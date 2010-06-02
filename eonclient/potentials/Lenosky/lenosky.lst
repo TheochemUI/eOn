@@ -1,0 +1,1449 @@
+IBM(R) XL Fortran Advanced Edition Version 8.1.0.4 --- lenosky.f90 05/10/07 13:59:29
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+          1 |!     Last change:  AA    6 Jun 2002    6:54 pm
+          2 |!
+          3 |!  SUBROUTINE potinit()
+          4 |!    IMPLICIT NONE
+          5 |!
+          6 |!  RETURN
+          7 |!  END SUBROUTINE potinit
+          8 |!
+          9 |!-----------------------------------------------------------------------------------!
+         10 |
+         11 |       subroutine lenosky(nat,R,F,ener,ax,ay,az)
+         12 |
+         13 |!      subroutine lenosky(nat,alat,R,F,ener,coord,ener_var,coord_var,count)
+         14 |
+         15 |  !     Evaluates the LENOSKY silicon potential with linear scaling
+         16 |  !     If publishable results are obtained with this program the following
+         17 |  !     2 references should be cited:
+         18 |  !     S. Goedecker, cond-mat/0201475 (2002)
+         19 |  !     T. Lenosky, Modelling. Simul. Mater. Sci. Eng. 8, 825 (2000)
+         20 |  !     Parallelized using OpenMP
+         21 |
+         22 |  !  Copyright (C) 2001-2002 Stefan Goedecker, CEA Grenoble
+         23 |  !  This file is distributed under the terms of the
+         24 |  !  GNU General Public License, see http://www.gnu.org/copyleft/gpl.txt .
+         25 |  !
+         26 |  !     input: - "nat": number of atoms
+         27 |  !            - "alat": lattice constants of the orthorombic box
+         28 |  !               containing the particles
+         29 |  !            - "rxyz0": atomic positions in Angstroem.
+         30 |  !               If an atom is outside the box the program will bring it   back
+         31 |  !               into the box by translations through alat
+         32 |  !     output:- "fxyz": forces in eV/A
+         33 |  !            - "ener": total energy in eV
+         34 |  !            - "coord": average coordination number
+         35 |  !            - "ener_var": variance of the energy/atom
+         36 |  !            - "coord_var": variance of the coordination number
+         37 |  !     I/Oput:- "count": is increased by one per call, has to be   initialized
+         38 |  !               to 0.d0 before first call of lenosky
+         39 |
+         40 |
+         41 |          implicit real*8 (a-h,o-z)
+            ........................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         42 |          logical lgl
+         43 |
+         44 |          REAL*8,INTENT(IN),DIMENSION(3*nat) :: R
+            ..........a.......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         45 |          REAL*8,INTENT(INOUT),DIMENSION(3*nat) :: F
+            ..........a..........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         46 |          REAL*8,INTENT(IN) :: ax,ay,az
+            ..........a.............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         47 |          INTEGER,INTENT(IN) :: nat
+         48 |          REAL*8,INTENT(OUT) :: ener
+            ..........a..........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         49 |          REAL*8,DIMENSION(3) :: alat
+            ..........a...........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         50 |          REAL*8,DIMENSION(3,nat) :: rxyz0,fxyz
+            ..........a.....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         51 |!          REAL*8 :: count,cut,cut2
+         52 |!          INTEGER :: npr,iam
+         53 |!          COMMON /meam/ COUNT,cut,cut2,npr,iam
+         54 |
+         55 |          real*8, ALLOCATABLE, DIMENSION(:,:) :: rxyz
+            ..........a...........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         56 |          integer, ALLOCATABLE, DIMENSION(:,:) :: lsta
+         57 |          integer, ALLOCATABLE, DIMENSION(:) :: lstb
+         58 |          integer, ALLOCATABLE, DIMENSION(:) :: lay
+         59 |          integer, ALLOCATABLE, DIMENSION(:,:,:,:) :: icell
+         60 |          real*8, ALLOCATABLE, DIMENSION(:,:) :: rel
+            ..........a..........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         61 |!          real*8, ALLOCATABLE, DIMENSION(:,:) :: txyz
+         62 |          real*8, ALLOCATABLE, DIMENSION(:,:) :: f2ij,f3ij,f3ik
+            ..........a.....................................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         63 |
+         64 |          REAL*8,PARAMETER :: cut=0.45d1
+            ..........a..............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         65 |          REAL*8,SAVE :: COUNT=1.0d0,cut2=cut**2
+            ..........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         66 |          INTEGER,SAVE :: npr=1,iam=0
+         67 |
+         68 |          alat(1)=ax
+         69 |          alat(2)=ay
+         70 |          alat(3)=az
+         71 |
+         72 |          j=1
+         73 |          DO i=1,nat
+         74 |            rxyz0(:,i)=R(j:j+2)
+         75 |            j=j+3
+         76 |          END DO
+         77 |
+         78 |          if (count.eq.0.d0) open(unit=10,file='lenosky.mon',status='unknown')
+         79 |          count=count+1.d0
+         80 |
+         81 |  ! linear scaling calculation of verlet list
+         82 |          ll1=int(alat(1)/cut)
+         83 |          if (ll1.lt.1) stop 'alat(1) too small'
+         84 |          ll2=int(alat(2)/cut)
+         85 |          if (ll2.lt.1) stop 'alat(2) too small'
+         86 |          ll3=int(alat(3)/cut)
+         87 |          if (ll3.lt.1) stop 'alat(3) too small'
+         88 |
+         89 |  ! linear scaling calculation of verlet list
+         90 |
+         91 |       if (npr.le.1) then !serial if too few processors to gain by parallelizing
+         92 |
+         93 |  ! set ncx for serial case, ncx for parallel case set below
+         94 |          ncx=8
+         95 |  1234    ncx=ncx*2
+         96 |          allocate(icell(0:ncx,-1:ll1,-1:ll2,-1:ll3))
+         97 |          do 984,l3=-1,ll3
+         98 |          do 984,l2=-1,ll2
+         99 |          do 984,l1=-1,ll1
+        100 |  984     icell(0,l1,l2,l3)=0
+            ..a...........................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        101 |          rlc1i=ll1/alat(1)
+        102 |          rlc2i=ll2/alat(2)
+        103 |          rlc3i=ll3/alat(3)
+        104 |
+        105 |          do 983,iat=1,nat
+        106 |
+        107 |          lgl=.false.
+        108 |  115     continue
+        109 |          if (rxyz0(1,iat).ge.alat(1)) then
+        110 |                    if (lgl) then
+        111 |                      write(10,*) count,' bad x position ',iat,rxyz0(1,iat)
+        112 |                      rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        113 |                      goto 115
+        114 |                    endif
+        115 |              rxyz0(1,iat)=rxyz0(1,iat)-alat(1)
+        116 |              lgl=.true.
+        117 |              goto 115
+        118 |          endif
+        119 |          if (rxyz0(1,iat).lt.0.d0) then
+        120 |                    if (lgl) then
+        121 |                      write(10,*) count,' bad x position ',iat,rxyz0(1,iat)
+        122 |                      rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        123 |                      goto 115
+        124 |                    endif
+        125 |              rxyz0(1,iat)=rxyz0(1,iat)+alat(1)
+        126 |              lgl=.true.
+        127 |              goto 115
+        128 |          endif
+        129 |          l1=int(rxyz0(1,iat)*rlc1i)
+        130 |
+        131 |          lgl=.false.
+        132 |  225    continue
+        133 |          if (rxyz0(2,iat).ge.alat(2)) then
+        134 |                    if (lgl) then
+        135 |                      write(10,*) count,' bad y position ',iat,rxyz0(2,iat)
+        136 |                      rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        137 |                      goto 225
+        138 |                    endif
+        139 |              rxyz0(2,iat)=rxyz0(2,iat)-alat(2)
+        140 |              lgl=.true.
+        141 |              goto 225
+        142 |          endif
+        143 |          if (rxyz0(2,iat).lt.0.d0) then
+        144 |                    if (lgl) then
+        145 |                      write(10,*) count,' bad y position ',iat,rxyz0(2,iat)
+        146 |                      rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        147 |                      goto 225
+        148 |                    endif
+        149 |              rxyz0(2,iat)=rxyz0(2,iat)+alat(2)
+        150 |              lgl=.true.
+        151 |              goto 225
+        152 |          endif
+        153 |          l2=int(rxyz0(2,iat)*rlc2i)
+        154 |
+        155 |          lgl=.false.
+        156 |  335    continue
+        157 |          if (rxyz0(3,iat).ge.alat(3)) then
+        158 |                    if (lgl) then
+        159 |                      write(10,*) count,' bad z position ',iat,rxyz0(3,iat)
+        160 |                      rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        161 |                      goto 335
+        162 |                    endif
+        163 |              rxyz0(3,iat)=rxyz0(3,iat)-alat(3)
+        164 |              lgl=.true.
+        165 |              goto 335
+        166 |          endif
+        167 |          if (rxyz0(3,iat).lt.0.d0) then
+        168 |                    if (lgl) then
+        169 |                      write(10,*) count,' bad z position ',iat,rxyz0(3,iat)
+        170 |                      rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        171 |                      goto 225
+        172 |                    endif
+        173 |              rxyz0(3,iat)=rxyz0(3,iat)+alat(3)
+        174 |              lgl=.true.
+        175 |              goto 335
+        176 |          endif
+        177 |          l3=int(rxyz0(3,iat)*rlc3i)
+        178 |
+        179 |          ii=icell(0,l1,l2,l3)
+        180 |          ii=ii+1
+        181 |          icell(0,l1,l2,l3)=ii
+        182 |          if (ii.gt.ncx) then
+        183 |          write(10,*) count,'NCX too small',ncx
+        184 |          deallocate(icell)
+        185 |          goto 1234
+        186 |          endif
+        187 |          icell(ii,l1,l2,l3)=iat
+        188 |  983     continue
+        189 |
+        190 |      endif
+        191 |
+        192 |
+        193 |  ! duplicate all atoms within boundary layer
+        194 |          laymx=ncx*(2*ll1*ll2+2*ll1*ll3+2*ll2*ll3+4*ll1+4*ll2+4*ll3+8)
+        195 |          nn=nat+laymx
+        196 |          allocate(rxyz(3,nn),lay(nn))
+        197 |          do  iat=1,nat
+        198 |          lay(iat)=iat
+        199 |          rxyz(1,iat)=rxyz0(1,iat)
+        200 |          rxyz(2,iat)=rxyz0(2,iat)
+        201 |          rxyz(3,iat)=rxyz0(3,iat)
+        202 |          enddo
+        203 |          il=nat
+        204 |  ! xy plane
+        205 |          do l2=0,ll2-1
+        206 |          do l1=0,ll1-1
+        207 |
+        208 |          in=icell(0,l1,l2,0)
+        209 |          icell(0,l1,l2,ll3)=in
+        210 |          do ii=1,in
+        211 |          i=icell(ii,l1,l2,0)
+        212 |          il=il+1
+        213 |          if (il.gt.nn) stop 'enlarge laymx'
+        214 |          lay(il)=i
+        215 |          icell(ii,l1,l2,ll3)=il
+        216 |          rxyz(1,il)=rxyz(1,i)
+        217 |          rxyz(2,il)=rxyz(2,i)
+        218 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        219 |          enddo
+        220 |
+        221 |          in=icell(0,l1,l2,ll3-1)
+        222 |          icell(0,l1,l2,-1)=in
+        223 |          do ii=1,in
+        224 |          i=icell(ii,l1,l2,ll3-1)
+        225 |          il=il+1
+        226 |          if (il.gt.nn) stop 'enlarge laymx'
+        227 |          lay(il)=i
+        228 |          icell(ii,l1,l2,-1)=il
+        229 |          rxyz(1,il)=rxyz(1,i)
+        230 |          rxyz(2,il)=rxyz(2,i)
+        231 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        232 |          enddo
+        233 |
+        234 |          enddo
+        235 |          enddo
+        236 |
+        237 |
+        238 |  ! yz plane
+        239 |          do l3=0,ll3-1
+        240 |          do l2=0,ll2-1
+        241 |
+        242 |          in=icell(0,0,l2,l3)
+        243 |          icell(0,ll1,l2,l3)=in
+        244 |          do ii=1,in
+        245 |          i=icell(ii,0,l2,l3)
+        246 |          il=il+1
+        247 |          if (il.gt.nn) stop 'enlarge laymx'
+        248 |          lay(il)=i
+        249 |          icell(ii,ll1,l2,l3)=il
+        250 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        251 |          rxyz(2,il)=rxyz(2,i)
+        252 |          rxyz(3,il)=rxyz(3,i)
+        253 |          enddo
+        254 |
+        255 |          in=icell(0,ll1-1,l2,l3)
+        256 |          icell(0,-1,l2,l3)=in
+        257 |          do ii=1,in
+        258 |          i=icell(ii,ll1-1,l2,l3)
+        259 |          il=il+1
+        260 |          if (il.gt.nn) stop 'enlarge laymx'
+        261 |          lay(il)=i
+        262 |          icell(ii,-1,l2,l3)=il
+        263 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        264 |          rxyz(2,il)=rxyz(2,i)
+        265 |          rxyz(3,il)=rxyz(3,i)
+        266 |          enddo
+        267 |
+        268 |          enddo
+        269 |          enddo
+        270 |
+        271 |
+        272 |  ! xz plane
+        273 |          do l3=0,ll3-1
+        274 |          do l1=0,ll1-1
+        275 |
+        276 |          in=icell(0,l1,0,l3)
+        277 |          icell(0,l1,ll2,l3)=in
+        278 |          do ii=1,in
+        279 |          i=icell(ii,l1,0,l3)
+        280 |          il=il+1
+        281 |          if (il.gt.nn) stop 'enlarge laymx'
+        282 |          lay(il)=i
+        283 |          icell(ii,l1,ll2,l3)=il
+        284 |          rxyz(1,il)=rxyz(1,i)
+        285 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        286 |          rxyz(3,il)=rxyz(3,i)
+        287 |          enddo
+        288 |
+        289 |          in=icell(0,l1,ll2-1,l3)
+        290 |          icell(0,l1,-1,l3)=in
+        291 |          do ii=1,in
+        292 |          i=icell(ii,l1,ll2-1,l3)
+        293 |          il=il+1
+        294 |          if (il.gt.nn) stop 'enlarge laymx'
+        295 |          lay(il)=i
+        296 |          icell(ii,l1,-1,l3)=il
+        297 |          rxyz(1,il)=rxyz(1,i)
+        298 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        299 |          rxyz(3,il)=rxyz(3,i)
+        300 |          enddo
+        301 |
+        302 |          enddo
+        303 |          enddo
+        304 |
+        305 |
+        306 |  ! x axis
+        307 |          do l1=0,ll1-1
+        308 |
+        309 |          in=icell(0,l1,0,0)
+        310 |          icell(0,l1,ll2,ll3)=in
+        311 |          do ii=1,in
+        312 |          i=icell(ii,l1,0,0)
+        313 |          il=il+1
+        314 |          if (il.gt.nn) stop 'enlarge laymx'
+        315 |          lay(il)=i
+        316 |          icell(ii,l1,ll2,ll3)=il
+        317 |          rxyz(1,il)=rxyz(1,i)
+        318 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        319 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        320 |          enddo
+        321 |
+        322 |          in=icell(0,l1,0,ll3-1)
+        323 |          icell(0,l1,ll2,-1)=in
+        324 |          do ii=1,in
+        325 |          i=icell(ii,l1,0,ll3-1)
+        326 |          il=il+1
+        327 |          if (il.gt.nn) stop 'enlarge laymx'
+        328 |          lay(il)=i
+        329 |          icell(ii,l1,ll2,-1)=il
+        330 |          rxyz(1,il)=rxyz(1,i)
+        331 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        332 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        333 |          enddo
+        334 |
+        335 |          in=icell(0,l1,ll2-1,0)
+        336 |          icell(0,l1,-1,ll3)=in
+        337 |          do ii=1,in
+        338 |          i=icell(ii,l1,ll2-1,0)
+        339 |          il=il+1
+        340 |          if (il.gt.nn) stop 'enlarge laymx'
+        341 |          lay(il)=i
+        342 |          icell(ii,l1,-1,ll3)=il
+        343 |          rxyz(1,il)=rxyz(1,i)
+        344 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        345 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        346 |          enddo
+        347 |
+        348 |          in=icell(0,l1,ll2-1,ll3-1)
+        349 |          icell(0,l1,-1,-1)=in
+        350 |          do ii=1,in
+        351 |          i=icell(ii,l1,ll2-1,ll3-1)
+        352 |          il=il+1
+        353 |          if (il.gt.nn) stop 'enlarge laymx'
+        354 |          lay(il)=i
+        355 |          icell(ii,l1,-1,-1)=il
+        356 |          rxyz(1,il)=rxyz(1,i)
+        357 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        358 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        359 |          enddo
+        360 |
+        361 |          enddo
+        362 |
+        363 |
+        364 |  ! y axis
+        365 |          do l2=0,ll2-1
+        366 |
+        367 |          in=icell(0,0,l2,0)
+        368 |          icell(0,ll1,l2,ll3)=in
+        369 |          do ii=1,in
+        370 |          i=icell(ii,0,l2,0)
+        371 |          il=il+1
+        372 |          if (il.gt.nn) stop 'enlarge laymx'
+        373 |          lay(il)=i
+        374 |          icell(ii,ll1,l2,ll3)=il
+        375 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        376 |          rxyz(2,il)=rxyz(2,i)
+        377 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        378 |          enddo
+        379 |
+        380 |          in=icell(0,0,l2,ll3-1)
+        381 |          icell(0,ll1,l2,-1)=in
+        382 |          do ii=1,in
+        383 |          i=icell(ii,0,l2,ll3-1)
+        384 |          il=il+1
+        385 |          if (il.gt.nn) stop 'enlarge laymx'
+        386 |          lay(il)=i
+        387 |          icell(ii,ll1,l2,-1)=il
+        388 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        389 |          rxyz(2,il)=rxyz(2,i)
+        390 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        391 |          enddo
+        392 |
+        393 |          in=icell(0,ll1-1,l2,0)
+        394 |          icell(0,-1,l2,ll3)=in
+        395 |          do ii=1,in
+        396 |          i=icell(ii,ll1-1,l2,0)
+        397 |          il=il+1
+        398 |          if (il.gt.nn) stop 'enlarge laymx'
+        399 |          lay(il)=i
+        400 |          icell(ii,-1,l2,ll3)=il
+        401 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        402 |          rxyz(2,il)=rxyz(2,i)
+        403 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        404 |          enddo
+        405 |
+        406 |          in=icell(0,ll1-1,l2,ll3-1)
+        407 |          icell(0,-1,l2,-1)=in
+        408 |          do ii=1,in
+        409 |          i=icell(ii,ll1-1,l2,ll3-1)
+        410 |          il=il+1
+        411 |          if (il.gt.nn) stop 'enlarge laymx'
+        412 |          lay(il)=i
+        413 |          icell(ii,-1,l2,-1)=il
+        414 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        415 |          rxyz(2,il)=rxyz(2,i)
+        416 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        417 |          enddo
+        418 |
+        419 |          enddo
+        420 |
+        421 |
+        422 |  ! z axis
+        423 |          do l3=0,ll3-1
+        424 |
+        425 |          in=icell(0,0,0,l3)
+        426 |          icell(0,ll1,ll2,l3)=in
+        427 |          do ii=1,in
+        428 |          i=icell(ii,0,0,l3)
+        429 |          il=il+1
+        430 |          if (il.gt.nn) stop 'enlarge laymx'
+        431 |          lay(il)=i
+        432 |          icell(ii,ll1,ll2,l3)=il
+        433 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        434 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        435 |          rxyz(3,il)=rxyz(3,i)
+        436 |          enddo
+        437 |
+        438 |          in=icell(0,ll1-1,0,l3)
+        439 |          icell(0,-1,ll2,l3)=in
+        440 |          do ii=1,in
+        441 |          i=icell(ii,ll1-1,0,l3)
+        442 |          il=il+1
+        443 |          if (il.gt.nn) stop 'enlarge laymx'
+        444 |          lay(il)=i
+        445 |          icell(ii,-1,ll2,l3)=il
+        446 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        447 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        448 |          rxyz(3,il)=rxyz(3,i)
+        449 |          enddo
+        450 |
+        451 |          in=icell(0,0,ll2-1,l3)
+        452 |          icell(0,ll1,-1,l3)=in
+        453 |          do ii=1,in
+        454 |          i=icell(ii,0,ll2-1,l3)
+        455 |          il=il+1
+        456 |          if (il.gt.nn) stop 'enlarge laymx'
+        457 |          lay(il)=i
+        458 |          icell(ii,ll1,-1,l3)=il
+        459 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        460 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        461 |          rxyz(3,il)=rxyz(3,i)
+        462 |          enddo
+        463 |
+        464 |          in=icell(0,ll1-1,ll2-1,l3)
+        465 |          icell(0,-1,-1,l3)=in
+        466 |          do ii=1,in
+        467 |          i=icell(ii,ll1-1,ll2-1,l3)
+        468 |          il=il+1
+        469 |          if (il.gt.nn) stop 'enlarge laymx'
+        470 |          lay(il)=i
+        471 |          icell(ii,-1,-1,l3)=il
+        472 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        473 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        474 |          rxyz(3,il)=rxyz(3,i)
+        475 |          enddo
+        476 |
+        477 |          enddo
+        478 |
+        479 |
+        480 |  ! corners
+        481 |          in=icell(0,0,0,0)
+        482 |          icell(0,ll1,ll2,ll3)=in
+        483 |          do ii=1,in
+        484 |          i=icell(ii,0,0,0)
+        485 |          il=il+1
+        486 |          if (il.gt.nn) stop 'enlarge laymx'
+        487 |          lay(il)=i
+        488 |          icell(ii,ll1,ll2,ll3)=il
+        489 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        490 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        491 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        492 |          enddo
+        493 |
+        494 |          in=icell(0,ll1-1,0,0)
+        495 |          icell(0,-1,ll2,ll3)=in
+        496 |          do ii=1,in
+        497 |          i=icell(ii,ll1-1,0,0)
+        498 |          il=il+1
+        499 |          if (il.gt.nn) stop 'enlarge laymx'
+        500 |          lay(il)=i
+        501 |          icell(ii,-1,ll2,ll3)=il
+        502 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        503 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        504 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        505 |          enddo
+        506 |
+        507 |          in=icell(0,0,ll2-1,0)
+        508 |          icell(0,ll1,-1,ll3)=in
+        509 |          do ii=1,in
+        510 |          i=icell(ii,0,ll2-1,0)
+        511 |          il=il+1
+        512 |          if (il.gt.nn) stop 'enlarge laymx'
+        513 |          lay(il)=i
+        514 |          icell(ii,ll1,-1,ll3)=il
+        515 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        516 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        517 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        518 |          enddo
+        519 |
+        520 |          in=icell(0,ll1-1,ll2-1,0)
+        521 |          icell(0,-1,-1,ll3)=in
+        522 |          do ii=1,in
+        523 |          i=icell(ii,ll1-1,ll2-1,0)
+        524 |          il=il+1
+        525 |          if (il.gt.nn) stop 'enlarge laymx'
+        526 |          lay(il)=i
+        527 |          icell(ii,-1,-1,ll3)=il
+        528 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        529 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        530 |          rxyz(3,il)=rxyz(3,i)+alat(3)
+        531 |          enddo
+        532 |
+        533 |          in=icell(0,0,0,ll3-1)
+        534 |          icell(0,ll1,ll2,-1)=in
+        535 |          do ii=1,in
+        536 |          i=icell(ii,0,0,ll3-1)
+        537 |          il=il+1
+        538 |          if (il.gt.nn) stop 'enlarge laymx'
+        539 |          lay(il)=i
+        540 |          icell(ii,ll1,ll2,-1)=il
+        541 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        542 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        543 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        544 |          enddo
+        545 |
+        546 |          in=icell(0,ll1-1,0,ll3-1)
+        547 |          icell(0,-1,ll2,-1)=in
+        548 |          do ii=1,in
+        549 |          i=icell(ii,ll1-1,0,ll3-1)
+        550 |          il=il+1
+        551 |          if (il.gt.nn) stop 'enlarge laymx'
+        552 |          lay(il)=i
+        553 |          icell(ii,-1,ll2,-1)=il
+        554 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        555 |          rxyz(2,il)=rxyz(2,i)+alat(2)
+        556 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        557 |          enddo
+        558 |
+        559 |          in=icell(0,0,ll2-1,ll3-1)
+        560 |          icell(0,ll1,-1,-1)=in
+        561 |          do ii=1,in
+        562 |          i=icell(ii,0,ll2-1,ll3-1)
+        563 |          il=il+1
+        564 |          if (il.gt.nn) stop 'enlarge laymx'
+        565 |          lay(il)=i
+        566 |          icell(ii,ll1,-1,-1)=il
+        567 |          rxyz(1,il)=rxyz(1,i)+alat(1)
+        568 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        569 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        570 |          enddo
+        571 |
+        572 |          in=icell(0,ll1-1,ll2-1,ll3-1)
+        573 |          icell(0,-1,-1,-1)=in
+        574 |          do ii=1,in
+        575 |          i=icell(ii,ll1-1,ll2-1,ll3-1)
+        576 |          il=il+1
+        577 |          if (il.gt.nn) stop 'enlarge laymx'
+        578 |          lay(il)=i
+        579 |          icell(ii,-1,-1,-1)=il
+        580 |          rxyz(1,il)=rxyz(1,i)-alat(1)
+        581 |          rxyz(2,il)=rxyz(2,i)-alat(2)
+        582 |          rxyz(3,il)=rxyz(3,i)-alat(3)
+        583 |          enddo
+        584 |
+        585 |          allocate(lsta(2,nat))
+        586 |          nnbrx=24
+        587 |  2345    nnbrx=3*nnbrx/2
+        588 |          allocate(lstb(nnbrx*nat),rel(5,nnbrx*nat))
+        589 |
+        590 |          indlstx=0
+        591 |
+        592 |  ! assign contiguous portions of the arrays lstb and rel to the threads
+        593 |          myspace=(nat*nnbrx)/npr
+        594 |          if (iam.eq.0) myspaceout=myspace
+        595 |  ! Verlet list, relative positions
+        596 |          indlst=0
+        597 |        do 6000,l3=0,ll3-1
+        598 |        do 6000,l2=0,ll2-1
+        599 |        do 6000,l1=0,ll1-1
+        600 |        do 6600,ii=1,icell(0,l1,l2,l3)
+        601 |          iat=icell(ii,l1,l2,l3)
+        602 |          if ( ((iat-1)*npr)/nat .eq. iam) then
+        603 |            lsta(1,iat)=iam*myspace+indlst+1
+        604 |            call sublstiat(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
+        605 |                           rxyz,icell,lstb(iam*myspace+1),lay,rel(1,iam*myspace+1),cut2,indlst)
+        606 |            lsta(2,iat)=iam*myspace+indlst
+        607 |          endif
+        608 |
+        609 |  6600    continue
+        610 |  6000    continue
+            ..a................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        611 |          indlstx=max(indlstx,indlst)
+        612 |
+        613 |             if (indlstx.ge.myspaceout) then
+        614 |                 write(10,*) count,'NNBRX too  small', nnbrx
+        615 |                 deallocate(lstb,rel)
+        616 |                 goto 2345
+        617 |             endif
+        618 |
+        619 |          npjx=300 ; npjkx=3000
+        620 |          istopg=0
+        621 |
+        622 |          if (npr.le.1) then   ! SERIAL CASE
+        623 |            iat1=1
+        624 |            iat2=nat
+        625 |            allocate(f2ij(3,npjx),f3ij(3,npjkx),f3ik(3,npjkx))
+        626 |            call subfeniat(iat1,iat2,nat,lsta,lstb,rel,ener,ener2, &
+        627 |                           coord,coord2,nnbrx,fxyz,f2ij,npjx,f3ij,npjkx,f3ik,istop)
+        628 |            deallocate(f2ij,f3ij,f3ik)
+        629 |          endif
+        630 |
+        631 |          if (istopg.gt.0) stop 'DIMENSION ERROR (see WARNING above)'
+        632 |          ener_var=ener2/nat-(ener/nat)**2
+        633 |          coord=coord/nat
+        634 |          coord_var=coord2/nat-coord**2
+        635 |
+        636 |          j=1
+        637 |          DO i=1,nat
+        638 |            F(j:j+2)=fxyz(:,i)
+        639 |            j=j+3
+        640 |          END DO
+        641 |
+        642 |          deallocate(rxyz,icell,lay,lsta,lstb,rel)
+        643 |
+        644 |          end subroutine lenosky
+** lenosky   === End of Compilation 1 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   14           0         0           0         14            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        645 |
+        646 |!-----------------------------------------------------------------------------------!
+        647 |
+        648 |          subroutine subfeniat(iat1,iat2,nat,lsta,lstb,rel,tener,tener2, &
+        649 |                               tcoord,tcoord2,nnbrx,txyz,f2ij,npjx,f3ij,npjkx,f3ik,istop)
+        650 |
+        651 |  ! for a subset of atoms iat1 to iat2 the routine calculates the (partial) forces
+        652 |  ! txyz acting on these atoms as well as on the atoms (jat, kat) interacting
+        653 |  ! with them and their contribution to the energy (tener).
+        654 |  ! In addition the coordination number tcoord and the second moment of the
+        655 |  ! local energy tener2 and coordination number tcoord2 are returned
+        656 |
+        657 |         implicit real*8 (a-h,o-z)
+            .......................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        658 |         dimension lsta(2,nat),lstb(nnbrx*nat),rel(5,nnbrx*nat),txyz(3,nat)
+        659 |         dimension f2ij(3,npjx),f3ij(3,npjkx),f3ik(3,npjkx)
+        660 |         real*8 :: tmin_phi= 0.1500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        661 |         real*8 :: tmax_phi= 0.4500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        662 |         real*8 :: hi_phi= 3.00000000000d0
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        663 |         real*8 :: hsixth_phi=5.55555555555556D-002
+            ..............a.....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        664 |         real*8 :: h2sixth_phi=1.85185185185185D-002
+            ..............a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        665 |         real*8, dimension(0:9) :: cof_phi  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        666 |                      (/ 0.69299400000000d+01, -0.43995000000000d+00, &
+        667 |                        -0.17012300000000d+01, -0.16247300000000d+01, &
+        668 |                        -0.99696000000000d+00, -0.27391000000000d+00, &
+        669 |                        -0.24990000000000d-01, -0.17840000000000d-01, &
+        670 |                        -0.96100000000000d-02,  0.00000000000000d+00 /)
+        671 |         real*8, dimension(0:9) :: dof_phi  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        672 |                      (/ 0.16533229480429d+03,  0.39415410391417d+02, &
+        673 |                         0.68710036300407d+01,  0.53406950884203d+01, &
+        674 |                         0.15347960162782d+01, -0.63347591535331d+01, &
+        675 |                        -0.17987794021458d+01,  0.47429676211617d+00, &
+        676 |                        -0.40087646318907d-01, -0.23942617684055d+00 /)
+        677 |         real*8 :: tmin_rho= 0.1500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        678 |         real*8 :: tmax_rho= 0.3500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        679 |         real*8 :: hi_rho= 5.00000000000d0
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        680 |         real*8 :: hsixth_rho=3.33333333333333D-002
+            ..............a.....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        681 |         real*8 :: h2sixth_rho=6.66666666666667D-003
+            ..............a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        682 |         real*8, dimension(0:10) :: cof_rho =  &
+            .........a.......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        683 |                      (/ 0.13747000000000d+00, -0.14831000000000d+00, &
+        684 |                        -0.55972000000000d+00, -0.73110000000000d+00, &
+        685 |                        -0.76283000000000d+00, -0.72918000000000d+00, &
+        686 |                        -0.66620000000000d+00, -0.57328000000000d+00, &
+        687 |                        -0.40690000000000d+00, -0.16662000000000d+00, &
+        688 |                         0.00000000000000d+00 /)
+        689 |         real*8, dimension(0:10) :: dof_rho =  &
+            .........a.......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        690 |                     (/ -0.32275496741918d+01, -0.64119006516165d+01, &
+        691 |                         0.10030652280658d+02,  0.22937915289857d+01, &
+        692 |                         0.17416816033995d+01,  0.54648205741626d+00, &
+        693 |                         0.47189016693543d+00,  0.20569572748420d+01, &
+        694 |                         0.23192807336964d+01, -0.24908020962757d+00, &
+        695 |                        -0.12371959895186d+02 /)
+        696 |         real*8 :: tmin_fff= 0.1500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        697 |         real*8 :: tmax_fff= 0.3500000d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        698 |         real*8 :: hi_fff= 4.50000000000d0
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        699 |         real*8 :: hsixth_fff=3.70370370370370D-002
+            ..............a.....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        700 |         real*8 :: h2sixth_fff=8.23045267489712D-003
+            ..............a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        701 |         real*8, dimension(0:9) :: cof_fff  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        702 |                      (/ 0.12503100000000d+01,  0.86821000000000d+00, &
+        703 |                         0.60846000000000d+00,  0.48756000000000d+00, &
+        704 |                         0.44163000000000d+00,  0.37610000000000d+00, &
+        705 |                         0.27145000000000d+00,  0.14814000000000d+00, &
+        706 |                         0.48550000000000d-01,  0.00000000000000d+00 /)
+        707 |         real*8, dimension(0:9) :: dof_fff  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        708 |                      (/ 0.27904652711432d+02, -0.45230754228635d+01, &
+        709 |                         0.50531739800222d+01,  0.11806545027747d+01, &
+        710 |                        -0.66693699112098d+00, -0.89430653829079d+00, &
+        711 |                        -0.50891685571587d+00,  0.66278396115427d+00, &
+        712 |                         0.73976101109878d+00,  0.25795319944506d+01 /)
+        713 |         real*8 :: tmin_uuu= -0.1770930d+01
+            ..............a.............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        714 |         real*8 :: tmax_uuu= 0.7908520d+01
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        715 |         real*8 :: hi_uuu= 0.723181585730594d0
+            ..............a................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        716 |         real*8 :: hsixth_uuu=0.230463095238095d0
+            ..............a...................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        717 |         real*8 :: h2sixth_uuu=0.318679429600340d0
+            ..............a....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        718 |         real*8, dimension(0:7) :: cof_uuu  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        719 |                     (/ -0.10749300000000d+01, -0.20045000000000d+00, &
+        720 |                         0.41422000000000d+00,  0.87939000000000d+00, &
+        721 |                         0.12668900000000d+01,  0.16299800000000d+01, &
+        722 |                         0.19773800000000d+01,  0.23961800000000d+01 /)
+        723 |         real*8, dimension(0:7) :: dof_uuu  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        724 |                     (/ -0.14827125747284d+00, -0.14922155328475d+00, &
+        725 |                        -0.70113224223509d-01, -0.39449020349230d-01, &
+        726 |                        -0.15815242579643d-01,  0.26112640061855d-01, &
+        727 |                        -0.13786974745095d+00,  0.74941595372657d+00 /)
+        728 |         real*8 :: tmin_ggg= -0.1000000d+01
+            ..............a.............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        729 |         real*8 :: tmax_ggg= 0.8001400d+00
+            ..............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        730 |         real*8 :: hi_ggg= 3.88858644327663d0
+            ..............a...............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        731 |         real*8 :: hsixth_ggg=4.28604761904762D-002
+            ..............a.....................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        732 |         real*8 :: h2sixth_ggg=1.10221225156463D-002
+            ..............a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        733 |         real*8, dimension(0:7) :: cof_ggg  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        734 |                      (/ 0.52541600000000d+01,  0.23591500000000d+01, &
+        735 |                         0.11959500000000d+01,  0.12299500000000d+01, &
+        736 |                         0.20356500000000d+01,  0.34247400000000d+01, &
+        737 |                         0.49485900000000d+01,  0.56179900000000d+01 /)
+        738 |         real*8, dimension(0:7) :: dof_ggg  = &
+            .........a......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        739 |                      (/ 0.15826876132396d+02,  0.31176239377907d+02, &
+        740 |                         0.16589446539683d+02,  0.11083892500520d+02, &
+        741 |                         0.90887216383860d+01,  0.54902279653967d+01, &
+        742 |                        -0.18823313223755d+02, -0.77183416481005d+01 /)
+        743 |
+        744 |  ! initialize temporary private scalars for reduction sum on energies and
+        745 |  ! private workarray txyz for forces forces
+        746 |          tener=0.d0
+        747 |          tener2=0.d0
+        748 |          tcoord=0.d0
+        749 |          tcoord2=0.d0
+        750 |          istop=0
+        751 |          do 121,iat=1,nat
+        752 |          txyz(1,iat)=0.d0
+        753 |          txyz(2,iat)=0.d0
+        754 |  121     txyz(3,iat)=0.d0
+            ..a........................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        755 |
+        756 |
+        757 |  ! calculation of forces, energy
+        758 |
+        759 |          do 1000,iat=iat1,iat2
+        760 |
+        761 |          dens2=0.d0
+        762 |          dens3=0.d0
+        763 |          jcnt=0
+        764 |          jkcnt=0
+        765 |          coord_iat=0.d0
+        766 |          ener_iat=0.d0
+        767 |          do 2000,jbr=lsta(1,iat),lsta(2,iat)
+        768 |          jat=lstb(jbr)
+        769 |          jcnt=jcnt+1
+        770 |          if (jcnt.gt.npjx) then
+        771 |              write(6,*) 'WARNING: enlarge npjx'
+        772 |              istop=1
+        773 |          endif
+        774 |
+        775 |          fxij=rel(1,jbr)
+        776 |          fyij=rel(2,jbr)
+        777 |          fzij=rel(3,jbr)
+        778 |          rij=rel(4,jbr)
+        779 |          sij=rel(5,jbr)
+        780 |
+        781 |  ! coordination number calculated with soft cutoff between first and
+        782 |  ! second nearest neighbor
+        783 |          if (rij.le.2.36d0) then
+        784 |            coord_iat=coord_iat+1.d0
+        785 |          else if (rij.ge.3.83d0) then
+        786 |          else
+        787 |            x=(rij-2.36d0)*(1.d0/((3.83d0)-2.36d0))
+        788 |            coord_iat=coord_iat+(2*x+1.d0)*(x-1.d0)**2
+        789 |          endif
+        790 |
+        791 |  ! pairpotential term
+        792 |          call splint(cof_phi,dof_phi,tmin_phi,tmax_phi, &
+        793 |                      hsixth_phi,h2sixth_phi,hi_phi,10,rij,e_phi,ep_phi)
+        794 |          ener_iat=ener_iat+(e_phi*.5d0)
+        795 |          txyz(1,iat)=txyz(1,iat)-fxij*(ep_phi*.5d0)
+        796 |          txyz(2,iat)=txyz(2,iat)-fyij*(ep_phi*.5d0)
+        797 |          txyz(3,iat)=txyz(3,iat)-fzij*(ep_phi*.5d0)
+        798 |          txyz(1,jat)=txyz(1,jat)+fxij*(ep_phi*.5d0)
+        799 |          txyz(2,jat)=txyz(2,jat)+fyij*(ep_phi*.5d0)
+        800 |          txyz(3,jat)=txyz(3,jat)+fzij*(ep_phi*.5d0)
+        801 |
+        802 |  ! 2 body embedding term
+        803 |          call splint(cof_rho,dof_rho,tmin_rho,tmax_rho, &
+        804 |                      hsixth_rho,h2sixth_rho,hi_rho,11,rij,rho,rhop)
+        805 |          dens2=dens2+rho
+        806 |          f2ij(1,jcnt)=fxij*rhop
+        807 |          f2ij(2,jcnt)=fyij*rhop
+        808 |          f2ij(3,jcnt)=fzij*rhop
+        809 |
+        810 |  ! 3 body embedding term
+        811 |          call splint(cof_fff,dof_fff,tmin_fff,tmax_fff, &
+        812 |                      hsixth_fff,h2sixth_fff,hi_fff,10,rij,fij,fijp)
+        813 |
+        814 |          do 3000,kbr=lsta(1,iat),lsta(2,iat)
+        815 |          kat=lstb(kbr)
+        816 |          if (kat.lt.jat) then
+        817 |            jkcnt=jkcnt+1
+        818 |            if (jkcnt.gt.npjkx) then
+        819 |                write(6,*) 'WARNING: enlarge npjkx'
+        820 |                istop=1
+        821 |            endif
+        822 |
+        823 |  ! begin optimized version
+        824 |          rik=rel(4,kbr)
+        825 |        if (rik.gt.tmax_fff) then
+        826 |          fikp=0.d0 ; fik=0.d0
+        827 |          gjik=0.d0 ;  gjikp=0.d0 ; sik=0.d0
+        828 |          costheta=0.d0 ; fxik=0.d0 ; fyik=0.d0 ; fzik=0.d0
+        829 |        else if (rik.lt.tmin_fff) then
+        830 |          fxik=rel(1,kbr)
+        831 |          fyik=rel(2,kbr)
+        832 |          fzik=rel(3,kbr)
+        833 |          costheta=fxij*fxik+fyij*fyik+fzij*fzik
+        834 |          sik=rel(5,kbr)
+        835 |          fikp=hi_fff*(cof_fff(1)-cof_fff(0)) -  &
+        836 |               ( dof_fff(1)+2.d0*dof_fff(0) )*hsixth_fff
+        837 |          fik=cof_fff(0) + (rik-tmin_fff)*fikp
+        838 |          tt_ggg=(costheta-tmin_ggg)*hi_ggg
+        839 |          if (costheta.gt.tmax_ggg) then
+        840 |            gjikp=hi_ggg*(cof_ggg(8-1)-cof_ggg(8-2)) + &
+        841 |                  ( 2.d0*dof_ggg(8-1)+dof_ggg(8-2) )*hsixth_ggg
+        842 |            gjik=cof_ggg(8-1) + (costheta-tmax_ggg)*gjikp
+        843 |          else
+        844 |            klo_ggg=tt_ggg
+        845 |            khi_ggg=klo_ggg+1
+        846 |            cof_ggg_klo=cof_ggg(klo_ggg)
+        847 |            dof_ggg_klo=dof_ggg(klo_ggg)
+        848 |            b_ggg=tt_ggg-klo_ggg
+        849 |            a_ggg=1.d0-b_ggg
+        850 |            cof_ggg_khi=cof_ggg(khi_ggg)
+        851 |            dof_ggg_khi=dof_ggg(khi_ggg)
+        852 |            b2_ggg=b_ggg*b_ggg
+        853 |            gjik=a_ggg*cof_ggg_klo
+        854 |            gjikp=cof_ggg_khi-cof_ggg_klo
+        855 |            a2_ggg=a_ggg*a_ggg
+        856 |            cof1_ggg=a2_ggg-1.d0
+        857 |            cof2_ggg=b2_ggg-1.d0
+        858 |            gjik=gjik+b_ggg*cof_ggg_khi
+        859 |            gjikp=hi_ggg*gjikp
+        860 |            cof3_ggg=3.d0*b2_ggg
+        861 |            cof4_ggg=3.d0*a2_ggg
+        862 |            cof1_ggg=a_ggg*cof1_ggg
+        863 |            cof2_ggg=b_ggg*cof2_ggg
+        864 |            cof3_ggg=cof3_ggg-1.d0
+        865 |            cof4_ggg=cof4_ggg-1.d0
+        866 |            yt1_ggg=cof1_ggg*dof_ggg_klo
+        867 |            yt2_ggg=cof2_ggg*dof_ggg_khi
+        868 |            ypt1_ggg=cof3_ggg*dof_ggg_khi
+        869 |            ypt2_ggg=cof4_ggg*dof_ggg_klo
+        870 |            gjik=gjik + (yt1_ggg+yt2_ggg)*h2sixth_ggg
+        871 |            gjikp=gjikp + ( ypt1_ggg - ypt2_ggg )*hsixth_ggg
+        872 |          endif
+        873 |        else
+        874 |          fxik=rel(1,kbr)
+        875 |          tt_fff=rik-tmin_fff
+        876 |          costheta=fxij*fxik
+        877 |          fyik=rel(2,kbr)
+        878 |          tt_fff=tt_fff*hi_fff
+        879 |          costheta=costheta+fyij*fyik
+        880 |          fzik=rel(3,kbr)
+        881 |          klo_fff=tt_fff
+        882 |          costheta=costheta+fzij*fzik
+        883 |          sik=rel(5,kbr)
+        884 |          tt_ggg=(costheta-tmin_ggg)*hi_ggg
+        885 |          if (costheta.gt.tmax_ggg) then
+        886 |            gjikp=hi_ggg*(cof_ggg(8-1)-cof_ggg(8-2)) + &
+        887 |                  ( 2.d0*dof_ggg(8-1)+dof_ggg(8-2) )*hsixth_ggg
+        888 |            gjik=cof_ggg(8-1) + (costheta-tmax_ggg)*gjikp
+        889 |            khi_fff=klo_fff+1
+        890 |            cof_fff_klo=cof_fff(klo_fff)
+        891 |            dof_fff_klo=dof_fff(klo_fff)
+        892 |            b_fff=tt_fff-klo_fff
+        893 |            a_fff=1.d0-b_fff
+        894 |            cof_fff_khi=cof_fff(khi_fff)
+        895 |            dof_fff_khi=dof_fff(khi_fff)
+        896 |            b2_fff=b_fff*b_fff
+        897 |            fik=a_fff*cof_fff_klo
+        898 |            fikp=cof_fff_khi-cof_fff_klo
+        899 |            a2_fff=a_fff*a_fff
+        900 |            cof1_fff=a2_fff-1.d0
+        901 |            cof2_fff=b2_fff-1.d0
+        902 |            fik=fik+b_fff*cof_fff_khi
+        903 |            fikp=hi_fff*fikp
+        904 |            cof3_fff=3.d0*b2_fff
+        905 |            cof4_fff=3.d0*a2_fff
+        906 |            cof1_fff=a_fff*cof1_fff
+        907 |            cof2_fff=b_fff*cof2_fff
+        908 |            cof3_fff=cof3_fff-1.d0
+        909 |            cof4_fff=cof4_fff-1.d0
+        910 |            yt1_fff=cof1_fff*dof_fff_klo
+        911 |            yt2_fff=cof2_fff*dof_fff_khi
+        912 |            ypt1_fff=cof3_fff*dof_fff_khi
+        913 |            ypt2_fff=cof4_fff*dof_fff_klo
+        914 |            fik=fik + (yt1_fff+yt2_fff)*h2sixth_fff
+        915 |            fikp=fikp + ( ypt1_fff - ypt2_fff )*hsixth_fff
+        916 |          else
+        917 |            klo_ggg=tt_ggg
+        918 |            khi_ggg=klo_ggg+1
+        919 |            khi_fff=klo_fff+1
+        920 |            cof_ggg_klo=cof_ggg(klo_ggg)
+        921 |            cof_fff_klo=cof_fff(klo_fff)
+        922 |            dof_ggg_klo=dof_ggg(klo_ggg)
+        923 |            dof_fff_klo=dof_fff(klo_fff)
+        924 |            b_ggg=tt_ggg-klo_ggg
+        925 |            b_fff=tt_fff-klo_fff
+        926 |            a_ggg=1.d0-b_ggg
+        927 |            a_fff=1.d0-b_fff
+        928 |            cof_ggg_khi=cof_ggg(khi_ggg)
+        929 |            cof_fff_khi=cof_fff(khi_fff)
+        930 |            dof_ggg_khi=dof_ggg(khi_ggg)
+        931 |            dof_fff_khi=dof_fff(khi_fff)
+        932 |            b2_ggg=b_ggg*b_ggg
+        933 |            b2_fff=b_fff*b_fff
+        934 |            gjik=a_ggg*cof_ggg_klo
+        935 |            fik=a_fff*cof_fff_klo
+        936 |            gjikp=cof_ggg_khi-cof_ggg_klo
+        937 |            fikp=cof_fff_khi-cof_fff_klo
+        938 |            a2_ggg=a_ggg*a_ggg
+        939 |            a2_fff=a_fff*a_fff
+        940 |            cof1_ggg=a2_ggg-1.d0
+        941 |            cof1_fff=a2_fff-1.d0
+        942 |            cof2_ggg=b2_ggg-1.d0
+        943 |            cof2_fff=b2_fff-1.d0
+        944 |            gjik=gjik+b_ggg*cof_ggg_khi
+        945 |            fik=fik+b_fff*cof_fff_khi
+        946 |            gjikp=hi_ggg*gjikp
+        947 |            fikp=hi_fff*fikp
+        948 |            cof3_ggg=3.d0*b2_ggg
+        949 |            cof3_fff=3.d0*b2_fff
+        950 |            cof4_ggg=3.d0*a2_ggg
+        951 |            cof4_fff=3.d0*a2_fff
+        952 |            cof1_ggg=a_ggg*cof1_ggg
+        953 |            cof1_fff=a_fff*cof1_fff
+        954 |            cof2_ggg=b_ggg*cof2_ggg
+        955 |            cof2_fff=b_fff*cof2_fff
+        956 |            cof3_ggg=cof3_ggg-1.d0
+        957 |            cof3_fff=cof3_fff-1.d0
+        958 |            cof4_ggg=cof4_ggg-1.d0
+        959 |            cof4_fff=cof4_fff-1.d0
+        960 |            yt1_ggg=cof1_ggg*dof_ggg_klo
+        961 |            yt1_fff=cof1_fff*dof_fff_klo
+        962 |            yt2_ggg=cof2_ggg*dof_ggg_khi
+        963 |            yt2_fff=cof2_fff*dof_fff_khi
+        964 |            ypt1_ggg=cof3_ggg*dof_ggg_khi
+        965 |            ypt1_fff=cof3_fff*dof_fff_khi
+        966 |            ypt2_ggg=cof4_ggg*dof_ggg_klo
+        967 |            ypt2_fff=cof4_fff*dof_fff_klo
+        968 |            gjik=gjik + (yt1_ggg+yt2_ggg)*h2sixth_ggg
+        969 |            fik=fik + (yt1_fff+yt2_fff)*h2sixth_fff
+        970 |            gjikp=gjikp + ( ypt1_ggg - ypt2_ggg )*hsixth_ggg
+        971 |            fikp=fikp + ( ypt1_fff - ypt2_fff )*hsixth_fff
+        972 |          endif
+        973 |        endif
+        974 |  ! end optimized version
+        975 |
+        976 |        tt=fij*fik
+        977 |        dens3=dens3+tt*gjik
+        978 |
+        979 |          t1=fijp*fik*gjik
+        980 |          t2=sij*(tt*gjikp)
+        981 |          f3ij(1,jkcnt)=fxij*t1 + (fxik-fxij*costheta)*t2
+        982 |          f3ij(2,jkcnt)=fyij*t1 + (fyik-fyij*costheta)*t2
+        983 |          f3ij(3,jkcnt)=fzij*t1 + (fzik-fzij*costheta)*t2
+        984 |
+        985 |          t3=fikp*fij*gjik
+        986 |          t4=sik*(tt*gjikp)
+        987 |          f3ik(1,jkcnt)=fxik*t3 + (fxij-fxik*costheta)*t4
+        988 |          f3ik(2,jkcnt)=fyik*t3 + (fyij-fyik*costheta)*t4
+        989 |          f3ik(3,jkcnt)=fzik*t3 + (fzij-fzik*costheta)*t4
+        990 |          endif
+        991 |  3000    continue
+        992 |  2000    continue
+        993 |          dens=dens2+dens3
+        994 |          call splint(cof_uuu,dof_uuu,tmin_uuu,tmax_uuu, &
+        995 |               hsixth_uuu,h2sixth_uuu,hi_uuu,8,dens,e_uuu,ep_uuu)
+        996 |          ener_iat=ener_iat+e_uuu
+        997 |
+        998 |  ! Only now ep_uu is known and the forces can be calculated, lets loop again
+        999 |          jcnt=0
+       1000 |          jkcnt=0
+       1001 |          do 2200,jbr=lsta(1,iat),lsta(2,iat)
+       1002 |          jat=lstb(jbr)
+       1003 |          jcnt=jcnt+1
+       1004 |          txyz(1,iat)=txyz(1,iat)-ep_uuu*f2ij(1,jcnt)
+       1005 |          txyz(2,iat)=txyz(2,iat)-ep_uuu*f2ij(2,jcnt)
+       1006 |          txyz(3,iat)=txyz(3,iat)-ep_uuu*f2ij(3,jcnt)
+       1007 |          txyz(1,jat)=txyz(1,jat)+ep_uuu*f2ij(1,jcnt)
+       1008 |          txyz(2,jat)=txyz(2,jat)+ep_uuu*f2ij(2,jcnt)
+       1009 |          txyz(3,jat)=txyz(3,jat)+ep_uuu*f2ij(3,jcnt)
+       1010 |
+       1011 |  ! 3 body embedding term
+       1012 |          do 3300,kbr=lsta(1,iat),lsta(2,iat)
+       1013 |          kat=lstb(kbr)
+       1014 |          if (kat.lt.jat) then
+       1015 |          jkcnt=jkcnt+1
+       1016 |
+       1017 |          txyz(1,iat)=txyz(1,iat)-ep_uuu*(f3ij(1,jkcnt)+f3ik(1,jkcnt))
+       1018 |          txyz(2,iat)=txyz(2,iat)-ep_uuu*(f3ij(2,jkcnt)+f3ik(2,jkcnt))
+       1019 |          txyz(3,iat)=txyz(3,iat)-ep_uuu*(f3ij(3,jkcnt)+f3ik(3,jkcnt))
+       1020 |          txyz(1,jat)=txyz(1,jat)+ep_uuu*f3ij(1,jkcnt)
+       1021 |          txyz(2,jat)=txyz(2,jat)+ep_uuu*f3ij(2,jkcnt)
+       1022 |          txyz(3,jat)=txyz(3,jat)+ep_uuu*f3ij(3,jkcnt)
+       1023 |          txyz(1,kat)=txyz(1,kat)+ep_uuu*f3ik(1,jkcnt)
+       1024 |          txyz(2,kat)=txyz(2,kat)+ep_uuu*f3ik(2,jkcnt)
+       1025 |          txyz(3,kat)=txyz(3,kat)+ep_uuu*f3ik(3,jkcnt)
+       1026 |
+       1027 |
+       1028 |          endif
+       1029 |  3300    continue
+       1030 |  2200    continue
+       1031 |
+       1032 |          tener=tener+ener_iat
+       1033 |          tener2=tener2+ener_iat**2
+       1034 |          tcoord=tcoord+coord_iat
+       1035 |          tcoord2=tcoord2+coord_iat**2
+       1036 |
+       1037 |  1000    continue
+       1038 |
+       1039 |          return
+       1040 |          end subroutine subfeniat
+** subfeniat   === End of Compilation 2 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   37           0         0           0         37            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+       1041 |
+       1042 |!-----------------------------------------------------------------------------------!
+       1043 |
+       1044 |  subroutine sublstiat(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
+       1045 |                       rxyz,icell,lstb,lay,rel,cut2,indlst)
+       1046 |
+       1047 |! finds the neighbours of atom iat (specified by lsta and lstb) and and
+       1048 |! the relative position rel of iat with respect to these neighbours
+       1049 |
+       1050 |    implicit real*8 (a-h,o-z)
+            ..................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+       1051 |    dimension rxyz(3,nn),lay(nn),icell(0:ncx,-1:ll1,-1:ll2,-1:ll3), &
+       1052 |             lstb(0:myspace-1),rel(5,0:myspace-1)
+       1053 |
+       1054 |    do 63,k3=l3-1,l3+1
+       1055 |      do 63,k2=l2-1,l2+1
+       1056 |        do 63,k1=l1-1,l1+1
+       1057 |           do 63,jj=1,icell(0,k1,k2,k3)
+       1058 |             jat=icell(jj,k1,k2,k3)
+       1059 |             if (jat.eq.iat) goto 63
+       1060 |             xrel= rxyz(1,iat)-rxyz(1,jat)
+       1061 |             yrel= rxyz(2,iat)-rxyz(2,jat)
+       1062 |             zrel= rxyz(3,iat)-rxyz(3,jat)
+       1063 |             rr2=xrel**2 + yrel**2 + zrel**2
+       1064 |             if ( rr2 .le. cut2 ) then
+       1065 |               indlst=min(indlst,myspace-1)
+       1066 |               lstb(indlst)=lay(jat)
+       1067 |               tt=sqrt(rr2)
+       1068 |               tti=1.d0/tt
+       1069 |               rel(1,indlst)=xrel*tti
+       1070 |               rel(2,indlst)=yrel*tti
+       1071 |               rel(3,indlst)=zrel*tti
+       1072 |               rel(4,indlst)=tt
+       1073 |               rel(5,indlst)=tti
+       1074 |               indlst= indlst+1
+       1075 |             endif
+       1076 |63 continue
+            .a..........
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+       1077 |
+       1078 |  return
+       1079 |  end subroutine sublstiat
+** sublstiat   === End of Compilation 3 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    2           0         0           0          2            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+       1080 |
+       1081 |!-----------------------------------------------------------------------------------!
+       1082 |
+       1083 |  subroutine splint(ya,y2a,tmin,tmax,hsixth,h2sixth,hi,n,x,y,yp)
+       1084 |    implicit real*8 (a-h,o-z)
+            ..................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+       1085 |    dimension y2a(0:n-1),ya(0:n-1)
+       1086 |
+       1087 |! interpolate if the argument is outside the cubic spline interval [tmin,tmax]
+       1088 |    tt=(x-tmin)*hi
+       1089 |    if (x.lt.tmin) then
+       1090 |      yp=hi*(ya(1)-ya(0)) - ( y2a(1)+2.d0*y2a(0) )*hsixth
+       1091 |      y=ya(0) + (x-tmin)*yp
+       1092 |    else if (x.gt.tmax) then
+       1093 |      yp=hi*(ya(n-1)-ya(n-2)) + ( 2.d0*y2a(n-1)+y2a(n-2) )*hsixth
+       1094 |      y=ya(n-1) + (x-tmax)*yp
+       1095 |! otherwise evaluate cubic spline
+       1096 |    else
+       1097 |      klo=tt
+       1098 |      khi=klo+1
+       1099 |      ya_klo=ya(klo)
+       1100 |      y2a_klo=y2a(klo)
+       1101 |      b=tt-klo
+       1102 |      a=1.d0-b
+       1103 |      ya_khi=ya(khi)
+       1104 |      y2a_khi=y2a(khi)
+       1105 |      b2=b*b
+       1106 |      y=a*ya_klo
+       1107 |      yp=ya_khi-ya_klo
+       1108 |      a2=a*a
+       1109 |      cof1=a2-1.d0
+       1110 |      cof2=b2-1.d0
+       1111 |      y=y+b*ya_khi
+       1112 |      yp=hi*yp
+       1113 |      cof3=3.d0*b2
+       1114 |      cof4=3.d0*a2
+       1115 |      cof1=a*cof1
+       1116 |      cof2=b*cof2
+       1117 |      cof3=cof3-1.d0
+       1118 |      cof4=cof4-1.d0
+       1119 |      yt1=cof1*y2a_klo
+       1120 |      yt2=cof2*y2a_khi
+       1121 |      ypt1=cof3*y2a_khi
+       1122 |      ypt2=cof4*y2a_klo
+       1123 |      y=y + (yt1+yt2)*h2sixth
+       1124 |      yp=yp + ( ypt1 - ypt2 )*hsixth
+       1125 |    endif
+       1126 |  return
+       1127 |  end subroutine splint
+** splint   === End of Compilation 4 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    1           0         0           0          1            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-2)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+       1128 |
+       1129 |!-----------------------------------------------------------------------------------!
+       1130 |
+       1131 |
+ 
+>>>>> FILE TABLE SECTION <<<<<
+ 
+ 
+                                       FILE CREATION        FROM
+FILE NO   FILENAME                    DATE       TIME       FILE    LINE
+     0    lenosky.f90                 05/10/07   13:58:28
+ 
+ 
+>>>>> COMPILATION EPILOGUE SECTION <<<<<
+ 
+ 
+FORTRAN Summary of Diagnosed Conditions
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   54           0         0           0         54            0
+ 
+ 
+    Source records read.......................................    1131
+1501-510  Compilation successful for file lenosky.f90.
+1501-543  Object file created.
