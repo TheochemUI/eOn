@@ -1,0 +1,10 @@
+c  comgeom.cmn:
+
+      common / geom / ax,ay,az,ax0,ay0,az0,alpha,beta,gamma,
+     +                sinalp,cosalp,sinbet,cosbet,singam,cosgam,
+     +                zsurf,zbott,indzbott,indzsurf
+c             ax, ay and az are the lengths of the simulation cell sides.                 
+c             alpha is the angle between the ax and ay vectors, beta the                  
+c             angle between the ay and az and gamma betwee ax and az.                     
+c             zsurf,zbott,indzbott,indzsurf are used to keep track of top
+c                   and bottom layer in z direction.
