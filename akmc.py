@@ -213,34 +213,41 @@ def kmc_step(current_state, states, time):
     previous_state = current_state 
     dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
     start_state_num = current_state.number
-    superbasining = get_superbasin_scheme(states)
+    if config.sb_on:
+        superbasining = get_superbasin_scheme(states)
     while current_state.get_confidence() > config.akmc_confidence:
-        rate_table = current_state.get_ratetable()
-        if len(rate_table) == 0:
-            logger.error("No processes in rate table, but confidence has been reached")
-        ratesum = 0.0
-        for i in range(len(rate_table)):
-            ratesum += rate_table[i][1]
-        
-        #TODO: Superbasining check
-        u = random.random()
-        p = 0.0
-         
-        for i in range(len(rate_table)):
-            p += rate_table[i][1]/ratesum
-            if p>u:
-                nsid = i 
-                break
-        else:
-            logger.warning("Warning: failed to select rate. p = " + str(p))
-            break
+        if config.sb_on:
+            sb = superbasining.get_containing_state(current_state)
 
-        next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
-        
+        if config.sb_on and sb:
+            time, next_state = sb.step(current_state, states.get_product_state)
+        else:
+            rate_table = current_state.get_ratetable()
+            if len(rate_table) == 0:
+                logger.error("No processes in rate table, but confidence has been reached")
+            ratesum = 0.0
+            for i in range(len(rate_table)):
+                ratesum += rate_table[i][1]
+            
+            #TODO: Superbasining check
+            u = random.random()
+            p = 0.0
+             
+            for i in range(len(rate_table)):
+                p += rate_table[i][1]/ratesum
+                if p>u:
+                    nsid = i 
+                    break
+            else:
+                logger.warning("Warning: failed to select rate. p = " + str(p))
+                break
+
+            next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
+            time += 1/ratesum
+
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
         
-        time += 1/ratesum
         print >> dynamics_file, next_state.number, time
         logger.info("Stepped from state " + str(current_state.number) + " to state " + str(next_state.number))
         
