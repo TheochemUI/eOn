@@ -72,6 +72,7 @@ class KDB:
         if wait:
             sp.wait()
 
+
     def make_suggestion(self, jobdir):
         if os.path.isdir(os.path.join(self.path, "kdbmatches")):
             dones = glob.glob(os.path.join(self.path, "kdbmatches",".done_*"))
