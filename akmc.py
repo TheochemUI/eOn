@@ -9,6 +9,7 @@ import os
 import time as unix_time
 import logging
 import optparse
+#TODO: should write to log file and have customizable verbosity
 logging.basicConfig(filename = '/dev/stdout', level = logging.DEBUG)
 logger = logging.getLogger('akmc')
 import numpy
@@ -42,11 +43,7 @@ def main():
         sys.exit(1)
     
     start_state_num, time, wuid = get_akmc_metadata()
-
-    initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    states = statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path) #might 
-        #as well pass the reactant in case we somehow lost state 0
-
+    states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
 
     if config.recycling_on:
@@ -136,6 +133,10 @@ def write_recycling_metadata(parser, recycling_start, previous_state_num):
     parser.set('Recycling', 'previous_state',str(previous_state_num))  
     parser.set('Recycling', 'start_process_id',str(recycling_start)) 
 
+def get_statelist(kT):
+    initial_state_path = os.path.join(config.path_root, 'reactant.con') 
+    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path) #might 
+
 def get_communicator():
     if config.comm_type=='boinc':
         comm = communicator.BOINC(config.path_scratch, config.comm_boinc_project_dir, 
@@ -202,15 +203,17 @@ def get_results(comm, current_state, states, kdber = None):
 
     return num_registered
 
+def get_superbasin_scheme(states):
+    if config.sb_scheme == 'transition_counting':
+        superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
+    return superbasining
+
 def kmc_step(current_state, states, time):
     t1 = unix_time.time()
     previous_state = current_state 
     dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
     start_state_num = current_state.number
-    if config.sb_on:
-        if config.sb_scheme == 'transition_counting':
-            superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
-    
+    superbasining = get_superbasin_scheme(states)
     while current_state.get_confidence() > config.akmc_confidence:
         rate_table = current_state.get_ratetable()
         if len(rate_table) == 0:
@@ -334,8 +337,41 @@ if __name__ == '__main__':
 
     #XXX: Some options are mutally exclusive. This should be handled better.
     if options.print_status:
-        raise NotImplementedError() 
-            
+        states = get_statelist(config.akmc_temperature/11604.5)
+        start_state_num, time, wuid = get_akmc_metadata()
+
+        print
+        print "General"
+        print "-------"
+        print "Current state:", start_state_num
+        print "Number of states:",states.get_num_states()  
+        print "Time simulated: %.3e seconds" % time
+        print
+
+        current_state = states.get_state(start_state_num)
+        print "Current State"
+        print "-------------"
+        print "Confidence: %.3f" % current_state.get_confidence()
+        print "Unique Saddles:", current_state.get_unique_saddle_count()
+        print "Good Saddles:", current_state.get_good_saddle_count()
+        print "Bad Saddles:", current_state.get_bad_saddle_count()
+        print "Percentage bad saddles: %.1f" % (float(current_state.get_bad_saddle_count())/float(max(current_state.get_bad_saddle_count() + current_state.get_good_saddle_count(), 1)) * 100)
+        print 
+
+        comm = get_communicator()
+        print "Saddle Searches"
+        print "---------------" 
+        #print "Searches currently running:", comm.thingy()
+        print "Searches in queue:", comm.get_queue_size() 
+        print
+
+        sb = get_superbasin_scheme(states)
+        print "Superbasins"
+        print "-----------"
+        for i in sb.superbasins:
+            print i.state_numbers 
+        
+        sys.exit(0)
     elif options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
