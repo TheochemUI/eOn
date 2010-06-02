@@ -1,0 +1,15 @@
+c  compotent:
+
+      parameter (MAXPOTPAR = 100)   !max # of parameters for each int.
+
+      character*1 potheader
+
+      COMMON / POTENT /
+cc     +                potheader(30,MAXPOTPAR),                                          
+     +                  potpar(MAXPOTPAR,3),
+     +                  rskinmax,
+     +                  rskin(3),rskin2(3),skndpt(3),RCUT(3),RCUT2(3),
+     +                  rhocut1st(10),rhocut2st(10),phicutst(10),
+     +                  maxneb,maxnpr,npotpar,iorderf,indf1
+
+

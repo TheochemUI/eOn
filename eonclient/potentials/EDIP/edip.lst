@@ -1,0 +1,1632 @@
+IBM(R) XL Fortran Advanced Edition Version 8.1.0.4 --- edip.f90 05/10/07 14:02:18
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+          1 |!  SUBROUTINE potinit()
+          2 |!    IMPLICIT NONE
+          3 |!  RETURN
+          4 |!  END SUBROUTINE potinit
+          5 |
+          6 |!-------------------------------------------------------------------------------!
+          7 |
+          8 |!    subroutine bazant(nat,alat,rxyz0,fxyz,ener,coord,ener_var,coord_var,count)
+          9 |
+         10 |
+         11 |    subroutine edip(nat,R,F,ener,ax,ay,az)
+         12 |
+         13 |!     Evaluates the bazant silicon potential with linear scaling
+         14 |!     Any publication describing research involving this software should
+         15 |!     contain the following citations, at once and in this order,
+         16 |!     1.  M. Z. Bazant and E. Kaxiras, Phys. Rev. Lett. 77, 4370 (1996).
+         17 |!     2.  M. Z. Bazant, E. Kaxiras, J. F. Justo, Phys. Rev. B 56, 8542 (1997).
+         18 |!     3.  J. F. Justo, M. Z. Bazant, E. Kaxiras, V. V. Bulatov, and S. Yip,
+         19 |!           Phys. Rev. B 58, 2539 (1998).
+         20 |!     4.  S. Goedecker, Comp. Phys. Commun. ??, ?? (2002) once
+         21 |!         this article has been published or
+         22 |!         S. Goedecker, cond-mat/0201475 (2002) before it has been published
+         23 |!
+         24 |!     Parallelized using OpenMP
+         25 |! Good Compiler options (last option only if paralellization with OpenMp desired)\
+         26 |! IBM Power3
+         27 |!  xlf90_r -O2 -qarch=pwr3 -qtune=pwr3 -qmaxmem=-1 -qsmp=omp
+         28 |! Dec Alpha
+         29 |! f90 -arch ev67 -O2 -fast -omp
+         30 |! Intel Pentium
+         31 |!  ifc -w -xW -O2 -openmp
+         32 |
+         33 |!  Copyright (C) 2001-2002 Stefan Goedecker, CEA Grenoble
+         34 |!  This file is distributed under the terms of the
+         35 |!  GNU General Public License, see http://www.gnu.org/copyleft/gpl.txt .
+         36 |!
+         37 |!     input: - "nat": number of atoms
+         38 |!            - "alat": lattice constants of the orthorombic box
+         39 |!               containing the particles
+         40 |!            - "rxyz0": atomic positions in Angstroem.
+         41 |!               If an atom is outside the box the program will bring it back
+         42 |!               into the box by translations through alat
+         43 |!     output:- "fxyz": forces in eV/A
+         44 |!            - "ener": total energy in eV
+         45 |!            - "coord": average coordination number
+         46 |!            - "ener_var": variance of the energy/atom
+         47 |!            - "coord_var": variance of the coordination number
+         48 |!     I/Oput:- "count": is increased by one per call, has to be initialized
+         49 |!               to 0.d0 before first call of bazant
+         50 |
+         51 |        implicit real*8 (a-h,o-z)
+            ......................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         52 |        logical lgl
+         53 |
+         54 |!$      interface
+         55 |!$        integer ( kind=4 ) function omp_get_num_threads ( )
+         56 |!$        end function omp_get_num_threads
+         57 |!$      end interface
+         58 |!$      interface
+         59 |!$        integer ( kind=4 ) function omp_get_thread_num ( )
+         60 |!$        end function omp_get_thread_num
+         61 |!$      end interface
+         62 |
+         63 |! AA 21-12-2002
+         64 |
+         65 |        REAL*8,INTENT(IN),DIMENSION(3*nat) :: R
+            ........a.......................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         66 |        REAL*8,INTENT(INOUT),DIMENSION(3*nat) :: F
+            ........a..........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         67 |        REAL*8,INTENT(IN) :: ax,ay,az
+            ........a.............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         68 |        INTEGER,INTENT(IN) :: nat
+         69 |        REAL*8,INTENT(OUT) :: ener
+            ........a..........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         70 |        REAL*8,SAVE :: count=1.0d0
+            ........a...................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         71 |
+         72 |! END AA 21-12-2002
+         73 |
+         74 |        dimension rxyz0(3,nat),fxyz(3,nat),alat(3)
+         75 |        real*8, ALLOCATABLE, DIMENSION(:,:) :: rxyz
+            ........a...........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         76 |        integer, ALLOCATABLE, DIMENSION(:,:) :: lsta
+         77 |        integer, ALLOCATABLE, DIMENSION(:) :: lstb
+         78 |        integer, ALLOCATABLE, DIMENSION(:) :: lay
+         79 |        integer, ALLOCATABLE, DIMENSION(:,:,:,:) :: icell
+         80 |        real*8, ALLOCATABLE, DIMENSION(:,:) :: rel
+            ........a..........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         81 |        real*8, ALLOCATABLE, DIMENSION(:,:) :: txyz
+            ........a...........................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         82 |        real*8, ALLOCATABLE, DIMENSION(:,:) :: s2,s3,sz
+            ........a...............................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         83 |        integer, ALLOCATABLE, DIMENSION(:) :: num2,num3,numz
+         84 |
+         85 |
+         86 |! AA 21-12-20002 (2)
+         87 |
+         88 |        alat(1)=ax
+         89 |        alat(2)=ay
+         90 |        alat(3)=az
+         91 |
+         92 |        j=1
+         93 |        DO i=1,nat
+         94 |          rxyz0(:,i)=R(j:j+2)
+         95 |          j=j+3
+         96 |        END DO
+         97 |
+         98 |! END AA 21-12-2002 (2)
+         99 |
+        100 |!        cut=par_a
+        101 |        cut= 3.1213820d0 + 1.d-14
+        102 |
+        103 |!        if (count.eq.0)  open(unit=10,file='bazant.mon',status='unknown')
+        104 |!        count=count+1.d0
+        105 |
+        106 |! linear scaling calculation of verlet list
+        107 |        ll1=int(alat(1)/cut)
+        108 |        if (ll1.lt.1) stop 'alat(1) too small'
+        109 |        ll2=int(alat(2)/cut)
+        110 |        if (ll2.lt.1) stop 'alat(2) too small'
+        111 |        ll3=int(alat(3)/cut)
+        112 |        if (ll3.lt.1) stop 'alat(3) too small'
+        113 |
+        114 |! determine number of threads
+        115 |        npr=1
+        116 |!$omp parallel private(iam)  shared (npr)
+        117 |!$       iam=omp_get_thread_num()
+        118 |!$       if (iam.eq.0) npr=omp_get_num_threads()
+        119 |!$omp end parallel
+        120 |
+        121 |! linear scaling calculation of verlet list
+        122 |
+        123 |     if (npr.le.1) then !serial if too few processors to gain by parallelizing
+        124 |
+        125 |! set ncx for serial case, ncx for parallel case set below
+        126 |        ncx=8
+        127 |1234    ncx=ncx*2
+        128 |        allocate(icell(0:ncx,-1:ll1,-1:ll2,-1:ll3))
+        129 |        do 984,l3=-1,ll3
+        130 |        do 984,l2=-1,ll2
+        131 |        do 984,l1=-1,ll1
+        132 |984     icell(0,l1,l2,l3)=0
+            .a..........................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        133 |        rlc1i=ll1/alat(1)
+        134 |        rlc2i=ll2/alat(2)
+        135 |        rlc3i=ll3/alat(3)
+        136 |
+        137 |        do 983,iat=1,nat
+        138 |
+        139 |        lgl=.false.
+        140 |115    continue
+        141 |        if (rxyz0(1,iat).ge.alat(1)) then
+        142 |                  if (lgl) then
+        143 |                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
+        144 |                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        145 |                    goto 115
+        146 |                  endif
+        147 |            rxyz0(1,iat)=rxyz0(1,iat)-alat(1)
+        148 |            lgl=.true.
+        149 |            goto 115
+        150 |        endif
+        151 |        if (rxyz0(1,iat).lt.0.d0) then
+        152 |                  if (lgl) then
+        153 |                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
+        154 |                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        155 |                    goto 115
+        156 |                  endif
+        157 |            rxyz0(1,iat)=rxyz0(1,iat)+alat(1)
+        158 |            lgl=.true.
+        159 |            goto 115
+        160 |        endif
+        161 |        l1=int(rxyz0(1,iat)*rlc1i)
+        162 |
+        163 |        lgl=.false.
+        164 |225    continue
+        165 |        if (rxyz0(2,iat).ge.alat(2)) then
+        166 |                  if (lgl) then
+        167 |                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
+        168 |                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        169 |                    goto 225
+        170 |                  endif
+        171 |            rxyz0(2,iat)=rxyz0(2,iat)-alat(2)
+        172 |            lgl=.true.
+        173 |            goto 225
+        174 |        endif
+        175 |        if (rxyz0(2,iat).lt.0.d0) then
+        176 |                  if (lgl) then
+        177 |                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
+        178 |                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        179 |                    goto 225
+        180 |                  endif
+        181 |            rxyz0(2,iat)=rxyz0(2,iat)+alat(2)
+        182 |            lgl=.true.
+        183 |            goto 225
+        184 |        endif
+        185 |        l2=int(rxyz0(2,iat)*rlc2i)
+        186 |
+        187 |        lgl=.false.
+        188 |335    continue
+        189 |        if (rxyz0(3,iat).ge.alat(3)) then
+        190 |                  if (lgl) then
+        191 |                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
+        192 |                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        193 |                    goto 335
+        194 |                  endif
+        195 |            rxyz0(3,iat)=rxyz0(3,iat)-alat(3)
+        196 |            lgl=.true.
+        197 |            goto 335
+        198 |        endif
+        199 |        if (rxyz0(3,iat).lt.0.d0) then
+        200 |                  if (lgl) then
+        201 |                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
+        202 |                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        203 |                    goto 225
+        204 |                  endif
+        205 |            rxyz0(3,iat)=rxyz0(3,iat)+alat(3)
+        206 |            lgl=.true.
+        207 |            goto 335
+        208 |        endif
+        209 |        l3=int(rxyz0(3,iat)*rlc3i)
+        210 |
+        211 |        ii=icell(0,l1,l2,l3)
+        212 |        ii=ii+1
+        213 |        icell(0,l1,l2,l3)=ii
+        214 |        if (ii.gt.ncx) then
+        215 |        write(10,*) count,'NCX too small',ncx
+        216 |        deallocate(icell)
+        217 |        goto 1234
+        218 |        endif
+        219 |        icell(ii,l1,l2,l3)=iat
+        220 |983     continue
+        221 |
+        222 |     else  ! parallel case
+        223 |
+        224 |! periodization of particles can be done in parallel
+        225 |!$omp parallel do shared (alat,nat,rxyz0,count) private(lgl,iat)
+        226 |
+        227 |        do 5983,iat=1,nat
+        228 |
+        229 |        lgl=.false.
+        230 |1155    continue
+        231 |        if (rxyz0(1,iat).ge.alat(1)) then
+        232 |                  if (lgl) then
+        233 |                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
+        234 |                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        235 |                    goto 1155
+        236 |                  endif
+        237 |            rxyz0(1,iat)=rxyz0(1,iat)-alat(1)
+        238 |            lgl=.true.
+        239 |            goto 1155
+        240 |        endif
+        241 |        if (rxyz0(1,iat).lt.0.d0) then
+        242 |                  if (lgl) then
+        243 |                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
+        244 |                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
+        245 |                    goto 1155
+        246 |                  endif
+        247 |            rxyz0(1,iat)=rxyz0(1,iat)+alat(1)
+        248 |            lgl=.true.
+        249 |            goto 1155
+        250 |        endif
+        251 |
+        252 |        lgl=.false.
+        253 |2255    continue
+        254 |        if (rxyz0(2,iat).ge.alat(2)) then
+        255 |                  if (lgl) then
+        256 |                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
+        257 |                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        258 |                    goto 2255
+        259 |                  endif
+        260 |            rxyz0(2,iat)=rxyz0(2,iat)-alat(2)
+        261 |            lgl=.true.
+        262 |            goto 2255
+        263 |        endif
+        264 |        if (rxyz0(2,iat).lt.0.d0) then
+        265 |                  if (lgl) then
+        266 |                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
+        267 |                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
+        268 |                    goto 2255
+        269 |                  endif
+        270 |            rxyz0(2,iat)=rxyz0(2,iat)+alat(2)
+        271 |            lgl=.true.
+        272 |            goto 2255
+        273 |        endif
+        274 |
+        275 |        lgl=.false.
+        276 |3355    continue
+        277 |        if (rxyz0(3,iat).ge.alat(3)) then
+        278 |                  if (lgl) then
+        279 |                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
+        280 |                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        281 |                    goto 3355
+        282 |                  endif
+        283 |            rxyz0(3,iat)=rxyz0(3,iat)-alat(3)
+        284 |            lgl=.true.
+        285 |            goto 3355
+        286 |        endif
+        287 |        if (rxyz0(3,iat).lt.0.d0) then
+        288 |                  if (lgl) then
+        289 |                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
+        290 |                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
+        291 |                    goto 3355
+        292 |                  endif
+        293 |            rxyz0(3,iat)=rxyz0(3,iat)+alat(3)
+        294 |            lgl=.true.
+        295 |            goto 3355
+        296 |        endif
+        297 |5983        continue
+        298 |!$omp end parallel do
+        299 |
+        300 |! assignment to cell is done serially
+        301 |! set ncx for parallel case, ncx for serial case set above
+        302 |        ncx=8
+        303 |4321    ncx=ncx*2
+        304 |        allocate(icell(0:ncx,-1:ll1,-1:ll2,-1:ll3))
+        305 |        do 3984,l3=-1,ll3
+        306 |        do 3984,l2=-1,ll2
+        307 |        do 3984,l1=-1,ll1
+        308 |3984    icell(0,l1,l2,l3)=0
+            .a..........................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        309 |
+        310 |        rlc1i=ll1/alat(1)
+        311 |        rlc2i=ll2/alat(2)
+        312 |        rlc3i=ll3/alat(3)
+        313 |
+        314 |        do 6983,iat=1,nat
+        315 |        l1=int(rxyz0(1,iat)*rlc1i)
+        316 |        l2=int(rxyz0(2,iat)*rlc2i)
+        317 |        l3=int(rxyz0(3,iat)*rlc3i)
+        318 |        ii=icell(0,l1,l2,l3)
+        319 |        ii=ii+1
+        320 |        icell(0,l1,l2,l3)=ii
+        321 |        if (ii.gt.ncx) then
+        322 |        write(10,*) count,'NCX too small',ncx
+        323 |        deallocate(icell)
+        324 |        goto 4321
+        325 |        endif
+        326 |        icell(ii,l1,l2,l3)=iat
+        327 |6983    continue
+        328 |
+        329 |    endif
+        330 |
+        331 |
+        332 |! duplicate all atoms within boundary layer
+        333 |        laymx=ncx*(2*ll1*ll2+2*ll1*ll3+2*ll2*ll3+4*ll1+4*ll2+4*ll3+8)
+        334 |        nn=nat+laymx
+        335 |        allocate(rxyz(3,nn),lay(nn))
+        336 |        do  iat=1,nat
+        337 |        lay(iat)=iat
+        338 |        rxyz(1,iat)=rxyz0(1,iat)
+        339 |        rxyz(2,iat)=rxyz0(2,iat)
+        340 |        rxyz(3,iat)=rxyz0(3,iat)
+        341 |        enddo
+        342 |        il=nat
+        343 |! xy plane
+        344 |        do l2=0,ll2-1
+        345 |        do l1=0,ll1-1
+        346 |
+        347 |        in=icell(0,l1,l2,0)
+        348 |        icell(0,l1,l2,ll3)=in
+        349 |        do ii=1,in
+        350 |        i=icell(ii,l1,l2,0)
+        351 |        il=il+1
+        352 |        if (il.gt.nn) stop 'enlarge laymx'
+        353 |        lay(il)=i
+        354 |        icell(ii,l1,l2,ll3)=il
+        355 |        rxyz(1,il)=rxyz(1,i)
+        356 |        rxyz(2,il)=rxyz(2,i)
+        357 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        358 |        enddo
+        359 |
+        360 |        in=icell(0,l1,l2,ll3-1)
+        361 |        icell(0,l1,l2,-1)=in
+        362 |        do ii=1,in
+        363 |        i=icell(ii,l1,l2,ll3-1)
+        364 |        il=il+1
+        365 |        if (il.gt.nn) stop 'enlarge laymx'
+        366 |        lay(il)=i
+        367 |        icell(ii,l1,l2,-1)=il
+        368 |        rxyz(1,il)=rxyz(1,i)
+        369 |        rxyz(2,il)=rxyz(2,i)
+        370 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        371 |        enddo
+        372 |
+        373 |        enddo
+        374 |        enddo
+        375 |
+        376 |
+        377 |! yz plane
+        378 |        do l3=0,ll3-1
+        379 |        do l2=0,ll2-1
+        380 |
+        381 |        in=icell(0,0,l2,l3)
+        382 |        icell(0,ll1,l2,l3)=in
+        383 |        do ii=1,in
+        384 |        i=icell(ii,0,l2,l3)
+        385 |        il=il+1
+        386 |        if (il.gt.nn) stop 'enlarge laymx'
+        387 |        lay(il)=i
+        388 |        icell(ii,ll1,l2,l3)=il
+        389 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        390 |        rxyz(2,il)=rxyz(2,i)
+        391 |        rxyz(3,il)=rxyz(3,i)
+        392 |        enddo
+        393 |
+        394 |        in=icell(0,ll1-1,l2,l3)
+        395 |        icell(0,-1,l2,l3)=in
+        396 |        do ii=1,in
+        397 |        i=icell(ii,ll1-1,l2,l3)
+        398 |        il=il+1
+        399 |        if (il.gt.nn) stop 'enlarge laymx'
+        400 |        lay(il)=i
+        401 |        icell(ii,-1,l2,l3)=il
+        402 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        403 |        rxyz(2,il)=rxyz(2,i)
+        404 |        rxyz(3,il)=rxyz(3,i)
+        405 |        enddo
+        406 |
+        407 |        enddo
+        408 |        enddo
+        409 |
+        410 |
+        411 |! xz plane
+        412 |        do l3=0,ll3-1
+        413 |        do l1=0,ll1-1
+        414 |
+        415 |        in=icell(0,l1,0,l3)
+        416 |        icell(0,l1,ll2,l3)=in
+        417 |        do ii=1,in
+        418 |        i=icell(ii,l1,0,l3)
+        419 |        il=il+1
+        420 |        if (il.gt.nn) stop 'enlarge laymx'
+        421 |        lay(il)=i
+        422 |        icell(ii,l1,ll2,l3)=il
+        423 |        rxyz(1,il)=rxyz(1,i)
+        424 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        425 |        rxyz(3,il)=rxyz(3,i)
+        426 |        enddo
+        427 |
+        428 |        in=icell(0,l1,ll2-1,l3)
+        429 |        icell(0,l1,-1,l3)=in
+        430 |        do ii=1,in
+        431 |        i=icell(ii,l1,ll2-1,l3)
+        432 |        il=il+1
+        433 |        if (il.gt.nn) stop 'enlarge laymx'
+        434 |        lay(il)=i
+        435 |        icell(ii,l1,-1,l3)=il
+        436 |        rxyz(1,il)=rxyz(1,i)
+        437 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        438 |        rxyz(3,il)=rxyz(3,i)
+        439 |        enddo
+        440 |
+        441 |        enddo
+        442 |        enddo
+        443 |
+        444 |
+        445 |! x axis
+        446 |        do l1=0,ll1-1
+        447 |
+        448 |        in=icell(0,l1,0,0)
+        449 |        icell(0,l1,ll2,ll3)=in
+        450 |        do ii=1,in
+        451 |        i=icell(ii,l1,0,0)
+        452 |        il=il+1
+        453 |        if (il.gt.nn) stop 'enlarge laymx'
+        454 |        lay(il)=i
+        455 |        icell(ii,l1,ll2,ll3)=il
+        456 |        rxyz(1,il)=rxyz(1,i)
+        457 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        458 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        459 |        enddo
+        460 |
+        461 |        in=icell(0,l1,0,ll3-1)
+        462 |        icell(0,l1,ll2,-1)=in
+        463 |        do ii=1,in
+        464 |        i=icell(ii,l1,0,ll3-1)
+        465 |        il=il+1
+        466 |        if (il.gt.nn) stop 'enlarge laymx'
+        467 |        lay(il)=i
+        468 |        icell(ii,l1,ll2,-1)=il
+        469 |        rxyz(1,il)=rxyz(1,i)
+        470 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        471 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        472 |        enddo
+        473 |
+        474 |        in=icell(0,l1,ll2-1,0)
+        475 |        icell(0,l1,-1,ll3)=in
+        476 |        do ii=1,in
+        477 |        i=icell(ii,l1,ll2-1,0)
+        478 |        il=il+1
+        479 |        if (il.gt.nn) stop 'enlarge laymx'
+        480 |        lay(il)=i
+        481 |        icell(ii,l1,-1,ll3)=il
+        482 |        rxyz(1,il)=rxyz(1,i)
+        483 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        484 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        485 |        enddo
+        486 |
+        487 |        in=icell(0,l1,ll2-1,ll3-1)
+        488 |        icell(0,l1,-1,-1)=in
+        489 |        do ii=1,in
+        490 |        i=icell(ii,l1,ll2-1,ll3-1)
+        491 |        il=il+1
+        492 |        if (il.gt.nn) stop 'enlarge laymx'
+        493 |        lay(il)=i
+        494 |        icell(ii,l1,-1,-1)=il
+        495 |        rxyz(1,il)=rxyz(1,i)
+        496 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        497 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        498 |        enddo
+        499 |
+        500 |        enddo
+        501 |
+        502 |
+        503 |! y axis
+        504 |        do l2=0,ll2-1
+        505 |
+        506 |        in=icell(0,0,l2,0)
+        507 |        icell(0,ll1,l2,ll3)=in
+        508 |        do ii=1,in
+        509 |        i=icell(ii,0,l2,0)
+        510 |        il=il+1
+        511 |        if (il.gt.nn) stop 'enlarge laymx'
+        512 |        lay(il)=i
+        513 |        icell(ii,ll1,l2,ll3)=il
+        514 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        515 |        rxyz(2,il)=rxyz(2,i)
+        516 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        517 |        enddo
+        518 |
+        519 |        in=icell(0,0,l2,ll3-1)
+        520 |        icell(0,ll1,l2,-1)=in
+        521 |        do ii=1,in
+        522 |        i=icell(ii,0,l2,ll3-1)
+        523 |        il=il+1
+        524 |        if (il.gt.nn) stop 'enlarge laymx'
+        525 |        lay(il)=i
+        526 |        icell(ii,ll1,l2,-1)=il
+        527 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        528 |        rxyz(2,il)=rxyz(2,i)
+        529 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        530 |        enddo
+        531 |
+        532 |        in=icell(0,ll1-1,l2,0)
+        533 |        icell(0,-1,l2,ll3)=in
+        534 |        do ii=1,in
+        535 |        i=icell(ii,ll1-1,l2,0)
+        536 |        il=il+1
+        537 |        if (il.gt.nn) stop 'enlarge laymx'
+        538 |        lay(il)=i
+        539 |        icell(ii,-1,l2,ll3)=il
+        540 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        541 |        rxyz(2,il)=rxyz(2,i)
+        542 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        543 |        enddo
+        544 |
+        545 |        in=icell(0,ll1-1,l2,ll3-1)
+        546 |        icell(0,-1,l2,-1)=in
+        547 |        do ii=1,in
+        548 |        i=icell(ii,ll1-1,l2,ll3-1)
+        549 |        il=il+1
+        550 |        if (il.gt.nn) stop 'enlarge laymx'
+        551 |        lay(il)=i
+        552 |        icell(ii,-1,l2,-1)=il
+        553 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        554 |        rxyz(2,il)=rxyz(2,i)
+        555 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        556 |        enddo
+        557 |
+        558 |        enddo
+        559 |
+        560 |
+        561 |! z axis
+        562 |        do l3=0,ll3-1
+        563 |
+        564 |        in=icell(0,0,0,l3)
+        565 |        icell(0,ll1,ll2,l3)=in
+        566 |        do ii=1,in
+        567 |        i=icell(ii,0,0,l3)
+        568 |        il=il+1
+        569 |        if (il.gt.nn) stop 'enlarge laymx'
+        570 |        lay(il)=i
+        571 |        icell(ii,ll1,ll2,l3)=il
+        572 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        573 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        574 |        rxyz(3,il)=rxyz(3,i)
+        575 |        enddo
+        576 |
+        577 |        in=icell(0,ll1-1,0,l3)
+        578 |        icell(0,-1,ll2,l3)=in
+        579 |        do ii=1,in
+        580 |        i=icell(ii,ll1-1,0,l3)
+        581 |        il=il+1
+        582 |        if (il.gt.nn) stop 'enlarge laymx'
+        583 |        lay(il)=i
+        584 |        icell(ii,-1,ll2,l3)=il
+        585 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        586 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        587 |        rxyz(3,il)=rxyz(3,i)
+        588 |        enddo
+        589 |
+        590 |        in=icell(0,0,ll2-1,l3)
+        591 |        icell(0,ll1,-1,l3)=in
+        592 |        do ii=1,in
+        593 |        i=icell(ii,0,ll2-1,l3)
+        594 |        il=il+1
+        595 |        if (il.gt.nn) stop 'enlarge laymx'
+        596 |        lay(il)=i
+        597 |        icell(ii,ll1,-1,l3)=il
+        598 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        599 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        600 |        rxyz(3,il)=rxyz(3,i)
+        601 |        enddo
+        602 |
+        603 |        in=icell(0,ll1-1,ll2-1,l3)
+        604 |        icell(0,-1,-1,l3)=in
+        605 |        do ii=1,in
+        606 |        i=icell(ii,ll1-1,ll2-1,l3)
+        607 |        il=il+1
+        608 |        if (il.gt.nn) stop 'enlarge laymx'
+        609 |        lay(il)=i
+        610 |        icell(ii,-1,-1,l3)=il
+        611 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        612 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        613 |        rxyz(3,il)=rxyz(3,i)
+        614 |        enddo
+        615 |
+        616 |        enddo
+        617 |
+        618 |
+        619 |! corners
+        620 |        in=icell(0,0,0,0)
+        621 |        icell(0,ll1,ll2,ll3)=in
+        622 |        do ii=1,in
+        623 |        i=icell(ii,0,0,0)
+        624 |        il=il+1
+        625 |        if (il.gt.nn) stop 'enlarge laymx'
+        626 |        lay(il)=i
+        627 |        icell(ii,ll1,ll2,ll3)=il
+        628 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        629 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        630 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        631 |        enddo
+        632 |
+        633 |        in=icell(0,ll1-1,0,0)
+        634 |        icell(0,-1,ll2,ll3)=in
+        635 |        do ii=1,in
+        636 |        i=icell(ii,ll1-1,0,0)
+        637 |        il=il+1
+        638 |        if (il.gt.nn) stop 'enlarge laymx'
+        639 |        lay(il)=i
+        640 |        icell(ii,-1,ll2,ll3)=il
+        641 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        642 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        643 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        644 |        enddo
+        645 |
+        646 |        in=icell(0,0,ll2-1,0)
+        647 |        icell(0,ll1,-1,ll3)=in
+        648 |        do ii=1,in
+        649 |        i=icell(ii,0,ll2-1,0)
+        650 |        il=il+1
+        651 |        if (il.gt.nn) stop 'enlarge laymx'
+        652 |        lay(il)=i
+        653 |        icell(ii,ll1,-1,ll3)=il
+        654 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        655 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        656 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        657 |        enddo
+        658 |
+        659 |        in=icell(0,ll1-1,ll2-1,0)
+        660 |        icell(0,-1,-1,ll3)=in
+        661 |        do ii=1,in
+        662 |        i=icell(ii,ll1-1,ll2-1,0)
+        663 |        il=il+1
+        664 |        if (il.gt.nn) stop 'enlarge laymx'
+        665 |        lay(il)=i
+        666 |        icell(ii,-1,-1,ll3)=il
+        667 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        668 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        669 |        rxyz(3,il)=rxyz(3,i)+alat(3)
+        670 |        enddo
+        671 |
+        672 |        in=icell(0,0,0,ll3-1)
+        673 |        icell(0,ll1,ll2,-1)=in
+        674 |        do ii=1,in
+        675 |        i=icell(ii,0,0,ll3-1)
+        676 |        il=il+1
+        677 |        if (il.gt.nn) stop 'enlarge laymx'
+        678 |        lay(il)=i
+        679 |        icell(ii,ll1,ll2,-1)=il
+        680 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        681 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        682 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        683 |        enddo
+        684 |
+        685 |        in=icell(0,ll1-1,0,ll3-1)
+        686 |        icell(0,-1,ll2,-1)=in
+        687 |        do ii=1,in
+        688 |        i=icell(ii,ll1-1,0,ll3-1)
+        689 |        il=il+1
+        690 |        if (il.gt.nn) stop 'enlarge laymx'
+        691 |        lay(il)=i
+        692 |        icell(ii,-1,ll2,-1)=il
+        693 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        694 |        rxyz(2,il)=rxyz(2,i)+alat(2)
+        695 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        696 |        enddo
+        697 |
+        698 |        in=icell(0,0,ll2-1,ll3-1)
+        699 |        icell(0,ll1,-1,-1)=in
+        700 |        do ii=1,in
+        701 |        i=icell(ii,0,ll2-1,ll3-1)
+        702 |        il=il+1
+        703 |        if (il.gt.nn) stop 'enlarge laymx'
+        704 |        lay(il)=i
+        705 |        icell(ii,ll1,-1,-1)=il
+        706 |        rxyz(1,il)=rxyz(1,i)+alat(1)
+        707 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        708 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        709 |        enddo
+        710 |
+        711 |        in=icell(0,ll1-1,ll2-1,ll3-1)
+        712 |        icell(0,-1,-1,-1)=in
+        713 |        do ii=1,in
+        714 |        i=icell(ii,ll1-1,ll2-1,ll3-1)
+        715 |        il=il+1
+        716 |        if (il.gt.nn) stop 'enlarge laymx'
+        717 |        lay(il)=i
+        718 |        icell(ii,-1,-1,-1)=il
+        719 |        rxyz(1,il)=rxyz(1,i)-alat(1)
+        720 |        rxyz(2,il)=rxyz(2,i)-alat(2)
+        721 |        rxyz(3,il)=rxyz(3,i)-alat(3)
+        722 |        enddo
+        723 |
+        724 |        allocate(lsta(2,nat))
+        725 |        nnbrx=8
+        726 |2345    nnbrx=3*nnbrx/2
+        727 |        allocate(lstb(nnbrx*nat),rel(5,nnbrx*nat))
+        728 |
+        729 |        indlstx=0
+        730 |
+        731 |!$omp parallel  &
+        732 |!$omp private(iat,cut2,iam,ii,indlst,l1,l2,l3,myspace,npr) &
+        733 |!$omp shared (indlstx,nat,nn,nnbrx,ncx,ll1,ll2,ll3,icell,lsta,lstb,lay, &
+        734 |!$omp rel,rxyz,cut,myspaceout)
+        735 |
+        736 |
+        737 |        npr=1
+        738 |!$       npr=omp_get_num_threads()
+        739 |        iam=0
+        740 |!$       iam=omp_get_thread_num()
+        741 |
+        742 |        cut2=cut**2
+        743 |! assign contiguous portions of the arrays lstb and rel to the threads
+        744 |        myspace=(nat*nnbrx)/npr
+        745 |        if (iam.eq.0) myspaceout=myspace
+        746 |! Verlet list, relative positions
+        747 |        indlst=0
+        748 |      do 6000,l3=0,ll3-1
+        749 |      do 6000,l2=0,ll2-1
+        750 |      do 6000,l1=0,ll1-1
+        751 |      do 6600,ii=1,icell(0,l1,l2,l3)
+        752 |        iat=icell(ii,l1,l2,l3)
+        753 |        if ( ((iat-1)*npr)/nat .eq. iam) then
+        754 |!     write(6,*) 'sublstiat:iam,iat',iam,iat
+        755 |        lsta(1,iat)=iam*myspace+indlst+1
+        756 |        call sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
+        757 |             rxyz,icell,lstb(iam*myspace+1),lay,rel(1,iam*myspace+1),cut2,indlst)
+        758 |        lsta(2,iat)=iam*myspace+indlst
+        759 |!        write(6,'(a,4(x,i3),100(x,i2))') &
+        760 |!               'iam,iat,lsta',iam,iat,lsta(1,iat),lsta(2,iat), &
+        761 |!                    (lstb(j),j=lsta(1,iat),lsta(2,iat))
+        762 |        endif
+        763 |
+        764 |6600    continue
+        765 |6000    continue
+            .a...............
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        766 |!$omp critical
+        767 |        indlstx=max(indlstx,indlst)
+        768 |!$omp end critical
+        769 |!$omp end parallel
+        770 |
+        771 |           if (indlstx.ge.myspaceout) then
+        772 |               write(10,*) count,'NNBRX too  small', nnbrx
+        773 |               deallocate(lstb,rel)
+        774 |               goto 2345
+        775 |           endif
+        776 |
+        777 |!$omp parallel  &
+        778 |!$omp private(iam,npr,iat,iat1,iat2,lot,istop,tcoord,tcoord2, &
+        779 |!$omp tener,tener2,txyz,s2,s3,sz,num2,num3,numz,max_nbrs) &
+        780 |!$omp shared (nat,nnbrx,lsta,lstb,rel,ener,ener2,fxyz,coord,coord2,istopg)
+        781 |
+        782 |        npr=1
+        783 |!$       npr=omp_get_num_threads()
+        784 |        iam=0
+        785 |!$       iam=omp_get_thread_num()
+        786 |
+        787 |         max_nbrs=30
+        788 |         istopg=0
+        789 |
+        790 |        if (npr.ne.1) then
+        791 |! PARALLEL CASE
+        792 |! create temporary private scalars for reduction sum on energies and
+        793 |!        temporary private array for reduction sum on forces
+        794 |!$omp critical
+        795 |        allocate(txyz(3,nat),s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  &
+        796 |                 num2(max_nbrs),num3(max_nbrs),numz(max_nbrs))
+        797 |!$omp end critical
+        798 |        if (iam.eq.0) then
+        799 |        ener=0.d0
+        800 |        ener2=0.d0
+        801 |        coord=0.d0
+        802 |        coord2=0.d0
+        803 |        do 121,iat=1,nat
+        804 |        fxyz(1,iat)=0.d0
+        805 |        fxyz(2,iat)=0.d0
+        806 |121     fxyz(3,iat)=0.d0
+            .a.......................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        807 |        endif
+        808 |
+        809 |! Each thread treats at most lot atoms
+        810 |        lot=int(float(nat)/float(npr)+.999999999999d0)
+        811 |        iat1=iam*lot+1
+        812 |        iat2=min((iam+1)*lot,nat)
+        813 |!       write(6,*) 'subfeniat:iat1,iat2,iam',iat1,iat2,iam
+        814 |        call subfeniatEDIP(iat1,iat2,nat,lsta,lstb,rel,tener,tener2,  &
+        815 |          tcoord,tcoord2,nnbrx,txyz,max_nbrs,istop,  &
+        816 |          s2(1,1),s2(1,2),s2(1,3),s2(1,4),s2(1,5),s2(1,6),s2(1,7),s2(1,8),  &
+        817 |          num2,s3(1,1),s3(1,2),s3(1,3),s3(1,4),s3(1,5),s3(1,6),s3(1,7),  &
+        818 |          num3,sz(1,1),sz(1,2),sz(1,3),sz(1,4),sz(1,5),sz(1,6),numz)
+        819 |
+        820 |!$omp critical
+        821 |        ener=ener+tener
+        822 |        ener2=ener2+tener2
+        823 |        coord=coord+tcoord
+        824 |        coord2=coord2+tcoord2
+        825 |        istopg=istopg+istop
+        826 |        do 8093,iat=1,nat
+        827 |        fxyz(1,iat)=fxyz(1,iat)+txyz(1,iat)
+        828 |        fxyz(2,iat)=fxyz(2,iat)+txyz(2,iat)
+        829 |        fxyz(3,iat)=fxyz(3,iat)+txyz(3,iat)
+        830 |8093    continue
+        831 |        deallocate(txyz,s2,s3,sz,num2,num3,numz)
+        832 |!$omp end critical
+        833 |
+        834 |        else
+        835 |! SERIAL CASE
+        836 |        iat1=1
+        837 |        iat2=nat
+        838 |        allocate(s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  &
+        839 |                 num2(max_nbrs),num3(max_nbrs),numz(max_nbrs))
+        840 |        call subfeniatEDIP(iat1,iat2,nat,lsta,lstb,rel,ener,ener2,  &
+        841 |          coord,coord2,nnbrx,fxyz,max_nbrs,istopg,  &
+        842 |          s2(1,1),s2(1,2),s2(1,3),s2(1,4),s2(1,5),s2(1,6),s2(1,7),s2(1,8),  &
+        843 |          num2,s3(1,1),s3(1,2),s3(1,3),s3(1,4),s3(1,5),s3(1,6),s3(1,7),  &
+        844 |          num3,sz(1,1),sz(1,2),sz(1,3),sz(1,4),sz(1,5),sz(1,6),numz)
+        845 |        deallocate(s2,s3,sz,num2,num3,numz)
+        846 |
+        847 |        endif
+        848 |!$omp end parallel
+        849 |
+        850 |!         write(6,*) 'ener,norm force', &
+        851 |!                    ener,DNRM2(3*nat,fxyz,1)
+        852 |        if (istopg.gt.0) stop 'DIMENSION ERROR (see WARNING above)'
+        853 |        ener_var=ener2/nat-(ener/nat)**2
+        854 |        coord=coord/nat
+        855 |        coord_var=coord2/nat-coord**2
+        856 |
+        857 |        j=1
+        858 |        DO i=1,nat
+        859 |          F(j:j+2)=fxyz(:,i)
+        860 |          j=j+3
+        861 |        END DO
+        862 |
+        863 |        deallocate(rxyz,icell,lay,lsta,lstb,rel)
+        864 |
+        865 |        end subroutine edip
+** edip   === End of Compilation 1 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   14           0         0           0         14            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        866 |
+        867 |!----------------------------------------------------------------------------------!
+        868 |
+        869 |
+        870 |        subroutine subfeniatEDIP(iat1,iat2,nat,lsta,lstb,rel,ener,ener2,  &
+        871 |          coord,coord2,nnbrx,ff,max_nbrs,istop,  &
+        872 |          s2_t0,s2_t1,s2_t2,s2_t3,s2_dx,s2_dy,s2_dz,s2_r,  &
+        873 |          num2,s3_g,s3_dg,s3_rinv,s3_dx,s3_dy,s3_dz,s3_r,  &
+        874 |          num3,sz_df,sz_sum,sz_dx,sz_dy,sz_dz,sz_r,numz)
+        875 |! This subroutine is a modification of a subroutine that is available at
+        876 |! http://www-math.mit.edu/~bazant/EDIP/ and for which Martin Z. Bazant
+        877 |! and Harvard University have a 1997 copyright.
+        878 |! The modifications were done by S. Goedecker on April 10, 2002.
+        879 |! The routines are included with the permission of M. Bazant into this package.
+        880 |
+        881 |        implicit none
+        882 |!  ------------------------- VARIABLE DECLARATIONS -------------------------
+        883 |          integer iat1,iat2,nat
+        884 |          real*8 ener,ener2,coord,coord2
+            ...............a.........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        885 |          real*8 xarg,coord_iat,ener_iat
+            ...............a.........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        886 |          real*8 ff(3,nat)
+            ...............a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        887 |
+        888 |        real*8 par_cap_A,par_cap_B,par_rh,par_a,par_sig,par_lam,par_gam, &
+            .............a.............................................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        889 |               par_b,par_c,par_delta,par_mu,par_Qo,par_palp, &
+        890 |               par_bet,par_alp,par_bg,par_eta,u1,u2,u3,u4,u5
+        891 |
+        892 |          integer nnbrx,max_nbrs,istop
+        893 |          integer lsta(2,nat),lstb(nnbrx*nat)
+        894 |          real*8 rel(5,nnbrx*nat)
+            ...............a..................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        895 |
+        896 |          integer i,j,k,l,n
+        897 |          real*8 dx,dy,dz,r
+            ...............a............
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        898 |          real*8 rinv,rmainv,xinv,xinv3,den,Z,fZ
+            ...............a.................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        899 |          real*8 dV2j,dV2ijx,dV2ijy,dV2ijz,pZ,dp
+            ...............a.................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        900 |          real*8 temp0,temp1
+            ...............a.............
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        901 |          real*8 Qort,muhalf
+            ...............a.............
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        902 |          real*8 rmbinv,winv,dwinv,tau,dtau,lcos,x,H,dHdx,dhdl
+            ...............a...............................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        903 |          real*8 dV3rij,dV3rijx,dV3rijy,dV3rijz
+            ...............a................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        904 |          real*8 dV3rik,dV3rikx,dV3riky,dV3rikz
+            ...............a................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        905 |          real*8 dV3l,dV3ljx,dV3ljy,dV3ljz,dV3lkx,dV3lky,dV3lkz
+            ...............a................................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        906 |          real*8 dV2dZ,dxdZ,dV3dZ
+            ...............a..................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        907 |          real*8 dEdrl,dEdrlx,dEdrly,dEdrlz
+            ...............a............................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        908 |          real*8 bmc,cmbinv
+            ...............a............
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        909 |          real*8 fjx,fjy,fjz,fkx,fky,fkz
+            ...............a.........................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        910 |
+        911 |          real*8 s2_t0(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        912 |          real*8 s2_t1(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        913 |          real*8 s2_t2(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        914 |          real*8 s2_t3(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        915 |          real*8 s2_dx(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        916 |          real*8 s2_dy(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        917 |          real*8 s2_dz(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        918 |          real*8 s2_r(max_nbrs)
+            ...............a................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        919 |          integer n2
+        920 |!   size of s2[]
+        921 |          integer num2(max_nbrs)
+        922 |!   atom ID numbers for s2[]
+        923 |
+        924 |          real*8 s3_g(max_nbrs)
+            ...............a................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        925 |          real*8 s3_dg(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        926 |          real*8 s3_rinv(max_nbrs)
+            ...............a...................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        927 |          real*8 s3_dx(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        928 |          real*8 s3_dy(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        929 |          real*8 s3_dz(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        930 |          real*8 s3_r(max_nbrs)
+            ...............a................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        931 |
+        932 |          integer n3
+        933 |!   size of s3[]
+        934 |          integer num3(max_nbrs)
+        935 |!   atom ID numbers for s3[]
+        936 |
+        937 |          real*8 sz_df(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        938 |          real*8 sz_sum(max_nbrs)
+            ...............a..................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        939 |          real*8 sz_dx(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        940 |          real*8 sz_dy(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        941 |          real*8 sz_dz(max_nbrs)
+            ...............a.................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        942 |          real*8 sz_r(max_nbrs)
+            ...............a................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+        943 |          integer nz
+        944 |!   size of sz[]
+        945 |          integer numz(max_nbrs)
+        946 |!   atom ID numbers for sz[]
+        947 |
+        948 |          integer nj,nk,nl
+        949 |!   indices for the store arrays
+        950 |
+        951 |!   EDIP parameters
+        952 |          par_cap_A = 5.6714030d0
+        953 |          par_cap_B = 2.0002804d0
+        954 |          par_rh = 1.2085196d0
+        955 |          par_a = 3.1213820d0
+        956 |          par_sig = 0.5774108d0
+        957 |          par_lam = 1.4533108d0
+        958 |          par_gam = 1.1247945d0
+        959 |          par_b = 3.1213820d0
+        960 |          par_c = 2.5609104d0
+        961 |          par_delta = 78.7590539d0
+        962 |          par_mu = 0.6966326d0
+        963 |          par_Qo = 312.1341346d0
+        964 |          par_palp = 1.4074424d0
+        965 |          par_bet = 0.0070975d0
+        966 |          par_alp = 3.1083847d0
+        967 |
+        968 |          u1 = -0.165799d0
+        969 |          u2 = 32.557d0
+        970 |          u3 = 0.286198d0
+        971 |          u4 = 0.66d0
+        972 |
+        973 |          par_bg=par_a
+        974 |          par_eta = par_delta/par_Qo
+        975 |
+        976 |          do i=1, nat
+        977 |            ff(1,i) = 0.0d0
+        978 |            ff(2,i) = 0.0d0
+        979 |            ff(3,i) = 0.0d0
+        980 |          end do
+        981 |
+        982 |          coord=0.d0
+        983 |          coord2=0.d0
+        984 |          ener=0.d0
+        985 |          ener2=0.d0
+        986 |          istop=0
+        987 |
+        988 |
+        989 |!   COMBINE COEFFICIENTS
+        990 |
+        991 |          Qort = sqrt(par_Qo)
+        992 |          muhalf = par_mu*0.5D0
+        993 |          u5 = u2*u4
+        994 |          bmc = par_b-par_c
+        995 |          cmbinv = 1.0D0/(par_c-par_b)
+        996 |
+        997 |
+        998 |
+        999 |!  --- LEVEL 1: OUTER LOOP OVER ATOMS ---
+       1000 |
+       1001 |          do 1000, i= iat1, iat2
+       1002 |
+       1003 |!   RESET COORDINATION AND NEIGHBOR NUMBERS
+       1004 |
+       1005 |            coord_iat=0.d0
+       1006 |            ener_iat=0.d0
+       1007 |            Z = 0.0d0
+       1008 |            n2 = 1
+       1009 |            n3 = 1
+       1010 |            nz = 1
+       1011 |
+       1012 |
+       1013 |!  --- LEVEL 2: LOOP PREPASS OVER PAIRS ---
+       1014 |
+       1015 |            do n=lsta(1,i),lsta(2,i)
+       1016 |              j=lstb(n)
+       1017 |
+       1018 |
+       1019 |!   PARTS OF TWO-BODY INTERACTION r<par_a
+       1020 |
+       1021 |                num2(n2) = j
+       1022 |                dx = -rel(1,n)
+       1023 |                dy = -rel(2,n)
+       1024 |                dz = -rel(3,n)
+       1025 |	        r=rel(4,n)
+       1026 |	        rinv=rel(5,n)
+       1027 |                rmainv = 1.d0/(r-par_a)
+       1028 |                s2_t0(n2) = par_cap_A*dexp(par_sig*rmainv)
+       1029 |                s2_t1(n2) = (par_cap_B*rinv)**par_rh
+       1030 |                s2_t2(n2) = par_rh*rinv
+       1031 |                s2_t3(n2) = par_sig*rmainv*rmainv
+       1032 |                s2_dx(n2) = dx
+       1033 |                s2_dy(n2) = dy
+       1034 |                s2_dz(n2) = dz
+       1035 |                 s2_r(n2) = r
+       1036 |                n2 = n2 + 1
+       1037 |                if (n2.gt.max_nbrs) then
+       1038 |                write(6,*) 'WARNING enlarge max_nbrs'
+       1039 |                istop=1
+       1040 |                return
+       1041 |                endif
+       1042 |
+       1043 |! coordination number calculated with soft cutoff between first and
+       1044 |! second nearest neighbor
+       1045 |        if (r.le.2.36d0) then
+       1046 |        coord_iat=coord_iat+1.d0
+       1047 |        else if (r.ge.3.83d0) then
+       1048 |        else
+       1049 |        xarg=(r-2.36d0)*(1.d0/(3.83d0-2.36d0))
+       1050 |        coord_iat=coord_iat+(2*xarg+1.d0)*(xarg-1.d0)**2
+       1051 |        endif
+       1052 |
+       1053 |
+       1054 |!   RADIAL PARTS OF THREE-BODY INTERACTION r<par_b
+       1055 |
+       1056 |                if(r .lt. par_bg)  then
+       1057 |
+       1058 |                  num3(n3) = j
+       1059 |                  rmbinv = 1.d0/(r-par_bg)
+       1060 |                  temp1 = par_gam*rmbinv
+       1061 |                  temp0 = dexp(temp1)
+       1062 |                  s3_g(n3) = temp0
+       1063 |                  s3_dg(n3) = -rmbinv*temp1*temp0
+       1064 |                  s3_dx(n3) = dx
+       1065 |                  s3_dy(n3) = dy
+       1066 |                  s3_dz(n3) = dz
+       1067 |                  s3_rinv(n3) = rinv
+       1068 |                  s3_r(n3) = r
+       1069 |                  n3 = n3 + 1
+       1070 |                  if (n3.gt.max_nbrs) then
+       1071 |                  write(6,*) 'WARNING enlarge max_nbrs'
+       1072 |                  istop=1
+       1073 |                  return
+       1074 |                  endif
+       1075 |
+       1076 |
+       1077 |!   COORDINATION AND NEIGHBOR FUNCTION par_c<r<par_b
+       1078 |
+       1079 |                  if(r .lt. par_b) then
+       1080 |                    if(r .lt. par_c) then
+       1081 |                    Z = Z + 1.d0
+       1082 |                   else
+       1083 |                    xinv = bmc/(r-par_c)
+       1084 |                    xinv3 = xinv*xinv*xinv
+       1085 |                    den = 1.d0/(1 - xinv3)
+       1086 |                    temp1 = par_alp*den
+       1087 |                    fZ = dexp(temp1)
+       1088 |                    Z = Z + fZ
+       1089 |                    numz(nz) = j
+       1090 |                    sz_df(nz) = fZ*temp1*den*3.d0*xinv3*xinv*cmbinv
+       1091 |!   df/dr
+       1092 |                    sz_dx(nz) = dx
+       1093 |                    sz_dy(nz) = dy
+       1094 |                    sz_dz(nz) = dz
+       1095 |                    sz_r(nz) = r
+       1096 |                    nz = nz + 1
+       1097 |                    if (nz.gt.max_nbrs) then
+       1098 |                    write(6,*) 'WARNING enlarge max_nbrs'
+       1099 |                    istop=1
+       1100 |                    return
+       1101 |                    endif
+       1102 |                   end if
+       1103 |!  r < par_C
+       1104 |                  end if
+       1105 |!  r < par_b
+       1106 |                  end if
+       1107 |!  r < par_bg
+       1108 |              end do
+       1109 |
+       1110 |
+       1111 |!   ZERO ACCUMULATION ARRAY FOR ENVIRONMENT FORCES
+       1112 |
+       1113 |              do nl=1, nz-1
+       1114 |                sz_sum(nl)=0.d0
+       1115 |              end do
+       1116 |
+       1117 |
+       1118 |!   ENVIRONMENT-DEPENDENCE OF PAIR INTERACTION
+       1119 |
+       1120 |              temp0 = par_bet*Z
+       1121 |              pZ = par_palp*dexp(-temp0*Z)
+       1122 |!   bond order
+       1123 |              dp = -2.d0*temp0*pZ
+       1124 |!   derivative of bond order
+       1125 |
+       1126 |
+       1127 |
+       1128 |!  --- LEVEL 2: LOOP FOR PAIR INTERACTIONS ---
+       1129 |
+       1130 |            do nj=1, n2-1
+       1131 |
+       1132 |              temp0 = s2_t1(nj) - pZ
+       1133 |
+       1134 |
+       1135 |!   two-body energy V2(rij,Z)
+       1136 |
+       1137 |              ener_iat = ener_iat + temp0*s2_t0(nj)
+       1138 |
+       1139 |!   two-body forces
+       1140 |
+       1141 |              dV2j = - s2_t0(nj) * (s2_t1(nj)*s2_t2(nj) + temp0 * s2_t3(nj))
+       1142 |!   dV2/dr
+       1143 |              dV2ijx = dV2j * s2_dx(nj)
+       1144 |              dV2ijy = dV2j * s2_dy(nj)
+       1145 |              dV2ijz = dV2j * s2_dz(nj)
+       1146 |              ff(1,i) = ff(1,i) + dV2ijx
+       1147 |              ff(2,i) = ff(2,i) + dV2ijy
+       1148 |              ff(3,i) = ff(3,i) + dV2ijz
+       1149 |              j = num2(nj)
+       1150 |              ff(1,j) = ff(1,j) - dV2ijx
+       1151 |              ff(2,j) = ff(2,j) - dV2ijy
+       1152 |              ff(3,j) = ff(3,j) - dV2ijz
+       1153 |
+       1154 |
+       1155 |
+       1156 |!  --- LEVEL 3: LOOP FOR PAIR COORDINATION FORCES ---
+       1157 |
+       1158 |              dV2dZ = - dp * s2_t0(nj)
+       1159 |              do nl=1, nz-1
+       1160 |                 sz_sum(nl) =  sz_sum(nl) + dV2dZ
+       1161 |              end do
+       1162 |
+       1163 |            end do
+       1164 |
+       1165 |
+       1166 |!   COORDINATION-DEPENDENCE OF THREE-BODY INTERACTION
+       1167 |
+       1168 |              winv = Qort*exp(-muhalf*Z)
+       1169 |!   inverse width of angular function
+       1170 |              dwinv = -muhalf*winv
+       1171 |!   its derivative
+       1172 |              temp0 = exp(-u4*Z)
+       1173 |              tau = u1+u2*temp0*(u3-temp0)
+       1174 |!   -cosine of angular minimum
+       1175 |              dtau = u5*temp0*(2*temp0-u3)
+       1176 |!   its derivative
+       1177 |
+       1178 |
+       1179 |!  --- LEVEL 2: FIRST LOOP FOR THREE-BODY INTERACTIONS ---
+       1180 |
+       1181 |            do nj=1, n3-2
+       1182 |
+       1183 |              j=num3(nj)
+       1184 |
+       1185 |
+       1186 |!  --- LEVEL 3: SECOND LOOP FOR THREE-BODY INTERACTIONS ---
+       1187 |
+       1188 |              do nk=nj+1, n3-1
+       1189 |
+       1190 |                k=num3(nk)
+       1191 |
+       1192 |
+       1193 |!   angular function h(l,Z)
+       1194 |
+       1195 |                lcos=s3_dx(nj)*s3_dx(nk)+s3_dy(nj)*s3_dy(nk)+s3_dz(nj)*s3_dz(nk)
+       1196 |                x = (lcos + tau)*winv
+       1197 |                temp0 = exp(-x*x)
+       1198 |
+       1199 |                H = par_lam*(1 - temp0 + par_eta*x*x)
+       1200 |                dHdx = 2*par_lam*x*(temp0 + par_eta)
+       1201 |
+       1202 |                dhdl = dHdx*winv
+       1203 |
+       1204 |
+       1205 |!   three-body energy
+       1206 |
+       1207 |                temp1 = s3_g(nj) * s3_g(nk)
+       1208 |                ener_iat = ener_iat + temp1*H
+       1209 |
+       1210 |
+       1211 |!   (-) radial force on atom j
+       1212 |
+       1213 |                dV3rij = s3_dg(nj) * s3_g(nk) * H
+       1214 |                dV3rijx = dV3rij * s3_dx(nj)
+       1215 |                dV3rijy = dV3rij * s3_dy(nj)
+       1216 |                dV3rijz = dV3rij * s3_dz(nj)
+       1217 |                fjx = dV3rijx
+       1218 |                fjy = dV3rijy
+       1219 |                fjz = dV3rijz
+       1220 |
+       1221 |
+       1222 |!   (-) radial force on atom k
+       1223 |
+       1224 |                dV3rik = s3_g(nj) * s3_dg(nk) * H
+       1225 |                dV3rikx = dV3rik * s3_dx(nk)
+       1226 |                dV3riky = dV3rik * s3_dy(nk)
+       1227 |                dV3rikz = dV3rik * s3_dz(nk)
+       1228 |                fkx = dV3rikx
+       1229 |                fky = dV3riky
+       1230 |                fkz = dV3rikz
+       1231 |
+       1232 |
+       1233 |!   (-) angular force on j
+       1234 |
+       1235 |                dV3l = temp1*dhdl
+       1236 |                dV3ljx = dV3l * (s3_dx(nk) - lcos * s3_dx(nj)) * s3_rinv(nj)
+       1237 |                dV3ljy = dV3l * (s3_dy(nk) - lcos * s3_dy(nj)) * s3_rinv(nj)
+       1238 |                dV3ljz = dV3l * (s3_dz(nk) - lcos * s3_dz(nj)) * s3_rinv(nj)
+       1239 |                fjx = fjx + dV3ljx
+       1240 |                fjy = fjy + dV3ljy
+       1241 |                fjz = fjz + dV3ljz
+       1242 |
+       1243 |
+       1244 |!   (-) angular force on k
+       1245 |
+       1246 |                dV3lkx = dV3l * (s3_dx(nj) - lcos * s3_dx(nk)) * s3_rinv(nk)
+       1247 |                dV3lky = dV3l * (s3_dy(nj) - lcos * s3_dy(nk)) * s3_rinv(nk)
+       1248 |                dV3lkz = dV3l * (s3_dz(nj) - lcos * s3_dz(nk)) * s3_rinv(nk)
+       1249 |                fkx = fkx + dV3lkx
+       1250 |                fky = fky + dV3lky
+       1251 |                fkz = fkz + dV3lkz
+       1252 |
+       1253 |
+       1254 |!   apply radial + angular forces to i, j, k
+       1255 |
+       1256 |                ff(1,j) = ff(1,j) - fjx
+       1257 |                ff(2,j) = ff(2,j) - fjy
+       1258 |                ff(3,j) = ff(3,j) - fjz
+       1259 |                ff(1,k) = ff(1,k) - fkx
+       1260 |                ff(2,k) = ff(2,k) - fky
+       1261 |                ff(3,k) = ff(3,k) - fkz
+       1262 |                ff(1,i) = ff(1,i) + fjx + fkx
+       1263 |                ff(2,i) = ff(2,i) + fjy + fky
+       1264 |                ff(3,i) = ff(3,i) + fjz + fkz
+       1265 |
+       1266 |
+       1267 |
+       1268 |!   prefactor for 4-body forces from coordination
+       1269 |                  dxdZ = dwinv*(lcos + tau) + winv*dtau
+       1270 |                  dV3dZ = temp1*dHdx*dxdZ
+       1271 |
+       1272 |
+       1273 |!  --- LEVEL 4: LOOP FOR THREE-BODY COORDINATION FORCES ---
+       1274 |
+       1275 |                  do nl=1, nz-1
+       1276 |                    sz_sum(nl) = sz_sum(nl) + dV3dZ
+       1277 |                  end do
+       1278 |              end do
+       1279 |            end do
+       1280 |
+       1281 |
+       1282 |!  --- LEVEL 2: LOOP TO APPLY COORDINATION FORCES ---
+       1283 |
+       1284 |            do nl=1, nz-1
+       1285 |
+       1286 |                dEdrl = sz_sum(nl) * sz_df(nl)
+       1287 |                dEdrlx = dEdrl * sz_dx(nl)
+       1288 |                dEdrly = dEdrl * sz_dy(nl)
+       1289 |                dEdrlz = dEdrl * sz_dz(nl)
+       1290 |                ff(1,i) = ff(1,i) + dEdrlx
+       1291 |                ff(2,i) = ff(2,i) + dEdrly
+       1292 |                ff(3,i) = ff(3,i) + dEdrlz
+       1293 |                l = numz(nl)
+       1294 |                ff(1,l) = ff(1,l) - dEdrlx
+       1295 |                ff(2,l) = ff(2,l) - dEdrly
+       1296 |                ff(3,l) = ff(3,l) - dEdrlz
+       1297 |
+       1298 |
+       1299 |            end do
+       1300 |
+       1301 |        coord=coord+coord_iat
+       1302 |        coord2=coord2+coord_iat**2
+       1303 |        ener = ener + ener_iat
+       1304 |        ener2 = ener2 + ener_iat**2
+       1305 |
+       1306 |1000      continue
+       1307 |
+       1308 |
+       1309 |        return
+       1310 |        end
+ "edip.f90", 1518-051 (L) TAB characters have been detected in the source.  The TAB character is not allowed in Fortran 95, Fortran 90, FORTRAN 77 or SAA.
+** subfeniatedip   === End of Compilation 2 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   40           0         0           0         40            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+       1311 |
+       1312 |!---------------------------------------------------------------------------------------!
+       1313 |
+       1314 |        subroutine sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
+       1315 |                   rxyz,icell,lstb,lay,rel,cut2,indlst)
+       1316 |! finds the neighbours of atom iat (specified by lsta and lstb) and and
+       1317 |! the relative position rel of iat with respect to these neighbours
+       1318 |        implicit real*8 (a-h,o-z)
+            ......................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+       1319 |        dimension rxyz(3,nn),lay(nn),icell(0:ncx,-1:ll1,-1:ll2,-1:ll3), &
+       1320 |                  lstb(0:myspace-1),rel(5,0:myspace-1)
+       1321 |
+       1322 |        do 6363,k3=l3-1,l3+1
+       1323 |        do 6363,k2=l2-1,l2+1
+       1324 |        do 6363,k1=l1-1,l1+1
+       1325 |        do 6363,jj=1,icell(0,k1,k2,k3)
+       1326 |          jat=icell(jj,k1,k2,k3)
+       1327 |          if (jat.eq.iat) goto 6363
+       1328 |          xrel= rxyz(1,iat)-rxyz(1,jat)
+       1329 |          yrel= rxyz(2,iat)-rxyz(2,jat)
+       1330 |          zrel= rxyz(3,iat)-rxyz(3,jat)
+       1331 |          rr2=xrel**2 + yrel**2 + zrel**2
+       1332 |          if ( rr2 .le. cut2 ) then
+       1333 |           indlst=min(indlst,myspace-1)
+       1334 |           lstb(indlst)=lay(jat)
+       1335 |!        write(6,*) 'iat,indlst,lay(jat)',iat,indlst,lay(jat)
+       1336 |           tt=sqrt(rr2)
+       1337 |           tti=1.d0/tt
+       1338 |           rel(1,indlst)=xrel*tti
+       1339 |           rel(2,indlst)=yrel*tti
+       1340 |           rel(3,indlst)=zrel*tti
+       1341 |           rel(4,indlst)=tt
+       1342 |           rel(5,indlst)=tti
+       1343 |           indlst= indlst+1
+       1344 |          endif
+       1345 |6363        continue
+            .a...................
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+       1346 |
+       1347 |        return
+       1348 |        end
+** sublstiatedip   === End of Compilation 3 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    2           0         0           0          2            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-2)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+       1349 |
+       1350 |
+ 
+>>>>> FILE TABLE SECTION <<<<<
+ 
+ 
+                                       FILE CREATION        FROM
+FILE NO   FILENAME                    DATE       TIME       FILE    LINE
+     0    edip.f90                    05/10/07   14:02:09
+ 
+ 
+>>>>> COMPILATION EPILOGUE SECTION <<<<<
+ 
+ 
+FORTRAN Summary of Diagnosed Conditions
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+   56           0         0           0         56            0
+ 
+ 
+    Source records read.......................................    1350
+1501-510  Compilation successful for file edip.f90.
+1501-543  Object file created.
