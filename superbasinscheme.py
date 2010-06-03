@@ -63,6 +63,9 @@ class TransitionCounting(SuperbasinScheme):
 
     def register_transition(self, start_state, end_state):
         logger.debug('Registering transitions')
+        
+        if start_state == end_state:
+            return
         if start_state not in self.count:
             self.count[start_state] = {}
             table_path = os.path.join(start_state.path)
