@@ -17,7 +17,8 @@ import atoms
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
 processtable_header = "  state    saddle energy    prefactor product  product energy  product prefactor  barrier  rate  repeats\n"
 processtable_line = "%7d %16.5f % .5e %9d %16.5f % .5e %16.5f % .5e %7d\n"
-
+search_result_header = "%8s %16s %16s    %s\n" % ("id", "type", "barrier", "result")
+search_result_header += "-" * len(search_result_header) + '\n'
 
 class State:
     """ The State class. """
@@ -35,6 +36,7 @@ class State:
         self.procdata_path = os.path.join(self.path, "procdata")
         self.reactant_path = os.path.join(self.path, "reactant.con")
         self.proctable_path = os.path.join(self.path, "processtable")
+        self.search_result_path = os.path.join(self.path, "search_results.txt")
 
         # Variables for comparing energies and distances.
         self.epsilon_e = epsilon_e
@@ -62,12 +64,28 @@ class State:
             f = open(self.proctable_path, 'w')
             f.write(processtable_header)
             f.close()
+            f = open(self.search_result_path, 'w')
+            f.write(search_result_header)
+            f.close()
 
-        #Statistics
+        # Statistics
         self.good_saddle_count = None
         self.bad_saddle_count = None
         self.unique_saddle_count = None
 
+
+    def append_search_result(self, resultdata, result, failure = False):
+        if not failure:
+            f = open(self.search_result_path, 'a')
+            f.write("%8d %16s %16.5e    %s\n" % (resultdata["search_id"], 
+                     "<unknown>", 
+                     resultdata["barrier_product_to_reactant"],
+                     result))
+        else:
+            f = open(self.search_result_path, 'a')
+            f.write("%8s %16s %16s    %s\n" % ("", "", "", result))
+        f.close()
+        
 
 
     def add_process(self, resultpath, resultdata):
@@ -84,6 +102,7 @@ class State:
         lowest = self.update_lowest_barrier(barrier)
         ediff = (barrier - lowest) - (self.kT * self.max_thermal_window)
         if ediff > 0.0:
+            self.append_search_result(resultdata, "barrier > max_thermal_window")
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
@@ -105,6 +124,7 @@ class State:
                         self.set_sequential_redundant(self.get_sequential_redundant() + 1)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
+                    self.append_search_result(resultdata, "repeat %d" % id)
                     return None
 
         # This appears to be a unique process.
@@ -116,7 +136,11 @@ class State:
         # If this barrier is within the thermal window, reset sequential_redundant.
         ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
         if ediff < 0.0:    
+            self.append_search_result(resultdata, "good")
             self.set_sequential_redundant(0)
+        else:
+            self.append_search_result(resultdata, "barrier > thermal_window")
+
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
@@ -140,6 +164,7 @@ class State:
                                   repeats =           0)
 
         # This was a unique process, so return True
+        self.append_search_result(resultdata, "good")
         return id
 
 
@@ -356,9 +381,19 @@ class State:
 
 
 
-    def register_bad_saddle(self, state_number, store):
+    def register_bad_saddle(self, state_number, store, reason):
         """ Registers a bad saddle. """
+        result_state_code = ["Good",
+                             "Init",
+                             "Saddle Search No Convex Region",
+                             "Saddle Search Terminated Barrier",
+                             "Saddle Search Terminated Total Iterations",
+                             "Saddle Search Terminated Concave Iterations",
+                             "Not Connected",
+                             "Bad Prefactor",
+                             "Bad Barrier"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
+        self.append_search_result(None, result_state_code[reason], failure = True)
 
     
 
