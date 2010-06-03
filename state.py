@@ -110,7 +110,7 @@ class State:
         # This appears to be a unique process.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest:
-            logger.info("Found new lowest barrier: %f", lowest)
+            logger.info("found new lowest barrier %f for state %i", lowest, self.number)
 
         
         # If this barrier is within the thermal window, reset sequential_redundant.
