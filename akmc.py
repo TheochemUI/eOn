@@ -7,11 +7,9 @@ import os.path
 import shutil
 import os
 import time as unix_time
-import logging
 import optparse
-#TODO: should write to log file and have customizable verbosity
-logging.basicConfig(filename = '/dev/stdout', level = logging.DEBUG)
-logger = logging.getLogger('akmc')
+import logging
+import logging.handlers
 import numpy
 numpy.seterr(all='raise')
 
@@ -341,6 +339,20 @@ if __name__ == '__main__':
     if len(args) == 1:
         sys.argv += args
     import config
+
+    #setup logging
+    logging.basicConfig(level=logging.DEBUG,
+            filename=os.path.join(config.path_root, "akmc.log"),
+            format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
+            datefmt="%F %T")
+    rootlogger = logging.getLogger('')
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(message)s")
+    console.setFormatter(formatter)
+    rootlogger.addHandler(console)
+    logger = logging.getLogger('akmc')
+
 
     #XXX: Some options are mutally exclusive. This should be handled better.
     if options.print_status:
