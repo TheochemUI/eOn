@@ -133,8 +133,8 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
             strict: perform an actual distance check if True
             bc:     include neighbors across pbc's """
     #TODO: Get rid of 'cutoff' and use the covalent bond radii. (Rye can do)
-    # Do we want to use covalent radii? I think the displace class wants to allow for user-defined cutoffs.
-        # We should have both options available. -Rye
+        # Do we want to use covalent radii? I think the displace class wants to allow for user-defined cutoffs.
+            # We should have both options available. -Rye
     #TODO: Make work for nonorthogonal boxes.
     p = p_in.copy()
     p.r = pbc(p.r, p.box)
