@@ -60,7 +60,7 @@ def main():
             
     if current_state.number != start_state_num:
         num_cancelled = comm.cancel_state(start_state_num)
-        logger.info("Cancelled %i workunits from state %i" % (num_cancelled, start_state_num))
+        logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
         #fork off kdb
         if config.kdb_on:
             kdber.query(current_state)
@@ -150,6 +150,7 @@ def get_communicator():
     return comm
 
 def get_results(comm, current_state, states, kdber = None):
+    logger.info("registering results")
     t1 = unix_time.time()
 
     if os.path.isdir(config.path_searches_in):
@@ -196,8 +197,8 @@ def get_results(comm, current_state, states, kdber = None):
         num_registered += 1
     
     t2 = unix_time.time()
-    logger.info(str(num_registered) + " results processed")
-    logger.debug(str(num_registered/(t2-t1)) + " results per second")
+    logger.info("%i results processed", num_registered)
+    logger.debug("%.1f results per second", (num_registered/(t2-t1)))
 
     return num_registered
 
@@ -247,7 +248,7 @@ def kmc_step(current_state, states, time):
             superbasining.register_transition(current_state, next_state)    
         
         print >> dynamics_file, next_state.number, time
-        logger.info("Stepped from state " + str(current_state.number) + " to state " + str(next_state.number))
+        logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
         if config.recycling_on:
             recycling_start = 0
@@ -257,7 +258,7 @@ def kmc_step(current_state, states, time):
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("Now in state " + str(current_state.number) + ". Confidence is "+ str(current_state.get_confidence()))
+    logger.info("currently in state %i with confidence %.3f", current_state.number, current_state.get_confidence())
     dynamics_file.close()
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
