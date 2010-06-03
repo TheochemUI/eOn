@@ -83,7 +83,7 @@ class State:
                      result))
         else:
             f = open(self.search_result_path, 'a')
-            f.write("%8s %16s %16s    %s\n" % ("", "", "", result))
+            f.write("%8s %16s %16s    %s\n" % ("xxxx", "xxxx", "xxxx", result))
         f.close()
         
 
