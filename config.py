@@ -33,6 +33,7 @@ akmc_max_thermal_window = parser.getfloat('aKMC', 'maximum_thermally_accessible_
 debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
 debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
 
+
 #path options
 path_root         = parser.get('Paths', 'main_directory')
 path_searches_out = parser.get('Paths', 'searches_out')
