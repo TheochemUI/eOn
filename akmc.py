@@ -31,6 +31,7 @@ def main():
     # 5) Make new work units
     # 6) Write out the state of the simulation
     
+    print logo()
     
     kT = config.akmc_temperature/11604.5 #in eV
 
@@ -53,7 +54,7 @@ def main():
     if config.kdb_on:
         kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
 
-    get_results(comm, current_state, states, kdber =  kdber if config.kdb_on else None)
+    get_results(comm, current_state, states, kdber = kdber if config.kdb_on else None)
 
     current_state, previous_state, time = kmc_step(current_state, states, time) 
     
@@ -71,7 +72,6 @@ def main():
     if config.recycling_on:
         recycler = recycling.Recycling(previous_state, current_state, 
                         config.recycling_move_distance, recycling_start)
-    
     
     wuid = make_searches(comm, current_state, wuid, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
     
@@ -183,6 +183,9 @@ def get_results(comm, current_state, states, kdber = None):
             continue
             
         if result_data['termination_reason'] == 0:
+            # <rye>            
+            result_data['search_id'] = int(i.split("_")[1])
+            # </rye>
             process_id = states.get_state(state_num).add_process(result_path, result_data)
             if current_state.get_confidence() > config.akmc_confidence:
                 if config.kdb_on:
@@ -192,7 +195,7 @@ def get_results(comm, current_state, states, kdber = None):
                         logger.debug("kdbaddpr.pl: %s" % output)
                 break
         else:
-            states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles)
+            states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles, result_data['termination_reason'])
 
         num_registered += 1
     
@@ -314,6 +317,11 @@ def make_searches(comm, current_state, wuid, kdber = None, recycler = None):
     logger.debug( str(num_to_make/(t2-t1)) + " jobs per second")
     
     return wuid
+
+
+def logo():
+    return "      ___           ___           ___      \n     /\__\         /\  \         /\  \     \n    /:/ _/_       /::\  \        \:\  \    \n   /:/ /\__\     /:/\:\  \        \:\  \   \n  /:/ /:/ _/_   /:/  \:\  \   _____\:\  \  \n /:/_/:/ /\__\ /:/__/ \:\__\ /::::::::\__\ \n \:\/:/ /:/  / \:\  \ /:/  / \:\~~\~~\/__/ \n  \::/_/:/  /   \:\  /:/  /   \:\  \       \n   \:\/:/  /     \:\/:/  /     \:\  \      \n    \::/  /       \::/  /       \:\__\     \n     \/__/         \/__/         \/__/     \n"
+
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
