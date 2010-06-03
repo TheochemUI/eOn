@@ -2,8 +2,6 @@ import ConfigParser
 import StringIO
 import os.path
 import sys
-import logging
-logger = logging.getLogger('config')
 
 
 parser = ConfigParser.SafeConfigParser()
@@ -15,12 +13,12 @@ if len(sys.argv)>1:
     if os.path.isfile(sys.argv[-1]):
         parser.read(sys.argv[-1])
     else:
-        logger.error("Specified configuration file does not exist.")
+        print >> sys.stderr, "specified configuration file %s does not exist" % sys.argv[-1]
         sys.exit(2)
 elif os.path.isfile('config.ini'):
     parser.read('config.ini')
 else:
-    logger.error("You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory.")
+    print >> sys.stderr, "You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory."
     sys.exit(2)        
 
 #aKMC options

@@ -363,14 +363,6 @@ def logo():
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
@@ -386,7 +378,7 @@ if __name__ == '__main__':
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=os.path.join(config.path_root, "akmc.log"),
+            filename=os.path.join(config.path_results, "akmc.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
             datefmt="%F %T")
     rootlogger = logging.getLogger('')
