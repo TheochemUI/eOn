@@ -50,8 +50,10 @@ def per_atom_norm(v, box, ibox = None):
 
 
 
+
+
 def identical(atoms1, atoms2, epsilon_r):
-    #TODO: Custom comparator could be MUCH better
+    #XXX: n^2
     if len(atoms1) != len(atoms2):
         return False
     
@@ -61,60 +63,159 @@ def identical(atoms1, atoms2, epsilon_r):
             if abs(atoms1.box[i][j] - atoms2.box[i][j]) > .0001:
                 logger.warning("Identical returned false because boxes were not the same")
                 return False
+    box = atoms1.box 
 
-    def sortr(named_r, epsilon_r, box, axis = 0):
-        #we need to sort our atom identities along with coordinates
-        if len(named_r) ==1:
-            return named_r
-        sr = sorted(named_r, key = lambda foo: foo[axis])
-        brackets = []
-        bracket = []
-        #partition sorted x list into 
-        for i in sr:
-            if len(bracket) > 0:
-                #XXX: Suboptimal
-                v2 = numpy.zeros(3)
-                v1 = numpy.zeros(3)
-
-                v2[axis] = i[axis]
-                v1[axis] = bracket[-1][axis]
-                if numpy.linalg.norm(pbc(v2 - v1, box)) > epsilon_r:
-                    brackets.append(bracket)
-                    bracket = []
-            bracket.append(i)
-        if len(bracket) > 0:
-            brackets.append(bracket)
-
-        sorted_bracket_list = []
-        for i in brackets:
-            if axis + 1 <= 2:
-                i = sortr(i, epsilon_r, box, axis = axis + 1)
-            elif len(i) > 1:
-                logger.warning('Identical found two atoms with the "same" coordinates')
-            sorted_bracket_list.append(i)
-
-        return sum(sorted_bracket_list, [])
-
-    named_r1 = [(list(atoms1.r[i]) + [atoms1.names[i]]) for i in range(len(atoms1))]
-    named_r2 = [(list(atoms2.r[i]) + [atoms2.names[i]]) for i in range(len(atoms2))]
-    sorted_r1 = sortr(named_r1, epsilon_r, atoms1.box)
-    sorted_r2 = sortr(named_r2, epsilon_r, atoms1.box)
+    mismatch = []
+    pan = per_atom_norm(atoms1.r - atoms2.r, box)
+    for i in range(len(pan)):
+        if pan[i] > epsilon_r:
+            mismatch.append(i)
     
-    #construct names and comparison vectors
-    v = numpy.zeros((len(atoms1), 3))
-    for i in range(len(v)):
-        v[i] = sorted_r1[i][0:3]
-        v[i] -= sorted_r2[i][0:3] 
-        
-        #compare names
-        if sorted_r1[i][3] != sorted_r2[i][3]:
-            return False
-
-    for i in per_atom_norm(v, atoms1.box):
-        if i > epsilon_r:
+    for i in mismatch:
+        pan = per_atom_norm(atoms1.r - atoms2.r[i], box)
+        minpan = 1e300
+        minj = 0
+        for j in range(len(pan)):
+            if i == j:
+                continue
+            minpan = min(minpan, pan[j])
+        if not minpan < epsilon_r:
             return False
 
     return True
+            
+            
+
+
+#def identical(atoms1, atoms2, epsilon_r):
+#    #TODO: Custom comparator could be MUCH better
+#    if len(atoms1) != len(atoms2):
+#        return False
+#    
+#    for i in range(3):
+#        for j in range(3):
+#            #XXX: Hardcoded comparison criteria
+#            if abs(atoms1.box[i][j] - atoms2.box[i][j]) > .0001:
+#                logger.warning("Identical returned false because boxes were not the same")
+#                return False
+#    box = atoms1.box 
+#    def comparer(r1, r2, axis = 0):
+#        v1 = numpy.zeros(3)
+#        v2 = numpy.zeros(3)
+#        v1[axis] = r1[axis]
+#        v2[axis] = r2[axis] 
+#        
+#        #diff = pbc(v1 - v2, box)[axis]
+#        diff1 = pbc(r1[0:3], box)[axis] - pbc(r2[0:3], box)[axis]
+#        diff2 = (v2 - v1)[axis] 
+#        if abs(diff1) < abs(diff2):
+#            diff = diff1
+#        else:
+#            diff = diff2
+#
+#        if diff > epsilon_r:
+#            return 1
+#        elif diff < -epsilon_r:
+#            return -1
+#        else:
+#            if axis + 1 <= 2:
+#                return comparer(r1, r2, axis = axis + 1)
+#            else:
+#                logger.warning("Found two identical atoms in the same structure")
+#                return 0
+#
+#    named_r1 = [(list(atoms1.r[i]) + [atoms1.names[i]] + [i]) for i in range(len(atoms1))]
+#    named_r2 = [(list(atoms2.r[i]) + [atoms2.names[i]] + [i]) for i in range(len(atoms2))]
+#
+#    sorted_r1 = sorted(named_r1, cmp = comparer)
+#    sorted_r2 = sorted(named_r2, cmp = comparer)
+#    
+#    v = numpy.zeros((len(atoms1), 3))
+#   
+#    for i in range(len(v)):
+#        v[i]  = sorted_r1[i][0:3]
+#        v[i] -= sorted_r2[i][0:3] 
+#        #compare names
+#        if  numpy.linalg.norm(pbc(v[i],box)) > epsilon_r:
+#            print i,sorted_r1[i], sorted_r2[i], v[i], numpy.linalg.norm(pbc(v[i],box))
+#        if sorted_r1[i][3] != sorted_r2[i][3]:
+#            return False
+#    #print per_atom_norm(v, atoms1.box)
+#    pan = per_atom_norm(v, box)
+#    for i in range(len(pan)):
+#        if pan[i] > epsilon_r:
+#            return False 
+#    
+#    return True
+
+
+#####
+# Ugly version (could be faster). 
+#def identical(atoms1, atoms2, epsilon_r):
+#    #TODO: Custom comparator could be MUCH better
+#    if len(atoms1) != len(atoms2):
+#        return False
+#    
+#    for i in range(3):
+#        for j in range(3):
+#            #XXX: Hardcoded comparison criteria
+#            if abs(atoms1.box[i][j] - atoms2.box[i][j]) > .0001:
+#                logger.warning("Identical returned false because boxes were not the same")
+#                return False
+#
+#    def sortr(named_r, epsilon_r, box, axis = 0):
+#        #we need to sort our atom identities along with coordinates
+#        if len(named_r) ==1:
+#            return named_r
+#        sr = sorted(named_r, key = lambda foo: foo[axis])
+#        brackets = []
+#        bracket = []
+#        TODO: Bracket PBC
+#        #partition sorted x list into 
+#        for i in sr:
+#            if len(bracket) > 0:
+#                #XXX: Suboptimal
+#                v2 = numpy.zeros(3)
+#                v1 = numpy.zeros(3)
+#
+#                v2[axis] = i[axis]
+#                v1[axis] = bracket[-1][axis]
+#                if numpy.linalg.norm(pbc(v2 - v1, box)) > epsilon_r:
+#                    brackets.append(bracket)
+#                    bracket = []
+#            bracket.append(i)
+#        if len(bracket) > 0:
+#            brackets.append(bracket)
+#
+#        sorted_bracket_list = []
+#        for i in brackets:
+#            if axis + 1 <= 2:
+#                i = sortr(i, epsilon_r, box, axis = axis + 1)
+#            elif len(i) > 1:
+#                logger.warning('Identical found two atoms with the "same" coordinates')
+#            sorted_bracket_list.append(i)
+#
+#        return sum(sorted_bracket_list, [])
+#
+#    named_r1 = [(list(atoms1.r[i]) + [atoms1.names[i]]) for i in range(len(atoms1))]
+#    named_r2 = [(list(atoms2.r[i]) + [atoms2.names[i]]) for i in range(len(atoms2))]
+#    sorted_r1 = sortr(named_r1, epsilon_r, atoms1.box)
+#    sorted_r2 = sortr(named_r2, epsilon_r, atoms1.box)
+#    
+#    #construct names and comparison vectors
+#    v = numpy.zeros((len(atoms1), 3))
+#    for i in range(len(v)):
+#        v[i] = sorted_r1[i][0:3]
+#        v[i] -= sorted_r2[i][0:3] 
+#        
+#        #compare names
+#        if sorted_r1[i][3] != sorted_r2[i][3]:
+#            return False
+#    for i in per_atom_norm(v, atoms1.box):
+#        if i > epsilon_r:
+#            return False
+#
+#    return True
 
 
 
@@ -251,9 +352,9 @@ if __name__ == "__main__":
     #p = io.loadcon("foo.con")
     #print coordination_numbers(p, 3.0)
     #print least_coordinated(p, 3.0)
-
+    
     import sys
     logger = logging
     p1 = io.loadcon(sys.argv[1])
     p2 = io.loadcon(sys.argv[2])
-    print identical(p1,p2,.01)
+    print identical(p1,p2,float(sys.argv[3]))
