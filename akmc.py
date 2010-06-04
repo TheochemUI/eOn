@@ -11,6 +11,7 @@ import logging
 import logging.handlers
 import numpy
 numpy.seterr(all='raise')
+import pickle
 
 import locking
 import communicator
@@ -80,7 +81,7 @@ def main():
     
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.SafeConfigParser() 
+    parser = ConfigParser.RawConfigParser() 
     write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
     if config.recycling_on:
         write_recycling_metadata(parser, recycler.process_num, previous_state.number)
@@ -110,8 +111,15 @@ def get_akmc_metadata():
 
     if config.debug_random_seed:
         try:
+            parser = ConfigParser.RawConfigParser()
             parser.read(metafile)
-            seed = parser.getint("aKMC Metadata", "random_seed")
+            seed = parser.get("aKMC Metadata", "random_state")
+            from numpy import array, uint32
+            numpy.random.set_state(eval(seed))
+            logger.debug("Set random state from pervious run's state")
+        except:
+            numpy.random.seed(config.debug_random_seed)
+            logger.debug("Set random state from seed")
 
     return start_state_num, time, wuid, searchdata
 
@@ -124,7 +132,8 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
     parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
-
+    if config.debug_random_seed:
+        parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
 
 def get_recycling_metadata():
