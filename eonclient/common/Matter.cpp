@@ -22,76 +22,34 @@ using namespace system_unit;
 using namespace constants;
 
 namespace {
+       const char *elementArray[] = {"Unknown", "H","He","Li","Be","B","C","N","O",
+           "F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc",
+           "Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se",
+           "Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag",
+           "Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
+           "Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta",
+           "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
+           "Fr","Ra","Ac","Th","Pa","U", NULL};
       /// guess the atom type from the atomic mass,
-      std::string mass2atom(double atomicmass) {
-            switch(int(atomicmass+.5)) {
-                  case 1:
-                        return "H";
-                  case 16:
-                        return "O";
-                  case 24:
-                        return "Mg";
-                  case 26:
-                        return "Al";
-                  case 28:
-                        return "Si";
-                  case 46:
-                        return "Pd";
-                  case 79:
-                        return "Au";
-                  default: 
-                        return "C";
-            };
-      }
+        std::string mass2atom(double atomicmass) {
+            return elementArray[int(atomicmass+.5)];
+        }
       const int MAXC=10;/// Maximum number of components for functions matter2con and con2matter
       int symbol2atomicNumber(char const * symbol)
       {
-            if (strcmp(symbol, "H") == 0) {
-                  return 1;
-            }
-            else if (strcmp(symbol, "D") == 0) {
-                  return 2001;
-            }
-            else if (strcmp(symbol, "O") == 0) {
-                  return 16;
-            }
-            else if (strcmp(symbol, "Pt") == 0)
-                  return 78;
-            else if (strcmp(symbol, "Pd") == 0)
-                  return 46;
-            else if (strcmp(symbol, "Au") == 0)
-                  return 79;
-            else if (strcmp(symbol, "Al") == 0)
-                  return 13;
-            else {
-                  int i=0;
-                  sscanf(symbol, "%d", &i);
-                  return i;
+            int i=0;
+
+            while (elementArray[i] != NULL) {
+                if (strcmp(symbol, elementArray[i]) == 0) {
+                    return i;
+                }
+                i++;
             }
       }
       
       char const * atomicNumber2symbol(int n)
       {
-            switch (n) {
-                  case 1:
-                        return "H";
-                  case 2001:
-                        return "D";
-                  case 16:
-                        return "O";
-                  case 78:
-                        return "Pt";
-                  case 13:
-                        return "Al";
-                  case 79:
-                        return "Au";
-                  case 46:
-                        return "Pd";
-                  default:
-                        static char s[6];
-                        sprintf(s, "%5d", n);
-                        return s;
-            };
+            return elementArray[n];
       }
 }
 
