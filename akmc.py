@@ -13,6 +13,7 @@ import logging.handlers
 import numpy
 numpy.seterr(all='raise')
 
+import locking
 import communicator
 import statelist
 import displace
@@ -30,8 +31,6 @@ def main():
     # 4) Possibly take a KMC step
     # 5) Make new work units
     # 6) Write out the state of the simulation
-    
-    print logo()
     
     kT = config.akmc_temperature/11604.5 #in eV
 
@@ -367,13 +366,17 @@ if __name__ == '__main__':
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
+    optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     (options, args) = optpar.parse_args()
  
     if len(args) > 1:
-        print "akmc.py takes only one argument"
+        print "akmc.py takes only one positional argument"
     sys.argv = sys.argv[0:1]
     if len(args) == 1:
         sys.argv += args
+
+    #XXX: config is ugly as it finds out where the config file is directly from 
+    #     sys.argv instead of being passed it.
     import config
 
     #setup logging
@@ -381,14 +384,19 @@ if __name__ == '__main__':
             filename=os.path.join(config.path_results, "akmc.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
             datefmt="%F %T")
-    rootlogger = logging.getLogger('')
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter = logging.Formatter("%(message)s")
-    console.setFormatter(formatter)
-    rootlogger.addHandler(console)
     logger = logging.getLogger('akmc')
 
+    if not options.quiet:
+        #Rye's silly logo.
+        print logo()
+        rootlogger = logging.getLogger('')
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        formatter = logging.Formatter("%(message)s")
+        console.setFormatter(formatter)
+        rootlogger.addHandler(console)
+
+    lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
 
     #XXX: Some options are mutally exclusive. This should be handled better.
     if options.print_status:
@@ -454,4 +462,9 @@ if __name__ == '__main__':
         else:
             print "Not resetting."
             sys.exit(1)
-    main()
+
+    if lock.aquirelock():
+        main()
+    else:
+        logger.info("the server is locked by pid %i" % lock.pid)
+        sys.exit(1)
