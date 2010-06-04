@@ -55,6 +55,7 @@ public:
 	~Matter();///< Destructor.
 	const Matter& operator=(const Matter& matter);///< The object 'matter' is copied into this object.
     bool operator==(const Matter& matter);///< Returns true if all differences in positions are bellow getMaxDifferencePos, they are then considered equal.
+    double distanceTo(const Matter& matter); /* RT: Returns the distance to the given matter object. */
     void setPotential();///< Set function to use as for potential. 
     void resize(long int nAtoms);///< Set or reset the number of atoms.
 	long int numberOfAtoms() const;///< Return the number of atoms. 
