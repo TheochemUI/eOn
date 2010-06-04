@@ -32,52 +32,57 @@ def main():
     # 5) Make new work units
     # 6) Write out the state of the simulation
     
+    # This doesn't even need a comment.
+    print logo()
+    
+    # Define constants. <rye> should this be a config option? </rye>    
     kT = config.akmc_temperature/11604.5 #in eV
-
     
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist, as such the reactant cannot exist. Exiting...")
         sys.exit(1)
     
-    start_state_num, time, wuid = get_akmc_metadata()
+    # Load metadata, the state list, and the current state.
+    start_state_num, time, wuid, searchdata = get_akmc_metadata()
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
 
+    # If recycling is being used, initialize it.
     if config.recycling_on:
         recycling_start, previous_state_num = get_recycling_metadata()
         previous_state = states.get_state(previous_state_num)
     
-    comm = get_communicator()
-
+    # If kdb is being used, initialize it.
     if config.kdb_on:
         kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
 
-    get_results(comm, current_state, states, kdber = kdber if config.kdb_on else None)
+    # Create the communicator object.
+    comm = get_communicator()
 
+    # Handle any results returned through the communicator.
+    get_results(comm, current_state, states, searchdata, kdber = kdber if config.kdb_on else None)
+
+    # Take a KMC step, if it's time.
     current_state, previous_state, time = kmc_step(current_state, states, time) 
-    
             
+    # If we took a step, cancel old jobs and start the kdbquery.
     if current_state.number != start_state_num:
         num_cancelled = comm.cancel_state(start_state_num)
         logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
-        #fork off kdb
         if config.kdb_on:
-            kdber.query(current_state)
-        
-
+            kdber.query(current_state, wait = True)
     
-    #make new work
+    # Create new work.
     if config.recycling_on:
         recycler = recycling.Recycling(previous_state, current_state, 
                         config.recycling_move_distance, recycling_start)
+    wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
     
-    wuid = make_searches(comm, current_state, wuid, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
-    
-    #write out metadata, XXX:ugly
+    # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.SafeConfigParser() 
-    write_akmc_metadata(parser, current_state.number, time, wuid)
+    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
     if config.recycling_on:
         write_recycling_metadata(parser, recycler.process_num, previous_state.number)
     parser.write(open(metafile, 'w')) 
@@ -85,13 +90,11 @@ def main():
 
 
 def get_akmc_metadata():
-
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
     # read in metadata
     # do we want custom metadata locations?
     metafile = os.path.join(config.path_results, 'info.txt')
-
     parser = ConfigParser.SafeConfigParser() 
     # give our parser some default values in case our metafile doesn't exist
     try:
@@ -99,19 +102,25 @@ def get_akmc_metadata():
         start_state_num = parser.getint("Simulation Information",'current_state')
         time = parser.getfloat("Simulation Information", 'time_simulated') 
         wuid = parser.getint("aKMC Metadata", 'wu_id') 
+        searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
     except:
         time = 0
         start_state_num = 0
         wuid = 0
-    
-    return start_state_num, time, wuid
+        searchdata = {}
+    return start_state_num, time, wuid, searchdata
 
-def write_akmc_metadata(parser,current_state_num,time,wuid):
+
+
+def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
     parser.set('aKMC Metadata', 'wu_id', str(wuid))
+    parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
+
+
 
 def get_recycling_metadata():
     metafile = os.path.join(config.path_results, 'info.txt')
@@ -125,14 +134,20 @@ def get_recycling_metadata():
         previous_state_num = 0 
     return recycling_start, previous_state_num
 
+
+
 def write_recycling_metadata(parser, recycling_start, previous_state_num):
     parser.add_section('Recycling')
     parser.set('Recycling', 'previous_state',str(previous_state_num))  
     parser.set('Recycling', 'start_process_id',str(recycling_start)) 
 
+
+
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
     return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path) #might 
+
+
 
 def get_communicator():
     if config.comm_type=='boinc':
@@ -148,10 +163,11 @@ def get_communicator():
         raise ValueError()
     return comm
 
-def get_results(comm, current_state, states, kdber = None):
+
+
+def get_results(comm, current_state, states, searchdata, kdber = None):
     logger.info("registering results")
     t1 = unix_time.time()
-
     if os.path.isdir(config.path_searches_in):
         shutil.rmtree(config.path_searches_in)    
     os.makedirs(config.path_searches_in)
@@ -159,7 +175,6 @@ def get_results(comm, current_state, states, kdber = None):
     num_registered = 0
     for i in results:
         result_path = os.path.join(config.path_searches_in, i)
-        
         if config.debug_keep_all_results:
             #XXX: We should only do these checks once to speed things up, but at the same time
             #debug options don't have to be fast
@@ -167,7 +182,6 @@ def get_results(comm, current_state, states, kdber = None):
             if not os.path.isdir(save_path):
                 os.mkdir(save_path)
             shutil.copytree(result_path, os.path.join(save_path, i))
-        
         state_num = int(i.split("_")[0])
         try:
             result_data = io.parse_results_dat(os.path.join(result_path, 'results.dat'))
@@ -180,11 +194,15 @@ def get_results(comm, current_state, states, kdber = None):
         except IOError:
             logger.warning("Search %s did not return a results.dat" % i)
             continue
-            
+
+        # Store information about the search into result_data for the search_results.txt file in the state directory.
+        result_data['search_id'] = int(i.split("_")[1])
+        result_data['search_type'] = searchdata[i.split("_")[1] + "type"]
+        
+        # Remove used information from the searchdata metadata.
+        del searchdata[i.split("_")[1] + "type"]
+        
         if result_data['termination_reason'] == 0:
-            # <rye>            
-            result_data['search_id'] = int(i.split("_")[1])
-            # </rye>
             process_id = states.get_state(state_num).add_process(result_path, result_data)
             if current_state.get_confidence() > config.akmc_confidence:
                 if config.kdb_on:
@@ -194,20 +212,21 @@ def get_results(comm, current_state, states, kdber = None):
                         logger.debug("kdbaddpr.pl: %s" % output)
                 break
         else:
-            states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles, result_data['termination_reason'])
-
+            states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles, result_data)
         num_registered += 1
-    
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
-
     return num_registered
+
+
 
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
     return superbasining
+
+
 
 def kmc_step(current_state, states, time):
     t1 = unix_time.time()
@@ -266,6 +285,8 @@ def kmc_step(current_state, states, time):
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
 
+
+
 def get_displacement(reactant):
     if config.disp_type == 'random':
         disp = displace.Random(reactant, config.disp_size, config.disp_radius)
@@ -277,7 +298,9 @@ def get_displacement(reactant):
         raise ValueError()
     return disp
 
-def make_searches(comm, current_state, wuid, kdber = None, recycler = None):
+
+
+def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler = None):
     reactant = current_state.get_reactant()
     disp = get_displacement(reactant)
     num_in_buffer = comm.get_queue_size()
@@ -302,10 +325,13 @@ def make_searches(comm, current_state, wuid, kdber = None, recycler = None):
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
         if (config.recycling_on and current_state.number is not 0) and recycler.make_suggestion(job_dir):
             logger.debug('Recycled a saddle')
+            searchdata[str(wuid)+"type"] = "recycling"
         elif config.kdb_on and kdber.make_suggestion(job_dir):
-            logger.debug('Made a KDB suggestion')
+            logger.info('Made a KDB suggestion')
+            searchdata[str(wuid)+"type"] = "kdb"
         else:
             disp.make_displacement(job_dir) 
+            searchdata[str(wuid)+"type"] = "random"
         wuid += 1
         jobpaths.append(job_dir)
 
@@ -318,12 +344,11 @@ def make_searches(comm, current_state, wuid, kdber = None, recycler = None):
     return wuid
 
 
+
 def logo():
     import random
     if random.randint(0, 1):
-        return """
-
-      ___           ___           ___     
+        return """      ___           ___           ___     
      /\__\         /\  \         /\  \     
     /:/ _/_       /::\  \        \:\  \    
    /:/ /\__\     /:/\:\  \        \:\  \   
@@ -340,10 +365,10 @@ def logo():
  ____, ____, ____,  
 (-|_, (-/  \(-|  |  
  _|__,  \__/ _|  |_,
-(           (       """
+(           (       
+"""
     else:
         return """
-
          )          
       ( /(          
    (  )\())         
