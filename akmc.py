@@ -32,8 +32,6 @@ def main():
     # 5) Make new work units
     # 6) Write out the state of the simulation
     
-    # This doesn't even need a comment.
-    print "\033[1m\033[" + str(numpy.random.randint(31,36)) + "m" + logo() + "\033[0m"
     
     # Define constants. <rye> should this be a config option? </rye>    
     kT = config.akmc_temperature/11604.5 #in eV
@@ -505,6 +503,9 @@ if __name__ == '__main__':
             sys.exit(1)
 
     if lock.aquirelock():
+        # This doesn't even need a comment.
+        if not options.quiet:
+            print "\033[1m\033[" + str(numpy.random.randint(31,36)) + "m" + logo() + "\033[0m"
         main()
     else:
         logger.info("the server is locked by pid %i" % lock.pid)
