@@ -384,6 +384,7 @@ if __name__ == '__main__':
             filename=os.path.join(config.path_results, "akmc.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
             datefmt="%F %T")
+    logging.raiseExceptions = False
     logger = logging.getLogger('akmc')
 
     if not options.quiet:
