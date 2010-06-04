@@ -9,7 +9,6 @@ parser = ConfigParser.SafeConfigParser()
 parser.read(os.path.join(sys.path[0], 'default_config.ini'))
 
 if len(sys.argv)>1:
-    print sys.argv[-1]
     if os.path.isfile(sys.argv[-1]):
         parser.read(sys.argv[-1])
     else:
