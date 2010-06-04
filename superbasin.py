@@ -1,7 +1,6 @@
 import os
 import numpy
 from numpy import array #XXX: For repr-eval
-import random
 import logging
 logger = logging.getLogger('superbasin')
 
@@ -37,7 +36,7 @@ class Superbasin:
 
 
         exit_prob = self.prod_matrix[:,entry_state_index]
-        u = random.random()
+        u = numpy.random.random_sample()
         p = 0.0
         for i in range(len(exit_prob)):
             p += exit_prob[i]
@@ -59,6 +58,7 @@ class Superbasin:
                 rate_table.append([key, process['rate']])
                 ratesum += process['rate']
         
+        u = numpy.random.random_sample()
         for i in range(len(rate_table)):
             p += rate_table[i][1]/ratesum
             if p>u:

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import random
 import ConfigParser
 import os.path
 import shutil
@@ -33,7 +32,7 @@ def main():
     # 6) Write out the state of the simulation
     
     # This doesn't even need a comment.
-    print "\033[1m\033[" + str(random.randint(31,36)) + "m" + logo() + "\033[0m"
+    print "\033[1m\033[" + str(numpy.random.randint(31,36)) + "m" + logo() + "\033[0m"
     
     # Define constants. <rye> should this be a config option? </rye>    
     kT = config.akmc_temperature/11604.5 #in eV
@@ -108,6 +107,12 @@ def get_akmc_metadata():
         start_state_num = 0
         wuid = 0
         searchdata = {}
+
+    if config.debug_random_seed:
+        try:
+            parser.read(metafile)
+            seed = parser.getint("aKMC Metadata", "random_seed")
+
     return start_state_num, time, wuid, searchdata
 
 
@@ -250,7 +255,7 @@ def kmc_step(current_state, states, time):
                 ratesum += rate_table[i][1]
             
             #TODO: Superbasining check
-            u = random.random()
+            u = numpy.random.random_sample()
             p = 0.0
              
             for i in range(len(rate_table)):

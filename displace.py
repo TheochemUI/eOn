@@ -1,5 +1,4 @@
 import os
-import random
 import numpy
 import atoms
 import io
@@ -89,7 +88,7 @@ class Undercoordinated(Displace):
         # TODO: We should make sure that the amount of I/O to disk
         #       is what we think it should be: about 100 kB or so per
         #       make_displacement().
-        epicenter = random.choice(self.undercoordinated_atoms) 
+        epicenter = self.undercoodrinated_atoms[numpy.randint(0, len(self.undercoordinated_atoms)-1)] 
         displacement = self.get_displacement(epicenter)
         self.save_files(path, displacement)
 
@@ -116,7 +115,7 @@ class Leastcoordinated(Displace):
         # TODO: We should make sure that the amount of I/O to disk
         #       is what we think it should be: about 100 kB or so per
         #       make_displacement().
-        epicenter = random.choice(self.leastcoordinated_atoms) 
+        epicenter = self.leastcoodrinated_atoms[numpy.random.randint(0, len(self.leastcoordinated_atoms)-1)] 
         displacement = self.get_displacement(epicenter)
         self.save_files(path, displacement)
 
@@ -134,7 +133,7 @@ class Random(Displace):
     def make_displacement(self, path):
         """Select a random atom and displace all atoms in a radius about it."""
         #chose a random atom
-        epicenter = random.choice(self.free_atoms) 
+        epicenter = self.free_atoms[numpy.random.randint(0, len(self.free_atoms)-1)] 
         displacement = self.get_displacement(epicenter)
         self.save_files(path, displacement)
 
