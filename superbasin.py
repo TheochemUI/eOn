@@ -39,7 +39,6 @@ class Superbasin:
         exit_prob = self.prod_matrix[:,entry_state_index]
         u = random.random()
         p = 0.0
-        
         for i in range(len(exit_prob)):
             p += exit_prob[i]
             if p>u:
@@ -54,9 +53,10 @@ class Superbasin:
         #make a rate table for the exit state
         rate_table = []
         ratesum = 0.0
-        for i in exit_state.get_process_table(): 
+        for key in exit_state.get_process_table(): 
+            process = exit_state.get_process_table()[key]
             if process['product']==-1 or process['product'] not in self.state_numbers:
-                rate_table.append([process['id'], process['rate']])
+                rate_table.append([key, process['rate']])
                 ratesum += process['rate']
         
         for i in range(len(rate_table)):
@@ -111,7 +111,7 @@ class Superbasin:
         #XXX: Matrix inversion
         self.fundamental_matrix = numpy.linalg.inv(fundamental_matrix)
         
-        self.prod_matrix = numpy.dot(self.fundamental_matrix, self.recurrent_matrix)
+        self.prod_matrix = numpy.dot(self.recurrent_matrix, self.fundamental_matrix)
         
         #Calculate mean residence time
         self.mean_residence_time = 0.0
