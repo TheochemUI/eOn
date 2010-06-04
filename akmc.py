@@ -33,7 +33,7 @@ def main():
     # 6) Write out the state of the simulation
     
     # This doesn't even need a comment.
-    print logo()
+    print "\033[1m\033[" + str(random.randint(31,36)) + "m" + logo() + "\033[0m"
     
     # Define constants. <rye> should this be a config option? </rye>    
     kT = config.akmc_temperature/11604.5 #in eV
@@ -61,7 +61,7 @@ def main():
     comm = get_communicator()
 
     # Handle any results returned through the communicator.
-    get_results(comm, current_state, states, searchdata, kdber = kdber if config.kdb_on else None)
+    register_results(comm, current_state, states, searchdata, kdber = kdber if config.kdb_on else None)
 
     # Take a KMC step, if it's time.
     current_state, previous_state, time = kmc_step(current_state, states, time) 
@@ -165,7 +165,7 @@ def get_communicator():
 
 
 
-def get_results(comm, current_state, states, searchdata, kdber = None):
+def register_results(comm, current_state, states, searchdata, kdber = None):
     logger.info("registering results")
     t1 = unix_time.time()
     if os.path.isdir(config.path_searches_in):
@@ -347,8 +347,9 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
 
 def logo():
     import random
-    if random.randint(0, 1):
-        return """      ___           ___           ___     
+    if random.randint(0, 2) == 0:
+        return """
+      ___           ___           ___     
      /\__\         /\  \         /\  \     
     /:/ _/_       /::\  \        \:\  \    
    /:/ /\__\     /:/\:\  \        \:\  \   
@@ -360,7 +361,7 @@ def logo():
     \::/  /       \::/  /       \:\__\     
      \/__/         \/__/         \/__/     
 """
-    elif random.randint(0, 1):
+    elif random.randint(0, 2) == 0:
         return """
  ____, ____, ____,  
 (-|_, (-/  \(-|  |  
@@ -427,7 +428,7 @@ if __name__ == '__main__':
     #XXX: Some options are mutally exclusive. This should be handled better.
     if options.print_status:
         states = get_statelist(config.akmc_temperature/11604.5)
-        start_state_num, time, wuid = get_akmc_metadata()
+        start_state_num, time, wuid, searchdata = get_akmc_metadata()
 
         print
         print "General"
