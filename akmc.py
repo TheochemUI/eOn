@@ -375,7 +375,7 @@ if __name__ == '__main__':
     if len(args) == 1:
         sys.argv += args
         #always run from the directory where the config file is
-        os.chdir(args)
+        os.chdir(os.path.dirname(args[0]))
 
     #XXX: config is ugly as it finds out where the config file is directly from 
     #     sys.argv instead of being passed it.
@@ -390,8 +390,6 @@ if __name__ == '__main__':
     logger = logging.getLogger('akmc')
 
     if not options.quiet:
-        #Rye's silly logo.
-        print logo()
         rootlogger = logging.getLogger('')
         console = logging.StreamHandler()
         console.setLevel(logging.INFO)
