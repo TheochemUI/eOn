@@ -217,7 +217,7 @@ def kmc_step(current_state, states, time):
     start_state_num = current_state.number
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
-    while current_state.get_confidence() > config.akmc_confidence:
+    while current_state.get_confidence() >= config.akmc_confidence:
         if config.sb_on:
             sb = superbasining.get_containing_superbasin(current_state)
 
