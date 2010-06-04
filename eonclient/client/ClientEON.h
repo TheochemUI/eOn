@@ -59,6 +59,7 @@ namespace client_eon {
 
       Matter *initial;///< The initial unpertubed configuration. 
       Matter *saddle;///< Configuration used during the saddle point search.
+      Matter *displacement;///< Configuration used during the saddle point search.
       Matter *min1;///< Used to determine one of the stable states connected to the saddle point.
       Matter *min2;///< Used to determine the other stable state connected to the saddle point.
 

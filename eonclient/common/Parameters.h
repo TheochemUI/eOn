@@ -34,7 +34,7 @@ struct Input {
     long typePertubation_SP_;///< Displacement type to use. Compare with values in Constants.cpp
     bool refine_SP_;///< Refine saddle point.
     long lowestEigenmodeDetermination_SP_;///< The algorithm to be used for lowest eigenmode determination. Compare with values in Constants.cpp
-
+    double displacement_saddle_distance_; // RT: The distance between the displacement and the discovered saddle.
     double converged_Relax_;///< Converge criterion during relaxation [eV/A].
     double converged_SP_;///< Converge criterion during saddle point search [eV/A].
     long maxJumpAttempts_SP_;///< How many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what.
@@ -117,6 +117,7 @@ public:
     void setPrefactorProd_Reac(double prefactorProd_Reac);
     void setBarrierReac_Prod(double barrierReac_Prod);
     void setBarrierProd_Reac(double barrierProd_Reac);
+    void setDisplacementSaddleDistance(double displacement_saddle_distance);
 
     // Accounting for the force calls
     long getForceCalls();

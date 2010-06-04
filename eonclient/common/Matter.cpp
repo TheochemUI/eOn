@@ -148,6 +148,38 @@ bool Matter::operator==(const Matter& matter) {//To compare two matter objects, 
 }
 
 
+
+double Matter::distanceTo(const Matter& matter) 
+{
+    /* RT: Returns the distance to the given matter object. */
+    
+    double *pos;
+    pos = new double[3 * nAtoms_];   
+    
+    long i = 0;
+    double dX, dY, dZ;
+    double sum = 0.0;
+    
+    if(matter.numberOfAtoms() == nAtoms_)
+    {
+        matter.getPositions(pos);
+        for(i = 0; i < nAtoms_; i++)
+        {
+            dX = positions_[3 * i + 0] - pos[3 * i + 0];
+            dY = positions_[3 * i + 1] - pos[3 * i + 1];
+            dZ = positions_[3 * i + 2] - pos[3 * i + 2];
+            dX = dX - cellBoundaries_[0] * floor(dX / cellBoundaries_[0] + 0.5);  
+            dY = dY - cellBoundaries_[1] * floor(dY / cellBoundaries_[1] + 0.5);
+            dZ = dZ - cellBoundaries_[2] * floor(dZ / cellBoundaries_[2] + 0.5);
+            sum += dX * dX + dY * dY + dZ * dZ;
+        }
+    }
+    delete [] pos;
+    return sqrt(sum);
+}
+
+
+
 void Matter::resize(const long int nAtoms)
 {
       clearMemory();
