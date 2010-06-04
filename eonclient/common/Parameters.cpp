@@ -53,6 +53,7 @@ Parameters::Parameters(){
     forceCallsSaddlePointConcave_ = 0;
     forceCallsSaddlePointConvex_ = 0;
     forceCallsPrefactors_ = 0;
+    displacement_saddle_distance_ = 0;
 
     return;
 }
@@ -156,6 +157,7 @@ void Parameters::saveOutput(FILE *file){
     fprintf(file, "%f potential_energy_product\n", potentialEnergyMin2_);
     fprintf(file, "%f barrier_reactant_to_product\n", barrierReac_Prod_);
     fprintf(file, "%f barrier_product_to_reactant\n", barrierProd_Reac_);
+    fprintf(file, "%f displacement_saddle_distance\n", displacement_saddle_distance_);
 
     if(getPrefactorsTag_)
     {
@@ -256,7 +258,8 @@ void Parameters::printOutput(){
     <<potentialEnergyMin1_<<" potentialEnergyMin1\n"
     <<potentialEnergyMin2_<<" potentialEnergyMin2\n"
     <<barrierReac_Prod_<<" barrierReac_Prod\n"
-    <<barrierProd_Reac_<<" barrierProd_Reac\n";
+    <<barrierProd_Reac_<<" barrierProd_Reac\n"
+    <<displacement_saddle_distance_<<" displacement_saddle_distance\n";
     
     if(getPrefactorsTag_){
         std::cout
@@ -380,6 +383,10 @@ void Parameters::setBarrierReac_Prod(double barrierReac_Prod){
 }
 void Parameters::setBarrierProd_Reac(double barrierProd_Reac){
     barrierProd_Reac_ = barrierProd_Reac;
+    return;
+}
+void Parameters::setDisplacementSaddleDistance(double displacement_saddle_distance){
+    displacement_saddle_distance_ = displacement_saddle_distance;
     return;
 }
 

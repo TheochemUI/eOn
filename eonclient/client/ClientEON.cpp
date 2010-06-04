@@ -97,7 +97,7 @@ void client_eon::doSaddleSearch(void)
         state = saddlePoint.locate(min1, min2);
         
         // Barrier determination part
-        if(state==getStateInit() && connectedToReactantState())
+        if(state == getStateInit() && connectedToReactantState())
         {
             determineBarriers();
             barriersOK = barriersWithinWindow();
@@ -185,6 +185,7 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     printf("Random seed is: %ld\n", parameters.getRandomSeed());
     // The paramters have been loaded && the Matter objects can be initialized
     initial = new Matter(&parameters);
+    displacement = new Matter(&parameters);
     saddle = new Matter(&parameters);
     min1 = new Matter(&parameters);
     min2 = new Matter(&parameters);
@@ -227,6 +228,19 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
         fseek(file, displacementPosition, SEEK_SET);
     }
     saddle->con2matter(file);
+    //read in displacement con file
+    file=openFile(displacement_passed);
+    if (count == 0) {
+        fseek(file, 0, SEEK_END);
+        displacementFileLength = ftell(file);
+        fseek(file, 0, SEEK_SET);
+    }else{
+        if (displacementFileLength <= displacementPosition) {
+            return false;
+        }
+        fseek(file, displacementPosition, SEEK_SET);
+    }
+    displacement->con2matter(file);
     displacementPosition = ftell(file);
     closeFile(file, displacement_passed);
 
@@ -369,6 +383,7 @@ void client_eon::saveData(){
                              parameters.getForceCallsPrefactors());
     
     parameters.setTerminationReason(state);
+    parameters.setDisplacementSaddleDistance(displacement->distanceTo(*saddle));
     
     // Input need to be "resolved" from their logical name
     // for the application to the actual path on the client's disk
