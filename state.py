@@ -74,23 +74,19 @@ class State:
         self.unique_saddle_count = None
 
 
-    def append_search_result(self, resultdata, result, failure = False):
-        if not failure:
-            f = open(self.search_result_path, 'a')
-            f.write("%8d %16s %16.5e    %s\n" % (resultdata["search_id"], 
-                     "<unknown>", 
-                     resultdata["barrier_product_to_reactant"],
-                     result))
-        else:
-            f = open(self.search_result_path, 'a')
-            f.write("%8s %16s %16s    %s\n" % ("xxxx", "xxxx", "xxxx", result))
+    def append_search_result(self, resultdata, result):
+        f = open(self.search_result_path, 'a')
+        f.write("%8d %16s %16.5e    %s\n" % (resultdata["search_id"], 
+                 resultdata["search_type"], 
+                 resultdata["barrier_product_to_reactant"],
+                 result))
         f.close()
         
 
 
     def add_process(self, resultpath, resultdata):
         """ Adds a process to this State. """
-        
+
         self.set_good_saddle_count(self.get_good_saddle_count() + 1)
 
         # We may not already have the energy for this State.  If not, it should be in the result data.
@@ -164,7 +160,6 @@ class State:
                                   repeats =           0)
 
         # This was a unique process, so return True
-        self.append_search_result(resultdata, "good")
         return id
 
 
@@ -381,7 +376,7 @@ class State:
 
 
 
-    def register_bad_saddle(self, state_number, store, reason):
+    def register_bad_saddle(self, state_number, store, resultdata):
         """ Registers a bad saddle. """
         result_state_code = ["Good",
                              "Init",
@@ -393,7 +388,7 @@ class State:
                              "Bad Prefactor",
                              "Bad Barrier"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
-        self.append_search_result(None, result_state_code[reason], failure = True)
+        self.append_search_result(resultdata, result_state_code[resultdata["termination_reason"]])
 
     
 
