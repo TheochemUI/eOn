@@ -244,76 +244,39 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
     coord_list = []
     for i in range(numatoms):
         coord_list.append([i, p.r[i]])
-    sorted_x = sorted(coord_list, key = lambda foo: foo[1][0])
-    intersect_x = []
-    for i in range(numatoms):
-        intersect_x.append([])
-    for i in range(numatoms):
-        done = False
-        j = i + 1
-        if not bc and j >= numatoms:
-            done = True
-        while not done:
-            j = j % numatoms
-            dist = abs(sorted_x[j][1][0] - sorted_x[i][1][0])
-            if p.box[0][0] - sorted_x[i][1][0] < cutoff:
-                dist = min(dist, (p.box[0][0] - sorted_x[i][1][0]) + sorted_x[j][1][0])
-            if dist < cutoff:
-                intersect_x[sorted_x[i][0]].append(sorted_x[j][0]) 
-                intersect_x[sorted_x[j][0]].append(sorted_x[i][0]) 
-                j += 1
-                if not bc and j >= numatoms:
-                    done = True
-            else:
+    for axis in range(3):
+        sorted_axis = sorted(coord_list, key = lambda foo: foo[1][axis])
+        intersect_axis = []
+        for i in range(numatoms):
+            intersect_axis.append([])
+        for i in range(numatoms):
+            done = False
+            j = i + 1
+            if not bc and j >= numatoms:
                 done = True
-    sorted_y = sorted(coord_list, key = lambda foo: foo[1][1])
-    intersect_y = []
-    for i in range(numatoms):
-        intersect_y.append([])
-    for i in range(numatoms):
-        done = False
-        j = i + 1
-        if not bc and j >= numatoms:
-            done = True
-        while not done:
-            j = j % numatoms
-            dist = abs(sorted_y[j][1][1] - sorted_y[i][1][1])
-            if p.box[1][1] - sorted_y[i][1][1] < cutoff:
-                dist = min(dist, (p.box[1][1] - sorted_y[i][1][1]) + sorted_y[j][1][1])
-            if dist < cutoff:
-                intersect_y[sorted_y[i][0]].append(sorted_y[j][0]) 
-                intersect_y[sorted_y[j][0]].append(sorted_y[i][0]) 
-                j += 1
-                if not bc and j >= numatoms:
+            while not done:
+                j = j % numatoms
+                if j == i:
                     done = True
-            else:
-                done = True
-    sorted_z = sorted(coord_list, key = lambda foo: foo[1][2])
-    intersect_z = []
-    for i in range(numatoms):
-        intersect_z.append([])
-    for i in range(numatoms):
-        done = False
-        j = i + 1
-        if not bc and j >= numatoms:
-            done = True
-        while not done:
-            j = j % numatoms
-            dist = abs(sorted_z[j][1][2] - sorted_z[i][1][2])
-            if p.box[2][2] - sorted_z[i][1][2] < cutoff:
-                dist = min(dist, (p.box[2][2] - sorted_z[i][1][2]) + sorted_z[j][1][2])
-            if dist < cutoff:
-                intersect_z[sorted_z[i][0]].append(sorted_z[j][0]) 
-                intersect_z[sorted_z[j][0]].append(sorted_z[i][0]) 
-                j += 1
-                if not bc and j >= numatoms:
+                dist = abs(sorted_axis[j][1][axis] - sorted_axis[i][1][axis])
+                if p.box[axis][axis] - sorted_axis[i][1][axis] < cutoff:
+                    dist = min(dist, (p.box[axis][axis] - sorted_axis[i][1][axis]) + sorted_axis[j][1][axis])
+                if dist < cutoff:
+                    intersect_axis[sorted_axis[i][0]].append(sorted_axis[j][0]) 
+                    intersect_axis[sorted_axis[j][0]].append(sorted_axis[i][0]) 
+                    j += 1
+                    if not bc and j >= numatoms:
+                        done = True
+                else:
                     done = True
-            else:
-                done = True
-    intersect = []
-    for i in range(numatoms):
-        intersect.append([])
-        intersect[i] = list(set(intersect_x[i]).intersection(intersect_y[i]).intersection(intersect_z[i]))
+        if axis == 0:
+            intersect = []
+            for i in range(numatoms):
+                intersect.append([])
+                intersect[i] = intersect_axis[i]
+        else:
+            for i in range(numatoms):
+                intersect[i] = list(set(intersect[i]).intersection(intersect_axis[i]))
     if strict:
         ibox = numpy.linalg.inv(p.box)
         for i in range(numatoms):
@@ -349,12 +312,11 @@ def least_coordinated(p, cutoff):
     
 if __name__ == "__main__":
     import io
-    #p = io.loadcon("foo.con")
-    #print coordination_numbers(p, 3.0)
-    #print least_coordinated(p, 3.0)
-    
     import sys
-    logger = logging
-    p1 = io.loadcon(sys.argv[1])
-    p2 = io.loadcon(sys.argv[2])
-    print identical(p1,p2,float(sys.argv[3]))
+    p = io.loadcon(sys.argv[1])
+    print coordination_numbers(p, 3.0)
+
+
+
+    
+
