@@ -26,8 +26,6 @@ class Atoms:
         p.box = self.box.copy()
         p.names = self.names[:]
         return p
-        
-
 
 def pbc(r, box, ibox = None):
     """
@@ -41,16 +39,10 @@ def pbc(r, box, ibox = None):
     vdir = numpy.dot(r, ibox)
     vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
     return numpy.dot(vdir, box)
-    
-
 
 def per_atom_norm(v, box, ibox = None):
     diff = pbc(v, box, ibox)
     return numpy.array([numpy.linalg.norm(d) for d in diff])
-
-
-
-
 
 def identical(atoms1, atoms2, epsilon_r):
     #XXX: n^2
@@ -217,15 +209,6 @@ def identical(atoms1, atoms2, epsilon_r):
 #
 #    return True
 
-
-
-
-
-
-    
-
-
-
 def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
     """ Returns a list of nearest neighbors within cutoff for each atom. 
         Parameters:
@@ -315,8 +298,3 @@ if __name__ == "__main__":
     import sys
     p = io.loadcon(sys.argv[1])
     print coordination_numbers(p, 3.0)
-
-
-
-    
-
