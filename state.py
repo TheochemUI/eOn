@@ -259,7 +259,10 @@ class State:
 
     def get_lowest_barrier(self):
         self.load_info()
-        return self.info.getfloat("MetaData", "lowest barrier")
+        try:
+            return self.info.getfloat("MetaData", "lowest barrier")
+        except:
+            return 1e300
     
 
 
@@ -278,6 +281,7 @@ class State:
                 return 0
         else:
             return self.unique_saddle_count
+
 
     def set_unique_saddle_count(self, num):
         self.unique_saddle_count = num
