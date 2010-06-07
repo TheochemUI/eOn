@@ -136,7 +136,7 @@ void Parameters::load(FILE *file){
         // Lines with user comment are started with #
         else if(parms[i][0]=='#'){}
         else
-            std::cout<<"Unkonown property: "<<parms[i]<<"\n";
+            std::cout<<"Unknown property: "<<parms[i]<<"\n";
     }
     delete [] values;
     for(i=0; i<nLines; i++)

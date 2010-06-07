@@ -56,15 +56,16 @@ def identical(atoms1, atoms2, epsilon_r):
                 logger.warning("Identical returned false because boxes were not the same")
                 return False
     box = atoms1.box 
+    ibox = numpy.linalg.inv(box)
 
     mismatch = []
-    pan = per_atom_norm(atoms1.r - atoms2.r, box)
+    pan = per_atom_norm(atoms1.r - atoms2.r, box, ibox)
     for i in range(len(pan)):
         if pan[i] > epsilon_r:
             mismatch.append(i)
     
     for i in mismatch:
-        pan = per_atom_norm(atoms1.r - atoms2.r[i], box)
+        pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
         minpan = 1e300
         minj = 0
         for j in range(len(pan)):
