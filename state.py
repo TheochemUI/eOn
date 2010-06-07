@@ -226,10 +226,11 @@ class State:
     def get_ratetable(self):
         """ Loads the process table if it has not been loaded and generates a rate table according to kT and thermal_window. """
         self.load_process_table()
+        lowest = self.get_lowest_barrier()
         table = []
         for id in self.procs.keys():
             proc = self.procs[id]
-            if proc['barrier'] < self.kT * self.thermal_window:
+            if proc['barrier'] < lowest + (self.kT * self.thermal_window):
                 table.append((id, proc['rate']))
         return table
 
@@ -256,6 +257,10 @@ class State:
             self.save_info()        
         return lowest
 
+    def get_lowest_barrier(self):
+        self.load_info()
+        return self.info.getfloat("MetaData", "lowest barrier")
+    
 
 
     def get_num_procs(self):
