@@ -383,7 +383,7 @@ void client_eon::saveData(){
                              parameters.getForceCallsPrefactors());
     
     parameters.setTerminationReason(state);
-    parameters.setDisplacementSaddleDistance(displacement->distanceTo(*saddle));
+    parameters.setDisplacementSaddleDistance(displacement->per_atom_norm(*saddle));
     
     // Input need to be "resolved" from their logical name
     // for the application to the actual path on the client's disk

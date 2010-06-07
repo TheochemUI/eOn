@@ -18,7 +18,7 @@ ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
 processtable_header = processtable_head_fmt % ("state", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-search_result_header = "%8s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "distance", "result")
+search_result_header = "%8s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "result")
 search_result_header += "-" * len(search_result_header) + '\n'
 
 class State:
