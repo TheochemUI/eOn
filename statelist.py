@@ -77,7 +77,8 @@ class StateList:
         # Get the state number for the product.
         newstnr = st.procs[process_id]['product']
 
-        # If the product id is not initialized, make sure it is not a copy of an existing state.  Otherwise, create it, connect it to st, and return it.
+        # If the product id is not initialized, make sure it is not a copy of an existing state.
+        # Otherwise, create it, connect it to st, and return it.
         if newstnr == -1:
             
             # Make a list of states for which we need to compare configurations.
@@ -104,7 +105,9 @@ class StateList:
             newstnr = self.get_num_states()
 
             # Create the new state object.
-            newst = state.State(self.state_path(newstnr), newstnr, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r, st.proc_product_path(process_id))
+            newst = state.State(self.state_path(newstnr), newstnr, self.kT, 
+                    self.thermal_window, self.max_thermal_window, self.epsilon_e, 
+                    self.epsilon_r, st.proc_product_path(process_id))
             
             # Update the reactant state to point at the new state id.
             st.procs[process_id]['product'] = newstnr

@@ -225,7 +225,7 @@ def loadposcar(filename):
     return p    
 
 
-def saveposcar(filename, p, direct = False):
+def saveposcar(filename, p, w='w', direct = False):
     '''
     Save a POSCAR
         filename - name to save it under
@@ -240,7 +240,7 @@ def saveposcar(filename, p, direct = False):
             num_each_type[name] = 1
         else:
             num_each_type[name] += 1
-    poscar = open(filename, 'w')
+    poscar = open(filename, w)
     print >> poscar, " ".join(atom_types) #Line 1: Atom types
     print >> poscar, 1.0 #Line 2: scaling
     for i in range(3):
