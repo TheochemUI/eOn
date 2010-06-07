@@ -180,6 +180,42 @@ double Matter::distanceTo(const Matter& matter)
 
 
 
+double Matter::per_atom_norm(const Matter& matter) 
+{
+    /* RT: Returns the maximum distance between two atoms in the Matter objects. */
+    
+    double *pos;
+    pos = new double[3 * nAtoms_];   
+    
+    long i = 0;
+    double dX, dY, dZ;
+    double max_distance = 0.0;
+    double distance = 0.0;
+    
+    if(matter.numberOfAtoms() == nAtoms_)
+    {
+        matter.getPositions(pos);
+        for(i = 0; i < nAtoms_; i++)
+        {
+            dX = positions_[3 * i + 0] - pos[3 * i + 0];
+            dY = positions_[3 * i + 1] - pos[3 * i + 1];
+            dZ = positions_[3 * i + 2] - pos[3 * i + 2];
+            dX = dX - cellBoundaries_[0] * floor(dX / cellBoundaries_[0] + 0.5);  
+            dY = dY - cellBoundaries_[1] * floor(dY / cellBoundaries_[1] + 0.5);
+            dZ = dZ - cellBoundaries_[2] * floor(dZ / cellBoundaries_[2] + 0.5);
+            distance = sqrt(dX * dX + dY * dY + dZ * dZ);
+            if(distance > max_distance)
+            {
+                max_distance = distance;
+            }
+        }
+    }
+    delete [] pos;
+    return max_distance;
+}
+
+
+
 void Matter::resize(const long int nAtoms)
 {
       clearMemory();
