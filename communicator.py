@@ -88,7 +88,7 @@ class BOINC(Communicator):
         if not os.path.isfile(uniqueid_path):
             f = open(uniqueid_path, 'w')
             import random 
-            uid = random.randint(-2147483647, 2147483646)
+            uid = random.randint(0, 2147483647)
             f.write("%s\n" % uid)
             f.close()
             logger.debug("wrote new unique id %i to %s" % (uid, uniqueid_path))
