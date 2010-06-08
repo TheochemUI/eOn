@@ -250,7 +250,8 @@ double Matter::getBoundary(int axis) const
 void Matter::setBoundary(int axis, double length)
 {
     cellBoundaries_[axis]=length;
-    if(usePeriodicBoundaries_){
+    if(usePeriodicBoundaries_)
+    {
         applyPeriodicBoundary(axis);
     }
     computePotential_=true;
@@ -449,8 +450,9 @@ void Matter::setFreePositions(const double pos[]) {//Update Matter with the new 
             j++;
         };
     };
-    if(usePeriodicBoundaries_){
-            applyPeriodicBoundary();
+    if(usePeriodicBoundaries_)
+    {
+        applyPeriodicBoundary();
     }
     computePotential_=true;
 }
@@ -777,7 +779,8 @@ bool Matter::con2matter(FILE *file) {
                   setFixed(i, static_cast<bool>(fixed));
             };
       };
-      if(usePeriodicBoundaries_){ 
+      if(usePeriodicBoundaries_)
+      { 
             applyPeriodicBoundary();// Transform the coordinate to use the minimum image convention.
       }
       //    potential_ = new Potentials(parameters_);
@@ -869,9 +872,12 @@ void Matter::applyPeriodicBoundary() // Transform the coordinate to use the mini
     applyPeriodicBoundary(2);
 }
 
-void Matter::applyPeriodicBoundary(int axis) {
+void Matter::applyPeriodicBoundary(int axis) 
+{
     for(long int i=0; i<nAtoms_; i++)
+    {
         applyPeriodicBoundary(i, axis);
+    }
 }
 
 void Matter::applyPeriodicBoundary(long atom, int axis)
