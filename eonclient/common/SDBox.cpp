@@ -1,6 +1,6 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 4/17/07.
+ *  Created by Rye Terrell on 6/7/10.
  *-----------------------------------------------
  *  Modified. Name, Date and a small description!
  *
@@ -9,12 +9,12 @@
  *
  *===============================================
  */
-#include "Quickmin.h"
+#include "SDBox.h"
 
 using namespace helper_functions;
 using namespace constants;
 
-Quickmin::Quickmin(Matter *matter, Parameters *parameters){
+SDBox::SDBox(Matter *matter, Parameters *parameters){
     // Note that it is the pointer that is copied.
     matter_ = matter;    
     parameters_ = parameters;
@@ -25,7 +25,7 @@ Quickmin::Quickmin(Matter *matter, Parameters *parameters){
 
 };
 
-Quickmin::~Quickmin(){
+SDBox::~SDBox(){
 
     // matter_ should not be deleted
     // parameters_ should not be deleted
@@ -37,7 +37,7 @@ Quickmin::~Quickmin(){
 };
 
 
-void Quickmin::oneStep(){
+void SDBox::oneStep(){
 //    long forceCallsTemp;
     double *freeForces;
     freeForces = new double[nFreeCoord_];
@@ -58,7 +58,7 @@ void Quickmin::oneStep(){
     return;
 };
 
-void Quickmin::oneStepPart1(double *freeForces){
+void SDBox::oneStepPart1(double *freeForces){
     double *positions;
     double *velocity;
     positions = new double[nFreeCoord_];
@@ -85,7 +85,7 @@ void Quickmin::oneStepPart1(double *freeForces){
 };
     
 
-void Quickmin::oneStepPart2(double *freeForces)
+void SDBox::oneStepPart2(double *freeForces)
 {
     double dotVelocityForces;
     double dotForcesForces;
@@ -118,7 +118,7 @@ void Quickmin::oneStepPart2(double *freeForces)
 };
 
 
-void Quickmin::fullRelax(){
+void SDBox::fullRelax(){
     bool converged = false;
     long forceCallsTemp;
     //----- Initialize end -----
@@ -137,7 +137,7 @@ void Quickmin::fullRelax(){
 };
 
 
-bool Quickmin::isItConverged(double convergeCriterion){
+bool SDBox::isItConverged(double convergeCriterion){
     double diff;
     
     for(int i=0;i<nFreeCoord_;i++){

@@ -30,6 +30,7 @@
 #include "common/Parameters.h"
 #include "common/Matter.h"
 #include "common/ConjugateGradients.h"
+#include "common/SDBox.h"
 #include "Prefactors.h"
 #include "SaddlePoint.h"
 /** The main program.*/
