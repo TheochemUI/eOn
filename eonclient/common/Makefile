@@ -1,4 +1,4 @@
-OBJECTS = ConjugateGradients.o Matter.o Quickmin.o Constants.o Parameters.o HelperFunctions.o \
+OBJECTS = SDBox.o ConjugateGradients.o Matter.o Quickmin.o Constants.o Parameters.o HelperFunctions.o \
     Potentials.o PotentialsInterface.o debug.o
 CXXFLAGS += -I..
 ifdef NO_POT_EMT
