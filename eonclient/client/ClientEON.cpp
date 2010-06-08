@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     loadDataAndRelax(parameters_passed, reactant_passed);
     
     // If we are not only minimizing, perform saddle searches.
-    if(! parameters.getMinimizeOnly())
+    if(!parameters.getMinimizeOnly())
     {
         // If the server performed the displacement, load it and perform the saddle search.
         if (parameters.getRefineSP()) 

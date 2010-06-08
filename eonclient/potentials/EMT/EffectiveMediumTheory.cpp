@@ -45,7 +45,7 @@ void EffectiveMediumTheory::force(long N, const double *R, const long *atomicNrs
         
     for(i=0; i<3*N; i++)
         pos[i] = R[i]/system_unit::ANGSTROM;
-    
+
     
 	// an atom has been deposited
 	if(numberOfAtoms != N)
@@ -77,6 +77,16 @@ void EffectiveMediumTheory::force(long N, const double *R, const long *atomicNrs
         delete [] atomicNrsTemp;
 	}
 	AtomsObj->SetCartesianPositions((Vec *) pos);
+	// update the box
+	Vec tempBasisX(box[0]/system_unit::ANGSTROM, 0.0, 0.0);
+	Vec tempBasisY(0.0, box[1]/system_unit::ANGSTROM, 0.0);
+	Vec tempBasisZ(0.0, 0.0, box[2]/system_unit::ANGSTROM);
+	Vec tempBasis[3];
+	tempBasis[0] = tempBasisX;
+	tempBasis[1] = tempBasisY;
+	tempBasis[2] = tempBasisZ;
+    AtomsObj->SetUnitCell(tempBasis, true);	
+    
 
 	*U = EMTObj->GetPotentialEnergy();
 	
