@@ -69,15 +69,29 @@ int main(int argc, char **argv)
 
     // Loads runtime parameters and relaxes the initial configuration.
     loadDataAndRelax(parameters_passed, reactant_passed);
-    //Read in the displacement and mode files
-    if (parameters.getRefineSP()) {
-        while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) {
+    
+    // If we are not only minimizing, perform saddle searches.
+    if(! parameters.getMinimizeOnly())
+    {
+        // If the server performed the displacement, load it and perform the saddle search.
+        if (parameters.getRefineSP()) 
+        {
+            // While we can read in the displacement and mode files, perform a saddle search on them.
+            while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
+            {
+                doSaddleSearch();
+            }
+        }
+        // Otherwise, displace and search ourselves.
+        else
+        {
             doSaddleSearch();
         }
-    }else{
-        doSaddleSearch();
     }
-
+    else
+    {
+        saveData();
+    }
     // BOINC applications must exit via boinc_finish(rc), not merely exit */
     boinc_finish(0);
     return 0;
@@ -170,19 +184,23 @@ static void closeFile(FILE * file, char const name[])
 void client_eon::loadDataAndRelax(char const parameters_passed[], char const reactant_passed[])
 {
     FILE * file;
-    file=openFile(parameters_passed);
+    file = openFile(parameters_passed);
     parameters.load(file);
     closeFile(file, parameters_passed);
     
     // Initialize random generator
-    if(parameters.getRandomSeed() < 0) {
-        unsigned i=time(NULL);
+    if(parameters.getRandomSeed() < 0) 
+    {
+        unsigned i = time(NULL);
         parameters.setRandomSeed(i);
         srand(i);
     }
     else
+    {
         srand(parameters.getRandomSeed());
+    }
     printf("Random seed is: %ld\n", parameters.getRandomSeed());
+
     // The paramters have been loaded && the Matter objects can be initialized
     initial = new Matter(&parameters);
     displacement = new Matter(&parameters);
@@ -190,9 +208,10 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     min1 = new Matter(&parameters);
     min2 = new Matter(&parameters);
 
-    file=openFile(reactant_passed);
-    int ok=initial->con2matter(file);
-    if (not ok) {
+    file = openFile(reactant_passed);
+    int ok = initial->con2matter(file);
+    if (not ok) 
+    {
         fprintf(stderr, "Cannot read file %s\n", reactant_passed);
         std::exit(1);
     };

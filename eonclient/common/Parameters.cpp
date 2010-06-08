@@ -24,6 +24,8 @@ Parameters::Parameters(){
     typePertubation_SP_ = 1;
     refine_SP_=false;
     lowestEigenmodeDetermination_SP_ = 1;
+    minimize_only_ = 0;
+    minimize_box_ = 0;
     
     // Tweak able parameters, default values if not read in from parameters_passed.dat
     // Value used in the Relaxation   
@@ -88,6 +90,10 @@ void Parameters::load(FILE *file){
             potentialTag_ = long(values[i]);
         else if(!strcmp(parms[i], "POTENTIAL_NO_TRANSLATION"))
             potentialNoTranslation_ = long(values[i]);
+        else if(!strcmp(parms[i], "MINIMIZE_ONLY"))
+            minimize_only_ = long(values[i]);
+        else if(!strcmp(parms[i], "MINIMIZE_BOX"))
+            minimize_box_ = long(values[i]);
         else if(!strcmp(parms[i], "GET_PREFACTORS_TAG"))
             getPrefactorsTag_ = long(values[i]);
         else if(!strcmp(parms[i], "TYPE_PERTUBATION_SP"))
@@ -179,6 +185,8 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "# describtion LOWEST_EIGENMODE_DETERMINATION_SP\n# 1 = dimer method\n# 2 = lanczos method\nLOWEST_EIGENMODE_DETERMINATION_SP %ld\n\n", lowestEigenmodeDetermination_SP_);
     fprintf(file, "# description TYPE_PERTUBATION_SP\n# 0 = no displacement\n# 1 = displace atoms not being fcc or hcp coordinated\n# 2 = displace atom with lowest coordination\n# 3 = displace last atom\nTYPE_PERTUBATION_SP %ld\n\n", typePertubation_SP_);
     fprintf(file, "#  Refine saddle point\nREFINE_SP %d\n\n", refine_SP_);
+    fprintf(file, "MINIMIZE_ONLY %d\n\n", minimize_only_);
+    fprintf(file, "MINIMIZE_BOX %d\n\n", minimize_box_);
     
     fprintf(file, "#### Tweakable Parameters ####\n");
     fprintf(file, "# relaxation related\n");
@@ -217,6 +225,8 @@ void Parameters::printInput(){
     <<lowestEigenmodeDetermination_SP_<<" : LOWEST_EIGENMODE_DETERMINATION_SP\n" 
     <<typePertubation_SP_<<" : TYPE_PERTUBATION_SP\n\n"
     << refine_SP_ <<" : REFINE_SP\n\n"
+    << minimize_only_ <<" : MINIMIZE_ONLY\n\n"
+    << minimize_box_ <<" : MINIMIZE_BOX\n\n"
 
     <<"#### Tweakable Parameters ####\n"
     <<"# relaxation related\n"
@@ -288,6 +298,12 @@ long Parameters::getPotentialTag(){
 }
 long Parameters::getPotentialNoTranslation(){
     return potentialNoTranslation_;
+}
+bool Parameters::getMinimizeOnly(){
+    return minimize_only_;
+}
+bool Parameters::getMinimizeBox(){
+    return minimize_box_;
 }
 long Parameters::getPrefactorsTag(){
     return getPrefactorsTag_;
