@@ -217,9 +217,19 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     };
     closeFile(file, reactant_passed);
     
-    // Relaxing the passed configuration
-    ConjugateGradients cgInitial(initial, &parameters);
-    cgInitial.fullRelax();
+    // Relax the passed configuration.
+    // RT: if we are only minimizing AND are minimizing the box, use SDBox
+    if (parameters.getMinimizeOnly() && parameters.getMinimizeBox())
+    {
+        SDBox sdboxInitial(initial, &parameters);
+        sdboxInitial.fullRelax();
+    }
+    // RT: Otherwise, minimize as usual.
+    else
+    {    
+        ConjugateGradients cgInitial(initial, &parameters);
+        cgInitial.fullRelax();
+    }
 
     return;
 }
@@ -339,18 +349,20 @@ bool client_eon::connectedToReactantState(){
 }
 
 
-void client_eon::determineBarriers(){ 
+void client_eon::determineBarriers()
+{ 
     barriersValues[0] = saddle->potentialEnergy()-min1->potentialEnergy();
     barriersValues[1] = saddle->potentialEnergy()-min2->potentialEnergy();
     return;
 }
 
 
-bool client_eon::barriersWithinWindow(){
+bool client_eon::barriersWithinWindow()
+{
     bool result = true;
 
-    if((parameters.getMaxEnergy_SP() < barriersValues[0]) || 
-       (parameters.getMaxEnergy_SP() < barriersValues[1])){
+    if((parameters.getMaxEnergy_SP() < barriersValues[0]) || (parameters.getMaxEnergy_SP() < barriersValues[1]))
+    {
         result = false;
         state = getStateBadBarrier();
     }
@@ -450,7 +462,14 @@ void client_eon::saveData(){
 
     parameters.saveOutput(fileResults);
 
-    min1->matter2con(fileReactant);
+    if(parameters.getMinimizeOnly())
+    {
+        initial->matter2con(fileReactant);
+    }
+    else
+    {
+        min1->matter2con(fileReactant);
+    }
     saddle->matter2con(fileSaddle);    
     min2->matter2con(fileProduct);
     long const nfree=saddlePoint.getnFreeCoord();
