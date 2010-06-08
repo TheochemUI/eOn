@@ -20,6 +20,7 @@
 #include "HelperFunctions.h"
 #include "Constants.h"
 #include "Parameters.h"
+#include "common/Quickmin.h"
 
 class SDBox : public MinimizersInterface
 {
@@ -33,19 +34,25 @@ class SDBox : public MinimizersInterface
         ~SDBox();///< Destructor.
 
         void oneStep();///< Do one iteration.
-        void oneStepPart1(double *freeForces);
-        void oneStepPart2(double *freeForces);
+//        void oneStepPart1(double *freeForces);
+//        void oneStepPart2(double *freeForces);
         
         void fullRelax();///< Relax the Matter object corresponding to the pointer that was passed with the constructor.
         bool isItConverged(double convergeCriterion);///< Determine if the norm of the force vector is bellow the \a convergeCriterion.
         
     private:
         long nFreeCoord_;///< Number of free coordinates.
+        void increment_velocity();
 
         Matter *matter_;///< Pointer to atom object \b outside the scope of the class.    
         Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
 
         double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
+        double *boxforce_;
+        double *boxv_;
+        double dR;
+        double dT;
+        Quickmin *qmBox_;
         double *forces_;///< Double array, its size equals the number of \b free atoms times 3.
 };
 
