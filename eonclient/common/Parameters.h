@@ -30,11 +30,12 @@ struct Input {
     long reactantStateTag_;///< Tag to describe to which reactant state the saddle point connects.
     long potentialTag_;///< Tag to describe which potential to use. Compare with values in Constants.cpp
     long potentialNoTranslation_;///< Translation will be removed, handled in the potential class   
+    long minimize_only_; /* RT: only perform minimization, not saddle search. */
+    long minimize_box_; /* RT: also minimize the box dimensions if minimize_only_ is true. */
     long getPrefactorsTag_;///< Tag to describe if the prefactors should be determined.  
     long typePertubation_SP_;///< Displacement type to use. Compare with values in Constants.cpp
     bool refine_SP_;///< Refine saddle point.
     long lowestEigenmodeDetermination_SP_;///< The algorithm to be used for lowest eigenmode determination. Compare with values in Constants.cpp
-    double displacement_saddle_distance_; // RT: The distance between the displacement and the discovered saddle.
     double converged_Relax_;///< Converge criterion during relaxation [eV/A].
     double converged_SP_;///< Converge criterion during saddle point search [eV/A].
     long maxJumpAttempts_SP_;///< How many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what.
@@ -66,6 +67,7 @@ struct Output {
     double barrierProd_Reac_;///< Barrier (dE[2->1]) for process from min2 -> min1 [eV].
     double prefactorReac_Prod_;///< Prefactor (v[1->2]) for process from min1 -> min2 [1/s].
     double prefactorProd_Reac_;///< Prefactor (v[2->1]) for process from min2 -> min1 [1/s].
+    double displacement_saddle_distance_; // RT: The distance between the displacement and the discovered saddle.
 };
 
 /** Contains all runtime parameters and results. No functionality just bookkeeping.*/
@@ -85,6 +87,8 @@ public:
     long getReactantStateTag();
     long getPotentialTag();
     long getPotentialNoTranslation();
+    bool getMinimizeOnly();
+    bool getMinimizeBox();
     long getPrefactorsTag();
     long getTypePertubation_SP();
     bool getRefineSP();
