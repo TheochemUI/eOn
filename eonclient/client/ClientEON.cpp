@@ -218,11 +218,11 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     closeFile(file, reactant_passed);
     
     // Relax the passed configuration.
-    // RT: if we are only minimizing AND are minimizing the box, use SDBox
+    // RT: if we are only minimizing AND are minimizing the box, use QMBox
     if (parameters.getMinimizeOnly() && parameters.getMinimizeBox())
     {
-        SDBox sdboxInitial(initial, &parameters);
-        sdboxInitial.fullRelax();
+        QMBox qmboxInitial(initial, &parameters);
+        qmboxInitial.fullRelax();
     }
     // RT: Otherwise, minimize as usual.
     else

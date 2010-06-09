@@ -125,7 +125,8 @@ void ConjugateGradients::fullRelax(){
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     int i=0;
-    while(!converged and i < parameters_->getMaximumIterations()) {
+    while(!converged and i < parameters_->getMaximumIterations()) 
+    {
         oneStep();
         converged = isItConverged(parameters_->getConverged_Relax());
         ++i;
@@ -143,12 +144,15 @@ void ConjugateGradients::fullRelax(){
 bool ConjugateGradients::isItConverged(double convergeCriterion){
     double diff;
     
-//    for(int i=0;i<nFreeCoord_;i++){
-//        diff = fabs(force_[i]);//-forceOld_[i]);
-//        if(convergeCriterion < diff)
-//            break;
-//    }
-    diff = length(force_,nFreeCoord_);
+    for(int i=0;i<nFreeCoord_;i++)
+    {
+        diff = fabs(force_[i]);//-forceOld_[i]);
+        if(convergeCriterion < diff)
+        {
+            break;
+        }
+    }
+//    diff = length(force_,nFreeCoord_);
 //    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);    
 //std::cout<<diff<<"\n";
 
