@@ -9,12 +9,12 @@
  *
  *===============================================
  */
-#include "SDBox.h"
+#include "QMBox.h"
 
 using namespace helper_functions;
 using namespace constants;
 
-SDBox::SDBox(Matter *matter, Parameters *parameters)
+QMBox::QMBox(Matter *matter, Parameters *parameters)
 {
     matter_ = matter;    
     parameters_ = parameters;
@@ -24,11 +24,11 @@ SDBox::SDBox(Matter *matter, Parameters *parameters)
     boxv_ = new double[3];
     boxv_[0] = 0.0; boxv_[1] = 0.0; boxv_[2] = 0.0; 
     dR = 0.0001;
-    dT = 0.01;
+    dT = 0.001;
     qmBox_ = new Quickmin(matter_, parameters);
 };
 
-SDBox::~SDBox(){
+QMBox::~QMBox(){
 
     // matter_ should not be deleted
     // parameters_ should not be deleted
@@ -42,7 +42,7 @@ SDBox::~SDBox(){
 };
 
 
-void SDBox::increment_velocity()
+void QMBox::increment_velocity()
 {
     double bx = matter_->getBoundary(0);
     double by = matter_->getBoundary(1);
@@ -64,7 +64,7 @@ void SDBox::increment_velocity()
     {
         if(boxforce_[i] * boxv_[i] < 0.0)
         {
-            boxv_[i] += boxforce_[i] * dT;
+            boxv_[i] = boxforce_[i] * dT;
         }
         else
         {
@@ -74,7 +74,7 @@ void SDBox::increment_velocity()
     return;
 }
 
-void SDBox::oneStep()
+void QMBox::oneStep()
 {
     increment_velocity();
     double bx = matter_->getBoundary(0);
@@ -90,7 +90,7 @@ void SDBox::oneStep()
 
     
 
-void SDBox::fullRelax()
+void QMBox::fullRelax()
 {
     bool converged = false;
     long forceCallsTemp;
@@ -108,7 +108,7 @@ void SDBox::fullRelax()
 };
 
 
-bool SDBox::isItConverged(double convergeCriterion)
+bool QMBox::isItConverged(double convergeCriterion)
 {
     double diff;
     if(!qmBox_->isItConverged(convergeCriterion))
@@ -178,7 +178,7 @@ bool SDBox::isItConverged(double convergeCriterion)
 
 
 
-//void SDBox::oneStepPart2(double *freeForces)
+//void QMBox::oneStepPart2(double *freeForces)
 //{
 //    double dotVelocityForces;
 //    double dotForcesForces;
@@ -209,7 +209,7 @@ bool SDBox::isItConverged(double convergeCriterion)
 //    return;
 //};
 
-//void SDBox::oneStepPart1(double *freeForces){
+//void QMBox::oneStepPart1(double *freeForces){
 //    double *positions;
 //    double *velocity;
 //    positions = new double[nFreeCoord_];

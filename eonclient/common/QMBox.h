@@ -1,6 +1,6 @@
 /*
  *===============================================
- *  SDBox.h
+ *  QMBox.h
  *  eon
  *-----------------------------------------------
  *  Created by Rye Terrell on 6/7/10.
@@ -12,8 +12,8 @@
  *
  *===============================================
  */
-#ifndef SDBOX_H
-#define SDBOX_H
+#ifndef QMBOX_H
+#define QMBOX_H
 
 #include "MinimizersInterface.h"
 #include "Matter.h"
@@ -22,16 +22,16 @@
 #include "Parameters.h"
 #include "common/Quickmin.h"
 
-class SDBox : public MinimizersInterface
+class QMBox : public MinimizersInterface
 {
 
     public:
         /** Constructor to be used when a structure is minimized.
         @param[in]   *matter        Pointer to the Matter object to be relaxed.
         @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.*/
-        SDBox(Matter *matter, Parameters *parameters);
+        QMBox(Matter *matter, Parameters *parameters);
 
-        ~SDBox();///< Destructor.
+        ~QMBox();///< Destructor.
 
         void oneStep();///< Do one iteration.
 //        void oneStepPart1(double *freeForces);
