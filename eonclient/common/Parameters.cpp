@@ -49,6 +49,7 @@ Parameters::Parameters(){
     // Values used in the Dimer method
     rotations_Dimer_ = 1;
     rotationsNewSearch_Dimer_ = 10;
+    dimer_dR_ = 0.0001;
 
     // Initializing the cummulative output
     forceCalls_ = 0;
@@ -138,6 +139,8 @@ void Parameters::load(FILE *file){
             rotations_Dimer_ = (long) values[i];
         else if(!strcmp(parms[i], "ROTATIONS_NEW_SEARCH_DIMER"))
             rotationsNewSearch_Dimer_ = (long) values[i];
+        else if(!strcmp(parms[i], "DIMER_DR"))
+            dimer_dR_ = (double) values[i];
 
         // Lines with user comment are started with #
         else if(parms[i][0]=='#'){}
@@ -185,8 +188,8 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "# describtion LOWEST_EIGENMODE_DETERMINATION_SP\n# 1 = dimer method\n# 2 = lanczos method\nLOWEST_EIGENMODE_DETERMINATION_SP %ld\n\n", lowestEigenmodeDetermination_SP_);
     fprintf(file, "# description TYPE_PERTUBATION_SP\n# 0 = no displacement\n# 1 = displace atoms not being fcc or hcp coordinated\n# 2 = displace atom with lowest coordination\n# 3 = displace last atom\nTYPE_PERTUBATION_SP %ld\n\n", typePertubation_SP_);
     fprintf(file, "#  Refine saddle point\nREFINE_SP %d\n\n", refine_SP_);
-    fprintf(file, "MINIMIZE_ONLY %d\n\n", minimize_only_);
-    fprintf(file, "MINIMIZE_BOX %d\n\n", minimize_box_);
+    fprintf(file, "MINIMIZE_ONLY %ld\n\n", minimize_only_);
+    fprintf(file, "MINIMIZE_BOX %ld\n\n", minimize_box_);
     
     fprintf(file, "#### Tweakable Parameters ####\n");
     fprintf(file, "# relaxation related\n");
@@ -368,6 +371,12 @@ long Parameters::getRotations_Dimer(){
 long Parameters::getRotationsNewSearch_Dimer(){
     return rotationsNewSearch_Dimer_;
 }
+
+double Parameters::getDimerDR()
+{
+    return dimer_dR_;
+}
+
 // Setting results values
 void Parameters::setTerminationReason(long terminationReason){
     terminationReason_ = terminationReason;
