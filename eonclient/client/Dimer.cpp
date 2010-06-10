@@ -248,7 +248,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     //std::cout<<"calcRotationalForce\n";
 
     // Displacing the one of the dimer configurations
-    multiplyScalar(tempListDouble_,directionNorm_,getDimerSize(),nFreeCoord_);
+    multiplyScalar(tempListDouble_,directionNorm_, parameters_->getDimerDR(),nFreeCoord_);
     add(posDimer, posInitial, tempListDouble_, nFreeCoord_);
 //    fprintf(stderr, "Dimer.calcRotationalForce: posDimer = %f\n", posDimer);    
 //    fprintf(stderr, "Dimer.calcRotationalForce: posInitial = %f\n", posInitial);    
@@ -272,7 +272,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     
     // Determine difference in force orthogonal to dimer
     subtract(tempListDouble_, forceA, forceB, nFreeCoord_);
-    divideScalar(rotationalForce, tempListDouble_, getDimerSize(), nFreeCoord_);
+    divideScalar(rotationalForce, tempListDouble_, parameters_->getDimerDR(), nFreeCoord_);
     
     delete [] posInitial;    
     delete [] posDimer;
@@ -281,7 +281,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     delete [] forceB;
 
     // Based on difference in force parallel to dimer    
-    return (projectedForceB-projectedForceA)/(2*getDimerSize());
+    return (projectedForceB-projectedForceA)/(2*parameters_->getDimerDR());
 };
 
 

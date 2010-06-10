@@ -21,7 +21,7 @@
 
 namespace constants {
     // Constants used in dimer  
-    double getDimerSize();///< Distance between the configurations defining the dimer.
+    //double getDimerSize();///< Distance between the configurations defining the dimer. RT: Deprecated.
     double getDimerRotationAngle();///< The infinitesimal rotation step to determine the optimal rotational angle.
 }
 #endif
