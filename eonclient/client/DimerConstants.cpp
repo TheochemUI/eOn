@@ -13,6 +13,6 @@
 #include "DimerConstants.h"
 
 // Constants used in dimer  
-double constants::getDimerSize(){return 0.2;};
+double constants::getDimerSize(){return 0.0001;};
 double constants::getDimerRotationAngle(){return 0.005;};
 
