@@ -51,6 +51,7 @@ struct Input {
     double withinRadiusDisplaced_Hessian_;///< Atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A].
     long rotations_Dimer_;///< The number of rotation iterations during the eigenmode estimation used in Dimer.
     long rotationsNewSearch_Dimer_;///< The number of iteration before starting a new saddle point search used in Dimer.
+    double dimer_dR_; /* RT: The distance between the two dimer images. */
 };
 
 /** All results being obtained. The results are store in the file with the name set in (Constants::RESULTS_FILE_NAME).*/
@@ -108,6 +109,7 @@ public:
     long getMaximumIterations();
     double getMinDisplacement_Hessian();
     double getWithinRadiusDisplaced_Hessian();
+    double getDimerDR();
 
     long getRotations_Dimer();
     long getRotationsNewSearch_Dimer();
