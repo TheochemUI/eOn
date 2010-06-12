@@ -1,0 +1,13 @@
+# EON Documentation
+
+## Introduction
+
+## Input Files
+
+Three input files are required to run an akmc simulation. The config.ini file which sets the options for the server code. The parameters.dat file which is passed on to the client and the initial configuration of the chemical system to be modeled.
+
+* config.ini
+* parameters.dat
+* reactant.con
+
+## Output Files
