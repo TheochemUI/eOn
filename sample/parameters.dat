@@ -16,15 +16,12 @@ RANDOM_SEED -1
 # 8 = Lenosky
 # 9 = Lennard-jones binary
 # 10 = Aluminum
-POTENTIAL_TAG 3
+POTENTIAL_TAG 10
 
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
 # 1 = translation of the system is prevented
 POTENTIAL_NO_TRANSLATION 1
-
-MINIMIZE_ONLY 0
-MINIMIZE_BOX 0
 
 # describtion GET_PREFACTORS_TAG
 # 0 = processes prefactors are not determined
@@ -50,6 +47,7 @@ within_Radius_Pertubated_SP 1.000000
 max_Single_Pertubation_SP 0.750000
 min_Displacement_Hessian 0.250000
 within_Radius_Displaced_Hessian 3.500000
+maximum_iterations 512
 
 rotations_Dimer 2
 rotations_New_Search_Dimer 35

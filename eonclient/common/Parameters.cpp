@@ -41,7 +41,7 @@ Parameters::Parameters(){
     normPertubation_SP_ = 0.1;
     withinRadiusPertubated_SP_ = 4.0;
     maxSinglePertubation_SP_ = 0.1;
-    maximumIterations_=4000;
+    maximumIterations_ = 512;
     // Values used in the Hessian determination   
     minDisplacement_Hessian_ = 0.25;
     withinRadiusDisplaced_Hessian_ = 5.0;
