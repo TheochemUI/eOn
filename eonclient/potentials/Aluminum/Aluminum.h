@@ -1,7 +1,7 @@
 #ifndef ALUMINUM_POTENTIAL
 #define ALUMINUM_POTENTIAL
 
-#include "PotentialsInterface.h"
+#include "common/PotentialsInterface.h"
 
     /** External function implemented in Fortran. Calculate interactions between molecules of water using forcefield Aluminum.
     @param[in]	N           Number of atoms.
