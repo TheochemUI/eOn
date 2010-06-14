@@ -4,7 +4,7 @@ OBJECTS = dfrhoDblexp.o  embedenergy.o  fofrhoDblexp.o  forces.o  gagafeDblexp.o
 FC = gfortran
 
 %.o: %.f
-	${FC} -c -g $< -o $@
+	${FC} -c $< -o $@
 
 CXXFLAGS += -O3 -I../..
 CFLAGS += -O3 -I../..

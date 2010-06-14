@@ -388,7 +388,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;        
         parameters_->addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
 
-        iterations = iterations+1;
+        iterations++;
         #ifndef NDEBUG
             printf("climb = %ld\n", iterations);
             saddle_->matter2xyz("climb", true);
