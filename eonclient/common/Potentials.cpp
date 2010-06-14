@@ -69,14 +69,16 @@ Potentials::Potentials(Parameters *parameters){
     }
 #endif
 #ifdef ALUMINUM_POTENTIAL
-    else if(parameters_->getPotentialTag() == getPotentialAluminum()){
+    else if(parameters_->getPotentialTag() == getPotentialAluminum())
+    {
         interface_ = new Aluminum();
         interface_->initialize();
     }
 #endif
 };
 
-Potentials::~Potentials(){
+Potentials::~Potentials()
+{
     interface_->cleanMemory();
 };
 

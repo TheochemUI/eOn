@@ -68,4 +68,4 @@ long constants::getLowestEigenmodeLanczos(){return 2;};
 
 // Constant used in saddle point search
 //long constants::getMaximumJumpAttemptsSP(){return 50;};
-long constants::getMaximumIterationsConcaveSeriesSP(){return 1000;};
+long constants::getMaximumIterationsConcaveSeriesSP(){return 256;};
