@@ -1,10 +1,22 @@
-MOD = al_
 
-OUT = $(MOD).so
-../$(OUT):
-	f2py -c --opt=-O2 --fcompiler=gnu95 *.f -m $(MOD)
-	mv -f $(OUT) ..
+OBJECTS = dfrhoDblexp.o  embedenergy.o  fofrhoDblexp.o  forces.o  gagafeDblexp.o  potinit.o  sumembforce.o Aluminum.o
 
-.PHONY: clean
-clean:
-	rm -f *.o ../$(OUT)
+FC = gfortran
+
+%.o: %.f
+	${FC} -c -g $< -o $@
+
+CXXFLAGS += -O3 -I../..
+CFLAGS += -O3 -I../..
+
+LIB := libAL.a
+
+$(LIB) : $(OBJECTS)
+	ar cru $@ $^
+	ranlib $@
+clean :
+	rm -f $(OBJECTS) $(LIB)
+
+
+
+
