@@ -1,6 +1,6 @@
 OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	Eigenvalues.o EpiCenters.o Prefactors.o
-CXXFLAGS += -g -I..
+CXXFLAGS += -I..
 # Libraries to link the executable 
 LIBS := ../common/libCommon.a
 # define NDEBUG to link to boinc and remove debuggin lines
