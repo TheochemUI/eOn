@@ -47,6 +47,7 @@ within_Radius_Pertubated_SP 1.000000
 max_Single_Pertubation_SP 0.750000
 min_Displacement_Hessian 0.250000
 within_Radius_Displaced_Hessian 3.500000
+maximum_iterations 512
 
 rotations_Dimer 2
 rotations_New_Search_Dimer 35
