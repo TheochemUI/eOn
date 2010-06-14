@@ -1,6 +1,6 @@
 OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	Eigenvalues.o EpiCenters.o Prefactors.o
-CXXFLAGS += -I..
+CXXFLAGS += -g -I..
 # Libraries to link the executable 
 LIBS := ../common/libCommon.a
 # define NDEBUG to link to boinc and remove debuggin lines
@@ -18,10 +18,15 @@ ifndef NO_MORSE
    SUBDIRS += ../potentials/Morse/
    LIBS += ../potentials/Morse/libMorse.a
 endif
+ifndef NO_AL
+   SUBDIRS += ../potentials/Aluminum/
+   LIBS += ../potentials/Aluminum/libAL.a
+endif
+
 all : $(SUBDIRS) client
 client : $(OBJECTS) $(LIBS)
 # In order to link, libCommon.a has to be inserted both before and after the potentials' libraries. 
-	g++  $(CXXFLAGS) -o $@ $^  ../common/libCommon.a 
+	g++  $(CXXFLAGS) -o $@ $^  ../common/libCommon.a -lgfortran
 $(LIBS) : $(SUBDIRS)
 $(SUBDIRS) :
 	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
