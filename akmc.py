@@ -23,8 +23,6 @@ import recycling
 import superbasinscheme
 import kdb
 
-#hi from maggi
-
 def main(): 
      
     # Here's what this does:
@@ -87,8 +85,6 @@ def main():
     if config.recycling_on:
         write_recycling_metadata(parser, recycler.process_num, previous_state.number)
     parser.write(open(metafile, 'w')) 
-    
-
 
 def get_akmc_metadata():
     if not os.path.isdir(config.path_results):
@@ -124,8 +120,6 @@ def get_akmc_metadata():
 
     return start_state_num, time, wuid, searchdata
 
-
-
 def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
@@ -135,7 +129,6 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     if config.debug_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
-
 
 def get_recycling_metadata():
     metafile = os.path.join(config.path_results, 'info.txt')
@@ -149,36 +142,29 @@ def get_recycling_metadata():
         previous_state_num = 0 
     return recycling_start, previous_state_num
 
-
-
 def write_recycling_metadata(parser, recycling_start, previous_state_num):
     parser.add_section('Recycling')
     parser.set('Recycling', 'previous_state',str(previous_state_num))  
     parser.set('Recycling', 'start_process_id',str(recycling_start)) 
 
-
-
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
     return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path) #might 
-
-
 
 def get_communicator():
     if config.comm_type=='boinc':
         comm = communicator.BOINC(config.path_scratch, config.comm_boinc_project_dir, 
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
-                config.comm_boinc_appname, config.comm_boinc_results_path)
+                config.comm_boinc_appname, config.comm_boinc_results_path, config.comm_job_bundle_size)
     elif config.comm_type=='cluster':
         comm = communicator.Cluster()
     elif config.comm_type=='local':
-        comm = communicator.Local(config.path_scratch, config.comm_local_client, config.comm_local_ncpus)
+        comm = communicator.Local(config.path_scratch, config.comm_local_client, config.comm_local_ncpus,
+                config.comm_job_bundle_size)
     else:
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()
     return comm
-
-
 
 def register_results(comm, current_state, states, searchdata, kdber = None):
     logger.info("registering results")
@@ -188,6 +174,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     os.makedirs(config.path_searches_in)
     results = comm.get_results(config.path_searches_in) 
     num_registered = 0
+    # XXX: Don't use i in loops unless it is an integer. It is confusing.
     for i in results:
         result_path = os.path.join(config.path_searches_in, i)
         if config.debug_keep_all_results:
@@ -234,14 +221,10 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
 
-
-
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
     return superbasining
-
-
 
 def kmc_step(current_state, states, time):
     t1 = unix_time.time()
@@ -301,8 +284,6 @@ def kmc_step(current_state, states, time):
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
 
-
-
 def get_displacement(reactant):
     if config.disp_type == 'random':
         disp = displace.Random(reactant, config.disp_size, config.disp_radius)
@@ -313,8 +294,6 @@ def get_displacement(reactant):
     else:
         raise ValueError()
     return disp
-
-
 
 def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler = None):
     reactant = current_state.get_reactant()
@@ -359,8 +338,6 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     
     return wuid
 
-
-
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 
@@ -369,6 +346,7 @@ if __name__ == '__main__':
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
+    optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
     (options, args) = optpar.parse_args()
  
     if len(args) > 1:
@@ -382,6 +360,8 @@ if __name__ == '__main__':
     #XXX: config is ugly as it finds out where the config file is directly from 
     #     sys.argv instead of being passed it.
     import config
+    if options.no_submit:
+        config.comm_job_buffer_size = 0
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
@@ -431,12 +411,13 @@ if __name__ == '__main__':
         print "Searches in queue:", comm.get_queue_size() 
         print
 
-        sb = get_superbasin_scheme(states)
-        print "Superbasins"
-        print "-----------"
-        for i in sb.superbasins:
-            print i.state_numbers 
-        
+        if config.sb_on: 
+            sb = get_superbasin_scheme(states)
+            print "Superbasins"
+            print "-----------"
+            for i in sb.superbasins:
+                print i.state_numbers 
+            
         sys.exit(0)
     elif options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()

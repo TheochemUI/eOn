@@ -14,11 +14,12 @@ class CommunicatorError(Exception):
     pass
 
 class Communicator:
-    def __init__(self, scratchpath):
+    def __init__(self, scratchpath, bundle_size=1):
         if not os.path.isdir(scratchpath):
             #should probably log this event
             os.makedirs(scratchpath)
         self.scratchpath = scratchpath
+        self.bundle_size = bundle_size
 
     def submit_searches(self, jobpaths):
         '''Throws CommunicatorError if fails.'''
@@ -36,16 +37,104 @@ class Communicator:
         '''Returns the number of workunits that were canceled.'''
         raise NotImplementedError()
 
+    def get_bundle_size(self, result_dat_path):
+        f = open(result_dat_path)
+        bundle_size = 0
+        for line in f:
+            fields = line.split()
+            if fields[1] == "termination_reason":
+                bundle_size += 1
+        if bundle_size == 0:
+            logger.warning("termination_reason missing for result file %s", result_dat_path)
+        return bundle_size
+
+    def unbundle(self, resultpath):
+        '''This method unbundles multiple searches into multiple single 
+           searchs so the akmc script can process them.'''
+
+        # These are the files in the result directory that we keep.
+        file_list = [ "minimum.con", "mode.dat", "product.con", "reactant.con",
+                      "results.dat", "saddle.con"]
+
+        jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
+                    if os.path.isdir(os.path.join(resultpath,d)) ]
+
+        result_dirs = []
+        for jobpath in jobpaths:
+            # Need to figure out how many searches were bundled together
+            # and then create the new job directories with the split files.
+            bundle_size = self.get_bundle_size(os.path.join(jobpath, "results.dat"))
+            # Get the number at the end of the jobpath. Looks like path/to/job/#_#
+            # and we want the second #.
+            basename, dirname = os.path.split(jobpath)
+            state, uid = dirname.split('_')
+            state = int(state)
+            uid = int(uid)
+            jobpath_template = os.path.join(basename, "%i_%i")
+            fdata = {}
+            for i in range(bundle_size):
+                jobpath_dest = jobpath_template % (state, uid+i)
+                # Read in the files we care about into memory so we can split them
+                # and then delete the files.
+                for fname in file_list:
+                    fpath = os.path.join(jobpath_dest, fname)
+                    if i == 0:
+                        f = open(fpath)
+                        fdata[fname] = f.readlines()
+                        f.close()
+                        os.unlink(fpath)
+                    else:
+                        if not os.path.isdir(jobpath_dest):
+                            os.makedirs(jobpath_dest)
+
+                    offset = len(fdata[fname])/bundle_size
+                    f = open(fpath, "w")
+                    fsplitdata = ''.join(fdata[fname][i*offset:(i+1)*offset])
+                    f.write(fsplitdata)
+                    f.close()
+
+                result_dirs.append(os.path.split(jobpath_dest)[1])
+        return result_dirs
+
+    def make_bundles(self, jobpaths):
+        '''This method is a generator that bundles together multiple searches into a single job.
+           Example usage:
+               for jobpath in self.make_bundles(jobpaths):
+                   do_stuff()'''
+        # Split jobpaths in to lists of size self.bundle_size.
+        chunks = [ jobpaths[i:i+self.bundle_size] for i in range(0, len(jobpaths), self.bundle_size) ]
+        for chunk in chunks:
+            # Open the first jobpath's displacement and mode files.
+            dp_concat = open(os.path.join(chunk[0],"displacement_passed.con"), "a")
+            mp_concat = open(os.path.join(chunk[0],"mode_passed.dat"), "a")
+
+            # Concatenate all of the displacement and modes together.
+            for i in range(1,len(chunk)):
+                dp_join = open(os.path.join(jobpaths[i], "displacement_passed.con"))
+                mp_join = open(os.path.join(jobpaths[i], "mode_passed.dat"))
+                
+                dp_concat.write(dp_join.read())
+                mp_concat.write(mp_join.read())
+
+                dp_join.close()
+                mp_join.close()
+
+            dp_concat.close()
+            mp_concat.close()
+
+            # Returns the jobpath to the new bigger workunit.
+            yield chunk[0]
+
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-            result_template, appname, boinc_results_path):
+            result_template, appname, boinc_results_path, bundle_size):
         '''This constructor modifies sys.path to include the BOINC python modules. 
         It then tries to connect to the BOINC mysql database raising exceptions if there are problems 
         connecting. It also creates a file named uniqueid in the scratchpath to identify BOINC jobs as
         belonging to this akmc run if it doesn't exist. It then reads in the uniqueid file and 
         stores that as an integer in self.uniqueid.'''
         
-        Communicator.__init__(self, scratchpath)
+        Communicator.__init__(self, scratchpath, bundle_size)
         self.wu_template = wu_template
         self.result_template = result_template
         self.appname = appname
@@ -172,13 +261,13 @@ class BOINC(Communicator):
         '''Runs the BOINC command create_work on all the jobs.'''
         from threading import Thread
         thread_list = []
-        for jobpath in jobpaths:
+        for jobpath in self.make_bundles(jobpaths):
             wu_name = "%i_%s" % (self.uniqueid, os.path.split(jobpath)[1])
             t = Thread(target=self.create_work, args=(jobpath, wu_name))
             t.start()
             thread_list.append(t)
 
-            if len(thread_list) == 20:
+            if len(thread_list) == 10:
                 for t in thread_list:
                     t.join()
                 thread_list = []
@@ -286,11 +375,11 @@ class BOINC(Communicator):
                 filename = ending_to_filename[ending]
                 shutil.move(filepath, os.path.join(resultspath, key, filename))
 
-        return jobfiles.keys()
+        return self.unbundle(resultspath)
 
 class Local(Communicator):
-    def __init__(self, scratchpath, client, ncpus):
-        Communicator.__init__(self, scratchpath)
+    def __init__(self, scratchpath, client, ncpus, bundle_size):
+        Communicator.__init__(self, scratchpath, bundle_size)
 
         #number of cpus to use
         self.ncpus = ncpus
@@ -316,11 +405,20 @@ class Local(Communicator):
     def get_results(self, resultspath):
         '''Moves work from scratchpath to results path.'''
         jobdirs = [ d for d in os.listdir(self.scratchpath) 
-                        if os.path.isdir(os.path.join(self.scratchpath,d)) ]
-        for jobdir in jobdirs:
-            shutil.move(os.path.join(self.scratchpath,jobdir), os.path.join(resultspath, jobdir))
+                    if os.path.isdir(os.path.join(self.scratchpath,d)) ]
 
-        return jobdirs
+        for jobdir in jobdirs:
+            dest_dir = os.path.join(resultspath, jobdir)
+            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+        return self.unbundle(resultspath)
+
+        #jobdirs = [ os.path.join(self.scratchpath, d) for d in os.listdir(self.scratchpath) 
+        #                if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+        #results = []
+        #for jobdir in self.unbundle(jobdirs):
+        #    shutil.move(jobdir, os.path.join(resultspath, os.path.split(jobdir)[1]))
+        #    results.append(os.path.split(jobdir)[1])
+        #return results
 
     def check_search(self, search):
         p, jobpath = search
@@ -334,9 +432,9 @@ class Local(Communicator):
 
     def submit_searches(self, jobpaths):
         '''Run up to ncpu number of clients to process the work in jobpaths.
-        The job directories are moved to the scratch path before the calculcation
-        is run. This method doesn't return anything.'''
-        for jobpath in jobpaths:
+           The job directories are moved to the scratch path before the calculcation
+           is run. This method doesn't return anything.'''
+        for jobpath in self.make_bundles(jobpaths):
             #move the job directory to the scratch directory
             jobdir = os.path.split(jobpath)[1]
             destpath = os.path.join(self.scratchpath, jobdir)

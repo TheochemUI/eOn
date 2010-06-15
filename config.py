@@ -44,7 +44,9 @@ path_results      = parser.get('Paths', 'results')
 #communicator options
 comm_type = parser.get('Communicator', 'type')
 #print comm_type
+comm_job_bundle_size = parser.getint('Communicator', 'job_bundle_size')
 comm_job_buffer_size = parser.getint('Communicator', 'job_buffer_size')
+comm_job_buffer_size = comm_job_bundle_size * comm_job_buffer_size
 path_scratch = parser.get('Paths', 'scratch')
 #print path_scratch
 if comm_type == 'local':
