@@ -53,7 +53,7 @@ class Communicator:
            searchs so the akmc script can process them.'''
 
         # These are the files in the result directory that we keep.
-        file_list = [ "minimum.con", "mode.dat", "product.con", "reactant.con",
+        file_list = [ "mode.dat", "product.con", "reactant.con",
                       "results.dat", "saddle.con"]
 
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
@@ -87,6 +87,7 @@ class Communicator:
                         if not os.path.isdir(jobpath_dest):
                             os.makedirs(jobpath_dest)
 
+                    #check to see that len(fdata[fname]%bundle_size == 0
                     offset = len(fdata[fname])/bundle_size
                     f = open(fpath, "w")
                     fsplitdata = ''.join(fdata[fname][i*offset:(i+1)*offset])
