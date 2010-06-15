@@ -125,10 +125,63 @@ class TransitionCounting(SuperbasinScheme):
                 f.close()
 
 
+class EnergyLevel(SuperbasinScheme):
+
+    def __init__(self, superbasin_path, states, energy_increment):
+        self.energy_increment = energy_increment
+        SuperbasinScheme.__init__(self,superbasin_path, states)
+        self.levels = {}
+
+    def get_energy_increment(self):
+        # implement variable increment according to JC paper
+        return self.energy_increment
+
+    def register_transition(self, start_state, end_state):
+        '''Increments the energy level of the end state or sets it equal to the energy 
+           of the end_state if it hasn't been visited before.'''
+        if start_state == end_state:
+            return
+        if end_state not in self.levels:
+            self.levels[end_state] = end_state.get_energy()
+        else:
+            self.levels[end_state] += self.energy_increment()
+
+        #saddle energy is the total energy of the saddle
+        largest_level = max(self.levels[start_state], self.levels[end_state])
+       
+        saddle_energy = 0.0
+        proc_tab = start_state.get_process_table()
+        for key in proc_tab:
+            if proc_tab[key][product] == end_state.number:
+                saddle_energy = max(proc_tab[key][barrier], saddle_energy)
+        
+        if saddle_energy == 0.0:
+            logger.warning("Start and end state have no connections")
+            return
+
+        if largest_level > saddle_energy:
+            self.levels[start_state] = largest_level 
+            self.levels[end_state] = largest_level 
+            self.merge_basin([start_state, end_state])
 
 
+    def read_data(self):
+        logger.debug('reading')
+        for i in range(self.states.get_num_states()):
+            state = self.states.get_state(i)
+            data_path = os.path.join(state.path, 'superbasin_el')
+            if os.path.isfile(data_path):
+                f = open(data_path, 'r')
+                self.levels[self.states.get_state(i)] = float(f.read().strip())
+                f.close()
 
-#class JeanClaudeThingy(SuperbasinScheme): 
+    def write_data(self):
+        logger.debug('writing')
+        for i in self.levels:
+            data_path = os.path.join(start_state.path, 'superbasin_el')
+            f = open(data_path, 'w')
+            print >> f, "%f\n" % self.levels[i]
+            f.close()
 
     
         
