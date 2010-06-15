@@ -301,7 +301,7 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     num_in_buffer = comm.get_queue_size()
     logger.info("%i jobs in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-    logger.info("making %i jobs" % num_to_make)
+    logger.info("making %i searches" % num_to_make)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
     
     if os.path.isdir(config.path_searches_out):
@@ -333,8 +333,8 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     t1 = unix_time.time()
     comm.submit_searches(jobpaths)
     t2 = unix_time.time()
-    logger.info( str(num_to_make) + " jobs created") 
-    logger.debug( str(num_to_make/(t2-t1)) + " jobs per second")
+    logger.info( str(num_to_make) + " searches created") 
+    logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
     
     return wuid
 
