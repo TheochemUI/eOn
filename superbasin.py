@@ -34,12 +34,15 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-
-        exit_prob = self.prod_matrix[:,entry_state_index]
+        probability_vector = self.probability_matrix[entry_state_index]
+        probability_vector /= numpy.sum(probability_vector)
+        if abs(1.0-numpy.sum(probability_vector)) < 1e-3:
+            logger.warning("the probability vector isn't close to 1.0")
+        
         u = numpy.random.random_sample()
         p = 0.0
-        for i in range(len(exit_prob)):
-            p += exit_prob[i]
+        for i in range(len(self.states)):
+            p += probability_vector[i]
             if p>u:
                 exit_state_index = i 
                 break
@@ -68,11 +71,13 @@ class Superbasin:
             logger.warning("Warning: failed to select rate. p = " + str(p))
 
         absorbing_state = get_product_state(exit_state.number, rate_table[nsid][0])
-        time = self.mean_residence_time
+        time = self.mean_residence_times[entry_state_index]
 
         if absorbing_state in self.states:
             #if we discovered a new connection between states in this basin
             #we need to update everything
+
+            #TODO: need to ensure detailed balance for the subspace
             self._calculate_stuff()
             self.write_data()
         return time, absorbing_state
@@ -83,48 +88,49 @@ class Superbasin:
     def _calculate_stuff(self):
         '''easy to rip out later if necessary'''
        
-        #Calculate the recurrent matrix
-        recurrent_matrix = numpy.zeros((len(self.states), len(self.states)))
+        recurrent_vector = numpy.zeros(len(self.states))
+        transient_matrix= numpy.zeros((len(self.states), len(self.states)))
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
             for key in proc_table:
                 process = proc_table[key]
-                if process['product']==-1 or process['product'] not in self.state_numbers: 
-                    recurrent_matrix[i][i] += process['rate']
-        self.recurrent_matrix = recurrent_matrix
 
-        #Calculate the fundamental matrix
-        fundamental_matrix = numpy.zeros((len(self.states), len(self.states)))
+                if process['product']==-1 or process['product'] not in self.state_numbers: 
+                    recurrent_vector[i] += process['rate']
+                elif process['product'] == self.state_numbers[i]:
+                    j = self.state_numbers.index(process['product'])
+                    transient_matrix[i][j] += process['rate']
+                transient_matrix[i][i] -= process['rate']
+        
+        #What is this stuff?
+        #inverse free method
+        #entry_state_vector = numpy.zeros(len(self.states))
+        #entry_state_vector[self.state_numbers.index(entry_state.number)] = 1.0
+        #fundamental_vector = numpy.linalg.solve(transient_matrix, entry_state_vector)
+        # probabilitity to be the exit state
+        #self.probability_vector = fundamental_vector/recurrent_vector
+        #Calculate mean residence time
+        #self.mean_residence_time = numpy.sum(fundamental_vector)
+
+        fundamental_matrix = numpy.linalg.inv(transient_matrix)
+        
+        self.mean_residence_times = numpy.zeros(len(self.states))
+        self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
+        
         for i in range(len(self.states)):
             for j in range(len(self.states)):
-                if i == j:
-                    #sum the rate table
-                    for k in self.states[i].get_ratetable():
-                        fundamental_matrix[i,i] += k[1]
-                else:
-                    #sum the rates from state j to state i
-                    proc_table = self.states[j].get_process_table()
-                    for key in proc_table:#Can I simply iterate over values?
-                        proc = proc_table[key] 
-                        if proc['product'] == self.state_numbers[i]:
-                            fundamental_matrix[i,j] -= proc['rate']
-        #XXX: Matrix inversion
-        self.fundamental_matrix = numpy.linalg.inv(fundamental_matrix)
-        
-        self.prod_matrix = numpy.dot(self.recurrent_matrix, self.fundamental_matrix)
-        
-        #Calculate mean residence time
-        self.mean_residence_time = 0.0
-        for i in range(len(self.fundamental_matrix)):
-            self.mean_residence_time += self.fundamental_matrix[i,i]
+                self.mean_residence_times[j] += fundamental_matrix[i][j]
+                self.probability_matrix[j][i] = fundamental_matrix[i][j]/recurrent_vector[i]
 
-    
+
+   
+
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
         f = open(self.path, 'w')
         print >> f, repr(self.state_numbers)
-        print >> f, repr(self.mean_residence_time)
-        print >> f, repr(self.prod_matrix)
+        print >> f, repr(self.mean_residence_times)
+        print >> f, repr(self.probability_matrix)
         f.close()
 
     def read_data(self, get_state):
@@ -132,19 +138,18 @@ class Superbasin:
         f = open(self.path, 'r')
         self.state_numbers = eval(f.readline())
         self.states = [get_state(i) for i in self.state_numbers]
-        self.mean_residence_time = eval(f.readline())
         
         matstr = ''
         for i in f.readlines():
             matstr += i
-        self.prod_matrix = eval(matstr)
+        self.probability_matrix = eval(matstr)
 
     def delete(self):
         logger.debug('deleting %s' % self.path)
         os.remove(self.path)
         self.states = None
-        self.prod_matrix = None
-        self.mean_residence_time = None
+        self.probability_matrix = None
+        self.mean_residence_times = None
 
           
 
