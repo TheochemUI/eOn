@@ -257,6 +257,7 @@ def kmc_step(current_state, states, time):
         if config.sb_on and sb:
             time, next_state = sb.step(current_state, states.get_product_state)
         else:
+            ### Voter scheme: provide custom rate table here
             rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
@@ -279,6 +280,7 @@ def kmc_step(current_state, states, time):
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             time -= math.log(numpy.random.random_sample())/ratesum
 
+        ### Voter scheme: register transition here
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
         
