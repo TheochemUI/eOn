@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import math
 import sys
 import ConfigParser
 import os.path
@@ -263,7 +264,6 @@ def kmc_step(current_state, states, time):
             for i in range(len(rate_table)):
                 ratesum += rate_table[i][1]
             
-            #TODO: Superbasining check
             u = numpy.random.random_sample()
             p = 0.0
              
@@ -277,7 +277,7 @@ def kmc_step(current_state, states, time):
                 break
 
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
-            time += 1/ratesum
+            time -= math.log(numpy.random.random_sample())/ratesum
 
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
