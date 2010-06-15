@@ -16,7 +16,7 @@ import atoms
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
-processtable_header = processtable_head_fmt % ("state", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
+processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 search_result_header = "%8s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "result")
 search_result_header += "-" * len(search_result_header) + '\n'
@@ -304,6 +304,9 @@ class State:
         self.load_info()
         self.info.set("MetaData", "good_saddles", "%d" % num)
         self.save_info()        
+
+    def get_total_saddle_count(self):
+        return self.get_good_saddle_count() + self.get_bad_saddle_count()
     
     def get_bad_saddle_count(self):
         if self.bad_saddle_count is None:
@@ -328,21 +331,15 @@ class State:
             return self.info.getint("MetaData", "sequential_redundant")
         except:
             return 0       
-            
-    
 
     def set_sequential_redundant(self, repeats):
         """ Loads the info file if it has not been loaded and sets the sequential_redundant variable. """
         self.load_info()
         self.info.set("MetaData", "sequential_redundant", "%d" % repeats)
-        self.save_info()        
-    
-
+        self.save_info()
 
     def get_confidence(self):
         return 1.0 - (1.0 / max(self.get_sequential_redundant(), 1.0))
-
-
 
     def get_energy(self):
         """ Loads the info file if it is not already loaded and returns the energy, or None
@@ -353,8 +350,6 @@ class State:
         except:
             return None       
 
-
-
     def set_energy(self, e):
         """ Loads the info file if it has not been loaded and sets the reactant energy 
             variable. """
@@ -362,30 +357,25 @@ class State:
         self.info.set("MetaData", "reactant energy", "%f" % e)
         self.save_info()        
                 
-
-
     def get_reactant(self):
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
-
-
 
     def get_process_reactant(self, id):
         return io.loadcon(self.proc_reactant_path(id))
+
     def get_process_saddle(self, id):
         return io.loadcon(self.proc_saddle_path(id))
+
     def get_process_product(self, id):
         return io.loadcon(self.proc_product_path(id))
+
     def get_process_mode(self, id):
         return numpy.array([[float(i) for i in l.strip().split()] for l in open(self.proc_mode_path(id), 'r').readlines()[1:]])
-
-
 
     def get_reactant(self):
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
-
-
 
     def register_bad_saddle(self, state_number, store, resultdata):
         """ Registers a bad saddle. """
@@ -400,16 +390,13 @@ class State:
                              "Bad Barrier"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(resultdata, result_state_code[resultdata["termination_reason"]])
-
-    
+        #self.update_forcecall_average(resultdata['force_calls'])
 
     def load_info(self):
         """ Loads the info file if it has not been loaded. """
         if self.info == None:
             self.info = SafeConfigParser()
             self.info.read(self.info_path)
-            
-            
 
     def save_info(self):
         """ Saves the info object if it exists. """
@@ -417,20 +404,21 @@ class State:
             return
         self.info.write(open(self.info_path, 'w'))
 
-    
-
     # Utility functions for compiling procdata paths, whether the files exist or not.    
     def proc_saddle_path(self, id):
         return os.path.join(self.procdata_path, "saddle_%d.con" % id)
+
     def proc_reactant_path(self, id):
         return os.path.join(self.procdata_path, "reactant_%d.con" % id)
+
     def proc_product_path(self, id):
         return os.path.join(self.procdata_path, "product_%d.con" % id)
+
     def proc_mode_path(self, id):
         return os.path.join(self.procdata_path, "mode_%d.dat" % id)
+
     def proc_results_path(self, id):
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
-    
 
     def get_process_table(self):
         self.load_process_table()
