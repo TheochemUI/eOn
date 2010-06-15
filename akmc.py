@@ -298,8 +298,8 @@ def get_displacement(reactant):
 def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler = None):
     reactant = current_state.get_reactant()
     disp = get_displacement(reactant)
-    num_in_buffer = comm.get_queue_size()
-    logger.info("%i jobs in the queue" % num_in_buffer)
+    num_in_buffer = comm.get_queue_size()*config.job_bundle_size #XXX:what if the user changes the bundle size?
+    logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
