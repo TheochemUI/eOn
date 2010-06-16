@@ -116,6 +116,7 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     {
         rotationalForce[i] = 0;
         rotationalForceOld[i] = 0;
+        rotationalPlaneNormOld[i] = 0;
     } 
     lengthRotationalForceOld = 0;
     //----- Initialize end -----
