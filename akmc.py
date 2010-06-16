@@ -214,7 +214,8 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
                     for process_id in states.get_state(state_num).get_process_ids():
                         output = kdber.add_process(states.get_state(state_num), process_id)
                         logger.debug("kdbaddpr.pl: %s" % output)
-                break
+                if not config.register_extra_results:
+                    break
         else:
             states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles, result_data)
         num_registered += 1
