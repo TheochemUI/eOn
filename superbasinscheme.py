@@ -1,6 +1,6 @@
 import os
 import logging
-logger = logging.getLogger('superbasinlist')
+logger = logging.getLogger('superbasinscheme')
 
 import superbasin
 
