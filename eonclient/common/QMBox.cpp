@@ -24,7 +24,7 @@ QMBox::QMBox(Matter *matter, Parameters *parameters)
     boxv_ = new double[3];
     boxv_[0] = 0.0; boxv_[1] = 0.0; boxv_[2] = 0.0; 
     dR = 0.0001;
-    dT = 0.001;
+    dT = 0.01;
     qmBox_ = new Quickmin(matter_, parameters);
 };
 
@@ -64,7 +64,8 @@ void QMBox::increment_velocity()
     {
         if(boxforce_[i] * boxv_[i] < 0.0)
         {
-            boxv_[i] = boxforce_[i] * dT;
+            boxv_[i] *= 0;//boxforce_[i] * dT;
+            dT *= 0.999;
         }
         else
         {
@@ -84,6 +85,17 @@ void QMBox::oneStep()
     matter_->setBoundary(0, bx + boxv_[0] * dT);
     matter_->setBoundary(1, by + boxv_[1] * dT);
     matter_->setBoundary(2, bz + boxv_[2] * dT);
+    double scalex = (bx + boxv_[0] * dT) / bx;
+    double scaley = (by + boxv_[1] * dT) / by;
+    double scalez = (bz + boxv_[2] * dT) / bz;
+    matter_->getFreePositions(tempListDouble_);  
+    for(int i = 0; i < nFreeCoord_ / 3; i++)
+    {
+        tempListDouble_[i * 3 + 0] *= scalex;
+        tempListDouble_[i * 3 + 1] *= scaley;
+        tempListDouble_[i * 3 + 2] *= scalez;
+    }
+    matter_->setFreePositions(tempListDouble_);  
     qmBox_->oneStep();
     return;
 };
@@ -98,7 +110,7 @@ void QMBox::fullRelax()
     while(!converged)
     {
         oneStep();
-        printf("%12.8f   %12.8f   %12.8f   %12.8f\n", boxforce_[0], boxforce_[1], boxforce_[2], matter_->potentialEnergy());
+        printf("%12.8f   %12.8f   %12.8f   %12.8f   %12.8f\n", boxforce_[0], boxforce_[1], boxforce_[2], matter_->potentialEnergy(), dT);
         converged = isItConverged(parameters_->getConverged_Relax());
 //        std::cout<<matter_->potentialEnergy()<<"\n";
     }

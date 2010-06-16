@@ -95,10 +95,16 @@ class StateList:
                     p = self.get_state(id).get_reactant()
                     if self.use_identical:
                         if atoms.identical(p, pnew, self.epsilon_r):
+                            # Update the reactant state to point at the new state id.
+                            st.procs[process_id]['product'] = id
+                            st.save_process_table()
                             return self.get_state(id)
                     else:
                         dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
                         if dist < self.epsilon_r:
+                            # Update the reactant state to point at the new state id.
+                            st.procs[process_id]['product'] = id
+                            st.save_process_table()
                             return self.get_state(id)
 
             # The id for the new state is the number of states.

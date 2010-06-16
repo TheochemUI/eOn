@@ -449,6 +449,7 @@ class Local(Communicator):
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
             p = subprocess.Popen(self.client,cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)
+            commands.getoutput("renice -n 20 -p %d" % p.pid)
             self.searchlist.append((p,jobpath))
 
             while len(self.searchlist) == self.ncpus:

@@ -47,6 +47,7 @@ private:
 
     double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
     double *forces_;///< Double array, its size equals the number of \b free atoms times 3.
+    double dtScale_;
 };
 
 #endif
