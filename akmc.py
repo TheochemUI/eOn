@@ -246,7 +246,6 @@ def kmc_step(current_state, states, time):
         else:
             ### Voter scheme: provide custom rate table here
             rate_table = current_state.get_ratetable()
-            print rate_table
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
             ratesum = 0.0
@@ -264,7 +263,6 @@ def kmc_step(current_state, states, time):
             else:
                 logger.warning("Warning: failed to select rate. p = " + str(p))
                 break
-
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             time -= math.log(numpy.random.random_sample())/ratesum
 

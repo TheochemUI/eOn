@@ -18,6 +18,7 @@ Quickmin::Quickmin(Matter *matter, Parameters *parameters){
     // Note that it is the pointer that is copied.
     matter_ = matter;    
     parameters_ = parameters;
+    dtScale_ = 1.0;
     
     nFreeCoord_ = 3*matter->numberOfFreeAtoms();
 //    forces_ = new double[nFreeCoord_];
@@ -70,12 +71,12 @@ void Quickmin::oneStepPart1(double *freeForces){
     
     matter_->getFreeVelocities(velocity);  
     
-    multiplyScalar(tempListDouble_, freeForces, 0.5 * getTimeStep(), nFreeCoord_);
+    multiplyScalar(tempListDouble_, freeForces, 0.5 * getTimeStep() * dtScale_, nFreeCoord_);
     add(velocity, tempListDouble_, velocity, nFreeCoord_);
     matter_->setFreeVelocities(velocity);
     
     matter_->getFreePositions(positions);       
-    multiplyScalar(tempListDouble_, velocity, getTimeStep(), nFreeCoord_);
+    multiplyScalar(tempListDouble_, velocity, getTimeStep() * dtScale_, nFreeCoord_);
     add(positions, tempListDouble_, positions, nFreeCoord_);
     matter_->setFreePositions(positions);  
 
@@ -99,17 +100,22 @@ void Quickmin::oneStepPart2(double *freeForces)
     //std::cout<<"oneStepPart2\n";
     
     matter_->getFreeVelocities(velocity); 
-    multiplyScalar(tempListDouble_, freeForces, 0.5*getTimeStep(), nFreeCoord_);
+    multiplyScalar(tempListDouble_, freeForces, 0.5*getTimeStep() * dtScale_, nFreeCoord_);
     add(velocity, tempListDouble_, velocity, nFreeCoord_);
     
     dotVelocityForces = dot(velocity, freeForces, nFreeCoord_);
     // Zeroing all velocities if they are not orthogonal to the forces
     if(dotVelocityForces < 0)
+    {
         multiplyScalar(velocity, velocity, 0., nFreeCoord_);
-    else{
+        dtScale_ *= 0.99;
+    }    
+    else
+    {
         dotForcesForces = dot(freeForces, freeForces, nFreeCoord_);
         multiplyScalar(velocity, freeForces, 
                        dotVelocityForces/dotForcesForces, nFreeCoord_);
+        //dtScale_ *= 1.01;
     }
     matter_->setFreeVelocities(velocity);      
 
@@ -128,10 +134,11 @@ void Quickmin::fullRelax(){
     while(!converged){
         oneStep();
         converged = isItConverged(parameters_->getConverged_Relax());
-        std::cout<<matter_->potentialEnergy()<<"\n";
+//        std::cout<<matter_->potentialEnergy()<<"\n";
     }
 
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
+    printf("fcs: %d\n", forceCallsTemp);
     parameters_->addForceCalls(forceCallsTemp);
     return;
 };
