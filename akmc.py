@@ -76,7 +76,9 @@ def main():
     if config.recycling_on:
         recycler = recycling.Recycling(previous_state, current_state, 
                         config.recycling_move_distance, recycling_start)
-    wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
+    
+    if current_state.get_confidence() < config.akmc_confidence:
+        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
     
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
@@ -231,9 +233,11 @@ def kmc_step(current_state, states, time):
     previous_state = current_state 
     dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
     start_state_num = current_state.number
+    steps = 0
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
-    while current_state.get_confidence() >= config.akmc_confidence:
+    while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
+        steps += 1
         if config.sb_on:
             sb = superbasining.get_containing_superbasin(current_state)
 
@@ -242,6 +246,7 @@ def kmc_step(current_state, states, time):
         else:
             ### Voter scheme: provide custom rate table here
             rate_table = current_state.get_ratetable()
+            print rate_table
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
             ratesum = 0.0

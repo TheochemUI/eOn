@@ -27,6 +27,7 @@ akmc_temperature = parser.getfloat('aKMC', 'temperature')
 akmc_confidence  = parser.getfloat('aKMC', 'confidence')
 akmc_thermal_window = parser.getfloat('aKMC', 'thermally_accessible_window')
 akmc_max_thermal_window = parser.getfloat('aKMC', 'maximum_thermally_accessible_window') *akmc_thermal_window
+akmc_max_kmc_steps = parser.getint('aKMC', 'max_kmc_steps')
 
 #Debug Options
 debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
