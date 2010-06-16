@@ -36,6 +36,7 @@ try:
     debug_random_seed   = parser.getint('Debug', 'random_seed')
 except:
     debug_random_seed   = None
+debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
 
 #path options
 path_root         = parser.get('Paths', 'main_directory')
