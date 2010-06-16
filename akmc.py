@@ -425,7 +425,7 @@ if __name__ == '__main__':
                 rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
                         config.path_scratch]
                 if config.kdb_on:
-                    rmdirs.append(config.kdb_path) #Do we want to save kdb data across resets? No.
+                    rmdirs.append(config.kdb_path) 
                 if config.sb_on:
                     rmdirs.append(config.sb_path)
                 for i in rmdirs:
@@ -437,7 +437,8 @@ if __name__ == '__main__':
                 
                 dynamics_path =os.path.join(config.path_results, "dynamics.txt")  
                 info_path = os.path.join(config.path_results, "info.txt") 
-                for i in [info_path, dynamics_path]:
+                log_path = os.path.join(config.path_results, "akmc.log") 
+                for i in [info_path, dynamics_path, log_path]:
                     if os.path.isfile(i):
                         os.remove(i)
                 
