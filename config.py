@@ -8,6 +8,7 @@ parser = ConfigParser.SafeConfigParser()
 
 parser.read(os.path.join(sys.path[0], 'default_config.ini'))
 
+gave_config = True
 if len(sys.argv)>1:
     if os.path.isfile(sys.argv[-1]):
         parser.read(sys.argv[-1])
@@ -16,6 +17,7 @@ if len(sys.argv)>1:
         sys.exit(2)
 elif os.path.isfile('config.ini'):
     parser.read('config.ini')
+    gave_config = False
 else:
     print >> sys.stderr, "You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory."
     sys.exit(2)        
@@ -41,6 +43,14 @@ path_searches_in  = parser.get('Paths', 'searches_in')
 path_states       = parser.get('Paths', 'states')
 path_results      = parser.get('Paths', 'results')
 
+#Rye-requested check
+if not gave_config and not os.path.samefile(path_root, os.getcwd()):
+    res = raw_input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
+    if len(res)>0 and res[0] == 'y':
+        pass
+    else:
+        sys.exit(3)
+    
 #communicator options
 comm_type = parser.get('Communicator', 'type')
 #print comm_type
