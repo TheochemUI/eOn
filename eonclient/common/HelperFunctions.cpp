@@ -10,6 +10,7 @@
  *===============================================
  */
 #include <cassert>
+#include <stdio.h>
 #include "HelperFunctions.h"
 
 // Random values in interval
