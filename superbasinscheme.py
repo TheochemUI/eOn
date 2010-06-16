@@ -141,24 +141,31 @@ class EnergyLevel(SuperbasinScheme):
            of the end_state if it hasn't been visited before.'''
         if start_state == end_state:
             return
-        if end_state not in self.levels:
-            self.levels[end_state] = end_state.get_energy()
+        sb = self.get_containing_superbasin(end_state)
+        if not sb:
+            up_states = [end_state]
         else:
-            self.levels[end_state] += self.energy_increment()
+            up_states = sb.states
+        for i in up_states:
+            if i not in self.levels:
+                self.levels[i] = i.get_energy()
+            else:
+                self.levels[i] += self.energy_increment()
 
         #saddle energy is the total energy of the saddle
         largest_level = max(self.levels[start_state], self.levels[end_state])
        
-        saddle_energy = 0.0
+        barrier = 0.0
         proc_tab = start_state.get_process_table()
         for key in proc_tab:
             if proc_tab[key][product] == end_state.number:
-                saddle_energy = max(proc_tab[key][barrier], saddle_energy)
+                barrier = min(proc_tab[key]['barrier'], barrier)
         
-        if saddle_energy == 0.0:
+        if barrier == 0.0:
             logger.warning("Start and end state have no connections")
             return
-
+        
+        saddle_energy = barrier + start_state.get_energy()
         if largest_level > saddle_energy:
             self.levels[start_state] = largest_level 
             self.levels[end_state] = largest_level 
