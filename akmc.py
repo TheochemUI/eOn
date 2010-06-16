@@ -355,7 +355,7 @@ if __name__ == '__main__':
     if len(args) == 1:
         sys.argv += args
         #always run from the directory where the config file is
-        os.chdir(os.path.dirname(args[0]))
+        #os.chdir(os.path.dirname(args[0]))
 
     #XXX: config is ugly as it finds out where the config file is directly from 
     #     sys.argv instead of being passed it.
