@@ -282,14 +282,18 @@ def coordination_numbers(p, cutoff):
 
 
 def least_coordinated(p, cutoff):
-    """ Returns a list of atom indices in p with the lowest coordination numbers """
+    """ Returns a list of atom indices in p with the lowest coordination numbers for unfrozen atoms"""
     cn = coordination_numbers(p, cutoff)
+    maxcoord = max(cn)
     mincoord = min(cn)
-    least = []
-    for i in range(len(cn)):
-        if cn[i] <= mincoord:
-            least.append(i)
-    return least
+    while mincoord <= maxcoord:
+        least = []
+        for i in range(len(cn)):
+            if cn[i] <= mincoord and p.free[i]:
+                least.append(i)
+        if len(least) > 0:
+            return least
+        mincoord += 1
 
     
     
