@@ -38,7 +38,11 @@ class Communicator:
         raise NotImplementedError()
 
     def get_bundle_size(self, result_dat_path):
-        f = open(result_dat_path)
+        try:
+            f = open(result_dat_path)
+        except:
+            logger.warning("results.dat missing. Should be at %s.", result_dat_path)
+            return 0
         bundle_size = 0
         for line in f:
             fields = line.split()
