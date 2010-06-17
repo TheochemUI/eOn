@@ -5,6 +5,8 @@ import shutil
 import signal
 import glob
 import numpy
+import logging
+logger = logging.getLogger('kdb')    
 
 import io
 
@@ -20,6 +22,7 @@ class KDB:
 
 
     def add_process(self, state, process_id):
+        logger.debug("Adding process.")
         try:
             os.makedirs(self.path)
         except OSError:
