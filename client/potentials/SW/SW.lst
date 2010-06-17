@@ -1,0 +1,565 @@
+IBM(R) XL Fortran Advanced Edition Version 8.1.0.4 --- SW.f90 05/10/07 13:59:11
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+          1 |!     Last change:  AA    3 Apr 2002    2:31 pm
+          2 |!-----------------------------------------------------------------------------------!
+          3 |
+          4 |  SUBROUTINE sw(NATOMS,pos,F,energy,bx,by,bz)
+          5 |    IMPLICIT NONE
+          6 |
+          7 |    INTEGER,INTENT(IN) :: NATOMS
+          8 |    REAL(8),intent(in),dimension(3*NATOMS) :: pos
+          9 |    REAL(8),INTENT(IN) :: bx,by,bz
+         10 |    REAL(8),intent(out) :: energy
+         11 |    REAL(8),intent(out),dimension(3*NATOMS) :: F
+         12 |
+         13 |    REAL(8),dimension(NATOMS) :: fx,fy,fz
+         14 |    REAL(8),dimension(NATOMS) :: x,y,z
+         15 |    integer :: i,j,i_id,j_id,ind_j,k,k_id,ind_k
+         16 |    REAL(8) :: xi, yi, zi, xij, yij, zij, rij, rij2
+         17 |    REAL(8) :: twobodyenergy, threebodyenergy
+         18 |    REAL(8) :: cos_x_ij, cos_y_ij, cos_z_ij, invrij, rhoij
+         19 |    REAL(8) :: one_o_a_ij, expo, gam_o_a_ij, exp_gam_ij, r_to_minusp
+         20 |    REAL(8) :: one_o_a2, term1, term2,fact3_ij
+         21 |    REAL(8) :: ffx,ffy,ffz, term_ij, term_ik
+         22 |    REAL(8) :: dcosdxj,dcosdyj,dcosdzj,dcosdxk,dcosdyk,dcosdzk
+         23 |    REAL(8) :: dhdcos_ij,dhdcos_ik,cos_p_1o3,cos_jik
+         24 |    REAL(8) :: cos_x_ik, cos_y_ik, cos_z_ik, one_o_a_ik, gam_o_a_ik, fact
+         25 |    REAL(8) :: xik,yik,zik,rik, rik2, invrik,rhoik,xxx
+         26 |
+         27 |    INTEGER,PARAMETER :: MAXNATOMS=20000,                                        &
+         28 |    &		         MAXNEI=20,                                            &
+         29 |    &                    P=4
+         30 |    REAL(8),PARAMETER :: SIGMA = 2.0951D0,                                     &
+         31 |    &    	         ALPHA = 1.8d0,                                        &
+         32 |    &                    RCUT = (ALPHA * SIGMA),                               &
+         33 |    &                    RSKIN = 4.0d0,                                        &
+         34 |    &                    invsig=1.0d0/SIGMA,                                   &
+         35 |    &                    EPSILON = 2.16826D0 * 1.06767385d0,                   & !* 1.07d0
+         36 |    &                    LAMBDA = 21.0d0,                                      & !* 1.07d0
+         37 |    &			 A =  7.049556277D0,                                   &
+         38 |    &			 BETA = 0.6022245584D0,                                &
+         39 |    &			 GAMMA = 1.2D0,                                        &
+         40 |    &			 ONE_THIRD = (1.0d0/ 3.0d0),                           &
+         41 |    &			 A_EPS = (A * EPSILON),                                &
+         42 |    &			 PI = 3.14159265358979D0
+         43 |
+         44 |    LOGICAL,SAVE :: initflag=.true. , indupd=.true.
+         45 |    REAL(8),DIMENSION(MAXNATOMS),SAVE :: xold,yold,zold
+         46 |    INTEGER,DIMENSION(MAXNATOMS),SAVE :: numnei
+         47 |    INTEGER,DIMENSION(MAXNATOMS,MAXNEI),SAVE :: nei
+         48 |    REAL(8),DIMENSION(2,2),SAVE :: S0,A0,rcut2
+         49 |
+         50 |    INTERFACE
+         51 |      SUBROUTINE check_neigbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,xold,yold,zold,&
+         52 |                                 initflag,indupd,RCUT,RSKIN)
+         53 |        IMPLICIT NONE
+         54 |        INTEGER,INTENT(IN) :: NATOMS,MAXNATOMS
+         55 |        REAL(8),INTENT(IN),DIMENSION(NATOMS) :: x,y,z
+         56 |        REAL(8),INTENT(INOUT),DIMENSION(NATOMS) :: xold,yold,zold
+         57 |        REAL(8),INTENT(IN) :: bx,by,bz,RCUT,RSKIN
+         58 |        LOGICAL,INTENT(INOUT) :: initflag,indupd
+         59 |      END SUBROUTINE check_neigbours
+         60 |
+         61 |      !-----*****-----!
+         62 |
+         63 |      SUBROUTINE neighbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,MAXNEI,numnei,nei,RSKIN)
+         64 |        IMPLICIT NONE
+         65 |        INTEGER,INTENT(IN) :: NATOMS,MAXNATOMS,MAXNEI
+         66 |        REAL(8),intent(in),dimension(NATOMS) :: x,y,z
+         67 |        REAL(8),INTENT(IN) :: bx,by,bz,RSKIN
+         68 |        INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS) :: numnei
+         69 |        INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS,MAXNEI) :: nei
+         70 |      END SUBROUTINE
+         71 |    END INTERFACE
+         72 |
+         73 |    IF (initflag) THEN
+         74 |      S0=0.0d0
+         75 |      A0=0.0d0
+         76 |      rcut2=0.0d0
+         77 |      S0(1,1) = 3.6d0
+         78 |      A0(1,1) = 0.0d0
+         79 |      rcut2(1,1) = RCUT*RCUT
+         80 |      xold=0.0d0
+         81 |      yold=0.0d0
+         82 |      zold=0.0d0
+         83 |    END IF
+         84 |
+         85 |    j=0
+         86 |    DO i=1,3*NATOMS,3
+         87 |      j=j+1
+         88 |      x(j)=pos(i)
+         89 |      y(j)=pos(i+1)
+         90 |      z(j)=pos(i+2)
+         91 |      fx(j)=0.0d0
+         92 |      fy(j)=0.0d0
+         93 |      fz(j)=0.0d0
+         94 |    END DO
+         95 |
+         96 |  !Generate a neighbour list
+         97 |    CALL check_neigbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,xold,yold,zold,initflag,&
+         98 |                         indupd,RCUT,RSKIN)
+         99 |    IF (indupd) CALL neighbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,MAXNEI,numnei,nei,&
+        100 |                                RSKIN)
+        101 |!    CALL neighbours(NATOMS,x,y,z,bx,by,bz)
+        102 |
+        103 |  ! We first set-up pointers for the x, y, z components in the force
+        104 |
+        105 |    twobodyenergy = 0.0d0
+        106 |    threebodyenergy = 0.0d0
+        107 |
+        108 |    DO i=1, NATOMS
+        109 |!      i_id = type(i)
+        110 |      i_id=1
+        111 |      xi = x(i)
+        112 |      yi = y(i)
+        113 |      zi = z(i)
+        114 |      DO ind_j=1, numnei(i)
+        115 |        j = nei(i,ind_j)
+        116 |!        j_id = type(j)
+        117 |        j_id=1
+        118 |
+        119 |      ! Pair interactions of i and j
+        120 |      ! Distance, with periodic boundary conditions
+        121 |        xij=x(j)-xi
+        122 |        yij=y(j)-yi
+        123 |        zij=z(j)-zi
+        124 |        xij=xij-bx*ANINT(xij/bx)
+        125 |        yij=yij-by*ANINT(yij/by)
+        126 |        zij=zij-bz*ANINT(zij/bz)
+        127 |
+        128 |        rij2 = xij*xij + yij*yij + zij*zij
+        129 |
+        130 |      ! Check the cut-off before proceeding
+        131 |        IF( rij2 < rcut2(i_id,j_id) ) THEN
+        132 |          rij = sqrt(rij2)
+        133 |          invrij = 1.0d0 / rij
+        134 |          rhoij = rij * invsig
+        135 |	  cos_x_ij = xij * invrij
+        136 |          cos_y_ij = yij * invrij
+        137 |          cos_z_ij = zij * invrij
+        138 |
+        139 |        ! Some useful quantities
+        140 |          one_o_a_ij =1.0/(rhoij-ALPHA)
+        141 |          IF (one_o_a_ij > -300.0d0) THEN
+        142 |            expo=exp(one_o_a_ij)
+        143 |          ELSE
+        144 |            expo=0.0d0
+        145 |          END IF
+        146 |          gam_o_a_ij=GAMMA*one_o_a_ij
+        147 |
+        148 |          IF (gam_o_a_ij > -300.0d0) THEN
+        149 |            exp_gam_ij=exp(gam_o_a_ij)
+        150 |          ELSE
+        151 |            exp_gam_ij=0.0d0
+        152 |          END IF
+        153 |          r_to_minusp=rhoij ** (-1*P)
+        154 |
+        155 |        ! Two body energy and force
+        156 |          term1=A_EPS*(BETA*r_to_minusp-1.0)*expo
+        157 |          one_o_a2 = one_o_a_ij * one_o_a_ij
+        158 |          term2=(one_o_a2*term1+A_EPS*P*BETA*r_to_minusp*expo/rhoij)*invsig
+        159 |
+        160 |        ! Contribution to the binary repulsive term
+        161 |          IF(rij <=  S0(i_id,j_id)) THEN
+        162 |            term1=term1+A0(i_id,j_id)*(cos(PI*rij/S0(i_id,j_id))+1.0d0)
+        163 |            term2=term2+A0(i_id,j_id)*PI/S0(i_id,j_id)* sin(PI*rij/S0(i_id,j_id))
+        164 |          ENDIF
+        165 |          twobodyenergy=twobodyenergy + 0.5d0*term1;
+        166 |
+        167 |          fx(i)=fx(i)-term2*cos_x_ij;
+        168 |          fy(i)=fy(i)-term2*cos_y_ij;
+        169 |          fz(i)=fz(i)-term2*cos_z_ij;
+        170 |
+        171 |        ! Prepare for the three body term
+        172 |          fact3_ij=gam_o_a_ij*one_o_a_ij*invsig
+        173 |
+        174 |          DO ind_k = ind_j+1, numnei(i)
+        175 |          ! Triplet interaction with i in the middle; all interactions
+        176 |            k = nei(i,ind_k)
+        177 |!            k_id = type(k)
+        178 |            k_id=1
+        179 |
+        180 |          ! Distance, with periodic boundary conditions
+        181 |            xik=x(k)-xi
+        182 |            yik=y(k)-yi
+        183 |            zik=z(k)-zi
+        184 |            xik=xik-bx*ANINT(xik/bx)
+        185 |            yik=yik-by*ANINT(yik/by)
+        186 |            zik=zik-bz*ANINT(zik/bz)
+        187 |
+        188 |            rik2 = xik*xik + yik*yik + zik*zik
+        189 |
+        190 |          ! Check whether the distance is too large
+        191 |            IF (rik2<rcut2(i_id,k_id))  THEN
+        192 |              rik=sqrt(rik2)
+        193 |              invrik=1.0/rik
+        194 |              rhoik=rik*invsig
+        195 |              cos_x_ik=xik*invrik
+        196 |              cos_y_ik=yik*invrik
+        197 |              cos_z_ik=zik*invrik
+        198 |
+        199 |            ! Some useful quantities
+        200 |              one_o_a_ik=1.0D0/(rhoik-ALPHA)
+        201 |              gam_o_a_ik=GAMMA*one_o_a_ik
+        202 |
+        203 |              IF (gam_o_a_ik > -300.0d0) THEN
+        204 |                xxx=exp(gam_o_a_ik)
+        205 |              ELSE
+        206 |                xxx=0.0d0
+        207 |              END IF
+        208 |              fact=EPSILON*LAMBDA*xxx*exp_gam_ij
+        209 |
+        210 |              cos_jik  =cos_x_ij*cos_x_ik+cos_y_ij*cos_y_ik+ cos_z_ij*cos_z_ik
+        211 |              cos_p_1o3=cos_jik+ONE_THIRD
+        212 |
+        213 |            ! Energy (added only to central atom)
+        214 |              threebodyenergy=threebodyenergy+fact*cos_p_1o3*cos_p_1o3
+        215 |
+        216 |            ! Force
+        217 |              term_ij=fact*fact3_ij*cos_p_1o3*cos_p_1o3;
+        218 |              dhdcos_ij=2*fact*cos_p_1o3;
+        219 |              term_ik=fact*gam_o_a_ik*one_o_a_ik*cos_p_1o3*cos_p_1o3/SIGMA;
+        220 |              dhdcos_ik=2*fact*cos_p_1o3;
+        221 |
+        222 |              dcosdxj=(cos_x_ik-cos_jik*cos_x_ij)*invrij;
+        223 |              dcosdyj=(cos_y_ik-cos_jik*cos_y_ij)*invrij;
+        224 |              dcosdzj=(cos_z_ik-cos_jik*cos_z_ij)*invrij;
+        225 |
+        226 |              dcosdxk=(cos_x_ij-cos_jik*cos_x_ik)*invrik;
+        227 |              dcosdyk=(cos_y_ij-cos_jik*cos_y_ik)*invrik;
+        228 |              dcosdzk=(cos_z_ij-cos_jik*cos_z_ik)*invrik;
+        229 |
+        230 |              ffx=term_ij*cos_x_ij-dhdcos_ij*dcosdxj;
+        231 |              ffy=term_ij*cos_y_ij-dhdcos_ij*dcosdyj;
+        232 |              ffz=term_ij*cos_z_ij-dhdcos_ij*dcosdzj;
+        233 |              fx(j)=fx(j)+ffx;
+        234 |              fy(j)=fy(j)+ffy;
+        235 |              fz(j)=fz(j)+ffz;
+        236 |              fx(i)=fx(i)-ffx;
+        237 |              fy(i)=fy(i)-ffy;
+        238 |              fz(i)=fz(i)-ffz;
+        239 |              ffx=term_ik*cos_x_ik-dhdcos_ik*dcosdxk;
+        240 |              ffy=term_ik*cos_y_ik-dhdcos_ik*dcosdyk;
+        241 |              ffz=term_ik*cos_z_ik-dhdcos_ik*dcosdzk;
+        242 |              fx(k)=fx(k)+ffx;
+        243 |              fy(k)=fy(k)+ffy;
+        244 |              fz(k)=fz(k)+ffz;
+        245 |              fx(i)=fx(i)-ffx;
+        246 |              fy(i)=fy(i)-ffy;
+        247 |              fz(i)=fz(i)-ffz;
+        248 |            ENDIF
+        249 |          END DO
+        250 |        ENDIF
+        251 |      END DO
+        252 |    END DO
+        253 |
+        254 |    j=0
+        255 |    DO i=1,3*NATOMS,3
+        256 |      j=j+1
+        257 |      F(i)=fx(j)
+        258 |      F(i+1)=fy(j)
+        259 |      F(i+2)=fz(j)
+        260 |    END DO
+        261 |
+        262 |    energy= twobodyenergy+threebodyenergy
+        263 |
+        264 |  END SUBROUTINE sw
+ "SW.f90", 1518-051 (L) TAB characters have been detected in the source.  The TAB character is not allowed in Fortran 95, Fortran 90, FORTRAN 77 or SAA.
+** sw   === End of Compilation 1 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    1           0         0           0          1            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        265 |
+        266 |!-----------------------------------------------------------------------------------!
+        267 |
+        268 |  SUBROUTINE check_neigbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,xold,yold,zold,initflag,&
+        269 |                             indupd,RCUT,RSKIN)
+        270 |    IMPLICIT NONE
+        271 |
+        272 |    INTEGER,INTENT(IN) :: NATOMS,MAXNATOMS
+        273 |    REAL(8),INTENT(IN),DIMENSION(NATOMS) :: x,y,z
+        274 |    REAL(8),INTENT(INOUT),DIMENSION(NATOMS) :: xold,yold,zold
+        275 |    REAL(8),INTENT(IN) :: bx,by,bz,RCUT,RSKIN
+        276 |    LOGICAL,INTENT(INOUT) :: initflag,indupd
+        277 |
+        278 |    REAL(8),DIMENSION(3) :: Rij
+        279 |    REAL(8),PARAMETER :: R1=1.0d0
+        280 |    REAL(8) :: dR0,dR1,dR2
+        281 |    INTEGER :: i
+        282 |
+        283 |    IF(initflag) THEN
+        284 |      initflag=.false.
+        285 |      indupd=.true.
+        286 |    ELSE
+        287 |      DO i=1,NATOMS
+        288 |        Rij(1)=xold(i)-x(i)
+        289 |        Rij(2)=yold(i)-y(i)
+        290 |        Rij(3)=zold(i)-z(i)
+        291 |        Rij(1)=Rij(1)-bx*ANINT(Rij(1)/bx)
+        292 |        Rij(2)=Rij(2)-by*ANINT(Rij(2)/by)
+        293 |        Rij(3)=Rij(3)-bz*ANINT(Rij(3)/bz)
+        294 |        dR0=SQRT(DOT_PRODUCT(Rij,Rij))
+        295 |	IF(i == 1) THEN
+        296 |          dR1=dR0
+        297 |	ELSE IF(i == 2) THEN
+        298 |	  IF(dR1 > dR0) THEN
+        299 |            dR2=dR0
+        300 |	  ELSE
+        301 |	    dR2=dR1
+        302 |	    dR1=dR0
+        303 |	  END IF
+        304 |	ELSE
+        305 |	  IF(dR1 < dR0) THEN
+        306 |	    dR2=dR1
+        307 |	    dR1=dR0
+        308 |	  ELSE IF(dR2 < dR0) THEN
+        309 |	    dR2=dR0
+        310 |	  END IF
+        311 |	END IF
+        312 |      END DO
+        313 |      IF((dR1+dR2) > (RSKIN-RCUT)) THEN
+        314 |        indupd=.true.
+        315 |      ELSE
+        316 |        indupd=.false.
+        317 |      END IF
+        318 |    END IF
+        319 |    IF(indupd) THEN
+        320 |      xold(1:NATOMS)=x
+        321 |      yold(1:NATOMS)=y
+        322 |      zold(1:NATOMS)=z
+        323 |    END IF
+        324 |  RETURN
+        325 |  END SUBROUTINE check_neigbours
+ "SW.f90", 1518-051 (L) TAB characters have been detected in the source.  The TAB character is not allowed in Fortran 95, Fortran 90, FORTRAN 77 or SAA.
+** check_neigbours   === End of Compilation 2 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    1           0         0           0          1            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        326 |
+        327 |!-----------------------------------------------------------------------------------!
+        328 |
+        329 |! Subroutine neighbours.f90
+        330 |!
+        331 |! This subroutine should depend only on the details of the physics and not
+        332 |! on the ART algorithm per se. It should be called only from the force or
+        333 |! energy routine
+        334 |!
+        335 |! Box should include all rescaling.
+        336 |! pos is in box units, from -0.5 to 0.5
+        337 |!
+        338 |  SUBROUTINE neighbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,MAXNEI,numnei,nei,RSKIN)
+        339 |    IMPLICIT NONE
+        340 |
+        341 |    INTEGER,INTENT(IN) :: NATOMS,MAXNATOMS,MAXNEI
+        342 |    REAL(8),intent(in),dimension(NATOMS) :: x,y,z
+        343 |    REAL(8),INTENT(IN) :: bx,by,bz,RSKIN
+        344 |    INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS) :: numnei
+        345 |    INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS,MAXNEI) :: nei
+        346 |
+        347 |    integer i, i_ind, j, j_ind
+        348 |    REAL(8) :: xi, yi, zi, xij, yij, zij, rij2
+        349 |
+        350 |    numnei = 0  ! Vectorial assignment
+        351 |    DO i=1, NATOMS
+        352 |!      i_ind = type(i)
+        353 |      i_ind=1
+        354 |      xi = x(i)
+        355 |      yi = y(i)
+        356 |      zi = z(i)
+        357 |
+        358 |      DO j=i+1, NATOMS
+        359 |!        j_ind = type(j)
+        360 |        j_ind=1
+        361 |
+        362 |        xij=x(j)-xi
+        363 |        yij=y(j)-yi
+        364 |        zij=z(j)-zi
+        365 |        xij=xij-bx*ANINT(xij/bx)
+        366 |        yij=yij-by*ANINT(yij/by)
+        367 |        zij=zij-bz*ANINT(zij/bz)
+        368 |
+        369 |        rij2 = xij*xij + yij*yij + zij*zij
+        370 |
+        371 | !       IF (rij2 < rcut2(i_ind,j_ind) ) THEN
+        372 |        IF (rij2 < RSKIN**2) THEN
+        373 |          numnei(i) = numnei(i) + 1
+        374 |          numnei(j) = numnei(j) + 1
+        375 |          nei(i,numnei(i)) = j
+        376 |          nei(j,numnei(j)) = i
+        377 |        ENDIF
+        378 |      END DO
+        379 |    END DO
+        380 |
+        381 |  END SUBROUTINE neighbours
+** neighbours   === End of Compilation 3 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    0           0         0           0          0            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-2)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        382 |
+        383 |!-----------------------------------------------------------------------------------!
+        384 |!
+        385 |!  SUBROUTINE potinit()
+        386 |!     IMPLICIT NONE
+        387 |!
+        388 |!  END SUBROUTINE potinit
+        389 |!
+        390 |!-----------------------------------------------------------------------------------!
+        391 |
+        392 |!END MODULE  potential
+ 
+>>>>> FILE TABLE SECTION <<<<<
+ 
+ 
+                                       FILE CREATION        FROM
+FILE NO   FILENAME                    DATE       TIME       FILE    LINE
+     0    SW.f90                      05/10/07   13:58:08
+ 
+ 
+>>>>> COMPILATION EPILOGUE SECTION <<<<<
+ 
+ 
+FORTRAN Summary of Diagnosed Conditions
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    2           0         0           0          2            0
+ 
+ 
+    Source records read.......................................     392
+1501-510  Compilation successful for file SW.f90.
+1501-543  Object file created.
