@@ -18,19 +18,19 @@
 #include "Constants.h"
 #include "Parameters.h"
 #include "PotentialsInterface.h"
-#include "potentials/NewPotential/NewPotential.h"
+#include "../potentials/NewPotential/NewPotential.h"
 //#include "VASP.h"
 //#include "EDIP.h"
-#include "potentials/EMT/EffectiveMediumTheory.h"
+#include "../potentials/EMT/EffectiveMediumTheory.h"
 //#include "LJBinary.h"
 
-#include "potentials/Morse/Morse.h"
+#include "../potentials/Morse/Morse.h"
 //#include "LJ.h"
 //#include "Lenosky.h"
 //#include "SW.h"
 //#include "Tersoff.h"
 //#include "LJBinary.h"
-#include "potentials/Aluminum/Aluminum.h"
+#include "../potentials/Aluminum/Aluminum.h"
 
 
 /** Class serving as a wrapper between the force calculator and the Atoms object. It is here it is decided which potential that is going to be used! Might seem redundant but it is nessesary in order to have a clean code in the Matter class*/

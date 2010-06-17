@@ -7,7 +7,7 @@
       */
 //#include "LJBinary.h"
 #include <cmath>
-#include "common/PotentialsInterface.h"
+#include "../../common/PotentialsInterface.h"
 
 class Morse : public PotentialsInterface {
 public:
