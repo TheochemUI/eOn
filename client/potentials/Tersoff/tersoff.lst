@@ -1,0 +1,345 @@
+IBM(R) XL Fortran Advanced Edition Version 8.1.0.4 --- tersoff.f90 05/10/07 13:59:50
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-1)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+          1 |!   for version EAMf of the MD code, Feb 1995.  (Modified by Graeme)
+          2 |!   for EAM version E     Feb 1994
+          3 |!   Tersoff potential:   Sept 14. 1993   based on EAMd version
+          4 |!      two components
+          5 |!      No neighborlist, no FPI chains
+          6 |
+          7 |!     SUBROUTINE TO COMPUTE FORCE, ENERGY AND VIRIAL FOR A GROUP OF
+          8 |!     ATOMS INTERACTING WITH ANOTHER GROUP OF ATOMS.
+          9 |!     THE GROUPS MAY BE THE SAME.
+         10 |!     The force is scaled in such a way that the real force is ax*fa.
+         11 |!
+         12 |
+         13 |
+         14 |!AA      SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az, MAXCOO)
+         15 |      SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az)
+         16 |
+         17 |      implicit real*8 (a-h,o-z)
+            ....................a...........
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         18 |
+         19 |      real*8 ax, ay, az
+            ...........a............
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         20 |!AA      integer(4) NATOM, MAXCOO
+         21 |      integer(4) NATOM
+         22 |
+         23 |!AA      DIMENSION RA(MAXCOO),FA(MAXCOO)
+         24 |      DIMENSION RA(3*NATOM),FA(3*NATOM)
+         25 |
+         26 |
+         27 |      real*8 lamdaij,lamda,muij,kaij,nei,np,mu
+            ...........a...................................
+ a - 1518-012 (L) Length may only be specified for CHARACTER definitions in Fortran 95, Fortran 90, FORTRAN 77 and SAA.
+         28 |      DIMENSION PL(3),drij(3),drik(3),XYZ(3,NATOM),FRC(3,NATOM),    &
+         29 |     &          ftj(3,NATOM),ftk(3,NATOM),lid(NATOM)
+         30 |
+         31 |!   ---------------------------------------------------------------------
+         32 |!   Function definitions:
+         33 |
+         34 |      Frfn(x)=Aij*exp(-lamdaij*x)
+         35 |      Fafn(x)=-Bij*exp(-muij*x)
+         36 |      Fcfn(x)=0.5+0.5*cos(pi*(x-RLD)/(Sij-RLD))
+         37 |      Bfn(z)=kaij/(1.+(beta*z)**nei)**(0.5/nei)
+         38 |      Gfn(t)=1.0+(ci/di)**2-ci**2/(di**2+(hi-t)**2)
+         39 |
+         40 |      DFrfn(x)=-Aij*lamdaij*exp(-lamdaij*x)
+         41 |      DFafn(x)=Bij*muij*exp(-muij*x)
+         42 |      DFcfn(x)=-pi/(2.*(Sij-RLD))*sin(pi*(x-RLD)/(Sij-RLD))
+         43 |      XSij(z)=-kaij*0.5*beta**nei*z**(nei-1)/(1.            &
+         44 |     &     +(beta*z)**nei)**((0.5+nei)/nei)
+         45 |      Qfn(t)=-2.*ci**2*(hi-t)/(di**2+(hi-t)**2)**2
+         46 |
+         47 |      pi=4.0*atan(1.0)
+         48 |
+         49 |! --------------------------------------------------------------
+         50 |!  Potential parameters:  (for silicon)
+         51 |
+         52 |      A=1.8308e+3
+         53 |      B=4.7118e+2
+         54 |      lamda=2.4799
+         55 |      mu=1.7322
+         56 |      bt=1.1000e-6
+         57 |      np=7.8734e-1
+         58 |      c=1.0039e+5
+         59 |      d=1.6217e+1
+         60 |      h=-5.9825e-1
+         61 |      R=2.7
+         62 |      S=3.0
+         63 |      chipure=1.0
+         64 |
+         65 |      PL(1)=ax
+         66 |      PL(2)=ay
+         67 |      PL(3)=az
+         68 |
+         69 |	k=0
+         70 |	do i=1,natom
+         71 |	 do j=1,3
+         72 |	  k=k+1
+         73 |	  XYZ(j,i)=RA(k)
+         74 |	 enddo
+         75 |	enddo
+         76 |	k=0
+         77 |
+         78 |      do 99 i=1,natom
+         79 |         do 99 l=1,3
+         80 |            FRC(l,i)=0.0
+         81 | 99   continue
+            .a.............
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+         82 |
+         83 |      ENG=0.0
+         84 |
+         85 |      do 100 i=1,natom
+         86 |         ci=c
+         87 |         di=d
+         88 |         hi=h
+         89 |         beta=bt
+         90 |         nei=np
+         91 |         do 101 j=1,natom
+         92 |            if(j.eq.i) goto 101
+         93 |            Aij=a
+         94 |            Bij=b
+         95 |            RLD=r
+         96 |            Sij=s
+         97 |            lamdaij=lamda
+         98 |            muij=mu
+         99 |            kaij=chipure
+        100 |
+        101 |            rij2=0.0
+        102 |            do 120 ii=1,3
+        103 |               drij(ii)=XYZ(ii,i)-XYZ(ii,j)
+        104 |               if(abs(drij(ii)).ge.Sij) then
+        105 |                  drij(ii)=drij(ii)*(1.-PL(ii)/abs(drij(ii)))
+        106 |                  if(abs(drij(ii)).ge.Sij) goto 101
+        107 |               endif
+        108 |               rij2=rij2+drij(ii)**2
+        109 | 120        continue
+        110 |
+        111 |            rij=sqrt(rij2)
+        112 |            if(rij.ge.Sij) goto 101
+        113 |
+        114 |            if(rij.le.RLD) then
+        115 |               fcij=1.0
+        116 |               dfcij=0.0
+        117 |            else
+        118 |               fcij=Fcfn(rij)
+        119 |               dfcij=DFcfn(rij)
+        120 |            endif
+        121 |
+        122 |            zeta=0.0
+        123 |            do 102 k=1,natom
+        124 |               lid(k)=0
+        125 |               if(k.eq.i.or.k.eq.j) goto 102
+        126 |               RLD=r
+        127 |               Sij=s
+        128 |               rik2=0.0
+        129 |               do 130 ii=1,3
+        130 |                  drik(ii)=xyz(ii,i)-xyz(ii,k)
+        131 |                  if(abs(drik(ii)).ge.Sij) then
+        132 |                     drik(ii)=drik(ii)*(1.0-PL(ii)/abs(drik(ii)))
+        133 |                     if(abs(drik(ii)).ge.Sij) goto 102
+        134 |                  endif
+        135 |                  rik2=rik2+drik(ii)**2
+        136 | 130           continue
+        137 |
+        138 |               rik=sqrt(rik2)
+        139 |               if(rik.ge.Sij) goto 102
+        140 |               lid(k)=1
+        141 |               if(rik.le.RLD) then
+        142 |                  fcik=1.0
+        143 |                  dfcik=0.0
+        144 |               else
+        145 |                  fcik=Fcfn(rik)
+        146 |                  dfcik=DFcfn(rik)
+        147 |               endif
+        148 |
+        149 |               tijk=0.0
+        150 |               do 140 ii=1,3
+        151 |                  tijk=tijk+drij(ii)*drik(ii)
+        152 | 140           continue
+        153 |
+        154 |               cosijk=tijk/(rij*rik)
+        155 |               drijk=rij-rik
+        156 |               zeta=zeta+fcik*Gfn(cosijk)
+        157 |
+        158 |               cf1=fcik*Qfn(cosijk)
+        159 |
+        160 |               do 104 l=1,3
+        161 |
+        162 |                  ftj(l,k)=0.0
+        163 |                  ftk(l,k)=0.0
+        164 |
+        165 |                  ftk(l,k)=ftk(l,k)                  &
+        166 |     &                 +drik(l)/rik*dfcik*Gfn(cosijk)
+        167 |
+        168 |                  ftj(l,k)=ftj(l,k)+cf1*(drik(l)/rik       &
+        169 |     &                 -cosijk*drij(l)/rij)/rij
+        170 |                  ftk(l,k)=ftk(l,k)+cf1*(drij(l)/rij        &
+        171 |     &                 -cosijk*drik(l)/rik)/rik
+        172 |
+        173 |
+        174 | 104           continue
+        175 | 102        continue
+        176 |
+        177 |!         write(6,*) ' '
+        178 |!         write(6,*) '  From Gagafe:  zeta = ',zeta
+        179 |            if(zeta.lt.1.e-15) then
+        180 |               cf=0.0
+        181 |               cf1=1.0
+        182 |            else
+        183 |               cf=fcij*Fafn(rij)*XSij(zeta)
+        184 |               Cf1=Bfn(zeta)
+        185 |            endif
+        186 |            Fcf=dfcij*(Frfn(rij)+Cf1*Fafn(rij))                 &
+        187 |     &           +fcij*(DFrfn(rij)+Cf1*DFafn(rij))
+        188 |
+        189 |            do 105 l=1,3
+        190 |               fik=0.0
+        191 |               fjk=0.0
+        192 |               do 103 k=1,natom
+        193 |                  if (lid(k).eq.0) goto 103
+        194 |
+        195 |                  fik=fik+ftj(l,k)+ftk(l,k)
+        196 |                  fjk=fjk+ftj(l,k)
+        197 |
+        198 |                  FRC(l,k)=FRC(l,k)-cf*ftk(l,k)
+        199 | 103           continue
+        200 |
+        201 |               Cf2=drij(l)/rij
+        202 |
+        203 |               FRC(l,i)=FRC(l,i)+cf2*Fcf+cf*fik
+        204 |               FRC(l,j)=FRC(l,j)-cf2*Fcf-cf*fjk
+        205 |
+        206 | 105        continue
+        207 |
+        208 |            ENG=ENG+fcij*(Frfn(rij)+Cf1*Fafn(rij))
+        209 |
+        210 | 101        continue
+        211 |
+        212 | 100  continue
+        213 |
+        214 |      do 200 i=1,natom
+        215 |         do 200 l=1,3
+        216 |            FRC(l,i)=FRC(l,i)/2.0
+        217 | 200  continue
+            .a.............
+ a - 1518-078 (L) Shared DO termination and termination on a statement other than END DO or CONTINUE is obsolescent in Fortran 95 or Fortran 90.
+        218 |
+        219 |      ENG=ENG/2.0
+        220 |
+        221 |!   Translate back:   Change sign to get force rather than gradient
+        222 |
+        223 |      utot=eng
+        224 |      do i=1,natom
+        225 |         FA(3*(i-1)+1)=-FRC(1,i)
+        226 |         FA(3*(i-1)+2)=-FRC(2,i)
+        227 |         FA(3*(i-1)+3)=-FRC(3,i)
+        228 |      enddo
+        229 |
+        230 |      return
+        231 |      end
+ "tersoff.f90", 1518-051 (L) TAB characters have been detected in the source.  The TAB character is not allowed in Fortran 95, Fortran 90, FORTRAN 77 or SAA.
+** tersoff   === End of Compilation 1 ===
+ 
+>>>>> COMPILATION UNIT EPILOGUE SECTION <<<<<
+ 
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    6           0         0           0          6            0
+ 
+>>>>> OPTIONS SECTION <<<<<
+***   Options In Effect   ***
+  
+         ==  On / Off Options  ==
+         CHECK           CR              ESCAPE          I4
+         OBJECT          SOURCE          NOSTRICT        SWAPOMP
+         UNWIND          ZEROSIZE
+  
+         ==  Options Of Integer Type ==
+         HOT()                 MAXMEM(-2)            OPTIMIZE(3)
+         SPILLSIZE(512)
+  
+         ==  Options of Integer and Character Type ==
+         CACHE(LEVEL(1),TYPE(I),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(I),ASSOC(1),COST(42),LINE(32),SIZE(512))
+         CACHE(LEVEL(1),TYPE(D),ASSOC(2),COST(10),LINE(32),SIZE(32))
+         CACHE(LEVEL(2),TYPE(D),ASSOC(1),COST(42),LINE(32),SIZE(512))
+  
+         ==  Options Of Character Type  ==
+         ALIAS(STD,NOINTPTR)   ALIGN(BINDC(POWER),STRUCT(NATURAL))
+         ARCH(PPCV)            AUTODBL(NONE)         DIRECTIVE(IBM*)
+         EXTNAME()             FLAG(I,I)             FLOAT(MAF,FOLD,RSQRT,FLTINT)
+         FLTTRAP(OVERFLOW,UNDERFLOW,ZERODIVIDE,INVALID,INEXACT)
+         FREE(F90)             HALT(S)               HOT(VECTOR)
+         IEEE(NEAR)            INTSIZE(4)            LANGLVL(90PURE)
+         PIC()                 REALSIZE(4)           TUNE(G5)
+         UNROLL(AUTO)          XFLAG()               XLF77(LEADZERO,BLANKPAD)
+         XLF90(NOSIGNEDZERO,NOAUTODEALLOC)
+  
+>>>>> SOURCE SECTION <<<<<
+        232 |
+        233 |
+        234 |!-----------------------------------------------------------------------------------!
+        235 |!
+        236 |!  SUBROUTINE potinit()
+        237 |!     IMPLICIT NONE
+        238 |!
+        239 |!  END SUBROUTINE potinit
+        240 |!
+        241 |!-----------------------------------------------------------------------------------!
+ 
+>>>>> FILE TABLE SECTION <<<<<
+ 
+ 
+                                       FILE CREATION        FROM
+FILE NO   FILENAME                    DATE       TIME       FILE    LINE
+     0    tersoff.f90                 05/10/07   13:58:15
+ 
+ 
+>>>>> COMPILATION EPILOGUE SECTION <<<<<
+ 
+ 
+FORTRAN Summary of Diagnosed Conditions
+ 
+TOTAL   UNRECOVERABLE  SEVERE       ERROR     WARNING    INFORMATIONAL
+               (U)       (S)         (E)        (W)          (I)
+    6           0         0           0          6            0
+ 
+ 
+    Source records read.......................................     241
+1501-510  Compilation successful for file tersoff.f90.
+1501-543  Object file created.
