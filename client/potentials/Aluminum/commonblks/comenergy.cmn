@@ -1,0 +1,5 @@
+c  comenergy:
+
+      COMMON /ENERGY/ TTOT,TT(6,10),UTOT,UT(55),VIRTOT,virial(55),
+     +                VIRMAT(6,55),virVEC
+
