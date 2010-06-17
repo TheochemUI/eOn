@@ -17,7 +17,7 @@
 #else
       #include "false_boinc.h"
 #endif
-#include "common/Parameters.h"
+#include "Parameters.h"
 
 #include "ClientEON.h"
 #include "LowestEigenmodeInterface.h"  

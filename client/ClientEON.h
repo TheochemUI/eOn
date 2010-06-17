@@ -26,11 +26,11 @@
 #include <win_util.h>
 #endif
 
-#include "common/Constants.h"
-#include "common/Parameters.h"
-#include "common/Matter.h"
-#include "common/ConjugateGradients.h"
-#include "common/QMBox.h"
+#include "Constants.h"
+#include "Parameters.h"
+#include "Matter.h"
+#include "ConjugateGradients.h"
+#include "QMBox.h"
 #include "Prefactors.h"
 #include "SaddlePoint.h"
 /** The main program.*/

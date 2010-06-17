@@ -18,9 +18,9 @@
 #include <vector>
 #include <limits>
 
-#include "common/Matter.h"
-#include "common/HelperFunctions.h"
-#include "common/Constants.h"
+#include "Matter.h"
+#include "HelperFunctions.h"
+#include "Constants.h"
 
 namespace epi_centers {
     long cnaEpiCenter(const Matter *matter);///< The value returned is the index of a random atom being both free and neither FCC nor HCP coordinated.
