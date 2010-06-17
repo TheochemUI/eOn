@@ -114,6 +114,7 @@ class StateList:
             newst = state.State(self.state_path(newstnr), newstnr, self.kT, 
                     self.thermal_window, self.max_thermal_window, self.epsilon_e, 
                     self.epsilon_r, st.proc_product_path(process_id))
+            newst.set_energy(st.procs[process_id]["product_energy"])
             
             # Update the reactant state to point at the new state id.
             st.procs[process_id]['product'] = newstnr
