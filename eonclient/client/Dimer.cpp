@@ -254,7 +254,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
 //    fprintf(stderr, "Dimer.calcRotationalForce: posDimer = %f\n", posDimer);    
 //    fprintf(stderr, "Dimer.calcRotationalForce: posInitial = %f\n", posInitial);    
 
-    // Obtaining the force for picture A
+    // Obtaining the force for configuration A
     matterDimer_->setFreePositions(posDimer);
     matterDimer_->getFreeForces(forceA);
     
