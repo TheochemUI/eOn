@@ -20,7 +20,7 @@
 #include "HelperFunctions.h"
 #include "Constants.h"
 #include "Parameters.h"
-#include "../common/Quickmin.h"
+#include "Quickmin.h"
 
 class QMBox : public MinimizersInterface
 {

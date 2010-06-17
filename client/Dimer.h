@@ -22,9 +22,9 @@
 
 #include <math.h>
 
-#include "common/Matter.h"
-#include "common/HelperFunctions.h"
-#include "common/Parameters.h"
+#include "Matter.h"
+#include "HelperFunctions.h"
+#include "Parameters.h"
 #include "DimerConstants.h"
 #include "LowestEigenmodeInterface.h"
 

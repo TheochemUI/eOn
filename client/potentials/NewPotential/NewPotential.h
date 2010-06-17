@@ -1,7 +1,7 @@
 #ifndef NEWPOTENTIAL_INTERFACE
 #define NEWPOTENTIAL_INTERFACE
 
-#include "../../common/PotentialsInterface.h"
+#include "../../PotentialsInterface.h"
 
 /** Template to use if user want to provide potential.*/
 class NewPotential : public PotentialsInterface{

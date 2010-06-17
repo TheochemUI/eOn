@@ -21,10 +21,10 @@
 #include <math.h>
 
 #include "Eigenvalues.h"
-#include "common/Matter.h"
+#include "Matter.h"
 //#include "IO.h"
-#include "common/HelperFunctions.h"
-#include "common/Parameters.h"
+#include "HelperFunctions.h"
+#include "Parameters.h"
 
 /** Functionality to determine prefactors for the forward and reverse proces. It is assume that the potential energy surface can be expressed with harmonic functions at the vicinity of the minima and the saddle point.*/ 
 class Prefactors {
