@@ -14,12 +14,12 @@
  *      Roar Olsen
  *===============================================
 */
-#include "common/ConjugateGradients.h"
-#include "common/Matter.h"
-#include "common/debug.h"
-#include "common/Parameters.h"
-#include "common/HelperFunctions.h"
-#include "common/Constants.h"
+#include "ConjugateGradients.h"
+#include "Matter.h"
+#include "debug.h"
+#include "Parameters.h"
+#include "HelperFunctions.h"
+#include "Constants.h"
 
 #include "SaddlePoint.h"
 #include "LowestEigenmodeInterface.h" 

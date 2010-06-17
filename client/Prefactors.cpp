@@ -13,7 +13,7 @@
  *===============================================
  */
 #include <cassert>
-#include "common/Constants.h"
+#include "Constants.h"
 #include "Prefactors.h"
 
 using namespace helper_functions;

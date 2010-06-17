@@ -15,9 +15,9 @@
 #ifndef LOWEST_EIGENMODE_INTERFACE_H
 #define LOWEST_EIGENMODE_INTERFACE_H
 
-#include "common/Matter.h"
+#include "Matter.h"
 
-#include "common/Parameters.h"
+#include "Parameters.h"
 
 /** Defining the interface for the lowest eigenvalue determination algorithm.*/
 class LowestEigenmodeInterface{
