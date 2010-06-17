@@ -97,7 +97,8 @@ class Superbasin:
 
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
                     recurrent_vector[i] += process['rate']
-                elif process['product'] == self.state_numbers[i]:
+                #elif process['product'] == self.state_numbers[i]:
+                else:
                     j = self.state_numbers.index(process['product'])
                     transient_matrix[i][j] += process['rate']
                 transient_matrix[i][i] -= process['rate']
@@ -111,7 +112,9 @@ class Superbasin:
         #self.probability_vector = fundamental_vector/recurrent_vector
         #Calculate mean residence time
         #self.mean_residence_time = numpy.sum(fundamental_vector)
-
+        
+        print recurrent_vector
+        print transient_matrix
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
         
         self.mean_residence_times = numpy.zeros(len(self.states))
