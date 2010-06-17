@@ -208,7 +208,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         
         if result_data['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result_path, result_data)
-            if current_state.get_confidence() > config.akmc_confidence:
+            if current_state.get_confidence() >= config.akmc_confidence:
                 if config.kdb_on:
                     logger.debug("Adding relevant processes to kinetic database.")
                     for process_id in states.get_state(state_num).get_process_ids():
