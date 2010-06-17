@@ -8,8 +8,8 @@
 #include"Asap/SuperCell.h"
 #include"Asap/Vec.h"
 
-#include "../../common/system_unit.h" // unit converters
-#include "../../common/PotentialsInterface.h"
+#include "../../system_unit.h" // unit converters
+#include "../../PotentialsInterface.h"
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/
 class EffectiveMediumTheory : public PotentialsInterface {

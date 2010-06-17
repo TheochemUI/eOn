@@ -15,7 +15,7 @@
 #ifndef DIMER_CONSTANTS_H
 #define DIMER_CONSTANTS_H
 
-#include "common/Constants.h"
+#include "Constants.h"
 
 /** Collection of dimer constants.*/
 
