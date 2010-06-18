@@ -1,3 +1,4 @@
+
 /*
  *===============================================
  *  Created by Andreas Pedersen on 10/5/06.
@@ -14,6 +15,7 @@
  *      Roar Olsen
  *===============================================
  */
+
 #include <cmath>
 #include <cassert>
 #include "Dimer.h"
@@ -21,6 +23,7 @@
 
 using namespace helper_functions;
 using namespace constants;
+
 
 Dimer::Dimer(Matter const *matter, Parameters *parameters)
 {
@@ -30,29 +33,26 @@ Dimer::Dimer(Matter const *matter, Parameters *parameters)
     matterDimer_    = new Matter(parameters_);
     *matterInitial_ = *matter;
     *matterDimer_   = *matter;
-
     nAllCoord   = 3 * matter->numberOfAtoms();
     nFreeCoord_ = 3 * matter->numberOfFreeAtoms();    
-    
-    // There should be space for both free and frozen atoms
-    tempListDouble_ = new double[nAllCoord];
-    
+    tempListDouble_ = new double[nAllCoord]; // There should be space for both free and frozen atoms.
     directionNorm_ = new double[nFreeCoord_];
     rotationalPlaneNorm_ = new double[nFreeCoord_];
 };
 
 
-Dimer::~Dimer(){
+Dimer::~Dimer()
+{
     delete [] directionNorm_;
     delete [] rotationalPlaneNorm_;
     delete [] tempListDouble_;
-
     delete matterInitial_;
     delete matterDimer_;
 };
 
 
-void Dimer::moveAndCompute(Matter const *matter){
+void Dimer::moveAndCompute(Matter const *matter)
+{
     *matterInitial_ = *matter;
     estimateLowestEigenmode(parameters_->getRotations_Dimer());
     return;
@@ -62,7 +62,6 @@ void Dimer::moveAndCompute(Matter const *matter){
 void Dimer::startNewSearchAndCompute(Matter const *matter, double *displacement)
 {
     *matterInitial_ = *matter;
-    
     long nAtoms = matter->numberOfAtoms();
     long index = 0;
         
@@ -94,7 +93,6 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     long rotations = 0;
     long forceCallsInitial;
     long forceCallsDimer;
-    
     double forceDimer1AlongRotationalPlaneNorm;
     double forceDimer2AlongRotationalPlaneNorm;
     double curvature, rotationalForceChange, forceDimer, rotationAngle;
@@ -106,10 +104,10 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
     forceDimer1AlongRotationalPlaneNorm = 0;
     forceDimer2AlongRotationalPlaneNorm = 0;
-
     rotationalForce = new double[nFreeCoord_];
     rotationalForceOld = new double[nFreeCoord_];
     rotationalPlaneNormOld = new double[nFreeCoord_];
+
     // Values to ensure that gamma equals zero,
     // (a<b/2) is false in the part where the rotational plane is determined
     for(int i = 0;i < nFreeCoord_; i++)
@@ -119,16 +117,12 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
         rotationalPlaneNormOld[i] = 0;
     } 
     lengthRotationalForceOld = 0;
-    //----- Initialize end -----
-    //std::cout<<"estimateLowestEigenmode\n";
-
     forceCallsInitial = matterInitial_->getForceCalls();
     forceCallsDimer = matterDimer_->getForceCalls();
     // Uses two force calls per rotation
     while(!doneRotating){
         // First dimer
         curvature = calcRotationalForce(rotationalForce);        
-//        fprintf(stderr, "Dimer.estimateLowestEigenmode: curvature = %f\n", curvature);
         
         // The new rotational plane is determined
         determineRotationalPlane(rotationalForce, 
@@ -196,7 +190,6 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
             rotations++;
         }
     }    
-    #warning printf("torque: %f    rotations: %ld    curvature:%f\n", torqueMagnitude, rotations, curvature);
     eigenvalue_ = curvature;
 
     forceCallsInitial = matterInitial_->getForceCalls()-forceCallsInitial;
@@ -245,14 +238,10 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     forceB = new double[nFreeCoord_];
     
     matterInitial_->getFreePositions(posInitial);    
-    //----- Initialize end -----
-    //std::cout<<"calcRotationalForce\n";
 
     // Displacing the one of the dimer configurations
     multiplyScalar(tempListDouble_,directionNorm_, parameters_->getDimerDR(),nFreeCoord_);
     add(posDimer, posInitial, tempListDouble_, nFreeCoord_);
-//    fprintf(stderr, "Dimer.calcRotationalForce: posDimer = %f\n", posDimer);    
-//    fprintf(stderr, "Dimer.calcRotationalForce: posInitial = %f\n", posInitial);    
 
     // Obtaining the force for configuration A
     matterDimer_->setFreePositions(posDimer);
@@ -293,17 +282,12 @@ void Dimer::determineRotationalPlane(double *rotationalForce,
     double a, b, gamma = 0;
     double *rotationalPlane;
     rotationalPlane = new double[nFreeCoord_];
-    //----- Initialize end -----
-    //std::cout<<"determineRotationalPlane\n";
-
     
     a = fabs(dot(rotationalForce, rotationalForceOld, nFreeCoord_));
     b = dot(rotationalForceOld, rotationalForceOld, nFreeCoord_);
-    if(a<0.5*b){
-        subtract(tempListDouble_, 
-                 rotationalForce, 
-                 rotationalForceOld, 
-                 nFreeCoord_);
+    if(a<0.5*b)
+    {
+        subtract(tempListDouble_, rotationalForce, rotationalForceOld, nFreeCoord_);
         
         //Polak-Ribiere way to determine how much to mix in of old direction
         gamma = dot(rotationalForce, tempListDouble_, nFreeCoord_)/b;  
@@ -338,10 +322,9 @@ void Dimer::determineRotationalPlane(double *rotationalForce,
 };
 
 
-void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle){
+void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
+{
     double temp1, temp2, cosAngle, sinAngle;
-    //----- Initialize end -----
-    //std::cout<<"rotateDimerAndNormalizeAndOrthogonalize\n";
 
     cosAngle = cos(rotationAngle);
     sinAngle = sin(rotationAngle);
