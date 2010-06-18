@@ -1,6 +1,5 @@
 #ifndef FALSE_BOINC_H
 #define FALSE_BOINC_H
-#warning Use false Boinc
 #include <cstdlib>
 #include <cstring>
 // For degugging
