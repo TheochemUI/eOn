@@ -11,7 +11,6 @@ ifdef NDEBUG
    CXXFLAGS += -DNDEBUG -static
 endif
 # sub-directories with a makefile and something to build, such as a library
-#SUBDIRS :=  ./common/
 ifndef NO_POT_EMT
    SUBDIRS += ./potentials/EMT/
    LIBS += ./potentials/EMT/libEMT.a
@@ -26,12 +25,15 @@ ifndef NO_AL
    CXXFLAGS += -lgfortran
 endif
 
-all : client
-client : $(OBJECTS) $(LIBS)
-# In order to link, libCommon.a has to be inserted both before and after the potentials' libraries. 
+all : $(SUBDIRS) client
+
+client : $(OBJECTS) $(LIBS)  
 	g++  $(CXXFLAGS) -o $@ $^
-#$(SUBDIRS) :
-#	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
+
+$LIBS: $(SUBDIRS)
+
+$(SUBDIRS) :
+	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
 
 clean :
 	rm -f $(OBJECTS) client
