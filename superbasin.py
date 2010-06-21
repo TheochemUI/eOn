@@ -86,7 +86,6 @@ class Superbasin:
         return state in self.states
 
     def _calculate_stuff(self):
-        '''easy to rip out later if necessary'''
        
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
