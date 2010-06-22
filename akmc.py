@@ -253,14 +253,6 @@ def kmc_step(current_state, states, time, kT):
                 rate_table = vsb.get_ratetable(current_state)
             else:
                 rate_table = current_state.get_ratetable()
-            vsb = votersb.VoterSB(kT, states, config.path_root, config.akmc_thermal_window)
-            rate_table_vsb = vsb.get_ratetable(current_state)
-            rate_table_actual = current_state.get_ratetable()
-#            print "Actual rate table is"
-#            print rate_table_actual
-#            print "vsb-edited rate table is"
-#            print rate_table_vsb
-#            raw_input()
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
             ratesum = 0.0
