@@ -106,6 +106,7 @@ sb_scheme = parser.get('Superbasins', 'scheme')
 if sb_scheme == 'transition_counting':
     sb_tc_ntrans = parser.getint('Superbasins', 'number_of_transitions')
     sb_path = parser.get('Paths', 'superbasins')
+votersb_on = parser.getboolean('Superbasins','use_votersb')
 
 #State comparison
 comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
