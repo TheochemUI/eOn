@@ -14,6 +14,11 @@ processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefa
 mod_processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "view count")
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 
+# --- Extra check on the superbasin criterion? ---
+# This will implement a method to determine whether there are any missed
+# connections between states identified as "in the superbasin".
+checksb = False
+
 # --- Defining the "acceleration" parameters ---
 # Should these be set in the configuration file?
 
@@ -230,13 +235,52 @@ class VoterSB:
             return True
         else:
             return False
+
+    def missed_connections(self, edgelist, origEtrans):
+        """ Determine whether or not there are low barrier processes which
+            connect states in the proposed superbasin which have been missed. """
+        # testvar indicates whether or not a problem has arisen.
+        # A value of zero indicates "all clear"
+        testvar = 0
+        # Compile a list of the state *numbers* with no repeats.
+        # Must check for repeats because multiple processes to/from
+        # a given state could be in the super-basin
+        state_nums_in_basin = []
+        for i in edgelist:
+            ref_state_a_num = i[0]
+            ref_state_b_num = i[1]
+            if ref_state_a_num not in state_nums_in_basin:
+                state_nums_in_basin.append(ref_state_a_num)
+            if ref_state_b_num not in state_nums_in_basin:
+                state_nums_in_basin.append(ref_state_b_num)
+        # Make a list of state objects.
+        states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
+        num_states = len(state_nums_in_basin)
+        # Convert all the "-1's" in the process tables to the correct
+        # product state number (if it's in the superbasin)
+        self.states.connect_states(states_in_basin)
+        # See if any of the states have "low-barrier" processes
+        # to other states in the superbasin which haven't been caught
+        for state in states_in_basin:
+            state_real_procs = self.get_real_process_table(state)
+            for process_id in state_real_procs.keys():
+                product_state_num = state_real_procs[process_id]["product"]
+                # If (1) the process goes somewhere in the basin, (2) it's not in the basin edgelist, and (3) it has a low barrier, that's bad.
+                # Note that the "real" process table may be used in this case because if it were in the "modified" process table,
+                # then this process *really* should have been caught in the "locsearch" function
+                if product_state_num in state_nums_in_basin \
+                    and not (self.in_array([product_state_num, state.number], edgelist) or self.in_array([state.number, product_state_num], edgelist)) \
+                    and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
+                        testvar = 1
+                        return testvar
+        return testvar
     
     def locsearch(self, current_state, origEtrans):
         """ Act recursively to find if the superbasic criterion is met.
             However, ---Note--- that in this implementation, not all neighbors are necessarily checked --
             just those which have been seen so far (which is *probably* all low barrier processes in a superbasin).
             origEtrans should be transition state energy (eV) of the process initially used for the call.
-            Immediately before each call, welltest should be set to 1 and edgelist should be any 2X1 numpy array. """
+                Immediately before each call, welltest should be set to 1 and edgelist should be any 2X1 numpy array. """
         # "welltest" will serve as a flag to stop the search if it has failed.
         # A value of 1 will indicate it has not yet failed.
         global welltest
@@ -278,9 +322,6 @@ class VoterSB:
         # Preparing for the "locsearch" function, "welltest" and "edgelist" are set globally.
         global welltest
         global edgelist
-        
-        logger.info('Raising barrier between states %d and %d' % (current_state.number, next_state.number))
-
         welltest = 1
         edgelist = numpy.array([0,0])
         sb_check_count += 1
@@ -292,17 +333,24 @@ class VoterSB:
                 break
         origEtrans = current_state_mod_procs[next_state_id]["saddle_energy"]
         # Perform "locsearch" to determine if the current state is in a superbasin,
-        # and if so, the "bottom" of edgelist will be the contained states
+        # and if so, the "bottom" of edgelist will be the contained states.
         self.locsearch(current_state, origEtrans)
         if welltest:
             edgelist = edgelist[1:,:]
-            # Reset the check count, because a raise has been performed
+            # If the extra check to find missed connections within the discovered superbasin is on, do the check.
+            if checksb:
+                # If there is a process that was missed, that's problematic.
+                if self.missed_connections(edgelist, origEtrans):
+                    # NOTE - Matt, do you think this should be just something to log, or should it be left as an exception?
+                    raise Exception("A superbasin process was likely missed by the implemented 'Chatterjee & Voter' method")
+            # Reset the check count, because a barrier raise is being performed
             sb_check_count = 0
             # Performing adjustments
             for state_pair in edgelist:
                 # The state numbers
                 state_a_num = state_pair[0]
                 state_b_num = state_pair[1]
+                logger.info('Raising barrier between states %d and %d' % (state_a_num, state_b_num))
                 # The state objects
                 state_a = self.states.get_state(state_a_num)
                 state_b = self.states.get_state(state_b_num)
