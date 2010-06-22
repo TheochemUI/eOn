@@ -64,7 +64,7 @@ class StateList:
         for i in states:
             proc_tab = i.get_process_table()
             for j in proc_tab:
-                if prov_tab[j]['product'] != -1:
+                if proc_tab[j]['product'] != -1:
                     continue
                 enew = proc_tab[j]['product_energy']
                 energetically_close = []
