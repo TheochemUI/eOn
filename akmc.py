@@ -446,7 +446,11 @@ if __name__ == '__main__':
                         os.mkdir(i)
                         os.removedirs(i)
                 
-                dynamics_path =os.path.join(config.path_results, "dynamics.txt")  
+                if config.votersb_on:
+                    askmc_data_path = os.path.join(config.path_results, "askmc_data.txt")
+                    if os.path.isfile(askmc_data_path):
+                        os.remove(askmc_data_path)
+                dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
                 info_path = os.path.join(config.path_results, "info.txt") 
                 log_path = os.path.join(config.path_results, "akmc.log") 
                 for i in [info_path, dynamics_path, log_path]:
