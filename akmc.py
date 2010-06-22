@@ -21,6 +21,7 @@ import displace
 import io
 import recycling
 import superbasinscheme
+import votersb
 import kdb
 
 def main(): 
@@ -55,7 +56,7 @@ def main():
     # If kdb is being used, initialize it.
     if config.kdb_on:
         kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
-
+    
     # Create the communicator object.
     comm = get_communicator()
 
@@ -63,7 +64,7 @@ def main():
     register_results(comm, current_state, states, searchdata, kdber = kdber if config.kdb_on else None)
 
     # Take a KMC step, if it's time.
-    current_state, previous_state, time = kmc_step(current_state, states, time) 
+    current_state, previous_state, time = kmc_step(current_state, states, time, kT) 
             
     # If we took a step, cancel old jobs and start the kdbquery.
     if current_state.number != start_state_num:
@@ -115,7 +116,7 @@ def get_akmc_metadata():
             seed = parser.get("aKMC Metadata", "random_state")
             from numpy import array, uint32
             numpy.random.set_state(eval(seed))
-            logger.debug("Set random state from pervious run's state")
+            logger.debug("Set random state from previous run's state")
         except:
             numpy.random.seed(config.debug_random_seed)
             logger.debug("Set random state from seed")
@@ -229,7 +230,7 @@ def get_superbasin_scheme(states):
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
     return superbasining
 
-def kmc_step(current_state, states, time):
+def kmc_step(current_state, states, time, kT):
     t1 = unix_time.time()
     previous_state = current_state 
     dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
@@ -237,6 +238,9 @@ def kmc_step(current_state, states, time):
     steps = 0
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
+    # If the Chatterjee & Voter superbasin acceleration method is being used
+    if config.votersb_on:
+        vsb = votersb.VoterSB(kT, states, config.path_root, config.akmc_thermal_window)
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
         if config.sb_on:
@@ -245,8 +249,18 @@ def kmc_step(current_state, states, time):
         if config.sb_on and sb:
             time, next_state = sb.step(current_state, states.get_product_state)
         else:
-            ### Voter scheme: provide custom rate table here
-            rate_table = current_state.get_ratetable()
+            if config.votersb_on:
+                rate_table = vsb.get_ratetable(current_state)
+            else:
+                rate_table = current_state.get_ratetable()
+            vsb = votersb.VoterSB(kT, states, config.path_root, config.akmc_thermal_window)
+            rate_table_vsb = vsb.get_ratetable(current_state)
+            rate_table_actual = current_state.get_ratetable()
+#            print "Actual rate table is"
+#            print rate_table_actual
+#            print "vsb-edited rate table is"
+#            print rate_table_vsb
+#            raw_input()
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
             ratesum = 0.0
@@ -265,9 +279,10 @@ def kmc_step(current_state, states, time):
                 logger.warning("Warning: failed to select rate. p = " + str(p))
                 break
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
-            time -= math.log(numpy.random.random_sample())/ratesum
+            time -= math.log(1-numpy.random.random_sample())/ratesum # numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
 
-        ### Voter scheme: register transition here
+        if config.votersb_on:
+            vsb.register_transition(current_state, next_state)
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
         
@@ -352,7 +367,7 @@ if __name__ == '__main__':
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
     (options, args) = optpar.parse_args()
- 
+
     if len(args) > 1:
         print "akmc.py takes only one positional argument"
     sys.argv = sys.argv[0:1]
