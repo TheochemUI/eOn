@@ -4,6 +4,8 @@ import time
 import os
 
 import numpy
+import logging
+logger = logging.getLogger('votersb')
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
@@ -13,6 +15,7 @@ mod_processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "p
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 
 # --- Defining the "acceleration" parameters ---
+# Should these be set in the configuration file?
 
 # delta is more or less a measure of maximum error encountered as a result of using this method.
 # Smaller values of delta correspond to higher assurance that the superbasin exiting will be correct
@@ -275,6 +278,9 @@ class VoterSB:
         # Preparing for the "locsearch" function, "welltest" and "edgelist" are set globally.
         global welltest
         global edgelist
+        
+        logger.info('Raising barrier between states %d and %d' % (current_state.number, next_state.number))
+
         welltest = 1
         edgelist = numpy.array([0,0])
         sb_check_count += 1
