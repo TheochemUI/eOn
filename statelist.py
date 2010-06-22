@@ -60,6 +60,33 @@ class StateList:
         return len(self.state_table)
 
 
+    def connect_states(self, states):
+        for i in states:
+            proc_tab = i.get_process_table()
+            for j in proc_tab:
+                enew = proc_tab[j]['product_energy']
+                energetically_close = []
+                for state in states:
+                    if abs(state.get_energy() - enew) < self.epsilon_e:
+                        energetically_close.append(state)
+
+                # Perform distance checks on the energetically close configurations.
+                if len(energetically_close) > 0:
+                    pnew = i.get_process_product(j)
+                    for state in energetically_close:
+                        p = state.get_reactant()
+                        if self.use_identical:
+                            if atoms.identical(p, pnew, self.epsilon_r):
+                                # Update the reactant state to point at the new state id.
+                                proc_tab[j]['product'] = i.number
+                                i.save_process_table()
+                        else:
+                            dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
+                            if dist < self.epsilon_r:
+                                # Update the reactant state to point at the new state id.
+                                proc_tab[j]['product'] = i.number
+                                i.save_process_table()
+
 
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
