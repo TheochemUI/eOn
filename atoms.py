@@ -298,8 +298,3 @@ def least_coordinated(p, cutoff):
     
     
     
-if __name__ == "__main__":
-    import io
-    import sys
-    p = io.loadcon(sys.argv[1])
-    print coordination_numbers(p, 3.0)

@@ -71,7 +71,7 @@ def main():
         num_cancelled = comm.cancel_state(start_state_num)
         logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
         if config.kdb_on:
-            kdber.query(current_state, wait = True)
+            kdber.query(current_state, wait = config.kdb_wait)
     
     # Create new work.
     if config.recycling_on:

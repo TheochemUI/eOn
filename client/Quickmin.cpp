@@ -91,7 +91,7 @@ void Quickmin::oneStepPart2(double *freeForces)
     {
         dotForcesForces = dot(freeForces, freeForces, nFreeCoord_);
         multiplyScalar(velocity, freeForces, dotVelocityForces/dotForcesForces, nFreeCoord_);
-        dtScale_ *= 1.01;
+//        dtScale_ *= 1.01;
     }
     matter_->setFreeVelocities(velocity);      
     delete [] velocity;

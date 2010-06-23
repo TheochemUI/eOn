@@ -70,7 +70,7 @@ void QMBox::increment_velocity()
         else
         {
             boxv_[i] += boxforce_[i] * dT;
-        }    
+        }
     }
     return;
 }
