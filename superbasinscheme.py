@@ -44,7 +44,7 @@ class SuperbasinScheme:
             else:
                 for j in sb.states:
                     if j not in new_sb_states:
-                        new_sb_states += j
+                        new_sb_states.append(j)
                 sb.delete()
                 self.superbasins.remove(sb)
         
