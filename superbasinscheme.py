@@ -9,9 +9,10 @@ class SuperbasinScheme:
     to which superbasins, the SuperBasin object of those superbasins, and 
     superbasining criteria. It also expands and merges superbasins'''
 
-    def __init__(self, superbasin_path, states):
+    def __init__(self, superbasin_path, states, kT):
         self.path = superbasin_path
         self.states = states
+        self.kT = kT
 
         if not os.path.isdir(self.path):
             logger.warning('superbasin path does not exist, creating %s' % self.path)
@@ -23,7 +24,7 @@ class SuperbasinScheme:
         for i in dirs:
             self.next_sb_num = max(self.next_sb_num, int(i))
             path = os.path.join(self.path, i)
-            self.superbasins.append(superbasin.Superbasin(path, get_state = states.get_state))
+            self.superbasins.append(superbasin.Superbasin(path, self.kT, get_state = states.get_state))
         self.next_sb_num += 1
         self.read_data()
 
@@ -33,6 +34,27 @@ class SuperbasinScheme:
                 return i
         return None
 
+    def make_basin(self, merge_states):
+        new_sb_states = []
+        for i in merge_states:
+            sb = self.get_containing_superbasin(i)
+            if sb is None:
+                new_sb_states.append(i)
+            else:
+                new_sb_states += sb.states
+                sb.delete()
+                self.superbasins.remove(sb)
+        self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
+        #However, it will likely be very slow. We should be able to do without it.
+        #Also, if confidence is changed and new processes are found, the superbasin
+        #will ignore these new processes.
+
+        new_sb_path = os.path.join(self.path, str(self.next_sb_num))
+        self.superbasins.append(superbasin.Superbasin(new_sb_path, self.kT, state_list = new_sb_states)) 
+        
+        logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
+        self.next_sb_num += 1
+    
     def register_transition(self, start_state, end_state):
         raise NotImplementedError()
 
@@ -57,9 +79,9 @@ class SuperbasinScheme:
 class TransitionCounting(SuperbasinScheme):
     ''' Implements the transition counting scheme for superbasining '''
     
-    def __init__(self, superbasin_path, states, num_transitions):
+    def __init__(self, superbasin_path, states, kT, num_transitions):
         self.num_transitions = num_transitions
-        SuperbasinScheme.__init__(self,superbasin_path, states)
+        SuperbasinScheme.__init__(self,superbasin_path, states, kT)
 
     def register_transition(self, start_state, end_state):
         logger.debug('Registering transitions')
@@ -84,21 +106,6 @@ class TransitionCounting(SuperbasinScheme):
             self.make_basin([start_state, end_state])
 
     
-    def make_basin(self, merge_states):
-        new_sb_states = []
-        for i in merge_states:
-            sb = self.get_containing_superbasin(i)
-            if sb is None:
-                new_sb_states.append(i)
-            else:
-                new_sb_states += sb.states
-                sb.delete()
-                self.superbasins.remove(sb)
-        new_sb_path = os.path.join(self.path, str(self.next_sb_num))
-        self.superbasins.append(superbasin.Superbasin(new_sb_path, new_sb_states)) 
-        
-        logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
-        self.next_sb_num += 1
 
     def write_data(self):
         logger.debug('writing')
@@ -127,9 +134,9 @@ class TransitionCounting(SuperbasinScheme):
 
 class EnergyLevel(SuperbasinScheme):
 
-    def __init__(self, superbasin_path, states, energy_increment):
+    def __init__(self, superbasin_path, states, kT, energy_increment):
         self.energy_increment = energy_increment
-        SuperbasinScheme.__init__(self,superbasin_path, states)
+        SuperbasinScheme.__init__(self,superbasin_path, states, kT)
         self.levels = {}
 
     def get_energy_increment(self):

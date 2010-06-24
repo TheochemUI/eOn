@@ -1,4 +1,5 @@
 import os
+import math
 import numpy
 from numpy import array #XXX: For repr-eval
 import logging
@@ -6,13 +7,13 @@ logger = logging.getLogger('superbasin')
 
 
 class Superbasin:
-    
-    def __init__(self, path, state_list = None, get_state = None):
+ 
+    def __init__(self, path, kT, state_list = None, get_state = None):
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
-        
+        self.kT = kT
         self.path = path
         if not os.path.isfile(self.path):
             self.states = state_list
@@ -47,20 +48,23 @@ class Superbasin:
         else:
             logger.warning("Warning: failed to select exit state. p = " + str(p))
         time = self.mean_residence_times[entry_state_index]
+        
+         
         return time, exit_state_index
 
-    def step(self, entry_state):
+    def step(self, entry_state, get_product_state):
         time, exit_state_index=self.pick_exit_state(entry_state)
         exit_state=self.states[exit_state_index]
         #make a rate table for the exit state
         rate_table = []
         ratesum = 0.0
         process_table=exit_state.get_process_table()
-        for process in process_table:
-            if process['product']==-1 or process['product'] not in self.state_numbers:
+        for process in process_table.values():
+            if process['product'] not in self.state_numbers:
                 rate_table.append(process['rate'])
                 ratesum += process['rate']
-        
+       
+        p = 0.0
         u = numpy.random.random_sample()
         for i in range(len(rate_table)):
             p += rate_table[i]/ratesum
@@ -69,22 +73,52 @@ class Superbasin:
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
-        exit_process_index, time=pick_exit_process()
-        exit_process=exit_state.get_process_table()[exit_process_index]
-        return time, exit_process
+        
+        #akmc expects a state, not a process id
+        exit_state = get_product_state(entry_state.number, exit_process_index)
+        return time, exit_state
 
     def contains_state(self, state):
         return state in self.states
 
-    def _calculate_stuff(self):
-       
+    def _calculate_stuff(self): 
+        #Check detailed balance
+        eq_prob = []
+        for i in range(len(self.states)-1):
+            for j in range(i+1, len(self.states)):
+                proc_tab_i = self.states[i].get_process_table()
+                proc_tab_j = self.states[j].get_process_table()
+                
+                rate_sum = 0.0
+                pij = 0.0
+                for id in proc_tab_i:
+                    rate_sum += proc_tab_i[id]['rate']
+                    if proc_tab_i[id]['product'] == self.state_numbers[j]:
+                        pij += proc_tab_i[id]['rate']
+                pij/=rate_sum
+
+                rate_sum = 0.0
+                pji = 0.0
+                for id in proc_tab_j:
+                    rate_sum += proc_tab_j[id]['rate']
+                    if proc_tab_j[id]['product'] == self.state_numbers[i]:
+                        pji += proc_tab_j[id]['rate']
+                pji/=rate_sum
+
+                #XXX: Hard coded comparison criteria
+                if abs(math.exp((self.states[j].get_energy() - self.states[i].get_energy())/self.kT)*pij - pji) > .1:
+                    logger.warning('states %d and %d do not satisfy detailed balance' % (self.state_numbers[i], self.state_numbers[j]))
+
+
+        
+        
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
         print 'remove'
         sum=0.0
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
-            for process in proc_table:
+            for process in proc_table.values():
                 sum+=process['rate']
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
                     recurrent_vector[i] += process['rate']
