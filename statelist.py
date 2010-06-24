@@ -125,15 +125,13 @@ class StateList:
                     if self.use_identical:
                         if atoms.identical(p, pnew, self.epsilon_r):
                             # Update the reactant state to point at the new state id.
-                            st.procs[process_id]['product'] = id
-                            st.save_process_table()
+                            self.register_process(st.number, id, process_id)                            
                             return self.get_state(id)
                     else:
                         dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
                         if dist < self.epsilon_r:
                             # Update the reactant state to point at the new state id.
-                            st.procs[process_id]['product'] = id
-                            st.save_process_table()
+                            self.register_process(st.number, id, process_id)                            
                             return self.get_state(id)
 
             # The id for the new state is the number of states.
@@ -143,28 +141,8 @@ class StateList:
             newst = state.State(self.state_path(newstnr), newstnr, self.kT, 
                     self.thermal_window, self.max_thermal_window, self.epsilon_e, 
                     self.epsilon_r, st.proc_product_path(process_id))
-            newst.set_energy(st.procs[process_id]["product_energy"])
-            
-            # Update the reactant state to point at the new state id.
-            st.procs[process_id]['product'] = newstnr
-            st.save_process_table()
 
-            # Create the reverse process in the new state.
-            barrier = st.procs[process_id]['saddle_energy'] - st.procs[process_id]['product_energy']
-            shutil.copy(st.proc_saddle_path(process_id), newst.proc_saddle_path(0))
-            shutil.copy(st.proc_reactant_path(process_id), newst.proc_reactant_path(0))
-            shutil.copy(st.proc_product_path(process_id), newst.proc_product_path(0))
-            shutil.copy(st.proc_results_path(process_id), newst.proc_results_path(0))
-            shutil.copy(st.proc_mode_path(process_id), newst.proc_mode_path(0))
-            newst.append_process_table(id = 0, 
-                                       saddle_energy = st.procs[process_id]['saddle_energy'], 
-                                       prefactor = st.procs[process_id]['product_prefactor'], 
-                                       product = state_number, 
-                                       product_energy = st.procs[process_id]['product_energy'],
-                                       product_prefactor = st.procs[process_id]['prefactor'],
-                                       barrier = barrier, 
-                                       rate = st.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
-                                       repeats = 0)
+            self.register_process(st.number, newstnr, process_id)
             
             # Append the new state to the state table.
             self.append_state_table(st.procs[process_id]['product_energy'])
@@ -176,7 +154,64 @@ class StateList:
         # Return the product state.
         return newst
 
-            
+
+    def register_process(self, reactant_number, product_number, process_id):
+        # Get the reactant and product state objects.
+        reactant = self.get_state(reactant_number)
+        product = self.get_state(product_number)
+        reverse_procs = product.get_process_table()
+        # Make the reactant process point to the product state number.
+        reactant.procs[process_id]["product"] = product_number
+        reactant.save_process_table()
+        if product.get_num_procs() != 0:
+            # Check to see if the reverse process is already identified (not -1). If so, return.
+            for id in reverse_procs.keys():
+                proc = reverse_procs[id]
+                if proc["product"] == reactant_number:
+                    return
+            # The reverse process might already exist, but is unidentified (-1). See if this is the case and fix it.
+            candidates = []
+            for id in reverse_procs.keys():
+                if reverse_procs[id]["product"] == -1:
+                    candidates.append(id)
+            esaddle = proc["saddle_energy"]
+            energetically_close = []
+            for id in candidates:
+                proc = reverse_procs[id]
+                if abs(proc["saddle_energy"] - esaddle) < self.epsilon_e:
+                    energetically_close.append(id)
+            if len(energetically_close) > 0:
+                saddle_config = reactant.get_reactant()
+                for id in energetically_close:
+                    temp_config = product.get_process_saddle(id)
+                    dist = max(atoms.per_atom_norm(saddle_config.r - temp_config.r, saddle_config.box))
+                    if dist < self.epsilon_r:
+                        reverse_procs[id][product] = product_number
+                        product.save_process_table()
+                        return
+        # There are no processes, so this must be a new state. Add the reverse process.
+        product.set_energy(reactant.procs[process_id]["product_energy"])
+        # Update the reactant state to point at the new state id.
+        reactant.procs[process_id]['product'] = product_number
+        reactant.save_process_table()
+        # Create the reverse process in the new state.
+        barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
+        shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
+        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_reactant_path(0))
+        shutil.copy(reactant.proc_product_path(process_id), product.proc_product_path(0))
+        shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
+        shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
+        product.append_process_table(id = 0, 
+                                     saddle_energy = reactant.procs[process_id]['saddle_energy'], 
+                                     prefactor = reactant.procs[process_id]['product_prefactor'], 
+                                     product = reactant_number, 
+                                     product_energy = reactant.procs[process_id]['product_energy'],
+                                     product_prefactor = reactant.procs[process_id]['prefactor'],
+                                     barrier = barrier, 
+                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
+                                     repeats = 0)
+        product.save_process_table()
+
 
     def get_state(self, state_number):
         ''' Returns a state object. '''
