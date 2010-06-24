@@ -1,0 +1,34 @@
+energy_ 6.9754114068176772e-09
+stateNumber_ 4
+paths_ 6
+|	energyPass_ 0.14999998735891229
+	framePass_ 1
+	energyNewMinimum_ 2.4907427587095301e-08
+	frameNewMinimum_ 2
+	numberNewMinimum_ 2
+|	energyPass_ 0.050000001361903509
+	framePass_ 3
+	energyNewMinimum_ 8.142437613045673e-10
+	frameNewMinimum_ 4
+	numberNewMinimum_ 7
+|	energyPass_ 0.15000000196766028
+	framePass_ 5
+	energyNewMinimum_ 3.1479374440479543e-09
+	frameNewMinimum_ 6
+	numberNewMinimum_ 2
+|	energyPass_ 0.049999996865822571
+	framePass_ 7
+	energyNewMinimum_ 5.9982835087790682e-10
+	frameNewMinimum_ 8
+	numberNewMinimum_ 7
+|	energyPass_ 0.099999999737218181
+	framePass_ 9
+	energyNewMinimum_ 4.3844495256628589e-10
+	frameNewMinimum_ 10
+	numberNewMinimum_ 5
+|	energyPass_ 0.10000000562209202
+	framePass_ 11
+	energyNewMinimum_ 1.5070756836932375e-09
+	frameNewMinimum_ 12
+	numberNewMinimum_ 5
+end
