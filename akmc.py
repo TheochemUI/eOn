@@ -337,6 +337,11 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
         elif config.kdb_on and kdber.make_suggestion(job_dir):
             logger.info('Made a KDB suggestion')
             searchdata[str(wuid)+"type"] = "kdb"
+            # Store the kdb suggestion in the state directory if config.kdb_keep is set.
+            if config.kdb_keep:
+                if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
+                    os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
+                shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))             
         else:
             disp.make_displacement(job_dir) 
             searchdata[str(wuid)+"type"] = "random"
