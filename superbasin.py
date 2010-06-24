@@ -164,16 +164,17 @@ class Superbasin:
         print >> f, repr(self.probability_matrix)
         f.close()
 
+
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
-        print 'path', self.path
         f = open(self.path, 'r')
         self.state_numbers = eval(f.readline())
-        print 'state_numbers', self.state_numbers
-        self.mean_residence_times=eval(f.readline())
-        print 'mean_residence_times', self.mean_residence_times
-        self.probability_matrix=eval(f.read())
-        print 'probability_matrix', self.probability_matrix
+        self.states = [get_state(i) for i in self.state_numbers]
+        
+        matstr = ''
+        for i in f.readlines():
+            matstr += i
+        self.probability_matrix = eval(matstr)
 
     def delete(self):
         logger.debug('deleting %s' % self.path)

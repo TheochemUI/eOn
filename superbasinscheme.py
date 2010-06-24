@@ -39,11 +39,16 @@ class SuperbasinScheme:
         for i in merge_states:
             sb = self.get_containing_superbasin(i)
             if sb is None:
-                new_sb_states.append(i)
+                if i not in new_sb_states:
+                    new_sb_states.append(i)
             else:
-                new_sb_states += sb.states
+                for j in sb.states:
+                    if j not in new_sb_states:
+                        new_sb_states += j
                 sb.delete()
                 self.superbasins.remove(sb)
+        
+        
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         #However, it will likely be very slow. We should be able to do without it.
         #Also, if confidence is changed and new processes are found, the superbasin
