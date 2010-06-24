@@ -21,9 +21,10 @@ processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 search_result_header = "%8s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "result")
 search_result_header += "-" * len(search_result_header) + '\n'
 
+
+
 class State:
     """ The State class. """
-
 
 
     def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, reactant_path = None):
@@ -89,8 +90,8 @@ class State:
     def add_process(self, resultpath, resultdata):
         """ Adds a process to this State. """
 
-        self.set_good_saddle_count(self.get_good_saddle_count() + 1)
-
+        self.set_good_saddle_count(self.get_good_saddle_count() + 1) #XXX should have specific definition for what a "good" saddle is.  This is not it.
+        
         # We may not already have the energy for this State.  If not, it should be in the result data.
         if self.get_energy() == None:
             self.set_energy(resultdata["potential_energy_reactant"])
@@ -122,7 +123,7 @@ class State:
                         self.set_sequential_redundant(self.get_sequential_redundant() + 1)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
-                    self.append_search_result(resultdata, "repeat")
+                    self.append_search_result(resultdata, "repeat-%d" % id)
                     return None
 
         # This appears to be a unique process.
@@ -134,7 +135,7 @@ class State:
         # If this barrier is within the thermal window, reset sequential_redundant.
         ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
         if ediff < 0.0:    
-            self.append_search_result(resultdata, "good")
+            self.append_search_result(resultdata, "good-%d" % self.get_num_procs())
             self.set_sequential_redundant(0)
         else:
             self.append_search_result(resultdata, "barrier > thermal_window")
