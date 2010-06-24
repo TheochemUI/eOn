@@ -21,10 +21,8 @@ class Superbasin:
             self.write_data()
         else:
             self.read_data(get_state)
-
-        
-    
-    def step(self, entry_state, get_product_state):        
+      
+    def pick_exit_state(self, entry_state):        
         #Find the exit state
         
         for i in range(len(self.state_numbers)):
@@ -34,10 +32,10 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-        probability_vector = self.probability_matrix[entry_state_index]
-        probability_vector /= numpy.sum(probability_vector)
+        probability_vector = self.probability_matrix.transpose()[entry_state_index]
         if abs(1.0-numpy.sum(probability_vector)) < 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
+        probability_vector /= numpy.sum(probability_vector)
         
         u = numpy.random.random_sample()
         p = 0.0
@@ -48,39 +46,32 @@ class Superbasin:
                 break
         else:
             logger.warning("Warning: failed to select exit state. p = " + str(p))
-        
-        #XXX: Do i even need to be keeping track of the exit_state_index?
-        exit_state = self.states[exit_state_index]
+        time = self.mean_residence_times[entry_state_index]
+        return time, exit_state_index
 
+    def step(self, entry_state):
+        time, exit_state_index=self.pick_exit_state(entry_state)
+        exit_state=self.states[exit_state_index]
         #make a rate table for the exit state
         rate_table = []
         ratesum = 0.0
-        for key in exit_state.get_process_table(): 
-            process = exit_state.get_process_table()[key]
+        process_table=exit_state.get_process_table()
+        for process in process_table:
             if process['product']==-1 or process['product'] not in self.state_numbers:
-                rate_table.append([key, process['rate']])
+                rate_table.append(process['rate'])
                 ratesum += process['rate']
         
         u = numpy.random.random_sample()
         for i in range(len(rate_table)):
-            p += rate_table[i][1]/ratesum
+            p += rate_table[i]/ratesum
             if p>u:
-                nsid = i 
+                exit_process_index = i 
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
-
-        absorbing_state = get_product_state(exit_state.number, rate_table[nsid][0])
-        time = self.mean_residence_times[entry_state_index]
-
-        if absorbing_state in self.states:
-            #if we discovered a new connection between states in this basin
-            #we need to update everything
-
-            #TODO: need to ensure detailed balance for the subspace
-            self._calculate_stuff()
-            self.write_data()
-        return time, absorbing_state
+        exit_process_index, time=pick_exit_process()
+        exit_process=exit_state.get_process_table()[exit_process_index]
+        return time, exit_process
 
     def contains_state(self, state):
         return state in self.states
@@ -89,18 +80,22 @@ class Superbasin:
        
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
+        print 'remove'
+        sum=0.0
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
-            for key in proc_table:
-                process = proc_table[key]
-
+            for process in proc_table:
+                sum+=process['rate']
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
                     recurrent_vector[i] += process['rate']
-                #elif process['product'] == self.state_numbers[i]:
                 else:
                     j = self.state_numbers.index(process['product'])
                     transient_matrix[i][j] += process['rate']
                 transient_matrix[i][i] -= process['rate']
+        print 'sum', sum
+        print 'transient_matrix\n', transient_matrix
+        print 'recurrent_vector', recurrent_vector
+
         
         #What is this stuff?
         #inverse free method
@@ -112,20 +107,20 @@ class Superbasin:
         #Calculate mean residence time
         #self.mean_residence_time = numpy.sum(fundamental_vector)
         
-        print recurrent_vector
-        print transient_matrix
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
-        
+        print 'fundamental_matrix\n', fundamental_matrix
+        n=len(fundamental_matrix)
+        id=numpy.zeros((n, n))
         self.mean_residence_times = numpy.zeros(len(self.states))
         self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
         
         for i in range(len(self.states)):
             for j in range(len(self.states)):
-                self.mean_residence_times[j] += fundamental_matrix[i][j]
-                self.probability_matrix[j][i] = fundamental_matrix[i][j]/recurrent_vector[i]
-
-
-   
+                self.mean_residence_times[j] -= fundamental_matrix[i][j]
+                self.probability_matrix[i][j] = -recurrent_vector[i]*fundamental_matrix[i][j]
+        print 'mean_residence_times=', repr(self.mean_residence_times)
+        print 'probability_matrix=\\\n', repr(self.probability_matrix)
+        print 'probability_matrix.sum', self.probability_matrix.sum(0)
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
@@ -137,14 +132,14 @@ class Superbasin:
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
+        print 'path', self.path
         f = open(self.path, 'r')
         self.state_numbers = eval(f.readline())
-        self.states = [get_state(i) for i in self.state_numbers]
-        
-        matstr = ''
-        for i in f.readlines():
-            matstr += i
-        self.probability_matrix = eval(matstr)
+        print 'state_numbers', self.state_numbers
+        self.mean_residence_times=eval(f.readline())
+        print 'mean_residence_times', self.mean_residence_times
+        self.probability_matrix=eval(f.read())
+        print 'probability_matrix', self.probability_matrix
 
     def delete(self):
         logger.debug('deleting %s' % self.path)
