@@ -1,0 +1,34 @@
+energy_ 00
+stateNumber_ 3
+paths_ 6
+|	energyPass_ 0.05000
+	framePass_ 1
+	energyNewMinimum_ 0
+	frameNewMinimum_ 2
+	numberNewMinimum_ 2
+|	energyPass_ 0.150000
+	framePass_ 3
+	energyNewMinimum_ 0
+	frameNewMinimum_ 4
+	numberNewMinimum_ 7
+|	energyPass_ 0.150
+	framePass_ 5
+	energyNewMinimum_ 0
+	frameNewMinimum_ 6
+	numberNewMinimum_ 7
+|	energyPass_ 0.100000
+	framePass_ 7
+	energyNewMinimum_ 0
+	frameNewMinimum_ 8
+	numberNewMinimum_ 0
+|	energyPass_ 0.05
+	framePass_ 9
+	energyNewMinimum_ 0
+	frameNewMinimum_ 10
+	numberNewMinimum_ 2
+|	energyPass_ 0.100000
+	framePass_ 11
+	energyNewMinimum_ 0
+	frameNewMinimum_ 12
+	numberNewMinimum_ 0
+end
