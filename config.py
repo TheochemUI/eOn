@@ -88,6 +88,7 @@ if kdb_on:
     kdb_addpath = parser.get('KDB', 'addpath')
     kdb_querypath = parser.get('KDB', 'querypath')
     kdb_wait = parser.get('KDB', 'wait')
+    kdb_keep = parser.get('KDB', 'keep')
 
 
 #Recycling
