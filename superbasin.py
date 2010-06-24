@@ -1,7 +1,6 @@
 import os
 import math
 import numpy
-from numpy import array #XXX: For repr-eval
 import logging
 logger = logging.getLogger('superbasin')
 
@@ -159,22 +158,19 @@ class Superbasin:
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
         f = open(self.path, 'w')
-        print >> f, repr(self.state_numbers)
-        print >> f, repr(self.mean_residence_times)
-        print >> f, repr(self.probability_matrix)
+        numpy.savez(f, state_numbers = numpy.array(self.state_numbers), mean_residence_times = self.mean_residence_times, probability_matrix = self.probability_matrix) 
         f.close()
 
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
         f = open(self.path, 'r')
-        self.state_numbers = eval(f.readline())
+        npz = numpy.load(f)
+        self.state_numbers = npz['state_numbers']
         self.states = [get_state(i) for i in self.state_numbers]
-        
-        matstr = ''
-        for i in f.readlines():
-            matstr += i
-        self.probability_matrix = eval(matstr)
+        self.mean_residence_times = npz['mean_residence_times']
+        self.probability_matrix = npz['probability_matrix']
+        f.close()        
 
     def delete(self):
         logger.debug('deleting %s' % self.path)
