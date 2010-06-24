@@ -6,6 +6,7 @@ logger = logging.getLogger('communicator')
 from time import sleep, time
 import subprocess
 import commands
+import tarfile
 
 class NotImplementedError(Exception):
     pass
@@ -475,6 +476,149 @@ class Local(Communicator):
 
     def get_queue_size(self):
         return 0
+
+
+class ARC(Communicator):
+
+    def __init__(self, scratchpath, bundle_size=1):
+        Communicator.__init__(self, scratchpath, bundle_size)
+
+        try:
+            import arclib
+            self.arc = arclib
+        except ImportError:
+            raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
+
+        self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
+
+
+    def create_wrapper_script(self):
+        '''Create a wrapper script to execute a job.  Return path to script.'''
+        
+        s = """
+        #!/bin/sh
+
+        tar jxvf $1.tar.bz2
+        cd $1
+        Client
+        cd $HOME
+        tar jcvf $1.tar.bz2  $1
+        """
+        script_path = os.path.join(self.scratchpath, 'wrapper.sh')
+        try:
+            f = open(script_path, "w")
+            f.write(s)
+            f.close()
+        except Exception as msg:
+            raise CommunicatorError("Can't create wrapper script: %s" % msg)
+
+        return script_path
+
+
+    def create_tarball(self, src, dest):
+        """Pack directory 'src' into tar.bz2 file 'dest', makeing sure it will unopack into
+           a dir called basename(src), rather than path/to/src"""
+
+        # Remove trailing '/'; it would cause trouble with
+        # os.path.dirname() and os.path.basename()
+        if src[-1] == '/':
+            src = src[:-1]
+
+        dirname = os.path.dirname(src)
+        basename = os.path.basename(src)
+
+        cwd = os.getcwd()
+        try:
+            os.chdir(dirname)
+            tarball = tarfile.open(dest, 'w:bz2')
+            tarball.add(basename)
+            tarball.close()
+        finally:
+            os.chdir(cwd)
+
+
+    def create_job(self, job_path, wrapper_path):
+        '''Prepare a job who's inputfiles are found in 'job_path'.
+           Return pre-processed xRSL code and job name.'''
+
+        # Remove trailing '/'; it would cause trouble with os.path.basename()
+        if job_path[-1] == '/':
+            job_path = job_path[:-1]
+
+        basename = os.path.basename(job_path)
+        tarball_path = os.path.join(self.scratchpath, basename + ".tar.bz2")
+        self.create_tarball(job_path, tarball_path)
+
+        s = "&"
+        s += "(executable=./%s)" % os.path.basename(wrapper_path)
+        s += "(arguments=%s)" % basename
+
+        s += "(inputFiles="
+        s += "(%s %s)" % (os.path.basename(wrapper_path), wrapper_path)
+        s += "(%s %s)" % (os.path.basename(tarball_path), tarball_path)
+        s += ")"
+
+        s += "(outputFiles="
+        s += "(%s '')" % os.path.basename(tarball_path)
+        s += ")"
+
+        s += "(stdout=stdout)"
+        s += "(stderr=stderr)"
+
+        s += "(runTimeEnvironment=APPS/CHEM/EON2)"
+
+        jobname = "eon-%s" % basename
+        s += "(jobName=%s)" % jobname
+
+        logger.debug("xrsl: " + s)
+
+        return self.arc.Xrsl(s), jobname
+
+
+    def submit_searches(self, jobpaths):
+        '''Throws CommunicatorError if fails.'''
+
+        try:
+            c = self.arc.Certificate(self.arc.PROXY)
+        except self.arc.CertificateError as msg:
+            raise CommunicatorError(msg)
+
+        if c.IsExpired():
+            raise CommunicatorError("Grid proxy has expired!")
+
+        logger.info("Grid proxy is valid for " + c.ValidFor())
+
+        wrapper_path = self.create_wrapper_script()
+
+        qi = self.arc.GetQueueInfo()
+        f = open(self.jobsfilename, "w")
+
+        for job_path in self.make_bundles(jobpaths):
+            xrsl, jobname = self.create_job(job_path, wrapper_path)
+            targets = self.arc.ConstructTargets(qi, xrsl)
+            targetsleft = self.arc.PerformStandardBrokering(targets)
+            jobid = self.arc.SubmitJob(xrsl, targetsleft)
+
+            self.arc.AddJobID(jobid, jobname) # Why is this needed?
+            f.write(jobid + '\n')
+            logger.debug("jobId: " + jobid)
+        f.close()
+
+
+    def get_results(self, resultspath):
+        '''Returns a list of directories containing the results.'''
+        return []
+
+    def get_queue_size(self):
+        '''Returns the number of items waiting to run in the queue.'''
+        return 0
+
+    def cancel_state(self, statenumber):
+        '''Returns the number of workunits that were canceled.'''
+        print 'statenumber =', statenumber
+        raise NotImplementedError()
+
+
 
 if __name__=='__main__':
     import sys
