@@ -229,7 +229,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
 
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
-        superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.sb_tc_ntrans)
+        superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
     return superbasining
 
 def kmc_step(current_state, states, time, kT):
