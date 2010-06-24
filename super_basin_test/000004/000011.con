@@ -1,0 +1,12 @@
+void					Random Number generator (obsolete)
+potential EggBox 					Potential to use with (optional)
+10.000000	10.000000	10.000000					Periods x, y, z / Angstrom
+90	90	90					Cell Angles/Degree (always 90 with current implementation)
+energyConstant 0					Constant to add to the energy (in eV) to change reference (optional)
+0	1	1				# fixed atoms, # movable atoms, # images
+1						# components
+1 						# atoms/components
+16.000000 			Masses / components / (g/mol)
+O    		Atomic Symbol
+Coordinates of Component 1 / Angstrom
+-2.49978132713543	-4.36053412806827e-05	-2.49971668419162	0	0
