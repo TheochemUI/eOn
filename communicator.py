@@ -537,6 +537,21 @@ class ARC(Communicator):
             os.chdir(cwd)
 
 
+    def open_tarball(self, filename):
+        """Pack upp tar.bz2 file beneth the directory where it resides."""
+
+        tarball = tarfile.open(filename, 'r:bz2')
+
+        # For security reasons, filter out filenames that might end up
+        # outside of 'dirname':
+        files = tarball.getmembers()
+        good_files = [ f for f in files if f.name[0:2] != '..' and f.name[0] != '/' ]
+
+        dirname = os.path.dirname(filename)
+        tarball.extractall(path=dirname, members=good_files)
+        tarball.close()
+
+
     def create_job(self, job_path, wrapper_path):
         '''Prepare a job who's inputfiles are found in 'job_path'.
            Return pre-processed xRSL code and job name.'''
@@ -550,7 +565,7 @@ class ARC(Communicator):
         self.create_tarball(job_path, tarball_path)
 
         s = "&"
-        s += "(executable=./%s)" % os.path.basename(wrapper_path)
+        s += "(executable=%s)" % os.path.basename(wrapper_path)
         s += "(arguments=%s)" % basename
 
         s += "(inputFiles="
@@ -567,7 +582,7 @@ class ARC(Communicator):
 
         s += "(runTimeEnvironment=APPS/CHEM/EON2)"
 
-        jobname = "eon-%s" % basename
+        jobname = "%s" % basename
         s += "(jobName=%s)" % jobname
 
         logger.debug("xrsl: " + s)
@@ -591,23 +606,79 @@ class ARC(Communicator):
         wrapper_path = self.create_wrapper_script()
 
         qi = self.arc.GetQueueInfo()
-        f = open(self.jobsfilename, "w")
+        f = open(self.jobsfilename, "a")
 
         for job_path in self.make_bundles(jobpaths):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
             targets = self.arc.ConstructTargets(qi, xrsl)
             targetsleft = self.arc.PerformStandardBrokering(targets)
-            jobid = self.arc.SubmitJob(xrsl, targetsleft)
+            try:
+                jobid = self.arc.SubmitJob(xrsl, targetsleft)
+            except (JobSubmissionError, XrslError) as msg:
+                raise CommunicatorError(msg)
 
             self.arc.AddJobID(jobid, jobname) # Why is this needed?
             f.write(jobid + '\n')
             logger.debug("jobId: " + jobid)
         f.close()
 
+    
+    def get_job(self, jobid, resultspath):
+        """Sort like the cli command 'ngget': 
+        Fetch the output files of a job, and remove the the job.
+        The files are put in a subdirectory of resultspath,
+        and the full path of the subdirectory is returned."""
+
+        n = jobid.split('/')[-1]
+        outputdir = os.path.join(resultspath, n)
+        if not os.path.isdir(outputdir):
+            os.makedirs(outputdir)
+
+        ftp = self.arc.FTPControl()
+        ftp.DownloadDirectory(jobid, outputdir)
+
+        self.arc.CleanJob(jobid)
+
+        return outputdir
+
 
     def get_results(self, resultspath):
         '''Returns a list of directories containing the results.'''
-        return []
+
+        if os.path.isfile(self.jobsfilename):
+            with open(self.jobsfilename, "r") as f:
+                jobids = [ jid[:-1] for jid in f ]  # Remove trailing '\n'.
+        else:
+            jobids = []
+
+        if not jobids: return []
+
+        done = []
+        notdone = []
+        for info in self.arc.GetJobInfo(jobids):
+            if info.status in [ "FINISHED", "FAILED" ]:
+                done.append(info)
+            else:
+                logger.info("%s / '%s' not done yet (%s)" % (info.id,info.job_name,info.status)) 
+                notdone.append(info)
+
+        result_dirs = []
+        for job in done:
+            jid = job.id
+            jname = job.job_name
+            logger.info("Fetching %s / '%s' (%s)" % (jid, jname, info.status)) 
+            p = self.get_job(jid, resultspath)
+            tarball = os.path.join(p, "%s.tar.bz2" % jname)
+            self.open_tarball(tarball)
+            result_dirs.append(os.path.join(p, jname))
+
+        # Write the "not done" back to self.jobsfilename - or empty it if
+        # there are no "not done"-jobs:
+        with open(self.jobsfilename, "w") as f:
+            f.writelines([ j.job_name for j in notdone ])
+
+        return result_dirs
+
 
     def get_queue_size(self):
         '''Returns the number of items waiting to run in the queue.'''
