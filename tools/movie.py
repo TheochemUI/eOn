@@ -3,6 +3,7 @@ import os
 import sys
 from optparse import OptionParser
 
+import pathfix
 import io
 import statelist
 
