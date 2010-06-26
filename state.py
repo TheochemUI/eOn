@@ -18,7 +18,7 @@ ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
 processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-search_result_header = "%8s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "result")
+search_result_header = "%8s %16s %8s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "result")
 search_result_header += "-" * len(search_result_header) + '\n'
 
 
@@ -78,9 +78,9 @@ class State:
 
     def append_search_result(self, resultdata, result):
         f = open(self.search_result_path, 'a')
-        f.write("%8d %16s %16.5e %16.5e    %s\n" % (resultdata["search_id"], 
+        f.write("%8d %16s %8.5f %16.5e    %s\n" % (resultdata["search_id"], 
                  resultdata["search_type"], 
-                 resultdata["barrier_product_to_reactant"],
+                 resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
                  resultdata["displacement_saddle_distance"],
                  result))
         f.close()

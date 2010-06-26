@@ -29,6 +29,9 @@ all : $(SUBDIRS) client
 
 client : $(OBJECTS) $(LIBS)  
 	g++  $(CXXFLAGS) -o $@ $^
+$(LIBS):
+	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
+	
 
 $LIBS: $(SUBDIRS)
 
