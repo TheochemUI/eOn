@@ -21,7 +21,7 @@ import displace
 import io
 import recycling
 import superbasinscheme
-import votersb
+import askmc
 import kdb
 
 def main(): 
@@ -241,8 +241,8 @@ def kmc_step(current_state, states, time, kT):
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
     # If the Chatterjee & Voter superbasin acceleration method is being used
-    if config.votersb_on:
-        vsb = votersb.VoterSB(kT, states, config.votersb_confidence, config.votersb_barrier_test_on, config.votersb_connections_test_on, config.path_root, config.akmc_thermal_window)
+    if config.askmc_on:
+        asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_barrier_test_on, config.askmc_connections_test_on, config.path_root, config.akmc_thermal_window)
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
         if config.sb_on:
@@ -251,8 +251,8 @@ def kmc_step(current_state, states, time, kT):
         if config.sb_on and sb:
             time, next_state = sb.step(current_state, states.get_product_state)
         else:
-            if config.votersb_on:
-                rate_table = vsb.get_ratetable(current_state)
+            if config.askmc_on:
+                rate_table = asKMC.get_ratetable(current_state)
             else:
                 rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
@@ -275,8 +275,8 @@ def kmc_step(current_state, states, time, kT):
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             time -= math.log(1-numpy.random.random_sample())/ratesum # numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
 
-        if config.votersb_on:
-            vsb.register_transition(current_state, next_state)
+        if config.askmc_on:
+            asKMC.register_transition(current_state, next_state)
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
         
@@ -453,10 +453,9 @@ if __name__ == '__main__':
                         os.mkdir(i)
                         os.removedirs(i)
                 
-                if config.votersb_on:
-                    askmc_data_path = os.path.join(config.path_results, "askmc_data.txt")
-                    if os.path.isfile(askmc_data_path):
-                        os.remove(askmc_data_path)
+                askmc_data_path = os.path.join(config.path_results, "askmc_data.txt")
+                if os.path.isfile(askmc_data_path):
+                    os.remove(askmc_data_path)
                 dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
                 info_path = os.path.join(config.path_results, "info.txt") 
                 log_path = os.path.join(config.path_results, "akmc.log") 
