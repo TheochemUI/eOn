@@ -35,7 +35,7 @@ class VoterSB:
     """ This is a class to keep track of things associated with performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
-    def __init__(self, kT, states, confidence, barrier_test_on, path_root, thermal_window):
+    def __init__(self, kT, states, confidence, barrier_test_on = True, connection_test_on = False, path_root, thermal_window):
         self.kT = kT
         self.Beta = 1/(kT)
         self.path = path_root
@@ -51,19 +51,20 @@ class VoterSB:
         self.Nf = math.ceil((alpha - 1)/self.delta*math.log(1/self.delta))
 
         # --- Extra check on the superbasin criterion? ---
-        # "checksb_connections" will implement a method to determine whether there are any missed
-        # connections between states identified as "in the superbasin".
-        # Perhaps use "checksb_barriers" instead?
         # "checksb_barriers" will check to see if there are any low-barrier, unvisited processes
         # originating from states in the superbasin.
-        # Note that if a "-1" in the process table does not *necessarily* imply that a process
-        # is unvisited, then "checksb_barriers" will fail.  But it should be faster and more effective
-        # than "checksb_connections"
-        self.checksb_connections = False
+        # Default: On
+        # "checksb_connections" will implement a method to determine whether there are any missed
+        # connections between states identified as "in the superbasin".
+        # Default: Off
         if barrier_test_on:
             self.checksb_barriers = True
         else:
             self.checksb_barriers = False
+        if connection_test_on:
+            self.checksb_connections = True
+        else:
+            self.checksb_connections = False
 
     def compile_process_table(self, current_state):
         """ Load the normal process table, and replace all the rates edited by AS-KMC. """
