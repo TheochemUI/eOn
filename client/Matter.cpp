@@ -45,6 +45,8 @@ namespace {
                 }
                 i++;
             }
+            //Invalid symbol.
+            return -1;
       }
       
       char const * atomicNumber2symbol(int n)
