@@ -493,9 +493,9 @@ class ARC(Communicator):
 
         if os.path.isfile(self.jobsfilename):
             jobids = []
-            with open(self.jobsfilename, "r") as f:
-                for jid in f:
-                    jobids.append(jid[:-1])  # Remove trailing '\n'.
+            f = open(self.jobsfilename, "r")
+            for jid in f:
+                jobids.append(jid[:-1])  # Remove trailing '\n'.
         else:
             jobids = []
 
