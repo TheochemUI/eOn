@@ -108,10 +108,10 @@ sb_scheme = parser.get('Superbasins', 'scheme')
 if sb_scheme == 'transition_counting':
     sb_tc_ntrans = parser.getint('Superbasins', 'number_of_transitions')
     sb_path = parser.get('Paths', 'superbasins')
-votersb_on = parser.getboolean('Superbasins','use_votersb')
-votersb_confidence = parser.getfloat('Superbasins','votersb_confidence')
-votersb_barrier_test_on = parser.getboolean('Superbasins','votersb_barrier_test_on')
-votersb_connections_test_on = parser.getboolean('Superbasins','votersb_connections_test_on')
+askmc_on = parser.getboolean('Superbasins','use_askmc')
+askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
+askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
+askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
 
 #State comparison
 comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
