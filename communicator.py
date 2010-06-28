@@ -485,7 +485,7 @@ class ARC(Communicator):
 
         try:
             import arclib
-            self.arc = arclib
+            self.arclib = arclib
         except ImportError:
             raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
 
@@ -501,8 +501,8 @@ class ARC(Communicator):
 
         self.jobs = []
         if jobids:
-            print 'info:', self.arc.GetJobInfo(jobids)
-            for info in self.arc.GetJobInfo(jobids):
+            print 'info:', self.arclib.GetJobInfo(jobids)
+            for info in self.arclib.GetJobInfo(jobids):
                 job = {"id": info.id, "name": info.job_name}
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["state"] = "Done"
@@ -527,8 +527,8 @@ class ARC(Communicator):
         for j in self.jobs:
             if j["state"] == "Retrieved":
                 logger.info("Removing %s / %s" % (j["name"], j["id"]))
-                self.arc.CleanJob(j["id"])
-                self.arc.RemoveJobID(j["id"])
+                self.arclib.CleanJob(j["id"])
+                self.arclib.RemoveJobID(j["id"])
             else:
                 still_running.append(j["id"])
 
@@ -632,15 +632,15 @@ class ARC(Communicator):
 
         logger.debug("xrsl: " + s)
 
-        return self.arc.Xrsl(s), jobname
+        return self.arclib.Xrsl(s), jobname
 
 
     def submit_searches(self, jobpaths):
         '''Throws CommunicatorError if fails.'''
 
         try:
-            c = self.arc.Certificate(self.arc.PROXY)
-        except self.arc.CertificateError as msg:
+            c = self.arclib.Certificate(self.arclib.PROXY)
+        except self.arclib.CertificateError as msg:
             raise CommunicatorError(msg)
 
         if c.IsExpired():
@@ -650,18 +650,18 @@ class ARC(Communicator):
 
         wrapper_path = self.create_wrapper_script()
 
-        qi = self.arc.GetQueueInfo()
+        qi = self.arclib.GetQueueInfo()
 
         for job_path in self.make_bundles(jobpaths):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
-            targets = self.arc.ConstructTargets(qi, xrsl)
-            targetsleft = self.arc.PerformStandardBrokering(targets)
+            targets = self.arclib.ConstructTargets(qi, xrsl)
+            targetsleft = self.arclib.PerformStandardBrokering(targets)
             try:
-                jobid = self.arc.SubmitJob(xrsl, targetsleft)
+                jobid = self.arclib.SubmitJob(xrsl, targetsleft)
             except (JobSubmissionError, XrslError) as msg:
                 raise CommunicatorError(msg)
 
-            self.arc.AddJobID(jobid, jobname) # Why is this needed?
+            self.arclib.AddJobID(jobid, jobname) # Why is this needed?
             self.jobs.append({"id": jobid, "name": jobname, "state":"Running"})
             logger.info("submitted " + jobid)
 
@@ -676,7 +676,7 @@ class ARC(Communicator):
         if not os.path.isdir(outputdir):
             os.makedirs(outputdir)
 
-        ftp = self.arc.FTPControl()
+        ftp = self.arclib.FTPControl()
         ftp.DownloadDirectory(jobid, outputdir)
 
         return outputdir
