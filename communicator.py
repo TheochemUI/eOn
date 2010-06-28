@@ -491,6 +491,44 @@ class ARC(Communicator):
 
         self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
 
+        if os.path.isfile(self.jobsfilename):
+            with open(self.jobsfilename, "r") as f:
+                jobids = [ jid[:-1] for jid in f ]  # Remove trailing '\n'.
+        else:
+            jobids = []
+
+        self.jobs = []
+        if jobids:
+            for info in self.arc.GetJobInfo(jobids):
+                job = {"id": info.id, "name": info.job_name}
+                if info.status in [ "FINISHED", "FAILED" ]:
+                    job["state"] = "Done"
+                elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
+                    job["state"] = "Aborted" # Will disappear by itself soonish
+                else:
+                    job["state"] = "Running"
+
+                if job["state"] != "Aborted":
+                    self.jobs.append(job)
+
+
+    def __del__(self):
+        """
+        Remove those jobs scheduled for removal; remember the rest for future invocations.
+        """
+
+        for j in self.jobs:
+            if j["state"] == "Retrieved":
+                logger.info("Removing %s / %s" % (j["name"], j["id"]))
+                self.arc.CleanJob(j["id"])
+            else:
+                still_around.append(j["id"])
+
+        f = open(self.jobsfilename, "w")
+        if still_around:
+            f.writelines(still_around)
+        f.close()
+
 
     def create_wrapper_script(self):
         '''Create a wrapper script to execute a job.  Return path to script.'''
@@ -606,7 +644,6 @@ class ARC(Communicator):
         wrapper_path = self.create_wrapper_script()
 
         qi = self.arc.GetQueueInfo()
-        f = open(self.jobsfilename, "a")
 
         for job_path in self.make_bundles(jobpaths):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
@@ -618,14 +655,12 @@ class ARC(Communicator):
                 raise CommunicatorError(msg)
 
             self.arc.AddJobID(jobid, jobname) # Why is this needed?
-            f.write(jobid + '\n')
-            logger.debug("jobId: " + jobid)
-        f.close()
+            self.jobs.append({"id": jobid, "name": jobname, "state":"Running"})
+            logger.info("submitted " + jobid)
 
     
-    def get_job(self, jobid, resultspath):
-        """Sort like the cli command 'ngget': 
-        Fetch the output files of a job, and remove the the job.
+    def get_job_output(self, jobid, resultspath):
+        """Fetch the output files of a job.
         The files are put in a subdirectory of resultspath,
         and the full path of the subdirectory is returned."""
 
@@ -637,47 +672,27 @@ class ARC(Communicator):
         ftp = self.arc.FTPControl()
         ftp.DownloadDirectory(jobid, outputdir)
 
-        self.arc.CleanJob(jobid)
-
         return outputdir
 
 
     def get_results(self, resultspath):
         '''Returns a list of directories containing the results.'''
 
-        if os.path.isfile(self.jobsfilename):
-            with open(self.jobsfilename, "r") as f:
-                jobids = [ jid[:-1] for jid in f ]  # Remove trailing '\n'.
-        else:
-            jobids = []
-
-        if not jobids: return []
-
-        done = []
-        notdone = []
-        for info in self.arc.GetJobInfo(jobids):
-            if info.status in [ "FINISHED", "FAILED" ]:
-                done.append(info)
-            else:
-                logger.info("%s / '%s' not done yet (%s)" % (info.id,info.job_name,info.status)) 
-                notdone.append(info)
-
         result_dirs = []
+        done = [ j for j in self.jobs if j["state"] == "Done" ]
         for job in done:
-            jid = job.id
-            jname = job.job_name
-            logger.info("Fetching %s / '%s' (%s)" % (jid, jname, info.status)) 
-            p = self.get_job(jid, resultspath)
+            jid = job["id"]
+            jname = job["name"]
+
+            p = self.get_job_output(jid, resultspath)
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
             self.open_tarball(tarball)
+
             result_dirs.append(os.path.join(p, jname))
+            job['state'] = "Retrieved"
+            logger.info("Fetched %s / %s" % (jname, jid)) 
 
-        # Write the "not done" back to self.jobsfilename - or empty it if
-        # there are no "not done"-jobs:
-        with open(self.jobsfilename, "w") as f:
-            f.writelines([ j.job_name for j in notdone ])
-
-        return result_dirs
+        return result_dirs # XXX: unbundle???
 
 
     def get_queue_size(self):
@@ -688,6 +703,7 @@ class ARC(Communicator):
         '''Returns the number of workunits that were canceled.'''
         print 'statenumber =', statenumber
         raise NotImplementedError()
+
 
 
 
