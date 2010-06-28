@@ -500,7 +500,6 @@ class ARC(Communicator):
             jobids = []
 
         self.jobs = []
-        print 'jobids = ', jobids
         if jobids:
             print 'info:', self.arc.GetJobInfo(jobids)
             for info in self.arc.GetJobInfo(jobids):
@@ -529,7 +528,7 @@ class ARC(Communicator):
             if j["state"] == "Retrieved":
                 logger.info("Removing %s / %s" % (j["name"], j["id"]))
                 self.arc.CleanJob(j["id"])
-                self.arc.RemoveJobId(j["id"])
+                self.arc.RemoveJobID(j["id"])
             else:
                 still_running.append(j["id"])
 
