@@ -492,13 +492,17 @@ class ARC(Communicator):
         self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
 
         if os.path.isfile(self.jobsfilename):
+            jobids = []
             with open(self.jobsfilename, "r") as f:
-                jobids = [ jid[:-1] for jid in f ]  # Remove trailing '\n'.
+                for jid in f:
+                    jobids.append(jid[:-1])  # Remove trailing '\n'.
         else:
             jobids = []
 
         self.jobs = []
+        print 'jobids = ', jobids
         if jobids:
+            print 'info:', self.arc.GetJobInfo(jobids)
             for info in self.arc.GetJobInfo(jobids):
                 job = {"id": info.id, "name": info.job_name}
                 if info.status in [ "FINISHED", "FAILED" ]:
@@ -507,6 +511,8 @@ class ARC(Communicator):
                     job["state"] = "Aborted" # Will disappear by itself soonish
                 else:
                     job["state"] = "Running"
+
+                print 'job: ', job["id"], job["state"], info.status
 
                 if job["state"] != "Aborted":
                     self.jobs.append(job)
@@ -517,16 +523,19 @@ class ARC(Communicator):
         Remove those jobs scheduled for removal; remember the rest for future invocations.
         """
 
+        still_running = []
+
         for j in self.jobs:
             if j["state"] == "Retrieved":
                 logger.info("Removing %s / %s" % (j["name"], j["id"]))
                 self.arc.CleanJob(j["id"])
+                self.arc.RemoveJobId(j["id"])
             else:
-                still_around.append(j["id"])
+                still_running.append(j["id"])
 
         f = open(self.jobsfilename, "w")
-        if still_around:
-            f.writelines(still_around)
+        if still_running:
+            f.writelines([ j + '\n' for j in still_running ])
         f.close()
 
 
@@ -575,18 +584,17 @@ class ARC(Communicator):
             os.chdir(cwd)
 
 
-    def open_tarball(self, filename):
-        """Pack upp tar.bz2 file beneth the directory where it resides."""
+    def open_tarball(self, filename, dest_dir):
+        """Pack upp tar.bz2 file beneth the directory dest_dir."""
 
         tarball = tarfile.open(filename, 'r:bz2')
 
         # For security reasons, filter out filenames that might end up
-        # outside of 'dirname':
+        # outside of 'dest_dir':
         files = tarball.getmembers()
         good_files = [ f for f in files if f.name[0:2] != '..' and f.name[0] != '/' ]
 
-        dirname = os.path.dirname(filename)
-        tarball.extractall(path=dirname, members=good_files)
+        tarball.extractall(path=dest_dir, members=good_files)
         tarball.close()
 
 
@@ -684,15 +692,14 @@ class ARC(Communicator):
             jid = job["id"]
             jname = job["name"]
 
-            p = self.get_job_output(jid, resultspath)
+            p = self.get_job_output(jid, self.scratchpath)
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
-            self.open_tarball(tarball)
+            self.open_tarball(tarball, resultspath)
 
-            result_dirs.append(os.path.join(p, jname))
             job['state'] = "Retrieved"
             logger.info("Fetched %s / %s" % (jname, jid)) 
 
-        return result_dirs # XXX: unbundle???
+        return self.unbundle(resultspath)
 
 
     def get_queue_size(self):
