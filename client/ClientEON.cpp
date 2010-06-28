@@ -10,7 +10,7 @@
 #include <ctime>
 #include <cstring>
 #include <cassert>
-#ifdef NDEBUG
+#ifdef BOINC
       #include <boinc/boinc_api.h>
       #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
       #include <boinc/filesys.h>         // boinc_fopen(), etc...
@@ -242,7 +242,6 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     static int count=0;
     static int displacementFileLength=0;
     FILE * file;
-    char buf[1024];
 
     //read in displacement con file
     file=openFile(displacement_passed);
