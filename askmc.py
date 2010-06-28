@@ -35,7 +35,7 @@ class ASKMC:
     """ This is a class to keep track of things associated with performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
-    def __init__(self, kT, states, confidence, barrier_test_on = True, connection_test_on = False, path_root, thermal_window):
+    def __init__(self, kT, states, confidence, barrier_test_on, connection_test_on, path_root, thermal_window):
         self.kT = kT
         self.Beta = 1/(kT)
         self.path = path_root
@@ -53,10 +53,10 @@ class ASKMC:
         # --- Extra check on the superbasin criterion? ---
         # "checksb_barriers" will check to see if there are any low-barrier, unvisited processes
         # originating from states in the superbasin.
-        # Default: On
+        # Default (in default_config): On
         # "checksb_connections" will implement a method to determine whether there are any missed
         # connections between states identified as "in the superbasin".
-        # Default: Off
+        # Default (in default_config): Off
         if barrier_test_on:
             self.checksb_barriers = True
         else:
