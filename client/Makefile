@@ -2,7 +2,7 @@ OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
 	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
-#CXXFLAGS += -I..
+CXXFLAGS += -O2
 # Libraries to link the executable 
 #LIBS := ./common/libCommon.a
 # define NDEBUG to link to boinc and remove debuggin lines
@@ -22,21 +22,22 @@ endif
 ifndef NO_AL
    SUBDIRS += ./potentials/Aluminum/
    LIBS += ./potentials/Aluminum/libAL.a
-   CXXFLAGS += -lgfortran
+   LDFLAGS += -lgfortran
+else
+   CXXFLAGS += -DNO_AL
 endif
 
 all : $(SUBDIRS) client
 
 client : $(OBJECTS) $(LIBS)  
-	g++  $(CXXFLAGS) -o $@ $^
+	g++ $(LDFLAGS) -o $@ $^
 $(LIBS):
-	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
-	
+	$(MAKE) -C $@
 
 $LIBS: $(SUBDIRS)
 
 $(SUBDIRS) :
-	export CXXFLAGS="$(CXXFLAGS)" ; $(MAKE) -C $@
+	$(MAKE) -C $@
 
 clean :
 	rm -f $(OBJECTS) client

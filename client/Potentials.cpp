@@ -68,7 +68,7 @@ Potentials::Potentials(Parameters *parameters){
         interface_->initialize();
     }
 #endif
-#ifdef ALUMINUM_POTENTIAL
+#ifndef NO_AL
     else if(parameters_->getPotentialTag() == getPotentialAluminum())
     {
         interface_ = new Aluminum();
