@@ -555,7 +555,7 @@ class ARC(Communicator):
             f = open(script_path, "w")
             f.write(s)
             f.close()
-        except Exception as msg:
+        except Exception, msg:
             raise CommunicatorError("Can't create wrapper script: %s" % msg)
 
         return script_path
@@ -640,7 +640,7 @@ class ARC(Communicator):
 
         try:
             c = self.arclib.Certificate(self.arclib.PROXY)
-        except self.arclib.CertificateError as msg:
+        except self.arclib.CertificateError, msg:
             raise CommunicatorError(msg)
 
         if c.IsExpired():
@@ -658,7 +658,9 @@ class ARC(Communicator):
             targetsleft = self.arclib.PerformStandardBrokering(targets)
             try:
                 jobid = self.arclib.SubmitJob(xrsl, targetsleft)
-            except (JobSubmissionError, XrslError) as msg:
+            except JobSubmissionError, msg:
+                raise CommunicatorError(msg)
+            except XrslError, msg:
                 raise CommunicatorError(msg)
 
             self.arclib.AddJobID(jobid, jobname) # Why is this needed?
