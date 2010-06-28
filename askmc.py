@@ -6,7 +6,7 @@ import copy
 
 import numpy
 import logging
-logger = logging.getLogger('votersb')
+logger = logging.getLogger('askmc')
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
@@ -31,7 +31,7 @@ alpha = 2
 gamma = 2
 
 
-class VoterSB:
+class ASKMC:
     """ This is a class to keep track of things associated with performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
@@ -288,19 +288,12 @@ class VoterSB:
     def missed_low_barriers(self, edgelist, origEtrans):
         """ Determine whether or not there are low barrier processes originating
             from any of the states in identified superbasin that *were missed*. """
-        # NOTE - This method will not work if the product of unvisited processes are
-        # not labeled as "-1" in the process tables of the state objects.
-        # For example, "statelist_object.connect_states()" should *never* be used
-        # while this is being used as a "superbasin criterion" check.
-        # It seems like this would be faster, easier, and more effective anyway,
-        # so the other method should perhaps be removed (???).
-
         # testvar indicates whether or not a problem has arisen.
         # A value of zero indicates "all clear"
         testvar = 0
         # Compile a list of the state *numbers* with no repeats.
         # Check for repeats to avoid extraneous runs through the
-        # real process tables and "get_state()" calls.
+        # real and modified process tables and "get_state()" calls.
         state_nums_in_basin = []
         for i in edgelist:
             ref_state_a_num = i[0]
@@ -309,16 +302,17 @@ class VoterSB:
                 state_nums_in_basin.append(ref_state_a_num)
             if ref_state_b_num not in state_nums_in_basin:
                 state_nums_in_basin.append(ref_state_b_num)
-        # Make a list of state objects.
+        # Make a list of state objects from the basin.
         states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
         # See if any of the states have "low-barrier" processes from them which have not been seen.
-        # If the product is not "-1", then they would be in the modified process table, and considered
-        # during "locsearch()".  Thus only unvisited processes are considered here.
+        # Only processes not in the modified list (unvisited processes) will be considered.
         for state in states_in_basin:
             state_real_procs = self.get_real_process_table(state)
+            state_mod_procs = self.get_modified_process_table(state)
+            mod_proc_ids = [process_id for process_id in state_mod_procs.keys()]
             for process_id in state_real_procs.keys():
-                if state_real_procs[process_id]["product"] == -1 and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
-                    testvar = 1
+                if process_id not in mod_proc_ids and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
+                        testvar = 1
         return testvar
     
     def locsearch(self, current_state, origEtrans):
