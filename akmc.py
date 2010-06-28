@@ -242,7 +242,7 @@ def kmc_step(current_state, states, time, kT):
         superbasining = get_superbasin_scheme(states)
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.votersb_on:
-        vsb = votersb.VoterSB(kT, states, config.votersb_confidence, config.votersb_barrier_test_on, config.path_root, config.akmc_thermal_window)
+        vsb = votersb.VoterSB(kT, states, config.votersb_confidence, config.votersb_barrier_test_on, config.votersb_connections_test_on, config.path_root, config.akmc_thermal_window)
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
         if config.sb_on:
