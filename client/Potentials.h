@@ -21,9 +21,8 @@
 #include "potentials/NewPotential/NewPotential.h"
 //#include "VASP.h"
 //#include "EDIP.h"
-#include "potentials/EMT/EffectiveMediumTheory.h"
+//#include "potentials/EMT/EffectiveMediumTheory.h"
 //#include "LJBinary.h"
-
 #include "potentials/Morse/Morse.h"
 //#include "LJ.h"
 //#include "Lenosky.h"
