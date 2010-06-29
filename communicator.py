@@ -504,7 +504,6 @@ class ARC(Communicator):
         self.jobs = []
         if jobids:
             for info in self.arclib.GetJobInfo(jobids):
-                print 'info:', info.id, info.job_name, '"', info.status, '"'
                 job = {"id": info.id, "name": info.job_name}
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["state"] = "Done"
@@ -515,8 +514,6 @@ class ARC(Communicator):
                 else:
                     job["state"] = "Running"
 
-                print 'job: ', job["id"], job["state"], info.status
-
                 if job["state"] != "Aborted":
                     self.jobs.append(job)
         self.init_completed = True
@@ -526,7 +523,7 @@ class ARC(Communicator):
         """
         Remember the rest for future invocations.
         """
-        logger.debug("ARC.__del__ invoced!")
+        logger.debug("ARC.__del__ invoked!")
 
         if self.init_completed:
             f = open(self.jobsfilename, "w")
@@ -710,7 +707,7 @@ class ARC(Communicator):
 
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
-        print 'statenumber =', statenumber
+        logger.debug("cancel_state called with statenumber = %s" % str(statenumber))
         raise NotImplementedError()
 
 
