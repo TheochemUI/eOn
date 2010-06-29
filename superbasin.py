@@ -81,36 +81,6 @@ class Superbasin:
         return state in self.states
 
     def _calculate_stuff(self): 
-        #Check detailed balance
-        eq_prob = []
-        for i in range(len(self.states)-1):
-            for j in range(i+1, len(self.states)):
-                proc_tab_i = self.states[i].get_process_table()
-                proc_tab_j = self.states[j].get_process_table()
-                
-                rate_sum = 0.0
-                pij = 0.0
-                for id in proc_tab_i:
-                    rate_sum += proc_tab_i[id]['rate']
-                    if proc_tab_i[id]['product'] == self.state_numbers[j]:
-                        pij += proc_tab_i[id]['rate']
-                pij/=rate_sum
-
-                rate_sum = 0.0
-                pji = 0.0
-                for id in proc_tab_j:
-                    rate_sum += proc_tab_j[id]['rate']
-                    if proc_tab_j[id]['product'] == self.state_numbers[i]:
-                        pji += proc_tab_j[id]['rate']
-                pji/=rate_sum
-
-                #XXX: Hard coded comparison criteria
-                if abs(math.exp((self.states[j].get_energy() - self.states[i].get_energy())/self.kT)*pij - pji) > .1:
-                    logger.warning('states %d and %d do not satisfy detailed balance' % (self.state_numbers[i], self.state_numbers[j]))
-
-
-        
-        
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
         print 'remove'
