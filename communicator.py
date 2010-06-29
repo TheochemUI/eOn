@@ -516,6 +516,7 @@ class ARC(Communicator):
 
                 if job["state"] != "Aborted":
                     self.jobs.append(job)
+                logger.info("Job %s / %s found in state %s (%s)" % (job["name"], job["id"], job["state"], info.status))
         self.init_completed = True
 
 
