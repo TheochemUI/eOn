@@ -510,6 +510,8 @@ class ARC(Communicator):
                     job["state"] = "Done"
                 elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
                     job["state"] = "Aborted" # Will disappear by itself soonish
+                elif info.status in [ "", "ACCEPTING", "ACCEPTED", "PREPARING", "PREPARED", "SUBMITTING", "INLRMS:Q" ]:
+                    job["state"] = "Queueing"
                 else:
                     job["state"] = "Running"
 
@@ -701,7 +703,7 @@ class ARC(Communicator):
 
     def get_queue_size(self):
         '''Returns the number of items waiting to run in the queue.'''
-        return 0
+        return len([ j for j in self.jobs if j["state"] == "Queueing" ])
 
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
