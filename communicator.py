@@ -481,6 +481,8 @@ class Local(Communicator):
 class ARC(Communicator):
 
     def __init__(self, scratchpath, bundle_size=1):
+        self.init_completed = False
+
         Communicator.__init__(self, scratchpath, bundle_size)
 
         try:
@@ -515,6 +517,7 @@ class ARC(Communicator):
 
                 if job["state"] != "Aborted":
                     self.jobs.append(job)
+        self.init_completed = True
 
 
     def __del__(self):
@@ -522,9 +525,10 @@ class ARC(Communicator):
         Remember the rest for future invocations.
         """
         logger.debug("ARC.__del__ invoced!")
-        f = open(self.jobsfilename, "w")
-        f.writelines([ j["id"] + '\n' for j in self.jobs if j["state"] != "Aborted" ])
-        f.close()
+        if self.init_completed:
+            f = open(self.jobsfilename, "w")
+            f.writelines([ j["id"] + '\n' for j in self.jobs if j["state"] != "Aborted" ])
+            f.close()
 
 
     def create_wrapper_script(self):
