@@ -24,6 +24,9 @@
 #include "SaddlePoint.h"
 #include "LowestEigenmodeInterface.h" 
 #include "Dimer.h"
+#ifdef LANCZOS
+      #include "Lanczos/lanczos_for_eon.hpp"
+#endif
 #include "EpiCenters.h"
 
 using namespace helper_functions;
@@ -82,10 +85,15 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     {
         lowestEigenmode_=new Dimer(saddle_, parameters_);
     }
-    //else if(parameters_->getlowestEigenmodeDetermination_SP() == getLowestEigenmodeLanczos())
-    //{
-    //    lowestEigenmode_ = new Lanczos(saddle_, parameters_);
-    //}
+    else if(parameters_->getLowestEigenmodeDetermination_SP() == getLowestEigenmodeLanczos())
+    {
+        #ifdef LANCZOS_FOR_EON_HPP
+            lowestEigenmode_ = new Lanczos(saddle_, parameters_);
+        #else
+            fprintf(stderr, "Error: the application was compiled without Lanczos.\n");
+            exit(EXIT_FAILURE);
+        #endif
+    }
     nFreeCoord_ = 3 * saddle->numberOfFreeAtoms();
     eigenMode_ = new double [nFreeCoord_];
     state_ = getStateInit();
