@@ -503,8 +503,8 @@ class ARC(Communicator):
 
         self.jobs = []
         if jobids:
-            print 'info:', self.arclib.GetJobInfo(jobids)
             for info in self.arclib.GetJobInfo(jobids):
+                print 'info:', info.id, info.job_name, '"', info.status, '"'
                 job = {"id": info.id, "name": info.job_name}
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["state"] = "Done"
@@ -527,9 +527,12 @@ class ARC(Communicator):
         Remember the rest for future invocations.
         """
         logger.debug("ARC.__del__ invoced!")
+
         if self.init_completed:
             f = open(self.jobsfilename, "w")
-            f.writelines([ j["id"] + '\n' for j in self.jobs if j["state"] != "Aborted" ])
+            for j in self.jobs:
+                if j["state"] not in ["Aborted", "Retrieved"]:
+                    f.write(j["id"] + '\n')
             f.close()
 
 
@@ -692,7 +695,7 @@ class ARC(Communicator):
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
             self.open_tarball(tarball, resultspath)
 
-            del job # Remove from our internal data structures
+            job["state"] = "Retrieved"
             self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
             self.arclib.CleanJob(jid) # Remove from ARC sever
 
