@@ -519,22 +519,11 @@ class ARC(Communicator):
 
     def __del__(self):
         """
-        Remove those jobs scheduled for removal; remember the rest for future invocations.
+        Remember the rest for future invocations.
         """
-
-        still_running = []
-
-        for j in self.jobs:
-            if j["state"] == "Retrieved":
-                logger.info("Removing %s / %s" % (j["name"], j["id"]))
-                self.arclib.CleanJob(j["id"])
-                self.arclib.RemoveJobID(j["id"])
-            else:
-                still_running.append(j["id"])
-
+        logger.debug("ARC.__del__ invoced!")
         f = open(self.jobsfilename, "w")
-        if still_running:
-            f.writelines([ j + '\n' for j in still_running ])
+        f.writelines([ j["id"] + '\n' for j in self.jobs if j["state"] != "Aborted" ])
         f.close()
 
 
@@ -697,7 +686,10 @@ class ARC(Communicator):
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
             self.open_tarball(tarball, resultspath)
 
-            job['state'] = "Retrieved"
+            del job # Remove from our internal data structures
+            self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
+            self.arclib.CleanJob(jid) # Remove from ARC sever
+
             logger.info("Fetched %s / %s" % (jname, jid)) 
 
         return self.unbundle(resultspath)
