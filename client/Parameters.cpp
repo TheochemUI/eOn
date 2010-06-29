@@ -377,6 +377,16 @@ double Parameters::getDimerDR()
     return dimer_dR_;
 }
 
+double Parameters::getLanczosConvergenceLimit()
+{
+      return lanczosConvergenceLimit_;
+}
+
+double Parameters::getLanczosIterationLimit()
+{
+      return iterationLimit_;
+}
+
 // Setting results values
 void Parameters::setTerminationReason(long terminationReason){
     terminationReason_ = terminationReason;
