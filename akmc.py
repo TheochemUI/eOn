@@ -222,7 +222,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
                 if not config.debug_register_extra_results:
                     break
         else:
-            states.get_state(state_num).register_bad_saddle(result_path, config.debug_keep_bad_saddles, result_data)
+            states.get_state(state_num).register_bad_saddle(result_path, result_data, config.debug_keep_bad_saddles)
         num_registered += 1
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)
