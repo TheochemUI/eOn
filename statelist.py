@@ -144,6 +144,8 @@ class StateList:
         # Get the reactant and product state objects.
         reactant = self.get_state(reactant_number)
         product = self.get_state(product_number)
+        reactant.load_process_table()
+        product.load_process_table()
         reverse_procs = product.get_process_table()
         # Make the reactant process point to the product state number.
         reactant.procs[process_id]["product"] = product_number
