@@ -138,8 +138,9 @@ long Prefactors::atomsToAccountForInHessian(){
     for(int i=0; i<nAtoms_; i++){
         diffR1 = saddle_->distance(*min1_, i);
         diffR2 = saddle_->distance(*min2_, i);
-        if((parameters_->getMinDisplacement_Hessian()<diffR1) || 
-           (parameters_->getMinDisplacement_Hessian()<diffR2)){
+        if(((parameters_->getMinDisplacement_Hessian()<diffR1) || 
+           (parameters_->getMinDisplacement_Hessian()<diffR2)) &&
+                !saddle_->getFixed(i)){
             coordinatesToAccountFor_[ 3*i ] = true;
             coordinatesToAccountFor_[3*i+1] = true;
             coordinatesToAccountFor_[3*i+2] = true;
