@@ -90,30 +90,24 @@ class StateList:
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
         #TODO: Compare configuration of product with existing states.
-
         # If the number of states in state_table is zero, we need to add the zero state and energy to the state table.
         if self.get_num_states() == 0:
             zst = self.get_state(0)
             self.append_state_table(zst.get_energy())
-
         # Load the state object containing the process we want the product for.
         st = self.get_state(state_number)
         st.load_process_table()
-
         # Get the state number for the product.
         newstnr = st.procs[process_id]['product']
-
         # If the product id is not initialized, make sure it is not a copy of an existing state.
         # Otherwise, create it, connect it to st, and return it.
         if newstnr == -1:
-            
             # Make a list of states for which we need to compare configurations.
             enew = st.procs[process_id]['product_energy']
             energetically_close = []
             for id in range(self.get_num_states()):
                 if abs(self.get_state(id).get_energy() - enew) < self.epsilon_e:
                     energetically_close.append(id)
-
             # Perform distance checks on the energetically close configurations.
             if len(energetically_close) > 0:
                 pnew = st.get_process_product(process_id)
@@ -130,24 +124,18 @@ class StateList:
                             # Update the reactant state to point at the new state id.
                             self.register_process(st.number, id, process_id)                            
                             return self.get_state(id)
-
             # The id for the new state is the number of states.
             newstnr = self.get_num_states()
-
             # Create the new state object.
             newst = state.State(self.state_path(newstnr), newstnr, self.kT, 
                     self.thermal_window, self.max_thermal_window, self.epsilon_e, 
                     self.epsilon_r, st.proc_product_path(process_id))
-
             self.register_process(st.number, newstnr, process_id)
-            
             # Append the new state to the state table.
             self.append_state_table(st.procs[process_id]['product_energy'])
-        
         # The product state already exists, so get it.
         else:
             newst = self.get_state(newstnr)
-
         # Return the product state.
         return newst
 

@@ -129,7 +129,7 @@ bool Matter::operator==(const Matter& matter) {//To compare two matter objects, 
         matter.getPositions(pos);
         
         for(i=0;i<nAtoms_;i++){
-            diffRX = positions_[ 3*i ]-pos[ 3*i ];
+            diffRX = positions_[3*i+0]-pos[3*i+0];
             diffRY = positions_[3*i+1]-pos[3*i+1];
             diffRZ = positions_[3*i+2]-pos[3*i+2];
             // floor = largest integer value less than argument
