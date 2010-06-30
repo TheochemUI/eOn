@@ -182,8 +182,8 @@ class StateList:
         # Create the reverse process in the new state.
         barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
         shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
-        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_reactant_path(0))
-        shutil.copy(reactant.proc_product_path(process_id), product.proc_product_path(0))
+        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(0))
+        shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(0))
         shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
         shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
         product.append_process_table(id = 0, 
