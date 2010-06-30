@@ -506,30 +506,30 @@ class ARC(Communicator):
             for info in self.arclib.GetJobInfo(jobids):
                 job = {"id": info.id, "name": info.job_name}
                 if info.status in [ "FINISHED", "FAILED" ]:
-                    job["state"] = "Done"
+                    job["stage"] = "Done"
                 elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
-                    job["state"] = "Aborted" # Will disappear by itself soonish
+                    job["stage"] = "Aborted" # Will disappear by itself soonish
                 elif info.status in [ "", "ACCEPTING", "ACCEPTED", "PREPARING", "PREPARED", "SUBMITTING", "INLRMS:Q" ]:
-                    job["state"] = "Queueing"
+                    job["stage"] = "Queueing"
                 else:
-                    job["state"] = "Running"
+                    job["stage"] = "Running"
 
-                if job["state"] != "Aborted":
+                if job["stage"] != "Aborted":
                     self.jobs.append(job)
-                logger.info("Job %s / %s found in state %s (%s)" % (job["name"], job["id"], job["state"], info.status))
+                logger.info("Job %s / %s found in state %s (%s)" % (job["name"], job["id"], job["stage"], info.status))
         self.init_completed = True
 
 
     def __del__(self):
         """
-        Remember the rest for future invocations.
+        Remember jobs for future invocations.
         """
         logger.debug("ARC.__del__ invoked!")
 
         if self.init_completed:
             f = open(self.jobsfilename, "w")
             for j in self.jobs:
-                if j["state"] not in ["Aborted", "Retrieved"]:
+                if j["stage"] not in ["Aborted", "Retrieved"]:
                     f.write(j["id"] + '\n')
             f.close()
 
@@ -659,8 +659,8 @@ class ARC(Communicator):
             except XrslError, msg:
                 raise CommunicatorError(msg)
 
-            self.arclib.AddJobID(jobid, jobname) # Why is this needed?
-            self.jobs.append({"id": jobid, "name": jobname, "state":"Running"})
+            self.arclib.AddJobID(jobid, jobname)
+            self.jobs.append({"id": jobid, "name": jobname, "stage":"Queueing"})
             logger.info("submitted " + jobid)
 
     
@@ -684,7 +684,7 @@ class ARC(Communicator):
         '''Returns a list of directories containing the results.'''
 
         result_dirs = []
-        done = [ j for j in self.jobs if j["state"] == "Done" ]
+        done = [ j for j in self.jobs if j["stage"] == "Done" ]
         for job in done:
             jid = job["id"]
             jname = job["name"]
@@ -693,7 +693,7 @@ class ARC(Communicator):
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
             self.open_tarball(tarball, resultspath)
 
-            job["state"] = "Retrieved"
+            job["stage"] = "Retrieved"
             self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
             self.arclib.CleanJob(jid) # Remove from ARC sever
 
@@ -704,12 +704,28 @@ class ARC(Communicator):
 
     def get_queue_size(self):
         '''Returns the number of items waiting to run in the queue.'''
-        return len([ j for j in self.jobs if j["state"] == "Queueing" ])
+        return len([ j for j in self.jobs if j["stage"] == "Queueing" ])
+
+
+    def cancel_job(self, job):
+        self.arclib.RemoveJobID(job["id"])
+        self.arclib.CancelJob(job["id"])
+        job["stage"] = "Aborted"
+
 
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
+
         logger.debug("cancel_state called with statenumber = %s" % str(statenumber))
-        raise NotImplementedError()
+
+        n = 0
+        for j in self.jobs:
+            sn = j["name"].split('_')[0]
+            if sn == statenumber and j["stage"] not in [ "Aborted", "Retrieved" ]:
+                self.cancel_job(j)
+                logger.debug("Canceling job %s / %s" % (j["name"], j["id"]))
+                n += 1
+        return n
 
 
 
