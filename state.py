@@ -36,6 +36,7 @@ class State:
 
         self.info_path = os.path.join(self.path, "info")
         self.procdata_path = os.path.join(self.path, "procdata")
+        self.bad_procdata_path = os.path.join(self.path, "badprocdata")
         self.reactant_path = os.path.join(self.path, "reactant.con")
         self.proctable_path = os.path.join(self.path, "processtable")
         self.search_result_path = os.path.join(self.path, "search_results.txt")
@@ -378,7 +379,7 @@ class State:
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
 
-    def register_bad_saddle(self, state_number, store, resultdata):
+    def register_bad_saddle(self, result_path, resultdata, store = False):
         """ Registers a bad saddle. """
         result_state_code = ["Good",
                              "Init",
@@ -391,6 +392,10 @@ class State:
                              "Bad Barrier"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(resultdata, result_state_code[resultdata["termination_reason"]])
+        if store:
+            if not os.path.isdir(self.bad_procdata_path):
+                os.mkdir(self.bad_procdata_path)
+            shutil.move(result_path, os.path.join(self.bad_procdata_path, os.path.basename(result_path)))
         #self.update_forcecall_average(resultdata['force_calls'])
 
     def load_info(self):
@@ -420,7 +425,7 @@ class State:
 
     def proc_results_path(self, id):
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
-
+        
     def get_process_table(self):
         self.load_process_table()
         return self.procs
