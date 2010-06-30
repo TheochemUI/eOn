@@ -190,6 +190,8 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
                 os.mkdir(save_path)
             shutil.copytree(result_path, os.path.join(save_path, i))
         state_num = int(i.split("_")[0])
+        if not config.debug_register_extra_results and state_num != current_state.number:
+            continue
         try:
             result_data = io.parse_results_dat(os.path.join(result_path, 'results.dat'))
         except KeyError, (foo, name):
