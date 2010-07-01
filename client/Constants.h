@@ -51,7 +51,7 @@ namespace constants {
     long getStateBadBarrier();///< Constant used to indicate that either the forward or reverse process have a barrier that is above the run time parameter in Parameter.
     
     // Constants used in the client
-    double getMaxDifferencePos();///< The maximal difference between an atoms positions in two configurations in order to consider the configurations as equvivalent.
+    double getMaxDifferencePos();///< The maximal difference between an atoms positions in two configurations in order to consider the configurations as equivalent.
     
     // Constants used in prefactor determination
     double getPrefactorMax();///< The maximal prefactor value.
@@ -63,11 +63,11 @@ namespace constants {
     double getTimeStep();///< The time step size used in Quickmin.
         
     // Constants used in displacement prior saddle point search
-    long getNoPertubation();///< Constant used to indicate that no pertubation should be performed prior the saddle point search.
-    long getPertubateNotFccOrHcp();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
-    long getPertubateMinimalCoordinated();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
-    long getPertubateLastAtom();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
-    double getNeighborCutoff();///< Radius for which atoms that should be used in the analysis determing the local atomic structure.
+    long getNoPerturbation();///< Constant used to indicate that no perturbation should be performed prior the saddle point search.
+    long getPerturbateNotFccOrHcp();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
+    long getPerturbateMinimalCoordinated();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
+    long getPerturbateLastAtom();///< Constant used to indicate which type of atoms that should be considered in the displacement prior a saddle point search.
+    double getNeighborCutoff();///< Radius for which atoms that should be used in the analysis determining the local atomic structure.
     
     // Constants used in saddle point determination to set which algorithm that is going to be used for the lowest eigenmode determination.
     long getLowestEigenmodeDimer();///< Constant used to indicate that the Dimer method should be used for the lowest eigenmode determination.
@@ -78,7 +78,7 @@ namespace constants {
     long getMaximumIterationsConcaveSeriesSP();///< The maximal number of iterations in a series allowed to perform during the saddle point.    
     //IO file names
     const std::string PARMS_PASSED_FILE_NAME("parameters_passed.dat");///< Name for file containing the run time parameters.
-    const std::string REAC_PASSED_FILE_NAME("reactant_passed.con");///< Name of file containig the initial configuration. This structure is relaxed within the code!
+    const std::string REAC_PASSED_FILE_NAME("reactant_passed.con");///< Name of file containing the initial configuration. This structure is relaxed within the code!
     const std::string DISPLACEMENT_PASSED_FILE_NAME("displacement_passed.con");///< Approximate saddle point. The program will refine the saddle point.
     const std::string MODE_PASSED_FILE_NAME("mode_passed.dat");///< Eigenvector. When refining saddle point.    
     const std::string RESULTS_FILE_NAME("results.dat");///< Name for file describing the obtained result.
