@@ -83,7 +83,15 @@ def main():
                         config.recycling_move_distance, recycling_start)
     
     if current_state.get_confidence() < config.akmc_confidence:
-        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = recycler if config.recycling_on else None, kdber = kdber if config.kdb_on else None)
+        if config.recycling_on:
+            pass_recycler = recycler
+        else:
+            pass_recycler = None
+        if config.kdb_on:
+            pass_kdb = kdber          	
+        else:
+            pass_kdb = None
+        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = pass_recycler, kdber = pass_kdb)
     
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
