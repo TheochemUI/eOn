@@ -57,8 +57,7 @@ if not gave_config and not os.path.samefile(path_root, os.getcwd()):
 comm_type = parser.get('Communicator', 'type')
 #print comm_type
 comm_job_bundle_size = parser.getint('Communicator', 'job_bundle_size')
-comm_job_buffer_size = parser.getint('Communicator', 'job_buffer_size')
-comm_job_buffer_size = comm_job_bundle_size * comm_job_buffer_size
+comm_search_buffer_size = parser.getint('Communicator', 'search_buffer_size')
 path_scratch = parser.get('Paths', 'scratch')
 #print path_scratch
 if comm_type == 'local':
