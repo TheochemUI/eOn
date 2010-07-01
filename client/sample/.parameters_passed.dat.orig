@@ -16,7 +16,7 @@ RANDOM_SEED -1
 # 8 = Lenosky
 # 9 = Lennard-jones binary
 # 10 = Aluminum
-POTENTIAL_TAG 10
+POTENTIAL_TAG 3
 
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
