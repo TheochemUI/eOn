@@ -545,6 +545,7 @@ class ARC(Communicator):
         Client
         cd $HOME
         tar jcvf $1.tar.bz2  $1
+        #sleep 65
         """
         script_path = os.path.join(self.scratchpath, 'wrapper.sh')
         try:
@@ -716,12 +717,12 @@ class ARC(Communicator):
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
 
-        logger.debug("cancel_state called with statenumber = %s" % str(statenumber))
+        logger.debug("cancel_state called with statenumber = %i (%s)" % (int(statenumber), type(statenumber)))
 
         n = 0
         for j in self.jobs:
             sn = j["name"].split('_')[0]
-            if sn == statenumber and j["stage"] not in [ "Aborted", "Retrieved" ]:
+            if int(sn) == int(statenumber) and j["stage"] not in [ "Aborted", "Retrieved" ]:
                 self.cancel_job(j)
                 logger.debug("Canceling job %s / %s" % (j["name"], j["id"]))
                 n += 1
