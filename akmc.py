@@ -450,6 +450,8 @@ if __name__ == '__main__':
                     rmdirs.append(config.kdb_path) 
                 if config.sb_on:
                     rmdirs.append(config.sb_path)
+                if config.debug_keep_all_results:
+                    rmdirs.append(os.path.join(config.path_root, "old_searches"))
                 for i in rmdirs:
                     if os.path.isdir(i):
                         shutil.rmtree(i)
