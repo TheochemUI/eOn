@@ -95,7 +95,7 @@ void ConjugateGradients::oneStep(){
     assert(length(force_, nFreeCoord_) != 0.0);
     matter_->getFreePositions(pos);  
     determineSearchDirection();
-    // Move system an infinitisimal step 
+    // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_, directionNorm_, 
                    getCurvatureStep(), nFreeCoord_);
@@ -221,7 +221,7 @@ void ConjugateGradients::makeInfinitisimalStepModifiedForces(double *posStep,
     
     determineSearchDirection();
     
-    // Move system an infinitisimal step 
+    // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_,
                    directionNorm_,
