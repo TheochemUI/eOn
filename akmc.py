@@ -61,7 +61,11 @@ def main():
     comm = get_communicator()
 
     # Handle any results returned through the communicator.
-    register_results(comm, current_state, states, searchdata, kdber = kdber if config.kdb_on else None)
+    if config.kdb_on:
+        pass_kdb = kdber          	
+    else:
+        pass_kdb = None
+    register_results(comm, current_state, states, searchdata, kdber = pass_kdb)
 
     # Take a KMC step, if it's time.
     current_state, previous_state, time = kmc_step(current_state, states, time, kT) 
