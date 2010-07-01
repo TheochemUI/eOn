@@ -33,7 +33,7 @@ struct Input {
     long minimize_only_; /* RT: only perform minimization, not saddle search. */
     long minimize_box_; /* RT: also minimize the box dimensions if minimize_only_ is true. */
     long getPrefactorsTag_;///< Tag to describe if the prefactors should be determined.  
-    long typePertubation_SP_;///< Displacement type to use. Compare with values in Constants.cpp
+    long typePerturbation_SP_;///< Displacement type to use. Compare with values in Constants.cpp
     bool refine_SP_;///< Refine saddle point.
     long lowestEigenmodeDetermination_SP_;///< The algorithm to be used for lowest eigenmode determination. Compare with values in Constants.cpp
     double converged_Relax_;///< Converge criterion during relaxation [eV/A].
@@ -43,9 +43,9 @@ struct Input {
     double maxStepSizeConcave_SP_;///< Max length of the norm of the displacement when positive eigenvalue [A].
     double maxStepSizeConvex_SP_;///< Max length of the norm of the displacement when negative eigenvalue [A].
     double maxEnergy_SP_;///< Energy above product state that will cause termination of the saddle point search [eV].
-    double normPertubation_SP_;///< The norm or the pertubation vector [A].
-    double maxSinglePertubation_SP_;///< Max value of displacement in x, y and z direction for atoms being pertubated [A].
-    double withinRadiusPertubated_SP_;///< Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePertubation_SP_ [A].
+    double normPerturbation_SP_;///< The norm or the perturbation vector [A].
+    double maxSinglePerturbation_SP_;///< Max value of displacement in x, y and z direction for atoms being perturbated [A].
+    double withinRadiusPerturbated_SP_;///< Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePerturbation_SP_ [A].
     long maximumIterations_;///< Maximum of iterations for saddle point searches and minimisation.
     double minDisplacement_Hessian_;///< Atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A].
     double withinRadiusDisplaced_Hessian_;///< Atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A].
@@ -93,7 +93,7 @@ public:
     bool getMinimizeOnly();
     bool getMinimizeBox();
     long getPrefactorsTag();
-    long getTypePertubation_SP();
+    long getTypePerturbation_SP();
     bool getRefineSP();
     long getLowestEigenmodeDetermination_SP();
 
@@ -105,9 +105,9 @@ public:
     double getMaxStepSizeConcave_SP();
     double getMaxStepSizeConvex_SP();
     double getMaxEnergy_SP();
-    double getNormPertubation_SP();
-    double getWithinRadiusPertubated_SP();
-    double getMaxSinglePertubation_SP();
+    double getNormPerturbation_SP();
+    double getWithinRadiusPerturbated_SP();
+    double getMaxSinglePerturbation_SP();
     long getMaximumIterations();
     double getMinDisplacement_Hessian();
     double getWithinRadiusDisplaced_Hessian();

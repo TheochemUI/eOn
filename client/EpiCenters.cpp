@@ -169,7 +169,7 @@ void epi_centers::cna(long *cna, const Matter *matter){
         for(int j=i+1; j<nAtoms; j++){
 
             diffR = matter->distance(i, j);
-            
+ 
             if(diffR<getNeighborCutoff()){
                 neighborLists[i].push_back(j);
                 neighborLists[j].push_back(i);
@@ -177,60 +177,60 @@ void epi_centers::cna(long *cna, const Matter *matter){
         }
     }
     for (a2 = 0; a2 < nAtoms; a2++){
-		vector<int>& nbs2 = neighborLists[a2];
-		for (n2 = 0; n2 < nbs2.size(); n2++){
-			a1 = nbs2[n2];
-			if (a1 < a2){
-				vector<int> common;
-				vector<int>& nbs1 = neighborLists[a1];
-				for (n1 = 0; n1 < nbs1.size(); n1++){
+        vector<int>& nbs2 = neighborLists[a2];
+        for (n2 = 0; n2 < nbs2.size(); n2++){
+            a1 = nbs2[n2];
+            if (a1 < a2){
+                vector<int> common;
+                vector<int>& nbs1 = neighborLists[a1];
+                for (n1 = 0; n1 < nbs1.size(); n1++){
                     a3 = nbs1[n1];
-					for (m2 = 0; m2 < nbs2.size(); m2++)
-						if (a3 == nbs2[m2])
-							common.push_back(a3);
-				}
-				if (common.size() == 4){
+                    for (m2 = 0; m2 < nbs2.size(); m2++)
+                        if (a3 == nbs2[m2])
+                            common.push_back(a3);
+                }
+                if (common.size() == 4){
                     nBonds = 0;
-					bondsSum = 0;
-					for (j2 = 1; j2 < 4; j2++){
+                    bondsSum = 0;
+                    for (j2 = 1; j2 < 4; j2++){
                         vector<int>& nbs = neighborLists[common[j2]];
-						for (j1 = 0; j1 < j2; j1++){
-							for (n = 0; n < nbs.size(); n++){
+                        for (j1 = 0; j1 < j2; j1++){
+                            for (n = 0; n < nbs.size(); n++){
                                 if (common[j1] == nbs[n]){
-									nBonds++;
-									bondsSum += j1 + j2;
-									break;
-								}
+                                    nBonds++;
+                                    bondsSum += j1 + j2;
+                                    break;
+                                }
                             }
                         }
-					}
-					if (nBonds == 2){
-						if (bondsSum == 6){
-							nFCC[a1]++;
-							nFCC[a2]++;
-						}
-						else{
-							nHCP[a1]++;
-							nHCP[a2]++;
-						}
-					}
-				}
-			}
-		}
+                    }
+                    if (nBonds == 2){
+                        if (bondsSum == 6){
+                            nFCC[a1]++;
+                            nFCC[a2]++;
+                        }
+                        else{
+                            nHCP[a1]++;
+                            nHCP[a2]++;
+                        }
+                    }
+                }
+            }
+        }
     }
     // 0: fcc (421), 1: hcp (422), 2: other
     for (int i = 0; i < nAtoms; i++){
-		if (neighborLists[i].size() == 12){
-			if (nFCC[i] == 12)
-				cna[i] = 0;
-			else if (nFCC[i] == 6 && nHCP[i] == 6)
-				cna[i] = 1;
-			else
-				cna[i] = 2;
-		}
-	else
-		cna[i] = 2;
-	}
+        if (neighborLists[i].size() == 12){
+            if (nFCC[i] == 12)
+                cna[i] = 0;
+            else if (nFCC[i] == 6 && nHCP[i] == 6)
+                cna[i] = 1;
+            else
+                cna[i] = 2;
+        }
+        else
+            cna[i] = 2;
+    }
     return;
 }
 

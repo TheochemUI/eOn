@@ -21,7 +21,7 @@ Parameters::Parameters(){
     potentialTag_ = 1;
     potentialNoTranslation_ = 0;
     getPrefactorsTag_ = 0;
-    typePertubation_SP_ = 1;
+    typePerturbation_SP_ = 1;
     refine_SP_=false;
     lowestEigenmodeDetermination_SP_ = 1;
     minimize_only_ = 0;
@@ -38,9 +38,9 @@ Parameters::Parameters(){
     maxStepSizeConcave_SP_ = 0.2;
     maxStepSizeConvex_SP_ = 0.1;
     maxEnergy_SP_ = 20.0;
-    normPertubation_SP_ = 0.1;
-    withinRadiusPertubated_SP_ = 4.0;
-    maxSinglePertubation_SP_ = 0.1;
+    normPerturbation_SP_ = 0.1;
+    withinRadiusPerturbated_SP_ = 4.0;
+    maxSinglePerturbation_SP_ = 0.1;
     maximumIterations_ = 512;
     // Values used in the Hessian determination   
     minDisplacement_Hessian_ = 0.25;
@@ -97,8 +97,8 @@ void Parameters::load(FILE *file){
             minimize_box_ = long(values[i]);
         else if(!strcmp(parms[i], "GET_PREFACTORS_TAG"))
             getPrefactorsTag_ = long(values[i]);
-        else if(!strcmp(parms[i], "TYPE_PERTUBATION_SP"))
-            typePertubation_SP_ = (long) values[i];
+        else if(!strcmp(parms[i], "TYPE_PERTURBATION_SP"))
+            typePerturbation_SP_ = (long) values[i];
         else if(!strcmp(parms[i], "LOWEST_EIGENMODE_DETERMINATION_SP"))
             lowestEigenmodeDetermination_SP_ = long(values[i]);
         else if(!strcmp(parms[i], "REFINE_SP")) {
@@ -121,12 +121,12 @@ void Parameters::load(FILE *file){
             maxStepSizeConvex_SP_ = values[i];            
         else if(!strcmp(parms[i], "MAX_ENERGY_SP"))
             maxEnergy_SP_ = values[i];
-        else if(!strcmp(parms[i], "NORM_PERTUBATION_SP"))
-            normPertubation_SP_ = values[i];
-        else if(!strcmp(parms[i], "WITHIN_RADIUS_PERTUBATED_SP"))
-            withinRadiusPertubated_SP_ = values[i];
-        else if(!strcmp(parms[i], "MAX_SINGLE_PERTUBATION_SP"))
-            maxSinglePertubation_SP_ = values[i];
+        else if(!strcmp(parms[i], "NORM_PERTURBATION_SP"))
+            normPerturbation_SP_ = values[i];
+        else if(!strcmp(parms[i], "WITHIN_RADIUS_PERTURBATED_SP"))
+            withinRadiusPerturbated_SP_ = values[i];
+        else if(!strcmp(parms[i], "MAX_SINGLE_PERTURBATION_SP"))
+            maxSinglePerturbation_SP_ = values[i];
         else if(!strcmp(parms[i], "MAXIMUM_ITERATIONS"))
               maximumIterations_ = (long)values[i];
              // Hessian related
@@ -186,7 +186,7 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "# describtion POTENTIAL_NO_TRANSLATION\n# 0 = the system is free to translate\n# 1 = translation of the system is prevented\nPOTENTIAL_NO_TRANSLATION %ld\n\n", potentialNoTranslation_);
     fprintf(file, "# describtion GET_PREFACTORS_TAG\n# 0 = processes prefactors are not determined\n# 1 = processes prefactors are determined\nGET_PREFACTORS_TAG %ld\n\n", getPrefactorsTag_);
     fprintf(file, "# describtion LOWEST_EIGENMODE_DETERMINATION_SP\n# 1 = dimer method\n# 2 = lanczos method\nLOWEST_EIGENMODE_DETERMINATION_SP %ld\n\n", lowestEigenmodeDetermination_SP_);
-    fprintf(file, "# description TYPE_PERTUBATION_SP\n# 0 = no displacement\n# 1 = displace atoms not being fcc or hcp coordinated\n# 2 = displace atom with lowest coordination\n# 3 = displace last atom\nTYPE_PERTUBATION_SP %ld\n\n", typePertubation_SP_);
+    fprintf(file, "# description TYPE_PERTURBATION_SP\n# 0 = no displacement\n# 1 = displace atoms not being fcc or hcp coordinated\n# 2 = displace atom with lowest coordination\n# 3 = displace last atom\nTYPE_PERTURBATION_SP %ld\n\n", typePerturbation_SP_);
     fprintf(file, "#  Refine saddle point\nREFINE_SP %d\n\n", refine_SP_);
     fprintf(file, "MINIMIZE_ONLY %ld\n\n", minimize_only_);
     fprintf(file, "MINIMIZE_BOX %ld\n\n", minimize_box_);
@@ -202,9 +202,9 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "max_Step_Size_Concave_SP %f\n", maxStepSizeConcave_SP_);
     fprintf(file, "max_Step_Size_Convex_SP %f\n", maxStepSizeConvex_SP_);
     fprintf(file, "max_Energy_SP %f\n", maxEnergy_SP_);
-    fprintf(file, "norm_Pertubation_SP %f\n", normPertubation_SP_);
-    fprintf(file, "within_Radius_Pertubated_SP %f\n", withinRadiusPertubated_SP_);
-    fprintf(file, "max_Single_Pertubation_SP %f\n\n", maxSinglePertubation_SP_);
+    fprintf(file, "norm_Perturbation_SP %f\n", normPerturbation_SP_);
+    fprintf(file, "within_Radius_Perturbated_SP %f\n", withinRadiusPerturbated_SP_);
+    fprintf(file, "max_Single_Perturbation_SP %f\n\n", maxSinglePerturbation_SP_);
     
     fprintf(file, "# hessian related\n");
     fprintf(file, "min_Displacement_Hessian %f\n", minDisplacement_Hessian_);
@@ -226,7 +226,7 @@ void Parameters::printInput(){
     <<potentialNoTranslation_<<" : POTENTIAL_NO_TRANSLATION\n"
     <<getPrefactorsTag_<<" : GET_PREFACTORS_TAG\n"
     <<lowestEigenmodeDetermination_SP_<<" : LOWEST_EIGENMODE_DETERMINATION_SP\n" 
-    <<typePertubation_SP_<<" : TYPE_PERTUBATION_SP\n\n"
+    <<typePerturbation_SP_<<" : TYPE_PERTURBATION_SP\n\n"
     << refine_SP_ <<" : REFINE_SP\n\n"
     << minimize_only_ <<" : MINIMIZE_ONLY\n\n"
     << minimize_box_ <<" : MINIMIZE_BOX\n\n"
@@ -242,9 +242,9 @@ void Parameters::printInput(){
     <<maxStepSizeConcave_SP_<<" : max_Step_Size_Concave_SP\n"
     <<maxStepSizeConvex_SP_<<" : max_StepSize_Convex_SP\n"
     <<maxEnergy_SP_<<" : max_Energy_SP\n"
-    <<normPertubation_SP_<<" : norm_Pertubation_SP\n"
-    <<withinRadiusPertubated_SP_<<" : within_Radius_Pertubated_SP\n"
-    <<maxSinglePertubation_SP_<<" : max_Single_Pertubation_SP\n\n"
+    <<normPerturbation_SP_<<" : norm_Perturbation_SP\n"
+    <<withinRadiusPerturbated_SP_<<" : within_Radius_Perturbated_SP\n"
+    <<maxSinglePerturbation_SP_<<" : max_Single_Perturbation_SP\n\n"
     
     <<"# hessian related\n"
     <<minDisplacement_Hessian_<<" : min_Displacement_Hessian\n"
@@ -323,8 +323,8 @@ double Parameters::getConverged_SP(){
 long Parameters::getMaxJumpAttempts_SP(){
     return maxJumpAttempts_SP_;
 }
-long Parameters::getTypePertubation_SP(){
-    return typePertubation_SP_;
+long Parameters::getTypePerturbation_SP(){
+    return typePerturbation_SP_;
 }
 bool Parameters::getRefineSP(){
     return refine_SP_;
@@ -344,14 +344,14 @@ double Parameters::getMaxStepSizeConvex_SP(){
 double Parameters::getMaxEnergy_SP(){
     return maxEnergy_SP_;
 }
-double Parameters::getNormPertubation_SP(){
-    return normPertubation_SP_;
+double Parameters::getNormPerturbation_SP(){
+    return normPerturbation_SP_;
 }
-double Parameters::getWithinRadiusPertubated_SP(){
-    return withinRadiusPertubated_SP_;
+double Parameters::getWithinRadiusPerturbated_SP(){
+    return withinRadiusPerturbated_SP_;
 }
-double Parameters::getMaxSinglePertubation_SP(){
-    return maxSinglePertubation_SP_;
+double Parameters::getMaxSinglePerturbation_SP(){
+    return maxSinglePerturbation_SP_;
 }
 /// Limit on the number of iterations that may be performed by the saddle point searches and minimisation
 long Parameters::getMaximumIterations() {
