@@ -24,24 +24,18 @@ Potentials::Potentials(Parameters *parameters){
         //interface_->initialize();
     }
 // _______________________  
-#if 0
     else if(parameters_->getPotentialTag() == getPotentialLJ()){
         interface_ = new LJ();
         interface_->initialize();
     }
-#endif
-#ifdef MORSE
     else if(parameters_->getPotentialTag() == getPotentialMorse()){
         interface_ = new Morse();
         interface_->initialize();
     }
-#endif
-#ifdef EFFECTIVE_MEDIUM_THEORY
     else if(parameters_->getPotentialTag() == getPotentialEMT()){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
-#endif
 #if 0
     else if(parameters_->getPotentialTag() == getPotentialEDIP()){
         interface_ = new EDIP();
@@ -68,7 +62,7 @@ Potentials::Potentials(Parameters *parameters){
         interface_->initialize();
     }
 #endif
-#ifndef NO_AL
+#ifndef NO_FORTRAN
     else if(parameters_->getPotentialTag() == getPotentialAluminum())
     {
         interface_ = new Aluminum();
