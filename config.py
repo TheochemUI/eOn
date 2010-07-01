@@ -109,6 +109,8 @@ if sb_scheme == 'transition_counting':
     sb_path = parser.get('Paths', 'superbasins')
 askmc_on = parser.getboolean('Superbasins','use_askmc')
 askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
+askmc_alpha = parser.getfloat('Superbasins','askmc_barrier_raise_param')
+askmc_gamma = parser.getfloat('Superbasins','askmc_high_barrier_def')
 askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
 askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
 

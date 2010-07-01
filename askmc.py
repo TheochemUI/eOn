@@ -16,47 +16,48 @@ mod_processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "p
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 
 
-# --- Defining the "acceleration" parameters ---
-# Should others of these (not just delta) be set in the configuration file?
-
-# alpha is the factor by which the rate constants are lowered when the superbasin criterion is passed.
-# In general Chatterjee & Voter found 2 to be an acceptable value,
-# but if there are "overlapping timescales", it should be less than the square root of gamma.
-alpha = 2
-
-# gamma determines what is a "high" barrier in the superbasin criterion.
-# If a barrier is *not* a "high" barrier, *and* it has a low process count, the criterion fails.
-# Thus if all "low-barrier" processes connected to the "current state" by other "low-barrier" processes
-# have a high enough process count, then all of these processes will have their barriers raised
-gamma = 2
-
-
 class ASKMC:
-    """ This is a class to keep track of things associated with performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
+    """ This is a class to keep track of things associated with
+        performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
-    def __init__(self, kT, states, confidence, barrier_test_on, connection_test_on, path_root, thermal_window):
+    def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, path_root, thermal_window):
         self.kT = kT
         self.Beta = 1/(kT)
         self.path = path_root
         self.thermal_window = thermal_window
         self.states = states
 
-        # "delta" is more or less a measure of maximum error encountered as a result of using this method.
-        # Smaller values of delta correspond to higher assurance that the superbasin exiting will be correct
-        # with respect to exit time and direction (and smaller computational speed-up).
+        # --- Defining the "acceleration" parameters ---
+
+        # "delta" is more or less a measure of maximum error encountered
+        # as a result of using this method.
+        # Smaller values of delta correspond to higher assurance that
+        # the superbasin exiting will be correct with respect to exit
+        # time and direction (and smaller computational speed-up).
         self.delta = (1 - confidence)
+        # alpha is the factor by which the rate constants are lowered
+        # when the superbasin criterion is passed.
+        # In general Chatterjee & Voter found 2 to be an acceptable value,
+        # but if there are "overlapping timescales", it should be less than the square root of gamma.
+        # Default in the config:  1.5.
+        self.alpha = alpha
+        # gamma determines what is a "high" barrier in the superbasin criterion.
+        # Chatterjee and Voter found 2 to be an acceptable value.
+        # Default in the config:  2.
+        self.gamma = gamma
         # Nf is the number of times to have seen a process before performing the superbasin criterion.
         # This comes from eq. 10 from the Chatterjee & Voter paper.
-        self.Nf = math.ceil((alpha - 1)/self.delta*math.log(1/self.delta))
+        self.Nf = math.ceil((self.alpha - 1)/self.delta*math.log(1/self.delta))
 
-        # --- Extra check on the superbasin criterion? ---
+        # --- Extra check(s) on the superbasin criterion? ---
+
         # "checksb_barriers" will check to see if there are any low-barrier, unvisited processes
         # originating from states in the superbasin.
-        # Default (in default_config): On
+        # Default in the config:  On
         # "checksb_connections" will implement a method to determine whether there are any missed
         # connections between states identified as "in the superbasin".
-        # Default (in default_config): Off
+        # Default in the config:  Off
         if barrier_test_on:
             self.checksb_barriers = True
         else:
@@ -97,10 +98,9 @@ class ASKMC:
             If it hasn't, simply use the correct starting values.
             Otherwise, read the current values. """
         # "sb_check_count" is a method to reduce the wasteful calls of working through the superbasin criterion.
-        # Rather than checking each time a process is seen more than Nf times, it is checked
-        # when a process is seen more than (2^sb_check_count)*Nf times
-        # with sb_check_count starting at 0 and increasing
-        # by one each time the superbasin criterion fails
+        # Rather than checking (calling raiseup) each time a process is seen more than Nf times (see register_transition),
+        # it is checked when a process is seen more than (2^sb_check_count)*Nf times with sb_check_count starting at 0
+        # and increasing by one each time the superbasin criterion fails.
         # In order to keep track of it, it will be written to disk, along with "num_rate_changes".
         # "num_rate_changes" keeps up with how many times barriers were raised in the entire simulation.
         if not os.path.isfile(os.path.join(self.path,"askmc_data.txt")):
@@ -186,7 +186,7 @@ class ASKMC:
                     next_state_process_id = process_id
                     break
         # If in "find" mode, an exception will be raised if the next_state_num is never found.
-        if flag == "find":
+        elif flag == "find":
             for process_id in current_state_procs.keys():
                 if current_state_procs[process_id]["product"] == next_state_num:
                     next_state_process_id = process_id
@@ -246,6 +246,18 @@ class ASKMC:
         else:
             return False
 
+    def edgelist_to_statelist(self, edgelist):
+        """ Compile a list of state numbers from an edgelist with no repeats. """
+        state_nums = []
+        for edge in edgelist:
+            ref_state_a_num = edge[0]
+            ref_state_b_num = edge[1]
+            if ref_state_a_num not in state_nums:
+                state_nums.append(ref_state_a_num)
+            if ref_state_b_num not in state_nums:
+                state_nums.append(ref_state_b_num)
+        return state_nums
+
     def missed_connections(self, edgelist, origEtrans):
         """ Determine whether or not there are low barrier processes which
             connect states in the proposed superbasin which have been missed. """
@@ -253,16 +265,7 @@ class ASKMC:
         # A value of zero indicates "all clear"
         testvar = 0
         # Compile a list of the state *numbers* with no repeats.
-        # Must check for repeats because multiple processes to/from
-        # a given state could be in the super-basin
-        state_nums_in_basin = []
-        for i in edgelist:
-            ref_state_a_num = i[0]
-            ref_state_b_num = i[1]
-            if ref_state_a_num not in state_nums_in_basin:
-                state_nums_in_basin.append(ref_state_a_num)
-            if ref_state_b_num not in state_nums_in_basin:
-                state_nums_in_basin.append(ref_state_b_num)
+        state_nums_in_basin = self.edgelist_to_statelist(edgelist)
         # Make a list of state objects.
         states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
         num_states = len(state_nums_in_basin)
@@ -280,7 +283,7 @@ class ASKMC:
                 # then this process *really* should have been caught in the "locsearch" function
                 if product_state_num in state_nums_in_basin \
                     and not (self.in_array([product_state_num, state.number], edgelist) or self.in_array([state.number, product_state_num], edgelist)) \
-                    and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
+                    and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
                         testvar = 1
                         return testvar
         return testvar
@@ -292,16 +295,7 @@ class ASKMC:
         # A value of zero indicates "all clear"
         testvar = 0
         # Compile a list of the state *numbers* with no repeats.
-        # Check for repeats to avoid extraneous runs through the
-        # real and modified process tables and "get_state()" calls.
-        state_nums_in_basin = []
-        for i in edgelist:
-            ref_state_a_num = i[0]
-            ref_state_b_num = i[1]
-            if ref_state_a_num not in state_nums_in_basin:
-                state_nums_in_basin.append(ref_state_a_num)
-            if ref_state_b_num not in state_nums_in_basin:
-                state_nums_in_basin.append(ref_state_b_num)
+        state_nums_in_basin = self.edgelist_to_statelist(edgelist)
         # Make a list of state objects from the basin.
         states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
         # See if any of the states have "low-barrier" processes from them which have not been seen.
@@ -311,8 +305,9 @@ class ASKMC:
             state_mod_procs = self.get_modified_process_table(state)
             mod_proc_ids = [process_id for process_id in state_mod_procs.keys()]
             for process_id in state_real_procs.keys():
-                if process_id not in mod_proc_ids and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
-                        testvar = 1
+                if process_id not in mod_proc_ids and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
+                    testvar = 1
+                    return testvar
         return testvar
     
     def locsearch(self, current_state, origEtrans):
@@ -320,7 +315,7 @@ class ASKMC:
             However, ---Note--- that in this implementation, not all neighbors are necessarily checked --
             just those which have been seen so far (which is *probably* all low barrier processes in a superbasin).
             origEtrans should be transition state energy (eV) of the process initially used for the call.
-                Immediately before each call, welltest should be set to 1 and edgelist should be any 2X1 numpy array. """
+            Immediately before each call, welltest should be set to 1 and edgelist should be any 2X1 numpy array. """
         # "welltest" will serve as a flag to stop the search if it has failed.
         # A value of 1 will indicate it has not yet failed.
         global welltest
@@ -337,7 +332,7 @@ class ASKMC:
                     # and the barrier is considered "low", its number of sightings (view_count),
                     # in both the forward and backward direction will be checked.
                     if not (self.in_array([current_state.number, next_state_num], edgelist) or self.in_array([next_state_num, current_state.number], edgelist)) \
-                        and current_state_mod_procs[next_state_id]["saddle_energy"] < origEtrans + math.log(gamma)/self.Beta:
+                        and current_state_mod_procs[next_state_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
                             next_state = self.states.get_state(next_state_num)
                             next_state_mod_procs = self.get_modified_process_table(next_state)
                             # Try to find the "process_id" of the current state relative to the next state
@@ -377,13 +372,12 @@ class ASKMC:
             if self.checksb_connections and self.missed_connections(edgelist, origEtrans):
                 # NOTE - Matt/Rye, do you think this should be just something to log, or should it raise an exception?
                 continue_flag = 0
-                logger.info("default superbasin criterion apparently missed a barrier - Not raising the barriers")
+                logger.info("Based on 'connections-check', default superbasin criterion apparently missed a barrier - Not raising the barriers")
             # If the extra check to find missed low barriers from superbasin states is on,
             # and the test indicates there was a missed low barrier (returns 1), that's problematic.
             if self.checksb_barriers and self.missed_low_barriers(edgelist, origEtrans):
-                # NOTE - Matt/Rye, do you think this is exception-worthy (see comment ~6 lines up)?
                 continue_flag = 0
-                logger.info("default superbasin criterion apparently missed a barrier - Not raising the barriers")
+                logger.info("Based on 'Barrier-check', default superbasin criterion apparently missed a barrier - Not raising the barriers")
             if continue_flag:
                 # Reset the check count, because a barrier raise is being performed
                 sb_check_count = 0
@@ -406,8 +400,8 @@ class ASKMC:
                     state_b_id = self.get_process_id(state_a, state_a_mod_procs, state_b_num, "find")
                     state_a_id = self.get_process_id(state_b, state_b_mod_procs, state_a_num, "find")
                     # The new rates
-                    a_b_new_rate = state_a_mod_procs[state_b_id]["rate"]/alpha
-                    b_a_new_rate = state_b_mod_procs[state_a_id]["rate"]/alpha
+                    a_b_new_rate = state_a_mod_procs[state_b_id]["rate"]/self.alpha
+                    b_a_new_rate = state_b_mod_procs[state_a_id]["rate"]/self.alpha
                     # The new saddle energies. Both calculated then compared for assurance
                     a_b_new_saddle = math.log(a_b_new_rate/state_a_mod_procs[state_b_id]["prefactor"])/(-self.Beta) + state_a_energy
                     b_a_new_saddle = math.log(b_a_new_rate/state_b_mod_procs[state_a_id]["prefactor"])/(-self.Beta) + state_b_energy
@@ -433,4 +427,4 @@ class ASKMC:
                     self.save_modified_process_table(state_b, state_b_mod_procs)
                 num_rate_changes += 1
             # Finally, save the 'tallies' being kept track of
-            self.save_askmc_metadata(sb_check_count, num_rate_changes)
+        self.save_askmc_metadata(sb_check_count, num_rate_changes)
