@@ -4,8 +4,8 @@
 
 #include <math.h> 
 #include <iostream>
-#include "system_unit.h" // unit converters
-#include "PotentialsInterface.h"
+#include "../../system_unit.h" // unit converters
+#include "../../PotentialsInterface.h"
 
 /** Lennard Jones potential.*/
 class LJ : public PotentialsInterface{

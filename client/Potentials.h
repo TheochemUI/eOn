@@ -12,23 +12,19 @@
  *
  *===============================================
  */
-#ifndef POTENTIALS
-#define POTENTIALS
-
 #include "Constants.h"
 #include "Parameters.h"
 #include "PotentialsInterface.h"
 #include "potentials/NewPotential/NewPotential.h"
 //#include "VASP.h"
 //#include "EDIP.h"
-//#include "potentials/EMT/EffectiveMediumTheory.h"
+#include "potentials/EMT/EffectiveMediumTheory.h"
 //#include "LJBinary.h"
 #include "potentials/Morse/Morse.h"
-//#include "LJ.h"
+#include "potentials/LennardJones/LJ.h"
 //#include "Lenosky.h"
 //#include "SW.h"
 //#include "Tersoff.h"
-//#include "LJBinary.h"
 #include "potentials/Aluminum/Aluminum.h"
 
 
@@ -52,5 +48,3 @@ private:
     PotentialsInterface *interface_;
     Parameters *parameters_;
 };
-
-#endif
