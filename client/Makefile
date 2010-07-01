@@ -1,19 +1,17 @@
 CXXFLAGS += -O2 -Wall
-FC=gfortran
-LDFLAGS += -lgfortran
 
 # define NDEBUG to remove debugging lines
 ifdef NDEBUG
-	NDEBUG=No
+	DEBUG=No
 	CXXFLAGS += -DNDEBUG
 else
-	NDEBUG=Yes
+	DEBUG=Yes
 endif
 
 # define BOINC to link against boinc libs
 ifdef BOINC
 	BOINC=Yes	
-	NDEBUG=No
+	DEBUG=No
 	CXXFLAGS += -DNDEBUG -DBOINC
 	LDFLAGS += -static -lboinc_api -lboinc -lpthread
 else
@@ -32,12 +30,14 @@ LIBS += ./potentials/LennardJones/libLJ.a
 POTENTIALS += "+LJ "
 
 ifdef NO_FORTRAN
-   CXXFLAGS += -DNO_FORTRAN
-   POTENTIALS += "-Aluminum "
+	CXXFLAGS += -DNO_FORTRAN
+	POTENTIALS += "-Aluminum "
 else
-   SUBDIRS += ./potentials/Aluminum/
-   LIBS += ./potentials/Aluminum/libAL.a
-   POTENTIALS += "+Aluminum "
+	FC=gfortran
+	LDFLAGS += -lgfortran
+	SUBDIRS += ./potentials/Aluminum/
+	LIBS += ./potentials/Aluminum/libAL.a
+	POTENTIALS += "+Aluminum "
 endif
 
 OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
@@ -46,9 +46,10 @@ OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
 
 all: $(SUBDIRS) client
+	@echo
 	@echo "EON Client Compilation Options"
 	@echo "BOINC: $(BOINC)" 
-	@echo "DEBUG: $(NDEBUG)"
+	@echo "DEBUG: $(DEBUG)"
 	@echo "POTENTIALS: $(POTENTIALS)"
 
 client: $(OBJECTS) $(LIBS)
