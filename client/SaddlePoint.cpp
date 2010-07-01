@@ -168,15 +168,15 @@ void SaddlePoint::displaceState(Matter *matter)
         initialDisplacement_[3 * i + 2] = 0;
     }
     
-    if(parameters_->getTypePertubation_SP() == getPertubateNotFccOrHcp())
+    if(parameters_->getTypePerturbation_SP() == getPerturbateNotFccOrHcp())
     {
         indexEpiCenter = cnaEpiCenter(matter);            
     }
-    else if(parameters_->getTypePertubation_SP() == getPertubateLastAtom())
+    else if(parameters_->getTypePerturbation_SP() == getPerturbateLastAtom())
     {
         indexEpiCenter = lastAtom(matter);
     }
-    else if(parameters_->getTypePertubation_SP() == getPertubateMinimalCoordinated())
+    else if(parameters_->getTypePerturbation_SP() == getPerturbateMinimalCoordinated())
     {
         indexEpiCenter = minimalCoordinatedEpiCenter(matter);
     }
@@ -196,7 +196,7 @@ void SaddlePoint::displaceState(Matter *matter)
         if(matter->getFixed(i) == false)
         {
             diffR = matter->distance(i, indexEpiCenter);
-            if(diffR < parameters_->getWithinRadiusPertubated_SP())
+            if(diffR < parameters_->getWithinRadiusPerturbated_SP())
             {
                 initialDisplacement_[3 * i + 0] = 2 * randomDouble() - 1;
                 initialDisplacement_[3 * i + 1] = 2 * randomDouble() - 1;
@@ -206,17 +206,17 @@ void SaddlePoint::displaceState(Matter *matter)
         j++;
     }
     normalize(initialDisplacement_, 3 * nAtoms);
-    multiplyScalar(initialDisplacement_, initialDisplacement_, parameters_->getNormPertubation_SP(), 3 * nAtoms);
+    multiplyScalar(initialDisplacement_, initialDisplacement_, parameters_->getNormPerturbation_SP(), 3 * nAtoms);
     
     for(int i = 0; i < 3 * nAtoms; i++)
     {
-        if(parameters_->getMaxSinglePertubation_SP() < initialDisplacement_[i])
+        if(parameters_->getMaxSinglePerturbation_SP() < initialDisplacement_[i])
         {
-            initialDisplacement_[i] = parameters_->getMaxSinglePertubation_SP();
+            initialDisplacement_[i] = parameters_->getMaxSinglePerturbation_SP();
         }
-        else if(initialDisplacement_[i] < -parameters_->getMaxSinglePertubation_SP())
+        else if(initialDisplacement_[i] < -parameters_->getMaxSinglePerturbation_SP())
         {
-            initialDisplacement_[i] = -parameters_->getMaxSinglePertubation_SP();
+            initialDisplacement_[i] = -parameters_->getMaxSinglePerturbation_SP();
         }
     }
     // Adding the initialDisplacement_
@@ -299,7 +299,7 @@ void SaddlePoint::jumpToConvexRegion(){
     //----- Initialize end -----
     //std::cout<<"jumpToConvexRegion\n";
 
-    if(parameters_->getTypePertubation_SP()!=getNoPertubation()){
+    if(parameters_->getTypePerturbation_SP()!=getNoPerturbation()){
         do{
             saddle_->setFreePositions(pos);
             displaceState(saddle_);

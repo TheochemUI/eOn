@@ -17,7 +17,7 @@
 //long constants::getStringSize(){return 512;};
 
 // Constants used to determine which potential to use.
-// _______________________    
+// _______________________
 // To use a new potential.
 // An interface should be created in the file NewPotential_interface.cpp. Code will crash at runtime if used and no new potential has been defined!
 long constants::getPotentialNewPotential(){return 0;};
@@ -56,13 +56,13 @@ double constants::getMaxMoveFullRelax(){return 0.01;};
 double constants::getTimeStep(){return 0.1;};
 
 // Constants used in displacement prior saddle point search
-long constants::getNoPertubation(){return 0;};
-long constants::getPertubateNotFccOrHcp(){return 1;};
-long constants::getPertubateMinimalCoordinated(){return 2;};
-long constants::getPertubateLastAtom(){return 3;};
+long constants::getNoPerturbation(){return 0;};
+long constants::getPerturbateNotFccOrHcp(){return 1;};
+long constants::getPerturbateMinimalCoordinated(){return 2;};
+long constants::getPerturbateLastAtom(){return 3;};
 double constants::getNeighborCutoff(){return 3.3;};
 
-// Constants used in saddle point determination to set which algorithm that is going to be used for the lowest eigenmode determination.
+// Constants used in saddle point determination to set which algorithm that is going to be used for the lowest eigenmode determination
 long constants::getLowestEigenmodeDimer(){return 1;};
 long constants::getLowestEigenmodeLanczos(){return 2;};
 
