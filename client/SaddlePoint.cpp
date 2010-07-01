@@ -187,7 +187,7 @@ void SaddlePoint::displaceState(Matter *matter)
 
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
         
-    // To keep track of free cooridnates when setting atoms that have moved
+    // To keep track of free coordinates when setting atoms that have moved
     // Create an array containing initialDisplacement_ of atoms 
     // in the vicinity of the epicenter atom
     j = 0;
@@ -374,13 +374,13 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         
         maxStep = parameters_->getMaxStepSizeConvex_SP();
         cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-        // The system (saddle_) is moved to a new configurations
+        // The system (saddle_) is moved to a new configuration
         saddle_->setFreePositions(pos);
         saddle_->getFreeForces(forces);
         // The new lowest eigenvalue
         lowestEigenmode_->moveAndCompute(saddle_);
         eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
-        // Updating the conjugated object to the new confiuration
+        // Updating the conjugated object to the new configuration
         correctingForces(forces);
         cgSaddle.setFreeAtomForcesModifiedForces(forces);
         if(eigenValue_ < 0)
