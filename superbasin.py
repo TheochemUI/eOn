@@ -8,6 +8,7 @@ logger = logging.getLogger('superbasin')
 class Superbasin:
  
     def __init__(self, path, kT, state_list = None, get_state = None):
+        assert(isinstance(kT, float))
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
@@ -21,10 +22,9 @@ class Superbasin:
             self.write_data()
         else:
             self.read_data(get_state)
-      
+
+
     def pick_exit_state(self, entry_state):        
-        #Find the exit state
-        
         for i in range(len(self.state_numbers)):
             if entry_state.number == self.state_numbers[i]:
                 entry_state_index = i
@@ -32,8 +32,9 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-        probability_vector = self.probability_matrix.transpose()[entry_state_index]
+        probability_vector = self.probability_matrix[entry_state_index]
         if abs(1.0-numpy.sum(probability_vector)) < 1e-3:
+            print 'probability_vector', probability_vector, numpy.sum(probability_vector)
             logger.warning("the probability vector isn't close to 1.0")
         probability_vector /= numpy.sum(probability_vector)
         
@@ -47,8 +48,18 @@ class Superbasin:
         else:
             logger.warning("Warning: failed to select exit state. p = " + str(p))
         time = self.mean_residence_times[entry_state_index]
-        
-         
+        return time, exit_state_index
+
+    def test(self, entry_state):
+        n=len(self.mean_residence_times)
+        p=[0]*n
+        m=10
+        for i in range(m):
+            time, exit_state_index=self.pick_exit_state(entry_state)
+            p[exit_state_index]+=1
+        for i in range(n):
+            p[i]=float(p[i])/m
+        print 'pick up p:', p
         return time, exit_state_index
 
     def step(self, entry_state, get_product_state):
@@ -58,23 +69,28 @@ class Superbasin:
         rate_table = []
         ratesum = 0.0
         process_table=exit_state.get_process_table()
+        # The index of a process in process_table is different from the one it has in rate_table
+        # because the processes internal to the sub-space are not present in rate_table.
+        process_indices=list() # key=index in rate_table; return index in process_table
+        index=0
         for process in process_table.values():
             if process['product'] not in self.state_numbers:
                 rate_table.append(process['rate'])
                 ratesum += process['rate']
-       
+                process_indices.append(index)
+            index+=1
+        
         p = 0.0
         u = numpy.random.random_sample()
         for i in range(len(rate_table)):
             p += rate_table[i]/ratesum
-            if p>u:
-                exit_process_index = i 
+            if p>=u:
+                exit_process_index = process_indices[i] 
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
-        
-        #akmc expects a state, not a process id
         exit_state = get_product_state(entry_state.number, exit_process_index)
+        assert(time >= 0.0)
         return time, exit_state
 
     def contains_state(self, state):
@@ -83,7 +99,6 @@ class Superbasin:
     def _calculate_stuff(self): 
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
-        print 'remove'
         sum=0.0
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
@@ -95,10 +110,6 @@ class Superbasin:
                     j = self.state_numbers.index(process['product'])
                     transient_matrix[i][j] += process['rate']
                 transient_matrix[i][i] -= process['rate']
-        print 'sum', sum
-        print 'transient_matrix\n', transient_matrix
-        print 'recurrent_vector', recurrent_vector
-
         
         #What is this stuff?
         #inverse free method
@@ -111,7 +122,6 @@ class Superbasin:
         #self.mean_residence_time = numpy.sum(fundamental_vector)
         
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
-        print 'fundamental_matrix\n', fundamental_matrix
         n=len(fundamental_matrix)
         id=numpy.zeros((n, n))
         self.mean_residence_times = numpy.zeros(len(self.states))
@@ -121,9 +131,7 @@ class Superbasin:
             for j in range(len(self.states)):
                 self.mean_residence_times[j] -= fundamental_matrix[i][j]
                 self.probability_matrix[i][j] = -recurrent_vector[i]*fundamental_matrix[i][j]
-        print 'mean_residence_times=', repr(self.mean_residence_times)
-        print 'probability_matrix=\\\n', repr(self.probability_matrix)
-        print 'probability_matrix.sum', self.probability_matrix.sum(0)
+
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
@@ -148,9 +156,3 @@ class Superbasin:
         self.states = None
         self.probability_matrix = None
         self.mean_residence_times = None
-
-          
-
-
-
-            

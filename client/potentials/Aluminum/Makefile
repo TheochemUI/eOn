@@ -1,7 +1,7 @@
 
 OBJECTS = dfrhoDblexp.o  embedenergy.o  fofrhoDblexp.o  forces.o  gagafeDblexp.o  potinit.o  sumembforce.o Aluminum.o
 
-FC = gfortran
+FC ?= gfortran
 
 %.o: %.f
 	${FC} -c $< -o $@
@@ -16,7 +16,3 @@ $(LIB) : $(OBJECTS)
 	ranlib $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
-
-
-
-
