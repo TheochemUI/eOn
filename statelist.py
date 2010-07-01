@@ -1,17 +1,17 @@
 """ The statelist module. """
 
 
-
 import os
 import shutil
-import logging
-logger = logging.getLogger('statelist')
+import sys
 import math
 from ConfigParser import SafeConfigParser 
 
+import logging
+logger = logging.getLogger('statelist')
+
 import state
 import atoms
-
 
 
 class StateList:
@@ -176,28 +176,29 @@ class StateList:
                         reverse_procs[id][product] = product_number
                         product.save_process_table()
                         return
-        # There are no processes, so this must be a new state. Add the reverse process.
-        product.set_energy(reactant.procs[process_id]["product_energy"])
-        # Update the reactant state to point at the new state id.
-        reactant.procs[process_id]['product'] = product_number
-        reactant.save_process_table()
-        # Create the reverse process in the new state.
-        barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
-        shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
-        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(0))
-        shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(0))
-        shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
-        shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
-        product.append_process_table(id = 0, 
-                                     saddle_energy = reactant.procs[process_id]['saddle_energy'], 
-                                     prefactor = reactant.procs[process_id]['product_prefactor'], 
-                                     product = reactant_number, 
-                                     product_energy = reactant.procs[process_id]['product_energy'],
-                                     product_prefactor = reactant.procs[process_id]['prefactor'],
-                                     barrier = barrier, 
-                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
-                                     repeats = 0)
-        product.save_process_table()
+        else:
+            # There are no processes, so this must be a new state. Add the reverse process.
+            product.set_energy(reactant.procs[process_id]["product_energy"])
+            # Update the reactant state to point at the new state id.
+            reactant.procs[process_id]['product'] = product_number
+            reactant.save_process_table()
+            # Create the reverse process in the new state.
+            barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
+            shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
+            shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(0))
+            shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(0))
+            shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
+            shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
+            product.append_process_table(id = 0, 
+                                         saddle_energy = reactant.procs[process_id]['saddle_energy'], 
+                                         prefactor = reactant.procs[process_id]['product_prefactor'], 
+                                         product = reactant_number, 
+                                         product_energy = reactant.procs[process_id]['product_energy'],
+                                         product_prefactor = reactant.procs[process_id]['prefactor'],
+                                         barrier = barrier, 
+                                         rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
+                                         repeats = 0)
+            product.save_process_table()
 
 
     def get_state(self, state_number):
