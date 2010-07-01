@@ -7,11 +7,15 @@
  *
  *-----------------------------------------------
  *  Todo:
+ *      GH: add improved dimer method of Andreas Heyden
+ *          - add 45 degree rotation angle
+ *          - add rotation angle instead of rotational force criteria
+ *      GH: add LBFGS optimizer
+ *      GH: make torqueLimitHigh/Low and torqueMin/MaxRotations variables
  *
  *-----------------------------------------------
  *  Heavily inspired of codes by:
- *      Graeme Henkelmann
- *      Andri Arnaldsson
+ *      Graeme Henkelman
  *      Roar Olsen
  *===============================================
  */
