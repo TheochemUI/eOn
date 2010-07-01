@@ -35,7 +35,7 @@ def loadcon(filepath):
         boxtemp[i][i]=BoxLength[i]
     con.readline() #Line 5: comment
     con.readline() #Line 6: comment
-    num_types = int(con.readline()) #Line 7: number of atom types
+    num_types = int(con.readline().split()[0]) #Line 7: number of atom types
     num_each_type = con.readline().split() #line 8: number of each type of atom
     mass_of_type = con.readline().split() #line 9: mass of each type of atom
     num_atoms = 0
@@ -267,13 +267,3 @@ if __name__=='__main__':
     import sys
     a = loadposcar(sys.argv[1])
     saveposcar("FOOCAR", a)
-
-
-
-
-
-
-
-
-
-

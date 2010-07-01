@@ -232,6 +232,8 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
+    elif config.sb_scheme == 'energy_level':
+        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
     return superbasining
 
 def kmc_step(current_state, states, time, kT):
@@ -251,7 +253,7 @@ def kmc_step(current_state, states, time, kT):
             sb = superbasining.get_containing_superbasin(current_state)
 
         if config.sb_on and sb:
-            time, next_state = sb.step(current_state, states.get_product_state)
+            mean_time, next_state = sb.step(current_state, states.get_product_state)
         else:
             if config.askmc_on:
                 rate_table = asKMC.get_ratetable(current_state)
@@ -275,8 +277,8 @@ def kmc_step(current_state, states, time, kT):
                 logger.warning("Warning: failed to select rate. p = " + str(p))
                 break
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
-            time -= math.log(1-numpy.random.random_sample())/ratesum # numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
-
+            mean_time = 1.0/ratesum
+        time -= mean_time*math.log(1-numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
         if config.askmc_on:
             asKMC.register_transition(current_state, next_state)
         if config.sb_on:

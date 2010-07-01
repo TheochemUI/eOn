@@ -3,8 +3,6 @@ OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
 CXXFLAGS += -O2 -Wall
-# Libraries to link the executable 
-#LIBS := ./common/libCommon.a
 # define NDEBUG to remove debugging lines
 ifdef NDEBUG
    CXXFLAGS += -DNDEBUG
@@ -27,6 +25,7 @@ endif
 ifndef NO_AL
    SUBDIRS += ./potentials/Aluminum/
    LIBS += ./potentials/Aluminum/libAL.a
+   LDFLAGS += -lg2c
    LDFLAGS += -lgfortran
 else
    CXXFLAGS += -DNO_AL
