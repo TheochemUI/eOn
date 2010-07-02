@@ -9,12 +9,6 @@ RANDOM_SEED -1
 # 1 = Lennard-Jones
 # 2 = morse
 # 3 = emt
-# 4 = edip
-# 5 = VASP
-# 6 = Tersoff
-# 7 = Stillinger Weber
-# 8 = Lenosky
-# 9 = Lennard-Jones binary
 # 10 = Aluminum EAM
 POTENTIAL_TAG 10
 
