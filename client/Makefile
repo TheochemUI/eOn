@@ -10,9 +10,13 @@ else
 	FFLAGS += -O2
 	AR = ar cru
 	LDFLAGS += -lgfortran
-# OSX ifort
+# ifort
 #	FC = ifort
 #	FFLAGS += -O2
+#	# Linux linking
+#	AR = ar cru
+#	LDFLAGS += -limf -lsvml -lifcore -ldl
+#	# OSX linking
 #	AR = ifort -staticlib -o
 endif
 
