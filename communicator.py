@@ -116,8 +116,8 @@ class Communicator:
 
             # Concatenate all of the displacement and modes together.
             for i in range(1,len(chunk)):
-                dp_join = open(os.path.join(jobpaths[i], "displacement_passed.con"))
-                mp_join = open(os.path.join(jobpaths[i], "mode_passed.dat"))
+                dp_join = open(os.path.join(chunk[i], "displacement_passed.con"))
+                mp_join = open(os.path.join(chunk[i], "mode_passed.dat"))
                 
                 dp_concat.write(dp_join.read())
                 mp_concat.write(mp_join.read())
