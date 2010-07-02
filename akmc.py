@@ -336,14 +336,13 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     logger.info("making %i searches" % num_to_make)
     
     parameters_path = os.path.join(config.path_root, "parameters.dat")
-    searches = [{}]* num_to_make
+    searches = []
 
     
     t1 = unix_time.time()
     for i in range(num_to_make):
-        search = searches[i]
+        search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
-        
         done = False
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
         if (config.recycling_on and current_state.number is not 0):
@@ -368,11 +367,9 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
             searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
         search['displacement'] = displacement
         search['mode'] = mode
-        searches.append(search)
-        
+        searches.append(search) 
         wuid += 1
 
-    #print searches
     comm.submit_searches(searches, current_state.reactant_path, parameters_path)
     t2 = unix_time.time()
     logger.info( str(num_to_make) + " searches created") 
