@@ -2,12 +2,10 @@
 OBJECTS = dfrhoDblexp.o  embedenergy.o  fofrhoDblexp.o  forces.o  gagafeDblexp.o  potinit.o  sumembforce.o Aluminum.o
 
 FC ?= gfortran
+FFLAGS ?= -O2
 
 %.o: %.f
-	${FC} -c $< -o $@
-
-CXXFLAGS += -O3 -I../..
-CFLAGS += -O3 -I../..
+	${FC} ${FFLAGS} -c $< -o $@
 
 LIB := libAL.a
 

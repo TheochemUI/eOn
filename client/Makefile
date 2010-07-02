@@ -1,4 +1,14 @@
+#C compiler settings
 CXXFLAGS += -O2 -Wall
+
+#Fortran compiler settings
+ifdef NO_FORTRAN
+	CXXFLAGS += -DNO_FORTRAN
+else
+	FC=gfortran
+	FFLAGS += -O2
+	LDFLAGS += -lgfortran
+endif
 
 # define NDEBUG to remove debugging lines
 ifdef NDEBUG
@@ -19,23 +29,20 @@ else
 endif
 
 #Potentials
-SUBDIRS += ./potentials/EMT/
+POTDIRS += ./potentials/EMT/
 LIBS += ./potentials/EMT/libEMT.a
 POTENTIALS += "+EMT "
-SUBDIRS += ./potentials/Morse/
+POTDIRS += ./potentials/Morse/
 LIBS += ./potentials/Morse/libMorse.a
 POTENTIALS += "+MORSE "
-SUBDIRS += ./potentials/LennardJones/
+POTDIRS += ./potentials/LennardJones/
 LIBS += ./potentials/LennardJones/libLJ.a
 POTENTIALS += "+LJ "
 
 ifdef NO_FORTRAN
-	CXXFLAGS += -DNO_FORTRAN
 	POTENTIALS += "-Aluminum "
 else
-	FC=gfortran
-	LDFLAGS += -lgfortran
-	SUBDIRS += ./potentials/Aluminum/
+	FPOTDIRS += ./potentials/Aluminum/
 	LIBS += ./potentials/Aluminum/libAL.a
 	POTENTIALS += "+Aluminum "
 endif
@@ -45,7 +52,7 @@ OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
 	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
 
-all: $(SUBDIRS) client
+all: $(POTDIRS) $(FPOTDIRS) client
 	@echo
 	@echo "EON Client Compilation Options"
 	@echo "BOINC: $(BOINC)" 
@@ -58,15 +65,18 @@ client: $(OBJECTS) $(LIBS)
 $(LIBS):
 	$(MAKE) -C $@
 
-$LIBS: $(SUBDIRS)
+$LIBS: $(POTDIRS) $(FPOTDIRS)
 
-$(SUBDIRS):
-	export FC=$(FC); $(MAKE) -C $@
+$(POTDIRS):
+	$(MAKE) -C $@
+
+$(FPOTDIRS):
+	export FC=$(FC); export FFLAGS=$(FFLAGS); $(MAKE) -C $@
 
 clean:
 	rm -f $(OBJECTS) client
 
 clean-all: clean
-	for subdir in $(SUBDIRS) ; do $(MAKE) -C $$subdir clean ; done
+	for pot in $(POTDIRS) $(FPOTDIRS) ; do $(MAKE) -C $$pot clean ; done
 
-.PHONY : all $(SUBDIRS) clean clean-all
+.PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all
