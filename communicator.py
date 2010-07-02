@@ -114,6 +114,7 @@ class Communicator:
         chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
         for chunk in chunks:
             #create the bundle's directory
+            
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
             shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
