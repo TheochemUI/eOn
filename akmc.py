@@ -96,6 +96,9 @@ def main():
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
+    for key in searchdata.keys():
+        if int(key.split('_')[0]) < current_state.number:
+            del searchdata[key]
     write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
     if config.recycling_on:
         write_recycling_metadata(parser, recycler.process_num, previous_state.number)
@@ -164,7 +167,7 @@ def write_recycling_metadata(parser, recycling_start, previous_state_num):
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path) #might 
+    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path)  
 
 def get_communicator():
     if config.comm_type=='boinc':
@@ -218,10 +221,10 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         result_data['search_id'] = int(i.split("_")[1])
-        result_data['search_type'] = searchdata[i.split("_")[1] + "type"]
+        result_data['search_type'] = searchdata[i + "type"]
         
         # Remove used information from the searchdata metadata.
-        del searchdata[i.split("_")[1] + "type"]
+        del searchdata[i + "type"]
         
         if result_data['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result_path, result_data)
@@ -349,10 +352,10 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
         if (config.recycling_on and current_state.number is not 0) and recycler.make_suggestion(job_dir):
             logger.debug('Recycled a saddle')
-            searchdata[str(wuid)+"type"] = "recycling"
+            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
         elif config.kdb_on and kdber.make_suggestion(job_dir):
             logger.info('Made a KDB suggestion')
-            searchdata[str(wuid)+"type"] = "kdb"
+            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
             # Store the kdb suggestion in the state directory if config.kdb_keep is set.
             if config.kdb_keep:
                 if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
@@ -360,7 +363,7 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
                 shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))             
         else:
             disp.make_displacement(job_dir) 
-            searchdata[str(wuid)+"type"] = "random"
+            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
         wuid += 1
         jobpaths.append(job_dir)
 
@@ -417,7 +420,7 @@ if __name__ == '__main__':
 
     #XXX: Some options are mutally exclusive. This should be handled better.
     if options.print_status:
-        states = get_statelist(config.akmc_temperature/11604.5)
+        states = get_statelist(config.akmc_temperature / 11604.5)
         start_state_num, time, wuid, searchdata = get_akmc_metadata()
 
         print
