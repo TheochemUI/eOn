@@ -8,6 +8,8 @@ import subprocess
 import commands
 import tarfile
 
+import io
+
 class NotImplementedError(Exception):
     pass
 
@@ -22,7 +24,7 @@ class Communicator:
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
 
-    def submit_searches(self, jobpaths):
+    def submit_searches(self, reactant_path, parameters_path, searches):
         '''Throws CommunicatorError if fails.'''
         raise NotImplementedError()
 
@@ -102,34 +104,34 @@ class Communicator:
                 result_dirs.append(os.path.split(jobpath_dest)[1])
         return result_dirs
 
-    def make_bundles(self, jobpaths):
+    def make_bundles(self, searches, reactant_path, parameters_path):
         '''This method is a generator that bundles together multiple searches into a single job.
            Example usage:
                for jobpath in self.make_bundles(jobpaths):
                    do_stuff()'''
+        reactant = io.loadcon(reactant_path)
         # Split jobpaths in to lists of size self.bundle_size.
-        chunks = [ jobpaths[i:i+self.bundle_size] for i in range(0, len(jobpaths), self.bundle_size) ]
+        chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
         for chunk in chunks:
-            # Open the first jobpath's displacement and mode files.
-            dp_concat = open(os.path.join(chunk[0],"displacement_passed.con"), "a")
-            mp_concat = open(os.path.join(chunk[0],"mode_passed.dat"), "a")
+            #create the bundle's directory
+            job_path = os.path.join(self.scratchpath, chunk[0]['id'])
+            os.mkdir(job_path)
+            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
+            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
+            
+            # Open the first jobpath's displacement and mode files. 
+            dp_concat = open(os.path.join(job_path,"displacement_passed.con"), "a")
+            mp_concat = open(os.path.join(job_path,"mode_passed.dat"), "a")
 
             # Concatenate all of the displacement and modes together.
-            for i in range(1,len(chunk)):
-                dp_join = open(os.path.join(chunk[i], "displacement_passed.con"))
-                mp_join = open(os.path.join(chunk[i], "mode_passed.dat"))
-                
-                dp_concat.write(dp_join.read())
-                mp_concat.write(mp_join.read())
-
-                dp_join.close()
-                mp_join.close()
-
+            for search in chunk:
+                io.savecon(dp_concat, search['displacement']) 
+                io.save_mode(mp_concat, search['mode'], reactant)
             dp_concat.close()
             mp_concat.close()
 
             # Returns the jobpath to the new bigger workunit.
-            yield chunk[0]
+            yield job_path
 
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
@@ -263,11 +265,11 @@ class BOINC(Communicator):
         path = commands.getoutput("%s %s" % (cmd, filename))
         return path
 
-    def submit_searches(self, jobpaths):
+    def submit_searches(self, searches, reactant_path, parameters_path):
         '''Runs the BOINC command create_work on all the jobs.'''
         from threading import Thread
         thread_list = []
-        for jobpath in self.make_bundles(jobpaths):
+        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
             wu_name = "%i_%s" % (self.uniqueid, os.path.split(jobpath)[1])
             t = Thread(target=self.create_work, args=(jobpath, wu_name))
             t.start()
@@ -436,17 +438,13 @@ class Local(Communicator):
             errmsg = "saddle search failed in %s: %s" % (jobpath, stderr)
             logger.warning(errmsg)
 
-    def submit_searches(self, jobpaths):
+    def submit_searches(self, searches, reactant_path, parameters_path):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
-        for jobpath in self.make_bundles(jobpaths):
+        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
             #move the job directory to the scratch directory
-            jobdir = os.path.split(jobpath)[1]
-            destpath = os.path.join(self.scratchpath, jobdir)
-            shutil.move(jobpath, destpath)
             #update jobpath to be in the scratch directory
-            jobpath = destpath
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
             p = subprocess.Popen(self.client,cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)

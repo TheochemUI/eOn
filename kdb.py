@@ -76,20 +76,19 @@ class KDB:
             sp.wait()
 
 
-    def make_suggestion(self, jobdir):
+    def make_suggestion(self):
         if os.path.isdir(os.path.join(self.path, "kdbmatches")):
             dones = glob.glob(os.path.join(self.path, "kdbmatches",".done_*"))
             if len(dones) > 0:
                 number = dones[0].split("_")[1]
-                p = io.loadposcar(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
-                io.savecon(os.path.join(jobdir, "displacement_passed.con"), p) 
-                m = [[float(i) for i in l.strip().split()] for l in open(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
-                io.save_mode(os.path.join(jobdir, "mode_passed.dat"), m, p)
+                displacement = io.loadposcar(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
+                mode = [[float(i) for i in l.strip().split()] for l in open(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
+                
                 os.remove(os.path.join(self.path, "kdbmatches", ".done_%s" % number))
                 os.remove(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
                 os.remove(os.path.join(self.path, "kdbmatches", "MODE_%s" % number))
-                return True
-        return False
+                return displacement, mode
+        return None, None
                 
             
     
