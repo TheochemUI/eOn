@@ -334,41 +334,46 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
-    parameters_path = os.path.join(config.path_root, "parameters.dat")
     
-    if os.path.isdir(config.path_searches_out):
-        #Clean out directory
-        shutil.rmtree(config.path_searches_out)
+    parameters_path = os.path.join(config.path_root, "parameters.dat")
+    searches = [{}]* num_to_make
 
+    
     t1 = unix_time.time()
-    os.makedirs(config.path_searches_out)
-    jobpaths = []
     for i in range(num_to_make):
-        job_dir = os.path.join(config.path_searches_out, str(current_state.number)+"_"+str(wuid))
-        os.mkdir(job_dir)
-        shutil.copy(current_state.reactant_path, os.path.join(job_dir, "reactant_passed.con"))
-        shutil.copy(parameters_path, os.path.join(job_dir, "parameters_passed.dat"))
+        search = searches[i]
+        search['id'] = "%d_%d" % (current_state.number, wuid)
         
+        done = False
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
-        if (config.recycling_on and current_state.number is not 0) and recycler.make_suggestion(job_dir):
-            logger.debug('Recycled a saddle')
-            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
-        elif config.kdb_on and kdber.make_suggestion(job_dir):
-            logger.info('Made a KDB suggestion')
-            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
-            # Store the kdb suggestion in the state directory if config.kdb_keep is set.
-            if config.kdb_keep:
-                if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
-                    os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
-                shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))             
-        else:
-            disp.make_displacement(job_dir) 
+        if (config.recycling_on and current_state.number is not 0):
+            displacement, mode = recycler.make_suggestion()
+            if displacement:
+                logger.debug('Recycled a saddle')
+                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
+                done = True
+        if not done and config.kdb_on:
+            displacement, mode = kdber.make_suggestion()
+            if displacement:
+                done = True
+                logger.info('Made a KDB suggestion')
+                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
+                # Store the kdb suggestion in the state directory if config.kdb_keep is set.
+                if config.kdb_keep:
+                    if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
+                        os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
+                    shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
+        if not done:
+            displacement, mode = disp.make_displacement() 
             searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
+        search['displacement'] = displacement
+        search['mode'] = mode
+        searches.append(search)
+        
         wuid += 1
-        jobpaths.append(job_dir)
 
-    t1 = unix_time.time()
-    comm.submit_searches(jobpaths)
+    #print searches
+    comm.submit_searches(searches, current_state.reactant_path, parameters_path)
     t2 = unix_time.time()
     logger.info( str(num_to_make) + " searches created") 
     logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
