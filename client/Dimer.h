@@ -36,9 +36,9 @@ public:
     
     ~Dimer();///< Destructor.
         
-    void startNewSearchAndCompute(Matter const *matter, double *displacement);///< Is computational heavy! The \a matter is a pointer. The object pointed at is copied into a local copy defining the center of the dimer.
-    void moveAndCompute(Matter const *matter);///< Is computational heavy! The \a matter is a pointer. The object pointed at is copied into a local copy defining the center of the dimer. As the function is intended to be used for moving the dimer up the potential energy surface the \a matter should be somehow alike the argument used in the former call to Dimer::moveAndCompute or Dimer::startNewSearchAndCompute.
-    double returnLowestEigenmode(double *result);///< The latest determined lowest eigenmode is returned in \a result, the array should have a length corrsponding to the number free coordinates.
+    void startNewSearchAndCompute(Matter const *matter, double *displacement);///< Is computational heavy. The matter object pointed at is copied into a local copy defining the center of the dimer.
+    void moveAndCompute(Matter const *matter);///< Is computational heavy! The matter object pointed at is copied into a local copy defining the center of the dimer. As the function is intended to be used for moving the dimer up the potential energy surface, matter should be somehow alike the argument used in the former call to Dimer::moveAndCompute or Dimer::startNewSearchAndCompute.
+    double returnLowestEigenmode(double *result);///< The latest determined lowest eigenmode is returned in result, the array should have a length corrsponding to the number free coordinates.
     /** Set initial direction manually.*/
     void setEigenvector(long size, double const eigenvector[]);
         /// Return eigenvector.
@@ -65,7 +65,7 @@ private:
                                   double *rotationalPlaneNormOld,
                                   double *lengthRotationalForceOld);
     
-    void rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle);///< Rotating the dimer \rotationAngle (radians), the rotational plane is also modified.
-    double calcRotationalForce(double *forceDiffOrthognalToDimer);///< Determine the rotational force of the dimer. \forceDiffOrthognalToDimer should be the difference in forces for the 'two' configurations defining the dimer where the forces along the dimer directionNorm_ has been projected out.
+    void rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle);///< Rotating the dimer rotationAngle (radians), the rotational plane is also modified.
+    double calcRotationalForce(double *forceDiffOrthognalToDimer);///< Determine the rotational force of the dimer. forceDiffOrthognalToDimer should be the difference in forces for the 'two' configurations defining the dimer where the forces along the dimer directionNorm_ has been projected out.
 };
 #endif

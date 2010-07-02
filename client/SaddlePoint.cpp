@@ -9,7 +9,7 @@
  *
  *-----------------------------------------------
  *  Heavily inspired of codes by:
- *      Graeme Henkelmann
+ *      Graeme Henkelman
  *      Andri Arnaldsson
  *      Roar Olsen
  *===============================================
@@ -60,7 +60,7 @@ SaddlePoint::SaddlePoint(Matter * initial, Matter *saddle, Parameters *parameter
 }
 
 void SaddlePoint::clean(){
-    // saddle_ should not be deleted, copy of a pointer that was passed in!
+    // saddle_ should not be deleted, copy of a pointer that was passed in
     // delete saddle_
     if(lowestEigenmode_ != 0){
         delete lowestEigenmode_;
@@ -264,7 +264,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     //----- Initialize end -----
     //std::cout<<"relaxFromSaddle\n";
     
-    // Displace saddle point conf. along the lowest eigenmode and minimize
+    // Displace saddle point configuration along the lowest eigenmode and minimize
     *min1 = *saddle_;    
     multiplyScalar(displacedPos, eigenMode_, 0.2, nFreeCoord_);
     // NOTE using subtract
@@ -362,7 +362,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     do
     {
         forceCallsSaddle = saddle_->getForceCalls();        
-        cgSaddle.makeInfinitisimalStepModifiedForces(posStep, pos);
+        cgSaddle.makeInfinitesimalStepModifiedForces(posStep, pos);
         // Determining the optimal step
         saddle_->setFreePositions(posStep);
         saddle_->getFreeForces(forcesStep);

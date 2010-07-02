@@ -9,7 +9,7 @@
  *
  *-----------------------------------------------
  *  Heavily inspired of codes by:
- *      Graeme Henkelmann
+ *      Graeme Henkelman
  *      Andri Arnaldsson
  *      Roar Olsen
  *===============================================
@@ -142,7 +142,7 @@ void ConjugateGradients::fullRelax(){
 
 
 bool ConjugateGradients::isItConverged(double convergeCriterion){
-    double diff;
+    double diff=0;
     
     for(int i=0;i<nFreeCoord_;i++)
     {
@@ -207,7 +207,7 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
     else{
         step = projectedForce1/curvature;
         if(maxStep < fabs(step)){
-            // Too big step was calculated
+            // Calculated is too large
             step = sign(step)*maxStep;
         }
     }
@@ -216,7 +216,7 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
 
 // Specific functions when forces are modified 
 
-void ConjugateGradients::makeInfinitisimalStepModifiedForces(double *posStep, 
+void ConjugateGradients::makeInfinitesimalStepModifiedForces(double *posStep, 
                                                              double *pos){
     
     determineSearchDirection();

@@ -39,12 +39,12 @@ namespace client_eon {
             long size;
             double * vector;
       } eigenvector;
-      /// Load the unperturbed configuration and the run time parameters recieved by BOINC from the master.
+      /// Load the unperturbed configuration and the run time parameters received by BOINC from the master.
       void doSaddleSearch(void);
       void loadDataAndRelax(char const parameters_passed[], char const reactant_passed[]);
       bool loadDisplacementAndMode(char const displacement_passed[], char const mode_passed[]);
       void initializeNewSearch();///< Initialize all variables used in the saddle point search.
-      bool connectedToReactantState();///< Return true if one of the two states seperated by the saddle point is equivalent to the conf recieved from the master 
+      bool connectedToReactantState();///< Return true if one of the two states separated by the saddle point is equivalent to the conf received from the master 
       void determineBarriers();///< Determine and store the barrier heights for both the forward and reverse processes.
       bool barriersWithinWindow();///< Return true if the barriers are within the window defined in the init.dat file.
       bool prefactorsWithinWindow();///< Return true if the prefactors are within the window defined.
@@ -70,6 +70,6 @@ namespace client_eon {
       Prefactors prefactors;///< Used to determine the other determine the prefactors.
       double prefactorsValues[2];///< First element is from min1 to saddle, second is from min2 to saddle.
       bool prefactorsOK;///< Is set if the prefactors fall into the window defined in Constants.h.
-      Parameters parameters;///< Store all the runtime parameters recieved from the server.
+      Parameters parameters;///< Store all the runtime parameters received from the server.
 };
 #endif
