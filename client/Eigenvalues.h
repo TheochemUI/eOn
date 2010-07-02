@@ -1,9 +1,8 @@
 /*
  *===============================================
  *  Eigenvalues.h
- *  eon2
  *-----------------------------------------------
- *  Stolen from unknown source!!
+ *  Taken from Numerical Recipies
  *-----------------------------------------------
  *  Modified. Name, Date and a small description!
  *

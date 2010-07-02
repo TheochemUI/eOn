@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     };
 
     // BOINC is started up
-    // before initializing BOINC itself, intialize diagnostics, so as
+    // before initializing BOINC itself, initialize diagnostics, so as
     // to get stderr output to the file stderr.txt, and thence back home.
     //boinc_init_diagnostics(BOINC_DIAG_REDIRECTSTDERR|
     //                       BOINC_DIAG_REDIRECTSTDOUT|
@@ -201,7 +201,7 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     }
     printf("Random seed is: %ld\n", parameters.getRandomSeed());
 
-    // The paramters have been loaded && the Matter objects can be initialized
+    // The parameters have been loaded && the Matter objects can be initialized
     initial = new Matter(&parameters);
     displacement = new Matter(&parameters);
     saddle = new Matter(&parameters);
@@ -330,7 +330,7 @@ bool client_eon::connectedToReactantState(){
     bool result = false;
     Matter matterTemp(&parameters);
     
-    // Ensure that not both minima correspond to the initial state
+    // Ensure that both minima do not correspond to the initial state
     if((*initial==*min1) && (!(*initial==*min2)))
         result = true;
     // If min2 corresponds to initial state swap min1 && min2
@@ -501,10 +501,10 @@ void client_eon::printEndState(long state){
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
    
     else if(state == getStateSaddleSearchTerminatedBarrier())
-        fprintf(stdout, "Saddle search, too high barrier.\n");
+        fprintf(stdout, "Saddle search, barrier too high.\n");
         
     else if(state == getStateSaddleSearchTerminatedConcaveIterations()) 
-        fprintf(stdout, "Saddle search, a too long series of iterations in concave region.\n");
+        fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
     else if(state == getStateSaddleSearchTerminatedTotalIterations())
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
@@ -551,7 +551,7 @@ void client_eon::printRequestedInfo(char *argv) {
     }
     else if (strcmp(argv, "-files") == 0 || strcmp(argv, "--files") == 0) {
         fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "The following files have to exist in the same directory as the this executable!\n\n"); 
+        fprintf(stdout, "The following files have to exist in the same directory as this executable\n\n"); 
         fprintf(stdout, "Input reactant configuration:           %s\n",
                 REAC_PASSED_FILE_NAME.c_str());            
         fprintf(stdout, "Input (-make_parameters creates file):  %s\n",
@@ -574,11 +574,11 @@ void client_eon::printRequestedInfo(char *argv) {
     else if (strcmp(argv, "-help") == 0 || strcmp(argv, "--help") == 0 || 
              strcmp(argv, "-h") == 0 || strcmp(argv, "--h") == 0) {
         fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "-help               prints this.\n");
-        fprintf(stdout, "-version            prints version number.\n");
-        fprintf(stdout, "-print_parameters   prints parameters used during execution.\n");
+        fprintf(stdout, "-help               prints this\n");
+        fprintf(stdout, "-version            prints version number\n");
+        fprintf(stdout, "-print_parameters   prints parameters used during execution\n");
         fprintf(stdout, "-make_parameters    makes parameter file needed. Overwrites existing file!\n");
-        fprintf(stdout, "-files              prints the files needed for execution.\n");
+        fprintf(stdout, "-files              prints the files needed for execution\n");
         fprintf(stdout, "-------------------\n\n");
     }
     else{

@@ -1,7 +1,6 @@
 /*
  *===============================================
  *  MinimizersInterface.h
- *  eon2
  *-----------------------------------------------
  *  Created by Andreas Pedersen on 4/17/07.
  *-----------------------------------------------
@@ -22,6 +21,6 @@ public:
     virtual ~MinimizersInterface(){};
     void virtual oneStep() = 0;///< Do one iteration.
     void virtual fullRelax() = 0;///< Relax the Matter object corresponding to the pointer that was passed.
-    bool virtual isItConverged(double convergeCriterion) = 0;///< Determine if the norm of the force vector is bellow the \a convergeCriterion.
+    bool virtual isItConverged(double convergeCriterion) = 0;///< Determine if the norm of the force vector is bellow the convergeCriterion.
 };
 #endif
