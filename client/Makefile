@@ -5,9 +5,15 @@ CXXFLAGS += -O2 -Wall
 ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
 else
-	FC=gfortran
+# gfortran
+	FC = gfortran
 	FFLAGS += -O2
+	AR = ar cru
 	LDFLAGS += -lgfortran
+# OSX ifort
+#	FC = ifort
+#	FFLAGS += -O2
+#	AR = ifort -staticlib -o
 endif
 
 # define NDEBUG to remove debugging lines
@@ -71,7 +77,8 @@ $(POTDIRS):
 	$(MAKE) -C $@
 
 $(FPOTDIRS):
-	export FC=$(FC); export FFLAGS=$(FFLAGS); $(MAKE) -C $@
+	@echo $(AR)
+	export FC=$(FC); export FFLAGS=$(FFLAGS); export AR="$(AR)"; $(MAKE) -C $@
 
 clean:
 	rm -f $(OBJECTS) client
