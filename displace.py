@@ -31,9 +31,8 @@ class Displace:
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
         #get neighboring atoms to the atom_index atom
-        displaced_atoms = self.neighbors_list[atom_index]
+        displaced_atoms = self.neighbors_list[atom_index] + [atom_index]
         #add the selected atom to the list
-        displaced_atoms.append(atom_index)
 
         displacement = numpy.zeros(self.reactant.r.shape)
         for i in xrange(len(displaced_atoms)):
