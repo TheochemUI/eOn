@@ -400,7 +400,7 @@ if __name__ == '__main__':
     #     sys.argv instead of being passed it.
     import config
     if options.no_submit:
-        config.comm_job_buffer_size = 0
+        config.comm_search_buffer_size = 0
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
