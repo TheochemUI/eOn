@@ -1,7 +1,6 @@
 /*
  *===============================================
  *  Potential.h
- *  eon2
  *-----------------------------------------------
  *  Created by Andreas Pedersen on 10/4/06.
  *-----------------------------------------------
@@ -28,12 +27,12 @@
 #include "potentials/Aluminum/Aluminum.h"
 
 
-/** Class serving as a wrapper between the force calculator and the Atoms object. It is here it is decided which potential that is going to be used! Might seem redundant but it is nessesary in order to have a clean code in the Matter class*/
+/** Class serving as a wrapper between the force calculator and the Atoms object. It is decided here which potential is going to be used. Might seem redundant but it is nessesary in order to have a clean code in the Matter class*/
 class Potentials{
 public:
-    Potentials(Parameters *parameters);///< Constructor
+    Potentials(Parameters *parameters); ///< Constructor
     
-    ~Potentials();///< Destructor
+    ~Potentials(); ///< Destructor
     
     /** A similar function should be provided by the force calculator.
     @param[in]    nAtoms      The number of atoms.

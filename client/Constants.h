@@ -1,7 +1,6 @@
 /*
  *===============================================
  *  Constants.h
- *  eon2
  *-----------------------------------------------
  *  Created by Andreas Pedersen on 10/3/06.
  *-----------------------------------------------
@@ -27,7 +26,7 @@ namespace constants {
     long getStringSize();///< The size of all char arrays used.  
     
     // Constants used to determine which potential to use.
-    long getPotentialNewPotential();///< If a new interface is specified in NewPotential_interface.cpp this constant tells that the new (user provided) potential should be used. Code will crash at runtime if used and no new potential has been defined! (0)
+    long getPotentialNewPotential();///< If a new interface is specified in NewPotential_interface.cpp this constant tells that the new (user provided) potential should be used. Code will crash at runtime if used and no new potential has been defined. (0)
     long getPotentialLJ();///< Constant used to indicate that Lennard-Jones should be used as potential. (1)
     long getPotentialMorse();///< Constant used to indicate that Morse should be used as potential. (2)
     long getPotentialEMT();///< Constant used to indicate that EMT should be used as potential. (3)
@@ -40,7 +39,7 @@ namespace constants {
     long getPotentialAluminum();///< Constant used to indicate that Aluminum should be used as potential. (9)
             
     // Values passed between server and clients
-    long getStateGood();///< Constant used to indicate the saddle point and prefactor determination was succesfull.
+    long getStateGood();///< Constant used to indicate the saddle point and prefactor determination was succesful.
     long getStateInit();///< Constant used to indicate the calculation should continue.
     long getStateSaddleSearchNoConvexRegion();///< Constant used to indicate that it was not possible to reach the convex region when doing the saddle point search.
     long getStateSaddleSearchTerminatedBarrier();///< Constant used to indicate that no saddle point was loacted as the search was terminated due to too much energy has been pumped into the system. 
@@ -51,7 +50,7 @@ namespace constants {
     long getStateBadBarrier();///< Constant used to indicate that either the forward or reverse process have a barrier that is above the run time parameter in Parameter.
     
     // Constants used in the client
-    double getMaxDifferencePos();///< The maximal difference between an atoms positions in two configurations in order to consider the configurations as equivalent.
+    double getMaxDifferencePos();///< The maximal distance between atoms in two configurations to consider the configurations as equivalent.
     
     // Constants used in prefactor determination
     double getPrefactorMax();///< The maximal prefactor value.
@@ -78,11 +77,11 @@ namespace constants {
     long getMaximumIterationsConcaveSeriesSP();///< The maximal number of iterations in a series allowed to perform during the saddle point.    
     //IO file names
     const std::string PARMS_PASSED_FILE_NAME("parameters_passed.dat");///< Name for file containing the run time parameters.
-    const std::string REAC_PASSED_FILE_NAME("reactant_passed.con");///< Name of file containing the initial configuration. This structure is relaxed within the code!
+    const std::string REAC_PASSED_FILE_NAME("reactant_passed.con");///< Name of file containing the initial configuration. This structure is relaxed within the code.
     const std::string DISPLACEMENT_PASSED_FILE_NAME("displacement_passed.con");///< Approximate saddle point. The program will refine the saddle point.
     const std::string MODE_PASSED_FILE_NAME("mode_passed.dat");///< Eigenvector. When refining saddle point.    
     const std::string RESULTS_FILE_NAME("results.dat");///< Name for file describing the obtained result.
-    const std::string REAC_FILE_NAME("reactant.con");///< Name of file containig the initial configuration. This structure is relaxed within the code!
+    const std::string REAC_FILE_NAME("reactant.con");///< Name of file containig the initial configuration. This structure is relaxed within the code.
     const std::string SEND_SP_CONF_FILE_NAME("saddle.con");///< Name of file containing the saddle point configuration if any was found.
     const std::string SEND_PROD_FILE_NAME("product.con");///< Name of file containing the other minima being connected to the saddle point. Note that REAC_FILE_NAME contains the other minima.
     const std::string MODE_FILE_NAME("mode.dat");///< Save last eigenvector.
