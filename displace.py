@@ -2,6 +2,7 @@ import os
 import numpy
 import atoms
 import io
+import copy
 
 class NotImplementedError(Exception):
     pass
@@ -23,7 +24,7 @@ class Displace:
 
         self.neighbors_list = atoms.sweep_and_prune(self.reactant, self.radius)
 
-    def make_displacement(self, path):
+    def make_displacement(self):
         '''Writes the displacement_passed.con and mode_passed.dat to
         path.'''
         raise NotImplementedError
@@ -31,11 +32,11 @@ class Displace:
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
         #get neighboring atoms to the atom_index atom
+        #and add the selected atom to the list
         displaced_atoms = self.neighbors_list[atom_index] + [atom_index]
-        #add the selected atom to the list
 
         displacement = numpy.zeros(self.reactant.r.shape)
-        for i in xrange(len(displaced_atoms)):
+        for i in range(len(displaced_atoms)):
             #don't displace frozen atoms
             if not self.reactant.free[displaced_atoms[i]]:
                 continue
@@ -43,7 +44,9 @@ class Displace:
             #random number with a standard deviation of self.std_dev.
             displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
         
-        return displacement
+        displacement_atoms = copy.deepcopy(self.reactant)
+        displacement_atoms.r += displacement
+        return displacement_atoms, displacement
 
 
     def save_files(self, path, displacement):
@@ -81,15 +84,14 @@ class Undercoordinated(Displace):
             errmsg = errmsg % self.max_coordination
             raise DisplaceError(errmsg)
 
-    def make_displacement(self, path):
+    def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius 
         about it."""
         # TODO: We should make sure that the amount of I/O to disk
         #       is what we think it should be: about 100 kB or so per
         #       make_displacement().
         epicenter = self.undercoordinated_atoms[numpy.random.randint(len(self.undercoordinated_atoms))] 
-        displacement = self.get_displacement(epicenter)
-        self.save_files(path, displacement)
+        return self.get_displacement(epicenter)
 
 class Leastcoordinated(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0):
@@ -109,14 +111,13 @@ class Leastcoordinated(Displace):
             errmsg = "The least coordinated atoms are all frozen."
             raise DisplaceError(errmsg)
 
-    def make_displacement(self, path):
+    def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
         # TODO: We should make sure that the amount of I/O to disk
         #       is what we think it should be: about 100 kB or so per
         #       make_displacement().
         epicenter = self.leastcoordinated_atoms[numpy.random.randint(len(self.leastcoordinated_atoms))] 
-        displacement = self.get_displacement(epicenter)
-        self.save_files(path, displacement)
+        return self.get_displacement(epicenter)
 
 class Random(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0):
@@ -129,12 +130,11 @@ class Random(Displace):
         if len(self.free_atoms) == 0: 
             raise DisplaceError("There are no free atoms in the reactant.")
 
-    def make_displacement(self, path):
+    def make_displacement(self):
         """Select a random atom and displace all atoms in a radius about it."""
         #chose a random atom
         epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))] 
-        displacement = self.get_displacement(epicenter)
-        self.save_files(path, displacement)
+        return self.get_displacement(epicenter)
 
 if __name__ == '__main__':
     import sys
