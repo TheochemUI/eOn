@@ -9,7 +9,7 @@
  *
  *-----------------------------------------------
  *  Heavily inspired of codes by:
- *      Graeme Henkelmann
+ *      Graeme Henkelman
  *===============================================
  */
 #include <cassert>

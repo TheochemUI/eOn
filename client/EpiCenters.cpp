@@ -21,6 +21,7 @@ long epi_centers::cnaEpiCenter(const Matter *matter){
     double tempDouble;
     nAtoms = matter->numberOfAtoms();
     cnaList = new long[nAtoms];
+    indexEpiCenter=-2; // initialize to a value that will fail the assert if no EpiCenter is found
     //----- Initialize end -----
     //std::cout<<"cnaEpiCenter\n";
 
@@ -58,6 +59,7 @@ long epi_centers::minimalCoordinatedEpiCenter(const Matter *matter){
     double tempDouble;
     nAtoms = matter->numberOfAtoms();
     minimalCoordinatedList = new bool[nAtoms];
+    indexEpiCenter=-2; // initialize to a value that will fail the assert if no EpiCenter is found
     //----- Initialize end -----
     //std::cout<<"minimalCoordinatedEpiCenter\n";
     
@@ -106,6 +108,7 @@ long epi_centers::randomFreeAtomEpiCenter(const Matter *matter)
     long j, nAtoms, indexEpiCenter;
     double tempDouble;
     nAtoms = matter->numberOfAtoms();
+    indexEpiCenter=-2; // initialize to a value that will fail the assert if no EpiCenter is found
     j = 0; 
     
     j = matter->numberOfFreeAtoms() - 1;

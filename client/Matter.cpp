@@ -586,7 +586,7 @@ void Matter::resetForceCalls(){
     return;
 }
 
-//Print atomic coordinate to a .xyz file
+// Print atomic coordinate to a .xyz file
 void Matter::matter2xyz(std::string filename, bool append /*Append if file already exist*/) const {
     FILE * file;
     long int i;
@@ -639,8 +639,8 @@ bool Matter::matter2con(FILE *file) const
       };
       j=0;
       for(i=1;i<numberOfAtoms();i++) {
-            if(getFixed(i)) Nfix++;//count the number of fixed atoms
-            if(getAtomicNr(i) != atomicNrs[j]) {// Check if there is a second component
+            if(getFixed(i)) Nfix++; //count the number of fixed atoms
+            if(getAtomicNr(i) != atomicNrs[j]) { // Check if there is a second component
                   j++;
                   if(j>=MAXC) {
                         std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
@@ -702,13 +702,13 @@ bool Matter::con2matter(std::string filename) {
 }
     
 bool Matter::con2matter(FILE *file) {
-      char line[255];// Temporary string of character to read from the file.
+      char line[255]; // Temporary string of character to read from the file.
       fgets(headerCon1_,sizeof(line),file);
       if (strchr(headerCon1_,'\r')) {
             /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
             with the new line charater (\n). C recognises only the \n as the end of line. */
             cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
-            return false;// return false for error
+            return false; // return false for error
       };
       
       long int i; int j;
@@ -718,13 +718,13 @@ bool Matter::con2matter(FILE *file) {
       fgets(line,sizeof(line),file);
       
       double x, y, z;
-      sscanf(line,"%lf %lf %lf", &x, &y, &z);// The third line contains the length of the periodic cell
+      sscanf(line,"%lf %lf %lf", &x, &y, &z); // The third line contains the length of the periodic cell
       setBoundary(0, x * ANGSTROM);
       setBoundary(1, y * ANGSTROM);
       setBoundary(2, z * ANGSTROM);
       
       fgets(headerCon4_,sizeof(line),file);
-      sscanf(headerCon4_,"%lf %lf %lf", &x, &y, &z);// The fourth line contains the angles of the cell vectors
+      sscanf(headerCon4_,"%lf %lf %lf", &x, &y, &z); // The fourth line contains the angles of the cell vectors
       if ( (x != 90.0) or (y != 90.0) or (z != 90.0) ) {
             /* The code only supports cubic simulation cells*/
             cerr << "This code only supports cubic cells.";
@@ -735,7 +735,7 @@ bool Matter::con2matter(FILE *file) {
       fgets(headerCon6_,sizeof(line),file);
       
       fgets(line,sizeof(line),file);
-      int Ncomponent;// Number of components is the number of of different types of atoms. For instance H2O (water) has two component (H and O).
+      int Ncomponent; // Number of components is the number of different types of atoms. For instance H2O (water) has two component (H and O).
       if(sscanf(line,"%d",&Ncomponent)==0) {
             std::cout << "The number of components cannot be read. One component is assumed instead\n";
             Ncomponent=1;
@@ -754,14 +754,14 @@ bool Matter::con2matter(FILE *file) {
             fscanf(file, "%ld", &Natoms);
             first[j+1]=Natoms+first[j];
       };    
-      fgets(line, sizeof(line), file);// Discard the rest of the line
-      resize(first[Ncomponent]);// Set the total number of atoms, and allocates memory
+      fgets(line, sizeof(line), file); // Discard the rest of the line
+      resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
       double mass[MAXC];
-      for(j=0; j<Ncomponent; j++) {// Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
+      for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
             fscanf(file, "%lf", &mass[j]);
-            mass[j]*=G_PER_MOL;// conversion of g/mol to local units. (see su.h)
+            mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
       };
-      fgets(line,sizeof(line),file);//Discard rest of the line
+      fgets(line,sizeof(line),file); //Discard rest of the line
       int atomicNr;
       int fixed;
       for (j=0; j<Ncomponent; j++) {
@@ -769,7 +769,7 @@ bool Matter::con2matter(FILE *file) {
             fgets(line,sizeof(line),file);
             sscanf(line, "%2s\n", symbol);
             atomicNr=symbol2atomicNumber(symbol);
-            fgets(line,sizeof(line),file);// skip one line
+            fgets(line,sizeof(line),file); // skip one line
             for (i=first[j]; i<first[j+1]; i++){
                   setMass(i, mass[j]);
                   setAtomicNr(i, atomicNr);
@@ -783,7 +783,7 @@ bool Matter::con2matter(FILE *file) {
       };
       if(usePeriodicBoundaries_)
       { 
-            applyPeriodicBoundary();// Transform the coordinate to use the minimum image convention.
+            applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
       }
       //    potential_ = new Potentials(parameters_);
       return(true);
@@ -829,8 +829,7 @@ void Matter::initialiseDataMembers(Parameters *parameters)
 
 void Matter::clearMemory()
 {
-      // the pointer to parameters should not be deleted, it is a reference
-      // to shared data
+      // the pointer to parameters should not be deleted, it is a reference to shared data
       //delete parameters_;
       
       if (positions_!=0) {

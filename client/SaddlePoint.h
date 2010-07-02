@@ -1,7 +1,6 @@
 /*
  *===============================================
  *  SaddlePoint.h
- *  eon2
  *-----------------------------------------------
  *  Created by Andreas Pedersen on 10/24/06.
  *-----------------------------------------------
@@ -12,8 +11,7 @@
  *
  *-----------------------------------------------
  *  Heavily inspired of codes by:
- *      Graeme Henkelmann
- *      Andri Arnaldsson
+ *      Graeme Henkelman
  *      Roar Olsen
  *===============================================
 */
@@ -47,7 +45,7 @@ public:
 
     /** Try to determine a nearby saddle point
     @param[out]  *min1     Pointer to an Matter object containing one of the minima connected to the saddle point.
-    @param[out]  *min2     Pointer to an Matter object containing other of the minima connected to the saddle point.
+    @param[out]  *min2     Pointer to an Matter object containing the other minima connected to the saddle point.
     The values returned is true if the calculation converged.*/
     long locate(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
@@ -55,12 +53,12 @@ public:
     double const *const getEigenMode() const;
 private:
     Matter * initial_;
-    Matter *saddle_;///< Pointer to atom object \b outside the scope of the class.
+    Matter *saddle_;///< Pointer to atom object outside the scope of the class.
     Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
     LowestEigenmodeInterface *lowestEigenmode_;///< Pointer to the method used to determine the lowest eigenmode.
         
     double eigenValue_;///< Containing an estimate for the lowest eigenvalue
-    double *eigenMode_;///< Double array for the lowest eigenmode, its size equals the number of \b free atoms times 3.  
+    double *eigenMode_;///< Double array for the lowest eigenmode, its size equals the number of free atoms times 3.  
     double *initialDisplacement_;///RT: used to keep track of the initial displacement.  
     long nFreeCoord_;///< Number of free coordinates.
     long state_;///< To keep track of where eventual problems occured.
@@ -68,7 +66,7 @@ private:
     void clean();///< Clean up dynamical allocated memory
         
     void displaceState(Matter *matter);///< Displacing the atomic positions in /a matter according to values in Parameters, being centered on the atom determined by one of the EpiCenter functions. 
-    void correctingForces(double *force);///< Modyfing /a force. If the eigenvalue is positive (Convex) the eigenmode is followed by zeroing all other forces. If negative (Concave) the force parallel to the eigenmode is reversed. 
+    void correctingForces(double *force);///< Modifying force. If the eigenvalue is positive (Convex) the eigenmode is followed by zeroing all other forces. If negative (Concave) the force parallel to the eigenmode is reversed. 
 
     /** Determine the two minima connected to the saddle point, by displacing the positions in the saddle point by either adding or subtracting a part of the lowest eigenmode
     @param[out]  *min1     Pointer to an Matter object containing one of the minima connected to the saddle point.

@@ -8,7 +8,7 @@ in the Systeme International (SI). It also contains local unit names (e.g. E_UNI
 
 COHERENTE LOCAL UNIT SYSTEM AND CONVETERS:
 Two constraints:
-First, minimising the number of operations during heavy computation, requires the use a coherent system of unit.
+First, minimizing the number of operations during heavy computation, requires the use a coherent system of unit.
 Second, changing to another system must be easy.
 The unit system is based on for starting dimensions: distance, mass, time. Therefore, once the 
 units for those three dimensions are chosen, the units for all other quantities are set. For 
@@ -18,13 +18,13 @@ dimension will always be expressed with the same unit. The temperature will alwa
 energy (J/mol in the example given before).
 
 UNIT NAMES (E_UNIT, etc...)
-The constants named after a quantity (e.g. ENERGY) contain the unit used by the programme for this quantity. It is recommended to use these 
-constants every time the programme needs to display a quantity in the units used by the programme. Then, if the system 
+The constants named after a quantity (e.g. ENERGY) contain the unit used by the program for this quantity. It is recommended to use these 
+constants every time the program needs to display a quantity in the units used by the program. Then, if the system 
 of unit is changed only the constant need to be updated. 
 Example: the local unit system uses kJ/mol as the energy unit. We wish to print an energy returned by a 
 function 'E()'. Then the expression should look like:
 cout << E() << ' ' << E_UNIT << endl;
-If the programme is later modified to use a different energy unit, eV for instance, 
+If the program is later modified to use a different energy unit, eV for instance, 
 we simply need to change the value of E_UNIT by "eV".
 
 However, this is not the best way to display results as we will certainly end up displaying quantities with 
@@ -33,8 +33,8 @@ or eV. I have then defined what I shall call 'converters'.
 
 CONVERTERS:
 A converter is a double constant which has the name of a unit (e.g. PASCAL, KELVIN, ANGSTROM...). The constant contains 
-the value of one quantity of the unit it names expressed in the system of unit used by the programme. 
-Example with ANGSTROM: We assume that the programme uses the meter as unit of distance. We wish to display the 
+the value of one quantity of the unit it names expressed in the system of unit used by the program.
+Example with ANGSTROM: We assume that the program uses the meter as unit of distance. We wish to display the 
 content of a variable 'x' which is a distance in meter, but we want to display it in Angstrom. To make the 
 conversion we simply need to divide the quantity in meter by one Angstrom:
 (x meter)/(1 angstrom)=(x meter)/(10^-10 meter)=x*10^-10. So, the expression to display will be like:
@@ -43,8 +43,8 @@ As well to input a value in angstrom the code will be similar to:
 double x_ang;
 cin >> x_ang;
 x= x_ang*ANGSTROM;
-Of course, if the unit system used by the programme already uses the angstrom, the constant ANGSTROM will be equal to 
-one. But it is still better to use the converter as it makes the programme easier to update if things were to change.
+Of course, if the unit system used by the program already uses the angstrom, the constant ANGSTROM will be equal to 
+one. But it is still better to use the converter as it makes the program easier to update if things were to change.
 */
 
 /** Units based on eV, Angstrom, and femtosecond. If the SYTEM_UNIT_H is defined as EV_A_FS, the system currently used is a coherent

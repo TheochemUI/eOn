@@ -14,7 +14,8 @@
 
 //using namespace constants;
 
-Parameters::Parameters(){    
+Parameters::Parameters(){
+
     // Default values
     randomSeed_ = -1;
     reactantStateTag_ = 0;
@@ -27,7 +28,8 @@ Parameters::Parameters(){
     minimize_only_ = 0;
     minimize_box_ = 0;
     
-    // Tweak able parameters, default values if not read in from parameters_passed.dat
+    // Tweakable parameters, default values if not read in from parameters_passed.dat
+
     // Value used in the Relaxation   
     converged_Relax_ = 0.005;
 
@@ -42,6 +44,7 @@ Parameters::Parameters(){
     withinRadiusPerturbated_SP_ = 4.0;
     maxSinglePerturbation_SP_ = 0.1;
     maximumIterations_ = 512;
+
     // Values used in the Hessian determination   
     minDisplacement_Hessian_ = 0.25;
     withinRadiusDisplaced_Hessian_ = 5.0;
@@ -104,10 +107,13 @@ void Parameters::load(FILE *file){
         else if(!strcmp(parms[i], "REFINE_SP")) {
             refine_SP_ = (bool) values[i];
         }
-        // Tweak able parameters
+
+        // Tweakable parameters
+
         // Relaxation related
         else if(!strcmp(parms[i], "CONVERGED_RELAX"))
             converged_Relax_ = values[i];
+
         // Saddle Point related
         else if(!strcmp(parms[i], "CONVERGED_SP"))
             converged_SP_ = values[i];
@@ -128,12 +134,14 @@ void Parameters::load(FILE *file){
         else if(!strcmp(parms[i], "MAX_SINGLE_PERTURBATION_SP"))
             maxSinglePerturbation_SP_ = values[i];
         else if(!strcmp(parms[i], "MAXIMUM_ITERATIONS"))
-              maximumIterations_ = (long)values[i];
-             // Hessian related
+            maximumIterations_ = (long)values[i];
+
+        // Hessian related
         else if(!strcmp(parms[i], "MIN_DISPLACEMENT_HESSIAN"))
             minDisplacement_Hessian_ = values[i];
         else if(!strcmp(parms[i], "WITHIN_RADIUS_DISPLACED_HESSIAN"))
             withinRadiusDisplaced_Hessian_ = values[i];
+
         // Dimer related
         else if(!strcmp(parms[i], "ROTATIONS_DIMER"))
             rotations_Dimer_ = (long) values[i];
@@ -256,6 +264,8 @@ void Parameters::printInput(){
     <<"----------------------------------\n";
     return;        
 }
+
+
 void Parameters::printOutput(){
     std::cout
     <<"---------Client side data---------\n"
@@ -286,7 +296,7 @@ void Parameters::printOutput(){
 }
 
 
-// Passing the input parameters.
+// Passing the input parameters
 long Parameters::getRandomSeed(){
     return randomSeed_;
 }
@@ -311,7 +321,8 @@ bool Parameters::getMinimizeBox(){
 long Parameters::getPrefactorsTag(){
     return getPrefactorsTag_;
 }
-// Tweak able paramters
+// Tweakable parameters
+
 // Relaxation related
 double Parameters::getConverged_Relax(){
     return converged_Relax_;
@@ -353,7 +364,7 @@ double Parameters::getWithinRadiusPerturbated_SP(){
 double Parameters::getMaxSinglePerturbation_SP(){
     return maxSinglePerturbation_SP_;
 }
-/// Limit on the number of iterations that may be performed by the saddle point searches and minimisation
+/// Limit on the number of iterations that may be performed by the saddle point searches and minimization
 long Parameters::getMaximumIterations() {
       return maximumIterations_;
 }
