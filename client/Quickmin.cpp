@@ -117,7 +117,7 @@ void Quickmin::fullRelax()
 
 bool Quickmin::isItConverged(double convergeCriterion)
 {
-    double diff;
+    double diff = 0;
     for(int i=0;i<nFreeCoord_;i++)
     {
         diff = fabs(forces_[i]);
