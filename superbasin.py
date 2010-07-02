@@ -32,7 +32,7 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-        probability_vector = self.probability_matrix[entry_state_index]
+        probability_vector = self.probability_matrix.transpose()[entry_state_index]
         if abs(1.0-numpy.sum(probability_vector)) < 1e-3:
             print 'probability_vector', probability_vector, numpy.sum(probability_vector)
             logger.warning("the probability vector isn't close to 1.0")
@@ -136,18 +136,29 @@ class Superbasin:
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
         f = open(self.path, 'w')
-        numpy.savez(f, state_numbers = numpy.array(self.state_numbers), mean_residence_times = self.mean_residence_times, probability_matrix = self.probability_matrix) 
+        for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
+            for j in i:
+                print >> f, repr(j), 
+            print >> f
         f.close()
 
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
         f = open(self.path, 'r')
-        npz = numpy.load(f)
-        self.state_numbers = npz['state_numbers']
+        
+        self.state_numbers = []
+        for i in f.readline().rstrip().split():
+            self.state_numbers.append(int(i)) 
         self.states = [get_state(i) for i in self.state_numbers]
-        self.mean_residence_times = npz['mean_residence_times']
-        self.probability_matrix = npz['probability_matrix']
+        self.mean_residence_times = []
+        for i in f.readline().rstrip().split():
+            self.mean_residence_times.append(numpy.float64(i)) 
+        pmat = [] 
+        for i in f.readline().rstrip().split():
+            pmat.append(numpy.float64(i))
+        self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
+        print self.state_numbers, self.mean_residence_times, self.probability_matrix
         f.close()        
 
     def delete(self):
