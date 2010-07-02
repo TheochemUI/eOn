@@ -33,10 +33,10 @@ class Recycling:
             if diff[i] < move_distance:
                 self.not_in_hole.append(i)
 
-    def make_suggestion(self, path):
+    def make_suggestion(self):
         '''Makes a saddle suggestion and returns True. If no more saddle suggestions are possible (end of rate table has been reached), returns False'''
         if self.process_num >= len(self.id_list):
-            return False
+            return None, None
         
         process_id = self.id_list[self.process_num]
         process_saddle = self.prev_state.get_process_saddle(process_id)
@@ -46,9 +46,8 @@ class Recycling:
         for i in self.not_in_hole:
             self.saddle.r[i] = process_saddle.r[i]
             self.mode[i] = process_mode[i]
-
-        io.savecon(os.path.join(path, "displacement_passed.con"), self.saddle) 
-        io.save_mode(os.path.join(path, "mode_passed.dat"), self.mode, self.saddle)
+        
+        #XXX: These should be returned, but akmc.py depends on the true/false return
 
         self.process_num += 1
-        return True
+        return copy.deepcopy(self.saddle), copy.deepcopy(self.mode)
