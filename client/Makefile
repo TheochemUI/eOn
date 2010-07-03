@@ -57,7 +57,7 @@ else
 	POTENTIALS += "+Aluminum "
 endif
 
-OBJECTS := ClientEON.o SaddlePoint.o Dimer.o DimerConstants.o \
+OBJECTS := ClientEON.o SaddlePoint.o Dimer.o\
 	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
 	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o

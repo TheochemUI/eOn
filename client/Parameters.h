@@ -39,8 +39,9 @@ struct Input {
     double converged_SP_;///< Converge criterion during saddle point search [eV/A].
     long maxJumpAttempts_SP_;///< How many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what.
     long nrOfTriesToDetermineSaddlePoint_SP_;///< Maximal number of attempts to obtain a converged saddle point;
-    double maxStepSizeConcave_SP_;///< Max length of the norm of the displacement when positive eigenvalue [A].
-    double maxStepSizeConvex_SP_;///< Max length of the norm of the displacement when negative eigenvalue [A].
+    double maxStepSize_SP_;///< Max length of the norm of the displacement when positive eigenvalue [A].
+//    double maxStepSizeConcave_SP_;///< Max length of the norm of the displacement when positive eigenvalue [A].
+//    double maxStepSizeConvex_SP_;///< Max length of the norm of the displacement when negative eigenvalue [A].
     double maxEnergy_SP_;///< Energy above product state that will cause termination of the saddle point search [eV].
     double normPerturbation_SP_;///< The norm or the perturbation vector [A].
     double maxSinglePerturbation_SP_;///< Max value of displacement in x, y and z direction for atoms being perturbated [A].
@@ -49,10 +50,11 @@ struct Input {
     double minDisplacement_Hessian_;///< Atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A].
     double withinRadiusDisplaced_Hessian_;///< Atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A].
     long rotations_Dimer_;///< The number of rotation iterations during the eigenmode estimation used in Dimer.
-    long rotationsNewSearch_Dimer_;///< The number of iteration before starting a new saddle point search used in Dimer.
-    double dimer_dR_; /* RT: The distance between the two dimer images. */
-    double lanczosConvergenceLimit_;
-    double iterationLimit_;
+    //long rotationsNewSearch_Dimer_;///< The number of iteration before starting a new saddle point search used in Dimer.
+    double separation_Dimer_;///< RT: The distance between the two dimer images. */
+    double rotationAngle_Dimer_;///< GH: Finite difference rotation angle.
+    double convergenceLimit_Lanczos_;
+    double iterationLimit_Lanczos_;
 };
 
 /** All results being obtained. The results are store in the file with the name set in (Constants::RESULTS_FILE_NAME).*/
@@ -101,8 +103,9 @@ public:
     long getMaxJumpAttempts_SP();
     long getNrOfTriesToDetermineSaddlePoints_SP();
     double getEnergyIntoMode_SP();
-    double getMaxStepSizeConcave_SP();
-    double getMaxStepSizeConvex_SP();
+    double getMaxStepSize_SP();
+//    double getMaxStepSizeConcave_SP();
+//    double getMaxStepSizeConvex_SP();
     double getMaxEnergy_SP();
     double getNormPerturbation_SP();
     double getWithinRadiusPerturbated_SP();
@@ -110,13 +113,14 @@ public:
     long getMaximumIterations();
     double getMinDisplacement_Hessian();
     double getWithinRadiusDisplaced_Hessian();
-    double getDimerDR();
+    double getSeparation_Dimer();
+    double getRotationAngle_Dimer();
 
     long getRotations_Dimer();
-    long getRotationsNewSearch_Dimer();
+    //long getRotationsNewSearch_Dimer();
     
-    double getLanczosConvergenceLimit();
-    double getLanczosIterationLimit();
+    double getConvergenceLimit_Lanczos();
+    double getIterationLimit_Lanczos();
 
     // Setting results values
     void setTerminationReason(long terminationReason);
