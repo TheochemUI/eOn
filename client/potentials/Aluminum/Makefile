@@ -11,10 +11,7 @@ AR ?= ar cru
 LIB := libAL.a
 
 $(LIB) : $(OBJECTS)
-	@echo $(AR)
 	$(AR) $@ $^
-#	$(FC) -o $@ -staticlib $^
-
 	ranlib $@
 clean :
 	rm -f $(OBJECTS) $(LIB)

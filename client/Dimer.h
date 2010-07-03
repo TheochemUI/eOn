@@ -23,7 +23,7 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Parameters.h"
-#include "DimerConstants.h"
+//#include "DimerConstants.h"
 #include "LowestEigenmodeInterface.h"
 
 /** Use the dimer method to estimate the lowest eigenvector of the Hessian and its corresponding eigenvalue (curvature). In this version a 'fictive' dimer is used, only one dimer configuration is calculated explicitly whereas the other configuration is estimated with forward differencing relative to the center of the dimer*/
