@@ -165,7 +165,7 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
                                                   rotationalPlaneNorm_, 
                                                   nFreeCoord_);
 
-        rotateDimerAndNormalizeAndOrthogonalize(getDimerRotationAngle());
+        rotateDimerAndNormalizeAndOrthogonalize(parameters_->getRotationAngle_Dimer());
         
         if(!doneRotating)
         {
@@ -175,11 +175,11 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
             forceDimer2AlongRotationalPlaneNorm = dot(rotationalForce, rotationalPlaneNorm_, nFreeCoord_);
             
             rotationalForceChange = ((forceDimer1AlongRotationalPlaneNorm - forceDimer2AlongRotationalPlaneNorm) / 
-                                     getDimerRotationAngle());
+                                     parameters_->getRotationAngle_Dimer());
             
             forceDimer = (forceDimer1AlongRotationalPlaneNorm + forceDimer2AlongRotationalPlaneNorm) / 2;
             
-            rotationAngle = (atan(2 * forceDimer / rotationalForceChange) / 2 - getDimerRotationAngle() / 2);
+            rotationAngle = (atan(2 * forceDimer / rotationalForceChange) / 2 - parameters_->getRotationAngle_Dimer() / 2);
             
             if(rotationalForceChange < 0)
             {
@@ -243,7 +243,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     matterInitial_->getFreePositions(posInitial);    
 
     // Displacing the one of the dimer configurations
-    multiplyScalar(tempListDouble_,directionNorm_, parameters_->getDimerDR(),nFreeCoord_);
+    multiplyScalar(tempListDouble_,directionNorm_, parameters_->getSeparation_Dimer(),nFreeCoord_);
     add(posDimer, posInitial, tempListDouble_, nFreeCoord_);
 
     // Obtaining the force for configuration A
@@ -265,7 +265,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     
     // Determine difference in force orthogonal to dimer
     subtract(tempListDouble_, forceA, forceB, nFreeCoord_);
-    divideScalar(rotationalForce, tempListDouble_, parameters_->getDimerDR(), nFreeCoord_);
+    divideScalar(rotationalForce, tempListDouble_, parameters_->getSeparation_Dimer(), nFreeCoord_);
     
     delete [] posInitial;    
     delete [] posDimer;
@@ -274,7 +274,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
     delete [] forceB;
 
     // Based on difference in force parallel to dimer    
-    return (projectedForceB-projectedForceA)/(2*parameters_->getDimerDR());
+    return (projectedForceB-projectedForceA)/(2*parameters_->getSeparation_Dimer());
 };
 
 
