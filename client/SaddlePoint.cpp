@@ -24,9 +24,6 @@
 #include "SaddlePoint.h"
 #include "LowestEigenmodeInterface.h" 
 #include "Dimer.h"
-#ifdef LANCZOS
-      #include "Lanczos/lanczos_for_eon.hpp"
-#endif
 #include "EpiCenters.h"
 
 using namespace helper_functions;
@@ -85,15 +82,11 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     {
         lowestEigenmode_=new Dimer(saddle_, parameters_);
     }
+/* GH: not implemented yet
     else if(parameters_->getLowestEigenmodeDetermination_SP() == getLowestEigenmodeLanczos())
     {
-        #ifdef LANCZOS_FOR_EON_HPP
-            lowestEigenmode_ = new Lanczos(saddle_, parameters_);
-        #else
-            fprintf(stderr, "Error: the application was compiled without Lanczos.\n");
-            exit(EXIT_FAILURE);
-        #endif
-    }
+        lowestEigenmode_ = new Lanczos(saddle_, parameters_);
+    }*/
     nFreeCoord_ = 3 * saddle->numberOfFreeAtoms();
     eigenMode_ = new double [nFreeCoord_];
     state_ = getStateInit();
@@ -367,12 +360,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         saddle_->setFreePositions(posStep);
         saddle_->getFreeForces(forcesStep);
         correctingForces(forcesStep);
-        if(0 < eigenValue_)
+/*        if(0 < eigenValue_)
             maxStep = parameters_->getMaxStepSizeConcave_SP();
         else
-            maxStep = parameters_->getMaxStepSizeConvex_SP();
-        
-        maxStep = parameters_->getMaxStepSizeConvex_SP();
+            maxStep = parameters_->getMaxStepSizeConvex_SP();*/
+        maxStep = parameters_->getMaxStepSize_SP();
         cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
         // The system (saddle_) is moved to a new configuration
         saddle_->setFreePositions(pos);

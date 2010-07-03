@@ -37,8 +37,9 @@ Parameters::Parameters(){
     converged_SP_ = 0.025;
     maxJumpAttempts_SP_ = 0;
     nrOfTriesToDetermineSaddlePoint_SP_ = 1;
-    maxStepSizeConcave_SP_ = 0.2;
-    maxStepSizeConvex_SP_ = 0.1;
+    maxStepSize_SP_ = 0.2;
+//    maxStepSizeConcave_SP_ = 0.2;
+//    maxStepSizeConvex_SP_ = 0.1;
     maxEnergy_SP_ = 20.0;
     normPerturbation_SP_ = 0.1;
     withinRadiusPerturbated_SP_ = 4.0;
@@ -51,8 +52,9 @@ Parameters::Parameters(){
 
     // Values used in the Dimer method
     rotations_Dimer_ = 1;
-    rotationsNewSearch_Dimer_ = 10;
-    dimer_dR_ = 0.0001;
+    //rotationsNewSearch_Dimer_ = 10; // GH: not using this any more
+    separation_Dimer_ = 0.0001;
+    rotationAngle_Dimer_ = 0.005;
 
     // Initializing the cummulative output
     forceCalls_ = 0;
@@ -121,10 +123,12 @@ void Parameters::load(FILE *file){
             maxJumpAttempts_SP_ = (long) values[i];
         else if(!strcmp(parms[i], "NR_OF_TRIES_TO_DETERMINE_SADDLE_POINT_SP"))
             nrOfTriesToDetermineSaddlePoint_SP_ = long(values[i]);
-        else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONCAVE_SP"))
+        else if(!strcmp(parms[i], "MAX_STEP_SIZE_SP"))
+            maxStepSize_SP_ = values[i];
+/*        else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONCAVE_SP"))
             maxStepSizeConcave_SP_ = values[i];
         else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONVEX_SP"))
-            maxStepSizeConvex_SP_ = values[i];            
+            maxStepSizeConvex_SP_ = values[i]; */
         else if(!strcmp(parms[i], "MAX_ENERGY_SP"))
             maxEnergy_SP_ = values[i];
         else if(!strcmp(parms[i], "NORM_PERTURBATION_SP"))
@@ -145,10 +149,10 @@ void Parameters::load(FILE *file){
         // Dimer related
         else if(!strcmp(parms[i], "ROTATIONS_DIMER"))
             rotations_Dimer_ = (long) values[i];
-        else if(!strcmp(parms[i], "ROTATIONS_NEW_SEARCH_DIMER"))
-            rotationsNewSearch_Dimer_ = (long) values[i];
-        else if(!strcmp(parms[i], "DIMER_DR"))
-            dimer_dR_ = (double) values[i];
+/*        else if(!strcmp(parms[i], "ROTATIONS_NEW_SEARCH_DIMER"))
+            rotationsNewSearch_Dimer_ = (long) values[i];*/
+        else if(!strcmp(parms[i], "SEPARATION_DIMER"))
+            separation_Dimer_ = (double) values[i];
 
         // Lines with user comment are started with #
         else if(parms[i][0]=='#'){}
@@ -207,8 +211,9 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "converged_SP %f\n", converged_SP_);
     fprintf(file, "maxJumpAttempts_SP %ld\n", maxJumpAttempts_SP_);
     fprintf(file, "nr_Of_Tries_To_Determine_Saddle_Point_SP %ld\n", nrOfTriesToDetermineSaddlePoint_SP_);
-    fprintf(file, "max_Step_Size_Concave_SP %f\n", maxStepSizeConcave_SP_);
-    fprintf(file, "max_Step_Size_Convex_SP %f\n", maxStepSizeConvex_SP_);
+    fprintf(file, "max_Step_Size_SP %f\n", maxStepSize_SP_);
+//    fprintf(file, "max_Step_Size_Concave_SP %f\n", maxStepSizeConcave_SP_);
+//    fprintf(file, "max_Step_Size_Convex_SP %f\n", maxStepSizeConvex_SP_);
     fprintf(file, "max_Energy_SP %f\n", maxEnergy_SP_);
     fprintf(file, "norm_Perturbation_SP %f\n", normPerturbation_SP_);
     fprintf(file, "within_Radius_Perturbated_SP %f\n", withinRadiusPerturbated_SP_);
@@ -220,7 +225,8 @@ void Parameters::saveInput(FILE *file){
 
     fprintf(file, "# dimer related\n");
     fprintf(file, "rotations_Dimer %ld\n", rotations_Dimer_);
-    fprintf(file, "rotations_New_Search_Dimer %ld\n", rotationsNewSearch_Dimer_);
+//    fprintf(file, "rotations_New_Search_Dimer %ld\n", rotationsNewSearch_Dimer_);
+    fprintf(file, "rotationAngle_Dimer %f\n\n", rotationAngle_Dimer_);
     return;
 }
 
@@ -247,8 +253,9 @@ void Parameters::printInput(){
     <<maxJumpAttempts_SP_<<" : max_Jump_Attempts_SP\n"
     <<nrOfTriesToDetermineSaddlePoint_SP_<<" : nr_Of_Tries_To_Determine_Saddle_Point_SP\n"
     <<converged_SP_<<" : converged_SP\n"
-    <<maxStepSizeConcave_SP_<<" : max_Step_Size_Concave_SP\n"
-    <<maxStepSizeConvex_SP_<<" : max_StepSize_Convex_SP\n"
+    <<maxStepSize_SP_<<" : max_Step_Size_SP\n"
+//    <<maxStepSizeConcave_SP_<<" : max_Step_Size_Concave_SP\n"
+//    <<maxStepSizeConvex_SP_<<" : max_StepSize_Convex_SP\n"
     <<maxEnergy_SP_<<" : max_Energy_SP\n"
     <<normPerturbation_SP_<<" : norm_Perturbation_SP\n"
     <<withinRadiusPerturbated_SP_<<" : within_Radius_Perturbated_SP\n"
@@ -259,8 +266,9 @@ void Parameters::printInput(){
     <<withinRadiusDisplaced_Hessian_<<" : within_Radius_Displaced_Hessian\n\n"
     
     <<"# dimer related\n"
-    <<rotations_Dimer_<<" :rotations_Dimer\n"
-    <<rotationsNewSearch_Dimer_<<" :rotationsNewSearch_Dimer\n"
+    <<rotations_Dimer_<<" : rotations_Dimer\n"
+//    <<rotationsNewSearch_Dimer_<<" : rotationsNewSearch_Dimer\n"
+    <<rotationAngle_Dimer_<<" : rotationAngle_Dimer\n"
     <<"----------------------------------\n";
     return;        
 }
@@ -346,12 +354,15 @@ long Parameters::getLowestEigenmodeDetermination_SP(){
 long Parameters::getNrOfTriesToDetermineSaddlePoints_SP(){
     return nrOfTriesToDetermineSaddlePoint_SP_;
 }
-double Parameters::getMaxStepSizeConcave_SP(){
+double Parameters::getMaxStepSize_SP(){
+    return maxStepSize_SP_;
+}
+/*double Parameters::getMaxStepSizeConcave_SP(){
     return maxStepSizeConcave_SP_;
 }
 double Parameters::getMaxStepSizeConvex_SP(){
     return maxStepSizeConvex_SP_;
-}
+}*/
 double Parameters::getMaxEnergy_SP(){
     return maxEnergy_SP_;
 }
@@ -379,23 +390,21 @@ double Parameters::getWithinRadiusDisplaced_Hessian(){
 long Parameters::getRotations_Dimer(){
     return rotations_Dimer_;
 }
-long Parameters::getRotationsNewSearch_Dimer(){
+/*long Parameters::getRotationsNewSearch_Dimer(){
     return rotationsNewSearch_Dimer_;
+}*/
+double Parameters::getSeparation_Dimer(){
+    return separation_Dimer_;
 }
-
-double Parameters::getDimerDR()
-{
-    return dimer_dR_;
+double Parameters::getRotationAngle_Dimer(){
+    return rotationAngle_Dimer_;
 }
-
-double Parameters::getLanczosConvergenceLimit()
-{
-      return lanczosConvergenceLimit_;
+// Lanczos related
+double Parameters::getConvergenceLimit_Lanczos(){
+      return convergenceLimit_Lanczos_;
 }
-
-double Parameters::getLanczosIterationLimit()
-{
-      return iterationLimit_;
+double Parameters::getIterationLimit_Lanczos(){
+      return iterationLimit_Lanczos_;
 }
 
 // Setting results values

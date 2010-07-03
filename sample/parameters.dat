@@ -33,15 +33,12 @@ REFINE_SP 1
 # tweakable parameters
 converged_Relax 0.001
 converged_SP    0.001
-max_Step_Size_Concave_SP 0.075
-max_Step_Size_Convex_SP  0.075
+max_Step_Size_SP 0.075
 max_Energy_SP 10.0
 norm_Perturbation_SP 1.0
 within_Radius_Perturbated_SP 1.0
 max_Single_Perturbation_SP 0.75
 min_Displacement_Hessian 0.25
 within_Radius_Displaced_Hessian 3.5
-maximum_iterations 512
-
+maximum_Iterations 2000
 rotations_Dimer 2
-rotations_New_Search_Dimer 35
