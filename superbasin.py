@@ -158,7 +158,6 @@ class Superbasin:
         for i in f.readline().rstrip().split():
             pmat.append(numpy.float64(i))
         self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
-        print self.state_numbers, self.mean_residence_times, self.probability_matrix
         f.close()        
 
     def delete(self):
