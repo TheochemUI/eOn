@@ -194,40 +194,29 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     os.makedirs(config.path_searches_in)
     results = comm.get_results(config.path_searches_in) 
     num_registered = 0
-    # XXX: Don't use i in loops unless it is an integer. It is confusing.
-    for i in results:
-        result_path = os.path.join(config.path_searches_in, i)
+    for result in results:        
         if config.debug_keep_all_results:
             #XXX: We should only do these checks once to speed things up, but at the same time
             #debug options don't have to be fast
-            save_path = os.path.join(config.path_root, "old_searches")
-            if not os.path.isdir(save_path):
-                os.mkdir(save_path)
-            shutil.copytree(result_path, os.path.join(save_path, i))
-        state_num = int(i.split("_")[0])
+            #save_path = os.path.join(config.path_root, "old_searches")
+            #if not os.path.isdir(save_path):
+            #    os.mkdir(save_path)
+            #shutil.copytree(result_path, os.path.join(save_path, i))
+            #XXX: This is currently broken by the new result passing scheme. Should it be 
+            #     done in communicator?
+            pass
+        state_num = int(result['id'].split("_")[0])
         if not config.debug_register_extra_results and state_num != current_state.number:
-            continue
-        try:
-            result_data = io.parse_results_dat(os.path.join(result_path, 'results.dat'))
-        except KeyError, (foo, name):
-            logger.warning("Search %s's results file is missing %s" % ( i ,str(name)))
-            continue
-        except TypeError, (foo, name): #we need to use python 2.6
-            logger.warning("%s has the wrong type in the results file of search %s" % (str(name), i))
-            continue
-        except IOError:
-            logger.warning("Search %s did not return a results.dat" % i)
             continue
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
-        result_data['search_id'] = int(i.split("_")[1])
-        result_data['search_type'] = searchdata[i + "type"]
-        
+        result['type'] = searchdata[result['id'] + "type"]
+        result['wuid'] = int(result['id'].split('_')[1]) 
         # Remove used information from the searchdata metadata.
-        del searchdata[i + "type"]
+        del searchdata[result['id'] + "type"]
         
-        if result_data['termination_reason'] == 0:
-            process_id = states.get_state(state_num).add_process(result_path, result_data)
+        if result['results']['termination_reason'] == 0:
+            process_id = states.get_state(state_num).add_process(result)
             if current_state.get_confidence() >= config.akmc_confidence:
                 if config.kdb_on:
                     logger.debug("Adding relevant processes to kinetic database.")
@@ -237,7 +226,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
                 if not config.debug_register_extra_results:
                     break
         else:
-            states.get_state(state_num).register_bad_saddle(result_path, result_data, config.debug_keep_bad_saddles)
+            states.get_state(state_num).register_bad_saddle(result, config.debug_keep_bad_saddles)
         num_registered += 1
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)

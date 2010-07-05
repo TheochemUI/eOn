@@ -78,26 +78,29 @@ class State:
         self.unique_saddle_count = None
 
 
-    def append_search_result(self, resultdata, result):
+    def append_search_result(self, result, comment):
         f = open(self.search_result_path, 'a')
 #GH        f.write("%8d %16s %8.5f %16.5e %16d %16d %16d    %s\n" % (resultdata["search_id"], 
-        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (resultdata["search_id"], 
-                 resultdata["search_type"], 
+        resultdata = result['results']
+        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
+                 result["type"], 
                  resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
                  resultdata["displacement_saddle_distance"],
                  resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
                  resultdata["force_calls_prefactors"],
                  resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
-                 result))
+                 comment))
         f.close()
         
 
 
-    def add_process(self, resultpath, resultdata):
+    def add_process(self, result):
         """ Adds a process to this State. """
 
-        self.set_good_saddle_count(self.get_good_saddle_count() + 1) #XXX should have specific definition for what a "good" saddle is.  This is not it.
+        self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
         
+        resultdata = result["results"] #The information from the result.dat file
+
         # We may not already have the energy for this State.  If not, it should be in the result data.
         if self.get_energy() == None:
             self.set_energy(resultdata["potential_energy_reactant"])
@@ -107,7 +110,7 @@ class State:
         lowest = self.update_lowest_barrier(barrier)
         ediff = (barrier - lowest) - (self.kT * self.max_thermal_window)
         if ediff > 0.0:
-            self.append_search_result(resultdata, "barrier > max_thermal_window")
+            self.append_search_result(result, "barrier > max_thermal_window")
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
@@ -119,17 +122,19 @@ class State:
 
         # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
         if len(energetically_close) > 0:
-            p0 = io.loadcon(os.path.join(resultpath, "saddle.con"))
+            p0 = result["saddle"]
             for id in energetically_close:
                 p1 = io.loadcon(self.proc_saddle_path(id))
-                dist = max(atoms.per_atom_norm(p1.r - p0.r, p1.box))
-                if dist < self.epsilon_r:
+                for dist in atoms.per_atom_norm_gen(p1.r - p0.r, p1.box):
+                    if dist > self.epsilon_r:
+                        break
+                else:
                     ediff = (barrier - lowest) - (self.kT * self.thermal_window)
                     if ediff < 0.0:
                         self.set_sequential_redundant(self.get_sequential_redundant() + 1)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
-                    self.append_search_result(resultdata, "repeat-%d" % id)
+                    self.append_search_result(result, "repeat-%d" % id)
                     return None
 
         # This appears to be a unique process.
@@ -141,21 +146,21 @@ class State:
         # If this barrier is within the thermal window, reset sequential_redundant.
         ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
         if ediff < 0.0:    
-            self.append_search_result(resultdata, "good-%d" % self.get_num_procs())
+            self.append_search_result(result, "good-%d" % self.get_num_procs())
             self.set_sequential_redundant(0)
         else:
-            self.append_search_result(resultdata, "barrier > thermal_window")
+            self.append_search_result(result, "barrier > thermal_window")
 
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
 
         # Move the relevant files into the procdata directory.
-        shutil.move(os.path.join(resultpath, "saddle.con"), self.proc_saddle_path(id))
-        shutil.move(os.path.join(resultpath, "reactant.con"), self.proc_reactant_path(id))
-        shutil.move(os.path.join(resultpath, "product.con"), self.proc_product_path(id))
-        shutil.move(os.path.join(resultpath, "results.dat"), self.proc_results_path(id))
-        shutil.move(os.path.join(resultpath, "mode.dat"), self.proc_mode_path(id))
+        io.savecon(self.proc_saddle_path(id), result['saddle'])
+        io.savecon(self.proc_reactant_path(id), result['reactant'])
+        io.savecon(self.proc_product_path(id), result['product'])
+        io.save_results_dat(self.proc_results_path(id), result['results'])
+        io.save_mode(self.proc_mode_path(id), result['mode'], result['reactant'])
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id = id, 
@@ -384,7 +389,7 @@ class State:
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
 
-    def register_bad_saddle(self, result_path, resultdata, store = False):
+    def register_bad_saddle(self, result, store = False):
         """ Registers a bad saddle. """
         result_state_code = ["Good",
                              "Init",
@@ -396,11 +401,15 @@ class State:
                              "Bad Prefactor",
                              "Bad Barrier"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
-        self.append_search_result(resultdata, result_state_code[resultdata["termination_reason"]])
+        self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
-            shutil.move(result_path, os.path.join(self.bad_procdata_path, os.path.basename(result_path)))
+            io.savecon(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), result['saddle'])
+            io.savecon(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), result['reactant'])
+            io.savecon(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), result['product'])
+            io.save_mode(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), result['mode'], result['reactant'])
+            io.save_results_dat(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), result['results'])
         #self.update_forcecall_average(resultdata['force_calls'])
 
     def load_info(self):
