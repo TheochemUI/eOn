@@ -1,0 +1,238 @@
+2010-07-05 17:16:36 WARNING:statelist:state list path does not exist, creating /Users/berthet/eon/tests/cube/states/
+2010-07-05 17:16:36 INFO:akmc:registering results
+2010-07-05 17:16:36 INFO:akmc:0 results processed
+2010-07-05 17:16:36 DEBUG:akmc:0.0 results per second
+2010-07-05 17:16:36 WARNING:superbasinscheme:superbasin path does not exist, creating /Users/berthet/eon/tests/cube/superbasins/
+2010-07-05 17:16:36 DEBUG:superbasinscheme:reading
+2010-07-05 17:16:36 DEBUG:superbasinscheme:writing
+2010-07-05 17:16:36 INFO:akmc:currently in state 0 with confidence 0.000
+2010-07-05 17:16:36 DEBUG:akmc:KMC finished in 0.00705313682556 seconds
+2010-07-05 17:16:36 DEBUG:superbasinscheme:writing
+2010-07-05 17:16:36 INFO:akmc:0 searches in the queue
+2010-07-05 17:16:36 INFO:akmc:making 8 searches
+2010-07-05 17:16:37 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_0
+2010-07-05 17:16:38 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_1
+2010-07-05 17:16:39 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_2
+2010-07-05 17:16:40 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_3
+2010-07-05 17:16:40 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_4
+2010-07-05 17:16:42 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_5
+2010-07-05 17:16:43 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_6
+2010-07-05 17:16:44 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/0_7
+2010-07-05 17:16:44 INFO:akmc:8 searches created
+2010-07-05 17:16:44 DEBUG:akmc:1.02480006211 searches per second
+2010-07-05 17:16:48 INFO:akmc:registering results
+2010-07-05 17:16:49 INFO:state:found new lowest barrier 0.150000 for state 0
+2010-07-05 17:16:50 INFO:state:found new lowest barrier 0.100000 for state 0
+2010-07-05 17:16:50 INFO:state:found new lowest barrier 0.050000 for state 0
+2010-07-05 17:16:50 INFO:state:found new lowest barrier 0.050000 for state 0
+2010-07-05 17:16:50 INFO:akmc:7 results processed
+2010-07-05 17:16:50 DEBUG:akmc:3.3 results per second
+2010-07-05 17:16:50 DEBUG:superbasinscheme:reading
+2010-07-05 17:16:51 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:16:51 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:16:51 DEBUG:superbasinscheme:writing
+2010-07-05 17:16:51 INFO:akmc:currently in state 1 with confidence 0.000
+2010-07-05 17:16:51 DEBUG:akmc:KMC finished in 0.273558139801 seconds
+2010-07-05 17:16:51 DEBUG:superbasinscheme:writing
+2010-07-05 17:16:51 INFO:akmc:cancelled 0 workunits from state 0
+2010-07-05 17:16:51 INFO:akmc:0 searches in the queue
+2010-07-05 17:16:51 INFO:akmc:making 8 searches
+2010-07-05 17:16:52 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_8
+2010-07-05 17:16:53 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_9
+2010-07-05 17:16:54 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_10
+2010-07-05 17:16:55 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_11
+2010-07-05 17:16:56 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_12
+2010-07-05 17:16:57 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_13
+2010-07-05 17:16:58 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_14
+2010-07-05 17:16:59 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/1_15
+2010-07-05 17:16:59 INFO:akmc:8 searches created
+2010-07-05 17:16:59 DEBUG:akmc:0.989237602562 searches per second
+2010-07-05 17:17:01 INFO:akmc:registering results
+2010-07-05 17:17:01 INFO:state:found new lowest barrier 0.050000 for state 1
+2010-07-05 17:17:01 INFO:akmc:7 results processed
+2010-07-05 17:17:01 DEBUG:akmc:16.0 results per second
+2010-07-05 17:17:01 DEBUG:superbasinscheme:reading
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Making basin....
+2010-07-05 17:17:01 DEBUG:superbasin:saving data to /Users/berthet/eon/tests/cube/superbasins/1
+2010-07-05 17:17:01 INFO:superbasinscheme:Created superbasin with states [0, 1]
+2010-07-05 17:17:01 INFO:akmc:stepped from state 0 to state 1
+2010-07-05 17:17:01 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:01 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:01 INFO:akmc:stepped from state 1 to state 2
+2010-07-05 17:17:01 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:01 INFO:akmc:currently in state 2 with confidence 0.000
+2010-07-05 17:17:01 DEBUG:akmc:KMC finished in 0.156924962997 seconds
+2010-07-05 17:17:01 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:01 INFO:akmc:cancelled 0 workunits from state 1
+2010-07-05 17:17:01 INFO:akmc:0 searches in the queue
+2010-07-05 17:17:01 INFO:akmc:making 8 searches
+2010-07-05 17:17:02 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_16
+2010-07-05 17:17:03 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_17
+2010-07-05 17:17:04 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_18
+2010-07-05 17:17:06 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_19
+2010-07-05 17:17:07 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_20
+2010-07-05 17:17:09 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_21
+2010-07-05 17:17:10 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_22
+2010-07-05 17:17:11 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/2_23
+2010-07-05 17:17:11 INFO:akmc:8 searches created
+2010-07-05 17:17:11 DEBUG:akmc:0.817893387358 searches per second
+2010-07-05 17:17:18 INFO:akmc:registering results
+2010-07-05 17:17:18 INFO:state:found new lowest barrier 0.050000 for state 2
+2010-07-05 17:17:18 INFO:state:found new lowest barrier 0.050000 for state 2
+2010-07-05 17:17:18 INFO:akmc:7 results processed
+2010-07-05 17:17:18 DEBUG:akmc:14.9 results per second
+2010-07-05 17:17:18 DEBUG:superbasin:reading data from /Users/berthet/eon/tests/cube/superbasins/1
+2010-07-05 17:17:18 DEBUG:superbasinscheme:reading
+2010-07-05 17:17:18 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:18 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:18 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:18 INFO:akmc:currently in state 3 with confidence 0.000
+2010-07-05 17:17:18 DEBUG:akmc:KMC finished in 0.152160167694 seconds
+2010-07-05 17:17:18 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:19 INFO:akmc:cancelled 0 workunits from state 2
+2010-07-05 17:17:19 INFO:akmc:0 searches in the queue
+2010-07-05 17:17:19 INFO:akmc:making 8 searches
+2010-07-05 17:17:19 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_24
+2010-07-05 17:17:20 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_25
+2010-07-05 17:17:21 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_26
+2010-07-05 17:17:23 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_27
+2010-07-05 17:17:23 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_28
+2010-07-05 17:17:24 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_29
+2010-07-05 17:17:25 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_30
+2010-07-05 17:17:26 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/3_31
+2010-07-05 17:17:26 INFO:akmc:8 searches created
+2010-07-05 17:17:26 DEBUG:akmc:1.0174649118 searches per second
+2010-07-05 17:17:28 INFO:akmc:registering results
+2010-07-05 17:17:29 INFO:state:found new lowest barrier 0.050000 for state 3
+2010-07-05 17:17:29 INFO:akmc:7 results processed
+2010-07-05 17:17:29 DEBUG:akmc:15.8 results per second
+2010-07-05 17:17:29 DEBUG:superbasin:reading data from /Users/berthet/eon/tests/cube/superbasins/1
+2010-07-05 17:17:29 DEBUG:superbasinscheme:reading
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Making basin....
+2010-07-05 17:17:29 DEBUG:superbasin:saving data to /Users/berthet/eon/tests/cube/superbasins/2
+2010-07-05 17:17:29 INFO:superbasinscheme:Created superbasin with states [2, 3]
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 3
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 0
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 0 to state 3
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 0
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 0 to state 3
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Making basin....
+2010-07-05 17:17:29 DEBUG:superbasin:deleting /Users/berthet/eon/tests/cube/superbasins/2
+2010-07-05 17:17:29 DEBUG:superbasin:saving data to /Users/berthet/eon/tests/cube/superbasins/3
+2010-07-05 17:17:29 INFO:superbasinscheme:Created superbasin with states [2, 3]
+2010-07-05 17:17:29 INFO:akmc:stepped from state 3 to state 2
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 1
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 1 to state 2
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 1
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 1 to state 2
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 2 to state 1
+2010-07-05 17:17:29 WARNING:superbasin:the probability vector isn't close to 1.0
+2010-07-05 17:17:29 DEBUG:superbasinscheme:Registering transitions
+2010-07-05 17:17:29 INFO:akmc:stepped from state 1 to state 4
+2010-07-05 17:17:29 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:29 INFO:akmc:currently in state 4 with confidence 0.000
+2010-07-05 17:17:29 DEBUG:akmc:KMC finished in 0.349713087082 seconds
+2010-07-05 17:17:29 DEBUG:superbasinscheme:writing
+2010-07-05 17:17:29 INFO:akmc:cancelled 0 workunits from state 3
+2010-07-05 17:17:29 INFO:akmc:0 searches in the queue
+2010-07-05 17:17:29 INFO:akmc:making 8 searches
+2010-07-05 17:17:30 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_32
+2010-07-05 17:17:31 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_33
+2010-07-05 17:17:32 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_34
+2010-07-05 17:17:33 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_35
+2010-07-05 17:17:34 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_36
+2010-07-05 17:17:35 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_37
+2010-07-05 17:17:36 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_38
+2010-07-05 17:17:37 INFO:communicator:saddle search finished in /Users/berthet/eon/tests/cube/searches/scratch/4_39
+2010-07-05 17:17:37 INFO:akmc:8 searches created
+2010-07-05 17:17:37 DEBUG:akmc:1.01410529344 searches per second

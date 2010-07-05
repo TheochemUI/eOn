@@ -1,0 +1,10 @@
+    wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
+-------------------------------------------------------------------------------------
+      16     random    0.05000    0.00000          0          0          0    good-1
+      17     random    0.15000    0.00000          0          0          0    good-2
+      18     random    0.05000    0.00000          0          0          0    good-3
+      19     random    0.10000    0.00000          0          0          0    repeat-0
+      20     random    0.10000    0.00000          0          0          0    good-4
+      21     random    0.15000    0.00000          0          0          0    good-5
+      22     random    0.05000    0.00000          0          0          0    repeat-1
+      23     random    0.15000    0.00000          0          0          0    repeat-2
