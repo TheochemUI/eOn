@@ -24,7 +24,7 @@ class Communicator:
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
 
-    def submit_searches(self, reactant_path, parameters_path, searches):
+    def submit_searches(self, searches, reactant_path, parameters_path):
         '''Throws CommunicatorError if fails.'''
         raise NotImplementedError()
 
