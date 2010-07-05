@@ -44,6 +44,11 @@ def per_atom_norm(v, box, ibox = None):
     diff = pbc(v, box, ibox)
     return numpy.array([numpy.linalg.norm(d) for d in diff])
 
+def per_atom_norm_gen(v, box, ibox = None):
+    diff = pbc(v, box, ibox)
+    for d in diff:
+        yield numpy.linalg.norm(d)
+
 def identical(atoms1, atoms2, epsilon_r):
     #XXX: n^2
     if len(atoms1) != len(atoms2):
