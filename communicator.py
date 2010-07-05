@@ -645,7 +645,7 @@ class ARC(Communicator):
         return self.arclib.Xrsl(s), jobname
 
 
-    def submit_searches(self, jobpaths):
+    def submit_searches(self, searches, reactant_path, parameters_path):
         '''Throws CommunicatorError if fails.'''
 
         try:
@@ -662,7 +662,7 @@ class ARC(Communicator):
 
         qi = self.arclib.GetQueueInfo()
 
-        for job_path in self.make_bundles(jobpaths):
+        for job_path in self.make_bundles(searches, reactant_path, parameters_path):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
             targets = self.arclib.ConstructTargets(qi, xrsl)
             targetsleft = self.arclib.PerformStandardBrokering(targets)
