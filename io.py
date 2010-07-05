@@ -129,6 +129,15 @@ def save_mode(modefileout, displace_vector, reactant):
         f.close()
 
 
+def save_results_dat(fileout, results):
+    '''Saves a results.dat file from a dictionary'''
+    if type(fileout) is file:
+        f = fileout
+    else:
+        f = open(fileout, 'w')
+    
+    for key in results:
+        print >> f, results[key], key
 
 def parse_results_dat(filein):
     '''Reads a results.dat file and gives a dictionary of the values contained
@@ -140,6 +149,8 @@ def parse_results_dat(filein):
     results = {}
     for line in f:
         line = line.split()
+        if len(line) < 2:
+            continue
         if '.' in line[0]:
             results[line[1]] = float(line[0])
         else:
