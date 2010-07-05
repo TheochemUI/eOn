@@ -109,6 +109,12 @@ def savecon(fileout, p, w = 'w'):
             index += 1
 
 
+def load_mode(modefilein):
+    if type(modefilein) is file:
+        f = modefilein
+    else:
+        f = open(modefilein, 'r')
+    return numpy.array([[float(i) for i in l.strip().split()] for l in f.readlines()[1:]])
 
 def save_mode(modefileout, displace_vector, reactant):
     if type(modefileout) is file:
