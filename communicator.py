@@ -7,6 +7,7 @@ from time import sleep, time
 import subprocess
 import commands
 import tarfile
+import StringIO
 
 import io
 
@@ -57,16 +58,14 @@ class Communicator:
 
     def unbundle(self, resultpath):
         '''This method unbundles multiple searches into multiple single 
-           searchs so the akmc script can process them.'''
+           searches so the akmc script can process them.'''
 
         # These are the files in the result directory that we keep.
-        file_list = [ "mode.dat", "product.con", "reactant.con",
-                      "results.dat", "saddle.con"]
 
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
 
-        result_dirs = []
+        results = []
         for jobpath in jobpaths:
             # Need to figure out how many searches were bundled together
             # and then create the new job directories with the split files.
@@ -77,37 +76,52 @@ class Communicator:
             state, uid = dirname.split('_')
             state = int(state)
             uid = int(uid)
-            jobpath_template = os.path.join(basename, "%i_%i")
-            fdata = {}
+
+            #XXX: Perhaps too verbose
+            try:
+                reactant_file = open(os.path.join(jobpath, 'reactant.con'), 'r')
+                reactant_lines = reactant_file.readlines()
+                reactant_file.close()
+                reactant_span = len(reactant_lines)/bundle_size
+
+                product_file = open(os.path.join(jobpath, 'product.con'), 'r')
+                product_lines = product_file.readlines()
+                product_file.close()
+                product_span = len(product_lines)/bundle_size
+
+                saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r')
+                saddle_lines = saddle_file.readlines()
+                saddle_file.close()
+                saddle_span = len(saddle_lines)/bundle_size
+
+                mode_file = open(os.path.join(jobpath, 'mode.dat'), 'r')
+                mode_lines = mode_file.readlines()
+                mode_file.close()
+                mode_span = len(mode_lines)/bundle_size
+
+                results_file = open(os.path.join(jobpath, 'results.dat'), 'r')
+                results_lines = results_file.readlines()
+                results_file.close()
+                results_span = len(results_lines)/bundle_size
+            except:
+                logger.warning('Work unit %d is incomplete' % uid)
+                continue
+
             for i in range(bundle_size):
-                jobpath_dest = jobpath_template % (state, uid+i)
-                # Read in the files we care about into memory so we can split them
-                # and then delete the files.
-                for fname in file_list:
-                    fpath = os.path.join(jobpath_dest, fname)
-                    if i == 0:
-                        f = open(fpath)
-                        fdata[fname] = f.readlines()
-                        f.close()
-                        os.unlink(fpath)
-                    else:
-                        if not os.path.isdir(jobpath_dest):
-                            os.makedirs(jobpath_dest)
-
-                    #check to see that len(fdata[fname]%bundle_size == 0
-                    offset = len(fdata[fname])/bundle_size
-                    f = open(fpath, "w")
-                    fsplitdata = ''.join(fdata[fname][i*offset:(i+1)*offset])
-                    f.write(fsplitdata)
-                    f.close()
-
-                result_dirs.append(os.path.split(jobpath_dest)[1])
-        return result_dirs
+                result = {}
+                result['reactant'] = io.loadcon(StringIO.StringIO(''.join(reactant_lines[i*reactant_span:(i+1)*reactant_span])))
+                result['product'] = io.loadcon(StringIO.StringIO(''.join(product_lines[i*product_span:(i+1)*product_span])))
+                result['saddle'] = io.loadcon(StringIO.StringIO(''.join(saddle_lines[i*saddle_span:(i+1)*saddle_span])))
+                result['mode'] = io.load_mode(StringIO.StringIO(''.join(mode_lines[i*mode_span:(i+1)*mode_span])))
+                result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
+                result['id'] = "%d_%d" % (state, uid+i)
+                results.append(result)
+        return results
 
     def make_bundles(self, searches, reactant_path, parameters_path):
         '''This method is a generator that bundles together multiple searches into a single job.
            Example usage:
-               for jobpath in self.make_bundles(jobpaths):
+               for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
                    do_stuff()'''
         reactant = io.loadcon(reactant_path)
         # Split jobpaths in to lists of size self.bundle_size.
