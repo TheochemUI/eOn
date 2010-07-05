@@ -1,8 +1,0 @@
-[Simulation Information]
-time_simulated = 7622393.24446
-current_state = 4
-
-[aKMC Metadata]
-wu_id = 40
-searchdata = {'4_34type': 'random', '4_39type': 'random', '4_36type': 'random', '4_37type': 'random', '4_35type': 'random', '4_32type': 'random', '4_33type': 'random', '4_38type': 'random'}
-
