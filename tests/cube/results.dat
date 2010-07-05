@@ -1,0 +1,16 @@
+0 termination_reason
+        0 random_seed
+        0 reactant_state_tag
+        0 potential_tag
+        0 force_calls
+        0 force_calls_saddle_point_concave
+        0 force_calls_saddle_point_convex
+        0.100000 potential_energy_saddle
+        0.000000 potential_energy_reactant
+        0.000000 potential_energy_product
+        0.100000 barrier_reactant_to_product
+        0.100000 barrier_product_to_reactant
+        0.0 displacement_saddle_distance
+        0 force_calls_prefactors
+        1.0 prefactor_reactant_to_product
+        1.0 prefactor_product_to_reactant

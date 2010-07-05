@@ -1,0 +1,44 @@
+nAlready_ 38
+nForceCallForAll_ 5885
+nForceCallForClimbing_ 4559
+n2ForceCallForClimbing_ 428469
+nIteration_ 1348
+nNoSaddle_ 0
+nOneBack_ 6
+nSearched_ 50
+nTwoBack_ 0
+nWrong_ 0
+nZeroBack_ 6
+energyInitial_ 1.3497022828644396e-294
+paths_ 6
+|	energyPass 0.099999999996052163
+	framePass 1
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 2
+	nFound 8
+|	energyPass 0.14999999999407823
+	framePass 3
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 4
+	nFound 4
+|	energyPass 0.049999999998026082
+	framePass 5
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 6
+	nFound 7
+|	energyPass 0.049999999998026082
+	framePass 7
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 8
+	nFound 7
+|	energyPass 0.099999999996052163
+	framePass 9
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 10
+	nFound 6
+|	energyPass 0.14999999999407823
+	framePass 11
+	energyNewMinimum 1.3497022828644396e-294
+	frameNewMinimum 12
+	nFound 12
+end

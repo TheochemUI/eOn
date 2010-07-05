@@ -1,0 +1,8 @@
+iTransition 100
+iState 1
+nState 8
+nSearched 8
+loops 8
+0 1 2 3 4 5 6 7 
+cutoffs 8
+1.3497e-294 1.3497e-294 1.3497e-294 1.3497e-294 1.3497e-294 1.3497e-294 1.3497e-294 1.3497e-294 
