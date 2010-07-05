@@ -33,9 +33,9 @@ class Superbasin:
             raise ValueError('Passed entry state is not in this superbasin')
 
         probability_vector = self.probability_matrix.transpose()[entry_state_index]
-        if abs(1.0-numpy.sum(probability_vector)) < 1e-3:
-            print 'probability_vector', probability_vector, numpy.sum(probability_vector)
+        if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
+            logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
         probability_vector /= numpy.sum(probability_vector)
         
         u = numpy.random.random_sample()
