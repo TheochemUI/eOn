@@ -378,7 +378,7 @@ class State:
         return io.loadcon(self.proc_product_path(id))
 
     def get_process_mode(self, id):
-        return numpy.array([[float(i) for i in l.strip().split()] for l in open(self.proc_mode_path(id), 'r').readlines()[1:]])
+        return io.load_mode(self.proc_mode_path(id))
 
     def get_reactant(self):
         """ Loads the reactant.con into a point and returns it. """
