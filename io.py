@@ -71,7 +71,7 @@ def savecon(fileout, p, w = 'w'):
         p    - information (in the form of an atoms object) to save
         w        - write/append flag
     '''
-    if hasattr(fileout, 'readline'):
+    if hasattr(fileout, 'write'):
         con = fileout
     else:
         con = open(fileout, w)
@@ -117,7 +117,7 @@ def load_mode(modefilein):
     return numpy.array([[float(i) for i in l.strip().split()] for l in f.readlines()[1:]])
 
 def save_mode(modefileout, displace_vector, reactant):
-    if hasattr(modefileout, 'readline'):
+    if hasattr(modefileout, 'write'):
         f = modefileout
     else:
         f = open(modefileout, 'w')
@@ -131,7 +131,7 @@ def save_mode(modefileout, displace_vector, reactant):
 
 def save_results_dat(fileout, results):
     '''Saves a results.dat file from a dictionary'''
-    if hasattr(fileout, 'readline'):
+    if hasattr(fileout, 'write'):
         f = fileout
     else:
         f = open(fileout, 'w')
