@@ -490,8 +490,17 @@ class ARC(Communicator):
         except ImportError:
             raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
 
-        self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
+        # Check grid certificate proxy
+        try:
+            c = self.arclib.Certificate(self.arclib.PROXY)
+        except self.arclib.CertificateError, msg:
+            raise CommunicatorError(msg)
+        if c.IsExpired():
+            raise CommunicatorError("Grid proxy has expired!")
+        logger.info("Grid proxy is valid for " + c.ValidFor())
 
+        # Get a list of jobs, and find their statuses.
+        self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
         if os.path.isfile(self.jobsfilename):
             jobids = []
             f = open(self.jobsfilename, "r")
@@ -647,17 +656,6 @@ class ARC(Communicator):
 
     def submit_searches(self, searches, reactant_path, parameters_path):
         '''Throws CommunicatorError if fails.'''
-
-        try:
-            c = self.arclib.Certificate(self.arclib.PROXY)
-        except self.arclib.CertificateError, msg:
-            raise CommunicatorError(msg)
-
-        if c.IsExpired():
-            raise CommunicatorError("Grid proxy has expired!")
-
-        logger.info("Grid proxy is valid for " + c.ValidFor())
-
         wrapper_path = self.create_wrapper_script()
 
         qi = self.arclib.GetQueueInfo()
