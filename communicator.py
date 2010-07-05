@@ -507,8 +507,15 @@ class ARC(Communicator):
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["stage"] = "Done"
                 elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
-                    job["stage"] = "Aborted" # Will disappear by itself soonish
-                elif info.status in [ "", "ACCEPTING", "ACCEPTED", "PREPARING", "PREPARED", "SUBMITTING", "INLRMS:Q" ]:
+                    job["stage"] = "Aborted" # Supposed to disappear by itself soonish
+                elif info.status in [ "ACCEPTING", "ACCEPTED", "PREPARING", "PREPARED", "SUBMITTING", "INLRMS:Q" ]:
+                    job["stage"] = "Queueing"
+                elif info.status == "":
+                    # XXX: The most common reason for info.status == "" is that
+                    # the job was submitted so recently that ARC info.sys.
+                    # hasn't picked up the job yet, which is why I decided
+                    # to consider it to be "Queueing". But it could also be the
+                    # ARC info.sys being down, or other problems.
                     job["stage"] = "Queueing"
                 else:
                     job["stage"] = "Running"
@@ -526,6 +533,13 @@ class ARC(Communicator):
         logger.debug("ARC.__del__ invoked!")
 
         if self.init_completed:
+            # Save the jobs to a file for the future, but only if
+            # __init__() was successful - if it wasn't we might not have
+            # read all the jobs from previous runs, in which case
+            # information on those jobs would be overwritten.
+            # (And no jobs could have been submitted or retrieved;
+            # init_completed = False means we crashed at an early stage, so
+            # there's nothing new to save)
             f = open(self.jobsfilename, "w")
             for j in self.jobs:
                 if j["stage"] not in ["Aborted", "Retrieved"]:
@@ -710,6 +724,9 @@ class ARC(Communicator):
     def cancel_job(self, job):
         self.arclib.RemoveJobID(job["id"])
         self.arclib.CancelJob(job["id"])
+        # XXX: CancelJob() could fail e.g. if ARC info.sys. is slow/down/not
+        # updated yet. Trying again in a few minutes is usually the only
+        # cure.
         job["stage"] = "Aborted"
 
 
