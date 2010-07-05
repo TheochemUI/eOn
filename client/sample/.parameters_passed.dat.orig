@@ -39,15 +39,9 @@ REFINE_SP 1
 # tweakable parameters
 converged_Relax 0.001
 converged_SP    0.001
-max_Step_Size_Concave_SP 0.075
-max_Step_Size_Convex_SP  0.075
 max_Energy_SP 10.000000
-norm_Pertubation_SP 1.00000000
-within_Radius_Pertubated_SP 1.000000
-max_Single_Pertubation_SP 0.750000
 min_Displacement_Hessian 0.250000
 within_Radius_Displaced_Hessian 3.500000
 maximum_iterations 512
 
 rotations_Dimer 2
-rotations_New_Search_Dimer 35
