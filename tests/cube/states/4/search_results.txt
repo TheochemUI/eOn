@@ -1,2 +1,0 @@
-    wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
--------------------------------------------------------------------------------------
