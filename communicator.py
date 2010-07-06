@@ -285,7 +285,7 @@ class BOINC(Communicator):
         
         #Clean out scratch directory
         for name in os.listdir(self.scratchpath):
-            if name is not 'uniqueid':
+            if name != 'uniqueid':
                 shutil.rmtree(os.path.join(self.scratchpath, name))
 
         from threading import Thread
