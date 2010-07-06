@@ -334,6 +334,8 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
     
+    if num_to_make == 0:
+        return wuid
     disp = get_displacement(reactant)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
