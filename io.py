@@ -115,7 +115,9 @@ def load_mode(modefilein):
     natoms = int(f.readline().split()[0])/3
     ret = numpy.zeros((natoms, 3))
     for i in range(natoms):
-        ret[i] = [float(j) for j in f.readline().strip().split()]
+        line = f.readline().strip().split()
+        for j in range(3):
+            ret[i][j] = float(line[j])
     return ret
 
 def save_mode(modefileout, displace_vector, reactant):
