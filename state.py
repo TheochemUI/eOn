@@ -157,10 +157,10 @@ class State:
 
         # Move the relevant files into the procdata directory.
         io.savecon(self.proc_saddle_path(id), result['saddle'])
-        io.savecon(self.proc_reactant_path(id), result['reactant'])
-        io.savecon(self.proc_product_path(id), result['product'])
-        io.save_results_dat(self.proc_results_path(id), result['results'])
-        io.save_mode(self.proc_mode_path(id), result['mode'], result['reactant'])
+        io.save_results_dat(self.proc_results_path(id), result['results']) 
+        open(self.proc_reactant_path(id), 'w').writelines(result['reactant'])
+        open(self.proc_mode_path(id), 'w').writelines(result['mode'])
+        open(self.proc_product_path(id), 'w').writelines(result['product'])
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id = id, 
@@ -406,11 +406,10 @@ class State:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
             io.savecon(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), result['saddle'])
-            io.savecon(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), result['reactant'])
-            io.savecon(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), result['product'])
-            io.save_mode(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), result['mode'], result['reactant'])
             io.save_results_dat(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), result['results'])
-        #self.update_forcecall_average(resultdata['force_calls'])
+        open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant'])
+        open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product'])
+        open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode'])
 
     def load_info(self):
         """ Loads the info file if it has not been loaded. """
