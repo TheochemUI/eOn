@@ -233,6 +233,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         num_registered += 1
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)
+    logger.info("%i results discarded", len(results) - num_registered)
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
 
