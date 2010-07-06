@@ -80,24 +80,9 @@ class Communicator:
             #XXX: Perhaps too verbose
             try:
                 reactant_file = open(os.path.join(jobpath, 'reactant.con'), 'r')
-                reactant_lines = reactant_file.readlines()
-                reactant_file.close()
-                reactant_span = len(reactant_lines)/bundle_size
-
                 product_file = open(os.path.join(jobpath, 'product.con'), 'r')
-                product_lines = product_file.readlines()
-                product_file.close()
-                product_span = len(product_lines)/bundle_size
-
                 saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r')
-                saddle_lines = saddle_file.readlines()
-                saddle_file.close()
-                saddle_span = len(saddle_lines)/bundle_size
-
                 mode_file = open(os.path.join(jobpath, 'mode.dat'), 'r')
-                mode_lines = mode_file.readlines()
-                mode_file.close()
-                mode_span = len(mode_lines)/bundle_size
 
                 results_file = open(os.path.join(jobpath, 'results.dat'), 'r')
                 results_lines = results_file.readlines()
@@ -109,10 +94,10 @@ class Communicator:
 
             for i in range(bundle_size):
                 result = {}
-                result['reactant'] = io.loadcon(StringIO.StringIO(''.join(reactant_lines[i*reactant_span:(i+1)*reactant_span])))
-                result['product'] = io.loadcon(StringIO.StringIO(''.join(product_lines[i*product_span:(i+1)*product_span])))
-                result['saddle'] = io.loadcon(StringIO.StringIO(''.join(saddle_lines[i*saddle_span:(i+1)*saddle_span])))
-                result['mode'] = io.load_mode(StringIO.StringIO(''.join(mode_lines[i*mode_span:(i+1)*mode_span])))
+                result['reactant'] = io.loadcon(reactant_file)
+                result['product'] = io.loadcon(product_file)
+                result['saddle'] = io.loadcon(saddle_file)
+                result['mode'] = io.load_mode(mode_file)
                 result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
                 result['id'] = "%d_%d" % (state, uid+i)
                 results.append(result)
