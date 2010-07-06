@@ -407,9 +407,9 @@ class State:
                 os.mkdir(self.bad_procdata_path)
             io.savecon(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), result['saddle'])
             io.save_results_dat(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), result['results'])
-        open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant'])
-        open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product'])
-        open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode'])
+            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant'])
+            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product'])
+            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode'])
 
     def load_info(self):
         """ Loads the info file if it has not been loaded. """
