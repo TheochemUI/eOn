@@ -282,6 +282,12 @@ class BOINC(Communicator):
 
     def submit_searches(self, searches, reactant_path, parameters_path):
         '''Runs the BOINC command create_work on all the jobs.'''
+        
+        #Clean out scratch directory
+        for name in os.listdir(self.scratchpath):
+            if name is not 'uniqueid':
+                shutil.rmtree(os.path.join(self.scratchpath, name))
+
         from threading import Thread
         thread_list = []
         for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
@@ -294,6 +300,7 @@ class BOINC(Communicator):
                 for t in thread_list:
                     t.join()
                 thread_list = []
+        
 
     def create_work(self, jobpath, wu_name):
         create_wu_cmd = os.path.join('bin', 'create_work')
