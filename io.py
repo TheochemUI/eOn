@@ -6,8 +6,6 @@ import numpy
 
 import atoms
 
-
-
 def loadcon(filein):
     '''
     Load a con file
