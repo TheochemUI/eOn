@@ -199,12 +199,15 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     num_registered = 0
     for result in results:        
         # The result dictionary contains the following key-value pairs:
-        # reactant - an atoms object containing the reactant
+        # reactant - an array of strings containing the reactant
         # saddle - an atoms object containing the saddle
-        # product - an atoms object containing the product
-        # mode - an Nx3 numpy array conatining the mode
+        # product - an array of strings containing the product
+        # mode - an array of strings conatining the mode
         # results - a dictionary containing the key-value pairs in results.dat
         # id - StateNumber_WUID
+        #
+        # The reactant, product, and mode are passed as lines of the files because
+        # the information contained in them is not needed for registering results
         if config.debug_keep_all_results:
             #XXX: We should only do these checks once to speed things up, but at the same time
             #debug options don't have to be fast
