@@ -78,11 +78,21 @@ class Communicator:
             uid = int(uid)
 
             try:
+                #These files are read in as strings for performance reasons
                 reactant_file = open(os.path.join(jobpath, 'reactant.con'), 'r')
+                reactant_lines = reactant_file.readlines()
+                reactant_file.close()
+                reactant_span = len(reactant_lines)/bundle_size
                 product_file = open(os.path.join(jobpath, 'product.con'), 'r')
-                saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r')
+                product_lines = product_file.readlines()
+                product_file.close()
                 mode_file = open(os.path.join(jobpath, 'mode.dat'), 'r')
+                mode_lines = mode_file.readlines()
+                mode_file.close()
+                mode_span = len(mode_lines)/bundle_size
                 
+                #These files are legitimately loaded
+                saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r') 
                 #TODO: Load results_file without stringio
                 results_file = open(os.path.join(jobpath, 'results.dat'), 'r')
                 results_lines = results_file.readlines()
@@ -94,10 +104,10 @@ class Communicator:
 
             for i in range(bundle_size):
                 result = {}
-                result['reactant'] = io.loadcon(reactant_file)
-                result['product'] = io.loadcon(product_file)
+                result['reactant'] = reactant_lines[i*reactant_span : (i+1)*reactant_span]
+                result['product'] = product_lines[i*reactant_span : (i+1)*reactant_span]
+                result['mode'] = mode_lines[i*mode_span : (i+1)*mode_span]
                 result['saddle'] = io.loadcon(saddle_file)
-                result['mode'] = io.load_mode(mode_file)
                 result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
                 result['id'] = "%d_%d" % (state, uid+i)
                 results.append(result)
