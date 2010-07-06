@@ -6,16 +6,16 @@ ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
 else
 # gfortran
-#FC = gfortran
-#FFLAGS += -O2
-#AR = ar cru
-#LDFLAGS += -lgfortran
-# ifort
-FC = ifort
+FC = gfortran
 FFLAGS += -O2
-# Linux linking
 AR = ar cru
-LDFLAGS += -limf -lsvml -lifcore -ldl
+LDFLAGS += -lgfortran
+# ifort
+#FC = ifort
+#FFLAGS += -O2
+# Linux linking
+#AR = ar cru
+#LDFLAGS += -limf -lsvml -lifcore -ldl
 # OSX linking
 #AR = ifort -staticlib -o
 endif
