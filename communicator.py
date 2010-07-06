@@ -77,13 +77,13 @@ class Communicator:
             state = int(state)
             uid = int(uid)
 
-            #XXX: Perhaps too verbose
             try:
                 reactant_file = open(os.path.join(jobpath, 'reactant.con'), 'r')
                 product_file = open(os.path.join(jobpath, 'product.con'), 'r')
                 saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r')
                 mode_file = open(os.path.join(jobpath, 'mode.dat'), 'r')
-
+                
+                #TODO: Load results_file without stringio
                 results_file = open(os.path.join(jobpath, 'results.dat'), 'r')
                 results_lines = results_file.readlines()
                 results_file.close()
