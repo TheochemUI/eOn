@@ -97,9 +97,9 @@ def main():
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
 
-    #for key in searchdata.keys():
-    #    if int(key.split('_')[0]) < current_state.number:
-    #        del searchdata[key]
+    for key in searchdata.keys():
+        if int(key.split('_')[0]) < current_state.number:
+            del searchdata[key]
 
     write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
 
