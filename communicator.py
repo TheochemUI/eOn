@@ -464,6 +464,11 @@ class Local(Communicator):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
+        
+        #Clean out scratch directory
+        for name in os.listdir(self.scratchpath):
+            shutil.rmtree(os.path.join(self.scratchpath, name))
+
         for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
             #move the job directory to the scratch directory
             #update jobpath to be in the scratch directory
@@ -484,6 +489,7 @@ class Local(Communicator):
                         self.searchlist.pop(i)
                         break
                 sleep(0.1)
+
 
         #wait for everything to finish
         for search in self.searchlist:
