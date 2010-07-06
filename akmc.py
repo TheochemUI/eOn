@@ -198,6 +198,13 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     results = comm.get_results(config.path_searches_in) 
     num_registered = 0
     for result in results:        
+        # The result dictionary contains the following key-value pairs:
+        # reactant - an atoms object containing the reactant
+        # saddle - an atoms object containing the saddle
+        # product - an atoms object containing the product
+        # mode - an Nx3 numpy array conatining the mode
+        # results - a dictionary containing the key-value pairs in results.dat
+        # id - StateNumber_WUID
         if config.debug_keep_all_results:
             #XXX: We should only do these checks once to speed things up, but at the same time
             #debug options don't have to be fast
@@ -322,12 +329,12 @@ def get_displacement(reactant):
 
 def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler = None):
     reactant = current_state.get_reactant()
-    disp = get_displacement(reactant)
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
     
+    disp = get_displacement(reactant)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
 
@@ -335,6 +342,10 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
     t1 = unix_time.time()
     for i in range(num_to_make):
         search = {}
+        # The search dictionary contains the following key-value pairs:
+        # id - CurrentState_WUID
+        # displacement - an atoms object containing the point the saddle search will start at
+        # mode - an Nx3 numpy array containing the initial mode 
         search['id'] = "%d_%d" % (current_state.number, wuid)
         done = False
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
