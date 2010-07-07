@@ -14,6 +14,9 @@ EAM::EAM()
 
 void EAM::initialize()
 {
+    celllist_old = 0;
+    celllist_new = 0;
+    neigh_list = 0;
     initialized = false;
     Dm = 1;
     alphaM = 3.0205380362464;
@@ -23,7 +26,7 @@ void EAM::initialize()
     r_cut = 5.5;
     rc = new double[3]; 
     rc[0] = rc[1] = rc[2] = 5.0;// 5 is arbitrary number. rc represents the optimal length for each cell in cell list
-    double temp[] = {67.2169,-253.032,392.956,-328.003,165.763,-59.8235,18.0797,-2.00292,-.0102076};
+    double temp[] = {67.2169 * 27.21, -253.032 * 27.21, 392.956 * 27.21, -328.003 * 27.21, 165.763 * 27.21, -59.8235 * 27.21, 18.0797 * 27.21, -2.00292 * 27.21, -0.0102076 * 27.21};
     func_param = new double[9];
     for(int i = 0; i < 9; i++){
         func_param[i] = temp[i];
