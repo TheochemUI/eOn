@@ -518,7 +518,7 @@ class ARC(Communicator):
         try:
             c = self.arclib.Certificate(self.arclib.PROXY)
         except self.arclib.CertificateError, msg:
-            raise CommunicatorError(msg)
+            raise CommunicatorError(str(msg) + ".\n\nForgot to run grid-proxy-init?\n")
         if c.IsExpired():
             raise CommunicatorError("Grid proxy has expired!")
         logger.info("Grid proxy is valid for " + c.ValidFor())
