@@ -158,12 +158,12 @@ def dynamics(path_root, states, unique=False):
 
     return atoms_list
 
-def fastestpath(path_root, states):
+def fastestpath(path_root, states, full=False):
     trajectory_path = os.path.join(path_root, "dynamics.txt")
     trajectory = get_trajectory(trajectory_path, True)
 
+    # Build the graph.
     G = Graph()
-
     for statenr in trajectory:
         state = states.get_state(statenr)
         G.add_node(state)
@@ -174,14 +174,18 @@ def fastestpath(path_root, states):
                 G.add_node(neighbor_state)
                 G.add_edge(state, neighbor_state, weight=1.0/p['rate'])
 
-    state_list = [states.get_state(0)]
 
-    nodes = sorted(G.nodes(), lambda a,b: a.number-b.number)
-    state_pairs = [ nodes[i:i+2] for i in range(0, len(nodes)-1) ]
-    for s1, s2 in state_pairs:
-        path = G.shortest_path(s1,s2)[1:]
-        for s in path:
-            state_list.append(s)
+    state_list = [states.get_state(0)]
+    if full:
+        nodes = sorted(G.nodes(), lambda a,b: a.number-b.number)
+        state_pairs = [ nodes[i:i+2] for i in range(0, len(nodes)-1) ]
+        for s1, s2 in state_pairs:
+            path = G.shortest_path(s1,s2)[1:]
+            for s in path:
+                state_list.append(s)
+    else:
+        end = states.get_state(trajectory[-1])
+        state_list = G.shortest_path(state_list[0], end)
 
     atoms_list = []
     for i in range(len(state_list)):
@@ -214,6 +218,8 @@ def make_movie(movie_type, path_root, states):
         atoms_list = dynamics(path_root, states, True)
     elif movie_type == 'fastestpath':
         atoms_list = fastestpath(path_root, states)
+    elif movie_type == 'fastestfullpath':
+        atoms_list = fastestpath(path_root, states, full=True)
     else:
         print "unknown MOVIE_TYPE"
         sys.exit(1)
@@ -223,18 +229,3 @@ def make_movie(movie_type, path_root, states):
         sys.exit(1)
     save_movie(atoms_list, movie_path)
     print "saved %i frames to %s" % (len(atoms_list), movie_path)
-
-#if __name__ == "__main__":
-#    optpar = OptionParser(usage = "usage: %prog [options]")
-#    optpar.add_option("-t", "--type", action="store", dest="type", default = "dynamics", help="specify the type of movie to make valid options are dynamics, states, and fastestpath")
-#    (options, args) = optpar.parse_args()
-#
-#    # XXX: evil
-#    import config
-#
-#    if options.type == "dynamics":
-#        dynamics(config.path_results, config.path_states, "movie.poscar")
-#    elif options.type == "fastestpath":
-#        fastestpath(config.path_states, "movie.poscar")
-#    elif options.type == "states":
-#        dynamics(config.path_results, config.path_states, "movie.poscar", True)
