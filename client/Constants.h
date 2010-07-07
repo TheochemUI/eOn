@@ -30,6 +30,7 @@ namespace constants {
     long getPotentialLJ();///< Constant used to indicate that Lennard-Jones should be used as potential. (1)
     long getPotentialMorse();///< Constant used to indicate that Morse should be used as potential. (2)
     long getPotentialEMT();///< Constant used to indicate that EMT should be used as potential. (3)
+    long getPotentialEAM();///< Constant used to indicate that EAM should be used as potential. (11)
     long getPotentialEDIP();///< Constant used to indicate that EDIP should be used as potential. (4)
     long getPotentialVASP();///< Constant used to indicate that VASP should be used as potential. (5)
     long getPotentialTersoff();///< Constant used to indicate that Tersoff should be used as potential. (6)
