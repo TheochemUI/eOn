@@ -98,6 +98,7 @@ def main():
     parser = ConfigParser.RawConfigParser() 
 
     for key in searchdata.keys():
+        #XXX: This may be buggy once superbasin recycling is implemented
         if int(key.split('_')[0]) < current_state.number:
             del searchdata[key]
 
@@ -241,7 +242,10 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         state_num = int(result['id'].split("_")[0])
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
-        result['type'] = searchdata[result['id'] + "type"]
+        try:
+            result['type'] = searchdata[result['id'] + "type"]
+        except:
+            logger.warning("Could not find search data for search %s" % result['id'])
         result['wuid'] = int(result['id'].split('_')[1]) 
         # Remove used information from the searchdata metadata.
         del searchdata[result['id'] + "type"]
@@ -376,14 +380,20 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
             displacement, mode = recycler.make_suggestion()
             if displacement:
                 logger.debug('Recycled a saddle')
-                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
+                try:
+                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
+                except:
+                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 done = True
         if not done and config.kdb_on:
             displacement, mode = kdber.make_suggestion()
             if displacement:
                 done = True
                 logger.info('Made a KDB suggestion')
-                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
+                try:
+                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
+                except:
+                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 # Store the kdb suggestion in the state directory if config.kdb_keep is set.
                 if config.kdb_keep:
                     if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
@@ -391,7 +401,10 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
                     shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
         if not done:
             displacement, mode = disp.make_displacement() 
-            searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
+            try:
+                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
+            except:
+                logger.warning("Failed to add data for search %d_%d" % (current_state.number, wuid)
         search['displacement'] = displacement
         search['mode'] = mode
         searches.append(search) 
