@@ -80,6 +80,9 @@ int main(int argc, char **argv)
             while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
             {
                 doSaddleSearch();
+                parameters.resetForceCalls();
+                parameters.resetForceCallsSaddlePoint();
+                parameters.resetForceCallsPrefactors(); 
             }
         }
         // Otherwise, displace and search ourselves.
