@@ -13,6 +13,7 @@ import logging.handlers
 import numpy
 numpy.seterr(all='raise')
 import pickle
+import StringIO
 
 import locking
 import communicator
@@ -114,14 +115,25 @@ def get_akmc_metadata():
     # do we want custom metadata locations?
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.SafeConfigParser() 
-    # give our parser some default values in case our metafile doesn't exist
-    try:
+    if os.path.isfile(metafile):
         parser.read(metafile)
-        start_state_num = parser.getint("Simulation Information",'current_state')
-        time = parser.getfloat("Simulation Information", 'time_simulated') 
-        wuid = parser.getint("aKMC Metadata", 'wu_id') 
-        searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
-    except:
+        try:
+            start_state_num = parser.getint("Simulation Information",'current_state')
+        except:
+            start_state_num = 0 #Sadly, ConfigParser doesn't have a better way of specifying defaults
+        try:
+            time = parser.getfloat("Simulation Information", 'time_simulated') 
+        except:
+            time = 0.0
+        try:
+            wuid = parser.getint("aKMC Metadata", 'wu_id') 
+        except:
+            wuid = 0
+        try:
+            searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
+        except:
+            searchdata={}
+    else:
         time = 0
         start_state_num = 0
         wuid = 0
