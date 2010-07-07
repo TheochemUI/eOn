@@ -325,7 +325,11 @@ def kmc_step(current_state, states, time, kT):
         if config.sb_on:
             superbasining.register_transition(current_state, next_state)    
         
-        print >> dynamics_file, next_state.number, time
+        if config.sb_on and sb:
+            proc_id_out = -1
+        else:
+            proc_id_out = rate_table[nsid][0]
+        print >> dynamics_file, next_state.number, proc_id_out, time
         logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
         if config.recycling_on:
