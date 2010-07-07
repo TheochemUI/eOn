@@ -21,7 +21,7 @@ class EAM : public PotentialsInterface
         void initialize();
         void cleanMemory();
         void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
-        void calc_force(long N, double *R, const long *atomicNrs, double *F, double *U, double *box);
+        void calc_force(long N, double *R, const long *atomicNrs, double *F, double *U, const double *box);
         void new_celllist(long N, const double *box, long *num_axis, long *cell_length, long *celllist_new, long num_cells, double *Rnew);
         void cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell_length, long *celllist_new, long *neigh_list);
         int update_cell_list(long N, long num_cells,long *num_axis, long *cell_length, long *celllist_old, double *Rnew); //returns 0 if unchanged, >0 if changed - represents number of atoms that changed lists
