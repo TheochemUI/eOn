@@ -36,6 +36,10 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
+    else if(parameters_->getPotentialTag() == getPotentialEAM()){
+        interface_ = new EAM();
+        interface_->initialize();
+    }
 #if 0
     else if(parameters_->getPotentialTag() == getPotentialEDIP()){
         interface_ = new EDIP();

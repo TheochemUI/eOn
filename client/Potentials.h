@@ -25,6 +25,7 @@
 //#include "SW.h"
 //#include "Tersoff.h"
 #include "potentials/Aluminum/Aluminum.h"
+#include "potentials/EAM/EAM.h"
 
 
 /** Class serving as a wrapper between the force calculator and the Atoms object. It is decided here which potential is going to be used. Might seem redundant but it is nessesary in order to have a clean code in the Matter class*/
