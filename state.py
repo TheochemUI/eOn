@@ -33,7 +33,6 @@ class State:
         # The path to and number of this state.
         self.path = statepath                               
         self.number = statenumber
-        print "SEARCH RESULTS BANG BANG", list_search_results
         self.list_search_results = list_search_results
 
         self.info_path = os.path.join(self.path, "info")
