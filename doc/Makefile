@@ -1,5 +1,6 @@
-eon.html: eon.txt header.txt footer.txt
-	./Markdown.pl eon.txt | cat header.txt - footer.txt > eon.html
+eon.pdf: eon.tex
+	pdflatex eon.tex
 
+.PHONY : clean
 clean:
-	rm eon.html
+	rm eon.aux eon.log eon.pdf eon.out
