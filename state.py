@@ -28,7 +28,7 @@ class State:
     """ The State class. """
 
 
-    def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, reactant_path = None):
+    def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r,  reactant_path = None):
         """ Creates a new State, with lazily loaded data. """
 
         # The path to and number of this state.
@@ -101,6 +101,8 @@ class State:
 
     def add_process(self, result):
         """ Adds a process to this State. """
+        
+        self.increment_number_searches()
 
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
         
@@ -134,9 +136,6 @@ class State:
                     if dist > self.epsilon_r:
                         break
                 else:
-                    ediff = (barrier - lowest) - (self.kT * self.thermal_window)
-                    if ediff < 0.0:
-                        self.set_sequential_redundant(self.get_sequential_redundant() + 1)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
                     self.append_search_result(result, "repeat-%d" % id)
@@ -148,11 +147,10 @@ class State:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
 
         
-        # If this barrier is within the thermal window, reset sequential_redundant.
+        # Update the search result table according to the barrier.
         ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
         if ediff < 0.0:    
             self.append_search_result(result, "good-%d" % self.get_num_procs())
-            self.set_sequential_redundant(0)
         else:
             self.append_search_result(result, "barrier > thermal_window")
 
@@ -168,7 +166,7 @@ class State:
         open(self.proc_product_path(id), 'w').writelines(result['product'])
 
         # Append this barrier to the process table (in memory and on disk).
-        self.append_process_table(id = id, 
+        self.append_process_table(id =                id, 
                                   saddle_energy =     resultdata["potential_energy_saddle"], 
                                   prefactor =         resultdata["prefactor_reactant_to_product"], 
                                   product =           -1, 
@@ -257,7 +255,21 @@ class State:
         """ Returns the list of ids in the rate table. """
         return [b[0] for b in self.get_ratetable()]
 
+
+    def get_number_searches(self):
+        self.load_info()
+        try:
+            ns = self.info.getint("MetaData", "num searches")
+        except:
+            ns = 0
+            self.info.set("MetaData", "num searches", "0")
+            self.save_info()
+        return ns
         
+    def increment_number_searches(self):
+        ns = self.get_number_searches() + 1        
+        self.info.set("MetaData", "num searches", str(ns))
+        self.save_info()
 
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
@@ -341,22 +353,12 @@ class State:
         self.info.set("MetaData", "bad_saddles", "%d" % num)
         self.save_info()        
     
-    def get_sequential_redundant(self):
-        """ Returns the number of sequential_redundant in a row for the current state. """
-        self.load_info()
-        try:        
-            return self.info.getint("MetaData", "sequential_redundant")
-        except:
-            return 0       
-
-    def set_sequential_redundant(self, repeats):
-        """ Loads the info file if it has not been loaded and sets the sequential_redundant variable. """
-        self.load_info()
-        self.info.set("MetaData", "sequential_redundant", "%d" % repeats)
-        self.save_info()
-
     def get_confidence(self):
-        return 1.0 - (1.0 / max(self.get_sequential_redundant(), 1.0))
+        Ns = max(1.0, float(self.get_number_searches()))
+        Nf = float(len(self.get_ratetable()))
+        if Nf < 1:
+            return 0.0
+        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0/(Nf/Ns))/(Nf/Ns))
 
     def get_energy(self):
         """ Loads the info file if it is not already loaded and returns the energy, or None
@@ -447,6 +449,71 @@ class State:
     def get_process_table(self):
         self.load_process_table()
         return self.procs
+        
+
+from math import log,sqrt,exp
+
+def lambertw(z):
+    """Lambert W function, principal branch"""
+    eps = 1.0e-12
+    em1 = 0.3678794411714423215955237701614608
+    if z < -em1:
+        logger.error("Tried to evaluate Lambert W function @ < -1/e")
+        raise ValueError()
+    if 0.0 == z: 
+        return 0.0
+    if z < -em1 + 1e-4:
+        q = z + em1
+        r = sqrt(q)
+        q2 = q * q
+        q3 = q2 * q
+        return\
+         -1.0\
+         +2.331643981597124203363536062168 * r\
+         -1.812187885639363490240191647568 * q\
+         +1.936631114492359755363277457668 * r * q\
+         -2.353551201881614516821543561516 * q2\
+         +3.066858901050631912893148922704 * r * q2\
+         -4.175335600258177138854984177460 * q3\
+         +5.858023729874774148815053846119 * r * q3\
+         -8.401032217523977370984161688514 * q3 * q
+    if z < 1.0:
+        p = sqrt(2.0 * (2.7182818284590452353602874713526625 * z + 1.0))
+        w = -1.0 + p * (1.0 + p * (-0.333333333333333333333 + p * 0.152777777777777777777777))
+    else:
+        w = log(z)
+    if z > 3.0: w-=log(w)
+    for i in xrange(10):
+        e = exp(w)
+        t = w * e - z
+        p = w + 1.0
+        t /= e * p - 0.5 * (p + 1.0) * t / p
+        w -= t
+        if abs(t) < eps * (1.0 + abs(w)): 
+            return w
+    logger.error("Failed to converge Lambert W function.")
+    raise ValueError()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
 if __name__ == "__main__":
     pass
