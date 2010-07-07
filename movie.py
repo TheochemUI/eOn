@@ -1,70 +1,131 @@
 #!/usr/bin/env python
+from __future__ import generators
 import os
 import sys
 
 import io
 
+class priorityDictionary(dict):
+    def __init__(self):
+        '''Initialize priorityDictionary by creating binary heap
+of pairs (value,key).  Note that changing or removing a dict entry will
+not remove the old pair from the heap until it is found by smallest() or
+until the heap is rebuilt.'''
+        self.__heap = []
+        dict.__init__(self)
+
+    def smallest(self):
+        '''Find smallest item after removing deleted items from heap.'''
+        if len(self) == 0:
+            raise IndexError, "smallest of empty priorityDictionary"
+        heap = self.__heap
+        while heap[0][1] not in self or self[heap[0][1]] != heap[0][0]:
+            lastItem = heap.pop()
+            insertionPoint = 0
+            while 1:
+                smallChild = 2*insertionPoint+1
+                if smallChild+1 < len(heap) and \
+                        heap[smallChild] > heap[smallChild+1]:
+                    smallChild += 1
+                if smallChild >= len(heap) or lastItem <= heap[smallChild]:
+                    heap[insertionPoint] = lastItem
+                    break
+                heap[insertionPoint] = heap[smallChild]
+                insertionPoint = smallChild
+        return heap[0][1]
+	
+    def __iter__(self):
+        '''Create destructive sorted iterator of priorityDictionary.'''
+        def iterfn():
+            while len(self) > 0:
+                x = self.smallest()
+                yield x
+                del self[x]
+        return iterfn()
+	
+    def __setitem__(self,key,val):
+        '''Change value stored in dictionary and add corresponding
+pair to heap.  Rebuilds the heap if the number of deleted items grows
+too large, to avoid memory leakage.'''
+        dict.__setitem__(self,key,val)
+        heap = self.__heap
+        if len(heap) > 2 * len(self):
+            self.__heap = [(v,k) for k,v in self.iteritems()]
+            self.__heap.sort()  # builtin sort likely faster than O(n) heapify
+        else:
+            newPair = (val,key)
+            insertionPoint = len(heap)
+            heap.append(None)
+            while insertionPoint > 0 and \
+                    newPair < heap[(insertionPoint-1)//2]:
+                heap[insertionPoint] = heap[(insertionPoint-1)//2]
+                insertionPoint = (insertionPoint-1)//2
+            heap[insertionPoint] = newPair
+	
+    def setdefault(self,key,val):
+        '''Reimplement setdefault to call our customized __setitem__.'''
+        if key not in self:
+            self[key] = val
+        return self[key]
+
 class Graph:
-    def __init__(self,name=""):
+    def __init__(self, name=""):
         self.name = name
-        self.list_neighbor = {}
-        self.list_node = {}
+        self.graph = {}
 
-    def add_node(self,node):
-        self.list_node[node] = True
+    def add_node(self, node):
+        if node not in self.graph:
+            self.graph[node] = {}
 
-    def add_edge(self,node,nodebis):
-        try :
-            self.list_neighbor[node].append(nodebis)
-        except :
-            self.list_neighbor[node] = []
-            self.list_neighbor[node].append(nodebis)
-        try :
-            self.list_neighbor[nodebis].append(node)
-        except :
-            self.list_neighbor[nodebis] = []
-            self.list_neighbor[nodebis].append(node)
+    def add_edge(self, node1, node2, weight=1.0):
+        if node1 not in self.graph:
+            self.add_node(node1)
+        if node2 not in self.graph:
+            self.add_node(node2)
+        
+        self.graph[node1][node2] = weight
 
     def neighbors(self,node):
-        try :
-            return self.list_neighbor[node]
-        except :
-            return []
-
-    def nodes(self):
-        return self.list_node.keys()
-
-    def shortest_path(self, node1, node2, path=[]):
-        path = path + [node1]
-
-        if node1 == node2:
-            return path
-
-        if node1 not in self.list_node or node2 not in self.list_node:
+        if node in self.graph:
+            return self.graph[node].keys()
+        else:
             return None
 
-        shortest = None
+    def nodes(self):
+        return self.graph.keys()
 
-        for node in self.neighbors(node1):
-            if node not in path:
-                newpath = self.shortest_path(node, node2, path)
-                if newpath:
-                    if not shortest or len(newpath) < len(shortest):
-                        shortest = newpath
-        return shortest
+    def dijkstra(self, start, end=None):
+        G = self.graph
+        D = {}	# dictionary of final distances
+        P = {}	# dictionary of predecessors
+        Q = priorityDictionary()   # est.dist. of non-final vert.
+        Q[start] = 0
+        
+        for v in Q:
+            D[v] = Q[v]
+            if v == end: break
+            
+            for w in G[v]:
+                vwLength = D[v] + G[v][w]
+                if w in D:
+                    if vwLength < D[w]:
+                        raise ValueError, \
+      "Dijkstra: found better path to already-final vertex"
+                elif w not in Q or vwLength < Q[w]:
+                    Q[w] = vwLength
+                    P[w] = v
+        
+        return (D,P)
 
-    def delete_edge(self,node,nodebis):
-        self.list_neighbor[node].remove(nodebis)
-        self.list_neighbor[nodebis].remove(node)
-
-    def delete_node(self,node):
-        del self.list_node[node]
-        try :
-            for nodebis in self.list_neighbor[node] :
-                self.list_neighbor[nodebis].remove(node)
-            del self.list_neighbor[node]
-        except :
-            return "error"
+    def shortest_path(self, start, end):
+        D,P = self.dijkstra(start,end)
+        path = []
+        while 1:
+            path.append(end)
+            if end == start: break
+            end = P[end]
+        path.reverse()
+        return path
 
 def get_trajectory(trajectory_path, unique=False):
     f = open(trajectory_path)
@@ -111,18 +172,36 @@ def fastestpath(path_root, states):
             if p['product'] != -1:
                 neighbor_state = states.get_state(p['product'])
                 G.add_node(neighbor_state)
-                G.add_edge(state, neighbor_state) 
+                G.add_edge(state, neighbor_state, weight=1.0/p['rate'])
 
-    nodes = map(states.get_state, trajectory)
+    state_list = [states.get_state(0)]
 
-    atoms_list = [states.get_state(0).get_reactant()]
-
+    nodes = sorted(G.nodes(), lambda a,b: a.number-b.number)
     state_pairs = [ nodes[i:i+2] for i in range(0, len(nodes)-1) ]
     for s1, s2 in state_pairs:
         path = G.shortest_path(s1,s2)[1:]
         for s in path:
-            atoms_list.append(s.get_reactant())
-    return atoms_list
+            state_list.append(s)
+
+    atoms_list = []
+    for i in range(len(state_list)):
+        atoms_list.append(state_list[i].get_reactant())
+        if len(state_list)-1 == i:
+            continue
+        atoms_list.append(state_list[i].get_process_saddle(
+                                        get_fastest_process_id(state_list[i],
+                                                               state_list[i+1])))
+    return atoms_list                                            
+
+def get_fastest_process_id(state1, state2):
+    ptable = state1.get_process_table()
+    fastest = None
+    for i,p in ptable.iteritems():
+        if p['product'] == state2.number:
+            if not fastest or fastest[1] < p['rate']:
+                fastest = (i, p['rate'])
+    return fastest[0]
+
 
 def save_movie(atoms_list, movie_path):
     for atoms in atoms_list:
