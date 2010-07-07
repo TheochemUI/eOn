@@ -79,18 +79,21 @@ class State:
 
 
     def append_search_result(self, result, comment):
-        f = open(self.search_result_path, 'a')
-#GH        f.write("%8d %16s %8.5f %16.5e %16d %16d %16d    %s\n" % (resultdata["search_id"], 
-        resultdata = result['results']
-        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
-                 result["type"], 
-                 resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
-                 resultdata["displacement_saddle_distance"],
-                 resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
-                 resultdata["force_calls_prefactors"],
-                 resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
-                 comment))
-        f.close()
+        try:
+            f = open(self.search_result_path, 'a')
+#GH            f.write("%8d %16s %8.5f %16.5e %16d %16d %16d    %s\n" % (resultdata["search_id"], 
+            resultdata = result['results']
+            f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
+                     result["type"], 
+                     resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
+                     resultdata["displacement_saddle_distance"],
+                     resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
+                     resultdata["force_calls_prefactors"],
+                     resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                     comment))
+            f.close()
+        except:
+            logger.warning("Failed to append search result %s", result['id'])
         
 
 

@@ -244,11 +244,11 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         try:
             result['type'] = searchdata[result['id'] + "type"]
+            del searchdata[result['id'] + "type"]
         except:
             logger.warning("Could not find search data for search %s" % result['id'])
         result['wuid'] = int(result['id'].split('_')[1]) 
         # Remove used information from the searchdata metadata.
-        del searchdata[result['id'] + "type"]
         
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
@@ -404,7 +404,7 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
             try:
                 searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
             except:
-                logger.warning("Failed to add data for search %d_%d" % (current_state.number, wuid)
+                logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
         search['displacement'] = displacement
         search['mode'] = mode
         searches.append(search) 
