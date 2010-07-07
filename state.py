@@ -77,6 +77,8 @@ class State:
         self.bad_saddle_count = None
         self.unique_saddle_count = None
 
+    def __repr__(self):
+        return "State #%i" % self.number
 
     def append_search_result(self, result, comment):
         try:
