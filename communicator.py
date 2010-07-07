@@ -512,6 +512,8 @@ class ARC(Communicator):
         except ImportError:
             raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
 
+        self.arclib.SetNotifyLevel(self.arclib.WARNING)
+
         # Check grid certificate proxy
         try:
             c = self.arclib.Certificate(self.arclib.PROXY)
