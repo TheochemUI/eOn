@@ -88,7 +88,7 @@ class ASKMC:
         # Find the lowest barrier process for the state.
         lowest = 1e300
         for process_id in current_state_procs.keys():
-            barrier = current_stat_procs["barrier"]
+            barrier = current_state_procs[process_id]["barrier"]
             if barrier < lowest:
                 lowest = barrier
         table = []
