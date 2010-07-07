@@ -183,7 +183,7 @@ def write_recycling_metadata(parser, recycling_start, previous_state_num):
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path)  
+    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path, list_search_results = config.debug_list_search_results)  
 
 def get_communicator():
     if config.comm_type=='boinc':
@@ -202,7 +202,7 @@ def get_communicator():
         raise ValueError()
     return comm
 
-def register_results(comm, current_state, states, searchdata, kdber = None):
+def register_results(comm, current_state, states, searchdata = None, kdber = None):
     logger.info("registering results")
     t1 = unix_time.time()
     if os.path.isdir(config.path_searches_in):
@@ -243,13 +243,14 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         state_num = int(result['id'].split("_")[0])
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
-        try:
-            result['type'] = searchdata[result['id'] + "type"]
-            del searchdata[result['id'] + "type"]
-        except:
-            logger.warning("Could not find search data for search %s" % result['id'])
-        result['wuid'] = int(result['id'].split('_')[1]) 
-        # Remove used information from the searchdata metadata.
+        if config.debug_list_search_results:
+            try:
+                result['type'] = searchdata[result['id'] + "type"]
+                del searchdata[result['id'] + "type"]
+            except:
+                logger.warning("Could not find search data for search %s" % result['id'])
+            result['wuid'] = int(result['id'].split('_')[1]) 
+            # Remove used information from the searchdata metadata.
         
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
@@ -357,7 +358,7 @@ def get_displacement(reactant):
         raise ValueError()
     return disp
 
-def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler = None):
+def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None):
     reactant = current_state.get_reactant()
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
     logger.info("%i searches in the queue" % num_in_buffer)
@@ -385,20 +386,22 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
             displacement, mode = recycler.make_suggestion()
             if displacement:
                 logger.debug('Recycled a saddle')
-                try:
-                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
-                except:
-                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
+                if config.debug_list_search_results:                
+                    try:
+                        searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
+                    except:
+                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 done = True
         if not done and config.kdb_on:
             displacement, mode = kdber.make_suggestion()
             if displacement:
                 done = True
                 logger.info('Made a KDB suggestion')
-                try:
-                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
-                except:
-                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
+                if config.debug_list_search_results:                
+                    try:
+                        searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
+                    except:
+                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 # Store the kdb suggestion in the state directory if config.kdb_keep is set.
                 if config.kdb_keep:
                     if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
@@ -406,10 +409,11 @@ def make_searches(comm, current_state, wuid, searchdata, kdber = None, recycler 
                     shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
         if not done:
             displacement, mode = disp.make_displacement() 
-            try:
-                searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
-            except:
-                logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
+            if config.debug_list_search_results:                
+                try:
+                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
+                except:
+                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
         search['displacement'] = displacement
         search['mode'] = mode
         searches.append(search) 

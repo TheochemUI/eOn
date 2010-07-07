@@ -37,6 +37,7 @@ try:
 except:
     debug_random_seed   = None
 debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
+debug_list_search_results = parser.getboolean('Debug', 'list_search_results')
 
 #path options
 path_root         = parser.get('Paths', 'main_directory')

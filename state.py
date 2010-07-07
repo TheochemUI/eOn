@@ -18,7 +18,6 @@ ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
 processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-#GH search_result_header = "%8s %16s %8s %16s %16s %16s %16s    %s\n" % ("wuid", "type", "barrier", "max-atom-dist", "saddle-fcs", "minimize-fcs", "prefactor-fcs", "result")
 search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier", "max-dist", "sad-fcs", "mins-fcs", "pref-fcs", "result")
 search_result_header += "-" * len(search_result_header) + '\n'
 
@@ -28,12 +27,14 @@ class State:
     """ The State class. """
 
 
-    def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r,  reactant_path = None):
+    def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, reactant_path = None, list_search_results = False):
         """ Creates a new State, with lazily loaded data. """
 
         # The path to and number of this state.
         self.path = statepath                               
         self.number = statenumber
+        print "SEARCH RESULTS BANG BANG", list_search_results
+        self.list_search_results = list_search_results
 
         self.info_path = os.path.join(self.path, "info")
         self.procdata_path = os.path.join(self.path, "procdata")
@@ -68,9 +69,10 @@ class State:
             f = open(self.proctable_path, 'w')
             f.write(processtable_header)
             f.close()
-            f = open(self.search_result_path, 'w')
-            f.write(search_result_header)
-            f.close()
+            if self.list_search_results:
+                f = open(self.search_result_path, 'w')
+                f.write(search_result_header)
+                f.close()
 
         # Statistics
         self.good_saddle_count = None
@@ -81,21 +83,21 @@ class State:
         return "State #%i" % self.number
 
     def append_search_result(self, result, comment):
-        try:
-            f = open(self.search_result_path, 'a')
-#GH            f.write("%8d %16s %8.5f %16.5e %16d %16d %16d    %s\n" % (resultdata["search_id"], 
-            resultdata = result['results']
-            f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
-                     result["type"], 
-                     resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
-                     resultdata["displacement_saddle_distance"],
-                     resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
-                     resultdata["force_calls_prefactors"],
-                     resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
-                     comment))
-            f.close()
-        except:
-            logger.warning("Failed to append search result %s", result['id'])
+        if self.list_search_results:
+            try:
+                f = open(self.search_result_path, 'a')
+                resultdata = result['results']
+                f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
+                         result["type"], 
+                         resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
+                         resultdata["displacement_saddle_distance"],
+                         resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
+                         resultdata["force_calls_prefactors"],
+                         resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                         comment))
+                f.close()
+            except:
+                logger.warning("Failed to append search result %s", result['id'])
         
 
 
