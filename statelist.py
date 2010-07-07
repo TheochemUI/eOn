@@ -193,7 +193,7 @@ class StateList:
                                          saddle_energy = reactant.procs[process_id]['saddle_energy'], 
                                          prefactor = reactant.procs[process_id]['product_prefactor'], 
                                          product = reactant_number, 
-                                         product_energy = reactant.procs[process_id]['product_energy'],
+                                         product_energy = reactant.procs[process_id]['reactant_energy'],
                                          product_prefactor = reactant.procs[process_id]['prefactor'],
                                          barrier = barrier, 
                                          rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
