@@ -28,6 +28,7 @@ long constants::getPotentialSW(){return 7;};
 long constants::getPotentialLenosky(){return 8;};
 long constants::getPotentialLJBinary(){return 9;};
 long constants::getPotentialAluminum(){return 10;};
+long constants::getPotentialEAM(){return 11;};
 
 // Values passed between server and clients
 long constants::getStateGood(){return 0;};
