@@ -56,7 +56,7 @@ class Communicator:
             logger.warning("termination_reason missing for result file %s", result_dat_path)
         return bundle_size
 
-    def unbundle(self, resultpath):
+    def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple searches into multiple single 
            searches so the akmc script can process them.'''
 
@@ -67,6 +67,9 @@ class Communicator:
 
         results = []
         for jobpath in jobpaths:
+            basename, dirname = os.path.split(jobpath)
+            if not keep_result(dirname):
+                continue
             # Need to figure out how many searches were bundled together
             # and then create the new job directories with the split files.
             bundle_size = self.get_bundle_size(os.path.join(jobpath, "results.dat"))
@@ -347,8 +350,11 @@ class BOINC(Communicator):
                         (stdout, stderr)
             raise CommunicatorError(errstr)
 
-    def get_results(self, resultspath):
-        '''Moves work from boinc results directory to results path.'''
+    def get_results(self, resultspath, keep_result):
+        '''
+        Moves work from boinc results directory to results path and then loads desired work units.
+        keep_result is a boolean-valued function which determines whether a result should be discarded.
+        '''
         # TODO: Think about writing a boinc assimilator that does this stuff.
         all_boinc_results = os.listdir(self.boinc_results_path)
         all_boinc_results = [ f for f in all_boinc_results if '_' in f ]
@@ -400,7 +406,7 @@ class BOINC(Communicator):
                 filename = ending_to_filename[ending]
                 shutil.move(filepath, os.path.join(resultspath, key, filename))
 
-        return self.unbundle(resultspath)
+        return self.unbundle(resultspath, keep_result)
 
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
@@ -427,7 +433,7 @@ class Local(Communicator):
             except:
                 pass
 
-    def get_results(self, resultspath):
+    def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
         jobdirs = [ d for d in os.listdir(self.scratchpath) 
                     if os.path.isdir(os.path.join(self.scratchpath,d)) ]
@@ -435,7 +441,7 @@ class Local(Communicator):
         for jobdir in jobdirs:
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
-        return self.unbundle(resultspath)
+        return self.unbundle(resultspath, keep_result)
 
         #jobdirs = [ os.path.join(self.scratchpath, d) for d in os.listdir(self.scratchpath) 
         #                if os.path.isdir(os.path.join(self.scratchpath,d)) ]
