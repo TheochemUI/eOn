@@ -23,6 +23,7 @@ import recycling
 import superbasinscheme
 import askmc
 import kdb
+import movie
 
 def main(): 
      
@@ -461,7 +462,7 @@ if __name__ == '__main__':
 
     lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
 
-    #XXX: Some options are mutally exclusive. This should be handled better.
+    # Some options are mutually exclusive. Let's check them now.
     exclusive_options = {}
     if len(options.movie_type) > 0:
         exclusive_options['movie_type'] = True
@@ -475,6 +476,8 @@ if __name__ == '__main__':
         optpar.error("the options %s are mutually exclusive" % ", ".join(offending_options))
 
     if len(options.movie_type) > 0:
+        states = get_statelist(config.akmc_temperature / 11604.5)
+        movie.make_movie(options.movie_type, config.path_root, states)
         sys.exit(0)
 
     if options.print_status:
