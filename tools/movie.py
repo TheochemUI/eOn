@@ -38,9 +38,16 @@ def dynamics(path_results, path_states, movie_path, unique=False):
         atoms = io.loadcon(os.path.join(path_states, str(state), "reactant.con"))
         io.saveposcar(movie_path, atoms, 'a')
 
+def fastestpath(path_states, movie_path):
+    dirs = [ int(d) for d in os.listdir(path_states) if os.path.isdir(os.path.join(path_states,d)) ]
+    dirs = sorted(dirs)
+    num_states = dirs[-1]+1
+
+    
+
 if __name__ == "__main__":
     optpar = OptionParser(usage = "usage: %prog [options]")
-    optpar.add_option("-t", "--type", action="store", dest="type", default = "dynamics", help="specify the type of movie to make")
+    optpar.add_option("-t", "--type", action="store", dest="type", default = "dynamics", help="specify the type of movie to make valid options are dynamics, states, and fastestpath")
     (options, args) = optpar.parse_args()
 
     # XXX: evil
@@ -48,5 +55,7 @@ if __name__ == "__main__":
 
     if options.type == "dynamics":
         dynamics(config.path_results, config.path_states, "movie.poscar")
+    elif options.type == "fastestpath":
+        fastestpath(config.path_states, "movie.poscar")
     elif options.type == "states":
         dynamics(config.path_results, config.path_states, "movie.poscar", True)
