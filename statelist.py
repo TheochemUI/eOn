@@ -19,7 +19,7 @@ class StateList:
 
 
 
-    def __init__(self, state_path, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, use_identical, initial_state = None):
+    def __init__(self, state_path, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, use_identical, initial_state = None, list_search_results = False):
         ''' Check to see if state_path exists and that state zero exists.
             Initializes state zero when passed a initial_state only if state
             zero doesn't already exist. '''
@@ -32,6 +32,7 @@ class StateList:
         self.epsilon_e = epsilon_e
         self.epsilon_r = epsilon_r
         self.use_identical = use_identical
+        self.list_search_results = list_search_results
 
         # Paths
         self.state_table_path = os.path.join(self.path, "state_table")
@@ -46,7 +47,7 @@ class StateList:
         if not os.path.isdir(os.path.join(self.path, "0")):
             if initial_state == None:
                 raise IOError("Missing zeroth state directory and no reactant provided.")
-            state.State(os.path.join(self.path, "0"), 0, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, initial_state)
+            state.State(os.path.join(self.path, "0"), 0, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, initial_state, list_search_results = self.list_search_results)
 
         # Other class variables.
         self.states = {}
@@ -127,9 +128,7 @@ class StateList:
             # The id for the new state is the number of states.
             newstnr = self.get_num_states()
             # Create the new state object.
-            newst = state.State(self.state_path(newstnr), newstnr, self.kT, 
-                    self.thermal_window, self.max_thermal_window, self.epsilon_e, 
-                    self.epsilon_r, st.proc_product_path(process_id))
+            newst = state.State(self.state_path(newstnr), newstnr, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r, st.proc_product_path(process_id), list_search_results = self.list_search_results)
             self.register_process(st.number, newstnr, process_id)
             # Append the new state to the state table.
             self.append_state_table(st.procs[process_id]['product_energy'])
@@ -205,7 +204,7 @@ class StateList:
         ''' Returns a state object. '''
         if state_number in self.states:
             return self.states[state_number]
-        st = state.State(os.path.join(self.path, str(state_number)), state_number, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r)
+        st = state.State(os.path.join(self.path, str(state_number)), state_number, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r, list_search_results = self.list_search_results)
         self.states[state_number] = st
         return st
 
