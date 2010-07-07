@@ -13,7 +13,6 @@ import logging.handlers
 import numpy
 numpy.seterr(all='raise')
 import pickle
-import StringIO
 
 import locking
 import communicator
@@ -207,7 +206,16 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
     if os.path.isdir(config.path_searches_in):
         shutil.rmtree(config.path_searches_in)    
     os.makedirs(config.path_searches_in)
-    results = comm.get_results(config.path_searches_in) 
+    
+    #Function used by communicator to determine whether to discard a result
+    discarded = 0
+    def keep_result(name):
+        state_num = int(name.split("_")[0])
+        return (config.debug_register_extra_results or \
+                state_num == current_state.number or \
+                states.get_state(state_num).get_confidence() < config.akmc_confidence)
+
+    results = comm.get_results(config.path_searches_in, keep_result) 
     num_registered = 0
     for result in results:        
         # The result dictionary contains the following key-value pairs:
@@ -231,8 +239,6 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
             #     done in communicator?
             pass
         state_num = int(result['id'].split("_")[0])
-        if not config.debug_register_extra_results and state_num != current_state.number and states.get_state(state_num).get_confidence() >= config.akmc_confidence:
-            continue
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         result['type'] = searchdata[result['id'] + "type"]
@@ -255,7 +261,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
         num_registered += 1
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)
-    logger.info("%i results discarded", len(results) - num_registered)
+    #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
 
