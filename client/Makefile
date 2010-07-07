@@ -48,6 +48,9 @@ POTENTIALS += "+MORSE "
 POTDIRS += ./potentials/LennardJones/
 LIBS += ./potentials/LennardJones/libLJ.a
 POTENTIALS += "+LJ "
+#POTDIRS += ./potentials/EAM/
+#LIBS += ./potentials/EAM/libEAM.a
+#POTENTIALS += "+EAM"
 
 ifdef NO_FORTRAN
 	POTENTIALS += "-Aluminum "
