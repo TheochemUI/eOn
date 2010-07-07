@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\begin{document}
+\title{eOn Documentation}
+\maketitle
+\section{Getting the Code}
+The code is available to users with an account on theory.cm.utexas.edu. It can
+be checked out of the subversion repository with the following command:
+\begin{verbatim}
+    svn checkout svn+ssh://username@theory.cm.utexas.edu/Groups/svn/eon 
+\end{verbatim}
+This will fetch a copy of the latest code to a local directory eon.
+The work flow for making changes, after editing the files, is to first see what
+files you have modified:
+\begin{verbatim}
+    svn status
+\end{verbatim}
+This will give you a one line per changed file output of what you have done
+since you checked out the code. It is often a good idea to run:
+\begin{verbatim}
+    svn update
+\end{verbatim}
+next to make sure that no other developers have commited changes since you
+checked out your copy of the code you should run:
+\begin{verbatim}
+    svn update
+\end{verbatim}
+to get the latest copy of the code. It is possible that some other developer
+modified the same file in the same places that you have. This means that there
+will be some conflicts to resolve. This is a rare thing to happen and you
+should read the \href{http://svnbook.red-bean.com/en/1.5/index.html}{online documentation} to figure out how to handle it. Once you have seen what changes you have made with `svn status` and ensured that you have the latest version of the code with `svn update` you should commit your changes to the repository:
+\begin{verbatim}
+    svn commit -m "a brief message describing your changes"
+\end{verbatim}
+
+\section{Introduction}
+
+\section{Input Files}
+Three input files are required to run an akmc simulation. The config.ini file
+which sets the options for the server code. The parameters.dat file which is
+passed on to the client and the initial configuration of the chemical system to
+be modeled.
+
+\subsection{config.ini}
+
+\subsection{parameters.dat}
+
+\section{Output Files}
+
+\end{document}
