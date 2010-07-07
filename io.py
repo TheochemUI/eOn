@@ -9,6 +9,7 @@ import atoms
 def loadcon(filein):
     '''
     Load a con file
+        filein - may be either a filename or a file-like object
     '''
     if hasattr(filein, 'readline'):
         con = filein
@@ -65,7 +66,7 @@ def loadcon(filein):
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file
-        filename - name to save it under
+        fileout - can be either a file name or a file-like object
         p    - information (in the form of an atoms object) to save
         w        - write/append flag
     '''
@@ -108,6 +109,10 @@ def savecon(fileout, p, w = 'w'):
 
 
 def load_mode(modefilein):
+    ''' 
+    Reads a mode.dat file into an N by 3 numpy array
+        modefilein - may be either a file-like object of a filename
+    '''
     if hasattr(modefilein, 'readline'):
         f = modefilein
     else:
@@ -121,6 +126,12 @@ def load_mode(modefilein):
     return ret
 
 def save_mode(modefileout, displace_vector, reactant):
+    '''
+    Saves an Nx3 numpy array into a mode.dat file. 
+        modefileout - may be either a filename or file-like object
+        displace_vector - the mode (Nx3 numpy array)
+        reactant - an atoms object that this mode is from. This is used to determine which atoms are free
+    '''
     if hasattr(modefileout, 'write'):
         f = modefileout
     else:
@@ -134,7 +145,9 @@ def save_mode(modefileout, displace_vector, reactant):
 
 
 def save_results_dat(fileout, results):
-    '''Saves a results.dat file from a dictionary'''
+    '''
+    Saves a results.dat file from a dictionary
+    '''
     if hasattr(fileout, 'write'):
         f = fileout
     else:
@@ -144,8 +157,10 @@ def save_results_dat(fileout, results):
         print >> f, results[key], key
 
 def parse_results_dat(filein):
-    '''Reads a results.dat file and gives a dictionary of the values contained
-    therein'''
+    '''
+    Reads a results.dat file and gives a dictionary of the values contained
+    therein
+    '''
     if hasattr(filein, 'readline'):
         f = filein
     else:
