@@ -55,13 +55,13 @@ class ASKMC:
         # "checksb_barriers" will check to see if there are any low-barrier, unvisited processes
         # originating from states in the superbasin.
         # Default in the config:  On
-        # "checksb_connections" will implement a method to determine whether there are any missed
-        # connections between states identified as "in the superbasin".
-        # Default in the config:  Off
         if barrier_test_on:
             self.checksb_barriers = True
         else:
             self.checksb_barriers = False
+        # "checksb_connections" will implement a method to determine whether there are any missed
+        # connections between states identified as "in the superbasin".
+        # Default in the config:  Off
         if connection_test_on:
             self.checksb_connections = True
         else:
@@ -91,6 +91,7 @@ class ASKMC:
             barrier = current_state_procs[process_id]["barrier"]
             if barrier < lowest:
                 lowest = barrier
+        # Make the rate table.
         table = []
         for process_id in current_state_procs.keys():
             proc = current_state_procs[process_id]
