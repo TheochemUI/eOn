@@ -219,7 +219,7 @@ def register_results(comm, current_state, states, searchdata, kdber = None):
             #     done in communicator?
             pass
         state_num = int(result['id'].split("_")[0])
-        if not config.debug_register_extra_results and state_num != current_state.number:
+        if not config.debug_register_extra_results and state_num != current_state.number and states.get_state(state_num).get_confidence() >= config.akmc_confidence:
             continue
 
         # Store information about the search into result_data for the search_results.txt file in the state directory.
