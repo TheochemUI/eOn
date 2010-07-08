@@ -341,7 +341,7 @@ def kmc_step(current_state, states, time, kT):
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("currently in state %i with confidence %.3f", current_state.number, current_state.get_confidence())
+    logger.info("currently in state %i with confidence %.4f", current_state.number, current_state.get_confidence())
     dynamics_file.close()
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
@@ -403,10 +403,10 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 # Store the kdb suggestion in the state directory if config.kdb_keep is set.
-                if config.kdb_keep:
-                    if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
-                        os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
-                    shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
+#                if config.kdb_keep:
+#                    if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
+#                        os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
+#                    shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
         if not done:
             displacement, mode = disp.make_displacement() 
             if config.debug_list_search_results:                
@@ -503,7 +503,7 @@ if __name__ == '__main__':
         current_state = states.get_state(start_state_num)
         print "Current State"
         print "-------------"
-        print "Confidence: %.3f" % current_state.get_confidence()
+        print "Confidence: %.4f" % current_state.get_confidence()
         print "Unique Saddles:", current_state.get_unique_saddle_count()
         print "Good Saddles:", current_state.get_good_saddle_count()
         print "Bad Saddles:", current_state.get_bad_saddle_count()
