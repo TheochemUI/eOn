@@ -415,7 +415,7 @@ class Local(Communicator):
         #number of cpus to use
         self.ncpus = ncpus
         #path to the saddle search executable
-        self.client = client
+        self.client = os.path.abspath(client)
 
         self.searchlist = []
 
@@ -474,6 +474,7 @@ class Local(Communicator):
             #move the job directory to the scratch directory
             #update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
+            print self.client
             p = subprocess.Popen(self.client,cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)
             commands.getoutput("renice -n 20 -p %d" % p.pid)
