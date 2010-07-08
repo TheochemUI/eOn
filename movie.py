@@ -12,6 +12,17 @@ def make_movie(movie_type, path_root, states):
         atoms_list = fastestpath(path_root, states)
     elif movie_type == 'fastestfullpath':
         atoms_list = fastestpath(path_root, states, full=True)
+    elif movie_type == 'graph':
+        s = dot(path_root, states)
+        if os.path.isfile("graph.dot"):
+            print "file %s already exists" % "graph.dot"
+            sys.exit(1)
+        f = open("graph.dot",'w')
+        f.write(s)
+        f.close()
+        print "if you have graphviz installed:"
+        print "dot graph.dot -Tpng -o graph.png"
+        sys.exit(0)
     else:
         print "unknown MOVIE_TYPE"
         sys.exit(1)
@@ -40,6 +51,12 @@ def get_trajectory(trajectory_path, unique=False):
 
     return trajectory
 
+def dot(path_root, states):
+    trajectory_path = os.path.join(path_root, "dynamics.txt")
+    trajectory = get_trajectory(trajectory_path, True)
+    G = make_graph(trajectory, states) 
+    return G.dot()
+
 def dynamics(path_root, states, unique=False):
     trajectory_path = os.path.join(path_root, "dynamics.txt")
     trajectory = get_trajectory(trajectory_path, unique)
@@ -57,10 +74,7 @@ def dynamics(path_root, states, unique=False):
 
     return atoms_list
 
-def fastestpath(path_root, states, full=False):
-    trajectory_path = os.path.join(path_root, "dynamics.txt")
-    trajectory = get_trajectory(trajectory_path, True)
-
+def make_graph(trajectory, states):
     # Build the graph.
     G = Graph()
     for statenr in trajectory:
@@ -72,7 +86,12 @@ def fastestpath(path_root, states, full=False):
                 neighbor_state = states.get_state(p['product'])
                 G.add_node(neighbor_state)
                 G.add_edge(state, neighbor_state, weight=1.0/p['rate'])
+    return G
 
+def fastestpath(path_root, states, full=False):
+    trajectory_path = os.path.join(path_root, "dynamics.txt")
+    trajectory = get_trajectory(trajectory_path, True)
+    G = make_graph(trajectory, states) 
 
     state_list = [states.get_state(0)]
     if full:
@@ -109,6 +128,18 @@ class Graph:
     def __init__(self, name=""):
         self.name = name
         self.graph = {}
+
+    def __repr__(self):
+        return str(self.graph)
+
+    def dot(self):
+        s = "graph akmc {\n"
+        for node,vertexdict in self.graph.iteritems():
+            vertexlist = vertexdict.keys()
+            for vertex in vertexlist:
+                s += "%s -- %s;\n" % (node.number, vertex.number)
+        s += "}\n"
+        return s
 
     def add_node(self, node):
         if node not in self.graph:
