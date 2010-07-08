@@ -17,6 +17,8 @@ class Atoms:
         self.names = ['']*n_atoms
 
     def __len__(self):
+        '''
+        Returns the number of atoms in the object'''
         return len(self.r)
         
     def copy(self):
@@ -33,6 +35,7 @@ def pbc(r, box, ibox = None):
     Parameters:
         r:      the vector the boundary conditions are applied to
         box:    the box that defines the boundary conditions
+        ibox:   the inverse of the box. This will be calcluated if not provided.
     """
     if ibox == None:    
         ibox = numpy.linalg.inv(box)
@@ -41,15 +44,34 @@ def pbc(r, box, ibox = None):
     return numpy.dot(vdir, box)
 
 def per_atom_norm(v, box, ibox = None):
+    '''
+    Returns a length N numpy array containing per atom distance
+        v:      an Nx3 numpy array
+        box:    box matrix that defines the boundary conditions
+        ibox:   the inverse of the box. will be calculated if not provided
+    '''
     diff = pbc(v, box, ibox)
     return numpy.array([numpy.linalg.norm(d) for d in diff])
 
 def per_atom_norm_gen(v, box, ibox = None):
+    '''
+    Returns a generator which yields the distance between pairs of atoms
+        v:      an Nx3 numpy array
+        box:    box matrix that defines the boundary conditions
+        ibox:   the inverse of the box. will be calculated if not provided
+    '''
     diff = pbc(v, box, ibox)
     for d in diff:
         yield numpy.linalg.norm(d)
 
 def identical(atoms1, atoms2, epsilon_r):
+    '''
+    Determines whether two structures are identical if atoms of the same element are
+    considered indistinguishable.
+        atoms1:     first atoms object for comparison
+        atoms2:     second atoms object for comparison
+        epsilon_r:  distance (in angstroms) that two atoms must be seperated by in order to be considered different
+    '''
     #XXX: n^2
     if len(atoms1) != len(atoms2):
         return False
