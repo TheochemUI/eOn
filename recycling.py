@@ -10,10 +10,10 @@ class Recycling:
         '''
         Constructs a saddle point recycling object.
         
-        prev_state - state to make suggestions from
-        curr_state - state to make suggestions for
-        move_distance - distance an atom must to be in the "hole"
-        start_process_number - number of the process to start from in prev_state
+            prev_state:           state to make suggestions from
+            curr_state:           state to make suggestions for
+            move_distance:        distance an atom must to be in the "hole"
+            start_process_number: number of the process to start from in prev_state
         '''
         
         self.prev_state = prev_state
@@ -34,7 +34,7 @@ class Recycling:
                 self.not_in_hole.append(i)
 
     def make_suggestion(self):
-        '''Makes a saddle suggestion and returns True. If no more saddle suggestions are possible (end of rate table has been reached), returns False'''
+        '''Makes a saddle suggestion and returns a displacement and a mode. If no more saddle suggestions are possible (end of rate table has been reached), returns None,None'''
         if self.process_num >= len(self.id_list):
             return None, None
         
