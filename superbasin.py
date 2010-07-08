@@ -69,29 +69,24 @@ class Superbasin:
         rate_table = []
         ratesum = 0.0
         process_table=exit_state.get_process_table()
-        # The index of a process in process_table is different from the one it has in rate_table
-        # because the processes internal to the sub-space are not present in rate_table.
-        process_indices=list() # key=index in rate_table; return index in process_table
-        index=0
-        for process in process_table.values():
+        for proc_id in process_table:
+            process = process_table[proc_id]
             if process['product'] not in self.state_numbers:
-                rate_table.append(process['rate'])
+                rate_table.append([proc_id, process['rate']])
                 ratesum += process['rate']
-                process_indices.append(index)
-            index+=1
         
         p = 0.0
         u = numpy.random.random_sample()
         for i in range(len(rate_table)):
-            p += rate_table[i]/ratesum
+            p += rate_table[i][1]/ratesum
             if p>=u:
-                exit_process_index = process_indices[i] 
+                exit_process_index = rate_table[i][0]
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
-        exit_state = get_product_state(entry_state.number, exit_process_index)
+        absorbing_state = get_product_state(exit_state.number, exit_process_index)
         assert(time >= 0.0)
-        return time, exit_state
+        return time, absorbing_state
 
     def contains_state(self, state):
         return state in self.states
