@@ -114,6 +114,7 @@ class State:
             self.set_energy(resultdata["potential_energy_reactant"])
 
         # Calculate the forward barrier for this process, and abort if the energy is too high.
+        oldlowest = self.get_lowest_barrier()
         barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
         lowest = self.update_lowest_barrier(barrier)
         ediff = (barrier - lowest) - (self.kT * self.max_thermal_window)
@@ -144,7 +145,7 @@ class State:
 
         # This appears to be a unique process.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
-        if barrier == lowest:
+        if barrier == lowest and barrier < oldlowest - self.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
 
         
