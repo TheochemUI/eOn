@@ -355,11 +355,11 @@ class State:
         self.save_info()        
     
     def get_confidence(self):
-        Ns = max(1.0, float(self.get_number_searches()))
+        Ns = float(self.get_number_searches())
         Nf = float(len(self.get_ratetable()))
-        if Nf < 1:
+        if Nf < 1 or Ns < 1:
             return 0.0
-        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0/(Nf/Ns))/(Nf/Ns))
+        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
 
     def get_energy(self):
         """ Loads the info file if it is not already loaded and returns the energy, or None
