@@ -95,6 +95,7 @@ if kdb_on:
 #Recycling
 recycling_on = parser.getboolean('Recycling', 'use_recycling')
 recycling_move_distance = parser.getfloat('Recycling', 'move_distance')
+sb_recycling_on = parser.getboolean('Recycling','use_sb_recycling')
 
 #Random Displacement
 disp_type = parser.get('Displacement', 'type')
