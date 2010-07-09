@@ -79,7 +79,8 @@ int main(int argc, char **argv)
             // While we can read in the displacement and mode files, perform a saddle search on them.
             while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
             {
-                doSaddleSearch();
+                try{doSaddleSearch();}
+                catch(int except){}
                 parameters.resetForceCalls();
                 parameters.resetForceCallsSaddlePoint();
                 parameters.resetForceCallsPrefactors(); 
