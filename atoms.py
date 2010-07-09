@@ -29,6 +29,9 @@ class Atoms:
         p.names = self.names[:]
         return p
 
+    def __deepcopy__(self):
+        return self.copy()
+
 def pbc(r, box, ibox = None):
     """
     Applies periodic boundary conditions.
@@ -42,7 +45,7 @@ def pbc(r, box, ibox = None):
     vdir = numpy.dot(r, ibox)
     vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
     return numpy.dot(vdir, box)
-
+    
 def per_atom_norm(v, box, ibox = None):
     '''
     Returns a length N numpy array containing per atom distance
