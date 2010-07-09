@@ -68,6 +68,8 @@ class Superbasin:
         #make a rate table for the exit state
         rate_table = []
         ratesum = 0.0
+        
+        #XXX: Only process in the thermally accesbile window should be on this rate table
         process_table=exit_state.get_process_table()
         for proc_id in process_table:
             process = process_table[proc_id]
