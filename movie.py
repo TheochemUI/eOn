@@ -124,6 +124,15 @@ def get_fastest_process_id(state1, state2):
                 fastest = (i, p['rate'])
     return fastest[0]
 
+def get_fastest_process_rate(state1, state2):
+    ptable = state1.get_process_table()
+    fastest = None
+    for i,p in ptable.iteritems():
+        if p['product'] == state2.number:
+            if not fastest or fastest[1] < p['rate']:
+                fastest = (i, p['rate'])
+    return fastest[1]
+
 class Graph:
     def __init__(self, name=""):
         self.name = name
@@ -133,11 +142,11 @@ class Graph:
         return str(self.graph)
 
     def dot(self):
-        s = "graph akmc {\n"
-        for node,vertexdict in self.graph.iteritems():
-            vertexlist = vertexdict.keys()
-            for vertex in vertexlist:
-                s += "%s -- %s;\n" % (node.number, vertex.number)
+        s = "digraph akmc {\n"
+        for node,edgedict in self.graph.iteritems():
+            edgelist = edgedict.keys()
+            for edge in edgelist:
+                s += "%s -> %s;\n" % (node.number, edge.number)
         s += "}\n"
         return s
 
