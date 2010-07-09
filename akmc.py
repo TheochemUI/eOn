@@ -320,7 +320,10 @@ def kmc_step(current_state, states, time, kT):
                 break
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
-        time -= mean_time*math.log(1-numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
+        if config.debug_use_mean_time:
+            time += mean_time
+        else:
+            time -= mean_time*math.log(1-numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
         if config.askmc_on:
             asKMC.register_transition(current_state, next_state)
         if config.sb_on:
