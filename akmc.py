@@ -49,11 +49,6 @@ def main():
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
 
-    # If recycling is being used, initialize it.
-    if config.recycling_on:
-        recycling_start, previous_state_num = get_recycling_metadata()
-        previous_state = states.get_state(previous_state_num)
-    
     # If kdb is being used, initialize it.
     if config.kdb_on:
         kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
@@ -63,7 +58,7 @@ def main():
 
     # Handle any results returned through the communicator.
     if config.kdb_on:
-        pass_kdb = kdber          	
+        pass_kdb = kdber
     else:
         pass_kdb = None
     register_results(comm, current_state, states, searchdata, kdber = pass_kdb)
@@ -80,8 +75,8 @@ def main():
     
     # Create new work.
     if config.recycling_on:
-        recycler = recycling.Recycling(previous_state, current_state, 
-                        config.recycling_move_distance, recycling_start)
+        recycler = recycling.Recycling(states, previous_state, current_state, 
+                        config.recycling_move_distance)
     
     if current_state.get_confidence() < config.akmc_confidence:
         if config.recycling_on:
@@ -105,8 +100,6 @@ def main():
 
     write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
 
-    if config.recycling_on:
-        write_recycling_metadata(parser, recycler.process_num, previous_state.number)
     parser.write(open(metafile, 'w')) 
 
 def get_akmc_metadata():
@@ -163,23 +156,6 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     if config.debug_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
-
-def get_recycling_metadata():
-    metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.SafeConfigParser() 
-    try:
-        parser.read(metafile)
-        recycling_start = parser.getint('Recycling', 'start_process_id')
-        previous_state_num = parser.getint('Recycling', 'previous_state')
-    except:
-        recycling_start = 0
-        previous_state_num = 0 
-    return recycling_start, previous_state_num
-
-def write_recycling_metadata(parser, recycling_start, previous_state_num):
-    parser.add_section('Recycling')
-    parser.set('Recycling', 'previous_state',str(previous_state_num))  
-    parser.set('Recycling', 'start_process_id',str(recycling_start)) 
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
@@ -288,7 +264,7 @@ def kmc_step(current_state, states, time, kT):
         superbasining = get_superbasin_scheme(states)
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
-        asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_alpha, config.askmc_gamma, config.askmc_barrier_test_on, config.askmc_connections_test_on, config.path_root, config.akmc_thermal_window)
+        asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_alpha, config.askmc_gamma, config.askmc_barrier_test_on, config.askmc_connections_test_on, config.sb_recycling_on, config.path_root, config.akmc_thermal_window)
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
         if config.sb_on:
@@ -386,7 +362,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         done = False
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
         if (config.recycling_on and current_state.number is not 0):
-            displacement, mode = recycler.make_suggestion()
+            displacement, mode = recycler.make_suggestion()[0:2]
             if displacement:
                 logger.debug('Recycled a saddle')
                 if config.debug_list_search_results:                
