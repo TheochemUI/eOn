@@ -96,7 +96,8 @@ void helper_functions::copyRightIntoLeft(double *result, const double *v1,
 
 void helper_functions::normalize(double *v1, long size){
     double const norm=length(v1, size);
-    assert(norm != 0.0);
+    //XXX: dirty hack while waiting for merge
+    if(norm == 0.0){throw 14323;}
     divideScalar(v1, v1, norm, size);
     return;
 }
