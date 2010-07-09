@@ -266,13 +266,17 @@ def loadposcar(filein):
     return p    
 
 
-def saveposcar(filename, p, w='w', direct = False):
+def saveposcar(fileout, p, w='w', direct = False):
     '''
     Save a POSCAR
-        filename: name to save it under
+        fileout: name to save it under
         point:    atoms object to save
         w:        write/append flag
-    '''
+    ''' 
+    if hasattr(fileout, 'write'):
+        poscar = fileout
+    else:
+        poscar = open(fileout, w)
     atom_types = []
     num_each_type = {}
     for name in p.names:
@@ -281,7 +285,6 @@ def saveposcar(filename, p, w='w', direct = False):
             num_each_type[name] = 1
         else:
             num_each_type[name] += 1
-    poscar = open(filename, w)
     print >> poscar, " ".join(atom_types) #Line 1: Atom types
     print >> poscar, 1.0 #Line 2: scaling
     for i in range(3):
