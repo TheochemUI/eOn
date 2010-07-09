@@ -106,10 +106,14 @@ if disp_type == 'undercoordinated':
 
 #Superbasins
 sb_on = parser.getboolean('Superbasins', 'use_superbasins')
-sb_scheme = parser.get('Superbasins', 'scheme')
-if sb_scheme == 'transition_counting':
-    sb_tc_ntrans = parser.getint('Superbasins', 'number_of_transitions')
+if sb_on:
     sb_path = parser.get('Paths', 'superbasins')
+    sb_scheme = parser.get('Superbasins', 'scheme')
+    if sb_scheme == 'transition_counting':
+        sb_tc_ntrans = parser.getint('Superbasins', 'number_of_transitions')
+    elif sb_scheme == 'energy_level':
+        sb_el_energy_increment = parser.getfloat('Superbasins', 'energy_increment')
+
 askmc_on = parser.getboolean('Superbasins','use_askmc')
 askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
 askmc_alpha = parser.getfloat('Superbasins','askmc_barrier_raise_param')

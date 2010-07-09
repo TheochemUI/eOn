@@ -141,8 +141,8 @@ class EnergyLevel(SuperbasinScheme):
 
     def __init__(self, superbasin_path, states, kT, energy_increment):
         self.energy_increment = energy_increment
-        SuperbasinScheme.__init__(self,superbasin_path, states, kT)
         self.levels = {}
+        SuperbasinScheme.__init__(self,superbasin_path, states, kT)
 
     def get_energy_increment(self):
         # implement variable increment according to JC paper
@@ -151,6 +151,9 @@ class EnergyLevel(SuperbasinScheme):
     def register_transition(self, start_state, end_state):
         '''Increments the energy level of the end state or sets it equal to the energy 
            of the end_state if it hasn't been visited before.'''
+        if start_state not in self.levels:
+            self.levels[start_state] = start_state.get_energy()
+        
         if start_state == end_state:
             return
         sb = self.get_containing_superbasin(end_state)
@@ -160,20 +163,20 @@ class EnergyLevel(SuperbasinScheme):
             up_states = sb.states
         for i in up_states:
             if i not in self.levels:
-                self.levels[i] = i.get_energy()
+                self.levels[i] = i.get_energy() + self.get_energy_increment()
             else:
-                self.levels[i] += self.energy_increment()
+                self.levels[i] += self.get_energy_increment()
 
         #saddle energy is the total energy of the saddle
         largest_level = max(self.levels[start_state], self.levels[end_state])
        
-        barrier = 0.0
+        barrier = 1e200
         proc_tab = start_state.get_process_table()
         for key in proc_tab:
-            if proc_tab[key][product] == end_state.number:
+            if proc_tab[key]['product'] == end_state.number:
                 barrier = min(proc_tab[key]['barrier'], barrier)
         
-        if barrier == 0.0:
+        if barrier > 1e199:
             logger.warning("Start and end state have no connections")
             return
         
@@ -181,7 +184,10 @@ class EnergyLevel(SuperbasinScheme):
         if largest_level > saddle_energy:
             self.levels[start_state] = largest_level 
             self.levels[end_state] = largest_level 
-            self.merge_basin([start_state, end_state])
+            if sb:
+                for i in sb.states:
+                    self.levels[i] = largest_level
+            self.make_basin([start_state, end_state])
 
 
     def read_data(self):
@@ -197,7 +203,7 @@ class EnergyLevel(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for i in self.levels:
-            data_path = os.path.join(start_state.path, 'superbasin_el')
+            data_path = os.path.join(i.path, 'superbasin_el')
             f = open(data_path, 'w')
             print >> f, "%f\n" % self.levels[i]
             f.close()
