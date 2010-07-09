@@ -1,7 +1,6 @@
 import atoms
 import io
 import os.path
-import copy
 import atexit
 
 import numpy
@@ -12,7 +11,7 @@ import numpy
 #        states - the statelist object
 #        sb_state_list - the list of states in the superbasin exited from
 #        current_state - the state just moved to
-#        move_didstance - distance an atom must move to be in the "hole"
+#        move_didstance - distance an atom must move to be in the 'hole'
 #    """
 #
 #    def __init__(self, states, sb_state_list, previous_state, current_state, move_distance):
@@ -72,7 +71,7 @@ class Recycling:
         # The saddle and mode are taken as the reactant
         # and will be modified for each suggested process
         # and then recommended as a search.
-        self.saddle = copy.deepcopy(curr_reactant)
+        self.saddle = curr_reactant.copy()
         self.mode = numpy.zeros((len(curr_reactant), 3))
         self.in_hole = []
         self.not_in_hole = []
@@ -100,13 +99,12 @@ class Recycling:
             self.saddle.r[i] = process_saddle.r[i]
             self.mode[i] = process_mode[i]
         
-        #XXX: These should be returned, but akmc.py depends on the true/false return
 
         self.process_number += 1
         # Note: Uncomment the final return values to also return the list of indices of atoms
         # which are not in the hole and in the hole.  No change should need to be made to the
         # line in akmc.py which calls this function.
-        return copy.deepcopy(self.saddle), copy.deepcopy(self.mode)#, self.not_in_hole, self.in_hole
+        return self.saddle.copy(), self.mode.copy()#, self.not_in_hole, self.in_hole
     
     def read_recycling_metadata(self):
         """ Open the recycling metadata file located in the current state's directory.
