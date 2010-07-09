@@ -29,11 +29,11 @@ class Atoms:
         p.names = self.names[:]
         return p
 
-    def free(self):
+    def free_r(self):
         nfree = sum(self.free)
-        temp = numpy.array((nfree, 3))
+        temp = numpy.zeros((nfree, 3))
         index = 0
-        for i in range(self.n_atoms)):
+        for i in range(len(self.r)):
             if self.free[i]:
                 temp[index] = self.r[i]
                 index += 1

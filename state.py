@@ -131,9 +131,11 @@ class State:
         # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
         if len(energetically_close) > 0:
             p0 = result["saddle"]
+            ibox = numpy.linalg.inv(p0.box)
             for id in energetically_close:
                 p1 = io.loadcon(self.proc_saddle_path(id))
-                for dist in atoms.per_atom_norm_gen(p1.r - p0.r, p1.box):
+                
+                for dist in atoms.per_atom_norm_gen(p1.free_r() - p0.free_r(), p1.box, ibox):
                     if dist > self.epsilon_r:
                         break
                 else:
