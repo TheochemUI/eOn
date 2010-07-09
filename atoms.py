@@ -29,8 +29,15 @@ class Atoms:
         p.names = self.names[:]
         return p
 
-    def __deepcopy__(self):
-        return self.copy()
+    def free(self):
+        nfree = sum(self.free)
+        temp = numpy.array((nfree, 3))
+        index = 0
+        for i in range(self.n_atoms)):
+            if self.free[i]:
+                temp[index] = self.r[i]
+                index += 1
+        return temp
 
 def pbc(r, box, ibox = None):
     """
