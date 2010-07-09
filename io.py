@@ -205,72 +205,64 @@ def parse_results_dat(filein):
     return results
 
 
-def loadposcar(filename):
+def loadposcar(filein):
     '''
     Load the POSCAR file named filename
     Returns an atoms object
     '''
-    f = open(filename, 'r')
-    lines = f.readlines()
-    f.close()
-    line_index = 0
-    while line_index < len(lines):
-        # Line 1: Atom types
-        AtomTypes = lines[line_index].split() 
-        # Line 2: scaling of coordinates
-        line_index += 1
-        scale = float(lines[line_index]) 
-        # Lines 3-5: the box
-        line_index += 1
-        box = numpy.zeros((3, 3))
-        for i in range(3):
-            line = lines[line_index].split()
-            line_index += 1
-            box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-        # Line 6: number of atoms of each type. 
-        line = lines[line_index].split()
-        line_index += 1
-        NumAtomsPerType = []
-        for l in line:
-            NumAtomsPerType.append(int(l))
-        # Now have enough info to make the atoms object.
-        num_atoms = sum(NumAtomsPerType)
-        p = atoms.Atoms(num_atoms)
-        # Fill in the box.
-        p.box = box
-        # Line 7: selective or cartesian
-        sel = lines[line_index][0]
-        line_index += 1
-        selective_flag = (sel == 's' or sel == 'S')
-        if not selective_flag: 
-            car = sel
-        else: 
-            car = lines[line_index][0]
-            line_index += 1
-        direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
-        atom_index = 0
-        for i in range(len(NumAtomsPerType)):
-            for j in range(NumAtomsPerType[i]):
-                p.names[atom_index] = AtomTypes[i]
-                line = lines[line_index].split()
-                line_index += 1
-                if(selective_flag): 
-                    assert len(line) >= 6
-                else: 
-                    assert len(line) >= 3
-                pos = line[0:3]
-                if selective_flag:
-                    sel = line[3:7]
-                    if sel[0] == 'T' or sel[0] == 't': 
-                        p.free[atom_index] = 1
-                    elif sel[0] == 'F' or sel[0] == 'f':
-                        p.free[atom_index] = 0
-                p.r[atom_index] = numpy.array([float(f) for f in pos])
-                if direct_flag:
-                    p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
-                else: 
-                    p.r[atom_index] *= scale
-                atom_index += 1
+    if hasattr(filein, 'readline'):
+        f = filein
+    else:
+        f = open(filein, 'r')
+    # Line 1: Atom types
+    AtomTypes = f.readline().split() 
+    # Line 2: scaling of coordinates
+    scale = float(f.readline()) 
+    # Lines 3-5: the box
+    box = numpy.zeros((3, 3))
+    for i in range(3):
+        line = f.readline().split()
+        box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
+    # Line 6: number of atoms of each type. 
+    line = f.readline().split()
+    NumAtomsPerType = []
+    for l in line:
+        NumAtomsPerType.append(int(l))
+    # Now have enough info to make the atoms object.
+    num_atoms = sum(NumAtomsPerType)
+    p = atoms.Atoms(num_atoms)
+    # Fill in the box.
+    p.box = box
+    # Line 7: selective or cartesian
+    sel = f.readline()[0]
+    selective_flag = (sel == 's' or sel == 'S')
+    if not selective_flag: 
+        car = sel
+    else: 
+        car = f.readline()[0]
+    direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
+    atom_index = 0
+    for i in range(len(NumAtomsPerType)):
+        for j in range(NumAtomsPerType[i]):
+            p.names[atom_index] = AtomTypes[i]
+            line = f.readline().split()
+            if(selective_flag): 
+                assert len(line) >= 6
+            else: 
+                assert len(line) >= 3
+            pos = line[0:3]
+            if selective_flag:
+                sel = line[3:7]
+                if sel[0] == 'T' or sel[0] == 't': 
+                    p.free[atom_index] = 1
+                elif sel[0] == 'F' or sel[0] == 'f':
+                    p.free[atom_index] = 0
+            p.r[atom_index] = numpy.array([float(q) for q in pos])
+            if direct_flag:
+                p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
+            else: 
+                p.r[atom_index] *= scale
+            atom_index += 1
     return p    
 
 
