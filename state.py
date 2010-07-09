@@ -320,13 +320,14 @@ class State:
         self.save_info()        
 
     def get_ns_barriers(self):
-        if self.ns_barriers is not None:
-            return self.ns_barriers
         self.load_info()
-        try:
-            temp = eval(self.info.get("MetaData", "ns barriers"))
-        except:
-            temp = []
+        if self.ns_barriers is None:
+            try:
+                temp = eval(self.info.get("MetaData", "ns barriers"))
+            except:
+                temp = []
+        else:
+            temp = self.ns_barriers[:]
         lowest = self.get_lowest_barrier()
         self.ns_barriers = []
         for nsb in temp:
