@@ -251,7 +251,7 @@ def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
-        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
+        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_el_energy_increment)
     return superbasining
 
 def kmc_step(current_state, states, time, kT):
@@ -398,11 +398,13 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         searches.append(search) 
         wuid += 1
 
-    comm.submit_searches(searches, current_state.reactant_path, parameters_path)
-    t2 = unix_time.time()
-    logger.info( str(num_to_make) + " searches created") 
-    logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
-    
+    try:
+        comm.submit_searches(searches, current_state.reactant_path, parameters_path)
+        t2 = unix_time.time()
+        logger.info( str(num_to_make) + " searches created") 
+        logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
+    except:
+        logger.error("Failed to submit searches.")
     return wuid
 
 #-------------------------------------------------------------------------------------------
