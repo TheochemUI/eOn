@@ -93,6 +93,8 @@ def identical(atoms1, atoms2, epsilon_r):
     for i in range(len(pan)):
         if pan[i] > epsilon_r:
             mismatch.append(i)
+        elif atoms1.names[i] != atoms2.names[i]:
+            return False
     
     for i in mismatch:
         pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
@@ -102,7 +104,7 @@ def identical(atoms1, atoms2, epsilon_r):
             if i == j:
                 continue
             minpan = min(minpan, pan[j])
-        if not minpan < epsilon_r:
+        if not (minpan < epsilon_r and atoms1.names[j] == atoms2.names[i]):
             return False
 
     return True
