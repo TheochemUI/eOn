@@ -2,7 +2,6 @@ import os
 import numpy
 import atoms
 import io
-import copy
 
 class NotImplementedError(Exception):
     pass
@@ -44,7 +43,7 @@ class Displace:
             #random number with a standard deviation of self.std_dev.
             displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
         
-        displacement_atoms = copy.deepcopy(self.reactant)
+        displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
         return displacement_atoms, displacement
 
