@@ -54,6 +54,7 @@ class State:
         # Lazily loaded data. Should use the get/set methods for these.
         self.info = None
         self.procs = None
+        self.ns_barriers = None
 
         # If this state does not exist on disk, create it.
         if not os.path.isdir(self.path):
@@ -103,8 +104,6 @@ class State:
     def add_process(self, result):
         """ Adds a process to this State. """
         
-        self.increment_number_searches()
-
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
         
         resultdata = result["results"] #The information from the result.dat file
@@ -141,13 +140,13 @@ class State:
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
                     self.append_search_result(result, "repeat-%d" % id)
+                    self.append_ns_barrier(barrier)
                     return None
 
         # This appears to be a unique process.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
-
         
         # Update the search result table according to the barrier.
         ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
@@ -156,6 +155,8 @@ class State:
         else:
             self.append_search_result(result, "barrier > thermal_window")
 
+        # Keep track of the number of searches, Ns.
+        self.append_ns_barrier(barrier)
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
@@ -251,27 +252,9 @@ class State:
                 table.append((id, proc['rate']))
         return table
 
-
-
     def get_process_ids(self):
         """ Returns the list of ids in the rate table. """
         return [b[0] for b in self.get_ratetable()]
-
-
-    def get_number_searches(self):
-        self.load_info()
-        try:
-            ns = self.info.getint("MetaData", "num searches")
-        except:
-            ns = 0
-            self.info.set("MetaData", "num searches", "0")
-            self.save_info()
-        return ns
-        
-    def increment_number_searches(self):
-        ns = self.get_number_searches() + 1        
-        self.info.set("MetaData", "num searches", str(ns))
-        self.save_info()
 
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
@@ -294,8 +277,6 @@ class State:
             return self.info.getfloat("MetaData", "lowest barrier")
         except:
             return 1e300
-    
-
 
     def get_num_procs(self):
         """ Loads the process table if it is not already loaded and returns the length of it """
@@ -336,6 +317,30 @@ class State:
         self.info.set("MetaData", "good_saddles", "%d" % num)
         self.save_info()        
 
+    def get_ns_barriers(self):
+        if self.ns_barriers is not None:
+            return self.ns_barriers
+        self.load_info()
+        try:
+            temp = eval(self.info.get("MetaData", "ns barriers"))
+        except:
+            temp = []
+        lowest = self.get_lowest_barrier()
+        self.ns_barriers = []
+        for nsb in temp:
+            if nsb <= lowest + (self.kT * self.thermal_window):
+                self.ns_barriers.append(nsb)
+        return self.ns_barriers
+
+    def set_ns_barriers(self, nsBarriers):
+        self.ns_barriers = nsBarriers
+        self.load_info()
+        self.info.set("MetaData", "ns barriers", "%s" % repr(self.ns_barriers))
+        self.save_info()
+        
+    def append_ns_barrier(self, barrier):
+        self.set_ns_barriers(self.get_ns_barriers() + [barrier])
+    
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
     
@@ -356,7 +361,7 @@ class State:
         self.save_info()        
     
     def get_confidence(self):
-        Ns = float(self.get_number_searches())
+        Ns = float(len(self.get_ns_barriers()))
         Nf = float(len(self.get_ratetable()))
         if Nf < 1 or Ns < 1:
             return 0.0
