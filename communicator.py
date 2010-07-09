@@ -414,11 +414,24 @@ class Local(Communicator):
 
         #number of cpus to use
         self.ncpus = ncpus
+
         #path to the saddle search executable
         if '/' in client:
             self.client = os.path.abspath(client)
+            if not os.path.isfile(self.client):
+                logger.error("can't find client: %s", client)
+                raise CommunicatorError("Can't find client binary: %s"%client)
         else:
-            self.client = client
+            #is the client in the local directory?
+            if os.path.isfile(client):
+                self.client = os.path.abspath(client)
+            #is the client in the path?
+            elif any([ os.path.isfile(os.path.join(d, client)) for d in 
+                       os.environ['PATH'].split(':') ]):
+                self.client = client
+            else:
+                logger.error("can't find client: %s", client)
+                raise CommunicatorError("Can't find client binary: %s"%client)
 
         self.searchlist = []
 
