@@ -415,7 +415,10 @@ class Local(Communicator):
         #number of cpus to use
         self.ncpus = ncpus
         #path to the saddle search executable
-        self.client = os.path.abspath(client)
+        if '/' in client:
+            self.client = os.path.abspath(client)
+        else:
+            self.client = client
 
         self.searchlist = []
 
