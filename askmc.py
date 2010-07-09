@@ -21,7 +21,7 @@ class ASKMC:
         performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
-    def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, path_root, thermal_window):
+    def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, sb_recycling_on, path_root, thermal_window):
         self.kT = kT
         self.Beta = 1/(kT)
         self.path = path_root
