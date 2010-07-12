@@ -12,6 +12,22 @@ def make_movie(movie_type, path_root, states):
         atoms_list = fastestpath(path_root, states)
     elif movie_type == 'fastestfullpath':
         atoms_list = fastestpath(path_root, states, full=True)
+    elif movie_type.split(',')[0] == 'processes':
+        try:
+            statenr = int(movie_type.split(',')[1])
+        except ValueError:
+            print "process number must be an integer"
+            sys.exit(1)
+        except IndexError:
+            print "must give a process number"
+            sys.exit(1)
+        print "making process movie for state %i" % statenr
+        if len(movie_type.split(',')) > 2:
+            limit = int(movie_type.split(',')[2])
+        else:
+            limit = 0
+
+        atoms_list = processes(states, statenr, limit)
     elif movie_type == 'graph':
         s = dot(path_root, states)
         if os.path.isfile("graph.dot"):
@@ -50,6 +66,28 @@ def get_trajectory(trajectory_path, unique=False):
         trajectory = list(set(trajectory))
 
     return trajectory
+
+def processes(states, statenr, limit):
+    state = states.get_state(statenr)
+
+    process_table = state.get_process_table()
+    for k,v in process_table.iteritems():
+        process_table[k]['reactant'] = state.get_process_reactant(k)
+        process_table[k]['saddle'] = state.get_process_saddle(k)
+        process_table[k]['product'] = state.get_process_product(k)
+    processes = process_table.values()
+    sorted_processes = sorted(processes, key=lambda a: a['rate'])
+    sorted_processes.reverse()
+
+    atoms_list = []
+    for p in sorted_processes:
+        atoms_list.append(p['reactant'])
+        atoms_list.append(p['saddle'])
+        atoms_list.append(p['product'])
+        limit -= 1
+        if limit == 0:
+            break
+    return atoms_list
 
 def dot(path_root, states):
     trajectory_path = os.path.join(path_root, "dynamics.txt")
