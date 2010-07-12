@@ -352,6 +352,8 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
 
     
     t1 = unix_time.time()
+    if config.recycling_on:
+        nrecycled = 0
     for i in range(num_to_make):
         search = {}
         # The search dictionary contains the following key-value pairs:
@@ -364,7 +366,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         if (config.recycling_on and current_state.number is not 0):
             displacement, mode = recycler.make_suggestion()[0:2]
             if displacement:
-                logger.debug('Recycled a saddle')
+                nrecycled += 1
                 if config.debug_list_search_results:                
                     try:
                         searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
@@ -398,6 +400,9 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         search['mode'] = mode
         searches.append(search) 
         wuid += 1
+
+    if config.recycling_on and nrecycled > 0:
+        logger.debug("Recycled %i saddles" % nrecycled)
 
     try:
         comm.submit_searches(searches, current_state.reactant_path, parameters_path)
