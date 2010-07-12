@@ -76,17 +76,23 @@ class KDB:
             sp.wait()
 
 
-    def make_suggestion(self):
+    def make_suggestion(self, keep_path = None):
         if os.path.isdir(os.path.join(self.path, "kdbmatches")):
             dones = glob.glob(os.path.join(self.path, "kdbmatches",".done_*"))
             if len(dones) > 0:
                 number = dones[0].split("_")[1]
                 displacement = io.loadposcar(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
                 mode = [[float(i) for i in l.strip().split()] for l in open(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
-                
-                os.remove(os.path.join(self.path, "kdbmatches", ".done_%s" % number))
-                os.remove(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
-                os.remove(os.path.join(self.path, "kdbmatches", "MODE_%s" % number))
+                if keep_path is not None:
+                    if not os.path.isdir(keep_path):
+                        os.mkdir(keep_path)
+                    shutil.move(os.path.join(self.path, "kdbmatches", ".done_%s" % number), os.path.join(keep_path, ".done_%s" % number))
+                    shutil.move(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number), os.path.join(keep_path, "SADDLE_%s" % number))
+                    shutil.move(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), os.path.join(keep_path, "MODE_%s" % number))
+                else:
+                    os.remove(os.path.join(self.path, "kdbmatches", ".done_%s" % number))
+                    os.remove(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
+                    os.remove(os.path.join(self.path, "kdbmatches", "MODE_%s" % number))
                 return displacement, mode
         return None, None
                 

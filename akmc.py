@@ -372,7 +372,13 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 done = True
         if not done and config.kdb_on:
-            displacement, mode = kdber.make_suggestion()
+            # Set up the path for keeping the suggestion if config.kdb_keep is set.
+            keep_path = None
+            if config.kdb_keep:
+                if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
+                    os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
+                keep_path = os.path.join(current_state.path, "kdbsuggestions", str(wuid))
+            displacement, mode = kdber.make_suggestion(keep_path)
             if displacement:
                 done = True
                 logger.info('Made a KDB suggestion')
@@ -381,11 +387,6 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                         searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-                # Store the kdb suggestion in the state directory if config.kdb_keep is set.
-#                if config.kdb_keep:
-#                    if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
-#                        os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
-#                    shutil.copytree(job_dir, os.path.join(current_state.path, "kdbsuggestions", os.path.basename(job_dir)))     
         if not done:
             displacement, mode = disp.make_displacement() 
             if config.debug_list_search_results:                
