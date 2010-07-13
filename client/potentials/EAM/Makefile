@@ -1,5 +1,5 @@
 OBJECTS = EAM.o
-CXXFLAGS += -I../..
+CXXFLAGS += -I../.. -Wall
 LIB := libEAM.a
 $(LIB) : $(OBJECTS)
 	ar cru $@ $^
