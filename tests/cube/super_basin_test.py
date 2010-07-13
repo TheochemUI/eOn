@@ -10,6 +10,10 @@ refloat='[\d\+\-\.e]+'
 
 class Path:
     def __init__(self, file, state):
+        """Constructor.
+        A Path object is expected to be listed in a State obbject.
+        file: open file from where to read the data.
+        state: State object to which self is to belong.."""
         self.state=state
         self.energyPass=float(re.search('\|\s*energyPass_ (%s)' % refloat, file.readline()).group(1))
         self.framePass=int(re.search('framePass_ (\d+)', file.readline()).group(1))
@@ -29,17 +33,24 @@ class Path:
         return out.getvalue()
     
     def loadNewMinimum(self):
+        """Load atomic configuration of the minimum the path leads to."""
         return self.state.load(self.frameNewMinimum)
 
     def loadPass(self):
+        """Load atomic configuration at the saddle point."""
         return self.state.load(self.framePass)
     
     def rate(self, temperature):
+        """Reaction rate of the process."""
         result=exp((self.energyNewMinimum - self.energyPass)/temperature)
         return result
 
 class State:
     def __init__(self, number, temperature=None, path=''):
+        """Container for a state defined as the minimum plus all the paths out of the minimum.
+        number: state's number is used to determine the path to files from where to read the data.
+        temperature: required to generate the rates.
+        path: path to directory where the data are."""
         self.path=path
         self.temperature=temperature
         file = open(path+'%06d/transient_state.txt' % number, 'r')
@@ -61,9 +72,12 @@ class State:
         return out.getvalue()
     
     def get_directory(self):
+        """Path to where the data are saved."""
         return self.path+'%06d/' % self.state_number
     
     def get_process_table(self):
+        """List or processes.
+        The function returns a list of dictionnaries. The list has one entry for per process (see self.paths). Each entry (i.e. dictionnary) has two entries: product: number of the state the process leads to; rate: rate of the process."""
         result=list()
         for path in self.paths:
             p=dict()
@@ -73,95 +87,14 @@ class State:
         return result
 
     def load(self, frame=0):
+        """Load con file. In frame 0 (default) is the minimum, then odd frames are saddle points and even frames are the minima the saddle point in the preceding frame is leading to."""
         return loadcon(self.path+'%06d/%06d.con' % (self.state_number, frame))
 
 class SuperBasinTestError:
     pass
 
-def wrap(states):
-    temperature=0.031066746727980595
-    temperature=0.010857362047581296343
-    #temperature=0.0072382413650541981
-    #temperature=0.0054286810237906486
-    #temperature=0.0001
-    n=len(states)
-    result=list()
-    for i in states:
-        result.append(State(i, temperature))
-    return result
-
-def isClose(d1, d2):
-    if abs((d1-d2)/d2) > 1e-8:
-        print 'Error'
-        raise SuperBasinTestError()
-
-def areClose(a1, a2):
-    if isinstance(a1, float):
-        isClose(a1, a2)
-    else:
-        if len(a1) != len(a2):
-            print 'Error'
-            raise SuperBasinTestError()
-        for a, b in zip(a1, a2):
-            areClose(a, b)
-
-def test_super_basin():       
-    fundfile='super_basin_test.txt'
-    if os.path.exists(fundfile): os.remove(fundfile)
-    
-    # Test number one
-    states=[0]
-    states=wrap(states)
-    sb=Superbasin(fundfile, states)
-    isClose(sb.mean_residence_times[0], 49.5000495)
-    isClose(sb.probability_matrix[0][0], 1.0)
-    sb.delete()
-    
-    # Test number two
-    states=[0, 1]
-    states=wrap(states)
-    sb=Superbasin(fundfile, states)
-    mean_residence_times=array([4950.4950495, 4950.4950495])
-    areClose(sb.mean_residence_times, mean_residence_times)
-    probability_matrix=array([[0.50251231, 0.49748769], [0.49748769, 0.50251231]])
-    areClose(sb.probability_matrix, probability_matrix)
-    sb.delete()
-    
-    # Test number three
-    states=[0, 1, 2]
-    states=wrap(states)
-    sb=Superbasin(fundfile, states)
-    mean_residence_times= array([ 4999.25752388,  4999.75002487,    98.99762424])
-    probability_matrix=array([[  5.04950255e-01,   4.99950252e-01,   4.94951245e-03],
-           [  4.95000250e-03,   4.99999752e-03,   4.95000250e-05],
-           [  4.90099743e-01,   4.95049750e-01,   9.95000988e-01]])
-    areClose(sb.mean_residence_times, mean_residence_times)
-    areClose(sb.probability_matrix, probability_matrix)
-    sb.delete()
-    
-    # Test number four
-    states=[0, 1, 5]
-    states=wrap(states)
-    sb=Superbasin(fundfile, states)
-    mean_residence_times= array([4950.74128214, 4950.74376909, 49.99017362])
-    probability_matrix=\
-    array([[ 5.02512555e-01, 4.97487932e-01, 4.92513545e-05],
-           [ 4.92562309e-01, 4.97537188e-01, 4.92562309e-05],
-           [ 4.92513545e-03, 4.97487932e-03, 9.99901492e-01]])
-    areClose(sb.mean_residence_times, mean_residence_times)
-    areClose(sb.probability_matrix, probability_matrix)
-    #sb.delete()
-    n=len(states)
-    p=[0]*n
-    tries=10
-    for i in range(tries):
-        time, i=sb.pick_exit_state(states[2])
-        p[i]+=1
-    for i in range(n):
-        p[i]=float(p[i])/tries
-    print time, p
-
 def run_as_client():
+    """Emulates the eOn client by reading the results from files."""
     a=loadcon('reactant_passed.con')
     path_states='/Users/berthet/eon/tests/cube/'
     for i in range(8):
