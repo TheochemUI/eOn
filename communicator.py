@@ -65,8 +65,8 @@ class Communicator:
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
 
-        results = []
         for jobpath in jobpaths:
+            results = []
             basename, dirname = os.path.split(jobpath)
             if not keep_result(dirname):
                 continue
@@ -114,7 +114,7 @@ class Communicator:
                 result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
                 result['id'] = "%d_%d" % (state, uid+i)
                 results.append(result)
-        return results
+            yield results
 
     def make_bundles(self, searches, reactant_path, parameters_path):
         '''This method is a generator that bundles together multiple searches into a single job.
@@ -406,7 +406,9 @@ class BOINC(Communicator):
                 filename = ending_to_filename[ending]
                 shutil.move(filepath, os.path.join(resultspath, key, filename))
 
-        return self.unbundle(resultspath, keep_result)
+        for bundle in self.unbundle(resultspath, keep_result):
+            for result in bundle:
+                yield result
 
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
@@ -457,7 +459,10 @@ class Local(Communicator):
         for jobdir in jobdirs:
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
-        return self.unbundle(resultspath, keep_result)
+        for bundle in self.unbundle(resultspath, keep_result):
+            for result in bundle:
+                yield result
+
 
         #jobdirs = [ os.path.join(self.scratchpath, d) for d in os.listdir(self.scratchpath) 
         #                if os.path.isdir(os.path.join(self.scratchpath,d)) ]
