@@ -44,8 +44,7 @@ def make_movie(movie_type, path_root, states):
         sys.exit(1)
     movie_path = "movie.poscar"
     if os.path.isfile(movie_path):
-        print "file %s already exists" % movie_path
-        sys.exit(1)
+        os.unlink(movie_path)
     save_movie(atoms_list, movie_path)
     print "saved %i frames to %s" % (len(atoms_list), movie_path)
 
