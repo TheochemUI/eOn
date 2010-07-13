@@ -193,9 +193,8 @@ def register_results(comm, current_state, states, searchdata = None, kdber = Non
                 state_num == current_state.number or \
                 states.get_state(state_num).get_confidence() < config.akmc_confidence)
 
-    results = comm.get_results(config.path_searches_in, keep_result) 
     num_registered = 0
-    for result in results:        
+    for result in comm.get_results(config.path_searches_in, keep_result): 
         # The result dictionary contains the following key-value pairs:
         # reactant - an array of strings containing the reactant
         # saddle - an atoms object containing the saddle
