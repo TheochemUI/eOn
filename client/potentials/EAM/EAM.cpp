@@ -27,19 +27,17 @@ void EAM::initialize()
     rc = new double[3]; 
     rc[0] = rc[1] = rc[2] = 5.0;// 5 is arbitrary number. rc represents the optimal length for each cell in cell list
     double temp[] = {67.2169 * 27.21, -253.032 * 27.21, 392.956 * 27.21, -328.003 * 27.21, 165.763 * 27.21, -59.8235 * 27.21, 18.0797 * 27.21, -2.00292 * 27.21, -0.0102076 * 27.21};
-    func_param = new double[9];
-    for(int i = 0; i < 9; i++){
-        func_param[i] = temp[i];
-    }
+    func_param = temp;
 }
 
 void EAM::cleanMemory()
 {
-    delete celllist_old;
-    delete celllist_new;
-    delete neigh_list;
-    delete rc;
-    delete func_param;
+    if(initialized)
+    {
+        delete[] celllist_old;
+        delete[] celllist_new;
+        delete[] neigh_list;
+    }
 }
 
 
@@ -134,11 +132,11 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     for (long i=0;i<num_cells*(N+1);i++)
         celllist_old[i]=celllist_new[i];
 
-    delete Rtemp;
-    delete Rnew;
-    delete Rold;
-    delete num_axis;
-    delete cell_length;
+    delete[] Rtemp;
+    delete[] Rnew;
+    delete[] Rold;
+    delete[] num_axis;
+    delete[] cell_length;
     initialized = true;
 }
 
@@ -226,7 +224,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             F[k]+=vector_force[k];
         }
     }
-    delete vector_force;
+    delete[] vector_force;
 }
 
 
@@ -257,13 +255,13 @@ void EAM::new_celllist(long N, const double *box, long *num_axis, long *cell_len
         //increases the value that gives number of atoms in that particular cells
         cell_list[cell*(N+1)+N]++;
 
-        delete coor;
+        delete[] coor;
     }
 
     for (long i=0;i<num_cells;i++)
         for (long j=0;j<N+1;j++)
             celllist_new[i*(N+1)+j]=cell_list[i*(N+1)+j];
-    delete cell_list;
+    delete[] cell_list;
 }
 
 //creates a neighbor list for each cell from given cell list
@@ -277,26 +275,41 @@ void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell
 
 	
     for (long j=0;j<num_axis[0];j++)
+    {
         for (long j1=0;j1<num_axis[1];j1++)
+        {
             for (long j2=0;j2<num_axis[2];j2++)
             {
                                  //last index contains number of atoms in array.
                 long *neighbors=new long[N+1];
                 for(long i=0;i<N+1;i++)
+                {
                     neighbors[i]=-1;
+                }
 
                 long cur_index= j*num_axis[1]*num_axis[2]+ j1*num_axis[2]+j2; //converts 3d location of cell to 1d location in use in cell_list
 
          //making a copy of cell list so that no cell is counted twice as a neighbor of a dif cell in small atom systems
                 long *cell_list_copy=new long[num_of_cells*(N+1)+N+1];
                 for (long d1=0;d1<num_of_cells;d1++)
+                {
                     for (long d2=0;d2<N+1;d2++)
+                    {
                         cell_list_copy[d1*(N+1)+d2]=celllist_new[d1*(N+1)+d2];
+                    }
+                }
 
-                if(cell_list_copy[cur_index*(N+1)+N]==0)continue; //if cell size is 0, continues to next cell
+                if(cell_list_copy[cur_index*(N+1)+N]==0)
+                {
+                    delete [] cell_list_copy;
+                    delete [] neighbors;
+                    continue; //if cell size is 0, continues to next cell
+                }
 
                 for (long d1=-1;d1<2;d1++)
+                {
                     for (long d2=-1;d2<2;d2++)
+                    {
                         for(long d3=-1;d3<2;d3++)
                         {
                             long *pos=new long[3];
@@ -304,8 +317,14 @@ void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell
 							//check if pos is within bounds, if not, pos wraps around to meet neighbors (periodic boundary conditions)
                             for (long y=0;y<3;y++)
                             {
-                                if (pos[y]<0) pos[y]=num_axis[y]-1;
-                                else if (pos[y]>=num_axis[y]) pos[y]=0;
+                                if (pos[y]<0) 
+                                {
+                                    pos[y]=num_axis[y]-1;
+                                }
+                                else if (pos[y]>=num_axis[y]) 
+                                {
+                                    pos[y]=0;
+                                }
                             }
 							//1d location of neighbor cell
                             long neigh_index= pos[0]*num_axis[1]*num_axis[2]+ pos[1]*num_axis[2]+pos[2];
@@ -317,7 +336,9 @@ void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell
 								//makes sure that atom has not already been added to neigbors
                                 long check=0;
                                 for (long k=0;k<N;k++)
+                                {
                                     if(neighbors[check]==cell_list_copy[neigh_index*(N+1)+y]){check=-1;}
+                                }
 								//if not, add atom to neighbors
                                     if(check!=-1)
                                 {
@@ -327,8 +348,10 @@ void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell
                                 }
                             }
 
-                            delete pos;
+                            delete[] pos;
                         }
+                    }
+                }
 				//adds all atoms in neighbors to the array of each atom in current cell
                 for (long i=0;i<celllist_new[cur_index*(N+1)+N];i++)
                 {
@@ -336,18 +359,22 @@ void EAM::cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell
                     long cur=celllist_new[cur_index*(N+1)+i];
                     neigh_list[cur*(N+1)+N]=0;
                     for (long temp=0;temp<=neighbors[N];temp++)
-                        if (cur!=neighbors[temp])//checks to make sure not same atom
                     {
+                        if (cur!=neighbors[temp])//checks to make sure not same atom
+                        {
 
                         neigh_list[cur*(N+1)+ neigh_list[cur*(N+1)+N]]=neighbors[temp];
                         neigh_list[cur*(N+1)+N]++;
 
+                        }
                     }
 
                 }
-                delete neighbors;
-                delete cell_list_copy;
+                delete[] neighbors;
+                delete[] cell_list_copy;
             }
+        }
+    }
 
 }
 
@@ -376,10 +403,10 @@ int EAM::update_cell_list(long N, long num_cells,long *num_axis, long *cell_leng
         {
             changed++;
         }
-        delete coor;
+        delete[] coor;
 
     }
-    delete table;
+    delete[] table;
     return changed;
 }
 
