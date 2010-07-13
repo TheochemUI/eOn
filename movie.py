@@ -4,14 +4,19 @@ import sys
 import io
 
 def make_movie(movie_type, path_root, states):
+    movie_path = "movie.poscar"
     if movie_type == 'dynamics':
         atoms_list = dynamics(path_root, states)
+        movie_path = "dynamics.poscar"
     elif movie_type == 'states':
         atoms_list = dynamics(path_root, states, True)
+        movie_path = "states.poscar"
     elif movie_type == 'fastestpath':
         atoms_list = fastestpath(path_root, states)
+        movie_path = "fastestpath.poscar"
     elif movie_type == 'fastestfullpath':
         atoms_list = fastestpath(path_root, states, full=True)
+        movie_path = "fastestfullpath.poscar"
     elif movie_type.split(',')[0] == 'processes':
         try:
             statenr = int(movie_type.split(',')[1])
@@ -28,6 +33,7 @@ def make_movie(movie_type, path_root, states):
             limit = 0
 
         atoms_list = processes(states, statenr, limit)
+        movie_path = "processes_%i.poscar" % statenr
     elif movie_type == 'graph':
         s = dot(path_root, states)
         if os.path.isfile("graph.dot"):
@@ -42,7 +48,6 @@ def make_movie(movie_type, path_root, states):
     else:
         print "unknown MOVIE_TYPE"
         sys.exit(1)
-    movie_path = "movie.poscar"
     if os.path.isfile(movie_path):
         os.unlink(movie_path)
     save_movie(atoms_list, movie_path)
