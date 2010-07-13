@@ -76,6 +76,7 @@ def processes(states, statenr, limit):
 
     process_table = state.get_process_table()
     for k,v in process_table.iteritems():
+        process_table[k]['id'] = k
         process_table[k]['reactant'] = state.get_process_reactant(k)
         process_table[k]['saddle'] = state.get_process_saddle(k)
         process_table[k]['product'] = state.get_process_product(k)
@@ -88,6 +89,7 @@ def processes(states, statenr, limit):
         atoms_list.append(p['reactant'])
         atoms_list.append(p['saddle'])
         atoms_list.append(p['product'])
+        print "process %i with barrier %.4f" % (p['id'], p['barrier'])
         limit -= 1
         if limit == 0:
             break
