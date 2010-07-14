@@ -4,7 +4,9 @@
 #include <limits.h>
 #include <float.h>
 #include <stdlib.h>
+
 #include "EAM.h"
+#include "Parameters.h"
 
 
 EAM::EAM()
@@ -18,25 +20,20 @@ void EAM::initialize()
     celllist_new = 0;
     neigh_list = 0;
     initialized = false;
-    Dm = 1;
-    alphaM = 3.0205380362464;
-    Rm = 2.65;
-    beta1 = 6.6137657075868;
-    beta2 = 6.0000000000000;
-    r_cut = 5.5;
+
     rc = new double[3]; 
-    rc[0] = rc[1] = rc[2] = 5.0;// 5 is arbitrary number. rc represents the optimal length for each cell in cell list
-    double temp[] = {67.2169 * 27.21, -253.032 * 27.21, 392.956 * 27.21, -328.003 * 27.21, 165.763 * 27.21, -59.8235 * 27.21, 18.0797 * 27.21, -2.00292 * 27.21, -0.0102076 * 27.21};
-    func_param = temp;
+    // 6 is arbitrary number. rc represents the optimal size
+    // for each cell in cell list.
+    rc[0] = rc[1] = rc[2] = 6.0;
 }
 
 void EAM::cleanMemory()
 {
     if(initialized)
     {
-        delete[] celllist_old;
-        delete[] celllist_new;
-        delete[] neigh_list;
+        delete celllist_old;
+        delete celllist_new;
+        delete neigh_list;
     }
 }
 
@@ -45,9 +42,9 @@ void EAM::cleanMemory()
 void EAM::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
     //num_axis contains the number of cell lengths on each axis
-    long *num_axis=new long[3];
+    long num_axis[3];
     //cell length contains dimensions of each cell
-    long *cell_length=new long[3];
+    long cell_length[3];
 
     for (long i=0;i<3;i++)
     {
@@ -69,9 +66,10 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     }
 
     *U=0;
-    long kk=0;
-    for (kk=0;kk<3*N;kk++)
+    for (long kk=0;kk<3*N;kk++)
+    {
         F[kk]=0;
+    }
 
     long xmin=LONG_MAX;
     long ymin=LONG_MAX;
@@ -107,10 +105,17 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
 
     //enforce periodic boundary conditions
     for (long i=0;i<3*N;i++)
-        while(Rtemp[i]>box[i%3]) Rtemp[i]-=box[i%3];
+    {
+        while(Rtemp[i]>box[i%3]) 
+        {
+            Rtemp[i]-=box[i%3];
+        }
+    }
 
     for (long i=0;i<3*N;i++)
+    {
         Rnew[i]=Rtemp[i];
+    }
 
     if (!initialized)
     {
@@ -130,13 +135,15 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     calc_force(N, Rnew, atomicNrs, F, U, box);
 
     for (long i=0;i<num_cells*(N+1);i++)
+    {
         celllist_old[i]=celllist_new[i];
+    }
 
-    delete[] Rtemp;
-    delete[] Rnew;
-    delete[] Rold;
-    delete[] num_axis;
-    delete[] cell_length;
+    //printf("%f\n", *U);
+
+    delete Rtemp;
+    delete Rnew;
+    delete Rold;
     initialized = true;
 }
 
@@ -150,7 +157,9 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
     for (long i=0;i<N;i++)
     {
         for (long j=0;j<3*N;j++)
+        {
             vector_force[j]=0;
+        }
 
         double dens=0; 	//sum of density for atom 1
         double phi_r=0;
@@ -179,7 +188,8 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
                 r=sqrt(r);
 				
 				//Morse potential portion of energy
-                phi_r+= Dm*pow(1-exp(-alphaM*(r-Rm)),2)-Dm; 
+                element_parameters params = get_element_parameters(atomicNrs[i]);
+                phi_r+= params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
 
 
                 double curdens=0;
@@ -187,13 +197,20 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
                 dens+=curdens;
 				
 				//magnitude of force from Morse potential
-                double mag_force = 2*alphaM*Dm*(exp(alphaM*r)-exp(alphaM*Rm))*(exp(alphaM*Rm-2*alphaM*r));
+                double mag_force = 2*params.alphaM*params.Dm*
+                                   (exp(params.alphaM*r)-exp(params.alphaM*params.Rm))*
+                                   (exp(params.alphaM*params.Rm-2*params.alphaM*r));
 
 				//magnitude of force from density
 					//derivation of embedding function
-                double mag_force_den=(537.7352*pow(curdens,7)-1771.224*pow(curdens,6)+2357.736*pow(curdens,5)-1640.015*pow(curdens,4)
-                    +663.052*pow(curdens,3)-179.4705*pow(curdens,2)+36.1594*curdens-2.00292); 
-					//derivation of density equation
+                //double mag_force_den=(537.7352*pow(curdens,7)-1771.224*pow(curdens,6)+2357.736*pow(curdens,5)-1640.015*pow(curdens,4)
+                //    +663.052*pow(curdens,3)-179.4705*pow(curdens,2)+36.1594*curdens-2.00292); 
+                double mag_force_den=0.0;
+                for (int k=0;k<9;k++)
+                {
+                    mag_force_den += params.func_coeff[k]*pow(curdens,(double)k);
+                }
+                //derivation of density equation
                 mag_force_den*=6*pow(r,5)*(512*exp(beta1*r)+exp(2*beta2*r))*exp(-beta1*r-2*beta2*r);
 
 				//total force magnitude between atoms i and j
@@ -224,7 +241,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             F[k]+=vector_force[k];
         }
     }
-    delete[] vector_force;
+    delete vector_force;
 }
 
 
@@ -440,7 +457,8 @@ double EAM::density (long N, long atom, double *R, const long *atomicNrs, const 
         if(r>r_cut) return 0;
 		
 		//density function
-        D+=pow(r,6)*(exp(-beta1 *r)+512*exp(-2*beta2*r));
+        element_parameters params = get_element_parameters(atomicNrs[i]);
+        D+=pow(r,6)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r));
     }
     return D;
 
