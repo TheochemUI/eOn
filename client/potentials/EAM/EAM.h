@@ -13,10 +13,7 @@ class EAM : public PotentialsInterface
 	    long *celllist_new;
 	    long *neigh_list;
 	    bool initialized;
-	    double Dm, alphaM, Rm, beta1,beta2;
-	    double r_cut;
 	    double *rc;
-        double *func_param;
         // To satify interface
         void initialize();
         void cleanMemory();
