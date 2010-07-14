@@ -139,7 +139,7 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
         celllist_old[i]=celllist_new[i];
     }
 
-    //printf("%f\n", *U);
+    printf("%f\n", *U);
 
     delete Rtemp;
     delete Rnew;
@@ -156,6 +156,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
     
     for (long i=0;i<N;i++)
     {
+        element_parameters params = get_element_parameters(atomicNrs[i]);
         for (long j=0;j<3*N;j++)
         {
             vector_force[j]=0;
@@ -188,7 +189,6 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
                 r=sqrt(r);
 				
 				//Morse potential portion of energy
-                element_parameters params = get_element_parameters(atomicNrs[i]);
                 phi_r+= params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
 
 
@@ -211,7 +211,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
                     mag_force_den += params.func_coeff[k]*pow(curdens,(double)k);
                 }
                 //derivation of density equation
-                mag_force_den*=6*pow(r,5)*(512*exp(beta1*r)+exp(2*beta2*r))*exp(-beta1*r-2*beta2*r);
+                mag_force_den*=6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
 
 				//total force magnitude between atoms i and j
                 mag_force+=mag_force_den;
@@ -228,9 +228,8 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
 
         //embedding function for density
         double density_after_func=0;
-        long power=8;
-        for (power=8;power>-0;power--)
-            density_after_func+=func_param[8-power]*pow(dens, power);
+        for (int power=0;power<9;power++)
+            density_after_func+=params.func_coeff[8-power]*pow(dens, power);
 
 		//adds to overall energy
         *U+=phi_r+density_after_func;
@@ -454,10 +453,10 @@ double EAM::density (long N, long atom, double *R, const long *atomicNrs, const 
             r+= dirs[k]*dirs[k];
         r=sqrt(r);
         //checks to determine if r is over rcut, at which density interaction is negligible
-        if(r>r_cut) return 0;
+        element_parameters params = get_element_parameters(atomicNrs[i]);
+        if(r>params.r_cut) return 0;
 		
 		//density function
-        element_parameters params = get_element_parameters(atomicNrs[i]);
         D+=pow(r,6)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r));
     }
     return D;

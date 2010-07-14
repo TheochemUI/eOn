@@ -1,5 +1,5 @@
 OBJECTS = EAM.o Parameters.o
-CXXFLAGS += -I../.. -Wall -pedantic -Wextra
+CXXFLAGS += -I../.. -Wall -pedantic -Wextra -O2
 LIB := libEAM.a
 $(LIB) : $(OBJECTS)
 	ar cru $@ $^
