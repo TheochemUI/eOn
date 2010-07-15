@@ -139,7 +139,7 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
         celllist_old[i]=celllist_new[i];
     }
 
-    printf("%f\n", *U);
+    //printf("%f\n", *U);
 
     delete Rtemp;
     delete Rnew;
@@ -202,14 +202,9 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
                                    (exp(params.alphaM*params.Rm-2*params.alphaM*r));
 
 				//magnitude of force from density
-					//derivation of embedding function
-                //double mag_force_den=(537.7352*pow(curdens,7)-1771.224*pow(curdens,6)+2357.736*pow(curdens,5)-1640.015*pow(curdens,4)
-                //    +663.052*pow(curdens,3)-179.4705*pow(curdens,2)+36.1594*curdens-2.00292); 
-                double mag_force_den=0.0;
-                for (int k=0;k<9;k++)
-                {
-                    mag_force_den += params.func_coeff[k]*pow(curdens,(double)k);
-                }
+                //derivation of embedding function
+                double mag_force_den=embedding_function(params.func_coeff, curdens);
+
                 //derivation of density equation
                 mag_force_den*=6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
 
@@ -227,9 +222,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
         }
 
         //embedding function for density
-        double density_after_func=0;
-        for (int power=0;power<9;power++)
-            density_after_func+=params.func_coeff[8-power]*pow(dens, power);
+        double density_after_func=embedding_function(params.func_coeff, dens);
 
 		//adds to overall energy
         *U+=phi_r+density_after_func;
@@ -461,4 +454,14 @@ double EAM::density (long N, long atom, double *R, const long *atomicNrs, const 
     }
     return D;
 
+}
+
+double EAM::embedding_function(double *func_coeff, double rho)
+{
+    double result = func_coeff[8];
+
+    //Evaluate the polynomial using Horner's method.
+    for (int i=0;i>=0;i--) result *= rho + func_coeff[i];
+
+    return result;
 }
