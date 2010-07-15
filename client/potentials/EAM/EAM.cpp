@@ -218,14 +218,13 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             if(neigh>i)
             {
 				//Morse potential portion of energy
-                printf("r: %f  x: %f y: %f z: %f\n", r, dirs[0], dirs[1], dirs[2]);
                 phi_r = params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
 				
 				//magnitude of force from Morse potential
                 double mag_force = 2*params.alphaM*params.Dm*
                                    (exp(params.alphaM*r)-exp(params.alphaM*params.Rm))*
                                    (exp(params.alphaM*params.Rm-2*params.alphaM*r));
-                printf("fmag: %f\n", mag_force);
+                
                 //calculates forces on atom i and j because of each other
                 for (long k=0;k<3;k++)
                 {
@@ -238,7 +237,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
 
         // TODO: Forces for F(rho)
         double f_of_rho = embedding_function(params.func_coeff, dens);
-        //*U += f_of_rho;
+        *U += f_of_rho;
         //mag_force_den = f_of_rho *6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
         //for (long k=0;k<3;k++)
         //{
@@ -439,9 +438,10 @@ int EAM::update_cell_list(long N, long num_cells,long *num_axis, long *cell_leng
 double EAM::embedding_function(double *func_coeff, double rho)
 {
     double result = func_coeff[8];
-
     //Evaluate the polynomial using Horner's method.
-    for (int i=0;i>=0;i--) result *= rho + func_coeff[i];
-
+    for (int i=7;i>=0;i--) 
+    {
+        result = result * rho + func_coeff[i];
+    }
     return result;
 }
