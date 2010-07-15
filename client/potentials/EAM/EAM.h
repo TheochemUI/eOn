@@ -23,6 +23,7 @@ class EAM : public PotentialsInterface
         void cell_to_neighbor(long N, long num_of_cells, long *num_axis, long *cell_length, long *celllist_new, long *neigh_list);
         int update_cell_list(long N, long num_cells,long *num_axis, long *cell_length, long *celllist_old, double *Rnew); //returns 0 if unchanged, >0 if changed - represents number of atoms that changed lists
         double density (long N, long atom, double *R, const long *atomicNrs, const double *box); //calculates local density of single atom
+        double embedding_function(double *func_coeff, double rho);
 };
 	
 
