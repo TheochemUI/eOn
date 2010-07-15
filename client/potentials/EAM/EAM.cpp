@@ -145,7 +145,12 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
         celllist_old[i]=celllist_new[i];
     }
 
-    printf("%f\n", *U);
+    //double diff = R[0] - R[3];
+    //if(diff > box[0]/2)
+    //{
+    //    diff = box[0] - diff;
+    //}
+    printf("%f \n",*U);
 
     delete Rtemp;
     delete Rnew;
@@ -169,9 +174,13 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
         double dens=0; 	//sum of density for atom 1
         double phi_r=0;
 
-        for (long j=0;j<neigh_list[i*(N+1)+N];j++) //loops through each atom in atom i's neighbor list
+        //for (long j=0;j<neigh_list[i*(N+1)+N];j++) //loops through each atom in atom i's neighbor list
+        //{
+        //    long neigh= neigh_list[i*(N+1)+j];
+        for (long j=0;j<N;j++) //loops through each atom in atom i's neighbor list
         {
-            long neigh= neigh_list[i*(N+1)+j];
+            phi_r = 0;
+            long neigh= j;
             
 				//finds distance on each axis between atoms i and j
             double disx=R[3*i]-R[3*neigh];
@@ -184,12 +193,13 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             {
                 if(dirs[u]>box[u]/2) 
                 {
-                    dirs[u]=box[u]-dirs[u];
+                    dirs[u]= - box[u] + dirs[u];
                 }
                 else if (dirs[u]< -box[u]/2)
                 {
-                    dirs[u]=-box[u]-dirs[u];
+                    dirs[u] = box[u] + dirs[u];
                 }
+               
             }
 			
 			//distance between atoms i and j
@@ -208,33 +218,27 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             if(neigh>i)
             {
 				//Morse potential portion of energy
+                printf("r: %f  x: %f y: %f z: %f\n", r, dirs[0], dirs[1], dirs[2]);
                 phi_r = params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
-
-
 				
 				//magnitude of force from Morse potential
                 double mag_force = 2*params.alphaM*params.Dm*
                                    (exp(params.alphaM*r)-exp(params.alphaM*params.Rm))*
                                    (exp(params.alphaM*params.Rm-2*params.alphaM*r));
-
-
-
-				////total force magnitude between atoms i and j
-
+                printf("fmag: %f\n", mag_force);
                 //calculates forces on atom i and j because of each other
                 for (long k=0;k<3;k++)
                 {
-                    F[3*i+k]+=dirs[k]/r*-mag_force;
-                    F[3*neigh+k]-=dirs[k]/r*-mag_force;
+                    F[3*i+k]     -= dirs[k]/r*mag_force;
+                    F[3*neigh+k] += dirs[k]/r*mag_force;
                 }
-
+                *U+=phi_r;
             }
-            *U+=phi_r;
         }
 
         // TODO: Forces for F(rho)
         double f_of_rho = embedding_function(params.func_coeff, dens);
-        *U += f_of_rho;
+        //*U += f_of_rho;
         //mag_force_den = f_of_rho *6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
         //for (long k=0;k<3;k++)
         //{
