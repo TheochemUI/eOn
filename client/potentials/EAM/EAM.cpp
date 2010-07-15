@@ -145,7 +145,7 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
         celllist_old[i]=celllist_new[i];
     }
 
-    //printf("%f\n", *U);
+    printf("%f\n", *U);
 
     delete Rtemp;
     delete Rnew;
@@ -156,17 +156,15 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
 
 void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
-    for (long i=0;i<3*N;i++) F[i]=0;
+    for (long i=0;i<3*N;i++) 
+    {
+        F[i]=0;
+    }
     *U=0;
-    double *vector_force=new double[3*N];
     
     for (long i=0;i<N;i++)
     {
         element_parameters params = get_element_parameters(atomicNrs[i]);
-        for (long j=0;j<3*N;j++)
-        {
-            vector_force[j]=0;
-        }
 
         double dens=0; 	//sum of density for atom 1
         double phi_r=0;
@@ -174,72 +172,79 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
         for (long j=0;j<neigh_list[i*(N+1)+N];j++) //loops through each atom in atom i's neighbor list
         {
             long neigh= neigh_list[i*(N+1)+j];
+            
+				//finds distance on each axis between atoms i and j
+            double disx=R[3*i]-R[3*neigh];
+            double disy=R[3*i+1]-R[3*neigh+1];
+            double disz=R[3*i+2]-R[3*neigh+2];
+            double dirs[]={disx, disy, disz};
+            
+            //finds smallest distance between the two atoms (periodic boundary conditions)
+            for (long u=0;u<3;u++)
+            {
+                if(dirs[u]>box[u]/2) 
+                {
+                    dirs[u]=box[u]-dirs[u];
+                }
+                else if (dirs[u]< -box[u]/2)
+                {
+                    dirs[u]=-box[u]-dirs[u];
+                }
+            }
+			
+			//distance between atoms i and j
+            double r=0;
+            
+            for (long k=0;k<3;k++)
+            {
+                r+= dirs[k]*dirs[k];
+            }
+            r=sqrt(r);
+	        if(r > params.r_cut)
+            {
+                continue;
+            }            
+            dens += pow(r,6)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r));
             if(neigh>i)
             {
-				//finds distance on each axis between atoms i and j
-                double disx=R[3*i]-R[3*neigh];
-                double disy=R[3*i+1]-R[3*neigh+1];
-                double disz=R[3*i+2]-R[3*neigh+2];
-                double dirs[]={disx, disy, disz};
-                
-                //finds smallest distance between the two atoms (periodic boundary conditions)
-                for (long u=0;u<3;u++)
-                    if(dirs[u]>box[u]/2) dirs[u]=box[u]-dirs[u];
-                else if (dirs[u]< -box[u]/2)dirs[u]=-box[u]-dirs[u];
-				
-				//distance between atoms i and j
-                double r=0;
-                
-                for (long k=0;k<3;k++)
-                    r+= dirs[k]*dirs[k];
-                r=sqrt(r);
-				
 				//Morse potential portion of energy
-                phi_r+= params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
+                phi_r = params.Dm*pow(1-exp(-params.alphaM*(r-params.Rm)),2)-params.Dm; 
 
 
-                double curdens=0;
-                curdens=density(N, i, R, atomicNrs, box); //density between atoms i and j
-                dens+=curdens;
 				
 				//magnitude of force from Morse potential
                 double mag_force = 2*params.alphaM*params.Dm*
                                    (exp(params.alphaM*r)-exp(params.alphaM*params.Rm))*
                                    (exp(params.alphaM*params.Rm-2*params.alphaM*r));
 
-				//magnitude of force from density
-                //derivation of embedding function
-                double mag_force_den=embedding_function(params.func_coeff, curdens);
 
-                //derivation of density equation
-                mag_force_den*=6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
 
-				//total force magnitude between atoms i and j
-                mag_force+=mag_force_den;
+				////total force magnitude between atoms i and j
 
                 //calculates forces on atom i and j because of each other
                 for (long k=0;k<3;k++)
                 {
-                    vector_force[3*i+k]+=dirs[k]/r*-mag_force;
-                    vector_force[3*neigh+k]-=dirs[k]/r*-mag_force;
+                    F[3*i+k]+=dirs[k]/r*-mag_force;
+                    F[3*neigh+k]-=dirs[k]/r*-mag_force;
                 }
 
             }
+            *U+=phi_r;
         }
 
+        // TODO: Forces for F(rho)
+        double f_of_rho = embedding_function(params.func_coeff, dens);
+        *U += f_of_rho;
+        //mag_force_den = f_of_rho *6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
+        //for (long k=0;k<3;k++)
+        //{
+        //    F[3*i+k]+=dirs[k]/r*-mag_force_den;
+        //    F[3*neigh+k]-=dirs[k]/r*-mag_force_den;
+        //}
         //embedding function for density
-        double density_after_func=embedding_function(params.func_coeff, dens);
+        //printf("Density: %f\n", dens);
 
-		//adds to overall energy
-        *U+=phi_r+density_after_func;
-
-        for (long k=0;k<3*N;k++)
-        {
-			//adds forces
-            F[k]+=vector_force[k];
-        }
     }
-    delete vector_force;
 }
 
 
@@ -426,41 +431,6 @@ int EAM::update_cell_list(long N, long num_cells,long *num_axis, long *cell_leng
 }
 
 
-// Calculates local density of single atom
-double EAM::density (long N, long atom, double *R, const long *atomicNrs, const double *box)
-{
-    double D=0.0;
-
-    long j=atom;
-    long k;
-    for (long i=0;i<neigh_list[j*(N+1)+N];i++)
-    {	
-        long neigh=neigh_list[j*(N+1)+i];
-        //distance between atom neigh and j
-        double disx=R[3*neigh]-R[3*j];
-        double disy=R[3*neigh+1]-R[3*j+1];
-        double disz=R[3*neigh+2]-R[3*j+2];
-
-        double dirs[]={disx, disy, disz};
-        //periodic boundary condtitions
-        for (k=0;k<3;k++)
-            if(dirs[k]>box[k]/2) dirs[k]=box[k]-dirs[k]; 
-        else if(dirs[k]<-box[k]/2) dirs[k]=box[k]+dirs[k];
-
-        double r=0;
-        for (k=0;k<3;k++)
-            r+= dirs[k]*dirs[k];
-        r=sqrt(r);
-        //checks to determine if r is over rcut, at which density interaction is negligible
-        element_parameters params = get_element_parameters(atomicNrs[i]);
-        if(r>params.r_cut) return 0;
-		
-		//density function
-        D+=pow(r,6)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r));
-    }
-    return D;
-
-}
 
 double EAM::embedding_function(double *func_coeff, double rho)
 {
