@@ -41,6 +41,8 @@ void EAM::cleanMemory()
 // Calculate here long num_cells, long *num_axis, long *cell_length, //become global variables -long *celllist_old, long *celllist_new, long *neigh_list, long fcalled)
 void EAM::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
+
+    /* -- Code starting here only needs to be done once. -- */
     //num_axis contains the number of cell lengths on each axis
     long num_axis[3];
     //cell length contains dimensions of each cell
@@ -58,6 +60,8 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
 
     num_cells=num_axis[0]*num_axis[1]*num_axis[2];
 
+    /* -- Code ending here only needs to be done once. -- */
+
     if(!initialized) //first time force is called
     {
         celllist_old=new long[num_cells*(N+1)];
@@ -66,6 +70,8 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     }
 
     *U=0;
+
+    //Are the passed in forces already initialized?
     for (long kk=0;kk<3*N;kk++)
     {
         F[kk]=0;
