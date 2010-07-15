@@ -25,6 +25,7 @@ ifdef NDEBUG
 	DEBUG=No
 	CXXFLAGS += -DNDEBUG
 else
+	CXXFLAGS += -g
 	DEBUG=Yes
 endif
 
