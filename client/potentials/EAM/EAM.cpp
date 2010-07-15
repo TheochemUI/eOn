@@ -150,8 +150,16 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     //{
     //    diff = box[0] - diff;
     //}
-    printf("%f \n",*U);
-
+    double fsum = 0.0;
+    for (int i =0; i<3*N; i++)
+    { 
+        fsum+=F[i];
+    }
+    for (int i =0; i<N; i++)
+    {
+        printf("%d\t%f\t%f\t%f\n", i, F[3*i], F[3*i +1], F[3*i+2]);
+    }
+    printf("U: %f\tFsum: %f\n",*U, fsum);
     delete Rtemp;
     delete Rnew;
     delete Rold;
@@ -229,6 +237,7 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             for (long k=0;k<3;k++)
             {
                 drho_dr[3*i+k]+=dirs[k]/r*-mag_force_den;
+                drho_dr[3*neigh+k]-=dirs[k]/r*-mag_force_den;
             }
             if(neigh>i)
             {
