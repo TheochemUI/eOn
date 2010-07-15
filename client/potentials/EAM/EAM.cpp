@@ -161,14 +161,20 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
 
 void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
+    double *drho_dr = new double[3*N]; 
     for (long i=0;i<3*N;i++) 
     {
         F[i]=0;
     }
+
     *U=0;
     
     for (long i=0;i<N;i++)
     {
+        for (long j=0;j<3*N;j++) 
+        {
+            drho_dr[j]=0;
+        }
         element_parameters params = get_element_parameters(atomicNrs[i]);
 
         double dens=0; 	//sum of density for atom 1
@@ -179,6 +185,10 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
         //    long neigh= neigh_list[i*(N+1)+j];
         for (long j=0;j<N;j++) //loops through each atom in atom i's neighbor list
         {
+            if (i == j)
+            {
+                continue;
+            }
             phi_r = 0;
             long neigh= j;
             
@@ -213,8 +223,13 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
 	        if(r > params.r_cut)
             {
                 continue;
-            }            
+            }
             dens += pow(r,6)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r));
+            double mag_force_den = 6*pow(r,5)*(exp(-params.beta1 *r)+512*exp(-2*params.beta2*r)) + pow(r,6)*(-params.beta1*exp(-params.beta1 *r)-1024*params.beta2*exp(-2*params.beta2*r));
+            for (long k=0;k<3;k++)
+            {
+                drho_dr[3*i+k]+=dirs[k]/r*-mag_force_den;
+            }
             if(neigh>i)
             {
 				//Morse potential portion of energy
@@ -235,19 +250,17 @@ void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double
             }
         }
 
-        // TODO: Forces for F(rho)
         double f_of_rho = embedding_function(params.func_coeff, dens);
         *U += f_of_rho;
-        //mag_force_den = f_of_rho *6*pow(r,5)*(512*exp(params.beta1*r)+exp(2*params.beta2*r))*exp(-params.beta1*r-2*params.beta2*r);
-        //for (long k=0;k<3;k++)
-        //{
-        //    F[3*i+k]+=dirs[k]/r*-mag_force_den;
-        //    F[3*neigh+k]-=dirs[k]/r*-mag_force_den;
-        //}
-        //embedding function for density
-        //printf("Density: %f\n", dens);
+        double dF_drho = embedding_force(params.func_coeff, dens);
+        for(int k=0; k<3*N; k++)
+        {
+            F[k] -= dF_drho * drho_dr[k];
+        }
+         
 
     }
+    delete [] drho_dr;
 }
 
 
@@ -444,4 +457,15 @@ double EAM::embedding_function(double *func_coeff, double rho)
         result = result * rho + func_coeff[i];
     }
     return result;
+}
+
+double EAM::embedding_force(double *func_coeff, double rho)
+{
+    double result = func_coeff[8]*8;
+    //Evaluate the polynomial using Horner's method.
+    for (int i=7;i>=1;i--) 
+    {
+        result = result * rho + i*func_coeff[i];
+    }
+    return -result;
 }

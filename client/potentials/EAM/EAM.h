@@ -34,4 +34,5 @@ class EAM : public PotentialsInterface
         double density (long N, long atom, double *R, const long *atomicNrs,
                         const double *box);
         double embedding_function(double *func_coeff, double rho);
+        double embedding_force(double *func_coeff, double rho);
 };
