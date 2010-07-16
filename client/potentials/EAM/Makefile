@@ -6,5 +6,8 @@ $(LIB) : $(OBJECTS)
 	ranlib $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
+test : CXXFLAGS += -DEAM_STANDALONE
+test : $(OBJECTS) test.o
+	g++ -o test $^
 
 .PHONY : clean
