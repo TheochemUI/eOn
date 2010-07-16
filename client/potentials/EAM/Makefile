@@ -1,4 +1,4 @@
-OBJECTS = EAM.o Parameters.o
+OBJECTS = EAM.o
 CXXFLAGS += -I../.. -Wall -pedantic -Wextra -O0 -g
 LIB := libEAM.a
 $(LIB) : $(OBJECTS)

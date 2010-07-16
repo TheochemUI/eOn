@@ -161,6 +161,24 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
     initialized = true;
 }
 
+EAM::element_parameters EAM::get_element_parameters(int atomic_number)
+{
+    bool found=false;
+    int i;
+    for (i=0;i<NPARAMS;i++) {
+        if (el_params[i].Z == atomic_number) {
+            found = true;
+            break;
+        }
+    }
+    if (found == false) {
+        /* This sucks. We need to have a way to alert user that the 
+         * parameters are missing */
+        throw 14324;
+    }
+    return el_params[i];
+}
+
 
 void EAM::calc_force(long N, double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
