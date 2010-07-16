@@ -1,9 +1,14 @@
 #include <math.h> 
 #include <iostream>
 
+#ifndef EAM_STANDALONE
 #include "../../PotentialsInterface.h"
+#endif
     
-class EAM : public PotentialsInterface
+class EAM 
+#ifndef EAM_STANDALONE
+: public PotentialsInterface
+#endif
 {    
     public:
         EAM(void);
