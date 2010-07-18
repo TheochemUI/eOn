@@ -470,7 +470,7 @@ int EAM::update_cell_list(long N, long num_cells,long *num_axis, long *cell_leng
 
 
 
-double EAM::embedding_function(double *func_coeff, double rho)
+double EAM::embedding_function(const double *func_coeff, double rho)
 {
     double result = func_coeff[8];
     //Evaluate the polynomial using Horner's method.
@@ -481,7 +481,7 @@ double EAM::embedding_function(double *func_coeff, double rho)
     return result;
 }
 
-double EAM::embedding_force(double *func_coeff, double rho)
+double EAM::embedding_force(const double *func_coeff, double rho)
 {
     double result = func_coeff[8]*8;
     //Evaluate the polynomial using Horner's method.
