@@ -40,6 +40,10 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EAM();
         interface_->initialize();
     }
+    else if(parameters_->getPotentialTag() == getPotentialQSC()){
+        interface_ = new QSC();
+        interface_->initialize();
+    }
 #if 0
     else if(parameters_->getPotentialTag() == getPotentialEDIP()){
         interface_ = new EDIP();

@@ -19,14 +19,14 @@ class EAM
                    double *U, const double *box);
     private:
         struct element_parameters {
-            int Z;                //Atomic Number
-            double Dm;            //Morse potential well depth
-            double alphaM;        //Curvative at Morse minimum
-            double Rm;            //Position of Morse minimum
-            double beta1;         //Density parameter 1
-            double beta2;         //Density parameter 2
-            double r_cut;         //Cutoff distance
-            double func_coeff[9]; //8th order poly for embedding function
+            const int Z;                //Atomic Number
+            const double Dm;            //Morse potential well depth
+            const double alphaM;        //Curvative at Morse minimum
+            const double Rm;            //Position of Morse minimum
+            const double beta1;         //Density parameter 1
+            const double beta2;         //Density parameter 2
+            const double r_cut;         //Cutoff distance
+            const double func_coeff[9]; //8th order poly for embedding function
         };
         static const element_parameters el_params[];
         // Variables
@@ -49,7 +49,7 @@ class EAM
         //calculates local density of single atom
         double density (long N, long atom, double *R, const long *atomicNrs,
                         const double *box);
-        double embedding_function(double *func_coeff, double rho);
-        double embedding_force(double *func_coeff, double rho);
+        double embedding_function(const double *func_coeff, double rho);
+        double embedding_force(const double *func_coeff, double rho);
         element_parameters get_element_parameters(int atomic_number);
 };
