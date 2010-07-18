@@ -1,8 +1,5 @@
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include <float.h>
 #include <stdlib.h>
 
 #include "QSC.h"
@@ -37,29 +34,41 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     *U = 0.0;
     double *rho = new double[N];
 
-    /* Potential and Density Calculation */
+    /* Calculate the local density (rho_i) for each atom */
     for (int i=0; i<N; i++) {
-        double repulsive=0.0;
-        double attractive=0.0;
         rho[i]=0.0;
         for (int j=0; j<N; j++) {
             if (i==j) continue;
             double r_ij = distance(box, R, i, j);
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            if (r_ij > 2*p.a) continue;
-            repulsive += p.epsilon*pair_potential(r_ij, p.a, p.n); 
+            //if (r_ij > 2*p.a) continue;
             rho[i] += pair_potential(r_ij, p.a, p.m);
         }
-        repulsive *= 0.5;
+    }
+
+    /* Calculate the Potential Energy */
+    for (int i=0; i<N-1; i++) {
+        double pair_term=0.0;
+        double embedding_term=0.0;
+        for (int j=i+1; j<N; j++) {
+            double r_ij = distance(box, R, i, j);
+            qsc_parameters p;
+            /* Get the mixed parameters */
+            p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
+            //if (r_ij > 2*p.a) continue;
+            pair_term += p.epsilon*pair_potential(r_ij, p.a, p.n); 
+        }
+        /* Get the parameters for element i */
         qsc_parameters p=get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
-        attractive = p.c * p.epsilon * sqrt(rho[i]);
-        *U += repulsive - attractive;
+        embedding_term = p.c * p.epsilon * sqrt(rho[i]);
+        *U += pair_term - embedding_term;
         //printf("c=%f,e=%f,a=%f,m=%f,n=%f\n",p.c,p.epsilon,p.a,p.m,p.n);
         //printf("attractive=%f repulsive=%f\n", attractive, repulsive);
     }
 
     //printf("%10.4f %10.4f\n", distance(box, R, 0, 1), *U);
+    //printf("\t\t%10.4f\n", *U);
 
     /* Forces */
     for(int i=0;i<N;i++){
@@ -73,11 +82,12 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
             double r_ij = distance(box, R, i, j);
-            if (r_ij > 2*p.a) continue;
-            double mag_force = -p.epsilon/r_ij*
-                               (p.n*pair_potential(r_ij, p.a, p.n)-
-                                - p.c*p.m/2.0*(sqrt(rho[i])*sqrt(rho[j]))*
-                                pair_potential(r_ij, p.a, p.n));
+            //if (r_ij > 2*p.a) continue;
+            double mag_force; 
+            mag_force = -p.epsilon/r_ij *
+                        (p.n*pair_potential(r_ij, p.a, p.n) -
+                         p.c*p.m*0.5*(pow(rho[i],-0.5)+pow(rho[j],-0.5)) *
+                         pair_potential(r_ij, p.a, p.m));
             F[3*i]   += mag_force * (R[3*i]   - R[3*j]  )/r_ij;
             F[3*i+1] += mag_force * (R[3*i+1] - R[3*j+1])/r_ij;
             F[3*i+2] += mag_force * (R[3*i+2] - R[3*j+2])/r_ij;
@@ -114,29 +124,38 @@ double QSC::distance(const double *box, const double *R, int i, int j)
 }
 
 
-QSC::qsc_parameters QSC::get_qsc_parameters(int a, int b)
+QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b)
 {
     qsc_parameters p;
-    int ia, ib;
-    bool founda=false, foundb=false;
+    int i=0, ia=-1, ib=-1, Z;
 
-    for (int i=0;i<NPARAMS;i++) {
-        if (qsc_element_params[i].Z == a) {
-            founda = true;
-            ia = i;
+    while (true) {
+        Z = qsc_element_params[i].Z;
+
+        /* -1 is the element number of the parameter structure at
+         * the end of the array. */
+        if (Z == -1) {
+            /* Need better way to tell user there are missing
+             * parameters. */
+            throw 14324;
         }
-        if (qsc_element_params[i].Z == b) {
-            foundb = true;
+
+        if (Z == element_a) {
+            ia = i;
+        } 
+
+        if (Z == element_b) {
             ib = i;
         }
+
+        /* If we have found both parameters we are done. */
+        if (ia != -1 and ib != -1) {
+            break;
+        }
+        i++;
     }
 
-    if (founda == false and foundb == false) {
-        /* This sucks. We need to have a way to alert user that the 
-         * parameters are missing */
-        throw 14324;
-    }
-
+    /* Mixing rules */
     p.epsilon = sqrt(qsc_element_params[ia].epsilon * 
                      qsc_element_params[ib].epsilon);
     p.a = (qsc_element_params[ia].a + qsc_element_params[ib].a)/2.0;
