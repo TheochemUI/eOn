@@ -1,5 +1,4 @@
-#include <math.h> 
-#include <iostream>
+#include <utility>
 #include <map>
 
 #ifndef QSC_STANDALONE
@@ -20,7 +19,7 @@ class QSC
                    double *F, double *U, const double *box);
     private:
         struct qsc_parameters {
-            int Z;                //Atomic Number
+            int Z;
             double n;
             double m;
             double epsilon;
@@ -28,6 +27,7 @@ class QSC
             double a;
         };
         static const qsc_parameters qsc_element_params[];
+        
         qsc_parameters get_qsc_parameters(int a, int b);
         double distance(const double *box, const double *R, int i, int j);
         double pair_potential(double r, double a, double n);
