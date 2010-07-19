@@ -42,7 +42,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             double r_ij = distance(box, R, i, j);
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            //if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p.a) continue;
             rho[i] += pair_potential(r_ij, p.a, p.m);
         }
     }
@@ -56,7 +56,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             qsc_parameters p;
             /* Get the mixed parameters */
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            //if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p.a) continue;
             pair_term += p.epsilon*pair_potential(r_ij, p.a, p.n); 
         }
         /* Get the parameters for element i */
@@ -70,33 +70,50 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     //printf("%10.4f %10.4f\n", distance(box, R, 0, 1), *U);
     //printf("\t\t%10.4f\n", *U);
 
-    /* Forces */
+    /* Zero out Forces */
     for(int i=0;i<N;i++){
-        F[ 3*i ] = 0;
+        F[3*i  ] = 0;
         F[3*i+1] = 0;
         F[3*i+2] = 0;
     }
-    for (int i=0; i<N; i++) {
-        for (int j=0; j<N; j++) {
-            if (i==j) continue;
+    /* Forces Calculation */
+    for (int i=0; i<N-1; i++) {
+        for (int j=i+1; j<N; j++) {
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
+
             double r_ij = distance(box, R, i, j);
-            //if (r_ij > 2*p.a) continue;
-            double mag_force; 
-            mag_force = -p.epsilon/r_ij *
+            if (r_ij > 2*p.a) continue;
+
+            double Fij;
+            Fij =       p.epsilon *
                         (p.n*pair_potential(r_ij, p.a, p.n) -
-                         p.c*p.m*0.5*(pow(rho[i],-0.5)+pow(rho[j],-0.5)) *
-                         pair_potential(r_ij, p.a, p.m));
-            F[3*i]   += mag_force * (R[3*i]   - R[3*j]  )/r_ij;
-            F[3*i+1] += mag_force * (R[3*i+1] - R[3*j+1])/r_ij;
-            F[3*i+2] += mag_force * (R[3*i+2] - R[3*j+2])/r_ij;
+                         (p.c*p.m*0.5*(pow(rho[i],-0.5)+pow(rho[j],-0.5)) *
+                         pair_potential(r_ij, p.a, p.m)))/(r_ij*r_ij);
+
+            //this is correct for 2 atoms.
+            //mag_force = -p.epsilon/(2.0*r_ij) *
+            //            (2.0*p.n*pair_potential(r_ij, p.a, p.n) -
+            //             p.c*p.m*sqrt(pair_potential(r_ij, p.a, p.m)));
+            //printf("mf: %12.6g\n", mag_force);
+
+            double diffx,diffy,diffz, Fijx, Fijy, Fijz;
+            diffx = R[3*i  ] - R[3*j  ];
+            diffy = R[3*i+1] - R[3*j+1];
+            diffz = R[3*i+2] - R[3*j+2];
+
+            Fijx = Fij * diffx;
+            Fijy = Fij * diffy;
+            Fijz = Fij * diffz;
+
+            F[3*i]   += Fijx;
+            F[3*i+1] += Fijy;
+            F[3*i+2] += Fijz;
+            F[3*j]   -= Fijx;
+            F[3*j+1] -= Fijy;
+            F[3*j+2] -= Fijz;
         }
-        //printf("F[%2i] = %10.4g\n", 3*i, F[3*i]);
-        //printf("F[%2i] = %10.4g\n", 3*i+1,F[3*i+1]);
-        //printf("F[%2i] = %10.4g\n", 3*i+2,F[3*i+2]);
     }
-    //printf("F1x = %10.4f F2x = %10.4f\n", F[0], F[3]);
 
     delete rho;
 }
