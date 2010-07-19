@@ -48,7 +48,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     }
 
     /* Calculate the Potential Energy */
-    for (int i=0; i<N-1; i++) {
+    for (int i=0; i<N; i++) {
         double pair_term=0.0;
         double embedding_term=0.0;
         for (int j=i+1; j<N; j++) {
