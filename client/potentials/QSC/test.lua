@@ -17,7 +17,7 @@ set_box(box)
 a = 2.0
 b = 3.0
 range = b-a
-stepsize = .001
+stepsize = .00001
 npts = range/stepsize
 energies = {}
 for i=0,npts do
@@ -25,7 +25,7 @@ for i=0,npts do
     set_r(get_r(r_ij))
     energy, force = get_force()
     energies[i+1] = {r_ij, energy}
-    io.write(string.format("%10.4f %10.4f %10.4f\n", r_ij, energy, force[1]))
+    --io.write(string.format("%10.4f %10.4f %10.4f\n", r_ij, energy, force[1]))
 end
 
 mini = 1
