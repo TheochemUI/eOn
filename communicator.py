@@ -743,7 +743,7 @@ class ARC(Communicator):
         return outputdir
 
 
-    def get_results(self, resultspath):
+    def get_results(self, resultspath, keep_result):
         '''Returns a list of directories containing the results.'''
 
         result_dirs = []
@@ -762,7 +762,9 @@ class ARC(Communicator):
 
             logger.info("Fetched %s / %s" % (jname, jid)) 
 
-        return self.unbundle(resultspath)
+        for bundle in self.unbundle(resultspath, keep_result):
+            for result in bundle:
+                yield result
 
 
     def get_queue_size(self):
