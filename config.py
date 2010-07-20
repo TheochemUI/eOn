@@ -96,6 +96,8 @@ if kdb_on:
 recycling_on = parser.getboolean('Recycling', 'use_recycling')
 recycling_move_distance = parser.getfloat('Recycling', 'move_distance')
 sb_recycling_on = parser.getboolean('Recycling','use_sb_recycling')
+if sb_recycling_on:
+    sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
 #Random Displacement
 disp_type = parser.get('Displacement', 'type')
@@ -115,11 +117,12 @@ if sb_on:
         sb_el_energy_increment = parser.getfloat('Superbasins', 'energy_increment')
 
 askmc_on = parser.getboolean('Superbasins','use_askmc')
-askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
-askmc_alpha = parser.getfloat('Superbasins','askmc_barrier_raise_param')
-askmc_gamma = parser.getfloat('Superbasins','askmc_high_barrier_def')
-askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
-askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
+if askmc_on:
+    askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
+    askmc_alpha = parser.getfloat('Superbasins','askmc_barrier_raise_param')
+    askmc_gamma = parser.getfloat('Superbasins','askmc_high_barrier_def')
+    askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
+    askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
 
 #State comparison
 comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
