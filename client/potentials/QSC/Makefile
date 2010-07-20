@@ -1,5 +1,5 @@
 OBJECTS = QSC.o
-CXXFLAGS += -I../.. -Wall -pedantic -Wextra -O0 -g
+CXXFLAGS += -I../.. -Wall -pedantic -Wextra -g -O0
 LIB := libQSC.a
 $(LIB) : $(OBJECTS)
 	ar cru $@ $^

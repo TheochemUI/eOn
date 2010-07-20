@@ -42,7 +42,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             double r_ij = distance(box, R, i, j);
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            //if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p.a) continue;
             rho[i] += pair_potential(r_ij, p.a, p.m);
         }
     }
@@ -56,7 +56,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             qsc_parameters p;
             /* Get the mixed parameters */
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            //if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p.a) continue;
             pair_term += p.epsilon*pair_potential(r_ij, p.a, p.n); 
         }
         /* Get the parameters for element i */
@@ -85,7 +85,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
 
             double r_ij = distance(box, R, i, j);
-            //if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p.a) continue;
 
             double Fij;
             Fij =       p.epsilon *

@@ -16,38 +16,62 @@ int lua_set_r(lua_State *L);
 int lua_set_z(lua_State *L);
 int lua_set_box(lua_State *L);
 int lua_get_force(lua_State *L);
+int lua_get_new_sim(lua_State *L);
+int lua_test(lua_State *L);
 
-QSC potential;
-double *R;
-long N;
-long *atomicNrs;
-double *box;
-double *F;
-double U;
+struct simulation {
+    QSC *potential;
+    double *R;
+    long N;
+    long *atomicNrs;
+    double *box;
+    double *F;
+    double U;
+};
+
+int lua_get_new_sim(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TNUMBER);
+    long n = (long) lua_tonumber(L, 1);
+    simulation *s = new simulation;
+    s->N = n;
+    s->potential = new QSC;
+    s->R = new double[n];
+    s->box = new double[n];
+    s->atomicNrs = new long[n];
+    s->F = new double[3*n];
+    lua_pushlightuserdata(L, s);
+    return 1;
+}
 
 int lua_get_force(lua_State *L)
 {
-    potential.force(N, R, atomicNrs, F, &U, box);
-    lua_pushnumber(L, U);
+    simulation *s;
+    luaL_checktype(L, 1, LUA_TLIGHTUSERDATA);
+    s = (simulation*) lua_topointer(L, 1);
+
+    s->potential->force(s->N, s->R, s->atomicNrs, s->F, &(s->U), s->box);
+    lua_pushnumber(L, s->U);
     lua_newtable(L);
-    for (int i=0; i<3*N; i++) {
-        lua_pushnumber(L, i+1);
-        lua_pushnumber(L, F[i]);
-        lua_settable(L, -3);
+    for (int i=0; i<3*(s->N); i++) {
+        lua_pushnumber(L, s->F[i]);
+        lua_rawseti(L, -2, i+1);
     }
     return 2;
 }
 
 int lua_set_box(lua_State *L)
 {
-    luaL_checktype(L, 1, LUA_TTABLE);
+    simulation *s;
+    luaL_checktype(L, 1, LUA_TLIGHTUSERDATA);
+    s = (simulation*) lua_topointer(L, 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
 
-    int n = luaL_getn(L, 1);
-    box = new double[n];
+    int n = luaL_getn(L, 2);
 
     for (int i=1; i<=n; i++) {
-        lua_rawgeti(L, 1, i);
-        box[i-1] = lua_tonumber(L, -1);
+        lua_rawgeti(L, 2, i);
+        s->box[i-1] = lua_tonumber(L, -1);
     }
 
     return 0;
@@ -55,16 +79,16 @@ int lua_set_box(lua_State *L)
 
 int lua_set_z(lua_State *L)
 {
-    luaL_checktype(L, 1, LUA_TTABLE);
+    simulation *s;
+    luaL_checktype(L, 1, LUA_TLIGHTUSERDATA);
+    s = (simulation*) lua_topointer(L, 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
 
-    int n = luaL_getn(L, 1);
-    atomicNrs = new long[n];
-    N = n;
-    F = new double[3*n];
+    int n = luaL_getn(L, 2);
 
     for (int i=1; i<=n; i++) {
-        lua_rawgeti(L, 1, i);
-        atomicNrs[i-1] = (long) lua_tonumber(L, -1);
+        lua_rawgeti(L, 2, i);
+        s->atomicNrs[i-1] = (long) lua_tonumber(L, -1);
     }
 
     return 0;
@@ -72,58 +96,20 @@ int lua_set_z(lua_State *L)
 
 int lua_set_r(lua_State *L)
 {
-    luaL_checktype(L, 1, LUA_TTABLE);
+    simulation *s;
+    luaL_checktype(L, 1, LUA_TLIGHTUSERDATA);
+    s = (simulation*) lua_topointer(L, -1);
+    luaL_checktype(L, 2, LUA_TTABLE);
 
-    int n = luaL_getn(L, 1);
-    R = new double[n];
-
+    int n = luaL_getn(L, 2);
     for (int i=1; i<=n; i++) {
-        lua_rawgeti(L, 1, i);
+        lua_rawgeti(L, 2, i);
         double num = lua_tonumber(L, -1);
-        R[i-1] = num;
+        s->R[i-1] = num;
     }
 
     return 0;
 }
-
-
-/*
-void initialize(void) {
-    //long N=4;
-    //double R[] = { 50.0,50.0,50.0, 
-    //               52.0,50.0,50.0,
-    //               50.0,52.0,50.0,
-    //               50.0,50.0,52.0};
-    //const long atomicNrs[] = {46,79,46,79}; 
-    //long N=2;
-    //double R[] = { .0,.0,.0,
-    //              3.0,.0,.0};
-    //const long atomicNrs[] = {46,46};
-
-    for (int i=0;i<75;i++) {
-        pot.force(N, R, atomicNrs, F, &U, box);
-        R[3] += .5;
-        R[7] += .5;
-        R[11] += .5;
-        pot.force(N, R, atomicNrs, F, &U, box);
-        printf("dR=%10.4g U=%10.4g\n", R[3]-R[0], U);
-        printf("mag forces:\n");
-        for (int j=0;j<N;j++) {
-            double mag;
-            mag = sqrt(F[3*j]*F[3*j] + F[3*j+1]*F[3*j+1] + 
-                       F[3*j+2]*F[3*j+2]);
-            printf("%13.4g\n", mag);
-        }
-        //for (int i=0;i<3*N;i++)
-        //{
-        //    if (i%3==0) printf("\n");
-        //    printf("%10.4g ", F[i]); 
-        //}
-        //printf("\n");
-    }
-    pot.cleanMemory(); 
-}
-*/
 
 void report_errors(lua_State *L, int status)
 {
@@ -141,6 +127,7 @@ int main(int argc, char **argv)
         lua_State *L = lua_open();
         luaL_openlibs(L);
 
+        lua_register(L, "get_new_sim", lua_get_new_sim);
         lua_register(L, "set_r", lua_set_r);
         lua_register(L, "set_z", lua_set_z);
         lua_register(L, "set_box", lua_set_box);
