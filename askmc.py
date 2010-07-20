@@ -1,6 +1,4 @@
-import random
 import math
-import time
 import os
 import copy
 
@@ -21,12 +19,14 @@ class ASKMC:
         performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
 
-    def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, sb_recycling_on, path_root, thermal_window):
+    def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, sb_recycling_on, path_root, thermal_window, recycle_path):
         self.kT = kT
+        self.states = states
         self.Beta = 1/(kT)
+        self.sb_recycling_on = sb_recycling_on
         self.path = path_root
         self.thermal_window = thermal_window
-        self.states = states
+        self.recycle_path = recycle_path
 
         # --- Defining the "acceleration" parameters ---
 
@@ -66,6 +66,11 @@ class ASKMC:
             self.checksb_connections = True
         else:
             self.checksb_connections = False
+
+        if sb_recycling_on:
+            self.sb_recycling_on = True
+        else:
+            self.sb_recycling_ont = False
 
     def compile_process_table(self, current_state):
         """ Load the normal process table, and replace all the rates edited by AS-KMC. """
@@ -158,9 +163,9 @@ class ASKMC:
         mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
         fo = open(mod_proctable_path,"w")
         fo.write(mod_processtable_header)
-        for id in current_state_mod_procs.keys():
-            proc = current_state_mod_procs[id]
-            fo.write(processtable_line % (id, 
+        for process_id in current_state_mod_procs.keys():
+            proc = current_state_mod_procs[process_id]
+            fo.write(processtable_line % (process_id, 
                                          proc['saddle_energy'], 
                                          proc['prefactor'], 
                                          proc['product'], 
@@ -181,7 +186,7 @@ class ASKMC:
         fo.write(processtable_line % (process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count))
         fo.close()
 
-    def get_process_id(self, current_state, current_state_procs, next_state_num, flag):
+    def get_process_id(self, current_state_procs, next_state_num, flag):
         """ Return the process id of the process going from the current state
             to the next state (number). """
         # If in "try" mode, return "None" if there is no process from current_state to next_state_num.
@@ -201,19 +206,21 @@ class ASKMC:
 
     def register_transition(self, current_state, next_state):
         """ Whenever there is a move (in KMC), update the view_count, and potentially
-            lower rate constants and raise the corresponding transition state energies. """
+            lower rate constants and raise the corresponding transition state energies.
+            If superbasin recycling is on, and a superbasin has just been exited from,
+            Perform the superbasin recycling. """
         # If for some reason, there wasn't actually a move, don't do anything.
         if current_state == next_state:
             return
         sb_check_count, num_rate_changes = self.get_askmc_metadata()
         current_state_mod_procs = self.get_modified_process_table(current_state)
         # Determine if the process is new -- Try to find the process_id in the modified process table.
-        next_state_process_id = self.get_process_id(current_state, current_state_mod_procs, next_state.number, "try")
+        next_state_process_id = self.get_process_id(current_state_mod_procs, next_state.number, "try")
         # If we've never been along this path before, add it to our modified list
         if next_state_process_id == None:
             # Find the find the process id from the real process table
             current_state_real_procs = self.get_real_process_table(current_state)
-            next_state_process_id = self.get_process_id(current_state, current_state_real_procs, next_state.number, "find")
+            next_state_process_id = self.get_process_id(current_state_real_procs, next_state.number, "find")
             # Get the info from the actual process table
             procs = current_state_real_procs[next_state_process_id]
             saddle_energy = procs["saddle_energy"]
@@ -252,10 +259,10 @@ class ASKMC:
         else:
             return False
 
-    def edgelist_to_statelist(self, edgelist):
-        """ Compile a list of state numbers from an edgelist with no repeats. """
+    def edgelist_to_statelist(self):
+        """ Compile a list of state numbers from the current edgelist with no repeats. """
         state_nums = []
-        for edge in edgelist:
+        for edge in self.edgelist:
             ref_state_a_num = edge[0]
             ref_state_b_num = edge[1]
             if ref_state_a_num not in state_nums:
@@ -264,17 +271,16 @@ class ASKMC:
                 state_nums.append(ref_state_b_num)
         return state_nums
 
-    def missed_connections(self, edgelist, origEtrans):
+    def missed_connections(self, origEtrans):
         """ Determine whether or not there are low barrier processes which
             connect states in the proposed superbasin which have been missed. """
         # testvar indicates whether or not a problem has arisen.
         # A value of zero indicates "all clear"
         testvar = 0
         # Compile a list of the state *numbers* with no repeats.
-        state_nums_in_basin = self.edgelist_to_statelist(edgelist)
+        state_nums_in_basin = self.edgelist_to_statelist()
         # Make a list of state objects.
         states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
-        num_states = len(state_nums_in_basin)
         # Convert all the "-1's" in the process tables to the correct
         # product state number (if it's in the superbasin)
         self.states.connect_states(states_in_basin)
@@ -288,20 +294,20 @@ class ASKMC:
                 # Note that the "real" process table may be used in this case because if it were in the "modified" process table,
                 # then this process *really* should have been caught in the "locsearch" function
                 if product_state_num in state_nums_in_basin \
-                    and not (self.in_array([product_state_num, state.number], edgelist) or self.in_array([state.number, product_state_num], edgelist)) \
+                    and not (self.in_array([product_state_num, state.number], self.edgelist) or self.in_array([state.number, product_state_num], self.edgelist)) \
                     and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
                         testvar = 1
                         return testvar
         return testvar
 
-    def missed_low_barriers(self, edgelist, origEtrans):
+    def missed_low_barriers(self, origEtrans):
         """ Determine whether or not there are low barrier processes originating
             from any of the states in identified superbasin that *were missed*. """
         # testvar indicates whether or not a problem has arisen.
         # A value of zero indicates "all clear"
         testvar = 0
         # Compile a list of the state *numbers* with no repeats.
-        state_nums_in_basin = self.edgelist_to_statelist(edgelist)
+        state_nums_in_basin = self.edgelist_to_statelist()
         # Make a list of state objects from the basin.
         states_in_basin = [self.states.get_state(state_num) for state_num in state_nums_in_basin]
         # See if any of the states have "low-barrier" processes from them which have not been seen.
@@ -320,75 +326,71 @@ class ASKMC:
         """ Act recursively to find if the superbasic criterion is met.
             However, ---Note--- that in this implementation, not all neighbors are necessarily checked --
             just those which have been seen so far (which is *probably* all low barrier processes in a superbasin).
+            This can be remedied by using the checksb_barriers option.
             origEtrans should be transition state energy (eV) of the process initially used for the call.
-            Immediately before each call, welltest should be set to 1 and edgelist should be any 2X1 numpy array. """
-        # "welltest" will serve as a flag to stop the search if it has failed.
+            Immediately before each call, self.welltest should be set to 1 and self.edgelist should be any 2X1 numpy array. """
+        # "self.welltest" will serve as a flag to stop the search if it has failed.
         # A value of 1 will indicate it has not yet failed.
-        global welltest
-        # "edgelist" is the list of edges that have been examined.  It is global so that 
-        # other copies of this function do not examine the same edges.
-        global edgelist
-        if welltest == 1:
+        # "self.edgelist" is the list of edges that have been examined.
+        if self.welltest == 1:
             current_state_mod_procs = self.get_modified_process_table(current_state)
             # scan all the neighbor states
             for next_state_id in current_state_mod_procs.keys():
                 next_state_num = current_state_mod_procs[next_state_id]["product"]
-                if welltest == 1:
+                if self.welltest == 1:
                     # If this process has not already been traversed (either direction),
                     # and the barrier is considered "low", its number of sightings (view_count),
                     # in both the forward and backward direction will be checked.
-                    if not (self.in_array([current_state.number, next_state_num], edgelist) or self.in_array([next_state_num, current_state.number], edgelist)) \
+                    if not (self.in_array([current_state.number, next_state_num], self.edgelist) or self.in_array([next_state_num, current_state.number], self.edgelist)) \
                         and current_state_mod_procs[next_state_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
                             next_state = self.states.get_state(next_state_num)
                             next_state_mod_procs = self.get_modified_process_table(next_state)
                             # Try to find the "process_id" of the current state relative to the next state
-                            current_state_id = self.get_process_id(next_state, next_state_mod_procs, current_state.number, "try")
+                            current_state_id = self.get_process_id(next_state_mod_procs, current_state.number, "try")
                             # If the number of sightings is below the cut-off, the superbasin criterion fails.
                             # Both forward and backward reaction counts are checked.
                             if current_state_mod_procs[next_state_id]["view_count"] < self.Nf or current_state_id == None or next_state_mod_procs[current_state_id]["view_count"] < self.Nf:
-                                welltest = 0
+                                self.welltest = 0
                             # Otherwise, add this process to "edgelist" to note it's been viewed, and continue the search
                             else:
-                                edgelist = numpy.vstack((edgelist,[current_state.number, next_state_num]))
+                                self.edgelist = numpy.vstack((self.edgelist,[current_state.number, next_state_num]))
                                 self.locsearch(next_state, origEtrans)
     
     def raiseup(self, current_state, next_state, sb_check_count, num_rate_changes):
         """ Determine (with the aid of locsearch) if a superbasin is present.
-            If a superbasin is found to be present, raise the rate constants
-            and lower the saddle energies and the barriers. """
-        # Preparing for the "locsearch" function, "welltest" and "edgelist" are set globally.
-        global welltest
-        global edgelist
-        welltest = 1
-        edgelist = numpy.array([0,0])
+            If a superbasin is found to be present, raise the rate constants,
+            lower the saddle energies and the barriers, and save the states in the basin. """
+        # Preparing for the "locsearch" function.
+        self.welltest = 1
+        self.edgelist = numpy.array([0,0])
         sb_check_count += 1
         current_state_mod_procs = self.get_modified_process_table(current_state)
         # Find the "process_id" of the next state
-        next_state_id = self.get_process_id(current_state, current_state_mod_procs, next_state.number, "find")
+        next_state_id = self.get_process_id(current_state_mod_procs, next_state.number, "find")
         origEtrans = current_state_mod_procs[next_state_id]["saddle_energy"]
         # Perform "locsearch" to determine if the current state is in a superbasin,
         # and if so, the "bottom" of edgelist will be the contained states.
         self.locsearch(current_state, origEtrans)
-        if welltest:
-            edgelist = edgelist[1:,:]
+        if self.welltest:
+            self.edgelist = self.edgelist[1:,:]
             # "continue_flag" will indicate if it is safe to proceed (in case one of the following tests is performed).
             continue_flag = 1
             # If the extra check to find missed connections within the discovered superbasin is on,
             # and the test indicates there was a missed process (returns 1), that's problematic.
-            if self.checksb_connections and self.missed_connections(edgelist, origEtrans):
+            if self.checksb_connections and self.missed_connections(origEtrans):
                 # NOTE - Matt/Rye, do you think this should be just something to log, or should it raise an exception?
                 continue_flag = 0
                 logger.info("Based on 'connections-check', default superbasin criterion apparently missed a barrier - Not raising the barriers")
             # If the extra check to find missed low barriers from superbasin states is on,
             # and the test indicates there was a missed low barrier (returns 1), that's problematic.
-            if self.checksb_barriers and self.missed_low_barriers(edgelist, origEtrans):
+            if self.checksb_barriers and self.missed_low_barriers(origEtrans):
                 continue_flag = 0
                 logger.info("Based on 'Barrier-check', default superbasin criterion apparently missed a barrier - Not raising the barriers")
             if continue_flag:
                 # Reset the check count, because a barrier raise is being performed
                 sb_check_count = 0
                 # Performing adjustments
-                for state_pair in edgelist:
+                for state_pair in self.edgelist:
                     # The state numbers
                     state_a_num = state_pair[0]
                     state_b_num = state_pair[1]
@@ -403,8 +405,8 @@ class ASKMC:
                     state_a_energy = state_a.get_energy()
                     state_b_energy = state_b.get_energy()
                     # And the state process id's from the other's perspective
-                    state_b_id = self.get_process_id(state_a, state_a_mod_procs, state_b_num, "find")
-                    state_a_id = self.get_process_id(state_b, state_b_mod_procs, state_a_num, "find")
+                    state_b_id = self.get_process_id(state_a_mod_procs, state_b_num, "find")
+                    state_a_id = self.get_process_id(state_b_mod_procs, state_a_num, "find")
                     # The new rates
                     a_b_new_rate = state_a_mod_procs[state_b_id]["rate"]/self.alpha
                     b_a_new_rate = state_b_mod_procs[state_a_id]["rate"]/self.alpha
@@ -415,7 +417,9 @@ class ASKMC:
                         # NOTE - this exception is primarily for ensuring proper functioning of the method.
                         # If it's never raised, then only one of the above saddles needs to be calculated,
                         # and this "if" clause may be removed. (Note that below, *_*_new_saddle must then be replaced)
-                        raise ValueError("When recalculating, saddle energies from changed rate constants,\
+                        logger.warning("When recalculating saddle energies from changed rate constants,\
+                                        different saddle energies were obtained from the two direction")
+                        raise ValueError("When recalculating saddle energies from changed rate constants,\
                                          different saddle energies were obtained from the two directions!")
                     # The new "barrier" values.
                     a_b_new_barrier = a_b_new_saddle - state_a_energy
@@ -431,6 +435,17 @@ class ASKMC:
                     state_b_mod_procs[state_a_id]["view_count"] = 0
                     self.save_modified_process_table(state_a, state_a_mod_procs)
                     self.save_modified_process_table(state_b, state_b_mod_procs)
+                # If using super-basin recycling, write out the list of states that are present in this 'superbasin'.
+                if self.sb_recycling_on:
+                    if not os.path.isdir(self.recycle_path):
+                        os.mkdir(self.recycle_path)
+                    sb_data_path = os.path.join(self.recycle_path, "current_sb_states")
+                    fo = open(sb_data_path, "w")
+                    fo.write("Most recent 'superbasin' states:\n")
+                    state_list = self.edgelist_to_statelist()
+                    fo.write(repr(state_list))
+                    fo.close()
+                # Update the number of times rate constants have been adjusted.
                 num_rate_changes += 1
             # Finally, save the 'tallies' being kept track of
         self.save_askmc_metadata(sb_check_count, num_rate_changes)
