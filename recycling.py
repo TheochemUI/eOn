@@ -273,15 +273,16 @@ class Recycling:
     """
 
 
-    def __init__(self, states, suggested_ref_state, new_state, move_distance, from_sb=False):
+    def __init__(self, states, suggested_ref_state, new_state, move_distance, from_sb=False, save=False):
         """ Initialize the data for the recycling object.
             If there is a file containing the data for the current state,
             use this file.  Otherwise, the previous state will be the reference. """
         self.states = states
         self.ref_state = suggested_ref_state
         self.current_state = new_state
-        self.metadata_path = os.path.join(self.current_state.path,"recycling_info")
+        self.metadata_path = os.path.join(self.current_state.path, "recycling_info")
         self.from_sb = from_sb
+        self.save = save
         # If this state has already used the recycling process, we know what
         # the current process number (and maybe reference state number) is.
         if os.path.isfile(self.metadata_path):
@@ -297,21 +298,20 @@ class Recycling:
         self.ref_state.load_process_table()
         self.num_procs = len(self.ref_state.procs)
 
-        curr_reactant = self.current_state.get_reactant()
-        ref_reactant = self.ref_state.get_reactant()
+        self.curr_reactant = self.current_state.get_reactant()
+        self.ref_reactant = self.ref_state.get_reactant()
         # Make a vector of distances between previous
         # current positions for each atom in the state.
-        diff = atoms.per_atom_norm(curr_reactant.r - ref_reactant.r, 
-                                   curr_reactant.box)
+        diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r, 
+                                   self.curr_reactant.box)
         
-        # The saddle is taken as the reactant and will be modified
+        # The saddle will be taken as the reactant and will be modified
         # (along with the mode) for each suggested process
         # and then recommended as a search.
-        self.saddle = curr_reactant.copy()
-        self.mode = numpy.zeros((len(curr_reactant), 3))
+        self.mode = numpy.zeros((len(self.curr_reactant), 3))
         self.in_hole = []
         self.not_in_hole = []
-        for i in range(len(self.saddle)):
+        for i in range(len(self.curr_reactant)):
             if diff[i] < move_distance:
                 self.not_in_hole.append(i)
             else:
@@ -326,14 +326,17 @@ class Recycling:
             self.write_recycling_metadata()
             return None, None
 
-        # If there's NOTHING that's not in the whole (everything moved getting
-        # to this state from the reference), then there will be no recycling to do.
-        if len(self.not_in_hole) == 0:
-            self.process_number = 1e300
-            self.write_recycling_metadata()
-            return None, None
+#        # If there's NOTHING that's not in the whole (everything moved getting
+#        # to this state from the reference), then there will be no recycling to do.
+#        if len(self.not_in_hole) == 0:
+#            self.process_number = 1e300
+#            self.write_recycling_metadata()
+#            return None, None
         
-        # Determine the what happens in the reference state saddle
+        # Make a fresh copy of the "saddle" we're going to send,
+        # based on the current reactant.
+        saddle = self.curr_reactant.copy()
+        # Determine what happens in the reference state saddle
         # for the current process number.
         process_saddle = self.ref_state.get_process_saddle(self.process_number)
         process_mode = self.ref_state.get_process_mode(self.process_number)
@@ -341,8 +344,24 @@ class Recycling:
         # Now, for all the things that did *not* move getting to this state,
         # suggest this particular process's position to them.
         for i in self.not_in_hole:
-            self.saddle.r[i] = process_saddle.r[i]
+            saddle.r[i] = process_saddle.r[i]
             self.mode[i] = process_mode[i]
+        # And, for all the things that *did* move getting to this state,
+        # suggest the *motion* that they had available before to the
+        # current position they're in.
+        for i in self.in_hole:
+            movement = process_saddle.r[i] - self.ref_reactant.r[i]
+            saddle.r[i] += movement
+            self.mode[i] = process_mode[i]
+
+        # Save suggestions?
+        if self.save:
+            save_path = os.path.join(self.current_state.path, "saddle_suggestions")
+            if not os.path.isdir(save_path):
+                os.mkdir(save_path)
+            fo = open(os.path.join(save_path, "proc_%d" %self.process_number), "w")
+            io.savecon(fo, saddle)
+            fo.close()
         
         # Make a note of the fact that we've tried to recycle another saddle.
         self.process_number += 1
@@ -350,7 +369,7 @@ class Recycling:
         # Note: Uncomment the final return values to also return the list of indices of atoms
         # which are not in the hole and in the hole.  No change should need to be made to the
         # line in akmc.py which calls this function (unless akmc.py wants them as well).
-        return self.saddle.copy(), self.mode.copy()#, self.not_in_hole.copy(), self.in_hole.copy()
+        return saddle.copy(), self.mode.copy()#, self.not_in_hole.copy(), self.in_hole.copy()
     
     def read_recycling_metadata(self):
         """ Open the recycling metadata file located in the current state's directory.
