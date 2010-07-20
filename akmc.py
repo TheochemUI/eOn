@@ -52,6 +52,10 @@ def main():
     # If kdb is being used, initialize it.
     if config.kdb_on:
         kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
+
+    # If the Novotny-based superbasining scheme is being used, initialize it.
+    if config.sb_on:
+        superbasining = get_superbasin_scheme(states)
     
     # Create the communicator object.
     comm = get_communicator()
@@ -64,7 +68,11 @@ def main():
     register_results(comm, current_state, states, searchdata, kdber = pass_kdb)
 
     # Take a KMC step, if it's time.
-    current_state, previous_state, time = kmc_step(current_state, states, time, kT) 
+    if config.sb_on:
+        pass_superbasining = superbasining
+    else:
+        pass_superbasining = None
+    current_state, previous_state, time = kmc_step(current_state, states, time, kT, superbasining = pass_superbasining) 
             
     # If we took a step, cancel old jobs and start the kdbquery.
     if current_state.number != start_state_num:
@@ -74,12 +82,33 @@ def main():
             kdber.query(current_state, wait = config.kdb_wait)
     
     # Create new work.
-    if config.recycling_on:
+    recycler = None
+    # If we *just* want to do simple recycling
+    if config.recycling_on and not config.sb_recycling_on:
         recycler = recycling.Recycling(states, previous_state, current_state, 
                         config.recycling_move_distance)
+    # Is super-basin recycling on? If so, figure out the superbasin method being used.
+    if config.sb_recycling_on:
+        if config.sb_on:
+            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
+                          config.recycling_move_distance, config.sb_recycling_path, sb_type = "novotny",
+                          superbasining = superbasining)
+        elif config.askmc_on:
+            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
+                          config.recycling_move_distance, config.sb_recycling_path, sb_type = "askmc",
+                          superbasining = None)
+        else:
+            sb_recycler = recycling.SB_Recycling(config.sb_recycling_path, states,
+                          previous_state, current_state, config.recycling_move_distance,
+                          config.sb_recycling_path, sb_type = None, superbasining = None)
+        # If there's nothing that the superbasin recycler can do at this point,
+        # use the normal recycling process.
+        if (config.recycling_on and not sb_recycler.in_progress):
+            recycler = recycling.Recycling(states, previous_state, current_state, 
+                            config.recycling_move_distance)
     
     if current_state.get_confidence() < config.akmc_confidence:
-        if config.recycling_on:
+        if config.recycling_on and recycler:
             pass_recycler = recycler
         else:
             pass_recycler = None
@@ -87,7 +116,11 @@ def main():
             pass_kdb = kdber          	
         else:
             pass_kdb = None
-        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = pass_recycler, kdber = pass_kdb)
+        if config.sb_recycling_on:
+            pass_sb_recycler = sb_recycler
+        else:
+            pass_sb_recycler = None
+        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = pass_recycler, kdber = pass_kdb, sb_recycler = pass_sb_recycler)
     
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
@@ -253,17 +286,23 @@ def get_superbasin_scheme(states):
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_el_energy_increment)
     return superbasining
 
-def kmc_step(current_state, states, time, kT):
+def kmc_step(current_state, states, time, kT, superbasining):
     t1 = unix_time.time()
     previous_state = current_state 
     dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
     start_state_num = current_state.number
     steps = 0
-    if config.sb_on:
-        superbasining = get_superbasin_scheme(states)
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
-        asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_alpha, config.askmc_gamma, config.askmc_barrier_test_on, config.askmc_connections_test_on, config.sb_recycling_on, config.path_root, config.akmc_thermal_window)
+        if config.sb_recycling_on:
+            pass_rec_path = config.sb_recycling_path
+        else:
+            pass_rec_path = None
+        asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_alpha,
+                            config.askmc_gamma, config.askmc_barrier_test_on,
+                            config.askmc_connections_test_on, config.sb_recycling_on,
+                            config.path_root, config.akmc_thermal_window,
+                            recycle_path = pass_rec_path)
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
         if config.sb_on:
@@ -298,7 +337,7 @@ def kmc_step(current_state, states, time, kT):
         if config.debug_use_mean_time:
             time += mean_time
         else:
-            time -= mean_time*math.log(1-numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
+            time -= mean_time*math.log(1 - numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
         if config.askmc_on:
             asKMC.register_transition(current_state, next_state)
         if config.sb_on:
@@ -311,8 +350,6 @@ def kmc_step(current_state, states, time, kT):
         print >> dynamics_file, next_state.number, proc_id_out, time
         logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
-        if config.recycling_on:
-            recycling_start = 0
         previous_state = current_state
         current_state = next_state
 
@@ -336,7 +373,7 @@ def get_displacement(reactant):
         raise ValueError()
     return disp
 
-def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None):
+def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
     reactant = current_state.get_reactant()
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
     logger.info("%i searches in the queue" % num_in_buffer)
@@ -361,8 +398,20 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         # mode - an Nx3 numpy array containing the initial mode 
         search['id'] = "%d_%d" % (current_state.number, wuid)
         done = False
+        # Do we want to try superbasin recycling? If yes, try. If we fail to recycle the basin,
+        # move to the next case
+        if (config.sb_recycling_on and current_state.number is not 0):
+            displacement, mode = sb_recycler.make_suggestion()[0:2]
+            if displacement:
+                nrecycled += 1
+                if config.debug_list_search_results:
+                    try:
+                        searchdata["%d_%d" %(current_state.number, wuid) + "type"] = "recycling"
+                    except:
+                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
+                done = True
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
-        if (config.recycling_on and current_state.number is not 0):
+        if (recycler and current_state.number is not 0):
             displacement, mode = recycler.make_suggestion()[0:2]
             if displacement:
                 nrecycled += 1
@@ -477,6 +526,11 @@ if __name__ == '__main__':
         movie.make_movie(options.movie_type, config.path_root, states)
         sys.exit(0)
 
+    # From the config file: The Novotny and C&V (ASKMC) methods should not be used together.
+    if config.sb_on and config.askmc_on:
+        logger.error("Both superbasin methods should not be used at the same time.")
+        sys.exit(1)
+
     if options.print_status:
         states = get_statelist(config.akmc_temperature / 11604.5)
         start_state_num, time, wuid, searchdata = get_akmc_metadata()
@@ -523,6 +577,8 @@ if __name__ == '__main__':
                     rmdirs.append(config.kdb_path) 
                 if config.sb_on:
                     rmdirs.append(config.sb_path)
+                if config.sb_recycling_on:
+                    rmdirs.append(config.sb_recycling_path)
                 if config.debug_keep_all_results:
                     rmdirs.append(os.path.join(config.path_root, "old_searches"))
                 for i in rmdirs:
