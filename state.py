@@ -92,8 +92,8 @@ class State:
                          resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
                          resultdata["displacement_saddle_distance"],
                          resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
-                         resultdata["force_calls_prefactors"],
                          resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                         resultdata["force_calls_prefactors"],
                          comment))
                 f.close()
             except:
@@ -150,12 +150,8 @@ class State:
         if barrier == lowest and barrier < oldlowest - self.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
         
-        # Update the search result table according to the barrier.
-        ediff = (barrier - lowest) - (self.kT * self.thermal_window)        
-        if ediff < 0.0:    
-            self.append_search_result(result, "good-%d" % self.get_num_procs())
-        else:
-            self.append_search_result(result, "barrier > thermal_window")
+        # Update the search result table.
+        self.append_search_result(result, "good-%d" % self.get_num_procs())
 
         # Keep track of the number of searches, Ns.
         self.append_ns_barrier(barrier)
