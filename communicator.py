@@ -428,8 +428,8 @@ class Local(Communicator):
             if os.path.isfile(client):
                 self.client = os.path.abspath(client)
             #is the client in the path?
-            elif any([ os.path.isfile(os.path.join(d, client)) for d in 
-                       os.environ['PATH'].split(':') ]):
+            elif sum([ os.path.isfile(os.path.join(d, client)) for d in 
+                       os.environ['PATH'].split(':') ]) != 0:
                 self.client = client
             else:
                 logger.error("can't find client: %s", client)
