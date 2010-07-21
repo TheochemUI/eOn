@@ -23,7 +23,7 @@ QMBox::QMBox(Matter *matter, Parameters *parameters)
     boxforce_ = new double[3];
     boxv_ = new double[3];
     boxv_[0] = 0.0; boxv_[1] = 0.0; boxv_[2] = 0.0; 
-    dR = 0.0001;
+    dR = 0.001;
     dT = 0.01;
     qmBox_ = new Quickmin(matter_, parameters);
 };

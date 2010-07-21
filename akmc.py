@@ -461,10 +461,12 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         logger.error("Failed to submit searches.")
     return wuid
 
+
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
+    
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
