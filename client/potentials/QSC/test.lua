@@ -44,12 +44,12 @@ for i=0,npts do
     io.write("\n")
 end
 
-mini = 1
-for k,v in ipairs(energies) do
-    if (v[2]<energies[mini][2]) then
-        mini = k
-    end
-end
-set_r(get_r(energies[mini][1]))
-energy, force = get_force()
-io.write(string.format("Min at: %10.4f %10.4f %10.4g\n", energies[mini][1], energies[mini][2], force[1]))
+--mini = 1
+--for k,v in ipairs(energies) do
+--    if (v[2]<energies[mini][2]) then
+--        mini = k
+--    end
+--end
+--set_r(get_r(energies[mini][1]))
+--energy, force = get_force()
+--io.write(string.format("Min at: %10.4f %10.4f %10.4g\n", energies[mini][1], energies[mini][2], force[1]))

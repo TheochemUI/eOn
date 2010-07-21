@@ -448,7 +448,7 @@ class Local(Communicator):
             p = search[0]
             try:
                 os.kill(p.pid, signal.SIGKILL)
-            except:
+            except OSError:
                 pass
 
     def get_results(self, resultspath, keep_result):
