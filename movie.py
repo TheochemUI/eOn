@@ -72,7 +72,11 @@ def get_trajectory(trajectory_path, unique=False):
     return trajectory
 
 def processes(states, statenr, limit):
-    state = states.get_state(statenr)
+    try:
+        state = states.get_state(statenr)
+    except IOError:
+        print "error: Cannot make move for non-existant state"
+        sys.exit(1)
 
     process_table = state.get_process_table()
     for k,v in process_table.iteritems():
