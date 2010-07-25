@@ -489,6 +489,7 @@ if __name__ == '__main__':
     #set options.path_root to be where the config file is if given as an arg
     if config.path_root.strip() == '.' and len(args) == 1:
         config.path_root = os.path.abspath(os.path.dirname(args[0]))
+        os.chdir(config.path_root)
     if options.no_submit:
         config.comm_search_buffer_size = 0
 
