@@ -94,6 +94,7 @@ if kdb_on:
 
 #Recycling
 recycling_on = parser.getboolean('Recycling', 'use_recycling')
+disp_moved_only = parser.getboolean('Recycling', 'displace_moved_only')
 recycling_move_distance = parser.getfloat('Recycling', 'move_distance')
 sb_recycling_on = parser.getboolean('Recycling','use_sb_recycling')
 if sb_recycling_on:
