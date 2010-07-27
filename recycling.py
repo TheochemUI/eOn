@@ -143,7 +143,7 @@ class SB_Recycling:
         ref_state_index = [pair[1] for pair in self.sb_state_nums].index(self.current_state.number)
         ref_state = self.sb_states[ref_state_index][0]
         recycler = Recycling(self.states, ref_state, self.current_state, self.move_distance, from_sb = True)
-        sugg_saddle, sugg_mode = recycler.make_suggestion()[0:2]
+        sugg_saddle, sugg_mode = recycler.make_suggestion()
         # Write the data before we send the search recommendation, because akmc.py *may* be about to terminate.
         self.write_metadata()
         return sugg_saddle, sugg_mode
@@ -282,40 +282,49 @@ class Recycling:
         self.current_state = new_state
         self.metadata_path = os.path.join(self.current_state.path, "recycling_info")
         self.from_sb = from_sb
-        self.save = save
-        # If this state has already used the recycling process, we know what
-        # the current process number (and maybe reference state number) is.
+        self.save = True
+        # If this state has already used the recycling process, we know
+        # most of what we need about the state.
         if os.path.isfile(self.metadata_path):
-            # Establish self.process_number, and perhaps overwrite self.ref_state
+            # Establish (1) self.process_number, (2) self.num_procs,
+            # (3) self.in_hole, (4) and self.not_in_hole.
+            # Overwrite self.ref_state if not called by SB_recycling
             self.read_recycling_metadata()
+            # Re-load the current and reference reactants.
+            self.curr_reactant = self.current_state.get_reactant()
+            self.ref_reactant = self.ref_state.get_reactant()
         # Otherwise, this is a new recycling process;
-        # start with the first process.
+        # start with the first process, find the total number of processes,
+        # and determine what is and isn't in the hole
         else:
             self.process_number = 0
-        # Load the process table to determine the number
-        # of processes to recycle.
-        # Can't use the rate-table because that skips some processes.
-        self.ref_state.load_process_table()
-        self.num_procs = len(self.ref_state.procs)
+            # Load the process table to determine the number
+            # of processes to recycle.
+            # Can't use the rate-table because that skips some processes.
+            self.ref_state.load_process_table()
+            self.num_procs = len(self.ref_state.procs)
 
-        self.curr_reactant = self.current_state.get_reactant()
-        self.ref_reactant = self.ref_state.get_reactant()
-        # Make a vector of distances between previous
-        # current positions for each atom in the state.
-        diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r, 
-                                   self.curr_reactant.box)
-        
-        # The saddle will be taken as the reactant and will be modified
-        # (along with the mode) for each suggested process
-        # and then recommended as a search.
+            # Load the reference and current reactants.
+            self.curr_reactant = self.current_state.get_reactant()
+            self.ref_reactant = self.ref_state.get_reactant()
+
+            # Make a vector of distances between previous
+            # current positions for each atom in the state.
+            diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r, 
+                                       self.curr_reactant.box)
+            
+            # The saddle will be taken as the reactant and will be modified
+            # (along with the mode) for each suggested process
+            # and then recommended as a search.
+            self.moved = []
+            self.unmoved = []
+            for i in range(len(self.curr_reactant)):
+                if diff[i] < move_distance:
+                    self.unmoved.append(i)
+                else:
+                    self.moved.append(i)
+        # Set up the mode to be modified for process suggestions.
         self.mode = numpy.zeros((len(self.curr_reactant), 3))
-        self.in_hole = []
-        self.not_in_hole = []
-        for i in range(len(self.curr_reactant)):
-            if diff[i] < move_distance:
-                self.not_in_hole.append(i)
-            else:
-                self.in_hole.append(i)
 
     def make_suggestion(self):
         """ Makes a saddle suggestion and returns True.
@@ -326,13 +335,6 @@ class Recycling:
             self.write_recycling_metadata()
             return None, None
 
-#        # If there's NOTHING that's not in the whole (everything moved getting
-#        # to this state from the reference), then there will be no recycling to do.
-#        if len(self.not_in_hole) == 0:
-#            self.process_number = 1e300
-#            self.write_recycling_metadata()
-#            return None, None
-        
         # Make a fresh copy of the "saddle" we're going to send,
         # based on the current reactant.
         saddle = self.curr_reactant.copy()
@@ -343,13 +345,13 @@ class Recycling:
         
         # Now, for all the things that did *not* move getting to this state,
         # suggest this particular process's position to them.
-        for i in self.not_in_hole:
+        for i in self.unmoved:
             saddle.r[i] = process_saddle.r[i]
             self.mode[i] = process_mode[i]
         # And, for all the things that *did* move getting to this state,
         # suggest the *motion* that they had available before to the
         # current position they're in.
-        for i in self.in_hole:
+        for i in self.moved:
             movement = process_saddle.r[i] - self.ref_reactant.r[i]
             saddle.r[i] += movement
             self.mode[i] = process_mode[i]
@@ -369,25 +371,36 @@ class Recycling:
         # Note: Uncomment the final return values to also return the list of indices of atoms
         # which are not in the hole and in the hole.  No change should need to be made to the
         # line in akmc.py which calls this function (unless akmc.py wants them as well).
-        return saddle.copy(), self.mode.copy()#, self.not_in_hole.copy(), self.in_hole.copy()
+        return saddle.copy(), self.mode.copy()
     
     def read_recycling_metadata(self):
         """ Open the recycling metadata file located in the current state's directory.
             Return the state from which suggestions are being made.
             Return the process number current up for recycling consideration. """
-        fi = open(self.metadata_path,"r")
+        fi = open(self.metadata_path, "r")
         fi.readline() # The header
         lines = fi.readlines()
-        # If called from superbasin recycling, it likely has a different
+        # If called from superbasin recycling, use its
         # recommendation for reference state.
         if not self.from_sb:
             ref_state_num = int(lines[0].strip().split()[2])
             self.ref_state = self.states.get_state(ref_state_num)
-        self.process_number = int(lines[1].strip().split()[4])
+        self.process_number = int(lines[1].split('=')[1].strip())
+        self.num_procs = int(lines[2].split('=')[1].strip())
+        self.moved = eval(lines[3].split('=')[1].strip())
+        self.unmoved = eval(lines[4].split('=')[1].strip())
 
     def write_recycling_metadata(self):
         """ Write the recycling metadata file located in the current state's directory. """
-        fi = open(self.metadata_path,"w")
-        fi.write("Recycling Metadata\n")
-        fi.write("Reference State:  %d\n" %(self.ref_state.number))
-        fi.write("Current Process Number = %d\n" %(self.process_number))
+        fo = open(self.metadata_path, "w")
+        fo.write("Recycling Metadata\n")
+        fo.write("Reference State:  %d\n" %(self.ref_state.number))
+        fo.write("Current Process Number = %d\n" %(self.process_number))
+        fo.write("Number of processes = %d\n" %(self.num_procs))
+        fo.write("Indices of 'moved' atoms = %s\n" %(repr(self.moved)))
+        fo.write("Indices of 'unmoved' atoms = %s\n" %(repr(self.unmoved)))
+
+    def get_moved_indices(self):
+        """ Return the indices of atoms that moved in the process getting
+            to the current state from the reference state. """
+        return self.moved
