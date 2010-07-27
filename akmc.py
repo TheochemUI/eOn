@@ -362,8 +362,12 @@ def kmc_step(current_state, states, time, kT, superbasining):
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
 
-def get_displacement(reactant):
-    if config.disp_type == 'random':
+def get_displacement(reactant, indices=None):
+    # If we're going to be displacing based on indices.
+    if indices is not None:
+        disp = displace.MoveIndices(reactant, indices, config.disp_size, config.disp_radius)
+    # Otherwise, use the default, set method.
+    elif config.disp_type == 'random':
         disp = displace.Random(reactant, config.disp_size, config.disp_radius)
     elif config.disp_type == 'undercoordinated':
         disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius)
@@ -382,7 +386,12 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     
     if num_to_make == 0:
         return wuid
-    disp = get_displacement(reactant)
+    # If we plan to only displace atoms that moved getting to the current state.
+    if config.disp_moved_only and current_state.number != 0:
+        pass_indices = recycler.get_moved_indices()
+    else:
+        pass_indices = None
+    disp = get_displacement(reactant, indices = pass_indices)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
 
@@ -401,7 +410,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         # Do we want to try superbasin recycling? If yes, try. If we fail to recycle the basin,
         # move to the next case
         if (config.sb_recycling_on and current_state.number is not 0):
-            displacement, mode = sb_recycler.make_suggestion()[0:2]
+            displacement, mode = sb_recycler.make_suggestion()
             if displacement:
                 nrecycled += 1
                 if config.debug_list_search_results:
@@ -412,7 +421,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                 done = True
         # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
         if (recycler and current_state.number is not 0):
-            displacement, mode = recycler.make_suggestion()[0:2]
+            displacement, mode = recycler.make_suggestion()
             if displacement:
                 nrecycled += 1
                 if config.debug_list_search_results:                

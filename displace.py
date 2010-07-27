@@ -135,6 +135,20 @@ class Random(Displace):
         epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))] 
         return self.get_displacement(epicenter)
 
+class MoveIndices(Displace):
+    """ Move an atom selected randomly from the list of passed indices.
+        If there are no moved atoms (ex. still in state 0), displace randomly. """
+    def __init__(self, reactant, index_list, std_dev=0.05, radius=5.0):
+        Displace.__init__(self, reactant, std_dev, radius)
+        self.displaceable = index_list
+
+    def make_displacement(self):
+        """ Select an atom that moved in the process getting here and
+            displace all atoms in a radius about it. """
+        # Choose the atom
+        epicenter = self.displaceable[numpy.random.randint(len(self.displaceable))]
+        return self.get_displacement(epicenter)
+
 if __name__ == '__main__':
     import sys
     import time
