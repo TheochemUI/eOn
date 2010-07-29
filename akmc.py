@@ -86,26 +86,29 @@ def main():
     # If we *just* want to do simple recycling
     if config.recycling_on and not config.sb_recycling_on:
         recycler = recycling.Recycling(states, previous_state, current_state, 
-                        config.recycling_move_distance)
+                        config.recycling_move_distance, config.recycling_save_sugg)
     # Is super-basin recycling on? If so, figure out the superbasin method being used.
     if config.sb_recycling_on:
         if config.sb_on:
             sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
-                          config.recycling_move_distance, config.sb_recycling_path, sb_type = "novotny",
+                          config.recycling_move_distance, config.recycling_save_sugg,
+                          config.sb_recycling_path, sb_type = "novotny",
                           superbasining = superbasining)
         elif config.askmc_on:
             sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
-                          config.recycling_move_distance, config.sb_recycling_path, sb_type = "askmc",
+                          config.recycling_move_distance, config.recycling_save_sugg,
+                          config.sb_recycling_path, sb_type = "askmc",
                           superbasining = None)
         else:
-            sb_recycler = recycling.SB_Recycling(config.sb_recycling_path, states,
-                          previous_state, current_state, config.recycling_move_distance,
-                          config.sb_recycling_path, sb_type = None, superbasining = None)
+            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
+                          config.recycling_move_distance, config.recycling_save_sugg,
+                          config.sb_recycling_path, sb_type = None,
+                          superbasining = None)
         # If there's nothing that the superbasin recycler can do at this point,
         # use the normal recycling process.
         if (config.recycling_on and not sb_recycler.in_progress):
             recycler = recycling.Recycling(states, previous_state, current_state, 
-                            config.recycling_move_distance)
+                            config.recycling_move_distance, config.recycling_save_sugg)
     
     if current_state.get_confidence() < config.akmc_confidence:
         if config.recycling_on and recycler:
