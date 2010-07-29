@@ -136,8 +136,7 @@ class Random(Displace):
         return self.get_displacement(epicenter)
 
 class MoveIndices(Displace):
-    """ Move an atom selected randomly from the list of passed indices.
-        If there are no moved atoms (ex. still in state 0), displace randomly. """
+    """ Move an atom selected randomly from the list of passed indices. """
     def __init__(self, reactant, index_list, std_dev=0.05, radius=5.0):
         Displace.__init__(self, reactant, std_dev, radius)
         self.displaceable = index_list

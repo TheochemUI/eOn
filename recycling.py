@@ -33,7 +33,7 @@ class SB_Recycling:
     """
 
 
-    def __init__(self, states, previous_state, current_state, move_distance, path, sb_type, superbasining):
+    def __init__(self, states, previous_state, current_state, move_distance, recycle_save, path, sb_type, superbasining):
         """ Initialize the data for the super-basin recycling object. """
         # Establish the base data
         self.states = states
@@ -41,6 +41,7 @@ class SB_Recycling:
         self.current_state = current_state
         self.path = path
         self.move_distance = move_distance
+        self.recycle_save = recycle_save
         self.sb_type = sb_type
         self.superbasining = superbasining
 
@@ -142,7 +143,7 @@ class SB_Recycling:
             return None, None
         ref_state_index = [pair[1] for pair in self.sb_state_nums].index(self.current_state.number)
         ref_state = self.sb_states[ref_state_index][0]
-        recycler = Recycling(self.states, ref_state, self.current_state, self.move_distance, from_sb = True)
+        recycler = Recycling(self.states, ref_state, self.current_state, self.move_distance, self.recycle_save, from_sb = True)
         sugg_saddle, sugg_mode = recycler.make_suggestion()
         # Write the data before we send the search recommendation, because akmc.py *may* be about to terminate.
         self.write_metadata()
@@ -273,7 +274,7 @@ class Recycling:
     """
 
 
-    def __init__(self, states, suggested_ref_state, new_state, move_distance, from_sb=False, save=False):
+    def __init__(self, states, suggested_ref_state, new_state, move_distance, save=False, from_sb=False):
         """ Initialize the data for the recycling object.
             If there is a file containing the data for the current state,
             use this file.  Otherwise, the previous state will be the reference. """
@@ -282,7 +283,7 @@ class Recycling:
         self.current_state = new_state
         self.metadata_path = os.path.join(self.current_state.path, "recycling_info")
         self.from_sb = from_sb
-        self.save = True
+        self.save = save
         # If this state has already used the recycling process, we know
         # most of what we need about the state.
         if os.path.isfile(self.metadata_path):
