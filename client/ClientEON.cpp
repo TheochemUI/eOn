@@ -7,66 +7,50 @@
  *
  *===============================================
  */
-#include <ctime>
-#include <cstring>
-#include <cassert>
-#ifdef BOINC
-      #include <boinc/boinc_api.h>
-      #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
-      #include <boinc/filesys.h>         // boinc_fopen(), etc...
-#else
-      #include "false_boinc.h"
-#endif
-#include "Parameters.h"
 
 #include "ClientEON.h"
-#include "LowestEigenmodeInterface.h"  
-
 
 using namespace constants;
 using namespace client_eon;
 
 int main(int argc, char **argv) 
 {
-    unsigned const size=255;
-    char parameters_passed[size], reactant_passed[size], displacement_passed[size], mode_passed[size];
+	// BOINC is started
+	rc = boinc_init();
+	if(rc){
+		exit(rc);
+	}
+	char parameters_passed[STRING_SIZE], reactant_passed[STRING_SIZE], displacement_passed[STRING_SIZE], mode_passed[STRING_SIZE];
     if (argc > 1 ) {
-        strncpy(parameters_passed, argv[1], sizeof(parameters_passed));
-        strncpy(reactant_passed, argv[2], sizeof(reactant_passed));
-        strncpy(displacement_passed, argv[3], sizeof(displacement_passed));
-        strncpy(mode_passed, argv[4], sizeof(mode_passed));
+		if (*argv[1] == '-'){    
+			if (strcmp(argv[1], "-test") == 0 || strcmp(argv[1], "--test") == 0) {				
+				forcesOfConfig();
+			}
+			else{
+				printRequestedInfo(argv[1]);   //// NEEDS TO BE UPDATED
+			}
+			// To prevent segmentation fault
+			boinc_finish(0);
+			return 0;
+
+        }
+        else { 
+			// Uses data passed from user
+			strncpy(parameters_passed, argv[1], sizeof(parameters_passed));
+			strncpy(reactant_passed, argv[2], sizeof(reactant_passed));
+			strncpy(displacement_passed, argv[3], sizeof(displacement_passed));
+			strncpy(mode_passed, argv[4], sizeof(mode_passed));
+		}//
+		
     }
     else {
+		// Uses data from Constant file
         strncpy(parameters_passed, PARMS_PASSED_FILE_NAME.c_str(), sizeof(parameters_passed));
         strncpy(reactant_passed, REAC_PASSED_FILE_NAME.c_str(), sizeof(reactant_passed));
         strncpy(displacement_passed, DISPLACEMENT_PASSED_FILE_NAME.c_str(), sizeof(displacement_passed));
         strncpy(mode_passed, MODE_PASSED_FILE_NAME.c_str(), sizeof(mode_passed));
     };
-
-    // BOINC is started up
-    // before initializing BOINC itself, initialize diagnostics, so as
-    // to get stderr output to the file stderr.txt, and thence back home.
-    //boinc_init_diagnostics(BOINC_DIAG_REDIRECTSTDERR|
-    //                       BOINC_DIAG_REDIRECTSTDOUT|
-    //                       BOINC_DIAG_MEMORYLEAKCHECKENABLED|
-    //                       BOINC_DIAG_DUMPCALLSTACKENABLED| 
-    //                       BOINC_DIAG_TRACETOSTDERR);
     
-    rc = boinc_init();
-    if(rc) 
-    {
-        exit(rc);
-    }
-    
-    // Checks if the user has requested information
-    if ((argc > 1) && (*argv[1] == '-')) 
-    {    
-        printRequestedInfo(argv[1]);
-        boinc_finish(0);
-        return 0;
-    }
-
-
     // Loads runtime parameters and relaxes the initial configuration.
     loadDataAndRelax(parameters_passed, reactant_passed);
     
@@ -83,7 +67,7 @@ int main(int argc, char **argv)
                 catch(int except){}
                 parameters.resetForceCalls();
                 parameters.resetForceCallsSaddlePoint();
-                parameters.resetForceCallsPrefactors(); 
+                parameters.resetForceCallsPrefactors();
             }
         }
         // Otherwise, displace and search ourselves.
@@ -97,6 +81,7 @@ int main(int argc, char **argv)
         saveData();
     }
     // BOINC applications must exit via boinc_finish(rc), not merely exit */
+	// To prevent segmentation fault
     boinc_finish(0);
     return 0;
 }
@@ -160,21 +145,23 @@ void client_eon::doSaddleSearch(void)
     parameters.printOutput();    
 }
 
-static FILE * openFile(char const name[])
+
+static FILE * openFile(char const name[], char const readWriteAppend[])
 {
-    char resolved[512];
+    char resolved[STRING_SIZE];
     int rc = boinc_resolve_filename(name, resolved, sizeof(resolved));
     if (rc) {
         fprintf(stderr, "Cannot resolve intput file: %s, RC=%d\n", name, rc);
         boinc_finish(rc);    // back to BOINC core
     }
-    FILE * file = boinc_fopen(resolved, "r");
+    FILE * file = boinc_fopen(resolved, readWriteAppend);
     if (file == NULL){
         fprintf(stderr, "Cannot open file: %s\n", resolved);
         boinc_finish(rc);    // back to BOINC core
     }
     return file;
 }
+
 
 static void closeFile(FILE * file, char const name[])
 {
@@ -187,10 +174,10 @@ static void closeFile(FILE * file, char const name[])
 
 void client_eon::loadDataAndRelax(char const parameters_passed[], char const reactant_passed[])
 {
-    FILE * file;
-    file = openFile(parameters_passed);
-    parameters.load(file);
-    closeFile(file, parameters_passed);
+	FILE *fileParameters, *fileReactant;
+    fileParameters = openFile(parameters_passed, READ.c_str());
+    parameters.load(fileParameters);
+    closeFile(fileParameters, parameters_passed);
     
     // Initialize random generator
     if(parameters.getRandomSeed() < 0) 
@@ -212,14 +199,14 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     min1 = new Matter(&parameters);
     min2 = new Matter(&parameters);
 
-    file = openFile(reactant_passed);
-    int ok = initial->con2matter(file);
+    fileReactant = openFile(reactant_passed, READ.c_str());
+    int ok = initial->con2matter(fileReactant);
     if (not ok) 
     {
         fprintf(stderr, "Cannot read file %s\n", reactant_passed);
         std::exit(1);
     };
-    closeFile(file, reactant_passed);
+    closeFile(fileReactant, reactant_passed);
     
     // Relax the passed configuration.
     // RT: if we are only minimizing AND are minimizing the box, use QMBox
@@ -245,10 +232,11 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     static int displacementPosition=0;
     static int count=0;
     static int displacementFileLength=0;
+	//Dangerous to reuse the same pointer name for different files!
     FILE * file;
 
     //read in displacement con file
-    file=openFile(displacement_passed);
+    file=openFile(displacement_passed, READ.c_str());
     if (count == 0) {
         fseek(file, 0, SEEK_END);
         displacementFileLength = ftell(file);
@@ -261,7 +249,7 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     }
     saddle->con2matter(file);
     //read in displacement con file
-    file=openFile(displacement_passed);
+    file=openFile(displacement_passed, READ.c_str());
     if (count == 0) {
         fseek(file, 0, SEEK_END);
         displacementFileLength = ftell(file);
@@ -277,28 +265,11 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     closeFile(file, displacement_passed);
 
     //read in mode file
-    file=openFile(mode_passed);
+    file=openFile(mode_passed, READ.c_str());
     fseek(file, modePosition, SEEK_SET);
-    long nall=0, nfree=0;
-   
-    //fgets(buf, 1024, file);
-    //printf(buf);
-    //fseek(file, 0, SEEK_END);
-    //printf("length %i\n", ftell(file));
-    //fseek(file, modePosition, SEEK_SET);
-    //printf("seeked to %i\n", modePosition);
-    fscanf(file, "%ld %ld", &nall, &nfree);
-    assert(nall == 3*saddle->numberOfAtoms());
-    assert(nfree == 3*saddle->numberOfFreeAtoms());
-    client_eon::eigenvector.size=nfree;
-    double * vector=new double[nall];
-    client_eon::eigenvector.vector=vector;
-    for (int i=0, j=0; i < nall; ++i) {
-        //if (not saddle->getFixed(i/3)) {
-            fscanf(file, "%lf", &vector[j]);
-            ++j;
-        //};
-    };
+    
+    saddlePoint.loadMode(file);   /// new.
+    
     modePosition = ftell(file);
     closeFile(file, mode_passed);
 
@@ -391,17 +362,7 @@ bool client_eon::prefactorsWithinWindow(){
 
 
 void client_eon::saveData(){
-    FILE* fileResults;
-    FILE* fileReactant;
-    FILE* fileSaddle;
-    FILE* fileProduct;
-    FILE* fileMode;
-
-    char resolvedNameResults[STRING_SIZE];
-    char resolvedNameReactant[STRING_SIZE];
-    char resolvedNameSaddle[STRING_SIZE];
-    char resolvedNameProduct[STRING_SIZE];
-    char resolvedNameMode[STRING_SIZE];
+    FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
     parameters.setPotentialEnergySP(saddle->potentialEnergy());
     parameters.setPotentialEnergyMin1(min1->potentialEnergy());
@@ -418,53 +379,12 @@ void client_eon::saveData(){
     
     parameters.setTerminationReason(state);
     parameters.setDisplacementSaddleDistance(displacement->per_atom_norm(*saddle));
-    
-    // Input need to be "resolved" from their logical name
-    // for the application to the actual path on the client's disk
-    rc = boinc_resolve_filename(RESULTS_FILE_NAME.c_str(), 
-                                resolvedNameResults, 
-                                sizeof(resolvedNameResults));
-    if (rc){
-        fprintf(stderr, "Cannot resolve output file name. RC=%d\n", rc);
-        boinc_finish(rc);    // back to BOINC core
-    }
-    rc = boinc_resolve_filename(REAC_FILE_NAME.c_str(), 
-                                resolvedNameReactant, 
-                                sizeof(resolvedNameReactant));
-    if (rc){
-        fprintf(stderr, "Cannot resolve output file name. RC=%d\n", rc);
-        boinc_finish(rc);    // back to BOINC core
-    }
-    rc = boinc_resolve_filename(SEND_SP_CONF_FILE_NAME.c_str(), 
-                                resolvedNameSaddle, 
-                                sizeof(resolvedNameSaddle));
-    if (rc){
-        fprintf(stderr, "Cannot resolve output file name. RC=%d\n", rc);
-        boinc_finish(rc);    // back to BOINC core
-    }
-    rc = boinc_resolve_filename(SEND_PROD_FILE_NAME.c_str(), 
-                                resolvedNameProduct, 
-                                sizeof(resolvedNameProduct));
-    if (rc){
-        fprintf(stderr, "Cannot resolve output file name. RC=%d\n", rc);
-        boinc_finish(rc);    // back to BOINC core
-    }
-    rc = boinc_resolve_filename(MODE_FILE_NAME.c_str(), 
-                                resolvedNameMode, 
-                                sizeof(resolvedNameMode));
-    if (rc){
-        fprintf(stderr, "Cannot resolve output file name. RC=%d\n", rc);
-        boinc_finish(rc);    // back to BOINC core
-    }
-        
-    fileResults = boinc_fopen(resolvedNameResults, "a");
-    fileReactant = boinc_fopen(resolvedNameReactant, "a");
-    fileSaddle = boinc_fopen(resolvedNameSaddle, "a");
-    fileProduct = boinc_fopen(resolvedNameProduct, "a");
-    fileMode = boinc_fopen(resolvedNameMode, "a");
 
+	fileResults = openFile(RESULTS_FILE_NAME.c_str(), APPEND.c_str());
     parameters.saveOutput(fileResults);
+	closeFile(fileResults, RESULTS_FILE_NAME.c_str());
 
+	fileReactant = openFile(REAC_FILE_NAME.c_str(), APPEND.c_str());
     if(parameters.getMinimizeOnly())
     {
         initial->matter2con(fileReactant);
@@ -473,28 +393,23 @@ void client_eon::saveData(){
     {
         min1->matter2con(fileReactant);
     }
-    saddle->matter2con(fileSaddle);    
-    min2->matter2con(fileProduct);
-    long const nfree=saddlePoint.getnFreeCoord();
-    long const nAtoms=saddle->numberOfAtoms();
-    fprintf(fileMode, "%ld %ld\n", nAtoms*3, nfree);
-    double const *const eigenMode=saddlePoint.getEigenMode();
-    for (long i=0, j=0; i < nAtoms; ++i) {
-        if (saddle->getFixed(i)) {
-            fprintf(fileMode, "0 0 0\n");
-        }
-        else {
-            fprintf(fileMode, "%lf\t%lf \t%lf\n", eigenMode[j], eigenMode[j+1], eigenMode[j+2]);
-            j+=3;
-        };
-    };
-    fclose(fileResults);               
-    fclose(fileReactant);  
-    fclose(fileSaddle);               
-    fclose(fileProduct);
-    fclose(fileMode);
+	closeFile(fileReactant, REAC_FILE_NAME.c_str());  
+
+	fileSaddle = openFile(SEND_SP_CONF_FILE_NAME.c_str(), APPEND.c_str());
+    saddle->matter2con(fileSaddle);
+	closeFile(fileSaddle, SEND_SP_CONF_FILE_NAME.c_str());               
+
+	fileProduct = openFile(SEND_PROD_FILE_NAME.c_str(), APPEND.c_str());
+	min2->matter2con(fileProduct);
+    closeFile(fileProduct, SEND_PROD_FILE_NAME.c_str());
+	
+	fileMode = openFile(MODE_FILE_NAME.c_str(), APPEND.c_str());
+	saddlePoint.saveMode(fileMode);
+    closeFile(fileMode, MODE_FILE_NAME.c_str());
+
     return;
 }
+
 
 void client_eon::printEndState(long state){
     fprintf(stdout, "Final state: ");
@@ -560,6 +475,10 @@ void client_eon::printRequestedInfo(char *argv) {
                 REAC_PASSED_FILE_NAME.c_str());            
         fprintf(stdout, "Input (-make_parameters creates file):  %s\n",
                 PARMS_PASSED_FILE_NAME.c_str());            
+        fprintf(stdout, "Input displacement done by server:      %s\n",
+				DISPLACEMENT_PASSED_FILE_NAME.c_str());
+		fprintf(stdout, "Input initial mode:                     %s\n",
+				MODE_PASSED_FILE_NAME.c_str());
         fprintf(stdout, "Output (can be empty):                  %s\n",
                 REAC_FILE_NAME.c_str());
         fprintf(stdout, "Output (can be empty):                  %s\n",
@@ -583,6 +502,7 @@ void client_eon::printRequestedInfo(char *argv) {
         fprintf(stdout, "-print_parameters   prints parameters used during execution\n");
         fprintf(stdout, "-make_parameters    makes parameter file needed. Overwrites existing file!\n");
         fprintf(stdout, "-files              prints the files needed for execution\n");
+        fprintf(stdout, "-test               prints potential energy and forces of reactant.test to potentialInfo.txt\n");
         fprintf(stdout, "-------------------\n\n");
     }
     else{
@@ -592,3 +512,52 @@ void client_eon::printRequestedInfo(char *argv) {
     }        
     return;
 }
+
+void client_eon::forcesOfConfig(){
+	
+	FILE *fileParameters, *fileReactant;
+	
+    fileParameters = fopen("parameters.test", "r");            
+    parameters.load(fileParameters);
+    fclose(fileParameters);
+    
+    testConfig = new Matter(&parameters);
+    
+    fileReactant = fopen("reactant.test", "r");
+    //printf("test->con2matter(fileReactant);\n");
+    int ok = testConfig->con2matter(fileReactant);   //load the reactant
+    if (not ok) 
+    {
+        fprintf(stderr, "Cannot read reactant.test\n");
+        std::exit(1);
+    };
+    fclose(fileReactant);
+    //printf("Reactant loaded\n");
+    ConjugateGradients cgInitial(testConfig, &parameters);
+    //printf("Conjugate gradients initialized\n");
+    
+    double potEnergy;
+    potEnergy = testConfig->potentialEnergy();
+    //printf("Potential energy %lf\n", potEnergy);
+    
+    long int numOfAtoms;    
+    numOfAtoms = testConfig->numberOfAtoms();
+    
+    //printf("Number of atoms %li\n",numOfAtoms);
+    double initialForces[3*numOfAtoms];    // three coordinates for each atom
+    testConfig->getForces(initialForces);
+	FILE * file;
+    file = fopen("potentialInfo.txt","w");
+    fprintf(file, "Information about potential energy and forces of a\ncurrent configuration in reactant_passed.con\n\n\n\n");
+    fprintf(file, "Potential tag: %li\n\n\n", parameters.getPotentialTag());
+    fprintf(file, "Potential energy: %lf\n\n", potEnergy);
+    fprintf(file, "Force coordinates:\n");
+    fprintf(file, "Atom     %-13.13s%-13.13s%-13.13s\n", "x:","y:","z:");
+    for (int i=0; i<numOfAtoms;){
+		fprintf(file, "%4i%13.6lf%13.6lf%13.6lf\n",i,initialForces[3*i],initialForces[3*i+1],initialForces[3*i+2]);
+		i++;
+		}
+		
+    fclose(file);
+	return;
+	}
