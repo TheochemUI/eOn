@@ -5,19 +5,19 @@ CXXFLAGS += -O2 -Wall
 ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
 else
-# gfortran
-FC = gfortran
-FFLAGS += -O2
-AR = ar cru
-LDFLAGS += -lgfortran
-# ifort
-#FC = ifort
-#FFLAGS += -O2
-# Linux linking
-#AR = ar cru
-#LDFLAGS += -limf -lsvml -lifcore -ldl
-# OSX linking
-#AR = ifort -staticlib -o
+	# gfortran
+	FC = gfortran
+	FFLAGS += -O2
+	AR = ar cru
+	LDFLAGS += -lgfortran
+	# ifort
+	#FC = ifort
+	#FFLAGS += -O2
+	# Linux linking
+	#AR = ar cru
+	#LDFLAGS += -limf -lsvml -lifcore -ldl
+	# OSX linking
+	#AR = ifort -staticlib -o
 endif
 
 # define NDEBUG to remove debugging lines
@@ -57,11 +57,11 @@ LIBS += ./potentials/QSC/libQSC.a
 POTENTIALS += "+QSC"
 
 ifdef NO_FORTRAN
-	POTENTIALS += "-Aluminum "
+	POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
 else
-	FPOTDIRS += ./potentials/Aluminum/
-	LIBS += ./potentials/Aluminum/libAL.a
-	POTENTIALS += "+Aluminum "
+	POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP "
+	FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/
+	LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
 endif
 
 OBJECTS := ClientEON.o SaddlePoint.o Dimer.o\
