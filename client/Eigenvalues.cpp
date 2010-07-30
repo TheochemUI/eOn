@@ -9,9 +9,7 @@
  *
  *===============================================
  */
-#include <iostream>
-#include <cmath>
-#include <cassert>
+
 #include "Eigenvalues.h"
 
 void eigenValues(const int n,double *d, double **H){

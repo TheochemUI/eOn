@@ -7,8 +7,7 @@
  *
  *===============================================
  */
-#include <cassert>
-#include <climits>
+
 #include "EpiCenters.h"
 
 using namespace helper_functions;
