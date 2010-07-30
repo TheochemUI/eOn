@@ -19,6 +19,8 @@
 #ifndef CG_H
 #define CG_H
 
+#include <cassert>
+
 #include "MinimizersInterface.h"
 #include "Matter.h"
 #include "HelperFunctions.h"

@@ -16,6 +16,10 @@
 #ifndef _EIG_H
 #define _EIG_H
 
+#include <iostream>
+#include <cmath>
+#include <cassert>
+
 #define Sign(a) ((a)>0?1:-1)
 #define Abs(a) ((a)>0?(a):-(a))
 

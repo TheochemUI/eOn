@@ -19,6 +19,10 @@
 #define DIMER_H
 
 #include <math.h>
+#include <cmath>
+#include <cassert>
+#include "debug.h"
+
 
 #include "Matter.h"
 #include "HelperFunctions.h"

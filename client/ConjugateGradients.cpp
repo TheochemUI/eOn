@@ -14,7 +14,6 @@
  *      Roar Olsen
  *===============================================
  */
-#include <cassert>
 #include "ConjugateGradients.h"
 
 using namespace helper_functions;
