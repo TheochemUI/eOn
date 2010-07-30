@@ -16,6 +16,6 @@ void SW::cleanMemory(void){
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void SW::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box){
-//    sw_(&N, R, F, U, &box[0], &box[1], &box[2]);    
+    sw_(&N, R, F, U, &box[0], &box[1], &box[2]);    
     return;
 }
