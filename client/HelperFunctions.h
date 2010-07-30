@@ -16,6 +16,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <cassert>
+#include <stdio.h>
 
 // remember to delete
 #include <iostream>

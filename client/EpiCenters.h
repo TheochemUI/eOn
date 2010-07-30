@@ -16,6 +16,8 @@
 
 #include <vector>
 #include <limits>
+#include <cassert>
+#include <climits>
 
 #include "Matter.h"
 #include "HelperFunctions.h"

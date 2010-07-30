@@ -8,13 +8,7 @@
  *
  *===============================================
  */
-#include <cmath>
-#include<cstdlib>
-#include<cstdio>
-#include<cstring>
-#include<string>
-#include<iostream>
-#include <cassert>
+
 #include "Matter.h"
 
 using namespace std;
