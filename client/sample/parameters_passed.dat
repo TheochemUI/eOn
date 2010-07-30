@@ -16,7 +16,7 @@ RANDOM_SEED -1
 # 8 = Lenosky  //does not work
 # 10 = Aluminum EAM
 # 11 = EAM
-POTENTIAL_TAG 8
+POTENTIAL_TAG 12
 
 # description POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
