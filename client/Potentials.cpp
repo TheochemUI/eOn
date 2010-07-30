@@ -11,19 +11,23 @@
  */
 #include "Potentials.h"
 
+
 using namespace constants;
 
 // which potential to use is decided at preprocessor level
 Potentials::Potentials(Parameters *parameters){
     parameters_ = parameters;
-// _______________________    
+//_______________________    
 // To use a new potential.
-// An interface should be created in the file NewPotential_interface.cpp. Code will crash at runtime if used and no new potential has been defined!
+// An interface should be created in the file NewPotential_interface.cpp. 
+// Code will stop at runtime if used and no new potential has been defined!
     if(parameters_->getPotentialTag() == getPotentialNewPotential()){
         //interface_ = new NewPotential();
         //interface_->initialize();
+		printf("The new potential must be commented in Potentials.cpp.\n");
+        std::exit(1);
     }
-// _______________________  
+//_______________________  
     else if(parameters_->getPotentialTag() == getPotentialLJ()){
         interface_ = new LJ();
         interface_->initialize();
@@ -40,43 +44,43 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EAM();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialQSC()){
-        interface_ = new QSC();
-        interface_->initialize();
-    }
-#if 0
-    else if(parameters_->getPotentialTag() == getPotentialEDIP()){
-        interface_ = new EDIP();
-        interface_->initialize();
-    }
-    else if(parameters_->getpotentialtag() == getpotentialvasp()){
-        interface_ = new vasp();
-        interface_->initialize();
-    }
-    else if(parameters_->getPotentialTag() == getPotentialTersoff()){
-        interface_ = new Tersoff();
-        interface_->initialize();
-    }
-    else if(parameters_->getPotentialTag() == getPotentialSW()){
-        interface_ = new SW();
-        interface_->initialize();
-    }
-    else if(parameters_->getPotentialTag() == getPotentialLenosky()){
-        interface_ = new Lenosky();
-        interface_->initialize();
-    }
-    else if(parameters_->getPotentialTag() == getPotentialLJBinary()){
-        interface_ = new LJBinary();
-        interface_->initialize();
-    }
-#endif
+	else if(parameters_->getPotentialTag() == getPotentialQSC()){
+		interface_ = new QSC();
+		interface_->initialize();
+		}
 #ifndef NO_FORTRAN
     else if(parameters_->getPotentialTag() == getPotentialAluminum())
     {
         interface_ = new Aluminum();
         interface_->initialize();
     }
+    else if(parameters_->getPotentialTag() == getPotentialLenosky()){
+        interface_ = new Lenosky();
+        interface_->initialize();
+    }
+    else if(parameters_->getPotentialTag() == getPotentialSW()){
+        interface_ = new SW();
+        interface_->initialize();
+    }
+    else if(parameters_->getPotentialTag() == getPotentialTersoff()){
+        interface_ = new Tersoff();
+        interface_->initialize();
+    }
+    else if(parameters_->getPotentialTag() == getPotentialEDIP()){
+        interface_ = new EDIP();
+        interface_->initialize();
+    }
 #endif
+	else if(parameters_->getPotentialTag() == getPotentialVASP()){
+        printf("VASP potential not implemented yet. Please use different one.\n");
+        std::exit(1);
+        //interface_ = new vasp();
+        //interface_->initialize();
+    }		
+	else{
+		printf("Potential tag not recognized: %ld\n", parameters_->getPotentialTag());
+		std::exit(1);
+	}	
 };
 
 Potentials::~Potentials()
