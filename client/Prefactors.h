@@ -18,7 +18,9 @@
 #define PREFCTORS_H
 
 #include <math.h>
+#include <cassert>
 
+#include "Constants.h"
 #include "Eigenvalues.h"
 #include "Matter.h"
 //#include "IO.h"
@@ -65,7 +67,8 @@ private:
 
     void clean();///< Clean up dynamical allocated memory
         
-    long atomsToAccountForInHessian();///< Determine which atoms to account for. In the analysis atoms being displaced more than Parameters::getMinDisplacement_Hessian is considered. If an atom is considered displaced the neighbors within the radius Parameters::getWithinRadiusDisplaced_Hessian are also considered.
+    long atomsToAccountForInHessian();///< Determines the number of atoms to be accounted.
+	long atomsMovedMoreThan(double minDisplacement);///< Determines which atoms to account for. In the analysis atoms being displaced more than minDisplacement is considered. If an atom is considered displaced the neighbors within the radius Parameters::getWithinRadiusDisplaced_Hessian are also considered.
     bool getEigenValues();///< Determine the eigenvalues. The calculation terminates if either a negative mode exists in one of the minima or if there is not only one negative mode in the saddle point. Note that there is accounted for the masses in Prefactors::massScaleHessian.
     void determineHessian(double **hessian, const Matter *matter);///< Filling in the values in \a hessian for the coordinates being accounted for the configuration \a matter.
     void massScaleHessian(double **hessian);///< Scale the \a hessian according to the masses of the atoms for the coordinates.

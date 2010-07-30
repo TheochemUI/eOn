@@ -12,8 +12,6 @@
  *      Graeme Henkelman
  *===============================================
  */
-#include <cassert>
-#include "Constants.h"
 #include "Prefactors.h"
 
 using namespace helper_functions;
@@ -126,6 +124,7 @@ bool Prefactors::compute(double *prefactors){
 }
 
 
+/*
 long Prefactors::atomsToAccountForInHessian(){
     long sizeHessian;
     double diffR1, diffR2, diffRSaddle;
@@ -166,7 +165,70 @@ long Prefactors::atomsToAccountForInHessian(){
     }
     return(sizeHessian);
 }
+*/
 
+long Prefactors::atomsToAccountForInHessian(){
+	long sizeHessian;
+	double minDisp;
+	// Account for all atoms moved more than the value specified in parameters
+	if (parameters_->getMaxSize_Hessian() == 0){
+		minDisp = parameters_->getMinDisplacement_Hessian();
+		sizeHessian = atomsMovedMoreThan(minDisp);
+	}
+	// Will ensure that there is not accounted for more
+	// than a specified number of atoms
+	else{
+		int loop = 0;
+		do {
+			minDisp = parameters_->getMinDisplacement_Hessian() + loop * 0.1;		
+			sizeHessian = atomsMovedMoreThan(minDisp);
+			loop = loop + 1;
+		} while (parameters_->getMaxSize_Hessian() < sizeHessian);
+	}
+	return(sizeHessian);
+}
+
+long Prefactors::atomsMovedMoreThan(double minDisplacement){
+    long sizeHessian;
+    double diffR1, diffR2, diffRSaddle;
+    for(int i=0; i<3*nAtoms_; i++)
+        coordinatesToAccountFor_[i] = false;
+    //----- Initialize end -----
+    //std::cout<<"determineActiveAtoms\n";
+    
+    // Picking out all atoms that are displaced
+    for(int i=0; i<nAtoms_; i++){
+        diffR1 = saddle_->distance(*min1_, i);
+        diffR2 = saddle_->distance(*min2_, i);
+        if(((minDisplacement<diffR1) || 
+			(minDisplacement<diffR2)) &&
+		   !saddle_->getFixed(i)){
+            coordinatesToAccountFor_[ 3*i ] = true;
+            coordinatesToAccountFor_[3*i+1] = true;
+            coordinatesToAccountFor_[3*i+2] = true;
+            
+            // Picking out free atoms in the vicinity of a displaced atom
+            for(int j=0; j<nAtoms_; j++){
+                diffRSaddle = saddle_->distance(i,j);
+                
+                if(diffRSaddle<parameters_->getWithinRadiusDisplaced_Hessian() 
+                   && (!saddle_->getFixed(j))){
+                    coordinatesToAccountFor_[ 3*j ] = true;
+                    coordinatesToAccountFor_[3*j+1] = true;
+                    coordinatesToAccountFor_[3*j+2] = true;
+                }
+            }
+        }
+    }
+    // Counting all the atoms to be accounted for in the Hessian
+    sizeHessian = 0;
+    for(int i=0; i<3*nAtoms_; i++){
+        if(coordinatesToAccountFor_[i] == true)
+            sizeHessian = sizeHessian+1;
+    }
+    return(sizeHessian);
+}
+	
 
 void Prefactors::determineHessian(double **hessian, const Matter *matter){
     long iCoord, jCoord;
