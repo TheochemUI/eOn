@@ -14,6 +14,14 @@
 #ifndef Matter_H
 #define Matter_H
 
+#include <cmath>
+#include<cstdlib>
+#include<cstdio>
+#include<cstring>
+#include<string>
+#include<iostream>
+#include <cassert>
+
 #include "system_unit.h" // unit converters
 #include "Parameters.h"
 #include "Potentials.h"

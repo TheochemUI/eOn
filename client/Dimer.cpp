@@ -19,10 +19,7 @@
  *===============================================
  */
 
-#include <cmath>
-#include <cassert>
 #include "Dimer.h"
-#include "debug.h"
 
 using namespace helper_functions;
 using namespace constants;
