@@ -15,14 +15,27 @@
 #define CLIENT_EON_H
 
 // standard c libraries
-#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cassert>
+
+#ifdef BOINC
+	#include <boinc/boinc_api.h>
+	#include <boinc/diagnostics.h>     // boinc_init_diagnostics()
+	#include <boinc/filesys.h>         // boinc_fopen(), etc...
+#else
+	#include "false_boinc.h"
+#endif
+
 // includes for boinc
 #ifdef WIN32
-#include <boinc_win.h>
-#include <win_util.h>
+	#include <boinc_win.h>
+	#include <win_util.h>
 #endif
 
 #include "Constants.h"
@@ -32,13 +45,11 @@
 #include "QMBox.h"
 #include "Prefactors.h"
 #include "SaddlePoint.h"
+#include "LowestEigenmodeInterface.h"  
+
 /** The main program.*/
 namespace client_eon {
-      struct Vector {
-            ~Vector() {delete [] vector;}
-            long size;
-            double * vector;
-      } eigenvector;
+
       /// Load the unperturbed configuration and the run time parameters received by BOINC from the master.
       void doSaddleSearch(void);
       void loadDataAndRelax(char const parameters_passed[], char const reactant_passed[]);
@@ -52,6 +63,7 @@ namespace client_eon {
 
       void printEndState(long state);///< Print out the end state of the saddle point determination.
       void printRequestedInfo(char *argv); ///< Print help as requested by user.
+      void forcesOfConfig();  ///prints forces and energy to potentialInfo.txt
 
 
       int rc;///< BOINC related, return code from various functions.
@@ -62,6 +74,7 @@ namespace client_eon {
       Matter *displacement;///< Configuration used during the saddle point search.
       Matter *min1;///< Used to determine one of the stable states connected to the saddle point.
       Matter *min2;///< Used to determine the other stable state connected to the saddle point.
+      Matter *testConfig;  /// test configuration from reactant.test
 
       SaddlePoint saddlePoint;///< Used to determine the saddle point.
       double barriersValues[2];///< First element is from min1 to saddle, second is from min2 to saddle.
