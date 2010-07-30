@@ -14,26 +14,18 @@
  *      Roar Olsen
  *===============================================
 */
-#include "ConjugateGradients.h"
-#include "Matter.h"
-#include "debug.h"
-#include "Parameters.h"
-#include "HelperFunctions.h"
-#include "Constants.h"
 
 #include "SaddlePoint.h"
-#include "LowestEigenmodeInterface.h" 
-#include "Dimer.h"
-#include "EpiCenters.h"
+
 
 using namespace helper_functions;
 using namespace epi_centers;
 using namespace constants;
 
-namespace client_eon {
-    // defined in ClientEON.h
-    extern struct Vector {long size; double * vector;} eigenvector;
-}
+//namespace client_eon {
+//    // defined in ClientEON.h
+//    extern struct Vector {long size; double * vector;} eigenvector;
+//}
 
 SaddlePoint::SaddlePoint(){
 
@@ -94,6 +86,39 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     return;
 }
 
+// AP: fix how mode is passed to startNewSearchAndCompute
+void SaddlePoint::loadMode(FILE * modeFile)
+{    
+	long nall=0, nfree=0;
+    fscanf(modeFile, "%ld %ld", &nall, &nfree);
+    mode = new double[nall];
+    for (int i=0, j=0; i < nall; ++i) {
+            fscanf(modeFile, "%lf", &mode[j]);
+            //printf("%lf\n",mode[j]);
+            ++j;
+    };
+}
+
+
+void SaddlePoint::saveMode(FILE * modeFile)
+{	
+    long const nAtoms = saddle_->numberOfAtoms();
+    fprintf(modeFile, "%ld %ld\n", nAtoms*3, nFreeCoord_);
+    for (long i=0, j=0; i < nAtoms; ++i) {
+        if (saddle_->getFixed(i)) {
+            fprintf(modeFile, "0 0 0\n");
+        }
+        else {
+            fprintf(modeFile, "%lf\t%lf \t%lf\n", eigenMode_[j], eigenMode_[j+1], eigenMode_[j+2]);
+            j+=3;
+        };
+    };
+	return;
+}
+
+
+
+
 long SaddlePoint::locate(Matter *min1, Matter *min2)
 {    
     double initialEnergy;     
@@ -105,7 +130,7 @@ long SaddlePoint::locate(Matter *min1, Matter *min2)
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
     if (parameters_->getRefineSP()) {
-            lowestEigenmode_->startNewSearchAndCompute(saddle_, client_eon::eigenvector.vector);
+            lowestEigenmode_->startNewSearchAndCompute(saddle_, mode);
             eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
     }
     else {
