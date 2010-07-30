@@ -26,7 +26,7 @@ long constants::getPotentialVASP(){return 5;};
 long constants::getPotentialTersoff(){return 6;};
 long constants::getPotentialSW(){return 7;};
 long constants::getPotentialLenosky(){return 8;};
-long constants::getPotentialLJBinary(){return 9;};
+//long constants::getPotentialLJBinary(){return 9;};
 long constants::getPotentialAluminum(){return 10;};
 long constants::getPotentialEAM(){return 11;};
 long constants::getPotentialQSC(){return 12;};
