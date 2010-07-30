@@ -30,16 +30,17 @@ namespace constants {
     long getPotentialLJ();///< Constant used to indicate that Lennard-Jones should be used as potential. (1)
     long getPotentialMorse();///< Constant used to indicate that Morse should be used as potential. (2)
     long getPotentialEMT();///< Constant used to indicate that EMT should be used as potential. (3)
-    long getPotentialEAM();///< Constant used to indicate that EAM should be used as potential. (11)
-    long getPotentialQSC();
+//    long getPotentialEAM();///< Constant used to indicate that EAM should be used as potential. (11)
     long getPotentialEDIP();///< Constant used to indicate that EDIP should be used as potential. (4)
     long getPotentialVASP();///< Constant used to indicate that VASP should be used as potential. (5)
     long getPotentialTersoff();///< Constant used to indicate that Tersoff should be used as potential. (6)
     long getPotentialSW();///< Constant used to indicate that SW should be used as potential. (7)
     long getPotentialLenosky();///< Constant used to indicate that Lenosky should be used as potential. (8)
-    long getPotentialLJBinary();///< Constant used to indicate that LJBinary should be used as potential. (9)
-    long getPotentialAluminum();///< Constant used to indicate that Aluminum should be used as potential. (9)
-            
+//    long getPotentialLJBinary();///< Constant used to indicate that LJBinary should be used as potential. (9)
+    long getPotentialAluminum();///< Constant used to indicate that Aluminum should be used as potential. (10)
+    long getPotentialEAM();///< Constant used to indicate that EAM should be used as potential. (11)
+	long getPotentialQSC();///< Constant used to indicate that QSC should be used as potential. (12)
+	
     // Values passed between server and clients
     long getStateGood();///< Constant used to indicate the saddle point and prefactor determination was succesful.
     long getStateInit();///< Constant used to indicate the calculation should continue.
@@ -77,7 +78,8 @@ namespace constants {
     // Constants used in saddle point search
 //    long getMaximumJumpAttemptsSP();///< The maximal number of jumps allowed to perform before the search for the convex region is terminated.
     long getMaximumIterationsConcaveSeriesSP();///< The maximal number of iterations in a series allowed to perform during the saddle point.    
-    //IO file names
+
+	//IO file names
     const std::string PARMS_PASSED_FILE_NAME("parameters_passed.dat");///< Name for file containing the run time parameters.
     const std::string REAC_PASSED_FILE_NAME("reactant_passed.con");///< Name of file containing the initial configuration. This structure is relaxed within the code.
     const std::string DISPLACEMENT_PASSED_FILE_NAME("displacement_passed.con");///< Approximate saddle point. The program will refine the saddle point.
@@ -87,5 +89,9 @@ namespace constants {
     const std::string SEND_SP_CONF_FILE_NAME("saddle.con");///< Name of file containing the saddle point configuration if any was found.
     const std::string SEND_PROD_FILE_NAME("product.con");///< Name of file containing the other minima being connected to the saddle point. Note that REAC_FILE_NAME contains the other minima.
     const std::string MODE_FILE_NAME("mode.dat");///< Save last eigenvector.
+	const std::string READ("r");///< Set the file to read.
+	const std::string APPEND("a");///< Set the file to append.
+
+		
 }
 #endif
