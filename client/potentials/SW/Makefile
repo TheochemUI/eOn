@@ -1,16 +1,17 @@
-POT = SW.o
+
+OBJECTS = SW.o SWFortran.o
+
+#FC ?= gfortran
+#FFLAGS ?= -O2
+#AR ?= ar cru
 
 %.o: %.f90
-	$(FC) $(FFLAGS) -c $(LIB) $*.f90 
+	$(FC) $(FFLAGS) -c $< -o $@
 
-FC = xlf90
+LIB := libSW.a
 
-FFLAGS = -qlanglvl=90pure -qcheck -qflttrap -qsuffix=f=f90 -qsource -qextname -O4
-
-## create edip potential in library
-edip: ${POT}
-	${AR} rcs libSW_Fortran.a ${POT}
-	ranlib libSW_Fortran.a
-
-clean:
-	rm -f *.o *.a *.lst
+$(LIB) : $(OBJECTS)
+	$(AR) $@ $^
+	ranlib $@
+clean :
+	rm -f $(OBJECTS) $(LIB)
