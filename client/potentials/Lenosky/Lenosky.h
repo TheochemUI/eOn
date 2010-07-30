@@ -1,7 +1,7 @@
 #ifndef LENOSKY_POTENTIAL
 #define LENOSKY_POTENTIAL
 
-#include "PotentialsInterface.h"
+#include "../../PotentialsInterface.h"
 
     /** External function implemented in Fortran. Calculate interactions between atoms using forcefield Lenosky.
     @param[in]	N           Number of atoms.
