@@ -9,7 +9,6 @@
  *
  *===============================================
  */
-#include <cstring>
 #include "Parameters.h"
 
 //using namespace constants;
@@ -47,7 +46,8 @@ Parameters::Parameters(){
     maximumIterations_ = 512;
 
     // Values used in the Hessian determination   
-    minDisplacement_Hessian_ = 0.25;
+	maxSize_Hessian_ = 0;
+	minDisplacement_Hessian_ = 0.25;
     withinRadiusDisplaced_Hessian_ = 5.0;
 
     // Values used in the Dimer method
@@ -141,6 +141,8 @@ void Parameters::load(FILE *file){
             maximumIterations_ = (long)values[i];
 
         // Hessian related
+        else if(!strcmp(parms[i], "MAX_SIZE_HESSIAN"))
+            maxSize_Hessian_ = values[i];
         else if(!strcmp(parms[i], "MIN_DISPLACEMENT_HESSIAN"))
             minDisplacement_Hessian_ = values[i];
         else if(!strcmp(parms[i], "WITHIN_RADIUS_DISPLACED_HESSIAN"))
@@ -220,6 +222,7 @@ void Parameters::saveInput(FILE *file){
     fprintf(file, "max_Single_Perturbation_SP %f\n\n", maxSinglePerturbation_SP_);
     
     fprintf(file, "# hessian related\n");
+    fprintf(file, "max_Size_Hessian %ld\n", maxSize_Hessian_);
     fprintf(file, "min_Displacement_Hessian %f\n", minDisplacement_Hessian_);
     fprintf(file, "within_Radius_Displaced_Hessian %f\n\n", withinRadiusDisplaced_Hessian_);
 
@@ -262,6 +265,7 @@ void Parameters::printInput(){
     <<maxSinglePerturbation_SP_<<" : max_Single_Perturbation_SP\n\n"
     
     <<"# hessian related\n"
+    <<maxSize_Hessian_<<" : max_Size_Hessian\n"
     <<minDisplacement_Hessian_<<" : min_Displacement_Hessian\n"
     <<withinRadiusDisplaced_Hessian_<<" : within_Radius_Displaced_Hessian\n\n"
     
@@ -380,6 +384,9 @@ long Parameters::getMaximumIterations() {
       return maximumIterations_;
 }
 // Hessian related
+long Parameters::getMaxSize_Hessian(){
+    return maxSize_Hessian_;
+}
 double Parameters::getMinDisplacement_Hessian(){
     return minDisplacement_Hessian_;
 }

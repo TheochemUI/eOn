@@ -15,6 +15,7 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -47,7 +48,8 @@ struct Input {
     double maxSinglePerturbation_SP_;///< Max value of displacement in x, y and z direction for atoms being perturbated [A].
     double withinRadiusPerturbated_SP_;///< Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePerturbation_SP_ [A].
     long maximumIterations_;///< Maximum of iterations for saddle point searches and minimisation.
-    double minDisplacement_Hessian_;///< Atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A].
+	long maxSize_Hessian_;///< If specified, the size of the hessian determined will be equal or smaller than this value. 
+	double minDisplacement_Hessian_;///< Atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A].
     double withinRadiusDisplaced_Hessian_;///< Atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A].
     long rotations_Dimer_;///< The number of rotation iterations during the eigenmode estimation used in Dimer.
     //long rotationsNewSearch_Dimer_;///< The number of iteration before starting a new saddle point search used in Dimer.
@@ -111,6 +113,7 @@ public:
     double getWithinRadiusPerturbated_SP();
     double getMaxSinglePerturbation_SP();
     long getMaximumIterations();
+	long getMaxSize_Hessian();
     double getMinDisplacement_Hessian();
     double getWithinRadiusDisplaced_Hessian();
     double getSeparation_Dimer();
