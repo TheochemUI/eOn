@@ -18,6 +18,16 @@
 #ifndef SADDLE_POINT_H
 #define SADDLE_POINT_H
 
+#include "ConjugateGradients.h"
+#include "Matter.h"
+#include "debug.h"
+#include "Parameters.h"
+#include "HelperFunctions.h"
+#include "Constants.h"
+#include "LowestEigenmodeInterface.h" 
+#include "Dimer.h"
+#include "EpiCenters.h"
+
 class Matter;
 class Parameters;
 class LowestEigenmodeInterface;
@@ -51,6 +61,11 @@ public:
     LowestEigenmodeInterface const * getLowestEigenmode() const;
     long getnFreeCoord() const;
     double const *const getEigenMode() const;
+    
+    double * mode;	/// new
+    void loadMode(FILE * modeFile);   /// new.
+	void saveMode(FILE * modeFile);   /// new.
+    
 private:
     Matter * initial_;
     Matter *saddle_;///< Pointer to atom object outside the scope of the class.
