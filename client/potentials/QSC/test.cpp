@@ -36,8 +36,8 @@ int lua_get_new_sim(lua_State *L)
     simulation *s = new simulation;
     s->N = n;
     s->potential = new QSC;
-    s->R = new double[n];
-    s->box = new double[n];
+    s->R = new double[3*n];
+    s->box = new double[3];
     s->atomicNrs = new long[n];
     s->F = new double[3*n];
     lua_pushlightuserdata(L, s);
@@ -69,6 +69,10 @@ int lua_set_box(lua_State *L)
 
     int n = luaL_getn(L, 2);
 
+    if (n != 3) {
+        luaL_error(L, "set_box: box must be 3 dimensions");
+    }
+
     for (int i=1; i<=n; i++) {
         lua_rawgeti(L, 2, i);
         s->box[i-1] = lua_tonumber(L, -1);
@@ -86,6 +90,10 @@ int lua_set_z(lua_State *L)
 
     int n = luaL_getn(L, 2);
 
+    if (n != s->N) {
+        luaL_error(L, "set_z: must specify types for all atoms");
+    }
+
     for (int i=1; i<=n; i++) {
         lua_rawgeti(L, 2, i);
         s->atomicNrs[i-1] = (long) lua_tonumber(L, -1);
@@ -98,10 +106,16 @@ int lua_set_r(lua_State *L)
 {
     simulation *s;
     luaL_checktype(L, 1, LUA_TLIGHTUSERDATA);
-    s = (simulation*) lua_topointer(L, -1);
+    s = (simulation*) lua_topointer(L, 1);
     luaL_checktype(L, 2, LUA_TTABLE);
 
     int n = luaL_getn(L, 2);
+
+    if (n != 3*s->N) {
+        printf("%i %li\n", n, 3*s->N);
+        return luaL_error(L, "set_r: table of incorrect length");
+    }
+
     for (int i=1; i<=n; i++) {
         lua_rawgeti(L, 2, i);
         double num = lua_tonumber(L, -1);
@@ -149,4 +163,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-    
