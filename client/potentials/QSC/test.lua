@@ -1,14 +1,3 @@
-function get_r(r_ij) 
-    r = {0.0,0.0,0.0,
-         r_ij,0.0,0.0,
-         0.0,r_ij,0.0,
-         0.0,0.0,r_ij,
-         -r_ij,0.0,0.0,
-         0.0,-r_ij,0.0,
-         0.0,0.0,-r_ij}
-    return r
-end
-
 function print_forces(forces)
     fs = ""
     for i,force in pairs(forces) do
@@ -21,35 +10,26 @@ function print_forces(forces)
         end
     end
 end
-z = {46,46,46}--,46,46,46,46}
-box = {100.,100.,100.}
-set_r(get_r(1.0))
-set_z(z)
-set_box(box)
 
-a = 2.3
-b = 2.5
+z = {46,46}
+r = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0}
+box = {100.,100.,100.}
+s = get_new_sim(2)
+set_z(s,z)
+set_box(s, box)
+set_r(s,r)
+
+a = 2.2
+b = 3.5
 range = b-a
 stepsize = .05
 npts = range/stepsize
 energies = {}
 for i=0,npts do
     r_ij = i*stepsize+a
-    set_r(get_r(r_ij))
-    energy, force = get_force()
+    r = {0.0, 0.0, 0.0, r_ij, 0.0, 0.0}
+    set_r(s, r)
+    energy, force = get_force(s)
     energies[i+1] = {r_ij, energy}
-    --io.write(string.format("%10.4f %10.4f %10.4f\n", r_ij, energy, force[1]))
-    io.write(string.format("%10.4f %10.4f\n", r_ij, energy))
-    print_forces(force)
-    io.write("\n")
+    io.write(string.format("%10.4f %10.4f %10.4f\n", r_ij, energy, force[1]))
 end
-
---mini = 1
---for k,v in ipairs(energies) do
---    if (v[2]<energies[mini][2]) then
---        mini = k
---    end
---end
---set_r(get_r(energies[mini][1]))
---energy, force = get_force()
---io.write(string.format("Min at: %10.4f %10.4f %10.4g\n", energies[mini][1], energies[mini][2], force[1]))
