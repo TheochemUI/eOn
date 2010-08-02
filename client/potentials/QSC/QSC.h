@@ -18,6 +18,7 @@ class QSC
         void force(long N, const double *R, const long *atomicNrs,
                    double *F, double *U, const double *box);
     private:
+        bool init;
         struct qsc_parameters {
             int Z;
             double n;

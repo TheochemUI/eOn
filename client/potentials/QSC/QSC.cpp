@@ -34,52 +34,37 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     *U = 0.0;
     double *rho = new double[N];
 
-    /* Calculate the local density (rho_i) for each atom */
-    for (int i=0; i<N; i++) {
-        rho[i]=0.0;
-        for (int j=0; j<N; j++) {
-            if (i==j) continue;
-            double r_ij = distance(box, R, i, j);
-            qsc_parameters p;
-            p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            if (r_ij > 2*p.a) continue;
-            rho[i] += pair_potential(r_ij, p.a, p.m);
-        }
-    }
-
-    /* Calculate the Potential Energy */
-    for (int i=0; i<N; i++) {
-        double pair_term=0.0;
-        double embedding_term=0.0;
-        for (int j=i+1; j<N; j++) {
-            double r_ij = distance(box, R, i, j);
-            qsc_parameters p;
-            /* Get the mixed parameters */
-            p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            if (r_ij > 2*p.a) continue;
-            pair_term += p.epsilon*pair_potential(r_ij, p.a, p.n); 
-        }
-        /* Get the parameters for element i */
-        qsc_parameters p=get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
-        embedding_term = p.c * p.epsilon * sqrt(rho[i]);
-        *U += pair_term - embedding_term;
-        //printf("c=%f,e=%f,a=%f,m=%f,n=%f\n",p.c,p.epsilon,p.a,p.m,p.n);
-        //printf("attractive=%f repulsive=%f\n", attractive, repulsive);
-    }
-    //printf("dist=%.4f\n", distance(box, R,0, 1));
-    //printf("U=%.4f\n", *U);
-
-    //printf("%10.4f %10.4f\n", distance(box, R, 0, 1), *U);
-    //printf("\t\t%10.4f\n", *U);
-
-    /* Zero out Forces */
+    /* Zero out Forces and densities */
     for(int i=0;i<N;i++){
         F[3*i  ] = 0;
         F[3*i+1] = 0;
         F[3*i+2] = 0;
+        rho[i] = 0.0;
     }
+
+    /* Calculate the local density (rho[i]) for each atom 
+     * and the potential energy (U). */
+    for (int i=0; i<N; i++) {
+        double pair_term=0.0;
+        qsc_parameters p_ij, p_ii;
+        for (int j=i+1; j<N; j++) {
+            double r_ij = distance(box, R, i, j);
+            /* Get the mixed parameters */
+            p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
+            if (r_ij > 2*p_ij.a) continue;
+            double delta_rho = pair_potential(r_ij, p_ij.a, p_ij.m);
+            rho[i] += delta_rho;
+            rho[j] += delta_rho;
+            pair_term += p_ij.epsilon*pair_potential(r_ij, p_ij.a, p_ij.n);
+        }
+        /* Get the parameters for element i */
+        p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
+        double embedding_term = p_ii.c * p_ii.epsilon * sqrt(rho[i]);
+        *U += pair_term - embedding_term;
+    }
+
     /* Forces Calculation */
-    for (int i=0; i<N-1; i++) {
+    for (int i=0; i<N; i++) {
         for (int j=i+1; j<N; j++) {
             qsc_parameters p;
             p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
@@ -97,6 +82,7 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             diffx = R[3*i  ] - R[3*j  ];
             diffy = R[3*i+1] - R[3*j+1];
             diffz = R[3*i+2] - R[3*j+2];
+            /* Orthogonal PBC */
             diffx = diffx-box[0]*floor(diffx/box[0]+0.5); 
             diffy = diffy-box[1]*floor(diffy/box[1]+0.5);
             diffz = diffz-box[2]*floor(diffz/box[2]+0.5);
@@ -114,13 +100,6 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
         }
     }
 
-    //double mag_force=0.0;
-    //for (int i=0;i<3*N;i++) {
-    //    mag_force += F[i]*F[i];
-    //}
-    //mag_force = sqrt(mag_force);
-    //printf("mag_force = %.4g U = %.4g\n", mag_force, *U);
-
     delete rho;
 }
 
@@ -137,6 +116,7 @@ double QSC::distance(const double *box, const double *R, int i, int j)
     diffRY = R[3*i+1] - R[3*j+1];
     diffRZ = R[3*i+2] - R[3*j+2];
 
+    /* Orthogonal PBC */
     diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); 
     diffRY = diffRY-box[1]*floor(diffRY/box[1]+0.5);
     diffRZ = diffRZ-box[2]*floor(diffRZ/box[2]+0.5);
