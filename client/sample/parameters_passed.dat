@@ -16,6 +16,7 @@ RANDOM_SEED -1
 # 8 = Lenosky  //does not work
 # 10 = Aluminum EAM
 # 11 = EAM
+# 12 = QSC
 POTENTIAL_TAG 12
 
 # description POTENTIAL_NO_TRANSLATION
