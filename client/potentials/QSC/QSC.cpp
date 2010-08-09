@@ -28,7 +28,9 @@ void QSC::initialize()
 
 void QSC::cleanMemory()
 {
-    delete [] oldR;
+    if (init==true) {
+        delete oldR;
+    }
 }
 
 void QSC::new_vlist(long N, const double *R, const double *box)
