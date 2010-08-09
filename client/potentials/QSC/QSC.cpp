@@ -16,6 +16,9 @@
 
 QSC::QSC()
 {
+    cutoff = 6.0;
+    verlet_skin = 0.01;
+    init=false;
     return;
 }
 
@@ -25,12 +28,82 @@ void QSC::initialize()
 
 void QSC::cleanMemory()
 {
+    delete [] oldR;
 }
 
+void QSC::new_vlist(long N, const double *R, const double *box)
+{
+    vlist = new int*[N];
+    nlist = new int[N];
+    distances = new struct distance*[N];
+    double rv = cutoff+verlet_skin;
+
+    for (int i=0; i<N; i++) {
+        vlist[i] = new int[N];
+        distances[i] = new struct distance[N];
+        nlist[i] = 0;
+        for (int j=i+1;j<N; j++) {
+            calc_distance(box, R, i, j, &distances[i][j]);
+            if (distances[i][j].r <= rv) {
+                vlist[i][nlist[i]] = j;
+                nlist[i] += 1;
+            }
+        }
+    }
+}
+
+void QSC::calc_distance(const double *box, const double *R, int i, int j, struct distance *d)
+{
+        double diffRX = R[3*i]   - R[3*j];
+        double diffRY = R[3*i+1] - R[3*j+1];
+        double diffRZ = R[3*i+2] - R[3*j+2];
+
+        /* Orthogonal PBC */
+        diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); 
+        diffRY = diffRY-box[1]*floor(diffRY/box[1]+0.5);
+        diffRZ = diffRZ-box[2]*floor(diffRZ/box[2]+0.5);
+        
+        d->r = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
+        d->d[0] = diffRX;
+        d->d[1] = diffRY;
+        d->d[2] = diffRZ;
+}
+
+void QSC::update_vlist(long N, const double *R, const double *box) 
+{
+    bool update=false;
+    for (int i=0;i<3*N;i++) {
+        double diff = oldR[i]-R[i];
+        diff = diff-box[0]*floor(diff/box[0]+0.5); 
+        if (fabs(diff) > verlet_skin) {
+            update=true;
+            break;
+        }
+    }
+
+    if (update==true) {
+        new_vlist(N, R, box);
+    }else{
+        for (int i=0; i<N; i++) {
+            for (int k=0; k<nlist[i]; k++) {
+                int j = vlist[i][k];
+                calc_distance(box, R, i, j, &distances[i][j]);
+            }
+        }
+    }
+}
 
 void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
                 double *U, const double *box)
 {
+    if (init==false) {
+        init = true;
+        new_vlist(N, R, box);
+        oldR = new double[3*N];
+    }else{
+        update_vlist(N, R, box);
+    }
+
     *U = 0.0;
     double *rho = new double[N];
 
@@ -49,23 +122,23 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
         qsc_parameters p_ij, p_ii, p_jj;
         /* Get the parameters for element i */
         p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
-        for (int j=i+1; j<N; j++) {
-            double r_ij = distance(box, R, i, j);
+        for (int k=0; k<nlist[i]; k++) {
+            int j = vlist[i][k];
             /* Get the parameters */
             p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
-            if (r_ij > 2*p_ij.a) continue;
+            if (distances[i][j].r > cutoff) continue;
             p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
 
             /* Take care of density */
             double delta_rho;
-            delta_rho = pair_potential(r_ij, p_jj.a, p_jj.m);
+            delta_rho = pair_potential(distances[i][j].r, p_jj.a, p_jj.m);
             rho[i] += delta_rho;
 
-            delta_rho = pair_potential(r_ij, p_ii.a, p_ii.m);
+            delta_rho = pair_potential(distances[i][j].r, p_ii.a, p_ii.m);
             rho[j] += delta_rho;
 
             /* Repulsive pair term */
-            pair_term += p_ij.epsilon*pair_potential(r_ij, p_ij.a, p_ij.n);
+            pair_term += p_ij.epsilon*pair_potential(distances[i][j].r, p_ij.a, p_ij.n);
         }
         double embedding_term = p_ii.c * p_ii.epsilon * sqrt(rho[i]);
         *U += pair_term - embedding_term;
@@ -73,14 +146,15 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
 
     /* Forces Calculation */
     for (int i=0; i<N; i++) {
-        for (int j=i+1; j<N; j++) {
+        for (int k=0; k<nlist[i]; k++) {
+            int j = vlist[i][k];
             qsc_parameters p_ii, p_ij, p_jj;
             p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
             p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
             p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]); 
 
-            double r_ij = distance(box, R, i, j);
-            if (r_ij > 2*p_ij.a) continue;
+            double r_ij = distances[i][j].r;
+            if (distances[i][j].r > cutoff) continue;
 
             double Fij;
             Fij  = p_ij.epsilon*p_ij.n*pair_potential(r_ij, p_ij.a, p_ij.n);
@@ -91,22 +165,9 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             Fij /= r_ij;
 
 
-            double diffx,diffy,diffz, Fijx, Fijy, Fijz;
-            diffx = R[3*i  ] - R[3*j  ];
-            diffy = R[3*i+1] - R[3*j+1];
-            diffz = R[3*i+2] - R[3*j+2];
-
-            /* Orthogonal PBC */
-            diffx = diffx-box[0]*floor(diffx/box[0]+0.5); 
-            diffy = diffy-box[1]*floor(diffy/box[1]+0.5);
-            diffz = diffz-box[2]*floor(diffz/box[2]+0.5);
-
-            double magR = sqrt(diffx*diffx+diffy*diffy+diffz*diffz);
-
-
-            Fijx = Fij * diffx/magR;
-            Fijy = Fij * diffy/magR;
-            Fijz = Fij * diffz/magR;
+            double Fijx = Fij * distances[i][j].d[0]/r_ij;
+            double Fijy = Fij * distances[i][j].d[1]/r_ij;
+            double Fijz = Fij * distances[i][j].d[2]/r_ij;
 
             F[3*i]   += Fijx;
             F[3*i+1] += Fijy;
@@ -118,31 +179,16 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     }
 
     delete rho;
+
+    for (int i=0;i<3*N;i++) {
+        oldR[i] = R[i];
+    }
 }
 
-double QSC::pair_potential(double r, double a, double n)
+inline double QSC::pair_potential(double r, double a, double n)
 {
     return pow(a/r, n);
 }
-
-double QSC::distance(const double *box, const double *R, int i, int j)
-{
-    double diffR, diffRX, diffRY, diffRZ;
-
-    diffRX = R[3*i]   - R[3*j];
-    diffRY = R[3*i+1] - R[3*j+1];
-    diffRZ = R[3*i+2] - R[3*j+2];
-
-    /* Orthogonal PBC */
-    diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); 
-    diffRY = diffRY-box[1]*floor(diffRY/box[1]+0.5);
-    diffRZ = diffRZ-box[2]*floor(diffRZ/box[2]+0.5);
-    
-    diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
-
-    return diffR;
-}
-
 
 QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b)
 {
