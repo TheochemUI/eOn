@@ -364,6 +364,13 @@ bool client_eon::prefactorsWithinWindow(){
 void client_eon::saveData(){
     FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
+    if (parameters.getMinimizeOnly()) {
+        //If we are only minimizing set the min1 pointer
+        //to the matter object we just minimized so that
+        //the energy can be saved to the results.dat file.
+        min1 = initial;
+    }
+
     parameters.setPotentialEnergySP(saddle->potentialEnergy());
     parameters.setPotentialEnergyMin1(min1->potentialEnergy());
     parameters.setPotentialEnergyMin2(min2->potentialEnergy());
@@ -392,6 +399,10 @@ void client_eon::saveData(){
     else
     {
         min1->matter2con(fileReactant);
+        // If minimizing don't save the saddle
+        fileMode = openFile(MODE_FILE_NAME.c_str(), APPEND.c_str());
+        saddlePoint.saveMode(fileMode);
+        closeFile(fileMode, MODE_FILE_NAME.c_str());
     }
 	closeFile(fileReactant, REAC_FILE_NAME.c_str());  
 
@@ -402,10 +413,6 @@ void client_eon::saveData(){
 	fileProduct = openFile(SEND_PROD_FILE_NAME.c_str(), APPEND.c_str());
 	min2->matter2con(fileProduct);
     closeFile(fileProduct, SEND_PROD_FILE_NAME.c_str());
-	
-	fileMode = openFile(MODE_FILE_NAME.c_str(), APPEND.c_str());
-	saddlePoint.saveMode(fileMode);
-    closeFile(fileMode, MODE_FILE_NAME.c_str());
 
     return;
 }
