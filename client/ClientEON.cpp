@@ -399,7 +399,7 @@ void client_eon::saveData(){
     else
     {
         min1->matter2con(fileReactant);
-        // If minimizing don't save the saddle
+        // Only save the saddle in the case that we did a saddle search.
         fileMode = openFile(MODE_FILE_NAME.c_str(), APPEND.c_str());
         saddlePoint.saveMode(fileMode);
         closeFile(fileMode, MODE_FILE_NAME.c_str());
