@@ -1,10 +1,7 @@
-#include <utility>
-#include <map>
-
 #ifndef QSC_STANDALONE
 #include "../../PotentialsInterface.h"
 #endif
-    
+
 class QSC
 #ifndef QSC_STANDALONE
 : public PotentialsInterface
@@ -19,6 +16,19 @@ class QSC
                    double *F, double *U, const double *box);
     private:
         bool init;
+
+        struct distance {
+            double d[3];
+            double r;
+        };
+        distance **distances;
+
+        int **vlist;
+        int  *nlist;
+        double cutoff;
+        double verlet_skin;
+        double *oldR;
+
         struct qsc_parameters {
             int Z;
             double n;
@@ -30,6 +40,8 @@ class QSC
         static const qsc_parameters qsc_element_params[];
         
         qsc_parameters get_qsc_parameters(int a, int b);
-        double distance(const double *box, const double *R, int i, int j);
         double pair_potential(double r, double a, double n);
+        void new_vlist(long N, const double *R, const double *box);
+        void update_vlist(long N, const double *R, const double *box);
+        void calc_distance(const double *box, const double *R, int i, int j, struct distance *d);
 };
