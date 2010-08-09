@@ -46,19 +46,27 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
      * and the potential energy (U). */
     for (int i=0; i<N; i++) {
         double pair_term=0.0;
-        qsc_parameters p_ij, p_ii;
-        for (int j=i+1; j<N; j++) {
-            double r_ij = distance(box, R, i, j);
-            /* Get the mixed parameters */
-            p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
-            if (r_ij > 2*p_ij.a) continue;
-            double delta_rho = pair_potential(r_ij, p_ij.a, p_ij.m);
-            rho[i] += delta_rho;
-            rho[j] += delta_rho;
-            pair_term += p_ij.epsilon*pair_potential(r_ij, p_ij.a, p_ij.n);
-        }
+        qsc_parameters p_ij, p_ii, p_jj;
         /* Get the parameters for element i */
         p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
+        for (int j=i+1; j<N; j++) {
+            double r_ij = distance(box, R, i, j);
+            /* Get the parameters */
+            p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
+            if (r_ij > 2*p_ij.a) continue;
+            p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
+
+            /* Take care of density */
+            double delta_rho;
+            delta_rho = pair_potential(r_ij, p_jj.a, p_jj.m);
+            rho[i] += delta_rho;
+
+            delta_rho = pair_potential(r_ij, p_ii.a, p_ii.m);
+            rho[j] += delta_rho;
+
+            /* Repulsive pair term */
+            pair_term += p_ij.epsilon*pair_potential(r_ij, p_ij.a, p_ij.n);
+        }
         double embedding_term = p_ii.c * p_ii.epsilon * sqrt(rho[i]);
         *U += pair_term - embedding_term;
     }
@@ -66,30 +74,39 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
     /* Forces Calculation */
     for (int i=0; i<N; i++) {
         for (int j=i+1; j<N; j++) {
-            qsc_parameters p;
-            p = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
+            qsc_parameters p_ii, p_ij, p_jj;
+            p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]); 
+            p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]); 
+            p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]); 
 
             double r_ij = distance(box, R, i, j);
-            if (r_ij > 2*p.a) continue;
+            if (r_ij > 2*p_ij.a) continue;
 
             double Fij;
-            Fij =       p.epsilon *
-                        (p.n*pair_potential(r_ij, p.a, p.n) -
-                         (p.c*p.m*0.5*(pow(rho[i],-0.5)+pow(rho[j],-0.5)) *
-                         pair_potential(r_ij, p.a, p.m)))/(r_ij*r_ij);
+            Fij  = p_ij.epsilon*p_ij.n*pair_potential(r_ij, p_ij.a, p_ij.n);
+            Fij -= p_ii.epsilon*p_ii.c*p_jj.m*0.5*pow(rho[i],-0.5)*
+                   pair_potential(r_ij, p_jj.a, p_jj.m);
+            Fij -= p_jj.epsilon*p_jj.c*p_ii.m*0.5*pow(rho[j],-0.5)*
+                   pair_potential(r_ij, p_ii.a, p_ii.m);
+            Fij /= r_ij;
+
 
             double diffx,diffy,diffz, Fijx, Fijy, Fijz;
             diffx = R[3*i  ] - R[3*j  ];
             diffy = R[3*i+1] - R[3*j+1];
             diffz = R[3*i+2] - R[3*j+2];
+
             /* Orthogonal PBC */
             diffx = diffx-box[0]*floor(diffx/box[0]+0.5); 
             diffy = diffy-box[1]*floor(diffy/box[1]+0.5);
             diffz = diffz-box[2]*floor(diffz/box[2]+0.5);
 
-            Fijx = Fij * diffx;
-            Fijy = Fij * diffy;
-            Fijz = Fij * diffz;
+            double magR = sqrt(diffx*diffx+diffy*diffy+diffz*diffz);
+
+
+            Fijx = Fij * diffx/magR;
+            Fijy = Fij * diffy/magR;
+            Fijz = Fij * diffz/magR;
 
             F[3*i]   += Fijx;
             F[3*i+1] += Fijy;
@@ -161,9 +178,9 @@ QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b)
     /* Mixing rules */
     p.epsilon = sqrt(qsc_element_params[ia].epsilon * 
                      qsc_element_params[ib].epsilon);
-    p.a = (qsc_element_params[ia].a + qsc_element_params[ib].a)/2.0;
-    p.m = (qsc_element_params[ia].m + qsc_element_params[ib].m)/2.0;
-    p.n = (qsc_element_params[ia].n + qsc_element_params[ib].n)/2.0;
+    p.a = 0.5*(qsc_element_params[ia].a + qsc_element_params[ib].a);
+    p.m = 0.5*(qsc_element_params[ia].m + qsc_element_params[ib].m);
+    p.n = 0.5*(qsc_element_params[ia].n + qsc_element_params[ib].n);
     p.c = qsc_element_params[ia].c;
 
     return p;
