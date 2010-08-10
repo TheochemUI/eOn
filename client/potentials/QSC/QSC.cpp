@@ -49,10 +49,12 @@ void QSC::initialize(long N, const double *R, const long *atomicNrs,
         nunique++;
         delete sorted_atomic_numbers;
 
-        qsc_param_cache = new qsc_parameters*[79];
+        int largest_element_num = unique_elements[nunique-1];
+
+        qsc_param_cache = new qsc_parameters*[largest_element_num+1];
         for (int i=0;i<nunique;i++) {
             int ui = unique_elements[i];
-            qsc_param_cache[ui] = new qsc_parameters[79];
+            qsc_param_cache[ui] = new qsc_parameters[largest_element_num+1];
             for (int j=0;j<nunique;j++) {
                 int uj = unique_elements[j];
                 qsc_param_cache[ui][uj] = get_qsc_parameters(ui, uj);
@@ -61,13 +63,18 @@ void QSC::initialize(long N, const double *R, const long *atomicNrs,
 
         /* Allocate memory */
         rho = new double[N];
+        sqrtrho = new double[N];
         vlist = new int*[N];
         nlist = new int[N];
         distances = new struct distance*[N];
         oldR = new double[3*N];
+        V = new double*[N];
+        phi = new double*[N];
         for (int i=0;i<N;i++) {
             vlist[i] = new int[N];
             distances[i] = new struct distance[N];
+            V[i] = new double[N];
+            phi[i] = new double[N];
         }
 
         /* Make a new verlet list and populate distances[][] */
@@ -81,6 +88,7 @@ void QSC::cleanMemory()
 {
     if (init==true) {
         delete rho;
+        delete sqrtrho;
         delete oldR;
         delete qsc_param_cache;
         delete vlist;
@@ -167,14 +175,19 @@ void QSC::energy(long N, const double *R, const long *atomicNrs, double *U,
             p_jj = qsc_param_cache[atomicNrs[j]][atomicNrs[j]];
 
             /* Take care of density */
-            rho[i] += pair_potential(distances[i][j].r, p_jj.a, p_jj.m);
-            rho[j] += pair_potential(distances[i][j].r, p_ii.a, p_ii.m);
+            phi[i][j] = pair_potential(distances[i][j].r, p_jj.a, p_jj.m);
+            rho[i] += phi[i][j];
+            phi[j][i] = pair_potential(distances[i][j].r, p_ii.a, p_ii.m);
+            rho[j] += phi[j][i];
 
             /* Repulsive pair term */
-            pair_term += p_ij.epsilon*
-                         pair_potential(distances[i][j].r, p_ij.a, p_ij.n);
+            V[i][j] = p_ij.epsilon*
+                      pair_potential(distances[i][j].r, p_ij.a, p_ij.n);
+
+            pair_term += V[i][j];
         }
-        double embedding_term = p_ii.c * p_ii.epsilon * sqrt(rho[i]);
+        sqrtrho[i] = sqrt(rho[i]);
+        double embedding_term = p_ii.c * p_ii.epsilon * sqrtrho[i];
         *U += pair_term - embedding_term;
     }
 
@@ -210,11 +223,9 @@ void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
             if (distances[i][j].r > cutoff) continue;
 
             double Fij;
-            Fij  = p_ij.epsilon*p_ij.n*pair_potential(r_ij, p_ij.a, p_ij.n);
-            Fij -= p_ii.epsilon*p_ii.c*p_jj.m*0.5*pow(rho[i],-0.5)*
-                   pair_potential(r_ij, p_jj.a, p_jj.m);
-            Fij -= p_jj.epsilon*p_jj.c*p_ii.m*0.5*pow(rho[j],-0.5)*
-                   pair_potential(r_ij, p_ii.a, p_ii.m);
+            Fij  = p_ij.n*V[i][j];
+            Fij -= p_ii.epsilon*p_ii.c*p_jj.m*0.5*(1.0/sqrtrho[i])*phi[i][j];
+            Fij -= p_jj.epsilon*p_jj.c*p_ii.m*0.5*(1.0/sqrtrho[j])*phi[j][i];
             Fij /= r_ij;
 
 
@@ -297,6 +308,7 @@ QSC::qsc_parameters QSC::get_qsc_parameters(int element_a, int element_b)
     p.m = 0.5*(qsc_element_params[ia].m + qsc_element_params[ib].m);
     p.n = 0.5*(qsc_element_params[ia].n + qsc_element_params[ib].n);
     p.c = qsc_element_params[ia].c;
+    p.Z = 0;
 
     return p;
 }
