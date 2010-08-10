@@ -34,6 +34,9 @@ class QSC
         double verlet_skin;
         double *oldR;
         double *rho;
+        double *sqrtrho;
+        double **V;
+        double **phi;
 
         struct qsc_parameters {
             int Z;
