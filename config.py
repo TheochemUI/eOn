@@ -65,6 +65,10 @@ path_scratch = parser.get('Paths', 'scratch')
 if comm_type == 'local':
     comm_local_client = parser.get('Communicator', 'client_path')
     comm_local_ncpus = parser.getint('Communicator', 'number_of_CPUs')
+if comm_type == 'mpi':
+    comm_mpi_client = parser.get('Communicator', 'client_path')
+    comm_mpi_ncpus = parser.getint('Communicator', 'number_of_CPUs')
+    comm_mpi_mpicommand = parser.get('Communicator', 'mpi_command')
 if comm_type == 'boinc':
     comm_boinc_project_dir = parser.get('Communicator', 'boinc_project_dir')
     comm_boinc_wu_template_path = parser.get('Communicator', 'boinc_wu_template_path')
