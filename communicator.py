@@ -410,6 +410,81 @@ class BOINC(Communicator):
             for result in bundle:
                 yield result
 
+class MPI(Communicator):
+    def __init__(self, scratchpath, client, ncpus, bundle_size, mpicommand):
+        Communicator.__init__(self, scratchpath, bundle_size)
+
+        self.mpicommand = mpicommand
+
+        #number of cpus to use
+        self.ncpus = ncpus
+
+        #path to the saddle search executable
+        if '/' in client:
+            self.client = os.path.abspath(client)
+            if not os.path.isfile(self.client):
+                logger.error("can't find client: %s", client)
+                raise CommunicatorError("Can't find client binary: %s"%client)
+        else:
+            #is the client in the local directory?
+            if os.path.isfile(client):
+                self.client = os.path.abspath(client)
+            #is the client in the path?
+            elif sum([ os.path.isfile(os.path.join(d, client)) for d in 
+                       os.environ['PATH'].split(':') ]) != 0:
+                self.client = client
+            else:
+                logger.error("can't find client: %s", client)
+                raise CommunicatorError("Can't find client binary: %s"%client)
+
+    def get_results(self, resultspath, keep_result):
+        '''Moves work from scratchpath to results path.'''
+        jobdirs = [ d for d in os.listdir(self.scratchpath) 
+                    if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+
+        for jobdir in jobdirs:
+            dest_dir = os.path.join(resultspath, jobdir)
+            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+        for bundle in self.unbundle(resultspath, keep_result):
+            for result in bundle:
+                yield result
+
+
+    def check_search(self, search):
+        p, jobpath = search
+        if p.returncode == 0:
+            logger.info('saddle search finished in %s' % jobpath)
+            return True
+        else:
+            stdout, stderr = p.communicate()
+            errmsg = "saddle search failed in %s: %s" % (jobpath, stderr)
+            logger.warning(errmsg)
+
+    def submit_searches(self, searches, reactant_path, parameters_path):
+        '''Run up to ncpu number of clients to process the work in jobpaths.
+           The job directories are moved to the scratch path before the calculcation
+           is run. This method doesn't return anything.'''
+        
+        #Clean out scratch directory
+        for name in os.listdir(self.scratchpath):
+            shutil.rmtree(os.path.join(self.scratchpath, name))
+
+        mpi_wrapper_args = [self.mpicommand, self.client]
+        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
+            mpi_wrapper_args.append(jobpath) 
+
+        cmd = ' '.join(mpi_wrapper_args)
+
+        logger.debug("running command %s", cmd)
+        os.system(cmd)
+
+    def cancel_state(self, state):
+        return 0
+
+    def get_queue_size(self):
+        return 0
+
+
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
         Communicator.__init__(self, scratchpath, bundle_size)
