@@ -10,6 +10,8 @@ RANDOM_SEED -1
 # 2 = morse
 # 3 = emt
 # 10 = Aluminum EAM
+# 11 = General EAM 
+# 12 = Quantum Sutton-Chen
 POTENTIAL_TAG 10
 
 # description POTENTIAL_NO_TRANSLATION
