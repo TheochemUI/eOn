@@ -39,6 +39,7 @@ except:
 debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
 debug_list_search_results = parser.getboolean('Debug', 'list_search_results')
 debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
+debug_target_trajectory = parser.get('Debug', 'target_trajectory')
 
 #path options
 path_root         = parser.get('Paths', 'main_directory')
