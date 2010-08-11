@@ -19,6 +19,7 @@ import communicator
 import statelist
 import displace
 import io
+import atoms
 import recycling
 import superbasinscheme
 import askmc
@@ -295,7 +296,6 @@ def get_superbasin_scheme(states):
 def kmc_step(current_state, states, time, kT, superbasining):
     t1 = unix_time.time()
     previous_state = current_state 
-    dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
     start_state_num = current_state.number
     steps = 0
     # If the Chatterjee & Voter superbasin acceleration method is being used
@@ -329,15 +329,51 @@ def kmc_step(current_state, states, time, kT, superbasining):
             
             u = numpy.random.random_sample()
             p = 0.0
-             
-            for i in range(len(rate_table)):
-                p += rate_table[i][1]/ratesum
-                if p>u:
-                    nsid = i 
-                    break
+            nsid = -1 #next state process id
+            
+            # If we are following another trajectory:
+            if config.debug_target_trajectory != "False":
+                # Get the current_step.
+                try:
+                    current_step = len(open(os.path.join(config.path_results, "dynamics.txt"), 'r').readlines())
+                except:
+                    current_step = 0
+                # Get the target step process id.
+                if current_step > 0:
+                    stateid = int(open(os.path.join(config.debug_target_trajectory, "dynamics.txt"), 'r').readlines()[current_step - 1].split()[0])
+                else:
+                    stateid = 0
+                try:
+                    procid = int(open(os.path.join(config.debug_target_trajectory, "dynamics.txt"), 'r').readlines()[current_step].split()[1])
+                except:
+                    print "Can no longer follow target trajectory."
+                    sys.exit()
+                # Load the con file for that process saddle.
+                p0 = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
+                ibox = numpy.linalg.inv(p0.box)
+                # See if we have this process
+                for id in current_state.get_process_ids():
+                    p1 = current_state.get_process_saddle(id)
+                    for dist in atoms.per_atom_norm_gen(p1.free_r() - p0.free_r(), p0.box, ibox):
+                        if dist > config.comp_eps_r:
+                            break
+                    else:
+                        nsid = id
+                        break
+                else:
+                    print "Can no longer follow target trajectory."
+                    sys.exit()
+
+            # We are not following another trajectory:
             else:
-                logger.warning("Warning: failed to select rate. p = " + str(p))
-                break
+                for i in range(len(rate_table)):
+                    p += rate_table[i][1]/ratesum
+                    if p>u:
+                        nsid = i
+                        break
+                else:
+                    logger.warning("Warning: failed to select rate. p = " + str(p))
+                    break
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
         if config.debug_use_mean_time:
@@ -353,7 +389,9 @@ def kmc_step(current_state, states, time, kT, superbasining):
             proc_id_out = -1
         else:
             proc_id_out = rate_table[nsid][0]
+        dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
         print >> dynamics_file, next_state.number, proc_id_out, time
+        dynamics_file.close()
         logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
         previous_state = current_state
@@ -363,7 +401,6 @@ def kmc_step(current_state, states, time, kT, superbasining):
         superbasining.write_data()
 
     logger.info("currently in state %i with confidence %.4f", current_state.number, current_state.get_confidence())
-    dynamics_file.close()
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
