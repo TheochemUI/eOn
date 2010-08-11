@@ -33,10 +33,9 @@ def main():
     # 3) Get any results that have come in
     # 4) Possibly take a KMC step
     # 5) Make new work units
-    # 6) Write out the state of the simulation
+    # 6) Write out the state of the simulation    
     
-    
-    # Define constants. <rye> should this be a config option? </rye>    
+    # Define constants. 
     kT = config.akmc_temperature/11604.5 #in eV
     
     # First of all, does the root directory even exist?
@@ -61,11 +60,15 @@ def main():
     comm = get_communicator()
 
     # Handle any results returned through the communicator.
-    if config.kdb_on:
-        pass_kdb = kdber
-    else:
-        pass_kdb = None
-    register_results(comm, current_state, states, searchdata, kdber = pass_kdb)
+    register_results(comm, current_state, states, searchdata)
+    
+    # Add processes to the database if we've reached confidence. 
+    if current_state.get_confidence() >= config.akmc_confidence:
+        if config.kdb_on:
+            logger.debug("Adding relevant processes to kinetic database.")
+            for process_id in current_state.get_process_ids():
+                output = kdber.add_process(current_state, process_id)
+                logger.debug("kdbaddpr.pl: %s" % output)
 
     # Take a KMC step, if it's time.
     if config.sb_on:
@@ -214,7 +217,7 @@ def get_communicator():
         raise ValueError()
     return comm
 
-def register_results(comm, current_state, states, searchdata = None, kdber = None):
+def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
     t1 = unix_time.time()
     if os.path.isdir(config.path_searches_in):
@@ -265,17 +268,14 @@ def register_results(comm, current_state, states, searchdata = None, kdber = Non
         
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
-            if current_state.get_confidence() >= config.akmc_confidence:
-                if config.kdb_on:
-                    logger.debug("Adding relevant processes to kinetic database.")
-                    for process_id in states.get_state(state_num).get_process_ids():
-                        output = kdber.add_process(states.get_state(state_num), process_id)
-                        logger.debug("kdbaddpr.pl: %s" % output)
-                if not config.debug_register_extra_results:
-                    break
         else:
             states.get_state(state_num).register_bad_saddle(result, config.debug_keep_bad_saddles)
         num_registered += 1
+        
+        if current_state.get_confidence() >= config.akmc_confidence:
+            if not config.debug_register_extra_results:
+                break
+        
     t2 = unix_time.time()
     logger.info("%i results processed", num_registered)
     #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
