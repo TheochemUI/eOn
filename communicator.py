@@ -411,13 +411,10 @@ class BOINC(Communicator):
                 yield result
 
 class MPI(Communicator):
-    def __init__(self, scratchpath, client, ncpus, bundle_size, mpicommand):
+    def __init__(self, scratchpath, client, bundle_size, mpicommand):
         Communicator.__init__(self, scratchpath, bundle_size)
 
         self.mpicommand = mpicommand
-
-        #number of cpus to use
-        self.ncpus = ncpus
 
         #path to the saddle search executable
         if '/' in client:
