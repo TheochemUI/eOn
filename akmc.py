@@ -208,8 +208,12 @@ def get_communicator():
     elif config.comm_type=='cluster':
         comm = communicator.Cluster()
     elif config.comm_type=='local':
-        comm = communicator.Local(config.path_scratch, config.comm_local_client, config.comm_local_ncpus,
-                config.comm_job_bundle_size)
+        comm = communicator.Local(config.path_scratch, config.comm_local_client, 
+                                  config.comm_local_ncpus, config.comm_job_bundle_size)
+    elif config.comm_type=='mpi':
+        comm = communicator.MPI(config.path_scratch, config.comm_mpi_client, 
+                                  config.comm_mpi_ncpus, config.comm_job_bundle_size,
+                                  config.comm_mpi_mpicommand)
     elif config.comm_type=='arc':
         comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size)
     else:
