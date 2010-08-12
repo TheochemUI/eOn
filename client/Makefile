@@ -1,5 +1,5 @@
 #C compiler settings
-CXXFLAGS += -O2 -Wall
+CXXFLAGS += -O2 -Wall -static
 
 #Fortran compiler settings
 ifdef NO_FORTRAN
