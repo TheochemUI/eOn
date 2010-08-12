@@ -472,8 +472,12 @@ class MPI(Communicator):
 
         cmd = ' '.join(mpi_wrapper_args)
 
-        logger.debug("running command %s", cmd)
-        os.system(cmd)
+        p = subprocess.Popen(cmd.split(' '),
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p.wait()
+        stdout, stderr = p.communicate()
+        for line in stdout.split('\n'):
+            logger.debug(line)
 
     def cancel_state(self, state):
         return 0
