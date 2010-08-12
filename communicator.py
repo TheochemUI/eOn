@@ -471,7 +471,6 @@ class MPI(Communicator):
             mpi_wrapper_args.append(jobpath) 
 
         cmd = ' '.join(mpi_wrapper_args)
-        cmd += " >/dev/null"
 
         logger.debug("running command %s", cmd)
         os.system(cmd)
