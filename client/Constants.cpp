@@ -52,7 +52,7 @@ double constants::getPrefactorMin(){return 10e8;};
 
 // Constants used in conjugate gradients
 double constants::getCurvatureStep(){return 0.001;};
-double constants::getMaxMoveFullRelax(){return 0.01;};
+double constants::getMaxMoveFullRelax(){return 0.20;};
 double constants::getTimeStep(){return 0.1;};
 
 // Constants used in displacement prior saddle point search
