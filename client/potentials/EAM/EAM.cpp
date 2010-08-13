@@ -145,16 +145,21 @@ void EAM::force(long N, const double *R, const long *atomicNrs, double *F, doubl
         celllist_old[i]=celllist_new[i];
     }
 
-    //double fsum = 0.0;
-    //for (int i =0; i<3*N; i++)
-    //{ 
-    //    fsum+=F[i];
-    //}
-    //for (int i =0; i<N; i++)
+    //double diff = R[0] - R[3];
+    //if(diff > box[0]/2)
     //{
-    //    printf("%d\t%f\t%f\t%f\n", i, F[3*i], F[3*i +1], F[3*i+2]);
+    //    diff = box[0] - diff;
     //}
-    //printf("U: %f\tFsum: %f\n",*U, fsum);
+    double fsum = 0.0;
+    for (int i =0; i<3*N; i++)
+    { 
+        fsum+=F[i];
+    }
+    for (int i =0; i<N; i++)
+    {
+        printf("%d\t%f\t%f\t%f\n", i, F[3*i], F[3*i +1], F[3*i+2]);
+    }
+    printf("U: %f\tFsum: %f\n",*U, fsum);
     delete Rtemp;
     delete Rnew;
     delete Rold;

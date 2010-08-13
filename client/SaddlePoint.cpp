@@ -284,6 +284,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     
     // Displace saddle point configuration along the lowest eigenmode and minimize
     *min1 = *saddle_;    
+    //XXX: the distance displced from the saddle should be a parameter
     multiplyScalar(displacedPos, eigenMode_, 0.2, nFreeCoord_);
     // NOTE using subtract
     subtract(displacedPos, posSaddle, displacedPos, nFreeCoord_);
