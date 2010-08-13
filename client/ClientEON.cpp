@@ -315,9 +315,17 @@ bool client_eon::connectedToReactantState(){
         *min2 = matterTemp;
         result = true;
     }
-    else{
+    else
+    {
         result = false;
-        state = getStateNotConnected();
+        if((!min1->isItConverged(parameters.getConverged_Relax())) && (!min2->isItConverged(parameters.getConverged_Relax())))
+        {
+            state = getStateMinimumNotConverged();
+        }
+        else
+        {
+            state = getStateNotConnected();
+        }
     }
     return result;
 }

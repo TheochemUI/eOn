@@ -51,7 +51,7 @@ namespace constants {
     long getStateNotConnected();///< Constant used to indicate that saddle point was not connected to the initial state.
     long getStateBadPrefactor();///< Constant used to indicate that either the forward or reverse process have a prefactor that is either bellow getPrefactorMin or above getPrefactorMax.
     long getStateBadBarrier();///< Constant used to indicate that either the forward or reverse process have a barrier that is above the run time parameter in Parameter.
-    
+    long getStateMinimumNotConverged(); // <Constant used to indicate that a minimization from the saddle did not converge and neither minimum matched the reactant
     // Constants used in the client
     double getMaxDifferencePos();///< The maximal distance between atoms in two configurations to consider the configurations as equivalent.
     
