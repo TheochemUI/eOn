@@ -109,6 +109,7 @@ public:
     long getForceCalls() const;///< Return how many force calls that have been performed.
     void resetForceCalls();///< Zeroing the value of force calls.
 
+    bool isItConverged(double convergeCriterion);
 	void updateForces(double positions[], double velocities[], double forces[]);
 	void updateAccelerations(double positions[], double velocities[], double accelerations[]);
 
