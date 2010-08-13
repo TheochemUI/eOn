@@ -884,3 +884,19 @@ void Matter::applyPeriodicBoundary(long atom, int axis)
         positions_[atom*3+axis]+=cellBoundaries_[axis];
     };
 }
+
+bool Matter::isItConverged(double convergeCriterion)
+{
+    double diff=0;
+    
+    for(int i=0;i<nAtoms_*3;i++)
+    {
+        diff = fabs(forces_[i]);
+        if(convergeCriterion < diff)
+        {
+            break;
+        }
+    }
+
+    return(diff < convergeCriterion);
+};

@@ -41,6 +41,7 @@ long constants::getStateSaddleSearchTerminatedConcaveIterations(){return 5;};
 long constants::getStateNotConnected(){return 6;};
 long constants::getStateBadPrefactor(){return 7;};
 long constants::getStateBadBarrier(){return 8;};
+long constants::getStateMinimumNotConverged(){return 9;};
 
 // Constants used in the client
 double constants::getMaxDifferencePos(){return 0.1;};
