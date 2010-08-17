@@ -629,17 +629,18 @@ class ARC(Communicator):
         # Get a list of jobs, and find their statuses.
         self.jobsfilename = os.path.join(self.scratchpath, "jobs.txt")
         if os.path.isfile(self.jobsfilename):
-            jobids = []
+            jobids = {}
             f = open(self.jobsfilename, "r")
-            for jid in f:
-                jobids.append(jid[:-1])  # Remove trailing '\n'.
+            for line in f:
+                (jid, jname) = line.split('#')
+                jobids[jid] = jname[:-1]  # (Remove trailing '\n' from name).
         else:
-            jobids = []
+            jobids = {}
 
         self.jobs = []
         if jobids:
-            for info in self.arclib.GetJobInfo(jobids):
-                job = {"id": info.id, "name": info.job_name}
+            for info in self.arclib.GetJobInfo(jobids.keys()):
+                job = {"id": info.id, "name": jobids[info.id]}
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["stage"] = "Done"
                 elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
@@ -679,7 +680,7 @@ class ARC(Communicator):
             f = open(self.jobsfilename, "w")
             for j in self.jobs:
                 if j["stage"] not in ["Aborted", "Retrieved"]:
-                    f.write(j["id"] + '\n')
+                    f.write(j["id"] + '#' + j["name"] + '\n')
             f.close()
 
 
@@ -708,7 +709,7 @@ class ARC(Communicator):
 
 
     def create_tarball(self, src, dest):
-        """Pack directory 'src' into tar.bz2 file 'dest', makeing sure it will unopack into
+        """Pack directory 'src' into tar.bz2 file 'dest', makeing sure it will unpack into
            a dir called basename(src), rather than path/to/src"""
 
         # Remove trailing '/'; it would cause trouble with
