@@ -604,7 +604,7 @@ class Local(Communicator):
 
 class ARC(Communicator):
 
-    def __init__(self, scratchpath, bundle_size=1):
+    def __init__(self, scratchpath, bundle_size=1, client_url=None, blacklist=None):
         self.init_completed = False
 
         Communicator.__init__(self, scratchpath, bundle_size)
@@ -616,6 +616,9 @@ class ARC(Communicator):
             raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
 
         self.arclib.SetNotifyLevel(self.arclib.WARNING)
+
+        self.blacklist = blacklist
+        self.client_url = client_url
 
         # Check grid certificate proxy
         try:
@@ -688,14 +691,24 @@ class ARC(Communicator):
         '''Create a wrapper script to execute a job.  Return path to script.'''
         
         s = """
-        #!/bin/sh
+        #!/bin/bash
 
+        ls -l
+        if [ -f client-bin ]; then
+            # It seems we got a EON client binary as an inputfile. It does
+            # (probably) not have execute bit set, and it might be a
+            # sym-link to a file we don't own, so we have to make a copy
+            # and change permissions of the copy instead.
+            export PATH=$PATH:$PWD
+            cp client-bin client
+            chmod +x client
+        fi
+        ls -l
         tar jxvf $1.tar.bz2
         cd $1
-        Client
+        client
         cd $HOME
         tar jcvf $1.tar.bz2  $1
-        #sleep 65
         """
         script_path = os.path.join(self.scratchpath, 'wrapper.sh')
         try:
@@ -761,6 +774,8 @@ class ARC(Communicator):
         s += "(arguments=%s)" % basename
 
         s += "(inputFiles="
+        if self.client_url:
+            s += "(%s %s)" % ("client-bin", self.client_url)
         s += "(%s %s)" % (os.path.basename(wrapper_path), wrapper_path)
         s += "(%s %s)" % (os.path.basename(tarball_path), tarball_path)
         s += ")"
@@ -771,8 +786,10 @@ class ARC(Communicator):
 
         s += "(stdout=stdout)"
         s += "(stderr=stderr)"
+        s += "(gridlog=gridlog)"
 
-        s += "(runTimeEnvironment=APPS/CHEM/EON2)"
+        if not self.client_url:
+            s += "(runTimeEnvironment=APPS/CHEM/EON2)"
 
         jobname = "%s" % basename
         s += "(jobName=%s)" % jobname
@@ -782,18 +799,36 @@ class ARC(Communicator):
         return self.arclib.Xrsl(s), jobname
 
 
-    def submit_searches(self, searches, reactant_path, parameters_path):
-        '''Throws CommunicatorError if fails.'''
-        wrapper_path = self.create_wrapper_script()
+    def get_targets(self, xrsl):
+        """Get list of clusters+queues we can submit to."""
 
         qi = self.arclib.GetQueueInfo()
+        targets_initial = self.arclib.ConstructTargets(qi, xrsl)
+
+        logger.debug("List of targets: " + ', '.join([ t.cluster.hostname for t in targets_initial ]))
+
+        if self.blacklist:
+            targets = []
+            for t in targets_initial:
+                if t.cluster.hostname not in self.blacklist:
+                    targets.append(t)
+            logger.debug("List of targets after blacklisting: " + ', '.join([ t.cluster.hostname for t in targets ]))
+        else:
+            targets = targets_initial
+
+        return self.arclib.PerformStandardBrokering(targets)
+
+
+    def submit_searches(self, searches, reactant_path, parameters_path):
+        '''Throws CommunicatorError if fails.'''
+
+        wrapper_path = self.create_wrapper_script()
 
         for job_path in self.make_bundles(searches, reactant_path, parameters_path):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
-            targets = self.arclib.ConstructTargets(qi, xrsl)
-            targetsleft = self.arclib.PerformStandardBrokering(targets)
+            targets = self.get_targets(xrsl)
             try:
-                jobid = self.arclib.SubmitJob(xrsl, targetsleft)
+                jobid = self.arclib.SubmitJob(xrsl, targets)
             except JobSubmissionError, msg:
                 raise CommunicatorError(msg)
             except XrslError, msg:
