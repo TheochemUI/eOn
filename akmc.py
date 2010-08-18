@@ -215,7 +215,7 @@ def get_communicator():
         comm = communicator.MPI(config.path_scratch, config.comm_mpi_client, 
                                   config.comm_job_bundle_size, config.comm_mpi_mpicommand)
     elif config.comm_type=='arc':
-        comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size)
+        comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size, config.comm_client_url, config.comm_blacklist)
     else:
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()
