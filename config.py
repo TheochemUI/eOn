@@ -2,6 +2,7 @@ import ConfigParser
 import StringIO
 import os.path
 import sys
+import string
 
 
 parser = ConfigParser.SafeConfigParser()
@@ -80,6 +81,16 @@ if comm_type == 'boinc':
     #print comm_boinc_re_template_path
     #print comm_boinc_appname
     #print comm_boinc_results_path
+if comm_type == 'arc':
+    if parser.has_option('Communicator', 'client_url'):
+        comm_client_url = parser.get('Communicator', 'client_url')
+    else:
+        comm_client_url = ""
+
+    if parser.has_option('Communicator', 'blacklist'):
+        comm_blacklist = [ string.strip(c) for c in parser.get('Communicator', 'blacklist').split(',') ]
+    else:
+        comm_blacklist = []
 
 
 #
