@@ -10,13 +10,14 @@ class DisplaceError(Exception):
     pass
 
 class Displace:
-    def __init__(self, reactant, std_dev, radius):
+    def __init__(self, reactant, std_dev, radius, hole_epicenters):
         '''Reactant is an Atoms object. std_dev is the standard deviation
         of the normal distribution used to create the random displacements.
         radius is the distance to neighbors that will also be displaced.'''
         self.reactant = reactant
         self.std_dev = std_dev
         self.radius = radius
+        self.hole_epicenters = hole_epicenters
 
         #temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
@@ -47,6 +48,19 @@ class Displace:
         displacement_atoms.r += displacement
         return displacement_atoms, displacement
 
+    def filter_epicenters(self, epicenters):
+        '''Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
+           If Displace.hole_epicenters is None, all of the epicenters are accepted.'''
+        cutoff = 4.0 #The size of the hole. TODO: this should be parameterized.
+        if self.hole_epicenters == None:
+            return epicenters
+        new_epicenters = []
+        for e in epicenters:
+            for h in self.hole_epicenters:
+                if numpy.linalg.norm(atoms.pbc(self.reactant.r[h] - self.reactant.r[e], self.reactant.box)) < cutoff:
+                    new_epicenters.append(e)
+                    break
+        return new_epicenters
 
     def save_files(self, path, displacement):
         self.temp_array = self.reactant.r.copy()
@@ -61,8 +75,8 @@ class Displace:
 #class Recycle()
 
 class Undercoordinated(Displace):
-    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0):
-        Displace.__init__(self, reactant, std_dev, radius)
+    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
         self.max_coordination = max_coordination
         self.undercoordinated_atoms = []
@@ -78,6 +92,9 @@ class Undercoordinated(Displace):
         self.undercoordinated_atoms = [ i for i in range(len(cns)) 
                 if cns[i] <= self.max_coordination and 
                     self.reactant.free[i] == 1]
+                    
+        self.undercoordinated_atoms = self.filter_epicenters(self.undercoordinated_atoms)
+                    
         if len(self.undercoordinated_atoms) == 0:
             errmsg = "No free atoms have a coordination of %i or less." 
             errmsg = errmsg % self.max_coordination
@@ -93,8 +110,8 @@ class Undercoordinated(Displace):
         return self.get_displacement(epicenter)
 
 class Leastcoordinated(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0):
-        Displace.__init__(self, reactant, std_dev, radius)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
         self.leastcoordinated_atoms = []
 
@@ -105,6 +122,8 @@ class Leastcoordinated(Displace):
                 self.coordination_distance)
         self.leastcoordinated_atoms = [ i for i in self.leastcoordinated_atoms
                                         if self.reactant.free[i] == 1]
+
+        self.leastcoordinated_atoms = self.filter_epicenters(self.leastcoordinated_atoms)
 
         if len(self.leastcoordinated_atoms) == 0:
             errmsg = "The least coordinated atoms are all frozen."
@@ -119,12 +138,14 @@ class Leastcoordinated(Displace):
         return self.get_displacement(epicenter)
 
 class Random(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0):
-        Displace.__init__(self, reactant, std_dev, radius)
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
         #each item in this list is the index of a free atom
         self.free_atoms = [ i for i in range(len(self.reactant.free)) 
                 if self.reactant.free[i] ]
+                
+        self.free_atoms = self.filter_epicenters(self.free_atoms)
 
         if len(self.free_atoms) == 0: 
             raise DisplaceError("There are no free atoms in the reactant.")
@@ -133,19 +154,6 @@ class Random(Displace):
         """Select a random atom and displace all atoms in a radius about it."""
         #chose a random atom
         epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))] 
-        return self.get_displacement(epicenter)
-
-class MoveIndices(Displace):
-    """ Move an atom selected randomly from the list of passed indices. """
-    def __init__(self, reactant, index_list, std_dev=0.05, radius=5.0):
-        Displace.__init__(self, reactant, std_dev, radius)
-        self.displaceable = index_list
-
-    def make_displacement(self):
-        """ Select an atom that moved in the process getting here and
-            displace all atoms in a radius about it. """
-        # Choose the atom
-        epicenter = self.displaceable[numpy.random.randint(len(self.displaceable))]
         return self.get_displacement(epicenter)
 
 if __name__ == '__main__':
@@ -165,3 +173,10 @@ if __name__ == '__main__':
         d.make_displacement(sys.argv[2])
     dt = time.time()-t0
     print "%.2f displacements per second" % (float(ntimes)/dt)
+    
+    
+    
+    
+    
+    
+    
