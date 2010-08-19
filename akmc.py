@@ -329,7 +329,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
             
             u = numpy.random.random_sample()
             p = 0.0
-            nsid = -1 #next state process id
+            nsid = 1.1 # Next state process id, will throw exception if remains unchanged.
             
             # If we are following another trajectory:
             if config.debug_target_trajectory != "False":
@@ -347,22 +347,28 @@ def kmc_step(current_state, states, time, kT, superbasining):
                     procid = int(open(os.path.join(config.debug_target_trajectory, "dynamics.txt"), 'r').readlines()[current_step].split()[1])
                 except:
                     print "Can no longer follow target trajectory."
-                    sys.exit()
+                    sys.exit(1)
                 # Load the con file for that process saddle.
-                p0 = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
-                ibox = numpy.linalg.inv(p0.box)
+                targetSaddleCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
+                targetProductCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "product_%d.con" % procid))
+                ibox = numpy.linalg.inv(targetSaddleCon.box)
                 # See if we have this process
-                for id in current_state.get_process_ids():
-                    p1 = current_state.get_process_saddle(id)
-                    for dist in atoms.per_atom_norm_gen(p1.free_r() - p0.free_r(), p0.box, ibox):
+                for i in range(len(rate_table)):
+                    p1 = current_state.get_process_saddle(rate_table[i][0])
+                    for dist in atoms.per_atom_norm_gen(p1.free_r() - targetSaddleCon.free_r(), targetSaddleCon.box, ibox):
                         if dist > config.comp_eps_r:
                             break
                     else:
-                        nsid = id
-                        break
+                        p1 = current_state.get_process_product(rate_table[i][0])
+                        for dist in atoms.per_atom_norm_gen(p1.free_r() - targetProductCon.free_r(), targetProductCon.box, ibox):
+                            if dist > config.comp_eps_r:
+                                break
+                        else:
+                            nsid = i
+                            break
                 else:
                     print "Can no longer follow target trajectory."
-                    sys.exit()
+                    sys.exit(1)
 
             # We are not following another trajectory:
             else:
@@ -406,16 +412,12 @@ def kmc_step(current_state, states, time, kT, superbasining):
     return current_state, previous_state, time
 
 def get_displacement(reactant, indices=None):
-    # If we're going to be displacing based on indices.
-    if indices is not None:
-        disp = displace.MoveIndices(reactant, indices, config.disp_size, config.disp_radius)
-    # Otherwise, use the default, set method.
-    elif config.disp_type == 'random':
-        disp = displace.Random(reactant, config.disp_size, config.disp_radius)
+    if config.disp_type == 'random':
+        disp = displace.Random(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
     elif config.disp_type == 'undercoordinated':
-        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius)
+        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius, hole_epicenters=indices)
     elif config.disp_type == 'leastcoordinated':
-        disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius)
+        disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
     else:
         raise ValueError()
     return disp
