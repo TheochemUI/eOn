@@ -159,6 +159,9 @@ class State:
         # The id of this process is the number of processes.
         id = self.get_num_procs()
 
+        # If this was the result of a random search, append it to the list of randomly disovered procs.
+        self.append_random_process(id)
+
         # Move the relevant files into the procdata directory.
         io.savecon(self.proc_saddle_path(id), result['saddle'])
         io.save_results_dat(self.proc_results_path(id), result['results']) 
@@ -337,6 +340,26 @@ class State:
         self.info.set("MetaData", "ns barriers", "%s" % repr(self.ns_barriers))
         self.save_info()
         
+    def append_random_process(self, procid):
+        """ We need to keep track of which processes were discovered with random searches 
+            so that we can correctly determine Nf (only count random search saddles)."""
+        self.load_info()
+        try:
+            rps = eval(self.info.get("MetaData", "random procs"))
+        except:
+            rps = []
+        if procid not in rps:
+            rps.append(procid)
+        self.info.set("MetaData", "random procs", "%s" % repr(rps))
+        self.save_info()
+        
+    def get_random_processes(self):
+        self.load_info()
+        try:
+            return eval(self.info.get("MetaData", "random procs"))
+        except:
+            return []
+        
     def append_ns_barrier(self, barrier):
         self.set_ns_barriers(self.get_ns_barriers() + [barrier])
     
@@ -361,7 +384,12 @@ class State:
     
     def get_confidence(self):
         Ns = float(len(self.get_ns_barriers()))
-        Nf = float(len(self.get_ratetable()))
+        rt = self.get_ratetable()
+        rps = self.get_random_processes()
+        Nf = 0.0
+        for r in rt:
+            if r[0] in rps:
+                Nf += 1
         if Nf < 1 or Ns < 1:
             return 0.0
         return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
