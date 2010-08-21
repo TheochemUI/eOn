@@ -129,6 +129,14 @@ class Superbasin:
                 self.mean_residence_times[j] -= fundamental_matrix[i][j]
                 self.probability_matrix[i][j] = -recurrent_vector[i]*fundamental_matrix[i][j]
 
+        for i in self.probability_matrix:
+            if abs(1-i.sum()) > 1e-3:
+                logger.debug('Probability matrix has row which does not add up to 1')
+                logger.debug('Row: %s' % str(i))
+                logger.debug('Transient matrix:\n%s' % str(transient_matrix))
+                logger.debug('Recurrent vector:\n%s' % str(recurrent_vector))
+            
+
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
