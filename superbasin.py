@@ -105,7 +105,7 @@ class Superbasin:
                     recurrent_vector[i] += process['rate']
                 else:
                     j = self.state_numbers.index(process['product'])
-                    transient_matrix[i][j] += process['rate']
+                    transient_matrix[j][i] += process['rate']
                 transient_matrix[i][i] -= process['rate']
         
         #What is this stuff?
@@ -129,12 +129,13 @@ class Superbasin:
                 self.mean_residence_times[j] -= fundamental_matrix[i][j]
                 self.probability_matrix[i][j] = -recurrent_vector[i]*fundamental_matrix[i][j]
 
-        for i in self.probability_matrix:
+        for i in self.probability_matrix.transpose():
             if abs(1-i.sum()) > 1e-3:
                 logger.debug('Probability matrix has row which does not add up to 1')
                 logger.debug('Row: %s' % str(i))
                 logger.debug('Transient matrix:\n%s' % str(transient_matrix))
                 logger.debug('Recurrent vector:\n%s' % str(recurrent_vector))
+                logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix))
             
 
 
