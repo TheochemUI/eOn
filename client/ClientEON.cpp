@@ -187,6 +187,11 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
         unsigned i = time(NULL);
         parameters.setRandomSeed(i);
         srand(i);
+        // AP: the first number returned by rand tend to be alike
+        // after three iterations it hopefully has diverged
+        rand();
+        rand();
+        rand();
     }
     else
     {
