@@ -151,6 +151,5 @@ public:
     
 private:        
     long linesInFile(FILE *file);///< Determines the number of lines in the specified file. The number of lines should be used to initialize a characther 2D array being passed as an arguement in loadParameters.
-    void loadParameters(FILE *file, char **parms, double *values, long nLines);///< Load the first word in each line into parms. The next 'word' is assumed to be the values correspond to the parameter and is stored in values. Line 0: first word->parms[0] second 'word'->values[0]. Line 1 : first word->parms[1] second 'word'->values[1]. And so on. Lines stating with # are considered user comments and are ignored ('# comment')   
 };
 #endif
