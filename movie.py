@@ -100,9 +100,7 @@ def processes(states, statenr, limit):
     return atoms_list
 
 def dot(path_root, states):
-    trajectory_path = os.path.join(path_root, "dynamics.txt")
-    trajectory = get_trajectory(trajectory_path, True)
-    G = make_graph(trajectory, states) 
+    G = make_graph(states) 
     return G.dot()
 
 def dynamics(path_root, states, unique=False):
@@ -122,10 +120,10 @@ def dynamics(path_root, states, unique=False):
 
     return atoms_list
 
-def make_graph(trajectory, states):
+def make_graph(states):
     # Build the graph.
     G = Graph()
-    for statenr in trajectory:
+    for statenr in range(states.get_num_states()):
         state = states.get_state(statenr)
         G.add_node(state)
         ptable = state.get_process_table()
@@ -137,9 +135,7 @@ def make_graph(trajectory, states):
     return G
 
 def fastestpath(path_root, states, full=False):
-    trajectory_path = os.path.join(path_root, "dynamics.txt")
-    trajectory = get_trajectory(trajectory_path, True)
-    G = make_graph(trajectory, states) 
+    G = make_graph(states) 
 
     state_list = [states.get_state(0)]
     if full:
@@ -150,7 +146,7 @@ def fastestpath(path_root, states, full=False):
             for s in path:
                 state_list.append(s)
     else:
-        end = states.get_state(trajectory[-1])
+        end = states.get_state(states.get_num_states()-1)
         state_list = G.shortest_path(state_list[0], end)
 
     atoms_list = []
