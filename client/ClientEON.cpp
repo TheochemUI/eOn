@@ -180,6 +180,8 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     closeFile(fileParameters, parameters_passed);
     
     // Initialize random generator
+    //XXX: If the user sepcifies a negative random seed, the 
+    //RNG is seeded by the time instead of the user's seed
     if(parameters.getRandomSeed() < 0) 
     {
         unsigned i = time(NULL);

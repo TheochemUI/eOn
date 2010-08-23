@@ -10,6 +10,7 @@
  *===============================================
  */
 #include "Parameters.h"
+#include "INIFile.h"
 
 //using namespace constants;
 
@@ -73,98 +74,163 @@ Parameters::~Parameters(){
 
 
 void Parameters::load(FILE *file){
-    char **parms;
-    double *values;
-    long nLines, i;
     
-    nLines = linesInFile(file);
-    
-    values = new double[nLines];
-    parms = new char*[nLines];
-    for(int i=0; i<nLines; i++)
-        parms[i] = new char[STRING_SIZE];
-    
-    loadParameters(file, parms, values, nLines);
-    
-    for(i=0; i<nLines; i++){
-        // Note strcmp() return 0 if strings are equal
-        if(!strcmp(parms[i], "RANDOM_SEED"))
-            randomSeed_ = long(values[i]);
-        else if(!strcmp(parms[i], "REACTANT_STATE_TAG"))
-            reactantStateTag_ = long(values[i]);
-        else if(!strcmp(parms[i], "POTENTIAL_TAG"))
-            potentialTag_ = long(values[i]);
-        else if(!strcmp(parms[i], "POTENTIAL_NO_TRANSLATION"))
-            potentialNoTranslation_ = long(values[i]);
-        else if(!strcmp(parms[i], "MINIMIZE_ONLY"))
-            minimize_only_ = long(values[i]);
-        else if(!strcmp(parms[i], "MINIMIZE_BOX"))
-            minimize_box_ = long(values[i]);
-        else if(!strcmp(parms[i], "GET_PREFACTORS_TAG"))
-            getPrefactorsTag_ = long(values[i]);
-        else if(!strcmp(parms[i], "TYPE_PERTURBATION_SP"))
-            typePerturbation_SP_ = (long) values[i];
-        else if(!strcmp(parms[i], "LOWEST_EIGENMODE_DETERMINATION_SP"))
-            lowestEigenmodeDetermination_SP_ = long(values[i]);
-        else if(!strcmp(parms[i], "REFINE_SP")) {
-            refine_SP_ = (bool) values[i];
-        }
+    //If we fail to parse the file as an INI, we will need to rewind the
+    //file. So, we store the current stream position.
+    fpos_t pos;
+    fgetpos(file, &pos); 
 
-        // Tweakable parameters
+    CIniFile ini;
+    ini.CaseInsensitive();
+    if(ini.ReadFile(file))
+    {
+        //If we succesfully read the file, then parse it as an INI
+        randomSeed_ = ini.GetValueL("Default", "RANDOM_SEED", randomSeed_);
+        reactantStateTag_ = ini.GetValueL("Default", "REACTANT_STATE_TAG", reactantStateTag_);
+        potentialTag_ = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag_);
+        potentialNoTranslation_ = ini.GetValueL("Default", "POTENTIAL_NO_TRANSLATION", potentialNoTranslation_);
+        minimize_only_ = ini.GetValueL("Default", "MINIMIZE_ONLY", minimize_only_);
+        minimize_box_ = ini.GetValueL("Default", "MINIMIZE_BOX", minimize_box_);
+        getPrefactorsTag_ = ini.GetValueL("Default", "GET_PREFACTORS_TAG", getPrefactorsTag_);
+        converged_Relax_ = ini.GetValueF("Default", "CONVERGED_RELAX", converged_Relax_);
+        maximumIterations_ = ini.GetValueL("Default", "MAXIMUM_ITERATIONS", maximumIterations_);
+        
+        
+        typePerturbation_SP_ = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION", typePerturbation_SP_);
+        lowestEigenmodeDetermination_SP_ = ini.GetValueL("Saddle_Point", "LOWEST_EIGENMODE_DETERMINATION", lowestEigenmodeDetermination_SP_);
+        refine_SP_ = ini.GetValueB("Saddle_Point", "REFINE", refine_SP_);
+        converged_SP_ = ini.GetValueF("Saddle_Point", "CONVERGED", converged_SP_);
+        maxJumpAttempts_SP_ = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS", maxJumpAttempts_SP_);
+        nrOfTriesToDetermineSaddlePoint_SP_ = ini.GetValueL("Saddle_Point", "NR_OF_TRIES_TO_DETERMINE_SADDLE_POINT", nrOfTriesToDetermineSaddlePoint_SP_);
+        maxStepSize_SP_ = ini.GetValueF("Saddle_Point", "MAX_STEP_SIZE", maxStepSize_SP_);
+        maxEnergy_SP_ = ini.GetValueF("Saddle_Point", "MAX_ENERGY", maxEnergy_SP_);
+        normPerturbation_SP_ = ini.GetValueF("Saddle_Point", "NORM_PERTURBATION", normPerturbation_SP_);
+        maxSinglePerturbation_SP_ = ini.GetValueF("Saddle_Point", "MAX_SINGLE_PERTURBATION", maxSinglePerturbation_SP_);
+        withinRadiusPerturbated_SP_ = ini.GetValueF("Saddle_Point", "WITHIN_RADIUS_PERTURBATED", withinRadiusPerturbated_SP_);
 
-        // Relaxation related
-        else if(!strcmp(parms[i], "CONVERGED_RELAX"))
-            converged_Relax_ = values[i];
 
-        // Saddle Point related
-        else if(!strcmp(parms[i], "CONVERGED_SP"))
-            converged_SP_ = values[i];
-        else if(!strcmp(parms[i], "MAX_JUMP_ATTEMPTS_SP"))
-            maxJumpAttempts_SP_ = (long) values[i];
-        else if(!strcmp(parms[i], "NR_OF_TRIES_TO_DETERMINE_SADDLE_POINT_SP"))
-            nrOfTriesToDetermineSaddlePoint_SP_ = long(values[i]);
-        else if(!strcmp(parms[i], "MAX_STEP_SIZE_SP"))
-            maxStepSize_SP_ = values[i];
-/*        else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONCAVE_SP"))
-            maxStepSizeConcave_SP_ = values[i];
-        else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONVEX_SP"))
-            maxStepSizeConvex_SP_ = values[i]; */
-        else if(!strcmp(parms[i], "MAX_ENERGY_SP"))
-            maxEnergy_SP_ = values[i];
-        else if(!strcmp(parms[i], "NORM_PERTURBATION_SP"))
-            normPerturbation_SP_ = values[i];
-        else if(!strcmp(parms[i], "WITHIN_RADIUS_PERTURBATED_SP"))
-            withinRadiusPerturbated_SP_ = values[i];
-        else if(!strcmp(parms[i], "MAX_SINGLE_PERTURBATION_SP"))
-            maxSinglePerturbation_SP_ = values[i];
-        else if(!strcmp(parms[i], "MAXIMUM_ITERATIONS"))
-            maximumIterations_ = (long)values[i];
+        maxSize_Hessian_ = ini.GetValueL("Hessian", "MAX_SIZE", maxSize_Hessian_);
+        withinRadiusDisplaced_Hessian_ = ini.GetValueF("Hessian", "WITHIN_RADIUS_DISPLACED", withinRadiusDisplaced_Hessian_);
+        minDisplacement_Hessian_ = ini.GetValueF("Hessian", "MIN_DISPLACEMENT", minDisplacement_Hessian_);
 
-        // Hessian related
-        else if(!strcmp(parms[i], "MAX_SIZE_HESSIAN"))
-            maxSize_Hessian_ = values[i];
-        else if(!strcmp(parms[i], "MIN_DISPLACEMENT_HESSIAN"))
-            minDisplacement_Hessian_ = values[i];
-        else if(!strcmp(parms[i], "WITHIN_RADIUS_DISPLACED_HESSIAN"))
-            withinRadiusDisplaced_Hessian_ = values[i];
-
-        // Dimer related
-        else if(!strcmp(parms[i], "ROTATIONS_DIMER"))
-            rotations_Dimer_ = (long) values[i];
-/*        else if(!strcmp(parms[i], "ROTATIONS_NEW_SEARCH_DIMER"))
-            rotationsNewSearch_Dimer_ = (long) values[i];*/
-        else if(!strcmp(parms[i], "SEPARATION_DIMER"))
-            separation_Dimer_ = (double) values[i];
-
-        // Lines with user comment are started with #
-        else if(parms[i][0]=='#'){}
-        else
-            std::cout<<"Unknown property: "<<parms[i]<<"\n";
+        
+        rotations_Dimer_ = ini.GetValueL("Dimer", "ROTATIONS", rotations_Dimer_);
+        separation_Dimer_ = ini.GetValueF("Dimer", "SEPARATION", separation_Dimer_);
     }
-    delete [] values;
-    for(i=0; i<nLines; i++)
-        delete [] parms[i];
-    delete [] parms;
+    else
+    {
+        //Otherwise, parse it as an old-style parameters file
+        printf("Reading old-style parameters file\n"); 
+        //Rewind the file to before CIniFile::ReadFile was called
+        fsetpos(file, &pos);
+
+        char **parms;
+        double *values;
+        long nLines, i;
+        
+        nLines = linesInFile(file);
+        
+        values = new double[nLines];
+        parms = new char*[nLines];
+        for(int i=0; i<nLines; i++)
+            parms[i] = new char[STRING_SIZE];
+        i = 0;
+
+        // Important that the variable value is float
+        // The used function sscanf only support this type 
+        float value;
+        char parm[STRING_SIZE];
+        char lineAll[STRING_SIZE];
+        for (i=0; i<nLines; i++){
+            fgets(lineAll, STRING_SIZE, file);
+            std::sscanf(lineAll, "%s %e", parm, &value);            
+            for(int j = 0; parm[j]; j++)
+                parm[j] = toupper(parm[j]);
+                
+            values[i] = value;
+            strcpy(parms[i], parm);
+        }
+        
+        for(i=0; i<nLines; i++){
+            // Note strcmp() return 0 if strings are equal
+            if(!strcmp(parms[i], "RANDOM_SEED"))
+                randomSeed_ = long(values[i]);
+            else if(!strcmp(parms[i], "REACTANT_STATE_TAG"))
+                reactantStateTag_ = long(values[i]);
+            else if(!strcmp(parms[i], "POTENTIAL_TAG"))
+                potentialTag_ = long(values[i]);
+            else if(!strcmp(parms[i], "POTENTIAL_NO_TRANSLATION"))
+                potentialNoTranslation_ = long(values[i]);
+            else if(!strcmp(parms[i], "MINIMIZE_ONLY"))
+                minimize_only_ = long(values[i]);
+            else if(!strcmp(parms[i], "MINIMIZE_BOX"))
+                minimize_box_ = long(values[i]);
+            else if(!strcmp(parms[i], "GET_PREFACTORS_TAG"))
+                getPrefactorsTag_ = long(values[i]);
+            else if(!strcmp(parms[i], "TYPE_PERTURBATION_SP"))
+                typePerturbation_SP_ = (long) values[i];
+            else if(!strcmp(parms[i], "LOWEST_EIGENMODE_DETERMINATION_SP"))
+                lowestEigenmodeDetermination_SP_ = long(values[i]);
+            else if(!strcmp(parms[i], "REFINE_SP")) {
+                refine_SP_ = (bool) values[i];
+            }
+
+            // Tweakable parameters
+
+            // Relaxation related
+            else if(!strcmp(parms[i], "CONVERGED_RELAX"))
+                converged_Relax_ = values[i];
+
+            // Saddle Point related
+            else if(!strcmp(parms[i], "CONVERGED_SP"))
+                converged_SP_ = values[i];
+            else if(!strcmp(parms[i], "MAX_JUMP_ATTEMPTS_SP"))
+                maxJumpAttempts_SP_ = (long) values[i];
+            else if(!strcmp(parms[i], "NR_OF_TRIES_TO_DETERMINE_SADDLE_POINT_SP"))
+                nrOfTriesToDetermineSaddlePoint_SP_ = long(values[i]);
+            else if(!strcmp(parms[i], "MAX_STEP_SIZE_SP"))
+                maxStepSize_SP_ = values[i];
+/*            else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONCAVE_SP"))
+                maxStepSizeConcave_SP_ = values[i];
+            else if(!strcmp(parms[i], "MAX_STEP_SIZE_CONVEX_SP"))
+                maxStepSizeConvex_SP_ = values[i]; */
+            else if(!strcmp(parms[i], "MAX_ENERGY_SP"))
+                maxEnergy_SP_ = values[i];
+            else if(!strcmp(parms[i], "NORM_PERTURBATION_SP"))
+                normPerturbation_SP_ = values[i];
+            else if(!strcmp(parms[i], "WITHIN_RADIUS_PERTURBATED_SP"))
+                withinRadiusPerturbated_SP_ = values[i];
+            else if(!strcmp(parms[i], "MAX_SINGLE_PERTURBATION_SP"))
+                maxSinglePerturbation_SP_ = values[i];
+            else if(!strcmp(parms[i], "MAXIMUM_ITERATIONS"))
+                maximumIterations_ = (long)values[i];
+
+            // Hessian related
+            else if(!strcmp(parms[i], "MAX_SIZE_HESSIAN"))
+                maxSize_Hessian_ = values[i];
+            else if(!strcmp(parms[i], "MIN_DISPLACEMENT_HESSIAN"))
+                minDisplacement_Hessian_ = values[i];
+            else if(!strcmp(parms[i], "WITHIN_RADIUS_DISPLACED_HESSIAN"))
+                withinRadiusDisplaced_Hessian_ = values[i];
+
+            // Dimer related
+            else if(!strcmp(parms[i], "ROTATIONS_DIMER"))
+                rotations_Dimer_ = (long) values[i];
+/*            else if(!strcmp(parms[i], "ROTATIONS_NEW_SEARCH_DIMER"))
+                rotationsNewSearch_Dimer_ = (long) values[i];*/
+            else if(!strcmp(parms[i], "SEPARATION_DIMER"))
+                separation_Dimer_ = (double) values[i];
+
+            // Lines with user comment are started with #
+            else if(parms[i][0]=='#'){}
+            else
+                std::cout<<"Unknown property: "<<parms[i]<<"\n";
+        }
+        delete [] values;
+        for(i=0; i<nLines; i++)
+            delete [] parms[i];
+        delete [] parms;
+    }
     return;
 }
 void Parameters::saveOutput(FILE *file){
@@ -511,27 +577,5 @@ long Parameters::linesInFile(FILE *file){
 
     rewind(file);
     return (nLines);
-}
-
-void Parameters::loadParameters(FILE *file, char **parms, double *values, long nLines){
-    int i = 0;
-
-    // Important that the variable value is float
-    // The used function sscanf only support this type 
-    float value;
-    char parm[STRING_SIZE];
-    char lineAll[STRING_SIZE];
-    while (nLines){
-        fgets(lineAll, STRING_SIZE, file);
-        std::sscanf(lineAll, "%s %e", parm, &value);            
-        for(int j = 0; parm[j]; j++)
-            parm[j] = toupper(parm[j]);
-            
-        values[i] = value;
-        strcpy(parms[i], parm);
-        i = i+1;
-        nLines = nLines-1;
-    }
-    return;
 }
 
