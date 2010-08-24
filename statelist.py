@@ -19,7 +19,18 @@ class StateList:
 
 
 
-    def __init__(self, state_path, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, use_identical, initial_state = None, list_search_results = False):
+    def __init__(self, 
+                 state_path, 
+                 kT, 
+                 thermal_window, 
+                 max_thermal_window, 
+                 epsilon_e, 
+                 epsilon_r, 
+                 use_identical, 
+                 initial_state = None, 
+                 list_search_results = False,
+                 filter_hole = False):
+                 
         ''' Check to see if state_path exists and that state zero exists.
             Initializes state zero when passed a initial_state only if state
             zero doesn't already exist. '''
@@ -33,6 +44,7 @@ class StateList:
         self.epsilon_r = epsilon_r
         self.use_identical = use_identical
         self.list_search_results = list_search_results
+        self.filter_hole = filter_hole
 
         # Paths
         self.state_table_path = os.path.join(self.path, "state_table")
@@ -47,7 +59,16 @@ class StateList:
         if not os.path.isdir(os.path.join(self.path, "0")):
             if initial_state == None:
                 raise IOError("Missing zeroth state directory and no reactant provided.")
-            state.State(os.path.join(self.path, "0"), 0, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, initial_state, list_search_results = self.list_search_results)
+            state.State(statepath = os.path.join(self.path, "0"), 
+                        statenumber = 0, 
+                        kT = kT, 
+                        thermal_window = thermal_window, 
+                        max_thermal_window = max_thermal_window, 
+                        epsilon_e = epsilon_e, 
+                        epsilon_r = epsilon_r, 
+                        reactant_path = initial_state, 
+                        list_search_results = self.list_search_results,
+                        filter_hole = filter_hole)
 
         # Other class variables.
         self.states = {}
@@ -91,24 +112,30 @@ class StateList:
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
         #TODO: Compare configuration of product with existing states.
+
         # If the number of states in state_table is zero, we need to add the zero state and energy to the state table.
         if self.get_num_states() == 0:
             zst = self.get_state(0)
             self.append_state_table(zst.get_energy())
+
         # Load the state object containing the process we want the product for.
         st = self.get_state(state_number)
         st.load_process_table()
+
         # Get the state number for the product.
         newstnr = st.procs[process_id]['product']
+
         # If the product id is not initialized, make sure it is not a copy of an existing state.
         # Otherwise, create it, connect it to st, and return it.
         if newstnr == -1:
+
             # Make a list of states for which we need to compare configurations.
             enew = st.procs[process_id]['product_energy']
             energetically_close = []
             for id in range(self.get_num_states()):
                 if abs(self.get_state(id).get_energy() - enew) < self.epsilon_e:
                     energetically_close.append(id)
+
             # Perform distance checks on the energetically close configurations.
             if len(energetically_close) > 0:
                 pnew = st.get_process_product(process_id)
@@ -116,27 +143,44 @@ class StateList:
                     p = self.get_state(id).get_reactant()
                     if self.use_identical:
                         if atoms.identical(p, pnew, self.epsilon_r):
+
                             # Update the reactant state to point at the new state id.
                             self.register_process(st.number, id, process_id)                            
                             return self.get_state(id)
                     else:
                         dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
                         if dist < self.epsilon_r:
+
                             # Update the reactant state to point at the new state id.
                             self.register_process(st.number, id, process_id)                            
                             return self.get_state(id)
+
             # The id for the new state is the number of states.
             newstnr = self.get_num_states()
+
             # Create the new state object.
-            newst = state.State(self.state_path(newstnr), newstnr, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r, st.proc_product_path(process_id), list_search_results = self.list_search_results)
+            newst = state.State(statepath = self.state_path(newstnr), 
+                                statenumber = newstnr, 
+                                kT = self.kT, 
+                                thermal_window = self.thermal_window, 
+                                max_thermal_window = self.max_thermal_window, 
+                                epsilon_e = self.epsilon_e, 
+                                epsilon_r = self.epsilon_r, 
+                                reactant_path = st.proc_product_path(process_id), 
+                                list_search_results = self.list_search_results,
+                                filter_hole = self.filter_hole)
             self.register_process(st.number, newstnr, process_id)
+
             # Append the new state to the state table.
             self.append_state_table(st.procs[process_id]['product_energy'])
+
         # The product state already exists, so get it.
         else:
             newst = self.get_state(newstnr)
+
         # Return the product state.
         return newst
+
 
 
     def register_process(self, reactant_number, product_number, process_id):
@@ -204,7 +248,28 @@ class StateList:
         ''' Returns a state object. '''
         if state_number in self.states:
             return self.states[state_number]
-        st = state.State(os.path.join(self.path, str(state_number)), state_number, self.kT, self.thermal_window, self.max_thermal_window, self.epsilon_e, self.epsilon_r, list_search_results = self.list_search_results)
+
+#        newst = state.State(statepath = self.state_path(newstnr), 
+#                            statenumber = newstnr, 
+#                            kT = self.kT, 
+#                            thermal_window = self.thermal_window, 
+#                            max_thermal_window = self.max_thermal_window, 
+#                            epsilon_e = self.epsilon_e, 
+#                            epsilon_r = self.epsilon_r, 
+#                            reactant_path = st.proc_product_path(process_id), 
+#                            list_search_results = self.list_search_results
+#                            filter_hole = filter_hole)
+            
+        st = state.State(statepath = os.path.join(self.path, str(state_number)), 
+                         statenumber = state_number, 
+                         kT = self.kT, 
+                         thermal_window = self.thermal_window, 
+                         max_thermal_window = self.max_thermal_window, 
+                         epsilon_e = self.epsilon_e, 
+                         epsilon_r = self.epsilon_r, 
+                         list_search_results = self.list_search_results,
+                         filter_hole = self.filter_hole)
+                         
         self.states[state_number] = st
         return st
 

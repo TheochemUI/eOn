@@ -26,6 +26,8 @@ import askmc
 import kdb
 import movie
 
+
+
 def main(): 
      
     # Here's what this does:
@@ -45,7 +47,7 @@ def main():
         sys.exit(1)
     
     # Load metadata, the state list, and the current state.
-    start_state_num, time, wuid, searchdata = get_akmc_metadata()
+    start_state_num, time, wuid, searchdata, previous_state_num = get_akmc_metadata()
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
 
@@ -138,9 +140,11 @@ def main():
         if int(key.split('_')[0]) < current_state.number:
             del searchdata[key]
 
-    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata)
+    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata, previous_state.number)
 
     parser.write(open(metafile, 'w')) 
+
+
 
 def get_akmc_metadata():
     if not os.path.isdir(config.path_results):
@@ -167,11 +171,16 @@ def get_akmc_metadata():
             searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
         except:
             searchdata={}
+        try:
+            previous_state_num = parser.getint("Simulation Information", "previous_state")
+        except:
+            previous_state_num = None
     else:
         time = 0
         start_state_num = 0
         wuid = 0
         searchdata = {}
+        previous_state_num = None
 
     if config.debug_random_seed:
         try:
@@ -185,21 +194,28 @@ def get_akmc_metadata():
             numpy.random.seed(config.debug_random_seed)
             logger.debug("Set random state from seed")
 
-    return start_state_num, time, wuid, searchdata
+    return start_state_num, time, wuid, searchdata, previous_state_num
 
-def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata):
+
+
+def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previous_state_num):
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
     parser.set('aKMC Metadata', 'wu_id', str(wuid))
     parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
+    parser.set('Simulation Information', 'previous_state', str(previous_state_num))
     if config.debug_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
+
+
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path, list_search_results = config.debug_list_search_results)  
+    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path, list_search_results = config.debug_list_search_results, filter_hole = config.disp_moved_only)  
+
+
 
 def get_communicator():
     if config.comm_type=='boinc':
@@ -220,6 +236,8 @@ def get_communicator():
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()
     return comm
+
+
 
 def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
@@ -286,12 +304,16 @@ def register_results(comm, current_state, states, searchdata = None):
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
 
+
+
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_el_energy_increment)
     return superbasining
+
+
 
 def kmc_step(current_state, states, time, kT, superbasining):
     t1 = unix_time.time()
@@ -411,6 +433,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
 
+
+
 def get_displacement(reactant, indices=None):
     if config.disp_type == 'random':
         disp = displace.Random(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
@@ -421,6 +445,8 @@ def get_displacement(reactant, indices=None):
     else:
         raise ValueError()
     return disp
+
+
 
 def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
     reactant = current_state.get_reactant()
