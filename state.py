@@ -15,10 +15,19 @@ import atoms
 
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
+
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
-processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
+
+processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", 
+                                               "product", "product energy", "product prefactor",
+                                               "barrier", "rate", "repeats")
+
 processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier", "max-dist", "sad-fcs", "mins-fcs", "pref-fcs", "result")
+
+search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier",
+                                                                      "max-dist", "sad-fcs", 
+                                                                      "mins-fcs", "pref-fcs", 
+                                                                      "result")
 search_result_header += "-" * len(search_result_header) + '\n'
 
 
@@ -27,7 +36,18 @@ class State:
     """ The State class. """
 
 
-    def __init__(self, statepath, statenumber, kT, thermal_window, max_thermal_window, epsilon_e, epsilon_r, reactant_path = None, list_search_results = False):
+    def __init__(self, 
+                 statepath, 
+                 statenumber, 
+                 kT, 
+                 thermal_window, 
+                 max_thermal_window, 
+                 epsilon_e, 
+                 epsilon_r, 
+                 reactant_path = None, 
+                 list_search_results = False, 
+                 filter_hole = False):
+                 
         """ Creates a new State, with lazily loaded data. """
 
         # The path to and number of this state.
@@ -79,8 +99,12 @@ class State:
         self.bad_saddle_count = None
         self.unique_saddle_count = None
 
+
+
     def __repr__(self):
         return "State #%i" % self.number
+
+
 
     def append_search_result(self, result, comment):
         if self.list_search_results:
@@ -180,8 +204,56 @@ class State:
                                   rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.kT), 
                                   repeats =           0)
 
-        # This was a unique process, so return True
+        # This was a unique process, so return the id.
         return id
+
+
+
+    def get_ratetable(self):
+        """ Loads the process table if it has not been loaded and generates a rate table 
+        according to kT and thermal_window. """
+        self.load_process_table()
+        lowest = self.get_lowest_barrier()
+        table = []
+        for id in self.procs.keys():
+            proc = self.procs[id]
+            if proc['barrier'] < lowest + (self.kT * self.thermal_window):
+                table.append((id, proc['rate']))
+        return table
+        
+        
+
+    def get_confidence(self):
+        """ 
+            The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique 
+            processes and Ns is the number of searches performed.  
+            
+            When Nf or Ns are zero, there is no confidence.  Zero is returned in this case. 
+            
+            As the ratio Nf/Ns decreases, the confidence increases from 0.0 to a limit of 1.0.
+            This is roughly equivalent to the statement: I am more confident that I have found
+            all relevant processes if I have found 10 processes after 1000 searches than if I 
+            have found 900 processes after 1000 searches.
+            
+            Nf is calculated to be the number of processes in the rate table. Ns is calculated
+            to be the number of searches that resulted in a process on the rate table.
+            
+            When using recycling or kdb, it is useful to ignore processes that occur outside
+            the hole, or the region in which the last process took place.  Focusing on this
+            region means you can do possibly far fewer searches to reach confidence. When using
+            the hole to filter processes, Nf and Ns only take into account processes that 
+            intersect the hole.                                                              
+        """
+        Ns = float(len(self.get_ns_barriers()))
+        rt = self.get_ratetable()
+        rps = self.get_random_processes()
+        Nf = 0.0
+        for r in rt:
+            if r[0] in rps:
+                Nf += 1
+        if Nf < 1 or Ns < 1:
+            return 0.0
+        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
 
 
 
@@ -204,6 +276,7 @@ class State:
                                           "repeats":           int  (l[REPEATS])}
 
     
+
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
         if self.procs != None:
@@ -211,24 +284,21 @@ class State:
             f.write(processtable_header)
             for id in self.procs.keys():
                 proc = self.procs[id]
-                f.write(processtable_line % (id, 
-                                             proc['saddle_energy'], 
-                                             proc['prefactor'], 
-                                             proc['product'], 
-                                             proc['product_energy'],
-                                             proc['product_prefactor'], 
-                                             proc['barrier'],
-                                             proc['rate'],
-                                             proc['repeats']))
+                f.write(processtable_line % (id, proc['saddle_energy'], proc['prefactor'], 
+                                             proc['product'], proc['product_energy'],
+                                             proc['product_prefactor'], proc['barrier'],
+                                             proc['rate'], proc['repeats']))
             f.close() 
 
 
 
-    def append_process_table(self, id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, repeats):
+    def append_process_table(self, id, saddle_energy, prefactor, product, product_energy, 
+                             product_prefactor, barrier, rate, repeats):
         """ Append to the process table.  Append a single line to the process table file.  If we 
             have loaded the process table, also append it to the process table in memory. """
         f = open(self.proctable_path, 'a')
-        f.write(processtable_line % (id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, repeats))
+        f.write(processtable_line % (id, saddle_energy, prefactor, product, product_energy, 
+                                     product_prefactor, barrier, rate, repeats))
         f.close()
         if self.procs != None:
             self.procs[id] = {"saddle_energy":    saddle_energy, 
@@ -242,20 +312,11 @@ class State:
         
 
 
-    def get_ratetable(self):
-        """ Loads the process table if it has not been loaded and generates a rate table according to kT and thermal_window. """
-        self.load_process_table()
-        lowest = self.get_lowest_barrier()
-        table = []
-        for id in self.procs.keys():
-            proc = self.procs[id]
-            if proc['barrier'] < lowest + (self.kT * self.thermal_window):
-                table.append((id, proc['rate']))
-        return table
-
     def get_process_ids(self):
         """ Returns the list of ids in the rate table. """
         return [b[0] for b in self.get_ratetable()]
+
+
 
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
@@ -271,6 +332,8 @@ class State:
             self.info.set("MetaData", "lowest barrier", "%f" % lowest)
             self.save_info()        
         return lowest
+        
+        
 
     def get_lowest_barrier(self):
         self.load_info()
@@ -279,10 +342,13 @@ class State:
         except:
             return 1e300
 
+
+
     def get_num_procs(self):
         """ Loads the process table if it is not already loaded and returns the length of it """
         self.load_process_table()
         return len(self.procs)
+
 
 
     def get_unique_saddle_count(self):
@@ -296,11 +362,14 @@ class State:
             return self.unique_saddle_count
 
 
+
     def set_unique_saddle_count(self, num):
         self.unique_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "unique_saddles", "%d" % num)
         self.save_info()        
+
+
 
     def get_good_saddle_count(self):
         if self.good_saddle_count is None:
@@ -312,11 +381,15 @@ class State:
         else:
             return self.good_saddle_count
 
+
+
     def set_good_saddle_count(self, num):
         self.good_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "good_saddles", "%d" % num)
         self.save_info()        
+
+
 
     def get_ns_barriers(self):
         self.load_info()
@@ -333,6 +406,8 @@ class State:
             if nsb <= lowest + (self.kT * self.thermal_window):
                 self.ns_barriers.append(nsb)
         return self.ns_barriers
+        
+        
 
     def set_ns_barriers(self, nsBarriers):
         self.ns_barriers = nsBarriers
@@ -340,6 +415,8 @@ class State:
         self.info.set("MetaData", "ns barriers", "%s" % repr(self.ns_barriers))
         self.save_info()
         
+
+
     def append_random_process(self, procid):
         """ We need to keep track of which processes were discovered with random searches 
             so that we can correctly determine Nf (only count random search saddles)."""
@@ -353,6 +430,8 @@ class State:
         self.info.set("MetaData", "random procs", "%s" % repr(rps))
         self.save_info()
         
+
+
     def get_random_processes(self):
         self.load_info()
         try:
@@ -360,12 +439,18 @@ class State:
         except:
             return []
         
+
+
     def append_ns_barrier(self, barrier):
         self.set_ns_barriers(self.get_ns_barriers() + [barrier])
     
+
+
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
     
+
+
     def get_bad_saddle_count(self):
         if self.bad_saddle_count is None:
             self.load_info()
@@ -376,23 +461,15 @@ class State:
         else:
             return self.bad_saddle_count
 
+
+
     def set_bad_saddle_count(self, num):
         self.bad_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "bad_saddles", "%d" % num)
         self.save_info()        
     
-    def get_confidence(self):
-        Ns = float(len(self.get_ns_barriers()))
-        rt = self.get_ratetable()
-        rps = self.get_random_processes()
-        Nf = 0.0
-        for r in rt:
-            if r[0] in rps:
-                Nf += 1
-        if Nf < 1 or Ns < 1:
-            return 0.0
-        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
+
 
     def get_energy(self):
         """ Loads the info file if it is not already loaded and returns the energy, or None
@@ -403,6 +480,8 @@ class State:
         except:
             return None       
 
+
+
     def set_energy(self, e):
         """ Loads the info file if it has not been loaded and sets the reactant energy 
             variable. """
@@ -410,25 +489,13 @@ class State:
         self.info.set("MetaData", "reactant energy", "%f" % e)
         self.save_info()        
                 
-    def get_reactant(self):
-        """ Loads the reactant.con into a point and returns it. """
-        return io.loadcon(self.reactant_path)
 
-    def get_process_reactant(self, id):
-        return io.loadcon(self.proc_reactant_path(id))
-
-    def get_process_saddle(self, id):
-        return io.loadcon(self.proc_saddle_path(id))
-
-    def get_process_product(self, id):
-        return io.loadcon(self.proc_product_path(id))
-
-    def get_process_mode(self, id):
-        return io.load_mode(self.proc_mode_path(id))
 
     def get_reactant(self):
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
+
+
 
     def register_bad_saddle(self, result, store = False):
         """ Registers a bad saddle. """
@@ -453,6 +520,8 @@ class State:
             open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product'])
             open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode'])
 
+
+
     def load_info(self):
         """ Loads the info file if it has not been loaded. """
         if self.info == None:
@@ -465,28 +534,40 @@ class State:
             return
         self.info.write(open(self.info_path, 'w'))
 
+
+
+    # Utility functions for loading process .con and mode files.
+    def get_process_reactant(self, id):
+        return io.loadcon(self.proc_reactant_path(id))
+    def get_process_saddle(self, id):
+        return io.loadcon(self.proc_saddle_path(id))
+    def get_process_product(self, id):
+        return io.loadcon(self.proc_product_path(id))
+    def get_process_mode(self, id):
+        return io.load_mode(self.proc_mode_path(id))
+
+
+
     # Utility functions for compiling procdata paths, whether the files exist or not.    
     def proc_saddle_path(self, id):
         return os.path.join(self.procdata_path, "saddle_%d.con" % id)
-
     def proc_reactant_path(self, id):
         return os.path.join(self.procdata_path, "reactant_%d.con" % id)
-
     def proc_product_path(self, id):
         return os.path.join(self.procdata_path, "product_%d.con" % id)
-
     def proc_mode_path(self, id):
         return os.path.join(self.procdata_path, "mode_%d.dat" % id)
-
     def proc_results_path(self, id):
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
-        
     def get_process_table(self):
         self.load_process_table()
         return self.procs
         
 
-from math import log,sqrt,exp
+
+# Lambert-W function for calculating 
+# Source: http://keithbriggs.info/software/LambertW.py
+from math import log, sqrt, exp
 
 def lambertw(z):
     """Lambert W function, principal branch"""
