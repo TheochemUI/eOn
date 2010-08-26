@@ -1,0 +1,116 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\usepackage{amsmath}
+
+\begin{document}
+\title{eOn Install Documentation}
+\author{Jonsson	 Group}
+\maketitle
+\section{Boinc client libraries on Ubuntu 10}
+
+Take a look at http://boinc.berkeley.edu/trac/wiki/ServerIntro, which served as inspiration for this text.
+Install all the packages listed under Cookbook for debian40:
+
+1. libcurl3-dev install libcurl4-gnutls-dev instead
+
+2. Build the boinc client libraries.
+\begin{verbatim}
+	./configure --disable-server
+	make
+	sudo make install
+\end{verbatim}
+
+\section{Boinc server setup on Ubuntu 10}
+
+ake a look at http://boinc.berkeley.edu/trac/wiki/ServerIntro, which served as inspiration for this text.
+Install all the packages listed under Cookbook for debian40:
+
+1a. Make a new user(boincadm) to handle boinc:
+\begin{verbatim}	
+sudo useradd -m -s /bin/bash boincadm
+\end{verbatim}
+
+1b. Add www-data to group boinadm with:
+\begin{verbatim}
+sudo usermod -G boincadm www-data
+\end{verbatim}
+
+2a. Start mysql:
+\begin{verbatim}
+mysql -h localhost -u root [-p] 
+\end{verbatim}
+
+2b. Configure mysql
+\begin{verbatim}
+GRANT ALL ON *.* TO 'boincadm'@'localhost';
+SET PASSWORD FOR 'boincadm'@'localhost'=''; //or any password you want
+exit 
+\end{verbatim}
+
+3a. Get the latest stable code from BOINC
+\begin{verbatim}
+svn co http://boinc.berkeley.edu/svn/branches/server_stable
+\end{verbatim}
+
+3b. Rename the obtained folder to boinc
+\begin{verbatim}
+mv server_stable boinc
+cd boinc
+\end{verbatim}
+
+3c. Build boinc server. Possible problem with autoreconf version. In \_autosetup edit the line 'if check\_version autoreconf 2.58' to 'if check\_version /usr/bin/autoreconf2.50'
+\begin{verbatim}
+./_autosetup   
+./configure --disable-client
+make 
+\end{verbatim}
+
+
+\section{Making a project}
+
+Make sure the name of host and hostname is the same as your name to other computers. So /etc/hosts and /etc/hostname should specify that name.
+
+1. From boinc/tools/ run:
+\begin{verbatim}
+./make_project eon 
+\end{verbatim}
+
+2. Follow the instructions in the readme file until the command bin/xadd.
+
+3. Go to eon/html/ops and run:
+\begin{verbatim}
+\$ htpasswd -c .htpasswd <username>" this gives access to the ops site.
+\end{verbatim}
+
+4. Edit the function auth\_ops() in eon/html/project/project.ini by commenting out the default deny access and/or edit it to have some security.
+
+5. Replace eon/project.xml and eon/templates with our version and copy the eon program to eon/program
+
+6. Compile the client and place it in eon/apps/client/client\_version\_platform/client\_version\_platform
+
+7. Add these daemons to eon/config.xml:
+\begin{verbatim}
+<daemon>
+  <cmd>
+    sample_trivial_validator -d 3 -app client
+  </cmd>
+</daemon>
+<daemon>
+  <cmd>
+    sample_assimilator -d 3 -app client
+  </cmd>
+</daemon> 
+\end{verbatim}
+
+8. Run:
+\begin{verbatim}
+$ bin/xadd
+$ bin/update\_versions
+$ bin/start
+\end{verbatim}
+
+9. Edit paths and boinc paths in default\_config.ini and config.ini
+
+\end{document}
