@@ -140,7 +140,10 @@ def main():
         if int(key.split('_')[0]) < current_state.number:
             del searchdata[key]
 
-    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata, previous_state.number)
+    if previous_state.number != current_state.number:
+        previous_state_num = previous_state.number
+
+    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata, previous_state_num)
 
     parser.write(open(metafile, 'w')) 
 
@@ -174,13 +177,13 @@ def get_akmc_metadata():
         try:
             previous_state_num = parser.getint("Simulation Information", "previous_state")
         except:
-            previous_state_num = None
+            previous_state_num = -1
     else:
         time = 0
         start_state_num = 0
         wuid = 0
         searchdata = {}
-        previous_state_num = None
+        previous_state_num = -1
 
     if config.debug_random_seed:
         try:
@@ -213,7 +216,16 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previ
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return statelist.StateList(config.path_states, kT, config.akmc_thermal_window, config.akmc_max_thermal_window, config.comp_eps_e, config.comp_eps_r, config.comp_use_identical, initial_state_path, list_search_results = config.debug_list_search_results, filter_hole = config.disp_moved_only)  
+    return statelist.StateList(config.path_states, 
+                               kT, 
+                               config.akmc_thermal_window, 
+                               config.akmc_max_thermal_window, 
+                               config.comp_eps_e, 
+                               config.comp_eps_r, 
+                               config.comp_use_identical, 
+                               initial_state_path, 
+                               list_search_results = config.debug_list_search_results, 
+                               filter_hole = config.disp_moved_only)  
 
 
 
