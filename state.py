@@ -74,7 +74,7 @@ class State:
         # Lazily loaded data. Should use the get/set methods for these.
         self.info = None
         self.procs = None
-        self.ns_barriers = None
+        self.proc_repeat_count = None
 
         # If this state does not exist on disk, create it.
         if not os.path.isdir(self.path):
@@ -113,10 +113,15 @@ class State:
                 resultdata = result['results']
                 f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
                          result["type"], 
-                         resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
+                         resultdata["potential_energy_saddle"] - \
+                             resultdata["potential_energy_reactant"],
                          resultdata["displacement_saddle_distance"],
-                         resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
-                         resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                         resultdata["force_calls_saddle_point_concave"] + \
+                             resultdata["force_calls_saddle_point_convex"],
+                         resultdata["force_calls"] - \
+                             resultdata["force_calls_saddle_point_concave"] - \
+                             resultdata["force_calls_saddle_point_convex"] - \
+                             resultdata["force_calls_prefactors"],
                          resultdata["force_calls_prefactors"],
                          comment))
                 f.close()
@@ -126,7 +131,9 @@ class State:
 
 
     def add_process(self, result):
-        """ Adds a process to this State. """
+        """ 
+            Adds a process to this State. 
+        """
         
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
         
@@ -166,7 +173,7 @@ class State:
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
                     self.append_search_result(result, "repeat-%d" % id)
-                    self.append_ns_barrier(barrier)
+                    self.inc_proc_repeat_count(id)
                     return None
 
         # This appears to be a unique process.
@@ -177,11 +184,11 @@ class State:
         # Update the search result table.
         self.append_search_result(result, "good-%d" % self.get_num_procs())
 
-        # Keep track of the number of searches, Ns.
-        self.append_ns_barrier(barrier)
-
         # The id of this process is the number of processes.
         id = self.get_num_procs()
+
+        # Keep track of the number of searches, Ns.
+        self.inc_proc_repeat_count(id)
 
         # If this was the result of a random search, append it to the list of randomly disovered procs.
         self.append_random_process(id)
@@ -244,11 +251,13 @@ class State:
             the hole to filter processes, Nf and Ns only take into account processes that 
             intersect the hole.                                                              
         """
-        Ns = float(len(self.get_ns_barriers()))
+        prc = self.get_proc_repeat_count()
         rt = self.get_ratetable()
         rps = self.get_random_processes()
         Nf = 0.0
+        Ns = 0.0
         for r in rt:
+            Ns += prc[r[0]]
             if r[0] in rps:
                 Nf += 1
         if Nf < 1 or Ns < 1:
@@ -258,7 +267,10 @@ class State:
 
 
     def load_process_table(self):
-        """ Load the process table.  If the process table is not loaded, load it.  If it is loaded, do nothing. """
+        """ 
+            Load the process table.  If the process table is not loaded, load it.  If it is 
+            loaded, do nothing. 
+        """
         if self.procs == None:
             f = open(self.proctable_path)
             lines = f.readlines()
@@ -391,30 +403,26 @@ class State:
 
 
 
-    def get_ns_barriers(self):
+    def get_proc_repeat_count(self):
         self.load_info()
-        if self.ns_barriers is None:
+        if self.proc_repeat_count is None:
             try:
-                temp = eval(self.info.get("MetaData", "ns barriers"))
+                self.proc_repeat_count = eval(self.info.get("MetaData", "proc repeat count"))
             except:
-                temp = []
-        else:
-            temp = self.ns_barriers[:]
-        lowest = self.get_lowest_barrier()
-        self.ns_barriers = []
-        for nsb in temp:
-            if nsb <= lowest + (self.kT * self.thermal_window):
-                self.ns_barriers.append(nsb)
-        return self.ns_barriers
-        
-        
+                self.proc_repeat_count = [0]
+        return self.proc_repeat_count
 
-    def set_ns_barriers(self, nsBarriers):
-        self.ns_barriers = nsBarriers
-        self.load_info()
-        self.info.set("MetaData", "ns barriers", "%s" % repr(self.ns_barriers))
-        self.save_info()
-        
+
+
+    def inc_proc_repeat_count(self, procid):
+        self.get_proc_repeat_count()
+        if procid == len(self.proc_repeat_count):
+            self.proc_repeat_count.append(1)
+        elif procid < len(self.proc_repeat_count) and procid >= 0:
+            self.proc_repeat_count[procid] += 1                
+        self.info.set("MetaData", "proc repeat count", repr(self.proc_repeat_count))
+        self.save_info()        
+
 
 
     def append_random_process(self, procid):
@@ -439,11 +447,6 @@ class State:
         except:
             return []
         
-
-
-    def append_ns_barrier(self, barrier):
-        self.set_ns_barriers(self.get_ns_barriers() + [barrier])
-    
 
 
     def get_total_saddle_count(self):
