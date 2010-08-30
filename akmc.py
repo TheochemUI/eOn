@@ -628,7 +628,7 @@ if __name__ == '__main__':
 
     if options.print_status:
         states = get_statelist(config.akmc_temperature / 11604.5)
-        start_state_num, time, wuid, searchdata = get_akmc_metadata()
+        start_state_num, time, wuid, searchdata, previous_state_num = get_akmc_metadata()
 
         print
         print "General"
