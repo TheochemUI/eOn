@@ -82,8 +82,8 @@ if comm_type == 'boinc':
     #print comm_boinc_appname
     #print comm_boinc_results_path
 if comm_type == 'arc':
-    if parser.has_option('Communicator', 'client_url'):
-        comm_client_url = parser.get('Communicator', 'client_url')
+    if parser.has_option('Communicator', 'client_path'):
+        comm_client_url = parser.get('Communicator', 'client_path')
     else:
         comm_client_url = ""
 
