@@ -730,6 +730,11 @@ class ARC(Communicator):
         if src[-1] == '/':
             src = src[:-1]
 
+        # Since we'll change directory for a while, we should make sure we
+        # use absolute paths, rather than relative ones:
+        src = os.path.abspath(src)
+        dest = os.path.abspath(dest)
+        
         dirname = os.path.dirname(src)
         basename = os.path.basename(src)
 
