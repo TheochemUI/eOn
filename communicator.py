@@ -753,7 +753,8 @@ class ARC(Communicator):
         files = tarball.getmembers()
         good_files = [ f for f in files if f.name[0:2] != '..' and f.name[0] != '/' ]
 
-        tarball.extractall(path=dest_dir, members=good_files)
+        for f in good_files:
+             tarball.extract(path=dest_dir, member=f)
         tarball.close()
 
 
