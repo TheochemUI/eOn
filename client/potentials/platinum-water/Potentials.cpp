@@ -47,17 +47,16 @@ Potentials::Potentials(Parameters *parameters){
 	else if(parameters_->getPotentialTag() == getPotentialQSC()){
 		interface_ = new QSC();
 		interface_->initialize();
-    }
-    else if(parameters_->getPotentialTag() == getPotentialZpIce()){
-        interface_ = new ZpIce();
+	}
+    else if(parameters_->getPotentialTag() == getPotentialTip4p()){
+        interface_ = new forcefields::Tip4p();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialTip4p()){
-        interface_ = new Tip4p();
+    else if(parameters_->getPotentialTag() == getPotentialZpIce()){
+        interface_ = new forcefields::ZpIce();
         interface_->initialize();
     }
 #ifndef NO_FORTRAN
-#error
     else if(parameters_->getPotentialTag() == getPotentialAluminum())
     {
         interface_ = new Aluminum();

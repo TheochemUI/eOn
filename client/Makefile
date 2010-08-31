@@ -55,6 +55,10 @@ POTENTIALS += "+EAM"
 POTDIRS += ./potentials/QSC/
 LIBS += ./potentials/QSC/libQSC.a
 POTENTIALS += "+QSC"
+POTDIRS += ./potentials/platinum-water/
+LIBS += ./potentials/platinum-water/libplatinum-water.a
+POTENTIALS += "+Pt-H2O"
+
 
 ifdef NO_FORTRAN
 	POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "

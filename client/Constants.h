@@ -40,6 +40,8 @@ namespace constants {
     long getPotentialAluminum();///< Constant used to indicate that Aluminum should be used as potential. (10)
     long getPotentialEAM();///< Constant used to indicate that EAM should be used as potential. (11)
 	long getPotentialQSC();///< Constant used to indicate that QSC should be used as potential. (12)
+	long getPotentialZpIce();///< Constant used to indicate that ZpIce should be used as potential. (13)
+	long getPotentialTip4p();///< Constant used to indicate that TIP4P should be used as potential. (14)
 	
     // Values passed between server and clients
     long getStateGood();///< Constant used to indicate the saddle point and prefactor determination was succesful.
