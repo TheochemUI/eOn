@@ -61,14 +61,9 @@ class StateList:
                 raise IOError("Missing zeroth state directory and no reactant provided.")
             state.State(statepath = os.path.join(self.path, "0"), 
                         statenumber = 0, 
-                        kT = kT, 
-                        thermal_window = thermal_window, 
-                        max_thermal_window = max_thermal_window, 
-                        epsilon_e = epsilon_e, 
-                        epsilon_r = epsilon_r, 
-                        reactant_path = initial_state, 
-                        list_search_results = self.list_search_results,
-                        filter_hole = filter_hole)
+                        statelist = self,
+                        previous_state_num = -1,
+                        reactant_path = initial_state)
 
         # Other class variables.
         self.states = {}
@@ -161,14 +156,9 @@ class StateList:
             # Create the new state object.
             newst = state.State(statepath = self.state_path(newstnr), 
                                 statenumber = newstnr, 
-                                kT = self.kT, 
-                                thermal_window = self.thermal_window, 
-                                max_thermal_window = self.max_thermal_window, 
-                                epsilon_e = self.epsilon_e, 
-                                epsilon_r = self.epsilon_r, 
-                                reactant_path = st.proc_product_path(process_id), 
-                                list_search_results = self.list_search_results,
-                                filter_hole = self.filter_hole)
+                                statelist = self,
+                                previous_state_num = state_number,
+                                reactant_path = st.proc_product_path(process_id)) 
             self.register_process(st.number, newstnr, process_id)
 
             # Append the new state to the state table.
@@ -244,34 +234,17 @@ class StateList:
             product.save_process_table()
 
 
+
     def get_state(self, state_number):
         ''' Returns a state object. '''
         if state_number in self.states:
             return self.states[state_number]
-
-#        newst = state.State(statepath = self.state_path(newstnr), 
-#                            statenumber = newstnr, 
-#                            kT = self.kT, 
-#                            thermal_window = self.thermal_window, 
-#                            max_thermal_window = self.max_thermal_window, 
-#                            epsilon_e = self.epsilon_e, 
-#                            epsilon_r = self.epsilon_r, 
-#                            reactant_path = st.proc_product_path(process_id), 
-#                            list_search_results = self.list_search_results
-#                            filter_hole = filter_hole)
-            
         st = state.State(statepath = os.path.join(self.path, str(state_number)), 
                          statenumber = state_number, 
-                         kT = self.kT, 
-                         thermal_window = self.thermal_window, 
-                         max_thermal_window = self.max_thermal_window, 
-                         epsilon_e = self.epsilon_e, 
-                         epsilon_r = self.epsilon_r, 
-                         list_search_results = self.list_search_results,
-                         filter_hole = self.filter_hole)
-                         
+                         statelist = self)
         self.states[state_number] = st
         return st
+
 
 
     def load_state_table(self):
@@ -283,12 +256,16 @@ class StateList:
             for l in lines:
                 self.state_table.append(float(l.strip().split()[1]))
 
+
+
     def save_state_table(self):
         if self.state_table != None:
             f = open(self.state_table_path, 'w')
             for i in range(len(self.state_table)):
                 f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
             f.close()
+
+
 
     def append_state_table(self, energy):
         number = self.get_num_states()
