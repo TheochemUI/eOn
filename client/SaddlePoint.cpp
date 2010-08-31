@@ -14,9 +14,9 @@
  *      Roar Olsen
  *===============================================
 */
-
+#include <iostream>
 #include "SaddlePoint.h"
-
+//#include "lanczos_for_eon.hpp"
 
 using namespace helper_functions;
 using namespace epi_centers;
@@ -74,11 +74,15 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     {
         lowestEigenmode_=new Dimer(saddle_, parameters_);
     }
-/* GH: not implemented yet
     else if(parameters_->getLowestEigenmodeDetermination_SP() == getLowestEigenmodeLanczos())
     {
-        lowestEigenmode_ = new Lanczos(saddle_, parameters_);
-    }*/
+        #ifdef LANCZOS_FOR_EON_HPP
+            lowestEigenmode_ = new Lanczos(saddle_, parameters_);
+        #else
+            std::cerr << "Lanczos not available. Compile client application with option LANCZOS\n";
+            exit(EXIT_FAILURE);
+        #endif
+    }
     nFreeCoord_ = 3 * saddle->numberOfFreeAtoms();
     eigenMode_ = new double [nFreeCoord_];
     state_ = getStateInit();

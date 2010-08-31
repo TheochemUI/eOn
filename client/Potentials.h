@@ -27,7 +27,7 @@
 #include "potentials/EAM/EAM.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
-
+#include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
 #include <cstdlib>
 
 
