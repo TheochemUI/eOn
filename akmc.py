@@ -327,7 +327,7 @@ def get_superbasin_scheme(states):
 
 
 
-def kmc_step(current_state, states, time, kT, superbasining):
+def kmc_step(current_state, states, time, kT, superbasining, previous_state_num = None):
     t1 = unix_time.time()
     previous_state = current_state 
     start_state_num = current_state.number
