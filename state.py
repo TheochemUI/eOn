@@ -39,21 +39,17 @@ class State:
     def __init__(self, 
                  statepath, 
                  statenumber, 
-                 kT, 
-                 thermal_window, 
-                 max_thermal_window, 
-                 epsilon_e, 
-                 epsilon_r, 
-                 reactant_path = None, 
-                 list_search_results = False, 
-                 filter_hole = False):
-                 
+                 statelist,
+                 previous_state_num = -1, 
+                 reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
+
+        # The parent statelist.
+        self.statelist = statelist
 
         # The path to and number of this state.
         self.path = statepath                               
         self.number = statenumber
-        self.list_search_results = list_search_results
 
         self.info_path = os.path.join(self.path, "info")
         self.procdata_path = os.path.join(self.path, "procdata")
@@ -61,15 +57,6 @@ class State:
         self.reactant_path = os.path.join(self.path, "reactant.con")
         self.proctable_path = os.path.join(self.path, "processtable")
         self.search_result_path = os.path.join(self.path, "search_results.txt")
-
-        # Variables for comparing energies and distances.
-        self.epsilon_e = epsilon_e
-        self.epsilon_r = epsilon_r
-
-        # Rate table variables.
-        self.kT = kT
-        self.thermal_window = thermal_window
-        self.max_thermal_window = max_thermal_window
 
         # Lazily loaded data. Should use the get/set methods for these.
         self.info = None
@@ -85,11 +72,12 @@ class State:
             shutil.copy(reactant_path, self.reactant_path)
             config = SafeConfigParser()
             config.add_section("MetaData")
+            config.set("MetaData", "previous state", str(previous_state_num))            
             config.write(open(self.info_path, 'w'))
             f = open(self.proctable_path, 'w')
             f.write(processtable_header)
             f.close()
-            if self.list_search_results:
+            if self.statelist.list_search_results:
                 f = open(self.search_result_path, 'w')
                 f.write(search_result_header)
                 f.close()
@@ -106,34 +94,8 @@ class State:
 
 
 
-    def append_search_result(self, result, comment):
-        if self.list_search_results:
-            try:
-                f = open(self.search_result_path, 'a')
-                resultdata = result['results']
-                f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
-                         result["type"], 
-                         resultdata["potential_energy_saddle"] - \
-                             resultdata["potential_energy_reactant"],
-                         resultdata["displacement_saddle_distance"],
-                         resultdata["force_calls_saddle_point_concave"] + \
-                             resultdata["force_calls_saddle_point_convex"],
-                         resultdata["force_calls"] - \
-                             resultdata["force_calls_saddle_point_concave"] - \
-                             resultdata["force_calls_saddle_point_convex"] - \
-                             resultdata["force_calls_prefactors"],
-                         resultdata["force_calls_prefactors"],
-                         comment))
-                f.close()
-            except:
-                logger.warning("Failed to append search result %s", result['id'])
-        
-
-
     def add_process(self, result):
-        """ 
-            Adds a process to this State. 
-        """
+        """ Adds a process to this State. """
         
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
         
@@ -147,7 +109,7 @@ class State:
         oldlowest = self.get_lowest_barrier()
         barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
         lowest = self.update_lowest_barrier(barrier)
-        ediff = (barrier - lowest) - (self.kT * self.max_thermal_window)
+        ediff = (barrier - lowest) - (self.statelist.kT * self.statelist.max_thermal_window)
         if ediff > 0.0:
             self.append_search_result(result, "barrier > max_thermal_window")
             return None
@@ -156,7 +118,7 @@ class State:
         self.load_process_table()
         energetically_close = []
         for id in self.procs.keys():
-            if abs(self.procs[id]['barrier'] - barrier) < self.epsilon_e:
+            if abs(self.procs[id]['barrier'] - barrier) < self.statelist.epsilon_e:
                 energetically_close.append(id)
 
         # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
@@ -167,7 +129,7 @@ class State:
                 p1 = io.loadcon(self.proc_saddle_path(id))
                 
                 for dist in atoms.per_atom_norm_gen(p1.free_r() - p0.free_r(), p1.box, ibox):
-                    if dist > self.epsilon_r:
+                    if dist > self.statelist.epsilon_r:
                         break
                 else:
                     self.procs[id]['repeats'] += 1
@@ -178,7 +140,7 @@ class State:
 
         # This appears to be a unique process.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
-        if barrier == lowest and barrier < oldlowest - self.epsilon_e:
+        if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
         
         # Update the search result table.
@@ -189,9 +151,6 @@ class State:
 
         # Keep track of the number of searches, Ns.
         self.inc_proc_repeat_count(id)
-
-        # If this was the result of a random search, append it to the list of randomly disovered procs.
-        self.append_random_process(id)
 
         # Move the relevant files into the procdata directory.
         io.savecon(self.proc_saddle_path(id), result['saddle'])
@@ -208,7 +167,7 @@ class State:
                                   product_energy =    resultdata["potential_energy_product"],
                                   product_prefactor = resultdata["prefactor_product_to_reactant"], 
                                   barrier =           barrier, 
-                                  rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.kT), 
+                                  rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT), 
                                   repeats =           0)
 
         # This was a unique process, so return the id.
@@ -216,23 +175,41 @@ class State:
 
 
 
+    def append_search_result(self, result, comment):
+        if self.statelist.list_search_results:
+            try:
+                f = open(self.search_result_path, 'a')
+                resultdata = result['results']
+                f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
+                         result["type"], 
+                         resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
+                         resultdata["displacement_saddle_distance"],
+                         resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
+                         resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                         resultdata["force_calls_prefactors"],
+                         comment))
+                f.close()
+            except:
+                logger.warning("Failed to append search result %s", result['id'])
+        
+
+
     def get_ratetable(self):
         """ Loads the process table if it has not been loaded and generates a rate table 
-        according to kT and thermal_window. """
+            according to kT and thermal_window. """
         self.load_process_table()
         lowest = self.get_lowest_barrier()
         table = []
         for id in self.procs.keys():
             proc = self.procs[id]
-            if proc['barrier'] < lowest + (self.kT * self.thermal_window):
+            if proc['barrier'] < lowest + (self.statelist.kT * self.statelist.thermal_window):
                 table.append((id, proc['rate']))
         return table
         
         
 
     def get_confidence(self):
-        """ 
-            The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique 
+        """ The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique 
             processes and Ns is the number of searches performed.  
             
             When Nf or Ns are zero, there is no confidence.  Zero is returned in this case. 
@@ -249,16 +226,18 @@ class State:
             the hole, or the region in which the last process took place.  Focusing on this
             region means you can do possibly far fewer searches to reach confidence. When using
             the hole to filter processes, Nf and Ns only take into account processes that 
-            intersect the hole.                                                              
-        """
+            intersect the hole. """
         prc = self.get_proc_repeat_count()
         rt = self.get_ratetable()
-        rps = self.get_random_processes()
         Nf = 0.0
         Ns = 0.0
         for r in rt:
-            Ns += prc[r[0]]
-            if r[0] in rps:
+            if self.statelist.filter_hole:
+                if self.proc_in_hole(r[0]):
+                    Ns += prc[r[0]]
+                    Nf += 1
+            else:
+                Ns += prc[r[0]]
                 Nf += 1
         if Nf < 1 or Ns < 1:
             return 0.0
@@ -266,11 +245,75 @@ class State:
 
 
 
+    def proc_in_hole(self, procid):
+        """ Returns True if the given process intersects the previous state/current state hole,
+            False if not. """
+        if self.get_previous_state() == -1:
+            return True
+        if procid in self.get_procs_in_hole():
+            return True
+        if procid in self.get_procs_not_in_hole():
+            return False
+        ps = self.statelist.get_state(self.get_previous_state()).get_reactant()
+        cs = self.get_reactant()
+        pan = atoms.per_atom_norm(ps.r - cs.r, ps.box)
+        hole_atoms = []
+        for i in range(len(pan)):
+            if pan[i] > 0.2:
+                hole_atoms.append(i)
+        pp = self.get_process_product(procid)
+        pan = atoms.per_atom_norm(pp.r - cs.r, cs.box)
+        for i in range(len(pan)):
+            if pan[i] > 0.2:
+                if i in hole_atoms:
+                    pih = self.get_procs_in_hole()
+                    pih.append(procid)
+                    self.set_procs_in_hole(pih)
+                    return True
+        pnih = self.get_procs_not_in_hole()
+        pnih.append(procid)
+        self.set_procs_not_in_hole(pnih)
+        return False
+                
+        
+
+    def get_procs_in_hole(self):
+        self.load_info()
+        try:
+            return eval(self.info.get("MetaData", "procs in hole"))
+        except:
+            return []
+
+
+
+    def get_procs_not_in_hole(self):
+        self.load_info()
+        try:
+            return eval(self.info.get("MetaData", "procs not in hole"))
+        except:
+            return []
+
+
+
+    def set_procs_in_hole(self, procs):
+        self.load_info()
+        if procs == None:
+            assplode
+        self.info.set("MetaData", "procs in hole", repr(procs))
+        self.save_info()
+
+
+
+    def set_procs_not_in_hole(self, procs):
+        self.load_info()
+        self.info.set("MetaData", "procs not in hole", repr(procs))
+        self.save_info()
+
+
+
     def load_process_table(self):
-        """ 
-            Load the process table.  If the process table is not loaded, load it.  If it is 
-            loaded, do nothing. 
-        """
+        """ Load the process table.  If the process table is not loaded, load it.  If it is 
+            loaded, do nothing. """
         if self.procs == None:
             f = open(self.proctable_path)
             lines = f.readlines()
@@ -346,6 +389,15 @@ class State:
         return lowest
         
         
+
+    def get_previous_state(self):
+        self.load_info()
+        try:
+            return self.info.getint("MetaData", "previous state")
+        except:
+            return -1
+
+
 
     def get_lowest_barrier(self):
         self.load_info()
@@ -423,30 +475,6 @@ class State:
         self.info.set("MetaData", "proc repeat count", repr(self.proc_repeat_count))
         self.save_info()        
 
-
-
-    def append_random_process(self, procid):
-        """ We need to keep track of which processes were discovered with random searches 
-            so that we can correctly determine Nf (only count random search saddles)."""
-        self.load_info()
-        try:
-            rps = eval(self.info.get("MetaData", "random procs"))
-        except:
-            rps = []
-        if procid not in rps:
-            rps.append(procid)
-        self.info.set("MetaData", "random procs", "%s" % repr(rps))
-        self.save_info()
-        
-
-
-    def get_random_processes(self):
-        self.load_info()
-        try:
-            return eval(self.info.get("MetaData", "random procs"))
-        except:
-            return []
-        
 
 
     def get_total_saddle_count(self):
