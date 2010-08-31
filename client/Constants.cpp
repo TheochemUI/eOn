@@ -30,6 +30,8 @@ long constants::getPotentialLenosky(){return 8;};
 long constants::getPotentialAluminum(){return 10;};
 long constants::getPotentialEAM(){return 11;};
 long constants::getPotentialQSC(){return 12;};
+long constants::getPotentialZpIce(){return 13;};
+long constants::getPotentialTip4p(){return 14;};
 
 // Values passed between server and clients
 long constants::getStateGood(){return 0;};
