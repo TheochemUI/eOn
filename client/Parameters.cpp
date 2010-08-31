@@ -56,6 +56,10 @@ Parameters::Parameters(){
     //rotationsNewSearch_Dimer_ = 10; // GH: not using this any more
     separation_Dimer_ = 0.0001;
     rotationAngle_Dimer_ = 0.005;
+    
+    // Defaults for Lanczos
+    iterationLimit_Lanczos_=50;
+    convergenceLimit_Lanczos_=1e-4;
 
     // Initializing the cummulative output
     forceCalls_ = 0;
@@ -116,6 +120,9 @@ void Parameters::load(FILE *file){
         
         rotations_Dimer_ = ini.GetValueL("Dimer", "ROTATIONS", rotations_Dimer_);
         separation_Dimer_ = ini.GetValueF("Dimer", "SEPARATION", separation_Dimer_);
+
+        convergenceLimit_Lanczos_ = ini.GetValueF("Lanczos", "CONVERGENCE", convergenceLimit_Lanczos_);
+        iterationLimit_Lanczos_ = ini.GetValueF("Lanczos", "ITERATIONS", iterationLimit_Lanczos_);        
     }
     else
     {
@@ -221,6 +228,10 @@ void Parameters::load(FILE *file){
             else if(!strcmp(parms[i], "SEPARATION_DIMER"))
                 separation_Dimer_ = (double) values[i];
 
+            else if(!strcmp(parms[i], "convergenceLimit_Lanczos_"))
+                convergenceLimit_Lanczos_ = (double) values[i];
+            else if(!strcmp(parms[i], "iterationLimit_Lanczos_"))
+                iterationLimit_Lanczos_ = (double) values[i];
             // Lines with user comment are started with #
             else if(parms[i][0]=='#'){}
             else
