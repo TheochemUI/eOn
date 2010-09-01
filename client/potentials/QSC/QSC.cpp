@@ -25,7 +25,7 @@ QSC::QSC()
 
 QSC::~QSC()
 {
-    cleanMemory();
+    //cleanMemory();
 }
 
 void QSC::initialize() {}
@@ -49,9 +49,14 @@ void QSC::initialize(long N, const double *R, const long *atomicNrs,
         nunique++;
         delete sorted_atomic_numbers;
 
-        int largest_element_num = unique_elements[nunique-1];
+        largest_element_num = unique_elements[nunique-1];
 
         qsc_param_cache = new qsc_parameters*[largest_element_num+1];
+        /* Set all of them to NULL so we know which to delete later */
+        for (int i=0; i<largest_element_num+1; i++) {
+            qsc_param_cache[i] = NULL;
+        }
+
         for (int i=0;i<nunique;i++) {
             int ui = unique_elements[i];
             qsc_param_cache[ui] = new qsc_parameters[largest_element_num+1];
@@ -62,6 +67,7 @@ void QSC::initialize(long N, const double *R, const long *atomicNrs,
         }
 
         /* Allocate memory */
+        natomstoclear = N; //this is ugly but i need this in cleanMemory
         rho = new double[N];
         sqrtrho = new double[N];
         vlist = new int*[N];
@@ -90,10 +96,24 @@ void QSC::cleanMemory()
         delete rho;
         delete sqrtrho;
         delete oldR;
+        delete nlist;
+        for (int i=0; i<natomstoclear; i++) {
+            delete vlist[i];
+            delete distances[i];
+            delete V[i];    
+            delete phi[i];
+        }
+        for (int i=0; i<largest_element_num+1; i++) {
+            if (qsc_param_cache[i] != NULL) {
+                delete qsc_param_cache[i];
+            }
+        }
         delete qsc_param_cache;
         delete vlist;
-        delete nlist;
         delete distances;
+        delete V;    
+        delete phi;
+
         init = false;
     }
 }
