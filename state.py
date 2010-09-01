@@ -364,7 +364,10 @@ class State:
                               "barrier":          barrier, 
                               "rate":             rate, 
                               "repeats":          repeats}
-        
+    
+    def get_process(self, id):
+        self.load_process_table()
+        return self.procs[id]        
 
 
     def get_process_ids(self):
