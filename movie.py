@@ -85,11 +85,13 @@ def processes(states, statenr, limit):
     sorted_processes.reverse()
 
     atoms_list = []
+    print "%4s %16s %16s %16s" % ("ID", "Rate", "Barrier", "Prefactor")
+    print "-------------------------------------------------------"
     for p in sorted_processes:
         atoms_list.append(p['reactant'])
         atoms_list.append(p['saddle'])
         atoms_list.append(p['product'])
-        print "process %i with barrier %.4f" % (p['id'], p['barrier'])
+        print "%4i %16.5e %16.5e %16.5e" % (p['id'], p['rate'] ,p['barrier'], p['prefactor'])
         limit -= 1
         if limit == 0:
             break
