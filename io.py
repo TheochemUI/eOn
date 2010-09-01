@@ -1,7 +1,7 @@
 '''
 Con(figuration) i/o library
 '''
-
+import os
 import numpy
 
 import atoms
@@ -305,9 +305,71 @@ def saveposcar(fileout, p, w='w', direct = False):
                 else: 
                     posline+='   F'
             print >> poscar, posline
+            
+
+
+class Dynamics:
+    """ The Dynamics class handles I/O for the dynamics.txt file of an aKMC simulation. """
+    
+    def __init__(self, filename):
+        self.filename = filename
+        if not os.path.exists(filename):
+            f = open(self.filename, 'w')
+            header = "%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n" % ('step-number', 'reactant-id', 'process-id', 'product-id', 'step-time', 'total-time', 'barrier', 'prefactor')
+            f.write(header)
+            f.write("-" * len(header))
+            f.write("\n")
+            f.close()      
+        f = open(self.filename, 'r')
+        self.next_step = len(f.readlines()) - 2
+        f.close()
+        
+    def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, prefactor):
+        f = open(self.filename, 'a')
+        f.write("%12d  %12d  %12d  %12d  %12e  %12e  %12e  %12e\n" % (self.next_step, reactant_id, process_id, product_id, step_time, total_time, barrier, prefactor))
+        f.close()
+        self.next_step += 1
+
+    def get(self):
+        f = open(self.filename, 'r')
+        lines = f.readlines()[2:]
+        f.close()
+        data = []
+        for line in lines:
+            split = line.split()
+            data.append({"reactant":    int(split[1]),
+                         "process":     int(split[2]),
+                         "product":     int(split[3]),
+                         "steptime":    float(split[4]),
+                         "totaltime":   float(split[5]),
+                         "barrier":     float(split[6]),
+                         "prefactor":   float(split[7])})
+        return data
+            
+        
 
 
 if __name__=='__main__':
-    import sys
-    a = loadposcar(sys.argv[1])
-    saveposcar("FOOCAR", a)
+    d = Dynamics("dynamics.txt")
+    for s in  d.get():
+        print s    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
