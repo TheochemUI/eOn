@@ -367,18 +367,21 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
             
             # If we are following another trajectory:
             if config.debug_target_trajectory != "False":
+                # Get the Dynamics objects.
+                owndynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt")).get()
+                targetdynamics = io.Dynamics(os.path.join(config.debug_target_trajectory, "dynamics.txt")).get()
                 # Get the current_step.
                 try:
-                    current_step = len(open(os.path.join(config.path_results, "dynamics.txt"), 'r').readlines())
+                    current_step = len(owndynamics)
                 except:
                     current_step = 0
                 # Get the target step process id.
                 if current_step > 0:
-                    stateid = int(open(os.path.join(config.debug_target_trajectory, "dynamics.txt"), 'r').readlines()[current_step - 1].split()[0])
+                    stateid = targetdynamics[current_step]['reactant']
                 else:
                     stateid = 0
                 try:
-                    procid = int(open(os.path.join(config.debug_target_trajectory, "dynamics.txt"), 'r').readlines()[current_step].split()[1])
+                    procid = targetdynamics[current_step]['process']
                 except:
                     print "Can no longer follow target trajectory."
                     sys.exit(1)
@@ -429,9 +432,13 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
             proc_id_out = -1
         else:
             proc_id_out = rate_table[nsid][0]
-        dynamics_file = open(os.path.join(config.path_results, "dynamics.txt"), 'a')
-        print >> dynamics_file, next_state.number, proc_id_out, time
-        dynamics_file.close()
+        dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
+        if proc_id_out != -1:            
+            proc = current_state.get_process(proc_id_out)
+            dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, proc['barrier'], proc['rate'])
+        else:
+            #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
+            dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, 0, 0)
         logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
         previous_state = current_state
