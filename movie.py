@@ -21,10 +21,10 @@ def make_movie(movie_type, path_root, states):
         try:
             statenr = int(movie_type.split(',')[1])
         except ValueError:
-            print "process number must be an integer"
+            print "state number must be an integer"
             sys.exit(1)
         except IndexError:
-            print "must give a process number"
+            print "must give a state number"
             sys.exit(1)
         print "making process movie for state %i" % statenr
         if len(movie_type.split(',')) > 2:
@@ -57,17 +57,13 @@ def save_movie(atoms_list, movie_path):
     for atoms in atoms_list:
         io.saveposcar(movie_path, atoms, 'a')
 
-def get_trajectory(trajectory_path, unique=False):
+def get_trajectory(trajectory_path):
     f = open(trajectory_path)
     trajectory = [0]
     for line in f:
         fields = line.split()
         statenr = int(fields[0])
         trajectory.append(statenr)
-
-    if unique:
-        trajectory = sorted(trajectory)
-        trajectory = list(set(trajectory))
 
     return trajectory
 
@@ -104,8 +100,11 @@ def dot(path_root, states):
     return G.dot()
 
 def dynamics(path_root, states, unique=False):
-    trajectory_path = os.path.join(path_root, "dynamics.txt")
-    trajectory = get_trajectory(trajectory_path, unique)
+    if not unique:
+        trajectory_path = os.path.join(path_root, "dynamics.txt")
+        trajectory = get_trajectory(trajectory_path)
+    else:
+        trajectory = range(states.get_num_states())
 
     atoms_list = []
 
