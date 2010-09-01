@@ -28,6 +28,7 @@ class QSC
         };
         distance **distances;
 
+        int natomstoclear;
         int **vlist;
         int  *nlist;
         double cutoff;
@@ -48,6 +49,7 @@ class QSC
         };
         static const qsc_parameters qsc_element_params[];
         int unique_elements[9];
+        int largest_element_num;
         qsc_parameters **qsc_param_cache;
         
         qsc_parameters get_qsc_parameters(int a, int b);
