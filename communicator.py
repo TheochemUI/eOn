@@ -214,6 +214,31 @@ class BOINC(Communicator):
         except ValueError:
             raise CommunicatorError("Trouble converting uniqueid value in %s to integer" % uniqueid_path)
 
+        self.average_flops = self.get_average_flops()
+        logger.debug("current average flops per wu is %.2e", self.average_flops)
+
+    def get_average_flops(self):
+        #number of wus to average over
+        limit = 500
+        query = "select r.cpu_time*h.p_fpops " \
+                "from workunit w, result r, host h "\
+                "where r.workunitid=w.id and r.hostid=h.id and w.batch=%i "\
+                "and cpu_time>0 limit %i" % (self.uniqueid, limit)
+
+        self.cursor.execute(query)
+
+        rows = self.cursor.fetchall()
+        if rows:
+            average_flops = 0.0
+            for row in rows:
+                average_flops += row.values()[0]
+            average_flops /= limit
+        else:
+            #2e11 flops is about a 100 second job (assuming 2 gigaflop cpu)
+            average_flops = 2e11
+
+        return average_flops
+
     def get_queue_size(self):
         server_state = self.boinc_db_constants.RESULT_SERVER_STATE_UNSENT
         query = 'select count(*) from result where batch=%i and server_state=%i'
@@ -323,6 +348,8 @@ class BOINC(Communicator):
         arglist.append(self.result_template)
         arglist.append("-batch")
         arglist.append(str(self.uniqueid))
+        arglist.append("-rsc_fpops_est")
+        arglist.append(str(self.average_flops))
 
         # XXX: This assumes an order of the input files. We should read the
         #      input template xml file to discover this order. Too bad the
@@ -334,7 +361,6 @@ class BOINC(Communicator):
         arglist.append(os.path.split(dp_path)[1])
         arglist.append(os.path.split(mp_path)[1])
 
-        #logger.debug("submited wu %s" % wu_name)
         p = subprocess.Popen(arglist, cwd=self.boinc_project_dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
