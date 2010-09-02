@@ -33,7 +33,7 @@ hist = {}
 for i in range(0, len(p)):
     for j in range(i+1, len(p)):
         d = numpy.linalg.norm(p.r[i]-p.r[j])
-        d = round(d, 4)
+        d = round(d, 1)
         if d not in hist:
             hist[d] = 1
         else:
