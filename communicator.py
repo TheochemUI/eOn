@@ -230,9 +230,11 @@ class BOINC(Communicator):
         rows = self.cursor.fetchall()
         if rows:
             average_flops = 0.0
+            counter = 0
             for row in rows:
                 average_flops += row.values()[0]
-            average_flops /= limit
+                counter += 1
+            average_flops /= counter
         else:
             #2e11 flops is about a 100 second job (assuming 2 gigaflop cpu)
             average_flops = 2e11
