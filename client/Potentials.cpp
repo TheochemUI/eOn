@@ -57,7 +57,6 @@ Potentials::Potentials(Parameters *parameters){
         interface_->initialize();
     }
 #ifndef NO_FORTRAN
-#error
     else if(parameters_->getPotentialTag() == getPotentialAluminum())
     {
         interface_ = new Aluminum();
