@@ -44,7 +44,7 @@ LOWEST_EIGENMODE_DETERMINATION=1
 REFINE=1
 
 # tweakable parameters
-converged_Relax 0.001
+converged_Relax=0.001
 converged=0.001
 max_Energy=10.000000
 
