@@ -107,13 +107,16 @@ class Communicator:
 
             for i in range(bundle_size):
                 result = {}
-                result['reactant'] = reactant_lines[i*reactant_span : (i+1)*reactant_span]
-                result['product'] = product_lines[i*reactant_span : (i+1)*reactant_span]
-                result['mode'] = mode_lines[i*mode_span : (i+1)*mode_span]
-                result['saddle'] = io.loadcon(saddle_file)
-                result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
-                result['id'] = "%d_%d" % (state, uid+i)
-                results.append(result)
+                try:
+                    result['reactant'] = reactant_lines[i*reactant_span : (i+1)*reactant_span]
+                    result['product'] = product_lines[i*reactant_span : (i+1)*reactant_span]
+                    result['mode'] = mode_lines[i*mode_span : (i+1)*mode_span]
+                    result['saddle'] = io.loadcon(saddle_file)
+                    result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
+                    result['id'] = "%d_%d" % (state, uid+i)
+                    results.append(result)
+                except:
+                    logger.error("Failed to unbundle search %d_%d" % (state, uid+i))
             yield results
 
     def make_bundles(self, searches, reactant_path, parameters_path):
