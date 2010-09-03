@@ -1,46 +1,56 @@
-REACTANT_STATE_TAG 0
+[Default]
 
-# description RANDOM_SEED
+REACTANT_STATE_TAG=0
+
+# describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED -1
+RANDOM_SEED=-1
 
-# description POTENTIAL_TAG
-# 0 = a user-supplied potential
-# 1 = Lennard-Jones
+# describtion POTENTIAL_TAG
+# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
+# 1 = lennard-jones potential
 # 2 = morse
 # 3 = emt
-# 10 = Aluminum EAM
-# 11 = General EAM 
-# 12 = Quantum Sutton-Chen
-POTENTIAL_TAG 10
+# 4 = edip
+# 5 = VASP
+# 6 = Tersoff
+# 7 = Stilling Weber
+# 8 = Lenosky
+# 9 = Lennard-jones binary
+# 10 = Aluminum
+POTENTIAL_TAG=3
 
-# description POTENTIAL_NO_TRANSLATION
+# describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
 # 1 = translation of the system is prevented
-POTENTIAL_NO_TRANSLATION 1
+POTENTIAL_NO_TRANSLATION=1
 
-# description GET_PREFACTORS_TAG
+# describtion GET_PREFACTORS_TAG
 # 0 = processes prefactors are not determined
 # 1 = processes prefactors are determined
-GET_PREFACTORS_TAG 1
+GET_PREFACTORS_TAG=1
 
-# description LOWEST_EIGENMODE_DETERMINATION_SP
+
+maximum_iterations=512
+
+
+[Saddle_Point]
+# describtion LOWEST_EIGENMODE_DETERMINATION_SP
 # 1 = dimer method
 # 2 = lanczos method
-LOWEST_EIGENMODE_DETERMINATION_SP 1
+LOWEST_EIGENMODE_DETERMINATION=1
 
 # Refine saddle point.
-REFINE_SP 1
+REFINE=1
 
 # tweakable parameters
 converged_Relax 0.001
-converged_SP    0.001
-max_Step_Size_SP 0.075
-max_Energy_SP 10.0
-norm_Perturbation_SP 1.0
-within_Radius_Perturbated_SP 1.0
-max_Single_Perturbation_SP 0.75
-min_Displacement_Hessian 0.25
-within_Radius_Displaced_Hessian 3.5
-maximum_Iterations 2000
-rotations_Dimer 2
+converged=0.001
+max_Energy=10.000000
+
+[Hessian]
+min_Displacement=0.250000
+within_Radius_Displaced=3.500000
+
+[Dimer]
+rotations=2
