@@ -1,0 +1,37 @@
+<file_info>
+    <number>0</number>
+</file_info>
+<file_info>
+    <number>1</number>
+</file_info>
+<file_info>
+    <number>2</number>
+</file_info>
+<file_info>
+    <number>3</number>
+</file_info>
+<workunit>
+  <file_ref>
+    <file_number>0</file_number>
+    <open_name>reactant_passed.con</open_name>
+  </file_ref>
+  <file_ref>
+    <file_number>1</file_number>
+    <open_name>parameters_passed.dat</open_name>
+  </file_ref>
+  <file_ref>
+    <file_number>2</file_number>
+    <open_name>displacement_passed.con</open_name>
+  </file_ref>
+  <file_ref>
+    <file_number>3</file_number>
+    <open_name>mode_passed.dat</open_name>
+  </file_ref>
+  <delay_bound>86400</delay_bound>
+  <rsc_fpops_bound>5e13</rsc_fpops_bound>
+  <min_quorum>1</min_quorum>
+  <target_nresults>1</target_nresults>
+  <max_error_results>1</max_error_results>
+  <max_total_results>1</max_total_results>
+  <max_success_results>1</max_success_results>
+</workunit>

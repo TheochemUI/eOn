@@ -1,0 +1,63 @@
+<file_info>
+    <name><OUTFILE_0/></name>
+    <generated_locally/>
+    <upload_when_present/>
+    <max_nbytes>31457280</max_nbytes>
+    <url><UPLOAD_URL/></url>
+</file_info>
+<file_info>
+    <name><OUTFILE_1/></name>
+    <generated_locally/>
+    <upload_when_present/>
+    <max_nbytes>31457280</max_nbytes>
+    <url><UPLOAD_URL/></url>
+</file_info>
+<file_info>
+    <name><OUTFILE_2/></name>
+    <generated_locally/>
+    <upload_when_present/>
+    <max_nbytes>31457280</max_nbytes>
+    <url><UPLOAD_URL/></url>
+</file_info>
+<file_info>
+    <name><OUTFILE_3/></name>
+    <generated_locally/>
+    <upload_when_present/>
+    <max_nbytes>31457280</max_nbytes>
+    <url><UPLOAD_URL/></url>
+</file_info>
+<file_info>
+    <name><OUTFILE_4/></name>
+    <generated_locally/>
+    <upload_when_present/>
+    <max_nbytes>31457280</max_nbytes>
+    <url><UPLOAD_URL/></url>
+</file_info>
+
+<result>
+    <file_ref>
+        <file_name><OUTFILE_0/></file_name>
+        <open_name>results.dat</open_name>
+    </file_ref>
+
+    <file_ref>
+        <file_name><OUTFILE_1/></file_name>
+        <open_name>reactant.con</open_name>
+    </file_ref>
+
+    <file_ref>
+        <file_name><OUTFILE_2/></file_name>
+        <open_name>saddle.con</open_name>
+    </file_ref>
+
+    <file_ref>
+        <file_name><OUTFILE_3/></file_name>
+        <open_name>product.con</open_name>
+    </file_ref>
+
+    <file_ref>
+        <file_name><OUTFILE_4/></file_name>
+        <open_name>mode.dat</open_name>
+    </file_ref>
+
+</result>
