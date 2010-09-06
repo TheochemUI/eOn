@@ -3,6 +3,7 @@ Con(figuration) i/o library
 '''
 import os
 import numpy
+import struct
 
 import atoms
 
@@ -345,31 +346,15 @@ class Dynamics:
                          "barrier":     float(split[6]),
                          "prefactor":   float(split[7])})
         return data
-            
-        
 
+#not sure if this should take a path or a string of bytes
+def is_gzip(bytes):
+    header = struct.unpack_from("BBB", bytes)
+    if header[0] == 0x1f and header[1] == 0x8b and header[2] = 0x8:
+        return true
+    return false
 
 if __name__=='__main__':
     d = Dynamics("dynamics.txt")
     for s in  d.get():
         print s    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
