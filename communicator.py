@@ -342,6 +342,14 @@ class BOINC(Communicator):
         shutil.move(os.path.join(jobpath, 'displacement_passed.con'), dp_path)
         shutil.move(os.path.join(jobpath, 'mode_passed.dat'), mp_path)
 
+        #make sure permissions are correct
+        #this should be a config option for the boinc group
+        mode = 666
+        os.chmod(rp_path, mode)
+        os.chmod(pp_path, mode)
+        os.chmod(dp_path, mode)
+        os.chmod(mp_path, mode)
+
         arglist = [create_wu_cmd]
         arglist.append("-appname")
         arglist.append(self.appname)
