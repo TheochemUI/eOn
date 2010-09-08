@@ -344,7 +344,7 @@ class BOINC(Communicator):
 
         #make sure permissions are correct
         #this should be a config option for the boinc group
-        mode = 666
+        mode = 0666
         os.chmod(rp_path, mode)
         os.chmod(pp_path, mode)
         os.chmod(dp_path, mode)
