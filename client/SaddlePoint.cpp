@@ -16,8 +16,9 @@
 */
 #include <iostream>
 #include "SaddlePoint.h"
-//#include "lanczos_for_eon.hpp"
-
+#ifdef WITH_LANCZOS
+    #include "Lanczos/lanczos_for_eon.hpp"
+#endif
 using namespace helper_functions;
 using namespace epi_centers;
 using namespace constants;
@@ -263,8 +264,17 @@ void SaddlePoint::correctingForces(double *force){
     makeProjection(tempDoubleList, force, eigenMode_, nFreeCoord_);
     
     if(0 < eigenValue_){
-        // Follow eigenmode
-        multiplyScalar(force, tempDoubleList, -1, nFreeCoord_);
+        if (parameters_->getPerpendicularForceRatio() > 0.0) {
+            // reverse force parallel to eigenvector, and reduce perpendicular force
+            double const d=parameters_->getPerpendicularForceRatio();
+            multiplyScalar(force, force, d, nFreeCoord_);
+            multiplyScalar(tempDoubleList, tempDoubleList, -1-d, nFreeCoord_);
+            add(force, force, tempDoubleList, nFreeCoord_);
+        }
+        else {
+            // Follow eigenmode
+            multiplyScalar(force, tempDoubleList, -1, nFreeCoord_);
+        };
     }
     else{
         // Reversing force parallel to eigenmode

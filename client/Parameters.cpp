@@ -45,6 +45,7 @@ Parameters::Parameters(){
     withinRadiusPerturbated_SP_ = 4.0;
     maxSinglePerturbation_SP_ = 0.1;
     maximumIterations_ = 512;
+    perpendicularForceRatio_=0.0;
 
     // Values used in the Hessian determination   
 	maxSize_Hessian_ = 0;
@@ -98,6 +99,7 @@ void Parameters::load(FILE *file){
         getPrefactorsTag_ = ini.GetValueL("Default", "GET_PREFACTORS_TAG", getPrefactorsTag_);
         converged_Relax_ = ini.GetValueF("Default", "CONVERGED_RELAX", converged_Relax_);
         maximumIterations_ = ini.GetValueL("Default", "MAXIMUM_ITERATIONS", maximumIterations_);
+        perpendicularForceRatio_ = ini.GetValueL("Default", "PERPENDICULAR_FORCE_RATIO", perpendicularForceRatio_);
         
         
         typePerturbation_SP_ = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION", typePerturbation_SP_);
@@ -211,6 +213,8 @@ void Parameters::load(FILE *file){
                 maxSinglePerturbation_SP_ = values[i];
             else if(!strcmp(parms[i], "MAXIMUM_ITERATIONS"))
                 maximumIterations_ = (long)values[i];
+            else if(!strcmp(parms[i], "PERPENDICULAR_FORCE_RATIO"))
+                perpendicularForceRatio_ = (double)values[i];
 
             // Hessian related
             else if(!strcmp(parms[i], "MAX_SIZE_HESSIAN"))
@@ -458,7 +462,10 @@ double Parameters::getMaxSinglePerturbation_SP(){
 }
 /// Limit on the number of iterations that may be performed by the saddle point searches and minimization
 long Parameters::getMaximumIterations() {
-      return maximumIterations_;
+    return maximumIterations_;
+}
+double Parameters::getPerpendicularForceRatio() {
+    return perpendicularForceRatio_;
 }
 // Hessian related
 long Parameters::getMaxSize_Hessian(){

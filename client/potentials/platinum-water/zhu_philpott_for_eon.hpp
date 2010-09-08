@@ -1,3 +1,10 @@
+/** @file
+Wrapper for Eon
+@author Jean-Claude C. Berthet
+@date 2007
+University of Iceland
+*/
+
 #ifndef FORCEFIELDS_ZHU_PHILPOTT_FOR_EON_HPP
 #define FORCEFIELDS_ZHU_PHILPOTT_FOR_EON_HPP
 #include "zhu_philpott.hpp"
