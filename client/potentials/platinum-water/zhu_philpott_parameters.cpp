@@ -1,10 +1,10 @@
 /** @file
-      Parameters for potential ZhuPhilpott.
-      @author Jean-Claude C. Berthet
-      @date 2007
-      University of Iceland
-      @see zhu_philpott.hpp
-      */
+Parameters for potential ZhuPhilpott.
+@author Jean-Claude C. Berthet
+@date 2007
+University of Iceland
+@see zhu_philpott.hpp
+*/
 #include "zhu_philpott_parameters.hpp"
 using namespace forcefields::zhu_philpott_parameters;
 

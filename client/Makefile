@@ -38,7 +38,12 @@ ifdef BOINC
 else
 	BOINC=No
 endif
-
+ifdef WITH_LANCZOS
+	CXXFLAGS += -DWITH_LANCZOS
+	FPOTDIRS += Lanczos
+	LIBS += Lanczos/libLanczos.a
+    LDFLAGS += -lgsl -lgslcblas
+endif
 #Potentials
 POTDIRS += ./potentials/EMT/
 LIBS += ./potentials/EMT/libEMT.a
