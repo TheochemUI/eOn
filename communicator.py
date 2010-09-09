@@ -1,4 +1,5 @@
 import os
+import gzip
 import shutil
 import logging
 logger = logging.getLogger('communicator')
@@ -18,12 +19,48 @@ class CommunicatorError(Exception):
     pass
 
 class Communicator:
-    def __init__(self, scratchpath, bundle_size=1):
+    def __init__(self, scratchpath, bundle_size=1, compress=False):
         if not os.path.isdir(scratchpath):
             #should probably log this event
             os.makedirs(scratchpath)
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
+        self.compress = True
+
+    def _is_gzip(self, filename):
+        f = open(filename)
+        header = f.read(3)
+        f.close()
+        header = struct.unpack_from("BBB", header)
+
+        if header[0] == 0x1f and header[1] == 0x8b and header[2] == 0x8:
+            return true
+        return false
+
+    def _open(self, filename, mode):
+        if 'r' in mode:
+            read = True
+        elif 'w' in mode or 'a' in mode:
+            write = True
+
+        if 'r' in mode and 'w' in mode:
+            raise CommunicatorError()
+
+        if write:
+            if self.compress:
+                usegzip = True
+            else: 
+                usegzip = False
+        elif read:
+            if self._is_gzip(filename):
+                usegzip = True
+            else:
+                usegzip = False
+
+        if usegzip:
+            return gzip.GzipFile(filename, mode, 1)
+        return open(filename, mode)
+
 
     def submit_searches(self, searches, reactant_path, parameters_path):
         '''Throws CommunicatorError if fails.'''
@@ -151,14 +188,14 @@ class Communicator:
 
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-            result_template, appname, boinc_results_path, bundle_size):
+            result_template, appname, boinc_results_path, bundle_size, compress=False):
         '''This constructor modifies sys.path to include the BOINC python modules. 
         It then tries to connect to the BOINC mysql database raising exceptions if there are problems 
         connecting. It also creates a file named uniqueid in the scratchpath to identify BOINC jobs as
         belonging to this akmc run if it doesn't exist. It then reads in the uniqueid file and 
         stores that as an integer in self.uniqueid.'''
         
-        Communicator.__init__(self, scratchpath, bundle_size)
+        Communicator.__init__(self, scratchpath, bundle_size, compress)
         self.wu_template = wu_template
         self.result_template = result_template
         self.appname = appname
@@ -342,7 +379,7 @@ class BOINC(Communicator):
         shutil.move(os.path.join(jobpath, 'displacement_passed.con'), dp_path)
         shutil.move(os.path.join(jobpath, 'mode_passed.dat'), mp_path)
 
-        #make sure permissions are correct
+        #XXX: make sure permissions are correct
         #this should be a config option for the boinc group
         mode = 0666
         os.chmod(rp_path, mode)
