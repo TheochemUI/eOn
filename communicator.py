@@ -1,5 +1,6 @@
 import os
 import gzip
+import struct
 import shutil
 import logging
 logger = logging.getLogger('communicator')
@@ -25,7 +26,7 @@ class Communicator:
             os.makedirs(scratchpath)
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
-        self.compress = True
+        self.compress = compress
 
     def _is_gzip(self, filename):
         f = open(filename)
@@ -34,10 +35,12 @@ class Communicator:
         header = struct.unpack_from("BBB", header)
 
         if header[0] == 0x1f and header[1] == 0x8b and header[2] == 0x8:
-            return true
-        return false
+            return True
+        return False
 
-    def _open(self, filename, mode):
+    def _open(self, filename, mode='r'):
+        read = False
+        write = False
         if 'r' in mode:
             read = True
         elif 'w' in mode or 'a' in mode:
@@ -80,9 +83,9 @@ class Communicator:
 
     def get_bundle_size(self, result_dat_path):
         try:
-            f = open(result_dat_path)
+            f = self._open(result_dat_path)
         except:
-            logger.warning("results.dat missing. Should be at %s.", result_dat_path)
+            logger.exception("results.dat missing. Should be at %s", result_dat_path)
             return 0
         bundle_size = 0
         for line in f:
@@ -119,22 +122,22 @@ class Communicator:
 
             try:
                 #These files are read in as strings for performance reasons
-                reactant_file = open(os.path.join(jobpath, 'reactant.con'), 'r')
+                reactant_file = self._open(os.path.join(jobpath, 'reactant.con'), 'r')
                 reactant_lines = reactant_file.readlines()
                 reactant_file.close()
                 reactant_span = len(reactant_lines)/bundle_size
-                product_file = open(os.path.join(jobpath, 'product.con'), 'r')
+                product_file = self._open(os.path.join(jobpath, 'product.con'), 'r')
                 product_lines = product_file.readlines()
                 product_file.close()
-                mode_file = open(os.path.join(jobpath, 'mode.dat'), 'r')
+                mode_file = self._open(os.path.join(jobpath, 'mode.dat'), 'r')
                 mode_lines = mode_file.readlines()
                 mode_file.close()
                 mode_span = len(mode_lines)/bundle_size
                 
                 #These files are legitimately loaded
-                saddle_file = open(os.path.join(jobpath, 'saddle.con'), 'r') 
+                saddle_file = self._open(os.path.join(jobpath, 'saddle.con'), 'r') 
                 #TODO: Load results_file without stringio
-                results_file = open(os.path.join(jobpath, 'results.dat'), 'r')
+                results_file = self._open(os.path.join(jobpath, 'results.dat'), 'r')
                 results_lines = results_file.readlines()
                 results_file.close()
                 results_span = len(results_lines)/bundle_size
@@ -162,6 +165,13 @@ class Communicator:
                for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
                    do_stuff()'''
         reactant = io.loadcon(reactant_path)
+        #if compression is on need to append .gz to files
+        if self.compress:
+            print "COMPRESSION IS ON!!!!!!!!!!"
+            suffix = ".gz"
+        else:
+            suffix = ""
+
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
         for chunk in chunks:
@@ -169,12 +179,12 @@ class Communicator:
             
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
-            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
-            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
+            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"+suffix))
+            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"+suffix))
             
             # Open the first jobpath's displacement and mode files. 
-            dp_concat = open(os.path.join(job_path,"displacement_passed.con"), "a")
-            mp_concat = open(os.path.join(job_path,"mode_passed.dat"), "a")
+            dp_concat = self._open(os.path.join(job_path,"displacement_passed.con"+suffix), "a")
+            mp_concat = self._open(os.path.join(job_path,"mode_passed.dat"+suffix), "a")
 
             # Concatenate all of the displacement and modes together.
             for search in chunk:
