@@ -56,12 +56,13 @@ class Communicator:
                 usegzip = False
         elif read:
             if self._is_gzip(filename):
+                print "A GZIP RESULT WAS FOUND!!!!"
                 usegzip = True
             else:
                 usegzip = False
 
         if usegzip:
-            return gzip.GzipFile(filename, mode, 1)
+            return gzip.open(filename, mode)
         return open(filename, mode)
 
 
@@ -165,11 +166,14 @@ class Communicator:
                for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
                    do_stuff()'''
         reactant = io.loadcon(reactant_path)
+<<<<<<< .mine
+=======
         #if compression is on need to append .gz to files
         if self.compress:
             suffix = ".gz"
         else:
             suffix = ""
+>>>>>>> .r395
 
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
@@ -178,19 +182,20 @@ class Communicator:
             
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
-            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"+suffix))
-            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"+suffix))
+            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
+            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
             
             # Open the first jobpath's displacement and mode files. 
-            dp_concat = self._open(os.path.join(job_path,"displacement_passed.con"+suffix), "a")
-            mp_concat = self._open(os.path.join(job_path,"mode_passed.dat"+suffix), "a")
+            dp_concat = self._open(os.path.join(job_path,"displacement_passed.con"), "a")
+            mp_concat = self._open(os.path.join(job_path,"mode_passed.dat"), "a")
 
             # Concatenate all of the displacement and modes together.
             for search in chunk:
                 io.savecon(dp_concat, search['displacement']) 
                 io.save_mode(mp_concat, search['mode'], reactant)
             dp_concat.close()
-            mp_concat.close()
+            if not self.compress:
+                mp_concat.close()
 
             # Returns the jobpath to the new bigger workunit.
             yield job_path
@@ -377,11 +382,16 @@ class BOINC(Communicator):
         
 
     def create_work(self, jobpath, wu_name):
+        if self.compress:
+            suffix = '.gz'
+        else:
+            suffix = ''
+
         create_wu_cmd = os.path.join('bin', 'create_work')
-        rp_path = self.dir_hier_path('reactant_passed_%s.con' % wu_name).strip()
-        pp_path = self.dir_hier_path('parameters_passed_%s.dat' % wu_name).strip()
-        dp_path = self.dir_hier_path('displacement_passed_%s.con' % wu_name).strip()
-        mp_path = self.dir_hier_path('mode_passed_%s.dat' % wu_name).strip()
+        rp_path = self.dir_hier_path('reactant_passed_%s.con%s' % (wu_name,suffix)).strip()
+        pp_path = self.dir_hier_path('parameters_passed_%s.dat%s' % (wu_name,suffix)).strip()
+        dp_path = self.dir_hier_path('displacement_passed_%s.con%s' % (wu_name,suffix)).strip()
+        mp_path = self.dir_hier_path('mode_passed_%s.dat%s' % (wu_name,suffix)).strip()
 
         shutil.move(os.path.join(jobpath, 'reactant_passed.con'), rp_path)
         shutil.move(os.path.join(jobpath, 'parameters_passed.dat'), pp_path)
