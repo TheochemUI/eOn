@@ -167,7 +167,6 @@ class Communicator:
         reactant = io.loadcon(reactant_path)
         #if compression is on need to append .gz to files
         if self.compress:
-            print "COMPRESSION IS ON!!!!!!!!!!"
             suffix = ".gz"
         else:
             suffix = ""
