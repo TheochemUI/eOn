@@ -166,14 +166,6 @@ class Communicator:
                for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
                    do_stuff()'''
         reactant = io.loadcon(reactant_path)
-<<<<<<< .mine
-=======
-        #if compression is on need to append .gz to files
-        if self.compress:
-            suffix = ".gz"
-        else:
-            suffix = ""
->>>>>>> .r395
 
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
