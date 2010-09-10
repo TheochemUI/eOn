@@ -558,7 +558,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         logger.info( str(num_to_make) + " searches created") 
         logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
     except:
-        logger.error("Failed to submit searches.")
+        logger.exception("Failed to submit searches.")
     return wuid
 
 

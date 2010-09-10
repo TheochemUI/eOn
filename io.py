@@ -141,6 +141,7 @@ def save_mode(modefileout, displace_vector, reactant):
     for i in range(len(displace_vector)):
         f.write("%.5f %.5f %.5f\n" % (displace_vector[i][0], 
             displace_vector[i][1], displace_vector[i][2]))
+    # XXX: what if the file is a gzip file?
     if type(modefileout) is not file:
         f.close()
 
