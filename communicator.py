@@ -56,7 +56,6 @@ class Communicator:
                 usegzip = False
         elif read:
             if self._is_gzip(filename):
-                print "A GZIP RESULT WAS FOUND!!!!"
                 usegzip = True
             else:
                 usegzip = False
