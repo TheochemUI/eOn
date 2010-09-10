@@ -185,8 +185,7 @@ class Communicator:
                 io.savecon(dp_concat, search['displacement']) 
                 io.save_mode(mp_concat, search['mode'], reactant)
             dp_concat.close()
-            if not self.compress:
-                mp_concat.close()
+            mp_concat.close()
 
             # Returns the jobpath to the new bigger workunit.
             yield job_path
