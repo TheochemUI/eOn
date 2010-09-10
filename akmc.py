@@ -314,8 +314,8 @@ def register_results(comm, current_state, states, searchdata = None):
     tot_searches = len(os.listdir(config.path_searches_in)) * config.comm_job_bundle_size
     
     t2 = unix_time.time()
-    logger.info("%i searches processed", num_registered)
-    logger.info("Approximately %i searches discarded." % (tot_searches - num_registered))
+    logger.info("%i (result) searches processed", num_registered)
+    logger.info("Approximately %i (result) searches discarded." % (tot_searches - num_registered))
     #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
