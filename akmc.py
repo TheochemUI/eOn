@@ -233,7 +233,8 @@ def get_communicator():
     if config.comm_type=='boinc':
         comm = communicator.BOINC(config.path_scratch, config.comm_boinc_project_dir, 
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
-                config.comm_boinc_appname, config.comm_boinc_results_path, config.comm_job_bundle_size)
+                config.comm_boinc_appname, config.comm_boinc_results_path, config.comm_job_bundle_size,
+                config.comm_compress)
     elif config.comm_type=='cluster':
         comm = communicator.Cluster()
     elif config.comm_type=='local':
