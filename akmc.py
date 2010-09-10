@@ -260,7 +260,6 @@ def register_results(comm, current_state, states, searchdata = None):
     os.makedirs(config.path_searches_in)
     
     #Function used by communicator to determine whether to discard a result
-    discarded = 0
     def keep_result(name):
         state_num = int(name.split("_")[0])
         return (config.debug_register_extra_results or \
@@ -310,9 +309,13 @@ def register_results(comm, current_state, states, searchdata = None):
         if current_state.get_confidence() >= config.akmc_confidence:
             if not config.debug_register_extra_results:
                 break
-        
+    
+    #Approximate number of searches recieved
+    tot_searches = len(os.listdir(config.path_searches_in)) * config.comm_job_bundle_size
+    
     t2 = unix_time.time()
-    logger.info("%i results processed", num_registered)
+    logger.info("%i searches processed", num_registered)
+    logger.info("Approximately %i searches discarded." % (tot_searches - num_registered))
     #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
     logger.debug("%.1f results per second", (num_registered/(t2-t1)))
     return num_registered
