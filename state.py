@@ -297,8 +297,6 @@ class State:
 
     def set_procs_in_hole(self, procs):
         self.load_info()
-        if procs == None:
-            assplode
         self.info.set("MetaData", "procs in hole", repr(procs))
         self.save_info()
 
