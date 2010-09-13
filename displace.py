@@ -51,7 +51,7 @@ class Displace:
     def filter_epicenters(self, epicenters):
         '''Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
            If Displace.hole_epicenters is None, all of the epicenters are accepted.'''
-        cutoff = 4.0 #The size of the hole. TODO: this should be parameterized.
+        cutoff = 9.9 #The size of the hole. TODO: this should be parameterized.
         if self.hole_epicenters == None:
             return epicenters
         new_epicenters = []

@@ -47,7 +47,7 @@ def main():
         sys.exit(1)
     
     # Load metadata, the state list, and the current state.
-    start_state_num, time, wuid, searchdata, previous_state_num = get_akmc_metadata()
+    start_state_num, time, wuid, searchdata, previous_state_num, first_run = get_akmc_metadata()
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
 
@@ -84,6 +84,11 @@ def main():
     if current_state.number != start_state_num:
         num_cancelled = comm.cancel_state(start_state_num)
         logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
+        if config.kdb_on:
+            kdber.query(current_state, wait = config.kdb_wait)
+    
+    # If this is the first execution of akmc.py for this simulation, run kdbquery if it's on.
+    if first_run:
         if config.kdb_on:
             kdber.query(current_state, wait = config.kdb_wait)
     
@@ -178,12 +183,18 @@ def get_akmc_metadata():
             previous_state_num = parser.getint("Simulation Information", "previous_state")
         except:
             previous_state_num = -1
+        try:
+            first_run = parser.getboolean("Simulation Information", "first_run")
+        except:
+        
+            first_run = True
     else:
         time = 0
         start_state_num = 0
         wuid = 0
         searchdata = {}
         previous_state_num = -1
+        first_run = True
 
     if config.debug_random_seed:
         try:
@@ -197,7 +208,7 @@ def get_akmc_metadata():
             numpy.random.seed(config.debug_random_seed)
             logger.debug("Set random state from seed")
 
-    return start_state_num, time, wuid, searchdata, previous_state_num
+    return start_state_num, time, wuid, searchdata, previous_state_num, first_run
 
 
 
@@ -209,6 +220,7 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previ
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
+    parser.set('Simulation Information', 'first_run', str(False))
     if config.debug_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
@@ -451,7 +463,7 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("currently in state %i with confidence %.4f", current_state.number, current_state.get_confidence())
+    logger.info("currently in state %i with confidence %.6f", current_state.number, current_state.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     return current_state, previous_state, time
