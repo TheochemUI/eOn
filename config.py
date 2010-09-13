@@ -110,6 +110,7 @@ if kdb_on:
     kdb_querypath = parser.get('KDB', 'querypath')
     kdb_wait = parser.get('KDB', 'wait')
     kdb_keep = parser.get('KDB', 'keep')
+    kdb_rhsco = parser.getfloat('KDB', 'rhsco')
 
 
 #Recycling
