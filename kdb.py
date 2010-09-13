@@ -38,17 +38,13 @@ class KDB:
         for m in mode:
             f.write("%f %f %f\n" % (m[0], m[1], m[2]))
         f.close()
-#        sp = subprocess.Popen([self.addpath, os.path.join(self.path, "REACTANT"), 
-#                os.path.join(self.path, "PRODUCT"), os.path.join(self.path, "SADDLE"), 
-#                os.path.join(self.path, "MODE")], cwd = self.path, stdout = subprocess.PIPE, 
-#                stderr = subprocess.PIPE)
         sp = subprocess.Popen([self.addpath, "REACTANT", "PRODUCT", "SADDLE", "MODE"], 
                               cwd = self.path, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         sp.wait()
         return sp.communicate()[0].strip()
                 
 
-    def query(self, state, wait = False):
+    def query(self, state, rhsco = 1.0, wait = False):
         # If the path already exists, remove it and create a new one.
         if os.path.isdir(self.path):
             # See if there is a PID file for a possibly already running query process.
@@ -68,7 +64,7 @@ class KDB:
         os.makedirs(self.path)
         p = state.get_reactant()
         io.saveposcar(os.path.join(self.path, "POSCAR"), p)
-        sp = subprocess.Popen([self.querypath, "POSCAR"], cwd = self.path, 
+        sp = subprocess.Popen([self.querypath, "POSCAR", "--rhsco=%f" % rhsco], cwd = self.path, 
                 stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         # Save the PID of this running process.
         f = open(os.path.join(self.path, "PID"), 'w')
