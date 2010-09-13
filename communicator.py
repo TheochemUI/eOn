@@ -302,9 +302,12 @@ class BOINC(Communicator):
         #      wu name and then update the rows that correspond to statenumber.
 
         state_unsent = self.boinc_db_constants.RESULT_SERVER_STATE_UNSENT
-        state_inprogress = self.boinc_db_constants.RESULT_SERVER_STATE_IN_PROGRESS
-        q1 = "select id,workunitid,name from result where batch=%i and (server_state=%i or server_state=%i)"
-        q1 = q1 % (self.uniqueid, state_unsent, state_inprogress)
+        #state_inprogress = self.boinc_db_constants.RESULT_SERVER_STATE_IN_PROGRESS
+        q1 = "select id,workunitid,name from result where batch=%i and server_state=%i"
+        q1 = q1 % (self.uniqueid, state_unsent)
+
+        #q1 = "select id,workunitid,name from result where batch=%i and (server_state=%i or server_state=%i)"
+        #q1 = q1 % (self.uniqueid, state_unsent, state_inprogress)
 
         self.cursor.execute(q1)
         
