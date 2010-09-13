@@ -38,6 +38,17 @@ class Communicator:
             return True
         return False
 
+    def _copy(self, spath, dpath):
+        if self.compress and not self._is_gzip(spath):
+            sfile = open(spath, 'rb')
+            sdata = sfile.read()
+            sfile.close()
+            dfile = gzip.open(dpath, 'wb', 1)
+            dfile.write(sdata)
+            dfile.close()
+        else:
+            shutil.copy(spath, dpath)
+
     def _open(self, filename, mode='r'):
         read = False
         write = False
@@ -173,8 +184,10 @@ class Communicator:
             
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
-            shutil.copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
-            shutil.copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
+
+            #use this class' copy which will gzip the file is compression is on
+            self._copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
+            self._copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
             
             # Open the first jobpath's displacement and mode files. 
             dp_concat = self._open(os.path.join(job_path,"displacement_passed.con"), "a")
