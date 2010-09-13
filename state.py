@@ -6,6 +6,7 @@ import math
 import logging
 logger = logging.getLogger('state')
 from ConfigParser import SafeConfigParser 
+import StringIO
 
 import numpy
 
@@ -139,6 +140,30 @@ class State:
                     return None
 
         # This appears to be a unique process.
+        # Check if the mode, reactant, and product are legit
+        try:
+            # check the mode
+            dummy_mode = StringIO.StringIO()
+            dummy_mode.writelines(result['mode'])
+            dummy_mode.seek(0)
+            io.load_mode(dummy_mode)
+            
+            # check the reactant
+            dummy_reactant = StringIO.StringIO()
+            dummy_reactant.writelines(result['reactant'])
+            dummy_reactant.seek(0)
+            io.loadcon(dummy_reactant)
+            
+            # check the product
+            dummy_product = StringIO.StringIO()
+            dummy_product.writelines(result['product'])
+            dummy_product.seek(0)
+            io.loadcon(dummy_product)
+            
+        except:
+            logger.exception("Mode, reactant, or product has incorrect format")
+            return None
+        
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
