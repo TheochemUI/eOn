@@ -58,6 +58,7 @@ Lanczos::Lanczos(Matter *const, Parameters *parameters) :
       setIterationLimit(parameters->getIterationLimit_Lanczos());
       setFiniteDifference(1e-5);//Angstrom
       setInitial(PREVIOUS);
+      assert(getIterationLimit() > 0);
 }
 
 void Lanczos::startNewSearchAndCompute(Matter const *matter, double *)
