@@ -127,8 +127,12 @@ if sb_recycling_on:
 
 #Random Displacement
 disp_type = parser.get('Displacement', 'type')
-disp_size = parser.getfloat('Displacement', 'size')
-disp_radius = parser.getfloat('Displacement', 'radius')
+if disp_type == 'water':
+    stdev_translation = parser.getfloat('Displacement', 'stdev_translation')
+    stdev_rotation = parser.getfloat('Displacement', 'stdev_rotation')
+else:
+    disp_size = parser.getfloat('Displacement', 'size')
+    disp_radius = parser.getfloat('Displacement', 'radius')
 if disp_type == 'undercoordinated':
     disp_max_coord = parser.getint('Displacement', 'maximum_coordination')
 

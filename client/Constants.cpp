@@ -34,6 +34,7 @@ long constants::getPotentialZpIce(){return 13;};
 long constants::getPotentialTip4p(){return 14;};
 
 // Values passed between server and clients
+// terminationReason
 long constants::getStateGood(){return 0;};
 long constants::getStateInit(){return 1;};
 long constants::getStateSaddleSearchNoConvexRegion(){return 2;};
