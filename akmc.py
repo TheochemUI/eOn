@@ -477,6 +477,8 @@ def get_displacement(reactant, indices=None):
         disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius, hole_epicenters=indices)
     elif config.disp_type == 'leastcoordinated':
         disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
+    elif config.disp_type == 'water':
+        disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation)
     else:
         raise ValueError()
     return disp

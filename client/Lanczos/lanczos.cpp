@@ -423,6 +423,7 @@ Lanczos::Status Lanczos::lanczos(
 ) {
       int const ncoord=eigenvector.size();
       assert(ncoord > 0);
+      assert(iterationLimit_ > 0);
       // Equations and notations are based on the description of the algorithm in RA Olsen, GJ Kroes et al, J. chem. phys. vol 121, no 20 p 9776
       int maxIteration;
       if (iterationLimit_ >= ncoord)
