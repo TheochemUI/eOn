@@ -6,13 +6,14 @@
       */
 
 /** @namespace gradient_scanning
-      @brief ConjugateGradient, SaddlePoint searches.
-      Tools to scan a surface. The namespace contains a minimiser: class ConjugateGradient, and a class to search for saddle points: SaddlePoint. The namespace contains also other classes and functions needed by the two latter. \n
-      Class Lanczos performs the Lanczos iterative method and is used by SaddlePoint. Files gradient_scanning_tools.h and gradient_scanning_tools.cpp contains basic tools used by all major classes. In particular, it contains types (#GradientFunction) and classes (GradientObject ...) used to manage the functionss computing the gradient.\n
-      Tools in this namespace requires library blitz++ which can be downloaded at http://www.oonumerics.org/blitz . Class Lanczos and SaddlePoint requires library GSL (GNU Scientific Library) to diagonalise matrices. GSL can be downloaded at http://www.gnu.org/software/gsl .
-      @see ConjugateGradient, SaddlePoint.
-      @note Requires library blitz++ and GSL.
-      */
+@brief ConjugateGradient, SaddlePoint searches.
+
+Tools to scan a surface. The namespace contains a minimiser: class ConjugateGradient, and a class to search for saddle points: SaddlePoint. The namespace contains also other classes and functions needed by the two latter. \n
+Class Lanczos performs the Lanczos iterative method and is used by SaddlePoint. Files gradient_scanning_tools.h and gradient_scanning_tools.cpp contains basic tools used by all major classes. In particular, it contains types (#GradientFunction) and classes (GradientObject ...) used to manage the functionss computing the gradient.\n
+Tools in this namespace requires library blitz++ which can be downloaded at http://www.oonumerics.org/blitz . Class Lanczos and SaddlePoint requires library GSL (GNU Scientific Library) to diagonalise matrices. GSL can be downloaded at http://www.gnu.org/software/gsl .
+@see ConjugateGradient, SaddlePoint.
+@note Requires library blitz++ and GSL.
+*/
       
 #include "tools.hpp"
 #include <iostream>
