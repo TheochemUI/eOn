@@ -2,6 +2,7 @@ import os
 import numpy
 import atoms
 import io
+from math import cos, sin
 
 class NotImplementedError(Exception):
     pass
@@ -156,6 +157,75 @@ class Random(Displace):
         epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))] 
         return self.get_displacement(epicenter)
 
+class Water(Displace):
+    '''Displace molecules of water without streatching them'''
+    def __init__(self, reactant, stdev_translation, stdev_rotation):
+        '''reactant: structure to be displaced\n'''\
+        '''stdev_translation: translational standard deviation (Angstrom)\n'''\
+        '''stdev_rotation: rotational standard deviation (radian)'''
+        print self.__class__, '__init__'
+        self.reactant=reactant
+        self.stdev_translation=stdev_translation
+        self.stdev_rotation=stdev_rotation
+        for i, name in enumerate(reactant.names):
+            if name != 'H': break
+        # For water assume that all the hydrogen are listed first, then all the oxygen
+        self.n_water=i/2
+
+    def make_displacement(self):
+        print self.__class__, 'make_displacement'
+        '''Returns Atom object containing displaced structure and an array containing the displacement'''
+        return self.get_displacement()
+
+    def get_displacement(self):
+        '''Returns Atom object containing displaced structure and an array containing the displacement'''
+        free=self.reactant.free
+        displaced_atoms = self.reactant.copy()
+        for i in range(self.n_water):
+            h1=i*2
+            h2=i*2+1
+            o=i+self.n_water*2
+            #don't displace if any of the three atoms is fixed
+            if not (free[h1] and free[h2] and free[o]):
+                continue
+            #Displace one of the free atoms by a gaussian distributed
+            #random number with a standard deviation of self.std_dev.
+            disp=numpy.random.normal(scale = self.stdev_translation, size=3)
+            displaced_atoms.r[h1]+=disp
+            displaced_atoms.r[h2]+=disp
+            displaced_atoms.r[o]+=disp
+            rh1=displaced_atoms.r[h1]
+            rh2=displaced_atoms.r[h2]
+            ro=displaced_atoms.r[o]
+            disp=numpy.random.normal(scale = self.stdev_rotation, size=3)
+            rh1, rh2, ro=self.rotate_water(rh1, rh2, ro, disp[0], disp[1], disp[2])
+            displaced_atoms.r[h1]=rh1
+            displaced_atoms.r[h2]=rh2
+            displaced_atoms.r[o]=ro            
+        displacement=displaced_atoms.r - self.reactant.r
+        print self.__class__, 'get_displacement'
+        return displaced_atoms, displacement
+
+    ## Rotate a molecule of water.
+    # Rotate around the centre of gravity of the molecule.
+    # @param[in] "hydrogen1, hydrogen2, oxygen" numpy.array: coordinates of atoms.
+    # @param[in] "psi, theta, phi" float: Angle in @em radians of rotation around <em> x, y, z </em> axes.
+    # @param[in] "hydrogenMass, oxygenMass" float: masses of the hydrogen and oxygen atoms.
+    # @return "hydrogen1, hydrogen2, oxygen" coordinates of atoms after rotation
+    # The rotations uses the @em x, y, z convention (pitch-roll-yaw). The fisrt rotation to take place is around z, then y, then x.
+    # Equations and notations are from: http://mathworld.wolfram.com/EulerAngles.html .
+    def rotate_water(hydrogen1, hydrogen2, oxygen, psi, theta, phi, hydrogen_mass=1.0, oxygen_mass=16.0):
+        G=(hydrogen_mass*(hydrogen1+hydrogen2)+oxygen_mass*oxygen)/(hydrogen_mass*2+oxygen_mass)
+        rot=numpy.array([
+            [cos(theta)*cos(phi), cos(theta)*sin(phi), -sin(theta)],
+            [sin(psi)*sin(theta)*cos(phi)-cos(psi)*sin(phi), sin(psi)*sin(theta)*sin(phi)+cos(psi)*cos(phi), cos(theta)*sin(psi)],
+            [cos(psi)*sin(theta)*cos(phi)+sin(psi)*sin(phi), cos(psi)*sin(theta)*sin(phi)-sin(psi)*cos(phi), cos(theta)*cos(psi)]  ])
+        rh1=numpy.tensordot(rot, (hydrogen1-G), 1)+G
+        rh2=numpy.tensordot(rot, (hydrogen2-G), 1)+G
+        ro=numpy.tensordot(rot, (oxygen-G), 1)+G
+        return rh1, rh2, ro
+    rotate_water=staticmethod(rotate_water)
+
 if __name__ == '__main__':
     import sys
     import time
@@ -173,10 +243,3 @@ if __name__ == '__main__':
         d.make_displacement(sys.argv[2])
     dt = time.time()-t0
     print "%.2f displacements per second" % (float(ntimes)/dt)
-    
-    
-    
-    
-    
-    
-    

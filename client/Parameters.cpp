@@ -232,9 +232,9 @@ void Parameters::load(FILE *file){
             else if(!strcmp(parms[i], "SEPARATION_DIMER"))
                 separation_Dimer_ = (double) values[i];
 
-            else if(!strcmp(parms[i], "convergenceLimit_Lanczos_"))
+            else if(!strcmp(parms[i], "LANCZOS_CONVERGENCE"))
                 convergenceLimit_Lanczos_ = (double) values[i];
-            else if(!strcmp(parms[i], "iterationLimit_Lanczos_"))
+            else if(!strcmp(parms[i], "LANCZOS_ITERATION"))
                 iterationLimit_Lanczos_ = (double) values[i];
             // Lines with user comment are started with #
             else if(parms[i][0]=='#'){}
