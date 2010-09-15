@@ -263,7 +263,7 @@ void SaddlePoint::correctingForces(double *force){
     
     makeProjection(tempDoubleList, force, eigenMode_, nFreeCoord_);
     
-    if(0 < eigenValue_){
+    if (0 < eigenValue_){
         if (parameters_->getPerpendicularForceRatio() > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
             double const d=parameters_->getPerpendicularForceRatio();
