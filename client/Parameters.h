@@ -152,7 +152,6 @@ public:
     void resetForceCallsSaddlePoint();
     void resetForceCallsPrefactors();
     
-private:        
     long linesInFile(FILE *file);///< Determines the number of lines in the specified file. The number of lines should be used to initialize a characther 2D array being passed as an arguement in loadParameters.
 };
 #endif
