@@ -17,6 +17,7 @@
 // standard c libraries
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include <iostream>
 #include <cstdlib>
@@ -64,7 +65,8 @@ namespace client_eon {
       void printEndState(long state);///< Print out the end state of the saddle point determination.
       void printRequestedInfo(char *argv); ///< Print help as requested by user.
       void forcesOfConfig();  ///prints forces and energy to potentialInfo.txt
-
+     
+      int divineBundleSize(char const mode_passed[]); // Attempts to find the bundle size
 
       int rc;///< BOINC related, return code from various functions.
       int state;///< Variable is equal to GOOD if a converged saddle point is obtained.
@@ -84,5 +86,6 @@ namespace client_eon {
       double prefactorsValues[2];///< First element is from min1 to saddle, second is from min2 to saddle.
       bool prefactorsOK;///< Is set if the prefactors fall into the window defined in Constants.h.
       Parameters parameters;///< Store all the runtime parameters received from the server.
+
 };
 #endif

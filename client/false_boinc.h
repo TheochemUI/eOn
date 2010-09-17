@@ -15,6 +15,9 @@ inline int boinc_resolve_filename(const char *str1, char *str2, size_t n)
       return 0;
 }
 
+inline void boinc_fraction_done(double frac)
+{
+}
 #define boinc_fopen fopen
 
 #endif

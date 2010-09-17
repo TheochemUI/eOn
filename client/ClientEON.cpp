@@ -60,6 +60,8 @@ int main(int argc, char **argv)
         // If the server performed the displacement, load it and perform the saddle search.
         if (parameters.getRefineSP()) 
         {
+            int bundleSize = divineBundleSize(mode_passed);
+            double ndone = 0.0;
             // While we can read in the displacement and mode files, perform a saddle search on them.
             while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
             {
@@ -68,6 +70,9 @@ int main(int argc, char **argv)
                 parameters.resetForceCalls();
                 parameters.resetForceCallsSaddlePoint();
                 parameters.resetForceCallsPrefactors();
+                
+                ndone += 1.0;
+                boinc_fraction_done(ndone/bundleSize);
             }
         }
         // Otherwise, displace and search ourselves.
@@ -231,6 +236,33 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
 
     return;
 }
+
+int client_eon::divineBundleSize(char const mode_passed[])
+{
+    // XXX: As its name suggests, this method finds the bundle size
+    // using shaky methods.
+    FILE * file;
+    int count = 0;
+    int nlines;
+
+    file = openFile(mode_passed, READ.c_str());
+    nlines = parameters.linesInFile(file);
+    
+    char line[STRING_SIZE];
+     
+    int i;
+    for(i=0; i<nlines; i++)
+    {
+        fgets(line, STRING_SIZE, file);
+        if( std::sscanf(line, "%*d %*d %*d") == -1)
+        {
+            count++;
+        }
+    }
+
+    closeFile(file, mode_passed);
+    return count;
+} 
 
 
 bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char const mode_passed[])
