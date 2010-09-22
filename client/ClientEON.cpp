@@ -253,8 +253,11 @@ int client_eon::divineBundleSize(char const mode_passed[])
     int i;
     for(i=0; i<nlines; i++)
     {
+        int retval;
+        float dummy[3];
         fgets(line, STRING_SIZE, file);
-        if( std::sscanf(line, "%*d %*d %*d") == -1)
+        retval = sscanf(line, "%f %f %f",&dummy[0], &dummy[1], &dummy[2]);
+        if(retval == 2) 
         {
             count++;
         }
