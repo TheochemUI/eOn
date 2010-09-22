@@ -91,8 +91,8 @@ namespace constants {
     const std::string SEND_SP_CONF_FILE_NAME("saddle.con");///< Name of file containing the saddle point configuration if any was found.
     const std::string SEND_PROD_FILE_NAME("product.con");///< Name of file containing the other minima being connected to the saddle point. Note that REAC_FILE_NAME contains the other minima.
     const std::string MODE_FILE_NAME("mode.dat");///< Save last eigenvector.
-	const std::string READ("r");///< Set the file to read.
-	const std::string APPEND("a");///< Set the file to append.
+	const std::string READ("rb");///< Set the file to read.
+	const std::string APPEND("ab");///< Set the file to append.
 
 		
 }
