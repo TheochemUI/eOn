@@ -329,7 +329,11 @@ def register_results(comm, current_state, states, searchdata = None):
     logger.info("%i (result) searches processed", num_registered)
     logger.info("Approximately %i (result) searches discarded." % (tot_searches - num_registered))
     #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
-    logger.debug("%.1f results per second", (num_registered/(t2-t1)))
+    if num_registered == 0:
+        logger.debug("0 results per second", num_registered)
+    else:
+        logger.debug("%.1f results per second", (num_registered/(t2-t1)))
+        
     return num_registered
 
 
