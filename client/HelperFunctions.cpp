@@ -12,29 +12,62 @@
 
 #include "HelperFunctions.h"
 
-// Random values in interval
-double helper_functions::randomDouble(){
-    // RAND_MAX is in the library math.h
-    return((double)rand()/((double)RAND_MAX+1));
+#include <math.h>
+#include <cassert>
+
+// Random number generator
+
+double helper_functions::random(long newSeed){
+    static long seed = -1;
+    if(newSeed){
+        seed=-newSeed;}
+    int j;
+    long k;
+    static long seed2=123456789;
+    static long iy=0;
+    static long iv[NTAB];
+    double temp;
+    if (seed <= 0) {
+        if (-(seed) < 1) seed=3;
+        else seed = -(seed);
+        seed2=(seed);
+        for (j=NTAB+7;j>=0;j--) {
+            k=(seed)/IQ1;
+            seed=IA1*(seed-k*IQ1)-k*IR1;
+            if (seed < 0) seed += IM1;
+            if (j < NTAB) iv[j] = seed;}
+        iy=iv[0];}
+    k=(seed)/IQ1;
+    seed=IA1*(seed-k*IQ1)-k*IR1;
+    if (seed < 0) seed += IM1;
+    k=seed2/IQ2;
+    seed2=IA2*(seed2-k*IQ2)-k*IR2;
+    if (seed2 < 0) seed2 += IM2;
+    j=int(iy/NDIV);
+    iy=iv[j]-seed2;
+    iv[j] = seed;
+    if (iy < 1) iy += IMM1;
+    if ((temp=double(AM*iy)) > RNMX) return RNMX;
+    else return temp;
 }
 
+double helper_functions::randomDouble(){
+    return(random());
+}
+
+// Random value in interval
 double helper_functions::randomDouble(int max){
-    double dmax;
-    dmax = double(max);
-    // RAND_MAX is in the library math.h
-    return(dmax*(double)rand()/((double)RAND_MAX+1));
+    double dmax = double(max);
+    return(dmax*randomDouble());
 }
 
 double helper_functions::randomDouble(long max){
-    double dmax;
-    dmax = double(max);
-    // RAND_MAX is in the library math.h
-    return(dmax*(double)rand()/((double)RAND_MAX+1));
+    double dmax = double(max);
+    return(dmax*randomDouble());
 }
 
 double helper_functions::randomDouble(double dmax){
-    // RAND_MAX is in the library math.h
-    return(dmax*(double)rand()/((double)RAND_MAX+1));
+    return(dmax*randomDouble());
 }
 
 // Vector functions.

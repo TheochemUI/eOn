@@ -16,9 +16,9 @@
 
 #include "MinimizersInterface.h"
 #include "Matter.h"
-#include "HelperFunctions.h"
-#include "Constants.h"
-#include "Parameters.h"
+//#include "HelperFunctions.h"
+//#include "Constants.h"
+//#include "Parameters.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
 class Quickmin : public MinimizersInterface{

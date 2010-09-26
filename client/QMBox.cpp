@@ -11,8 +11,15 @@
  */
 #include "QMBox.h"
 
+//#include "MinimizersInterface.h"
+#include "HelperFunctions.h"
+//#include "Constants.h"
+
+#include <cmath>
+
 using namespace helper_functions;
-using namespace constants;
+//using namespace constants;
+
 
 QMBox::QMBox(Matter *matter, Parameters *parameters)
 {
@@ -88,25 +95,24 @@ void QMBox::oneStep()
     double scalex = (bx + boxv_[0] * dT) / bx;
     double scaley = (by + boxv_[1] * dT) / by;
     double scalez = (bz + boxv_[2] * dT) / bz;
-    matter_->getFreePositions(tempListDouble_);  
+    matter_->getFreePositions(tempListDouble_);
     for(int i = 0; i < nFreeCoord_ / 3; i++)
     {
         tempListDouble_[i * 3 + 0] *= scalex;
         tempListDouble_[i * 3 + 1] *= scaley;
         tempListDouble_[i * 3 + 2] *= scalez;
     }
-    matter_->setFreePositions(tempListDouble_);  
+    matter_->setFreePositions(tempListDouble_);
     qmBox_->oneStep();
     return;
 };
 
-    
 
 void QMBox::fullRelax()
 {
     bool converged = false;
     long forceCallsTemp;
-    forceCallsTemp = matter_->getForceCalls();  
+    forceCallsTemp = matter_->getForceCalls();
     while(!converged)
     {
         oneStep();
@@ -137,56 +143,6 @@ bool QMBox::isItConverged(double convergeCriterion)
     }
     return true;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -33,6 +33,12 @@ Parameters::Parameters(){
     // Value used in the Relaxation   
     converged_Relax_ = 0.005;
 
+    cgCurvatureStep_ = 0.001;
+    cgMaxMoveFullRelax_ = 0.2;
+    qmTimeStep_ = 0.1;
+    maxDifferencePos_ = 0.1;
+    neighborCutoff_ = 0.33;
+
     // Values used in the Saddle Point determination   
     converged_SP_ = 0.025;
     maxJumpAttempts_SP_ = 0;
@@ -45,12 +51,19 @@ Parameters::Parameters(){
     withinRadiusPerturbated_SP_ = 4.0;
     maxSinglePerturbation_SP_ = 0.1;
     maximumIterations_ = 512;
+
+    maxIterations_ = 256;
+    maxIterationsConcave_ = 256;
+
     perpendicularForceRatio_=0.0;
 
     // Values used in the Hessian determination   
 	maxSize_Hessian_ = 0;
 	minDisplacement_Hessian_ = 0.25;
     withinRadiusDisplaced_Hessian_ = 5.0;
+
+    prefactorMax_ = 10e20;
+    prefactorMin_ = 10e8;
 
     // Values used in the Dimer method
     rotations_Dimer_ = 1;
@@ -68,6 +81,19 @@ Parameters::Parameters(){
     forceCallsSaddlePointConvex_ = 0;
     forceCallsPrefactors_ = 0;
     displacement_saddle_distance_ = 0;
+
+    // Constants used in the client
+    maxDifferencePos_ = 0.1; // The distance criterion for comparing geometries
+
+    // Constants used in prefactor determination
+    prefactorMax_ = 10e20; // max prefactor allowed
+    prefactorMin_ = 10e8; // min prefactor allowed
+
+    // Constants used by the optimizers
+    cgCurvatureStep_ = 0.001; // finite difference step size used in conjugate gradients
+    cgMaxMoveFullRelax_ = 0.2; // maximum displacement vector for a step during minimization
+    qmTimeStep_ = 0.1; // time step size used in Quickmin.
+
 
     return;
 }
@@ -420,6 +446,28 @@ long Parameters::getPrefactorsTag(){
 double Parameters::getConverged_Relax(){
     return converged_Relax_;
 }
+
+// Optimizer related
+double  Parameters::getCgCurvatureStep(){
+    return cgCurvatureStep_;
+}
+double  Parameters::getCgMaxMoveFullRelax(){
+    return cgMaxMoveFullRelax_;
+}
+double  Parameters::getQmTimeStep(){
+    return qmTimeStep_;
+}
+
+// Matter related
+double  Parameters::getMaxDifferencePos(){ 
+    return maxDifferencePos_;
+}
+
+// EpiCenter related
+double  Parameters::getNeighborCutoff(){ 
+    return neighborCutoff_;
+}
+
 // Saddle Point determination related
 double Parameters::getConverged_SP(){
     return converged_SP_;
@@ -461,12 +509,19 @@ double Parameters::getMaxSinglePerturbation_SP(){
     return maxSinglePerturbation_SP_;
 }
 /// Limit on the number of iterations that may be performed by the saddle point searches and minimization
-long Parameters::getMaximumIterations() {
+long Parameters::getMaximumIterations(){
     return maximumIterations_;
 }
-double Parameters::getPerpendicularForceRatio() {
+double Parameters::getPerpendicularForceRatio(){
     return perpendicularForceRatio_;
 }
+long Parameters::getMaxIterations(){
+    return maxIterations_;
+}
+long Parameters::getMaxIterationsConcave(){
+    return maxIterationsConcave_;
+}
+
 // Hessian related
 long Parameters::getMaxSize_Hessian(){
     return maxSize_Hessian_;
@@ -477,6 +532,13 @@ double Parameters::getMinDisplacement_Hessian(){
 double Parameters::getWithinRadiusDisplaced_Hessian(){
     return withinRadiusDisplaced_Hessian_;
 }
+double Parameters::getPrefactorMax(){
+    return prefactorMax_;
+}
+double Parameters::getPrefactorMin(){
+    return prefactorMin_;
+}
+
 // Dimer related
 long Parameters::getRotations_Dimer(){
     return rotations_Dimer_;
@@ -490,6 +552,7 @@ double Parameters::getSeparation_Dimer(){
 double Parameters::getRotationAngle_Dimer(){
     return rotationAngle_Dimer_;
 }
+
 // Lanczos related
 double Parameters::getConvergenceLimit_Lanczos(){
       return convergenceLimit_Lanczos_;

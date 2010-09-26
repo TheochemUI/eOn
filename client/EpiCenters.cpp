@@ -8,13 +8,21 @@
  *===============================================
  */
 
+#include "HelperFunctions.h"
+#include "Constants.h"
 #include "EpiCenters.h"
 
 using namespace helper_functions;
-using namespace constants;
+//using namespace constants;
+
+#include <vector>
+//#include <limits>
+#include <cassert>
+#include <climits>
+
 using std::vector;
 
-long epi_centers::cnaEpiCenter(const Matter *matter){
+long EpiCenters::cnaEpiCenter(const Matter *matter){
     long *cnaList;
     long j, nAtoms, indexEpiCenter;
     double tempDouble;
@@ -46,13 +54,13 @@ long epi_centers::cnaEpiCenter(const Matter *matter){
         }
     }
     delete [] cnaList;
-    
+ 
     // Make certain the chosen atom index is within the domain of the atom list.
     assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
     return(indexEpiCenter);
 }
 
-long epi_centers::minimalCoordinatedEpiCenter(const Matter *matter){
+long EpiCenters::minimalCoordinatedEpiCenter(const Matter *matter){
     bool *minimalCoordinatedList;
     long j, nAtoms, indexEpiCenter, minCoordinationVal;
     double tempDouble;
@@ -61,17 +69,17 @@ long epi_centers::minimalCoordinatedEpiCenter(const Matter *matter){
     indexEpiCenter=-2; // initialize to a value that will fail the assert if no EpiCenter is found
     //----- Initialize end -----
     //std::cout<<"minimalCoordinatedEpiCenter\n";
-    
+ 
     minCoordinationVal = minCoordination(matter);
     coordinationEqualOrBellow(minimalCoordinatedList,minCoordinationVal,matter);
-    
+ 
     // Counting all atoms that are minimally coordinated and are free to move
     j = 0; 
     for(int i=0; i<nAtoms; i++){
         if((minimalCoordinatedList[i]) && !(matter->getFixed(i))) 
             j++;
     }
-    // picking a random atom being both free and minimally coordinated  
+    // picking a random atom being both free and minimally coordinated
     tempDouble = randomDouble(j);
     j = (long) tempDouble;
     for(int i=0; i<nAtoms; i++){
@@ -84,36 +92,34 @@ long epi_centers::minimalCoordinatedEpiCenter(const Matter *matter){
         }
     }
     delete [] minimalCoordinatedList;
-    
+
     // Make certain the chosen atom index is within the domain of the atom list.
     assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
     return(indexEpiCenter);
 }
 
-
-long epi_centers::lastAtom(const Matter *matter){
+long EpiCenters::lastAtom(const Matter *matter){
     long nAtoms, indexEpiCenter;
     nAtoms = matter->numberOfAtoms();
     indexEpiCenter = nAtoms-1;
-    
+
     // Make certain the chosen atom index is within the domain of the atom list.
     assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
     return(indexEpiCenter);
 }
 
-
-long epi_centers::randomFreeAtomEpiCenter(const Matter *matter)
+long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
 {
     long j, nAtoms, indexEpiCenter;
     double tempDouble;
     nAtoms = matter->numberOfAtoms();
     indexEpiCenter=-2; // initialize to a value that will fail the assert if no EpiCenter is found
     j = 0; 
-    
+
     j = matter->numberOfFreeAtoms() - 1;
     tempDouble = randomDouble(j);
     j = (long)tempDouble;
-    
+
     // picking a random atom being free
     for(int i = 0; i < nAtoms; i++)
     {
@@ -127,14 +133,12 @@ long epi_centers::randomFreeAtomEpiCenter(const Matter *matter)
             else j--;
         }
     }
-    
     // Make certain the chosen atom index is within the domain of the atom list.
     assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
     return(indexEpiCenter);
 }
 
-
-//long epi_centers::randomFreeAtomEpiCenter(const Matter *matter)
+//long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
 //{
 //    long indexEpiCenter;
 //    long nAtoms = matter->numberOfAtoms();
@@ -145,8 +149,7 @@ long epi_centers::randomFreeAtomEpiCenter(const Matter *matter)
 //    return(indexEpiCenter);
 //}
 
-
-void epi_centers::cna(long *cna, const Matter *matter){
+void EpiCenters::cna(long *cna, const Matter *matter){
     int a1 = 0;
     int a2 = 0;
     int a3 = 0;
@@ -162,17 +165,15 @@ void epi_centers::cna(long *cna, const Matter *matter){
     int bondsSum = 0;
     nAtoms = (int) matter->numberOfAtoms();
     vector<int> nFCC(nAtoms);
-	vector<int> nHCP(nAtoms);
+    vector<int> nHCP(nAtoms);
     vector< vector<int> > neighborLists(nAtoms);
     //----- Initialize end -----
     //std::cout<<"cna\n";
 
     for(int i=0; i<nAtoms-1; i++){
         for(int j=i+1; j<nAtoms; j++){
-
             diffR = matter->distance(i, j);
- 
-            if(diffR<getNeighborCutoff()){
+            if(diffR<neighborCutoff){
                 neighborLists[i].push_back(j);
                 neighborLists[j].push_back(i);
             }
@@ -236,8 +237,7 @@ void epi_centers::cna(long *cna, const Matter *matter){
     return;
 }
 
-
-void epi_centers::coordination(long *coordinationVal, const Matter *matter){
+void EpiCenters::coordination(long *coordinationVal, const Matter *matter){
     long nAtoms;
     double diffR;
     nAtoms = matter->numberOfAtoms();
@@ -248,10 +248,9 @@ void epi_centers::coordination(long *coordinationVal, const Matter *matter){
 
     for(int i=0; i<nAtoms-1; i++){
         for(int j=i+1; j<nAtoms; j++){
-            
             // Determining coordination number 
             diffR = matter->distance(i, j);
-            if(diffR<getNeighborCutoff()){
+            if(diffR<neighborCutoff){
                 coordinationVal[i] = coordinationVal[i]+1;
                 coordinationVal[j] = coordinationVal[j]+1;
             }
@@ -260,8 +259,7 @@ void epi_centers::coordination(long *coordinationVal, const Matter *matter){
     return;
 }
 
-
-void epi_centers::coordinationEqualOrBellow(bool *result, 
+void EpiCenters::coordinationEqualOrBellow(bool *result, 
                                             long coordinationMaxVal, 
                                             const Matter *matter){
     long *coordinationVal;
@@ -270,9 +268,9 @@ void epi_centers::coordinationEqualOrBellow(bool *result,
     coordinationVal = new long[nAtoms];
     //----- Initialize end -----
     //std::cout<<"coordinationEqualOrBellow\n";
-    
+ 
     coordination(coordinationVal, matter);
-    
+ 
     for(int i=0; i<nAtoms; i++){
         if((coordinationVal[i]<coordinationMaxVal+1) && !(matter->getFixed(i)))
             result[i] = true;
@@ -284,8 +282,7 @@ void epi_centers::coordinationEqualOrBellow(bool *result,
     return;
 }
 
-
-long epi_centers::minCoordination(const Matter *matter){
+long EpiCenters::minCoordination(const Matter *matter){
     long *coordinationVal;
     long nAtoms;
     long minCoordinationVal;
@@ -297,9 +294,9 @@ long epi_centers::minCoordination(const Matter *matter){
     coordination(coordinationVal, matter);
     // LONG_MAX is a the maximal value a long can achieve, from library limits.
     minCoordinationVal = LONG_MAX;
-    
+ 
     bool temp;
-        
+ 
     for(int i=0; i<nAtoms; i++){
         if((coordinationVal[i]<minCoordinationVal) && !(matter->getFixed(i))){
             temp=matter->getFixed(i);
