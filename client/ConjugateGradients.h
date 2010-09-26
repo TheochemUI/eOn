@@ -19,15 +19,11 @@
 #ifndef CG_H
 #define CG_H
 
-#include <cassert>
-
-#include "MinimizersInterface.h"
-#include "Matter.h"
-#include "HelperFunctions.h"
-#include "Constants.h"
 #include "Parameters.h"
+#include "Matter.h"
+#include "MinimizersInterface.h"
 
-/** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
+/** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing a Matter object or modified forces being passed in.*/
 class ConjugateGradients : public MinimizersInterface{
 
 public:
@@ -40,13 +36,13 @@ public:
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
     @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.
     @param[in]   *forces        Double array containing the forces acting on the matter.*/
-    ConjugateGradients(Matter *matter, Parameters *parameters, double *forces); 
+    ConjugateGradients(Matter *matter, Parameters *parameters, double *forces);
 
     ~ConjugateGradients();///< Destructor.
 
-    void oneStep();///< Do one iteration.
-    void fullRelax();///< Relax the Matter object corresponding to the pointer that was passed with the constructor.
-    bool isItConverged(double convergeCriterion);///< Determine if the norm of the force vector is below the convergeCriterion.
+    void oneStep(); // do one iteration
+    void fullRelax(); // relax the Matter object at the pointer that was passed with the constructor
+    bool isItConverged(double convergeCriterion); // determine if the norm of the force vector is below the convergeCriterion
 
     //----Functions used when forces are modified (saddle point search)----
     /** Performs and infinitesimal step along the search direction.
@@ -61,13 +57,13 @@ public:
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
     void getNewPosModifiedForces(double *pos, double *forceBeforeStep, double *forceAfterStep, double maxStep);
  
-    void setFreeAtomForcesModifiedForces(double *forces);///< Enables the use of modified forces. Double array containing the forces acting on the atoms.
+    void setFreeAtomForcesModifiedForces(double *forces); // enables the use of modified forces
  
 private:
-    long nFreeCoord_;///< Number of free coordinates.
+    long nFreeCoord_; // number of free coordinates
 
-    Matter *matter_;///< Pointer to atom object outside the scope of the class.
-    Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
+    Matter *matter_; // pointer to atom object outside the scope of the class
+    Parameters *parameters_; // pointer to a structure outside the scope of the class containing runtime parameters
 
     /** Double arrrays with size equal to three times the number of atoms. */
     double *tempListDouble_;
@@ -76,13 +72,13 @@ private:
     double *directionNorm_;
     double *force_;
     double *forceOld_;
-    
+
     /** To initialize the object to perform minimization of Matter object.
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
     @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.*/
     void initialize(Matter *matter, Parameters *parameters);
 
-    void determineSearchDirection();///< Determine the search direction according to Polak-Ribiere, some of the previous direction is mixed in. 
+    void determineSearchDirection(); // determine the search direction according to Polak-Ribiere
 
     /** Determine the size step to be performed.
     @param[in]   *forceBeforeStep  Double array, the forces before ConjugateGradients::makeInfinitesimalStepModifiedForces was called.
@@ -90,7 +86,7 @@ private:
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
     double stepSize(double *forceBeforeStep, double *forceAfterStep, double maxStep);
 
-    double sign(double value){ return(-(value<0)*2+1);};///< Determine the sign of value, \return {double being either 1 or -1}.
+    double sign(double value){ return(-(value<0)*2+1);}; // determine the sign of value, \return {double being either 1 or -1}.
 };
 
 #endif

@@ -1,9 +1,6 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/5/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
+ *  EON Dimer.cpp
  *-----------------------------------------------
  *  Todo:
  *      GH: add improved dimer method of Andreas Heyden
@@ -11,19 +8,12 @@
  *          - add rotation angle instead of rotational force criteria
  *      GH: add LBFGS optimizer
  *      GH: make torqueLimitHigh/Low and torqueMin/MaxRotations variables
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
- *      Roar Olsen
  *===============================================
  */
 
 #include "Dimer.h"
 
 using namespace helper_functions;
-using namespace constants;
-
 
 Dimer::Dimer(Matter const *matter, Parameters *parameters)
 {
@@ -38,7 +28,7 @@ Dimer::Dimer(Matter const *matter, Parameters *parameters)
     tempListDouble_ = new double[nAllCoord]; // There should be space for both free and frozen atoms.
     directionNorm_ = new double[nFreeCoord_];
     rotationalPlaneNorm_ = new double[nFreeCoord_];
-};
+}
 
 
 Dimer::~Dimer()
@@ -48,7 +38,7 @@ Dimer::~Dimer()
     delete [] tempListDouble_;
     delete matterInitial_;
     delete matterDimer_;
-};
+}
 
 
 void Dimer::moveAndCompute(Matter const *matter)
@@ -56,7 +46,7 @@ void Dimer::moveAndCompute(Matter const *matter)
     *matterInitial_ = *matter;
     estimateLowestEigenmode(parameters_->getRotations_Dimer());
     return;
-};
+}
 
 
 void Dimer::startNewSearchAndCompute(Matter const *matter, double *displacement)
@@ -85,7 +75,7 @@ void Dimer::startNewSearchAndCompute(Matter const *matter, double *displacement)
     // The initial search should be allowed to use extra iterations to obtain
     // better estimate
     //estimateLowestEigenmode(parameters_->getRotationsNewSearch_Dimer());
-};
+}
 
 
 void Dimer::estimateLowestEigenmode(long rotationsToPerform)
@@ -200,14 +190,14 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     delete [] rotationalForceOld;
     delete [] rotationalPlaneNormOld;
     return;
-};
+}
 
 
 double Dimer::returnLowestEigenmode(double *result){
     for(int i=0; i<nFreeCoord_;i++)
         result[i]=directionNorm_[i];
     return eigenvalue_;
-};
+}
 
 void Dimer::setEigenvector(long size, double const eigenvector[])
 {
@@ -272,7 +262,7 @@ double Dimer::calcRotationalForce(double *rotationalForce){
 
     // Based on difference in force parallel to dimer    
     return (projectedForceB-projectedForceA)/(2*parameters_->getSeparation_Dimer());
-};
+}
 
 
 void Dimer::determineRotationalPlane(double *rotationalForce, 
@@ -319,7 +309,7 @@ void Dimer::determineRotationalPlane(double *rotationalForce,
     
     delete [] rotationalPlane;
     return;
-};
+}
 
 
 void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
@@ -344,4 +334,4 @@ void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
     normalize(rotationalPlaneNorm_, nFreeCoord_);
 
     return;
-};
+}

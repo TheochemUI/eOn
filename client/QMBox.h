@@ -15,10 +15,10 @@
 #ifndef QMBOX_H
 #define QMBOX_H
 
-#include "MinimizersInterface.h"
+//#include "MinimizersInterface.h"
 #include "Matter.h"
-#include "HelperFunctions.h"
-#include "Constants.h"
+//#include "HelperFunctions.h"
+//#include "Constants.h"
 #include "Parameters.h"
 #include "Quickmin.h"
 
