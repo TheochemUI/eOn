@@ -86,6 +86,7 @@ namespace client_eon {
       double prefactorsValues[2];///< First element is from min1 to saddle, second is from min2 to saddle.
       bool prefactorsOK;///< Is set if the prefactors fall into the window defined in Constants.h.
       Parameters parameters;///< Store all the runtime parameters received from the server.
+      int result_pattern(char *filename);
 
 };
 #endif

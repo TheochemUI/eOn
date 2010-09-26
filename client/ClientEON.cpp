@@ -13,6 +13,10 @@
 using namespace constants;
 using namespace client_eon;
 
+#ifdef COMPRESSION
+#include "Compression.h"
+#endif
+
 int main(int argc, char **argv) 
 {
 	// BOINC is started
@@ -20,7 +24,22 @@ int main(int argc, char **argv)
 	if(rc){
 		exit(rc);
 	}
-	char parameters_passed[STRING_SIZE], reactant_passed[STRING_SIZE], displacement_passed[STRING_SIZE], mode_passed[STRING_SIZE];
+
+    #ifdef COMPRESSION
+    //We want to uncompress our input file
+    //XXX: This is ugly. It doesn't seem right to call eon_client::openFile from
+    //     Compression.cpp but this code probably shouldn't be here either.
+    char boinc_input_archive[] = "init.tgz";
+    char resolved[STRING_SIZE];
+    int rc = boinc_resolve_filename(boinc_input_archive, resolved, sizeof(resolved));
+    if (extract_archive(resolved) != 0) {
+        printf("error extracting input archive\n");
+        boinc_finish(1);
+    }
+    #endif
+
+	char parameters_passed[STRING_SIZE], reactant_passed[STRING_SIZE], 
+	     displacement_passed[STRING_SIZE], mode_passed[STRING_SIZE];
     if (argc > 1 ) {
 		if (*argv[1] == '-'){    
 			if (strcmp(argv[1], "-test") == 0 || strcmp(argv[1], "--test") == 0) {				
@@ -87,9 +106,31 @@ int main(int argc, char **argv)
     }
     // BOINC applications must exit via boinc_finish(rc), not merely exit */
 	// To prevent segmentation fault
+#ifdef COMPRESSION
+    //XXX: UGLY.
+    char boinc_result_archive[] = "result.tgz";
+    rc = boinc_resolve_filename(boinc_result_archive, resolved, sizeof(resolved));
+    create_archive("results.tgz", ".", result_pattern); 
+#endif
     boinc_finish(0);
-    return 0;
 }
+
+#ifdef COMPRESSION
+// This will match any file that doesn't have the string "passed",
+// has either a "con" or "dat" in it, and doesn't start with a period.
+int client_eon::result_pattern(char *filename)
+{
+        if (strstr(filename, "passed") != NULL) {
+            return 0; 
+        }else if (filename[0] == '.') {
+            return 0;
+        }else if (strstr(filename, "con") == NULL && 
+                  strstr(filename, "dat") == NULL) {
+            return 0;
+        }
+        return 1;
+}
+#endif
 
 void client_eon::doSaddleSearch(void)
 {
@@ -148,6 +189,10 @@ void client_eon::doSaddleSearch(void)
 
     saveData();
     parameters.printOutput();    
+
+    #ifdef COMPRESSION
+    
+    #endif
 }
 
 
