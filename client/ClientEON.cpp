@@ -189,10 +189,6 @@ void client_eon::doSaddleSearch(void)
 
     saveData();
     parameters.printOutput();    
-
-    #ifdef COMPRESSION
-    
-    #endif
 }
 
 
