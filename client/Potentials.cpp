@@ -9,10 +9,26 @@
  *
  *===============================================
  */
+
+#include "Constants.h"
+
 #include "Potentials.h"
+#include "potentials/NewPotential/NewPotential.h"
+//#include "VASP.h"
+#include "potentials/EDIP/EDIP.h"
+#include "potentials/EMT/EffectiveMediumTheory.h"
+//#include "LJBinary.h"
+#include "potentials/Morse/Morse.h"
+#include "potentials/LennardJones/LJ.h"
+#include "potentials/SW/SW.h"
+#include "potentials/Tersoff/Tersoff.h"
+#include "potentials/Aluminum/Aluminum.h"
+#include "potentials/EAM/EAM.h"
+#include "potentials/Lenosky/Lenosky.h"
+#include "potentials/QSC/QSC.h"
+#include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
 
-
-using namespace constants;
+#include <cstdlib>
 
 // which potential to use is decided at preprocessor level
 Potentials::Potentials(Parameters *parameters){
@@ -21,78 +37,78 @@ Potentials::Potentials(Parameters *parameters){
 // To use a new potential.
 // An interface should be created in the file NewPotential_interface.cpp. 
 // Code will stop at runtime if used and no new potential has been defined!
-    if(parameters_->getPotentialTag() == getPotentialNewPotential()){
+//GH    if(parameters_->getPotentialTag() == getPotentialNewPotential()){
+    if(parameters_->getPotentialTag() == POT_USER){
         //interface_ = new NewPotential();
         //interface_->initialize();
-		printf("The new potential must be commented in Potentials.cpp.\n");
+        printf("The new potential must be commented in Potentials.cpp.\n");
         std::exit(1);
     }
 //_______________________  
-    else if(parameters_->getPotentialTag() == getPotentialLJ()){
+//    else if(parameters_->getPotentialTag() == getPotentialLJ()){
+    else if(parameters_->getPotentialTag() == POT_LJ){
         interface_ = new LJ();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialMorse()){
+    else if(parameters_->getPotentialTag() == POT_MORSE){
         interface_ = new Morse();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialEMT()){
+    else if(parameters_->getPotentialTag() == POT_EMT){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialEAM()){
+    else if(parameters_->getPotentialTag() == POT_EAM){
         interface_ = new EAM();
         interface_->initialize();
     }
-	else if(parameters_->getPotentialTag() == getPotentialQSC()){
-		interface_ = new QSC();
-		interface_->initialize();
+    else if(parameters_->getPotentialTag() == POT_QSC){
+        interface_ = new QSC();
+        interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialZpIce()){
+    else if(parameters_->getPotentialTag() == POT_ZPICE){
         interface_ = new ZpIce();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialTip4p()){
+    else if(parameters_->getPotentialTag() == POT_TIP4P){
         interface_ = new Tip4p();
         interface_->initialize();
     }
 #ifndef NO_FORTRAN
-    else if(parameters_->getPotentialTag() == getPotentialAluminum())
-    {
+    else if(parameters_->getPotentialTag() == POT_ALUMINUM){
         interface_ = new Aluminum();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialLenosky()){
+    else if(parameters_->getPotentialTag() == POT_LENOSKY){
         interface_ = new Lenosky();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialSW()){
+    else if(parameters_->getPotentialTag() == POT_SW){
         interface_ = new SW();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialTersoff()){
+    else if(parameters_->getPotentialTag() == POT_TERSOFF){
         interface_ = new Tersoff();
         interface_->initialize();
     }
-    else if(parameters_->getPotentialTag() == getPotentialEDIP()){
+    else if(parameters_->getPotentialTag() == POT_EDIP){
         interface_ = new EDIP();
         interface_->initialize();
     }
 #endif
-	else if(parameters_->getPotentialTag() == getPotentialVASP()){
+    else if(parameters_->getPotentialTag() == POT_VASP){
         printf("VASP potential not implemented yet. Please use different one.\n");
         std::exit(1);
         //interface_ = new vasp();
         //interface_->initialize();
     }		
-	else{
-		printf("Potential tag not recognized: %ld\n", parameters_->getPotentialTag());
-		std::exit(1);
-	}	
+    else{
+        printf("Potential tag not recognized: %ld\n", parameters_->getPotentialTag());
+        std::exit(1);
+    }	
 };
 
-Potentials::~Potentials()
-{
+Potentials::~Potentials(){
     interface_->cleanMemory();
 };
 

@@ -14,86 +14,61 @@
 #ifndef HELPER_FUNCTIONS_H
 #define HELPER_FUNCTIONS_H
 
-#include <stdlib.h>
-#include <math.h>
-#include <cassert>
-#include <stdio.h>
+// Random number generator constants
 
-// remember to delete
-#include <iostream>
+#define IM 2147483647
+#define AM (1.0/IM)
+#define NTAB 32
+#define NDIV (1+(IM-1)/NTAB)
+#define EPS 1.2e-7
+#define RNMX (1.0-EPS)         
+#define IM1 2147483563
+#define IM2 2147483399
+#define IMM1 (IM1-1)
+#define IA1 40014
+#define IA2 40692
+#define IQ1 53668
+#define IQ2 52774
+#define IR1 12211
+#define IR2 3791
 
-
-/** Collection of supporting functions. Functions that handle arrays of doubles as vectors and different random number generators*/
+/* Collection of supporting functions that handle arrays of doubles as vectors and different random number generators */
 namespace helper_functions {
 
-    double randomDouble();///< Random value between 0 and 1.
-    double randomDouble(int max);///< Random value between 0 and \a max.
-    double randomDouble(long max);///< Random value between 0 and \a max.
-    double randomDouble(double max);///< Random value between 0 and \a max.
+    double random(long newSeed=0); // random number generator from numerical recipies
+    double randomDouble(); // random value between 0 and 1
+    double randomDouble(int max); // random value between 0 and max
+    double randomDouble(long max); // random value between 0 and max
+    double randomDouble(double max); // random value between 0 and max
 
-    /** Calculate the dot product of the two (\a v1 \a v2) double arrays being passed in of length \a size.
-    @param[in]   *v1    Array of double.
-    @param[in]   *v2    Array of double.
-    @param[in]   size   Number of elements in one of the arrays.*/
+    /* the dot product of the two (v1 v2) double arrays being passed in of length size */
     double dot(const double *v1, const double *v2, long size);
 
-    /** Calculate the length of (\a v1) array being passed in of length \a size.
-    @param[in]   *v1    Array of double.
-    @param[in]   size   Number of elements in array.*/
+    /* the length of (v1) array being passed in of length size */
     double length(const double *v1, long size);
 
-    /** Calculate the sum of the two (\a v1 \a v2) double arrays being passed in of length \a size in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   *v2      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* the sum of the two (v1 v2) double arrays being passed in of length size in result */
     void add(double *result, const double *v1, const double *v2, long size);
 
-    /** Calculate the difference of the two (\a v1 \a v2) double arrays being passed in of length \a size in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   *v2      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* the difference of the two (v1 v2) double arrays being passed in of length size in result */
     void subtract(double *result, const double *v1, const double *v2, long size);
 
-    /** Calculate the product of the (\a v1) double array being passed in of length \a size and scalar in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   scalar   Value of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* the product of the (v1) double array being passed in of length size and scalar in result */
     void multiplyScalar(double *result, const double *v1, double scalar, long size);
 
-    /** Calculate the ratio of the (\a v1) double array being passed in of length \a size and scalar in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   scalar   Value of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* Calculate the ratio of the (v1) double array being passed in of length size and scalar in result */
     void divideScalar(double *result, const double *v1, double scalar, long size);
 
-    /** Copy \a v2 into \a v1, double arrays of length \a size.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* copy v2 into v1, double arrays of length size */
     void copyRightIntoLeft(double *result, const double *v1, long size);
 
-    /** Normalize the double array \a v1 of length \a size.
-    @param[in]   *v1      Array of double.
-    @param[out]  *v1      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* normalize the double array v1 of length size. */
     void normalize(double *v1, long size);
 
-    /** Compute the orthogonal part of \a v1 to \a v2, of length \a size and store in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   *v2      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* the orthogonal part of v1 to v2, of length size and store in result */
     void makeOrthogonal(double *result, const double *v1, const double *v2, long size);
 
-    /** Compute the projection of \a v1 on \a v2, of length \a size and store in \a result.
-    @param[out]  *result  Array of double.
-    @param[in]   *v1      Array of double.
-    @param[in]   *v2      Array of double.
-    @param[in]   size     Number of elements in one of the arrays.*/
+    /* the projection of v1 on v2, of length size and store in result */
     void makeProjection(double *result, const double *v1, const double *v2, long size);
 }
 #endif

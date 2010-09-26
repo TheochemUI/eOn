@@ -81,7 +81,7 @@ endif
 
 OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
 	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
-	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
+	debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
