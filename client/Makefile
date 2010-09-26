@@ -1,6 +1,12 @@
 #C compiler settings
 CXXFLAGS += -O2 -Wall
 
+ifdef COMPRESSION
+	CXXFLAGS += -DCOMPRESSION
+	LDFLAGS += -larchive
+	OBJECTS += Compression.o
+endif
+
 #Fortran compiler settings
 ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
@@ -73,7 +79,7 @@ else
 	LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
 endif
 
-OBJECTS := ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
+OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
 	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
 	Constants.o debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o
