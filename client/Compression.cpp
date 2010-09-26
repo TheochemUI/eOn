@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
+#include <dirent.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include <archive.h>
@@ -11,23 +13,10 @@
 //block size of 512 bytes.
 #define BUFFER_SIZE  10240
 
-/*
-int main(int argc, char *argv[])
-{
-    int r;
-    if ((r = extract_archive("input.dat")) != 0) {
-        printf("error opening archive: %i\n", r);
-    }
-    const char *filenames[] = {"compression.c", "compression.h"};
-    if ((r = create_archive("output.dat", filenames)) != 0) {
-        printf("error opening archive: %i\n", r);
-    }
-}
-*/
-
 // This function will create a gzipped tar file (outname)
-// which contains the files in **filename
-int create_archive(const char *outname, const char **filename)
+// which contains the files matched by the function pattern_match.
+// Pattern_match should return 0 on no match and 1 on match.
+int create_archive(char *outname, char *path, int (*pattern_match)(char *))
 {
     struct archive *a;
     struct archive_entry *entry;
@@ -35,30 +24,44 @@ int create_archive(const char *outname, const char **filename)
     char buff[BUFFER_SIZE];
     int len;
     int fd;
+    DIR *dp;
+    struct dirent *ep;
 
     a = archive_write_new();
     archive_write_set_compression_gzip(a);
     archive_write_set_format_pax_restricted(a);
     archive_write_open_filename(a, outname);
 
-    while (*filename) {
-        stat(*filename, &st);
-        entry = archive_entry_new();
-        archive_entry_set_pathname(entry, *filename);
-        archive_entry_set_size(entry, st.st_size);
-        archive_entry_set_filetype(entry, AE_IFREG);
-        archive_entry_set_perm(entry, 0644);
-        archive_write_header(a, entry);
-        fd = open(*filename, O_RDONLY);
-        len = read(fd, buff, sizeof(buff));
-        while (len > 0) {
-            archive_write_data(a, buff, len);
+    dp = opendir(path);
+    if (dp != NULL) {
+        while (ep = readdir(dp)) {
+            if (ep->d_type != DT_REG) {
+                continue;
+            }
+            if (pattern_match(ep->d_name)==0) {
+                continue;
+            }
+            stat(ep->d_name, &st);
+            entry = archive_entry_new();
+            archive_entry_set_pathname(entry, ep->d_name);
+            archive_entry_set_size(entry, st.st_size);
+            archive_entry_set_filetype(entry, AE_IFREG);
+            archive_entry_set_perm(entry, 0644);
+            archive_write_header(a, entry);
+            fd = open(ep->d_name, O_RDONLY);
             len = read(fd, buff, sizeof(buff));
+            while (len > 0) {
+                archive_write_data(a, buff, len);
+                len = read(fd, buff, sizeof(buff));
+            }
+            close(fd);
+            archive_entry_free(entry);
         }
-        close(fd);
-        archive_entry_free(entry);
-        filename++;
+        closedir(dp);
+    }else{
+        printf("error opening directory\n");
     }
+
     archive_write_close(a);
     archive_write_finish(a);
 
@@ -78,14 +81,14 @@ int extract_archive(char *filename)
     archive_read_support_compression_all(a);
     archive_read_support_format_all(a);
 
-    r = archive_read_open_filename(a, filename, BUFFER_SIZE);
+    r = archive_read_open_filename(a, filename, 10240);
 
     if (r != ARCHIVE_OK) {
         return 1;
     }
 
     for (;;) {
-        if (r = archive_read_next_header(a, &entry)) {
+        if ((r = archive_read_next_header(a, &entry))) {
             if (r != ARCHIVE_OK) {
                 if (r == ARCHIVE_EOF) {
                     return 0;
