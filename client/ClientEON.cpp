@@ -1,17 +1,37 @@
 /*
  *===============================================
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON Client
  *===============================================
  */
 
+#ifdef BOINC
+    #include <boinc/boinc_api.h>
+    #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
+    #include <boinc/filesys.h>         // boinc_fopen(), etc...
+#else
+    #include "false_boinc.h"
+#endif
+
+// includes for boinc
+#ifdef WIN32
+    #include <boinc_win.h>
+    #include <win_util.h>
+#endif
+
+#include "Constants.h"
+#include "Parameters.h"
+//#include "Matter.h"
+#include "ConjugateGradients.h"
+#include "QMBox.h"
+//#include "Prefactors.h"
+#include "SaddlePoint.h"
+#include "LowestEigenmodeInterface.h"
+#include "HelperFunctions.h"
+
 #include "ClientEON.h"
 
-using namespace constants;
-using namespace client_eon;
+//using namespace constants;
+//using namespace client_eon;
 
 #ifdef COMPRESSION
 #include "Compression.h"
@@ -20,9 +40,9 @@ using namespace client_eon;
 int main(int argc, char **argv) 
 {
 	// BOINC is started
-	rc = boinc_init();
-	if(rc){
-		exit(rc);
+	client_eon::rc = boinc_init();
+	if(client_eon::rc){
+		exit(client_eon::rc);
 	}
 
     #ifdef COMPRESSION
@@ -41,54 +61,52 @@ int main(int argc, char **argv)
 	char parameters_passed[STRING_SIZE], reactant_passed[STRING_SIZE], 
 	     displacement_passed[STRING_SIZE], mode_passed[STRING_SIZE];
     if (argc > 1 ) {
-		if (*argv[1] == '-'){    
-			if (strcmp(argv[1], "-test") == 0 || strcmp(argv[1], "--test") == 0) {				
-				forcesOfConfig();
-			}
-			else{
-				printRequestedInfo(argv[1]);   //// NEEDS TO BE UPDATED
-			}
-			// To prevent segmentation fault
-			boinc_finish(0);
-			return 0;
-
+        if (*argv[1] == '-'){
+            if (strcmp(argv[1], "-test") == 0 || strcmp(argv[1], "--test") == 0) {
+                client_eon::forcesOfConfig();
+            }
+            else{
+                client_eon::printRequestedInfo(argv[1]);   //// NEEDS TO BE UPDATED
+            }
+            // prevent segmentation fault
+            boinc_finish(0);
+            return 0;
         }
         else { 
-			// Uses data passed from user
-			strncpy(parameters_passed, argv[1], sizeof(parameters_passed));
-			strncpy(reactant_passed, argv[2], sizeof(reactant_passed));
-			strncpy(displacement_passed, argv[3], sizeof(displacement_passed));
-			strncpy(mode_passed, argv[4], sizeof(mode_passed));
-		}//
-		
+            // use data passed from user
+            strncpy(parameters_passed, argv[1], sizeof(parameters_passed));
+            strncpy(reactant_passed, argv[2], sizeof(reactant_passed));
+            strncpy(displacement_passed, argv[3], sizeof(displacement_passed));
+            strncpy(mode_passed, argv[4], sizeof(mode_passed));
+        }
     }
     else {
-		// Uses data from Constant file
-        strncpy(parameters_passed, PARMS_PASSED_FILE_NAME.c_str(), sizeof(parameters_passed));
-        strncpy(reactant_passed, REAC_PASSED_FILE_NAME.c_str(), sizeof(reactant_passed));
-        strncpy(displacement_passed, DISPLACEMENT_PASSED_FILE_NAME.c_str(), sizeof(displacement_passed));
-        strncpy(mode_passed, MODE_PASSED_FILE_NAME.c_str(), sizeof(mode_passed));
-    };
-    
-    // Loads runtime parameters and relaxes the initial configuration.
-    loadDataAndRelax(parameters_passed, reactant_passed);
-    
-    // If we are not only minimizing, perform saddle searches.
-    if(!parameters.getMinimizeOnly())
+        // use data from constants file
+        strncpy(parameters_passed, constants::PARMS_PASSED_FILE_NAME.c_str(), sizeof(parameters_passed));
+        strncpy(reactant_passed, constants::REAC_PASSED_FILE_NAME.c_str(), sizeof(reactant_passed));
+        strncpy(displacement_passed, constants::DISPLACEMENT_PASSED_FILE_NAME.c_str(), sizeof(displacement_passed));
+        strncpy(mode_passed, constants::MODE_PASSED_FILE_NAME.c_str(), sizeof(mode_passed));
+    }
+ 
+    // loads runtime parameters and relaxes the initial configuration
+    client_eon::loadDataAndRelax(parameters_passed, reactant_passed);
+ 
+    // if we are not only minimizing, perform saddle searches
+    if(!client_eon::parameters.getMinimizeOnly())
     {
-        // If the server performed the displacement, load it and perform the saddle search.
-        if (parameters.getRefineSP()) 
+        // if the server performed the displacement, load it and perform the saddle search
+        if (client_eon::parameters.getRefineSP()) 
         {
-            int bundleSize = divineBundleSize(mode_passed);
+            int bundleSize = client_eon::divineBundleSize(mode_passed);
             double ndone = 0.0;
-            // While we can read in the displacement and mode files, perform a saddle search on them.
-            while (loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
+            // while we can read in the displacement and mode files, perform saddle searches on them
+            while (client_eon::loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
             {
-                try{doSaddleSearch();}
+                try{client_eon::doSaddleSearch();}
                 catch(int except){}
-                parameters.resetForceCalls();
-                parameters.resetForceCallsSaddlePoint();
-                parameters.resetForceCallsPrefactors();
+                client_eon::parameters.resetForceCalls();
+                client_eon::parameters.resetForceCallsSaddlePoint();
+                client_eon::parameters.resetForceCallsPrefactors();
                 
                 ndone += 1.0;
                 boinc_fraction_done(ndone/bundleSize);
@@ -97,12 +115,12 @@ int main(int argc, char **argv)
         // Otherwise, displace and search ourselves.
         else
         {
-            doSaddleSearch();
+            client_eon::doSaddleSearch();
         }
     }
     else
     {
-        saveData();
+        client_eon::saveData();
     }
     // BOINC applications must exit via boinc_finish(rc), not merely exit */
 	// To prevent segmentation fault
@@ -142,26 +160,26 @@ void client_eon::doSaddleSearch(void)
         fprintf(stdout, "\nNew search started.\n");
 
         initializeNewSearch();
-        // state is equal to getStateInit() if a saddle point is determined
-        state = saddlePoint.locate(min1, min2);
+        // status is equal to getStateInit() if a saddle point is determined
+        status = saddlePoint.locate(min1, min2);
         
         // Barrier determination part
-        if(state == getStateInit() && connectedToReactantState())
+        if(status == statusInit && connectedToReactantState())
         {
             determineBarriers();
             barriersOK = barriersWithinWindow();
         }
         if(!parameters.getPrefactorsTag() && barriersOK)
-            state = getStateGood();
+            status = statusGood;
 
         // Prefactor determination part
-        if(state==getStateInit() && parameters.getPrefactorsTag())
+        if(status == statusInit && parameters.getPrefactorsTag())
         {
             prefactors.compute(prefactorsValues);
             prefactorsOK = prefactorsWithinWindow();
         }
         if(parameters.getPrefactorsTag() && prefactorsOK)
-            state = getStateGood();
+            status = statusGood;
 
         currentTry++;
 
@@ -170,11 +188,11 @@ void client_eon::doSaddleSearch(void)
             continue;
         }
             
-        if ( (state == getStateGood()) ||
-             // getStateSaddleSearchNoConvexRegion() should be treated special 
+        if ( (status == statusGood) ||
+             // getStateSaddleSearchNoConvexRegion() [GH: now statusBadNoConvex] should be treated special 
              // as the saddle point search does not starts since the initial 
              // displacement is too small
-             (state == getStateSaddleSearchNoConvexRegion()) ) {
+             (status == statusBadNoConvex) ) {
             continueDimerSearch = false;
         }
 
@@ -182,7 +200,7 @@ void client_eon::doSaddleSearch(void)
             printf("Did maximum number (%i) of saddle searches.", currentTry);
             continueDimerSearch = false;
         }
-        printEndState(state);
+        printEndState(status);
 
     } while (continueDimerSearch);
     // ------ end simulation ------ 
@@ -211,37 +229,30 @@ static FILE * openFile(char const name[], char const readWriteAppend[])
 
 static void closeFile(FILE * file, char const name[])
 {
-        if (ferror(file)) {
-                fprintf(stderr, "Error while reading %s\n", name);
-                boinc_finish(rc);
-        };
-        fclose(file);
+    if (ferror(file)) {
+        fprintf(stderr, "Error while reading %s\n", name);
+        boinc_finish(client_eon::rc);
+    };
+    fclose(file);
 }
 
 void client_eon::loadDataAndRelax(char const parameters_passed[], char const reactant_passed[])
 {
-	FILE *fileParameters, *fileReactant;
-    fileParameters = openFile(parameters_passed, READ.c_str());
+    FILE *fileParameters, *fileReactant;
+    fileParameters = openFile(parameters_passed, constants::READ.c_str());
     parameters.load(fileParameters);
     closeFile(fileParameters, parameters_passed);
-    
+ 
     // Initialize random generator
-    //XXX: If the user sepcifies a negative random seed, the 
-    //RNG is seeded by the time instead of the user's seed
-    if(parameters.getRandomSeed() < 0) 
+    if(parameters.getRandomSeed() < 0)
     {
         unsigned i = time(NULL);
         parameters.setRandomSeed(i);
-        srand(i);
-        // AP: the first number returned by rand tend to be alike
-        // after three iterations it hopefully has diverged
-        rand();
-        rand();
-        rand();
+        helper_functions::random(i);
     }
     else
     {
-        srand(parameters.getRandomSeed());
+        helper_functions::random(parameters.getRandomSeed());
     }
     printf("Random seed is: %ld\n", parameters.getRandomSeed());
 
@@ -252,7 +263,7 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     min1 = new Matter(&parameters);
     min2 = new Matter(&parameters);
 
-    fileReactant = openFile(reactant_passed, READ.c_str());
+    fileReactant = openFile(reactant_passed, constants::READ.c_str());
     int ok = initial->con2matter(fileReactant);
     if (not ok) 
     {
@@ -260,7 +271,7 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
         std::exit(1);
     };
     closeFile(fileReactant, reactant_passed);
-    
+ 
     // Relax the passed configuration.
     // RT: if we are only minimizing AND are minimizing the box, use QMBox
     if (parameters.getMinimizeOnly() && parameters.getMinimizeBox())
@@ -270,27 +281,25 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
     }
     // RT: Otherwise, minimize as usual.
     else
-    {    
+    {
         ConjugateGradients cgInitial(initial, &parameters);
         cgInitial.fullRelax();
     }
-
     return;
 }
 
 int client_eon::divineBundleSize(char const mode_passed[])
 {
-    // XXX: As its name suggests, this method finds the bundle size
-    // using shaky methods.
+    // As its name suggests, this method finds the bundle size using shaky methods.
     FILE * file;
     int count = 0;
     int nlines;
 
-    file = openFile(mode_passed, READ.c_str());
+    file = openFile(mode_passed, constants::READ.c_str());
     nlines = parameters.linesInFile(file);
-    
+ 
     char line[STRING_SIZE];
-     
+ 
     int i;
     for(i=0; i<nlines; i++)
     {
@@ -303,7 +312,6 @@ int client_eon::divineBundleSize(char const mode_passed[])
             count++;
         }
     }
-
     closeFile(file, mode_passed);
     return count;
 } 
@@ -315,11 +323,11 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     static int displacementPosition=0;
     static int count=0;
     static int displacementFileLength=0;
-	//Dangerous to reuse the same pointer name for different files!
+    //Dangerous to reuse the same pointer name for different files!
     FILE * file;
 
     //read in displacement con file
-    file=openFile(displacement_passed, READ.c_str());
+    file=openFile(displacement_passed, constants::READ.c_str());
     if (count == 0) {
         fseek(file, 0, SEEK_END);
         displacementFileLength = ftell(file);
@@ -332,7 +340,7 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     }
     saddle->con2matter(file);
     //read in displacement con file
-    file=openFile(displacement_passed, READ.c_str());
+    file=openFile(displacement_passed, constants::READ.c_str());
     if (count == 0) {
         fseek(file, 0, SEEK_END);
         displacementFileLength = ftell(file);
@@ -348,11 +356,11 @@ bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char 
     closeFile(file, displacement_passed);
 
     //read in mode file
-    file=openFile(mode_passed, READ.c_str());
+    file=openFile(mode_passed, constants::READ.c_str());
     fseek(file, modePosition, SEEK_SET);
-    
-    saddlePoint.loadMode(file);   /// new.
-    
+ 
+    saddlePoint.loadMode(file);
+
     modePosition = ftell(file);
     closeFile(file, mode_passed);
 
@@ -403,11 +411,11 @@ bool client_eon::connectedToReactantState(){
         result = false;
         if((!min1->isItConverged(parameters.getConverged_Relax())) && (!min2->isItConverged(parameters.getConverged_Relax())))
         {
-            state = getStateMinimumNotConverged();
+            status = statusBadMinima;
         }
         else
         {
-            state = getStateNotConnected();
+            status = statusBadNotConnected;
         }
     }
     return result;
@@ -429,7 +437,7 @@ bool client_eon::barriersWithinWindow()
     if((parameters.getMaxEnergy_SP() < barriersValues[0]) || (parameters.getMaxEnergy_SP() < barriersValues[1]))
     {
         result = false;
-        state = getStateBadBarrier();
+        status = statusBadHighBarrier;
     }
     return result;
 }
@@ -437,16 +445,16 @@ bool client_eon::barriersWithinWindow()
 
 bool client_eon::prefactorsWithinWindow(){
     bool result = true;
-    
-    if((getPrefactorMax()<prefactorsValues[0]) || 
-       (prefactorsValues[0]<getPrefactorMin())){
+
+    if((prefactorsValues[0]>parameters.getPrefactorMax()) ||
+       (prefactorsValues[0]<parameters.getPrefactorMin())){
         result = false;
-        state = getStateBadPrefactor();
+        status = statusBadPrefactor;
     }
-    if((getPrefactorMax()<prefactorsValues[1]) || 
-       (prefactorsValues[1]<getPrefactorMin())){
+    if((prefactorsValues[1]>parameters.getPrefactorMax()) ||
+       (prefactorsValues[1]<parameters.getPrefactorMin())){
         result = false;
-        state = getStateBadPrefactor();
+        status = statusBadPrefactor;
     }
     return result;
 }
@@ -475,14 +483,14 @@ void client_eon::saveData(){
     parameters.addForceCalls(parameters.getForceCallsSaddlePoint()+
                              parameters.getForceCallsPrefactors());
     
-    parameters.setTerminationReason(state);
+    parameters.setTerminationReason(status);
     parameters.setDisplacementSaddleDistance(displacement->per_atom_norm(*saddle));
 
-	fileResults = openFile(RESULTS_FILE_NAME.c_str(), APPEND.c_str());
+	fileResults = openFile(constants::RESULTS_FILE_NAME.c_str(), constants::APPEND.c_str());
     parameters.saveOutput(fileResults);
-	closeFile(fileResults, RESULTS_FILE_NAME.c_str());
+	closeFile(fileResults, constants::RESULTS_FILE_NAME.c_str());
 
-	fileReactant = openFile(REAC_FILE_NAME.c_str(), APPEND.c_str());
+	fileReactant = openFile(constants::REAC_FILE_NAME.c_str(), constants::APPEND.c_str());
     if(parameters.getMinimizeOnly())
     {
         initial->matter2con(fileReactant);
@@ -491,48 +499,48 @@ void client_eon::saveData(){
     {
         min1->matter2con(fileReactant);
         // Only save the saddle in the case that we did a saddle search.
-        fileMode = openFile(MODE_FILE_NAME.c_str(), APPEND.c_str());
+        fileMode = openFile(constants::MODE_FILE_NAME.c_str(), constants::APPEND.c_str());
         saddlePoint.saveMode(fileMode);
-        closeFile(fileMode, MODE_FILE_NAME.c_str());
+        closeFile(fileMode, constants::MODE_FILE_NAME.c_str());
     }
-	closeFile(fileReactant, REAC_FILE_NAME.c_str());  
+	closeFile(fileReactant, constants::REAC_FILE_NAME.c_str());
 
-	fileSaddle = openFile(SEND_SP_CONF_FILE_NAME.c_str(), APPEND.c_str());
+	fileSaddle = openFile(constants::SEND_SP_CONF_FILE_NAME.c_str(), constants::APPEND.c_str());
     saddle->matter2con(fileSaddle);
-	closeFile(fileSaddle, SEND_SP_CONF_FILE_NAME.c_str());               
+	closeFile(fileSaddle, constants::SEND_SP_CONF_FILE_NAME.c_str());               
 
-	fileProduct = openFile(SEND_PROD_FILE_NAME.c_str(), APPEND.c_str());
+	fileProduct = openFile(constants::SEND_PROD_FILE_NAME.c_str(), constants::APPEND.c_str());
 	min2->matter2con(fileProduct);
-    closeFile(fileProduct, SEND_PROD_FILE_NAME.c_str());
+    closeFile(fileProduct, constants::SEND_PROD_FILE_NAME.c_str());
 
     return;
 }
 
 
-void client_eon::printEndState(long state){
+void client_eon::printEndState(long status){
     fprintf(stdout, "Final state: ");
-    if(state == getStateGood())
+    if(status == statusGood)
         fprintf(stdout, "Succesful.\n");
 
-    else if(state == getStateSaddleSearchNoConvexRegion())
+    else if(status == statusBadNoConvex)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
    
-    else if(state == getStateSaddleSearchTerminatedBarrier())
+    else if(status == statusBadHighEnergy)
         fprintf(stdout, "Saddle search, barrier too high.\n");
         
-    else if(state == getStateSaddleSearchTerminatedConcaveIterations()) 
+    else if(status == statusBadMaxConcaveIterations) 
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
-    else if(state == getStateSaddleSearchTerminatedTotalIterations())
+    else if(status == statusBadMaxIterations)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
 
-    else if(state == getStateNotConnected())
+    else if(status == statusBadNotConnected)
         fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
 
-    else if(state == getStateBadPrefactor())
+    else if(status == statusBadPrefactor)
             fprintf(stdout, "Prefactors, not within window as defined in Constants\n");
 
-    else if(state == getStateBadBarrier())
+    else if(status == statusBadHighBarrier)
         fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
 
     else
@@ -544,7 +552,7 @@ void client_eon::printEndState(long state){
 // Just to print information to the user
 void client_eon::printRequestedInfo(char *argv) {
     if (strcmp(argv, "-version") == 0 || strcmp(argv, "--version") == 0) {
-        fprintf(stdout, "Version: %s\n",VERSION_INFO_EON2.c_str());
+        fprintf(stdout, "Version: %s\n",constants::VERSION_INFO_EON2.c_str());
     }
     else if (strcmp(argv, "-print_parameters") == 0 || 
              strcmp(argv, "--print_parameters") == 0) {
@@ -552,7 +560,7 @@ void client_eon::printRequestedInfo(char *argv) {
         fprintf(stdout, "Parameters used when executed.\n");
         fprintf(stdout, "If \"Bus error\" parameter file is not in directory (-make_parameters creates file).\n\n");
         FILE* fileParameters;
-        fileParameters = fopen(PARMS_PASSED_FILE_NAME.c_str(), "r");            
+        fileParameters = fopen(constants::PARMS_PASSED_FILE_NAME.c_str(), "r");
         parameters.load(fileParameters);
         parameters.printInput();
         fprintf(stdout, "-------------------\n\n");
@@ -562,29 +570,29 @@ void client_eon::printRequestedInfo(char *argv) {
         fprintf(stdout, "\n-------------------\n");
         fprintf(stdout, "Create needed parameter file.\n");
         FILE* fileParameters;
-        fileParameters = fopen(PARMS_PASSED_FILE_NAME.c_str(), "w");            
+        fileParameters = fopen(constants::PARMS_PASSED_FILE_NAME.c_str(), "w");
         parameters.saveInput(fileParameters);
         fprintf(stdout, "-------------------\n\n");
     }
     else if (strcmp(argv, "-files") == 0 || strcmp(argv, "--files") == 0) {
         fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "The following files have to exist in the same directory as this executable\n\n"); 
+        fprintf(stdout, "The following files have to exist in the same directory as this executable\n\n");
         fprintf(stdout, "Input reactant configuration:           %s\n",
-                REAC_PASSED_FILE_NAME.c_str());            
+                constants::REAC_PASSED_FILE_NAME.c_str());
         fprintf(stdout, "Input (-make_parameters creates file):  %s\n",
-                PARMS_PASSED_FILE_NAME.c_str());            
+                constants::PARMS_PASSED_FILE_NAME.c_str());
         fprintf(stdout, "Input displacement done by server:      %s\n",
-				DISPLACEMENT_PASSED_FILE_NAME.c_str());
-		fprintf(stdout, "Input initial mode:                     %s\n",
-				MODE_PASSED_FILE_NAME.c_str());
+		constants::DISPLACEMENT_PASSED_FILE_NAME.c_str());
+	fprintf(stdout, "Input initial mode:                     %s\n",
+		constants::MODE_PASSED_FILE_NAME.c_str());
         fprintf(stdout, "Output (can be empty):                  %s\n",
-                REAC_FILE_NAME.c_str());
+                constants::REAC_FILE_NAME.c_str());
         fprintf(stdout, "Output (can be empty):                  %s\n",
-                SEND_SP_CONF_FILE_NAME.c_str());
+                constants::SEND_SP_CONF_FILE_NAME.c_str());
         fprintf(stdout, "Output (can be empty):                  %s\n",
-                SEND_PROD_FILE_NAME.c_str()); 
+                constants::SEND_PROD_FILE_NAME.c_str()); 
         fprintf(stdout, "Output (can be empty):                  %s\n",
-                RESULTS_FILE_NAME.c_str());
+                constants::RESULTS_FILE_NAME.c_str());
         fprintf(stdout, "-------------------\n");
         fprintf(stdout, "Files created by BOINC.\n\n");
         fprintf(stdout, "stderr.txt\n");
@@ -607,20 +615,20 @@ void client_eon::printRequestedInfo(char *argv) {
         fprintf(stdout, "\n-------------------\n");
         fprintf(stdout, "Unknown command! (-help prints known commands)\n");
         fprintf(stdout, "-------------------\n\n");
-    }        
+    }
     return;
 }
 
-void client_eon::forcesOfConfig(){
-	
-	FILE *fileParameters, *fileReactant;
-	
-    fileParameters = fopen("parameters.test", "r");            
+void client_eon::forcesOfConfig()
+{
+    FILE *fileParameters, *fileReactant;
+
+    fileParameters = fopen("parameters.test", "r");
     parameters.load(fileParameters);
     fclose(fileParameters);
-    
+ 
     testConfig = new Matter(&parameters);
-    
+
     fileReactant = fopen("reactant.test", "r");
     //printf("test->con2matter(fileReactant);\n");
     int ok = testConfig->con2matter(fileReactant);   //load the reactant
@@ -633,18 +641,18 @@ void client_eon::forcesOfConfig(){
     //printf("Reactant loaded\n");
     ConjugateGradients cgInitial(testConfig, &parameters);
     //printf("Conjugate gradients initialized\n");
-    
+
     double potEnergy;
     potEnergy = testConfig->potentialEnergy();
     //printf("Potential energy %lf\n", potEnergy);
-    
-    long int numOfAtoms;    
+
+    long int numOfAtoms;
     numOfAtoms = testConfig->numberOfAtoms();
-    
+ 
     //printf("Number of atoms %li\n",numOfAtoms);
     double initialForces[3*numOfAtoms];    // three coordinates for each atom
     testConfig->getForces(initialForces);
-	FILE * file;
+    FILE * file;
     file = fopen("potentialInfo.txt","w");
     fprintf(file, "Information about potential energy and forces of a\ncurrent configuration in reactant_passed.con\n\n\n\n");
     fprintf(file, "Potential tag: %li\n\n\n", parameters.getPotentialTag());
@@ -652,10 +660,10 @@ void client_eon::forcesOfConfig(){
     fprintf(file, "Force coordinates:\n");
     fprintf(file, "Atom     %-13.13s%-13.13s%-13.13s\n", "x:","y:","z:");
     for (int i=0; i<numOfAtoms;){
-		fprintf(file, "%4i%13.6lf%13.6lf%13.6lf\n",i,initialForces[3*i],initialForces[3*i+1],initialForces[3*i+2]);
-		i++;
-		}
-		
+        fprintf(file, "%4i%13.6lf%13.6lf%13.6lf\n",i,initialForces[3*i],initialForces[3*i+1],initialForces[3*i+2]);
+        i++;
+    }
+
     fclose(file);
-	return;
-	}
+    return;
+}

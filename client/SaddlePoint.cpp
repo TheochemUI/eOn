@@ -1,35 +1,25 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/24/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
- *      Andri Arnaldsson
- *      Roar Olsen
+ * EON SaddlePoint.cpp
  *===============================================
 */
-#include <iostream>
+
 #include "SaddlePoint.h"
 #ifdef WITH_LANCZOS
     #include "Lanczos/lanczos_for_eon.hpp"
 #endif
-using namespace helper_functions;
-using namespace epi_centers;
-using namespace constants;
+#include "ConjugateGradients.h"
+#include "HelperFunctions.h"
+#include "Dimer.h"
+#include "EpiCenters.h"
 
-//namespace client_eon {
-//    // defined in ClientEON.h
-//    extern struct Vector {long size; double * vector;} eigenvector;
-//}
+#include <cstdlib>
+
+using namespace helper_functions;
+//using namespace EpiCenters;
+//using namespace constants;
 
 SaddlePoint::SaddlePoint(){
-
     lowestEigenmode_ = 0;
     eigenMode_ = 0;
     initialDisplacement_ = 0;
@@ -44,7 +34,6 @@ SaddlePoint::~SaddlePoint(){
 SaddlePoint::SaddlePoint(Matter * initial, Matter *saddle, Parameters *parameters){
     lowestEigenmode_ = 0;
     eigenMode_ = 0;
-
     initialize(initial, saddle, parameters);
     return;
 }
@@ -60,7 +49,6 @@ void SaddlePoint::clean(){
         delete eigenMode_;
         eigenMode_ = 0;
     }
-    
     return;
 }
 
@@ -70,12 +58,11 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     initial_=initial;
     saddle_ = saddle;
     parameters_ = parameters;
-    
-    if(parameters_->getLowestEigenmodeDetermination_SP() == getLowestEigenmodeDimer())
+    if(parameters_->getLowestEigenmodeDetermination_SP() == minmodeDimer)
     {
         lowestEigenmode_=new Dimer(saddle_, parameters_);
     }
-    else if(parameters_->getLowestEigenmodeDetermination_SP() == getLowestEigenmodeLanczos())
+    else if(parameters_->getLowestEigenmodeDetermination_SP() == minmodeLanczos)
     {
         #ifdef LANCZOS_FOR_EON_HPP
             lowestEigenmode_ = new Lanczos(saddle_, parameters_);
@@ -86,27 +73,23 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
     }
     nFreeCoord_ = 3 * saddle->numberOfFreeAtoms();
     eigenMode_ = new double [nFreeCoord_];
-    state_ = getStateInit();
+    status_ = statusInit;
 
     return;
 }
 
-// AP: fix how mode is passed to startNewSearchAndCompute
-void SaddlePoint::loadMode(FILE * modeFile)
-{    
-	long nall=0, nfree=0;
+void SaddlePoint::loadMode(FILE * modeFile){
+    long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
     mode = new double[nall];
     for (int i=0, j=0; i < nall; ++i) {
-            fscanf(modeFile, "%lf", &mode[j]);
-            //printf("%lf\n",mode[j]);
-            ++j;
-    };
+        fscanf(modeFile, "%lf", &mode[j]);
+        ++j;
+    }
 }
 
-
 void SaddlePoint::saveMode(FILE * modeFile)
-{	
+{
     long const nAtoms = saddle_->numberOfAtoms();
     fprintf(modeFile, "%ld %ld\n", nAtoms*3, nFreeCoord_);
     for (long i=0, j=0; i < nAtoms; ++i) {
@@ -116,59 +99,56 @@ void SaddlePoint::saveMode(FILE * modeFile)
         else {
             fprintf(modeFile, "%lf\t%lf \t%lf\n", eigenMode_[j], eigenMode_[j+1], eigenMode_[j+2]);
             j+=3;
-        };
-    };
-	return;
+        }
+    }
+    return;
 }
 
-
-
-
 long SaddlePoint::locate(Matter *min1, Matter *min2)
-{    
-    double initialEnergy;     
+{
+    double initialEnergy;
     eigenValue_ = 0;
     initialEnergy = saddle_->potentialEnergy();
-    
+
     fprintf(stdout, "  Saddle point search started.\n");
-    
+
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
     if (parameters_->getRefineSP()) {
-            lowestEigenmode_->startNewSearchAndCompute(saddle_, mode);
-            eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
+        lowestEigenmode_->startNewSearchAndCompute(saddle_, mode);
+        eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
     }
     else {
-          if(parameters_->getMaxJumpAttempts_SP() <= 0)
-          {
-              displaceInConcaveRegion();
-          }
-          else
-          {
-              jumpToConvexRegion();
-          }
-    };
+        if(parameters_->getMaxJumpAttempts_SP() <= 0)
+        {
+            displaceInConcaveRegion();
+        }
+        else
+        {
+            jumpToConvexRegion();
+        }
+    }
     fprintf(stdout, "  Saddle point displaced.\n");
 
-    if(state_ == getStateInit())
+    if(status_ == statusInit)
        searchForSaddlePoint(initialEnergy);
         
-    if(state_ == getStateInit()){
+    if(status_ == statusInit){
         fprintf(stdout, "    Saddle point determined.\n");        
         relaxFromSaddle(min1, min2);
         fprintf(stdout, "    Minima determined.\n");
     }
-    return(state_);
+    return(status_);
 }
 
 long SaddlePoint::getnFreeCoord() const
 {
-      return nFreeCoord_;
+    return nFreeCoord_;
 }
 
 double const *const SaddlePoint::getEigenMode() const
 {
-      return eigenMode_;
+    return eigenMode_;
 }
 
 void SaddlePoint::displaceState(Matter *matter)
@@ -191,25 +171,24 @@ void SaddlePoint::displaceState(Matter *matter)
         initialDisplacement_[3 * i + 2] = 0;
     }
     
-    if(parameters_->getTypePerturbation_SP() == getPerturbateNotFccOrHcp())
+    if(parameters_->getTypePerturbation_SP() == dispNotFccOrHcp)
     {
-        indexEpiCenter = cnaEpiCenter(matter);            
+        indexEpiCenter = EpiCenters::cnaEpiCenter(matter);            
     }
-    else if(parameters_->getTypePerturbation_SP() == getPerturbateLastAtom())
+    else if(parameters_->getTypePerturbation_SP() == dispLastAtom)
     {
-        indexEpiCenter = lastAtom(matter);
+        indexEpiCenter = EpiCenters::lastAtom(matter);
     }
-    else if(parameters_->getTypePerturbation_SP() == getPerturbateMinimalCoordinated())
+    else if(parameters_->getTypePerturbation_SP() == dispMinCoordinated)
     {
-        indexEpiCenter = minimalCoordinatedEpiCenter(matter);
+        indexEpiCenter = EpiCenters::minimalCoordinatedEpiCenter(matter);
     }
     else
     {
-        indexEpiCenter = randomFreeAtomEpiCenter(matter);
+        indexEpiCenter = EpiCenters::randomFreeAtomEpiCenter(matter);
     }
-
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
-        
+ 
     // To keep track of free coordinates when setting atoms that have moved
     // Create an array containing initialDisplacement_ of atoms 
     // in the vicinity of the epicenter atom
@@ -230,7 +209,7 @@ void SaddlePoint::displaceState(Matter *matter)
     }
     normalize(initialDisplacement_, 3 * nAtoms);
     multiplyScalar(initialDisplacement_, initialDisplacement_, parameters_->getNormPerturbation_SP(), 3 * nAtoms);
-    
+ 
     for(int i = 0; i < 3 * nAtoms; i++)
     {
         if(parameters_->getMaxSinglePerturbation_SP() < initialDisplacement_[i])
@@ -246,7 +225,7 @@ void SaddlePoint::displaceState(Matter *matter)
     matter->getFreePositions(pos);
     add(pos, pos, initialDisplacement_, 3*nAtoms);
     matter->setFreePositions(pos);
-    
+ 
     delete [] pos;
     //RT: commented following line.
     //delete [] displacement;
@@ -254,15 +233,15 @@ void SaddlePoint::displaceState(Matter *matter)
 }
 
 void SaddlePoint::correctingForces(double *force){
-    
+ 
     double *tempDoubleList;
-    
+ 
     tempDoubleList = new double[nFreeCoord_];
     //----- Initialize end -----
     //std::cout<<"correctingForces\n";
-    
+ 
     makeProjection(tempDoubleList, force, eigenMode_, nFreeCoord_);
-    
+ 
     if (0 < eigenValue_){
         if (parameters_->getPerpendicularForceRatio() > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
@@ -274,7 +253,7 @@ void SaddlePoint::correctingForces(double *force){
         else {
             // Follow eigenmode
             multiplyScalar(force, tempDoubleList, -1, nFreeCoord_);
-        };
+        }
     }
     else{
         // Reversing force parallel to eigenmode
@@ -288,16 +267,16 @@ void SaddlePoint::correctingForces(double *force){
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     double *posSaddle;
     double *displacedPos;
-    
+ 
     posSaddle = new double[nFreeCoord_];
     displacedPos = new double[nFreeCoord_];
-        
+ 
     saddle_->getFreePositions(posSaddle);
     //----- Initialize end -----
     //std::cout<<"relaxFromSaddle\n";
-    
+ 
     // Displace saddle point configuration along the lowest eigenmode and minimize
-    *min1 = *saddle_;    
+    *min1 = *saddle_;
     //XXX: the distance displced from the saddle should be a parameter
     multiplyScalar(displacedPos, eigenMode_, 0.2, nFreeCoord_);
     // NOTE using subtract
@@ -305,7 +284,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     min1->setFreePositions(displacedPos);
     ConjugateGradients cgMin1(min1, parameters_);
     cgMin1.fullRelax();
-    
+ 
     *min2 = *saddle_;
     multiplyScalar(displacedPos, eigenMode_, 0.2, nFreeCoord_);
     // NOTE using add
@@ -313,26 +292,25 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     min2->setFreePositions(displacedPos);
     ConjugateGradients cgMin2(min2, parameters_);  
     cgMin2.fullRelax();
-    
+ 
     delete [] posSaddle;
     delete [] displacedPos;
     return;
-};
-
+}
 
 void SaddlePoint::jumpToConvexRegion(){
     long forceCallsSaddle;
     long iterations = 0;
-    
+ 
     double *pos;
     pos = new double[nFreeCoord_];
-    
+ 
     saddle_->getFreePositions(pos);
     forceCallsSaddle = saddle_->getForceCalls();
     //----- Initialize end -----
     //std::cout<<"jumpToConvexRegion\n";
 
-    if(parameters_->getTypePerturbation_SP()!=getNoPerturbation()){
+    if(parameters_->getTypePerturbation_SP()!=dispNone){
         do{
             saddle_->setFreePositions(pos);
             displaceState(saddle_);
@@ -343,15 +321,14 @@ void SaddlePoint::jumpToConvexRegion(){
                (iterations < parameters_->getMaxJumpAttempts_SP()));
     }
     if(0 < eigenValue_)
-        state_ = getStateSaddleSearchNoConvexRegion();
+        status_ = statusBadNoConvex;
 
-    forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;        
+    forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;
     parameters_->addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
 
     delete [] pos;
     return;
 }
-
 
 void SaddlePoint::displaceInConcaveRegion()
 {
@@ -361,7 +338,6 @@ void SaddlePoint::displaceInConcaveRegion()
     return;
 }
 
-
 void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 {
     bool converged = false;
@@ -370,7 +346,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     long concaveSeries = 0;
     double maxStep;
     double energySaddle;
-    
+ 
     double *forcesStep;
     double *posStep;
     double *forces;
@@ -385,7 +361,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     //----- Initialize end -----
     //std::cout<<"searchForSaddlePoint\n";
     saddle_->getFreeForces(forces);
-    
+ 
     eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
     correctingForces(forces);
     ConjugateGradients cgSaddle(saddle_, parameters_, forces);
@@ -436,24 +412,22 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         energySaddle = saddle_->potentialEnergy();
     }while(!converged && 
            (iterations < parameters_->getMaximumIterations()) && 
-           (concaveSeries < getMaximumIterationsConcaveSeriesSP()) &&
+           (concaveSeries < parameters_->getMaxIterationsConcave()) &&
            (energySaddle-initialEnergy < parameters_->getMaxEnergy_SP()));
     if(!converged){
         if(parameters_->getMaximumIterations() <= iterations)
-            state_ = getStateSaddleSearchTerminatedTotalIterations();
-        if(getMaximumIterationsConcaveSeriesSP() <= concaveSeries)
-            state_ = getStateSaddleSearchTerminatedConcaveIterations();
+            status_ = statusBadMaxIterations;
+        if(parameters_->getMaxIterationsConcave() <= concaveSeries)
+            status_ = statusBadMaxConcaveIterations;
         if(parameters_->getMaxEnergy_SP() <= energySaddle-initialEnergy)
-            state_ = getStateSaddleSearchTerminatedBarrier();
+            status_ = statusBadHighBarrier;
     }
-
     delete [] forcesStep;
     delete [] posStep;
     delete [] forces;
     delete [] pos;
     return; 
 }
-
 
 LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
 {

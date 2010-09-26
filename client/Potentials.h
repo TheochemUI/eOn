@@ -11,42 +11,42 @@
  *
  *===============================================
  */
-#include "Constants.h"
+
 #include "Parameters.h"
 #include "PotentialsInterface.h"
-#include "potentials/NewPotential/NewPotential.h"
-//#include "VASP.h"
-#include "potentials/EDIP/EDIP.h"  
-#include "potentials/EMT/EffectiveMediumTheory.h"
-//#include "LJBinary.h"
-#include "potentials/Morse/Morse.h"
-#include "potentials/LennardJones/LJ.h"
-#include "potentials/SW/SW.h"           
-#include "potentials/Tersoff/Tersoff.h"         
-#include "potentials/Aluminum/Aluminum.h"
-#include "potentials/EAM/EAM.h"
-#include "potentials/Lenosky/Lenosky.h"
-#include "potentials/QSC/QSC.h"
-#include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
-#include <cstdlib>
 
+#define POT_USER 0
+#define POT_LJ 1
+#define POT_MORSE 2
+#define POT_EMT 3
+#define POT_EDIP 4
+#define POT_VASP 5
+#define POT_TERSOFF 6
+#define POT_SW 7
+#define POT_LENOSKY 8
+#define POT_LJBINARY 9
+#define POT_ALUMINUM 10
+#define POT_EAM 11
+#define POT_QSC 12
+#define POT_ZPICE 13
+#define POT_TIP4P 14
 
-/** Class serving as a wrapper between the force calculator and the Atoms object. It is decided here which potential is going to be used. Might seem redundant but it is nessesary in order to have a clean code in the Matter class*/
+/* Class serving as a wrapper between the force calculator and the Matter object */
 class Potentials{
 public:
     Potentials(Parameters *parameters); ///< Constructor
-    
+ 
     ~Potentials(); ///< Destructor
-    
-    /** A similar function should be provided by the force calculator.
-    @param[in]    nAtoms      The number of atoms.
-    @param[in]    *positions  Pointer to the array containing the atoms positions, should have size 3*N.
-    @param[in]    *atomicNrs  Pointer to the array containing the atomic numbers, should have size N.
-    @param[out]   *forces     Pointer to the array where the forces should be stored, should have size 3*N.
-    @param[out]   *energy     Pointer where the total energy should be stored.
-    @param[in]    *box        Pointer to the array containing the size of the supercell, Box[0] is length in the x directions, Box[1] is length in the y directions, Box[2] is length in the z directions.*/
+ 
+    /* this function must be provided by each force calculator
+    @param[in]    nAtoms      the number of atoms
+    @param[in]    *positions  pointer to the array of 3N atoms positions
+    @param[in]    *atomicNrs  pointer to the array of N atomic numbers
+    @param[out]   *forces     pointer to the array of 3N forces
+    @param[out]   *energy     pointer to the total energy
+    @param[in]    *box        pointer to the array containing the 3 lengths of the supercell */
     void force(long nAtoms, const double *positions, const long *atomicNrs, double *forces, double *energy, const double *box);
-    
+ 
 private:
     PotentialsInterface *interface_;
     Parameters *parameters_;

@@ -15,9 +15,14 @@
  *===============================================
  */
 #include "ConjugateGradients.h"
+#include "HelperFunctions.h"
+#include "Constants.h"
+
+#include <cassert>
+#include <cmath>
 
 using namespace helper_functions;
-using namespace constants;
+//using namespace constants;
 
 
 ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters){
@@ -30,27 +35,27 @@ ConjugateGradients::ConjugateGradients(Matter *matter,
                                        Parameters *parameters, 
                                        double *forces){
     initialize(matter, parameters);
-    
+ 
     for(int i=0; i<nFreeCoord_; i++)
-        force_[i] = forces[i];    
+        force_[i] = forces[i];
 };
 
 
 void ConjugateGradients::initialize(Matter *matter, Parameters *parameters)
 {
     // Note that it is the pointer that is copied.
-    matter_ = matter;    
+    matter_ = matter;
     parameters_ = parameters;
-    
+ 
     nFreeCoord_ = 3 * matter->numberOfFreeAtoms();
-    
+
     direction_ = new double[nFreeCoord_];
     directionOld_ = new double[nFreeCoord_];
     directionNorm_ = new double[nFreeCoord_];
 
     force_ = new double[nFreeCoord_];
     forceOld_ = new double[nFreeCoord_];
-    
+ 
     // There should be space for both free and frozen atoms
     tempListDouble_ = new double[3*matter->numberOfAtoms()];
 
@@ -66,7 +71,7 @@ ConjugateGradients::~ConjugateGradients(){
     // matter_ should not be deleted
     // parameters_ should not be deleted
     // Are pointers to objects outside the scope
-    
+ 
     delete [] tempListDouble_;
     delete [] direction_;
     delete [] directionOld_;
@@ -89,29 +94,29 @@ void ConjugateGradients::oneStep(){
     //----- Initialize end -----
     //std::cout<<"oneStep\n";
 
-    forceCallsTemp = matter_->getForceCalls();    
+    forceCallsTemp = matter_->getForceCalls();
     matter_->getFreeForces(force_);
     assert(length(force_, nFreeCoord_) != 0.0);
-    matter_->getFreePositions(pos);  
+    matter_->getFreePositions(pos);
     determineSearchDirection();
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_, directionNorm_, 
-                   getCurvatureStep(), nFreeCoord_);
-    
+                   parameters_->getCgCurvatureStep(), nFreeCoord_);
+ 
     add(posStep, tempListDouble_, pos, nFreeCoord_);
     matter_->setFreePositions(posStep);
     matter_->getFreeForces(forceAfterStep);
-    
+ 
     // Move system optimal step
-    step = stepSize(force_, forceAfterStep, getMaxMoveFullRelax());
+    step = stepSize(force_, forceAfterStep, parameters_->getCgMaxMoveFullRelax());
     multiplyScalar(tempListDouble_, directionNorm_, step, nFreeCoord_);
-    add(pos, tempListDouble_, pos, nFreeCoord_);    
+    add(pos, tempListDouble_, pos, nFreeCoord_);
     matter_->setFreePositions(pos);
 
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
     parameters_->addForceCalls(forceCallsTemp);
-    
+
     delete [] pos;
     delete [] posStep;
     delete [] forceAfterStep;
@@ -142,7 +147,7 @@ void ConjugateGradients::fullRelax(){
 
 bool ConjugateGradients::isItConverged(double convergeCriterion){
     double diff=0;
-    
+ 
     for(int i=0;i<nFreeCoord_;i++)
     {
         diff = fabs(force_[i]);//-forceOld_[i]);
@@ -170,17 +175,17 @@ void ConjugateGradients::determineSearchDirection(){
     if(a<0.5*b){
         subtract(tempListDouble_, force_, forceOld_, nFreeCoord_);
         //Polak-Ribiere way to determine how much to mix in of old direction
-        gamma = dot(force_, tempListDouble_, nFreeCoord_)/b;  
+        gamma = dot(force_, tempListDouble_, nFreeCoord_)/b;
     }
     else
         gamma = 0;
-    
+
     multiplyScalar(tempListDouble_, directionOld_, gamma, nFreeCoord_);
     add(direction_, force_, tempListDouble_, nFreeCoord_);
     assert(length(direction_, nFreeCoord_) != 0.0);
     copyRightIntoLeft(directionNorm_, direction_, nFreeCoord_);
     normalize(directionNorm_, nFreeCoord_);
-    
+
     copyRightIntoLeft(directionOld_, direction_, nFreeCoord_);
     copyRightIntoLeft(forceOld_, force_, nFreeCoord_);
     return;
@@ -199,7 +204,7 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
     // Determine curvature
     projectedForce1 = dot(forceBeforeStep,directionNorm_,nFreeCoord_);
     projectedForce2 = dot(forceAfterStep,directionNorm_,nFreeCoord_);
-    curvature = (projectedForce1-projectedForce2)/getCurvatureStep();
+    curvature = (projectedForce1-projectedForce2)/parameters_->getCgCurvatureStep();
     
     if(curvature < 0)
         step = maxStep;
@@ -217,14 +222,14 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
 
 void ConjugateGradients::makeInfinitesimalStepModifiedForces(double *posStep, 
                                                              double *pos){
-    
+ 
     determineSearchDirection();
-    
+
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_,
                    directionNorm_,
-                   getCurvatureStep(),
+                   parameters_->getCgCurvatureStep(),
                    nFreeCoord_);
     add(posStep, tempListDouble_, pos, nFreeCoord_);
     return;
@@ -238,14 +243,14 @@ void ConjugateGradients::getNewPosModifiedForces(double *pos,
     double step;
 
     step = stepSize(forceBeforeStep, forceAfterStep, maxStep);
-    
+
     // Move system
     multiplyScalar(tempListDouble_, directionNorm_, step, nFreeCoord_);
     add(pos, tempListDouble_, pos, nFreeCoord_);
     return;
 };
 
-    
+
 void ConjugateGradients::setFreeAtomForcesModifiedForces(double *forces){
     for(int i=0; i<nFreeCoord_; i++)
         force_[i] = forces[i];
