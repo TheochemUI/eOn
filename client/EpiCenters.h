@@ -17,7 +17,7 @@
 #include "Matter.h"
 
 // radius used in the local atomic structure analysis: MOVE to paramters!
-#define neighborCutoff  0.33
+#define neighborCutoff  3.3
 
 namespace EpiCenters {
     long cnaEpiCenter(const Matter *matter); // index of a random atom being both free and neither FCC nor HCP coordinated
