@@ -93,20 +93,13 @@ class TransitionCounting(SuperbasinScheme):
         
         if start_state == end_state:
             return
-        if start_state not in self.count:
-            self.count[start_state] = {}
-            table_path = os.path.join(start_state.path)
-            if os.path.isfile(table_path):
-                f = open(table_path, 'r')
-                for i in f:
-                    i = i.strip().split()
-                    self.count[start_state][self.states.get_state(int(i[0]))] = i[1]
-                f.close()
-        if end_state not in self.count[start_state]:
-            self.count[start_state][end_state] = 0
-        self.count[start_state][end_state] += 1
         
-        if self.count[start_state][end_state] >= self.num_transitions:
+        start_count = self.get_count(start_state)
+        if end_state not in start_count:
+            start_count[end_state] = 0
+        start_count[end_state] += 1
+        
+        if start_count[end_state] >= self.num_transitions:
             logger.debug( "Making basin....")
             self.make_basin([start_state, end_state])
 
@@ -123,19 +116,23 @@ class TransitionCounting(SuperbasinScheme):
 
     def read_data(self):
         self.count = {}
-        logger.debug('reading')
-        for i in range(self.states.get_num_states()):
-            #TODO: Should each scheme have a unique file?
-            state = self.states.get_state(i)
+
+    def get_count(self, state):
+        try:
+            return self.count[state]
+        except:
             data_path = os.path.join(state.path, 'superbasin_tc')
+            self.count[state] = {}
             if os.path.isfile(data_path):
                 f = open(data_path, 'r')
-                self.count[state] = {}
                 for i in f:
                     i = i.strip().split()
                     self.count[state][self.states.get_state(int(i[0]))] = int(i[1]) 
                 f.close()
-
+            return self.count[state]
+            
+        
+   
 
 class EnergyLevel(SuperbasinScheme):
 
