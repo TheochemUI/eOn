@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include <cassert>
+#include <cstdlib>
 
 #include "Constants.h"
 #include "Eigenvalues.h"
