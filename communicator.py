@@ -10,7 +10,10 @@ import subprocess
 import commands
 import tarfile
 import StringIO
+import glob
+import re
 
+#XXX: Communicator should not depend on any other part of eOn
 import io
 
 class NotImplementedError(Exception):
@@ -28,60 +31,12 @@ class Communicator:
         self.bundle_size = bundle_size
         self.compress = compress
 
-    def _is_gzip(self, filename):
-        f = open(filename)
-        header = f.read(3)
-        f.close()
-        header = struct.unpack_from("BBB", header)
-
-        if header[0] == 0x1f and header[1] == 0x8b and header[2] == 0x8:
-            return True
-        return False
-
-    def _copy(self, spath, dpath):
-        if self.compress and not self._is_gzip(spath):
-            sfile = open(spath, 'rb')
-            sdata = sfile.read()
-            sfile.close()
-            dfile = gzip.open(dpath, 'wb', 1)
-            dfile.write(sdata)
-            dfile.close()
-        else:
-            shutil.copy(spath, dpath)
-
-    def _open(self, filename, mode='r'):
-        read = False
-        write = False
-        if 'r' in mode:
-            read = True
-        elif 'w' in mode or 'a' in mode:
-            write = True
-
-        if 'r' in mode and 'w' in mode:
-            raise CommunicatorError()
-
-        if write:
-            if self.compress:
-                usegzip = True
-            else: 
-                usegzip = False
-        elif read:
-            if self._is_gzip(filename):
-                usegzip = True
-            else:
-                usegzip = False
-
-        if usegzip:
-            return gzip.open(filename, mode)
-        return open(filename, mode)
-
-
-    def submit_searches(self, searches, reactant_path, parameters_path):
+    def submit_jobs(self, data, invariants):
         '''Throws CommunicatorError if fails.'''
         raise NotImplementedError()
 
-    def get_results(self, resultspath):
-        '''Returns a list of directories containing the results.'''
+    def get_results(self, results):
+        '''Returns a list of dictionaries containing the results.'''
         raise NotImplementedError()
 
     def get_queue_size(self):
@@ -92,20 +47,15 @@ class Communicator:
         '''Returns the number of workunits that were canceled.'''
         raise NotImplementedError()
 
-    def get_bundle_size(self, result_dat_path):
-        try:
-            f = self._open(result_dat_path)
-        except:
-            logger.exception("results.dat missing. Should be at %s", result_dat_path)
-            return 0
-        bundle_size = 0
-        for line in f:
-            fields = line.split()
-            if fields[1] == "termination_reason":
-                bundle_size += 1
-        if bundle_size == 0:
-            logger.warning("termination_reason missing for result file %s", result_dat_path)
-        return bundle_size
+    def get_bundle_size(self, job_path):
+        biggest = 0
+        for filename in glob.glob(os.path.join(job_path, "*_*.*")):
+            try:
+                num = int(filename.rsplit("_",1)[1].split(".",1)[0])
+                biggest = max(biggest, num)
+            except:
+                pass
+        return biggest + 1
 
     def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple searches into multiple single 
@@ -115,91 +65,74 @@ class Communicator:
 
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
-
+        
+        regex = re.compile("([\w]+)_([\d]+)(\.[\w]+)")
         for jobpath in jobpaths:
-            results = []
             basename, dirname = os.path.split(jobpath)
             if not keep_result(dirname):
                 continue
             # Need to figure out how many searches were bundled together
             # and then create the new job directories with the split files.
-            bundle_size = self.get_bundle_size(os.path.join(jobpath, "results.dat"))
+            bundle_size = self.get_bundle_size(jobpath)
             # Get the number at the end of the jobpath. Looks like path/to/job/#_#
             # and we want the second #.
             basename, dirname = os.path.split(jobpath)
-            state, uid = dirname.split('_')
-            state = int(state)
-            uid = int(uid)
-
-            try:
-                #These files are read in as strings for performance reasons
-                reactant_file = self._open(os.path.join(jobpath, 'reactant.con'), 'r')
-                reactant_lines = reactant_file.readlines()
-                reactant_file.close()
-                reactant_span = len(reactant_lines)/bundle_size
-                product_file = self._open(os.path.join(jobpath, 'product.con'), 'r')
-                product_lines = product_file.readlines()
-                product_file.close()
-                mode_file = self._open(os.path.join(jobpath, 'mode.dat'), 'r')
-                mode_lines = mode_file.readlines()
-                mode_file.close()
-                mode_span = len(mode_lines)/bundle_size
-                
-                #These files are legitimately loaded
-                saddle_file = self._open(os.path.join(jobpath, 'saddle.con'), 'r') 
-                #TODO: Load results_file without stringio
-                results_file = self._open(os.path.join(jobpath, 'results.dat'), 'r')
-                results_lines = results_file.readlines()
-                results_file.close()
-                results_span = len(results_lines)/bundle_size
-            except:
-                logger.warning('Work unit %d is incomplete' % uid)
-                continue
-
-            for i in range(bundle_size):
-                result = {}
+            
+            results = [{'name':basename} for i in range(bundle_size)]
+            for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
                 try:
-                    result['reactant'] = reactant_lines[i*reactant_span : (i+1)*reactant_span]
-                    result['product'] = product_lines[i*reactant_span : (i+1)*reactant_span]
-                    result['mode'] = mode_lines[i*mode_span : (i+1)*mode_span]
-                    result['saddle'] = io.loadcon(saddle_file)
-                    result['results'] = io.parse_results_dat(StringIO.StringIO(''.join(results_lines[i*results_span:(i+1)*results_span])))
-                    result['id'] = "%d_%d" % (state, uid+i)
-                    results.append(result)
+                    #parse filename
+                    rootname, dirname = os.path.split(filename)
+                    parts = re.match(regex, rootname).groups()
+                    index = int(parts[1])
+                    key = parts[0]+parts[2]
+
+                    #Load data into stringIO object (should we just return filehandles?
+                    f = open(filename,'r')
+                    filedata = StringIO.StringIO(''.join(f.readlines()))
+                    f.close()
+
+                    #add result to results
+                    results[index][key]=filedata
+                    results[index]['number']=index
                 except:
-                    logger.error("Failed to unbundle search %d_%d" % (state, uid+i))
+                    logger.exception("Failed to handle file %s" % filename)
             yield results
 
-    def make_bundles(self, searches, reactant_path, parameters_path):
-        '''This method is a generator that bundles together multiple searches into a single job.
+    def make_bundles(self, data, invariants):
+        '''This method is a generator that bundles together multiple jobs into a single job.
            Example usage:
-               for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
+               for jobpath in self.make_bundles(data, invariants):
                    do_stuff()'''
-        reactant = io.loadcon(reactant_path)
 
         # Split jobpaths in to lists of size self.bundle_size.
-        chunks = [ searches[i:i+self.bundle_size] for i in range(0, len(searches), self.bundle_size) ]
+        chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
         for chunk in chunks:
             #create the bundle's directory
             
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
 
-            #use this class' copy which will gzip the file is compression is on
-            self._copy(reactant_path, os.path.join(job_path, "reactant_passed.con"))
-            self._copy(parameters_path, os.path.join(job_path, "parameters_passed.dat"))
-            
-            # Open the first jobpath's displacement and mode files. 
-            dp_concat = self._open(os.path.join(job_path,"displacement_passed.con"), "a")
-            mp_concat = self._open(os.path.join(job_path,"mode_passed.dat"), "a")
+            for filename in invariants.keys():
+                f = open(os.path.join(job_path, filename), 'w')
+                f.write(invariants[filename].getvalue())
+                f.close()
 
             # Concatenate all of the displacement and modes together.
-            for search in chunk:
-                io.savecon(dp_concat, search['displacement']) 
-                io.save_mode(mp_concat, search['mode'], reactant)
-            dp_concat.close()
-            mp_concat.close()
-
+            n = 0
+            for job in chunk:
+                for basename in job.keys():
+                    print basename
+                    splitname = basename.rsplit(".", 1)
+                    if len(splitname)!=2:
+                        continue
+                    filename = "%s_%d.%s" % (splitname[0], n, splitname[1])
+                    f = open(os.path.join(job_path, filename), 'w')
+                    f.write(job[basename].getvalue())
+                    f.close()
+                n += 1
+                    
+                
             # Returns the jobpath to the new bigger workunit.
             yield job_path
 
@@ -549,17 +482,7 @@ class MPI(Communicator):
                 yield result
 
 
-    def check_search(self, search):
-        p, jobpath = search
-        if p.returncode == 0:
-            logger.info('saddle search finished in %s' % jobpath)
-            return True
-        else:
-            stdout, stderr = p.communicate()
-            errmsg = "saddle search failed in %s: %s" % (jobpath, stderr)
-            logger.warning(errmsg)
-
-    def submit_searches(self, searches, reactant_path, parameters_path):
+    def submit_searches(self, data, invariants):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
@@ -613,7 +536,7 @@ class Local(Communicator):
                 logger.error("can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
 
-        self.searchlist = []
+        self.joblist = []
 
         import atexit
         #don't let clients hang around if the script dies
@@ -622,8 +545,8 @@ class Local(Communicator):
     def cleanup(self):
         '''Kills the running eonclients.'''
         import signal
-        for search in self.searchlist:
-            p = search[0]
+        for job in self.joblist:
+            p = job[0]
             try:
                 os.kill(p.pid, signal.SIGKILL)
             except OSError:
@@ -650,17 +573,17 @@ class Local(Communicator):
         #    results.append(os.path.split(jobdir)[1])
         #return results
 
-    def check_search(self, search):
-        p, jobpath = search
+    def check_job(self, job):
+        p, jobpath = job
         if p.returncode == 0:
-            logger.info('saddle search finished in %s' % jobpath)
+            logger.info('job finished in %s' % jobpath)
             return True
         else:
             stdout, stderr = p.communicate()
-            errmsg = "saddle search failed in %s: %s" % (jobpath, stderr)
+            errmsg = "job failed in %s: %s" % (jobpath, stderr)
             logger.warning(errmsg)
 
-    def submit_searches(self, searches, reactant_path, parameters_path):
+    def submit_jobs(self, data, invariants):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
@@ -669,33 +592,33 @@ class Local(Communicator):
         for name in os.listdir(self.scratchpath):
             shutil.rmtree(os.path.join(self.scratchpath, name))
 
-        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
+        for jobpath in self.make_bundles(data, invariants):
             #move the job directory to the scratch directory
             #update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
             p = subprocess.Popen(self.client,cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)
             commands.getoutput("renice -n 20 -p %d" % p.pid)
-            self.searchlist.append((p,jobpath))
+            self.joblist.append((p,jobpath))
 
-            while len(self.searchlist) == self.ncpus:
-                for i in range(len(self.searchlist)):
-                    p = self.searchlist[i][0]
+            while len(self.joblist) == self.ncpus:
+                for i in range(len(self.joblist)):
+                    p = self.joblist[i][0]
                     retval = p.poll()
                     if retval == None:
                         continue
                     else:
-                        self.check_search(self.searchlist[i])
-                        self.searchlist.pop(i)
+                        self.check_job(self.joblist[i])
+                        self.joblist.pop(i)
                         break
                 sleep(0.1)
 
 
         #wait for everything to finish
-        for search in self.searchlist:
-            p = search[0]
+        for job in self.joblist:
+            p = job[0]
             p.wait()
-            self.check_search(search)
+            self.check_job(job)
 
     def cancel_state(self, state):
         return 0
