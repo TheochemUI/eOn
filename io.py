@@ -179,16 +179,12 @@ def parse_results_dat(filein):
         raise TypeError('termination_reason')
     if not type(results['random_seed']) == int:
         raise TypeError('random_seed')
-    if not type(results['reactant_state_tag']) == int:
-        raise TypeError('reactant_state_tag')
     if not type(results['potential_tag']) == int:
         raise TypeError('potential_tag')
-    if not type(results['force_calls']) == int:
-        raise TypeError('force_calls')
-    if not type(results['force_calls_saddle_point_concave']) == int:
-        raise TypeError('force_calls_saddle_point_concave')
-    if not type(results['force_calls_saddle_point_convex']) == int:
-        raise TypeError('force_calls_saddle_point_convex')
+    if not type(results['total_force_calls']) == int:
+        raise TypeError('total_force_calls')
+    if not type(results['force_calls_saddle']) == int:
+        raise TypeError('force_calls_saddle')
     if not type(results['force_calls_prefactors']) == int:
         raise TypeError('force_calls_prefactors')
     if not type(results['prefactor_reactant_to_product']) == float:
