@@ -182,7 +182,7 @@ void ProcessSearch::saveData(int status, int bundleNumber){
     min1->matter2con(fileReactant);
 
     if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "mode%i.dat", bundleNumber);
+        snprintf(filename, STRING_SIZE, "mode_%i.dat", bundleNumber);
     }else{
         strncpy(filename, "mode.dat", STRING_SIZE);
     }
