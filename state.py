@@ -197,8 +197,8 @@ class State:
                          result["type"], 
                          resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
                          resultdata["displacement_saddle_distance"],
-                         resultdata["force_calls_saddle_point_concave"] + resultdata["force_calls_saddle_point_convex"],
-                         resultdata["force_calls"] - resultdata["force_calls_saddle_point_concave"] - resultdata["force_calls_saddle_point_convex"] - resultdata["force_calls_prefactors"],
+                         resultdata["force_calls_saddle"] ,
+                         resultdata["force_calls_minimization"] ,
                          resultdata["force_calls_prefactors"],
                          comment))
                 f.close()
