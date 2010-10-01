@@ -22,6 +22,7 @@ Prefactors::Prefactors(){
     eigenValMin2_ = 0;
     eigenValSaddle_ = 0;
     coordinatesToAccountFor_ = 0;
+    totalForceCalls = 0;
 }
 
 
@@ -90,7 +91,12 @@ bool Prefactors::compute(double *prefactors){
     sizeHessian_ = atomsToAccountForInHessian();
     fprintf(stdout, "Hessian size %li\n",sizeHessian_);
     if (sizeHessian_ == 0) {
-        fprintf(stderr, "Error: size of hessian is zero. Try with smaller min_Displacement_Hessian\n");
+        ///XXX: This should not exit with a status of 1
+        //      due to showing up as a boinc error.
+        //      Users do not get credit for non-zero
+        //      exit statuses.
+        fprintf(stderr, "Error: size of hessian is zero. "
+                "Try with smaller min_Displacement_Hessian\n");
         exit(1);
     };    
     eigenValMin1_ = new double[sizeHessian_];
@@ -286,8 +292,7 @@ void Prefactors::determineHessian(double **hessian, const Matter *matter){
     
     forceCallsAtomsTemp = matterTemp.getForceCalls()-forceCallsAtomsTemp;
     
-    parameters_->addForceCallsPrefactors(forceCallsAtomsTemp);
-    
+    totalForceCalls += forceCallsAtomsTemp;
 
     delete [] pos;
     delete [] posTemp;

@@ -50,6 +50,7 @@ public:
     void initialize(const Matter *saddle, const Matter *min1, const Matter *min2, Parameters *parameters);
     
     bool compute(double *prefactors);///< Determine the prefactors and store the result in \a prefactors. Value at \a prefactors[0] is for process min1->saddle, value at \a prefactors[1] is for process min2->saddle.
+    long totalForceCalls;
     
 private:
     long sizeHessian_;///< Size of hessian. Value set by the Prefactors::atomsToAccountForInHessian

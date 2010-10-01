@@ -9,6 +9,10 @@
 #include "Matter.h"
 #include "LowestEigenmodeInterface.h" 
 
+#include <string>
+
+using namespace std;
+
 // Return codes passed from server to client to indicate calculation status
 #define statusGood  0
 #define statusInit  1
@@ -66,29 +70,12 @@ public:
     double const *const getEigenMode() const;
 
     double * mode;
+    void loadMode(string filename);
     void loadMode(FILE * modeFile);
     void saveMode(FILE * modeFile);
-/*
-    // Return codes passed from server to client to indicate calculation status
-    long statusGood = 0; // saddle and prefactor determination was succesful
-    long statusInit = 1; // the calculation should continue.
-    long statusBadNoConvex = 2; // the convex region was not reached in the saddle search
-    long statusBadHighEnergy = 3; // the energy limit was reached and the search terminated (was TerminatedBarrier)
-    long statusBadMaxConcaveIterations = 4; // the concave iteration limit was reached (was TerminatedConcaveIterations)
-    long statusBadMaxIterations = 5; // the iteration limit was reached (was TerminatedTotalIterations) 
-    long statusBadNotConnected = 6; // the saddle point was not connected to the initial state.
-    long statusBadPrefactor = 7; // the forward or reverse process have a prefactor that is either below getPrefactorMin or above getPrefactorMax
-    long statusBadHighBarrier = 8; // the forward or reverse process have a barrier that is over the energy limit
-    long statusBadMinima = 9; // a minimization from the saddle did not converge and neither minima matched the reactant (was MinimaNotConverged)
-*/
-/*
-    // Constants used to displace atoms before a saddle search
-    long dispNone = 0; // make no displacement before a saddle search
-    long dispNotFccOrHcp = 1; // displace any atoms which are not HCP or FCC (e.g. in a grain boundary)
-    long dispMinCoordinated = 2; // displace the minimum coordinated atoms in the initial configuration
-    long dispLastAtom = 3; // displace the last atom in the configuration file
-    double neighborCutoff = 0.33; // radius used in the local atomic structure analysis
-*/
+
+    long forceCallsSaddlePointConcave_;
+    long forceCallsSaddlePointConvex_;
 
 private:
     Matter * initial_;
@@ -116,6 +103,7 @@ private:
     void displaceInConcaveRegion();
  
     void searchForSaddlePoint(double initialEnergy);
+    void addForceCallsSaddlePoint(long fcalls, double eigenvalue);
 
 };
 

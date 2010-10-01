@@ -34,7 +34,7 @@ int create_archive(char *outname, char *path, int (*pattern_match)(char *))
 
     dp = opendir(path);
     if (dp != NULL) {
-        while (ep = readdir(dp)) {
+        while ((ep = readdir(dp))) {
             if (ep->d_type != DT_REG) {
                 continue;
             }

@@ -121,7 +121,8 @@ void QMBox::fullRelax()
 //        std::cout<<matter_->potentialEnergy()<<"\n";
     }
     forceCallsTemp = matter_->getForceCalls() - forceCallsTemp;
-    parameters_->addForceCalls(forceCallsTemp);
+    //XXX: need to fix force counting
+    //parameters_->addForceCalls(forceCallsTemp);
     return;
 };
 
