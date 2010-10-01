@@ -180,8 +180,13 @@ void ProcessSearch::saveData(int status, int bundleNumber){
     }
 	fileReactant = fopen(filename, "wb");
     min1->matter2con(fileReactant);
-    // Only save the saddle in the case that we did a saddle search.
-    fileMode = fopen(constants::MODE_FILE_NAME.c_str(), "wb");
+
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "mode%i.dat", bundleNumber);
+    }else{
+        strncpy(filename, "mode.dat", STRING_SIZE);
+    }
+    fileMode = fopen(filename, "wb");
     saddlePoint->saveMode(fileMode);
     fclose(fileMode);
 	fclose(fileReactant);
