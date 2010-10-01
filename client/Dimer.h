@@ -47,6 +47,7 @@ public:
     void setEigenvector(long size, double const eigenvector[]);
         /// Return eigenvector.
     double const * getEigenvector(long & size);
+    long totalForceCalls;
 private:
     Matter *matterInitial_;///< Used for the center of the dimer.
     Matter *matterDimer_;///< Used for the one of the configurations defining the dimer.

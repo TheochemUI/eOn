@@ -28,6 +28,8 @@ Dimer::Dimer(Matter const *matter, Parameters *parameters)
     tempListDouble_ = new double[nAllCoord]; // There should be space for both free and frozen atoms.
     directionNorm_ = new double[nFreeCoord_];
     rotationalPlaneNorm_ = new double[nFreeCoord_];
+
+    totalForceCalls = 0;
 }
 
 
@@ -184,8 +186,11 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
 
     forceCallsInitial = matterInitial_->getForceCalls()-forceCallsInitial;
     forceCallsDimer = matterDimer_->getForceCalls()-forceCallsDimer;
-    parameters_->addForceCallsSaddlePoint(forceCallsInitial+forceCallsDimer,
-                                          eigenvalue_);
+
+    totalForceCalls += forceCallsInitial+forceCallsDimer;
+
+    //parameters_->addForceCallsSaddlePoint(forceCallsInitial+forceCallsDimer,
+    //                                      eigenvalue_);
     delete [] rotationalForce;
     delete [] rotationalForceOld;
     delete [] rotationalPlaneNormOld;

@@ -25,6 +25,7 @@ namespace constants {
     const std::string VERSION_INFO_EON2("4.4; no Silicon");    
 /* [GH: moved to Potential.h]
     // Constants to identify available potentials
+
     long potentialNewPotential = 0; // specifies that a user define potential should be defined in NewPotential_interface.cpp
     long potentialLJ       = 1; // Lennard-Jones potential
     long potentialMorse    = 2; // Morse potential
@@ -108,8 +109,9 @@ namespace constants {
     const std::string SEND_SP_CONF_FILE_NAME("saddle.con"); // saddle point configuration found
     const std::string SEND_PROD_FILE_NAME("product.con"); // the product configuration found
     const std::string MODE_FILE_NAME("mode.dat"); // the last eignvector found
-    const std::string READ("r"); // set the file to read
-    const std::string APPEND("a"); // set the file to append
+    const std::string READ("rb"); // set the file to read
+    const std::string APPEND("ab"); // set the file to append
+    const std::string WRITE("wb"); // set the file to write
 
 }
 #endif
