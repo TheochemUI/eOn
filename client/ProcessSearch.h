@@ -13,7 +13,7 @@ class ProcessSearch : public Job {
     private:
         int  doProcessSearch(void);
         void printEndState(int status);
-        void saveData(int status);
+        void saveData(int status, int bundleNumber);
 
         Prefactors *prefactors;
         Parameters *parameters;
