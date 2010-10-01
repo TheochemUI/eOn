@@ -26,6 +26,7 @@ import askmc
 import kdb
 import movie
 
+import StringIO
 
 
 def main(): 
@@ -300,18 +301,21 @@ def register_results(comm, current_state, states, searchdata = None):
             #XXX: This is currently broken by the new result passing scheme. Should it be 
             #     done in communicator?
             pass
-        state_num = int(result['id'].split("_")[0])
-
+        state_num = int(result['name'].split("_")[0])
+        id = int(result['name'].split("_")) + result['number']
+        searchdata_id = "%d_%d" % (state_num, id)
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         if config.debug_list_search_results:
             try:
-                result['type'] = searchdata[result['id'] + "type"]
-                del searchdata[result['id'] + "type"]
+                result['type'] = searchdata[searchdata_id + "type"]
+                del searchdata[searchdata_id + "type"]
             except:
-                logger.warning("Could not find search data for search %s" % result['id'])
-            result['wuid'] = int(result['id'].split('_')[1]) 
+                logger.warning("Could not find search data for search %s" % searchdata_id)
+            result['wuid'] = id
             # Remove used information from the searchdata metadata.
         
+        #read in the results
+        result['results'] = io.parse_results_dat(result['results.dat'])
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
         else:
@@ -506,8 +510,17 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     disp = get_displacement(reactant, indices = pass_indices)
     parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
-
     
+    invariants = {}
+
+    reactIO = StringIO.StringIO()
+    io.savecon(reactIO, reactant)
+    invariants['reactant_passed.con']=reactIO
+    
+    f = open(parameters_path)
+    invariants['parameters_passed.dat'] = StringIO.StringIO(''.join(f.readlines()))
+    f.close()
+
     t1 = unix_time.time()
     if config.recycling_on:
         nrecycled = 0
@@ -565,8 +578,13 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                     searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
                 except:
                     logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-        search['displacement'] = displacement
-        search['mode'] = mode
+        dispIO = StringIO.StringIO()
+        io.savecon(dispIO, displacement)
+        search['displacement_passed.con'] = dispIO
+        
+        modeIO = StringIO.StringIO()
+        io.save_mode(modeIO, mode, reactant)
+        search['mode_passed.dat'] = modeIO
         searches.append(search) 
         wuid += 1
 
@@ -574,7 +592,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         logger.debug("Recycled %i saddles" % nrecycled)
 
     try:
-        comm.submit_searches(searches, current_state.reactant_path, parameters_path)
+        comm.submit_jobs(searches, invariants)
         t2 = unix_time.time()
         logger.info( str(num_to_make) + " searches created") 
         logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
