@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
+using namespace std;
+
 #include "Constants.h"
 
 /** All input parameters. If one would use values different from the default values these should be specified in the file with the name set in (Constants::PARMS_FILE_NAME).*/
@@ -97,11 +99,15 @@ class Parameters : private Input, private Output{
 public:
     Parameters();
     ~Parameters();
+    void load(string filename);
     void load(FILE *file);
     void saveOutput(FILE *file);
     void saveInput(FILE *file);
     void printInput();
     void printOutput();
+
+    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, UNKNOWN_JOBTYPE};
+    JobType job_Type_;
     
     // Passing the input parameters
     long getRandomSeed();
