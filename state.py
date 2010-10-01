@@ -99,9 +99,9 @@ class State:
         """ Adds a process to this State. """
         
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
-        
+         
         resultdata = result["results"] #The information from the result.dat file
-
+        
         # We may not already have the energy for this State.  If not, it should be in the result data.
         if self.get_energy() == None:
             self.set_energy(resultdata["potential_energy_reactant"])
@@ -124,6 +124,8 @@ class State:
 
         # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
         if len(energetically_close) > 0:
+            #load the saddle
+            result["saddle"] = io.loadcon(result["saddle.con"])
             p0 = result["saddle"]
             ibox = numpy.linalg.inv(p0.box)
             for id in energetically_close:
@@ -140,28 +142,14 @@ class State:
                     return None
 
         # This appears to be a unique process.
-        # Check if the mode, reactant, and product are legit
+        # Check if the mode, reactant, saddle, and product are legit
         try:
-            # check the mode
-            dummy_mode = StringIO.StringIO()
-            dummy_mode.writelines(result['mode'])
-            dummy_mode.seek(0)
-            io.load_mode(dummy_mode)
-            
-            # check the reactant
-            dummy_reactant = StringIO.StringIO()
-            dummy_reactant.writelines(result['reactant'])
-            dummy_reactant.seek(0)
-            io.loadcon(dummy_reactant)
-            
-            # check the product
-            dummy_product = StringIO.StringIO()
-            dummy_product.writelines(result['product'])
-            dummy_product.seek(0)
-            io.loadcon(dummy_product)
-            
+            io.load_mode(result['mode.dat'])
+            io.loadcon(result['reactant.con'])
+            io.loadcon(result['saddle.con'])
+            io.loadcon(result['product.con'])
         except:
-            logger.exception("Mode, reactant, or product has incorrect format")
+            logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
         
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
@@ -178,11 +166,11 @@ class State:
         self.inc_proc_repeat_count(id)
 
         # Move the relevant files into the procdata directory.
-        io.savecon(self.proc_saddle_path(id), result['saddle'])
-        io.save_results_dat(self.proc_results_path(id), result['results']) 
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant'])
-        open(self.proc_mode_path(id), 'w').writelines(result['mode'])
-        open(self.proc_product_path(id), 'w').writelines(result['product'])
+        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'])
+        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'])
+        open(self.proc_product_path(id), 'w').writelines(result['product.con'])
+        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'])
+        open(self.proc_results_path(id), 'w').writelines(result['results.dat'])
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id, 
@@ -571,11 +559,11 @@ class State:
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
-            io.savecon(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), result['saddle'])
-            io.save_results_dat(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), result['results'])
-            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant'])
-            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product'])
-            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode'])
+            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant.con'])
+            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product.con'])
+            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode.dat'])
+            open(os.path.join(self.bad_procdata_path, "result_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'])
+            open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'])
 
 
 
