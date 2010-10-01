@@ -13,8 +13,6 @@ import StringIO
 import glob
 import re
 
-#XXX: Communicator should not depend on any other part of eOn
-import io
 
 class NotImplementedError(Exception):
     pass
