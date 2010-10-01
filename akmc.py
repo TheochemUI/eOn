@@ -302,7 +302,7 @@ def register_results(comm, current_state, states, searchdata = None):
             #     done in communicator?
             pass
         state_num = int(result['name'].split("_")[0])
-        id = int(result['name'].split("_")) + result['number']
+        id = int(result['name'].split("_")[1]) + result['number']
         searchdata_id = "%d_%d" % (state_num, id)
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         if config.debug_list_search_results:

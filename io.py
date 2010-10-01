@@ -173,7 +173,6 @@ def parse_results_dat(filein):
             results[line[1]] = float(line[0])
         else:
             results[line[1]] = int(line[0])
-    f.close()
     #input validation
     if not type(results['termination_reason']) == int:
         raise TypeError('termination_reason')

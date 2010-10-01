@@ -97,19 +97,30 @@ int ProcessSearch::doProcessSearch(void)
 
     if ((*initial==*min1) == false) {
         printf("initial != min1\n");
+        if((!min1->isItConverged(parameters->getConverged_Relax()))  &&
+           (!min2->isItConverged(parameters->getConverged_Relax()))) {
+            return statusBadMinima;
+        }
         return statusBadNotConnected;
     }
 
+    //if((!min1->isItConverged(parameters->getConverged_Relax())))
+    //{
+    //    printf("min1 is not converged!!!!!! %lf\n", parameters->getConverged_Relax());
+    //}
+    //if((!min2->isItConverged(parameters->getConverged_Relax())))
+    //{
+    //    printf("min2 is not converged!!!!!! %lf\n", parameters->getConverged_Relax());
+    //}
+    
+    
+    
     if (*initial==*min2) {
         /* both minima are the initial state */
         printf("both minima are the initial state");
         return statusBadNotConnected;
     }
 
-    if((!min1->isItConverged(parameters->getConverged_Relax()))  &&
-       (!min2->isItConverged(parameters->getConverged_Relax()))) {
-        return statusBadMinima;
-    }
 
     /* Calculate the barriers */
     barriersValues[0] = saddle->potentialEnergy()-min1->potentialEnergy();
@@ -237,9 +248,12 @@ void ProcessSearch::printEndState(int status) {
 
     else if(status == statusBadHighBarrier)
         fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
-
+    else if (status == statusBadMinima)
+        fprintf(stdout, "Minima were not able to be matched to the initial reactant\n"
+                "because they did not converge\n");
     else
-        fprintf(stdout, "Unknown state!!!\n");
+        fprintf(stdout, "Unknown status: %i!\n", status);
+
     return;
 }
 
