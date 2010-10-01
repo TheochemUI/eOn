@@ -25,8 +25,10 @@ using namespace helper_functions;
 //using namespace constants;
 
 
-ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters){
+ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
+{
     initialize(matter, parameters);
+    totalForceCalls = 0;
 };
 
 
@@ -115,7 +117,7 @@ void ConjugateGradients::oneStep(){
     matter_->setFreePositions(pos);
 
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
-    parameters_->addForceCalls(forceCallsTemp);
+    totalForceCalls += forceCallsTemp;
 
     delete [] pos;
     delete [] posStep;
@@ -135,12 +137,18 @@ void ConjugateGradients::fullRelax(){
         converged = isItConverged(parameters_->getConverged_Relax());
         ++i;
         #ifndef NDEBUG
-        printf("min = %d\n", i);
+        double maxForce=0.0;
+        for (int j=0;j<nFreeCoord_;j++) {
+            if (force_[j]>maxForce) {
+                maxForce = force_[j];
+            }
+        }
+        printf("min = %d, max force = %lf\n", i, maxForce);
         #endif
     }
-    #ifndef NDEBUG
-    matter_->matter2con("minimum");
-    #endif
+//    #ifndef NDEBUG
+//    matter_->matter2con("minimum");
+//    #endif
     return;
 };
 

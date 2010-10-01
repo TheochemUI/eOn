@@ -664,7 +664,10 @@ void Matter::matter2xyz(std::string filename, bool append /*Append if file alrea
 bool Matter::matter2con(std::string filename) const {
     bool state;
     FILE *file;
-    filename += ".con";
+    int pos=filename.find_last_of('.');
+    if(filename.compare(pos+1, 3, "con")){
+        filename+=".con";
+    };
     file = fopen(filename.c_str(),"w");     
     state = matter2con(file);
     fclose(file); 
@@ -741,7 +744,7 @@ bool Matter::con2matter(std::string filename) {
     if(filename.compare(pos+1, 3, "con")){
         filename+=".con";
     };
-    file=fopen(filename.c_str(), "r");
+    file=fopen(filename.c_str(), "rb");
     if (!file) {
         cerr << "File " << filename << " was not found.\n";
         return(false);
@@ -953,7 +956,7 @@ void Matter::applyPeriodicBoundary(long atom, int axis)
 bool Matter::isItConverged(double convergeCriterion)
 {
     double diff=0;
-    
+
     for(int i=0;i<nAtoms_*3;i++)
     {
         diff = fabs(forces_[i]);

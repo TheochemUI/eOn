@@ -4,139 +4,35 @@
  *===============================================
  */
 
+
+#include "Constants.h"
+#include "Parameters.h"
+#include "Job.h"
+#include "ProcessSearch.h"
+#include "Minimization.h"
+
+#include <dirent.h>
+
 #ifdef BOINC
     #include <boinc/boinc_api.h>
     #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
     #include <boinc/filesys.h>         // boinc_fopen(), etc...
+    #ifdef WIN32
+        #include <boinc_win.h>
+        #include <win_util.h>
+    #endif
 #else
     #include "false_boinc.h"
 #endif
 
-// includes for boinc
-#ifdef WIN32
-    #include <boinc_win.h>
-    #include <win_util.h>
-#endif
-
-#include "Constants.h"
-#include "Parameters.h"
-//#include "Matter.h"
-#include "ConjugateGradients.h"
-#include "QMBox.h"
-//#include "Prefactors.h"
-#include "SaddlePoint.h"
-#include "LowestEigenmodeInterface.h"
-#include "HelperFunctions.h"
-
-#include "ClientEON.h"
-
-//using namespace constants;
-//using namespace client_eon;
-
 #ifdef COMPRESSION
 #include "Compression.h"
-#endif
+const char BOINC_INPUT_ARCHIVE[] = "input.tgz";
+const char BOINC_RESULT_ARCHIVE[] = "result.tgz";
 
-int main(int argc, char **argv) 
-{
-	// BOINC is started
-	client_eon::rc = boinc_init();
-	if(client_eon::rc){
-		exit(client_eon::rc);
-	}
-
-    #ifdef COMPRESSION
-    //We want to uncompress our input file
-    //XXX: This is ugly. It doesn't seem right to call eon_client::openFile from
-    //     Compression.cpp but this code probably shouldn't be here either.
-    char boinc_input_archive[] = "init.tgz";
-    char resolved[STRING_SIZE];
-    int rc = boinc_resolve_filename(boinc_input_archive, resolved, sizeof(resolved));
-    if (extract_archive(resolved) != 0) {
-        printf("error extracting input archive\n");
-        boinc_finish(1);
-    }
-    #endif
-
-	char parameters_passed[STRING_SIZE], reactant_passed[STRING_SIZE], 
-	     displacement_passed[STRING_SIZE], mode_passed[STRING_SIZE];
-    if (argc > 1 ) {
-        if (*argv[1] == '-'){
-            if (strcmp(argv[1], "-test") == 0 || strcmp(argv[1], "--test") == 0) {
-                client_eon::forcesOfConfig();
-            }
-            else{
-                client_eon::printRequestedInfo(argv[1]);   //// NEEDS TO BE UPDATED
-            }
-            // prevent segmentation fault
-            boinc_finish(0);
-            return 0;
-        }
-        else { 
-            // use data passed from user
-            strncpy(parameters_passed, argv[1], sizeof(parameters_passed));
-            strncpy(reactant_passed, argv[2], sizeof(reactant_passed));
-            strncpy(displacement_passed, argv[3], sizeof(displacement_passed));
-            strncpy(mode_passed, argv[4], sizeof(mode_passed));
-        }
-    }
-    else {
-        // use data from constants file
-        strncpy(parameters_passed, constants::PARMS_PASSED_FILE_NAME.c_str(), sizeof(parameters_passed));
-        strncpy(reactant_passed, constants::REAC_PASSED_FILE_NAME.c_str(), sizeof(reactant_passed));
-        strncpy(displacement_passed, constants::DISPLACEMENT_PASSED_FILE_NAME.c_str(), sizeof(displacement_passed));
-        strncpy(mode_passed, constants::MODE_PASSED_FILE_NAME.c_str(), sizeof(mode_passed));
-    }
- 
-    // loads runtime parameters and relaxes the initial configuration
-    client_eon::loadDataAndRelax(parameters_passed, reactant_passed);
- 
-    // if we are not only minimizing, perform saddle searches
-    if(!client_eon::parameters.getMinimizeOnly())
-    {
-        // if the server performed the displacement, load it and perform the saddle search
-        if (client_eon::parameters.getRefineSP()) 
-        {
-            int bundleSize = client_eon::divineBundleSize(mode_passed);
-            double ndone = 0.0;
-            // while we can read in the displacement and mode files, perform saddle searches on them
-            while (client_eon::loadDisplacementAndMode(displacement_passed, mode_passed) == true) 
-            {
-                try{client_eon::doSaddleSearch();}
-                catch(int except){}
-                client_eon::parameters.resetForceCalls();
-                client_eon::parameters.resetForceCallsSaddlePoint();
-                client_eon::parameters.resetForceCallsPrefactors();
-                
-                ndone += 1.0;
-                boinc_fraction_done(ndone/bundleSize);
-            }
-        }
-        // Otherwise, displace and search ourselves.
-        else
-        {
-            client_eon::doSaddleSearch();
-        }
-    }
-    else
-    {
-        client_eon::saveData();
-    }
-    // BOINC applications must exit via boinc_finish(rc), not merely exit */
-	// To prevent segmentation fault
-#ifdef COMPRESSION
-    //XXX: UGLY.
-    char boinc_result_archive[] = "result.tgz";
-    rc = boinc_resolve_filename(boinc_result_archive, resolved, sizeof(resolved));
-    create_archive("results.tgz", ".", result_pattern); 
-#endif
-    boinc_finish(0);
-}
-
-#ifdef COMPRESSION
 // This will match any file that doesn't have the string "passed",
 // has either a "con" or "dat" in it, and doesn't start with a period.
-int client_eon::result_pattern(char *filename)
+int result_pattern(char *filename)
 {
         if (strstr(filename, "passed") != NULL) {
             return 0; 
@@ -150,98 +46,62 @@ int client_eon::result_pattern(char *filename)
 }
 #endif
 
-void client_eon::doSaddleSearch(void)
-{
-    bool continueDimerSearch=true;
-    int currentTry=0;
-    // ----- start dimer search ----- 
-    do
-    {
-        fprintf(stdout, "\nNew search started.\n");
+int getBundleSize(void) {
+    DIR *dir;
+    struct dirent *dp;
+    int num_bundle=0;
 
-        initializeNewSearch();
-        // status is equal to getStateInit() if a saddle point is determined
-        status = saddlePoint.locate(min1, min2);
-        
-        // Barrier determination part
-        if(status == statusInit && connectedToReactantState())
-        {
-            determineBarriers();
-            barriersOK = barriersWithinWindow();
-        }
-        if(!parameters.getPrefactorsTag() && barriersOK)
-            status = statusGood;
+    dir = opendir(".");
 
-        // Prefactor determination part
-        if(status == statusInit && parameters.getPrefactorsTag())
-        {
-            prefactors.compute(prefactorsValues);
-            prefactorsOK = prefactorsWithinWindow();
-        }
-        if(parameters.getPrefactorsTag() && prefactorsOK)
-            status = statusGood;
-
-        currentTry++;
-
-        if (parameters.getRefineSP()) {
-            continueDimerSearch = false;
+    while ((dp=readdir(dir))) {
+        if (dp->d_name[0] == '.') {
             continue;
         }
-            
-        if ( (status == statusGood) ||
-             // getStateSaddleSearchNoConvexRegion() [GH: now statusBadNoConvex] should be treated special 
-             // as the saddle point search does not starts since the initial 
-             // displacement is too small
-             (status == statusBadNoConvex) ) {
-            continueDimerSearch = false;
+        if (strstr(dp->d_name, "passed")==NULL) {
+            continue;
         }
-
-        if (currentTry > parameters.getNrOfTriesToDetermineSaddlePoints_SP()) {
-            printf("Did maximum number (%i) of saddle searches.", currentTry);
-            continueDimerSearch = false;
+        char *ch = strrchr(dp->d_name, '_')+1;
+        char *cch = strrchr(dp->d_name, '.');
+        *cch = '\0';
+        if (isdigit(*ch)) {
+            int i=atoi(ch)+1;
+            if (i>num_bundle) {
+                num_bundle = i;
+            }
         }
-        printEndState(status);
+    }
 
-    } while (continueDimerSearch);
-    // ------ end simulation ------ 
-
-    saveData();
-    parameters.printOutput();    
+    return num_bundle;
 }
 
-
-static FILE * openFile(char const name[], char const readWriteAppend[])
+int main(int argc, char **argv) 
 {
+    int rc;
+	// BOINC is started
+	rc = boinc_init();
+	if(rc){
+		boinc_finish(rc);
+	}
+
+    #ifdef COMPRESSION
+    //We want to uncompress our input file
     char resolved[STRING_SIZE];
-    int rc = boinc_resolve_filename(name, resolved, sizeof(resolved));
-    if (rc) {
-        fprintf(stderr, "Cannot resolve intput file: %s, RC=%d\n", name, rc);
-        boinc_finish(rc);    // back to BOINC core
+    rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
+    if (extract_archive(resolved) != 0) {
+        printf("error extracting input archive\n");
+        boinc_finish(1);
     }
-    FILE * file = boinc_fopen(resolved, readWriteAppend);
-    if (file == NULL){
-        fprintf(stderr, "Cannot open file: %s\n", resolved);
-        boinc_finish(rc);    // back to BOINC core
-    }
-    return file;
-}
+    #endif
 
+    int bundleSize = getBundleSize();
+    #ifndef NDEBUG
+    printf("Bundle size of %i\n", bundleSize);
+    #endif
 
-static void closeFile(FILE * file, char const name[])
-{
-    if (ferror(file)) {
-        fprintf(stderr, "Error while reading %s\n", name);
-        boinc_finish(client_eon::rc);
-    };
-    fclose(file);
-}
-
-void client_eon::loadDataAndRelax(char const parameters_passed[], char const reactant_passed[])
-{
-    FILE *fileParameters, *fileReactant;
-    fileParameters = openFile(parameters_passed, constants::READ.c_str());
-    parameters.load(fileParameters);
-    closeFile(fileParameters, parameters_passed);
+    // store all the runtime parameters received from the server
+    Parameters parameters; 
+    string parameters_passed("parameters_passed.dat");
+    parameters.load(parameters_passed);
  
     // Initialize random generator
     if(parameters.getRandomSeed() < 0)
@@ -249,421 +109,45 @@ void client_eon::loadDataAndRelax(char const parameters_passed[], char const rea
         unsigned i = time(NULL);
         parameters.setRandomSeed(i);
         helper_functions::random(i);
-    }
-    else
-    {
+    }else{
         helper_functions::random(parameters.getRandomSeed());
     }
     printf("Random seed is: %ld\n", parameters.getRandomSeed());
 
-    // The parameters have been loaded && the Matter objects can be initialized
-    initial = new Matter(&parameters);
-    displacement = new Matter(&parameters);
-    saddle = new Matter(&parameters);
-    min1 = new Matter(&parameters);
-    min2 = new Matter(&parameters);
+    // Determine what type of job we are running according 
+    // to the parameters file. 
+    Job *job;
 
-    fileReactant = openFile(reactant_passed, constants::READ.c_str());
-    int ok = initial->con2matter(fileReactant);
-    if (not ok) 
-    {
-        fprintf(stderr, "Cannot read file %s\n", reactant_passed);
-        std::exit(1);
-    };
-    closeFile(fileReactant, reactant_passed);
- 
-    // Relax the passed configuration.
-    // RT: if we are only minimizing AND are minimizing the box, use QMBox
-    if (parameters.getMinimizeOnly() && parameters.getMinimizeBox())
-    {
-        QMBox qmboxInitial(initial, &parameters);
-        qmboxInitial.fullRelax();
+    if (parameters.job_Type_ == Parameters::PROCESS_SEARCH) {
+        job = new ProcessSearch(&parameters);
+    }else if (parameters.job_Type_ == Parameters::MINIMIZATION) {
+        job = new Minimization(&parameters);
+    //}else if (parameters.job_Type_ == Parameters::SADDLE_SEARCH) {
+    //    job = new SaddleSearch(&parameters);
+    //    boinc_finish(1);
+    }else if (parameters.job_Type_ == Parameters::UNKNOWN_JOBTYPE) {
+        fprintf(stderr, "Unknown JOB_TYPE in parameters_passed.dat\n");
+        boinc_finish(1);
     }
-    // RT: Otherwise, minimize as usual.
-    else
-    {
-        ConjugateGradients cgInitial(initial, &parameters);
-        cgInitial.fullRelax();
-    }
-    return;
-}
 
-int client_eon::divineBundleSize(char const mode_passed[])
-{
-    // As its name suggests, this method finds the bundle size using shaky methods.
-    FILE * file;
-    int count = 0;
-    int nlines;
-
-    file = openFile(mode_passed, constants::READ.c_str());
-    nlines = parameters.linesInFile(file);
- 
-    char line[STRING_SIZE];
- 
-    int i;
-    for(i=0; i<nlines; i++)
-    {
-        int retval;
-        float dummy[3];
-        fgets(line, STRING_SIZE, file);
-        retval = sscanf(line, "%f %f %f",&dummy[0], &dummy[1], &dummy[2]);
-        if(retval == 2) 
-        {
-            count++;
-        }
-    }
-    closeFile(file, mode_passed);
-    return count;
-} 
-
-
-bool client_eon::loadDisplacementAndMode(char const displacement_passed[], char const mode_passed[])
-{
-    static int modePosition=0;
-    static int displacementPosition=0;
-    static int count=0;
-    static int displacementFileLength=0;
-    //Dangerous to reuse the same pointer name for different files!
-    FILE * file;
-
-    //read in displacement con file
-    file=openFile(displacement_passed, constants::READ.c_str());
-    if (count == 0) {
-        fseek(file, 0, SEEK_END);
-        displacementFileLength = ftell(file);
-        fseek(file, 0, SEEK_SET);
+    //If no bundles run once; otherwise, run bundleSize number of times.
+    if (bundleSize == 0) {
+        job->run(-1);
+        boinc_fraction_done(1.0);
     }else{
-        if (displacementFileLength <= displacementPosition) {
-            return false;
-        }
-        fseek(file, displacementPosition, SEEK_SET);
-    }
-    saddle->con2matter(file);
-    //read in displacement con file
-    file=openFile(displacement_passed, constants::READ.c_str());
-    if (count == 0) {
-        fseek(file, 0, SEEK_END);
-        displacementFileLength = ftell(file);
-        fseek(file, 0, SEEK_SET);
-    }else{
-        if (displacementFileLength <= displacementPosition) {
-            return false;
-        }
-        fseek(file, displacementPosition, SEEK_SET);
-    }
-    displacement->con2matter(file);
-    displacementPosition = ftell(file);
-    closeFile(file, displacement_passed);
-
-    //read in mode file
-    file=openFile(mode_passed, constants::READ.c_str());
-    fseek(file, modePosition, SEEK_SET);
- 
-    saddlePoint.loadMode(file);
-
-    modePosition = ftell(file);
-    closeFile(file, mode_passed);
-
-    count++;
-    return true;
-}
-
-
-void client_eon::initializeNewSearch()
-{
-    barriersValues[0] = barriersValues[1] = 0;
-    prefactorsValues[0] = prefactorsValues[1] = 0;
-    barriersOK = prefactorsOK = false;
-    if (not parameters.getRefineSP()) {
-        // Matter objects
-        *saddle = *min1 = *min2 = *initial;
-    }
-    else {        
-        *min1 = *min2 = *initial;
-    }
-    // SaddlePoint object
-    saddlePoint.initialize(initial, saddle, &parameters);
-    // If prefactor has to be determined Prefactors object
-    if(parameters.getPrefactorsTag())
-    {
-        prefactors.initialize(saddle, min1, min2, &parameters);
-    }
-    return;
-}
-
-
-bool client_eon::connectedToReactantState(){
-    bool result = false;
-    Matter matterTemp(&parameters);
-    
-    // Ensure that both minima do not correspond to the initial state
-    if((*initial==*min1) && (!(*initial==*min2)))
-        result = true;
-    // If min2 corresponds to initial state swap min1 && min2
-    else if(!(*initial==*min1) && ((*initial==*min2))){
-        matterTemp = *min1;
-        *min1 = *min2;
-        *min2 = matterTemp;
-        result = true;
-    }
-    else
-    {
-        result = false;
-        if((!min1->isItConverged(parameters.getConverged_Relax())) && (!min2->isItConverged(parameters.getConverged_Relax())))
-        {
-            status = statusBadMinima;
-        }
-        else
-        {
-            status = statusBadNotConnected;
+        for (int i=0; i<bundleSize; i++) {
+            job->run(i);
+            boinc_fraction_done((double)(i+1)/(bundleSize));
         }
     }
-    return result;
-}
 
+    delete job;
 
-void client_eon::determineBarriers()
-{ 
-    barriersValues[0] = saddle->potentialEnergy()-min1->potentialEnergy();
-    barriersValues[1] = saddle->potentialEnergy()-min2->potentialEnergy();
-    return;
-}
+    #ifdef COMPRESSION
+    //XXX: Error handling!
+    rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
+    create_archive(resolved, ".", result_pattern); 
+    #endif
 
-
-bool client_eon::barriersWithinWindow()
-{
-    bool result = true;
-
-    if((parameters.getMaxEnergy_SP() < barriersValues[0]) || (parameters.getMaxEnergy_SP() < barriersValues[1]))
-    {
-        result = false;
-        status = statusBadHighBarrier;
-    }
-    return result;
-}
-
-
-bool client_eon::prefactorsWithinWindow(){
-    bool result = true;
-
-    if((prefactorsValues[0]>parameters.getPrefactorMax()) ||
-       (prefactorsValues[0]<parameters.getPrefactorMin())){
-        result = false;
-        status = statusBadPrefactor;
-    }
-    if((prefactorsValues[1]>parameters.getPrefactorMax()) ||
-       (prefactorsValues[1]<parameters.getPrefactorMin())){
-        result = false;
-        status = statusBadPrefactor;
-    }
-    return result;
-}
-
-
-void client_eon::saveData(){
-    FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
-
-    if (parameters.getMinimizeOnly()) {
-        //If we are only minimizing set the min1 pointer
-        //to the matter object we just minimized so that
-        //the energy can be saved to the results.dat file.
-        min1 = initial;
-    }
-
-    parameters.setPotentialEnergySP(saddle->potentialEnergy());
-    parameters.setPotentialEnergyMin1(min1->potentialEnergy());
-    parameters.setPotentialEnergyMin2(min2->potentialEnergy());
-    
-    parameters.setPrefactorReac_Prod(prefactorsValues[0]);
-    parameters.setPrefactorProd_Reac(prefactorsValues[1]);
-    
-    parameters.setBarrierReac_Prod(barriersValues[0]);
-    parameters.setBarrierProd_Reac(barriersValues[1]);
-
-    parameters.addForceCalls(parameters.getForceCallsSaddlePoint()+
-                             parameters.getForceCallsPrefactors());
-    
-    parameters.setTerminationReason(status);
-    parameters.setDisplacementSaddleDistance(displacement->per_atom_norm(*saddle));
-
-	fileResults = openFile(constants::RESULTS_FILE_NAME.c_str(), constants::APPEND.c_str());
-    parameters.saveOutput(fileResults);
-	closeFile(fileResults, constants::RESULTS_FILE_NAME.c_str());
-
-	fileReactant = openFile(constants::REAC_FILE_NAME.c_str(), constants::APPEND.c_str());
-    if(parameters.getMinimizeOnly())
-    {
-        initial->matter2con(fileReactant);
-    }
-    else
-    {
-        min1->matter2con(fileReactant);
-        // Only save the saddle in the case that we did a saddle search.
-        fileMode = openFile(constants::MODE_FILE_NAME.c_str(), constants::APPEND.c_str());
-        saddlePoint.saveMode(fileMode);
-        closeFile(fileMode, constants::MODE_FILE_NAME.c_str());
-    }
-	closeFile(fileReactant, constants::REAC_FILE_NAME.c_str());
-
-	fileSaddle = openFile(constants::SEND_SP_CONF_FILE_NAME.c_str(), constants::APPEND.c_str());
-    saddle->matter2con(fileSaddle);
-	closeFile(fileSaddle, constants::SEND_SP_CONF_FILE_NAME.c_str());               
-
-	fileProduct = openFile(constants::SEND_PROD_FILE_NAME.c_str(), constants::APPEND.c_str());
-	min2->matter2con(fileProduct);
-    closeFile(fileProduct, constants::SEND_PROD_FILE_NAME.c_str());
-
-    return;
-}
-
-
-void client_eon::printEndState(long status){
-    fprintf(stdout, "Final state: ");
-    if(status == statusGood)
-        fprintf(stdout, "Succesful.\n");
-
-    else if(status == statusBadNoConvex)
-        fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
-   
-    else if(status == statusBadHighEnergy)
-        fprintf(stdout, "Saddle search, barrier too high.\n");
-        
-    else if(status == statusBadMaxConcaveIterations) 
-        fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
-
-    else if(status == statusBadMaxIterations)
-        fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
-
-    else if(status == statusBadNotConnected)
-        fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
-
-    else if(status == statusBadPrefactor)
-            fprintf(stdout, "Prefactors, not within window as defined in Constants\n");
-
-    else if(status == statusBadHighBarrier)
-        fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
-
-    else
-        fprintf(stdout, "Unknown state!!!\n");
-    return;
-}
-
-
-// Just to print information to the user
-void client_eon::printRequestedInfo(char *argv) {
-    if (strcmp(argv, "-version") == 0 || strcmp(argv, "--version") == 0) {
-        fprintf(stdout, "Version: %s\n",constants::VERSION_INFO_EON2.c_str());
-    }
-    else if (strcmp(argv, "-print_parameters") == 0 || 
-             strcmp(argv, "--print_parameters") == 0) {
-        fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "Parameters used when executed.\n");
-        fprintf(stdout, "If \"Bus error\" parameter file is not in directory (-make_parameters creates file).\n\n");
-        FILE* fileParameters;
-        fileParameters = fopen(constants::PARMS_PASSED_FILE_NAME.c_str(), "r");
-        parameters.load(fileParameters);
-        parameters.printInput();
-        fprintf(stdout, "-------------------\n\n");
-    }
-    else if (strcmp(argv, "-make_parameters") == 0 || 
-             strcmp(argv, "--make_parameters") == 0) {
-        fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "Create needed parameter file.\n");
-        FILE* fileParameters;
-        fileParameters = fopen(constants::PARMS_PASSED_FILE_NAME.c_str(), "w");
-        parameters.saveInput(fileParameters);
-        fprintf(stdout, "-------------------\n\n");
-    }
-    else if (strcmp(argv, "-files") == 0 || strcmp(argv, "--files") == 0) {
-        fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "The following files have to exist in the same directory as this executable\n\n");
-        fprintf(stdout, "Input reactant configuration:           %s\n",
-                constants::REAC_PASSED_FILE_NAME.c_str());
-        fprintf(stdout, "Input (-make_parameters creates file):  %s\n",
-                constants::PARMS_PASSED_FILE_NAME.c_str());
-        fprintf(stdout, "Input displacement done by server:      %s\n",
-		constants::DISPLACEMENT_PASSED_FILE_NAME.c_str());
-	fprintf(stdout, "Input initial mode:                     %s\n",
-		constants::MODE_PASSED_FILE_NAME.c_str());
-        fprintf(stdout, "Output (can be empty):                  %s\n",
-                constants::REAC_FILE_NAME.c_str());
-        fprintf(stdout, "Output (can be empty):                  %s\n",
-                constants::SEND_SP_CONF_FILE_NAME.c_str());
-        fprintf(stdout, "Output (can be empty):                  %s\n",
-                constants::SEND_PROD_FILE_NAME.c_str()); 
-        fprintf(stdout, "Output (can be empty):                  %s\n",
-                constants::RESULTS_FILE_NAME.c_str());
-        fprintf(stdout, "-------------------\n");
-        fprintf(stdout, "Files created by BOINC.\n\n");
-        fprintf(stdout, "stderr.txt\n");
-        fprintf(stdout, "init_data.xml\n");
-        fprintf(stdout, "boinc_finish_called\n");
-        fprintf(stdout, "-------------------\n\n");
-    }
-    else if (strcmp(argv, "-help") == 0 || strcmp(argv, "--help") == 0 || 
-             strcmp(argv, "-h") == 0 || strcmp(argv, "--h") == 0) {
-        fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "-help               prints this\n");
-        fprintf(stdout, "-version            prints version number\n");
-        fprintf(stdout, "-print_parameters   prints parameters used during execution\n");
-        fprintf(stdout, "-make_parameters    makes parameter file needed. Overwrites existing file!\n");
-        fprintf(stdout, "-files              prints the files needed for execution\n");
-        fprintf(stdout, "-test               prints potential energy and forces of reactant.test to potentialInfo.txt\n");
-        fprintf(stdout, "-------------------\n\n");
-    }
-    else{
-        fprintf(stdout, "\n-------------------\n");
-        fprintf(stdout, "Unknown command! (-help prints known commands)\n");
-        fprintf(stdout, "-------------------\n\n");
-    }
-    return;
-}
-
-void client_eon::forcesOfConfig()
-{
-    FILE *fileParameters, *fileReactant;
-
-    fileParameters = fopen("parameters.test", "r");
-    parameters.load(fileParameters);
-    fclose(fileParameters);
- 
-    testConfig = new Matter(&parameters);
-
-    fileReactant = fopen("reactant.test", "r");
-    //printf("test->con2matter(fileReactant);\n");
-    int ok = testConfig->con2matter(fileReactant);   //load the reactant
-    if (not ok) 
-    {
-        fprintf(stderr, "Cannot read reactant.test\n");
-        std::exit(1);
-    };
-    fclose(fileReactant);
-    //printf("Reactant loaded\n");
-    ConjugateGradients cgInitial(testConfig, &parameters);
-    //printf("Conjugate gradients initialized\n");
-
-    double potEnergy;
-    potEnergy = testConfig->potentialEnergy();
-    //printf("Potential energy %lf\n", potEnergy);
-
-    long int numOfAtoms;
-    numOfAtoms = testConfig->numberOfAtoms();
- 
-    //printf("Number of atoms %li\n",numOfAtoms);
-    double initialForces[3*numOfAtoms];    // three coordinates for each atom
-    testConfig->getForces(initialForces);
-    FILE * file;
-    file = fopen("potentialInfo.txt","w");
-    fprintf(file, "Information about potential energy and forces of a\ncurrent configuration in reactant_passed.con\n\n\n\n");
-    fprintf(file, "Potential tag: %li\n\n\n", parameters.getPotentialTag());
-    fprintf(file, "Potential energy: %lf\n\n", potEnergy);
-    fprintf(file, "Force coordinates:\n");
-    fprintf(file, "Atom     %-13.13s%-13.13s%-13.13s\n", "x:","y:","z:");
-    for (int i=0; i<numOfAtoms;){
-        fprintf(file, "%4i%13.6lf%13.6lf%13.6lf\n",i,initialForces[3*i],initialForces[3*i+1],initialForces[3*i+2]);
-        i++;
-    }
-
-    fclose(file);
-    return;
+    boinc_finish(0);
 }

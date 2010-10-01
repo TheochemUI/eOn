@@ -114,7 +114,8 @@ void Quickmin::fullRelax()
         converged = isItConverged(parameters_->getConverged_Relax());
     }
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
-    parameters_->addForceCalls(forceCallsTemp);
+    //XXX: need to fix force counting
+    //parameters_->addForceCalls(forceCallsTemp);
     return;
 };
 

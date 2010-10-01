@@ -1,6 +1,5 @@
 #ifndef FALSE_BOINC_H
 #define FALSE_BOINC_H
-#include <cstdlib>
 #include <cstring>
 #include <stdlib.h>
 // For degugging
@@ -18,6 +17,7 @@ inline int boinc_resolve_filename(const char *str1, char *str2, size_t n)
 
 inline void boinc_fraction_done(double frac)
 {
+    printf("%.1lf%% done\n", frac*100);
 }
 #define boinc_fopen fopen
 

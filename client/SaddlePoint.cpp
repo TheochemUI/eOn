@@ -12,17 +12,18 @@
 #include "HelperFunctions.h"
 #include "Dimer.h"
 #include "EpiCenters.h"
+#include "Constants.h"
 
 #include <cstdlib>
 
 using namespace helper_functions;
-//using namespace EpiCenters;
-//using namespace constants;
 
 SaddlePoint::SaddlePoint(){
     lowestEigenmode_ = 0;
     eigenMode_ = 0;
     initialDisplacement_ = 0;
+    forceCallsSaddlePointConcave_ = 0;
+    forceCallsSaddlePointConvex_ = 0;
     return;
 }
 
@@ -72,13 +73,21 @@ void SaddlePoint::initialize(Matter * initial, Matter *saddle, Parameters *param
         #endif
     }
     nFreeCoord_ = 3 * saddle->numberOfFreeAtoms();
-    eigenMode_ = new double [nFreeCoord_];
+    eigenMode_ = new double[nFreeCoord_];
     status_ = statusInit;
 
     return;
 }
 
-void SaddlePoint::loadMode(FILE * modeFile){
+void SaddlePoint::loadMode(string filename) {
+    FILE *modeFile;
+
+    modeFile = fopen(filename.c_str(), constants::READ.c_str());
+    loadMode(modeFile);
+    fclose(modeFile);
+}
+
+void SaddlePoint::loadMode(FILE *modeFile){
     long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
     mode = new double[nall];
@@ -88,7 +97,7 @@ void SaddlePoint::loadMode(FILE * modeFile){
     }
 }
 
-void SaddlePoint::saveMode(FILE * modeFile)
+void SaddlePoint::saveMode(FILE *modeFile)
 {
     long const nAtoms = saddle_->numberOfAtoms();
     fprintf(modeFile, "%ld %ld\n", nAtoms*3, nFreeCoord_);
@@ -104,8 +113,7 @@ void SaddlePoint::saveMode(FILE * modeFile)
     return;
 }
 
-long SaddlePoint::locate(Matter *min1, Matter *min2)
-{
+long SaddlePoint::locate(Matter *min1, Matter *min2) {
     double initialEnergy;
     eigenValue_ = 0;
     initialEnergy = saddle_->potentialEnergy();
@@ -117,14 +125,10 @@ long SaddlePoint::locate(Matter *min1, Matter *min2)
     if (parameters_->getRefineSP()) {
         lowestEigenmode_->startNewSearchAndCompute(saddle_, mode);
         eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
-    }
-    else {
-        if(parameters_->getMaxJumpAttempts_SP() <= 0)
-        {
+    }else{
+        if(parameters_->getMaxJumpAttempts_SP() <= 0){
             displaceInConcaveRegion();
-        }
-        else
-        {
+        }else{
             jumpToConvexRegion();
         }
     }
@@ -298,6 +302,14 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     return;
 }
 
+void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
+    if(0 < eigenvalue)
+        forceCallsSaddlePointConcave_ += fcalls;
+    else
+        forceCallsSaddlePointConvex_ += fcalls;
+    return;
+}
+
 void SaddlePoint::jumpToConvexRegion(){
     long forceCallsSaddle;
     long iterations = 0;
@@ -324,7 +336,7 @@ void SaddlePoint::jumpToConvexRegion(){
         status_ = statusBadNoConvex;
 
     forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;
-    parameters_->addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
+    addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
 
     delete [] pos;
     return;
@@ -402,7 +414,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             concaveSeries = concaveSeries + 1;
         }
         forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;        
-        parameters_->addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
+        addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
 
         iterations++;
         #ifndef NDEBUG
