@@ -67,7 +67,7 @@ void ProcessSearch::run(int bundleNumber)
     int status = doProcessSearch();
 
     printEndState(status);
-    saveData(status);
+    saveData(status, bundleNumber);
 
     delete prefactors;
     delete saddlePoint;
@@ -136,10 +136,17 @@ int ProcessSearch::doProcessSearch(void)
     return statusGood;
 }
 
-void ProcessSearch::saveData(int status){
+void ProcessSearch::saveData(int status, int bundleNumber){
     FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
-	fileResults = fopen(constants::RESULTS_FILE_NAME.c_str(), "wb");
+    char filename[STRING_SIZE];
+
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
+    }else{
+        strncpy(filename, "results.dat", STRING_SIZE);
+    }
+	fileResults = fopen(filename, "wb");
 	///XXX: min_fcalls isn't quite right it should get them from
 	//      the minimizer. But right now the minimizers are in
 	//      the SaddlePoint object. They will be taken out eventually.
@@ -166,7 +173,12 @@ void ProcessSearch::saveData(int status){
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
 	fclose(fileResults);
 
-	fileReactant = fopen(constants::REAC_FILE_NAME.c_str(), "wb");
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "reactant.con", STRING_SIZE);
+    }
+	fileReactant = fopen(filename, "wb");
     min1->matter2con(fileReactant);
     // Only save the saddle in the case that we did a saddle search.
     fileMode = fopen(constants::MODE_FILE_NAME.c_str(), "wb");
@@ -174,11 +186,21 @@ void ProcessSearch::saveData(int status){
     fclose(fileMode);
 	fclose(fileReactant);
 
-	fileSaddle = fopen(constants::SEND_SP_CONF_FILE_NAME.c_str(), "wb");
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "saddle.con", STRING_SIZE);
+    }
+	fileSaddle = fopen(filename, "wb");
     saddle->matter2con(fileSaddle);
 	fclose(fileSaddle);
 
-	fileProduct = fopen(constants::SEND_PROD_FILE_NAME.c_str(), "wb");
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "product.con", STRING_SIZE);
+    }
+	fileProduct = fopen(filename, "wb");
 	min2->matter2con(fileProduct);
     fclose(fileProduct);
 
