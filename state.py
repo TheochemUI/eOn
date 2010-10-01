@@ -144,10 +144,14 @@ class State:
         # This appears to be a unique process.
         # Check if the mode, reactant, saddle, and product are legit
         try:
-            io.load_mode(result['mode.dat'])
-            io.loadcon(result['reactant.con'])
-            io.loadcon(result['saddle.con'])
-            io.loadcon(result['product.con'])
+            if 'mode' not in result:
+                io.load_mode(result['mode.dat'])
+            if 'reactant' not in result:
+                io.loadcon(result['reactant.con'])
+            if 'saddle' not in result:
+                io.loadcon(result['saddle.con'])
+            if 'product' not in result:
+                io.loadcon(result['product.con'])
         except:
             logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
@@ -166,11 +170,11 @@ class State:
         self.inc_proc_repeat_count(id)
 
         # Move the relevant files into the procdata directory.
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'])
-        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'])
-        open(self.proc_product_path(id), 'w').writelines(result['product.con'])
-        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'])
-        open(self.proc_results_path(id), 'w').writelines(result['results.dat'])
+        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
+        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'].getvalue())
+        open(self.proc_product_path(id), 'w').writelines(result['product.con'].getvalue())
+        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'].getvalue())
+        open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id, 
@@ -559,11 +563,11 @@ class State:
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
-            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant.con'])
-            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product.con'])
-            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode.dat'])
-            open(os.path.join(self.bad_procdata_path, "result_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'])
-            open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'])
+            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant.con'].getvalue())
+            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product.con'].getvalue())
+            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode.dat'].getvalue())
+            open(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'].getvalue())
+            open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'].getvalue())
 
 
 

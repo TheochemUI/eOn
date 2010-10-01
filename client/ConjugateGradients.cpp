@@ -139,8 +139,8 @@ void ConjugateGradients::fullRelax(){
         #ifndef NDEBUG
         double maxForce=0.0;
         for (int j=0;j<nFreeCoord_;j++) {
-            if (force_[j]>maxForce) {
-                maxForce = force_[j];
+            if (fabs(force_[j])>maxForce) {
+                maxForce = fabs(force_[j]);
             }
         }
         printf("min = %d, max force = %lf\n", i, maxForce);
@@ -167,7 +167,7 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
 //    diff = length(force_,nFreeCoord_);
 //    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);    
 //std::cout<<diff<<"\n";
-
+    printf("diff %lf\n", diff);
     return(diff < convergeCriterion);
 };
 

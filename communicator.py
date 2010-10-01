@@ -76,12 +76,21 @@ class Communicator:
             # and we want the second #.
             basename, dirname = os.path.split(jobpath)
             
-            results = [{'name':basename} for i in range(bundle_size)]
+            print "DIRNAME: "+dirname
+            results = [{'name':dirname} for i in range(bundle_size)]
             for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
+                if '_passed' in filename:
+                    continue
                 try:
                     #parse filename
-                    rootname, dirname = os.path.split(filename)
-                    parts = re.match(regex, rootname).groups()
+                    rootname, fname = os.path.split(filename)
+                    
+
+                    match = re.match(regex, fname)
+                    if not match:
+                        continue
+                    parts = match.groups()
+                  
                     index = int(parts[1])
                     key = parts[0]+parts[2]
 
@@ -120,7 +129,6 @@ class Communicator:
             n = 0
             for job in chunk:
                 for basename in job.keys():
-                    print basename
                     splitname = basename.rsplit(".", 1)
                     if len(splitname)!=2:
                         continue
