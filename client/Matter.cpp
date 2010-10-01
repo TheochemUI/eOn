@@ -959,12 +959,17 @@ bool Matter::isItConverged(double convergeCriterion)
 
     for(int i=0;i<nAtoms_*3;i++)
     {
-        diff = fabs(forces_[i]);
-        if(convergeCriterion < diff)
+        if(getFixed(i))
         {
+            continue;
+        }
+        diff = fabs(forces_[i]);
+        
+
+        if(convergeCriterion < diff)
+        { 
             break;
         }
     }
-
     return(diff < convergeCriterion);
 };
