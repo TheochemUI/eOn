@@ -1,28 +1,15 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/11/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
- *      Andri Arnaldsson
- *      Roar Olsen
+ *  EON ConjugateGradients.cpp
  *===============================================
  */
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
-#include "Constants.h"
 
 #include <cassert>
 #include <cmath>
 
 using namespace helper_functions;
-//using namespace constants;
 
 
 ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
@@ -32,7 +19,6 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 };
 
 
-// Constructor to be used when modified forces are used
 ConjugateGradients::ConjugateGradients(Matter *matter, 
                                        Parameters *parameters, 
                                        double *forces){
@@ -45,7 +31,7 @@ ConjugateGradients::ConjugateGradients(Matter *matter,
 
 void ConjugateGradients::initialize(Matter *matter, Parameters *parameters)
 {
-    // Note that it is the pointer that is copied.
+    // note that it is the pointer that is copied
     matter_ = matter;
     parameters_ = parameters;
  
@@ -58,7 +44,7 @@ void ConjugateGradients::initialize(Matter *matter, Parameters *parameters)
     force_ = new double[nFreeCoord_];
     forceOld_ = new double[nFreeCoord_];
  
-    // There should be space for both free and frozen atoms
+    // there should be space for both free and frozen atoms
     tempListDouble_ = new double[3*matter->numberOfAtoms()];
 
     for(int i=0;i<nFreeCoord_;i++)
@@ -101,8 +87,7 @@ void ConjugateGradients::oneStep(){
     assert(length(force_, nFreeCoord_) != 0.0);
     matter_->getFreePositions(pos);
     determineSearchDirection();
-    // Move system an infinitesimal step 
-    // to determine the optimal step size along the search line
+    // move system an infinitesimal step to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_, directionNorm_, 
                    parameters_->cgCurvatureStep, nFreeCoord_);
  
@@ -110,7 +95,7 @@ void ConjugateGradients::oneStep(){
     matter_->setFreePositions(posStep);
     matter_->getFreeForces(forceAfterStep);
  
-    // Move system optimal step
+    // move system optimal step
     step = stepSize(force_, forceAfterStep, parameters_->cgMaxMoveFullRelax);
     multiplyScalar(tempListDouble_, directionNorm_, step, nFreeCoord_);
     add(pos, tempListDouble_, pos, nFreeCoord_);
@@ -182,7 +167,7 @@ void ConjugateGradients::determineSearchDirection(){
     b = dot(forceOld_,forceOld_,nFreeCoord_);
     if(a<0.5*b){
         subtract(tempListDouble_, force_, forceOld_, nFreeCoord_);
-        //Polak-Ribiere way to determine how much to mix in of old direction
+        // Polak-Ribiere way to determine how much to mix in of old direction
         gamma = dot(force_, tempListDouble_, nFreeCoord_)/b;
     }
     else

@@ -1,14 +1,6 @@
 /*
  *===============================================
- *  PotentialsInterface.h
- *-----------------------------------------------
- *  Created by Andreas Pedersen on 1/3/07.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON PotentialsInterface.h
  *===============================================
  */
 #ifndef POTENTIALS_INTERFACE_H
