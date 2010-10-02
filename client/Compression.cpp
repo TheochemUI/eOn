@@ -9,7 +9,7 @@
 
 #include "compression.h"
 
-        const long potentialNewPotential = 1;
+//const long potentialNewPotential = 1;
 
 //Probably should be a multiple of 512 as tar files have a
 //block size of 512 bytes.

@@ -1,24 +1,15 @@
 /*
  *===============================================
- *  Created by Rye Terrell on 6/7/10.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON QMBox.cpp
  *===============================================
  */
-#include "QMBox.h"
 
-//#include "MinimizersInterface.h"
+#include "QMBox.h"
 #include "HelperFunctions.h"
-//#include "Constants.h"
 
 #include <cmath>
 
 using namespace helper_functions;
-//using namespace constants;
 
 
 QMBox::QMBox(Matter *matter, Parameters *parameters)
@@ -121,8 +112,6 @@ void QMBox::fullRelax()
 //        std::cout<<matter_->potentialEnergy()<<"\n";
     }
     forceCallsTemp = matter_->getForceCalls() - forceCallsTemp;
-    //XXX: need to fix force counting
-    //parameters_->addForceCalls(forceCallsTemp);
     return;
 };
 

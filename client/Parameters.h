@@ -1,14 +1,6 @@
 /*
  *===============================================
- *  Parameters.h
- *-----------------------------------------------
- *  Created by Andreas Pedersen on 10/30/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON Parameters.h
  *===============================================
  */
 
@@ -43,11 +35,11 @@ struct Input {
     double qmTimeStep; // time step size used in Quickmin
 
     double maxDifferencePos; // The distance criterion for comparing geometries
-    double neighborCutoff; // radius used in the local atomic structure analysis
+//    double neighborCutoff; // radius used in the local atomic structure analysis
+//GH: this needs to be a parameter instead of a #define in Epicenters
 
     bool saddleRefine; // refine saddle point
     long saddleMaxJumpAttempts; // how many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what
-    long saddleNrOfTriesToDetermine; // max number of attempts to obtain a converged saddle point
     long saddleMaxIterations; // max iterations for saddle point searches and minimization [GH: fix comment]
     long saddleMaxIterationsConcave; // max iterations for saddle point searches and minimization [GH: fix comment]
     long saddleLowestEigenmodeDetermination; // the algorithm to be used for lowest eigenmode determination; compare with values in Constants.cpp (now in SaddlePoint.h)
@@ -70,20 +62,12 @@ struct Input {
     //long dimerRotationsNewSearch; // number of iteration before starting a new saddle point search used in dimer
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
-    double dimerConvergenceLimit;
     double dimerMaxIterations;
-
-    double lanczosMaxIterations;
-    double lanczosConvergenceLimit;
 };
 
 /** All results being obtained. The results are store in the file with the name set in (Constants::RESULTS_FILE_NAME).*/
 struct Output {
     long terminationReason; // tag to indicate if the calculation converged. Compare with values in Constants.h
-    long forceCalls_; // total number of force calls
-    long forceCallsSaddlePointConcave_; // number of force calls used during the saddle point determination in the concave
-    long forceCallsSaddlePointConvex_; // number of force calls used during the saddle point determination in the convex region
-    long forceCallsPrefactors_; // number of force calls used during the prefactor determination
     double potentialEnergySP; // energy of the saddle point [eV]
     double potentialEnergyMin1; // energy of min1 [eV]
     double potentialEnergyMin2; // energy of min2 [eV]
@@ -108,18 +92,6 @@ public:
 
     enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, UNKNOWN_JOBTYPE};
     JobType jobType;
-    
-    // Accounting for the force calls
-    long getForceCalls();
-    long getForceCallsSaddlePoint();
-    long getForceCallsSaddlePointConcave();
-    long getForceCallsSaddlePointConvex();
-    long getForceCallsPrefactors();
-    void addForceCalls(long forceCalls);
-    void addForceCallsSaddlePoint(long forceCallsSaddlePoint, double eigenvalue);
-    void addForceCallsPrefactors(long forceCallsPrefactors);
-    void resetForceCalls();
-    void resetForceCallsSaddlePoint();
-    void resetForceCallsPrefactors();
+
 };
 #endif

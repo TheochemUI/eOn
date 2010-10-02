@@ -1,12 +1,6 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/4/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON Potentials.cpp
  *===============================================
  */
 
@@ -14,10 +8,8 @@
 
 #include "Potentials.h"
 #include "potentials/NewPotential/NewPotential.h"
-//#include "VASP.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/EMT/EffectiveMediumTheory.h"
-//#include "LJBinary.h"
 #include "potentials/Morse/Morse.h"
 #include "potentials/LennardJones/LJ.h"
 #include "potentials/SW/SW.h"
