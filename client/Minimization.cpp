@@ -33,7 +33,7 @@ void Minimization::run(int bundleNumber)
     ConjugateGradients cgMin(reactant, parameters);
     cgMin.fullRelax();
 
-    if (cgMin.isItConverged(parameters->getConverged_Relax())) {
+    if (cgMin.isItConverged(parameters->convergedRelax)) {
         printf("Minimization converged within tolerence\n");
     }else{
         printf("Minimization did not converge to tolerence!\n"
