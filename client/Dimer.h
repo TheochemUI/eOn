@@ -1,18 +1,6 @@
 /*
  *===============================================
- *  Dimer.h
- *-----------------------------------------------
- *  Created by Andreas Pedersen on 10/5/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
- *      Roar Olsen
+ *  EON Dimer.h
  *===============================================
  */
 #ifndef DIMER_H
@@ -27,7 +15,6 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Parameters.h"
-//#include "DimerConstants.h"
 #include "LowestEigenmodeInterface.h"
 
 /** Use the dimer method to estimate the lowest eigenvector of the Hessian and its corresponding eigenvalue (curvature). In this version a 'fictive' dimer is used, only one dimer configuration is calculated explicitly whereas the other configuration is estimated with forward differencing relative to the center of the dimer*/

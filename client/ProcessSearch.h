@@ -1,3 +1,9 @@
+/*
+ *===============================================
+ *  EON ProcessSearch.h
+ *===============================================
+ */
+
 #include "Matter.h"
 #include "Parameters.h"
 #include "SaddlePoint.h"

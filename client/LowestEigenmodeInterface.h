@@ -1,16 +1,9 @@
 /*
  *===============================================
- *  LowestEigenmodeInterface.h
- *-----------------------------------------------
- *  Created by Andreas Pedersen on 1/3/07.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON LowestEigenmodeInterface.h
  *===============================================
  */
+
 #ifndef LOWEST_EIGENMODE_INTERFACE_H
 #define LOWEST_EIGENMODE_INTERFACE_H
 
@@ -18,7 +11,7 @@
 
 #include "Parameters.h"
 
-/** Defining the interface for the lowest eigenvalue determination algorithm.*/
+/* Define the interface for the lowest eigenvalue determination algorithm */
 class LowestEigenmodeInterface{
 public:
     virtual ~LowestEigenmodeInterface(){};

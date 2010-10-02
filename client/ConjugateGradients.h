@@ -1,19 +1,6 @@
 /*
  *===============================================
- *  ConjugateGradients.h
- *-----------------------------------------------
- *  Created by Andreas Pedersen on 10/11/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
- *      Andri Arnaldsson
- *      Roar Olsen
+ *  EON ConjugateGradients.h
  *===============================================
  */
 #ifndef CG_H
