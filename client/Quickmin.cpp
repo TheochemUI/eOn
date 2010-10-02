@@ -1,13 +1,6 @@
-
 /*
  *===============================================
- *  Created by Andreas Pedersen on 4/17/07.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON Quickmin.cpp
  *===============================================
  */
 
@@ -18,7 +11,6 @@
 
 #include <cmath>
 using namespace helper_functions;
-//using namespace constants;
 
 
 Quickmin::Quickmin(Matter *matter, Parameters *parameters)
@@ -114,8 +106,6 @@ void Quickmin::fullRelax()
         converged = isItConverged(parameters_->convergedRelax);
     }
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
-    //XXX: need to fix force counting
-    //parameters_->addForceCalls(forceCallsTemp);
     return;
 };
 

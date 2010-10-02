@@ -8,7 +8,7 @@
 #include"Asap/SuperCell.h"
 #include"Asap/Vec.h"
 
-#include "../../system_unit.h" // unit converters
+//#include "../../system_unit.h" // unit converters
 #include "../../PotentialsInterface.h"
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/

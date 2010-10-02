@@ -38,7 +38,7 @@ void LJ::force(long N, const double *R, const long *atomicNrs, double *F, double
         F[3*i+2] = 0;
     }
     for(int i=0; i<3*N; i++)
-        pos[i] = R[i]/system_unit::ANGSTROM;
+        pos[i] = R[i];
     // Initializing end
     
     for(int i=0; i<N-1; i++){

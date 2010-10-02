@@ -1,25 +1,16 @@
 /*
  *===============================================
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON EpiCenters.cpp
  *===============================================
  */
-
-#include "HelperFunctions.h"
-#include "Constants.h"
 #include "EpiCenters.h"
-
-using namespace helper_functions;
-//using namespace constants;
+#include "HelperFunctions.h"
 
 #include <vector>
-//#include <limits>
 #include <cassert>
 #include <climits>
 
+using namespace helper_functions;
 using std::vector;
 
 long EpiCenters::cnaEpiCenter(const Matter *matter){

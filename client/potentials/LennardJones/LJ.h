@@ -4,7 +4,7 @@
 
 #include <math.h> 
 #include <iostream>
-#include "../../system_unit.h" // unit converters
+//#include "../../system_unit.h" // unit converters
 #include "../../PotentialsInterface.h"
 
 /** Lennard Jones potential.*/

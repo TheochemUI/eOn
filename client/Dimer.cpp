@@ -189,8 +189,6 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
 
     totalForceCalls += forceCallsInitial+forceCallsDimer;
 
-    //parameters_->addForceCallsSaddlePoint(forceCallsInitial+forceCallsDimer,
-    //                                      eigenvalue_);
     delete [] rotationalForce;
     delete [] rotationalForceOld;
     delete [] rotationalPlaneNormOld;

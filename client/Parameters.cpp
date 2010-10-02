@@ -1,20 +1,17 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/30/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
+ *  EON Parameters.cpp
  *===============================================
  */
+
 #include "Parameters.h"
 #include "INIFile.h"
 
 Parameters::Parameters(){
 
     // Default values
+
+    jobType = PROCESS_SEARCH;
     randomSeed = -1;
     reactantStateTag = 0;
     potentialTag = 1;
@@ -22,25 +19,18 @@ Parameters::Parameters(){
     getPrefactorsTag = 0;
     minimizeOnly = 0;
     minimizeBox = 0;
-
-    jobType = PROCESS_SEARCH;
+    maxDifferencePos = 0.1;
+    // neighborCutoff = 0.33; // this is now defined in Epicenters -- but it should be moved back as a parameter
     
-    // Parameters, default values if not read in from parameters_passed.dat
-
-    // Value used in the Relaxation   
+    // default parameter for relaxation   
     convergedRelax = 0.005;
 
-    // Constants used in the client
-    maxDifferencePos = 0.1; // The distance criterion for comparing geometries
-    neighborCutoff = 0.33;
-
-    // Values used in the Saddle Point determination   
+    // default parameters for saddle point determination   
     saddleTypePerturbation = 1;
     saddleRefine = false;
     saddleLowestEigenmodeDetermination = 1;
     saddleConverged = 0.025;
     saddleMaxJumpAttempts = 0;
-    saddleNrOfTriesToDetermine = 1;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleNormPerturbation = 0.1;
@@ -51,33 +41,22 @@ Parameters::Parameters(){
     saddleMaxIterationsConcave = 256;
     saddlePerpendicularForceRatio = 0.0;
 
-    // Values used in the Hessian determination   
+    // default parameters for Hessian determination   
 	hessianMaxSize = 0;
 	hessianMinDisplacement = 0.25;
     hessianWithinRadiusDisplaced = 5.0;
     hessianPrefactorMax = 10e20;
     hessianPrefactorMin = 10e8;
 
-    // Values used in the Dimer method
+    // default parameters the dimer method
     dimerRotations = 1;
     dimerSeparation = 0.0001;
     dimerRotationAngle = 0.005;
     
-    // Defaults for Lanczos
-    lanczosMaxIterations = 50;
-    lanczosConvergenceLimit = 1e-4;
-
-    // Initializing the cummulative output
-    forceCalls_ = 0;
-    forceCallsSaddlePointConcave_ = 0;
-    forceCallsSaddlePointConvex_ = 0;
-    forceCallsPrefactors_ = 0;
-    displacementSaddleDistance = 0;
-
-    // Parameters used by the optimizers
-    cgCurvatureStep = 0.001; // finite difference step size used in conjugate gradients
-    cgMaxMoveFullRelax = 0.2; // maximum displacement vector for a step during minimization
-    qmTimeStep = 0.1; // time step size used in Quickmin.
+    // default parameters used by the optimizers
+    cgCurvatureStep = 0.001;
+    cgMaxMoveFullRelax = 0.2;
+    qmTimeStep = 0.1;
 
     return;
 }
@@ -97,15 +76,15 @@ void Parameters::load(string filename)
 
 void Parameters::load(FILE *file){
     
-    //If we fail to parse the file as an INI, we will need to rewind the file. So, we store the current stream position.
-    fpos_t pos;
-    fgetpos(file, &pos); 
+    // if we fail to parse the file as an INI, we will need to rewind the file. So, we store the current stream position
+//    fpos_t pos;
+//    fgetpos(file, &pos); 
 
     CIniFile ini;
     ini.CaseInsensitive();
     if(ini.ReadFile(file))
     {
-        //If we succesfully read the file, then parse it as an INI
+        // if we succesfully read the file, then parse it as an INI
         randomSeed = ini.GetValueL("Default", "RANDOM_SEED", randomSeed);
         reactantStateTag = ini.GetValueL("Default", "REACTANT_STATE_TAG", reactantStateTag);
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
@@ -134,7 +113,6 @@ void Parameters::load(FILE *file){
         saddleRefine = ini.GetValueB("Saddle_Point", "REFINE", saddleRefine);
         saddleConverged = ini.GetValueF("Saddle_Point", "CONVERGED", saddleConverged);
         saddleMaxJumpAttempts = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS", saddleMaxJumpAttempts);
-        saddleNrOfTriesToDetermine = ini.GetValueL("Saddle_Point", "NR_OF_TRIES_TO_DETERMINE", saddleNrOfTriesToDetermine);
         saddleMaxStepSize = ini.GetValueF("Saddle_Point", "MAX_STEP_SIZE", saddleMaxStepSize);
         saddleMaxEnergy = ini.GetValueF("Saddle_Point", "MAX_ENERGY", saddleMaxEnergy);
         saddleNormPerturbation = ini.GetValueF("Saddle_Point", "NORM_PERTURBATION", saddleNormPerturbation);
@@ -149,58 +127,11 @@ void Parameters::load(FILE *file){
         
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
-
-        lanczosConvergenceLimit = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergenceLimit);
-        lanczosMaxIterations = ini.GetValueF("Lanczos", "ITERATIONS", lanczosMaxIterations);
     }
     else
     {
         // GH: old parameter style is no more
-        // should print some error or warning here
+        // should probably print some error or warning here
     }
-}
-
-// Accounting for the force calls
-long Parameters::getForceCalls(){
-    return forceCalls_;
-}
-long Parameters::getForceCallsSaddlePoint(){
-    return forceCallsSaddlePointConcave_+forceCallsSaddlePointConvex_;
-}
-long Parameters::getForceCallsSaddlePointConcave(){
-    return forceCallsSaddlePointConcave_;
-}
-long Parameters::getForceCallsSaddlePointConvex(){
-    return forceCallsSaddlePointConvex_;
-}
-long Parameters::getForceCallsPrefactors(){
-    return forceCallsPrefactors_;
-}
-void Parameters::addForceCalls(long forceCalls){
-    forceCalls_ += forceCalls;
-    return;
-}
-void Parameters::addForceCallsSaddlePoint(long forceCallsSaddlePoint, double eigenvalue){
-    if(0 < eigenvalue)
-        forceCallsSaddlePointConcave_ += forceCallsSaddlePoint;
-    else
-        forceCallsSaddlePointConvex_ += forceCallsSaddlePoint;
-    return;
-}
-void Parameters::addForceCallsPrefactors(long forceCallsPrefactors){
-    forceCallsPrefactors_ += forceCallsPrefactors;
-    return;
-}
-void Parameters::resetForceCalls(){
-    forceCalls_ = 0;
-    return;
-}
-void Parameters::resetForceCallsSaddlePoint(){
-    forceCallsSaddlePointConcave_ = 0;
-    forceCallsSaddlePointConvex_ = 0;
-    return;
-}
-void Parameters::resetForceCallsPrefactors(){
-    forceCallsPrefactors_ = 0;
 }
 

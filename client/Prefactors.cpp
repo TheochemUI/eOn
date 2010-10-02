@@ -1,15 +1,6 @@
 /*
  *===============================================
- *  Created by Andreas Pedersen on 10/24/06.
- *-----------------------------------------------
- *  Modified. Name, Date and a small description!
- *
- *-----------------------------------------------
- *  Todo:
- *
- *-----------------------------------------------
- *  Heavily inspired of codes by:
- *      Graeme Henkelman
+ *  EON Prefactors.cpp
  *===============================================
  */
 #include "Prefactors.h"
@@ -128,50 +119,6 @@ bool Prefactors::compute(double *prefactors){
     }
     return(good);
 }
-
-
-/*
-long Prefactors::atomsToAccountForInHessian(){
-    long sizeHessian;
-    double diffR1, diffR2, diffRSaddle;
-    for(int i=0; i<3*nAtoms_; i++)
-        coordinatesToAccountFor_[i] = false;
-    //----- Initialize end -----
-    //std::cout<<"determineActiveAtoms\n";
-    
-    // Picking out all atoms that are displaced
-    for(int i=0; i<nAtoms_; i++){
-        diffR1 = saddle_->distance(*min1_, i);
-        diffR2 = saddle_->distance(*min2_, i);
-        if(((parameters_->getMinDisplacement_Hessian()<diffR1) || 
-           (parameters_->getMinDisplacement_Hessian()<diffR2)) &&
-                !saddle_->getFixed(i)){
-            coordinatesToAccountFor_[ 3*i ] = true;
-            coordinatesToAccountFor_[3*i+1] = true;
-            coordinatesToAccountFor_[3*i+2] = true;
-            
-            // Picking out free atoms in the vicinity of a displaced atom
-            for(int j=0; j<nAtoms_; j++){
-                diffRSaddle = saddle_->distance(i,j);
-                
-                if(diffRSaddle<parameters_->getWithinRadiusDisplaced_Hessian() 
-                   && (!saddle_->getFixed(j))){
-                    coordinatesToAccountFor_[ 3*j ] = true;
-                    coordinatesToAccountFor_[3*j+1] = true;
-                    coordinatesToAccountFor_[3*j+2] = true;
-                }
-            }
-        }
-    }
-    // Counting all the atoms to be accounted for in the Hessian
-    sizeHessian = 0;
-    for(int i=0; i<3*nAtoms_; i++){
-        if(coordinatesToAccountFor_[i] == true)
-            sizeHessian = sizeHessian+1;
-    }
-    return(sizeHessian);
-}
-*/
 
 long Prefactors::atomsToAccountForInHessian(){
 	long sizeHessian;
