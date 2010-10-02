@@ -177,8 +177,8 @@ long Prefactors::atomsToAccountForInHessian(){
 	long sizeHessian;
 	double minDisp;
 	// Account for all atoms moved more than the value specified in parameters
-	if (parameters_->getMaxSize_Hessian() == 0){
-		minDisp = parameters_->getMinDisplacement_Hessian();
+	if (parameters_->hessianMaxSize == 0){
+		minDisp = parameters_->hessianMinDisplacement;
 		sizeHessian = atomsMovedMoreThan(minDisp);
 	}
 	// Will ensure that there is not accounted for more
@@ -186,10 +186,10 @@ long Prefactors::atomsToAccountForInHessian(){
 	else{
 		int loop = 0;
 		do {
-			minDisp = parameters_->getMinDisplacement_Hessian() + loop * 0.1;		
+			minDisp = parameters_->hessianMinDisplacement + loop * 0.1;		
 			sizeHessian = atomsMovedMoreThan(minDisp);
 			loop = loop + 1;
-		} while (parameters_->getMaxSize_Hessian() < sizeHessian);
+		} while (parameters_->hessianMaxSize < sizeHessian);
 	}
 	return(sizeHessian);
 }
@@ -217,7 +217,7 @@ long Prefactors::atomsMovedMoreThan(double minDisplacement){
             for(int j=0; j<nAtoms_; j++){
                 diffRSaddle = saddle_->distance(i,j);
                 
-                if(diffRSaddle<parameters_->getWithinRadiusDisplaced_Hessian() 
+                if(diffRSaddle<parameters_->hessianWithinRadiusDisplaced 
                    && (!saddle_->getFixed(j))){
                     coordinatesToAccountFor_[ 3*j ] = true;
                     coordinatesToAccountFor_[3*j+1] = true;

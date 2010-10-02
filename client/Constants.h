@@ -19,6 +19,7 @@
 /** Collection of constants.*/
 
 #define STRING_SIZE 512
+	const long potentialNewPotential = 0;
 
 namespace constants {
 

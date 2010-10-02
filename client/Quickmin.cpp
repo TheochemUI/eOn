@@ -61,11 +61,11 @@ void Quickmin::oneStepPart1(double *freeForces)
     positions = new double[nFreeCoord_];
     velocity = new double[nFreeCoord_];
     matter_->getFreeVelocities(velocity);  
-    multiplyScalar(tempListDouble_, freeForces, 0.5 * parameters_->getQmTimeStep() * dtScale_, nFreeCoord_);
+    multiplyScalar(tempListDouble_, freeForces, 0.5 * parameters_->qmTimeStep * dtScale_, nFreeCoord_);
     add(velocity, tempListDouble_, velocity, nFreeCoord_);
     matter_->setFreeVelocities(velocity);
     matter_->getFreePositions(positions);       
-    multiplyScalar(tempListDouble_, velocity, parameters_->getQmTimeStep() * dtScale_, nFreeCoord_);
+    multiplyScalar(tempListDouble_, velocity, parameters_->qmTimeStep * dtScale_, nFreeCoord_);
     add(positions, tempListDouble_, positions, nFreeCoord_);
     matter_->setFreePositions(positions);  
     delete [] positions;
@@ -82,7 +82,7 @@ void Quickmin::oneStepPart2(double *freeForces)
     velocity = new double[nFreeCoord_];
     forces_ = freeForces;
     matter_->getFreeVelocities(velocity); 
-    multiplyScalar(tempListDouble_, freeForces, 0.5*parameters_->getQmTimeStep() * dtScale_, nFreeCoord_);
+    multiplyScalar(tempListDouble_, freeForces, 0.5*parameters_->qmTimeStep * dtScale_, nFreeCoord_);
     add(velocity, tempListDouble_, velocity, nFreeCoord_);
     dotVelocityForces = dot(velocity, freeForces, nFreeCoord_);
     // Zeroing all velocities if they are not orthogonal to the forces
@@ -111,7 +111,7 @@ void Quickmin::fullRelax()
     while(!converged)
     {
         oneStep();
-        converged = isItConverged(parameters_->getConverged_Relax());
+        converged = isItConverged(parameters_->convergedRelax);
     }
     forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
     //XXX: need to fix force counting

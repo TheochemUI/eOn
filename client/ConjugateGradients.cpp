@@ -104,14 +104,14 @@ void ConjugateGradients::oneStep(){
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_, directionNorm_, 
-                   parameters_->getCgCurvatureStep(), nFreeCoord_);
+                   parameters_->cgCurvatureStep, nFreeCoord_);
  
     add(posStep, tempListDouble_, pos, nFreeCoord_);
     matter_->setFreePositions(posStep);
     matter_->getFreeForces(forceAfterStep);
  
     // Move system optimal step
-    step = stepSize(force_, forceAfterStep, parameters_->getCgMaxMoveFullRelax());
+    step = stepSize(force_, forceAfterStep, parameters_->cgMaxMoveFullRelax);
     multiplyScalar(tempListDouble_, directionNorm_, step, nFreeCoord_);
     add(pos, tempListDouble_, pos, nFreeCoord_);
     matter_->setFreePositions(pos);
@@ -131,10 +131,10 @@ void ConjugateGradients::fullRelax(){
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     int i=0;
-    while(!converged and i < parameters_->getMaximumIterations()) 
+    while(!converged and i < parameters_->maximumIterations) 
     {
         oneStep();
-        converged = isItConverged(parameters_->getConverged_Relax());
+        converged = isItConverged(parameters_->convergedRelax);
         ++i;
         #ifndef NDEBUG
         double maxForce=0.0;
@@ -212,7 +212,7 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
     // Determine curvature
     projectedForce1 = dot(forceBeforeStep,directionNorm_,nFreeCoord_);
     projectedForce2 = dot(forceAfterStep,directionNorm_,nFreeCoord_);
-    curvature = (projectedForce1-projectedForce2)/parameters_->getCgCurvatureStep();
+    curvature = (projectedForce1-projectedForce2)/parameters_->cgCurvatureStep;
     
     if(curvature < 0)
         step = maxStep;
@@ -237,7 +237,7 @@ void ConjugateGradients::makeInfinitesimalStepModifiedForces(double *posStep,
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_,
                    directionNorm_,
-                   parameters_->getCgCurvatureStep(),
+                   parameters_->cgCurvatureStep,
                    nFreeCoord_);
     add(posStep, tempListDouble_, pos, nFreeCoord_);
     return;
