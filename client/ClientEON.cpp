@@ -104,28 +104,28 @@ int main(int argc, char **argv)
     parameters.load(parameters_passed);
  
     // Initialize random generator
-    if(parameters.getRandomSeed() < 0)
+    if(parameters.randomSeed < 0)
     {
         unsigned i = time(NULL);
-        parameters.setRandomSeed(i);
+        parameters.randomSeed = i;
         helper_functions::random(i);
     }else{
-        helper_functions::random(parameters.getRandomSeed());
+        helper_functions::random(parameters.randomSeed);
     }
-    printf("Random seed is: %ld\n", parameters.getRandomSeed());
+    printf("Random seed is: %ld\n", parameters.randomSeed);
 
     // Determine what type of job we are running according 
     // to the parameters file. 
     Job *job;
 
-    if (parameters.job_Type_ == Parameters::PROCESS_SEARCH) {
+    if (parameters.jobType == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearch(&parameters);
-    }else if (parameters.job_Type_ == Parameters::MINIMIZATION) {
+    }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new Minimization(&parameters);
-    //}else if (parameters.job_Type_ == Parameters::SADDLE_SEARCH) {
+    //}else if (parameters.jobType == Parameters::SADDLE_SEARCH) {
     //    job = new SaddleSearch(&parameters);
     //    boinc_finish(1);
-    }else if (parameters.job_Type_ == Parameters::UNKNOWN_JOBTYPE) {
+    }else if (parameters.jobType == Parameters::UNKNOWN_JOBTYPE) {
         fprintf(stderr, "Unknown JOB_TYPE in parameters_passed.dat\n");
         boinc_finish(1);
     }

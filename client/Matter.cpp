@@ -154,7 +154,7 @@ bool Matter::operator==(const Matter& matter) {//To compare two matter objects, 
  
             diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
  
-            if(parameters_->getMaxDifferencePos()<diffR){
+            if(parameters_->maxDifferencePos<diffR){
                 result = false;
                 break;
             }

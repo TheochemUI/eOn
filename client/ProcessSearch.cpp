@@ -42,14 +42,14 @@ void ProcessSearch::run(int bundleNumber)
 
     initial->con2matter(reactant_passed);
 
-    if (parameters->getRefineSP()) {
+    if (parameters->saddleRefine) {
         saddle->con2matter(displacement_passed);
     }
 
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->getRefineSP()) {
+    if (parameters->saddleRefine) {
         *min1 = *min2 = *initial;
     }else{
         *saddle = *min1 = *min2 = *initial;
@@ -57,7 +57,7 @@ void ProcessSearch::run(int bundleNumber)
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (parameters->getRefineSP()) {
+    if (parameters->saddleRefine) {
         saddlePoint->loadMode(mode_passed);
     }
 
@@ -97,24 +97,22 @@ int ProcessSearch::doProcessSearch(void)
 
     if ((*initial==*min1) == false) {
         printf("initial != min1\n");
-        if((!min1->isItConverged(parameters->getConverged_Relax()))  &&
-           (!min2->isItConverged(parameters->getConverged_Relax()))) {
+        if((!min1->isItConverged(parameters->convergedRelax))  &&
+           (!min2->isItConverged(parameters->convergedRelax))) {
             return statusBadMinima;
         }
         return statusBadNotConnected;
     }
 
-    //if((!min1->isItConverged(parameters->getConverged_Relax())))
+    //if((!min1->isItConverged(parameters->convergedRelax)))
     //{
-    //    printf("min1 is not converged!!!!!! %lf\n", parameters->getConverged_Relax());
+    //    printf("min1 is not converged!!!!!! %lf\n", parameters->convergedRelax);
     //}
-    //if((!min2->isItConverged(parameters->getConverged_Relax())))
+    //if((!min2->isItConverged(parameters->convergedRelax)))
     //{
-    //    printf("min2 is not converged!!!!!! %lf\n", parameters->getConverged_Relax());
+    //    printf("min2 is not converged!!!!!! %lf\n", parameters->convergedRelax);
     //}
-    
-    
-    
+
     if (*initial==*min2) {
         /* both minima are the initial state */
         printf("both minima are the initial state");
@@ -126,8 +124,8 @@ int ProcessSearch::doProcessSearch(void)
     barriersValues[0] = saddle->potentialEnergy()-min1->potentialEnergy();
     barriersValues[1] = saddle->potentialEnergy()-min2->potentialEnergy();
 
-    if((parameters->getMaxEnergy_SP() < barriersValues[0]) || 
-       (parameters->getMaxEnergy_SP() < barriersValues[1])) {
+    if((parameters->saddleMaxEnergy < barriersValues[0]) || 
+       (parameters->saddleMaxEnergy < barriersValues[1])) {
         return statusBadHighBarrier;
     }
 
@@ -135,12 +133,12 @@ int ProcessSearch::doProcessSearch(void)
     prefactors->compute(prefactorsValues);
 
     /* Check that the prefactors are in the correct range */
-    if((prefactorsValues[0]>parameters->getPrefactorMax()) ||
-       (prefactorsValues[0]<parameters->getPrefactorMin())){
+    if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
+       (prefactorsValues[0]<parameters->hessianPrefactorMin)){
         return statusBadPrefactor;
     }
-    if((prefactorsValues[1]>parameters->getPrefactorMax()) ||
-       (prefactorsValues[1]<parameters->getPrefactorMin())){
+    if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
+       (prefactorsValues[1]<parameters->hessianPrefactorMin)){
         return statusBadPrefactor;
     }
 
@@ -167,8 +165,8 @@ void ProcessSearch::saveData(int status, int bundleNumber){
     long total_fcalls = min_fcalls + saddle_fcalls+prefactors->totalForceCalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%ld random_seed\n", parameters->getRandomSeed());
-    fprintf(fileResults, "%ld potential_tag\n", parameters->getPotentialTag());
+    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
     fprintf(fileResults, "%ld force_calls_saddle\n", saddle_fcalls);
