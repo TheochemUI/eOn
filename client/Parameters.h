@@ -18,8 +18,16 @@ using namespace std;
 
 #include "Constants.h"
 
+/** Contains all runtime parameters and results. No functionality just bookkeeping.*/
+class Parameters {
+public:
+    Parameters();
+    ~Parameters();
+    int load(string filename);
+    int load(FILE *file);
 /** All input parameters. If one would use values different from the default values these should be specified in the file with the name set in (Constants::PARMS_FILE_NAME).*/
-struct Input {
+    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION};
+    JobType jobType;
     long randomSeed; // seed for random generator
     long reactantStateTag; // tag to describe to which reactant state the saddle point connects
     long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
@@ -63,35 +71,7 @@ struct Input {
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
-};
-
-/** All results being obtained. The results are store in the file with the name set in (Constants::RESULTS_FILE_NAME).*/
-struct Output {
-    long terminationReason; // tag to indicate if the calculation converged. Compare with values in Constants.h
-    double potentialEnergySP; // energy of the saddle point [eV]
-    double potentialEnergyMin1; // energy of min1 [eV]
-    double potentialEnergyMin2; // energy of min2 [eV]
-    double barrierReac_Prod; // barrier (dE[1->2]) for process from min1 -> min2 [eV]
-    double barrierProd_Reac; // barrier (dE[2->1]) for process from min2 -> min1 [eV]
-    double prefactorReac_Prod; // prefactor (v[1->2]) for process from min1 -> min2 [1/s]
-    double prefactorProd_Reac; // prefactor (v[2->1]) for process from min2 -> min1 [1/s]
-    double displacementSaddleDistance; // distance between the displacement and the discovered saddle
-};
-
-/** Contains all runtime parameters and results. No functionality just bookkeeping.*/
-class Parameters : public Input, public Output{
-public:
-    Parameters();
-    ~Parameters();
-    void load(string filename);
-    void load(FILE *file);
-    void saveOutput(FILE *file);
-    void saveInput(FILE *file);
-    void printInput();
-    void printOutput();
-
-    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, UNKNOWN_JOBTYPE};
-    JobType jobType;
-
+private:
+    string toLowerCase(string s);
 };
 #endif

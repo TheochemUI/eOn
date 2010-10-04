@@ -20,7 +20,11 @@ Parameters::Parameters(){
     minimizeOnly = 0;
     minimizeBox = 0;
     maxDifferencePos = 0.1;
-    // neighborCutoff = 0.33; // this is now defined in Epicenters -- but it should be moved back as a parameter
+
+    /*
+    This is now defined in Epicenters, but it should be moved back as a parameter
+    neighborCutoff = 3.3; 
+    */
     
     // default parameter for relaxation   
     convergedRelax = 0.005;
@@ -65,73 +69,105 @@ Parameters::~Parameters(){
     return;
 }
 
-void Parameters::load(string filename)
+string Parameters::toLowerCase(string s)
+{
+    for (string::size_type i = 0; i < s.length(); ++i) {
+      s[i] = tolower(s[i]);
+    }
+    return s;
+}
+
+int Parameters::load(string filename)
 {
     FILE *parametersFile;
 
     parametersFile = fopen(filename.c_str(), constants::READ.c_str());
-    load(parametersFile);
+    int error = load(parametersFile);
     fclose(parametersFile);
+    return error;
 }
 
-void Parameters::load(FILE *file){
+int Parameters::load(FILE *file){
     
-    // if we fail to parse the file as an INI, we will need to rewind the file. So, we store the current stream position
-//    fpos_t pos;
-//    fgetpos(file, &pos); 
-
     CIniFile ini;
     ini.CaseInsensitive();
+    int error=0;
     if(ini.ReadFile(file))
     {
         // if we succesfully read the file, then parse it as an INI
         randomSeed = ini.GetValueL("Default", "RANDOM_SEED", randomSeed);
-        reactantStateTag = ini.GetValueL("Default", "REACTANT_STATE_TAG", reactantStateTag);
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
-        potentialNoTranslation = ini.GetValueL("Default", "POTENTIAL_NO_TRANSLATION", potentialNoTranslation);
+        printf("potentialTag = %ld\n", potentialTag);
+        potentialNoTranslation = ini.GetValueL("Default", 
+                                               "POTENTIAL_NO_TRANSLATION", 
+                                               potentialNoTranslation);
         minimizeOnly = ini.GetValueL("Default", "MINIMIZE_ONLY", minimizeOnly);
         minimizeBox = ini.GetValueL("Default", "MINIMIZE_BOX", minimizeBox);
-        getPrefactorsTag = ini.GetValueL("Default", "GET_PREFACTORS_TAG", getPrefactorsTag);
-        convergedRelax = ini.GetValueF("Default", "CONVERGED_RELAX", convergedRelax);
-        maximumIterations = ini.GetValueL("Default", "MAXIMUM_ITERATIONS", maximumIterations);
+        convergedRelax = ini.GetValueF("Default", "CONVERGED_RELAX", 
+                                       convergedRelax);
+        maximumIterations = ini.GetValueL("Default", "MAXIMUM_ITERATIONS",
+                                          maximumIterations);
 
         string jobTypeString;
-        jobTypeString = ini.GetValue("Default", "JOB_TYPE", "ProcessSearch");
+        jobTypeString = ini.GetValue("Default", "JOB_TYPE", "processsearch");
+        jobTypeString = toLowerCase(jobTypeString);
 
-        if (jobTypeString == "ProcessSearch") {
+        if (jobTypeString == "processsearch") {
             jobType = PROCESS_SEARCH;
-        }else if (jobTypeString == "SaddleSearch") {
+        }else if (jobTypeString == "saddlesearch") {
             jobType = SADDLE_SEARCH;
-        }else if (jobTypeString == "Minimization") {
+        }else if (jobTypeString == "minimization") {
             jobType = MINIMIZATION;
         }else{
-            jobType = UNKNOWN_JOBTYPE;
+            fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
+            error = 1;
         }
         
-        saddleTypePerturbation = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION", saddleTypePerturbation);
-        saddleLowestEigenmodeDetermination = ini.GetValueL("Saddle_Point", "LOWEST_EIGENMODE_DETERMINATION", saddleLowestEigenmodeDetermination);
+        saddleTypePerturbation = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION",
+                                               saddleTypePerturbation);
+        saddleLowestEigenmodeDetermination = 
+            ini.GetValueL("Saddle_Point", "LOWEST_EIGENMODE_DETERMINATION", 
+                          saddleLowestEigenmodeDetermination);
         saddleRefine = ini.GetValueB("Saddle_Point", "REFINE", saddleRefine);
-        saddleConverged = ini.GetValueF("Saddle_Point", "CONVERGED", saddleConverged);
-        saddleMaxJumpAttempts = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS", saddleMaxJumpAttempts);
-        saddleMaxStepSize = ini.GetValueF("Saddle_Point", "MAX_STEP_SIZE", saddleMaxStepSize);
-        saddleMaxEnergy = ini.GetValueF("Saddle_Point", "MAX_ENERGY", saddleMaxEnergy);
-        saddleNormPerturbation = ini.GetValueF("Saddle_Point", "NORM_PERTURBATION", saddleNormPerturbation);
-        saddleMaxSinglePerturbation = ini.GetValueF("Saddle_Point", "MAX_SINGLE_PERTURBATION", saddleMaxSinglePerturbation);
-        saddleWithinRadiusPerturbated = ini.GetValueF("Saddle_Point", "WITHIN_RADIUS_PERTURBATED", saddleWithinRadiusPerturbated);
-        saddleMaxIterations = ini.GetValueL("Saddle_Point", "MAX_ITERATIONS", saddleMaxIterations);
-        saddlePerpendicularForceRatio = ini.GetValueL("Default", "PERPENDICULAR_FORCE_RATIO", saddlePerpendicularForceRatio);
+        saddleConverged = ini.GetValueF("Saddle_Point", "CONVERGED",
+                                        saddleConverged);
+        saddleMaxJumpAttempts = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS",
+                                              saddleMaxJumpAttempts);
+        saddleMaxStepSize = ini.GetValueF("Saddle_Point", "MAX_STEP_SIZE",
+                                          saddleMaxStepSize);
+        saddleMaxEnergy = ini.GetValueF("Saddle_Point", "MAX_ENERGY", 
+                                        saddleMaxEnergy);
+        saddleNormPerturbation = ini.GetValueF("Saddle_Point", "NORM_PERTURBATION",
+                                               saddleNormPerturbation);
+        saddleMaxSinglePerturbation = ini.GetValueF("Saddle_Point",
+                                                    "MAX_SINGLE_PERTURBATION",
+                                                    saddleMaxSinglePerturbation);
+        saddleWithinRadiusPerturbated = ini.GetValueF("Saddle_Point",
+                                                      "WITHIN_RADIUS_PERTURBATED",
+                                                      saddleWithinRadiusPerturbated);
+        saddleMaxIterations = ini.GetValueL("Saddle_Point", 
+                                            "MAX_ITERATIONS", 
+                                            saddleMaxIterations);
+        saddlePerpendicularForceRatio = ini.GetValueL("Default",
+                                                      "PERPENDICULAR_FORCE_RATIO",
+                                                      saddlePerpendicularForceRatio);
 
         hessianMaxSize = ini.GetValueL("Hessian", "MAX_SIZE", hessianMaxSize);
-        hessianWithinRadiusDisplaced = ini.GetValueF("Hessian", "WITHIN_RADIUS_DISPLACED", hessianWithinRadiusDisplaced);
-        hessianMinDisplacement = ini.GetValueF("Hessian", "MIN_DISPLACEMENT", hessianMinDisplacement);
+        hessianWithinRadiusDisplaced = ini.GetValueF("Hessian", 
+                                                     "WITHIN_RADIUS_DISPLACED",
+                                                     hessianWithinRadiusDisplaced);
+        hessianMinDisplacement = ini.GetValueF("Hessian", 
+                                               "MIN_DISPLACEMENT",
+                                               hessianMinDisplacement);
         
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
     }
     else
     {
-        // GH: old parameter style is no more
-        // should probably print some error or warning here
+        fprintf(stderr, "Couldn't parse the ini file. Perhaps you are "
+                        "using the old style config?\n");
+        error = 1;
     }
+    return error;
 }
-
