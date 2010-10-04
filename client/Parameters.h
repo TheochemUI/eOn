@@ -46,6 +46,8 @@ public:
 //    double neighborCutoff; // radius used in the local atomic structure analysis
 //GH: this needs to be a parameter instead of a #define in Epicenters
 
+    long processSearchMinimizeFirst;
+
     bool saddleRefine; // refine saddle point
     long saddleMaxJumpAttempts; // how many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what
     long saddleMaxIterations; // max iterations for saddle point searches and minimization [GH: fix comment]
