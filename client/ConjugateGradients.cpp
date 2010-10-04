@@ -152,7 +152,6 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
 //    diff = length(force_,nFreeCoord_);
 //    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);    
 //std::cout<<diff<<"\n";
-    printf("diff %lf\n", diff);
     return(diff < convergeCriterion);
 };
 

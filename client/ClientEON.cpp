@@ -101,7 +101,10 @@ int main(int argc, char **argv)
     // store all the runtime parameters received from the server
     Parameters parameters; 
     string parameters_passed("parameters_passed.dat");
-    parameters.load(parameters_passed);
+    int error = parameters.load(parameters_passed);
+    if (error) {
+        boinc_finish(1);
+    }
  
     // Initialize random generator
     if(parameters.randomSeed < 0)
@@ -122,12 +125,6 @@ int main(int argc, char **argv)
         job = new ProcessSearch(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new Minimization(&parameters);
-    //}else if (parameters.jobType == Parameters::SADDLE_SEARCH) {
-    //    job = new SaddleSearch(&parameters);
-    //    boinc_finish(1);
-    }else if (parameters.jobType == Parameters::UNKNOWN_JOBTYPE) {
-        fprintf(stderr, "Unknown JOB_TYPE in parameters_passed.dat\n");
-        boinc_finish(1);
     }
 
     //If no bundles run once; otherwise, run bundleSize number of times.
