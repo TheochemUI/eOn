@@ -1,13 +1,13 @@
 [Default]
-
-REACTANT_STATE_TAG=0
+# The type of job to run. Current options are
+# ProcessSearch and Minimization
+JOB_TYPE=ProcessSearch
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
 
 # describtion POTENTIAL_TAG
-# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
 # 1 = lennard-jones potential
 # 2 = morse
 # 3 = emt
@@ -18,18 +18,13 @@ RANDOM_SEED=-1
 # 8 = Lenosky
 # 9 = Lennard-jones binary
 # 10 = Aluminum
+# 12 = QSC
 POTENTIAL_TAG=3
 
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
 # 1 = translation of the system is prevented
 POTENTIAL_NO_TRANSLATION=1
-
-# describtion GET_PREFACTORS_TAG
-# 0 = processes prefactors are not determined
-# 1 = processes prefactors are determined
-GET_PREFACTORS_TAG=1
-
 
 maximum_iterations=512
 
@@ -44,7 +39,7 @@ LOWEST_EIGENMODE_DETERMINATION=1
 REFINE=1
 
 # tweakable parameters
-converged_Relax 0.001
+converged_Relax=0.001
 converged=0.001
 max_Energy=10.000000
 
