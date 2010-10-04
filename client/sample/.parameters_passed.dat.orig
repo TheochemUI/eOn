@@ -28,6 +28,8 @@ POTENTIAL_NO_TRANSLATION=1
 
 maximum_iterations=512
 
+[ProcessSearch]
+minimize_first=1
 
 [Saddle_Point]
 # describtion LOWEST_EIGENMODE_DETERMINATION_SP

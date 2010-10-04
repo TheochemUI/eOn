@@ -29,8 +29,7 @@ public:
 
     void oneStep(); // do one iteration
     void fullRelax(); // relax the Matter object at the pointer that was passed with the constructor
-    bool isItConverged(double convergeCriterion); // determine if the norm of the force vector is below the convergeCriterion
-
+    bool isItConverged(double convergeCriterion);
     //----Functions used when forces are modified (saddle point search)----
     /** Performs and infinitesimal step along the search direction.
     @param[out]  *posStep  Double array containing the modified positions of the atoms.

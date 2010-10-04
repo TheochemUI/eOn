@@ -29,6 +29,9 @@ Parameters::Parameters(){
     // default parameter for relaxation   
     convergedRelax = 0.005;
 
+    // default parameters for process search
+    processSearchMinimizeFirst = 0;
+
     // default parameters for saddle point determination   
     saddleTypePerturbation = 1;
     saddleRefine = false;
@@ -41,7 +44,6 @@ Parameters::Parameters(){
     saddleWithinRadiusPerturbated = 4.0;
     saddleMaxSinglePerturbation = 0.1;
     saddleMaxIterations = 512;
-    saddleMaxIterations = 256;
     saddleMaxIterationsConcave = 256;
     saddlePerpendicularForceRatio = 0.0;
 
@@ -58,6 +60,7 @@ Parameters::Parameters(){
     dimerRotationAngle = 0.005;
     
     // default parameters used by the optimizers
+    maximumIterations=512;
     cgCurvatureStep = 0.001;
     cgMaxMoveFullRelax = 0.2;
     qmTimeStep = 0.1;
@@ -97,7 +100,6 @@ int Parameters::load(FILE *file){
         // if we succesfully read the file, then parse it as an INI
         randomSeed = ini.GetValueL("Default", "RANDOM_SEED", randomSeed);
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
-        printf("potentialTag = %ld\n", potentialTag);
         potentialNoTranslation = ini.GetValueL("Default", 
                                                "POTENTIAL_NO_TRANSLATION", 
                                                potentialNoTranslation);
@@ -122,6 +124,9 @@ int Parameters::load(FILE *file){
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;
         }
+
+        processSearchMinimizeFirst = ini.GetValueL("ProcessSearch", "minimize_first",
+                                                   processSearchMinimizeFirst);
         
         saddleTypePerturbation = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION",
                                                saddleTypePerturbation);

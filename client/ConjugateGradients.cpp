@@ -116,8 +116,10 @@ void ConjugateGradients::fullRelax(){
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     int i=0;
+    printf("maxIt = %ld\n", parameters_->maximumIterations);
     while(!converged and i < parameters_->maximumIterations) 
     {
+        printf("HAI\n");
         oneStep();
         converged = isItConverged(parameters_->convergedRelax);
         ++i;
@@ -131,9 +133,6 @@ void ConjugateGradients::fullRelax(){
         printf("min = %d, max force = %lf\n", i, maxForce);
         #endif
     }
-//    #ifndef NDEBUG
-//    matter_->matter2con("minimum");
-//    #endif
     return;
 };
 
