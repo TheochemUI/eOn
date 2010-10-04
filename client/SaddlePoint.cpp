@@ -424,15 +424,14 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         energySaddle = saddle_->potentialEnergy();
     }while(!converged && 
            (iterations < parameters_->saddleMaxIterations) && 
-//           (concaveSeries < parameters_->getMaxIterationsConcave()) &&
            (energySaddle-initialEnergy < parameters_->saddleMaxEnergy));
     if(!converged){
-        if(parameters_->saddleMaxIterations <= iterations)
+        if(parameters_->saddleMaxIterations <= iterations) {
             status_ = statusBadMaxIterations;
-//        if(parameters_->saddleMaxIterationsConcave <= concaveSeries)
-//            status_ = statusBadMaxConcaveIterations;
-        if(parameters_->saddleMaxEnergy <= energySaddle-initialEnergy)
+        }
+        if(parameters_->saddleMaxEnergy <= energySaddle-initialEnergy) {
             status_ = statusBadHighBarrier;
+        }
     }
     delete [] forcesStep;
     delete [] posStep;

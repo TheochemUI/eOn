@@ -6,6 +6,7 @@
 
 #include "ProcessSearch.h"
 #include "Constants.h"
+#include "ConjugateGradients.h"
 #include "false_boinc.h"
 
 #include <stdio.h>
@@ -47,6 +48,12 @@ void ProcessSearch::run(int bundleNumber)
     min2 = new Matter(parameters);
 
     initial->con2matter(reactant_passed);
+
+    if (parameters->processSearchMinimizeFirst) {
+        printf("Minimizing initial structure\n");
+        ConjugateGradients cgMin(initial, parameters);
+        cgMin.fullRelax();
+    }
 
     if (parameters->saddleRefine) {
         saddle->con2matter(displacement_passed);
@@ -105,7 +112,8 @@ int ProcessSearch::doProcessSearch(void)
         printf("initial != min1\n");
         if((!min1->isItConverged(parameters->convergedRelax))  &&
            (!min2->isItConverged(parameters->convergedRelax))) {
-            return statusBadMinima;
+            //the isItConverged in Matter doesn't work so this needs to be fixed.
+            //return statusBadMinima;
         }
         return statusBadNotConnected;
     }
