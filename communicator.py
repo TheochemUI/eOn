@@ -305,7 +305,7 @@ class BOINC(Communicator):
     def submit_jobs(jobdata, invariants):
         now = time()
         for job in jobdata:
-            wu_name = job.pop('id')
+            wu_name = "%i_%i" % (self.unique_id, job.pop('id'))
             tarname = "%s.tgz" % wu_name
             tarpath = dir_hier_path(tarname)
             tar = tarfile.open(tarpath, "w:gz")
