@@ -1,7 +1,7 @@
 #include "Mdynamics.h"
+#include <math.h>
 
 using namespace helper_functions;
-using namespace constants;
 
 Mdynamics::Mdynamics(Matter *matter,Parameters *parameters)
 {
@@ -24,7 +24,7 @@ Mdynamics::~Mdynamics()
 
 void Mdynamics::oneStep()
 {
-	//Andersen(); //Wait to be implemented later;
+	Andersen(); //Wait to be implemented later;
     VerletStep1();
     VerletStep2();
     return;
@@ -110,4 +110,58 @@ void Mdynamics::fullSteps()
     return;
 };
 
+void Mdynamics::Andersen()
+{    
+	 double temp,alpha,Tcol,Pcol,kb;//temp,sigma,Tcol,Pcol should be got from parameter.dat.
+	 double irand,v1,new_v,old_v;
+	 double *mass;
+	 double *freeVelocity;
+	 long int nFreeAtoms;
+
+	 kb = 1.0/11604.5;
+	 temp = parameters_->mdTemperture; //unit K
+	 alpha = parameters_->Andersen_Alpha; //collision strength
+	 Tcol = parameters_->Andersen_Tcol; // Average time between collision, in unit of dt
+	 Pcol = 1.0-exp(-1.0/Tcol);
+     nFreeAtoms = matter_->numberOfFreeAtoms(); 
+
+	 /* //test parameters
+	 printf("temp=%lf\n",temp);
+	 printf("alpha=%lf\n",alpha);
+	 printf("Tcol=%lf\n",Tcol);
+	 printf("Pcol=%lf\n",Pcol);
+	 */
+
+	 mass = new double[nFreeAtoms];
+     freeVelocity = new double[nFreeCoord_];
+     matter_->getFreeVelocities(freeVelocity);
+	 matter_->getFreeMasses(mass);
+
+	 for (long int i = 0;i<nFreeAtoms;i++){
+		 for (int j = 0; j < 3; j++){
+	 	    old_v = freeVelocity[3*i+j];
+		    irand = randomDouble();
+			printf("irand=%lf\n",irand);
+		    if( irand < Pcol){
+			   v1 = sqrt(kb*temp/mass[i])*guaRandom(0.0,1.0);
+			   new_v = sqrt(1-alpha*alpha)*old_v+alpha*v1;
+		       freeVelocity[3*i+j] = new_v;
+			}
+		 }
+	 }
+     /* //TEST
+	 for (long int i = 0;i<nFreeAtoms;i++){
+		for (int j = 0; j < 3; j++){
+		    printf("Andersen Velocity for atom %ld,axis %d is %lf \n",i,j,freeVelocity[3*i+j]);
+		 }
+	 }
+     */
+	 matter_->setFreeVelocities(freeVelocity);
+     
+     delete [] freeVelocity;
+	 delete [] mass;
+	 return;
+}
+
+	
 

@@ -76,7 +76,11 @@ public:
 
 	double mdTimeStep;
 	double mdTemperture;
-	long mdSteps;
+	long   mdSteps;
+  
+	double Andersen_Alpha;
+	double Andersen_Tcol;
+  
 private:
     string toLowerCase(string s);
 };
