@@ -35,6 +35,7 @@ public:
 	void VerletStep1();
 	void VerletStep2();
 	void fullSteps();
+	void Andersen();
 private:
     long nFreeCoord_;///< Number of free coordinates.
 
