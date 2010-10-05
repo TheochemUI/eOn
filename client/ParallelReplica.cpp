@@ -37,8 +37,6 @@ void ParallelReplica::run(int bundleNumber)
 	mdstep.fullSteps();
 	//mdstep.onestep();
 
-	
-    
 
     printf("Saving result to %s\n", reactant_output.c_str());
     reactant->matter2con(reactant_output);
