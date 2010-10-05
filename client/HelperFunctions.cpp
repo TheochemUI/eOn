@@ -49,6 +49,7 @@ double helper_functions::randomDouble(){
     return(random());
 }
 
+
 // Random value in interval
 double helper_functions::randomDouble(int max){
     double dmax = double(max);
@@ -62,6 +63,18 @@ double helper_functions::randomDouble(long max){
 
 double helper_functions::randomDouble(double dmax){
     return(dmax*randomDouble());
+}
+
+double helper_functions::guaRandom(double avg,double std){
+	double r=2,v1,v2,l,result;
+    while (r >= 1){
+	    v1=2.0*randomDouble()-1.0;
+		v2=2.0*randomDouble()-1.0;
+	    r=v1*v1+v2*v2;
+	}
+    l=v1*sqrt(-2.0*log(r)/r);
+	result=avg+std*l;
+	return(result);
 }
 
 // Vector functions.
