@@ -70,6 +70,9 @@ Parameters::Parameters(){
     mdTemperture=300.0;
 	mdSteps=1000;
 
+	//default parameters used by Thermostat
+	Andersen_Alpha=0.2; //collision strength
+	Andersen_Tcol=10; //collision frequency in unit of dt
     return;
 }
 
@@ -178,6 +181,9 @@ int Parameters::load(FILE *file){
 		mdTimeStep = ini.GetValueF("MDynamics","TIMESTEP",mdTimeStep);
 		mdTemperture = ini.GetValueF("MDynamics","TEMPERTURE",mdTemperture);
 		mdSteps = ini.GetValueL("MDynamics","STEPS",mdSteps);
+		 
+		Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
+		Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
 
     }
     else
