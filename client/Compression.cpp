@@ -37,9 +37,11 @@ int create_archive(char *outname, char *path, int (*pattern_match)(char *))
     dp = opendir(path);
     if (dp != NULL) {
         while ((ep = readdir(dp))) {
+            /* This had to be removed for win32 compat :(
             if (ep->d_type != DT_REG) {
                 continue;
             }
+            */
             if (pattern_match(ep->d_name)==0) {
                 continue;
             }
