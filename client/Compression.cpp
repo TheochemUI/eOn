@@ -7,7 +7,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "compression.h"
+#include "Compression.h"
 
 //const long potentialNewPotential = 1;
 
@@ -82,8 +82,8 @@ int extract_archive(char *filename)
     FILE *fd;
 
     a = archive_read_new();
-    archive_read_support_compression_all(a);
-    archive_read_support_format_all(a);
+    archive_read_support_compression_gzip(a);
+    archive_read_support_format_tar(a);
 
     r = archive_read_open_filename(a, filename, 10240);
 
