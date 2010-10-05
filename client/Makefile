@@ -1,12 +1,6 @@
 #C compiler settings
 CXXFLAGS += -O2 -Wall
 
-ifdef COMPRESSION
-	CXXFLAGS += -DCOMPRESSION
-	LDFLAGS += -larchive
-	OBJECTS += Compression.o
-endif
-
 #Fortran compiler settings
 ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
@@ -40,7 +34,12 @@ ifdef BOINC
 	BOINC=Yes	
 	DEBUG=No
 	CXXFLAGS += -DNDEBUG -DBOINC
-	LDFLAGS += -static -lboinc_api -lboinc -lpthread
+	OBJECTS += Compression.o
+ifdef WIN32
+	LDFLAGS += -static -lboinc_api -lboinc -larchive
+else
+	LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive
+endif
 else
 	BOINC=No
 endif
