@@ -120,6 +120,8 @@ int Parameters::load(FILE *file){
             jobType = SADDLE_SEARCH;
         }else if (jobTypeString == "minimization") {
             jobType = MINIMIZATION;
+		}else if (jobTypeString == "parallelreplica"){
+				jobType = PARALLEL_REPLICA;
         }else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;

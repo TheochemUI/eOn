@@ -10,6 +10,7 @@
 #include "Job.h"
 #include "ProcessSearch.h"
 #include "Minimization.h"
+#include "ParallelReplica.h"
 
 #include <dirent.h>
 
@@ -120,12 +121,16 @@ int main(int argc, char **argv)
     // Determine what type of job we are running according 
     // to the parameters file. 
     Job *job;
-
+	
+    //printf("Parameters.jobType=%s\n",parameters.jobType);
     if (parameters.jobType == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearch(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new Minimization(&parameters);
-    }
+    }else if (parameters.jobType == Parameters::PARALLEL_REPLICA){
+		job=  new ParallelReplica(&parameters);
+	}
+
 
     //If no bundles run once; otherwise, run bundleSize number of times.
     if (bundleSize == 0) {
