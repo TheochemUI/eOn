@@ -119,7 +119,6 @@ void ConjugateGradients::fullRelax(){
     printf("maxIt = %ld\n", parameters_->maximumIterations);
     while(!converged and i < parameters_->maximumIterations) 
     {
-        printf("HAI\n");
         oneStep();
         converged = isItConverged(parameters_->convergedRelax);
         ++i;
