@@ -122,13 +122,12 @@ int main(int argc, char **argv)
     // to the parameters file. 
     Job *job;
 	
-    //printf("Parameters.jobType=%s\n",parameters.jobType);
     if (parameters.jobType == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearch(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new Minimization(&parameters);
-    }else if (parameters.jobType == Parameters::PARALLEL_REPLICA){
-		job=  new ParallelReplica(&parameters);
+    }else if (parameters.jobType == Parameters::PARALLEL_REPLICA) {
+		job =  new ParallelReplica(&parameters);
 	}
 
 
