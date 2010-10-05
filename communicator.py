@@ -1,5 +1,4 @@
 import os
-import gzip
 import struct
 import shutil
 import logging
@@ -9,7 +8,7 @@ from time import sleep, time
 import subprocess
 import commands
 import tarfile
-import StringIO
+from cStringIO import StringIO
 import glob
 import re
 
@@ -21,13 +20,12 @@ class CommunicatorError(Exception):
     pass
 
 class Communicator:
-    def __init__(self, scratchpath, bundle_size=1, compress=False):
+    def __init__(self, scratchpath, bundle_size=1):
         if not os.path.isdir(scratchpath):
             #should probably log this event
             os.makedirs(scratchpath)
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
-        self.compress = compress
 
     def submit_jobs(self, data, invariants):
         '''Throws CommunicatorError if fails.'''
@@ -76,7 +74,6 @@ class Communicator:
             # and we want the second #.
             basename, dirname = os.path.split(jobpath)
             
-            print "DIRNAME: "+dirname
             results = [{'name':dirname} for i in range(bundle_size)]
             for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
                 if '_passed' in filename:
@@ -96,7 +93,7 @@ class Communicator:
 
                     #Load data into stringIO object (should we just return filehandles?
                     f = open(filename,'r')
-                    filedata = StringIO.StringIO(''.join(f.readlines()))
+                    filedata = StringIO(f.read())
                     f.close()
 
                     #add result to results
@@ -144,14 +141,14 @@ class Communicator:
 
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-            result_template, appname, boinc_results_path, bundle_size, compress=False):
+            result_template, appname, boinc_results_path, bundle_size, compresson=False)
         '''This constructor modifies sys.path to include the BOINC python modules. 
         It then tries to connect to the BOINC mysql database raising exceptions if there are problems 
         connecting. It also creates a file named uniqueid in the scratchpath to identify BOINC jobs as
         belonging to this akmc run if it doesn't exist. It then reads in the uniqueid file and 
         stores that as an integer in self.uniqueid.'''
         
-        Communicator.__init__(self, scratchpath, bundle_size, compress)
+        Communicator.__init__(self, scratchpath, bundle_size)
         self.wu_template = wu_template
         self.result_template = result_template
         self.appname = appname
@@ -214,6 +211,10 @@ class BOINC(Communicator):
         logger.debug("current average flops per wu is %.2e", self.average_flops)
 
     def get_average_flops(self):
+        'This function might be slow with large result tables and without '
+        'mysql indices on result.cpu_time, result.workunits, result.hostid, '
+        'and workunit.batch.'
+
         #number of wus to average over
         limit = 500
         query = "select r.cpu_time*h.p_fpops " \
@@ -254,12 +255,8 @@ class BOINC(Communicator):
         #      wu name and then update the rows that correspond to statenumber.
 
         state_unsent = self.boinc_db_constants.RESULT_SERVER_STATE_UNSENT
-        #state_inprogress = self.boinc_db_constants.RESULT_SERVER_STATE_IN_PROGRESS
         q1 = "select id,workunitid,name from result where batch=%i and server_state=%i"
         q1 = q1 % (self.uniqueid, state_unsent)
-
-        #q1 = "select id,workunitid,name from result where batch=%i and (server_state=%i or server_state=%i)"
-        #q1 = q1 % (self.uniqueid, state_unsent, state_inprogress)
 
         self.cursor.execute(q1)
         
@@ -305,52 +302,29 @@ class BOINC(Communicator):
         path = commands.getoutput("%s %s" % (cmd, filename))
         return path
 
-    def submit_searches(self, searches, reactant_path, parameters_path):
-        '''Runs the BOINC command create_work on all the jobs.'''
-        
-        #Clean out scratch directory
-        for name in os.listdir(self.scratchpath):
-            if name != 'uniqueid':
-                shutil.rmtree(os.path.join(self.scratchpath, name))
+    def submit_jobs(jobdata, invariants):
+        now = time()
+        for job in jobdata:
+            wu_name = job.pop('id')
+            tarname = "%s.tgz" % wu_name
+            tarpath = dir_hier_path(tarname)
+            tar = tarfile.open(tarpath, "w:gz")
+            for filename, filehandle in job.iteritems():
+                info = tarfile.TarInfo(name=filename)
+                info.size=len(filehandle.getvalue())
+                info.mtime = now
+                filehandle.seek(0)
+                tar.addfile(info, filehandle);
+            tar.close()
+            create_work(tarpath, wu_name)
 
-        from threading import Thread
-        thread_list = []
-        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
-            wu_name = "%i_%s" % (self.uniqueid, os.path.split(jobpath)[1])
-            t = Thread(target=self.create_work, args=(jobpath, wu_name))
-            t.start()
-            thread_list.append(t)
-
-            if len(thread_list) == 10:
-                for t in thread_list:
-                    t.join()
-                thread_list = []
-        
-
-    def create_work(self, jobpath, wu_name):
-        if self.compress:
-            suffix = '.gz'
-        else:
-            suffix = ''
-
+    def create_work(self, tarpath, wu_name):
         create_wu_cmd = os.path.join('bin', 'create_work')
-        rp_path = self.dir_hier_path('reactant_passed_%s.con%s' % (wu_name,suffix)).strip()
-        pp_path = self.dir_hier_path('parameters_passed_%s.dat%s' % (wu_name,suffix)).strip()
-        dp_path = self.dir_hier_path('displacement_passed_%s.con%s' % (wu_name,suffix)).strip()
-        mp_path = self.dir_hier_path('mode_passed_%s.dat%s' % (wu_name,suffix)).strip()
-
-        shutil.move(os.path.join(jobpath, 'reactant_passed.con'), rp_path)
-        shutil.move(os.path.join(jobpath, 'parameters_passed.dat'), pp_path)
-        shutil.move(os.path.join(jobpath, 'displacement_passed.con'), dp_path)
-        shutil.move(os.path.join(jobpath, 'mode_passed.dat'), mp_path)
 
         #XXX: make sure permissions are correct
         #this should be a config option for the boinc group
         mode = 0666
-        os.chmod(rp_path, mode)
-        os.chmod(pp_path, mode)
-        os.chmod(dp_path, mode)
-        os.chmod(mp_path, mode)
+            os.chmod(tarpath, mode)
 
         arglist = [create_wu_cmd]
         arglist.append("-appname")
@@ -365,24 +339,12 @@ class BOINC(Communicator):
         arglist.append(str(self.uniqueid))
         arglist.append("-rsc_fpops_est")
         arglist.append(str(self.average_flops))
-
-        # XXX: This assumes an order of the input files. We should read the
-        #      input template xml file to discover this order. Too bad the
-        #      job templates aren't valid XML files. This means that a
-        #      custom template file reader has to be written to read these
-        #      files.
-        arglist.append(os.path.split(rp_path)[1])
-        arglist.append(os.path.split(pp_path)[1])
-        arglist.append(os.path.split(dp_path)[1])
-        arglist.append(os.path.split(mp_path)[1])
+        #last arguments are the filenames
+        arglist.append("%s.tgz" % wu_name)
 
         p = subprocess.Popen(arglist, cwd=self.boinc_project_dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        #TODO: Benchmark this method. I previously found that spawning
-        #      a bunch of create_work commands and waiting for all of them
-        #      to finish in batches was faster. No premature optimization 
-        #      here.
         retval = p.wait()
 
         if retval != 0:
@@ -392,64 +354,30 @@ class BOINC(Communicator):
             raise CommunicatorError(errstr)
 
     def get_results(self, resultspath, keep_result):
-        '''
-        Moves work from boinc results directory to results path and then loads desired work units.
-        keep_result is a boolean-valued function which determines whether a result should be discarded.
-        '''
-        # TODO: Think about writing a boinc assimilator that does this stuff.
-        all_boinc_results = os.listdir(self.boinc_results_path)
-        all_boinc_results = [ f for f in all_boinc_results if '_' in f ]
-        my_boinc_results = [ f for f in all_boinc_results
-                                if int(f.split('_')[0]) == self.uniqueid and
+        all_results = os.listdir(self.boinc_results_path)
+        all_results = [ f for f in all_results if '_' in f ]
+        my_results = [ f for f in all_results
+                                if f.split('_')[0] == str(self.uniqueid) and
                                 'no_output_files' not in f]
 
-        #build up a set of all the state_wunumbers 
-        jobfiles = {}
-        for fname in my_boinc_results:
-            fname_parts = fname.split('_')    
-            fname_path = os.path.join(self.boinc_results_path,fname)
-            # fnames look like uniqueid_statenumber_wunumber_filenumber
-            # split on underscores  0        1          2        3
-            # thus key is statenumber_wunumber
-            key = fname_parts[1]+'_'+fname_parts[2]
-            if key in jobfiles:
-                jobfiles[key].append(fname_path)
-            else:
-                jobfiles[key] = [fname_path]
-
-        # XXX: This is completely dependent on the result template file.
-        #      We should be parsing the result template file for this stuff.                
-        ending_to_filename = [ 'results.dat', 'reactant.con', 'saddle.con', 
-                'product.con', 'mode.dat' ]
-
-        keys = jobfiles.keys()
-
-        for key in keys:
-            filepaths = jobfiles[key]
-            num_files = len(filepaths)
-            if num_files != 5:
-                logger.warning("got %i out of 5 files for %s" % (num_files, key))
-                jobfiles.pop(key)
+        for resultfile in my_results:
+            #jobname is everything but the first and last underscore records
+            jobname = resultfile.split('_')[1:-1]
+            resultpath = os.path.join(self.boinc_results_path, jobname)
+            if not keep_result(jobname):
+                os.remove(resultpath)
                 continue
 
-            try:
-                os.makedirs(os.path.join(resultspath, key))
-            except OSError, (errno, strerrno):
-                if errno == 31:
-                    logger.warning(strerrno)
-                    break
-                else:
-                    raise
-
-            for filepath in filepaths:
-                path, filename = os.path.split(filepath)
-                ending = int(filename[-1])
-                filename = ending_to_filename[ending]
-                shutil.move(filepath, os.path.join(resultspath, key, filename))
-
-        for bundle in self.unbundle(resultspath, keep_result):
-            for result in bundle:
-                yield result
+            print "reading in result %s" % resultfile
+            tar = tarfile.open(resultfile)
+            for tarinfo in tar:
+                print "\tfilename: %s" % tarinfo.name
+                result[tarinfo.name] = tar.extractfile(tarinfo)
+            result['number'] = int(jobname.split('_'])[1])
+            tar.close()
+            os.remove(resultpath)
+            yield result
+                
 
 class MPI(Communicator):
     def __init__(self, scratchpath, client, bundle_size, mpicommand):
@@ -488,7 +416,7 @@ class MPI(Communicator):
                 yield result
 
 
-    def submit_searches(self, data, invariants):
+    def submit_jobs(self, data, invariants):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
@@ -618,7 +546,6 @@ class Local(Communicator):
                         self.joblist.pop(i)
                         break
                 sleep(0.1)
-
 
         #wait for everything to finish
         for job in self.joblist:
