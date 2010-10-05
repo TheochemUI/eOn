@@ -65,6 +65,11 @@ Parameters::Parameters(){
     cgMaxMoveFullRelax = 0.2;
     qmTimeStep = 0.1;
 
+	//default parameters used by Parallel Repica Dynamics
+	mdTimeStep = 0.1;
+    mdTemperture=300.0;
+	mdSteps=1000;
+
     return;
 }
 
@@ -169,6 +174,11 @@ int Parameters::load(FILE *file){
         
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
+
+		mdTimeStep = ini.GetValueF("MDynamics","TIMESTEP",mdTimeStep);
+		mdTemperture = ini.GetValueF("MDynamics","TEMPERTURE",mdTemperture);
+		mdSteps = ini.GetValueL("MDynamics","STEPS",mdSteps);
+
     }
     else
     {
