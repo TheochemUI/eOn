@@ -4,6 +4,8 @@
  *===============================================
  */
 
+#include <err.h>
+
 #include "Parameters.h"
 #include "INIFile.h"
 
@@ -90,11 +92,15 @@ string Parameters::toLowerCase(string s)
 
 int Parameters::load(string filename)
 {
-    FILE *parametersFile;
+    FILE *fh;
 
-    parametersFile = fopen(filename.c_str(), constants::READ.c_str());
-    int error = load(parametersFile);
-    fclose(parametersFile);
+    fh = fopen(filename.c_str(), "rb");
+    if (fh == NULL) {
+        warn("problem loading parameters file");
+        return 1;
+    }
+    int error = load(fh);
+    fclose(fh);
     return error;
 }
 
