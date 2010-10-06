@@ -45,24 +45,10 @@ void Dynamics::VerletStep1()
     matter_->getFreeVelocities(velocities);
     matter_->getFreeAccelerations(accelerations);
      
-	/* //test acc
-    for (long int i = 0;i<matter->numberOfFreeAtoms();i++){
-	     for (int j = 0; j < 3; j++){
-     	    printf("acc for atom%ld, axis %d is %lf\n",i,j,accelerations[3*i+j]);    
-		 }
-    }
-	*/
     multiplyScalar(tempListDouble_, accelerations, 0.5 * parameters_->mdTimeStep * dtScale_, nFreeCoord_);
     add(velocities, tempListDouble_, velocities, nFreeCoord_);
     matter_->setFreeVelocities(velocities);  // First update velocities
 
-	/* //test vel
-	for (long int i = 0;i<nFreeCoord_/3;i++){
-		 for (int j = 0; j < 3; j++){
-			 printf("Velcocity 2 for atom %ld,axis %d is %lf \n",i,j,velocity[3*i+j]);
-		 }
-	}
-    */
     multiplyScalar(tempListDouble_, velocities, parameters_->mdTimeStep * dtScale_, nFreeCoord_);
     add(positions, tempListDouble_, positions, nFreeCoord_);
     matter_->setFreePositions(positions); // Update Positions
@@ -102,8 +88,7 @@ void Dynamics::fullSteps()
    
     freeVelocity = new double[nFreeCoord_];
     forceCallsTemp = matter_->getForceCalls();  
-	printf("test:steps=%ld\n",parameters_-> mdSteps);
-    
+
 	velocityScale();
 
     while(!stoped)
@@ -116,12 +101,12 @@ void Dynamics::fullSteps()
         TKin=(2*EKin/nFreeCoord_/kb); 
 		SumT+=TKin;
 		SumT2+=TKin*TKin;
-        printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
-		/*//test
-		for (long int i = 0;i<matter_->numberOfFreeAtoms();i++){
-	 			printf("%lf	%lf	%lf \n",freeVelocity[3*i],freeVelocity[3*i+1],freeVelocity[3*i+2]);
+        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
+
+		if (nsteps % 100 == 0){
+			matter_->matter2xyz("movie", true);
 		}
-        */
+
 		if (nsteps >= parameters_->mdSteps ){
 	       stoped = true;
 		}       
@@ -150,13 +135,6 @@ void Dynamics::Andersen()
 	 Pcol = 1.0-exp(-1.0/Tcol);
      nFreeAtoms = matter_->numberOfFreeAtoms(); 
 
-	 /* //test parameters
-	 printf("temp=%lf\n",temp);
-	 printf("alpha=%lf\n",alpha);
-	 printf("Tcol=%lf\n",Tcol);
-	 printf("Pcol=%lf\n",Pcol);
-	 */
-
 	 mass = new double[nFreeAtoms];
      freeVelocity = new double[nFreeCoord_];
      matter_->getFreeVelocities(freeVelocity);
@@ -166,7 +144,6 @@ void Dynamics::Andersen()
 		 for (int j = 0; j < 3; j++){
 	 	    old_v = freeVelocity[3*i+j];
 		    irand = randomDouble();
-			//printf("irand=%lf\n",irand);
 		    if( irand < Pcol){
 			   v1 = sqrt(kb*temp/mass[i])*guaRandom(0.0,1.0);
 			   new_v = sqrt(1-alpha*alpha)*old_v+alpha*v1;
@@ -174,13 +151,7 @@ void Dynamics::Andersen()
 			}
 		 }
 	 }
-     /* //TEST
-	 for (long int i = 0;i<nFreeAtoms;i++){
-		for (int j = 0; j < 3; j++){
-		    printf("Andersen Velocity for atom %ld,axis %d is %lf \n",i,j,freeVelocity[3*i+j]);
-		 }
-	 }
-     */
+
 	 matter_->setFreeVelocities(freeVelocity);
      
      delete [] freeVelocity;
