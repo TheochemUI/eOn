@@ -78,6 +78,8 @@ public:
 	double mdTemperture;
 	double PRD_MaxMovedDist;
 	long   mdSteps;
+	long   CheckFreq;
+	long   NewRelaxSteps;
   
 	double Andersen_Alpha;
 	double Andersen_Tcol;
