@@ -37,32 +37,10 @@ GET_PREFACTORS_TAG=1
 
 maximum_iterations=512
 
-
-[Saddle_Point]
-# describtion LOWEST_EIGENMODE_DETERMINATION_SP
-# 1 = dimer method
-# 2 = lanczos method
-LOWEST_EIGENMODE_DETERMINATION=1
-
-# Refine saddle point.
-REFINE=1
-
-# tweakable parameters
-converged_Relax=0.001
-converged=0.001
-max_Energy=10.000000
-
-[Hessian]
-min_Displacement=0.250000
-within_Radius_Displaced=3.500000
-
-[Dimer]
-rotations=2
-
 [MDynamics]
 TIMESTEP=0.1
 TEMPERTURE=350.0
-STEPS=2
+STEPS=50000
 
 [Thermo]
 Andersen_Alpha=0.1
