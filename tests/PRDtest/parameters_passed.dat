@@ -37,10 +37,11 @@ GET_PREFACTORS_TAG=1
 
 maximum_iterations=512
 
-[MDynamics]
+[Dynamics]
 TIMESTEP=0.1
 TEMPERTURE=300.0
-STEPS=100000
+STEPS=50000
+PRD_MaxMovedDist=2.5
 
 [Thermo]
 Andersen_Alpha=0.1
