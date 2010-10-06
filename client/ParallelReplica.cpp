@@ -7,6 +7,7 @@
 ParallelReplica::ParallelReplica(Parameters *params)
 {
     parameters = params;
+    nsteps = 0;
 }
 
 ParallelReplica::~ParallelReplica(){ }
@@ -24,76 +25,76 @@ void ParallelReplica::run(int bundleNumber)
     }
 
     reactant = new Matter(parameters);
-	min1 = new Matter(parameters);
-	min2 = new Matter(parameters);
+    min1 = new Matter(parameters);
+    min2 = new Matter(parameters);
 
     reactant->con2matter(reactant_passed);
     *min1 = *reactant;
 
-	ConjugateGradients cgMin1(min1, parameters);
+    ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
-	min_fcalls += min1->getForceCalls();
-    	
-	printf("Now running Parralel Replica Dynamics\n");
+    min_fcalls += min1->getForceCalls();
+        
+    printf("Now running Parralel Replica Dynamics\n");
 
-	stoped = false;  // initial stoped to false
-	dynamics();
-	saveData(newstate,bundleNumber);
+    stoped = false;  // initial stoped to false
+    dynamics();
+    saveData(newstate,bundleNumber);
     
-	if(newstate){
-		printf("New state has been found with %ld steps !\n", nsteps);
+    if(newstate){
+        printf("New state has been found with %ld steps !\n", nsteps);
     }else{
-	   printf("New state has not been found in this %ld Dynamics steps !\n",parameters->mdSteps);
-	}
+       printf("New state has not been found in this %ld Dynamics steps !\n",parameters->mdSteps);
+    }
 
-	delete min1;
-	delete min2;
-	delete reactant;
+    delete min1;
+    delete min2;
+    delete reactant;
 }
 
 void ParallelReplica::dynamics()
 {
-	long   nFreeCoord_;
+    long   nFreeCoord_;
     double *freeVelocities;
     double EKin=0.0, kb = 1.0/11604.5;
-	double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
+    double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
        
-	nFreeCoord_=3*reactant->numberOfFreeAtoms();
+    nFreeCoord_=3*reactant->numberOfFreeAtoms();
     freeVelocities = new double[nFreeCoord_];
 
-	Dynamics PRdynamics(reactant,parameters);
-		
-	PRdynamics.velocityScale();
+    Dynamics PRdynamics(reactant,parameters);
+        
+    PRdynamics.velocityScale();
 
     while(!stoped)
     {
         PRdynamics.oneStep();
-		nsteps++;
-		md_fcalls++;
+        nsteps++;
+        md_fcalls++;
         
-		reactant->getFreeVelocities(freeVelocities);
+        reactant->getFreeVelocities(freeVelocities);
         EKin = reactant->kineticEnergy();
         TKin = (2*EKin/nFreeCoord_/kb); 
-		SumT += TKin;
-		SumT2 += TKin*TKin;
+        SumT += TKin;
+        SumT2 += TKin*TKin;
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
 
-		if (nsteps % 200 == 0){
+        if (nsteps % 200 == 0){
 #ifndef NDEBUG           
-			reactant->matter2xyz("movie", true);
+            reactant->matter2xyz("movie", true);
 #endif
             newstate = IsNewState();
-		}
+        }
 
-		if (nsteps >= parameters->mdSteps ){
-	       stoped = true;
-		}       
+        if (nsteps >= parameters->mdSteps ){
+           stoped = true;
+        }       
     }
      
-	AvgT=SumT/nsteps;
-	VarT=SumT2/nsteps-AvgT*AvgT;
-	printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord_/2);
-	
+    AvgT=SumT/nsteps;
+    VarT=SumT2/nsteps-AvgT*AvgT;
+    printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord_/2);
+    
 
     delete [] freeVelocities;
     return;
@@ -101,23 +102,23 @@ void ParallelReplica::dynamics()
 
 bool ParallelReplica::IsNewState(){
 
-	double distance;
+    double distance;
 
-	*min2 = *reactant;
+    *min2 = *reactant;
     ConjugateGradients cgMin2(min2, parameters);
     cgMin2.fullRelax();
-	min_fcalls += min2->getForceCalls();
+    min_fcalls += min2->getForceCalls();
 
-	distance = min2->distanceTo(*min1);
+    distance = min2->distanceTo(*min1);
 #ifndef NDEBUG
-	printf("Total Moved Distance = %lf\n",distance);
+    printf("Total Moved Distance = %lf\n",distance);
 #endif
-	if (distance <= parameters->PRD_MaxMovedDist){
-		return false;
-	}else {
-		stoped = true;
-		return true;
-	}
+    if (distance <= parameters->PRD_MaxMovedDist){
+        return false;
+    }else {
+        stoped = true;
+        return true;
+    }
 }
 
 void ParallelReplica::saveData(int status,int bundleNumber){
@@ -130,10 +131,10 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     }else{
         strncpy(filename, "results.dat", STRING_SIZE);
     }
-	fileResults = fopen(filename, "wb");
-	///XXX: min_fcalls isn't quite right it should get them from
-	//      the minimizer. But right now the minimizers are in
-	//      the SaddlePoint object. They will be taken out eventually.
+    fileResults = fopen(filename, "wb");
+    ///XXX: min_fcalls isn't quite right it should get them from
+    //      the minimizer. But right now the minimizers are in
+    //      the SaddlePoint object. They will be taken out eventually.
     long total_fcalls = min_fcalls + md_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
@@ -144,14 +145,14 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
     fprintf(fileResults, "%lf moved_distance\n",
             min2->distanceTo(*min1));
-	fclose(fileResults);
+    fclose(fileResults);
 
     if (bundleNumber != -1) {
         snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
     }else{
         strncpy(filename, "reactant.con", STRING_SIZE);
     }
-	fileReactant = fopen(filename, "wb");
+    fileReactant = fopen(filename, "wb");
     min1->matter2con(fileReactant);
 
     if (bundleNumber != -1) {
@@ -159,8 +160,9 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     }else{
         strncpy(filename, "product.con", STRING_SIZE);
     }
-	fileProduct = fopen(filename, "wb");
-	min2->matter2con(fileProduct);
+
+    fileProduct = fopen(filename, "wb");
+    min2->matter2con(fileProduct);
     fclose(fileProduct);
 
     return;
