@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <err.h>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -103,6 +104,10 @@ int extract_archive(char *filename)
         }
 
         fd = fopen(archive_entry_pathname(entry),"wb");
+        if (fd == NULL) {
+            warn("problem extracting archive: %s", filename);
+            return 1;
+        }
         for (;;) {
             size = archive_read_data(a, buff, BUFFER_SIZE);
             if (size < 0) {
