@@ -30,6 +30,7 @@ void ParallelReplica::run(int bundleNumber)
 
     reactant->con2matter(reactant_passed);
     *min1 = *reactant;
+    *min2 = *reactant;
 
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
@@ -54,7 +55,8 @@ void ParallelReplica::run(int bundleNumber)
 
 void ParallelReplica::dynamics()
 {
-    long   nFreeCoord_;
+	bool   status = false;
+    long   nFreeCoord_, nexam = 0;
     double *freeVelocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
@@ -78,13 +80,21 @@ void ParallelReplica::dynamics()
         SumT += TKin;
         SumT2 += TKin*TKin;
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
-
-        if (nsteps % 200 == 0){
+        
+        if (nsteps % parameters->CheckFreq == 0){
 #ifndef NDEBUG           
             reactant->matter2xyz("movie", true);
 #endif
-            newstate = IsNewState();
+			status = firstAchieve();
         }
+       
+		if (status){
+			nexam ++;
+		    if (nexam >= parameters->NewRelaxSteps){	
+				newstate = IsNewState();
+				nexam = 0;
+			}
+		}
 
         if (nsteps >= parameters->mdSteps ){
            stoped = true;
@@ -99,6 +109,27 @@ void ParallelReplica::dynamics()
     delete [] freeVelocities;
     return;
 };
+
+bool ParallelReplica::firstAchieve()
+{
+	double distance; 
+ 	*min2 = *reactant;
+
+	ConjugateGradients cgMin2(min2, parameters);
+	cgMin2.fullRelax();
+	min_fcalls += min2->getForceCalls();
+
+	distance = min2->distanceTo(*min1);
+#ifndef NDEBUG
+	printf("Total Moved Distance = %lf\n",distance);
+#endif
+	if (distance <= parameters->PRD_MaxMovedDist){
+		return false;
+	}else { 
+ 		return true;
+	}
+}
+
 
 bool ParallelReplica::IsNewState(){
 
@@ -162,7 +193,7 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     }
 
     fileProduct = fopen(filename, "wb");
-    min2->matter2con(fileProduct);
+    reactant->matter2con(fileProduct);
     fclose(fileProduct);
 
     return;
