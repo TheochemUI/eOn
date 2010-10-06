@@ -14,7 +14,7 @@ void ParallelReplica::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed");
-    string reactant_output("reactant");
+    string reactant_output("product");
 
     if (bundleNumber < 0) {
         reactant_passed += ".con";
@@ -28,15 +28,10 @@ void ParallelReplica::run(int bundleNumber)
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
      
-	printf("Hello,I am ParralelReplica\n");
-	printf("mdSteps=%ld\n",parameters->mdSteps);
-	printf("mdTemperture=%lf\n",parameters->mdTemperture);
-	printf("mdTimeStep=%lf\n",parameters->mdTimeStep);
+	printf("Now running Parralel Replica Dynamics\n");
 
 	Dynamics mdstep(reactant,parameters);
 	mdstep.fullSteps();
-	//mdstep.onestep();
-
 
     printf("Saving result to %s\n", reactant_output.c_str());
     reactant->matter2con(reactant_output);
