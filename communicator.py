@@ -45,7 +45,14 @@ class Communicator:
 
     def get_bundle_size(self, job_path):
         biggest = 0
-        for filename in glob.glob(os.path.join(job_path, "*_*.*")):
+        if type(job_path) == type(str()):
+            filenames = glob.glob(os.path.join(job_path, "*_*.*"))
+        elif type(job_path) == type(list()):
+            filenames = job_path
+        else:
+            raise CommunicatorError("job_path wasn't a str or a list")
+
+        for filename in filenames:
             try:
                 num = int(filename.rsplit("_",1)[1].split(".",1)[0])
                 biggest = max(biggest, num)
@@ -81,7 +88,6 @@ class Communicator:
                 try:
                     #parse filename
                     rootname, fname = os.path.split(filename)
-                    
 
                     match = re.match(regex, fname)
                     if not match:
@@ -141,7 +147,7 @@ class Communicator:
 
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-            result_template, appname, boinc_results_path, bundle_size, compresson=False)
+            result_template, appname, boinc_results_path, bundle_size):
         '''This constructor modifies sys.path to include the BOINC python modules. 
         It then tries to connect to the BOINC mysql database raising exceptions if there are problems 
         connecting. It also creates a file named uniqueid in the scratchpath to identify BOINC jobs as
@@ -302,21 +308,37 @@ class BOINC(Communicator):
         path = commands.getoutput("%s %s" % (cmd, filename))
         return path
 
-    def submit_jobs(jobdata, invariants):
+    def submit_jobs(self, jobdata, invariants):
         now = time()
-        for job in jobdata:
-            wu_name = "%i_%i" % (self.unique_id, job.pop('id'))
+        chunks = [ jobdata[i:i+self.bundle_size] for i in 
+                   range(0, len(jobdata), self.bundle_size) ]
+        for jobs in chunks:
+            wu_name = "%i_%s" % (self.uniqueid, jobs[0]['id'])
             tarname = "%s.tgz" % wu_name
-            tarpath = dir_hier_path(tarname)
+            tarpath = self.dir_hier_path(tarname)
             tar = tarfile.open(tarpath, "w:gz")
-            for filename, filehandle in job.iteritems():
-                info = tarfile.TarInfo(name=filename)
-                info.size=len(filehandle.getvalue())
-                info.mtime = now
-                filehandle.seek(0)
-                tar.addfile(info, filehandle);
+
+            jobfiles = {}
+            n=0
+            for job in jobs:
+                job.pop('id')
+                for origname,data in job.iteritems():
+                    splitname = origname.rsplit(".",1)
+                    newname = "%s_%d.%s" % (splitname[0], n, splitname[1])
+                    jobfiles[newname] = data
+                n += 1
+
+            #Add the files in job and in invariants to the tar file
+            for filelist in (jobfiles, invariants):
+                for filename, filehandle in filelist.iteritems():
+                    info = tarfile.TarInfo(name=filename)
+                    info.size=len(filehandle.getvalue())
+                    info.mtime = now
+                    filehandle.seek(0)
+                    tar.addfile(info, filehandle);
             tar.close()
-            create_work(tarpath, wu_name)
+
+            self.create_work(tarpath, wu_name)
 
     def create_work(self, tarpath, wu_name):
         create_wu_cmd = os.path.join('bin', 'create_work')
@@ -324,7 +346,7 @@ class BOINC(Communicator):
         #XXX: make sure permissions are correct
         #this should be a config option for the boinc group
         mode = 0666
-            os.chmod(tarpath, mode)
+        os.chmod(tarpath, mode)
 
         arglist = [create_wu_cmd]
         arglist.append("-appname")
@@ -361,22 +383,41 @@ class BOINC(Communicator):
                                 'no_output_files' not in f]
 
         for resultfile in my_results:
-            #jobname is everything but the first and last underscore records
-            jobname = resultfile.split('_')[1:-1]
-            resultpath = os.path.join(self.boinc_results_path, jobname)
+            #jobname is everything but the first underscore records
+            #jobname looks like state#_job#
+            jobname = '_'.join(resultfile.split('_')[1:])
+            resultpath = os.path.join(self.boinc_results_path, resultfile)
             if not keep_result(jobname):
                 os.remove(resultpath)
                 continue
 
-            print "reading in result %s" % resultfile
-            tar = tarfile.open(resultfile)
+            tar = tarfile.open(resultpath)
+            bundle_size = self.get_bundle_size(tar.getnames())
+            results = [ {'name':jobname} for i in range(bundle_size) ]
             for tarinfo in tar:
-                print "\tfilename: %s" % tarinfo.name
-                result[tarinfo.name] = tar.extractfile(tarinfo)
-            result['number'] = int(jobname.split('_'])[1])
+                if bundle_size == 1:
+                    index = 0
+                else:
+                    try:
+                        index = int(tarinfo.name.split('_')[-1].split('.')[0])
+                    except:
+                        logger.exception("Failed to process file %s in tar" % tarinfo.name)
+                        continue
+                    splitname = tarinfo.name.rsplit(".",1) 
+                    newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
+
+
+                #Read the file in the tar archive into a stringio
+                #you cannot return the the filehandle that extractfile returns
+                #as it will be closed when tar.close() is called.
+                fh = StringIO(tar.extractfile(tarinfo).read())
+                results[index][newfilename] = fh
+                results[index]["number"] = index
+
             tar.close()
             os.remove(resultpath)
-            yield result
+            for result in results:
+                yield result
                 
 
 class MPI(Communicator):
