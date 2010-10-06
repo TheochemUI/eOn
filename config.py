@@ -92,12 +92,6 @@ if comm_type == 'arc':
     else:
         comm_blacklist = []
 
-#hack for compression
-if comm_type == 'boinc':
-    comm_compress = parser.getboolean('Communicator', 'compression')
-else:
-    comm_compress = False
-
 #
 #displacement options
 #
