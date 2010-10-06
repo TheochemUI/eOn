@@ -116,7 +116,6 @@ void ConjugateGradients::fullRelax(){
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     int i=0;
-    printf("maxIt = %ld\n", parameters_->maximumIterations);
     while(!converged and i < parameters_->maximumIterations) 
     {
         oneStep();

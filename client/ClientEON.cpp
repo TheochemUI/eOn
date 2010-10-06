@@ -26,7 +26,7 @@
     #include "false_boinc.h"
 #endif
 
-#ifdef COMPRESSION
+#ifdef BOINC
 #include "Compression.h"
 const char BOINC_INPUT_ARCHIVE[] = "input.tgz";
 const char BOINC_RESULT_ARCHIVE[] = "result.tgz";
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 		boinc_finish(rc);
 	}
 
-    #ifdef COMPRESSION
+    #ifdef BOINC
     //We want to uncompress our input file
     char resolved[STRING_SIZE];
     rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
