@@ -69,9 +69,11 @@ Parameters::Parameters(){
 
 	//default parameters used by Parallel Repica Dynamics
 	mdTimeStep = 0.1;
-    mdTemperture=300.0;
-	mdSteps=1000;
-    PRD_MaxMovedDist=2.0;
+    mdTemperture = 300.0;
+	mdSteps = 1000;
+    PRD_MaxMovedDist = 2.0;
+	CheckFreq = 500;
+    NewRelaxSteps = 500;
 
 	//default parameters used by Thermostat
 	Andersen_Alpha=0.2; //collision strength
@@ -188,7 +190,11 @@ int Parameters::load(FILE *file){
 		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
 		mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
 		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
-		PRD_MaxMovedDist=ini.GetValueL("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+		PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
+        NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
+
+
 
 		Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
 		Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);

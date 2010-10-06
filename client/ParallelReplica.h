@@ -8,6 +8,7 @@ class ParallelReplica: public Job {
         void run(int bundleNumber);
     private:
 		void dynamics();
+		bool firstAchieve();
 		bool IsNewState();
         void saveData(int status,int bundleNumber);
         Parameters *parameters;
