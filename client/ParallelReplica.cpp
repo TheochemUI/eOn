@@ -1,6 +1,6 @@
 #include "Matter.h"
 #include "Constants.h"
-#include "Mdynamics.h"
+#include "Dynamics.h"
 #include "ParallelReplica.h"
 
 ParallelReplica::ParallelReplica(Parameters *params)
@@ -33,7 +33,7 @@ void ParallelReplica::run(int bundleNumber)
 	printf("mdTemperture=%lf\n",parameters->mdTemperture);
 	printf("mdTimeStep=%lf\n",parameters->mdTimeStep);
 
-	Mdynamics mdstep(reactant,parameters);
+	Dynamics mdstep(reactant,parameters);
 	mdstep.fullSteps();
 	//mdstep.onestep();
 
