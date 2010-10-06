@@ -13,6 +13,7 @@
 #include "ParallelReplica.h"
 
 #include <dirent.h>
+#include <string.h>
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -39,8 +40,8 @@ int result_pattern(char *filename)
             return 0; 
         }else if (filename[0] == '.') {
             return 0;
-        }else if (strstr(filename, "con") == NULL && 
-                  strstr(filename, "dat") == NULL) {
+        }else if (strstr(filename+strlen(filename)-3, "con") == NULL && 
+                  strstr(filename+strlen(filename)-3, "dat") == NULL) {
             return 0;
         }
         return 1;
@@ -144,7 +145,7 @@ int main(int argc, char **argv)
 
     delete job;
 
-    #ifdef COMPRESSION
+    #ifdef BOINC
     //XXX: Error handling!
     rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
     create_archive(resolved, ".", result_pattern); 
