@@ -76,6 +76,7 @@ public:
 
 	double mdTimeStep;
 	double mdTemperture;
+	double PRD_MaxMovedDist;
 	long   mdSteps;
   
 	double Andersen_Alpha;
