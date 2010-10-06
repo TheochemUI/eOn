@@ -71,6 +71,7 @@ Parameters::Parameters(){
 	mdTimeStep = 0.1;
     mdTemperture=300.0;
 	mdSteps=1000;
+    PRD_MaxMovedDist=2.0;
 
 	//default parameters used by Thermostat
 	Andersen_Alpha=0.2; //collision strength
@@ -184,10 +185,11 @@ int Parameters::load(FILE *file){
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
 
-		mdTimeStep = ini.GetValueF("MDynamics","TIMESTEP",mdTimeStep);
-		mdTemperture = ini.GetValueF("MDynamics","TEMPERTURE",mdTemperture);
-		mdSteps = ini.GetValueL("MDynamics","STEPS",mdSteps);
-		 
+		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+		mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
+		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
+		PRD_MaxMovedDist=ini.GetValueL("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+
 		Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
 		Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
 
