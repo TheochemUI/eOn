@@ -8,6 +8,8 @@ ParallelReplica::ParallelReplica(Parameters *params)
 {
     parameters = params;
     nsteps = 0;
+	min_fcalls = 0;
+	md_fcalls = 0;
 }
 
 ParallelReplica::~ParallelReplica(){ }
