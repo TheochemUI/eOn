@@ -6,25 +6,24 @@
 #include <cstdio>
 #include "stdlib.h"
 
-#include "system_unit.h" // unit converters
 #include "PotentialsInterface.h"
 
-/** VASP potential.*/
-class VASP : public PotentialsInterface{
-    
-public:
-// Functions
-	// constructor
-    VASP(void);
-	
-    // Just to satify interface
-    void initialize() {};
-    void cleanMemory(void);    
-    void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+class VASP : public PotentialsInterface
+{
 
-private:
-    void writePositionsToFile(long N, const double *R, long const *atomicNrs, const double *box);
-    void readForcesFromFile(long N, double *F, double *U);
+    public:
+        VASP(void);
+        void initialize() {};
+        void cleanMemory(void);    
+        void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+
+
+    private:
+        void writeNEWCAR(long N, const double *R, long const *atomicNrs, const double *box);
+        void readFU(long N, double *F, double *U);
+        long vaspRunCount;
+
 };
+
 #endif
 
