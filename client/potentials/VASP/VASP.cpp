@@ -1,103 +1,130 @@
+
+
 #include "VASP.h"
 
-VASP::VASP(void){
+
+
+VASP::VASP(void)
+{
+    vaspRunCount = 0;
     return;
 }
 
-void VASP::cleanMemory(void){
+
+void VASP::cleanMemory(void)
+{
     return;
 }
 
-// pointer to number of atoms, pointer to array of positions	
-// pointer to array of forces, pointer to internal energy
-// adress to supercell size
-void VASP::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box){
 
-    writePositionsToFile(N, R, atomicNrs, box);
-    system("vasp >> vaspOutput");
-    readForcesFromFile(N, F, U);
-    
+void VASP::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
+{
+    writeNEWCAR(N, R, atomicNrs, box);
+    if(vaspRunCount == 0)
+    {
+        system("vasp >> vaspOutput");
+    }
+    while(access("FU", F_OK) == -1)
+    {
+        sleep(1);
+    }
+    readFU(N, F, U);
+    system("rm FU");
+    vaspRunCount++;
     return;
 }
 
-void VASP::writePositionsToFile(long N, const double *R, long const *atomicNrs, const double *box){
+
+void VASP::writeNEWCAR(long N, const double *R, long const *atomicNrs, const double *box)
+{
     // Positions are scaled 
-    int i=0, i_old=0;
-    FILE *file;
-    file = fopen("POSCAR","w");
+    long i = 0;
+    long i_old = 0;
+    FILE *NEWCAR;
+    
+    if(vaspRunCount = 0)
+    {
+        NEWCAR = fopen("POSCAR","w");
+    }
+    else
+    {
+        NEWCAR = fopen("NEWCAR","w");
+    }
 
     // header line (treated as a comment)
-    i_old=0;
-    fprintf(file, "%li ",atomicNrs[0]);
-    for(i=0; i<N; i++){
-        if(atomicNrs[i]!=atomicNrs[i_old]){
-            fprintf(file, "%li ",atomicNrs[i]);
+    i_old = 0;
+    fprintf(NEWCAR, "%li ", atomicNrs[0]);
+    for(i = 0; i < N; i++)
+    {
+        if(atomicNrs[i] != atomicNrs[i_old])
+        {
+            fprintf(NEWCAR, "%li ", atomicNrs[i]);
             i_old = i;
         }
     }
-    fprintf(file, ": Atomic numbers\n");
+    fprintf(NEWCAR, ": Atomic numbers\n");
     
     // boundary box
-    fprintf(file, "1.0\n");
-    fprintf(file, " %.8lf\t%.8lf\t%.8lf\n", box[0]/system_unit::ANGSTROM, 0.0, 0.0);
-    fprintf(file, " %.8lf\t%.8lf\t%.8lf\n", 0.0, box[1]/system_unit::ANGSTROM, 0.0);
-    fprintf(file, " %.8lf\t%.8lf\t%.8lf\n", 0.0, 0.0, box[2]/system_unit::ANGSTROM);
+    fprintf(NEWCAR, "1.0\n");
+    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", box[0], 0.0, 0.0);
+    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", 0.0, box[1], 0.0);
+    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", 0.0, 0.0, box[2]);
 
     // the number of atoms of each of the the different atomic types
-    i_old=0;
-    for(i=0; i<N; i++){
-        if(atomicNrs[i]!=atomicNrs[i_old]){
-            fprintf(file, "%li ",i-i_old);
+    i_old = 0;
+    for(i = 0; i < N; i++)
+    {
+        if(atomicNrs[i] != atomicNrs[i_old])
+        {
+            fprintf(NEWCAR, "%li ", i - i_old);
             i_old = i;
         }
     }
-    fprintf(file, "%li\n", N-i_old);
+    fprintf(NEWCAR, "%li\n", N - i_old);
 
     // coordinates for all atoms
-    fprintf(file, "Cartesian\n");
-    for(i=0; i<N; i++){
-        fprintf(file, "%.19lf\t%.19lf\t%.19lf\t F F F\n", 
-                       R[0+3*i]/system_unit::ANGSTROM,
-                       R[1+3*i]/system_unit::ANGSTROM,
-                       R[2+3*i]/system_unit::ANGSTROM);
+    fprintf(NEWCAR, "Cartesian\n");
+    for(i = 0; i < N; i++)
+    {
+        fprintf(NEWCAR, "%.19lf\t%.19lf\t%.19lf\t F F F\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
-    fclose(file);
+    fclose(NEWCAR);
     return;
 }
 
-void VASP::readForcesFromFile(long N, double *F, double *U){
-    int i=0, line=0, length=500;
-    double garbageDouble;
-    char garbageChar[length], word1[length], word2[length];
-    char lineAll[length];// Temporary string of character to read from the file.
-    FILE *file;
-    file = fopen("OUTCAR","r");
+
+void VASP::readFU(long N, double *F, double *U)
+{
+    FILE *FU;
+    FU = fopen("FU", "r");
     
-    while (!feof(file)){
-        fgets(lineAll, length, file);
-        std::sscanf(lineAll, "%s %s", word1, word2);
-        
-        if((!strcmp(word1, "FREE")) && (!strcmp(word2, "ENERGIE"))){
-            // remove three lines and read the fourth
-            for(i=0; i<4; i++)
-                fgets(lineAll, length, file);
-            sscanf(lineAll,"%s %s %s %lf %s %s %lf", 
-                           garbageChar, garbageChar, garbageChar,
-                           U,
-                           garbageChar, garbageChar, &garbageDouble);
-        }
-        
-        if((!strcmp(word1, "POSITION")) && (!strcmp(word2, "TOTAL-FORCE"))){
-            // remove one line
-            fgets(lineAll, length, file);
-            for(i=0; i<N; i++) {
-                fgets(lineAll, length, file);
-                sscanf(lineAll,"%lf %lf %lf %lf %lf %lf\n", 
-                               &garbageDouble, &garbageDouble, &garbageDouble,
-                               &F[0+i*3], &F[1+i*3], &F[2+i*3]);
-            }
-        }
-    };
-    fclose(file);
+    fscanf(FU, "%lf", U);
+    
+    for(int i = 0; i < N; i++)
+    {
+        fscanf(FU, "%lf %lf %lf", &F[i * 3 + 0], &F[i * 3 + 1], &F[i * 3 + 2]);
+    }
+   fclose(FU);
     return;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
