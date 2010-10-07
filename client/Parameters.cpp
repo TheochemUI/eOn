@@ -72,6 +72,7 @@ Parameters::Parameters(){
     mdTemperture = 300.0;
 	mdSteps = 1000;
     PRD_MaxMovedDist = 2.0;
+	mdRefine = false;
 	CheckFreq = 500;
     NewRelaxSteps = 500;
 
@@ -191,6 +192,7 @@ int Parameters::load(FILE *file){
 		mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
 		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
 		PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+		mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
 		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
