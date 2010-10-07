@@ -77,6 +77,7 @@ public:
 	double mdTimeStep;
 	double mdTemperture;
 	double PRD_MaxMovedDist;
+	bool mdRefine;
 	long   mdSteps;
 	long   CheckFreq;
 	long   NewRelaxSteps;

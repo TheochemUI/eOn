@@ -72,9 +72,15 @@ void ParallelReplica::dynamics()
 
     while(!stoped)
     {
+		
         PRdynamics.oneStep();
         nsteps++;
         md_fcalls++;
+
+		if(parameters->mdRefine){
+			printf("md final state will be refined!\n");
+		}
+
         
         reactant->getFreeVelocities(freeVelocities);
         EKin = reactant->kineticEnergy();
