@@ -82,9 +82,9 @@ def savecon(fileout, p, w = 'w'):
     BoxDiag=numpy.zeros((dim), 'd')
     for i in range(dim): 
         BoxDiag[i] = p.box[i][i]
-    print >> con, " ".join(['%.5f' % s for s in BoxDiag])
+    print >> con, " ".join(['%.4f' % s for s in BoxDiag])
     Angle = numpy.zeros((dim), 'd') + 90.0
-    print >> con, " ".join(['%.5f' % s for s in Angle])
+    print >> con, " ".join(['%.4f' % s for s in Angle])
     print >> con
     print >> con
     atom_count = {}
@@ -105,7 +105,7 @@ def savecon(fileout, p, w = 'w'):
         print >> con, name_order[i]
         print >> con, "Coordinates of Component", i+1
         for j in range(atom_count[name_order[i]]):
-            print >> con, p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1
+            con.write("%.3f %.3f %.3f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1))
             index += 1
 
 
@@ -139,7 +139,7 @@ def save_mode(modefileout, displace_vector, reactant):
         f = open(modefileout, 'w')
     f.write("%d %d\n" % (len(reactant) * 3, 3 * int(reactant.free.sum())))
     for i in range(len(displace_vector)):
-        f.write("%.5f %.5f %.5f\n" % (displace_vector[i][0], 
+        f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0], 
             displace_vector[i][1], displace_vector[i][2]))
 
 
