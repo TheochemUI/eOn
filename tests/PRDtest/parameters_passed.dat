@@ -42,9 +42,10 @@ TIMESTEP=0.1
 TEMPERTURE=300.0
 STEPS=50000
 PRD_MaxMovedDist=2.5
-mdRefine=1
-CheckFreq=1000
-NewRelaxStep=1000
+mdRefine=0
+RefineAccuracy=10
+CheckFreq=5000
+NewRelaxStep=10
 
 [Thermo]
 Andersen_Alpha=0.1
