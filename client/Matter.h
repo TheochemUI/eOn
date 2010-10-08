@@ -25,6 +25,7 @@ struct MatterPrivateData {
     int *isFixed_; // array of bool, false for movable atom, true for fixed
     double cellBoundaries_[3]; // boundaries of the cell
     mutable double potentialEnergy_; // potential energy
+	long nsteps_; //liang added for test
 };
 
 /** Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
@@ -58,6 +59,10 @@ public:
     /* @param  constraints  set to zero to remove any constraints.*/
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
+	//liang added 
+	void setNsteps(long int Nsteps);
+	long getNsteps() const;
+	//liang end
 
     void getPositions(double pos[]) const; // return coordinates of free atoms in array pos
     void setPositions(const double pos[]); // update Matter with the new positions of the free atoms given in array pos

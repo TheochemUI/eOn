@@ -111,6 +111,9 @@ const Matter& Matter::operator=(const Matter& matter)
     strcpy(headerCon5_,matter.headerCon5_);
     strcpy(headerCon6_,matter.headerCon6_);
 
+	//liang add here nsteps for test:
+	nsteps_ = matter.nsteps_;
+
     return *this;
 }
 
@@ -397,6 +400,15 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr)
 {
     atomicNrs_[indexAtom]=atomicNr;
     computePotential_=true;
+}
+
+//liang add here
+void Matter::setNsteps(long int Nsteps){
+	 nsteps_=Nsteps;
+}
+
+long Matter::getNsteps() const{
+	return(nsteps_);
 }
 
 
@@ -866,7 +878,8 @@ void Matter::initialiseDataMembers(Parameters *parameters)
     usePeriodicBoundaries_ = true;
     computePotential_ = true;
     forceCalls_ = 0;
-
+    //liang added 
+	nsteps_ = 0;
     parameters_ = parameters;
     potential_ = new Potentials(parameters_);
 }
