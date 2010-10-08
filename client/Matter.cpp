@@ -715,7 +715,7 @@ bool Matter::matter2con(FILE *file) const
         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
         fprintf(file, "Coordinates of Component %d\n", j+1);
         for(i=first[j]; i<first[j+1]; i++) {
-            fprintf(file,"%.19f\t%.19f\t%.19f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
+            fprintf(file,"%.3f\t%.3f\t%.3f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
         };
     };
     return true;
