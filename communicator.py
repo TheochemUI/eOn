@@ -414,13 +414,17 @@ class BOINC(Communicator):
                     fh = StringIO(tar.extractfile(tarinfo).read())
                     results[index][newfilename] = fh
                     results[index]["number"] = index
-
                 tar.close()
                 os.remove(resultpath)
             except:
                 logger.exception(
                         "Something tar-file related went wrong with file %s" % resultpath)
+                try:
+                    os.remove(resultpath)
+                except:
+                    logger.exception("Failed to remove %s" % resultpath)
                 continue
+
 
             for result in results:
                 yield result
