@@ -391,31 +391,37 @@ class BOINC(Communicator):
                 os.remove(resultpath)
                 continue
 
-            tar = tarfile.open(resultpath)
-            bundle_size = self.get_bundle_size(tar.getnames())
-            results = [ {'name':jobname} for i in range(bundle_size) ]
-            for tarinfo in tar:
-                if bundle_size == 1:
-                    index = 0
-                else:
-                    try:
-                        index = int(tarinfo.name.split('_')[-1].split('.')[0])
-                    except:
-                        logger.exception("Failed to process file %s in tar" % tarinfo.name)
-                        continue
-                    splitname = tarinfo.name.rsplit(".",1) 
-                    newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
+            try:
+                tar = tarfile.open(resultpath)
+                bundle_size = self.get_bundle_size(tar.getnames())
+                results = [ {'name':jobname} for i in range(bundle_size) ]
+                for tarinfo in tar:
+                    if bundle_size == 1:
+                        index = 0
+                    else:
+                        try:
+                            index = int(tarinfo.name.split('_')[-1].split('.')[0])
+                        except:
+                            logger.exception("Failed to process file %s in tar" % tarinfo.name)
+                            continue
+                        splitname = tarinfo.name.rsplit(".",1) 
+                        newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
 
 
-                #Read the file in the tar archive into a stringio
-                #you cannot return the the filehandle that extractfile returns
-                #as it will be closed when tar.close() is called.
-                fh = StringIO(tar.extractfile(tarinfo).read())
-                results[index][newfilename] = fh
-                results[index]["number"] = index
+                    #Read the file in the tar archive into a stringio
+                    #you cannot return the the filehandle that extractfile returns
+                    #as it will be closed when tar.close() is called.
+                    fh = StringIO(tar.extractfile(tarinfo).read())
+                    results[index][newfilename] = fh
+                    results[index]["number"] = index
 
-            tar.close()
-            os.remove(resultpath)
+                tar.close()
+                os.remove(resultpath)
+            except:
+                logger.exception(
+                        "Something tar-file related went wrong with file %s" % resultpath)
+                continue
+
             for result in results:
                 yield result
                 
