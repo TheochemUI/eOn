@@ -8,6 +8,11 @@ ParallelReplica::ParallelReplica(Parameters *params)
 {
     parameters = params;
     nsteps = 0;
+	ncheck = 0;
+	nexam = 0;
+	remember = true;
+	stoped = false;
+	newstate = false;
 	min_fcalls = 0;
 	md_fcalls = 0;
 }
@@ -40,7 +45,6 @@ void ParallelReplica::run(int bundleNumber)
         
     printf("Now running Parralel Replica Dynamics\n");
 
-    stoped = false;  // initial stoped to false
     dynamics();
     saveData(newstate,bundleNumber);
     
@@ -58,11 +62,16 @@ void ParallelReplica::run(int bundleNumber)
 void ParallelReplica::dynamics()
 {
 	bool   status = false;
-    long   nFreeCoord_, nexam = 0;
+    long   nFreeCoord_;
     double *freeVelocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
-       
+     
+    Matter *mdbuff[parameters->CheckFreq];	
+    for(long i =0; i < parameters->CheckFreq;i++){
+	    mdbuff[i] = new Matter(parameters);
+	}
+
     nFreeCoord_=3*reactant->numberOfFreeAtoms();
     freeVelocities = new double[nFreeCoord_];
 
@@ -75,13 +84,18 @@ void ParallelReplica::dynamics()
 		
         PRdynamics.oneStep();
         nsteps++;
+		reactant->setNsteps(nsteps);
         md_fcalls++;
 
 		if(parameters->mdRefine){
-			printf("md final state will be refined!\n");
+			//printf("md final state will be refined!\n");
+            if(remember){
+				*mdbuff[ncheck] = *reactant;
+			}
+			//mdbuff[ nsteps % parameters->CheckFreq]->setNsteps(nsteps); 
 		}
 
-        
+        ncheck ++;
         reactant->getFreeVelocities(freeVelocities);
         EKin = reactant->kineticEnergy();
         TKin = (2*EKin/nFreeCoord_/kb); 
@@ -89,20 +103,22 @@ void ParallelReplica::dynamics()
         SumT2 += TKin*TKin;
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
-        if (nsteps % parameters->CheckFreq == 0){
+        if (ncheck == parameters->CheckFreq){
 #ifndef NDEBUG           
             reactant->matter2xyz("movie", true);
 #endif
-			status = firstAchieve();
+			ncheck = 0;
+			status = firstArchieve(reactant);
         }
        
 		if (status){
 			nexam ++;
 		    if (nexam >= parameters->NewRelaxSteps){	
 				newstate = IsNewState();
-				nexam = 0;
 			}
 		}
+
+		//printf("%ld  ncheck = %ld nexam = %ld\n ",nsteps,ncheck,nexam);
 
         if (nsteps >= parameters->mdSteps ){
            stoped = true;
@@ -112,22 +128,69 @@ void ParallelReplica::dynamics()
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
     printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord_/2);
-    
 
+//Here we use Golden Search to refine the result; 	
+    //for(long i =0; i < parameters->CheckFreq;i++){
+	//	printf("%ld refine steps %ld\n",i,mdbuff[i]->getNsteps());		
+	//}
+
+ if(parameters->mdRefine && newstate){    
+	long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
+	bool ya, yb;
+
+	printf("Now started to refine the Final Point!\n");
+	RefineAccuracy = parameters->RefineAccuracy; 
+	ya = false;
+	yb = false;
+	initial = 0;
+	final = parameters->CheckFreq - 1;
+	a1 = a2 = initial;
+	b1 = b2 = final;
+	diff = final - initial;
+	//printf("diff = %ld, RefineAcc=%d\n",diff,RefineAccuracy);
+	while(diff > RefineAccuracy){
+			a2 = int(a1 + 0.382 * ( b1 - a1) );
+			b2 = int(a1 + 0.618 * ( b1 - a1) );
+			ya = firstArchieve(mdbuff[a2]);
+			yb = firstArchieve(mdbuff[b2]);
+      //      printf("a1=%ld, ya=%d\n",a2,ya);
+      //      printf("b1=%ld, yb=%d\n",b2,yb);
+			if ( ya == 0 && yb == 0){
+				a1 = initial;
+				b1 = a2;
+			}else if( ya == 0 && yb == 1){
+                a1 = a2;
+				b1 = b2;
+			}else if( ya == 1 && yb == 1){
+				a1 = b2;
+				b1 = final;
+			}else if( ya == 1 && yb == 0){
+				printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
+				a1 = b2;
+				b1 = final;
+			}else {
+				exit(1);
+			}
+			diff = abs(b2 -a2);
+	}
+	
+    printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
+ }
     delete [] freeVelocities;
     return;
 };
 
-bool ParallelReplica::firstAchieve()
+bool ParallelReplica::firstArchieve(Matter *matter)
 {
 	double distance; 
- 	*min2 = *reactant;
+ 	*min2 = *matter;
 
 	ConjugateGradients cgMin2(min2, parameters);
 	cgMin2.fullRelax();
 	min_fcalls += min2->getForceCalls();
 
 	distance = min2->distanceTo(*min1);
+
 #ifndef NDEBUG
 	printf("Total Moved Distance = %lf\n",distance);
 #endif
@@ -152,7 +215,9 @@ bool ParallelReplica::IsNewState(){
 #ifndef NDEBUG
     printf("Total Moved Distance = %lf\n",distance);
 #endif
+	nexam = 0;
     if (distance <= parameters->PRD_MaxMovedDist){
+		ncheck = 0;
         return false;
     }else {
         stoped = true;
@@ -207,4 +272,8 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     return;
 }
 
-
+/*
+long ParallelReplica::Refine(Matter &matter[]){
+	printf("test here\n");
+}
+*/
