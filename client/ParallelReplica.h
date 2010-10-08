@@ -8,8 +8,9 @@ class ParallelReplica: public Job {
         void run(int bundleNumber);
     private:
 		void dynamics();
-		bool firstAchieve();
+		bool firstArchieve(Matter *matter);
 		bool IsNewState();
+	//	long Refine(Matter &matter[]);
         void saveData(int status,int bundleNumber);
         Parameters *parameters;
 		Matter *reactant;
@@ -18,6 +19,9 @@ class ParallelReplica: public Job {
 		long min_fcalls;
 		long md_fcalls;
 		long nsteps;
+		long ncheck;
+		long nexam;
 		bool newstate;
 		bool stoped;
+		bool remember;
 };
