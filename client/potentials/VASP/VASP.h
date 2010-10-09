@@ -6,7 +6,7 @@
 #include <cstdio>
 #include "stdlib.h"
 
-#include "PotentialsInterface.h"
+#include "../../PotentialsInterface.h"
 
 class VASP : public PotentialsInterface
 {
