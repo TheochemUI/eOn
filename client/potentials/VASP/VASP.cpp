@@ -10,9 +10,9 @@ VASP::VASP(void)
     return;
 }
 
-
 void VASP::cleanMemory(void)
 {
+    system("echo LABORT = .TRUE. > STOPCAR");
     return;
 }
 
