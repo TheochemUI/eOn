@@ -3,7 +3,6 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <err.h>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -105,7 +104,8 @@ int extract_archive(char *filename)
 
         fd = fopen(archive_entry_pathname(entry),"wb");
         if (fd == NULL) {
-            warn("problem extracting archive: %s", filename);
+            fprintf(stderr, "problem extracting archive: %s: %s\n", filename,
+                    strerror(errno));
             return 1;
         }
         for (;;) {

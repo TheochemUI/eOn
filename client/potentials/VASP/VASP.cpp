@@ -1,8 +1,13 @@
-
+#include <iostream>
+#include <cstdio>
+#include <stdlib.h>
+#include <unistd.h>
+#ifdef WIN32
+#include <windows.h>
+#define sleep(n) Sleep(1000 * n)
+#endif
 
 #include "VASP.h"
-
-
 
 VASP::VASP(void)
 {
