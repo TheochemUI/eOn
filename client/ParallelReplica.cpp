@@ -79,20 +79,15 @@ void ParallelReplica::dynamics()
         
     PRdynamics.velocityScale();
 
-    while(!stoped)
-    {
+    while(!stoped){
 		
         PRdynamics.oneStep();
         nsteps++;
 		reactant->setNsteps(nsteps);
         md_fcalls++;
 
-		if(parameters->mdRefine){
-			//printf("md final state will be refined!\n");
-            if(remember){
-				*mdbuff[ncheck] = *reactant;
-			}
-			//mdbuff[ nsteps % parameters->CheckFreq]->setNsteps(nsteps); 
+		if(parameters->mdRefine && remember){
+            *mdbuff[ncheck] = *reactant;
 		}
 
         ncheck ++;
@@ -107,7 +102,7 @@ void ParallelReplica::dynamics()
 #ifndef NDEBUG           
             reactant->matter2xyz("movie", true);
 #endif
-			ncheck = 0;
+			ncheck = 0; // reinitial the ncheck
 			status = firstArchieve(reactant);
         }
        
@@ -129,53 +124,15 @@ void ParallelReplica::dynamics()
     VarT=SumT2/nsteps-AvgT*AvgT;
     printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord_/2);
 
-//Here we use Golden Search to refine the result; 	
+    //Here we use Golden Search to refine the result; 	
     //for(long i =0; i < parameters->CheckFreq;i++){
 	//	printf("%ld refine steps %ld\n",i,mdbuff[i]->getNsteps());		
 	//}
+   
+    if(parameters->mdRefine && newstate){     
+        Refine(mdbuff);
+    }
 
- if(parameters->mdRefine && newstate){    
-	long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
-	bool ya, yb;
-
-	printf("Now started to refine the Final Point!\n");
-	RefineAccuracy = parameters->RefineAccuracy; 
-	ya = false;
-	yb = false;
-	initial = 0;
-	final = parameters->CheckFreq - 1;
-	a1 = a2 = initial;
-	b1 = b2 = final;
-	diff = final - initial;
-	//printf("diff = %ld, RefineAcc=%d\n",diff,RefineAccuracy);
-	while(diff > RefineAccuracy){
-			a2 = int(a1 + 0.382 * ( b1 - a1) );
-			b2 = int(a1 + 0.618 * ( b1 - a1) );
-			ya = firstArchieve(mdbuff[a2]);
-			yb = firstArchieve(mdbuff[b2]);
-      //      printf("a1=%ld, ya=%d\n",a2,ya);
-      //      printf("b1=%ld, yb=%d\n",b2,yb);
-			if ( ya == 0 && yb == 0){
-				a1 = initial;
-				b1 = a2;
-			}else if( ya == 0 && yb == 1){
-                a1 = a2;
-				b1 = b2;
-			}else if( ya == 1 && yb == 1){
-				a1 = b2;
-				b1 = final;
-			}else if( ya == 1 && yb == 0){
-				printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
-				a1 = b2;
-				b1 = final;
-			}else {
-				exit(1);
-			}
-			diff = abs(b2 -a2);
-	}
-	
-    printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
- }
     delete [] freeVelocities;
     return;
 };
@@ -272,8 +229,49 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     return;
 }
 
-/*
-long ParallelReplica::Refine(Matter &matter[]){
-	printf("test here\n");
+
+void ParallelReplica::Refine(Matter *mdbuff[]){
+   
+	long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
+	bool ya, yb;
+
+
+        printf("Now started to refine the Final Point!\n");
+        RefineAccuracy = parameters->RefineAccuracy; 
+        ya = false;
+        yb = false;
+        initial = 0;
+        final = parameters->CheckFreq - 1;
+        a1 = a2 = initial;
+        b1 = b2 = final;
+        diff = final - initial;
+      
+        while(diff > RefineAccuracy){
+			a2 = int(a1 + 0.382 * ( b1 - a1) );
+			b2 = int(a1 + 0.618 * ( b1 - a1) );
+			ya = firstArchieve(mdbuff[a2]);
+			yb = firstArchieve(mdbuff[b2]);
+     
+			if ( ya == 0 && yb == 0){
+				a1 = initial;
+				b1 = a2;
+			}else if( ya == 0 && yb == 1){
+                a1 = a2;
+				b1 = b2;
+			}else if( ya == 1 && yb == 1){
+				a1 = b2;
+				b1 = final;
+			}else if( ya == 1 && yb == 0){
+				printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
+				a1 = b2;
+				b1 = final;
+			}else {
+				exit(1);
+			}
+			diff = abs(b2 -a2);
+        }
+	
+        printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
+    return;
 }
-*/
+
