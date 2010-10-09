@@ -7,6 +7,8 @@ import struct
 
 import atoms
 
+from cStringIO import StringIO
+
 def loadcon(filein):
     '''
     Load a con file
@@ -339,6 +341,17 @@ class Dynamics:
                          "barrier":     float(split[6]),
                          "prefactor":   float(split[7])})
         return data
+
+def load_potfiles(pot_dir):
+    ret = {}
+    if os.path.isdit(pot_dir):
+        for i in os.listdir(pot_dir):
+            a = open(os.path.join(pot_dir, i), 'r')
+            b = StringIO("".join(a.readlines()))
+            ret[a] = b
+    return ret
+    
+
 
 if __name__=='__main__':
     d = Dynamics("dynamics.txt")
