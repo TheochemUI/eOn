@@ -493,6 +493,8 @@ def get_displacement(reactant, indices=None):
 
 
 def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
+    
+    
     reactant = current_state.get_reactant()
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
     logger.info("%i searches in the queue" % num_in_buffer)
@@ -519,6 +521,8 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     f = open(parameters_path)
     invariants['parameters_passed.dat'] = StringIO.StringIO(''.join(f.readlines()))
     f.close()
+
+    invariants = dict(invariants,  **io.load_potfiles(config.path_pot)) #Merge potential files into invariants
 
     t1 = unix_time.time()
     if config.recycling_on:
