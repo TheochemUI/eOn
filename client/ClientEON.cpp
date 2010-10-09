@@ -14,6 +14,7 @@
 
 #include <dirent.h>
 #include <string.h>
+#include <time.h>
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
