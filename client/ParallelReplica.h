@@ -10,7 +10,7 @@ class ParallelReplica: public Job {
 		void dynamics();
 		bool firstArchieve(Matter *matter);
 		bool IsNewState();
-	//	long Refine(Matter &matter[]);
+		void Refine(Matter *mdbuff[]);
         void saveData(int status,int bundleNumber);
         Parameters *parameters;
 		Matter *reactant;
