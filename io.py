@@ -344,11 +344,11 @@ class Dynamics:
 
 def load_potfiles(pot_dir):
     ret = {}
-    if os.path.isdit(pot_dir):
+    if os.path.isdir(pot_dir):
         for i in os.listdir(pot_dir):
             a = open(os.path.join(pot_dir, i), 'r')
             b = StringIO("".join(a.readlines()))
-            ret[a] = b
+            ret[i] = b
     return ret
     
 
