@@ -1,10 +1,5 @@
-
 #ifndef VASP_POTENTIAL
 #define VASP_POTENTIAL
-
-#include <iostream>
-#include <cstdio>
-#include "stdlib.h"
 
 #include "../../PotentialsInterface.h"
 

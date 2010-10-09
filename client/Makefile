@@ -1,5 +1,5 @@
 #C compiler settings
-CXXFLAGS += -O2 -Wall -Wfatal-errors
+CXXFLAGS += -O2 -Wall
 
 #Fortran compiler settings
 ifdef NO_FORTRAN
@@ -39,7 +39,7 @@ ifdef BOINC
 ifdef WIN32
 	LDFLAGS += -static -lboinc_api -lboinc -larchive -lz
 else
-	LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive -lz
+	LDFLAGS += -static -lboinc_api -lboinc -lpthread  -lz
 endif
 else
 	BOINC=No
