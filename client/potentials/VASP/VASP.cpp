@@ -6,13 +6,15 @@
 
 VASP::VASP(void)
 {
-    vaspRunCount = 0;
+    printf("INITED\n");
+	vaspRunCount = 0;
     return;
 }
 
 void VASP::cleanMemory(void)
 {
-    system("echo LABORT = .TRUE. > STOPCAR");
+    printf("CLEANED\n");
+	system("echo LABORT = .TRUE. > STOPCAR");
     return;
 }
 
@@ -42,7 +44,7 @@ void VASP::writeNEWCAR(long N, const double *R, long const *atomicNrs, const dou
     long i_old = 0;
     FILE *NEWCAR;
     
-    if(vaspRunCount = 0)
+    if(vaspRunCount == 0)
     {
         NEWCAR = fopen("POSCAR","w");
     }
