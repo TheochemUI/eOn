@@ -4,7 +4,6 @@
  *===============================================
  */
 
-#include <err.h>
 
 #include "Parameters.h"
 #include "INIFile.h"
@@ -101,7 +100,7 @@ int Parameters::load(string filename)
 
     fh = fopen(filename.c_str(), "rb");
     if (fh == NULL) {
-        warn("problem loading parameters file");
+        fprintf(stderr, "problem loading parameters file:%s", strerror(errno));
         return 1;
     }
     int error = load(fh);
