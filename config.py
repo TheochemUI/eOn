@@ -48,7 +48,7 @@ path_searches_out = parser.get('Paths', 'searches_out')
 path_searches_in  = parser.get('Paths', 'searches_in')
 path_states       = parser.get('Paths', 'states')
 path_results      = parser.get('Paths', 'results')
-path_pot      = parser.get('Paths', 'potential_directory')
+path_pot      = parser.get('Paths', 'potential_files')
 
 #Rye-requested check
 if not gave_config and not os.path.samefile(path_root, os.getcwd()):
