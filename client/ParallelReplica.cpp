@@ -51,9 +51,9 @@ void ParallelReplica::run(int bundleNumber)
     saveData(newstate,bundleNumber);
     
     if(newstate){
-        printf("New state has been found with %ld steps !\n", nsteps);
+        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps,10*nsteps*parameters->mdTimeStep);
     }else{
-       printf("New state has not been found in this %ld Dynamics steps !\n",parameters->mdSteps);
+       printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
 
     delete min1;
@@ -84,20 +84,23 @@ void ParallelReplica::dynamics()
     while(!stoped){
 		
         PRdynamics.oneStep();
-        nsteps++;
-		reactant->setNsteps(nsteps);
-        md_fcalls++;
-
-		if(parameters->mdRefine && remember){
-            *mdbuff[ncheck] = *reactant;
-		}
-
-        ncheck ++;
+        
         reactant->getFreeVelocities(freeVelocities);
         EKin = reactant->kineticEnergy();
         TKin = (2*EKin/nFreeCoord_/kb); 
         SumT += TKin;
         SumT2 += TKin*TKin;
+
+        md_fcalls++;
+        ncheck++;
+        nsteps++;
+		reactant->setNsteps(nsteps);
+
+
+		if(parameters->mdRefine && remember){
+            *mdbuff[ncheck-1] = *reactant;
+		}
+
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
         if (ncheck == parameters->CheckFreq){
@@ -201,6 +204,12 @@ void ParallelReplica::saveData(int status,int bundleNumber){
     long total_fcalls = min_fcalls + md_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
+    if(status == 1){  
+        fprintf(fileResults,"New state has been found with %ld steps (%lf fs)!\n", nsteps,10*nsteps*parameters->mdTimeStep);
+    }else{
+       fprintf(fileResults,"New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
+    }
+
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
