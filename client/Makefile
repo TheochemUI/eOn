@@ -85,7 +85,7 @@ OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
 	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
 	debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
-    ProcessSearch.o Minimization.o ParallelReplica.o Dynamics.o
+	ProcessSearch.o Minimization.o ParallelReplica.o Dynamics.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

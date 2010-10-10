@@ -404,11 +404,11 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr)
 
 //liang add here
 void Matter::setNsteps(long int Nsteps){
-	 nsteps_=Nsteps;
+     nsteps_=Nsteps;
 }
 
 long Matter::getNsteps() const{
-	return(nsteps_);
+     return(nsteps_);
 }
 
 
