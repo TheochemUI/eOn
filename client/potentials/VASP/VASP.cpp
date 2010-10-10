@@ -8,33 +8,49 @@
 #endif
 
 #include "VASP.h"
+long VASP::vaspRunCount = 0;
+bool VASP::vaspRunning = false;
 
 VASP::VASP(void)
 {
-    printf("INITED\n");
-	vaspRunCount = 0;
+	vaspRunCount++;
     return;
 }
 
 void VASP::cleanMemory(void)
 {
-    printf("CLEANED\n");
-	system("echo LABORT = .TRUE. > STOPCAR");
+	vaspRunCount--;
+	if(vaspRunCount < 1)
+	{
+		system("echo LABORT = .TRUE. > STOPCAR");
+		vaspRunning = false;
+	}
     return;
+}
+
+VASP::~VASP()
+{
+	cleanMemory();
 }
 
 
 void VASP::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
 {
     writeNEWCAR(N, R, atomicNrs, box);
-    if(vaspRunCount == 0)
+    if(!vaspRunning)
     {
-        system("vasp >> vaspOutput");
+		system("vasp >> llout 2>&1 &");
+		vaspRunning = true;
     }
+	printf("vasp force call");
+	fflush(stdout);
     while(access("FU", F_OK) == -1)
     {
         sleep(1);
+		printf(".");
+		fflush(stdout);
     }
+	printf("\n");
     readFU(N, F, U);
     system("rm FU");
     vaspRunCount++;
@@ -49,7 +65,7 @@ void VASP::writeNEWCAR(long N, const double *R, long const *atomicNrs, const dou
     long i_old = 0;
     FILE *NEWCAR;
     
-    if(vaspRunCount == 0)
+    if(!vaspRunning)
     {
         NEWCAR = fopen("POSCAR","w");
     }
@@ -93,7 +109,7 @@ void VASP::writeNEWCAR(long N, const double *R, long const *atomicNrs, const dou
     fprintf(NEWCAR, "Cartesian\n");
     for(i = 0; i < N; i++)
     {
-        fprintf(NEWCAR, "%.19lf\t%.19lf\t%.19lf\t F F F\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
+        fprintf(NEWCAR, "%.19lf\t%.19lf\t%.19lf\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
     fclose(NEWCAR);
     return;

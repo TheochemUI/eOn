@@ -187,6 +187,7 @@ int Parameters::load(FILE *file){
         
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
+        dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
 		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
 		mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
@@ -197,6 +198,7 @@ int Parameters::load(FILE *file){
 		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
+        cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
 
 		Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
