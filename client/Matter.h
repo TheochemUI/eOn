@@ -95,6 +95,7 @@ public:
     void resetForceCalls(); // zeroing the value of force calls
 
     bool isItConverged(double convergeCriterion);
+	double maxForce(void);
     void updateForces(double positions[], double velocities[], double forces[]);
     void updateAccelerations(double positions[], double velocities[], double accelerations[]);
 

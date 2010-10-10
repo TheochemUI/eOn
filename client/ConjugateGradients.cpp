@@ -122,13 +122,7 @@ void ConjugateGradients::fullRelax(){
         converged = isItConverged(parameters_->convergedRelax);
         ++i;
         #ifndef NDEBUG
-        double maxForce=0.0;
-        for (int j=0;j<nFreeCoord_;j++) {
-            if (fabs(force_[j])>maxForce) {
-                maxForce = fabs(force_[j]);
-            }
-        }
-        printf("min = %d, max force = %lf\n", i, maxForce);
+        printf("min = %d, max force = %lf\n", i, matter_->maxForce());
         #endif
     }
     return;
