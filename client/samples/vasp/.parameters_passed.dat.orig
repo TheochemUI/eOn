@@ -24,7 +24,7 @@ POTENTIAL_TAG=5
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
 # 1 = translation of the system is prevented
-POTENTIAL_NO_TRANSLATION=1
+POTENTIAL_NO_TRANSLATION=0
 
 maximum_iterations=512
 
@@ -42,7 +42,7 @@ REFINE=1
 
 # tweakable parameters
 converged_Relax=0.001
-converged=0.001
+converged=0.002
 max_Energy=10.000000
 
 [Hessian]
@@ -50,4 +50,9 @@ min_Displacement=0.250000
 within_Radius_Displaced=3.500000
 
 [Dimer]
-rotations=2
+rotations = 16
+separation = 0.1
+angle = 0.1
+
+[CG]
+curvature_step = 0.1
