@@ -4,7 +4,7 @@
  *===============================================
  */
 
-
+#include <errno.h>
 #include "Parameters.h"
 #include "INIFile.h"
 
