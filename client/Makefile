@@ -39,7 +39,7 @@ ifdef BOINC
 ifdef WIN32
 	LDFLAGS += -static -lboinc_api -lboinc -larchive -lz
 else
-	LDFLAGS += -static -lboinc_api -lboinc -lpthread  -lz
+	LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive -lz
 endif
 else
 	BOINC=No
