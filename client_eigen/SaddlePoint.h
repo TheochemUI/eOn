@@ -95,7 +95,7 @@ private:
     void clean(); // clean up dynamical allocated memory
  
     void displaceState(Matter *matter); // displacing the atomic positions in @matter according to values in Parameters, being centered on the atom determined by one of the EpiCenter functions
-    void correctingForces(double *force); // projected min-mode force
+    Matrix<double, Eigen::Dynamic, 3> correctingForces(Matrix<double, Eigen::Dynamic, 3> force); // projected min-mode force
 
     /** Determine the two minima connected to the saddle point, by displacing the positions in the saddle point by either adding or subtracting a part of the lowest eigenmode
     @param[out]  *min1   Matter object containing one of the minima connected to the saddle point
