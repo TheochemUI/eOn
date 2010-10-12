@@ -10,13 +10,13 @@ ParallelReplica::ParallelReplica(Parameters *params)
 {
     parameters = params;
     nsteps = 0;
-	ncheck = 0;
-	nexam = 0;
-	remember = true;
-	stoped = false;
-	newstate = false;
-	min_fcalls = 0;
-	md_fcalls = 0;
+    ncheck = 0;
+    nexam = 0;
+    remember = true;
+    stoped = false;
+    newstate = false;
+    min_fcalls = 0;
+    md_fcalls = 0;
 }
 
 ParallelReplica::~ParallelReplica(){ }
@@ -51,9 +51,9 @@ void ParallelReplica::run(int bundleNumber)
     saveData(newstate,bundleNumber);
     
     if(newstate){
-        printf("New state has been found with %ld steps !\n", nsteps);
+        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps,10*nsteps*parameters->mdTimeStep);
     }else{
-       printf("New state has not been found in this %ld Dynamics steps !\n",parameters->mdSteps);
+       printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
 
     delete min1;
@@ -63,7 +63,7 @@ void ParallelReplica::run(int bundleNumber)
 
 void ParallelReplica::dynamics()
 {
-	bool   status = false;
+    bool   status = false;
     long   nFreeCoord_;
     double *freeVelocities;
     double EKin=0.0, kb = 1.0/11604.5;
@@ -84,38 +84,41 @@ void ParallelReplica::dynamics()
     while(!stoped){
 		
         PRdynamics.oneStep();
-        nsteps++;
-		reactant->setNsteps(nsteps);
-        md_fcalls++;
-
-		if(parameters->mdRefine && remember){
-            *mdbuff[ncheck] = *reactant;
-		}
-
-        ncheck ++;
+        
         reactant->getFreeVelocities(freeVelocities);
         EKin = reactant->kineticEnergy();
         TKin = (2*EKin/nFreeCoord_/kb); 
         SumT += TKin;
         SumT2 += TKin*TKin;
+
+        md_fcalls++;
+        ncheck++;
+        nsteps++;
+	reactant->setNsteps(nsteps);
+
+
+	if(parameters->mdRefine && remember){
+            *mdbuff[ncheck-1] = *reactant;
+	}
+
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
         if (ncheck == parameters->CheckFreq){
 #ifndef NDEBUG           
             reactant->matter2xyz("movie", true);
 #endif
-			ncheck = 0; // reinitial the ncheck
-			status = firstArchieve(reactant);
+  	    ncheck = 0; // reinitial the ncheck
+            status = firstArchieve(reactant);
         }
        
-		if (status){
-			nexam ++;
-		    if (nexam >= parameters->NewRelaxSteps){	
-				newstate = IsNewState();
-			}
-		}
+	if (status){
+            nexam ++;
+	    if (nexam >= parameters->NewRelaxSteps){	
+		newstate = IsNewState();
+            }
+	}
 
-		//printf("%ld  ncheck = %ld nexam = %ld\n ",nsteps,ncheck,nexam);
+	//printf("%ld  ncheck = %ld nexam = %ld\n ",nsteps,ncheck,nexam);
 
         if (nsteps >= parameters->mdSteps ){
            stoped = true;
@@ -141,139 +144,140 @@ void ParallelReplica::dynamics()
 
 bool ParallelReplica::firstArchieve(Matter *matter)
 {
-	double distance; 
- 	*min2 = *matter;
+     double distance; 
+     *min2 = *matter;
 
-	ConjugateGradients cgMin2(min2, parameters);
-	cgMin2.fullRelax();
-	min_fcalls += min2->getForceCalls();
+     ConjugateGradients cgMin2(min2, parameters);
+     cgMin2.fullRelax();
+     min_fcalls += min2->getForceCalls();
 
-	distance = min2->distanceTo(*min1);
+     distance = min2->distanceTo(*min1);
 
 #ifndef NDEBUG
-	printf("Total Moved Distance = %lf\n",distance);
+     printf("Total Moved Distance = %lf\n",distance);
 #endif
-	if (distance <= parameters->PRD_MaxMovedDist){
-		return false;
-	}else { 
- 		return true;
-	}
+     if (distance <= parameters->PRD_MaxMovedDist){
+	return false;
+     }else { 
+ 	return true;
+     }
 }
 
 
 bool ParallelReplica::IsNewState(){
 
-    double distance;
+     double distance;
 
-    *min2 = *reactant;
-    ConjugateGradients cgMin2(min2, parameters);
-    cgMin2.fullRelax();
-    min_fcalls += min2->getForceCalls();
+     *min2 = *reactant;
+     ConjugateGradients cgMin2(min2, parameters);
+     cgMin2.fullRelax();
+     min_fcalls += min2->getForceCalls();
 
-    distance = min2->distanceTo(*min1);
+     distance = min2->distanceTo(*min1);
 #ifndef NDEBUG
-    printf("Total Moved Distance = %lf\n",distance);
+     printf("Total Moved Distance = %lf\n",distance);
 #endif
-	nexam = 0;
-    if (distance <= parameters->PRD_MaxMovedDist){
-		ncheck = 0;
+     nexam = 0;
+     if (distance <= parameters->PRD_MaxMovedDist){
+	ncheck = 0;
         return false;
-    }else {
+     }else {
         stoped = true;
         return true;
-    }
+     }
 }
 
 void ParallelReplica::saveData(int status,int bundleNumber){
-    FILE *fileResults, *fileReactant, *fileProduct;
+     FILE *fileResults, *fileReactant, *fileProduct;
 
-    char filename[STRING_SIZE];
+     char filename[STRING_SIZE];
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-    }else{
-        strncpy(filename, "results.dat", STRING_SIZE);
-    }
-    fileResults = fopen(filename, "wb");
-    ///XXX: min_fcalls isn't quite right it should get them from
-    //      the minimizer. But right now the minimizers are in
-    //      the SaddlePoint object. They will be taken out eventually.
-    long total_fcalls = min_fcalls + md_fcalls;
+     if (bundleNumber != -1) {
+         snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
+     }else{
+         strncpy(filename, "results.dat", STRING_SIZE);
+     }
+     fileResults = fopen(filename, "wb");
+     ///XXX: min_fcalls isn't quite right it should get them from
+     //      the minimizer. But right now the minimizers are in
+     //      the SaddlePoint object. They will be taken out eventually.
+     long total_fcalls = min_fcalls + md_fcalls;
 
-    fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
-    fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
-    fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
-    fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
-    fprintf(fileResults, "%lf moved_distance\n",
-            min2->distanceTo(*min1));
-    fclose(fileResults);
+     fprintf(fileResults, "%d termination_reason\n", status);
+     fprintf(fileResults, "%ld simulation_steps\n", nsteps);
+     fprintf(fileResults, "%lf simulation_time_fs\n",10*nsteps*parameters->mdTimeStep);
+     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
+     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
+     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
+     fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
+     fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
+     fclose(fileResults);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "reactant.con", STRING_SIZE);
-    }
-    fileReactant = fopen(filename, "wb");
-    min1->matter2con(fileReactant);
+     if (bundleNumber != -1) {
+         snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
+     }else{
+         strncpy(filename, "reactant.con", STRING_SIZE);
+     }
+     fileReactant = fopen(filename, "wb");
+     min1->matter2con(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "product.con", STRING_SIZE);
-    }
+     if (bundleNumber != -1) {
+         snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
+     }else{
+         strncpy(filename, "product.con", STRING_SIZE);
+     }
 
-    fileProduct = fopen(filename, "wb");
-    reactant->matter2con(fileProduct);
-    fclose(fileProduct);
+     fileProduct = fopen(filename, "wb");
+     reactant->matter2con(fileProduct);
+     fclose(fileProduct);
 
-    return;
+     return;
 }
 
 
 void ParallelReplica::Refine(Matter *mdbuff[]){
    
-	long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
-	bool ya, yb;
+     long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
+     bool ya, yb;
 
-
-        printf("Now started to refine the Final Point!\n");
-        RefineAccuracy = parameters->RefineAccuracy; 
-        ya = false;
-        yb = false;
-        initial = 0;
-        final = parameters->CheckFreq - 1;
-        a1 = a2 = initial;
-        b1 = b2 = final;
-        diff = final - initial;
+     printf("Now started to refine the Final Point!\n");
+     RefineAccuracy = parameters->RefineAccuracy; 
+     ya = false;
+     yb = false;
+     initial = 0;
+     final = parameters->CheckFreq - 1;
+     a1 = a2 = initial;
+     b1 = b2 = final;
+     diff = final - initial;
       
-        while(diff > RefineAccuracy){
-			a2 = int(a1 + 0.382 * ( b1 - a1) );
-			b2 = int(a1 + 0.618 * ( b1 - a1) );
-			ya = firstArchieve(mdbuff[a2]);
-			yb = firstArchieve(mdbuff[b2]);
+     while(diff > RefineAccuracy){
+	   a2 = int(a1 + 0.382 * ( b1 - a1) );
+	   b2 = int(a1 + 0.618 * ( b1 - a1) );
+	   ya = firstArchieve(mdbuff[a2]);
+	   yb = firstArchieve(mdbuff[b2]);
      
-			if ( ya == 0 && yb == 0){
-				a1 = initial;
-				b1 = a2;
-			}else if( ya == 0 && yb == 1){
-                a1 = a2;
-				b1 = b2;
-			}else if( ya == 1 && yb == 1){
-				a1 = b2;
-				b1 = final;
-			}else if( ya == 1 && yb == 0){
-				printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
-				a1 = b2;
-				b1 = final;
-			}else {
-				exit(1);
-			}
-			diff = abs(b2 -a2);
-        }
+	   if ( ya == 0 && yb == 0){
+	      a1 = initial;
+              b1 = a2;
+	   }else if( ya == 0 && yb == 1){
+              a1 = a2;
+	      b1 = b2;
+	   }else if( ya == 1 && yb == 1){
+	      a1 = b2;
+	      b1 = final;
+	   }else if( ya == 1 && yb == 0){
+	      printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
+	      a1 = b2;
+	      b1 = final;
+	   }else {
+	      exit(1);
+	   }
 	
-        printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
-    return;
+	   diff = abs(b2 -a2);
+     }
+	
+     printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
+     return;
 }
 

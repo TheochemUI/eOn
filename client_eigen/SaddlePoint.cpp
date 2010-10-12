@@ -388,7 +388,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            printf("climb = %ld\n", iterations);
+            printf("climb = %ld, max force = %f\n", iterations, saddle_->maxForce());
             saddle_->matter2xyz("climb", true);
         #endif
         energySaddle = saddle_->potentialEnergy();

@@ -638,6 +638,27 @@ void Matter::applyPeriodicBoundary(long atom, int axis)
     //};
 }
 
+double Matter::maxForce(void)
+{
+	double maxForce = 0.0;
+	double force = 0.0;
+    for(int i = 0; i < nAtoms_; i++)
+    {
+        if(getFixed(i))
+        {
+            continue;
+        }
+		force = sqrt(forces_[i * 3 + 0] * forces_[i * 3 + 0] +
+					 forces_[i * 3 + 1] * forces_[i * 3 + 1] +
+					 forces_[i * 3 + 2] * forces_[i * 3 + 2]);
+		if(force > maxForce)
+		{
+			maxForce = force;
+		}
+	}
+	return maxForce;
+}
+
 
 bool Matter::isItConverged(double convergeCriterion)
 {

@@ -61,10 +61,10 @@ public:
     /* @param  constraints  set to zero to remove any constraints.*/
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
-	//liang added 
-	void setNsteps(long int Nsteps);
-	long getNsteps() const;
-	//liang end
+    //liang added 
+    void setNsteps(long int Nsteps);
+    long getNsteps() const;
+    //liang end
 
     Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff);
     
