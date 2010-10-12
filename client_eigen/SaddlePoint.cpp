@@ -32,10 +32,10 @@ SaddlePoint::~SaddlePoint(){
     return;
 }
 
-SaddlePoint::SaddlePoint(Matter * initial_passed, Matter *saddle_passed, Parameters *parameters_passed){
+SaddlePoint::SaddlePoint(Matter * initial_passed, Matter *saddlepassed, Parameters *parameterspassed){
     lowestEigenmode = 0;
     eigenMode.resize(saddle->numberOfAtoms(), 3);
-    initialize(initial_passed, saddle_passed, parameters_passed);
+    initialize(initial_passed, saddlepassed, parameterspassed);
     return;
 }
 
@@ -48,12 +48,12 @@ void SaddlePoint::clean(){
     return;
 }
 
-void SaddlePoint::initialize(Matter * initial_passed, Matter *saddle_passed, Parameters *parameters_passed)
+void SaddlePoint::initialize(Matter * initial_passed, Matter *saddlepassed, Parameters *parameterspassed)
 {
     clean();
     initial=initial_passed;
-    saddle = saddle_passed;
-    parameters = parameters_passed;
+    saddle = saddlepassed;
+    parameters = parameterspassed;
     if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
     {
         lowestEigenmode=new Dimer(saddle, parameters);
@@ -219,54 +219,49 @@ void SaddlePoint::displaceState(Matter *matter)
     return;
 }
 
-void SaddlePoint::correctingForces(double *force){
+Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Eigen::Dynamic, 3> force){
  
-    Matrix<double, Eigen::Dynamic, 3> tempDoubleList;
-    ///TODO: left off here
-    makeProjection(tempDoubleList, force, eigenMode_, nFreeCoord_);
+    Matrix<double, Eigen::Dynamic, 3> proj;
+    proj = force.dot(eigenMode) * eigenMode.normalized();
  
-    if (0 < eigenValue_){
-        if (parameters_->saddlePerpendicularForceRatio > 0.0) {
+    if (0 < eigenValue){
+        if (parameters->saddlePerpendicularForceRatio > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
-            double const d=parameters_->saddlePerpendicularForceRatio;
-            multiplyScalar(force, force, d, nFreeCoord_);
-            multiplyScalar(tempDoubleList, tempDoubleList, -1-d, nFreeCoord_);
-            add(force, force, tempDoubleList, nFreeCoord_);
+            double const d=parameters->saddlePerpendicularForceRatio;
+            force = d*force - (1+d)*proj;
         }
         else {
             // Follow eigenmode
-            multiplyScalar(force, tempDoubleList, -1, nFreeCoord_);
+            force = -proj;
         }
     }
     else{
         // Reversing force parallel to eigenmode
-        multiplyScalar(tempDoubleList, tempDoubleList, -2, nFreeCoord_);
-        add(force, force, tempDoubleList, nFreeCoord_);
+        force += -2*proj;
     }
-    delete [] tempDoubleList;
-    return;
+    return force;
 }
 
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
  
-    Matrix<double, Eigen::Dynamic, 3> posSaddle = saddle_->getPositions();
+    Matrix<double, Eigen::Dynamic, 3> posSaddle = saddle->getPositions();
 
-    Matrix<double, Eigen::Dynamic, 3> diplacedPos;
+    Matrix<double, Eigen::Dynamic, 3> displacedPos;
     //----- Initialize end -----
     //std::cout<<"relaxFromSaddle\n";
  
     // Displace saddle point configuration along the lowest eigenmode and minimize
-    *min1 = *saddle_;
+    *min1 = *saddle;
     //XXX: the distance displced from the saddle should be a parameter
-    diplacedPos = posSaddle - eigenMode * 0.2;
+    displacedPos = posSaddle - eigenMode * 0.2;
     min1->setPositions(displacedPos);
-    ConjugateGradients cgMin1(min1, parameters_);
+    ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
  
-    *min2 = *saddle_;
-    diplacedPos = posSaddle + eigenMode * 0.2;
+    *min2 = *saddle;
+    displacedPos = posSaddle + eigenMode * 0.2;
     min2->setPositions(displacedPos);
-    ConjugateGradients cgMin2(min2, parameters_);  
+    ConjugateGradients cgMin2(min2, parameters);  
     cgMin2.fullRelax();
  
     return;
@@ -274,9 +269,9 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
 
 void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
     if(0 < eigenvalue)
-        forceCallsSaddlePointConcave_ += fcalls;
+        forceCallsSaddlePointConcave += fcalls;
     else
-        forceCallsSaddlePointConvex_ += fcalls;
+        forceCallsSaddlePointConvex += fcalls;
     return;
 }
 
@@ -284,39 +279,36 @@ void SaddlePoint::jumpToConvexRegion(){
     long forceCallsSaddle;
     long iterations = 0;
  
-    double *pos;
-    pos = new double[nFreeCoord_];
+    Matrix<double, Eigen::Dynamic, 3> pos = saddle->getPositions();
  
-    saddle_->getFreePositions(pos);
-    forceCallsSaddle = saddle_->getForceCalls();
-    //----- Initialize end -----
-    //std::cout<<"jumpToConvexRegion\n";
+    forceCallsSaddle = saddle->getForceCalls();
 
-    if(parameters_->saddleTypePerturbation!=dispNone){
+    if(parameters->saddleTypePerturbation!=dispNone){
         do{
-            saddle_->setFreePositions(pos);
-            displaceState(saddle_);
-            lowestEigenmode_->startNewSearchAndCompute(saddle_, initialDisplacement_);
-            eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
-            iterations = iterations+1;
-        }while((0 < eigenValue_) && 
-               (iterations < parameters_->saddleMaxJumpAttempts));
+            saddle->setPositions(pos);
+            displaceState(saddle);
+            lowestEigenmode->startNewSearchAndCompute(saddle, initialDisplacement);
+            eigenMode = lowestEigenmode->getEigenvector();
+            eigenValue = lowestEigenmode->getEigenvalue();
+            iterations++;
+        }while((0 < eigenValue) && 
+               (iterations < parameters->saddleMaxJumpAttempts));
     }
-    if(0 < eigenValue_)
-        status_ = statusBadNoConvex;
+    if(0 < eigenValue)
+        status = statusBadNoConvex;
 
-    forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;
-    addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
+    forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
+    addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
 
-    delete [] pos;
     return;
 }
 
 void SaddlePoint::displaceInConcaveRegion()
 {
-    displaceState(saddle_);
-    lowestEigenmode_->startNewSearchAndCompute(saddle_, initialDisplacement_);
-    eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
+    displaceState(saddle);
+    lowestEigenmode->startNewSearchAndCompute(saddle, initialDisplacement);
+    eigenMode = lowestEigenmode->getEigenvector();
+    eigenValue = lowestEigenmode->getEigenvalue();
     return;
 }
 
@@ -334,48 +326,48 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     double *forces;
     double *pos;
 
-    forcesStep = new double [nFreeCoord_];
-    posStep = new double [nFreeCoord_];
-    forces = new double [nFreeCoord_];
-    pos = new double[nFreeCoord_];
+    forcesStep = new double [nFreeCoord];
+    posStep = new double [nFreeCoord];
+    forces = new double [nFreeCoord];
+    pos = new double[nFreeCoord];
 
-    saddle_->getFreePositions(pos);
+    saddle->getFreePositions(pos);
     //----- Initialize end -----
     //std::cout<<"searchForSaddlePoint\n";
-    saddle_->getFreeForces(forces);
+    saddle->getFreeForces(forces);
  
-    eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
-    correctingForces(forces);
-    ConjugateGradients cgSaddle(saddle_, parameters_, forces);
+    eigenValue = lowestEigenmode->returnLowestEigenmode(eigenMode);
+    forces = correctingForces(forces);
+    ConjugateGradients cgSaddle(saddle, parameters, forces);
 #ifndef NDEBUG
-    saddle_->matter2xyz("climb", false);
+    saddle->matter2xyz("climb", false);
 #endif
     do
     {
-        forceCallsSaddle = saddle_->getForceCalls();        
+        forceCallsSaddle = saddle->getForceCalls();        
         cgSaddle.makeInfinitesimalStepModifiedForces(posStep, pos);
         // Determining the optimal step
-        saddle_->setFreePositions(posStep);
-        saddle_->getFreeForces(forcesStep);
-        correctingForces(forcesStep);
-/*        if(0 < eigenValue_)
-            maxStep = parameters_->getMaxStepSizeConcave_SP();
+        saddle->setFreePositions(posStep);
+        saddle->getFreeForces(forcesStep);
+        forcesStep = correctingForces(forcesStep);
+/*        if(0 < eigenValue)
+            maxStep = parameters->getMaxStepSizeConcave_SP();
         else
-            maxStep = parameters_->getMaxStepSizeConvex_SP();*/
-        maxStep = parameters_->saddleMaxStepSize;
+            maxStep = parameters->getMaxStepSizeConvex_SP();*/
+        maxStep = parameters->saddleMaxStepSize;
         cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-        // The system (saddle_) is moved to a new configuration
-        saddle_->setFreePositions(pos);
-        saddle_->getFreeForces(forces);
+        // The system (saddle) is moved to a new configuration
+        saddle->setFreePositions(pos);
+        saddle->getFreeForces(forces);
         // The new lowest eigenvalue
-        lowestEigenmode_->moveAndCompute(saddle_);
+        lowestEigenmode_->moveAndCompute(saddle);
         eigenValue_ = lowestEigenmode_->returnLowestEigenmode(eigenMode_);
         // Updating the conjugated object to the new configuration
-        correctingForces(forces);
+        forces = correctingForces(forces);
         cgSaddle.setFreeAtomForcesModifiedForces(forces);
         if(eigenValue_ < 0)
         {
-            converged = cgSaddle.isItConverged(parameters_->saddleConverged);
+            converged = cgSaddle.isItConverged(parameters->saddleConverged);
             concaveSeries = 0;
         }
         else
@@ -383,24 +375,24 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             converged = false;
             concaveSeries = concaveSeries + 1;
         }
-        forceCallsSaddle = saddle_->getForceCalls()-forceCallsSaddle;        
+        forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;        
         addForceCallsSaddlePoint(forceCallsSaddle, eigenValue_);
 
         iterations++;
         #ifndef NDEBUG
-            printf("climb = %ld, max force = %f\n", iterations, saddle_->maxForce());
-            saddle_->matter2xyz("climb", true);
+            printf("climb = %ld, max force = %f\n", iterations, saddle->maxForce());
+            saddle->matter2xyz("climb", true);
         #endif
-        energySaddle = saddle_->potentialEnergy();
+        energySaddle = saddle->potentialEnergy();
     }while(!converged && 
-           (iterations < parameters_->saddleMaxIterations) && 
-           (energySaddle-initialEnergy < parameters_->saddleMaxEnergy));
+           (iterations < parameters->saddleMaxIterations) && 
+           (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
     if(!converged){
-        if(parameters_->saddleMaxIterations <= iterations) {
-            status_ = statusBadMaxIterations;
+        if(parameters->saddleMaxIterations <= iterations) {
+            status = statusBadMaxIterations;
         }
-        if(parameters_->saddleMaxEnergy <= energySaddle-initialEnergy) {
-            status_ = statusBadHighBarrier;
+        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy) {
+            status = statusBadHighBarrier;
         }
     }
     delete [] forcesStep;
@@ -412,5 +404,5 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
 LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
 {
-      return lowestEigenmode_;
+      return lowestEigenmode;
 }
