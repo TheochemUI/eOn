@@ -19,7 +19,6 @@
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
-#include "potentials/VASP/VASP.h"
 
 #include <cstdlib>
 
@@ -86,11 +85,13 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EDIP();
         interface_->initialize();
     }
-    else if(parameters_->potentialTag == POT_VASP){
-        interface_ = new VASP();
-        interface_->initialize();
-    }		
 #endif
+    else if(parameters_->potentialTag == POT_VASP){
+        printf("VASP potential not implemented yet. Please use different one.\n");
+        std::exit(1);
+        //interface_ = new vasp();
+        //interface_->initialize();
+    }		
     else{
         printf("Potential tag not recognized: %ld\n", parameters_->potentialTag);
         std::exit(1);
@@ -102,10 +103,20 @@ Potentials::~Potentials(){
 };
 
 // An alike function should be provided by the force calculator.
-void Potentials::force(long nAtoms, const double *positions, const long *atomicNrs, 
-                          double *forces, double *energy, const double *box){
+void Potentials::force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, Matrix<double, Eigen::Dynamic, 3> forces, double *energy, Matrix<double, 3, 3> box) 
+{
+    //XXX: For now, this just serves as a wrapper for the potentials
+    //     and converts from Matrix to double[]s. Later, the potentials
+    //     should also use Eigen
+
+
     // The call is passed to the specified force calculator.
-    interface_->force(nAtoms, positions, atomicNrs, forces, energy, box);
+    double tmpBox[3];
+    tmpBox[0] = box.diagonal()[0];
+    tmpBox[1] = box.diagonal()[1];
+    tmpBox[2] = box.diagonal()[2];
+    ///XXX: THE DATA ARRAYS NEED TO BE TRANSPOSED
+    interface_->force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, tmpBox);
     
     if(parameters_->potentialNoTranslation){
         double tempForceX = 0;

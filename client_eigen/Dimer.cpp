@@ -196,10 +196,8 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
 }
 
 
-double Dimer::returnLowestEigenmode(double *result){
-    for(int i=0; i<nFreeCoord_;i++)
-        result[i]=directionNorm_[i];
-    return eigenvalue_;
+double Dimer::getEigenvalue(){
+    return eigenvalue;
 }
 
 void Dimer::setEigenvector(long size, double const eigenvector[])
@@ -210,10 +208,9 @@ void Dimer::setEigenvector(long size, double const eigenvector[])
     eigenvalue_=0.0;
 }
 
-double const * Dimer::getEigenvector(long & size)
+Matrix<double, Eigen::Dynamic, 3> Dimer::getEigenvector()
 {
-      size=nFreeCoord_;
-      return directionNorm_;
+      return directionNorm;
 }
 
 double Dimer::calcRotationalForce(double *rotationalForce){
