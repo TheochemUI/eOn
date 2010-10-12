@@ -72,6 +72,9 @@ POTENTIALS += "+Pt-H2O"
 POTDIRS += ./potentials/VASP
 LIBS += ./potentials/VASP/libVASP.a
 POTENTIALS += "+VASP"
+POTDIRS += ./potentials/bopfox
+LIBS += ./potentials/bopfox/libbopfox.a
+POTENTIALS += "+bopfox"
 
 ifdef NO_FORTRAN
 	POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "

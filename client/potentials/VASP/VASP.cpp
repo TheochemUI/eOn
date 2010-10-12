@@ -39,7 +39,7 @@ void VASP::force(long N, const double *R, const long *atomicNrs, double *F, doub
     writeNEWCAR(N, R, atomicNrs, box);
     if(!vaspRunning)
     {
-		popen("vasp  >> llout 2>&1", "r");
+		popen("vasp >> llout 2>&1", "r");
 		vaspRunning = true;
     }
 	printf("vasp force call");
@@ -127,7 +127,7 @@ void VASP::readFU(long N, double *F, double *U)
     {
         fscanf(FU, "%lf %lf %lf", &F[i * 3 + 0], &F[i * 3 + 1], &F[i * 3 + 2]);
     }
-   fclose(FU);
+    fclose(FU);
     return;
 }
 
