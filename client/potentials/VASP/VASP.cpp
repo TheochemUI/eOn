@@ -39,7 +39,7 @@ void VASP::force(long N, const double *R, const long *atomicNrs, double *F, doub
     writeNEWCAR(N, R, atomicNrs, box);
     if(!vaspRunning)
     {
-		system("vasp >> llout 2>&1 &");
+		popen("vasp  >> llout 2>&1", "r");
 		vaspRunning = true;
     }
 	printf("vasp force call");
