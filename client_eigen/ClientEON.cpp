@@ -14,7 +14,6 @@
 
 #include <dirent.h>
 #include <string.h>
-#include <time.h>
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -129,8 +128,8 @@ int main(int argc, char **argv)
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new Minimization(&parameters);
     }else if (parameters.jobType == Parameters::PARALLEL_REPLICA) {
-	job =  new ParallelReplica(&parameters);
-    }
+		job =  new ParallelReplica(&parameters);
+	}
 
 
     //If no bundles run once; otherwise, run bundleSize number of times.

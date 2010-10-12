@@ -31,12 +31,12 @@ public:
 
     ~Dynamics();///< Destructor.
 
-    void oneStep();	
-    void VerletStep1();
-    void VerletStep2();
-    void fullSteps(); 
-    void Andersen();
-    void velocityScale();
+ 	void oneStep();	
+	void VerletStep1();
+	void VerletStep2();
+	void fullSteps();
+	void Andersen();
+	void velocityScale();
 
 private:
     long nFreeCoord_;///< Number of free coordinates.
@@ -46,7 +46,7 @@ private:
 
     double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
     double dtScale_;
-    double kb;
+	double kb;
 };
 
 #endif

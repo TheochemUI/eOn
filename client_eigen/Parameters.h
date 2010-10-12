@@ -60,10 +60,10 @@ public:
     double saddleNormPerturbation; // The norm or the perturbation vector [A]
     double saddleMaxSinglePerturbation; // max value of displacement in x, y and z direction for atoms being perturbated [A]
     double saddleWithinRadiusPerturbated; // Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePerturbation_SP_ [A]
-    double saddlePerpendicularForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
+	double saddlePerpendicularForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
     long hessianMaxSize; // if specified, the size of the hessian determined will be equal or smaller than this value
-    double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A]
+	double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A]
     double hessianWithinRadiusDisplaced; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A]
     double hessianPrefactorMax; // max prefactor allowed
     double hessianPrefactorMin; // min prefactor allowed
@@ -74,17 +74,17 @@ public:
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
 
-    double mdTimeStep;
-    double mdTemperture;
-    double PRD_MaxMovedDist;
-    bool   mdRefine;
+	double mdTimeStep;
+	double mdTemperture;
+	double PRD_MaxMovedDist;
+	bool   mdRefine;
     long   RefineAccuracy;
-    long   mdSteps;
-    long   CheckFreq;
-    long   NewRelaxSteps;
+	long   mdSteps;
+	long   CheckFreq;
+	long   NewRelaxSteps;
   
-    double Andersen_Alpha;
-    double Andersen_Tcol;
+	double Andersen_Alpha;
+	double Andersen_Tcol;
   
 private:
     string toLowerCase(string s);

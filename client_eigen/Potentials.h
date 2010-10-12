@@ -7,6 +7,9 @@
 #include "Parameters.h"
 #include "PotentialsInterface.h"
 
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
+
 #define POT_USER 0
 #define POT_LJ 1
 #define POT_MORSE 2
@@ -37,7 +40,7 @@ public:
     @param[out]   *forces     pointer to the array of 3N forces
     @param[out]   *energy     pointer to the total energy
     @param[in]    *box        pointer to the array containing the 3 lengths of the supercell */
-    void force(long nAtoms, const double *positions, const long *atomicNrs, double *forces, double *energy, const double *box);
+    void force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, Matrix<double, Eigen::Dynamic, 3> forces, double *energy, Matrix<double, 3, 3> box);
  
 private:
     PotentialsInterface *interface_;

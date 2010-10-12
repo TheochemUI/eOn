@@ -11,6 +11,9 @@
 
 #include <string>
 
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
+
 using namespace std;
 
 // Return codes passed from server to client to indicate calculation status
@@ -67,27 +70,27 @@ public:
     long locate(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
     long getnFreeCoord() const;
-    double const *const getEigenMode() const;
+    Matrix<double, Eigen::Dynamic, 3> getEigenMode();
 
-    double * mode;
+    Matrix<double, Eigen::Dynamic, 3> mode;
     void loadMode(string filename);
     void loadMode(FILE * modeFile);
     void saveMode(FILE * modeFile);
 
-    long forceCallsSaddlePointConcave_;
-    long forceCallsSaddlePointConvex_;
+    long forceCallsSaddlePointConcave;
+    long forceCallsSaddlePointConvex;
 
 private:
-    Matter * initial_;
-    Matter *saddle_; // pointer to atom object outside the scope of the class
-    Parameters *parameters_; // pointer to a structure outside the scope of the class containing runtime parameters
-    LowestEigenmodeInterface *lowestEigenmode_; // pointer to the method used to determine the lowest eigenmode
+    Matter * initial;
+    Matter *saddle; // pointer to atom object outside the scope of the class
+    Parameters *parameters; // pointer to a structure outside the scope of the class containing runtime parameters
+    LowestEigenmodeInterface *lowestEigenmode; // pointer to the method used to determine the lowest eigenmode
  
-    double eigenValue_; // containing an estimate for the lowest eigenvalue
-    double *eigenMode_; // double array for the lowest eigenmode
-    double *initialDisplacement_; //RT: used to keep track of the initial displacement
-    long nFreeCoord_; // number of free coordinates
-    long status_; // keep track of where problems occured
+    double eigenValue; // containing an estimate for the lowest eigenvalue
+    Matrix<double, Eigen::Dynamic, 3> eigenMode; // double array for the lowest eigenmode
+    Matrix<double, Eigen::Dynamic, 3> initialDisplacement; //RT: used to keep track of the initial displacement
+    long nFreeCoord; // number of free coordinates
+    long status; // keep track of where problems occured
 
     void clean(); // clean up dynamical allocated memory
  
