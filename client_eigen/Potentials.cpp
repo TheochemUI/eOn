@@ -19,6 +19,7 @@
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
+#include "potentials/VASP/VASP.h"
 
 #include <cstdlib>
 
@@ -85,13 +86,11 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EDIP();
         interface_->initialize();
     }
-#endif
     else if(parameters_->potentialTag == POT_VASP){
-        printf("VASP potential not implemented yet. Please use different one.\n");
-        std::exit(1);
-        //interface_ = new vasp();
-        //interface_->initialize();
+        interface_ = new VASP();
+        interface_->initialize();
     }		
+#endif
     else{
         printf("Potential tag not recognized: %ld\n", parameters_->potentialTag);
         std::exit(1);
