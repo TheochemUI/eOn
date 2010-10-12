@@ -20,6 +20,7 @@
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
 #include "potentials/VASP/VASP.h"
+#include "potentials/bopfox/bopfox.h"
 
 #include <cstdlib>
 
@@ -88,6 +89,10 @@ Potentials::Potentials(Parameters *parameters){
     }
     else if(parameters_->potentialTag == POT_VASP){
         interface_ = new VASP();
+        interface_->initialize();
+    }		
+    else if(parameters_->potentialTag == POT_BOPFOX){
+        interface_ = new bopfox();
         interface_->initialize();
     }		
 #endif
