@@ -22,6 +22,7 @@
 #define POT_QSC 12
 #define POT_ZPICE 13
 #define POT_TIP4P 14
+#define POT_BOPFOX 15
 
 /* Class serving as a wrapper between the force calculator and the Matter object */
 class Potentials{
