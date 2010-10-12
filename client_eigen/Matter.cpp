@@ -11,6 +11,7 @@
 #include<cstdlib>
 #include <cassert>
 
+
 using namespace std;
 
 namespace {
@@ -80,78 +81,37 @@ Matter::~Matter()
 const Matter& Matter::operator=(const Matter& matter)
 {
     resize(matter.numberOfAtoms());
-    nAtoms_ = matter.nAtoms_;
-    long i;
-    for(i=0; i<3*nAtoms_; i++) {
-        positions_[i] = matter.positions_[i];
-        forces_[i] = matter.forces_[i];
-    };
-    if(matter.velocities_) {
-        for(i=0; i<3*nAtoms_; i++)
-            velocities_[i] = matter.velocities_[i];
-    };
-    for(i=0; i<nAtoms_; i++) {
-        masses_[i] = matter.masses_[i];
-        atomicNrs_[i] = matter.atomicNrs_[i];
-        isFixed_[i] = matter.isFixed_[i];
-    };
-    cellBoundaries_[0] = matter.cellBoundaries_[0];
-    cellBoundaries_[1] = matter.cellBoundaries_[1];
-    cellBoundaries_[2] = matter.cellBoundaries_[2];
+    nAtoms = matter.nAtoms;
+    
+    positions = matter.positions;
+    forces = matter.forces;
+    masses = matter.masses;
+    atomicNrs = matter.atomicNrs;
+    isFixed = matter.isFixed;
+    cellBoundaries = matter.cellBoundaries;
+    velocities = matter.velocities; 
+    
+    constraints = matter.constraints;
+    usePeriodicBoundaries = matter.usePeriodicBoundaries;
  
-    constraints_ = matter.constraints_;
-    usePeriodicBoundaries_ = matter.usePeriodicBoundaries_;
+    potentialEnergy = matter.potentialEnergy;
+    recomputePotential = matter.recomputePotential;
  
-    potentialEnergy_ = matter.potentialEnergy_;
-    computePotential_ = matter.computePotential_;
- 
-    strcpy(headerCon1_,matter.headerCon1_);
-    strcpy(headerCon2_,matter.headerCon2_);
-    strcpy(headerCon4_,matter.headerCon4_);
-    strcpy(headerCon5_,matter.headerCon5_);
-    strcpy(headerCon6_,matter.headerCon6_);
+    strcpy(headerCon1,matter.headerCon1);
+    strcpy(headerCon2,matter.headerCon2);
+    strcpy(headerCon4,matter.headerCon4);
+    strcpy(headerCon5,matter.headerCon5);
+    strcpy(headerCon6,matter.headerCon6);
 
 	//liang add here nsteps for test:
-	nsteps_ = matter.nsteps_;
+	nsteps = matter.nsteps;
 
     return *this;
 }
 
 
 bool Matter::operator==(const Matter& matter) {//To compare two matter objects, if all differences in positions are bellow getMaxDifferencePos, they are considered equal
-    bool result = false;
-    long nCoord, i = 0;
-    double *pos, diffR, diffRX, diffRY, diffRZ;
-
-    nCoord = 3*nAtoms_;
-    pos = new double[nCoord];
-
-    if(matter.numberOfAtoms()==nAtoms_){
-        // Note that the state of result is changed 
-        // in order to be able to break out of the loop 
-        // when the first large difference appear
-        result = true;
-        matter.getPositions(pos);
- 
-        for(i=0;i<nAtoms_;i++){
-            diffRX = positions_[3*i+0]-pos[3*i+0];
-            diffRY = positions_[3*i+1]-pos[3*i+1];
-            diffRZ = positions_[3*i+2]-pos[3*i+2];
-            // floor = largest integer value less than argument
-            diffRX=diffRX-cellBoundaries_[0]*floor(diffRX/cellBoundaries_[0]+0.5);
-            diffRY=diffRY-cellBoundaries_[1]*floor(diffRY/cellBoundaries_[1]+0.5);
-            diffRZ=diffRZ-cellBoundaries_[2]*floor(diffRZ/cellBoundaries_[2]+0.5);
- 
-            diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
- 
-            if(parameters_->maxDifferencePos<diffR){
-                result = false;
-                break;
-            }
-        }
-    }
-    delete [] pos;
-    return result;
+    return (parameters->maxDifferencePos) > perAtomNorm(matter);
 }
 
 
@@ -159,115 +119,97 @@ double Matter::distanceTo(const Matter& matter)
 {
     /* RT: Returns the distance to the given matter object. */
 
-    double *pos;
-    pos = new double[3 * nAtoms_];   
-
-    long i = 0;
-    double dX, dY, dZ;
-    double sum = 0.0;
-
-    if(matter.numberOfAtoms() == nAtoms_)
-    {
-        matter.getPositions(pos);
-        for(i = 0; i < nAtoms_; i++)
-        {
-            dX = positions_[3 * i + 0] - pos[3 * i + 0];
-            dY = positions_[3 * i + 1] - pos[3 * i + 1];
-            dZ = positions_[3 * i + 2] - pos[3 * i + 2];
-            dX = dX - cellBoundaries_[0] * floor(dX / cellBoundaries_[0] + 0.5);
-            dY = dY - cellBoundaries_[1] * floor(dY / cellBoundaries_[1] + 0.5);
-            dZ = dZ - cellBoundaries_[2] * floor(dZ / cellBoundaries_[2] + 0.5);
-            sum += dX * dX + dY * dY + dZ * dZ;
-        }
-    }
-    delete [] pos;
-    return sqrt(sum);
+    return sqrt(pbc(positions - matter.positions).cwise().square().sum());
 }
 
+Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff)
+{
+    Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
+    Matrix<double, Eigen::Dynamic, 3> ddiff = diff*ibox;
+    
+    int i,j;
+    for(i=0; i<nAtoms; i++)
+    {
+        for(j=0; j<3; j++)
+        {
+            ddiff(i,j) = fmod(fmod(ddiff(i,j), 1.0)  + 1.5, 1.0) -.5;
+        }
+    }
 
-double Matter::per_atom_norm(const Matter& matter) 
+    return ddiff*cellBoundaries;
+}
+
+double Matter::perAtomNorm(const Matter& matter) 
 {
     /* RT: Returns the maximum distance between two atoms in the Matter objects. */
 
-    double *pos;
-    pos = new double[3 * nAtoms_];
-
     long i = 0;
-    double dX, dY, dZ;
     double max_distance = 0.0;
-    double distance = 0.0;
 
-    if(matter.numberOfAtoms() == nAtoms_)
+    if(matter.numberOfAtoms() == nAtoms)
     {
-        matter.getPositions(pos);
-        for(i = 0; i < nAtoms_; i++)
+        Matrix<double, Eigen::Dynamic, 3> diff = positions - matter.positions;
+        for(i = 0; i < nAtoms; i++)
         {
-            dX = positions_[3 * i + 0] - pos[3 * i + 0];
-            dY = positions_[3 * i + 1] - pos[3 * i + 1];
-            dZ = positions_[3 * i + 2] - pos[3 * i + 2];
-            dX = dX - cellBoundaries_[0] * floor(dX / cellBoundaries_[0] + 0.5);
-            dY = dY - cellBoundaries_[1] * floor(dY / cellBoundaries_[1] + 0.5);
-            dZ = dZ - cellBoundaries_[2] * floor(dZ / cellBoundaries_[2] + 0.5);
-            distance = sqrt(dX * dX + dY * dY + dZ * dZ);
-            if(distance > max_distance)
-            {
-                max_distance = distance;
-            }
+            max_distance = max(diff.row(i).norm(), max_distance);
         }
     }
-    delete [] pos;
     return max_distance;
 }
 
 
-void Matter::resize(const long int nAtoms)
+void Matter::resize(const long int length)
 {
-    clearMemory();
-    potential_ = new Potentials(parameters_);
  
-    if(nAtoms>0) {
-        nAtoms_ = nAtoms;
-        positions_ = new double[3*nAtoms];
-        velocities_ = new double[3*nAtoms];
-        forces_ = new double[3*nAtoms];
-        masses_ = new double[nAtoms];
-        atomicNrs_ = new long[nAtoms];
-        isFixed_ = new int[nAtoms];
-        for(long i=0; i<nAtoms; i++){
-            positions_[i*3]=0.0;   positions_[i*3+1]=0.0;   positions_[i*3+2]=0.0;
-            velocities_[i*3]=0.0;  velocities_[i*3+1]=0.0;  velocities_[i*3+2]=0.0;
-            forces_[i*3]=0.0;      forces_[i*3+1]=0.0;      forces_[i*3+2]=0.0;
-            masses_[i] = 0.0;
-            atomicNrs_[i] = 0;
-            isFixed_[i] = false;
-        };
-    };
+    if(nAtoms>0) 
+    {
+        potential = new Potentials(parameters);
+        
+        nAtoms = length;
+        positions.resize(length, 3);
+        positions.setZero();
+        
+        velocities.resize(length ,3);
+        velocities.setZero();
+
+        forces.resize(length ,3);
+        forces.setZero();
+        
+        masses.resize(length);
+        masses.setZero();
+
+        atomicNrs.resize(length);
+        atomicNrs.setZero();
+        
+        isFixed.resize(length);
+        isFixed.setZero();      
+    }
 }
 
 
-long int Matter::numberOfAtoms() const {return(nAtoms_);}// return the number of atoms
+long int Matter::numberOfAtoms() const {return(nAtoms);}// return the number of atoms
 
 
-double Matter::getBoundary(int axis) const
+Vector3d Matter::getBoundary(int axis) const
 {
-    return(cellBoundaries_[axis]);
+    return(cellBoundaries.row(axis));
 }
 
 
-void Matter::setBoundary(int axis, double length)
+void Matter::setBoundary(int axis, Vector3d bound)
 {
-    cellBoundaries_[axis]=length;
-    if(usePeriodicBoundaries_)
+    cellBoundaries.row(axis)=bound;
+    if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary(axis);
     }
-    computePotential_=true;
+    recomputePotential=true;
 }
 
 
 void Matter::activatePeriodicBoundaries()
 {
-    usePeriodicBoundaries_=true;
+    usePeriodicBoundaries=true;
     applyPeriodicBoundary(0);
     applyPeriodicBoundary(1);
     applyPeriodicBoundary(2);
@@ -276,359 +218,155 @@ void Matter::activatePeriodicBoundaries()
 
 void Matter::deactivatePeriodicBoundaries()
 {
-    usePeriodicBoundaries_=false;
+    usePeriodicBoundaries=false;
 }
 
 
-void Matter::setConstraints(Constraints constraints)
+void Matter::setConstraints(Constraints constraints_passed)
 {
-    constraints_=constraints;
+    constraints=constraints_passed;
 }
 
 
 double Matter::getPosition(long int indexAtom, int axis) const {
-    return positions_[3*indexAtom+axis];
+    return positions(indexAtom,axis);
 }
 
 
 void Matter::setPosition(long int indexAtom, int axis, double position)
 {
-    positions_[3*indexAtom+axis]=position;
-    if(usePeriodicBoundaries_){ 
+    positions(indexAtom,axis)=position;
+    if(usePeriodicBoundaries){ 
         applyPeriodicBoundary(indexAtom, axis);
     }
-    computePotential_=true;
+    recomputePotential=true;
 }
 
 
-void Matter::getPositions(double pos[]) const {//return coordinates of free atoms in array 'pos'
-    for(long int i=0; i<nAtoms_; i++) {
-        pos[ 3*i ]=positions_[ 3*i ];
-        pos[3*i+1]=positions_[3*i+1];
-        pos[3*i+2]=positions_[3*i+2];
-    };
+Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() 
+{//return coordinates of free atoms in array 'pos'
+    return positions;
 }
 
 
-void Matter::setPositions(const double pos[]) {//Update Matter with the new positions of the free atoms given in array 'pos'
-    for(long int i=0; i<nAtoms_; i++) {
-        positions_[ 3*i ]=pos[ 3*i ];
-        positions_[3*i+1]=pos[3*i+1];
-        positions_[3*i+2]=pos[3*i+2];
-    };    
-    if(usePeriodicBoundaries_){
+void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {//Update Matter with the new positions of the free atoms given in array 'pos'
+    positions = pos;
+    if(usePeriodicBoundaries)
+    {
         applyPeriodicBoundary();
     }
-    computePotential_=true;
+    recomputePotential=true;
 }
 
 
-void Matter::getForces(double forces[]) const {// return forces applied on all atoms in array 'force' 
+Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {// return forces applied on all atoms in array 'force' 
     computePotential();
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            forces[ 3*i ]=forces_[ 3*i ];
-            forces[3*i+1]=forces_[3*i+1];
-            forces[3*i+2]=forces_[3*i+2];
+    Matrix<double, Eigen::Dynamic, 3> ret= forces;
+    int i;
+    for(i=0; i<nAtoms; i++)
+    {
+        if(isFixed[i])
+        {
+            ret.row(i).setZero();
         }
-        else{
-            forces[ 3*i ]=0;
-            forces[3*i+1]=0;
-            forces[3*i+2]=0;
-        };
-    };
+    }
+    return ret;
 }
 
 
-double Matter::distance(long index1, long index2) const{// return distance between the atoms with index1 and index2
-    double diffRX, diffRY, diffRZ;
-    diffRX = positions_[ 3*index1 ]-positions_[ 3*index2 ];
-    diffRY = positions_[3*index1+1]-positions_[3*index2+1];
-    diffRZ = positions_[3*index1+2]-positions_[3*index2+2];
-    
-    // floor = largest integer value less than argument
-    diffRX = diffRX-cellBoundaries_[0]*floor(diffRX/cellBoundaries_[0]+0.5);  
-    diffRY = diffRY-cellBoundaries_[1]*floor(diffRY/cellBoundaries_[1]+0.5);
-    diffRZ = diffRZ-cellBoundaries_[2]*floor(diffRZ/cellBoundaries_[2]+0.5);
-    
-    return(sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ));
+double Matter::distance(long index1, long index2) {// return distance between the atoms with index1 and index2
+    return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
 
-double Matter::distance(const Matter& matter, long index) const{// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
-    double diffRX, diffRY, diffRZ;
-    double *pos;
-    pos = new double[3*nAtoms_];
-    
-    matter.getPositions(pos);
-    
-    diffRX = positions_[ 3*index ]-pos[ 3*index ];
-    diffRY = positions_[3*index+1]-pos[3*index+1];
-    diffRZ = positions_[3*index+2]-pos[3*index+2];
-    
-    // floor = largest integer value less than argument
-    diffRX = diffRX-cellBoundaries_[0]*floor(diffRX/cellBoundaries_[0]+0.5);  
-    diffRY = diffRY-cellBoundaries_[1]*floor(diffRY/cellBoundaries_[1]+0.5);
-    diffRZ = diffRZ-cellBoundaries_[2]*floor(diffRZ/cellBoundaries_[2]+0.5);
-    
-    delete [] pos;
-    
-    return(sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ));
+double Matter::distance(const Matter& matter, long index) {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
+    return pbc(positions.row(index) - matter.positions.row(index)).norm();
 }
 
 
 double Matter::getMass(long int indexAtom) const
 {
-    return(masses_[indexAtom]);
+    return(masses[indexAtom]);
 }
 
 
 void Matter::setMass(long int indexAtom, double mass)
 {
-    masses_[indexAtom]=mass;
-    computePotential_=true;
+    masses[indexAtom]=mass;
 }
 
 
 long Matter::getAtomicNr(long int indexAtom) const
 {
-    return(atomicNrs_[indexAtom]);
+    return(atomicNrs[indexAtom]);
 }
 
 
 void Matter::setAtomicNr(long int indexAtom, long atomicNr)
 {
-    atomicNrs_[indexAtom]=atomicNr;
-    computePotential_=true;
+    atomicNrs[indexAtom]=atomicNr;
+    recomputePotential=true;
 }
 
 //liang add here
 void Matter::setNsteps(long int Nsteps){
-     nsteps_=Nsteps;
+	 nsteps=Nsteps;
 }
 
 long Matter::getNsteps() const{
-     return(nsteps_);
+	return(nsteps);
 }
 
 
 int Matter::getFixed(long int indexAtom) const {
-    return(isFixed_[indexAtom]);
+    return(isFixed[indexAtom]);
 }
 
 
-void Matter::setFixed(long int indexAtom, int isFixed)
+void Matter::setFixed(long int indexAtom, int isFixed_passed)
 {
-    isFixed_[indexAtom]=isFixed;
+    isFixed[indexAtom]=isFixed_passed;
 }
 
 
-double Matter::potentialEnergy() const
+double Matter::getPotentialEnergy() const
 {
-    if(nAtoms_>0) {
+    if(nAtoms>0) {
         computePotential();
-        return potentialEnergy_;
+        return potentialEnergy;
     } 
     else 
         return 0.0;
 }
 
 
-double Matter::kineticEnergy() const
+double Matter::getKineticEnergy() const
 {
     double K=0;
-    if(velocities_) {
-        long int n3Atoms=3*nAtoms_;
-        for(long int i=0; i<n3Atoms; i++) {
-            if(!isFixed_[i/3]) K+=velocities_[i]*velocities_[i]*masses_[i/3]*0.5;
-        };
+    for(long int i=0; i<nAtoms; i++) {
+            if(!isFixed[i]) K+=masses[i]*0.5*velocities.row(i).squaredNorm();
     };
     return K;
 }
 
 
-double Matter::mechanicalEnergy() const
+double Matter::getMechanicalEnergy() const
 {
-    return potentialEnergy()+kineticEnergy();
+    return getPotentialEnergy()+getKineticEnergy();
 }
 
 
 long int Matter::numberOfFreeAtoms() const {
-    long int nfree=0;
-    for(long int i=0; i< nAtoms_; i++) {
-            if(!isFixed_[i]) nfree++;//count the number of free atoms
-    };
-    return(nfree);
+    return nAtoms - isFixed.sum();
 }
-
-
-void Matter::getFreePositions(double pos[]) const {//returns coordinates of free atoms in array 'pos'
-    long int j=0;
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            pos[3*j  ]=positions_[3*i  ];
-            pos[3*j+1]=positions_[3*i+1];
-            pos[3*j+2]=positions_[3*i+2];
-            j++;
-        };
-    };
-}
-
-
-void Matter::setFreePositions(const double pos[]) {//Update Matter with the new positions of the free atoms given in array 'pos'
-    long int j=0;
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            assert(isnormal(pos[3*j]));
-            positions_[3*i  ]=pos[3*j  ];
-            assert(isnormal(pos[3*j+1]));
-            positions_[3*i+1]=pos[3*j+1];
-            assert(isnormal(pos[3*j+2]));
-            positions_[3*i+2]=pos[3*j+2];
-            j++;
-        };
-    };
-    if(usePeriodicBoundaries_)
-    {
-        applyPeriodicBoundary();
-    }
-    computePotential_=true;
-}
-
-
-bool Matter::getFreeVelocities(double velocities[]) const{
-    long int j=0;
-    if(velocities_) {
-        for(long int i=0; i<nAtoms_; i++) {
-            if(!isFixed_[i]) {
-                velocities[3*j  ]=velocities_[3*i  ];
-                velocities[3*j+1]=velocities_[3*i+1];
-                velocities[3*j+2]=velocities_[3*i+2];
-                j++;
-            };
-        };
-        return true;
-    } else {
-        return false;
-    };
-}
-
-
-void Matter::setFreeVelocities(const double velocities[]) {
-    long int j=0;
-    if(!velocities_) {
-        velocities_=new double[3*nAtoms_];
-        for(long int i=0; i<nAtoms_; i++) {
-            if(!isFixed_[i]) {
-                velocities_[  3*i   ]=velocities[  3*j  ];
-                velocities_[3*i+1]=velocities[3*j+1];
-                velocities_[3*i+2]=velocities[3*j+2];
-                j++;
-            } else {
-                velocities_[ 3*i ]=0;
-                velocities_[3*i+1]=0;
-                velocities_[3*i+2]=0;
-            };
-        };  
-    } else {
-        for(long int i=0; i<nAtoms_; i++) {
-            if(!isFixed_[i]) {
-                velocities_[ 3*i ]=velocities[ 3*j ];
-                velocities_[3*i+1]=velocities[3*j+1];
-                velocities_[3*i+2]=velocities[3*j+2];
-                j++;
-            };
-        };
-    };
-}
-
-
-void Matter::getFreeAccelerations(double accelerations[]) const {
-    long int j=0;
-    computePotential();
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            accelerations[3*j  ]=forces_[3*i  ]/masses_[i];
-            accelerations[3*j+1]=forces_[3*i+1]/masses_[i];
-            accelerations[3*j+2]=forces_[3*i+2]/masses_[i];
-            j++;
-        };
-    };
-}
-
-
-void Matter::getFreeForces(double forces[]) const {// return forces applied on free atoms in array 'force' 
-    long int j=0;
-    computePotential();
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            forces[3*j  ]=forces_[3*i  ];
-            forces[3*j+1]=forces_[3*i+1];
-            forces[3*j+2]=forces_[3*i+2];
-            j++;
-        };
-    };
-}
-
-
-void Matter::updateForces(double positions[], double velocities[], double forces[]) {
-    if(constraints_) {// When constraints are applied.
-        //The old coordinates are stored in positionBefore_ (for reference). As constraint algorithms requires to old coordinates in order to apply to correction.
-        // see members constraint() & UpdateCons()
-        if(positionsBefore_==0) positionsBefore_=new double [3*nAtoms_];
-        for(int i=0; i<3*nAtoms_; i++) positionsBefore_[i]=positions_[i];
-    };
-    if(positions) setFreePositions(positions);
-    if(velocities) setFreeVelocities(velocities);
-    applyConstraints();
-    if(positions) getFreePositions(positions);
-    if(velocities) getFreeVelocities(velocities);
-    if(forces) getFreeForces(forces);
-}
-
-
-void Matter::updateAccelerations(double positions[], double velocities[],double accelerations[]) {
-    if(constraints_) {// When constraints are applied.
-        //The old coordinates are stored in positionBefore_ (for reference). As constraint algorithms requires to old coordinates in order to apply to correction.
-        // see members constraint() & UpdateCons()
-        if(positionsBefore_==0) positionsBefore_=new double [3*nAtoms_];
-        for(int i=0; i<3*nAtoms_; i++) positionsBefore_[i]=positions_[i];
-    };
-    if(positions) setFreePositions(positions);
-    if(velocities) setFreeVelocities(velocities);
-    applyConstraints();
-    if(positions) getFreePositions(positions);
-    if(velocities) getFreeVelocities(velocities);
-    if(accelerations) getFreeAccelerations(accelerations);
-}
-
-
-void Matter::applyConstraints() {
-    if(constraints_) {
-        // The 2nd and 3rd arguments are normally the position at time t and t+dt respectively. positions_ contains the position at time t+dt. This feature is not yet fully implemented.
-        constraints_(nAtoms_, positionsBefore_, positions_, velocities_, cellBoundaries_);
-    };
-}
-
-
-void Matter::getFreeMasses(double m[]) const {
-    long int j=0;
-    for(long int i=0; i<nAtoms_; i++) {
-        if(!isFixed_[i]) {
-            m[j]=masses_[i];
-            j++;
-        };
-    };
-}
-
 
 long Matter::getForceCalls() const{
-    return(forceCalls_);
+    return(forceCalls);
 }
 
 
 void Matter::resetForceCalls(){
-    forceCalls_ = 0;
+    forceCalls = 0;
     return;
 }
 
@@ -706,12 +444,12 @@ bool Matter::matter2con(FILE *file) const
     first[j+1]=numberOfAtoms();
     Ncomponent=j+1;
  
-    fputs(headerCon1_, file);
-    fputs(headerCon2_, file);
-    fprintf(file, "%f\t%f\t%f\n", getBoundary(0), getBoundary(1), getBoundary(2));
-    fputs(headerCon4_, file);
-    fputs(headerCon5_, file);
-    fputs(headerCon6_, file);
+    fputs(headerCon1, file);
+    fputs(headerCon2, file);
+    fprintf(file, "%f\t%f\t%f\n", cellBoundaries(0,0), cellBoundaries(1,1), cellBoundaries(2,2)); //XXX: Orthoganal boxes only!!
+    fputs(headerCon4, file);
+    fputs(headerCon5, file);
+    fputs(headerCon6, file);
  
     fprintf(file, "%d\n", Ncomponent);
     for(j=0; j<Ncomponent; j++) {
@@ -757,8 +495,8 @@ bool Matter::con2matter(std::string filename) {
     
 bool Matter::con2matter(FILE *file) {
     char line[255]; // Temporary string of character to read from the file.
-    fgets(headerCon1_,sizeof(line),file);
-    if (strchr(headerCon1_,'\r')) {
+    fgets(headerCon1,sizeof(line),file);
+    if (strchr(headerCon1,'\r')) {
         /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
         with the new line charater (\n). C recognises only the \n as the end of line. */
         cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
@@ -767,26 +505,26 @@ bool Matter::con2matter(FILE *file) {
  
     long int i; int j;
  
-    fgets(headerCon2_,sizeof(line),file);
+    fgets(headerCon2,sizeof(line),file);
  
     fgets(line,sizeof(line),file);
  
     double x, y, z;
     sscanf(line,"%lf %lf %lf", &x, &y, &z); // The third line contains the length of the periodic cell
-    setBoundary(0, x);
-    setBoundary(1, y);
-    setBoundary(2, z);
+    cellBoundaries(0,0)= x;
+    cellBoundaries(1,1)= y;
+    cellBoundaries(2,2)= z;
  
-    fgets(headerCon4_,sizeof(line),file);
-    sscanf(headerCon4_,"%lf %lf %lf", &x, &y, &z); // The fourth line contains the angles of the cell vectors
+    fgets(headerCon4,sizeof(line),file);
+    sscanf(headerCon4,"%lf %lf %lf", &x, &y, &z); // The fourth line contains the angles of the cell vectors
     if ( (x != 90.0) or (y != 90.0) or (z != 90.0) ) {
         /* The code only supports cubic simulation cells*/
-        cerr << "This code only supports cubic cells.";
+        cerr << "This code only supports rectangular cells.";
         return false;// return false for error
     };
  
-    fgets(headerCon5_,sizeof(line),file);
-    fgets(headerCon6_,sizeof(line),file);
+    fgets(headerCon5,sizeof(line),file);
+    fgets(headerCon6,sizeof(line),file);
  
     fgets(line,sizeof(line),file);
     int Ncomponent; // Number of components is the number of different types of atoms. For instance H2O (water) has two component (H and O).
@@ -835,7 +573,7 @@ bool Matter::con2matter(FILE *file) {
             setFixed(i, static_cast<bool>(fixed));
         };
     };
-    if(usePeriodicBoundaries_)
+    if(usePeriodicBoundaries)
     { 
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
@@ -846,12 +584,11 @@ bool Matter::con2matter(FILE *file) {
 
 void Matter::computePotential() const
 {
-    if(computePotential_) {
-        if(potential_) {
-            assert(isnormal(positions_[0]));
-            potential_->force(nAtoms_, positions_, atomicNrs_, forces_, &potentialEnergy_, cellBoundaries_);
-            forceCalls_ = forceCalls_+1;
-            computePotential_=false;
+    if(recomputePotential) {
+        if(potential) {
+            potential->force(nAtoms, positions, atomicNrs, forces, &potentialEnergy, cellBoundaries);
+            forceCalls = forceCalls+1;
+            recomputePotential=false;
         }
         else {
             cerr << "No potential associated with the atomic structure." << endl;
@@ -860,67 +597,14 @@ void Matter::computePotential() const
     };
 }
 
-
-void Matter::initialiseDataMembers(Parameters *parameters)
-{
-    nAtoms_ = 0;
-    positions_ = 0;
-    positionsBefore_ = 0;
-    velocities_ = 0;
-    forces_ = 0;
-    masses_ = 0;
-    atomicNrs_ = 0;
-    isFixed_ = 0;
-    constraints_ = 0;
-    cellBoundaries_[0] = 0.0;
-    cellBoundaries_[1] = 0.0;
-    cellBoundaries_[2] = 0.0; 
-    usePeriodicBoundaries_ = true;
-    computePotential_ = true;
-    forceCalls_ = 0;
-    //liang added 
-	nsteps_ = 0;
-    parameters_ = parameters;
-    potential_ = new Potentials(parameters_);
-}
-
-
 void Matter::clearMemory()
 {
     // the pointer to parameters should not be deleted, it is a reference to shared data
     //delete parameters_;
  
-    if (positions_!=0) {
-        delete [] positions_;
-        positions_=0;
-    };
-    if (positionsBefore_!=0) {
-        delete [] positionsBefore_;
-        positionsBefore_=0;
-    };
-    if (velocities_!=0) {
-        delete [] velocities_;
-        velocities_=0;
-    };
-    if (forces_!=0) {
-        delete [] forces_;
-        forces_=0;
-    };
-    if (masses_!=0) {
-        delete [] masses_;
-        masses_=0;
-    };
-    if (atomicNrs_!=0) {
-        delete [] atomicNrs_;
-        atomicNrs_=0;
-    };
-    if(isFixed_!=0) {
-        delete [] isFixed_;
-        isFixed_=0;
-    };
-    if (potential_!=0){
-        delete potential_;
-        potential_=0;
+    if (potential!=0){
+        delete potential;
+        potential=0;
     }
 }
 
@@ -935,7 +619,7 @@ void Matter::applyPeriodicBoundary() // Transform the coordinate to use the mini
 
 void Matter::applyPeriodicBoundary(int axis) 
 {
-    for(long int i=0; i<nAtoms_; i++)
+    for(long int i=0; i<nAtoms; i++)
     {
         applyPeriodicBoundary(i, axis);
     }
@@ -944,33 +628,14 @@ void Matter::applyPeriodicBoundary(int axis)
 
 void Matter::applyPeriodicBoundary(long atom, int axis)
 {
-    while(positions_[atom*3+axis]>cellBoundaries_[axis]) {
-        positions_[atom*3+axis]-=cellBoundaries_[axis];
-    };
-    while(positions_[atom*3+axis]<= 0.0) {
-        positions_[atom*3+axis]+=cellBoundaries_[axis];
-    };
-}
-
-double Matter::maxForce(void)
-{
-	double maxForce = 0.0;
-	double force = 0.0;
-    for(int i = 0; i < nAtoms_; i++)
-    {
-        if(getFixed(i))
-        {
-            continue;
-        }
-		force = sqrt(forces_[i * 3 + 0] * forces_[i * 3 + 0] +
-					 forces_[i * 3 + 1] * forces_[i * 3 + 1] +
-					 forces_[i * 3 + 2] * forces_[i * 3 + 2]);
-		if(force > maxForce)
-		{
-			maxForce = force;
-		}
-	}
-	return maxForce;
+    //TODO: implement this correctly (do we even need it??)
+    return;
+    //while(positions_[atom*3+axis]>cellBoundaries_[axis]) {
+    //    positions_[atom*3+axis]-=cellBoundaries_[axis];
+    //};
+    //while(positions_[atom*3+axis]<= 0.0) {
+    //    positions_[atom*3+axis]+=cellBoundaries_[axis];
+    //};
 }
 
 
@@ -978,13 +643,13 @@ bool Matter::isItConverged(double convergeCriterion)
 {
     double diff=0;
 
-    for(int i=0;i<nAtoms_*3;i++)
+    for(int i=0;i<nAtoms*3;i++)
     {
         if(getFixed(i))
         {
             continue;
         }
-        diff = fabs(forces_[i]);
+        diff = forces.row(i).norm();
         
 
         if(convergeCriterion < diff)
