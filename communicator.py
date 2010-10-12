@@ -613,7 +613,7 @@ class Local(Communicator):
 
 class ARC(Communicator):
 
-    def __init__(self, scratchpath, bundle_size=1, client_url=None, blacklist=None):
+    def __init__(self, scratchpath, bundle_size=1, client_path=None, blacklist=None):
         self.init_completed = False
 
         Communicator.__init__(self, scratchpath, bundle_size)
@@ -627,7 +627,7 @@ class ARC(Communicator):
         self.arclib.SetNotifyLevel(self.arclib.WARNING)
 
         self.blacklist = blacklist
-        self.client_url = client_url
+        self.client_path = client_path
 
         # Check grid certificate proxy
         try:
@@ -789,8 +789,8 @@ class ARC(Communicator):
         s += "(arguments=%s)" % basename
 
         s += "(inputFiles="
-        if self.client_url:
-            s += "(%s %s)" % ("client-bin", self.client_url)
+        if self.client_path:
+            s += "(%s %s)" % ("client-bin", self.client_path)
         s += "(%s %s)" % (os.path.basename(wrapper_path), wrapper_path)
         s += "(%s %s)" % (os.path.basename(tarball_path), tarball_path)
         s += ")"
@@ -803,7 +803,7 @@ class ARC(Communicator):
         s += "(stderr=stderr)"
         s += "(gridlog=gridlog)"
 
-        if not self.client_url:
+        if not self.client_path:
             s += "(runTimeEnvironment=APPS/CHEM/EON2)"
 
         jobname = "%s" % basename
@@ -834,19 +834,19 @@ class ARC(Communicator):
         return self.arclib.PerformStandardBrokering(targets)
 
 
-    def submit_searches(self, searches, reactant_path, parameters_path):
+    def submit_jobs(self, data, invariants):
         '''Throws CommunicatorError if fails.'''
 
         wrapper_path = self.create_wrapper_script()
 
-        for job_path in self.make_bundles(searches, reactant_path, parameters_path):
+        for job_path in self.make_bundles(data, invariants):
             xrsl, jobname = self.create_job(job_path, wrapper_path)
             targets = self.get_targets(xrsl)
             try:
                 jobid = self.arclib.SubmitJob(xrsl, targets)
-            except JobSubmissionError, msg:
+            except self.arclib.JobSubmissionError, msg:
                 raise CommunicatorError(msg)
-            except XrslError, msg:
+            except self.arclib.XrslError, msg:
                 raise CommunicatorError(msg)
 
             self.arclib.AddJobID(jobid, jobname)
