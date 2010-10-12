@@ -4,7 +4,8 @@
  *===============================================
  */
 
-#include <errno.h>
+#include <err.h>
+
 #include "Parameters.h"
 #include "INIFile.h"
 
@@ -49,8 +50,8 @@ Parameters::Parameters(){
     saddlePerpendicularForceRatio = 0.0;
 
     // default parameters for Hessian determination   
-    hessianMaxSize = 0;
-    hessianMinDisplacement = 0.25;
+	hessianMaxSize = 0;
+	hessianMinDisplacement = 0.25;
     hessianWithinRadiusDisplaced = 5.0;
     hessianPrefactorMax = 10e20;
     hessianPrefactorMin = 10e8;
@@ -66,19 +67,19 @@ Parameters::Parameters(){
     cgMaxMoveFullRelax = 0.2;
     qmTimeStep = 0.1;
 
-    //default parameters used by Parallel Repica Dynamics
-    mdTimeStep = 0.1;
+	//default parameters used by Parallel Repica Dynamics
+	mdTimeStep = 0.1;
     mdTemperture = 300.0;
-    mdSteps = 1000;
+	mdSteps = 1000;
     PRD_MaxMovedDist = 2.0;
-    mdRefine = false;
-    RefineAccuracy = 20;
-    CheckFreq = 500;
+	mdRefine = false;
+	RefineAccuracy = 20;
+	CheckFreq = 500;
     NewRelaxSteps = 500;
    
-    //default parameters used by Thermostat
-    Andersen_Alpha=0.2; //collision strength
-    Andersen_Tcol=10; //collision frequency in unit of dt
+	//default parameters used by Thermostat
+	Andersen_Alpha=0.2; //collision strength
+	Andersen_Tcol=10; //collision frequency in unit of dt
     return;
 }
 
@@ -100,7 +101,7 @@ int Parameters::load(string filename)
 
     fh = fopen(filename.c_str(), "rb");
     if (fh == NULL) {
-        fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
+        warn("problem loading parameters file");
         return 1;
     }
     int error = load(fh);
@@ -173,7 +174,7 @@ int Parameters::load(FILE *file){
         saddleMaxIterations = ini.GetValueL("Saddle_Point", 
                                             "MAX_ITERATIONS", 
                                             saddleMaxIterations);
-        saddlePerpendicularForceRatio = ini.GetValueF("Default",
+        saddlePerpendicularForceRatio = ini.GetValueL("Default",
                                                       "PERPENDICULAR_FORCE_RATIO",
                                                       saddlePerpendicularForceRatio);
 
@@ -187,22 +188,20 @@ int Parameters::load(FILE *file){
         
         dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
-        dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
-	mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
-	mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
-	mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
-	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
-	mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
-	RefineAccuracy = ini.GetValueL("Dynamics","STEPS",RefineAccuracy);
-	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
+		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+		mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
+		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
+		PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+		mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
+		RefineAccuracy = ini.GetValueL("Dynamics","STEPS",RefineAccuracy);
+		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
-        cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
 
-	Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
-	Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
+		Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
+		Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
 
     }
     else
