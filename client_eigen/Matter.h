@@ -68,7 +68,7 @@ public:
 
     Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff);
     
-    Matrix<double, Eigen::Dynamic, 3> getPositions(); // return coordinates of free atoms in array pos
+    Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
     void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos
     Matrix<double, Eigen::Dynamic, 3> getForces(); // return forces applied on all atoms in array force 
 
@@ -83,8 +83,8 @@ public:
     double getKineticEnergy() const; // return the Kinetic energy
     double getMechanicalEnergy() const; // return the mechanical energy (i.e. kinetic plus potential energy)
 
-    double distance(long index1, long index2); // return the distance between two atoms in same configuration
-    double distance(const Matter& matter, long index); // the distance between the same atom in two cofigurations
+    double distance(long index1, long index2) const; // return the distance between two atoms in same configuration
+    double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
  
@@ -102,7 +102,7 @@ public:
     void matter2xyz(std::string filename, bool append=false /*Append if file already exists*/) const;/**< Print @em .xyz file based on data stored in Class Matter. 
     @param append  Matters if file @filename already exists. When true, append new data to the existing file.*/
     
-    Matrix<int, Eigen::Dynamic, 3> getFree() const;
+    Matrix<double, Eigen::Dynamic, 3> getFree() const;
 
 private:
     Potentials *potential;/// Pointer to function calculating the energy and forces.
