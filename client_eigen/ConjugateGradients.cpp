@@ -34,6 +34,12 @@ void ConjugateGradients::initialize(Matter *matter_passed, Parameters *parameter
     parameters = parameters_passed;
  
     nAtoms =  matter->numberOfAtoms();
+    
+    direction.resize(nAtoms,3);
+    directionOld.resize(nAtoms,3);
+    directionNorm.resize(nAtoms,3);
+    force.resize(nAtoms,3);
+    forceOld.resize(nAtoms,3);
 
     direction.setZero();
     directionOld.setZero();
@@ -78,6 +84,7 @@ void ConjugateGradients::oneStep(){
  
     // move system optimal step
     step = stepSize(force, forceAfterStep, parameters->cgMaxMoveFullRelax);
+    //cout<<"Step: "<<step<<endl;
     pos += step*directionNorm;
     matter->setPositions(pos);
 
@@ -133,17 +140,18 @@ void ConjugateGradients::determineSearchDirection(){
     b = forceOld.squaredNorm();
     if(a<0.5*b){
         // Polak-Ribiere way to determine how much to mix in of old direction
-        gamma = (force.cwise() * (force - forceOld)).sum();
+        gamma = (force.cwise() * (force - forceOld)).sum()/b;
     }
     else
         gamma = 0;
-
+    //cout<<"gamma: "<<gamma<<endl;
     direction = force + gamma*directionOld;
-
+    //direction = direction.cwise() * matter->getFree();
     assert(direction.norm() != 0.0);
     directionNorm = direction;
     directionNorm.normalize();
 
+    //cout<<"DirectionNorm: "<<directionNorm<<endl;
     directionOld = direction;
     forceOld = force;
     return;

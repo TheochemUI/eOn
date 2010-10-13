@@ -86,9 +86,9 @@ public:
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
     void setFixed(long int atom, int isFixed); // set the atom to fixed (true) or movable (false)
-    double getPotentialEnergy() const; // return the potential energy
+    double getPotentialEnergy(); // return the potential energy
     double getKineticEnergy() const; // return the Kinetic energy
-    double getMechanicalEnergy() const; // return the mechanical energy (i.e. kinetic plus potential energy)
+    double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic plus potential energy)
 
     double distance(long index1, long index2) const; // return the distance between two atoms in same configuration
     double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
@@ -125,7 +125,7 @@ private:
     char headerCon5[100];///< To contain headerline 5 from CON file that is not used in this code.
     char headerCon6[100];///< To contain headerline 6 from CON file that is not used in this code.
     
-    void computePotential() const;
+    void computePotential();
     void initialiseDataMembers(Parameters *parameters);
     void clearMemory(); ///< Clear all dynamically allocated memory.
     void applyPeriodicBoundary();
