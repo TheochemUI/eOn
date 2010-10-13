@@ -65,6 +65,18 @@ Matter::Matter(Parameters *parameters, const long int nAtoms)
     initialiseDataMembers(parameters);
 }
 
+void Matter::initialiseDataMembers(Parameters *params)
+{
+    nAtoms = 0;
+    constraints = 0;
+    cellBoundaries.resize(3,3);
+    usePeriodicBoundaries = true;
+    recomputePotential = true;
+    forceCalls = 0;
+    nsteps = 0;
+    parameters = params;
+    potential = new Potentials(parameters);
+}
 
 Matter::Matter(const Matter& matter)
 {
@@ -195,6 +207,11 @@ Vector3d Matter::getBoundary(int axis) const
     return(cellBoundaries.row(axis));
 }
 
+double Matter::getBoundary(int axis1, int axis2) const
+{
+    return cellBoundaries(axis1, axis2);
+}
+
 
 void Matter::setBoundary(int axis, Vector3d bound)
 {
@@ -202,6 +219,16 @@ void Matter::setBoundary(int axis, Vector3d bound)
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary(axis);
+    }
+    recomputePotential=true;
+}
+
+void Matter::setBoundary(int axis1, int axis2, double val)
+{
+    cellBoundaries(axis1,axis2)=val;
+    if(usePeriodicBoundaries)
+    {
+        applyPeriodicBoundary(axis1);
     }
     recomputePotential=true;
 }
@@ -687,4 +714,28 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
         }
     }
     return ret;
+}
+
+Matrix<double, Eigen::Dynamic, 3> Matter::getVelocities() const
+{
+   return velocities.cwise() * getFree(); 
+}
+
+void Matter::setVelocities(const Matrix<double, Eigen::Dynamic, 3> v)
+{
+   velocities = v.cwise()*getFree(); 
+}
+
+Matrix<double, Eigen::Dynamic, 3> Matter::getAccelerations()
+{
+   Matrix<double, Eigen::Dynamic, 3> ret =  getForces().cwise() * getFree(); 
+   ret.col(0).cwise()/=masses;
+   ret.col(1).cwise()/=masses;
+   ret.col(2).cwise()/=masses;
+   return ret;
+}
+
+Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const
+{
+    return masses;
 }

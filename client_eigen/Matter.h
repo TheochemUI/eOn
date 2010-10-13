@@ -53,7 +53,9 @@ public:
     void resize(long int nAtoms); // set or reset the number of atoms
     long int numberOfAtoms() const; // return the number of atoms
     Vector3d getBoundary(int axis) const; // return the length of the periodic cell for the axis specified
+    double getBoundary(int axis1, int axis2) const; // return the length of the periodic cell for the axis specified
     void setBoundary(int axis, Vector3d); // set the length of the periodic cell for the axis specified
+    void setBoundary(int axis1, int axis2, double val); // set the length of the periodic cell for the axis specified
     void activatePeriodicBoundaries(); // activate the periodic boundary conditions
     /* When the function is called, coordinates are recalculated to fit the minimum image convention (i.e. coordinates within[-cellBoundaries_[X]/2;+cellBoundaries_[X]/2], etc...). Subsequently, coordinates are also recalculated each time these are modified. */
     void deactivatePeriodicBoundaries(); // deactivate periodic boundary conditions
@@ -70,6 +72,11 @@ public:
     
     Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
     void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos
+    
+    Matrix<double, Eigen::Dynamic, 3> getVelocities() const; 
+    void setVelocities(const Matrix<double, Eigen::Dynamic, 3> v); 
+    Matrix<double, Eigen::Dynamic, 3> getAccelerations(); 
+
     Matrix<double, Eigen::Dynamic, 3> getForces(); // return forces applied on all atoms in array force 
 
     double getMass(long int atom) const; // return the mass of the atom specified
@@ -103,6 +110,7 @@ public:
     @param append  Matters if file @filename already exists. When true, append new data to the existing file.*/
     
     Matrix<double, Eigen::Dynamic, 3> getFree() const;
+    Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
     Potentials *potential;/// Pointer to function calculating the energy and forces.
