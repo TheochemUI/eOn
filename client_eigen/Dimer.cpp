@@ -18,16 +18,14 @@ using namespace helper_functions;
 Dimer::Dimer(Matter const *matter, Parameters *parameters)
 {
     long nAllCoord;
-    parameters_     = parameters;
-    matterInitial_  = new Matter(parameters_);
-    matterDimer_    = new Matter(parameters_);
-    *matterInitial_ = *matter;
-    *matterDimer_   = *matter;
+    parameters     = parameters;
+    matterInitial  = new Matter(parameters);
+    matterDimer    = new Matter(parameters);
+    *matterInitial = *matter;
+    *matterDimer   = *matter;
     nAllCoord   = 3 * matter->numberOfAtoms();
-    nFreeCoord_ = 3 * matter->numberOfFreeAtoms();    
-    tempListDouble_ = new double[nAllCoord]; // There should be space for both free and frozen atoms.
-    directionNorm_ = new double[nFreeCoord_];
-    rotationalPlaneNorm_ = new double[nFreeCoord_];
+    nFreeCoord = 3 * matter->numberOfFreeAtoms();  
+    nAtoms = matter->numberOfAtoms();
 
     totalForceCalls = 0;
 }
@@ -35,48 +33,32 @@ Dimer::Dimer(Matter const *matter, Parameters *parameters)
 
 Dimer::~Dimer()
 {
-    delete [] directionNorm_;
-    delete [] rotationalPlaneNorm_;
-    delete [] tempListDouble_;
-    delete matterInitial_;
-    delete matterDimer_;
+    delete matterInitial;
+    delete matterDimer;
 }
 
 
 void Dimer::moveAndCompute(Matter const *matter)
 {
-    *matterInitial_ = *matter;
-    estimateLowestEigenmode(parameters_->dimerRotations);
+    *matterInitial = *matter;
+    estimateLowestEigenmode(parameters->dimerRotations);
     return;
 }
 
 
-void Dimer::startNewSearchAndCompute(Matter const *matter, double *displacement)
+void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
 {
-    *matterInitial_ = *matter;
-    long nAtoms = matter->numberOfAtoms();
-    long index = 0;
-        
+    *matterInitial = *matter;
+    
+    rotationalPlaneNorm.setZero();
     // Create an initial direction for the dimer
-    for(int i = 0; i < nAtoms; i++)
-    {
-        if(!matter->getFixed(i))
-        {
-            directionNorm_[index + 0] = displacement[i * 3 + 0];
-            directionNorm_[index + 1] = displacement[i * 3 + 1];
-            directionNorm_[index + 2] = displacement[i * 3 + 2];
-            rotationalPlaneNorm_[index + 0] = 0;
-            rotationalPlaneNorm_[index + 1] = 0;
-            rotationalPlaneNorm_[index + 2] = 0;
-            index += 3;
-        }
-    }
-    normalize(directionNorm_, nFreeCoord_);
+    directionNorm = displacement.cwise() * (matter->getFree());
+    directionNorm.normalize();
     
     // RT: following part of the algorithm has been replaced with the torque window.
     // The initial search should be allowed to use extra iterations to obtain
     // better estimate
-    //estimateLowestEigenmode(parameters_->getRotationsNewSearch_Dimer());
+    //estimateLowestEigenmode(parameters->getRotationsNewSearch_Dimer());
 }
 
 
@@ -88,7 +70,6 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     double forceDimer1AlongRotationalPlaneNorm;
     double forceDimer2AlongRotationalPlaneNorm;
     double curvature, rotationalForceChange, forceDimer, rotationAngle;
-    double *rotationalForce, *rotationalForceOld, *rotationalPlaneNormOld;
     double lengthRotationalForceOld;
     double torqueMagnitude = 0.0;
     bool doneRotating = false;
@@ -96,21 +77,17 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
     forceDimer1AlongRotationalPlaneNorm = 0;
     forceDimer2AlongRotationalPlaneNorm = 0;
-    rotationalForce = new double[nFreeCoord_];
-    rotationalForceOld = new double[nFreeCoord_];
-    rotationalPlaneNormOld = new double[nFreeCoord_];
+    Matrix<double, Eigen::Dynamic, 3> rotationalForce(nAtoms,3);
+    Matrix<double, Eigen::Dynamic, 3> rotationalForceOld(nAtoms, 3);
+    Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld(nAtoms, 3);
+    rotationalForce.setZero();
+    rotationalForceOld.setZero();
+    rotationalPlaneNormOld.setZero();
+    
 
-    // Values to ensure that gamma equals zero,
-    // (a<b/2) is false in the part where the rotational plane is determined
-    for(int i = 0;i < nFreeCoord_; i++)
-    {
-        rotationalForce[i] = 0;
-        rotationalForceOld[i] = 0;
-        rotationalPlaneNormOld[i] = 0;
-    } 
     lengthRotationalForceOld = 0;
-    forceCallsInitial = matterInitial_->getForceCalls();
-    forceCallsDimer = matterDimer_->getForceCalls();
+    forceCallsInitial = matterInitial->getForceCalls();
+    forceCallsDimer = matterDimer->getForceCalls();
     // Uses two force calls per rotation
     while(!doneRotating){
         // First dimer
@@ -123,12 +100,7 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
                                  &lengthRotationalForceOld);
                                  
         // Calculate the magnitude of the torque on the dimer.
-        double sum = 0.0;
-        for(int i = 0; i < nFreeCoord_; i++)
-        {
-            sum += rotationalForce[i] * rotationalForce[i];
-        }
-        torqueMagnitude = sqrt(sum);
+        torqueMagnitude = rotationalForce.norm();
 
         double torqueLimitHigh = 1.0;
         double torqueLimitLow = 0.1;
@@ -150,25 +122,23 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
         }
                 
         // Rotational force along the rotational planes normal
-        forceDimer1AlongRotationalPlaneNorm = dot(rotationalForce, 
-                                                  rotationalPlaneNorm_, 
-                                                  nFreeCoord_);
+        forceDimer1AlongRotationalPlaneNorm = (rotationalForce.cwise()*rotationalPlaneNorm).sum();
 
-        rotateDimerAndNormalizeAndOrthogonalize(parameters_->dimerRotationAngle);
+        rotateDimerAndNormalizeAndOrthogonalize(parameters->dimerRotationAngle);
         
         if(!doneRotating)
         {
             // Second dimer
             curvature = calcRotationalForce(rotationalForce);
             
-            forceDimer2AlongRotationalPlaneNorm = dot(rotationalForce, rotationalPlaneNorm_, nFreeCoord_);
+            forceDimer2AlongRotationalPlaneNorm = (rotationalForce.cwise()*rotationalPlaneNorm).sum();
             
             rotationalForceChange = ((forceDimer1AlongRotationalPlaneNorm - forceDimer2AlongRotationalPlaneNorm) / 
-                                     parameters_->dimerRotationAngle);
+                                     parameters->dimerRotationAngle);
             
             forceDimer = (forceDimer1AlongRotationalPlaneNorm + forceDimer2AlongRotationalPlaneNorm) / 2;
             
-            rotationAngle = (atan(2 * forceDimer / rotationalForceChange) / 2 - parameters_->dimerRotationAngle / 2);
+            rotationAngle = (atan(2 * forceDimer / rotationalForceChange) / 2 - parameters->dimerRotationAngle / 2);
             
             if(rotationalForceChange < 0)
             {
@@ -177,21 +147,18 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
                 
             rotateDimerAndNormalizeAndOrthogonalize(rotationAngle);
             
-            copyRightIntoLeft(rotationalPlaneNormOld, rotationalPlaneNorm_, nFreeCoord_);        
+            rotationalPlaneNormOld = rotationalPlaneNorm; //XXX: Is this copying correctly???        
     
             rotations++;
         }
     }    
-    eigenvalue_ = curvature;
+    eigenvalue = curvature;
 
-    forceCallsInitial = matterInitial_->getForceCalls()-forceCallsInitial;
-    forceCallsDimer = matterDimer_->getForceCalls()-forceCallsDimer;
+    forceCallsInitial = matterInitial->getForceCalls()-forceCallsInitial;
+    forceCallsDimer = matterDimer->getForceCalls()-forceCallsDimer;
 
     totalForceCalls += forceCallsInitial+forceCallsDimer;
 
-    delete [] rotationalForce;
-    delete [] rotationalForceOld;
-    delete [] rotationalPlaneNormOld;
     return;
 }
 
@@ -200,12 +167,10 @@ double Dimer::getEigenvalue(){
     return eigenvalue;
 }
 
-void Dimer::setEigenvector(long size, double const eigenvector[])
+void Dimer::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
 {
-    assert(size == nFreeCoord_);
-    for (int i=0; i < size; ++i)
-        directionNorm_[i]=eigenvector[i];
-    eigenvalue_=0.0;
+    directionNorm = eigenvector;
+    eigenvalue=0.0;
 }
 
 Matrix<double, Eigen::Dynamic, 3> Dimer::getEigenvector()
@@ -213,62 +178,50 @@ Matrix<double, Eigen::Dynamic, 3> Dimer::getEigenvector()
       return directionNorm;
 }
 
-double Dimer::calcRotationalForce(double *rotationalForce){
+double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalForce){
     
-    double *posInitial;
-    double *posDimer;
-    double *forceA;
-    double *forceB;
-    double *forceInitial;
     double projectedForceA, projectedForceB;
-    posInitial = new double[nFreeCoord_];
-    posDimer = new double[nFreeCoord_];
-    forceInitial = new double[nFreeCoord_];
-    forceA = new double[nFreeCoord_];
-    forceB = new double[nFreeCoord_];
+    Matrix<double, Eigen::Dynamic, 3> posInitial(nAtoms,3);
+    Matrix<double, Eigen::Dynamic, 3> posDimer(nAtoms,3);
+    Matrix<double, Eigen::Dynamic, 3> forceInitial(nAtoms,3);
+    Matrix<double, Eigen::Dynamic, 3> forceA(nAtoms,3);
+    Matrix<double, Eigen::Dynamic, 3> forceB(nAtoms,3);
     
-    matterInitial_->getFreePositions(posInitial);    
+    posInitial = matterInitial->getPositions();    
 
     // Displacing the one of the dimer configurations
-    multiplyScalar(tempListDouble_,directionNorm_, parameters_->dimerSeparation,nFreeCoord_);
-    add(posDimer, posInitial, tempListDouble_, nFreeCoord_);
-
+    posDimer = posInitial + directionNorm*parameters->dimerSeparation;
     // Obtaining the force for configuration A
-    matterDimer_->setFreePositions(posDimer);
-    matterDimer_->getFreeForces(forceA);
+    matterDimer->setPositions(posDimer);
+    forceA = matterDimer->getForces();
     
     // Use "forward differencing" together with the central averaging formula
     // to obtain the force for configuration B
-    matterInitial_->getFreeForces(forceInitial);
-    multiplyScalar(tempListDouble_, forceInitial, 2, nFreeCoord_);
-    subtract(forceB, tempListDouble_, forceA, nFreeCoord_);
+    forceInitial = matterInitial->getForces();
+    forceB = 2*forceInitial - forceA;
     
-    projectedForceA = dot(directionNorm_, forceA, nFreeCoord_);
-    projectedForceB = dot(directionNorm_, forceB, nFreeCoord_);
+    projectedForceA = (directionNorm.cwise() * forceA).sum();
+    projectedForceB = (directionNorm.cwise() * forceB).sum();
 
     // Remove force component parallel to dimer
-    makeOrthogonal(forceA, forceA, directionNorm_, nFreeCoord_);
-    makeOrthogonal(forceB, forceB, directionNorm_, nFreeCoord_);
+    forceA = makeOrthogonal(forceA, directionNorm);
+    forceB = makeOrthogonal(forceB, directionNorm);
     
     // Determine difference in force orthogonal to dimer
-    subtract(tempListDouble_, forceA, forceB, nFreeCoord_);
-    divideScalar(rotationalForce, tempListDouble_, parameters_->dimerSeparation, nFreeCoord_);
+    rotationalForce = (forceA - forceB)/parameters->dimerSeparation;
+    //XXX: Side effect
+
     
-    delete [] posInitial;    
-    delete [] posDimer;
-    delete [] forceInitial;
-    delete [] forceA;
-    delete [] forceB;
 
     // Based on difference in force parallel to dimer    
-    return (projectedForceB-projectedForceA)/(2*parameters_->dimerSeparation);
+    return (projectedForceB-projectedForceA)/(2*parameters->dimerSeparation);
 }
 
 
-void Dimer::determineRotationalPlane(double *rotationalForce, 
-                                     double *rotationalForceOld, 
-                                     double *rotationalPlaneNormOld,
-                                     double *lengthRotationalForceOld){
+void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationalForce, 
+                                     Matrix<double, Eigen::Dynamic, 3> rotationalForceOld, 
+                                     Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld,
+                                     double* lengthRotationalForceOld){
     double a, b, gamma = 0;
     double *rotationalPlane;
     rotationalPlane = new double[nFreeCoord_];
@@ -295,14 +248,14 @@ void Dimer::determineRotationalPlane(double *rotationalForce,
     
     // The planes normal is normalized,
     // made orthogonal to the dimers direction and renormalized
-    copyRightIntoLeft(rotationalPlaneNorm_, rotationalPlane, nFreeCoord_);
+    copyRightIntoLeft(rotationalPlaneNorm, rotationalPlane, nFreeCoord_);
     
-    normalize(rotationalPlaneNorm_, nFreeCoord_);
+    normalize(rotationalPlaneNorm, nFreeCoord_);
     
-    makeOrthogonal(rotationalPlaneNorm_, rotationalPlaneNorm_,
-                   directionNorm_, nFreeCoord_);
+    makeOrthogonal(rotationalPlaneNorm, rotationalPlaneNorm,
+                   directionNorm, nFreeCoord_);
     
-    normalize(rotationalPlaneNorm_, nFreeCoord_);
+    normalize(rotationalPlaneNorm, nFreeCoord_);
 
     copyRightIntoLeft(rotationalForceOld, rotationalForce, nFreeCoord_);
     *lengthRotationalForceOld = length(rotationalPlane, nFreeCoord_);
@@ -320,18 +273,18 @@ void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
     sinAngle = sin(rotationAngle);
     
     for(int i=0; i<nFreeCoord_; i++){
-        temp1 = directionNorm_[i]*cosAngle + rotationalPlaneNorm_[i]*sinAngle;
-        temp2 = rotationalPlaneNorm_[i]*cosAngle - directionNorm_[i]*sinAngle;
-        directionNorm_[i] = temp1;
-        rotationalPlaneNorm_[i] = temp2;
+        temp1 = directionNorm[i]*cosAngle + rotationalPlaneNorm[i]*sinAngle;
+        temp2 = rotationalPlaneNorm[i]*cosAngle - directionNorm[i]*sinAngle;
+        directionNorm[i] = temp1;
+        rotationalPlaneNorm[i] = temp2;
     }
-    normalize(directionNorm_, nFreeCoord_);
-    normalize(rotationalPlaneNorm_, nFreeCoord_);
+    normalize(directionNorm, nFreeCoord_);
+    normalize(rotationalPlaneNorm, nFreeCoord_);
     
-    // Remove component from rotationalPlaneNorm_ parallel to directionNorm_
-    makeOrthogonal(rotationalPlaneNorm_, rotationalPlaneNorm_, 
-                   directionNorm_, nFreeCoord_);
-    normalize(rotationalPlaneNorm_, nFreeCoord_);
+    // Remove component from rotationalPlaneNorm parallel to directionNorm
+    makeOrthogonal(rotationalPlaneNorm, rotationalPlaneNorm, 
+                   directionNorm, nFreeCoord_);
+    normalize(rotationalPlaneNorm, nFreeCoord_);
 
     return;
 }
