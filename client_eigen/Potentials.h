@@ -40,7 +40,7 @@ public:
     @param[out]   *forces     pointer to the array of 3N forces
     @param[out]   *energy     pointer to the total energy
     @param[in]    *box        pointer to the array containing the 3 lengths of the supercell */
-    void force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, Matrix<double, Eigen::Dynamic, 3> forces, double *energy, Matrix<double, 3, 3> box);
+    Matrix<double, Eigen::Dynamic, 3> force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box);
  
 private:
     PotentialsInterface *interface_;
