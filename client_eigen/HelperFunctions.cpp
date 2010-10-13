@@ -95,8 +95,6 @@ double helper_functions::length(const double *v1, long numFreeCoord){
 void helper_functions::add(double *result, const double *v1, 
                            const double *v2, long size){
     for(int i=0;i<size;i++) {
-        assert(isfinite(v1[i]));
-        assert(isfinite(v2[i]));
         result[i] = v1[i]+v2[i];
     };
     return;
@@ -111,9 +109,7 @@ void helper_functions::subtract(double *result, const double *v1,
 
 void helper_functions::multiplyScalar(double *result, const double *v1, 
                                       double scalar, long size) {
-    assert(isfinite(scalar));
     for(int i=0;i<size;i++) {
-        assert(isfinite(v1[i]));
         result[i] = v1[i]*scalar;
     };
     return;

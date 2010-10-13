@@ -122,7 +122,7 @@ double Matter::distanceTo(const Matter& matter)
     return sqrt(pbc(positions - matter.positions).cwise().square().sum());
 }
 
-Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff)
+Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff) const
 {
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
     Matrix<double, Eigen::Dynamic, 3> ddiff = diff*ibox;
@@ -642,7 +642,7 @@ double Matter::maxForce(void)
 {
     //I think this can be done in one line with the rowwise method
 	double maxForce = 0.0;
-    for(int i = 0; i < nAtoms_; i++)
+    for(int i = 0; i < nAtoms; i++)
     {
         if(getFixed(i))
         {
@@ -675,7 +675,7 @@ bool Matter::isItConverged(double convergeCriterion)
     return(diff < convergeCriterion);
 };
 
-Matrix<int, Eigen::Dynamic, 3> Matter::getFree() const
+Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 {
     Matrix<double, Eigen::Dynamic, 3> ret;
     int i,j;

@@ -49,18 +49,17 @@ public:
     void setForces(Matrix<double, Eigen::Dynamic, 3> forces); // enables the use of modified forces
  
 private:
-    long nFreeCoord_; // number of free coordinates
+    long nAtoms; // number of free coordinates
 
-    Matter *matter_; // pointer to atom object outside the scope of the class
-    Parameters *parameters_; // pointer to a structure outside the scope of the class containing runtime parameters
+    Matter *matter; // pointer to atom object outside the scope of the class
+    Parameters *parameters; // pointer to a structure outside the scope of the class containing runtime parameters
 
     /** Double arrrays with size equal to three times the number of atoms. */
-    double *tempListDouble_;
-    double *direction_;
-    double *directionOld_;
-    double *directionNorm_;
-    double *force_;
-    double *forceOld_;
+    Matrix<double, Eigen::Dynamic, 3> direction;
+    Matrix<double, Eigen::Dynamic, 3> directionOld;
+    Matrix<double, Eigen::Dynamic, 3> directionNorm;
+    Matrix<double, Eigen::Dynamic, 3> force;
+    Matrix<double, Eigen::Dynamic, 3> forceOld;
 
     /** To initialize the object to perform minimization of Matter object.
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
@@ -73,7 +72,7 @@ private:
     @param[in]   *forceBeforeStep  Double array, the forces before ConjugateGradients::makeInfinitesimalStepModifiedForces was called.
     @param[in]   *forceAfterStep   Double array, the forces returned by ConjugateGradients::makeInfinitesimalStepModifiedForces.
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
-    double stepSize(double *forceBeforeStep, double *forceAfterStep, double maxStep);
+    double stepSize(Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, Matrix<double, Eigen::Dynamic, 3> forceAfterStep, double maxStep);
 
     double sign(double value){ return(-(value<0)*2+1);}; // determine the sign of value, \return {double being either 1 or -1}.
 };
