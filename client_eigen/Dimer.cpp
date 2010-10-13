@@ -225,7 +225,7 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
     double a, b, gamma = 0;
     
     a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
-    b = rotationalForceOld.norm();
+    b = rotationalForceOld.squaredNorm();
     if(a<0.5*b)
     {
         gamma = (rotationalForce.cwise() * (rotationalForce - rotationalForceOld)).sum()/b;

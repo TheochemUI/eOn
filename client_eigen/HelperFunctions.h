@@ -6,6 +6,8 @@
 #ifndef HELPER_FUNCTIONS_H
 #define HELPER_FUNCTIONS_H
 
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
 // Random number generator constants
 
 #define IM 2147483647
