@@ -66,7 +66,7 @@ public:
     long getNsteps() const;
     //liang end
 
-    Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff);
+    Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff) const;
     
     Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
     void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos

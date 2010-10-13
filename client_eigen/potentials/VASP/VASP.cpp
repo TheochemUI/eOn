@@ -34,7 +34,7 @@ VASP::~VASP()
 }
 
 
-void VASP::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
+void VASP::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     writeNEWCAR(N, R, atomicNrs, box);
     if(!vaspRunning)
@@ -58,7 +58,7 @@ void VASP::force(long N, const double *R, const long *atomicNrs, double *F, doub
 }
 
 
-void VASP::writeNEWCAR(long N, const double *R, long const *atomicNrs, const double *box)
+void VASP::writeNEWCAR(long N, const double *R, int const *atomicNrs, const double *box)
 {
     // Positions are scaled 
     long i = 0;

@@ -23,12 +23,14 @@ public:
 	// constructor
     LJ(void);
 	LJ(double r0Recieved, double u0Recieved, double psiRecieved);
+
+    ~LJ();
 	
     // Just to satify interface
     void initialize() {};
-    void cleanMemory(void);    
+    void cleanMemory();    
     
-    void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
     void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
 #endif
