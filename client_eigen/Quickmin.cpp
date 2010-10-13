@@ -13,14 +13,15 @@
 using namespace helper_functions;
 
 
-Quickmin::Quickmin(Matter *matter, Parameters *parameters)
+Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
 {
-    matter_ = matter;    
-    parameters_ = parameters;
-    dtScale_ = 1.0;
+    matter = matter_passed;    
+    parameters = parameters_passed;
+    dtScale = 1.0;
     
-    nFreeCoord_ = 3*matter->numberOfFreeAtoms();
-    tempListDouble_ = new double[nFreeCoord_];
+    nAtoms = matter->numberOfAtoms();
+    velocity.resize(nAtoms, 3);
+    velocity.setZero();
 
 };
 
@@ -28,70 +29,54 @@ Quickmin::Quickmin(Matter *matter, Parameters *parameters)
 Quickmin::~Quickmin()
 {
     /* matter_, parameters_, and forces_ should not be deleted. They are pointers to objects outside the scope.*/
-    delete [] tempListDouble_;
     return;
 };
 
 
 void Quickmin::oneStep()
 {
-    double *freeForces;
-    freeForces = new double[nFreeCoord_];
-    matter_->getFreeForces(freeForces);
-    oneStepPart1(freeForces);
-    matter_->getFreeForces(freeForces);
-    oneStepPart2(freeForces);
-    delete [] freeForces;
+    Matrix<double, Eigen::Dynamic, 3> forces;
+    forces = matter->getForces();
+    oneStepPart1(forces);
+    forces = matter->getForces();
+    oneStepPart2(forces);
     return;
 };
 
 
-void Quickmin::oneStepPart1(double *freeForces)
+void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
 {
-    double *positions;
-    double *velocity;
-    positions = new double[nFreeCoord_];
-    velocity = new double[nFreeCoord_];
-    matter_->getFreeVelocities(velocity);  
-    multiplyScalar(tempListDouble_, freeForces, 0.5 * parameters_->qmTimeStep * dtScale_, nFreeCoord_);
-    add(velocity, tempListDouble_, velocity, nFreeCoord_);
-    matter_->setFreeVelocities(velocity);
-    matter_->getFreePositions(positions);       
-    multiplyScalar(tempListDouble_, velocity, parameters_->qmTimeStep * dtScale_, nFreeCoord_);
-    add(positions, tempListDouble_, positions, nFreeCoord_);
-    matter_->setFreePositions(positions);  
-    delete [] positions;
-    delete [] velocity;
-    return;
+    Matrix<double, Eigen::Dynamic, 3> positions;
+
+    velocity += force * .5 * parameters->qmTimeStep * dtScale;
+    velocity = velocity.cwise() * matter->getFree();
+    
+    positions = matter->getPositions();       
+    positions += velocity * parameters->qmTimeStep * dtScale;
+    matter->setPositions(positions);  
 };
     
 
-void Quickmin::oneStepPart2(double *freeForces)
+void Quickmin::oneStepPart2(Matrix<double, Eigen::Dynamic, 3> force)
 {
     double dotVelocityForces;
     double dotForcesForces;
-    double *velocity;
-    velocity = new double[nFreeCoord_];
-    forces_ = freeForces;
-    matter_->getFreeVelocities(velocity); 
-    multiplyScalar(tempListDouble_, freeForces, 0.5*parameters_->qmTimeStep * dtScale_, nFreeCoord_);
-    add(velocity, tempListDouble_, velocity, nFreeCoord_);
-    dotVelocityForces = dot(velocity, freeForces, nFreeCoord_);
+    forces = force;
+    velocity += force * 0.5 * parameters->qmTimeStep * dtScale;
+    velocity = velocity.cwise() * matter->getFree();
+    dotVelocityForces = (velocity.cwise() * force).sum();
     // Zeroing all velocities if they are not orthogonal to the forces
     if(dotVelocityForces < 0)
     {
-        multiplyScalar(velocity, velocity, 0., nFreeCoord_);
-        dtScale_ *= 0.99;
+        velocity.setZero();
+        dtScale *= 0.99;
     }    
     else
     {
-        dotForcesForces = dot(freeForces, freeForces, nFreeCoord_);
-        multiplyScalar(velocity, freeForces, dotVelocityForces/dotForcesForces, nFreeCoord_);
+        dotForcesForces = force.squaredNorm();
+        velocity = force * dotVelocityForces/dotForcesForces;
 //        dtScale_ *= 1.01;
     }
-    matter_->setFreeVelocities(velocity);      
-    delete [] velocity;
-    return;
 };
 
 
@@ -99,13 +84,13 @@ void Quickmin::fullRelax()
 {
     bool converged = false;
     long forceCallsTemp;
-    forceCallsTemp = matter_->getForceCalls();  
+    forceCallsTemp = matter->getForceCalls();  
     while(!converged)
     {
         oneStep();
-        converged = isItConverged(parameters_->convergedRelax);
+        converged = isItConverged(parameters->convergedRelax);
     }
-    forceCallsTemp = matter_->getForceCalls()-forceCallsTemp;
+    forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
     return;
 };
 
@@ -113,9 +98,9 @@ void Quickmin::fullRelax()
 bool Quickmin::isItConverged(double convergeCriterion)
 {
     double diff = 0;
-    for(int i=0;i<nFreeCoord_;i++)
+    for(int i=0;i<nAtoms;i++)
     {
-        diff = fabs(forces_[i]);
+        diff = forces.row(i).norm();
         if(convergeCriterion < diff)
         {
             break;

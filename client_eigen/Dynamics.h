@@ -20,6 +20,9 @@
 #include "Constants.h"
 #include "Parameters.h"
 
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
+
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
 class Dynamics {
 
@@ -39,14 +42,14 @@ public:
     void velocityScale();
 
 private:
-    long nFreeCoord_;///< Number of free coordinates.
+    long nAtoms;///< Number of free coordinates.
 
-    Matter *matter_;///< Pointer to atom object \b outside the scope of the class.    
-    Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
+    Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
+    Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
 
-    double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
-    double dtScale_;
+    double dtScale;
     double kb;
+
 };
 
 #endif

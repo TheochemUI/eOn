@@ -64,8 +64,8 @@ void ParallelReplica::run(int bundleNumber)
 void ParallelReplica::dynamics()
 {
     bool   status = false;
-    long   nFreeCoord_;
-    double *freeVelocities;
+    long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
+    Matrix<double, Eigen::Dynamic, 3> velocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
      
@@ -73,9 +73,6 @@ void ParallelReplica::dynamics()
     for(long i =0; i < parameters->CheckFreq;i++){
 	    mdbuff[i] = new Matter(parameters);
 	}
-
-    nFreeCoord_=3*reactant->numberOfFreeAtoms();
-    freeVelocities = new double[nFreeCoord_];
 
     Dynamics PRdynamics(reactant,parameters);
         
@@ -85,9 +82,9 @@ void ParallelReplica::dynamics()
 		
         PRdynamics.oneStep();
         
-        reactant->getFreeVelocities(freeVelocities);
-        EKin = reactant->kineticEnergy();
-        TKin = (2*EKin/nFreeCoord_/kb); 
+        velocities = reactant->getVelocities();
+        EKin = reactant->getKineticEnergy();
+        TKin = (2*EKin/nFreeCoord/kb); 
         SumT += TKin;
         SumT2 += TKin*TKin;
 
@@ -127,7 +124,7 @@ void ParallelReplica::dynamics()
      
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
-    printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord_/2);
+    printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
     //Here we use Golden Search to refine the result; 	
     //for(long i =0; i < parameters->CheckFreq;i++){
@@ -138,7 +135,6 @@ void ParallelReplica::dynamics()
         Refine(mdbuff);
     }
 
-    delete [] freeVelocities;
     return;
 };
 
