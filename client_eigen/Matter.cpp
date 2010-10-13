@@ -173,7 +173,7 @@ double Matter::perAtomNorm(const Matter& matter)
 void Matter::resize(const long int length)
 {
  
-    if(nAtoms>0) 
+    if(length>0) 
     {
         potential = new Potentials(parameters);
         
@@ -356,7 +356,7 @@ void Matter::setFixed(long int indexAtom, int isFixed_passed)
 }
 
 
-double Matter::getPotentialEnergy() const
+double Matter::getPotentialEnergy()
 {
     if(nAtoms>0) {
         computePotential();
@@ -377,7 +377,7 @@ double Matter::getKineticEnergy() const
 }
 
 
-double Matter::getMechanicalEnergy() const
+double Matter::getMechanicalEnergy()
 {
     return getPotentialEnergy()+getKineticEnergy();
 }
@@ -609,11 +609,11 @@ bool Matter::con2matter(FILE *file) {
 }
 
 
-void Matter::computePotential() const
+void Matter::computePotential()
 {
     if(recomputePotential) {
         if(potential) {
-            potential->force(nAtoms, positions, atomicNrs, forces, &potentialEnergy, cellBoundaries);
+            forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
             forceCalls = forceCalls+1;
             recomputePotential=false;
         }
