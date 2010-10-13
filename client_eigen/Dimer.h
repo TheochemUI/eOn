@@ -33,7 +33,7 @@ public:
     void moveAndCompute(Matter const *matter);///< Is computational heavy! The matter object pointed at is copied into a local copy defining the center of the dimer. As the function is intended to be used for moving the dimer up the potential energy surface, matter should be somehow alike the argument used in the former call to Dimer::moveAndCompute or Dimer::startNewSearchAndCompute.
     double getEigenvalue();///< The latest determined lowest eigenmode is returned in result, the array should have a length corrsponding to the number free coordinates.
     /** Set initial direction manually.*/
-    void setEigenvector(long size, Matrix<double, Eigen::Dynamic, 3> eigenvector);
+    void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
         /// Return eigenvector.
     Matrix<double, Eigen::Dynamic, 3>  getEigenvector();
     long totalForceCalls;
@@ -45,6 +45,7 @@ private:
     Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNorm;///< Used to store the normal of plane in which the dimer is ratated.
     double eigenvalue;///< An estimate for the lowest eigenvale, its most important feature is wheter it is negative (concave region) or positive (convex region).
     long nFreeCoord;///< Number of free coordinates.
+    int nAtoms;
     Parameters *parameters;///< Pointer to the runtime parameters. Note that the structure is used to store how many force calls that was used in the locating the eigenmodes.
 
     void estimateLowestEigenmode(long rotationsToPermod);///< Is computational heavy! Try to obtain a converged result for the eigenmode within the number of rotations passed in \a maxRotations.
@@ -60,6 +61,6 @@ private:
                                   double *lengthRotationalForceOld);
     
     void rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle);///< Rotating the dimer rotationAngle (radians), the rotational plane is also modified.
-    double calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> forceDiffOrthognalToDimer);///< Determine the rotational force of the dimer. forceDiffOrthognalToDimer should be the difference in forces for the 'two' configurations defining the dimer where the forces along the dimer directionNorm_ has been projected out.
+    double calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &forceDiffOrthognalToDimer);///< Determine the rotational force of the dimer. forceDiffOrthognalToDimer should be the difference in forces for the 'two' configurations defining the dimer where the forces along the dimer directionNorm_ has been projected out.
 };
 #endif

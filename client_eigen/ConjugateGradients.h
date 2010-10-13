@@ -10,6 +10,9 @@
 #include "Matter.h"
 #include "MinimizersInterface.h"
 
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
+
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing a Matter object or modified forces being passed in.*/
 class ConjugateGradients : public MinimizersInterface{
 
@@ -23,8 +26,8 @@ public:
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
     @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.
     @param[in]   *forces        Double array containing the forces acting on the matter.*/
-    ConjugateGradients(Matter *matter, Parameters *parameters, double *forces);
-
+    ConjugateGradients(Matter *matter, Parameters *parameters, Matrix<double, Eigen::Dynamic, 3> forces);
+  
     ~ConjugateGradients();///< Destructor.
 
     void oneStep(); // do one iteration
@@ -34,16 +37,16 @@ public:
     /** Performs and infinitesimal step along the search direction.
     @param[out]  *posStep  Double array containing the modified positions of the atoms.
     @param[in]   *pos      Double array containing the original positions of the atoms.*/
-    void makeInfinitesimalStepModifiedForces(double *posStep, double *pos);
+    Matrix<double, Eigen::Dynamic, 3> makeInfinitesimalStepModifiedForces(Matrix<double, Eigen::Dynamic, 3> pos);
 
     /** Performs and infinitesimal step along the search direction.
     @param[out]  *pos              Double array containing the calculated new positions of the atoms.
     @param[in]   *forceBeforeStep  Double array, the forces before ConjugateGradients::makeInfinitesimalStepSaddleSearch was called.
     @param[in]   *forceAfterStep   Double array, the forces returned by ConjugateGradients::makeInfinitesimalStepSaddleSearch.
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
-    void getNewPosModifiedForces(double *pos, double *forceBeforeStep, double *forceAfterStep, double maxStep);
+    Matrix<double, Eigen::Dynamic, 3> getNewPosModifiedForces(Matrix<double, Eigen::Dynamic, 3> pos, Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, Matrix<double, Eigen::Dynamic, 3> forceAfterStep, double maxStep);
  
-    void setFreeAtomForcesModifiedForces(double *forces); // enables the use of modified forces
+    void setForces(Matrix<double, Eigen::Dynamic, 3> forces); // enables the use of modified forces
  
 private:
     long nFreeCoord_; // number of free coordinates

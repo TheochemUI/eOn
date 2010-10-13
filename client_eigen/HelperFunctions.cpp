@@ -142,18 +142,8 @@ void helper_functions::normalize(double *v1, long size){
 }
 
 // Make v1 orthogonal to v2 
-void helper_functions::makeOrthogonal(double *result, const double *v1, 
-                                      const double *v2, long size){
-    double *tempListDouble;
-    double tempDouble;
-    tempListDouble = new double[size];
-    
-    tempDouble = dot(v2, v1, size);
-    multiplyScalar(tempListDouble, v2, tempDouble, size);
-    subtract(result, v1, tempListDouble, size);
-    
-    delete [] tempListDouble;
-    return;
+Matrix<double, Eigen::Dynamic, 3> helper_functions::makeOrthogonal(const Matrix<double, Eigen::Dynamic, 3> v1, const Matrix<double, Eigen::Dynamic, 3> v2){
+    return v1 - (v1.cwise()*v2).sum() * v2.normalized();
 }
 
 // result contains v1 projection on v2 
