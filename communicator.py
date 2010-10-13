@@ -655,6 +655,7 @@ class ARC(Communicator):
                 job = {"id": info.id, "name": jobids[info.id]}
                 if info.status in [ "FINISHED", "FAILED" ]:
                     job["stage"] = "Done"
+                    job["success"] = (info.status == "FINISHED")
                 elif info.status in [ "DELETED", "KILLED", "KILLING" ]:
                     job["stage"] = "Aborted" # Supposed to disappear by itself soonish
                 elif info.status in [ "ACCEPTING", "ACCEPTED", "PREPARING", "PREPARED", "SUBMITTING", "INLRMS:Q" ]:
@@ -716,8 +717,10 @@ class ARC(Communicator):
         tar jxvf $1.tar.bz2
         cd $1
         client
+        x=$?
         cd $HOME
         tar jcvf $1.tar.bz2  $1
+        exit $x
         """
         script_path = os.path.join(self.scratchpath, 'wrapper.sh')
         try:
@@ -881,13 +884,17 @@ class ARC(Communicator):
 
             p = self.get_job_output(jid, self.scratchpath)
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
-            self.open_tarball(tarball, resultspath)
+
+            if job["success"]:
+                self.open_tarball(tarball, resultspath)
+                logger.info("Fetched %s / %s" % (jname, jid)) 
+            else:
+                logger.warning("Job %s / %s FAILED.\nOutput files can be found in %s" % (jname, jid, p)) 
 
             job["stage"] = "Retrieved"
             self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
             self.arclib.CleanJob(jid) # Remove from ARC sever
 
-            logger.info("Fetched %s / %s" % (jname, jid)) 
 
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
