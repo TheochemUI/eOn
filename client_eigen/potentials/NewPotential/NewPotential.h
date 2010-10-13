@@ -20,7 +20,7 @@ public:
     void initialize(void);    
     void cleanMemory(void);    
 
-    void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };
 #endif
 

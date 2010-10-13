@@ -29,7 +29,7 @@ QSC::~QSC()
 }
 
 void QSC::initialize() {}
-void QSC::initialize(long N, const double *R, const long *atomicNrs,
+void QSC::initialize(long N, const double *R, const int *atomicNrs,
                      const double *box) {
         /* Determine what elements are in the system to build a table
          * of the parameters. */
@@ -167,7 +167,7 @@ int compare_ints(const void *a,const void *b)
     return ( *(int*)a - *(int*)b );
 }
 
-void QSC::energy(long N, const double *R, const long *atomicNrs, double *U,
+void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
                  const double *box) {
     if (init==false) {
         initialize(N, R, atomicNrs, box);
@@ -213,7 +213,7 @@ void QSC::energy(long N, const double *R, const long *atomicNrs, double *U,
 
 }
 
-void QSC::force(long N, const double *R, const long *atomicNrs, double *F,
+void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box)
 {
     if (init==false) {
