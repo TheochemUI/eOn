@@ -22,7 +22,7 @@ public:
     void virtual moveAndCompute(Matter const *matter) = 0;  
     double virtual getEigenvalue() = 0;
     /// Return eigenvector.
-    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector();
+    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector() {};
         /** Set initial direction manually.*/
     virtual void setEigenvector(long size, Matrix<double, Eigen::Dynamic, 3> eigenvector) {}
 };
