@@ -92,6 +92,7 @@ public:
     void resetForceCalls(); // zeroing the value of force calls
 
     bool isItConverged(double convergeCriterion);
+    double maxForce(void);
 
     bool con2matter(std::string filename); // Read con file into Matter, return true if successful
     bool con2matter(FILE *file);/* Read con file and load data into Matter. Support up to ten components (ten types of atoms). 
@@ -100,6 +101,8 @@ public:
     bool matter2con(FILE *file) const;///< Print @em .con file from data in Class Matter. 
     void matter2xyz(std::string filename, bool append=false /*Append if file already exists*/) const;/**< Print @em .xyz file based on data stored in Class Matter. 
     @param append  Matters if file @filename already exists. When true, append new data to the existing file.*/
+    
+    Matrix<int, Eigen::Dynamic, 3> getFree() const;
 
 private:
     Potentials *potential;/// Pointer to function calculating the energy and forces.

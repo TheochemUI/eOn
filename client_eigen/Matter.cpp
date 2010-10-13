@@ -640,21 +640,15 @@ void Matter::applyPeriodicBoundary(long atom, int axis)
 
 double Matter::maxForce(void)
 {
+    //I think this can be done in one line with the rowwise method
 	double maxForce = 0.0;
-	double force = 0.0;
     for(int i = 0; i < nAtoms_; i++)
     {
         if(getFixed(i))
         {
             continue;
         }
-		force = sqrt(forces_[i * 3 + 0] * forces_[i * 3 + 0] +
-					 forces_[i * 3 + 1] * forces_[i * 3 + 1] +
-					 forces_[i * 3 + 2] * forces_[i * 3 + 2]);
-		if(force > maxForce)
-		{
-			maxForce = force;
-		}
+		maxForce = max(forces.row(i).norm(), maxForce);
 	}
 	return maxForce;
 }
@@ -680,3 +674,17 @@ bool Matter::isItConverged(double convergeCriterion)
     }
     return(diff < convergeCriterion);
 };
+
+Matrix<int, Eigen::Dynamic, 3> Matter::getFree() const
+{
+    Matrix<int, Eigen::Dynamic, 3> ret;
+    int i,j;
+    for(i=0;i<nAtoms;i++)
+    {
+        for(j=0;j<3;j++)
+        {
+            ret(i,j) = int(!bool(isFixed(i)));
+        }
+    }
+    return ret;
+}
