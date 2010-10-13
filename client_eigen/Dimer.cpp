@@ -223,17 +223,12 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
                                      Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld,
                                      double* lengthRotationalForceOld){
     double a, b, gamma = 0;
-    double *rotationalPlane;
-    rotationalPlane = new double[nFreeCoord_];
     
-    a = fabs(dot(rotationalForce, rotationalForceOld, nFreeCoord_));
-    b = dot(rotationalForceOld, rotationalForceOld, nFreeCoord_);
+    a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
+    b = rotationalForceOld.norm();
     if(a<0.5*b)
     {
-        subtract(tempListDouble_, rotationalForce, rotationalForceOld, nFreeCoord_);
-        
-        //Polak-Ribiere way to determine how much to mix in of old direction
-        gamma = dot(rotationalForce, tempListDouble_, nFreeCoord_)/b;  
+        gamma = (rotationalForce.cwise() * (rotationalForce - rotationalForceOld)).sum()/b;
     }
     else
         gamma = 0;
@@ -241,50 +236,35 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
     // The new rotational plane
     // Based on the current rotational force and the rotational plane force 
     // from the former iteration    
-    multiplyScalar(tempListDouble_, rotationalPlaneNormOld, 
-                   *(lengthRotationalForceOld)*gamma, nFreeCoord_);    
-    
-    add(rotationalPlane, rotationalForce, tempListDouble_, nFreeCoord_);    
+    rotationalPlaneNorm = rotationalForce + rotationalPlaneNormOld * (*(lengthRotationalForceOld)) * gamma;
     
     // The planes normal is normalized,
     // made orthogonal to the dimers direction and renormalized
-    copyRightIntoLeft(rotationalPlaneNorm, rotationalPlane, nFreeCoord_);
     
-    normalize(rotationalPlaneNorm, nFreeCoord_);
-    
-    makeOrthogonal(rotationalPlaneNorm, rotationalPlaneNorm,
-                   directionNorm, nFreeCoord_);
-    
-    normalize(rotationalPlaneNorm, nFreeCoord_);
+    *lengthRotationalForceOld = rotationalPlaneNorm.norm();
+    rotationalPlaneNorm.normalize(); 
+    rotationalPlaneNorm = makeOrthogonal(rotationalPlaneNorm, directionNorm); 
+    rotationalPlaneNorm.normalize(); 
 
-    copyRightIntoLeft(rotationalForceOld, rotationalForce, nFreeCoord_);
-    *lengthRotationalForceOld = length(rotationalPlane, nFreeCoord_);
+    rotationalForceOld = rotationalForce;
     
-    delete [] rotationalPlane;
     return;
 }
 
 
 void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
 {
-    double temp1, temp2, cosAngle, sinAngle;
+    double cosAngle, sinAngle;
 
     cosAngle = cos(rotationAngle);
     sinAngle = sin(rotationAngle);
-    
-    for(int i=0; i<nFreeCoord_; i++){
-        temp1 = directionNorm[i]*cosAngle + rotationalPlaneNorm[i]*sinAngle;
-        temp2 = rotationalPlaneNorm[i]*cosAngle - directionNorm[i]*sinAngle;
-        directionNorm[i] = temp1;
-        rotationalPlaneNorm[i] = temp2;
-    }
-    normalize(directionNorm, nFreeCoord_);
-    normalize(rotationalPlaneNorm, nFreeCoord_);
-    
+   
+    directionNorm = directionNorm * cosAngle + rotationalPlaneNorm * sinAngle;
+    rotationalPlaneNorm = rotationalPlaneNorm * cosAngle - directionNorm * sinAngle; 
+    directionNorm.normalize();
+    rotationalPlaneNorm.normalize(); 
     // Remove component from rotationalPlaneNorm parallel to directionNorm
-    makeOrthogonal(rotationalPlaneNorm, rotationalPlaneNorm, 
-                   directionNorm, nFreeCoord_);
-    normalize(rotationalPlaneNorm, nFreeCoord_);
-
+    rotationalPlaneNorm = makeOrthogonal(rotationalPlaneNorm, directionNorm);
+    rotationalPlaneNorm.normalize();
     return;
 }

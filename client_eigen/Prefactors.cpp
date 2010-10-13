@@ -9,20 +9,20 @@ using namespace helper_functions;
 
 
 Prefactors::Prefactors(){
-    eigenValMin1_ = 0;
-    eigenValMin2_ = 0;
-    eigenValSaddle_ = 0;
-    coordinatesToAccountFor_ = 0;
+    eigenValMin1.setZero();
+    eigenValMin2.setZero();
+    eigenValSaddle.setZero();
+    coordinatesToAccountFor = 0;
     totalForceCalls = 0;
 }
 
 
 Prefactors::Prefactors(const Matter *saddle, const Matter *min1, 
                        const Matter *min2, Parameters *parameters){
-    eigenValMin1_ = 0;
-    eigenValMin2_ = 0;
-    eigenValSaddle_ = 0;
-    coordinatesToAccountFor_ = 0;
+    eigenValMin1.setZero();
+    eigenValMin2.setZero();
+    eigenValSaddle.setZero();
+    coordinatesToAccountFor = 0;
     initialize(saddle, min1, min2, parameters);
     return;
 }
@@ -37,37 +37,25 @@ Prefactors::~Prefactors(){
 void Prefactors::clean(){
     // min1_, min2_ and saddle_ should not be deleted
     // copies of pointers that were passed in! 
-    if(eigenValMin1_ != 0){
-        delete [] eigenValMin1_;
-        eigenValMin1_ = 0;
-    }
-    if(eigenValMin2_ != 0){
-        delete [] eigenValMin2_;
-        eigenValMin2_ = 0;
-    }
-    if(eigenValSaddle_ != 0){
-        delete [] eigenValSaddle_;
-        eigenValSaddle_ = 0;
-    }
-    if(coordinatesToAccountFor_ != 0){
-        delete [] coordinatesToAccountFor_;
-        coordinatesToAccountFor_ = 0;
+    if(coordinatesToAccountFor != 0){
+        delete [] coordinatesToAccountFor;
+        coordinatesToAccountFor = 0;
     }
     
     return;
 }
 
 
-void Prefactors::initialize(const Matter *saddle, const Matter *min1, 
-                            const Matter *min2, Parameters *parameters){
+void Prefactors::initialize(const Matter *saddle_passed, const Matter *min1_passed, 
+                            const Matter *min2_passed, Parameters *parameters_passed){
     clean();
-    saddle_ = saddle;
-    min1_ = min1;
-    min2_ = min2;
-    parameters_ = parameters;
+    saddle = saddle_passed;
+    min1 = min1_passed;
+    min2 = min2_passed;
+    parameters = parameters_passed;
     
-    nAtoms_ = saddle->numberOfAtoms();
-    coordinatesToAccountFor_ = new bool[3*nAtoms_];
+    nAtoms = saddle->numberOfAtoms();
+    coordinatesToAccountFor = new bool[3*nAtoms];
     return;
 }
 
@@ -79,9 +67,9 @@ bool Prefactors::compute(double *prefactors){
     long forceCallsMin1;
     long forceCallsMin2;
 
-    sizeHessian_ = atomsToAccountForInHessian();
-    fprintf(stdout, "Hessian size %li\n",sizeHessian_);
-    if (sizeHessian_ == 0) {
+    sizeHessian = atomsToAccountForInHessian();
+    fprintf(stdout, "Hessian size %li\n",sizeHessian);
+    if (sizeHessian == 0) {
         ///XXX: This should not exit with a status of 1
         //      due to showing up as a boinc error.
         //      Users do not get credit for non-zero
@@ -90,13 +78,13 @@ bool Prefactors::compute(double *prefactors){
                 "Try with smaller min_Displacement_Hessian\n");
         exit(1);
     };    
-    eigenValMin1_ = new double[sizeHessian_];
-    eigenValMin2_ = new double[sizeHessian_];
-    eigenValSaddle_ = new double[sizeHessian_];    
+    eigenValMin1.resize(sizeHessian);
+    eigenValMin2.resize(sizeHessian);
+    eigenValSaddle.resize(sizeHessian);    
     
-    forceCallsSaddle = saddle_->getForceCalls();
-    forceCallsMin1 = min1_->getForceCalls();
-    forceCallsMin2 = min2_->getForceCalls();    
+    forceCallsSaddle = saddle->getForceCalls();
+    forceCallsMin1 = min1->getForceCalls();
+    forceCallsMin2 = min2->getForceCalls();    
     
     good = getEigenValues();
     
@@ -105,12 +93,12 @@ bool Prefactors::compute(double *prefactors){
         prefactors[0] = 1;
         prefactors[1] = 1;
         
-        for(int i=0; i<sizeHessian_; i++){
-            prefactors[0] = prefactors[0]*eigenValMin1_[i];
-            prefactors[1] = prefactors[1]*eigenValMin2_[i];
-            if(eigenValSaddle_[i]>0){
-                prefactors[0] = prefactors[0]/eigenValSaddle_[i];
-                prefactors[1] = prefactors[1]/eigenValSaddle_[i];
+        for(int i=0; i<sizeHessian; i++){
+            prefactors[0] *= eigenValMin1[i];
+            prefactors[1] *= eigenValMin2[i];
+            if(eigenValSaddle[i]>0){
+                prefactors[0] /= eigenValSaddle[i];
+                prefactors[1] /= eigenValSaddle[i];
             }
         }
         // 10.18e-15 conversion factor from au to 1/s
@@ -124,8 +112,8 @@ long Prefactors::atomsToAccountForInHessian(){
 	long sizeHessian;
 	double minDisp;
 	// Account for all atoms moved more than the value specified in parameters
-	if (parameters_->hessianMaxSize == 0){
-		minDisp = parameters_->hessianMinDisplacement;
+	if (parameters->hessianMaxSize == 0){
+		minDisp = parameters->hessianMinDisplacement;
 		sizeHessian = atomsMovedMoreThan(minDisp);
 	}
 	// Will ensure that there is not accounted for more
@@ -133,10 +121,10 @@ long Prefactors::atomsToAccountForInHessian(){
 	else{
 		int loop = 0;
 		do {
-			minDisp = parameters_->hessianMinDisplacement + loop * 0.1;		
+			minDisp = parameters->hessianMinDisplacement + loop * 0.1;		
 			sizeHessian = atomsMovedMoreThan(minDisp);
 			loop = loop + 1;
-		} while (parameters_->hessianMaxSize < sizeHessian);
+		} while (parameters->hessianMaxSize < sizeHessian);
 	}
 	return(sizeHessian);
 }
@@ -144,96 +132,91 @@ long Prefactors::atomsToAccountForInHessian(){
 long Prefactors::atomsMovedMoreThan(double minDisplacement){
     long sizeHessian;
     double diffR1, diffR2, diffRSaddle;
-    for(int i=0; i<3*nAtoms_; i++)
-        coordinatesToAccountFor_[i] = false;
+    for(int i=0; i<3*nAtoms; i++)
+        coordinatesToAccountFor[i] = false;
     //----- Initialize end -----
     //std::cout<<"determineActiveAtoms\n";
     
     // Picking out all atoms that are displaced
-    for(int i=0; i<nAtoms_; i++){
-        diffR1 = saddle_->distance(*min1_, i);
-        diffR2 = saddle_->distance(*min2_, i);
+    for(int i=0; i<nAtoms; i++){
+        diffR1 = saddle->distance(*min1, i);
+        diffR2 = saddle->distance(*min2, i);
         if(((minDisplacement<diffR1) || 
 			(minDisplacement<diffR2)) &&
-		   !saddle_->getFixed(i)){
-            coordinatesToAccountFor_[ 3*i ] = true;
-            coordinatesToAccountFor_[3*i+1] = true;
-            coordinatesToAccountFor_[3*i+2] = true;
+		   !saddle->getFixed(i)){
+            coordinatesToAccountFor[ 3*i ] = true;
+            coordinatesToAccountFor[3*i+1] = true;
+            coordinatesToAccountFor[3*i+2] = true;
             
             // Picking out free atoms in the vicinity of a displaced atom
-            for(int j=0; j<nAtoms_; j++){
-                diffRSaddle = saddle_->distance(i,j);
+            for(int j=0; j<nAtoms; j++){
+                diffRSaddle = saddle->distance(i,j);
                 
-                if(diffRSaddle<parameters_->hessianWithinRadiusDisplaced 
-                   && (!saddle_->getFixed(j))){
-                    coordinatesToAccountFor_[ 3*j ] = true;
-                    coordinatesToAccountFor_[3*j+1] = true;
-                    coordinatesToAccountFor_[3*j+2] = true;
+                if(diffRSaddle<parameters->hessianWithinRadiusDisplaced 
+                   && (!saddle->getFixed(j))){
+                    coordinatesToAccountFor[ 3*j ] = true;
+                    coordinatesToAccountFor[3*j+1] = true;
+                    coordinatesToAccountFor[3*j+2] = true;
                 }
             }
         }
     }
     // Counting all the atoms to be accounted for in the Hessian
     sizeHessian = 0;
-    for(int i=0; i<3*nAtoms_; i++){
-        if(coordinatesToAccountFor_[i] == true)
+    for(int i=0; i<3*nAtoms; i++){
+        if(coordinatesToAccountFor[i] == true)
             sizeHessian = sizeHessian+1;
     }
     return(sizeHessian);
 }
 	
 
-void Prefactors::determineHessian(double **hessian, const Matter *matter){
+void Prefactors::determineHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian, const Matter *matter){
     long iCoord, jCoord;
     long iHessian, jHessian;
-    long nCoord = 3*nAtoms_;
     long forceCallsAtomsTemp;
     
-    Matter matterTemp(parameters_);
+    Matter matterTemp(parameters);
     matterTemp = *matter;
-    
-    double *pos, *posTemp, *posDisplace;
-    double *force1, *force2;
-    
-    pos = new double[nCoord];
-    posTemp = new double[nCoord];
-    posDisplace = new double[nCoord];
-    force1 = new double[nCoord];
-    force2 = new double[nCoord];
     
     double dr = 1e-6; // value used by graeme 1e-4;
     double tdr = 2*dr;
-    matter->getPositions(pos);
+    
+    Matrix<double, Eigen::Dynamic, 3> pos = matter->getPositions();
+    Matrix<double, Eigen::Dynamic, 3> posDisplace(nAtoms, 3);
+    Matrix<double, Eigen::Dynamic, 3> posTemp(nAtoms, 3);
+    Matrix<double, Eigen::Dynamic, 3> force1(nAtoms, 3);
+    Matrix<double, Eigen::Dynamic, 3> force2(nAtoms, 3);
+
     forceCallsAtomsTemp = matterTemp.getForceCalls();
 
     //----- Initialize end -----
     //std::cout<<"determineHessian\n";
-    
-    for(iCoord=iHessian=0; iHessian<sizeHessian_; iHessian++, iCoord++){
-        for(int k=0; k<nCoord; k++)
-            posDisplace[k] = 0;
+   
+    for(iCoord=iHessian=0; iHessian<sizeHessian; iHessian++, iCoord++){
         
+        posDisplace.setZero(); 
         // Getting the index for the next coordinate to be accounted for
-        while(!coordinatesToAccountFor_[iCoord]) 
+        while(!coordinatesToAccountFor[iCoord]) 
             iCoord++;
         
         // Displacing one coordinate
-        posDisplace[iCoord] = dr;
+        posDisplace(iCoord/3,iCoord%3)  = dr;
         
-        subtract(posTemp,pos,posDisplace,nCoord);
+        posTemp = pos - posDisplace;
         matterTemp.setPositions(posTemp);
-        matterTemp.getForces(force1);
+        force1 = matterTemp.getForces();
         
-        add(posTemp,pos,posDisplace,nCoord);
+        posTemp = pos + posDisplace; 
         matterTemp.setPositions(posTemp);
-        matterTemp.getForces(force2);
+        force1 = matterTemp.getForces();
         
-        for(jCoord=jHessian=0; jHessian<sizeHessian_; jHessian++,jCoord++){
+        for(jCoord=jHessian=0; jHessian<sizeHessian; jHessian++,jCoord++){
             
             // Getting the index for the next coordinate to be accounted for
-            while(!coordinatesToAccountFor_[jCoord]) 
+            while(!coordinatesToAccountFor[jCoord]) 
                 jCoord++;
-            hessian[jHessian][iHessian] = -(force2[jCoord]-force1[jCoord])/tdr;
+            hessian(jHessian,iHessian) = -(force2(jCoord/3, jCoord%3)-force1(jCoord/3, jCoord%3))/tdr;
         }
     }
     
@@ -241,45 +224,39 @@ void Prefactors::determineHessian(double **hessian, const Matter *matter){
     
     totalForceCalls += forceCallsAtomsTemp;
 
-    delete [] pos;
-    delete [] posTemp;
-    delete [] posDisplace;
-    delete [] force1;
-    delete [] force2;
     return;
 }
 
 
 bool Prefactors::getEigenValues(){
-    assert(sizeHessian_>0);
+    assert(sizeHessian>0);
     bool result = true;
-    double **hessian;
-    hessian = new double*[sizeHessian_];
-    for(int i=0; i<sizeHessian_; i++)
-        hessian[i] = new double[sizeHessian_];
+
+    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian((int)sizeHessian, (int)sizeHessian);
+
     long negModesInSaddle = 0;
     //----- Initialize end -----
     //std::cout<<"getEigenValues\n";
     
     // Eigenvalues for minima1
-    determineHessian(hessian, min1_);
+    determineHessian(hessian, min1);
     massScaleHessian(hessian);   
     
-    eigenValues(sizeHessian_, eigenValMin1_, hessian);
-    for(int i=0; i<sizeHessian_; i++){
-        if(eigenValMin1_[i]<=0){
+    eigenValMin1 = hessian.eigenvalues();
+    for(int i=0; i<sizeHessian; i++){
+        if(eigenValMin1[i]<=0){
             result = false;
             break;
         }
     }
     if(result){
         // Eigenvalues for minima2
-        determineHessian(hessian, min2_);
+        determineHessian(hessian, min2);
         massScaleHessian(hessian);
         
-        eigenValues(sizeHessian_, eigenValMin2_, hessian);
-        for(int i=0; i<sizeHessian_; i++){
-            if(eigenValMin2_[i]<=0){
+        eigenValMin2 = hessian.eigenvalues();
+        for(int i=0; i<sizeHessian; i++){
+            if(eigenValMin2[i]<=0){
                 result = false;
                 break;
             }
@@ -287,48 +264,45 @@ bool Prefactors::getEigenValues(){
     }    
     if(result){
         // Eigenvalues for saddle
-        determineHessian(hessian, saddle_);
+        determineHessian(hessian, saddle);
         massScaleHessian(hessian);
         
-        eigenValues(sizeHessian_, eigenValSaddle_, hessian);
-        for(int i=0; i<sizeHessian_; i++){
-            if(eigenValSaddle_[i]<0){
+        eigenValSaddle = hessian.eigenvalues();
+        for(int i=0; i<sizeHessian; i++){
+            if(eigenValSaddle[i]<0){
                 negModesInSaddle = negModesInSaddle+1;
             }
         }
         if(negModesInSaddle!=1)
             result = false;
     }
-    for(int i=0; i<sizeHessian_; i++)
-        delete [] hessian[i];
-    delete hessian;
     
     return(result); 
 }
 
 
-void Prefactors::massScaleHessian(double **hessian){
+void Prefactors::massScaleHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian){
     long iCoord, jCoord;
     long iHessian, jHessian;
     double effMass;
     
-    for(iCoord=iHessian=0; iHessian<sizeHessian_; iHessian++, iCoord++){
+    for(iCoord=iHessian=0; iHessian<sizeHessian; iHessian++, iCoord++){
         
         // Getting the index for the next atom to be accounted for
-        while(!coordinatesToAccountFor_[iCoord]) 
+        while(!coordinatesToAccountFor[iCoord]) 
             iCoord++;
         
-        for(jCoord=jHessian=0; jHessian<sizeHessian_; jHessian++,jCoord++){
+        for(jCoord=jHessian=0; jHessian<sizeHessian; jHessian++,jCoord++){
             
             // Getting the index for the next atom to be accounted for
-            while(!coordinatesToAccountFor_[jCoord]) 
+            while(!coordinatesToAccountFor[jCoord]) 
                 jCoord++;
             
             // Remember the omega = sqrt(k/m)
-            effMass=sqrt(saddle_->getMass(jCoord/3)*saddle_->getMass(iCoord/3));
+            effMass=sqrt(saddle->getMass(jCoord/3)*saddle->getMass(iCoord/3));
 //            effMass = effMass/SU::G_PER_MOL;
             
-            hessian[jHessian][iHessian] = hessian[jHessian][iHessian]/effMass;
+            hessian(jHessian, iHessian) /= effMass;
         }
     }
     return;
