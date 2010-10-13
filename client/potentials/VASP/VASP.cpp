@@ -22,7 +22,9 @@ void VASP::cleanMemory(void)
 	vaspRunCount--;
 	if(vaspRunCount < 1)
 	{
-		system("echo LABORT = .TRUE. > STOPCAR");
+		FILE *stopcar = fopen("STOPCAR", "w");
+		fprintf(stopcar, "LABORT = .TRUE.");
+		fclose(stopcar);
 		vaspRunning = false;
 	}
     return;
@@ -52,7 +54,7 @@ void VASP::force(long N, const double *R, const long *atomicNrs, double *F, doub
     }
 	printf("\n");
     readFU(N, F, U);
-    system("rm FU");
+    remove("FU");
     vaspRunCount++;
     return;
 }
