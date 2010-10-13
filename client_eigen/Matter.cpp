@@ -243,7 +243,7 @@ void Matter::setPosition(long int indexAtom, int axis, double position)
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() 
+Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() const
 {//return coordinates of free atoms in array 'pos'
     return positions;
 }
@@ -274,12 +274,12 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {// return forces applied 
 }
 
 
-double Matter::distance(long index1, long index2) {// return distance between the atoms with index1 and index2
+double Matter::distance(long index1, long index2) const{// return distance between the atoms with index1 and index2
     return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
 
-double Matter::distance(const Matter& matter, long index) {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
+double Matter::distance(const Matter& matter, long index) const {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
     return pbc(positions.row(index) - matter.positions.row(index)).norm();
 }
 
@@ -677,13 +677,13 @@ bool Matter::isItConverged(double convergeCriterion)
 
 Matrix<int, Eigen::Dynamic, 3> Matter::getFree() const
 {
-    Matrix<int, Eigen::Dynamic, 3> ret;
+    Matrix<double, Eigen::Dynamic, 3> ret;
     int i,j;
     for(i=0;i<nAtoms;i++)
     {
         for(j=0;j<3;j++)
         {
-            ret(i,j) = int(!bool(isFixed(i)));
+            ret(i,j) = double(!bool(isFixed(i)));
         }
     }
     return ret;
