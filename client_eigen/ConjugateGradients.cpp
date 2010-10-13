@@ -21,11 +21,9 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 
 ConjugateGradients::ConjugateGradients(Matter *matter, 
                                        Parameters *parameters, 
-                                       double *forces){
+                                       Matrix<double, Eigen::Dynamic, 3> forces){
     initialize(matter, parameters);
- 
-    for(int i=0; i<nFreeCoord_; i++)
-        force_[i] = forces[i];
+    force = forces; 
 };
 
 
@@ -116,13 +114,13 @@ void ConjugateGradients::fullRelax(){
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     int i=0;
-    while(!converged and i < parameters_->maximumIterations) 
+    while(!converged and i < parameters->maximumIterations) 
     {
         oneStep();
-        converged = isItConverged(parameters_->convergedRelax);
+        converged = isItConverged(parameters->convergedRelax);
         ++i;
         #ifndef NDEBUG
-        printf("min = %d, max force = %lf\n", i, matter_->maxForce());
+        printf("min = %d, max force = %lf\n", i, matter->maxForce());
         #endif
     }
     return;
@@ -203,11 +201,9 @@ double ConjugateGradients::stepSize(double *forceBeforeStep,
 
 // Specific functions when forces are modified 
 
-void ConjugateGradients::makeInfinitesimalStepModifiedForces(double *posStep, 
-                                                             double *pos){
+Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::makeInfinitesimalStepModifiedForces(Matrix<double, Eigen::Dynamic, 3> pos){
  
     determineSearchDirection();
-
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     multiplyScalar(tempListDouble_,
@@ -215,27 +211,26 @@ void ConjugateGradients::makeInfinitesimalStepModifiedForces(double *posStep,
                    parameters_->cgCurvatureStep,
                    nFreeCoord_);
     add(posStep, tempListDouble_, pos, nFreeCoord_);
-    return;
+    return directionNorm * parameters->cgCurvatureStep + pos;
 };
 
 
-void ConjugateGradients::getNewPosModifiedForces(double *pos,
-                                                 double *forceBeforeStep, 
-                                                 double *forceAfterStep,
-                                                 double maxStep){
+Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
+        Matrix<double, Eigen::Dynamic, 3> pos,
+        Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, 
+        Matrix<double, Eigen::Dynamic, 3> forceAfterStep,
+        double maxStep)
+{
     double step;
 
     step = stepSize(forceBeforeStep, forceAfterStep, maxStep);
 
     // Move system
-    multiplyScalar(tempListDouble_, directionNorm_, step, nFreeCoord_);
-    add(pos, tempListDouble_, pos, nFreeCoord_);
-    return;
+    return pos + directionNorm*step;
 };
 
 
-void ConjugateGradients::setFreeAtomForcesModifiedForces(double *forces){
-    for(int i=0; i<nFreeCoord_; i++)
-        force_[i] = forces[i];
+void ConjugateGradients::setForces(Matrix<double, Eigen::Dynamic, 3> forces){
+    force = forces;
     return;
 };
