@@ -801,7 +801,7 @@ class ARC(Communicator):
 
         s += "(stdout=stdout)"
         s += "(stderr=stderr)"
-        s += "(gridlog=gridlog)"
+        s += "(gmlog=gmlog)"
 
         if not self.client_path:
             s += "(runTimeEnvironment=APPS/CHEM/EON2)"
