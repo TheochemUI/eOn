@@ -305,5 +305,6 @@ Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Prefactors::massScaleHessian(Matr
             hessian(jHessian, iHessian) /= effMass;
         }
     }
+
     return hessian;
 }
