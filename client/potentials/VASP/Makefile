@@ -1,5 +1,5 @@
 OBJECTS = VASP.o
-CXXFLAGS += -I../..
+CXXFLAGS += -I../.. -Wall -pedantic
 LIB := libVASP.a
 $(LIB) : $(OBJECTS)
 	ar cru $@ $^
