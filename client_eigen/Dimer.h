@@ -40,7 +40,6 @@ public:
 private:
     Matter *matterInitial;///< Used for the center of the dimer.
     Matter *matterDimer;///< Used for the one of the configurations defining the dimer.
-    Matrix<double, Eigen::Dynamic, 3> tempListDouble;///< Array of a size corresponding to all coordinates
     Matrix<double, Eigen::Dynamic, 3> directionNorm;///< Direction descring how matterDimer_ is displaced relative to matterInitial_.
     Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNorm;///< Used to store the normal of plane in which the dimer is ratated.
     double eigenvalue;///< An estimate for the lowest eigenvale, its most important feature is wheter it is negative (concave region) or positive (convex region).

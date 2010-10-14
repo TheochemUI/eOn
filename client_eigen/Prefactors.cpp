@@ -9,9 +9,6 @@ using namespace helper_functions;
 
 
 Prefactors::Prefactors(){
-    eigenValMin1.setZero();
-    eigenValMin2.setZero();
-    eigenValSaddle.setZero();
     coordinatesToAccountFor = 0;
     totalForceCalls = 0;
 }
@@ -19,9 +16,6 @@ Prefactors::Prefactors(){
 
 Prefactors::Prefactors(const Matter *saddle, const Matter *min1, 
                        const Matter *min2, Parameters *parameters){
-    eigenValMin1.setZero();
-    eigenValMin2.setZero();
-    eigenValSaddle.setZero();
     coordinatesToAccountFor = 0;
     initialize(saddle, min1, min2, parameters);
     return;
@@ -56,6 +50,7 @@ void Prefactors::initialize(const Matter *saddle_passed, const Matter *min1_pass
     
     nAtoms = saddle->numberOfAtoms();
     coordinatesToAccountFor = new bool[3*nAtoms];
+
     return;
 }
 
@@ -171,9 +166,8 @@ long Prefactors::atomsMovedMoreThan(double minDisplacement){
 }
 	
 
-void Prefactors::determineHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian, const Matter *matter){
+Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Prefactors::determineHessian(const Matter *matter){
     long iCoord, jCoord;
-    long iHessian, jHessian;
     long forceCallsAtomsTemp;
     
     Matter matterTemp(parameters);
@@ -188,20 +182,30 @@ void Prefactors::determineHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic>
     Matrix<double, Eigen::Dynamic, 3> force1(nAtoms, 3);
     Matrix<double, Eigen::Dynamic, 3> force2(nAtoms, 3);
 
+    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian((int)sizeHessian, (int)sizeHessian);
+
     forceCallsAtomsTemp = matterTemp.getForceCalls();
 
     //----- Initialize end -----
     //std::cout<<"determineHessian\n";
-   
-    for(iCoord=iHessian=0; iHessian<sizeHessian; iHessian++, iCoord++){
-        
+    int i, j; 
+    Matrix <int, Eigen::Dynamic, 1> coords(sizeHessian);
+    j=0;
+    for(i = 0; i<nAtoms*3; i++)
+    {
+        if(coordinatesToAccountFor[i])
+        {
+            coords[j] = i;
+            j++;
+        }
+    }
+
+    for(i = 0; i<sizeHessian; i++)
+    { 
         posDisplace.setZero(); 
-        // Getting the index for the next coordinate to be accounted for
-        while(!coordinatesToAccountFor[iCoord]) 
-            iCoord++;
-        
+        iCoord = coords[i];
         // Displacing one coordinate
-        posDisplace(iCoord/3,iCoord%3)  = dr;
+        posDisplace(iCoord/3, iCoord%3)  = dr;
         
         posTemp = pos - posDisplace;
         matterTemp.setPositions(posTemp);
@@ -209,14 +213,12 @@ void Prefactors::determineHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic>
         
         posTemp = pos + posDisplace; 
         matterTemp.setPositions(posTemp);
-        force1 = matterTemp.getForces();
+        force2 = matterTemp.getForces();
         
-        for(jCoord=jHessian=0; jHessian<sizeHessian; jHessian++,jCoord++){
-            
-            // Getting the index for the next coordinate to be accounted for
-            while(!coordinatesToAccountFor[jCoord]) 
-                jCoord++;
-            hessian(jHessian,iHessian) = -(force2(jCoord/3, jCoord%3)-force1(jCoord/3, jCoord%3))/tdr;
+        for(j=0; j<sizeHessian; j++)
+        {     
+            jCoord = coords[j];
+            hessian(i,j) = -(force2(jCoord/3, jCoord%3)-force1(jCoord/3, jCoord%3))/tdr;
         }
     }
     
@@ -224,7 +226,7 @@ void Prefactors::determineHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic>
     
     totalForceCalls += forceCallsAtomsTemp;
 
-    return;
+    return hessian;
 }
 
 
@@ -232,17 +234,16 @@ bool Prefactors::getEigenValues(){
     assert(sizeHessian>0);
     bool result = true;
 
-    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian((int)sizeHessian, (int)sizeHessian);
+    Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian;
 
     long negModesInSaddle = 0;
     //----- Initialize end -----
     //std::cout<<"getEigenValues\n";
     
     // Eigenvalues for minima1
-    determineHessian(hessian, min1);
-    massScaleHessian(hessian);   
-    
-    eigenValMin1 = hessian.eigenvalues();
+    hessian = massScaleHessian( determineHessian(min1) );
+    Eigen::SelfAdjointEigenSolver<MatrixXd> eMin1(hessian);
+    eigenValMin1 = eMin1.eigenvalues();
     for(int i=0; i<sizeHessian; i++){
         if(eigenValMin1[i]<=0){
             result = false;
@@ -251,10 +252,10 @@ bool Prefactors::getEigenValues(){
     }
     if(result){
         // Eigenvalues for minima2
-        determineHessian(hessian, min2);
-        massScaleHessian(hessian);
+        hessian = massScaleHessian( determineHessian(min2) );
         
-        eigenValMin2 = hessian.eigenvalues();
+        Eigen::SelfAdjointEigenSolver<MatrixXd> eMin2(hessian);
+        eigenValMin2 = eMin2.eigenvalues();
         for(int i=0; i<sizeHessian; i++){
             if(eigenValMin2[i]<=0){
                 result = false;
@@ -264,10 +265,10 @@ bool Prefactors::getEigenValues(){
     }    
     if(result){
         // Eigenvalues for saddle
-        determineHessian(hessian, saddle);
-        massScaleHessian(hessian);
+        hessian = massScaleHessian( determineHessian(saddle) );
         
-        eigenValSaddle = hessian.eigenvalues();
+        Eigen::SelfAdjointEigenSolver<MatrixXd> eSaddle(hessian);
+        eigenValSaddle = eSaddle.eigenvalues();
         for(int i=0; i<sizeHessian; i++){
             if(eigenValSaddle[i]<0){
                 negModesInSaddle = negModesInSaddle+1;
@@ -281,11 +282,10 @@ bool Prefactors::getEigenValues(){
 }
 
 
-void Prefactors::massScaleHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian){
+Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Prefactors::massScaleHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian){
     long iCoord, jCoord;
     long iHessian, jHessian;
     double effMass;
-    
     for(iCoord=iHessian=0; iHessian<sizeHessian; iHessian++, iCoord++){
         
         // Getting the index for the next atom to be accounted for
@@ -305,5 +305,5 @@ void Prefactors::massScaleHessian(Matrix<double, Eigen::Dynamic, Eigen::Dynamic>
             hessian(jHessian, iHessian) /= effMass;
         }
     }
-    return;
+    return hessian;
 }
