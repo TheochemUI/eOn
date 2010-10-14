@@ -1,7 +1,6 @@
 #include <cstdlib>
 
 #include "Matter.h"
-#include "Constants.h"
 #include "Dynamics.h"
 #include "ParallelReplica.h"
 #include "ConjugateGradients.h"
@@ -10,6 +9,7 @@ ParallelReplica::ParallelReplica(Parameters *params)
 {
     parameters = params;
     nsteps = 0;
+    nsteps_refined = 0;
     ncheck = 0;
     nexam = 0;
     remember = true;
@@ -51,7 +51,7 @@ void ParallelReplica::run(int bundleNumber)
     saveData(newstate,bundleNumber);
     
     if(newstate){
-        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps,10*nsteps*parameters->mdTimeStep);
+        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps_refined,10*nsteps_refined*parameters->mdTimeStep);
     }else{
        printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
@@ -130,7 +130,7 @@ void ParallelReplica::dynamics()
     //for(long i =0; i < parameters->CheckFreq;i++){
 	//	printf("%ld refine steps %ld\n",i,mdbuff[i]->getNsteps());		
 	//}
-   
+    nsteps_refined = nsteps;
     if(parameters->mdRefine && newstate){     
         Refine(mdbuff);
     }
@@ -200,6 +200,9 @@ void ParallelReplica::saveData(int status,int bundleNumber){
      long total_fcalls = min_fcalls + md_fcalls;
 
      fprintf(fileResults, "%d termination_reason\n", status);
+     if(parameters->mdRefine){
+        fprintf(fileResults, "%ld refined simulation_steps\n", nsteps_refined);
+     }
      fprintf(fileResults, "%ld simulation_steps\n", nsteps);
      fprintf(fileResults, "%lf simulation_time_fs\n",10*nsteps*parameters->mdTimeStep);
      fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
@@ -263,7 +266,7 @@ void ParallelReplica::Refine(Matter *mdbuff[]){
 	      a1 = b2;
 	      b1 = final;
 	   }else if( ya == 1 && yb == 0){
-	      printf("Warning : Recrossing happened, search ranger will defined as (b2,final)\n");
+	      printf("Warning : Recrossing happened, search range will defined as (b2,final)\n");
 	      a1 = b2;
 	      b1 = final;
 	   }else {
@@ -272,8 +275,8 @@ void ParallelReplica::Refine(Matter *mdbuff[]){
 	
 	   diff = abs(b2 -a2);
      }
-	
-     printf("Refined mdsteps = %ld\n",nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+(a2+b2)/2);
+     nsteps_refined = nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+int((a2+b2)/2);
+     printf("Refined mdsteps = %ld\n",nsteps_refined);
      return;
 }
 

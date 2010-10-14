@@ -19,6 +19,7 @@ class ParallelReplica: public Job {
 	long min_fcalls;
 	long md_fcalls;
 	long nsteps;
+        long nsteps_refined;
 	long ncheck;
 	long nexam;
 	bool newstate;
