@@ -138,9 +138,9 @@ Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> 
 {
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
     Matrix<double, Eigen::Dynamic, 3> ddiff = diff*ibox;
-    
+   
     int i,j;
-    for(i=0; i<nAtoms; i++)
+    for(i=0; i<diff.rows(); i++)
     {
         for(j=0; j<3; j++)
         {
@@ -685,7 +685,7 @@ bool Matter::isItConverged(double convergeCriterion)
 {
     double diff=0;
 
-    for(int i=0;i<nAtoms*3;i++)
+    for(int i=0;i<nAtoms;i++)
     {
         if(getFixed(i))
         {
@@ -704,7 +704,7 @@ bool Matter::isItConverged(double convergeCriterion)
 
 Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 {
-    Matrix<double, Eigen::Dynamic, 3> ret;
+    Matrix<double, Eigen::Dynamic, 3> ret(nAtoms,3);
     int i,j;
     for(i=0;i<nAtoms;i++)
     {
