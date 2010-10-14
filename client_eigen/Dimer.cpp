@@ -29,6 +29,8 @@ Dimer::Dimer(Matter const *matter, Parameters *params)
     
     directionNorm.resize(nAtoms, 3);
     rotationalPlaneNorm.resize(nAtoms, 3);
+    directionNorm.setZero();
+    rotationalPlaneNorm.setZero();
     totalForceCalls = 0;
 }
 
