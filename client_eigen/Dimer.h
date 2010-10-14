@@ -55,7 +55,7 @@ private:
     @param[in]      *rotationalPlaneNormOld    Pointer to array of length nFreeCoord_. The rotational plane from the former iteration.      
     @param[in,out]  *lengthRotationalForceOld  Pointer to value. The length of the rotational forces from the former iteration. The length of the rotational forces just calcuated, to be used in the next iteration*/
     void determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationalForce, 
-                                  Matrix<double, Eigen::Dynamic, 3> rotationalForceOld, 
+                                  Matrix<double, Eigen::Dynamic, 3> &rotationalForceOld, 
                                   Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld,
                                   double *lengthRotationalForceOld);
     

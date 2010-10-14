@@ -96,16 +96,22 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     // Uses two force calls per rotation
     while(!doneRotating){
         // First dimer
-        curvature = calcRotationalForce(rotationalForce);        
+        //cout<<"Before "<<rotationalForce.norm()<<endl;
+        curvature = calcRotationalForce(rotationalForce);  
+        //cout<<"After "<<rotationalForce.norm()<<endl;
+
         
         // The new rotational plane is determined
+        
+        //cout<<"rfo Before "<<rotationalForceOld.norm()<<endl;
         determineRotationalPlane(rotationalForce, 
                                  rotationalForceOld, 
                                  rotationalPlaneNormOld,
                                  &lengthRotationalForceOld);
                                  
+        //cout<<"rfo After "<<rotationalForceOld.norm()<<endl;
         // Calculate the magnitude of the torque on the dimer.
-        torqueMagnitude = rotationalForce.norm();
+        torqueMagnitude = rotationalForce.squaredNorm();
 
         double torqueLimitHigh = 1.0;
         double torqueLimitLow = 0.1;
@@ -191,7 +197,7 @@ double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalF
     Matrix<double, Eigen::Dynamic, 3> forceInitial(nAtoms,3);
     Matrix<double, Eigen::Dynamic, 3> forceA(nAtoms,3);
     Matrix<double, Eigen::Dynamic, 3> forceB(nAtoms,3);
-    
+   
     posInitial = matterInitial->getPositions();    
 
     // Displacing the one of the dimer configurations
@@ -205,9 +211,10 @@ double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalF
     forceInitial = matterInitial->getForces();
     forceB = 2*forceInitial - forceA;
     
+    //cout<<"force norm: "<<forceA.norm()<<" "<<forceB.norm()<<endl;
     projectedForceA = (directionNorm.cwise() * forceA).sum();
     projectedForceB = (directionNorm.cwise() * forceB).sum();
-
+    //cout<<"projected force: "<<projectedForceA<<" "<<projectedForceB<<endl;
     // Remove force component parallel to dimer
     forceA = makeOrthogonal(forceA, directionNorm);
     forceB = makeOrthogonal(forceB, directionNorm);
@@ -224,20 +231,21 @@ double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalF
 
 
 void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationalForce, 
-                                     Matrix<double, Eigen::Dynamic, 3> rotationalForceOld, 
+                                     Matrix<double, Eigen::Dynamic, 3> &rotationalForceOld, 
                                      Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld,
                                      double* lengthRotationalForceOld){
     double a, b, gamma = 0;
     
     a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
     b = rotationalForceOld.squaredNorm();
+    //cout<<"a "<<a<<" b "<<b<<endl;
     if(a<0.5*b)
     {
         gamma = (rotationalForce.cwise() * (rotationalForce - rotationalForceOld)).sum()/b;
     }
     else
         gamma = 0;
-    
+   //cout<<"gamma: "<<gamma<<endl; 
     // The new rotational plane
     // Based on the current rotational force and the rotational plane force 
     // from the former iteration    
@@ -247,6 +255,7 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
     // made orthogonal to the dimers direction and renormalized
     
     *lengthRotationalForceOld = rotationalPlaneNorm.norm();
+    //cout<<"lRFO "<<*lengthRotationalForceOld<<endl;
     rotationalPlaneNorm.normalize(); 
     rotationalPlaneNorm = makeOrthogonal(rotationalPlaneNorm, directionNorm); 
     rotationalPlaneNorm.normalize(); 
