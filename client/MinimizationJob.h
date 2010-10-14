@@ -1,10 +1,10 @@
 #include "Job.h"
 #include "Parameters.h"
 
-class Minimization: public Job {
+class MinimizationJob: public Job {
     public:
-        Minimization(Parameters *params);
-        ~Minimization(void);
+        MinimizationJob(Parameters *params);
+        ~MinimizationJob(void);
         void run(int bundleNumber);
     private:
         Parameters *parameters;

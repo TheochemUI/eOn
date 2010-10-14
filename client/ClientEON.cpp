@@ -8,8 +8,8 @@
 #include "Constants.h"
 #include "Parameters.h"
 #include "Job.h"
-#include "ProcessSearch.h"
-#include "Minimization.h"
+#include "ProcessSearchJob.h"
+#include "MinimizationJob.h"
 #include "ParallelReplica.h"
 
 #include <dirent.h>
@@ -125,9 +125,9 @@ int main(int argc, char **argv)
     Job *job;
 	
     if (parameters.jobType == Parameters::PROCESS_SEARCH) {
-        job = new ProcessSearch(&parameters);
+        job = new ProcessSearchJob(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
-        job = new Minimization(&parameters);
+        job = new MinimizationJob(&parameters);
     }else if (parameters.jobType == Parameters::PARALLEL_REPLICA) {
 	job =  new ParallelReplica(&parameters);
     }

@@ -1,6 +1,6 @@
 /*
  *===============================================
- *  EON ProcessSearch.h
+ *  EON ProcessSearchJob.h
  *===============================================
  */
 
@@ -10,10 +10,10 @@
 #include "Prefactors.h"
 #include "Job.h"
 
-class ProcessSearch : public Job {
+class ProcessSearchJob : public Job {
     public:
-        ProcessSearch(Parameters *params);
-        ~ProcessSearch(void);
+        ProcessSearchJob(Parameters *params);
+        ~ProcessSearchJob(void);
         void run(int bundleNumber);
 
     private:
