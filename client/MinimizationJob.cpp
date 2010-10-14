@@ -1,16 +1,16 @@
-#include "Minimization.h"
+#include "MinimizationJob.h"
 #include "ConjugateGradients.h"
 #include "Matter.h"
 #include "Constants.h"
 
-Minimization::Minimization(Parameters *params)
+MinimizationJob::MinimizationJob(Parameters *params)
 {
     parameters = params;
 }
 
-Minimization::~Minimization(){ }
+MinimizationJob::~MinimizationJob(){ }
 
-void Minimization::run(int bundleNumber)
+void MinimizationJob::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed");
