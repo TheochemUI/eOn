@@ -38,13 +38,12 @@ class QMBox : public MinimizersInterface
         Matter *matter_;///< Pointer to atom object \b outside the scope of the class.    
         Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
 
-        double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
-        double *boxforce_;
-        double *boxv_;
+        Vector3d boxforce_;
+        Vector3d boxv_;
         double dR;
         double dT;
         Quickmin *qmBox_;
-        double *forces_;///< Double array, its size equals the number of \b free atoms times 3.
+        Matrix<double, Eigen::Dynamic, 3> forces_;///< Double array, its size equals the number of \b free atoms times 3.
 };
 
 #endif

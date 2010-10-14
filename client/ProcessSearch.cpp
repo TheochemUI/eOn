@@ -135,8 +135,8 @@ int ProcessSearch::doProcessSearch(void)
 
 
     /* Calculate the barriers */
-    barriersValues[0] = saddle->potentialEnergy()-min1->potentialEnergy();
-    barriersValues[1] = saddle->potentialEnergy()-min2->potentialEnergy();
+    barriersValues[0] = saddle->getPotentialEnergy()-min1->getPotentialEnergy();
+    barriersValues[1] = saddle->getPotentialEnergy()-min2->getPotentialEnergy();
 
     if((parameters->saddleMaxEnergy < barriersValues[0]) || 
        (parameters->saddleMaxEnergy < barriersValues[1])) {
@@ -174,8 +174,8 @@ void ProcessSearch::saveData(int status, int bundleNumber){
 	//      the minimizer. But right now the minimizers are in
 	//      the SaddlePoint object. They will be taken out eventually.
     long min_fcalls = min1->getForceCalls()+min2->getForceCalls();
-    long saddle_fcalls = saddlePoint->forceCallsSaddlePointConcave_ + 
-                         saddlePoint->forceCallsSaddlePointConvex_;
+    long saddle_fcalls = saddlePoint->forceCallsSaddlePointConcave + 
+                         saddlePoint->forceCallsSaddlePointConvex;
     long total_fcalls = min_fcalls + saddle_fcalls+prefactors->totalForceCalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
@@ -184,13 +184,13 @@ void ProcessSearch::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
     fprintf(fileResults, "%ld force_calls_saddle\n", saddle_fcalls);
-    fprintf(fileResults, "%f potential_energy_saddle\n", saddle->potentialEnergy());
-    fprintf(fileResults, "%f potential_energy_reactant\n", min1->potentialEnergy());
-    fprintf(fileResults, "%f potential_energy_product\n", min2->potentialEnergy());
+    fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
+    fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());
+    fprintf(fileResults, "%f potential_energy_product\n", min2->getPotentialEnergy());
     fprintf(fileResults, "%f barrier_reactant_to_product\n", barriersValues[0]);
     fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
     fprintf(fileResults, "%f displacement_saddle_distance\n",
-            displacement->per_atom_norm(*saddle));
+            displacement->perAtomNorm(*saddle));
     fprintf(fileResults, "%ld force_calls_prefactors\n", prefactors->totalForceCalls);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);

@@ -94,7 +94,8 @@ Potentials::Potentials(Parameters *parameters){
     else if(parameters_->potentialTag == POT_BOPFOX){
         interface_ = new bopfox();
         interface_->initialize();
-    }		
+    }
+
 #endif
     else{
         printf("Potential tag not recognized: %ld\n", parameters_->potentialTag);
@@ -107,30 +108,32 @@ Potentials::~Potentials(){
 };
 
 // An alike function should be provided by the force calculator.
-void Potentials::force(long nAtoms, const double *positions, const long *atomicNrs, 
-                          double *forces, double *energy, const double *box){
+Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box) 
+{
+    //XXX: For now, this just serves as a wrapper for the potentials
+    //     and converts from Matrix to double[]s. Later, the potentials
+    //     should also use Eigen
+
+
     // The call is passed to the specified force calculator.
-    interface_->force(nAtoms, positions, atomicNrs, forces, energy, box);
-    
+    double tmpBox[3];
+    tmpBox[0] = box.diagonal()[0];
+    tmpBox[1] = box.diagonal()[1];
+    tmpBox[2] = box.diagonal()[2];
+    Matrix<double, 3, Eigen::Dynamic> positionsT = positions.transpose();
+    Matrix<double, 3, Eigen::Dynamic> forcesT(3, (int)nAtoms);
+    interface_->force(nAtoms, positionsT.data(), atomicNrs.data(), forcesT.data(), energy, tmpBox);
+    Matrix<double, Eigen::Dynamic, 3> forces = forcesT.transpose();  
+
     if(parameters_->potentialNoTranslation){
-        double tempForceX = 0;
-        double tempForceY = 0;
-        double tempForceZ = 0;
-        
-        for(long int i=0; i<nAtoms; i++) {
-            tempForceX = tempForceX+forces[ 3*i ];
-            tempForceY = tempForceY+forces[3*i+1];
-            tempForceZ = tempForceZ+forces[3*i+2];
-        }
-        tempForceX = tempForceX/nAtoms;
-        tempForceY = tempForceY/nAtoms;
-        tempForceZ = tempForceZ/nAtoms;
-        
-        for(long int i=0; i<nAtoms; i++) {
-            forces[ 3*i ] = forces[ 3*i ]-tempForceX;
-            forces[3*i+1] = forces[3*i+1]-tempForceY;
-            forces[3*i+2] = forces[3*i+2]-tempForceZ;
+        //XXX: What does this do?
+        Vector3d tempForce(3);
+        tempForce = forces.colwise().sum()/nAtoms;
+
+        for(long int i=0; i<nAtoms; i++) 
+        {
+            forces.row(i) -= tempForce.transpose();
         }
     }
-    return;
+    return forces;
 };

@@ -20,7 +20,7 @@ public:
     // To satify interface
     void initialize(void) {}
     void cleanMemory(void) {}
-    void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };
 
 class Tip4p : public PotentialsInterface, private forcefields::Tip4p {
@@ -32,7 +32,7 @@ public:
     // To satify interface
     void initialize(void) {}
     void cleanMemory(void) {}
-    void force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };
 #endif
 
