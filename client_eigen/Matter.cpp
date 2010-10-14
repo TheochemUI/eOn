@@ -70,6 +70,7 @@ void Matter::initialiseDataMembers(Parameters *params)
     nAtoms = 0;
     constraints = 0;
     cellBoundaries.resize(3,3);
+    cellBoundaries.setZero();
     usePeriodicBoundaries = true;
     recomputePotential = true;
     forceCalls = 0;
@@ -131,7 +132,7 @@ double Matter::distanceTo(const Matter& matter)
 {
     /* RT: Returns the distance to the given matter object. */
 
-    return sqrt(pbc(positions - matter.positions).cwise().square().sum());
+    return pbc(positions - matter.positions).norm();
 }
 
 Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff) const
@@ -307,7 +308,7 @@ double Matter::distance(long index1, long index2) const{// return distance betwe
 
 
 double Matter::distance(const Matter& matter, long index) const {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
-    return pbc(positions.row(index) - matter.positions.row(index)).norm();
+    return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
 
 

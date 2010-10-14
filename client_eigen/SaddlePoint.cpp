@@ -52,6 +52,7 @@ void SaddlePoint::initialize(Matter * initial_passed, Matter *saddlepassed, Para
     saddle = saddlepassed;
     parameters = parameterspassed;
     eigenMode.resize(saddlepassed->numberOfAtoms(), 3);
+    eigenMode.setZero();
     if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
     {
         lowestEigenmode=new Dimer(saddle, parameters);
@@ -82,6 +83,7 @@ void SaddlePoint::loadMode(FILE *modeFile){
     long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
     mode.resize(nall/3, 3);
+    mode.setZero();
     for (int i=0; i < nall/3; i++) 
     {
         for(int j=0; j<3; j++)
