@@ -159,7 +159,7 @@ long Prefactors::atomsMovedMoreThan(double minDisplacement){
     // Counting all the atoms to be accounted for in the Hessian
     sizeHessian = 0;
     for(int i=0; i<3*nAtoms; i++){
-        if(coordinatesToAccountFor[i] == true)
+        if(coordinatesToAccountFor[i])
             sizeHessian = sizeHessian+1;
     }
     return(sizeHessian);
