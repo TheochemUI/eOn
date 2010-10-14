@@ -20,8 +20,6 @@ using namespace helper_functions;
 
 SaddlePoint::SaddlePoint(){
     lowestEigenmode = 0;
-    eigenMode.setZero();
-    initialDisplacement.setZero();
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
     return;
@@ -34,7 +32,6 @@ SaddlePoint::~SaddlePoint(){
 
 SaddlePoint::SaddlePoint(Matter * initial_passed, Matter *saddlepassed, Parameters *parameterspassed){
     lowestEigenmode = 0;
-    eigenMode.resize(saddle->numberOfAtoms(), 3);
     initialize(initial_passed, saddlepassed, parameterspassed);
     return;
 }
@@ -54,6 +51,7 @@ void SaddlePoint::initialize(Matter * initial_passed, Matter *saddlepassed, Para
     initial=initial_passed;
     saddle = saddlepassed;
     parameters = parameterspassed;
+    eigenMode.resize(saddlepassed->numberOfAtoms(), 3);
     if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
     {
         lowestEigenmode=new Dimer(saddle, parameters);
@@ -67,7 +65,6 @@ void SaddlePoint::initialize(Matter * initial_passed, Matter *saddlepassed, Para
             exit(EXIT_FAILURE);
         #endif
     }
-    nFreeCoord = 3 * saddle->numberOfFreeAtoms();
     status = statusInit;
 
     return;
@@ -84,7 +81,8 @@ void SaddlePoint::loadMode(string filename) {
 void SaddlePoint::loadMode(FILE *modeFile){
     long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
-    for (int i=0; i < nall; i++) 
+    mode.resize(nall/3, 3);
+    for (int i=0; i < nall/3; i++) 
     {
         for(int j=0; j<3; j++)
         {
@@ -112,6 +110,7 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
     double initialEnergy;
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
+
 
     fprintf(stdout, "  Saddle point search started.\n");
 
