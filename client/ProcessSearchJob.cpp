@@ -1,10 +1,10 @@
 /*
  *===============================================
- *  EON ProcessSearch.cpp
+ *  EON ProcessSearchJob.cpp
  *===============================================
  */
 
-#include "ProcessSearch.h"
+#include "ProcessSearchJob.h"
 #include "Constants.h"
 #include "ConjugateGradients.h"
 #include "false_boinc.h"
@@ -14,17 +14,17 @@
 
 using namespace std;
 
-ProcessSearch::ProcessSearch (Parameters *params)
+ProcessSearchJob::ProcessSearchJob (Parameters *params)
 {
     parameters = params;
 }
 
-ProcessSearch::~ProcessSearch()
+ProcessSearchJob::~ProcessSearchJob()
 {
 
 }
 
-void ProcessSearch::run(int bundleNumber)
+void ProcessSearchJob::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed.con");
@@ -91,7 +91,7 @@ void ProcessSearch::run(int bundleNumber)
     delete min2; 
 }
 
-int ProcessSearch::doProcessSearch(void)
+int ProcessSearchJob::doProcessSearch(void)
 {
     Matter matterTemp(parameters);
     long status;
@@ -159,7 +159,7 @@ int ProcessSearch::doProcessSearch(void)
     return statusGood;
 }
 
-void ProcessSearch::saveData(int status, int bundleNumber){
+void ProcessSearchJob::saveData(int status, int bundleNumber){
     FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
     char filename[STRING_SIZE];
@@ -235,7 +235,7 @@ void ProcessSearch::saveData(int status, int bundleNumber){
     return;
 }
 
-void ProcessSearch::printEndState(int status) {
+void ProcessSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
     if(status == statusGood)
         fprintf(stdout, "Successful.\n");
