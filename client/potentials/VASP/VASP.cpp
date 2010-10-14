@@ -2,14 +2,33 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
+
 #ifdef WIN32
 #include <windows.h>
 #define sleep(n) Sleep(1000 * n)
+//#define popen _popen
+#else
+#include <sys/wait.h>
+#include <fcntl.h>
+#endif
+
+#ifdef BOINC
+    #include <boinc/boinc_api.h>
+    #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
+    #include <boinc/filesys.h>         // boinc_fopen(), etc...
+#ifdef WIN32
+    #include <boinc/boinc_win.h>
+    #include <boinc/win_util.h>
+#endif
+#else
+    #include "../../false_boinc.h"
 #endif
 
 #include "VASP.h"
-long VASP::vaspRunCount = 0;
-bool VASP::vaspRunning = false;
+bool  VASP::firstRun = true;
+long  VASP::vaspRunCount = 0;
+pid_t VASP::vaspPID = 0;
 
 VASP::VASP(void)
 {
@@ -20,12 +39,10 @@ VASP::VASP(void)
 void VASP::cleanMemory(void)
 {
 	vaspRunCount--;
-	if(vaspRunCount < 1)
-	{
+	if(vaspRunCount < 1) {
 		FILE *stopcar = fopen("STOPCAR", "w");
 		fprintf(stopcar, "LABORT = .TRUE.");
 		fclose(stopcar);
-		vaspRunning = false;
 	}
     return;
 }
@@ -35,15 +52,65 @@ VASP::~VASP()
 	cleanMemory();
 }
 
+void VASP::spawnVASP()
+{
+    if ((vaspPID=fork()) == -1) {
+        fprintf(stderr, "error forking for vasp: %s\n", strerror(errno));
+        boinc_finish(1);
+    }
 
-void VASP::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
+    if (vaspPID) {
+        /* We are the parent */
+        setvbuf(stdout, (char*)NULL, _IONBF, 0); //non-buffered output
+    }else{
+        /* We are the child */
+        int outFd = open("vaspout", O_WRONLY);
+        dup2(outFd, 1);
+        dup2(outFd, 2);
+
+        char vaspPath[1024];
+        if(boinc_resolve_filename("vasp", vaspPath, 1024)) {
+            fprintf(stderr, "problem resolving vasp filename\n");
+            boinc_finish(1);
+        }
+
+        if (execlp(vaspPath, "vasp", NULL) == -1) {
+            fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
+            boinc_finish(1);
+        }
+    }
+}
+
+bool VASP::vaspRunning()
+{
+    pid_t pid;
+    int status;
+
+    if (vaspPID == 0) {
+        return false;
+    }
+
+    pid = waitpid(vaspPID, &status, WNOHANG);
+
+    if (pid) {
+        fprintf(stderr, "vasp died unexpectedly!\n");
+        boinc_finish(1);
+    }
+
+    return true;
+}
+
+
+void VASP::force(long N, const double *R, const int *atomicNrs, double *F, 
+                 double *U, const double *box)
 {
     writeNEWCAR(N, R, atomicNrs, box);
-    if(!vaspRunning)
+
+    if(!vaspRunning())
     {
-		popen("vasp >> llout 2>&1", "r");
-		vaspRunning = true;
+        spawnVASP();
     }
+
 	printf("vasp force call");
 	fflush(stdout);
     while(access("FU", F_OK) == -1)
@@ -51,6 +118,8 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F, doubl
         sleep(1);
 		printf(".");
 		fflush(stdout);
+		vaspRunning();
+            
     }
 	printf("\n");
     readFU(N, F, U);
@@ -60,19 +129,18 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F, doubl
 }
 
 
-void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs, const double *box)
+void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs, 
+                       const double *box)
 {
     // Positions are scaled 
     long i = 0;
     long i_old = 0;
     FILE *NEWCAR;
     
-    if(!vaspRunning)
-    {
+    if(firstRun) {
         NEWCAR = fopen("POSCAR","w");
-    }
-    else
-    {
+        firstRun = false;
+    }else{
         NEWCAR = fopen("NEWCAR","w");
     }
 
@@ -91,9 +159,9 @@ void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs, const doub
     
     // boundary box
     fprintf(NEWCAR, "1.0\n");
-    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", box[0], 0.0, 0.0);
-    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", 0.0, box[1], 0.0);
-    fprintf(NEWCAR, " %.8lf\t%.8lf\t%.8lf\n", 0.0, 0.0, box[2]);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[0], 0.0, 0.0);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", 0.0, box[1], 0.0);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", 0.0, 0.0, box[2]);
 
     // the number of atoms of each of the the different atomic types
     i_old = 0;
@@ -111,7 +179,7 @@ void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs, const doub
     fprintf(NEWCAR, "Cartesian\n");
     for(i = 0; i < N; i++)
     {
-        fprintf(NEWCAR, "%.19lf\t%.19lf\t%.19lf\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
+        fprintf(NEWCAR, "%.19f\t%.19f\t%.19f\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
     fclose(NEWCAR);
     return;
@@ -132,24 +200,3 @@ void VASP::readFU(long N, double *F, double *U)
     fclose(FU);
     return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
