@@ -15,7 +15,7 @@ class EAM
         // To satify interface
         void initialize();
         void cleanMemory();
-        void force(long N, const double *R, const long *atomicNrs, double *F,
+        void force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, const double *box);
     private:
         struct element_parameters {
@@ -35,7 +35,7 @@ class EAM
 	    long *neigh_list;
 	    bool initialized;
 	    double *rc;
-        void calc_force(long N, double *R, const long *atomicNrs, double *F,
+        void calc_force(long N, double *R, const int *atomicNrs, double *F,
                         double *U, const double *box);
         void new_celllist(long N, const double *box, long *num_axis,
                           long *cell_length, long *celllist_new, 

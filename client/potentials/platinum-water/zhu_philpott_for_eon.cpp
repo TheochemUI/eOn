@@ -5,7 +5,7 @@ ZpIce::ZpIce() :
     forcefields::ZhuPhilpott<>(8.5, 1.0)
 {}
 
-void ZpIce::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
+void ZpIce::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     int i=0;
     while (atomicNrs[i] == 1)
@@ -18,7 +18,7 @@ Tip4p::Tip4p() :
     forcefields::Tip4p(8.5, 1.0)
 {}
 
-void Tip4p::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
+void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     computeHH_O_(N, R, F, *U, box, 0);
 }

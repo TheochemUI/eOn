@@ -76,6 +76,7 @@ POTDIRS += ./potentials/bopfox
 LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
 
+
 ifdef NO_FORTRAN
 	POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
 else
@@ -85,7 +86,7 @@ else
 endif
 
 OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
-	Eigenvalues.o EpiCenters.o Prefactors.o ConjugateGradients.o\
+	EpiCenters.o Prefactors.o ConjugateGradients.o\
 	debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
 	ProcessSearch.o Minimization.o ParallelReplica.o Dynamics.o

@@ -24,21 +24,22 @@ public:
     ~Quickmin();///< Destructor.
 
     void oneStep();///< Do one iteration.
-    void oneStepPart1(double *freeForces);
-    void oneStepPart2(double *freeForces);
+    void oneStepPart1(Matrix<double, Eigen::Dynamic, 3> forces);
+    void oneStepPart2(Matrix<double, Eigen::Dynamic, 3> forces);
     
     void fullRelax();///< Relax the Matter object corresponding to the pointer that was passed with the constructor.
     bool isItConverged(double convergeCriterion);///< Determine if the norm of the force vector is bellow the \a convergeCriterion.
     
 private:
-    long nFreeCoord_;///< Number of free coordinates.
+    long nAtoms;///< Number of free coordinates.
 
-    Matter *matter_;///< Pointer to atom object \b outside the scope of the class.    
-    Parameters *parameters_;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
+    Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
+    Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
 
-    double *tempListDouble_;///< Double array, its size equals the number of atoms times 3.
-    double *forces_;///< Double array, its size equals the number of \b free atoms times 3.
-    double dtScale_;
+    Matrix<double, Eigen::Dynamic, 3> forces;///< Double array, its size equals the number of \b free atoms times 3.
+    double dtScale;
+
+    Matrix<double, Eigen::Dynamic, 3> velocity; 
 };
 
 #endif
