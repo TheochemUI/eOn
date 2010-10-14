@@ -15,10 +15,10 @@
 
 using namespace helper_functions;
 
-Dimer::Dimer(Matter const *matter, Parameters *parameters)
+Dimer::Dimer(Matter const *matter, Parameters *params)
 {
     long nAllCoord;
-    parameters     = parameters;
+    parameters     = params;
     matterInitial  = new Matter(parameters);
     matterDimer    = new Matter(parameters);
     *matterInitial = *matter;
@@ -26,7 +26,9 @@ Dimer::Dimer(Matter const *matter, Parameters *parameters)
     nAllCoord   = 3 * matter->numberOfAtoms();
     nFreeCoord = 3 * matter->numberOfFreeAtoms();  
     nAtoms = matter->numberOfAtoms();
-
+    
+    directionNorm.resize(nAtoms, 3);
+    rotationalPlaneNorm.resize(nAtoms, 3);
     totalForceCalls = 0;
 }
 
@@ -52,7 +54,8 @@ void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen:
     
     rotationalPlaneNorm.setZero();
     // Create an initial direction for the dimer
-    directionNorm = displacement.cwise() * (matter->getFree());
+
+    directionNorm = displacement.cwise() * matter->getFree();
     directionNorm.normalize();
     
     // RT: following part of the algorithm has been replaced with the torque window.
