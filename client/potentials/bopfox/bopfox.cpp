@@ -34,7 +34,7 @@ bopfox::~bopfox()
 }
 
 
-void bopfox::force(long N, const double *R, const long *atomicNrs, double *F, double *U, const double *box)
+void bopfox::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     writeFOX(N, R, atomicNrs, box);
 	printf("bopfox force call\n");
@@ -44,7 +44,7 @@ void bopfox::force(long N, const double *R, const long *atomicNrs, double *F, do
 }
 
 
-void bopfox::writeFOX(long N, const double *R, long const *atomicNrs, const double *box)
+void bopfox::writeFOX(long N, const double *R, int const *atomicNrs, const double *box)
 {
     FILE *struc = fopen("struc.bx", "w");
     fprintf(struc, "StrucName = struc\n");

@@ -16,11 +16,7 @@ QMBox::QMBox(Matter *matter, Parameters *parameters)
 {
     matter_ = matter;    
     parameters_ = parameters;
-    nFreeCoord_ = 3 * matter->numberOfFreeAtoms();
-    tempListDouble_ = new double[nFreeCoord_];
-    boxforce_ = new double[3];
-    boxv_ = new double[3];
-    boxv_[0] = 0.0; boxv_[1] = 0.0; boxv_[2] = 0.0; 
+    boxv_.setZero();
     dR = 0.001;
     dT = 0.01;
     qmBox_ = new Quickmin(matter_, parameters);
@@ -33,28 +29,25 @@ QMBox::~QMBox(){
     // forces_ should not be deleted
     // Are pointers to objects outside the scope
     
-    delete [] tempListDouble_;
-    delete [] boxforce_;
-    delete [] boxv_;
     return;
 };
 
 
 void QMBox::increment_velocity()
 {
-    double bx = matter_->getBoundary(0);
-    double by = matter_->getBoundary(1);
-    double bz = matter_->getBoundary(2);
-    double E = matter_->potentialEnergy();
-    matter_->setBoundary(0, bx + dR);
-    double dxE = matter_->potentialEnergy();
-    matter_->setBoundary(0, bx);
-    matter_->setBoundary(1, by + dR);
-    double dyE = matter_->potentialEnergy();
-    matter_->setBoundary(1, by);
-    matter_->setBoundary(2, bz + dR);
-    double dzE = matter_->potentialEnergy();
-    matter_->setBoundary(2, bz);
+    double bx = matter_->getBoundary(0,0);
+    double by = matter_->getBoundary(1,1);
+    double bz = matter_->getBoundary(2,2);
+    double E = matter_->getPotentialEnergy();
+    matter_->setBoundary(0, 0, bx + dR);
+    double dxE = matter_->getPotentialEnergy();
+    matter_->setBoundary(0, 0, bx);
+    matter_->setBoundary(1, 1, by + dR);
+    double dyE = matter_->getPotentialEnergy();
+    matter_->setBoundary(1, 1, by);
+    matter_->setBoundary(2,2, bz + dR);
+    double dzE = matter_->getPotentialEnergy();
+    matter_->setBoundary(2,2 , bz);
     boxforce_[0] = (E - dxE) / dR;
     boxforce_[1] = (E - dyE) / dR;
     boxforce_[2] = (E - dzE) / dR;
@@ -76,24 +69,22 @@ void QMBox::increment_velocity()
 void QMBox::oneStep()
 {
     increment_velocity();
-    double bx = matter_->getBoundary(0);
-    double by = matter_->getBoundary(1);
-    double bz = matter_->getBoundary(2);
+    double bx = matter_->getBoundary(0,0);
+    double by = matter_->getBoundary(1,1);
+    double bz = matter_->getBoundary(2,2);
     //printf("%12.8f   %12.8f   %12.8f   %12.8f\n", bx, by, bz, matter_->potentialEnergy());
-    matter_->setBoundary(0, bx + boxv_[0] * dT);
-    matter_->setBoundary(1, by + boxv_[1] * dT);
-    matter_->setBoundary(2, bz + boxv_[2] * dT);
+    matter_->setBoundary(0,0, bx + boxv_[0] * dT);
+    matter_->setBoundary(1,1, by + boxv_[1] * dT);
+    matter_->setBoundary(2,2, bz + boxv_[2] * dT);
     double scalex = (bx + boxv_[0] * dT) / bx;
     double scaley = (by + boxv_[1] * dT) / by;
     double scalez = (bz + boxv_[2] * dT) / bz;
-    matter_->getFreePositions(tempListDouble_);
-    for(int i = 0; i < nFreeCoord_ / 3; i++)
-    {
-        tempListDouble_[i * 3 + 0] *= scalex;
-        tempListDouble_[i * 3 + 1] *= scaley;
-        tempListDouble_[i * 3 + 2] *= scalez;
-    }
-    matter_->setFreePositions(tempListDouble_);
+    Matrix<double, Eigen::Dynamic, 3> pos = matter_->getPositions();
+    pos.col(0) *= scalex;
+    pos.col(1) *= scaley;
+    pos.col(2) *= scalez;
+    
+    matter_->setPositions(pos);
     qmBox_->oneStep();
     return;
 };
@@ -107,7 +98,7 @@ void QMBox::fullRelax()
     while(!converged)
     {
         oneStep();
-        printf("%12.8f   %12.8f   %12.8f   %12.8f   %12.8f\n", boxforce_[0], boxforce_[1], boxforce_[2], matter_->potentialEnergy(), dT);
+        printf("%12.8f   %12.8f   %12.8f   %12.8f   %12.8f\n", boxforce_[0], boxforce_[1], boxforce_[2], matter_->getPotentialEnergy(), dT);
         converged = isItConverged(parameters_->convergedRelax);
 //        std::cout<<matter_->potentialEnergy()<<"\n";
     }

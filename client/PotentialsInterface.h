@@ -30,7 +30,7 @@ public:
                               Box[1] is length in the y directions,
                               Box[2] is length in the z directions.
     */    
-    void virtual force(long nAtoms, const double *positions, const long *atomicNrs, 
+    void virtual force(long nAtoms, const double *positions, const int *atomicNrs, 
                        double *forces, double *energy, const double *box) = 0;
 };
 #endif
