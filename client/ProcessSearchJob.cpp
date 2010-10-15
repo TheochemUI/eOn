@@ -153,19 +153,16 @@ int ProcessSearchJob::doProcessSearch(void)
     double reactModes, saddleModes, prodModes;
     f1 = Potentials::fcalls;
     reactModes = hessian->getModeProduct(Hessian::REACTANT);
-    cout<<reactModes<<endl;
     if(reactModes<0)
     {
         return statusBadPrefactor;
     }
     saddleModes = hessian->getModeProduct(Hessian::SADDLE);
-    cout<<saddleModes<<endl;
     if(saddleModes<0)
     {
         return statusBadPrefactor;
     }
     prodModes = hessian->getModeProduct(Hessian::PRODUCT);
-    cout<<prodModes<<endl;
     if(prodModes<0)
     {
         return statusBadPrefactor;
