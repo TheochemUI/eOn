@@ -2,10 +2,10 @@
 
 #include "Matter.h"
 #include "Dynamics.h"
-#include "ParallelReplica.h"
+#include "ParallelReplicaJob.h"
 #include "ConjugateGradients.h"
 
-ParallelReplica::ParallelReplica(Parameters *params)
+ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 {
     parameters = params;
     nsteps = 0;
@@ -19,9 +19,9 @@ ParallelReplica::ParallelReplica(Parameters *params)
     md_fcalls = 0;
 }
 
-ParallelReplica::~ParallelReplica(){ }
+ParallelReplicaJob::~ParallelReplicaJob(){ }
 
-void ParallelReplica::run(int bundleNumber)
+void ParallelReplicaJob::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed");
@@ -61,7 +61,7 @@ void ParallelReplica::run(int bundleNumber)
     delete reactant;
 }
 
-void ParallelReplica::dynamics()
+void ParallelReplicaJob::dynamics()
 {
     bool   status = false;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
@@ -138,7 +138,7 @@ void ParallelReplica::dynamics()
     return;
 };
 
-bool ParallelReplica::firstArchieve(Matter *matter)
+bool ParallelReplicaJob::firstArchieve(Matter *matter)
 {
      double distance; 
      *min2 = *matter;
@@ -160,7 +160,7 @@ bool ParallelReplica::firstArchieve(Matter *matter)
 }
 
 
-bool ParallelReplica::IsNewState(){
+bool ParallelReplicaJob::IsNewState(){
 
      double distance;
 
@@ -183,7 +183,7 @@ bool ParallelReplica::IsNewState(){
      }
 }
 
-void ParallelReplica::saveData(int status,int bundleNumber){
+void ParallelReplicaJob::saveData(int status,int bundleNumber){
      FILE *fileResults, *fileReactant, *fileProduct;
 
      char filename[STRING_SIZE];
@@ -235,7 +235,7 @@ void ParallelReplica::saveData(int status,int bundleNumber){
 }
 
 
-void ParallelReplica::Refine(Matter *mdbuff[]){
+void ParallelReplicaJob::Refine(Matter *mdbuff[]){
    
      long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
      bool ya, yb;
