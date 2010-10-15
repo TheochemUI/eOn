@@ -146,12 +146,12 @@ void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs,
 
     // header line (treated as a comment)
     i_old = 0;
-    fprintf(NEWCAR, "%li ", atomicNrs[0]);
+    fprintf(NEWCAR, "%d ", atomicNrs[0]);
     for(i = 0; i < N; i++)
     {
         if(atomicNrs[i] != atomicNrs[i_old])
         {
-            fprintf(NEWCAR, "%li ", atomicNrs[i]);
+            fprintf(NEWCAR, "%d ", atomicNrs[i]);
             i_old = i;
         }
     }
