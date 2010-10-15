@@ -8,6 +8,14 @@ Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)
     saddle = sad;
     product = prod;
     parameters = params;
+
+    for(int i=0; i<3; i++)
+    {
+        modeProducts[i] = -1;
+        modes[i].resize(0);
+        hessians[i].resize(0,0);
+    }
+
 }
 
 Hessian::~Hessian()
@@ -15,6 +23,33 @@ Hessian::~Hessian()
 }
 
 double Hessian::getModeProduct(int which)
+{
+    if(modeProducts[which] == -1)
+    {
+        calculate(which);
+    }
+    return modeProducts[which];
+}
+
+Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(int which)
+{
+    if(hessians[which].rows() == 0)
+    {
+        calculate(which);
+    }
+    return hessians[which];
+}
+
+VectorXd Hessian::getModes(int which)
+{
+    if(modes[which].rows() == 0)
+    {
+        calculate(which);
+    }
+    return modes[which];
+}
+
+void Hessian::calculate(int which)
 {
     Matter *curr;
     assert(saddle->numberOfAtoms() == reactant->numberOfAtoms());
@@ -32,7 +67,7 @@ double Hessian::getModeProduct(int which)
             break;
         default:
             cerr<<"Hessian can't deterimine which structure to use"<<endl;
-            return -1;
+            return;
             break;
     }
 
@@ -121,18 +156,20 @@ double Hessian::getModeProduct(int which)
     {
         if(nNeg!=1)
         {
-            return -1;
+            return;
         }
     }
     else
     {
         if(nNeg!=0)
         {
-            return -1;
+            return;
         }
     }
 
-    return prod;    
+    modeProducts[which] = prod;
+    modes[which] = freqs;
+    hessians[which] = hessian;    
 }
 
 VectorXi Hessian::movedAtoms(double const distance)
