@@ -205,9 +205,9 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
-    fprintf(fileResults, "%ld total_force_calls\n", Potentials::fcalls);
-    fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
-    fprintf(fileResults, "%ld force_calls_saddle\n", fCallsSaddle);
+    fprintf(fileResults, "%d total_force_calls\n", Potentials::fcalls);
+    fprintf(fileResults, "%d force_calls_minimization\n", fCallsMin);
+    fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_product\n", min2->getPotentialEnergy());
@@ -215,7 +215,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
     fprintf(fileResults, "%f displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
-    fprintf(fileResults, "%ld force_calls_prefactors\n", fCallsPrefactors);
+    fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
 	fclose(fileResults);
