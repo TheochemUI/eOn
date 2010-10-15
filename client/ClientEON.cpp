@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 
     // Determine what type of job we are running according 
     // to the parameters file. 
-    Job *job;
+    Job *job=NULL;
 	
     if (parameters.jobType == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearchJob(&parameters);
