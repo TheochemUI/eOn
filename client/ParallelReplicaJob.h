@@ -1,10 +1,10 @@
 #include "Job.h"
 #include "Parameters.h"
 
-class ParallelReplica: public Job {
+class ParallelReplicaJob: public Job {
     public:
-        ParallelReplica(Parameters *params);
-        ~ParallelReplica(void);
+        ParallelReplicaJob(Parameters *params);
+        ~ParallelReplicaJob(void);
         void run(int bundleNumber);
     private:
 	void dynamics();
