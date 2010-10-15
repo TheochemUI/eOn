@@ -3,6 +3,8 @@
  *  EON Potential.h
  *===============================================
  */
+#ifndef POTENTIALS_H
+#define POTENTIALS_H
 
 #include "Parameters.h"
 #include "PotentialsInterface.h"
@@ -46,7 +48,9 @@ public:
     @param[in]    *box        pointer to the array containing the 3 lengths of the supercell */
     Matrix<double, Eigen::Dynamic, 3> force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box);
  
+    static int fcalls;
 private:
     PotentialsInterface *interface_;
     Parameters *parameters_;
 };
+#endif

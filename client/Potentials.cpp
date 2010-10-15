@@ -24,6 +24,8 @@
 
 #include <cstdlib>
 
+//int Potentials::fcalls = 0;
+int Potentials::fcalls = 0;
 // which potential to use is decided at preprocessor level
 Potentials::Potentials(Parameters *parameters){
     parameters_ = parameters;
@@ -124,7 +126,6 @@ Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, 
     Matrix<double, 3, Eigen::Dynamic> forcesT(3, (int)nAtoms);
     interface_->force(nAtoms, positionsT.data(), atomicNrs.data(), forcesT.data(), energy, tmpBox);
     Matrix<double, Eigen::Dynamic, 3> forces = forcesT.transpose();  
-
     if(parameters_->potentialNoTranslation){
         //XXX: What does this do?
         Vector3d tempForce(3);
@@ -135,5 +136,8 @@ Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, 
             forces.row(i) -= tempForce.transpose();
         }
     }
+
+    fcalls+=1;
     return forces;
 };
+

@@ -34,6 +34,10 @@ class ProcessSearchJob : public Job {
 
         double barriersValues[2];
         double prefactorsValues[2];
+
+        int fCallsSaddle;
+        int fCallsMin;
+        int fCallsPrefactors;
 };
 
 #endif
