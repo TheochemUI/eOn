@@ -64,7 +64,7 @@ void VASP::spawnVASP()
         setvbuf(stdout, (char*)NULL, _IONBF, 0); //non-buffered output
     }else{
         /* We are the child */
-        int outFd = open("vaspout", O_WRONLY);
+        int outFd = open("vaspout", O_APPEND|O_CREAT|O_WRONLY);
         dup2(outFd, 1);
         dup2(outFd, 2);
 
