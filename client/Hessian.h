@@ -4,6 +4,9 @@
 #include "Eigen/Eigen"
 USING_PART_OF_NAMESPACE_EIGEN
 
+#include "Matter.h"
+#include "Parameters.h"
+
 class Hessian
 {
 public:
@@ -13,7 +16,7 @@ public:
         SADDLE,
         PRODUCT
     };
-    Hessian(const Matter* reactant, const Matter* saddle, const Matter* product, Parameters* params);
+    Hessian(Matter *reactant, Matter *saddle, Matter *product, Parameters *params);
     ~Hessian();
 
     double getModeProduct(int which);
@@ -21,8 +24,9 @@ private:
     Matter *reactant;
     Matter *product;
     Matter *saddle;
+    Parameters *parameters;
 
-    VectorXi movedAtoms(const double distance) const;
-}
+    VectorXi movedAtoms(const double distance);
+};
 
 #endif
