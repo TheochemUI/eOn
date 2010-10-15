@@ -11,6 +11,8 @@
 #include "ProcessSearchJob.h"
 #include "MinimizationJob.h"
 #include "ParallelReplica.h"
+#include "HelperFunctions.h"
+using namespace helper_functions;
 
 #include <dirent.h>
 #include <string.h>
