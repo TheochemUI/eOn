@@ -10,10 +10,8 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     parameters = params;
     nsteps = 0;
     nsteps_refined = 0;
-    ncheck = 0;
-    nexam = 0;
-    remember = true;
-    stoped = false;
+    check_steps = parameters->CheckFreq;
+    relax_steps = parameters->NewRelaxSteps;
     newstate = false;
     min_fcalls = 0;
     md_fcalls = 0;
@@ -63,14 +61,15 @@ void ParallelReplicaJob::run(int bundleNumber)
 
 void ParallelReplicaJob::dynamics()
 {
-    bool   status = false;
+    bool   status = false, remember = true, stoped = false; 
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
+    long   ncheck = 0, nexam = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
      
-    Matter *mdbuff[parameters->CheckFreq];	
-    for(long i =0; i < parameters->CheckFreq;i++){
+    Matter *mdbuff[check_steps];	
+    for(long i =0; i < check_steps;i++){
 	    mdbuff[i] = new Matter(parameters);
 	}
 
@@ -100,18 +99,29 @@ void ParallelReplicaJob::dynamics()
 
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
-        if (ncheck == parameters->CheckFreq){
+
 #ifndef NDEBUG           
-            reactant->matter2xyz("movie", true);
+        if (ncheck == check_steps){            
+           reactant->matter2xyz("movie", true);
+        }
 #endif
+        if (ncheck == check_steps){
   	    ncheck = 0; // reinitial the ncheck
-            status = firstArchieve(reactant);
+            status = CheckState(reactant);
+            if(status == true){
+               remember = false;
+            }
         }
        
 	if (status){
             nexam ++;
-	    if (nexam >= parameters->NewRelaxSteps){	
-		newstate = IsNewState();
+	    if (nexam >= relax_steps){
+                nexam = 0;
+                ncheck = 0; 	
+		newstate = CheckState(reactant);
+                stoped = newstate;
+                status = false;
+                remember = true;
             }
 	}
 
@@ -138,7 +148,7 @@ void ParallelReplicaJob::dynamics()
     return;
 };
 
-bool ParallelReplicaJob::firstArchieve(Matter *matter)
+bool ParallelReplicaJob::CheckState(Matter *matter)
 {
      double distance; 
      *min2 = *matter;
@@ -159,29 +169,6 @@ bool ParallelReplicaJob::firstArchieve(Matter *matter)
      }
 }
 
-
-bool ParallelReplicaJob::IsNewState(){
-
-     double distance;
-
-     *min2 = *reactant;
-     ConjugateGradients cgMin2(min2, parameters);
-     cgMin2.fullRelax();
-     min_fcalls += min2->getForceCalls();
-
-     distance = min2->distanceTo(*min1);
-#ifndef NDEBUG
-     printf("Total Moved Distance = %lf\n",distance);
-#endif
-     nexam = 0;
-     if (distance <= parameters->PRD_MaxMovedDist){
-	ncheck = 0;
-        return false;
-     }else {
-        stoped = true;
-        return true;
-     }
-}
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber){
      FILE *fileResults, *fileReactant, *fileProduct;
@@ -245,7 +232,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      ya = false;
      yb = false;
      initial = 0;
-     final = parameters->CheckFreq - 1;
+     final = check_steps - 1;
      a1 = a2 = initial;
      b1 = b2 = final;
      diff = final - initial;
@@ -253,8 +240,8 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      while(diff > RefineAccuracy){
 	   a2 = int(a1 + 0.382 * ( b1 - a1) );
 	   b2 = int(a1 + 0.618 * ( b1 - a1) );
-	   ya = firstArchieve(mdbuff[a2]);
-	   yb = firstArchieve(mdbuff[b2]);
+	   ya = CheckState(mdbuff[a2]);
+	   yb = CheckState(mdbuff[b2]);
      
 	   if ( ya == 0 && yb == 0){
 	      a1 = initial;
@@ -275,7 +262,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
 	
 	   diff = abs(b2 -a2);
      }
-     nsteps_refined = nsteps-parameters->CheckFreq-parameters->NewRelaxSteps+int((a2+b2)/2);
+     nsteps_refined = nsteps-check_steps-relax_steps+int((a2+b2)/2);
      printf("Refined mdsteps = %ld\n",nsteps_refined);
      return;
 }

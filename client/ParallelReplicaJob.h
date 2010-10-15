@@ -8,8 +8,7 @@ class ParallelReplicaJob: public Job {
         void run(int bundleNumber);
     private:
 	void dynamics();
-	bool firstArchieve(Matter *matter);
-	bool IsNewState();
+	bool CheckState(Matter *matter);
 	void Refine(Matter *mdbuff[]);
         void saveData(int status,int bundleNumber);
         Parameters *parameters;
@@ -20,9 +19,7 @@ class ParallelReplicaJob: public Job {
 	long md_fcalls;
 	long nsteps;
         long nsteps_refined;
-	long ncheck;
-	long nexam;
+	long check_steps;
+	long relax_steps;
 	bool newstate;
-	bool stoped;
-	bool remember;
 };
