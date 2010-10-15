@@ -629,6 +629,8 @@ class ARC(Communicator):
         self.blacklist = blacklist
         self.client_path = client_path
 
+        self.queue_info = None
+
         # Check grid certificate proxy
         try:
             c = self.arclib.Certificate(self.arclib.PROXY)
@@ -820,8 +822,10 @@ class ARC(Communicator):
     def get_targets(self, xrsl):
         """Get list of clusters+queues we can submit to."""
 
-        qi = self.arclib.GetQueueInfo()
-        targets_initial = self.arclib.ConstructTargets(qi, xrsl)
+        if not self.queue_info:
+            self.queue_info = self.arclib.GetQueueInfo()
+
+        targets_initial = self.arclib.ConstructTargets(self.queue_info, xrsl)
 
         logger.debug("List of targets: " + ', '.join([ t.cluster.hostname for t in targets_initial ]))
 
