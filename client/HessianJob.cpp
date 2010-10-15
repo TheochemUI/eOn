@@ -56,6 +56,7 @@ void HessianJob::run(int bundleNumber)
 
 	fprintf(fileResults, "%s good\n", failed ? "false" : "true");
 	fprintf(fileResults, "%d force_calls\n", Potentials::fcalls);
+    fprintf(fileResults, "%d hessian_size\n", hessian.getHessian(parameters->hessianKind).rows());
 	if(!failed)
     {
 	    fprintf(fileResults, "%f mode_product\n", modeProduct);
