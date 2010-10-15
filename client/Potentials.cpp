@@ -52,10 +52,10 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
-    else if(parameters_->potentialTag == POT_EAM){
-        interface_ = new EAM();
-        interface_->initialize();
-    }
+    //else if(parameters_->potentialTag == POT_EAM){
+    //    interface_ = new EAM();
+    //    interface_->initialize();
+    //}
     else if(parameters_->potentialTag == POT_QSC){
         interface_ = new QSC();
         interface_->initialize();
