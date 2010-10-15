@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include "Parameters.h"
+#include "Hessian.h"
 #include "INIFile.h"
 
 Parameters::Parameters(){
@@ -49,6 +50,7 @@ Parameters::Parameters(){
     saddlePerpendicularForceRatio = 0.0;
 
     // default parameters for Hessian determination   
+    hessianKind = 0;
     hessianMaxSize = 0;
     hessianMinDisplacement = 0.25;
     hessianWithinRadiusDisplaced = 5.0;
@@ -138,6 +140,8 @@ int Parameters::load(FILE *file){
             jobType = SADDLE_SEARCH;
         }else if (jobTypeString == "minimization") {
             jobType = MINIMIZATION;
+        }else if (jobTypeString == "hessian") {
+            jobType = HESSIAN;
 		}else if (jobTypeString == "parallelreplica"){
 				jobType = PARALLEL_REPLICA;
         }else{
@@ -176,6 +180,23 @@ int Parameters::load(FILE *file){
         saddlePerpendicularForceRatio = ini.GetValueF("Default",
                                                       "PERPENDICULAR_FORCE_RATIO",
                                                       saddlePerpendicularForceRatio);
+
+        string hessianType = ini.GetValue("Hessian", "Type", "reactant");
+        hessianType = toLowerCase(hessianType);
+        if(hessianType == "reactant")
+        {
+            hessianKind = Hessian::REACTANT;
+        }
+        else if(hessianType == "saddle")
+        {
+            hessianKind = Hessian::SADDLE;
+        }
+        else if(hessianType == "product")
+        {
+            hessianKind = Hessian::PRODUCT;
+        }
+
+
 
         hessianMaxSize = ini.GetValueL("Hessian", "MAX_SIZE", hessianMaxSize);
         hessianWithinRadiusDisplaced = ini.GetValueF("Hessian", 

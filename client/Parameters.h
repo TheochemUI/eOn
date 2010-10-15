@@ -26,7 +26,7 @@ public:
     int load(string filename);
     int load(FILE *file);
 /** All input parameters. If one would use values different from the default values these should be specified in the file with the name set in (Constants::PARMS_FILE_NAME).*/
-    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, PARALLEL_REPLICA};
+    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, PARALLEL_REPLICA, HESSIAN};
     JobType jobType;
     long randomSeed; // seed for random generator
     long reactantStateTag; // tag to describe to which reactant state the saddle point connects
@@ -63,6 +63,7 @@ public:
     double saddlePerpendicularForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
     long hessianMaxSize; // if specified, the size of the hessian determined will be equal or smaller than this value
+    int hessianKind;
     double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A]
     double hessianWithinRadiusDisplaced; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A]
     double hessianPrefactorMax; // max prefactor allowed

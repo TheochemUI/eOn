@@ -10,6 +10,7 @@
 #include "Job.h"
 #include "ProcessSearchJob.h"
 #include "MinimizationJob.h"
+#include "HessianJob.h"
 #include "ParallelReplica.h"
 #include "HelperFunctions.h"
 using namespace helper_functions;
@@ -130,6 +131,8 @@ int main(int argc, char **argv)
         job = new ProcessSearchJob(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
         job = new MinimizationJob(&parameters);
+    }else if (parameters.jobType == Parameters::HESSIAN) {
+        job = new HessianJob(&parameters);
     }else if (parameters.jobType == Parameters::PARALLEL_REPLICA) {
 	job =  new ParallelReplica(&parameters);
     }
