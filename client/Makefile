@@ -101,6 +101,8 @@ all: $(POTDIRS) $(FPOTDIRS) client
 client: $(OBJECTS) $(LIBS)
 	g++  -o $@ $^ $(LDFLAGS)
 
+include Depend.mk
+
 $(LIBS):
 	$(MAKE) -C $@
 
@@ -120,5 +122,3 @@ clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) ; do $(MAKE) -C $$pot clean ; done
 
 .PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all
-
-include Depend.mk
