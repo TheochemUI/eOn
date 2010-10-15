@@ -97,6 +97,9 @@ double Hessian::getModeProduct(int which)
         }
     }
 
+    //Force hessian to be symmetric
+    hessian = (hessian + hessian.transpose())/2;
+
     
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
     VectorXd freqs = es.eigenvalues();
