@@ -8,6 +8,7 @@
 #include "Constants.h"
 #include "ConjugateGradients.h"
 #include "false_boinc.h"
+#include "Potentials.h"
 
 #include <stdio.h>
 #include <string>
@@ -17,6 +18,7 @@ using namespace std;
 ProcessSearchJob::ProcessSearchJob (Parameters *params)
 {
     parameters = params;
+    fCallsSaddle = fCallsPrefactors = fCallsMin = 0;
 }
 
 ProcessSearchJob::~ProcessSearchJob()
@@ -51,8 +53,10 @@ void ProcessSearchJob::run(int bundleNumber)
 
     if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
+        int fi = Potentials::fcalls;
         ConjugateGradients cgMin(initial, parameters);
         cgMin.fullRelax();
+        fCallsMin += Potentials::fcalls - fi;
     }
 
     if (parameters->saddleRefine) {
@@ -94,7 +98,10 @@ int ProcessSearchJob::doProcessSearch(void)
 {
     Matter matterTemp(parameters);
     long status;
+    int f1;
+    f1 = Potentials::fcalls;
     status = saddlePoint->locate(min1, min2);
+    fCallsSaddle += Potentials::fcalls - f1;
 
     if (status != statusInit) {
         return status;
@@ -144,6 +151,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
     /* Perform the dynamical matrix caluclation */
     double reactModes, saddleModes, prodModes;
+    f1 = Potentials::fcalls;
     reactModes = hessian->getModeProduct(Hessian::REACTANT);
     cout<<reactModes<<endl;
     if(reactModes<0)
@@ -162,6 +170,7 @@ int ProcessSearchJob::doProcessSearch(void)
     {
         return statusBadPrefactor;
     }
+    fCallsPrefactors += Potentials::fcalls - f1; 
     prefactorsValues[0] = sqrt(reactModes/saddleModes)/(2*M_PI*10.18e-15);
     prefactorsValues[1] = sqrt(prodModes/saddleModes)/(2*M_PI*10.18e-15);
 
@@ -192,17 +201,13 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
 	///XXX: min_fcalls isn't quite right it should get them from
 	//      the minimizer. But right now the minimizers are in
 	//      the SaddlePoint object. They will be taken out eventually.
-    long min_fcalls = min1->getForceCalls()+min2->getForceCalls();
-    long saddle_fcalls = saddlePoint->forceCallsSaddlePointConcave + 
-                         saddlePoint->forceCallsSaddlePointConvex;
     
-    long total_fcalls = min_fcalls + saddle_fcalls;
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
-    fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
-    fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
-    fprintf(fileResults, "%ld force_calls_saddle\n", saddle_fcalls);
+    fprintf(fileResults, "%ld total_force_calls\n", Potentials::fcalls);
+    fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
+    fprintf(fileResults, "%ld force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_product\n", min2->getPotentialEnergy());
@@ -210,7 +215,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
     fprintf(fileResults, "%f displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
-    fprintf(fileResults, "%ld force_calls_prefactors\n", 0);
+    fprintf(fileResults, "%ld force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
 	fclose(fileResults);
