@@ -3,11 +3,13 @@
  *  EON ProcessSearchJob.h
  *===============================================
  */
+#ifndef PROCESSSEARCHJOB_H
+#define PROCESSSEARCHJOB_H
 
 #include "Matter.h"
 #include "Parameters.h"
 #include "SaddlePoint.h"
-#include "Prefactors.h"
+#include "Hessian.h"
 #include "Job.h"
 
 class ProcessSearchJob : public Job {
@@ -21,7 +23,7 @@ class ProcessSearchJob : public Job {
         void printEndState(int status);
         void saveData(int status, int bundleNumber);
 
-        Prefactors *prefactors;
+        Hessian *hessian;
         Parameters *parameters;
         SaddlePoint *saddlePoint; 
         Matter *initial;      // initial configuration.
@@ -33,3 +35,5 @@ class ProcessSearchJob : public Job {
         double barriersValues[2];
         double prefactorsValues[2];
 };
+
+#endif

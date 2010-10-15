@@ -74,15 +74,14 @@ void ProcessSearchJob::run(int bundleNumber)
         saddlePoint->loadMode(mode_passed);
     }
 
-    prefactors = new Prefactors();
-    prefactors->initialize(saddle, min1, min2, parameters);
+    hessian = new Hessian(min1, saddle, min2, parameters);
 
     int status = doProcessSearch();
 
     printEndState(status);
     saveData(status, bundleNumber);
 
-    delete prefactors;
+    delete hessian;
     delete saddlePoint;
     delete initial;
     delete displacement;
@@ -144,7 +143,27 @@ int ProcessSearchJob::doProcessSearch(void)
     }
 
     /* Perform the dynamical matrix caluclation */
-    prefactors->compute(prefactorsValues);
+    double reactModes, saddleModes, prodModes;
+    reactModes = hessian->getModeProduct(Hessian::REACTANT);
+    cout<<reactModes<<endl;
+    if(reactModes<0)
+    {
+        return statusBadPrefactor;
+    }
+    saddleModes = hessian->getModeProduct(Hessian::SADDLE);
+    cout<<saddleModes<<endl;
+    if(saddleModes<0)
+    {
+        return statusBadPrefactor;
+    }
+    prodModes = hessian->getModeProduct(Hessian::PRODUCT);
+    cout<<prodModes<<endl;
+    if(prodModes<0)
+    {
+        return statusBadPrefactor;
+    }
+    prefactorsValues[0] = sqrt(reactModes/saddleModes)/(2*M_PI*10.18e-15);
+    prefactorsValues[1] = sqrt(prodModes/saddleModes)/(2*M_PI*10.18e-15);
 
     /* Check that the prefactors are in the correct range */
     if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
@@ -176,8 +195,8 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     long min_fcalls = min1->getForceCalls()+min2->getForceCalls();
     long saddle_fcalls = saddlePoint->forceCallsSaddlePointConcave + 
                          saddlePoint->forceCallsSaddlePointConvex;
-    long total_fcalls = min_fcalls + saddle_fcalls+prefactors->totalForceCalls;
-
+    
+    long total_fcalls = min_fcalls + saddle_fcalls;
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
@@ -191,7 +210,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
     fprintf(fileResults, "%f displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
-    fprintf(fileResults, "%ld force_calls_prefactors\n", prefactors->totalForceCalls);
+    fprintf(fileResults, "%ld force_calls_prefactors\n", 0);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
 	fclose(fileResults);
