@@ -43,7 +43,6 @@ double Hessian::getModeProduct(int which)
     VectorXi atoms;
     if(parameters->hessianMaxSize == 0)
     {
-        cout<<"m1"<<endl;
         atoms = movedAtoms(parameters->hessianMinDisplacement);
     }
     else
@@ -97,7 +96,6 @@ double Hessian::getModeProduct(int which)
             hessian(i,j)/=effMass;
         }
     }
-    //cout<<"Hessian"<<endl<<hessian<<endl;
 
     
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
@@ -105,7 +103,6 @@ double Hessian::getModeProduct(int which)
 
     int nNeg = 0;
     double prod = 1;
-    cout<<"Foo"<<endl;
     for(i=0; i<size; i++)
     {
         if(freqs(i) < 0)
@@ -117,7 +114,6 @@ double Hessian::getModeProduct(int which)
             prod *= freqs(i);
         }
     }
-    cout<<prod<<" "<<nNeg<<endl;
     if(which == SADDLE)
     {
         if(nNeg!=1)
