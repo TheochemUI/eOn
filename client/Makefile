@@ -86,7 +86,7 @@ else
 endif
 
 OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
-	EpiCenters.o Prefactors.o ConjugateGradients.o\
+	EpiCenters.o Hessian.o ConjugateGradients.o\
 	debug.o HelperFunctions.o Matter.o Parameters.o\
 	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
 	ProcessSearchJob.o MinimizationJob.o ParallelReplica.o Dynamics.o
