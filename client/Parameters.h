@@ -83,6 +83,7 @@ public:
     long   mdSteps;
     long   CheckFreq;
     long   NewRelaxSteps;
+    bool   BondBoost;
   
     double Andersen_Alpha;
     double Andersen_Tcol;
