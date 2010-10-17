@@ -2,6 +2,7 @@
 
 #include "Matter.h"
 #include "Dynamics.h"
+#include "BondBoost.h"
 #include "ParallelReplicaJob.h"
 #include "ConjugateGradients.h"
 
@@ -61,7 +62,8 @@ void ParallelReplicaJob::run(int bundleNumber)
 
 void ParallelReplicaJob::dynamics()
 {
-    bool   status = false, remember = true, stoped = false; 
+    bool   status = false, remember = true, stoped = false;
+    bool   boost = parameters->BondBoost; 
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   ncheck = 0, nexam = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
@@ -78,7 +80,12 @@ void ParallelReplicaJob::dynamics()
     PRdynamics.velocityScale();
 
     while(!stoped){
-		
+ 		
+        if(boost){
+           BondBoost Bbm(reactant,parameters);
+           Bbm.boost();
+        }
+
         PRdynamics.oneStep();
         
         velocities = reactant->getVelocities();
@@ -143,6 +150,14 @@ void ParallelReplicaJob::dynamics()
     nsteps_refined = nsteps;
     if(parameters->mdRefine && newstate){     
         Refine(mdbuff);
+        long final_refined = nsteps_refined-nsteps+check_steps+relax_steps;
+        *reactant = *mdbuff[final_refined];
+        for(long i = 0; i<relax_steps;i++){
+            PRdynamics.oneStep();
+            reactant->setNsteps(nsteps);
+            md_fcalls++;
+            printf("%ld refine steps %ld\n",i,reactant->getNsteps());
+        }
     }
 
     return;
@@ -191,7 +206,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
         fprintf(fileResults, "%ld refined simulation_steps\n", nsteps_refined);
      }
      fprintf(fileResults, "%ld simulation_steps\n", nsteps);
-     fprintf(fileResults, "%lf simulation_time_fs\n",10*nsteps*parameters->mdTimeStep);
+     fprintf(fileResults, "%lf transition_time_fs\n",10*nsteps_refined*parameters->mdTimeStep);
      fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
      fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
      fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);

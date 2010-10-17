@@ -29,23 +29,16 @@ POTENTIAL_TAG= 3
 # 1 = translation of the system is prevented
 POTENTIAL_NO_TRANSLATION=1
 
-# describtion GET_PREFACTORS_TAG
-# 0 = processes prefactors are not determined
-# 1 = processes prefactors are determined
-GET_PREFACTORS_TAG=1
-
-
-maximum_iterations=512
-
 [Dynamics]
 TIMESTEP=0.2
-TEMPERTURE=400.0
-STEPS=75000
+TEMPERTURE=300.0
+STEPS=2
 PRD_MaxMovedDist=2.5
 mdRefine=0
-RefineAccuracy=10
-CheckFreq=500
-NewRelaxStep=500
+RefineAccuracy=5
+CheckFreq=0
+NewRelaxStep=0
+BondBoost=1
 
 [Thermo]
 Andersen_Alpha=0.1
