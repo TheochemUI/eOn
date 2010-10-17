@@ -77,7 +77,10 @@ Parameters::Parameters(){
     RefineAccuracy = 20;
     CheckFreq = 500;
     NewRelaxSteps = 500;
-   
+    
+    //default parameters used by Hyperdynamics
+    BondBoost = false ;
+
     //default parameters used by Thermostat
     Andersen_Alpha=0.2; //collision strength
     Andersen_Tcol=10; //collision frequency in unit of dt
@@ -218,7 +221,8 @@ int Parameters::load(FILE *file){
 	RefineAccuracy = ini.GetValueL("Dynamics","STEPS",RefineAccuracy);
 	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
-
+        BondBoost = ini.GetValueB("Dynamics","BondBoost",BondBoost);
+      
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
 
