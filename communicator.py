@@ -611,7 +611,7 @@ class Local(Communicator):
         return 0
 
 class Script(Communicator):
-    def __init__(self, scratch_path, bundle_size, scripts_path, 
+    def __init__(self, scratch_path, bundle_size, name_prefix, scripts_path, 
                  queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
         Communicator.__init__(self, scratch_path, bundle_size)
 
@@ -619,6 +619,8 @@ class Script(Communicator):
         self.cancel_job_cmd = os.path.join(scripts_path, cancel_job_cmd)
         self.submit_job_cmd = os.path.join(scripts_path, submit_job_cmd)
         self.job_id_path = os.path.join(scratch_path, "script_job_ids")
+
+        self.name_prefix = name_prefix
 
         #read in job ids
         try:
@@ -676,7 +678,7 @@ class Script(Communicator):
             # should return a jobid
             # need to associate this jobid with our jobid
             jobpath = os.path.realpath(jobpath)
-            jobname = os.path.basename(jobpath)
+            jobname = "%s_%s" (self.name_prefix, os.path.basename(jobpath))
             eon_jobid = jobname.rsplit('_',1)[-1]
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
