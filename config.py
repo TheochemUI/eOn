@@ -70,6 +70,7 @@ if comm_type == 'local':
     comm_local_ncpus = parser.getint('Communicator', 'number_of_CPUs')
 if comm_type == 'cluster':
     comm_script_path = parser.get('Communicator', 'script_path')
+    comm_script_name_prefix = parser.get('Communicator', 'name_prefix')
     comm_script_queued_jobs_cmd = parser.get('Communicator', 'queued_jobs')
     comm_script_cancel_job_cmd = parser.get('Communicator', 'cancel_job')
     comm_script_submit_job_cmd = parser.get('Communicator', 'submit_job')
