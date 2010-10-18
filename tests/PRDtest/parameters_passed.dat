@@ -32,7 +32,7 @@ POTENTIAL_NO_TRANSLATION=1
 [Dynamics]
 TIMESTEP=0.2
 TEMPERTURE=300.0
-STEPS=2
+STEPS=1
 PRD_MaxMovedDist=2.5
 mdRefine=0
 RefineAccuracy=5
