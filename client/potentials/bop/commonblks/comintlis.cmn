@@ -1,0 +1,25 @@
+
+      common / intlis / indupd,nstupd,nintpr,mxipot
+     +                 ,icntud,nuptdl(MAXNUPTDL)
+c                           info on the list of interacting pairs.                        
+c          indupd  tells if the list of interacting pairs should be updated.              
+c          icntud  counts how often the list is updated.                                  
+c          nuptdl  contains how many steps were taken before each update.                 
+
+ 
+      common / neighborlist / initflag,nncount,
+     +               Rold(MAXCOO),dR,dR1,dR2,Rij(3),Rxyz(3),
+     +               r2pr(MAXPRS),delpr(MAXPRSCOO),r2st(MAXATOMS),
+     +               rhoij(MAXPRS),rhofij(MAXPRSCOO),rhofji(MAXPRSCOO),
+     +               rhoji(MAXPRS),potpr(MAXPRS),
+     +               drhoijr(MAXPRS),drhojir(MAXPRS),
+     +               indpra(2,MAXPRS),iptpr1(MAXATOMS,3),iptcom(4),
+     +               nintst(3),natm1(3),natm2(3),nintp(3)
+c   iptcom(i) points to the starting address in arrays r2pr and indpra where              
+c             the interaction is of type i.                                               
+c   nintst(i) gives how many interacting pairs there are of type i.                       
+c   iptpr1(i,ipot) points to the entry in r2pr and indpra where index i                   
+c                     starts to be the index of the first atom of the pair.               
+c                     I.e.  r2pr(iptpr1(i,ipot)) to r2pr(iptpr1(i+1,ipot)-1               
+c                     refer to pairs where the first atom in the pair is i.               
+

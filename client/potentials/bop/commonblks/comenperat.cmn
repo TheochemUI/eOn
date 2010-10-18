@@ -1,0 +1,3 @@
+      common /enperat/ potenpat(MAXATOMS),eldensity(MAXATOMS,3),
+     +                 iatshift1,iatshift2
+
