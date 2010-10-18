@@ -250,6 +250,7 @@ def get_communicator():
                 config.comm_job_bundle_size)
     elif config.comm_type=='cluster':
         comm = communicator.Script(config.path_scratch, config.comm_job_bundle_size,
+                                   config.comm_script_name_prefix,
                                    config.comm_script_path, 
                                    config.comm_script_queued_jobs_cmd,
                                    config.comm_script_cancel_job_cmd, 
