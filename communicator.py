@@ -643,12 +643,13 @@ class Script(Communicator):
 
         finished_jobids = set(self.jobids.keys()) - set(self.get_queued_jobs())
 
+        finished_eonids = []
         for jobid in finished_jobids:
-            self.jobids.pop(jobid)
+            finished_eonids.append(int(self.jobids.pop(jobid)))
 
         jobdirs = [ d for d in os.listdir(self.scratchpath) 
                     if os.path.isdir(os.path.join(self.scratchpath,d)) 
-                    if int(d.rsplit('_', 1)[-1]) in finished_jobids ]
+                    if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
 
         for jobdir in jobdirs:
             dest_dir = os.path.join(resultspath, jobdir)
@@ -674,6 +675,7 @@ class Script(Communicator):
             # submit_job.sh jobname jobpath
             # should return a jobid
             # need to associate this jobid with our jobid
+            jobpath = os.path.realpath(jobpath)
             jobname = os.path.basename(jobpath)
             eon_jobid = jobname.rsplit('_',1)[-1]
 
