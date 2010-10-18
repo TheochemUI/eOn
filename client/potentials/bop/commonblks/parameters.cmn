@@ -1,0 +1,35 @@
+cAllinCh:
+c    increase MAXFPI to 1200
+
+c ----------------------------------------------------------------------
+
+c   Parameters for md3dEAM program:
+
+c   from comconf:
+      parameter (MAXATOMS = 5000)
+c                      maximum # of atoms.
+c      parameter (MAXCOO = 3*MAXATOMS)
+      parameter (MAXCOO = 15000)
+c                      3*(max # of atoms).
+      parameter (MAXFPI = 1200)
+c                      Maximum tag of a Feyman Path Integral (tags 100-599).
+c      parameter (MAXFPICOO = 3*MAXFPI)
+      parameter (MAXFPICOO = 3600)
+
+      parameter (MAXCOMP = 10)
+
+
+c  maximum number of updates of neighborlist:
+      parameter (MAXNUPTDL = 10000)
+c              this dimension is for array on comintlis.cmn in mdloop
+
+c  Maximum number of nodes in the temperature grid:
+      parameter (MAXTGR = 21)
+
+c  For neighborlist:
+      parameter (MAXPRS = 200000)
+c      parameter (MAXPRSCOO = 3*MAXPRS)
+      parameter (MAXPRSCOO = 600000)
+
+c  For checking potential in setup:
+      parameter (MAXPOTCH = 50)
