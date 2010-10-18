@@ -250,8 +250,10 @@ def get_communicator():
                 config.comm_job_bundle_size)
     elif config.comm_type=='cluster':
         comm = communicator.Script(config.path_scratch, config.comm_job_bundle_size,
-                                   comm_script_queued_jobs_cmd, comm_script_cancel_job_cmd, 
-                                   comm_script_submit_job_cmd)
+                                   config.comm_script_path, 
+                                   config.comm_script_queued_jobs_cmd,
+                                   config.comm_script_cancel_job_cmd, 
+                                   config.comm_script_submit_job_cmd)
     elif config.comm_type=='local':
         comm = communicator.Local(config.path_scratch, config.comm_local_client, 
                                   config.comm_local_ncpus, config.comm_job_bundle_size)
