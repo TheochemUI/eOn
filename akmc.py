@@ -246,9 +246,12 @@ def get_communicator():
     if config.comm_type=='boinc':
         comm = communicator.BOINC(config.path_scratch, config.comm_boinc_project_dir, 
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
-                config.comm_boinc_appname, config.comm_boinc_results_path, config.comm_job_bundle_size)
+                config.comm_boinc_appname, config.comm_boinc_results_path,
+                config.comm_job_bundle_size)
     elif config.comm_type=='cluster':
-        comm = communicator.Cluster()
+        comm = communicator.Script(config.path_scratch, config.comm_job_bundle_size,
+                                   comm_script_queued_jobs_cmd, comm_script_cancel_job_cmd, 
+                                   comm_script_submit_job_cmd)
     elif config.comm_type=='local':
         comm = communicator.Local(config.path_scratch, config.comm_local_client, 
                                   config.comm_local_ncpus, config.comm_job_bundle_size)
@@ -256,7 +259,8 @@ def get_communicator():
         comm = communicator.MPI(config.path_scratch, config.comm_mpi_client, 
                                   config.comm_job_bundle_size, config.comm_mpi_mpicommand)
     elif config.comm_type=='arc':
-        comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size, config.comm_client_path, config.comm_blacklist)
+        comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size, 
+                                config.comm_client_path, config.comm_blacklist)
     else:
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()

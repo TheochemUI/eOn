@@ -9,6 +9,7 @@ import subprocess
 import commands
 import tarfile
 from cStringIO import StringIO
+import cPickle as pickle
 import glob
 import re
 
@@ -429,7 +430,6 @@ class BOINC(Communicator):
             for result in results:
                 yield result
                 
-
 class MPI(Communicator):
     def __init__(self, scratchpath, client, bundle_size, mpicommand):
         Communicator.__init__(self, scratchpath, bundle_size)
@@ -610,6 +610,100 @@ class Local(Communicator):
     def get_queue_size(self):
         return 0
 
+class Script(Communicator):
+    def __init__(self, scratch_path, bundle_size, scripts_path, 
+                 queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
+        Communicator.__init__(self, scratch_path, bundle_size)
+
+        self.queued_jobs_cmd = queued_jobs_cmd
+        self.cancel_job_cmd = cancel_job_cmd
+        self.submit_job_cmd = submit_job_cmd
+        self.job_id_path = os.path.join(scratch_path, "script_job_ids")
+
+        #read in job ids
+        f = open(self.job_id_path, "r")
+        self.jobids = pickle.load(f)
+        f.close()
+
+    def save_jobids(self):
+        f = open(self.job_id_path, "w")
+        pickle.dump(self.jobids, f)
+        f.close()
+
+    def get_results(self, resultspath, keep_result):
+        '''Moves work from scratchpath to results path.'''
+        # queued_jobs.sh jobid1 jobid2 jobid 3
+        # the inverse of the jobids returned is 
+        # job dirs needs to map 
+        queued_jobs = self.get_queued_jobs()
+
+        finished_jobids = set(self.jobids) - set(self.get_queued_jobs())
+
+        for jobid in finished_jobids:
+            self.jobids.pop(jobid)
+
+        jobdirs = [ d for d in os.listdir(self.scratchpath) 
+                    if os.path.isdir(os.path.join(self.scratchpath,d)) 
+                    if int(d.rsplit('_', 1)[-1]) in finished_jobids ]
+
+        for jobdir in jobdirs:
+            dest_dir = os.path.join(resultspath, jobdir)
+            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+
+        for bundle in self.unbundle(resultspath, keep_result):
+            for result in bundle:
+                yield result
+
+    def check_command(self, status, cmdname):
+        if status != 0:
+            raise CommunicatorError("'%s' returned a non-zero exit status"%cmdname)
+
+    def submit_jobs(self, data, invariants):
+        #Clean out scratch directory
+        for name in os.listdir(self.scratchpath):
+            shutil.rmtree(os.path.join(self.scratchpath, name))
+
+        for jobpath in self.make_bundles(data, invariants):
+            # submit_job.sh jobname jobpath
+            # should return a jobid
+            # need to associate this jobid with our jobid
+            jobname = os.path.basename(jobpath)
+            eon_jobid = jobname.rsplit('_',1)[-1]
+
+            cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
+            status, output = commands.getstatusoutput(cmd)
+            self.check_command(status, cmd)
+
+            jobid = int(output.strip())
+            self.jobids[jobid] = eon_jobid
+
+            # XXX: It is probably slow to save after EVERY job submission,
+            #      but is slow better than losing jobs?
+            self.save_jobids()
+
+    def cancel_state(self, state):
+        # cancel_job.sh jobid
+
+        #map state->job ids!?!?!?
+        #status, output = commands.getstatusoutput(self.cancel_job_cmd)
+        return 0
+
+    def get_queued_jobs(self):
+        # get_queued_jobs.sh 
+        # should return the jobids of the jobs in the queue
+        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
+        self.check_command(status, self.get_queued_jobs_cmd)
+
+        queued_job_ids = []
+        for line in output.split("\n"):
+            try:
+                queued_job_ids.append(int(line))
+            except ValueError:
+                continue
+        return queued_job_ids
+
+    def get_queue_size(self):
+        return len(get_queued_jobs())
 
 class ARC(Communicator):
 
