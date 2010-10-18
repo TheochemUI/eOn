@@ -6,6 +6,7 @@
 #include "Parameters.h"
 
 #include "Eigen/Eigen"
+
 USING_PART_OF_NAMESPACE_EIGEN
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
@@ -18,12 +19,21 @@ public:
     BondBoost(Matter *matt, Parameters *params);
     ~BondBoost();///< Destructor.
 
-    void boost();	
+    void initial();
+    void boost();  
 
 private:
+    Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
     long nAtoms;///< Number of free coordinates.
     Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
     Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
+    long  *BAList;
+    long  *RAList;
+    long  *TABAList;
+    Matrix<double, Eigen::Dynamic, 1> TABLList;
+    long  nBAs;
+    long  nRAs;
+    long  nTABs;
 };
 
 #endif
