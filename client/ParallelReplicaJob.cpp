@@ -63,7 +63,7 @@ void ParallelReplicaJob::run(int bundleNumber)
 void ParallelReplicaJob::dynamics()
 {
     bool   status = false, remember = true, stoped = false;
-    bool   boost = parameters->BondBoost; 
+    bool   boost = parameters->BondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   ncheck = 0, nexam = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
@@ -76,14 +76,17 @@ void ParallelReplicaJob::dynamics()
 	}
 
     Dynamics PRdynamics(reactant,parameters);
+    BondBoost Bbm(reactant,parameters);
+    if(boost){   
+        Bbm.initial();
+    }
         
     PRdynamics.velocityScale();
 
     while(!stoped){
  		
         if(boost){
-           BondBoost Bbm(reactant,parameters);
-           Bbm.boost();
+            Bbm.boost();
         }
 
         PRdynamics.oneStep();
