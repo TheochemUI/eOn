@@ -615,15 +615,19 @@ class Script(Communicator):
                  queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
         Communicator.__init__(self, scratch_path, bundle_size)
 
-        self.queued_jobs_cmd = queued_jobs_cmd
-        self.cancel_job_cmd = cancel_job_cmd
-        self.submit_job_cmd = submit_job_cmd
+        self.queued_jobs_cmd = os.path.join(scripts_path, queued_jobs_cmd)
+        self.cancel_job_cmd = os.path.join(scripts_path, cancel_job_cmd)
+        self.submit_job_cmd = os.path.join(scripts_path, submit_job_cmd)
         self.job_id_path = os.path.join(scratch_path, "script_job_ids")
 
         #read in job ids
-        f = open(self.job_id_path, "r")
-        self.jobids = pickle.load(f)
-        f.close()
+        try:
+            f = open(self.job_id_path, "r")
+            self.jobids = pickle.load(f)
+            f.close()
+        except IOError:
+            self.jobids = {}
+            pass
 
     def save_jobids(self):
         f = open(self.job_id_path, "w")
@@ -637,7 +641,7 @@ class Script(Communicator):
         # job dirs needs to map 
         queued_jobs = self.get_queued_jobs()
 
-        finished_jobids = set(self.jobids) - set(self.get_queued_jobs())
+        finished_jobids = set(self.jobids.keys()) - set(self.get_queued_jobs())
 
         for jobid in finished_jobids:
             self.jobids.pop(jobid)
@@ -654,13 +658,16 @@ class Script(Communicator):
             for result in bundle:
                 yield result
 
-    def check_command(self, status, cmdname):
+    def check_command(self, status, output, cmdname):
         if status != 0:
+            logger.error(output)
             raise CommunicatorError("'%s' returned a non-zero exit status"%cmdname)
 
     def submit_jobs(self, data, invariants):
         #Clean out scratch directory
         for name in os.listdir(self.scratchpath):
+            if name == "script_job_ids":
+                continue
             shutil.rmtree(os.path.join(self.scratchpath, name))
 
         for jobpath in self.make_bundles(data, invariants):
@@ -672,7 +679,7 @@ class Script(Communicator):
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
             status, output = commands.getstatusoutput(cmd)
-            self.check_command(status, cmd)
+            self.check_command(status, output,cmd)
 
             jobid = int(output.strip())
             self.jobids[jobid] = eon_jobid
@@ -692,7 +699,7 @@ class Script(Communicator):
         # get_queued_jobs.sh 
         # should return the jobids of the jobs in the queue
         status, output = commands.getstatusoutput(self.queued_jobs_cmd)
-        self.check_command(status, self.get_queued_jobs_cmd)
+        self.check_command(status, output, self.queued_jobs_cmd)
 
         queued_job_ids = []
         for line in output.split("\n"):
@@ -700,10 +707,10 @@ class Script(Communicator):
                 queued_job_ids.append(int(line))
             except ValueError:
                 continue
-        return queued_job_ids
+        return list(set(self.jobids).intersection(queued_job_ids))
 
     def get_queue_size(self):
-        return len(get_queued_jobs())
+        return len(self.get_queued_jobs())
 
 class ARC(Communicator):
 
