@@ -84,7 +84,13 @@ public:
     long   CheckFreq;
     long   NewRelaxSteps;
     bool   BondBoost;
-  
+    long   BBnBAs; 
+    long   BBRMDS;
+    double BBDVMAX;
+    double BBQRR; 
+    double BBPRR; 
+    double BBQcut;
+
     double Andersen_Alpha;
     double Andersen_Tcol;
   

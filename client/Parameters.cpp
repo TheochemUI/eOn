@@ -80,6 +80,12 @@ Parameters::Parameters(){
     
     //default parameters used by Hyperdynamics
     BondBoost = false ;
+    BBnBAs = 0;
+    BBDVMAX = 0.0;
+    BBQRR = 0.0001; // Can not be set to be 0.0;
+    BBPRR = 0.95;
+    BBQcut = 3.0;
+    BBRMDS = 0;
 
     //default parameters used by Thermostat
     Andersen_Alpha=0.2; //collision strength
@@ -223,7 +229,16 @@ int Parameters::load(FILE *file){
 	RefineAccuracy = ini.GetValueL("Dynamics","STEPS",RefineAccuracy);
 	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
-        BondBoost = ini.GetValueB("Dynamics","BondBoost",BondBoost);
+
+        BondBoost = ini.GetValueB("Hyper","BondBoost",BondBoost);
+        BBnBAs = ini.GetValueL("Hyper","nBoostAtoms",BBnBAs);
+        BBRMDS = ini.GetValueL("Hyper","RMDS",BBRMDS);
+        BBDVMAX = ini.GetValueF("Hyper","DVMAX",BBDVMAX);
+        BBQRR = ini.GetValueF("Hyper","QRR",BBQRR );
+        BBPRR = ini.GetValueF("Hyper","PRR",BBPRR );
+	BBQcut= ini.GetValueF("Hyper","Qcut",BBQcut);
+        
+        
       
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 

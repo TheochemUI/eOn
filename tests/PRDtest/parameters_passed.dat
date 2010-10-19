@@ -32,14 +32,22 @@ POTENTIAL_NO_TRANSLATION=1
 [Dynamics]
 TIMESTEP=0.2
 TEMPERTURE=300.0
-STEPS=4
+STEPS=10
 PRD_MaxMovedDist=2.5
 mdRefine=0
 RefineAccuracy=5
 CheckFreq=0
 NewRelaxStep=0
-BondBoost=1
 
+[Hyper]
+BondBoost=1
+RMDS=4
+nBoostAtoms=3
+DVMAX=0.0
+QRR=0.2
+PRR=0.95
+Qcut=3.0
+ 
 [Thermo]
 Andersen_Alpha=0.1
 Andersen_Tcol=10.0

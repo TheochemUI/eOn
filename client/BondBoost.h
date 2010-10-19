@@ -25,7 +25,7 @@ public:
 private:
     Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
     long BondSelect();
-    void Booststeps();
+    double Booststeps();
     long nAtoms;///< Number of free coordinates.
     Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
     Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
@@ -42,6 +42,9 @@ private:
     long  nTABs;
     long  nReg;
     long  nBBs;
+    double SDtime;
+    double SPtime;
+    double SDtime_B;
 };
 
 #endif
