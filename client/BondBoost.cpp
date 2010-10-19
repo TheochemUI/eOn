@@ -23,7 +23,7 @@ void BondBoost::initial(){
   
   nBBs = 0;
   nReg = 0;
-  nBAs = 3; //nBoostAtoms
+  nBAs = parameters->BBnBAs; //nBoostAtoms
   nRAs = nAtoms - nBAs;//nRestAtoms
   nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; //number of Bonds involved with Tagged Atoms
   BAList = new long[nBAs];//BoostAtomsList
@@ -65,10 +65,16 @@ void BondBoost::initial(){
 
 void BondBoost::boost(){
 
-    long RMDS = parameters->mdSteps-3;
+    long RMDS = parameters->BBRMDS;
+    double dt = parameters->mdTimeStep;
+    double boost_dt = 0.0, AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
-    
+   
+    SDtime_B = 0.0;
+    SDtime = 0.0;
+    SPtime = 0.0;
+
     if(nReg < RMDS){
         flag = 0;
     }
@@ -80,7 +86,10 @@ void BondBoost::boost(){
         TABL_tmp=Rmdsteps();
         TABLList = TABLList + (1.0/RMDS)*TABL_tmp;
         nReg ++;
-        // TEST PRINT
+        
+        SDtime += dt;
+        SPtime += dt;
+/*        // TEST PRINT
         for(long i=0;i<nTABs;i++){
               printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABL_tmp(i,0));
         }
@@ -89,7 +98,7 @@ void BondBoost::boost(){
         for(long i=0;i<nTABs;i++){
               printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABLList(i,0));
         }
-        // TEST END
+*/        // TEST END
     }
     else{ 
            if( nReg == RMDS+1){
@@ -102,46 +111,49 @@ void BondBoost::boost(){
 
            Epsr_Q = new double[nBBs];           
            CBBLList.setZero(nBBs,1);
-           Booststeps();
+           boost_dt=Booststeps();
+           SDtime += dt;
+           SPtime += boost_dt; 
            nReg ++;
+           AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
+    	   printf("AVE_BOOST_FACT=%E;nReg = %ld\n",AVE_Boost_Fact,nReg);
     }
-
-       
-  printf("hello,let's boost! nReg = %ld\n",nReg);
 }
 
-void BondBoost::Booststeps(){
+double BondBoost::Booststeps(){
      long i,j,Mi;
      long AtomI_1,AtomI_2;
      double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
-     double Dforce, Fact_1, Fact_2,Mforce;
+     double Dforce, Fact_1, Fact_2, Mforce, dt, bdt, Temp, kb;
      double Ri[3] = {0.0} , R = 0.0;
 
-     Matrix<double, Eigen::Dynamic, 3> OriForce(nAtoms,3);
+     Matrix<double, Eigen::Dynamic, 3> OldForce(nAtoms,3);
      Matrix<double, Eigen::Dynamic, 3> Free(nAtoms,3);
      Matrix<double, Eigen::Dynamic, 3> AddForce(nBBs,3);
      Matrix<double, Eigen::Dynamic, 3> TADF(nAtoms,3);
      Matrix<double, Eigen::Dynamic, 3> NewForce(nAtoms,3);
  
-     OriForce.setZero();
+     OldForce.setZero();
      TADF.setZero();
      Free.setZero();
      AddForce.setZero();
      NewForce.setZero();
 
-     QRR = 0.3;
-     PRR = 0.95;
+     dt = parameters->mdTimeStep;
+     Temp = parameters->mdTemperture;
+     QRR = parameters->BBQRR;
+     PRR = parameters->BBPRR;
+     DVMAX = parameters->BBDVMAX;
+     bdt = dt;
+     kb = 1.0/11604.5;
      Epsr_MAX = 0.0;
      A_EPS_M = 0.0;
      Boost_Fact = 0.0;
      Sum_V = 0.0;
-     DVMAX = 1.0;
      Dforce = 0.0;
      Mforce = 0.0;
      Fact_1 = 0.0;
      Fact_2 = 0.0;
-
-     printf("haha::BoostSteps\n");
 
      for(i=0;i<nBBs;i++){
          AtomI_1 = BBAList[2*i];
@@ -170,9 +182,7 @@ void BondBoost::Booststeps(){
 	    Sum_V +=DVMAX*(1.0-Epsr_Q[i]*Epsr_Q[i])/double(nBBs);
 	}
 	Boost_Fact = A_EPS_M*Sum_V;
-	//SPtime
- 	//SDtime
-	//Ave_Boost_Fact
+        SDtime_B += dt;
    
         for(i=0;i<nBBs;i++){
 	    if( abs(Epsr_Q[i]) < Epsr_MAX ){
@@ -220,43 +230,45 @@ void BondBoost::Booststeps(){
 	   }
 */
 	}
-         OriForce = matter->getForces();
-        NewForce = OriForce + TADF;
+
+        OldForce = matter->getForces();
+        NewForce = OldForce + TADF;
         Free = matter->getFree();
         NewForce = NewForce.cwise() *  Free;
 	matter->setForces(NewForce);
-       
+/*       
         printf("TADF::\n");
 	for(i=0;i<nAtoms;i++){
 		printf("%lf   %lf   %lf\n",TADF(i,0),TADF(i,1),TADF(i,2));
         }
  
-        printf("OriForces::\n");
+        printf("OldForces::\n");
         for(i=0;i<nAtoms;i++){
-                printf("%lf   %lf   %lf\n",OriForce(i,0),OriForce(i,1),OriForce(i,2));
+                printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
         }
   
         printf("NewForces::\n");
         for(i=0;i<nAtoms;i++){
                 printf("%lf   %lf   %lf\n",NewForce(i,0),NewForce(i,1),NewForce(i,2));
         }
-        OriForce = matter->getForces();
+        OldForce = matter->getForces();
         printf("NewSettedForces::\n");
         for(i=0;i<nAtoms;i++){
-                printf("%lf   %lf   %lf\n",OriForce(i,0),OriForce(i,1),OriForce(i,2));
+                printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
         }
-
-       
-
-
+*/
 
      }
      else if(Epsr_MAX >= 1.0){
    	Boost_Fact = 0.0;
-	//SPtime = 
 	//Ave_Boost_Fact =
-	//
      }
+
+     //update bdt;
+     bdt = dt*exp(Boost_Fact/kb/Temp);
+     printf("bdt = %E\n",bdt);
+    
+     return bdt;
 }
 
 
@@ -296,7 +308,7 @@ Matrix<double, Eigen::Dynamic,1> BondBoost::Rmdsteps() {
 
 long BondBoost::BondSelect(){
     long count = 0,i,nBBs_tmp = 0;
-    double Qcutoff = 3.0;
+    double Qcutoff = parameters->BBQcut;
 
     for(i=0;i<nTABs;i++){
         if(TABLList(i,0) <= Qcutoff){
