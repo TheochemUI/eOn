@@ -17,6 +17,7 @@ class bopfox : public PotentialsInterface
     private:
         void writeFOX(long N, const double *R, int const *atomicNrs, const double *box);
         void readFU(long N, double *F, double *U);
+        
 
 };
 
