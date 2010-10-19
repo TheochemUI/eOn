@@ -24,16 +24,24 @@ public:
 
 private:
     Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
+    long BondSelect();
+    void Booststeps();
     long nAtoms;///< Number of free coordinates.
     Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
     Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
     long  *BAList;
     long  *RAList;
     long  *TABAList;
-    Matrix<double, Eigen::Dynamic, 1> TABLList;
+    long  *BBAList;
+    double  *Epsr_Q;
+    Matrix<double, Eigen::Dynamic, 1> TABLList;//EquilibriumTaggedAtomInvolvedBondLengthList;
+    Matrix<double, Eigen::Dynamic, 1> EBBLList;//EquilibriumBoostBondLengthList
+    Matrix<double, Eigen::Dynamic, 1> CBBLList;//CurrentBoostBondLengthList
     long  nBAs;
     long  nRAs;
     long  nTABs;
+    long  nReg;
+    long  nBBs;
 };
 
 #endif
