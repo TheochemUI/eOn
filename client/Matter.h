@@ -69,12 +69,14 @@ public:
     //liang end
 
     Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff) const;
+    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> pbc2(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> diff) const;
     
     Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
     void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos
     
     Matrix<double, Eigen::Dynamic, 3> getVelocities() const; 
     void setVelocities(const Matrix<double, Eigen::Dynamic, 3> v); 
+    void setForces(const Matrix<double, Eigen::Dynamic, 3> f);
     Matrix<double, Eigen::Dynamic, 3> getAccelerations(); 
 
     Matrix<double, Eigen::Dynamic, 3> getForces(); // return forces applied on all atoms in array force 
@@ -91,6 +93,7 @@ public:
     double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic plus potential energy)
 
     double distance(long index1, long index2) const; // return the distance between two atoms in same configuration
+    double pdistance(long index1, long index2, int axis) const;
     double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
