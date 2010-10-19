@@ -19,6 +19,15 @@ else
 	#AR = ifort -staticlib -o
 endif
 
+#Fortran compiler settings
+ifdef BOPFOX
+	CXXFLAGS += -DBOPFOX
+	LDFLAGS += libbopfox.a
+    POTDIRS += ./potentials/bop
+    LIBS += ./potentials/bop/libbop.a
+    POTENTIALS += "+bop"
+endif
+
 # define NDEBUG to remove debugging lines
 ifdef NDEBUG
 	DEBUG=No

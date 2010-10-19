@@ -29,6 +29,7 @@ enum{
     POT_ZPICE,
     POT_TIP4P,
     POT_BOPFOX,
+    POT_BOP,
     N_POTS
 };
 

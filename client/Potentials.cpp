@@ -21,6 +21,9 @@
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
 #include "potentials/VASP/VASP.h"
 #include "potentials/bopfox/bopfox.h"
+#ifdef BOPFOX
+    #include "potentials/bop/bop.h"
+#endif
 
 #include <cstdlib>
 
@@ -97,7 +100,14 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new bopfox();
         interface_->initialize();
     }
+ 
 
+#endif
+#ifdef BOPFOX
+    else if(parameters_->potentialTag == POT_BOP){
+        interface_ = new bop();
+        interface_->initialize();
+    }
 #endif
     else{
         printf("Potential tag not recognized: %ld\n", parameters_->potentialTag);
