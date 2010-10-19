@@ -152,7 +152,8 @@ Matrix<double, Eigen::Dynamic, 3> SaddlePoint::getEigenMode()
     return eigenMode;
 }
 
-void SaddlePoint::displaceState(Matter *matter)
+// Displace state and sets mode
+void SaddlePoint::displaceStateAndSetMode(Matter *matter)
 {
     long nAtoms = saddle->numberOfAtoms();
     long j, indexEpiCenter = 0;
@@ -199,7 +200,6 @@ void SaddlePoint::displaceState(Matter *matter)
         j++;
     }
     initialDisplacement.normalize();
-
     initialDisplacement *= parameters->saddleNormPerturbation;
  
     //XXX: There is probably a more idomatic way to do this with Eigen
@@ -216,6 +216,9 @@ void SaddlePoint::displaceState(Matter *matter)
     }
     // Adding the initialDisplacement
     matter->setPositions(matter->getPositions() + initialDisplacement);
+    
+    // Sets the initial mode for the SP search
+    mode = initialDisplacement;
  
     return;
 }
@@ -287,8 +290,9 @@ void SaddlePoint::jumpToConvexRegion(){
     if(parameters->saddleTypePerturbation!=dispNone){
         do{
             saddle->setPositions(pos);
-            displaceState(saddle);
-            lowestEigenmode->startNewSearchAndCompute(saddle, initialDisplacement);
+            displaceStateAndSetMode(saddle);
+            
+            lowestEigenmode->startNewSearchAndCompute(saddle, mode);
             eigenMode = lowestEigenmode->getEigenvector();
             eigenValue = lowestEigenmode->getEigenvalue();
             iterations++;
@@ -306,10 +310,13 @@ void SaddlePoint::jumpToConvexRegion(){
 
 void SaddlePoint::displaceInConcaveRegion()
 {
-    displaceState(saddle);
-    lowestEigenmode->startNewSearchAndCompute(saddle, initialDisplacement);
+    displaceStateAndSetMode(saddle);
+    
+    lowestEigenmode->startNewSearchAndCompute(saddle, mode);
     eigenMode = lowestEigenmode->getEigenvector();
     eigenValue = lowestEigenmode->getEigenvalue();
+
+
     return;
 }
 
