@@ -147,6 +147,8 @@ int Parameters::load(FILE *file){
             jobType = HESSIAN;
 		}else if (jobTypeString == "parallelreplica"){
 				jobType = PARALLEL_REPLICA;
+		}else if (jobTypeString == "dimerdr"){
+				jobType = DIMER_DR;
         }else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;
