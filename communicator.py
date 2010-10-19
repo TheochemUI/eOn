@@ -108,6 +108,11 @@ class Communicator:
                     results[index]['number']=index
                 except:
                     logger.exception("Failed to handle file %s" % filename)
+
+            # XXX: UGLY: We need a way to check if there are no results.
+            if 'number' not in results[0]:
+                logger.warning("Failed to find any results for %s",results[0]['name'])
+                results = []
             yield results
 
     def make_bundles(self, data, invariants):
