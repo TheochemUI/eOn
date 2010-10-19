@@ -1,6 +1,5 @@
 #C compiler settings
 CXXFLAGS += -O2 -Wall -Wfatal-errors
-LDFLAGS += -static
 #Fortran compiler settings
 ifdef NO_FORTRAN
 	CXXFLAGS += -DNO_FORTRAN
