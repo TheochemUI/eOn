@@ -678,7 +678,7 @@ class Script(Communicator):
             # should return a jobid
             # need to associate this jobid with our jobid
             jobpath = os.path.realpath(jobpath)
-            jobname = "%s_%s" (self.name_prefix, os.path.basename(jobpath))
+            jobname = "%s_%s" % (self.name_prefix, os.path.basename(jobpath))
             eon_jobid = jobname.rsplit('_',1)[-1]
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
