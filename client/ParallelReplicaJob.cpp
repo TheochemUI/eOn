@@ -52,7 +52,7 @@ void ParallelReplicaJob::run(int bundleNumber)
 
     dynamics();
     saveData(newstate,bundleNumber);
-  
+    
     printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
     printf("Physical Thansition Time = %lf\n",SPtime);
     if(newstate){

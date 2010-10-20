@@ -151,22 +151,6 @@ Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> 
 
     return ddiff*cellBoundaries;
 }
-Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Matter::pbc2(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> diff) const
-{
-    Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ddiff = diff*ibox;
-
-    int i,j;
-    for(i=0; i<diff.rows(); i++)
-    {
-        for(j=0; j<diff.cols(); j++)
-        {
-            ddiff(i,j) = fmod(fmod(ddiff(i,j), 1.0)  + 1.5, 1.0) -.5;
-        }
-    }
-    return ddiff*cellBoundaries;
-}
-
 
 double Matter::perAtomNorm(const Matter& matter) 
 {
@@ -322,9 +306,18 @@ double Matter::distance(long index1, long index2) const{// return distance betwe
     return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
-double Matter::pdistance(long index1, long index2,int axis) const{// return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)
-        return pbc2(positions.row(index1).col(axis) - positions.row(index2).col(axis)).norm();
+double Matter::pdistance(long index1, long index2,int axis) const{// return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)              
+    Matrix<double, 1, 3> ret;
+    ret.setZero();
+    for(int i=0;i<3;i++){
+        ret(0,i) = 0.0;
+        if(i == axis){
+            ret(0,i) = positions(index1,axis)-positions(index2,axis);
+        }
+    }
+    return pbc(ret).norm();
 }
+
 
 
 double Matter::distance(const Matter& matter, long index) const {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
