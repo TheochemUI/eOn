@@ -13,6 +13,9 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     nsteps_refined = 0;
     check_steps = parameters->CheckFreq;
     relax_steps = parameters->NewRelaxSteps;
+    stepsbuff = new long[check_steps];
+    //SDtimebuff = new double[check_steps];
+    //SPtimebuff = new double[check_steps];
     newstate = false;
     min_fcalls = 0;
     md_fcalls = 0;
@@ -69,7 +72,7 @@ void ParallelReplicaJob::dynamics()
     Matrix<double, Eigen::Dynamic, 3> velocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
-     
+    
     Matter *mdbuff[check_steps];	
     for(long i =0; i < check_steps;i++){
 	    mdbuff[i] = new Matter(parameters);
@@ -84,7 +87,7 @@ void ParallelReplicaJob::dynamics()
     PRdynamics.velocityScale();
 
     while(!stoped){
- 		
+  		
         if(boost){
             Bbm.boost();
         }
@@ -100,11 +103,12 @@ void ParallelReplicaJob::dynamics()
         md_fcalls++;
         ncheck++;
         nsteps++;
-	reactant->setNsteps(nsteps);
+	    //reactant->setNsteps(nsteps);
 
 
 	if(parameters->mdRefine && remember){
             *mdbuff[ncheck-1] = *reactant;
+            stepsbuff[ncheck-1] = nsteps;
 	}
 
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
@@ -147,20 +151,26 @@ void ParallelReplicaJob::dynamics()
     printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
     //Here we use Golden Search to refine the result; 	
-    //for(long i =0; i < parameters->CheckFreq;i++){
-	//	printf("%ld refine steps %ld\n",i,mdbuff[i]->getNsteps());		
+    //for(long i =0; i < check_steps;i++){
+	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
+   
     nsteps_refined = nsteps;
     if(parameters->mdRefine && newstate){     
+        
         Refine(mdbuff);
+
         long final_refined = nsteps_refined-nsteps+check_steps+relax_steps;
+        long totsteps = nsteps_refined; 
+
         *reactant = *mdbuff[final_refined];
+    
         for(long i = 0; i<relax_steps;i++){
             PRdynamics.oneStep();
-            reactant->setNsteps(nsteps);
+            totsteps ++;
             md_fcalls++;
-            printf("%ld refine steps %ld\n",i,reactant->getNsteps());
         }
+        printf("total physical steps %ld\n",totsteps);
     }
 
     return;
