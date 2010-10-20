@@ -356,16 +356,6 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr)
     recomputePotential=true;
 }
 
-//liang add here
-void Matter::setNsteps(long int Nsteps){
-	 nsteps=Nsteps;
-}
-
-long Matter::getNsteps() const{
-	return(nsteps);
-}
-
-
 int Matter::getFixed(long int indexAtom) const {
     return(isFixed[indexAtom]);
 }
