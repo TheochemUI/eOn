@@ -11,11 +11,12 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     parameters = params;
     nsteps = 0;
     nsteps_refined = 0;
+    SPtime = 0.0;
+    RLtime = 0.0;
     check_steps = parameters->CheckFreq;
     relax_steps = parameters->NewRelaxSteps;
     stepsbuff = new long[check_steps];
-    //SDtimebuff = new double[check_steps];
-    //SPtimebuff = new double[check_steps];
+    SPtimebuff = new double[check_steps];
     newstate = false;
     min_fcalls = 0;
     md_fcalls = 0;
@@ -51,9 +52,11 @@ void ParallelReplicaJob::run(int bundleNumber)
 
     dynamics();
     saveData(newstate,bundleNumber);
-    
+  
+    printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
+    printf("Physical Thansition Time = %lf\n",SPtime);
     if(newstate){
-        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps_refined,10*nsteps_refined*parameters->mdTimeStep);
+        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps_refined,SPtime);
     }else{
        printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
@@ -89,9 +92,10 @@ void ParallelReplicaJob::dynamics()
     while(!stoped){
   		
         if(boost){
-            Bbm.boost();
+           SPtime += Bbm.boost();
         }
-
+        else{ SPtime += 10*parameters->mdTimeStep;}
+        
         PRdynamics.oneStep();
         
         velocities = reactant->getVelocities();
@@ -103,12 +107,11 @@ void ParallelReplicaJob::dynamics()
         md_fcalls++;
         ncheck++;
         nsteps++;
-	    //reactant->setNsteps(nsteps);
-
 
 	if(parameters->mdRefine && remember){
             *mdbuff[ncheck-1] = *reactant;
             stepsbuff[ncheck-1] = nsteps;
+            SPtimebuff[ncheck-1] = SPtime;
 	}
 
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
@@ -132,7 +135,7 @@ void ParallelReplicaJob::dynamics()
 	    if (nexam >= relax_steps){
                 nexam = 0;
                 ncheck = 0; 	
-		newstate = CheckState(reactant);
+		        newstate = CheckState(reactant);
                 stoped = newstate;
                 status = false;
                 remember = true;
@@ -148,13 +151,13 @@ void ParallelReplicaJob::dynamics()
      
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
-    printf("\nTempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
+    printf("Tempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
     //Here we use Golden Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
-   
+    nsteps = nsteps + 1;
     nsteps_refined = nsteps;
     if(parameters->mdRefine && newstate){     
         
@@ -163,16 +166,17 @@ void ParallelReplicaJob::dynamics()
         long final_refined = nsteps_refined-nsteps+check_steps+relax_steps;
         long totsteps = nsteps_refined; 
 
-        *reactant = *mdbuff[final_refined];
-    
+        *reactant = *mdbuff[final_refined-1];
+        SPtime = SPtimebuff[final_refined-1];
+
         for(long i = 0; i<relax_steps;i++){
             PRdynamics.oneStep();
             totsteps ++;
-            md_fcalls++;
+            RLtime += 10*parameters->mdTimeStep;
+            md_fcalls ++;
         }
-        printf("total physical steps %ld\n",totsteps);
     }
-
+  
     return;
 };
 
@@ -215,11 +219,9 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
      long total_fcalls = min_fcalls + md_fcalls;
 
      fprintf(fileResults, "%d termination_reason\n", status);
-     if(parameters->mdRefine){
-        fprintf(fileResults, "%ld refined simulation_steps\n", nsteps_refined);
-     }
-     fprintf(fileResults, "%ld simulation_steps\n", nsteps);
-     fprintf(fileResults, "%lf transition_time_fs\n",10*nsteps_refined*parameters->mdTimeStep);
+     fprintf(fileResults, "%lf total Physical time\n", SPtime+RLtime);
+     fprintf(fileResults, "%lf transition_time_fs\n", SPtime);
+     fprintf(fileResults, "%lf relax_time_fs\n", RLtime);
      fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
      fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
      fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
@@ -268,18 +270,19 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      while(diff > RefineAccuracy){
 	   a2 = int(a1 + 0.382 * ( b1 - a1) );
 	   b2 = int(a1 + 0.618 * ( b1 - a1) );
+       diff = abs(b2 -a2);
 	   ya = CheckState(mdbuff[a2]);
 	   yb = CheckState(mdbuff[b2]);
      
 	   if ( ya == 0 && yb == 0){
-	      a1 = initial;
-              b1 = a2;
+	      a1 = b2;
+          b1 = final;
 	   }else if( ya == 0 && yb == 1){
-              a1 = a2;
+          a1 = a2;
 	      b1 = b2;
 	   }else if( ya == 1 && yb == 1){
-	      a1 = b2;
-	      b1 = final;
+	      a1 = initial;
+	      b1 = a2;
 	   }else if( ya == 1 && yb == 0){
 	      printf("Warning : Recrossing happened, search range will defined as (b2,final)\n");
 	      a1 = b2;
@@ -288,7 +291,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
 	      exit(1);
 	   }
 	
-	   diff = abs(b2 -a2);
+	  
      }
      nsteps_refined = nsteps-check_steps-relax_steps+int((a2+b2)/2);
      printf("Refined mdsteps = %ld\n",nsteps_refined);
