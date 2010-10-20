@@ -34,16 +34,16 @@ TIMESTEP=0.2
 TEMPERTURE=350.0
 STEPS=40000
 PRD_MaxMovedDist=2.5
-mdRefine=5
+mdRefine=1
 RefineAccuracy=5
 CheckFreq=5000
 NewRelaxStep=500
 
 [Hyper]
-BondBoost=0
+BondBoost=1
 RMDS=2000
 nBoostAtoms=3
-DVMAX=0.1
+DVMAX=0.2
 QRR=0.2
 PRR=0.95
 Qcut=3.0
