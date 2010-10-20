@@ -65,7 +65,6 @@ public:
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
 
     Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff) const;
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> pbc2(Matrix<double, Eigen::Dynamic, Eigen::Dynamic> diff) const;
     
     Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
     void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos
