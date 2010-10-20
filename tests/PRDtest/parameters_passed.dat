@@ -31,19 +31,19 @@ POTENTIAL_NO_TRANSLATION=1
 
 [Dynamics]
 TIMESTEP=0.2
-TEMPERTURE=300.0
-STEPS=10
+TEMPERTURE=350.0
+STEPS=40000
 PRD_MaxMovedDist=2.5
-mdRefine=0
+mdRefine=5
 RefineAccuracy=5
-CheckFreq=0
-NewRelaxStep=0
+CheckFreq=5000
+NewRelaxStep=500
 
 [Hyper]
-BondBoost=1
-RMDS=4
+BondBoost=0
+RMDS=2000
 nBoostAtoms=3
-DVMAX=0.0
+DVMAX=0.1
 QRR=0.2
 PRR=0.95
 Qcut=3.0
