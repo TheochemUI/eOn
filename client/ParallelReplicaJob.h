@@ -15,6 +15,9 @@ class ParallelReplicaJob: public Job {
 	Matter *reactant;
    	Matter *min1;
 	Matter *min2;
+    long *stepsbuff;
+    // long *SDtimebuff;
+    //long *SPtimebuff;
 	long min_fcalls;
 	long md_fcalls;
 	long nsteps;
