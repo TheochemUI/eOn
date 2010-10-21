@@ -228,7 +228,7 @@ int Parameters::load(FILE *file){
 	mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
 	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
 	mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
-	RefineAccuracy = ini.GetValueL("Dynamics","STEPS",RefineAccuracy);
+	RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
 	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
