@@ -357,6 +357,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+        double stepSize = sqrt(((saddle->getPositions() - pos).cwise().square()).sum());
         // The system (saddle) is moved to a new configuration
         saddle->setPositions(pos);
         forces = saddle->getForces();
@@ -382,7 +383,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            printf("DIMER Step: %ld    Force = %f\n", iterations, saddle->maxForce());
+            printf("DIMER Step: %5ld    Force = % 8f    StepSize: % 8f\n", iterations, saddle->maxForce(), stepSize);
             saddle->matter2xyz("climb", true);
         #endif
         energySaddle = saddle->getPotentialEnergy();
