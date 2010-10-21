@@ -58,9 +58,12 @@ Parameters::Parameters(){
     hessianPrefactorMin = 10e8;
 
     // default parameters the dimer method
-    dimerRotations = 1;
     dimerSeparation = 0.0001;
     dimerRotationAngle = 0.005;
+    dimerWindowHigh = 1.0;
+    dimerWindowLow = 0.1;
+    dimerRotationsHigh = 8;
+    dimerRotationsLow = 1;
     
     // default parameters used by the optimizers
     maximumIterations=512;
@@ -219,7 +222,10 @@ int Parameters::load(FILE *file){
                                                "MIN_DISPLACEMENT",
                                                hessianMinDisplacement);
         
-        dimerRotations = ini.GetValueL("Dimer", "ROTATIONS", dimerRotations);
+        dimerRotationsHigh = ini.GetValueL("Dimer", "ROTATIONS_HIGH", dimerRotationsHigh);
+        dimerRotationsLow = ini.GetValueL("Dimer", "ROTATIONS_LOW", dimerRotationsLow);
+        dimerWindowHigh = ini.GetValueF("Dimer", "WINDOW_HIGH", dimerWindowHigh);
+        dimerWindowLow = ini.GetValueF("Dimer", "WINDOW_LOW", dimerWindowLow);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
