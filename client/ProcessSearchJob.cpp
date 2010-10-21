@@ -203,7 +203,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
     fprintf(fileResults, "%d total_force_calls\n", Potentials::fcalls);
-    fprintf(fileResults, "%d force_calls_minimization\n", fCallsMin);
+    fprintf(fileResults, "%d force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());

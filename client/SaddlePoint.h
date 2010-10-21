@@ -79,7 +79,8 @@ public:
 
     long forceCallsSaddlePointConcave;
     long forceCallsSaddlePointConvex;
-
+    long forceCallsMinimization;
+    
 private:
     Matter * initial;
     Matter *saddle; // pointer to atom object outside the scope of the class

@@ -138,19 +138,21 @@ void ConjugateGradients::determineSearchDirection(){
 
     a = fabs((force.cwise() * forceOld).sum());
     b = forceOld.squaredNorm();
-    if(a<0.5*b){
+    if(a<0.5*b)
+    {
         // Polak-Ribiere way to determine how much to mix in of old direction
         gamma = (force.cwise() * (force - forceOld)).sum()/b;
     }
     else
+    {
         gamma = 0;
+    }
     //cout<<"gamma: "<<gamma<<endl;
     direction = force + gamma*directionOld;
     //direction = direction.cwise() * matter->getFree();
     assert(direction.norm() != 0.0);
     directionNorm = direction;
     directionNorm.normalize();
-
     //cout<<"DirectionNorm: "<<directionNorm<<endl;
     directionOld = direction;
     forceOld = force;
