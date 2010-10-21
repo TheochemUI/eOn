@@ -153,7 +153,7 @@ void ParallelReplicaJob::dynamics()
     VarT=SumT2/nsteps-AvgT*AvgT;
     printf("Tempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
-    //Here we use Golden Search to refine the result; 	
+    //Here we use Binary Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
@@ -254,48 +254,43 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
 
 void ParallelReplicaJob::Refine(Matter *mdbuff[]){
    
-     long a1, b1, a2, b2, initial, final, diff, RefineAccuracy;
-     bool ya, yb;
+     long a1, b1, test , initial, final, diff, RefineAccuracy;
+     bool ytest;
 
      printf("Now started to refine the Final Point!\n");
      RefineAccuracy = parameters->RefineAccuracy; 
-     ya = false;
-     yb = false;
+     ytest = false;
+     
      initial = 0;
      final = check_steps - 1;
-     a1 = a2 = initial;
-     b1 = b2 = final;
+     a1 = initial;
+     b1 = final;
      diff = final - initial;
+     test = int((b1-a1)/2);
      //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
+
      while(diff > RefineAccuracy){
-	   a2 = int(a1 + 0.382 * ( b1 - a1) );
-	   b2 = int(a1 + 0.618 * ( b1 - a1) );
-       diff = abs(b2 -a2);
-	   ya = CheckState(mdbuff[a2]);
-	   yb = CheckState(mdbuff[b2]);
-     
-	   if ( ya == 0 && yb == 0){
-	      a1 = b2;
-          b1 = b1;
-	   }else if( ya == 0 && yb == 1){
-          a1 = a2;
-	      b1 = b2;
-	   }else if( ya == 1 && yb == 1){
-	      a1 = a1;
-	      b1 = a2;
-	   }else if( ya == 1 && yb == 0){
-	      printf("Warning : Recrossing happened, search range will defined as (b2,final)\n");
-	      a1 = b2;
-	      b1 = b1;
-	   }else {
-          printf("Refine Step failed !\n");
-	      exit(1);
-	   }
-      // printf("Old Bound [ %ld,%ld ]; Test ya = %d , yb = %d ; New Bond [ %ld, %ld ] \n", a2,b2,ya,yb,a1,b1);
-	
-	  
+
+         test = a1+int((b1-a1)/2);
+         ytest = CheckState(mdbuff[test]);
+         
+         if ( ytest == 0 ){
+             a1 = test;
+             b1 = b1;
+         }
+         else if ( ytest == 1 ){
+             a1 = a1;
+             b1 = test;
+         }
+         else { 
+             printf("Refine Step Failed ! \n");
+             exit(1);
+         }
+         diff = abs( b1 - a1 );
+         printf("Insert Point %ld; Test ytest = %d ; New Bond [ %ld, %ld ] \n",test,ytest,a1,b1);
      }
-     nsteps_refined = nsteps-check_steps-relax_steps+int((a2+b2)/2);
+
+     nsteps_refined = nsteps-check_steps-relax_steps+int((a1+b1)/2);
      printf("Refined mdsteps = %ld\n",nsteps_refined);
      return;
 }
