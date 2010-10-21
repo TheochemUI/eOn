@@ -229,13 +229,13 @@ int Parameters::load(FILE *file){
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
-	mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
-	mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
-	mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
-	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
-	mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
-	RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
-	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
+	    mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+	    mdTemperture = ini.GetValueF("Dynamics","TEMPERTURE",mdTemperture);
+	    mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
+	    PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+	    mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
+	    RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
+	    CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
         BondBoost = ini.GetValueB("Hyper","BondBoost",BondBoost);

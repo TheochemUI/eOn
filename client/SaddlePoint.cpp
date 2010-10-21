@@ -22,6 +22,7 @@ SaddlePoint::SaddlePoint(){
     lowestEigenmode = 0;
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
+    forceCallsMinimization = 0;
     return;
 }
 
@@ -122,19 +123,27 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
         lowestEigenmode->startNewSearchAndCompute(saddle, mode);
         eigenMode = lowestEigenmode->getEigenvector();
         eigenValue = lowestEigenmode->getEigenvalue();
-    }else{
-        if(parameters->saddleMaxJumpAttempts <= 0){
+    }
+    else
+    {
+        if(parameters->saddleMaxJumpAttempts <= 0)
+        {
             displaceInConcaveRegion();
-        }else{
+        }
+        else
+        {
             jumpToConvexRegion();
         }
     }
     fprintf(stdout, "  Saddle point displaced.\n");
 
     if(status == statusInit)
+    {
        searchForSaddlePoint(initialEnergy);
+    }
         
-    if(status == statusInit){
+    if(status == statusInit)
+    {
         fprintf(stdout, "    Saddle point determined.\n");        
         relaxFromSaddle(min1, min2);
         fprintf(stdout, "    Minima determined.\n");
@@ -261,13 +270,15 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     min1->setPositions(displacedPos);
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
+    forceCallsMinimization += cgMin1.totalForceCalls;
  
     *min2 = *saddle;
     displacedPos = posSaddle + eigenMode * 0.2;
     min2->setPositions(displacedPos);
     ConjugateGradients cgMin2(min2, parameters);  
     cgMin2.fullRelax();
- 
+    forceCallsMinimization += cgMin2.totalForceCalls;
+
     return;
 }
 
@@ -316,7 +327,6 @@ void SaddlePoint::displaceInConcaveRegion()
     eigenMode = lowestEigenmode->getEigenvector();
     eigenValue = lowestEigenmode->getEigenvalue();
 
-
     return;
 }
 
@@ -343,9 +353,9 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenMode = lowestEigenmode->getEigenvector();
     forces = correctingForces(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-#ifndef NDEBUG
-    saddle->matter2xyz("climb", false);
-#endif
+    #ifndef NDEBUG
+        saddle->matter2xyz("climb", false);
+    #endif
     do
     {
         forceCallsSaddle = saddle->getForceCalls();        
