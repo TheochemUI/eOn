@@ -32,6 +32,14 @@ void bop::cleanMemory(void)
 
 void bop::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
+    // Redirect stdout to llout.
+    fpos_t pos;
+    int fd;
+    fflush(stdout);
+    fgetpos(stdout, &pos);
+    fd = dup(fileno(stdout));
+    freopen("llout", "a+", stdout);
+
     assert(N > 1);
     if(!initialized)
     {
@@ -47,14 +55,6 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     bopbox[0] = box[0];
     bopbox[4] = box[1];
     bopbox[8] = box[2];
-
-    // Redirect stdout to llout.
-    fpos_t pos;
-    int fd;
-    fflush(stdout);
-    fgetpos(stdout, &pos);
-    fd = dup(fileno(stdout));
-    freopen("llout", "a+", stdout);
 
     // Call the FU function.
     boplib_calc_ef_(&N, R, bopbox, atomEnergies, F);      
