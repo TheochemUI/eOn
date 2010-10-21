@@ -815,6 +815,8 @@ class ARC(Communicator):
         s = """
         #!/bin/bash
 
+        set -e # Immediately exit if any command fail
+
         ls -l
         if [ -f client-bin ]; then
             # It seems we got a EON client binary as an inputfile. It does
@@ -829,10 +831,8 @@ class ARC(Communicator):
         tar jxvf $1.tar.bz2
         cd $1
         client
-        x=$?
         cd $HOME
         tar jcvf $1.tar.bz2  $1
-        exit $x
         """
         script_path = os.path.join(self.scratchpath, 'wrapper.sh')
         try:
