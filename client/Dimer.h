@@ -47,7 +47,7 @@ private:
     int nAtoms;
     Parameters *parameters;///< Pointer to the runtime parameters. Note that the structure is used to store how many force calls that was used in the locating the eigenmodes.
 
-    void estimateLowestEigenmode(long rotationsToPermod);///< Is computational heavy! Try to obtain a converged result for the eigenmode within the number of rotations passed in \a maxRotations.
+    void estimateLowestEigenmode();///< Is computational heavy! Try to obtain a converged result for the eigenmode within the number of rotations passed in \a maxRotations.
 
     /** The rotational plane that is going to be used is determined with the Conjugate Gradient method.
     @param[in]      *rotationalForce           Pointer to array of length nFreeCoord_. The rotational forces just calculated.

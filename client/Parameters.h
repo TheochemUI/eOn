@@ -69,7 +69,10 @@ public:
     double hessianPrefactorMax; // max prefactor allowed
     double hessianPrefactorMin; // min prefactor allowed
 
-    long dimerRotations; // number of rotation iterations during the eigenmode estimation used in dimer
+    long dimerRotationsHigh;
+    long dimerRotationsLow;
+    double dimerWindowHigh;
+    double dimerWindowLow;
     //long dimerRotationsNewSearch; // number of iteration before starting a new saddle point search used in dimer
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle

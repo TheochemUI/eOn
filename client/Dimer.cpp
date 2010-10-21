@@ -45,7 +45,7 @@ Dimer::~Dimer()
 void Dimer::moveAndCompute(Matter const *matter)
 {
     *matterInitial = *matter;
-    estimateLowestEigenmode(parameters->dimerRotations);
+    estimateLowestEigenmode();
     return;
 }
 
@@ -67,7 +67,7 @@ void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen:
 }
 
 
-void Dimer::estimateLowestEigenmode(long rotationsToPerform)
+void Dimer::estimateLowestEigenmode()
 {
     long rotations = 0;
     long forceCallsInitial;
@@ -119,10 +119,10 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
         //XXX: NEEDS TO BE PARAMETERIZED.
         //XXX: NEEDS TO BE PARAMETERIZED.
         //XXX: NEEDS TO BE PARAMETERIZED.
-        double torqueLimitHigh = 1.0;
-        double torqueLimitLow = 0.1;
-        int torqueMaxRotations = 32;
-        int torqueMinRotations = 1;
+        double torqueLimitHigh = parameters->dimerWindowHigh;
+        double torqueLimitLow = parameters->dimerWindowLow;
+        int torqueMaxRotations = parameters->dimerRotationsHigh;
+        int torqueMinRotations = parameters->dimerRotationsLow;
         //XXX: NEEDS TO BE PARAMETERIZED.
         //XXX: NEEDS TO BE PARAMETERIZED.
         //XXX: NEEDS TO BE PARAMETERIZED.
