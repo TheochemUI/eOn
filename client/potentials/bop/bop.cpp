@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 bool  bop::initialized = false;
 
@@ -47,9 +48,24 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     bopbox[4] = box[1];
     bopbox[8] = box[2];
 
+    // Redirect stdout to llout.
+    fpos_t pos;
+    int fd;
+    fflush(stdout);
+    fgetpos(stdout, &pos);
+    fd = dup(fileno(stdout));
+    freopen("llout", "a+", stdout);
+
     // Call the FU function.
     boplib_calc_ef_(&N, R, bopbox, atomEnergies, F);      
     
+    // Redirect stdout to... stdout?? Something like that.
+    fflush(stdout);
+    dup2(fd, fileno(stdout));
+    close(fd);
+    clearerr(stdout);
+    fsetpos(stdout, &pos);
+
     // bopfox returns energy in an array of per-atom energies.  Sum to get total energy.
     *U = 0.0;
     for(int i = 0; i < N; i++)
