@@ -116,16 +116,10 @@ void Dimer::estimateLowestEigenmode()
 
 
 
-        //XXX: NEEDS TO BE PARAMETERIZED.
-        //XXX: NEEDS TO BE PARAMETERIZED.
-        //XXX: NEEDS TO BE PARAMETERIZED.
         double torqueLimitHigh = parameters->dimerWindowHigh;
         double torqueLimitLow = parameters->dimerWindowLow;
         int torqueMaxRotations = parameters->dimerRotationsHigh;
         int torqueMinRotations = parameters->dimerRotationsLow;
-        //XXX: NEEDS TO BE PARAMETERIZED.
-        //XXX: NEEDS TO BE PARAMETERIZED.
-        //XXX: NEEDS TO BE PARAMETERIZED.
   
         assert(( std::isnormal(torqueMagnitude) ));
         if(torqueMagnitude > torqueLimitHigh && rotations >= torqueMaxRotations)
@@ -172,7 +166,9 @@ void Dimer::estimateLowestEigenmode()
             rotations++;
         }
         
-        printf("DIMER        Curvature: % 8f  Torque: % 8f\n", curvature, torqueMagnitude);
+        #ifndef NDEBUG
+            printf("DIMER        Curvature: % 8f  Torque: % 8f\n", curvature, torqueMagnitude);
+        #endif
         
     }    
     eigenvalue = curvature;
