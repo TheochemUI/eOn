@@ -206,7 +206,7 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
     step = stepSize(forceBeforeStep, forceAfterStep, maxStep);
 
     // Move system
-    return pos + directionNorm*step;
+    return pos + directionNorm * step;
 };
 
 
