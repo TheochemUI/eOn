@@ -266,7 +266,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      a1 = a2 = initial;
      b1 = b2 = final;
      diff = final - initial;
-      
+     //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
      while(diff > RefineAccuracy){
 	   a2 = int(a1 + 0.382 * ( b1 - a1) );
 	   b2 = int(a1 + 0.618 * ( b1 - a1) );
@@ -276,20 +276,22 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      
 	   if ( ya == 0 && yb == 0){
 	      a1 = b2;
-          b1 = final;
+          b1 = b1;
 	   }else if( ya == 0 && yb == 1){
           a1 = a2;
 	      b1 = b2;
 	   }else if( ya == 1 && yb == 1){
-	      a1 = initial;
+	      a1 = a1;
 	      b1 = a2;
 	   }else if( ya == 1 && yb == 0){
 	      printf("Warning : Recrossing happened, search range will defined as (b2,final)\n");
 	      a1 = b2;
-	      b1 = final;
+	      b1 = b1;
 	   }else {
+          printf("Refine Step failed !\n");
 	      exit(1);
 	   }
+      // printf("Old Bound [ %ld,%ld ]; Test ya = %d , yb = %d ; New Bond [ %ld, %ld ] \n", a2,b2,ya,yb,a1,b1);
 	
 	  
      }
