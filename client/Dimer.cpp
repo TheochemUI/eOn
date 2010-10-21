@@ -94,7 +94,8 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     forceCallsInitial = matterInitial->getForceCalls();
     forceCallsDimer = matterDimer->getForceCalls();
     // Uses two force calls per rotation
-    while(!doneRotating){
+    while(!doneRotating)
+    {
         // First dimer
         //cout<<"Before "<<rotationalForce.norm()<<endl;
         curvature = calcRotationalForce(rotationalForce);  
@@ -113,10 +114,18 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
         // Calculate the magnitude of the torque on the dimer.
         torqueMagnitude = rotationalForce.squaredNorm();
 
+
+
+        //XXX: NEEDS TO BE PARAMETERIZED.
+        //XXX: NEEDS TO BE PARAMETERIZED.
+        //XXX: NEEDS TO BE PARAMETERIZED.
         double torqueLimitHigh = 1.0;
         double torqueLimitLow = 0.1;
         int torqueMaxRotations = 32;
         int torqueMinRotations = 1;
+        //XXX: NEEDS TO BE PARAMETERIZED.
+        //XXX: NEEDS TO BE PARAMETERIZED.
+        //XXX: NEEDS TO BE PARAMETERIZED.
   
         assert(( std::isnormal(torqueMagnitude) ));
         if(torqueMagnitude > torqueLimitHigh && rotations >= torqueMaxRotations)
@@ -162,6 +171,9 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     
             rotations++;
         }
+        
+        printf("DIMER        Curvature: % 8f  Torque: % 8f\n", curvature, torqueMagnitude);
+        
     }    
     eigenvalue = curvature;
 
@@ -169,6 +181,8 @@ void Dimer::estimateLowestEigenmode(long rotationsToPerform)
     forceCallsDimer = matterDimer->getForceCalls()-forceCallsDimer;
 
     totalForceCalls += forceCallsInitial+forceCallsDimer;
+
+    //printf("DIMER: Force: %8f    Torque: %8f    Curvature: %8f    Rotations: %8d\n", forceDimer, torqueMagnitude, curvature, rotations);
 
     return;
 }
