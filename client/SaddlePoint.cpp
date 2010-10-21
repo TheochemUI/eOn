@@ -382,7 +382,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            printf("climb = %ld, max force = %f\n", iterations, saddle->maxForce());
+            printf("DIMER Step: %ld    Force = %f\n", iterations, saddle->maxForce());
             saddle->matter2xyz("climb", true);
         #endif
         energySaddle = saddle->getPotentialEnergy();
