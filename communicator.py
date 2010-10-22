@@ -322,7 +322,6 @@ class BOINC(Communicator):
             wu_name = "%i_%s" % (self.uniqueid, jobs[0]['id'])
             tarname = "%s.tgz" % wu_name
             tarpath = self.dir_hier_path(tarname)
-            print "writing tar file to %s" % tarpath
             tar = tarfile.open(tarpath, "w:gz")
 
             jobfiles = {}
