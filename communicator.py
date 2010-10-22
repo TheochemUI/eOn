@@ -322,6 +322,7 @@ class BOINC(Communicator):
             wu_name = "%i_%s" % (self.uniqueid, jobs[0]['id'])
             tarname = "%s.tgz" % wu_name
             tarpath = self.dir_hier_path(tarname)
+            print "writing tar file to %s" % tarpath
             tar = tarfile.open(tarpath, "w:gz")
 
             jobfiles = {}
@@ -402,16 +403,13 @@ class BOINC(Communicator):
                 bundle_size = self.get_bundle_size(tar.getnames())
                 results = [ {'name':jobname} for i in range(bundle_size) ]
                 for tarinfo in tar:
-                    if bundle_size == 1:
-                        index = 0
-                    else:
-                        try:
-                            index = int(tarinfo.name.split('_')[-1].split('.')[0])
-                        except:
-                            logger.exception("Failed to process file %s in tar" % tarinfo.name)
-                            continue
-                        splitname = tarinfo.name.rsplit(".",1) 
-                        newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
+                    try:
+                        index = int(tarinfo.name.split('_')[-1].split('.')[0])
+                    except:
+                        logger.exception("Failed to process file %s in tar" % tarinfo.name)
+                        continue
+                    splitname = tarinfo.name.rsplit(".",1) 
+                    newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
 
 
                     #Read the file in the tar archive into a stringio
