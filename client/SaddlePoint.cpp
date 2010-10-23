@@ -2,7 +2,7 @@
  *===============================================
  * EON SaddlePoint.cpp
  *===============================================
-*/
+ */
 
 #include "SaddlePoint.h"
 #ifdef WITH_LANCZOS
@@ -355,6 +355,13 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     ConjugateGradients cgSaddle(saddle, parameters, forces);
     #ifndef NDEBUG
         saddle->matter2xyz("climb", false);
+        if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
+        {
+            printf("DIMER ---------------------------------------------------------------------------------------\n");    
+            printf("DIMER  %9s  %9s  %9s  %9s  %9s  %9s  %9s  %9s\n", "Step", "Force", "Torque", 
+                   "Energy", "Curvature", "Angle", "Rotations", "Step Size");
+            printf("DIMER ---------------------------------------------------------------------------------------\n");    
+        }
     #endif
     do
     {
@@ -393,18 +400,27 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            printf("DIMER Step: %5ld    Force = % 8f    StepSize: % 8f\n", iterations, saddle->maxForce(), stepSize);
+            if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)        
+            {
+                double *stats = lowestEigenmode->stats;
+                printf("DIMER  %9ld  % 9.5f  % 9.5f  % 9.5f  % 9.5f  % 9.3f  %9d  % 9.5f \n", iterations, 
+                       sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
+                       saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
+            }
             saddle->matter2xyz("climb", true);
         #endif
         energySaddle = saddle->getPotentialEnergy();
     }while(!converged && 
            (iterations < parameters->saddleMaxIterations) && 
            (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
-    if(!converged){
-        if(parameters->saddleMaxIterations <= iterations) {
+    if(!converged)
+    {
+        if(parameters->saddleMaxIterations <= iterations) 
+        {
             status = statusBadMaxIterations;
         }
-        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy) {
+        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy) 
+        {
             status = statusBadHighBarrier;
         }
     }
