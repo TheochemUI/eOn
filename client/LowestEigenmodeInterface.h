@@ -20,6 +20,8 @@ public:
     void virtual startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>) = 0; 
     void virtual moveAndCompute(Matter const *matter) = 0;  
     double virtual getEigenvalue() = 0;
+    double *stats;
+    
     /// Return eigenvector.
     virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector()=0;
         /** Set initial direction manually.*/
