@@ -16,4 +16,4 @@ for i in range(len(p1)):
     diff = atoms.pbc(p2.r[i] - p1.r[i], p1.box)
     print "%5d    %10f    %10f    %10f    %10f" % (i, diff[0], diff[1], diff[2], numpy.linalg.norm(diff))
 
-print "\n  total norm:", numpy.linalg.norm(atoms.pbc(p2.r - p1.r, p1.box)), "\n"
+print "\n total norm:", numpy.linalg.norm(atoms.pbc(p2.r - p1.r, p1.box)), "\n"
