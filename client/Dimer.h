@@ -19,6 +19,8 @@ USING_PART_OF_NAMESPACE_EIGEN
 #include "Parameters.h"
 #include "LowestEigenmodeInterface.h"
 
+#define PI 3.141592653589793
+
 /** Use the dimer method to estimate the lowest eigenvector of the Hessian and its corresponding eigenvalue (curvature). In this version a 'fictive' dimer is used, only one dimer configuration is calculated explicitly whereas the other configuration is estimated with forward differencing relative to the center of the dimer*/
 class Dimer : public LowestEigenmodeInterface{
 public:
@@ -46,7 +48,6 @@ private:
     long nFreeCoord;///< Number of free coordinates.
     int nAtoms;
     Parameters *parameters;///< Pointer to the runtime parameters. Note that the structure is used to store how many force calls that was used in the locating the eigenmodes.
-
     void estimateLowestEigenmode();///< Is computational heavy! Try to obtain a converged result for the eigenmode within the number of rotations passed in \a maxRotations.
 
     /** The rotational plane that is going to be used is determined with the Conjugate Gradient method.

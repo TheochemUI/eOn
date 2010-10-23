@@ -7,7 +7,6 @@
  *          - add 45 degree rotation angle
  *          - add rotation angle instead of rotational force criteria
  *      GH: add LBFGS optimizer
- *      GH: make torqueLimitHigh/Low and torqueMin/MaxRotations variables
  *===============================================
  */
 
@@ -32,6 +31,7 @@ Dimer::Dimer(Matter const *matter, Parameters *params)
     directionNorm.setZero();
     rotationalPlaneNorm.setZero();
     totalForceCalls = 0;
+    stats = new double[4]; //Torque, Curvature, Angle, Rotations.
 }
 
 
@@ -39,6 +39,7 @@ Dimer::~Dimer()
 {
     delete matterInitial;
     delete matterDimer;
+    delete stats;
 }
 
 
@@ -89,7 +90,7 @@ void Dimer::estimateLowestEigenmode()
     rotationalForceOld.setZero();
     rotationalPlaneNormOld.setZero();
     
-
+    stats[2] = 0.0;
     lengthRotationalForceOld = 0;
     forceCallsInitial = matterInitial->getForceCalls();
     forceCallsDimer = matterDimer->getForceCalls();
@@ -140,6 +141,7 @@ void Dimer::estimateLowestEigenmode()
 
         rotateDimerAndNormalizeAndOrthogonalize(parameters->dimerRotationAngle);
         
+
         if(!doneRotating)
         {
             // Second dimer
@@ -165,12 +167,13 @@ void Dimer::estimateLowestEigenmode()
     
             rotations++;
         }
-        
-        #ifndef NDEBUG
-            printf("DIMER        Curvature: % 8f  Torque: % 8f\n", curvature, torqueMagnitude);
-        #endif
-        
+
     }    
+    stats[0] = torqueMagnitude;
+    stats[1] = curvature;
+    stats[2] = (stats[2] * 180.0) / PI;
+    stats[3] = rotations;
+
     eigenvalue = curvature;
 
     forceCallsInitial = matterInitial->getForceCalls()-forceCallsInitial;
@@ -182,7 +185,6 @@ void Dimer::estimateLowestEigenmode()
 
     return;
 }
-
 
 double Dimer::getEigenvalue(){
     return eigenvalue;
@@ -279,6 +281,8 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
 void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
 {
     double cosAngle, sinAngle;
+
+    stats[2] += rotationAngle;
 
     cosAngle = cos(rotationAngle);
     sinAngle = sin(rotationAngle);
