@@ -19,7 +19,7 @@ RANDOM_SEED=-1
 # 9 = Lennard-jones binary
 # 10 = Aluminum
 # 12 = Quantum Sutton-Chen
-POTENTIAL_TAG=3
+POTENTIAL_TAG=10
 
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
