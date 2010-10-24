@@ -128,6 +128,9 @@ if sb_recycling_on:
 
 #Random Displacement
 disp_type = parser.get('Displacement', 'type')
+disp_cutoff = parser.getfloat('Displacement', 'cutoff')
+disp_use_covalent = parser.getboolean('Displacement', 'use_covalent')
+disp_covalent_scale = parser.getfloat('Displacement', 'covalent_scale')
 if disp_type == 'water':
     stdev_translation = parser.getfloat('Displacement', 'stdev_translation')
     stdev_rotation = parser.getfloat('Displacement', 'stdev_rotation')
