@@ -168,6 +168,10 @@ void Dimer::estimateLowestEigenmode()
             rotations++;
         }
 
+    #ifndef NDEBUG
+        printf("DIMERROT          % 9.5f  % 9.5f             % 9.5f  % 9.3f  %9ld\n", forceDimer, torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
+    #endif
+
     }    
     stats[0] = torqueMagnitude;
     stats[1] = curvature;
@@ -181,7 +185,6 @@ void Dimer::estimateLowestEigenmode()
 
     totalForceCalls += forceCallsInitial+forceCallsDimer;
 
-    //printf("DIMER: Force: %8f    Torque: %8f    Curvature: %8f    Rotations: %8d\n", forceDimer, torqueMagnitude, curvature, rotations);
 
     return;
 }
