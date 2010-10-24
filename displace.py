@@ -76,14 +76,13 @@ class Displace:
 #class Recycle()
 
 class Undercoordinated(Displace):
-    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None):
+    def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
         self.max_coordination = max_coordination
         self.undercoordinated_atoms = []
 
-        # XXX: 3.3 should be replaced by a fancy method that uses bond distances.
-        self.coordination_distance = 3.3
+        self.coordination_distance = cutoff
 
         #cns is an array of the coordination numbers for each of the atoms.
         cns = atoms.coordination_numbers(self.reactant, self.coordination_distance)
@@ -111,13 +110,12 @@ class Undercoordinated(Displace):
         return self.get_displacement(epicenter)
 
 class Leastcoordinated(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
         self.leastcoordinated_atoms = []
 
-        # XXX: 3.3 should be replaced by a fancy method that uses bond distances.
-        self.coordination_distance = 3.3
+        self.coordination_distance = cutoff
 
         self.leastcoordinated_atoms = atoms.least_coordinated(self.reactant, 
                 self.coordination_distance)

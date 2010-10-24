@@ -488,9 +488,9 @@ def get_displacement(reactant, indices=None):
     if config.disp_type == 'random':
         disp = displace.Random(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
     elif config.disp_type == 'undercoordinated':
-        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius, hole_epicenters=indices)
+        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius, hole_epicenters=indices, cutoff=config.disp_cutoff, use_covalent=config.disp_use_covalent, covalent_scale=config.disp_covalent_scale)
     elif config.disp_type == 'leastcoordinated':
-        disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
+        disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices, cutoff=config.disp_cutoff, use_covalent=config.disp_use_covalent, covalent_scale=config.disp_covalent_scale)
     elif config.disp_type == 'water':
         disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation)
     else:
