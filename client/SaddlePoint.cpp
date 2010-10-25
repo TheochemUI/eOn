@@ -353,7 +353,12 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenMode = lowestEigenmode->getEigenvector();
     forces = correctingForces(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-    #ifndef NDEBUG
+	#ifndef NDEBUG
+    	static int run;
+    	ostringstream climb;
+    	climb << "climb" << run;
+    	saddle->matter2xyz(climb.str(), false);
+    	++run;
         saddle->matter2xyz("climb", false);
         if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
         {

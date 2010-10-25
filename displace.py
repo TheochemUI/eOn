@@ -1,4 +1,4 @@
-import os
+import os, re
 import numpy
 import atoms
 import io
@@ -161,17 +161,16 @@ class Water(Displace):
         '''reactant: structure to be displaced\n'''\
         '''stdev_translation: translational standard deviation (Angstrom)\n'''\
         '''stdev_rotation: rotational standard deviation (radian)'''
-        print self.__class__, '__init__'
         self.reactant=reactant
         self.stdev_translation=stdev_translation
         self.stdev_rotation=stdev_rotation
         for i, name in enumerate(reactant.names):
-            if name != 'H': break
+            print i, name
+            if not re.search('^H', name): break
         # For water assume that all the hydrogen are listed first, then all the oxygen
         self.n_water=i/2
 
     def make_displacement(self):
-        print self.__class__, 'make_displacement'
         '''Returns Atom object containing displaced structure and an array containing the displacement'''
         return self.get_displacement()
 
@@ -201,7 +200,6 @@ class Water(Displace):
             displaced_atoms.r[h2]=rh2
             displaced_atoms.r[o]=ro            
         displacement=displaced_atoms.r - self.reactant.r
-        print self.__class__, 'get_displacement'
         return displaced_atoms, displacement
 
     ## Rotate a molecule of water.
@@ -212,6 +210,7 @@ class Water(Displace):
     # @return "hydrogen1, hydrogen2, oxygen" coordinates of atoms after rotation
     # The rotations uses the @em x, y, z convention (pitch-roll-yaw). The fisrt rotation to take place is around z, then y, then x.
     # Equations and notations are from: http://mathworld.wolfram.com/EulerAngles.html .
+    @staticmethod
     def rotate_water(hydrogen1, hydrogen2, oxygen, psi, theta, phi, hydrogen_mass=1.0, oxygen_mass=16.0):
         G=(hydrogen_mass*(hydrogen1+hydrogen2)+oxygen_mass*oxygen)/(hydrogen_mass*2+oxygen_mass)
         rot=numpy.array([
@@ -222,7 +221,6 @@ class Water(Displace):
         rh2=numpy.tensordot(rot, (hydrogen2-G), 1)+G
         ro=numpy.tensordot(rot, (oxygen-G), 1)+G
         return rh1, rh2, ro
-    rotate_water=staticmethod(rotate_water)
 
 if __name__ == '__main__':
     import sys
