@@ -634,7 +634,12 @@ if __name__ == '__main__':
 
     #XXX: config is ugly as it finds out where the config file is directly from 
     #     sys.argv instead of being passed it.
+    #import sys
     import config
+    if len(sys.argv) > 1:
+        config.init(sys.argv[-1])
+    else:
+        config.init()
     #set options.path_root to be where the config file is if given as an arg
     if config.path_root.strip() == '.' and len(args) == 1:
         config.path_root = os.path.abspath(os.path.dirname(args[0]))
