@@ -61,10 +61,6 @@ void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen:
     directionNorm = displacement.cwise() * matter->getFree();
     directionNorm.normalize();
     
-    // RT: following part of the algorithm has been replaced with the torque window.
-    // The initial search should be allowed to use extra iterations to obtain
-    // better estimate
-    //estimateLowestEigenmode(parameters->getRotationsNewSearch_Dimer());
 }
 
 
