@@ -18,6 +18,8 @@ export WITH_LANCZOS=1
 @endcode
 */
 #include <blitz/array.h>
+#include "../Eigen/Eigen"
+
 #include "../Constants.h"
 #include "../Parameters.h"
 #include "../Matter.h"
@@ -30,56 +32,99 @@ using namespace blitz;
 namespace gs=gradient_scanning;
 
 namespace {
-      class Matter2GradientObject : public gradient_scanning::GradientObject {
-      public:
-            Matter2GradientObject(Matter & matter);
-            void compute(blitz::Array<double, 1>& coordinates, blitz::Array<double, 1>& gradient);
-      private:
-            Matter2GradientObject();
-            Matter* matter_;
-      };
-
-      Matter2GradientObject::Matter2GradientObject(Matter & matter)
-      {
+    class Matter2GradientObject : public gradient_scanning::GradientObject {
+    public:
+        Matter2GradientObject(Matter & matter);
+        void compute(blitz::Array<double, 1>& coordinates, blitz::Array<double, 1>& gradient);
+    private:
+        Matter2GradientObject();
+        Matter* matter_;
+    };
+    
+    Matter2GradientObject::Matter2GradientObject(Matter & matter)
+    {
             matter_=&matter;
-      }
+    }
 
-      void Matter2GradientObject::compute(blitz::Array<double, 1>& coordinates, blitz::Array<double, 1>& gradient)
-      {
-            matter_->updateForces(coordinates.data(), 0, gradient.data());
-            gradient*=-1;
-      }
-}// end anonymous
+    void Matter2GradientObject::compute(blitz::Array<double, 1>& coordinates, blitz::Array<double, 1>& gradient)
+    {
+        int const n=coordinates.size();
+        for (int i=0; i<n; ++i) {
+            matter_->setPosition(i/3, i%3, coordinates(i));
+        };
+        Matrix<double, Eigen::Dynamic, 3> forces=matter_->getForces();
+        for (int i=0; i<n; ++i) {
+            coordinates(i)=matter_->getPosition(i/3, i%3);
+            gradient(i)= -forces(i/3, i%3);
+        };
+    }
+} // end anonymous
 
-Lanczos::Lanczos(Matter *const, Parameters *parameters) :
-      matter_(parameters)
+Lanczos::Lanczos(Matter *const, Parameters *parameters) : matter_(parameters)
 {
-      setConvergenceLimit(parameters->getConvergenceLimit_Lanczos());
-      setIterationLimit(parameters->getIterationLimit_Lanczos());
-      setFiniteDifference(1e-5);//Angstrom
-      setInitial(PREVIOUS);
-      assert(getIterationLimit() > 0);
+    setConvergenceLimit(parameters->lanczosConvergence);
+    setIterationLimit(parameters->lanczosIteration);
+    setFiniteDifference(1e-5); //Angstrom
+    setInitial(PREVIOUS);
+    assert(getIterationLimit() > 0);
 }
 
-void Lanczos::startNewSearchAndCompute(Matter const *matter, double *)
+void Lanczos::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> matrix)
 {
-      eigenvector_.free();
-      moveAndCompute(matter);
+    eigenvector_.free();
+    moveAndCompute(matter);
 }
 
 void Lanczos::moveAndCompute(Matter const *matter)
 {
-      Array<double, 1> coordinates(3*matter->numberOfFreeAtoms()), gradient;
-      matter->getFreePositions(coordinates.data());
-      matter_=*matter;
-      Matter2GradientObject forcefield(matter_); 
-      minimumMode(static_cast<gs::GradientObject&>(forcefield), coordinates, eigenvalue_, eigenvector_, gradient);
+    Array<double, 1> coordinates(3*matter->numberOfFreeAtoms()), gradient;
+    int const n=matter->numberOfAtoms();
+    double * data=coordinates.data();
+    int j=0;
+    for (int i=0; i<n; ++i) {
+        if (not matter->getFixed(i)) {
+            for (int a=0; a<3; ++a) {    
+                data[j]=matter->getPosition(i, a);
+                ++j;
+            };
+        };
+    };
+    matter_=*matter;
+    Matter2GradientObject forcefield(matter_); 
+    minimumMode(static_cast<gs::GradientObject&>(forcefield), coordinates, eigenvalue_, eigenvector_, gradient);
 }
 
-double Lanczos::returnLowestEigenmode(double *result)
+double Lanczos::getEigenvalue()
 {
-      const int n=eigenvector_.size();
-      Array<double, 1> _result(result, n, neverDeleteData);
-      _result=eigenvector_;
-      return eigenvalue_;
+    return eigenvalue_;
+}
+
+Matrix<double, Eigen::Dynamic, 3> Lanczos::getEigenvector()
+{
+    int const n=matter_.numberOfAtoms();
+    Matrix<double, Eigen::Dynamic, 3> result(n, 3);
+    int j=0;
+    for (int i=0; i < n; ++i) {
+        if (not matter_.getFixed(i)) {
+            for (int a=0; a < 3; ++a) {
+                result(i, a)=eigenvector_(j);
+                ++j;
+            };
+        };
+    };
+    return result;
+}
+
+void Lanczos::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
+{
+    int const n=matter_.numberOfAtoms();
+    int j=0;
+    for (int i=0; i<n; ++i) {
+        if (not matter_.getFixed(i)) {
+            for (int a=0; a<3; ++a) {    
+                eigenvector_(j)=eigenvector(i, a);
+                ++j;
+            };
+        };
+    };
 }

@@ -17,16 +17,13 @@ public:
     Lanczos(Matter *const, Parameters *parameters);
     
     ~Lanczos() {};///< Destructor.
-    
-    /// Execute Lanczos. It uses gradient to start lanczos. Use at the beggining of a saddle point search.
-    virtual void startNewSearchAndCompute(Matter const *matter, double *);
-    /// Execute Lanczos. It uses last eigenvector to start Lanczos. Use in subsequent step of a saddle point search
-    virtual void moveAndCompute(Matter const *matter);
-    /** Lowest eigenvalue and corresponding eigenvector.
-        @param[in] result Pointer to array to store the eigenvector. The length of the vector is @f$ 3\times \textrm{Number of Movable Atoms} @f$.
-        @return Eigenvalue
-        */
-    virtual double returnLowestEigenmode(double *result);
+    void virtual startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> matrix); 
+    void virtual moveAndCompute(Matter const *matter);  
+    double virtual getEigenvalue();
+    /// Return eigenvector.
+    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector();
+        /** Set initial direction manually.*/
+    virtual void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
 private:
     Lanczos();
     blitz::Array<double, 1> eigenvector_;///< Back up eigenvector for last Lanczos.
