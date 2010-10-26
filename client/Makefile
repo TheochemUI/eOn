@@ -2,60 +2,60 @@
 CXXFLAGS += -O2 -Wall -Wfatal-errors
 #Fortran compiler settings
 ifdef NO_FORTRAN
-	CXXFLAGS += -DNO_FORTRAN
+    CXXFLAGS += -DNO_FORTRAN
 else
-	# gfortran
-	FC = gfortran
-	FFLAGS += -O2
-	AR = ar cru
-	LDFLAGS += -lgfortran
-	# ifort
-	#FC = ifort
-	#FFLAGS += -O2
-	# Linux linking
-	#AR = ar cru
-	#LDFLAGS += -limf -lsvml -lifcore -ldl
-	# OSX linking
-	#AR = ifort -staticlib -o
+    # gfortran
+    FC = gfortran
+    FFLAGS += -O2
+    AR = ar cru
+    LDFLAGS += -lgfortran
+    # ifort
+    #FC = ifort
+    #FFLAGS += -O2
+    # Linux linking
+    #AR = ar cru
+    #LDFLAGS += -limf -lsvml -lifcore -ldl
+    # OSX linking
+    #AR = ifort -staticlib -o
 endif
 
 #Fortran compiler settings
 ifdef BOPFOX
-	CXXFLAGS += -DBOPFOX
-	LDFLAGS += libbopfox.a
+    CXXFLAGS += -DBOPFOX
+    LDFLAGS += libbopfox.a
     POTDIRS += ./potentials/bop
     LIBS += ./potentials/bop/libbop.a
     POTENTIALS += "+bop"
 endif
 
-# define NDEBUG to remove debugging lines
-ifdef NDEBUG
-	DEBUG=No
-	CXXFLAGS += -DNDEBUG
-else
-	CXXFLAGS += -g
-	DEBUG=Yes
-endif
 
 # define BOINC to link against boinc libs
 ifdef BOINC
-	BOINC=Yes	
-	DEBUG=No
-	OBJECTS += Compression.o
-	CXXFLAGS += -DNDEBUG -DBOINC
-	OBJECTS += Compression.o
-ifdef WIN32
-	LDFLAGS += -static -lboinc_api -lboinc -larchive -lz
+    BOINC=Yes
+    DEBUG=No
+    OBJECTS += Compression.o
+    CXXFLAGS += -DNDEBUG -DBOINC
+    OBJECTS += Compression.o
+    ifdef WIN32
+        LDFLAGS += -static -lboinc_api -lboinc -larchive -lz
+    else
+        LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive -lz
+    endif
 else
-	LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive -lz
-endif
-else
-	BOINC=No
+    BOINC=No
+	# define NDEBUG to remove debugging lines
+	ifdef NDEBUG
+		DEBUG=No
+		CXXFLAGS += -DNDEBUG
+	else
+		CXXFLAGS += -g
+		DEBUG=Yes
+	endif
 endif
 ifdef WITH_LANCZOS
-	CXXFLAGS += -DWITH_LANCZOS
-	FPOTDIRS += Lanczos
-	LIBS += Lanczos/libLanczos.a
+    CXXFLAGS += -DWITH_LANCZOS
+    FPOTDIRS += Lanczos
+    LIBS += Lanczos/libLanczos.a
     LDFLAGS += -lgsl -lgslcblas
 endif
 #Potentials
@@ -86,19 +86,19 @@ POTENTIALS += "+bopfox"
 
 
 ifdef NO_FORTRAN
-	POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
+    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
 else
-	POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP "
-	FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/
-	LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
+    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP "
+    FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/
+    LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
 endif
 
 OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
-	EpiCenters.o Hessian.o ConjugateGradients.o\
-	debug.o HelperFunctions.o Matter.o Parameters.o\
-	PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
-	ProcessSearchJob.o MinimizationJob.o HessianJob.o \
-        ParallelReplicaJob.o Dynamics.o BondBoost.o DimerDrJob.o DimerRotationJob.o
+    EpiCenters.o Hessian.o ConjugateGradients.o\
+    debug.o HelperFunctions.o Matter.o Parameters.o\
+    PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
+    ProcessSearchJob.o MinimizationJob.o HessianJob.o \
+    ParallelReplicaJob.o Dynamics.o BondBoost.o DimerDrJob.o DimerRotationJob.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo
