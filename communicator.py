@@ -1,6 +1,7 @@
 import os
 import struct
 import shutil
+import config
 import logging
 logger = logging.getLogger('communicator')
 
@@ -13,6 +14,32 @@ import cPickle as pickle
 import glob
 import re
 
+def get_communicator():
+    if config.comm_type=='boinc':
+        comm = BOINC(config.path_scratch, config.comm_boinc_project_dir, 
+                config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
+                config.comm_boinc_appname, config.comm_boinc_results_path,
+                config.comm_job_bundle_size)
+    elif config.comm_type=='cluster':
+        comm = Script(config.path_scratch, config.comm_job_bundle_size,
+                                   config.comm_script_name_prefix,
+                                   config.comm_script_path, 
+                                   config.comm_script_queued_jobs_cmd,
+                                   config.comm_script_cancel_job_cmd, 
+                                   config.comm_script_submit_job_cmd)
+    elif config.comm_type=='local':
+        comm = Local(config.path_scratch, config.comm_local_client, 
+                                  config.comm_local_ncpus, config.comm_job_bundle_size)
+    elif config.comm_type=='mpi':
+        comm = MPI(config.path_scratch, config.comm_mpi_client, 
+                                  config.comm_job_bundle_size, config.comm_mpi_mpicommand)
+    elif config.comm_type=='arc':
+        comm = ARC(config.path_scratch, config.comm_job_bundle_size, 
+                                config.comm_client_path, config.comm_blacklist)
+    else:
+        logger.error(str(config.comm_type)+" is an unknown communicator.")
+        raise ValueError()
+    return comm
 
 class NotImplementedError(Exception):
     pass
