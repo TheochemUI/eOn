@@ -362,10 +362,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         saddle->matter2xyz("climb", false);
         if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
         {
-            printf("DIMER ---------------------------------------------------------------------------------------\n");    
-            printf("DIMER  %9s  %9s  %9s  %9s  %9s  %9s  %9s  %9s\n", "Step", "Force", "Torque", 
+            printf("DIMER ---------------------------------------------------------------------------------------------\n");    
+            printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Force", "Torque", 
                    "Energy", "Curvature", "Angle", "Rotations", "Step Size");
-            printf("DIMER ---------------------------------------------------------------------------------------\n");    
+            printf("DIMER ---------------------------------------------------------------------------------------------\n");    
         }
     #endif
     do
@@ -408,7 +408,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)        
             {
                 double *stats = lowestEigenmode->stats;
-                printf("DIMER  %9ld  % 9.5g  % 9.5g  % 9.5g  % 9.5g  % 9.3g  %9d  % 9.5g \n", iterations, 
+                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
                        saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
             }
