@@ -32,6 +32,10 @@ def init(config_file = ""):
     config.akmc_max_kmc_steps = parser.getint('aKMC', 'max_kmc_steps')
 
     #Debug Options
+    config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
+    if debug_interactive_shell:
+        import signal, code
+        signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
     config.debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
     config.debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
     try:
