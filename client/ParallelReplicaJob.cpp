@@ -136,12 +136,12 @@ void ParallelReplicaJob::dynamics()
                 nexam = 0;
                 ncheck = 0; 	
 		newstate = CheckState(reactant);
-                stoped = newstate;
+                //stoped = newstate;
                 status = false;
                 if(newstate == false){
                    remember = true;
                 }else{
-                    nsteps_refined = nsteps + 1;
+                    //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
                        printf("haha AutoStop here !\n");
                        stoped = newstate;
@@ -167,13 +167,14 @@ void ParallelReplicaJob::dynamics()
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
     nsteps = nsteps + 1;
-
+    
+   
     if(parameters->mdRefine && newstate){     
         
         Refine(mdbuff);
-
-        long final_refined = nsteps_refined-nsteps+check_steps+relax_steps;
-        long totsteps = nsteps_refined; 
+         printf("nsteps_refined=%ld\n",nsteps_refined); 
+        long final_refined = nsteps_refined;
+        long totsteps = nsteps-check_steps-relax_steps+nsteps_refined; 
 
         *reactant = *mdbuff[final_refined-1];
         SPtime = SPtimebuff[final_refined-1];
@@ -299,7 +300,8 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      //    printf("Insert Point %ld; Test ytest = %d ; New Bondary [ %ld, %ld ] \n",test,ytest,a1,b1);
      }
 
-     nsteps_refined = nsteps-check_steps-relax_steps+int((a1+b1)/2);
+     //nsteps_refined = nsteps-check_steps-relax_steps+int((a1+b1)/2);
+     nsteps_refined = int((a1+b1)/2);
      printf("Refined mdsteps = %ld\n",nsteps_refined);
      return;
 }
