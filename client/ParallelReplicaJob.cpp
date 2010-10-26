@@ -108,7 +108,7 @@ void ParallelReplicaJob::dynamics()
         ncheck++;
         nsteps++;
 
-	if(parameters->mdRefine && remember){
+	if(parameters->mdRefine && remember ){
             *mdbuff[ncheck-1] = *reactant;
             stepsbuff[ncheck-1] = nsteps;
             SPtimebuff[ncheck-1] = SPtime;
@@ -135,10 +135,19 @@ void ParallelReplicaJob::dynamics()
 	    if (nexam >= relax_steps){
                 nexam = 0;
                 ncheck = 0; 	
-		        newstate = CheckState(reactant);
+		newstate = CheckState(reactant);
                 stoped = newstate;
                 status = false;
-                remember = true;
+                if(newstate == false){
+                   remember = true;
+                }else{
+                    nsteps_refined = nsteps + 1;
+                    if(parameters->mdAutoStop){
+                       printf("haha AutoStop here !\n");
+                       stoped = newstate;
+                    }
+   		    remember = false;
+                }
             }
 	}
 
@@ -158,7 +167,7 @@ void ParallelReplicaJob::dynamics()
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
     nsteps = nsteps + 1;
-    nsteps_refined = nsteps;
+
     if(parameters->mdRefine && newstate){     
         
         Refine(mdbuff);

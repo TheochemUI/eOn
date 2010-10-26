@@ -35,6 +35,7 @@ TEMPERATURE=350.0
 STEPS=40000
 PRD_MaxMovedDist=2.5
 mdRefine=1
+mdAutoStop=0
 RefineAccuracy=5
 CheckFreq=2000
 NewRelaxStep=5
