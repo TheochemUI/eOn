@@ -230,14 +230,18 @@ int Parameters::load(FILE *file){
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
-	mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
- 	mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
-	mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
-	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
-	mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
+		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+ 		mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
+		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
+		PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+		mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics","mdAutoStop",mdAutoStop);
-	RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
-	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
+		RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
+		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
+
+        lanczosConvergence = ini.GetValueL("Lanczos", "CONVERGENCE", lanczosConvergence);
+        lanczosIteration = ini.GetValueF("Lanczos", "ITERATOIN", lanczosIteration);
+
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
         BondBoost = ini.GetValueB("Hyper","BondBoost",BondBoost);
@@ -246,15 +250,14 @@ int Parameters::load(FILE *file){
         BBDVMAX = ini.GetValueF("Hyper","DVMAX",BBDVMAX);
         BBQRR = ini.GetValueF("Hyper","QRR",BBQRR );
         BBPRR = ini.GetValueF("Hyper","PRR",BBPRR );
-	BBQcut= ini.GetValueF("Hyper","Qcut",BBQcut);
+        BBQcut= ini.GetValueF("Hyper","Qcut",BBQcut);
         
         
-      
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
 
-	Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
-	Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
+        Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
+        Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
 
     }
     else
