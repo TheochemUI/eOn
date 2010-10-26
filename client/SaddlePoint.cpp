@@ -408,7 +408,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)        
             {
                 double *stats = lowestEigenmode->stats;
-                printf("DIMER  %9ld  % 9.5f  % 9.5f  % 9.5f  % 9.5f  % 9.3f  %9d  % 9.5f \n", iterations, 
+                printf("DIMER  %9ld  % 9.5g  % 9.5g  % 9.5g  % 9.5g  % 9.3g  %9d  % 9.5g \n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
                        saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
             }
