@@ -151,7 +151,7 @@ void ParallelReplicaJob::dynamics()
      
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
-    printf("Tempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
+    printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
     //Here we use Binary Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
@@ -287,7 +287,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
              exit(1);
          }
          diff = abs( b1 - a1 );
-         printf("Insert Point %ld; Test ytest = %d ; New Bond [ %ld, %ld ] \n",test,ytest,a1,b1);
+     //    printf("Insert Point %ld; Test ytest = %d ; New Bondary [ %ld, %ld ] \n",test,ytest,a1,b1);
      }
 
      nsteps_refined = nsteps-check_steps-relax_steps+int((a1+b1)/2);
