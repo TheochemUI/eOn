@@ -83,6 +83,7 @@ void SaddlePoint::loadMode(string filename) {
 void SaddlePoint::loadMode(FILE *modeFile){
     long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
+    nFreeCoord = nfree;
     mode.resize(nall/3, 3);
     mode.setZero();
     for (int i=0; i < nall/3; i++) 
@@ -408,7 +409,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)        
             {
                 double *stats = lowestEigenmode->stats;
-                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 
+                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
                        saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
             }
