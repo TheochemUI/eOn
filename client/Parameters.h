@@ -82,6 +82,7 @@ public:
     double mdTemperature;
     double PRD_MaxMovedDist;
     bool   mdRefine;
+    bool   mdAutoStop;
     long   RefineAccuracy;
     long   mdSteps;
     long   CheckFreq;
