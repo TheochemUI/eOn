@@ -77,6 +77,7 @@ Parameters::Parameters(){
     mdSteps = 1000;
     PRD_MaxMovedDist = 2.0;
     mdRefine = false;
+    mdAutoStop = true;
     RefineAccuracy = 20;
     CheckFreq = 500;
     NewRelaxSteps = 500;
@@ -234,6 +235,7 @@ int Parameters::load(FILE *file){
 	mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
 	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
 	mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
+        mdAutoStop = ini.GetValueB("Dynamics","mdAutoStop",mdAutoStop);
 	RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
 	CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
