@@ -244,7 +244,6 @@ int Parameters::load(FILE *file){
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
         BondBoost = ini.GetValueB("Hyper","BondBoost",BondBoost);
-        BBnBAs = ini.GetValueL("Hyper","nBoostAtoms",BBnBAs);
         BBRMDS = ini.GetValueL("Hyper","RMDS",BBRMDS);
         BBDVMAX = ini.GetValueF("Hyper","DVMAX",BBDVMAX);
         BBQRR = ini.GetValueF("Hyper","QRR",BBQRR );
