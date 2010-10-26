@@ -39,11 +39,11 @@ void ParallelReplicaJob::run(int bundleNumber)
     reactant = new Matter(parameters);
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
+    transition = new Matter(parameters);
 
     reactant->con2matter(reactant_passed);
-    *min1 = *reactant;
-    *min2 = *reactant;
-
+    *min1 = *reactant;   
+    *transition = *reactant;
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
@@ -51,6 +51,12 @@ void ParallelReplicaJob::run(int bundleNumber)
     printf("Now running Parralel Replica Dynamics\n");
 
     dynamics();
+
+    *min2 = *reactant;   
+    ConjugateGradients cgMin2(min2, parameters);
+    cgMin2.fullRelax();
+    min_fcalls += min2->getForceCalls();
+ 
     saveData(newstate,bundleNumber);
     
     printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
@@ -64,6 +70,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     delete min1;
     delete min2;
     delete reactant;
+    delete transition;
 }
 
 void ParallelReplicaJob::dynamics()
@@ -141,6 +148,7 @@ void ParallelReplicaJob::dynamics()
                 if(newstate == false){
                    remember = true;
                 }else{
+                    *transition = *reactant;
                     //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
                        printf("haha AutoStop here !\n");
@@ -177,6 +185,7 @@ void ParallelReplicaJob::dynamics()
         long totsteps = nsteps-check_steps-relax_steps+nsteps_refined; 
 
         *reactant = *mdbuff[final_refined-1];
+        *transition = *reactant;
         SPtime = SPtimebuff[final_refined-1];
 
         for(long i = 0; i<relax_steps;i++){
@@ -193,13 +202,12 @@ void ParallelReplicaJob::dynamics()
 bool ParallelReplicaJob::CheckState(Matter *matter)
 {
      double distance; 
-     *min2 = *matter;
 
-     ConjugateGradients cgMin2(min2, parameters);
-     cgMin2.fullRelax();
-     min_fcalls += min2->getForceCalls();
+     ConjugateGradients cgMin(matter, parameters);
+     cgMin.fullRelax();
+     min_fcalls += matter->getForceCalls();
 
-     distance = min2->distanceTo(*min1);
+     distance = matter->distanceTo(*min1);
 
 #ifndef NDEBUG
      printf("Total Moved Distance = %lf\n",distance);
@@ -213,7 +221,7 @@ bool ParallelReplicaJob::CheckState(Matter *matter)
 
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber){
-     FILE *fileResults, *fileReactant, *fileProduct;
+     FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle;
 
      char filename[STRING_SIZE];
 
@@ -255,8 +263,19 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
      }
 
      fileProduct = fopen(filename, "wb");
-     reactant->matter2con(fileProduct);
+     min2->matter2con(fileProduct);
      fclose(fileProduct);
+  
+     if (bundleNumber != -1) {
+         snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
+     }else{
+         strncpy(filename, "saddle.con", STRING_SIZE);
+     }
+
+     fileSaddle = fopen(filename, "wb");
+     transition->matter2con(fileSaddle);
+     fclose(fileSaddle);
+
 
      return;
 }
