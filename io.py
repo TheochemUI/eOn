@@ -157,7 +157,7 @@ def save_results_dat(fileout, results):
     for key in results:
         print >> f, results[key], key
 
-def parse_results_dat(filein):
+def parse_process_search_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained
     therein
