@@ -18,12 +18,12 @@ BondBoost::~BondBoost()
 
 void BondBoost::initial(){
 
-  long i, j,count = 0;
+  long i, j, k = 0, count = 0;
   bool flag  = 1;
   
   nBBs = 0;
   nReg = 0;
-  nBAs = parameters->BBnBAs; //nBoostAtoms
+  nBAs = matter->numberOfFreeAtoms();
   nRAs = nAtoms - nBAs;//nRestAtoms
   nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; //number of Bonds involved with Tagged Atoms
   BAList = new long[nBAs];//BoostAtomsList
@@ -31,8 +31,12 @@ void BondBoost::initial(){
   TABAList = new long[2*nTABs];//CorrespondingAtomsList of TABLList
   TABLList.setZero(nTABs,1);
   
-  for(i = 0;i < nBAs; i++){
-      BAList[i]=i;
+  printf("BondBoost Used !\n");
+  for(i = 0;i < nAtoms; i++){
+      if(!matter->getFixed(i)){
+         BAList[k]=i;
+         k++;
+      }
   }
 
   for(i = 0 ;i < nAtoms; i++){
@@ -57,6 +61,7 @@ void BondBoost::initial(){
   for(i=0 ;i< nBAs;i++){
       printf("nBoostAtoms %ld: %ld\n",i,BAList[i]);
   }
+
   for(i=0; i< nRAs;i++){
       printf("nRestAtoms %ld: %ld\n",i,RAList[i]);
   }

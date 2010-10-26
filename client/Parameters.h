@@ -90,7 +90,6 @@ public:
     long   CheckFreq;
     long   NewRelaxSteps;
     bool   BondBoost;
-    long   BBnBAs; 
     long   BBRMDS;
     double BBDVMAX;
     double BBQRR; 
