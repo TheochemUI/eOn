@@ -10,10 +10,12 @@ import time as unix_time
 import optparse
 import logging
 import logging.handlers
+logger = logging.getLogger('akmc')
 import numpy
 numpy.seterr(all='raise')
 import pickle
 
+import config
 import locking
 import communicator
 import statelist
@@ -29,7 +31,7 @@ import movie
 import StringIO
 
 
-def main(): 
+def akmc(config): 
      
     # Here's what this does:
     # 1) Read in the state of our calculation from last time
@@ -61,7 +63,7 @@ def main():
         superbasining = get_superbasin_scheme(states)
     
     # Create the communicator object.
-    comm = get_communicator()
+    comm = communicator.get_communicator()
 
     # Handle any results returned through the communicator.
     register_results(comm, current_state, states, searchdata)
@@ -242,35 +244,6 @@ def get_statelist(kT):
 
 
 
-def get_communicator():
-    if config.comm_type=='boinc':
-        comm = communicator.BOINC(config.path_scratch, config.comm_boinc_project_dir, 
-                config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
-                config.comm_boinc_appname, config.comm_boinc_results_path,
-                config.comm_job_bundle_size)
-    elif config.comm_type=='cluster':
-        comm = communicator.Script(config.path_scratch, config.comm_job_bundle_size,
-                                   config.comm_script_name_prefix,
-                                   config.comm_script_path, 
-                                   config.comm_script_queued_jobs_cmd,
-                                   config.comm_script_cancel_job_cmd, 
-                                   config.comm_script_submit_job_cmd)
-    elif config.comm_type=='local':
-        comm = communicator.Local(config.path_scratch, config.comm_local_client, 
-                                  config.comm_local_ncpus, config.comm_job_bundle_size)
-    elif config.comm_type=='mpi':
-        comm = communicator.MPI(config.path_scratch, config.comm_mpi_client, 
-                                  config.comm_job_bundle_size, config.comm_mpi_mpicommand)
-    elif config.comm_type=='arc':
-        comm = communicator.ARC(config.path_scratch, config.comm_job_bundle_size, 
-                                config.comm_client_path, config.comm_blacklist)
-    else:
-        logger.error(str(config.comm_type)+" is an unknown communicator.")
-        raise ValueError()
-    return comm
-
-
-
 def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
     t1 = unix_time.time()
@@ -321,7 +294,7 @@ def register_results(comm, current_state, states, searchdata = None):
             # Remove used information from the searchdata metadata.
         
         #read in the results
-        result['results'] = io.parse_results_dat(result['results.dat'])
+        result['results'] = io.parse_process_search_results(result['results.dat'])
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
         else:
@@ -611,11 +584,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     return wuid
 
 
-#-------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------
-
-if __name__ == '__main__':
-    
+def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
@@ -635,7 +604,6 @@ if __name__ == '__main__':
     #XXX: config is ugly as it finds out where the config file is directly from 
     #     sys.argv instead of being passed it.
     #import sys
-    import config
     if len(sys.argv) > 1:
         config.init(sys.argv[-1])
     else:
@@ -653,7 +621,6 @@ if __name__ == '__main__':
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
-    logger = logging.getLogger('akmc')
 
     if not options.quiet:
         rootlogger = logging.getLogger('')
@@ -762,7 +729,10 @@ if __name__ == '__main__':
             sys.exit(1)
 
     if lock.aquirelock():
-        main()
+        akmc(config)
     else:
         logger.info("the server is locked by pid %i" % lock.pid)
         sys.exit(1)
+
+if __name__ == '__main__':
+    main()
