@@ -94,7 +94,7 @@ void Dynamics::fullSteps()
      
      AvgT=SumT/nsteps;
      VarT=SumT2/nsteps-AvgT*AvgT;
-     printf("Tempeture : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
+     printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 };
 
 void Dynamics::Andersen(){
@@ -104,7 +104,7 @@ void Dynamics::Andersen(){
      Matrix<double, Eigen::Dynamic, 1> mass;
      Matrix<double, Eigen::Dynamic, 3> velocity;
 
-     temp = parameters->mdTemperture; //unit K
+     temp = parameters->mdTemperature; //unit K
      alpha = parameters->Andersen_Alpha; //collision strength
      Tcol = parameters->Andersen_Tcol; // Average time between collision, in unit of dt
      Pcol = 1.0-exp(-1.0/Tcol);
@@ -142,7 +142,7 @@ void Dynamics::velocityScale(){
      Matrix<double, Eigen::Dynamic, 3> velocity;
      long int nFreeAtoms;
 
-     temp = parameters->mdTemperture;
+     temp = parameters->mdTemperature;
      nFreeAtoms = matter->numberOfFreeAtoms(); 
      velocity = matter->getVelocities();
      mass = matter->getMasses();

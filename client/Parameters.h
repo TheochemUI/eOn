@@ -79,7 +79,7 @@ public:
     double dimerMaxIterations;
 
     double mdTimeStep;
-    double mdTemperture;
+    double mdTemperature;
     double PRD_MaxMovedDist;
     bool   mdRefine;
     long   RefineAccuracy;
