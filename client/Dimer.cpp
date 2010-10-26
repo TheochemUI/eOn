@@ -85,6 +85,8 @@ void Dimer::estimateLowestEigenmode()
     rotationalForce.setZero();
     rotationalForceOld.setZero();
     rotationalPlaneNormOld.setZero();
+    Matrix<double, Eigen::Dynamic, 3> initialDirectionNorm = directionNorm;
+    initialDirectionNorm.normalize();
     
     stats[2] = 0.0;
     lengthRotationalForceOld = 0;
@@ -163,14 +165,16 @@ void Dimer::estimateLowestEigenmode()
     
             rotations++;
         }
-
+        
     #ifndef NDEBUG
-        printf("DIMERROT                     % 9.5g             % 9.5g  % 9.3g  %9ld\n", torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
+        printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n", torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
     #endif
 
     }    
     stats[0] = torqueMagnitude;
     stats[1] = curvature;
+    directionNorm.normalize();
+    stats[2] = acos((directionNorm.cwise() * initialDirectionNorm).sum());
     stats[2] = (stats[2] * 180.0) / PI;
     stats[3] = rotations;
 
