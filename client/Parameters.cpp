@@ -84,7 +84,6 @@ Parameters::Parameters(){
     
     //default parameters used by Hyperdynamics
     BondBoost = false ;
-    BBnBAs = 0;
     BBDVMAX = 0.0;
     BBQRR = 0.0001; // Can not be set to be 0.0;
     BBPRR = 0.95;
