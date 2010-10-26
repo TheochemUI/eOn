@@ -77,6 +77,8 @@ public:
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
+    double lanczosConvergence; // Difference between the lowest eignevalues of two successive iterations.
+    int lanczosIteration; // maximum number of iteration
 
     double mdTimeStep;
     double mdTemperature;
