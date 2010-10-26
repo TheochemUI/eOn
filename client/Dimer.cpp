@@ -165,7 +165,7 @@ void Dimer::estimateLowestEigenmode()
         }
 
     #ifndef NDEBUG
-        printf("DIMERROT          % 9.5f  % 9.5f             % 9.5f  % 9.3f  %9ld\n", forceDimer, torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
+        printf("DIMERROT                     % 9.5g             % 9.5g  % 9.3g  %9ld\n", torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
     #endif
 
     }    
