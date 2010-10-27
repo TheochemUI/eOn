@@ -26,5 +26,5 @@ print >> f, "plot \"-\" with lines"
 
 dyn = io.Dynamics('dynamics_fixed.txt')
 for i in dyn.get():
-    print >> f, i['totaltime'], e[i['reactant']]
+    print >> f, i['totaltime'], e[i['reactant']], i['reactant']
 
