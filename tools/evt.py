@@ -24,7 +24,7 @@ print >> f, "set ylabel \"Energy (eV)\""
 print >> f, "set nokey"
 print >> f, "plot \"-\" with lines" 
 
-dyn = io.Dynamics('dynamics.txt')
+dyn = io.Dynamics('dynamics_fixed.txt')
 for i in dyn.get():
     print >> f, i['totaltime'], e[i['reactant']]
 
