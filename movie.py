@@ -158,6 +158,15 @@ def fastestpath(path_root, states, full=False):
         atoms_list.append(state_list[i].get_process_saddle(
                                         get_fastest_process_id(state_list[i],
                                                                state_list[i+1])))
+    time = 0.0
+    for i in range(len(state_list)-1):
+        ratesum = 0.0
+        for j in state_list[i].get_process_table():
+            ratesum += j['rate']
+        print time, state_list[i].number 
+        time += 1/ratesum
+
+
     return atoms_list                                            
 
 def get_fastest_process_id(state1, state2):
