@@ -1,4 +1,4 @@
-#!/usr/bin/env awk -f
+#!/usr/bin/env awk
 
 # generates a gnuplot script and data for energy versus time
 # use by running from the simulation directory as such:
@@ -13,4 +13,4 @@ BEGIN {
 }
 
 $3 !~ /[0-9]+/ {e[$1]=$2} 
-$3 ~ /[0-9]+/ {print $3, e[$1];}
+$3 ~ /[0-9]+/ {print $6, e[$4];}
