@@ -13,7 +13,7 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 numpy.seterr(all='raise')
-import pickle
+import cPickle as pickle
 
 import config
 import locking
@@ -179,7 +179,10 @@ def get_akmc_metadata():
         except:
             wuid = 0
         try:
-            searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
+#            searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
+            sd = open(os.path.join(config.path_root, "searchdata"), "r")
+            searchdata = pickle.load(sd)
+            sd.close()
         except:
             searchdata={}
         try:
@@ -219,7 +222,10 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previ
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
     parser.set('aKMC Metadata', 'wu_id', str(wuid))
-    parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
+    #parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
+    sd = open(os.path.join(config.path_root, "searchdata"), "w")
+    pickle.dump(searchdata, sd)
+    sd.close()
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
@@ -286,8 +292,8 @@ def register_results(comm, current_state, states, searchdata = None):
         # Store information about the search into result_data for the search_results.txt file in the state directory.
         if config.debug_list_search_results:
             try:
-                result['type'] = searchdata[searchdata_id + "type"]
-                del searchdata[searchdata_id + "type"]
+                result['type'] = searchdata[searchdata_id]["type"]
+                del searchdata[searchdata_id]["type"]
             except:
                 logger.warning("Could not find search data for search %s" % searchdata_id)
             result['wuid'] = id
@@ -473,8 +479,6 @@ def get_displacement(reactant, indices=None):
 
 
 def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
-    
-    
     reactant = current_state.get_reactant()
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
     logger.info("%i searches in the queue" % num_in_buffer)
@@ -523,7 +527,8 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                 nrecycled += 1
                 if config.debug_list_search_results:
                     try:
-                        searchdata["%d_%d" %(current_state.number, wuid) + "type"] = "recycling"
+                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
+                        searchdata["%d_%d" %(current_state.number, wuid)]["type"] = "recycling"
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 done = True
@@ -534,7 +539,8 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                 nrecycled += 1
                 if config.debug_list_search_results:                
                     try:
-                        searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "recycling"
+                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
+                        searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "recycling"
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
                 done = True
@@ -551,14 +557,16 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                 logger.info('Made a KDB suggestion')
                 if config.debug_list_search_results:                
                     try:
-                        searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "kdb"
+                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
+                        searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "kdb"
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
         if not done:
             displacement, mode = disp.make_displacement() 
             if config.debug_list_search_results:                
                 try:
-                    searchdata["%d_%d" % (current_state.number, wuid) + "type"] = "random"
+                    searchdata["%d_%d" %(current_state.number, wuid)] = {}
+                    searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "random"
                 except:
                     logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
         dispIO = StringIO.StringIO()
