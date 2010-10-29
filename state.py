@@ -207,7 +207,7 @@ class State:
                          comment))
                 f.close()
             except:
-                logger.warning("Failed to append search result %s", result['id'])
+                logger.warning("Failed to append search result.")
         
 
 
