@@ -19,7 +19,6 @@ struct MatterPrivateData {
  
     long int nAtoms; // number of atoms
     Matrix<double, Eigen::Dynamic, 3> positions; // array of 3N positions
-    Matrix<double, Eigen::Dynamic, 3> positionsBefore;
     Matrix<double, Eigen::Dynamic, 3> velocities; // array of 3N velocities
     Matrix<double, Eigen::Dynamic, 3> forces; // array of 3N forces
     Matrix<double, Eigen::Dynamic, 1> masses; // array of masses
@@ -32,14 +31,6 @@ struct MatterPrivateData {
 
 /** Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
 class Matter : private MatterPrivateData {
-    /** Pointer to function to constraint the molecules. #constraint_ must point to a function which corrects the position and velocities of the atoms in order to get the system complying with constraints. Constraint algorithms usually requires 'reference' coordinates which means the coordinates before the modifications leading to a unconstrained coordinates were applied. Matter will provide these reference coordinates to constraint through the argument @em ref.
-    @see        The function is called by UpdateCons(), UpdateAcc() and UpdateForce().
-    @param[in]      nAtoms            Number of atoms(including fixed atoms)
-    @param[in]      positionsBefore   Positions before the unconstrained operations
-    @param[in,out]	positions         Coordinates to correct
-    @param[in,out]	velocities        Velocities to correct
-    @param[in,out]	cellBoundaries    Array of length 3 containing the parameters of the periodic cell.*/
-    typedef void (*Constraints)(const long int nAtoms, const double positionsBefore[], double positions[], double velocities[], const double cellBoundaries[]);
 public:
     Matter(Parameters *parameters); // the number of atoms shall be set later using resize()
     Matter(Parameters *parameters, long int nAtoms); // prepare the object for use with nAtoms atoms
@@ -59,7 +50,6 @@ public:
     void activatePeriodicBoundaries(); // activate the periodic boundary conditions
     /* When the function is called, coordinates are recalculated to fit the minimum image convention (i.e. coordinates within[-cellBoundaries_[X]/2;+cellBoundaries_[X]/2], etc...). Subsequently, coordinates are also recalculated each time these are modified. */
     void deactivatePeriodicBoundaries(); // deactivate periodic boundary conditions
-    void setConstraints(Constraints constraints); // Set the function to use constraints are needed
     /* @param  constraints  set to zero to remove any constraints.*/
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
@@ -112,7 +102,6 @@ public:
 
 private:
     Potentials *potential;/// Pointer to function calculating the energy and forces.
-    Constraints constraints;/// Pointer to function constraining some of the coordinates of the structure.
     bool usePeriodicBoundaries;///< Boolean telling periodic boundaries are used.
     mutable bool recomputePotential; ///< Boolean telling if the potential energy and forces need to be recalculated.
     mutable long forceCalls; ///< Keeping track of how many force calls that have been performed.
@@ -129,7 +118,8 @@ private:
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(int axis);
     void applyPeriodicBoundary(long atom, int axis);
-    void applyConstraints();
+    void applyPeriodicBoundary(double & component, int axis);
+    void applyPeriodicBoundary(Matrix<double, Eigen::Dynamic, 3> & diff);
 };
 
 #endif

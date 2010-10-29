@@ -165,7 +165,6 @@ class Water(Displace):
         self.stdev_translation=stdev_translation
         self.stdev_rotation=stdev_rotation
         for i, name in enumerate(reactant.names):
-            print i, name
             if not re.search('^H', name): break
         # For water assume that all the hydrogen are listed first, then all the oxygen
         self.n_water=i/2
