@@ -99,6 +99,13 @@ void ConjugateGradients::fullRelax(){
     bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
+    #ifndef NDEBUG
+    static int run=0;
+    ostringstream min;
+    min << "min_" << run;
+    matter->matter2xyz(min.str(), false);
+    ++run;
+    #endif
     int i=0;
     while(!converged and i < parameters->maximumIterations) 
     {
@@ -107,6 +114,8 @@ void ConjugateGradients::fullRelax(){
         ++i;
         #ifndef NDEBUG
         printf("min = %d, max force = %lf\n", i, matter->maxForce());
+        if (i % 10 == 0)
+            matter->matter2xyz(min.str(), true);
         #endif
     }
     return;

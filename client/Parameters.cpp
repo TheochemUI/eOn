@@ -141,6 +141,7 @@ int Parameters::load(FILE *file){
                                        convergedRelax);
         maximumIterations = ini.GetValueL("Default", "MAXIMUM_ITERATIONS",
                                           maximumIterations);
+        maxDifferencePos = ini.GetValueF("Default", "MAX_DIFFERENCE_POS", maxDifferencePos);
 
         string jobTypeString;
         jobTypeString = ini.GetValue("Default", "JOB_TYPE", "processsearch");
@@ -238,8 +239,8 @@ int Parameters::load(FILE *file){
 		RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
 		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
 
-        lanczosConvergence = ini.GetValueL("Lanczos", "CONVERGENCE", lanczosConvergence);
-        lanczosIteration = ini.GetValueF("Lanczos", "ITERATOIN", lanczosIteration);
+        lanczosConvergence = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergence);
+        lanczosIteration = ini.GetValueL("Lanczos", "ITERATOIN", lanczosIteration);
 
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 

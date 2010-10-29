@@ -357,10 +357,9 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 	#ifndef NDEBUG
     	static int run;
     	ostringstream climb;
-    	climb << "climb" << run;
+    	climb << "climb_" << run;
     	saddle->matter2xyz(climb.str(), false);
     	++run;
-        saddle->matter2xyz("climb", false);
         if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
@@ -368,6 +367,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                    "Energy", "Curvature", "Angle", "Rotations", "Step Size");
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
         }
+        else {
+            printf("LANCZOS ---------------------------------------------------------------------------------------\n");    
+            printf("LANCZOS  %9s  %9s  %9s  %9s\n", "Step", "Force", "Energy", "Step Size");
+            printf("LANCZOS ---------------------------------------------------------------------------------------\n");    
+        };
     #endif
     do
     {
@@ -412,8 +416,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
                        saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
-            }
-            saddle->matter2xyz("climb", true);
+            } else {
+                printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
+                       sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
+            };
+            saddle->matter2xyz(climb.str(), true);
         #endif
         energySaddle = saddle->getPotentialEnergy();
     }while(!converged && 

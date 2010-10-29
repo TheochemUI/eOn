@@ -95,6 +95,11 @@ int main(int argc, char **argv)
     //We want to uncompress our input file
     char resolved[STRING_SIZE];
     rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
+    if (rc) {
+        // 
+        printf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
+        boinc_finish(rc);
+    };
     if (extract_archive(resolved) != 0) {
         printf("error extracting input archive\n");
         boinc_finish(1);
