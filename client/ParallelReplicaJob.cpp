@@ -62,7 +62,8 @@ void ParallelReplicaJob::run(int bundleNumber)
     printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
     printf("Physical Thansition Time = %lf\n",SPtime);
     if(newstate){
-        printf("New state has been found with %ld steps (%lf fs)!\n", nsteps_refined,SPtime);
+       // printf("New state has been found with %ld steps (%lf fs)!\n", final_refined,SPtime);
+        printf("New state has been found !\n");
     }else{
        printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
@@ -78,7 +79,7 @@ void ParallelReplicaJob::dynamics()
     bool   status = false, remember = true, stoped = false;
     bool   boost = parameters->BondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
-    long   ncheck = 0, nexam = 0;
+    long   ncheck = 0, nexam = 0, steps_tmp = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
     double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
@@ -98,7 +99,7 @@ void ParallelReplicaJob::dynamics()
 
     while(!stoped){
   		
-        if(boost){
+        if(boost && !newstate){
            SPtime += Bbm.boost();
         }
         else{ SPtime += 10*parameters->mdTimeStep;}
@@ -115,7 +116,7 @@ void ParallelReplicaJob::dynamics()
         ncheck++;
         nsteps++;
 
-	if(parameters->mdRefine && remember ){
+	if(parameters->mdRefine && remember && !newstate ){
             *mdbuff[ncheck-1] = *reactant;
             stepsbuff[ncheck-1] = nsteps;
             SPtimebuff[ncheck-1] = SPtime;
@@ -125,11 +126,11 @@ void ParallelReplicaJob::dynamics()
         
 
 #ifndef NDEBUG           
-        if (ncheck == check_steps){            
+        if (ncheck == check_steps && !newstate){            
            reactant->matter2xyz("movie", true);
         }
 #endif
-        if (ncheck == check_steps){
+        if (ncheck == check_steps && !newstate){
   	    ncheck = 0; // reinitial the ncheck
             status = CheckState(reactant);
             if(status == true){
@@ -137,22 +138,24 @@ void ParallelReplicaJob::dynamics()
             }
         }
        
-	if (status){
+	if (status && !newstate){
             nexam ++;
 	    if (nexam >= relax_steps){
                 nexam = 0;
                 ncheck = 0; 	
-		newstate = CheckState(reactant);
+		        newstate = CheckState(reactant);
                 //stoped = newstate;
                 status = false;
                 if(newstate == false){
                    remember = true;
                 }else{
                     *transition = *reactant;
+                    steps_tmp = nsteps;
+                    printf("steps_tmp = %ld\n",steps_tmp);
                     //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
                        printf("haha AutoStop here !\n");
-                       stoped = newstate;
+                       stoped = true;
                     }
    		    remember = false;
                 }
@@ -165,7 +168,7 @@ void ParallelReplicaJob::dynamics()
            stoped = true;
         }       
     }
-     
+    printf("nsteps = %ld \n", nsteps);
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
     printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
@@ -181,13 +184,14 @@ void ParallelReplicaJob::dynamics()
         
         Refine(mdbuff);
          printf("nsteps_refined=%ld\n",nsteps_refined); 
-        long final_refined = nsteps_refined;
+        long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined;
         long totsteps = nsteps-check_steps-relax_steps+nsteps_refined; 
-
-        *reactant = *mdbuff[final_refined-1];
+        printf("final_step = %ld\n",final_refined);
+        *reactant = *mdbuff[nsteps_refined-1];
         *transition = *reactant;
-        SPtime = SPtimebuff[final_refined-1];
-
+        SPtime = SPtimebuff[nsteps_refined-1];
+       
+       
         for(long i = 0; i<relax_steps;i++){
             PRdynamics.oneStep();
             totsteps ++;
@@ -195,7 +199,6 @@ void ParallelReplicaJob::dynamics()
             md_fcalls ++;
         }
     }
-  
     return;
 };
 
