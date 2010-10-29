@@ -62,8 +62,11 @@ namespace {
 
 Lanczos::Lanczos(Matter *const, Parameters *parameters) : matter_(parameters)
 {
-    setConvergenceLimit(parameters->lanczosConvergence);
-    setIterationLimit(parameters->lanczosIteration);
+#warning quick fix
+    setConvergenceLimit(1e-4);
+    setIterationLimit(50);
+    //setConvergenceLimit(parameters->lanczosConvergence);
+    //setIterationLimit(parameters->lanczosIteration);
     setFiniteDifference(1e-5); //Angstrom
     setInitial(PREVIOUS);
     assert(getIterationLimit() > 0);
