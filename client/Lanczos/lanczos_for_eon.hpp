@@ -15,7 +15,6 @@ public:
     /** Constructor.
     @param[in]      *parameters                Pointer to the Parameter object containing the runtime parameters.*/    
     Lanczos(Matter *const, Parameters *parameters);
-    
     ~Lanczos() {};///< Destructor.
     void virtual startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> matrix); 
     void virtual moveAndCompute(Matter const *matter);  

@@ -68,7 +68,6 @@ Matter::Matter(Parameters *parameters, const long int nAtoms)
 void Matter::initialiseDataMembers(Parameters *params)
 {
     nAtoms = 0;
-    constraints = 0;
     cellBoundaries.resize(3,3);
     cellBoundaries.setZero();
     usePeriodicBoundaries = true;
@@ -104,7 +103,6 @@ const Matter& Matter::operator=(const Matter& matter)
     cellBoundaries = matter.cellBoundaries;
     velocities = matter.velocities; 
     
-    constraints = matter.constraints;
     usePeriodicBoundaries = matter.usePeriodicBoundaries;
  
     potentialEnergy = matter.potentialEnergy;
@@ -248,13 +246,6 @@ void Matter::deactivatePeriodicBoundaries()
 {
     usePeriodicBoundaries=false;
 }
-
-
-void Matter::setConstraints(Constraints constraints_passed)
-{
-    constraints=constraints_passed;
-}
-
 
 double Matter::getPosition(long int indexAtom, int axis) const {
     return positions(indexAtom,axis);
