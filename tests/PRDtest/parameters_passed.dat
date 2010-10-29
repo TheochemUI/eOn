@@ -7,7 +7,7 @@ JOB_TYPE=PARALLELREPLICA
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED=1288128369
+RANDOM_SEED=1288390871
 
 # describtion POTENTIAL_TAG
 # 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
@@ -35,9 +35,9 @@ TEMPERATURE=350.0
 STEPS=20000
 PRD_MaxMovedDist=2.5
 mdRefine=1
-mdAutoStop=0
+mdAutoStop=1
 RefineAccuracy=5
-CheckFreq=2000
+CheckFreq=1000
 NewRelaxStep=5
 
 [Hyper]
