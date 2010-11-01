@@ -18,7 +18,7 @@ import cPickle as pickle
 import config
 import locking
 import communicator
-import statelist
+import akmcstatelist
 import displace
 import io
 import atoms
@@ -237,7 +237,7 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previ
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return statelist.StateList(config.path_states, 
+    return akmcstatelist.AKMCStateList(config.path_states, 
                                kT, 
                                config.akmc_thermal_window, 
                                config.akmc_max_thermal_window, 
@@ -247,8 +247,6 @@ def get_statelist(kT):
                                initial_state_path, 
                                list_search_results = config.debug_list_search_results, 
                                filter_hole = config.disp_moved_only)  
-
-
 
 def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
