@@ -81,6 +81,8 @@ class Communicator:
             raise CommunicatorError("job_path wasn't a str or a list")
 
         for filename in filenames:
+            if filename[-3:] != 'con' and filename[-3] != 'dat':
+                continue
             try:
                 num = int(filename.rsplit("_",1)[1].split(".",1)[0])
                 biggest = max(biggest, num)
@@ -111,6 +113,8 @@ class Communicator:
             
             results = [{'name':dirname} for i in range(bundle_size)]
             for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
+                if filename[-3:] != 'con' and filename[-3:] != 'dat':
+                    continue
                 if '_passed' in filename:
                     continue
                 try:
