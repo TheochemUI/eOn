@@ -44,15 +44,20 @@ void HessianJob::run(int bundleNumber)
     bool failed = modeProduct<0;
 
     FILE *fileResults;
+    FILE *fileMode;
 
-    char filename[STRING_SIZE];
+    char resultsname[STRING_SIZE];
+    char modename[STRING_SIZE];
 
     if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
+        snprintf(resultsname, STRING_SIZE, "results_%i.dat", bundleNumber);
+        snprintf(modename, STRING_SIZE, "mode_%i.dat", bundleNumber);
     }else{
-        strncpy(filename, "results.dat", STRING_SIZE);
+        strncpy(resultsname, "results.dat", STRING_SIZE);
+        strncpy(modename, "mode.dat", STRING_SIZE);
     }
-	fileResults = fopen(filename, "wb");
+	fileResults = fopen(resultsname, "wb");
+	fileMode = fopen(modename, "wb");
 
 	fprintf(fileResults, "%s good\n", failed ? "false" : "true");
 	fprintf(fileResults, "%d force_calls\n", Potentials::fcalls);
@@ -60,6 +65,12 @@ void HessianJob::run(int bundleNumber)
 	if(!failed)
     {
 	    fprintf(fileResults, "%f mode_product\n", modeProduct);
+        
+        VectorXd modes = hessian.getModes(parameters->hessianKind);
+        for(int i=0; i<modes.size(); i++)
+        {
+            fprintf(fileMode, "%f\n", modes[i]);
+        }
     }
 
     delete reactant;
