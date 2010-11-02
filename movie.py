@@ -161,8 +161,9 @@ def fastestpath(path_root, states, full=False):
     time = 0.0
     for i in range(len(state_list)-1):
         ratesum = 0.0
-        for j in state_list[i].get_process_table():
+        for j in state_list[i].get_process_table().values():
             ratesum += j['rate']
+
         print time, state_list[i].number 
         time += 1/ratesum
 
