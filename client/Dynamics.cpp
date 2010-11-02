@@ -143,14 +143,15 @@ void Dynamics::velocityScale(){
      long int nFreeAtoms;
 
      temp = parameters->mdTemperature;
-     nFreeAtoms = matter->numberOfFreeAtoms(); 
      velocity = matter->getVelocities();
      mass = matter->getMasses();
 
-     for (long int i = 0;i<nFreeAtoms;i++)
+     for (long int i = 0;i<nAtoms;i++)
      {
+        if(!matter->getFixed(i))
 	    for (int j = 0; j < 3; j++)
         {
+          // printf("mass[%ld] = %lf\n",i,mass(i));
 	       new_v = sqrt(kb*temp/mass[i])*guaRandom(0.0,1.0);
 	       velocity(i,j) = new_v;
 	    }
