@@ -42,4 +42,5 @@ void MinimizationJob::run(int bundleNumber)
 
     printf("Saving result to %s\n", reactant_output.c_str());
     reactant->matter2con(reactant_output);
+    printf("Final Energy: %f\n", reactant->getPotentialEnergy());
 }
