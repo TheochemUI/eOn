@@ -140,7 +140,6 @@ void Dynamics::velocityScale(){
      double temp,new_v;
      Matrix<double, Eigen::Dynamic, 1> mass;
      Matrix<double, Eigen::Dynamic, 3> velocity;
-     long int nFreeAtoms;
 
      temp = parameters->mdTemperature;
      velocity = matter->getVelocities();
