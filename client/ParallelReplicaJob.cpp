@@ -60,7 +60,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     saveData(newstate,bundleNumber);
     
     printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
-    printf("Physical Thansition Time = %lf\n",SPtime);
+    printf("Physical Transition Time = %lf\n",SPtime);
     if(newstate){
        // printf("New state has been found with %ld steps (%lf fs)!\n", final_refined,SPtime);
         printf("New state has been found !\n");
@@ -103,14 +103,13 @@ void ParallelReplicaJob::dynamics()
            SPtime += Bbm.boost();
         }
         else{ SPtime += 10*parameters->mdTimeStep;}
-        
-        PRdynamics.oneStep();
-        
-        velocities = reactant->getVelocities();
+                
         EKin = reactant->getKineticEnergy();
         TKin = (2*EKin/nFreeCoord/kb); 
         SumT += TKin;
         SumT2 += TKin*TKin;
+
+        PRdynamics.oneStep(); 
 
         md_fcalls++;
         ncheck++;
@@ -122,7 +121,7 @@ void ParallelReplicaJob::dynamics()
             SPtimebuff[ncheck-1] = SPtime;
 	}
 
-        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
+     //   printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
 
 #ifndef NDEBUG           
@@ -151,10 +150,10 @@ void ParallelReplicaJob::dynamics()
                 }else{
                     *transition = *reactant;
                     steps_tmp = nsteps;
-                    printf("steps_tmp = %ld\n",steps_tmp);
+                    //printf("steps_tmp = %ld\n",steps_tmp);
                     //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
-                       printf("haha AutoStop here !\n");
+                       //printf("haha AutoStop here !\n");
                        stoped = true;
                     }
    		    remember = false;
@@ -177,15 +176,15 @@ void ParallelReplicaJob::dynamics()
     //for(long i =0; i < check_steps;i++){
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
 	//}
-    nsteps = nsteps + 1;
+    //nsteps = nsteps + 1;
     
    
     if(parameters->mdRefine && newstate){     
         
         Refine(mdbuff);
          printf("nsteps_refined=%ld\n",nsteps_refined); 
-        long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined;
-        long totsteps = nsteps-check_steps-relax_steps+nsteps_refined; 
+        long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
+        long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
         printf("final_step = %ld\n",final_refined);
         *reactant = *mdbuff[nsteps_refined-1];
         *transition = *reactant;
@@ -200,17 +199,21 @@ void ParallelReplicaJob::dynamics()
         }
     }
     return;
+     
+    delete []mdbuff;
 };
 
 bool ParallelReplicaJob::CheckState(Matter *matter)
 {
      double distance; 
-
-     ConjugateGradients cgMin(matter, parameters);
+     Matter *tmp;
+     tmp = new Matter(parameters);
+     *tmp = *matter;
+     ConjugateGradients cgMin(tmp, parameters);
      cgMin.fullRelax();
-     min_fcalls += matter->getForceCalls();
+     min_fcalls += tmp->getForceCalls();
 
-     distance = matter->distanceTo(*min1);
+     distance = tmp->distanceTo(*min1);
 
 #ifndef NDEBUG
      printf("Total Moved Distance = %lf\n",distance);
@@ -220,6 +223,7 @@ bool ParallelReplicaJob::CheckState(Matter *matter)
      }else { 
  	return true;
      }
+     delete tmp;
 }
 
 
@@ -322,9 +326,9 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      //    printf("Insert Point %ld; Test ytest = %d ; New Bondary [ %ld, %ld ] \n",test,ytest,a1,b1);
      }
 
-     //nsteps_refined = nsteps-check_steps-relax_steps+int((a1+b1)/2);
+    
      nsteps_refined = int((a1+b1)/2);
-     printf("Refined mdsteps = %ld\n",nsteps_refined);
+     //printf("Refined mdsteps = %ld\n",nsteps_refined);
      return;
 }
 
