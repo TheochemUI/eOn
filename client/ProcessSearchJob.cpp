@@ -150,26 +150,43 @@ int ProcessSearchJob::doProcessSearch(void)
     }
 
     /* Perform the dynamical matrix caluclation */
-    double reactModes, saddleModes, prodModes;
+    VectorXd reactModes, saddleModes, prodModes;
     f1 = Potentials::fcalls;
-    reactModes = hessian->getModeProduct(Hessian::REACTANT);
-    if(reactModes<0)
+    reactModes = hessian->getModes(Hessian::REACTANT);
+    if(reactModes.size() == 0)
     {
         return statusBadPrefactor;
     }
-    saddleModes = hessian->getModeProduct(Hessian::SADDLE);
-    if(saddleModes<0)
+    saddleModes = hessian->getModes(Hessian::SADDLE);
+    if(saddleModes.size() == 0)
     {
         return statusBadPrefactor;
     }
-    prodModes = hessian->getModeProduct(Hessian::PRODUCT);
-    if(prodModes<0)
+    prodModes = hessian->getModes(Hessian::PRODUCT);
+    if(prodModes.size() == 0)
     {
         return statusBadPrefactor;
     }
     fCallsPrefactors += Potentials::fcalls - f1; 
-    prefactorsValues[0] = sqrt(reactModes/saddleModes)/(2*M_PI*10.18e-15);
-    prefactorsValues[1] = sqrt(prodModes/saddleModes)/(2*M_PI*10.18e-15);
+
+    prefactorsValues[0] = 1;
+    prefactorsValues[1] = 1;
+    
+    //This may have large numerical error
+    //products are calculated this way in order to avoid overflow
+    for(int i=0; i<saddleModes.size(); i++)
+    {
+        prefactorsValues[0] *= reactModes[i];
+        prefactorsValues[1] *= prodModes[i];
+        if(saddleModes[i]>0)
+        {
+            prefactorsValues[0] /= saddleModes[i];
+            prefactorsValues[1] /= saddleModes[i];
+        }
+
+    }
+    prefactorsValues[0] = sqrt(prefactorsValues[0])/(2*M_PI*10.18e-15);
+    prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
 
     /* Check that the prefactors are in the correct range */
     if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
