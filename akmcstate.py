@@ -14,63 +14,25 @@ import atoms
 import io
 import state
 
-
-
-ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
-
-processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
-
-processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", 
-                                               "product", "product energy", "product prefactor",
-                                               "barrier", "rate", "repeats")
-
-processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-
-search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier",
-                                                                      "max-dist", "sad-fcs", 
-                                                                      "mins-fcs", "pref-fcs", 
-                                                                      "result")
-search_result_header += "-" * len(search_result_header) + '\n'
-
-
-
 class AKMCState(state.State):
+    ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
+    processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
+    processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", 
+                                                   "product", "product energy", "product prefactor",
+                                                   "barrier", "rate", "repeats")
+    processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
+    search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier",
+                                                                          "max-dist", "sad-fcs", 
+                                                                          "mins-fcs", "pref-fcs", 
+                                                                          "result")
+    search_result_header += "-" * len(search_result_header) + '\n'
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1, 
                  reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
                     reactant_path)
 
-        self.info_path = os.path.join(self.path, "info")
-        self.procdata_path = os.path.join(self.path, "procdata")
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
-        self.reactant_path = os.path.join(self.path, "reactant.con")
-        self.proctable_path = os.path.join(self.path, "processtable")
-        self.search_result_path = os.path.join(self.path, "search_results.txt")
-
-        # Lazily loaded data. Should use the get/set methods for these.
-        self.info = None
-        self.procs = None
-        self.proc_repeat_count = None
-
-        # If this state does not exist on disk, create it.
-        if not os.path.isdir(self.path):
-            if reactant_path == None:
-                raise IOError("State needs a reactant_path when it is being instantiated to disk.")
-            os.mkdir(self.path)
-            os.mkdir(self.procdata_path)
-            shutil.copy(reactant_path, self.reactant_path)
-            config = SafeConfigParser()
-            config.add_section("MetaData")
-            config.set("MetaData", "previous state", str(previous_state_num))            
-            config.write(open(self.info_path, 'w'))
-            f = open(self.proctable_path, 'w')
-            f.write(processtable_header)
-            f.close()
-            if self.statelist.list_search_results:
-                f = open(self.search_result_path, 'w')
-                f.write(search_result_header)
-                f.close()
 
         # Statistics
         self.good_saddle_count = None
@@ -318,14 +280,14 @@ class AKMCState(state.State):
             self.procs = {}
             for l in lines[1:]:
                 l = l.strip().split()
-                self.procs[int(l[ID])] = {"saddle_energy":     float(l[ENERGY]), 
-                                          "prefactor":         float(l[PREFACTOR]), 
-                                          "product":           int  (l[PRODUCT]), 
-                                          "product_energy":    float(l[PRODUCT_ENERGY]), 
-                                          "product_prefactor": float(l[PRODUCT_PREFACTOR]), 
-                                          "barrier":           float(l[BARRIER]), 
-                                          "rate":              float(l[RATE]), 
-                                          "repeats":           int  (l[REPEATS])}
+                self.procs[int(l[self.ID])] = {"saddle_energy":     float(l[self.ENERGY]), 
+                                               "prefactor":         float(l[self.PREFACTOR]), 
+                                               "product":           int  (l[self.PRODUCT]), 
+                                               "product_energy":    float(l[self.PRODUCT_ENERGY]), 
+                                               "product_prefactor": float(l[self.PRODUCT_PREFACTOR]), 
+                                               "barrier":           float(l[self.BARRIER]), 
+                                               "rate":              float(l[self.RATE]), 
+                                               "repeats":           int  (l[self.REPEATS])}
 
     
 
@@ -333,13 +295,13 @@ class AKMCState(state.State):
         """ If the processtable is present in memory, writes it to disk. """
         if self.procs != None:
             f = open(self.proctable_path, 'w')
-            f.write(processtable_header)
+            f.write(self.processtable_header)
             for id in self.procs.keys():
                 proc = self.procs[id]
-                f.write(processtable_line % (id, proc['saddle_energy'], proc['prefactor'], 
-                                             proc['product'], proc['product_energy'],
-                                             proc['product_prefactor'], proc['barrier'],
-                                             proc['rate'], proc['repeats']))
+                f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'], 
+                                                  proc['product'], proc['product_energy'],
+                                                  proc['product_prefactor'], proc['barrier'],
+                                                  proc['rate'], proc['repeats']))
             f.close() 
 
 
@@ -349,8 +311,8 @@ class AKMCState(state.State):
         """ Append to the process table.  Append a single line to the process table file.  If we 
             have loaded the process table, also append it to the process table in memory. """
         f = open(self.proctable_path, 'a')
-        f.write(processtable_line % (id, saddle_energy, prefactor, product, product_energy, 
-                                     product_prefactor, barrier, rate, repeats))
+        f.write(self.processtable_line % (id, saddle_energy, prefactor, product, product_energy, 
+                                          product_prefactor, barrier, rate, repeats))
         f.close()
         if self.procs != None:
             self.procs[id] = {"saddle_energy":    saddle_energy, 
@@ -362,17 +324,6 @@ class AKMCState(state.State):
                               "rate":             rate, 
                               "repeats":          repeats}
     
-    def get_process(self, id):
-        self.load_process_table()
-        return self.procs[id]        
-
-
-    def get_process_ids(self):
-        """ Returns the list of ids in the rate table. """
-        return [b[0] for b in self.get_ratetable()]
-
-
-
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
             barrier stored in info if the barrier parameter is lower and returns the (possibly new)
@@ -388,32 +339,12 @@ class AKMCState(state.State):
             self.save_info()        
         return lowest
         
-        
-
-    def get_previous_state(self):
-        self.load_info()
-        try:
-            return self.info.getint("MetaData", "previous state")
-        except:
-            return -1
-
-
-
     def get_lowest_barrier(self):
         self.load_info()
         try:
             return self.info.getfloat("MetaData", "lowest barrier")
         except:
             return 1e300
-
-
-
-    def get_num_procs(self):
-        """ Loads the process table if it is not already loaded and returns the length of it """
-        self.load_process_table()
-        return len(self.procs)
-
-
 
     def get_unique_saddle_count(self):
         if self.unique_saddle_count is None:
@@ -425,15 +356,11 @@ class AKMCState(state.State):
         else:
             return self.unique_saddle_count
 
-
-
     def set_unique_saddle_count(self, num):
         self.unique_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "unique_saddles", "%d" % num)
         self.save_info()        
-
-
 
     def get_good_saddle_count(self):
         if self.good_saddle_count is None:
@@ -445,15 +372,11 @@ class AKMCState(state.State):
         else:
             return self.good_saddle_count
 
-
-
     def set_good_saddle_count(self, num):
         self.good_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "good_saddles", "%d" % num)
         self.save_info()        
-
-
 
     def get_proc_repeat_count(self):
         self.load_info()
@@ -464,8 +387,6 @@ class AKMCState(state.State):
                 self.proc_repeat_count = [0]
         return self.proc_repeat_count
 
-
-
     def inc_proc_repeat_count(self, procid):
         self.get_proc_repeat_count()
         if procid == len(self.proc_repeat_count):
@@ -475,12 +396,8 @@ class AKMCState(state.State):
         self.info.set("MetaData", "proc repeat count", repr(self.proc_repeat_count))
         self.save_info()        
 
-
-
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
-    
-
 
     def get_bad_saddle_count(self):
         if self.bad_saddle_count is None:
@@ -492,39 +409,11 @@ class AKMCState(state.State):
         else:
             return self.bad_saddle_count
 
-
-
     def set_bad_saddle_count(self, num):
         self.bad_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "bad_saddles", "%d" % num)
         self.save_info()        
-    
-
-
-    def get_energy(self):
-        """ Loads the info file if it is not already loaded and returns the energy, or None
-            if it is not there. """
-        self.load_info()
-        try:        
-            return self.info.getfloat("MetaData", "reactant energy")
-        except:
-            return None       
-
-
-
-    def set_energy(self, e):
-        """ Loads the info file if it has not been loaded and sets the reactant energy 
-            variable. """
-        self.load_info()
-        self.info.set("MetaData", "reactant energy", "%f" % e)
-        self.save_info()        
-                
-
-
-    def get_reactant(self):
-        """ Loads the reactant.con into a point and returns it. """
-        return io.loadcon(self.reactant_path)
 
     def register_bad_saddle(self, result, store = False):
         """ Registers a bad saddle. """
@@ -549,18 +438,6 @@ class AKMCState(state.State):
             open(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'].getvalue())
             open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'].getvalue())
 
-    def load_info(self):
-        """ Loads the info file if it has not been loaded. """
-        if self.info == None:
-            self.info = SafeConfigParser()
-            self.info.read(self.info_path)
-
-    def save_info(self):
-        """ Saves the info object if it exists. """
-        if self.info == None:
-            return
-        self.info.write(open(self.info_path, 'w'))
-
     # Utility functions for loading process .con and mode files.
     def get_process_saddle(self, id):
         return io.loadcon(self.proc_saddle_path(id))
@@ -572,14 +449,8 @@ class AKMCState(state.State):
         return os.path.join(self.procdata_path, "saddle_%d.con" % id)
     def proc_mode_path(self, id):
         return os.path.join(self.procdata_path, "mode_%d.dat" % id)
-    def get_process_table(self):
-        self.load_process_table()
-        return self.procs
 
-# Lambert-W function for calculating 
-# Source: http://keithbriggs.info/software/LambertW.py
-from math import log, sqrt, exp
-
+# Lambert-W function: http://keithbriggs.info/software/LambertW.py
 def lambertw(z):
     """Lambert W function, principal branch"""
     eps = 1.0e-12
@@ -591,7 +462,7 @@ def lambertw(z):
         return 0.0
     if z < -em1 + 1e-4:
         q = z + em1
-        r = sqrt(q)
+        r = math.sqrt(q)
         q2 = q * q
         q3 = q2 * q
         return\
@@ -605,13 +476,13 @@ def lambertw(z):
          +5.858023729874774148815053846119 * r * q3\
          -8.401032217523977370984161688514 * q3 * q
     if z < 1.0:
-        p = sqrt(2.0 * (2.7182818284590452353602874713526625 * z + 1.0))
+        p = math.sqrt(2.0 * (2.7182818284590452353602874713526625 * z + 1.0))
         w = -1.0 + p * (1.0 + p * (-0.333333333333333333333 + p * 0.152777777777777777777777))
     else:
-        w = log(z)
-    if z > 3.0: w-=log(w)
+        w = math.log(z)
+    if z > 3.0: w-=math.log(w)
     for i in xrange(10):
-        e = exp(w)
+        e = math.exp(w)
         t = w * e - z
         p = w + 1.0
         t /= e * p - 0.5 * (p + 1.0) * t / p
@@ -620,6 +491,3 @@ def lambertw(z):
             return w
     logger.error("Failed to converge Lambert W function.")
     raise ValueError()
-
-if __name__ == "__main__":
-    pass

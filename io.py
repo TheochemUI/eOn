@@ -157,6 +157,27 @@ def save_results_dat(fileout, results):
     for key in results:
         print >> f, results[key], key
 
+def parse_pr_results(filein):
+    '''
+    Reads a results.dat file and gives a dictionary of the values contained
+    therein
+    '''
+    if hasattr(filein, 'readline'):
+        f = filein
+    else:
+        f = open(filein)
+    results = {}
+    for line in f:
+        line = line.split()
+        if len(line) < 2:
+            continue
+        if '.' in line[0]:
+            results[line[1]] = float(line[0])
+        else:
+            results[line[1]] = int(line[0])
+
+    return results
+
 def parse_process_search_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained
