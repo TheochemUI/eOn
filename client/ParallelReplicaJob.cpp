@@ -200,7 +200,7 @@ void ParallelReplicaJob::dynamics()
     }
     return;
      
-    delete []mdbuff;
+    delete[] mdbuff;
 };
 
 bool ParallelReplicaJob::CheckState(Matter *matter)
@@ -244,10 +244,12 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
      long total_fcalls = min_fcalls + md_fcalls;
 
      fprintf(fileResults, "%d termination_reason\n", status);
-     fprintf(fileResults, "%lf total Physical time\n", SPtime+RLtime);
+     fprintf(fileResults, "%lf total_physical_time\n", SPtime+RLtime);
      fprintf(fileResults, "%lf transition_time_fs\n", SPtime);
      fprintf(fileResults, "%lf relax_time_fs\n", RLtime);
      fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
+     fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
      fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
      fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
      fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
