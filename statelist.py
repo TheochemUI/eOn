@@ -17,24 +17,18 @@ import state
 
 class StateList:
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, 
-                 state_path, 
-                 epsilon_e, 
-                 epsilon_r, 
-                 use_identical,
-                 StateClass,
-                 initial_state = None):
-                 
+    def __init__(self, state_path, epsilon_e, epsilon_r, use_identical, StateClass,
+                 list_search_results=None, initial_state = None):
         ''' Check to see if state_path exists and that state zero exists.
             Initializes state zero when passed a initial_state only if state
             zero doesn't already exist. '''
 
-        # aKMC data.
         self.path = state_path
         self.epsilon_e = epsilon_e
         self.epsilon_r = epsilon_r
         self.use_identical = use_identical
         self.StateClass = StateClass
+        self.list_search_results = list_search_results
 
         # Paths
         self.state_table_path = os.path.join(self.path, "state_table")
@@ -64,97 +58,12 @@ class StateList:
         self.load_state_table()
         return len(self.state_table)
 
-    def connect_states(self, states):
-        for i in states:
-            proc_tab = i.get_process_table()
-            for j in proc_tab:
-                if proc_tab[j]['product'] != -1:
-                    continue
-                enew = proc_tab[j]['product_energy']
-                energetically_close = []
-                for state in states:
-                    if abs(state.get_energy() - enew) < self.epsilon_e:
-                        energetically_close.append(state)
-
-                # Perform distance checks on the energetically close configurations.
-                if len(energetically_close) > 0:
-                    pnew = i.get_process_product(j)
-                    for state in energetically_close:
-                        p = state.get_reactant()
-                        if self.use_identical:
-                            if atoms.identical(p, pnew, self.epsilon_r):
-                                # Update the reactant state to point at the new state id.
-                                self.register_process(i.number, state.number, j)                            
-                        else:
-                            dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
-                            if dist < self.epsilon_r:
-                                self.register_process(i.number, state.number, j)                            
-
-    def register_process(self, reactant_number, product_number, process_id):
-        # Get the reactant and product state objects.
-        reactant = self.get_state(reactant_number)
-        product = self.get_state(product_number)
-        reactant.load_process_table()
-        product.load_process_table()
-        reverse_procs = product.get_process_table()
-        # Make the reactant process point to the product state number.
-        reactant.procs[process_id]["product"] = product_number
-        reactant.save_process_table()
-        if product.get_num_procs() != 0:
-            # Check to see if the reverse process is already identified (not -1). If so, return.
-            for id in reverse_procs.keys():
-                proc = reverse_procs[id]
-                if proc["product"] == reactant_number:
-                    return
-            # The reverse process might already exist, but is unidentified (-1). See if this is the case and fix it.
-            candidates = []
-            for id in reverse_procs.keys():
-                if reverse_procs[id]["product"] == -1:
-                    candidates.append(id)
-            esaddle = proc["saddle_energy"]
-            energetically_close = []
-            for id in candidates:
-                proc = reverse_procs[id]
-                if abs(proc["saddle_energy"] - esaddle) < self.epsilon_e:
-                    energetically_close.append(id)
-            if len(energetically_close) > 0:
-                saddle_config = reactant.get_reactant()
-                for id in energetically_close:
-                    temp_config = product.get_process_saddle(id)
-                    dist = max(atoms.per_atom_norm(saddle_config.r - temp_config.r, saddle_config.box))
-                    if dist < self.epsilon_r:
-                        reverse_procs[id][product] = product_number
-                        product.save_process_table()
-                        return
-        else:
-            # There are no processes, so this must be a new state. Add the reverse process.
-            product.set_energy(reactant.procs[process_id]["product_energy"])
-            # Update the reactant state to point at the new state id.
-            reactant.procs[process_id]['product'] = product_number
-            reactant.save_process_table()
-            # Create the reverse process in the new state.
-            barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
-            shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
-            shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(0))
-            shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(0))
-            shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
-            shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
-            product.append_process_table(id = 0, 
-                                         saddle_energy = reactant.procs[process_id]['saddle_energy'], 
-                                         prefactor = reactant.procs[process_id]['product_prefactor'], 
-                                         product = reactant_number, 
-                                         product_energy = reactant.get_energy(),
-                                         product_prefactor = reactant.procs[process_id]['prefactor'],
-                                         barrier = barrier, 
-                                         rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
-                                         repeats = 0)
-            product.save_process_table()
-
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
         #TODO: Compare configuration of product with existing states.
 
-        # If the number of states in state_table is zero, we need to add the zero state and energy to the state table.
+        # If the number of states in state_table is zero
+        #we need to add the zero state and energy to the state table.
         if self.get_num_states() == 0:
             zst = self.get_state(0)
             self.append_state_table(zst.get_energy())
