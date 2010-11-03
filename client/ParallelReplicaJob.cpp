@@ -121,7 +121,7 @@ void ParallelReplicaJob::dynamics()
             SPtimebuff[ncheck-1] = SPtime;
 	}
 
-     //   printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
+        printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
 
 #ifndef NDEBUG           
