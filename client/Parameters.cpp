@@ -156,11 +156,13 @@ int Parameters::load(FILE *file){
         }else if (jobTypeString == "hessian") {
             jobType = HESSIAN;
 		}else if (jobTypeString == "parallelreplica"){
-				jobType = PARALLEL_REPLICA;
+			jobType = PARALLEL_REPLICA;
+        }else if (jobTypeString == "replicaexchange"){
+            jobType = REPLICA_EXCHANGE;         
 		}else if (jobTypeString == "dimerdr"){
-				jobType = DIMER_DR;
+			jobType = DIMER_DR;
 		}else if (jobTypeString == "dimerrotation"){
-				jobType = DIMER_ROTATION;
+			jobType = DIMER_ROTATION;
         }else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;

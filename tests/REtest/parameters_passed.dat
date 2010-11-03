@@ -1,0 +1,53 @@
+[Default]
+
+REACTANT_STATE_TAG=0
+
+JOB_TYPE=REPLICAEXCHANGE
+#JOB_TYPE=MINIMIZATION
+
+# describtion RANDOM_SEED
+# -1 = time is used to seed the random generator
+RANDOM_SEED=1288728573
+
+# describtion POTENTIAL_TAG
+# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
+# 1 = lennard-jones potential
+# 2 = morse
+# 3 = emt
+# 4 = edip
+# 5 = VASP
+# 6 = Tersoff
+# 7 = Stilling Weber
+# 8 = Lenosky
+# 9 = Lennard-jones binary
+# 10 = Aluminum
+# 12 = Quantum Sutton-Chen
+POTENTIAL_TAG= 3
+
+# describtion POTENTIAL_NO_TRANSLATION
+# 0 = the system is free to translate
+# 1 = translation of the system is prevented
+POTENTIAL_NO_TRANSLATION=1
+
+[Dynamics]
+TIMESTEP=0.2
+TEMPERATURE=350.0
+STEPS=20000
+PRD_MaxMovedDist=2.5
+mdRefine=1
+mdAutoStop=1
+RefineAccuracy=5
+CheckFreq=1000
+NewRelaxStep=5
+
+[Hyper]
+BondBoost=0
+RMDS=200
+DVMAX=0.2
+QRR=0.2
+PRR=0.95
+Qcut=3.0
+ 
+[Thermo]
+Andersen_Alpha=0.1
+Andersen_Tcol=10.0
