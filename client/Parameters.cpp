@@ -163,6 +163,8 @@ int Parameters::load(FILE *file){
 			jobType = DIMER_DR;
 		}else if (jobTypeString == "dimerrotation"){
 			jobType = DIMER_ROTATION;
+		}else if (jobTypeString == "dimerdisplace"){
+			jobType = DIMER_DISPLACE;
         }else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;
