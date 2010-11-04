@@ -77,6 +77,21 @@ public:
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
+    
+    // The displacement job performs a montecarlo sampling of different displacement values
+    // to find good values for the radius and magnitude of the displacement. Run 
+    // eon/tools/displaceplot.py to plot the results.
+    long   displaceNSteps;              // The number of samples to take.
+    double displaceCutoff;              // The initial value of the cutoff radius within which atoms are displaced.
+    double displaceCutoffStep;          // The magnitude by which to adjust the cutoff each montecarlo step.
+    double displaceMagnitude;           // The initial magnitude of the displacement.
+    double displaceMagnitudeStep;       // The magnitude by which to adjust the displacement magnitude each montecarlo step.
+    long   displaceIterMax;             // The maximum number of rotations to perform on the dimer.
+    double displaceTorqueConvergence;   // The convergence criteria of the dimer rotation.
+    double displaceMaxCurvature;        // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
+    double displaceMaxDE;               // The maximum dE for which a sample is considered good.
+    
+    
     double lanczosConvergence; // Difference between the lowest eignevalues of two successive iterations.
     int lanczosIteration; // maximum number of iteration
 
