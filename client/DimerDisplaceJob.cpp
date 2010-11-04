@@ -24,15 +24,15 @@ void DimerDisplaceJob::run(int bundleNumber)
     FILE *results = fopen("results.dat", "w");
     fprintf(results, "%15s   %15s   %15s   %15s   %15s\n", "cutoff", "magnitude", "curvature", "dE", "result");
 
-    int nSteps = 1024; //XXX Parameterize.
-    double cutoff = 3.3; //XXX Parameterize.
-    double cutoffStep = 0.25;//XXX Parameterize.
-    double magnitude = 1.0; //XXX Parameterize.
-    double magnitudeStep = 0.25;//XXX Parameterize.
-    double iterMax = 32; //XXX Parameterize.
-    double torqueConvergence = 0.01; //XXX Parameterize.
-    double maxCurvature = -0.1;
-    double max_dE = 10.0;
+    long   nSteps = parameters->displaceNSteps;
+    double cutoff = parameters->displaceCutoff;
+    double cutoffStep = parameters->displaceCutoffStep;
+    double magnitude = parameters->displaceMagnitude;
+    double magnitudeStep = parameters->displaceMagnitudeStep;
+    long   iterMax = parameters->displaceIterMax;
+    double torqueConvergence = parameters->displaceTorqueConvergence;
+    double maxCurvature = parameters->displaceMaxCurvature;
+    double max_dE = parameters->displaceMaxDE;
 
     for(int k = 0; k < nSteps; k++)
     {
