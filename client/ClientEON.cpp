@@ -16,6 +16,7 @@
 #include "DimerDrJob.h"
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
+#include "TestJob.h"
 #include "HelperFunctions.h"
 using namespace helper_functions;
 
@@ -152,6 +153,8 @@ int main(int argc, char **argv)
 	    job =  new DimerRotationJob(&parameters);
     }else if (parameters.jobType == Parameters::DISPLACEMENT_SAMPLING) {
 	    job =  new DisplacementSamplingJob(&parameters);
+    }else if (parameters.jobType == Parameters::TEST) {
+	    job =  new TestJob(&parameters);
     }
 
 

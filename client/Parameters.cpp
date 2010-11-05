@@ -177,7 +177,10 @@ int Parameters::load(FILE *file){
 			jobType = DIMER_ROTATION;
 		}else if (jobTypeString == "displacementsampling"){
 			jobType = DISPLACEMENT_SAMPLING;
-        }else{
+		}else if (jobTypeString == "test"){
+				jobType = TEST;
+        }
+        else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;
         }
