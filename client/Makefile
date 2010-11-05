@@ -1,5 +1,12 @@
 #C compiler settings
 CXXFLAGS += -O2 -Wall -Wfatal-errors
+
+#Ensures all code is statically linked on a Linux machine
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+   LDFLAGS += -static
+endif
+
 #Fortran compiler settings
 ifdef NO_FORTRAN
     CXXFLAGS += -DNO_FORTRAN
