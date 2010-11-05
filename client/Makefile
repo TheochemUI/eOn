@@ -99,7 +99,7 @@ OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
     PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o ReplicaExchangeJob.o  \
-	DimerDrJob.o DimerRotationJob.o DimerDisplaceJob.o
+	DimerDrJob.o DimerRotationJob.o DisplacementSamplingJob.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo
