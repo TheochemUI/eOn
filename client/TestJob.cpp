@@ -8,7 +8,7 @@
 
 TestJob::TestJob(Parameters *params)
 {
-    tolerance = 0.0001;
+    tolerance = 0.01;
     parameters = params;
 }
 
@@ -27,6 +27,7 @@ void TestJob::checkFullSearch(void){
 
     long status;
     bool ok=1;
+    double diffM1, diffM2, diffSP;
     
     Matter *initial;      
     Matter *saddle;
@@ -58,45 +59,55 @@ void TestJob::checkFullSearch(void){
     status = saddlePoint->locate(min1, min2);
     printf("---Output for saddle point search end---\n\n");    
     
-    if ((abs(min1->getPotentialEnergy()-45.737426) < tolerance) and
-       (abs(min2->getPotentialEnergy()-45.737433) < tolerance) and
-       (abs(saddle->getPotentialEnergy()-46.284511) < tolerance)){
+    // checking the energies of the obtained configurations
+    diffM1 = abs(min1->getPotentialEnergy()-45.737426);
+    diffM2 = abs(min2->getPotentialEnergy()-45.737433);
+    diffSP = abs(saddle->getPotentialEnergy()-46.284511);
+    
+    if ((diffM1 < tolerance) and
+        (diffM2 < tolerance) and
+        (diffSP < tolerance)){
         ok *= 1; 
         printf("OK: Saddle search structural energies\n");
     }
     else{
-        if (abs(saddle->getPotentialEnergy()-46.284511) < tolerance){
+        if (tolerance < diffSP){
             ok *= 0;
-            printf("WARNING: Saddle point not within energy tolerance\n");
+            printf("WARNING: Saddle point not within energy tolerance: %f\n", diffSP);
         }
-        if (abs(min2->getPotentialEnergy()-45.737433) < tolerance){
+        if (tolerance < diffM2){
             ok *= 0;
-            printf("WARNING: Minimum 2 not within energy tolerance\n");
+            printf("WARNING: Minimum 2 not within energy tolerance: %f\n", diffM2);
         }
-        if (abs(min1->getPotentialEnergy()-45.737426) < tolerance){
+        if (tolerance < diffM1){
             ok *= 0;
-            printf("WARNING: Minimum 1 not within energy tolerance\n");
+            printf("WARNING: Minimum 1 not within energy tolerance: %f\n", diffM2);
         }
     }
+    
+    // checking the structures of the obtained configurations
+    diffM1 = abs((min1->getPositions()).row(384).norm()-19.123375);
+    diffM2 = abs((min2->getPositions()).row(384).norm()-19.527995);
+    diffSP = abs((saddle->getPositions()).row(384).norm()-19.026709);
 
-    if ((abs((min1->getPositions()).row(384).norm())-19.123375 < tolerance) and
-       (abs((min2->getPositions()).row(384).norm())-19.527995 < tolerance) and
-       (abs((saddle->getPositions()).row(384).norm())-19.026709 < tolerance)){
+    if ((diffM1 < tolerance) and
+        (diffM2 < tolerance) and
+        (diffSP < tolerance)){
         ok *= 1; 
         printf("OK: Saddle search, adatom positions\n");
     }
     else{
-        if (abs((saddle->getPositions()).row(384).norm())-19.123375 < tolerance){
+        if (tolerance < diffSP){
             ok *= 0;
-            printf("WARNING: Saddle point, adatom not within position tolerance\n");
+            printf("WARNING: Saddle point, adatom not within position tolerance: %f\n", diffSP);
         }
-        if (abs((min2->getPositions()).row(384).norm())-19.527995 < tolerance){
+        if (tolerance < diffM2){
             ok *= 0;
-            printf("WARNING: Minimum 2, adatom not within position tolerance\n");
+            printf("WARNING: Minimum 2, adatom not within position tolerance: %f\n", diffM2);
         }
-        if (abs((min1->getPositions()).row(384).norm())-19.026709 < tolerance){
+        if (tolerance < diffM1){
             ok *= 0;
-            printf("WARNING: Minimum 1, adatom not within position tolerance\n");
+            printf("WARNING: Minimum 1, adatom not within position tolerance: %f\n", diffM1);
         }
     }
     
@@ -201,7 +212,7 @@ void TestJob::checkPotentials(void)
         if (abs(forceDiff) > tolerance){
             printf("Lenosky force difference: %f\n", forceDiff);
         }else{
-            printf("OK Lenosky\n");
+            printf("OK: Lenosky\n");
         }
     } 
 
@@ -239,7 +250,7 @@ void TestJob::checkPotentials(void)
         if (abs(forceDiff) > tolerance){
             printf("WARNING: QSC force difference: %f\n", forceDiff);
         }else{
-            printf("OK QSC\n");
+            printf("OK: QSC\n");
         }
     } 
 
