@@ -34,6 +34,11 @@ void DimerDisplaceJob::run(int bundleNumber)
     double maxCurvature = parameters->displaceMaxCurvature;
     double max_dE = parameters->displaceMaxDE;
 
+    parameters->dimerRotationsHigh = 1;
+    parameters->dimerRotationsLow = 1;
+    parameters->dimerWindowHigh = 0.0;
+    parameters->dimerWindowLow = 0.0;
+
     for(int k = 0; k < nSteps; k++)
     {
 
