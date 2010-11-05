@@ -662,6 +662,9 @@ void Matter::applyPeriodicBoundary(long atom, int axis)
 
 double Matter::maxForce(void)
 {
+    //Ensures that the forces are up to date
+    computePotential();
+    
     //I think this can be done in one line with the rowwise method
 	double maxForce = 0.0;
     for(int i = 0; i < nAtoms; i++)
