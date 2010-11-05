@@ -26,7 +26,7 @@ public:
     int load(string filename);
     int load(FILE *file);
 /** All input parameters. If one would use values different from the default values these should be specified in the file with the name set in (Constants::PARMS_FILE_NAME).*/
-    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, PARALLEL_REPLICA, REPLICA_EXCHANGE, HESSIAN, DIMER_DR, DIMER_ROTATION, DIMER_DISPLACE};
+    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, PARALLEL_REPLICA, REPLICA_EXCHANGE, HESSIAN, DIMER_DR, DIMER_ROTATION, DISPLACEMENT_SAMPLING};
     JobType jobType;
     long randomSeed; // seed for random generator
     long reactantStateTag; // tag to describe to which reactant state the saddle point connects

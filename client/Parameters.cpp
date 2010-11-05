@@ -96,15 +96,15 @@ Parameters::Parameters(){
     return;
 
     // Default parameters for the DisplacementSamplingJob.
-    long   displaceNSteps = 1024;              // The number of samples to take.
-    double displaceCutoff = 3.3;              // The initial value of the cutoff radius within which atoms are displaced.
-    double displaceCutoffStep = 0.1;          // The magnitude by which to adjust the cutoff each montecarlo step.
-    double displaceMagnitude = 0.25;           // The initial magnitude of the displacement.
-    double displaceMagnitudeStep = 0.1;       // The magnitude by which to adjust the displacement magnitude each montecarlo step.
-    long   displaceIterMax = 32;             // The maximum number of rotations to perform on the dimer.
-    double displaceTorqueConvergence = 0.01;   // The convergence criteria of the dimer rotation.
-    double displaceMaxCurvature = -0.1;        // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
-    double displaceMaxDE = 10.0;               // The maximum dE for which a sample is considered good. XXX: Should use saddleMaxEnergy?
+    displaceNSteps = 1024;              // The number of samples to take.
+    displaceCutoff = 3.3;              // The initial value of the cutoff radius within which atoms are displaced.
+    displaceCutoffStep = 0.1;          // The magnitude by which to adjust the cutoff each montecarlo step.
+    displaceMagnitude = 0.25;           // The initial magnitude of the displacement.
+    displaceMagnitudeStep = 0.1;       // The magnitude by which to adjust the displacement magnitude each montecarlo step.
+    displaceIterMax = 32;             // The maximum number of rotations to perform on the dimer.
+    displaceTorqueConvergence = 0.01;   // The convergence criteria of the dimer rotation.
+    displaceMaxCurvature = -0.1;        // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
+    displaceMaxDE = 10.0;               // The maximum dE for which a sample is considered good. XXX: Should use saddleMaxEnergy?
 
 }
 
@@ -175,8 +175,8 @@ int Parameters::load(FILE *file){
 			jobType = DIMER_DR;
 		}else if (jobTypeString == "dimerrotation"){
 			jobType = DIMER_ROTATION;
-		}else if (jobTypeString == "dimerdisplace"){
-			jobType = DIMER_DISPLACE;
+		}else if (jobTypeString == "displacementsampling"){
+			jobType = DISPLACEMENT_SAMPLING;
         }else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;

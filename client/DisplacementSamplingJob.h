@@ -4,10 +4,10 @@
 
 USING_PART_OF_NAMESPACE_EIGEN
 
-class DimerDisplaceJob: public Job {
+class DisplacementSamplingJob: public Job {
     public:
-        DimerDisplaceJob(Parameters *params);
-        ~DimerDisplaceJob(void);
+        DisplacementSamplingJob(Parameters *params);
+        ~DisplacementSamplingJob(void);
         void run(int bundleNumber);
     private:
         Parameters *parameters;
