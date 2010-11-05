@@ -15,7 +15,7 @@
 #include "ReplicaExchangeJob.h"
 #include "DimerDrJob.h"
 #include "DimerRotationJob.h"
-#include "DimerDisplaceJob.h"
+#include "DisplacementSamplingJob.h"
 #include "HelperFunctions.h"
 using namespace helper_functions;
 
@@ -150,12 +150,12 @@ int main(int argc, char **argv)
 	    job =  new DimerDrJob(&parameters);
     }else if (parameters.jobType == Parameters::DIMER_ROTATION) {
 	    job =  new DimerRotationJob(&parameters);
-    }else if (parameters.jobType == Parameters::DIMER_DISPLACE) {
-	    job =  new DimerDisplaceJob(&parameters);
+    }else if (parameters.jobType == Parameters::DISPLACEMENT_SAMPLING) {
+	    job =  new DisplacementSamplingJob(&parameters);
     }
 
 
-    //If no bundles run once; otherwise, run bundleSize number of times.
+    // If no bundles run once; otherwise, run bundleSize number of times.
     if (bundleSize == 0) {
         job->run(-1);
         boinc_fraction_done(1.0);

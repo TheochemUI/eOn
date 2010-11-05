@@ -1,4 +1,4 @@
-#include "DimerDisplaceJob.h"
+#include "DisplacementSamplingJob.h"
 #include "ConjugateGradients.h"
 #include "Matter.h"
 #include "Constants.h"
@@ -8,19 +8,18 @@
 
 using namespace helper_functions;
 
-DimerDisplaceJob::DimerDisplaceJob(Parameters *params)
+DisplacementSamplingJob::DisplacementSamplingJob(Parameters *params)
 {
     parameters = params;
 }
 
-DimerDisplaceJob::~DimerDisplaceJob(){ }
+DisplacementSamplingJob::~DisplacementSamplingJob(){ }
 
-void DimerDisplaceJob::run(int bundleNumber)
+void DisplacementSamplingJob::run(int bundleNumber)
 {
     // No bundling for this job, so bundleNumber is ignored.
     
-    // Load the displacement con file and get the position.
-    
+   
     FILE *results = fopen("results.dat", "w");
     fprintf(results, "%15s   %15s   %15s   %15s   %15s\n", "cutoff", "magnitude", "curvature", "dE", "result");
 
