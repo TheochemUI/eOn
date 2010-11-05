@@ -120,7 +120,12 @@ void Dimer::estimateLowestEigenmode()
         int torqueMaxRotations = parameters->dimerRotationsHigh;
         int torqueMinRotations = parameters->dimerRotationsLow;
   
-        assert(( std::isnormal(torqueMagnitude) ));
+        if(!std::isnormal(torqueMagnitude))
+        {
+            printf("Warning, numerical glitch in torque magnitude. Setting torque magnitude to torqueLimitHigh + 1.0\n");
+            torqueMagnitude = torqueLimitHigh + 1.0;
+        }
+        
         if(torqueMagnitude > torqueLimitHigh && rotations >= torqueMaxRotations)
         {
             doneRotating = true;
