@@ -96,15 +96,13 @@ Parameters::Parameters(){
     return;
 
     // Default parameters for the DisplacementSamplingJob.
-    displaceNSteps = 1024;              // The number of samples to take.
-    displaceCutoff = 3.3;              // The initial value of the cutoff radius within which atoms are displaced.
-    displaceCutoffStep = 0.1;          // The magnitude by which to adjust the cutoff each montecarlo step.
-    displaceMagnitude = 0.25;           // The initial magnitude of the displacement.
-    displaceMagnitudeStep = 0.1;       // The magnitude by which to adjust the displacement magnitude each montecarlo step.
-    displaceIterMax = 32;             // The maximum number of rotations to perform on the dimer.
+    displaceNSamples = 32;              // The number of samples to take.
+    displaceIterMax = 32;               // The maximum number of rotations to perform on the dimer.
     displaceTorqueConvergence = 0.01;   // The convergence criteria of the dimer rotation.
     displaceMaxCurvature = -0.1;        // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
     displaceMaxDE = 10.0;               // The maximum dE for which a sample is considered good. XXX: Should use saddleMaxEnergy?
+    displaceCutoffs = "0.0 3.3";
+    displaceMagnitudes = "0.0625 0.125 0.25";
 
 }
 
@@ -249,16 +247,13 @@ int Parameters::load(FILE *file){
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
 
-        displaceNSteps = ini.GetValueL("DisplacementSampling", "NSTEPS", displaceNSteps);
-        displaceCutoff = ini.GetValueF("DisplacementSampling", "CUTOFF", displaceCutoff);
-        displaceCutoffStep = ini.GetValueF("DisplacementSampling", "CUTOFF_STEP", displaceCutoffStep);
-        displaceMagnitude = ini.GetValueF("DisplacementSampling", "MAGNITUDE", displaceMagnitude);
-        displaceMagnitudeStep = ini.GetValueF("DisplacementSampling", "MAGNITUDE_STEP", displaceMagnitudeStep);
+        displaceNSamples = ini.GetValueL("DisplacementSampling", "NSAMPLES", displaceNSamples);
         displaceIterMax = ini.GetValueL("DisplacementSampling", "ITERMAX", displaceIterMax);
         displaceTorqueConvergence = ini.GetValueF("DisplacementSampling", "TORQUE_CONVERGENCE", displaceTorqueConvergence);
         displaceMaxCurvature = ini.GetValueF("DisplacementSampling", "MAX_CURVATURE", displaceMaxCurvature);
         displaceMaxDE = ini.GetValueF("DisplacementSampling", "MAX_DE", displaceMaxDE);
-
+        displaceCutoffs = ini.GetValue("DisplacementSampling", "CUTOFFS", displaceCutoffs);
+        displaceMagnitudes = ini.GetValue("DisplacementSampling", "MAGNITUDES", displaceMagnitudes);
 
 		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
  		mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
