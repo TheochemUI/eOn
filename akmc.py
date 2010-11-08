@@ -298,7 +298,7 @@ def register_results(comm, current_state, states, searchdata = None):
             # Remove used information from the searchdata metadata.
         
         #read in the results
-        result['results'] = io.parse_process_search_results(result['results.dat'])
+        result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 0:
             process_id = states.get_state(state_num).add_process(result)
         else:

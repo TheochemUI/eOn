@@ -157,7 +157,7 @@ def save_results_dat(fileout, results):
     for key in results:
         print >> f, results[key], key
 
-def parse_pr_results(filein):
+def parse_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained
     therein
@@ -177,50 +177,6 @@ def parse_pr_results(filein):
             results[line[1]] = int(line[0])
 
     return results
-
-def parse_process_search_results(filein):
-    '''
-    Reads a results.dat file and gives a dictionary of the values contained
-    therein
-    '''
-    if hasattr(filein, 'readline'):
-        f = filein
-    else:
-        f = open(filein)
-    results = {}
-    for line in f:
-        line = line.split()
-        if len(line) < 2:
-            continue
-        if '.' in line[0]:
-            results[line[1]] = float(line[0])
-        else:
-            results[line[1]] = int(line[0])
-    #input validation
-    if not type(results['termination_reason']) == int:
-        raise TypeError('termination_reason')
-    if not type(results['random_seed']) == int:
-        raise TypeError('random_seed')
-    if not type(results['potential_tag']) == int:
-        raise TypeError('potential_tag')
-    if not type(results['total_force_calls']) == int:
-        raise TypeError('total_force_calls')
-    if not type(results['force_calls_saddle']) == int:
-        raise TypeError('force_calls_saddle')
-    if not type(results['force_calls_prefactors']) == int:
-        raise TypeError('force_calls_prefactors')
-    if not type(results['prefactor_reactant_to_product']) == float:
-        raise TypeError('prefactor_reactant_to_product')
-    if not type(results['prefactor_product_to_reactant']) == float:
-        raise TypeError('prefactor_product_to_reactant')
-    if not type(results['potential_energy_saddle']) == float:
-        raise TypeError('potential_energy_saddle')
-    if not type(results['potential_energy_reactant']) == float:
-        raise TypeError('potential_energy_reactant')
-    if not type(results['potential_energy_product']) == float:
-        raise TypeError('potential_energy_product')
-    return results
-
 
 def loadposcar(filein):
     '''
