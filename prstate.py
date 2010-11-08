@@ -110,3 +110,14 @@ class PRState(state.State):
                               "time":              time
                              }
     
+    def get_search_count(self):
+        self.load_info()
+        try:        
+            return self.info.getint("MetaData", "search_count")
+        except:
+            return 0
+
+    def inc_search_count(self):
+        search_count = self.get_search_count()+1
+        self.info.set("MetaData", "search_count", str(search_count))
+        self.save_info()
