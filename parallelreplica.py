@@ -155,9 +155,10 @@ def register_results(comm, current_state, states):
         id = int(result['name'].split("_")[1]) + result['number']
 
         #read in the results
-        result['results'] = io.parse_pr_results(result['results.dat'])
+        result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 1:
             process_id = states.get_state(state_num).add_process(result)
+            logger.info("found transition with time %.3e", result['results']['transition_time'])
 
         num_registered += 1
         
