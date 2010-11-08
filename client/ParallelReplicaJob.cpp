@@ -81,9 +81,10 @@ void ParallelReplicaJob::dynamics()
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   ncheck = 0, nexam = 0, steps_tmp = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
-    double EKin=0.0, kb = 1.0/11604.5;
+    double EKin=0.0, kb = 1.0/11604.5, temp;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
     
+    temp = parameters->mdTemperature;
     Matter *mdbuff[check_steps];	
     for(long i =0; i < check_steps;i++){
 	    mdbuff[i] = new Matter(parameters);
@@ -95,7 +96,7 @@ void ParallelReplicaJob::dynamics()
         Bbm.initial();
     }
         
-    PRdynamics.velocityScale();
+    PRdynamics.velocityScale(temp);
 
     while(!stoped){
   		
@@ -109,7 +110,7 @@ void ParallelReplicaJob::dynamics()
         SumT += TKin;
         SumT2 += TKin*TKin;
 
-        PRdynamics.oneStep(); 
+        PRdynamics.oneStep(temp); 
 
         md_fcalls++;
         ncheck++;
@@ -192,7 +193,7 @@ void ParallelReplicaJob::dynamics()
        
        
         for(long i = 0; i<relax_steps;i++){
-            PRdynamics.oneStep();
+            PRdynamics.oneStep(temp);
             totsteps ++;
             RLtime += 10*parameters->mdTimeStep;
             md_fcalls ++;

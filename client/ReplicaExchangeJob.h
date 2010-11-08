@@ -9,4 +9,6 @@ class ReplicaExchangeJob: public Job {
     private:
     Parameters *parameters;
 	Matter *reactant;
+    Matter *ReplicaArray[];
+    double *ReplicaTemp;
 };
