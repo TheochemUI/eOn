@@ -50,6 +50,7 @@ def parallelreplica():
 
 def step(current_time, current_state, states, transition):
     next_state = states.get_product_state(current_state.number, transition['process_id'])
+    next_state.zero_search_count()
     dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
     proc = current_state.get_process(transition['process_id'])
     dynamics.append(current_state.number, transition['process_id'],
@@ -177,15 +178,22 @@ def register_results(comm, current_state, states):
         result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 1:
             process_id = state.add_process(result)
-            if not transition: 
-                time = (state.get_search_count()+1)*result['results']['transition_time'] 
+            time = result['results']['transition_time']
+            logger.info("found transition with time %.3e", time)
+            # if this is a faster transition record it
+            if not transition or transition['time'] > time:
                 transition = {'process_id':process_id, 'time':time}
-                logger.info("found transition with time %.3e", time)
 
         num_registered += 1
         state.inc_search_count()
         
     logger.info("%i (result) searches processed", num_registered)
+
+    if transition:
+        num_searches = state.get_search_count()
+        logger.info("fastest time: %e", transition['time'])
+        transition['time'] *= num_searches
+        logger.info("real time: %e", transition['time'])
 
     return num_registered, transition
 
