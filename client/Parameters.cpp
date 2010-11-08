@@ -77,7 +77,7 @@ Parameters::Parameters(){
     mdSteps = 1000;
     PRD_MaxMovedDist = 2.0;
     mdRefine = false;
-    mdAutoStop = true;
+    mdAutoStop = false;
     RefineAccuracy = 20;
     CheckFreq = 500;
     NewRelaxSteps = 500;
