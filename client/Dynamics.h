@@ -34,12 +34,12 @@ public:
 
     ~Dynamics();///< Destructor.
 
-    void oneStep();	
+    void oneStep(double T);	
     void VerletStep1();
     void VerletStep2();
-    void fullSteps(); 
-    void Andersen();
-    void velocityScale();
+    void fullSteps(double T); 
+    void Andersen(double T);
+    void velocityScale(double T);
 
 private:
     long nAtoms;///< Number of free coordinates.

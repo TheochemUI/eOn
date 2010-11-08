@@ -20,9 +20,10 @@ Dynamics::~Dynamics()
 };
 
 
-void Dynamics::oneStep()
+void Dynamics::oneStep(double T)
 {
-    Andersen(); //Wait to be implemented later;
+    double temp = T;
+    Andersen(temp); //Wait to be implemented later;
     VerletStep1();
     VerletStep2();
     return;
@@ -58,7 +59,7 @@ void Dynamics::VerletStep2()
      matter->setVelocities(velocities);// Second update Velocities
 };
 
-void Dynamics::fullSteps()
+void Dynamics::fullSteps(double T)
 {
      bool stoped = false;
      long forceCallsTemp;
@@ -66,14 +67,14 @@ void Dynamics::fullSteps()
      Matrix<double, Eigen::Dynamic, 3> velocity; 
      double EKin;
      double TKin,SumT=0.0,SumT2=0.0,AvgT,VarT;
-  
+     double temp = T;
      long nFreeCoord = matter->numberOfFreeAtoms()*3; 
      forceCallsTemp = matter->getForceCalls();  
 
-     velocityScale();
+     velocityScale(temp);
 
      while(!stoped){
-        oneStep();
+        oneStep(temp);
 	nsteps++;
      
 	velocity = matter->getVelocities();
@@ -82,11 +83,11 @@ void Dynamics::fullSteps()
 	SumT+=TKin;
 	SumT2+=TKin*TKin;
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
-
+/*
 	if (nsteps % 100 == 0){
 	    matter->matter2xyz("movie", true);
 	}
-
+*/
 	if (nsteps >= parameters->mdSteps ){
 	    stoped = true;
 	}       
@@ -97,14 +98,14 @@ void Dynamics::fullSteps()
      printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 };
 
-void Dynamics::Andersen(){
+void Dynamics::Andersen(double T){
     
      double temp,alpha,Tcol,Pcol;//temp,sigma,Tcol,Pcol should be got from parameter.dat.
      double irand,v1,new_v,old_v;
      Matrix<double, Eigen::Dynamic, 1> mass;
      Matrix<double, Eigen::Dynamic, 3> velocity;
 
-     temp = parameters->mdTemperature; //unit K
+     temp = T; //unit K
      alpha = parameters->Andersen_Alpha; //collision strength
      Tcol = parameters->Andersen_Tcol; // Average time between collision, in unit of dt
      Pcol = 1.0-exp(-1.0/Tcol);
@@ -135,13 +136,13 @@ void Dynamics::Andersen(){
      return;
 }
 
-void Dynamics::velocityScale(){
+void Dynamics::velocityScale(double T){
 	
      double temp,new_v;
      Matrix<double, Eigen::Dynamic, 1> mass;
      Matrix<double, Eigen::Dynamic, 3> velocity;
 
-     temp = parameters->mdTemperature;
+     temp = T;
      velocity = matter->getVelocities();
      mass = matter->getMasses();
 
