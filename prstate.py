@@ -121,3 +121,9 @@ class PRState(state.State):
         search_count = self.get_search_count()+1
         self.info.set("MetaData", "search_count", str(search_count))
         self.save_info()
+
+    def zero_search_count(self):
+        self.load_info()
+        search_count = 0
+        self.info.set("MetaData", "search_count", str(search_count))
+        self.save_info()
