@@ -159,7 +159,7 @@ double Matter::perAtomNorm(const Matter& matter)
 
     if(matter.numberOfAtoms() == nAtoms)
     {
-        Matrix<double, Eigen::Dynamic, 3> diff = positions - matter.positions;
+        Matrix<double, Eigen::Dynamic, 3> diff = pbc(positions - matter.positions);
         for(i = 0; i < nAtoms; i++)
         {
             max_distance = max(diff.row(i).norm(), max_distance);
