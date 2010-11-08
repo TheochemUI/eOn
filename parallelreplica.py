@@ -25,6 +25,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
+    logger.info("current time is %e", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -33,10 +34,11 @@ def parallelreplica():
 
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
-    register_results(comm, current_state, states)
+    num_registered, transition = register_results(comm, current_state, states)
 
-    # If we have found a transition for the current state we need to update the
-    # trajectory file and create a new state with the product file.
+    if transition:
+        current_state, previous_state = step(time, current_state, states, transition)
+        time += transition['time']
 
     wuid = make_searches(comm, current_state, wuid)
     
@@ -45,6 +47,20 @@ def parallelreplica():
     parser = ConfigParser.RawConfigParser() 
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w')) 
+
+def step(current_time, current_state, states, transition):
+    next_state = states.get_product_state(current_state.number, transition['process_id'])
+    dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
+    proc = current_state.get_process(transition['process_id'])
+    dynamics.append(current_state.number, transition['process_id'],
+                    next_state.number, transition['time'], transition['time']+current_time, 0, 0)
+
+    previous_state = current_state
+    current_state = next_state
+
+    logger.info("currently in state %i", current_state.number)
+
+    return current_state, previous_state
 
 def get_statelist():
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
@@ -141,6 +157,7 @@ def register_results(comm, current_state, states):
     def keep_result(name):
         return True
 
+    transition = None
     num_registered = 0
     for result in comm.get_results(config.path_searches_in, keep_result): 
         # The result dictionary contains the following key-value pairs:
@@ -154,24 +171,59 @@ def register_results(comm, current_state, states):
         state_num = int(result['name'].split("_")[0])
         id = int(result['name'].split("_")[1]) + result['number']
 
+        state = states.get_state(state_num)
+
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 1:
-            process_id = states.get_state(state_num).add_process(result)
-            logger.info("found transition with time %.3e", result['results']['transition_time'])
+            process_id = state.add_process(result)
+            if not transition: 
+                time = (state.get_search_count()+1)*result['results']['transition_time'] 
+                transition = {'process_id':process_id, 'time':time}
+                logger.info("found transition with time %.3e", time)
 
         num_registered += 1
+        state.inc_search_count()
         
     logger.info("%i (result) searches processed", num_registered)
 
-    return num_registered
+    return num_registered, transition
 
 def main():
     optpar = optparse.OptionParser(usage="usage: %prog [options] config.ini")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
+    optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
+    optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the simulation, discarding all data")
     options, args = optpar.parse_args()
 
     config.init()
+
+    if options.no_submit:
+        config.comm_search_buffer_size = 0
+
+    if options.reset:
+        res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
+        if len(res)>0 and res[0] == 'y':
+                rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
+                        config.path_scratch]
+                if config.debug_keep_all_results:
+                    rmdirs.append(os.path.join(config.path_root, "old_searches"))
+                for i in rmdirs:
+                    if os.path.isdir(i):
+                        shutil.rmtree(i)
+                        #XXX: ugly way to remove all empty directories containing this one
+                        os.mkdir(i)
+                        os.removedirs(i)
+                
+                dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
+                info_path = os.path.join(config.path_results, "info.txt") 
+                log_path = os.path.join(config.path_results, "pr.log") 
+                for i in [info_path, dynamics_path, log_path]:
+                    if os.path.isfile(i):
+                        os.remove(i)
+                
+                print "Reset."
+                sys.exit(0)
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
