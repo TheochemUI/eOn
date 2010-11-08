@@ -116,7 +116,20 @@ def identical(atoms1, atoms2, epsilon_r):
 
     return True
             
-            
+
+def brutal_neighbor_list(p, cutoff):
+    nl = []
+    ibox = numpy.linalg.inv(p.box)    
+    for a in range(len(p)):
+        nl.append([])
+        for b in range(len(p)):
+            if b != a:
+                dist = numpy.linalg.norm(pbc(p.r[a] - p.r[b], p.box, ibox))        
+                if dist < cutoff:
+                    nl[a].append(b)
+    return nl
+
+
 def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
     """ Returns a list of nearest neighbors within cutoff for each atom. 
         Parameters:
@@ -178,19 +191,20 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
                     intersect[i].remove(j)
                     intersect[j].remove(i)
     return intersect
-    
 
     
-def coordination_numbers(p, cutoff):
+def coordination_numbers(p, cutoff, brutal=False):
     """ Returns a list of coordination numbers for each atom in p """
-    nl = sweep_and_prune(p, cutoff)
+    if brutal:
+        nl = brutal_neighbor_list(p, cutoff)
+    else:
+        nl = sweep_and_prune(p, cutoff)
     return [len(l) for l in nl]
-    
 
 
-def least_coordinated(p, cutoff):
+def least_coordinated(p, cutoff, brutal=False):
     """ Returns a list of atom indices in p with the lowest coordination numbers for unfrozen atoms"""
-    cn = coordination_numbers(p, cutoff)
+    cn = coordination_numbers(p, cutoff, brutal)
     maxcoord = max(cn)
     mincoord = min(cn)
     while mincoord <= maxcoord:
