@@ -80,6 +80,14 @@ bool CIniFile::ReadFile(FILE *file)
 	  
 	case '=':
 	  valuename = line.substr( 0, pLeft);
+	  for(int j = 0; j < valuename.length(); j++)
+	  {
+	    if(valuename[j] == ' ')
+	    {
+	      valuename.erase(j, 1);
+	    }
+	  }
+	  printf("%s|\n", valuename.c_str());
 	  value = line.substr( pLeft + 1);
 	  SetValue( keyname, valuename, value);
 	  break;
