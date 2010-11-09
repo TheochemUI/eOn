@@ -85,7 +85,7 @@ void ParallelReplicaJob::dynamics()
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
     
     temp = parameters->mdTemperature;
-    Matter *mdbuff[check_steps];	
+    Matter *mdbuff[check_steps];
     for(long i =0; i < check_steps;i++){
 	    mdbuff[i] = new Matter(parameters);
 	}
@@ -201,7 +201,9 @@ void ParallelReplicaJob::dynamics()
     }
     return;
      
-    delete[] mdbuff;
+    for(long i =0; i < check_steps;i++){
+	    delete[] mdbuff[i];
+	}
 };
 
 bool ParallelReplicaJob::CheckState(Matter *matter)
