@@ -235,7 +235,7 @@ Lanczos::Status Lanczos::minimumMode(
       blitz::Array<double, 1> & gradient
 ) {
       gradientObject_=&object;
-      const int ncoord=coordinates.size();
+      const unsigned ncoord=coordinates.size();
       gradient.resize(ncoord);
       Array<double, 1> coord(ncoord);
       coord=coordinates;

@@ -177,27 +177,27 @@ class Water(Displace):
         '''Returns Atom object containing displaced structure and an array containing the displacement'''
         free=self.reactant.free
         displaced_atoms = self.reactant.copy()
-        for i in range(self.n_water):
-            h1=i*2
-            h2=i*2+1
-            o=i+self.n_water*2
-            #don't displace if any of the three atoms is fixed
-            if not (free[h1] and free[h2] and free[o]):
-                continue
-            #Displace one of the free atoms by a gaussian distributed
-            #random number with a standard deviation of self.std_dev.
-            disp=numpy.random.normal(scale = self.stdev_translation, size=3)
-            displaced_atoms.r[h1]+=disp
-            displaced_atoms.r[h2]+=disp
-            displaced_atoms.r[o]+=disp
-            rh1=displaced_atoms.r[h1]
-            rh2=displaced_atoms.r[h2]
-            ro=displaced_atoms.r[o]
-            disp=numpy.random.normal(scale = self.stdev_rotation, size=3)
-            rh1, rh2, ro=self.rotate_water(rh1, rh2, ro, disp[0], disp[1], disp[2])
-            displaced_atoms.r[h1]=rh1
-            displaced_atoms.r[h2]=rh2
-            displaced_atoms.r[o]=ro            
+        i=numpy.random.uniform(0, self.n_water)
+        h1=i*2
+        h2=i*2+1
+        o=i+self.n_water*2
+        #don't displace if any of the three atoms is fixed
+        #if not (free[h1] and free[h2] and free[o]):
+        #    continue
+        #Displace one of the free atoms by a gaussian distributed
+        #random number with a standard deviation of self.std_dev.
+        disp=numpy.random.normal(scale = self.stdev_translation, size=3)
+        displaced_atoms.r[h1]+=disp
+        displaced_atoms.r[h2]+=disp
+        displaced_atoms.r[o]+=disp
+        rh1=displaced_atoms.r[h1]
+        rh2=displaced_atoms.r[h2]
+        ro=displaced_atoms.r[o]
+        disp=numpy.random.normal(scale = self.stdev_rotation, size=3)
+        rh1, rh2, ro=self.rotate_water(rh1, rh2, ro, disp[0], disp[1], disp[2])
+        displaced_atoms.r[h1]=rh1
+        displaced_atoms.r[h2]=rh2
+        displaced_atoms.r[o]=ro
         displacement=displaced_atoms.r - self.reactant.r
         return displaced_atoms, displacement
 

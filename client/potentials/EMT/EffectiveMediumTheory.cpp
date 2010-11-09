@@ -38,7 +38,7 @@ void EffectiveMediumTheory::cleanMemory(void){
 void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
                                   double *F, double *U, const double *box)
 {
-    int i, j, index=0;
+    int i, j;
     double *pos;
     
     pos = new double[3*N];
