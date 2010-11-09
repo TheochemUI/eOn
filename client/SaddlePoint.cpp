@@ -358,7 +358,8 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     	static int run;
     	ostringstream climb;
     	climb << "climb_" << run;
-    	saddle->matter2xyz(climb.str(), false);
+    	initial->matter2xyz(climb.str(), false);
+    	saddle->matter2xyz(climb.str(), true);
     	++run;
         if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
         {
