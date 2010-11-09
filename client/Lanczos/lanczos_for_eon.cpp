@@ -62,11 +62,8 @@ namespace {
 
 Lanczos::Lanczos(Matter *const, Parameters *parameters) : matter_(parameters)
 {
-#warning quick fix
-    setConvergenceLimit(1e-4);
-    setIterationLimit(50);
-    //setConvergenceLimit(parameters->lanczosConvergence);
-    //setIterationLimit(parameters->lanczosIteration);
+    setConvergenceLimit(parameters->lanczosConvergence);
+    setIterationLimit(parameters->lanczosIteration);
     setFiniteDifference(1e-5); //Angstrom
     setInitial(PREVIOUS);
     assert(getIterationLimit() > 0);
@@ -112,6 +109,11 @@ Matrix<double, Eigen::Dynamic, 3> Lanczos::getEigenvector()
             for (int a=0; a < 3; ++a) {
                 result(i, a)=eigenvector_(j);
                 ++j;
+            };
+        }
+        else {
+            for (int a=0; a < 3; ++a) {
+                result(i, a)=0.0;
             };
         };
     };

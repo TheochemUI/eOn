@@ -265,7 +265,7 @@ int Parameters::load(FILE *file){
 		CheckFreq = ini.GetValueL("Dynamics","CheckFreq",CheckFreq);
 
         lanczosConvergence = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergence);
-        lanczosIteration = ini.GetValueL("Lanczos", "ITERATOIN", lanczosIteration);
+        lanczosIteration = ini.GetValueL("Lanczos", "ITERATION", lanczosIteration);
 
         NewRelaxSteps = ini.GetValueL("Dynamics","NewRelaxStep",NewRelaxSteps);
 
