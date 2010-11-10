@@ -209,24 +209,21 @@ void ParallelReplicaJob::dynamics()
 bool ParallelReplicaJob::CheckState(Matter *matter)
 {
      double distance; 
-     Matter *tmp;
-     tmp = new Matter(parameters);
-     *tmp = *matter;
-     ConjugateGradients cgMin(tmp, parameters);
+     Matter tmp(parameters);
+     tmp = *matter;
+     ConjugateGradients cgMin(&tmp, parameters);
      cgMin.fullRelax();
-     min_fcalls += tmp->getForceCalls();
+     min_fcalls += tmp.getForceCalls();
 
-     distance = tmp->distanceTo(*min1);
 
+     distance = tmp.distanceTo(*min1);
 #ifndef NDEBUG
      printf("Total Moved Distance = %lf\n",distance);
 #endif
      if (distance <= parameters->PRD_MaxMovedDist){
-	return false;
-     }else { 
- 	return true;
-     }
-     delete tmp;
+        return false;
+     };
+     return true;
 }
 
 

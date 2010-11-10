@@ -143,7 +143,7 @@ namespace gradient_scanning {
 }
 
 inline
-gradient_scanning::Lanczos::Status operator|=(gradient_scanning::Lanczos::Status & a, gradient_scanning::Lanczos::Status b)
+gradient_scanning::Lanczos::Status operator|=(gradient_scanning::Lanczos::Status a, gradient_scanning::Lanczos::Status b)
 {return reinterpret_cast<gradient_scanning::Lanczos::Status&>(reinterpret_cast<int&>(a) |= reinterpret_cast<int&>(b));}
 
 #endif
