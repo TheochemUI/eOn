@@ -133,6 +133,7 @@ def init(config_file = ""):
 
     #Random Displacement
     config.disp_type = parser.get('Displacement', 'type')
+    config.disp_brute_neighbors = parser.getboolean('Displacement', 'brute_neighbors')
     config.disp_cutoff = parser.getfloat('Displacement', 'cutoff')
     config.disp_use_covalent = parser.getboolean('Displacement', 'use_covalent')
     config.disp_covalent_scale = parser.getfloat('Displacement', 'covalent_scale')
@@ -169,5 +170,3 @@ def init(config_file = ""):
     config.comp_use_identical = parser.getboolean('Structure Comparison', 'use_identical')
 
     del parser
-
-

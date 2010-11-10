@@ -156,6 +156,9 @@ void ConjugateGradients::determineSearchDirection(){
     {
         gamma = 0;
     }
+
+    //std::cout << "forces:" << std::endl << force << std::endl;
+
     //cout<<"gamma: "<<gamma<<endl;
     direction = force + gamma*directionOld;
     //direction = direction.cwise() * matter->getFree();

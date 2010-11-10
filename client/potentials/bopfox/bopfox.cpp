@@ -49,9 +49,9 @@ void bopfox::writeFOX(long N, const double *R, int const *atomicNrs, const doubl
     FILE *struc = fopen("struc.bx", "w");
     fprintf(struc, "StrucName = struc\n");
     fprintf(struc, "aLat = 1.0\n");
-    fprintf(struc, "a1 =  %.8lf   %.8lf   %.8lf\n", box[0], 0.0, 0.0);
-    fprintf(struc, "a2 =  %.8lf   %.8lf   %.8lf\n", 0.0, box[1], 0.0);
-    fprintf(struc, "a3 =  %.8lf   %.8lf   %.8lf\n", 0.0, 0.0, box[2]);
+    fprintf(struc, "a1 =  %.8lf   %.8lf   %.8lf\n", box[0], box[1], box[2]);
+    fprintf(struc, "a2 =  %.8lf   %.8lf   %.8lf\n", box[3], box[4], box[5]);
+    fprintf(struc, "a3 =  %.8lf   %.8lf   %.8lf\n", box[6], box[7], box[8]);
     fprintf(struc, "coord = cartesian\n");
     for(int i = 0; i < N; i++)
     {

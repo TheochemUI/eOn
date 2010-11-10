@@ -48,8 +48,8 @@ void LJ::force(long N, const double *R, const int *atomicNrs, double *F, double 
             diffRZ = pos[3*i+2]-pos[3*j+2];
 
             diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); // floor = largest integer value less than argument 
-            diffRY = diffRY-box[1]*floor(diffRY/box[1]+0.5);
-            diffRZ = diffRZ-box[2]*floor(diffRZ/box[2]+0.5);
+            diffRY = diffRY-box[4]*floor(diffRY/box[4]+0.5);
+            diffRZ = diffRZ-box[8]*floor(diffRZ/box[8]+0.5);
             
             diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
                 
