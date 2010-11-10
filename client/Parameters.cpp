@@ -211,6 +211,10 @@ int Parameters::load(FILE *file){
         saddleMaxIterations = ini.GetValueL("Saddle_Point", 
                                             "MAX_ITERATIONS", 
                                             saddleMaxIterations);
+        saddleMaxIterations = ini.GetValueL("Saddle_Point", 
+                                            "MAX_ITERATIONS_CONCAVE", 
+                                            saddleMaxIterationsConcave);
+
         saddlePerpendicularForceRatio = ini.GetValueF("Default",
                                                       "PERPENDICULAR_FORCE_RATIO",
                                                       saddlePerpendicularForceRatio);
