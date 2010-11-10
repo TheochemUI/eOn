@@ -385,7 +385,9 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+        #ifndef NDEBUG
         double stepSize = sqrt(((saddle->getPositions() - pos).cwise().square()).sum());
+        #endif
         // The system (saddle) is moved to a new configuration
         saddle->setPositions(pos);
         forces = saddle->getForces();

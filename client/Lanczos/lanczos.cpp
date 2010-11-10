@@ -540,7 +540,7 @@ void Lanczos::report()
             b=" < ";
       };
       cout << a << iteration() << b << getIterationLimit() << '\n';
-      if (iteration() == eigenvector_.size() ) {
+      if ((unsigned)iteration() == eigenvector_.size() ) {
             a="Has computed full Hesse matrix: ";
             b=" == ";
       }

@@ -177,7 +177,7 @@ class Water(Displace):
         '''Returns Atom object containing displaced structure and an array containing the displacement'''
         free=self.reactant.free
         displaced_atoms = self.reactant.copy()
-        i=numpy.random.uniform(0, self.n_water)
+        i=int(numpy.random.uniform(0, self.n_water))
         h1=i*2
         h2=i*2+1
         o=i+self.n_water*2
