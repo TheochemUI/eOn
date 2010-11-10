@@ -59,8 +59,8 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U, co
                   diffRY = R[3*i+1]-R[3*j+1];
                   diffRZ = R[3*i+2]-R[3*j+2];
                   diffRX = diffRX - box[0]*floor(diffRX/box[0]+0.5); // floor = largest integer value less than argument 
-                  diffRY = diffRY - box[1]*floor(diffRY/box[1]+0.5);
-                  diffRZ = diffRZ - box[2]*floor(diffRZ/box[2]+0.5);
+                  diffRY = diffRY - box[4]*floor(diffRY/box[4]+0.5);
+                  diffRZ = diffRZ - box[8]*floor(diffRZ/box[8]+0.5);
                   diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
                   assert(std::isnormal(diffR));
                   if(diffR < cutoff_){
