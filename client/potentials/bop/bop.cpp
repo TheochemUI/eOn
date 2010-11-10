@@ -51,10 +51,7 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     double *atomEnergies = new double[N];
     // Initialize positions.
 
-    double bopbox[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    bopbox[0] = box[0];
-    bopbox[4] = box[1];
-    bopbox[8] = box[2];
+    double *bopbox=box;
 
     // Call the FU function.
     boplib_calc_ef_(&N, R, bopbox, atomEnergies, F);      

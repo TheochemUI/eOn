@@ -126,16 +126,15 @@ Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, 
     //     and converts from Matrix to double[]s. Later, the potentials
     //     should also use Eigen
 
-
-    // The call is passed to the specified force calculator.
-    double tmpBox[3];
-    tmpBox[0] = box.diagonal()[0];
-    tmpBox[1] = box.diagonal()[1];
-    tmpBox[2] = box.diagonal()[2];
+    // Eigen stores data in column-major format but we want row-major
+    Matrix<double, 3, Eigen::Dynamic> boxT= box.transpose();
     Matrix<double, 3, Eigen::Dynamic> positionsT = positions.transpose();
     Matrix<double, 3, Eigen::Dynamic> forcesT(3, (int)nAtoms);
-    interface_->force(nAtoms, positionsT.data(), atomicNrs.data(), forcesT.data(), energy, tmpBox);
+
+    interface_->force(nAtoms, positionsT.data(), atomicNrs.data(), forcesT.data(), energy, boxT.data());
+
     Matrix<double, Eigen::Dynamic, 3> forces = forcesT.transpose();  
+
     if(parameters_->potentialNoTranslation){
         //XXX: What does this do?
         Vector3d tempForce(3);

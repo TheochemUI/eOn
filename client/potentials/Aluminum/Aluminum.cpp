@@ -25,6 +25,6 @@ void Aluminum::cleanMemory(void)
 void Aluminum::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     assert((int)N > 1);
-    force_(&N, R, F, U, &box[0], &box[1], &box[2]);    
+    force_(&N, R, F, U, &box[0], &box[4], &box[8]);    
     return;
 }

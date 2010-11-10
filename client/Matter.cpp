@@ -468,8 +468,16 @@ bool Matter::matter2con(FILE *file) const
  
     fputs(headerCon1, file);
     fputs(headerCon2, file);
-    fprintf(file, "%f\t%f\t%f\n", cellBoundaries(0,0), cellBoundaries(1,1), cellBoundaries(2,2)); //XXX: Orthoganal boxes only!!
-    fputs(headerCon4, file);
+    double lengths[3];
+    lengths[0] = cellBoundaries.row(0).norm();
+    lengths[1] = cellBoundaries.row(1).norm();
+    lengths[2] = cellBoundaries.row(2).norm();
+    fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
+    double angles[3];
+    angles[0] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(1))/lengths[0]/lengths[1])*180/M_PI;
+    angles[1] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(2))/lengths[0]/lengths[2])*180/M_PI;
+    angles[2] = acos(cellBoundaries.row(1).dot(cellBoundaries.row(2))/lengths[1]/lengths[2])*180/M_PI;
+    fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
     fputs(headerCon5, file);
     fputs(headerCon6, file);
  
@@ -529,21 +537,40 @@ bool Matter::con2matter(FILE *file) {
  
     fgets(headerCon2,sizeof(line),file);
  
+ 
+    double lengths[3];
+    // The third line contains the length of the periodic cell
     fgets(line,sizeof(line),file);
+    sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
  
-    double x, y, z;
-    sscanf(line,"%lf %lf %lf", &x, &y, &z); // The third line contains the length of the periodic cell
-    cellBoundaries(0,0)= x;
-    cellBoundaries(1,1)= y;
-    cellBoundaries(2,2)= z;
- 
+    double angles[3];
     fgets(headerCon4,sizeof(line),file);
-    sscanf(headerCon4,"%lf %lf %lf", &x, &y, &z); // The fourth line contains the angles of the cell vectors
-    if ( (x != 90.0) or (y != 90.0) or (z != 90.0) ) {
-        /* The code only supports cubic simulation cells*/
-        cerr << "This code only supports rectangular cells.";
-        return false;// return false for error
-    };
+    // The fourth line contains the angles of the cell vectors
+    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]); 
+
+    if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+        cellBoundaries(0,0) = lengths[0];
+        cellBoundaries(1,1) = lengths[1];
+        cellBoundaries(2,2) = lengths[2];
+    }else{
+        angles[0] *= M_PI/180.0;
+        angles[1] *= M_PI/180.0;
+        angles[2] *= M_PI/180.0;
+
+        cellBoundaries(0,0) = 1.0;
+        cellBoundaries(1,0) = cos(angles[0]);
+        cellBoundaries(1,1) = sin(angles[0]);
+        cellBoundaries(2,0) = cos(angles[1]);
+        cellBoundaries(2,1) = (cos(angles[2])-cellBoundaries(1,0)*cellBoundaries(2,0))/cellBoundaries(1,1);
+        cellBoundaries(2,2) = sqrt(1.0-pow(cellBoundaries(2,0),2)-pow(cellBoundaries(2,1),2));
+
+        cellBoundaries(0,0) *= lengths[0];
+        cellBoundaries(1,0) *= lengths[1];
+        cellBoundaries(1,1) *= lengths[1];
+        cellBoundaries(2,0) *= lengths[2];
+        cellBoundaries(2,1) *= lengths[2];
+        cellBoundaries(2,2) *= lengths[2];
+    }
  
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
@@ -578,6 +605,7 @@ bool Matter::con2matter(FILE *file) {
     fgets(line,sizeof(line),file); //Discard rest of the line
     int atomicNr;
     int fixed;
+    double x,y,z;
     for (j=0; j<Ncomponent; j++) {
         char symbol[3];
         fgets(line,sizeof(line),file);
