@@ -38,6 +38,8 @@ class QSC
         double *sqrtrho;
         double **V;
         double **phi;
+        bool calculate_ibox;
+        double ibox[9];
 
         struct qsc_parameters {
             int Z;
@@ -59,4 +61,6 @@ class QSC
         void calc_distance(const double *box, const double *R, int i, 
                            int j, struct distance *d);
         int int_comp(const void* a,const void* b);
+        void calc_ibox(const double *box);
+        void pbc(double *r, const double *box);
 };

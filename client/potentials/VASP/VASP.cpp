@@ -159,9 +159,9 @@ void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs,
     
     // boundary box
     fprintf(NEWCAR, "1.0\n");
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[0], 0.0, 0.0);
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", 0.0, box[1], 0.0);
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", 0.0, 0.0, box[2]);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[2], box[3]);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
+    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
 
     // the number of atoms of each of the the different atomic types
     i_old = 0;

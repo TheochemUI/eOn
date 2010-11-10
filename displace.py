@@ -1,8 +1,10 @@
 import os, re
+from math import cos, sin
 import numpy
+
 import atoms
 import io
-from math import cos, sin
+import config
 
 class NotImplementedError(Exception):
     pass
@@ -23,7 +25,7 @@ class Displace:
         #temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
 
-        self.neighbors_list = atoms.sweep_and_prune(self.reactant, self.radius)
+        self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.disp_brute_neighbors)
 
     def make_displacement(self):
         '''Writes the displacement_passed.con and mode_passed.dat to
@@ -130,9 +132,6 @@ class Leastcoordinated(Displace):
 
     def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
-        # TODO: We should make sure that the amount of I/O to disk
-        #       is what we think it should be: about 100 kB or so per
-        #       make_displacement().
         epicenter = self.leastcoordinated_atoms[numpy.random.randint(len(self.leastcoordinated_atoms))] 
         return self.get_displacement(epicenter)
 

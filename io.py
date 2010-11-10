@@ -9,6 +9,37 @@ import atoms
 
 from cStringIO import StringIO
 
+def length_angle_to_box(boxlengths, angles):
+    box = numpy.zeros( (3,3) )
+    angles *= numpy.pi/180.0
+
+    box[0][0] = 1.0
+    box[1][0] = numpy.cos(angles[0])
+    box[1][1] = numpy.sin(angles[0])
+    box[2][0] = numpy.cos(angles[1])
+    box[2][1] = (numpy.cos(angles[2])-box[1][0]*box[2][0])/box[1][1]
+    box[2][2] = numpy.sqrt(1.0-box[2][0]**2-box[2][1]**2)
+
+    box[0,:]*=boxlengths[0]
+    box[1,:]*=boxlengths[1]
+    box[2,:]*=boxlengths[2]
+
+    return box
+
+def box_to_length_angle(box):
+    lengths = numpy.zeros(3)
+    lengths[0] = numpy.linalg.norm(box[0,:])
+    lengths[1] = numpy.linalg.norm(box[1,:])
+    lengths[2] = numpy.linalg.norm(box[2,:])
+
+    angles = numpy.zeros(3)
+    angles[0] = numpy.arccos(numpy.dot(box[0,:]/lengths[0],box[1,:]/lengths[1]))
+    angles[1] = numpy.arccos(numpy.dot(box[0,:]/lengths[0],box[2,:]/lengths[2]))
+    angles[2] = numpy.arccos(numpy.dot(box[1,:]/lengths[1],box[2,:]/lengths[2]))
+    angles *= 180.0/numpy.pi
+
+    return lengths, angles
+
 def loadcon(filein):
     '''
     Load a con file
@@ -29,15 +60,12 @@ def loadcon(filein):
             dim=i
             break
     #handle the box   
-    BoxLength=numpy.zeros(dim)
+    boxlengths=numpy.zeros(dim)
     for i in range(dim):
-        BoxLength[i]=float(tmp[i])
-    con.readline()
-    #BoxAngle=numpy.array([ float(f) for f in con.readline().split()[0:dim] ]) #Line 4: Box angles
+        boxlengths[i]=float(tmp[i])
+    boxangles=numpy.array([ float(f) for f in con.readline().split()[0:dim] ]) #Line 4: Box angles
     boxtemp=numpy.zeros((dim,dim),'d')
-    for i in range(dim):
-        # how do box angles work in con files??
-        boxtemp[i][i]=BoxLength[i]
+    boxtemp = length_angle_to_box(boxlengths,boxangles)
     con.readline() #Line 5: comment
     con.readline() #Line 6: comment
     num_types = int(con.readline().split()[0]) #Line 7: number of atom types
@@ -81,12 +109,9 @@ def savecon(fileout, p, w = 'w'):
     print >> con
     dim = len(p.r[0])
     # Note: This will only work for orthogonal boxes
-    BoxDiag=numpy.zeros((dim), 'd')
-    for i in range(dim): 
-        BoxDiag[i] = p.box[i][i]
-    print >> con, " ".join(['%.4f' % s for s in BoxDiag])
-    Angle = numpy.zeros((dim), 'd') + 90.0
-    print >> con, " ".join(['%.4f' % s for s in Angle])
+    lengths, angles = box_to_length_angle(p.box)
+    print >> con, " ".join(['%.4f' % s for s in lengths])
+    print >> con, " ".join(['%.4f' % s for s in angles])
     print >> con
     print >> con
     atom_count = {}
@@ -331,6 +356,7 @@ def load_potfiles(pot_dir):
 
 
 if __name__=='__main__':
-    d = Dynamics("dynamics.txt")
-    for s in  d.get():
-        print s    
+    import sys
+    a=loadcon(sys.argv[1])
+    print a.box
+    savecon("test.con", a)

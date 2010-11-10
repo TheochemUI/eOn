@@ -56,9 +56,9 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
         atomicNrsTemp = new int[N];
 				
 		// create new atoms / emt potential with N atoms
-		Vec tempBasisX(box[0], 0.0, 0.0);
-		Vec tempBasisY(0.0, box[1], 0.0);
-		Vec tempBasisZ(0.0, 0.0, box[2]);
+		Vec tempBasisX(box[0], box[1], box[2]);
+		Vec tempBasisY(box[3], box[4], box[5]);
+		Vec tempBasisZ(box[6], box[7], box[8]);
 		Vec tempBasis[3];
 		tempBasis[0] = tempBasisX;
 		tempBasis[1] = tempBasisY;
@@ -78,9 +78,9 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
 	}
 	AtomsObj->SetCartesianPositions((Vec *) pos);
 	// update the box
-	Vec tempBasisX(box[0], 0.0, 0.0);
-	Vec tempBasisY(0.0, box[1], 0.0);
-	Vec tempBasisZ(0.0, 0.0, box[2]);
+    Vec tempBasisX(box[0], box[1], box[2]);
+    Vec tempBasisY(box[3], box[4], box[5]);
+    Vec tempBasisZ(box[6], box[7], box[8]);
 	Vec tempBasis[3];
 	tempBasis[0] = tempBasisX;
 	tempBasis[1] = tempBasisY;

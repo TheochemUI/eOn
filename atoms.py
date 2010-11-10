@@ -3,9 +3,6 @@
 import numpy
 import logging
 logger = logging.getLogger('atoms')
-#TODO: Add list of covalent radii from tsse/jmol/kdb. (Rye can do)
-
-
 
 class Atoms:
     """ The Atoms class. """
@@ -117,7 +114,7 @@ def identical(atoms1, atoms2, epsilon_r):
     return True
             
 
-def brutal_neighbor_list(p, cutoff):
+def brute_neighbor_list(p, cutoff):
     nl = []
     ibox = numpy.linalg.inv(p.box)    
     for a in range(len(p)):
@@ -192,19 +189,21 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
                     intersect[j].remove(i)
     return intersect
 
-    
-def coordination_numbers(p, cutoff, brutal=False):
-    """ Returns a list of coordination numbers for each atom in p """
-    if brutal:
-        nl = brutal_neighbor_list(p, cutoff)
+def neighbor_list(p, cutoff, brute=False):
+    if brute:
+        nl = brute_neighbor_list(p, cutoff)
     else:
         nl = sweep_and_prune(p, cutoff)
+    return nl
+    
+def coordination_numbers(p, cutoff, brute=False):
+    """ Returns a list of coordination numbers for each atom in p """
+    nl = neighbor_list(p, cutoff, brute)
     return [len(l) for l in nl]
 
-
-def least_coordinated(p, cutoff, brutal=False):
+def least_coordinated(p, cutoff, brute=False):
     """ Returns a list of atom indices in p with the lowest coordination numbers for unfrozen atoms"""
-    cn = coordination_numbers(p, cutoff, brutal)
+    cn = coordination_numbers(p, cutoff, brute)
     maxcoord = max(cn)
     mincoord = min(cn)
     while mincoord <= maxcoord:
@@ -215,7 +214,6 @@ def least_coordinated(p, cutoff, brutal=False):
         if len(least) > 0:
             return least
         mincoord += 1
-        
 
 elements = {}
 elements[  0] = elements[ 'Xx'] = {'symbol':  'Xx', 'name':       'unknown', 'mass':   1.00000000, 'radius':  1.0000, 'color': [1.000, 0.078, 0.576]}
