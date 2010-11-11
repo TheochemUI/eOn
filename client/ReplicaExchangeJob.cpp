@@ -57,7 +57,7 @@ void ReplicaExchangeJob::run(int bundleNumber)
         printf("%ld replica : numAtoms = %ld \n", i, numAtoms);
         printf("%ld replica : Temperature = %lf \n", i, ReplicaTemp[i]);
     }
-/*      
+      
     for(j= 0; j< nsteps; j++){
         printf("Steps %ld", j);
         for(i= 1; i< NumofReplica; i++){
@@ -77,7 +77,7 @@ void ReplicaExchangeJob::run(int bundleNumber)
         VarT=SumT2[i]/nsteps-AvgT*AvgT;
         printf("Replica %ld -- %5.2lf: AvgT = %lf ; VarT = %lf ; Factor = %lf \n",i, ReplicaTemp[i],AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
     }
-*/ 
+
     printf("%ld replica : Temperature = %lf \n", i, ReplicaTemp[2]);
     RES[2]->fullSteps(ReplicaTemp[2]);
 

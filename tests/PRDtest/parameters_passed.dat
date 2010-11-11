@@ -32,7 +32,8 @@ POTENTIAL_NO_TRANSLATION=1
 [Dynamics]
 TIMESTEP=0.2
 TEMPERATURE=350.0
-STEPS=20000
+mdSTEPS=2000
+Dephase_Steps=300
 PRD_MaxMovedDist=2.5
 mdRefine=1
 mdAutoStop=1

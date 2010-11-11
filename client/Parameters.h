@@ -96,6 +96,7 @@ public:
     bool   mdAutoStop;
     long   RefineAccuracy;
     long   mdSteps;
+    long   DephaseSteps;
     long   CheckFreq;
     long   NewRelaxSteps;
     bool   BondBoost;
