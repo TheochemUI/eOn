@@ -9,13 +9,13 @@
 ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 {
     parameters = params;
+    temp = parameters->mdTemperature;
     nsteps = 0;
     nsteps_refined = 0;
     SPtime = 0.0;
     RLtime = 0.0;
     check_steps = parameters->CheckFreq;
     relax_steps = parameters->NewRelaxSteps;
-    stepsbuff = new long[check_steps];
     SPtimebuff = new double[check_steps];
     newstate = false;
     min_fcalls = 0;
@@ -72,6 +72,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     delete min2;
     delete reactant;
     delete transition;
+    delete[] SPtimebuff;
 }
 
 void ParallelReplicaJob::dynamics()
@@ -81,10 +82,9 @@ void ParallelReplicaJob::dynamics()
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   ncheck = 0, nexam = 0, steps_tmp = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
-    double EKin=0.0, kb = 1.0/11604.5, temp;
+    double EKin=0.0, kb = 1.0/11604.5;
     double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
     
-    temp = parameters->mdTemperature;
     Matter *mdbuff[check_steps];
     for(long i =0; i < check_steps;i++){
 	    mdbuff[i] = new Matter(parameters);
@@ -97,7 +97,8 @@ void ParallelReplicaJob::dynamics()
     }
         
     PRdynamics.velocityScale(temp);
-
+     dephase();   
+ 
     while(!stoped){
   		
         if(boost && !newstate){
@@ -118,11 +119,11 @@ void ParallelReplicaJob::dynamics()
 
 	if(parameters->mdRefine && remember && !newstate ){
             *mdbuff[ncheck-1] = *reactant;
-            stepsbuff[ncheck-1] = nsteps;
+          //  stepsbuff[ncheck-1] = nsteps;
             SPtimebuff[ncheck-1] = SPtime;
 	}
 
-        printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
+        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
 
 #ifndef NDEBUG           
@@ -334,3 +335,14 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      return;
 }
 
+void ParallelReplicaJob::dephase(){
+     long DH_steps = parameters->DephaseSteps;
+     long i;
+
+     Dynamics DHdynamics(reactant,parameters);
+     printf("Dephasing for %ld steps\n",DH_steps);
+     for(i=0l;i<DH_steps;i++){
+          DHdynamics.oneStep(temp);
+          md_fcalls++;
+     }
+}
