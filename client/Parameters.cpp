@@ -75,6 +75,7 @@ Parameters::Parameters(){
     mdTimeStep = 0.1;
     mdTemperature = 300.0;
     mdSteps = 1000;
+    DephaseSteps = 200;
     PRD_MaxMovedDist = 2.0;
     mdRefine = false;
     mdAutoStop = false;
@@ -259,10 +260,11 @@ int Parameters::load(FILE *file){
         displaceCutoffs = ini.GetValue("DisplacementSampling", "CUTOFFS", displaceCutoffs);
         displaceMagnitudes = ini.GetValue("DisplacementSampling", "MAGNITUDES", displaceMagnitudes);
 
-		mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
- 		mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
-		mdSteps = ini.GetValueL("Dynamics","STEPS",mdSteps);
-		PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+	mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+ 	mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
+	mdSteps = ini.GetValueL("Dynamics","mdSTEPS",mdSteps);
+        DephaseSteps = ini.GetValueL("Dynamics","Dephase_Steps",DephaseSteps);
+	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
 		mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics","mdAutoStop",mdAutoStop);
 		RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
