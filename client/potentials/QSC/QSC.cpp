@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 int compare_ints(const void *a,const void *b);
 
 #include "QSC.h"
@@ -21,7 +20,6 @@ QSC::QSC()
     cutoff = 6.0;
     verlet_skin = 0.5;
     init=false;
-    calculate_ibox=true;
     return;
 }
 
@@ -139,26 +137,16 @@ void QSC::new_vlist(long N, const double *R, const double *box)
 void QSC::update_vlist(long N, const double *R, const double *box) 
 {
     bool update=false;
-    double diff[3];
-    for (int i=0;i<N;i++) {
-        /* Needs to use calc_distance! */
-        diff[0] = oldR[3*i]-R[3*i];
-        diff[1] = oldR[3*i+1]-R[3*i+1];
-        diff[2] = oldR[3*i+2]-R[3*i+2];
-
-        pbc(diff, box);
-
-        double dist;
-        dist = sqrt(diff[0]*diff[0]+diff[1]*diff[1]+diff[2]*diff[2]);
-
-        if (dist > verlet_skin) {
+    for (int i=0;i<3*N;i++) {
+        double diff = oldR[i]-R[i];
+        diff = diff-box[0]*floor(diff/box[0]+0.5); 
+        if (fabs(diff) > verlet_skin) {
             update=true;
             break;
         }
     }
 
     if (update==true) {
-        printf("updating vlist!\n");
         new_vlist(N, R, box);
     }else{
         for (int i=0; i<N; i++) {
@@ -280,78 +268,22 @@ inline double QSC::pair_potential(double r, double a, double n)
     return pow(a/r, n);
 }
 
-void QSC::calc_ibox(const double *box)
-{
-    double det;
-
-    det = box[0]*(box[8]*box[4]-box[7]*box[5])
-         -box[3]*(box[8]*box[1]-box[7]*box[2])
-         +box[6]*(box[5]*box[1]-box[4]*box[2]);
-
-    ibox[0] =   box[8]*box[4]-box[7]*box[5];
-    ibox[1] = -(box[8]*box[1]-box[7]*box[2]);
-    ibox[2] =   box[5]*box[1]-box[4]*box[2];
-    ibox[3] = -(box[8]*box[3]-box[6]*box[5]);
-    ibox[4] =   box[8]*box[0]-box[6]*box[2];
-    ibox[5] = -(box[5]*box[0]-box[3]*box[2]);
-    ibox[6] =   box[7]*box[3]-box[6]*box[4];
-    ibox[7] = -(box[7]*box[0]-box[6]*box[1]);
-    ibox[8] =   box[4]*box[0]-box[3]*box[1];
-
-    for (int i=0;i<9;i++) {
-        ibox[i] /= det;
-        if (fabs(ibox[i])<1e-6) {
-            ibox[i] = 0.0;
-        }
-    }
-
-    //std::cout << ibox[0] << " " <<
-    //ibox[1]<< " " <<  
-    //ibox[2]<< "\n" <<  
-    //ibox[3]<< " " <<  
-    //ibox[4]<< " " <<  
-    //ibox[5]<< "\n " <<  
-    //ibox[6]<< " " <<  
-    //ibox[7]<< " " <<  
-    //ibox[8]<<  std::endl;
-    //exit(0);
-}
-
-void QSC::pbc(double *r, const double *box)
-{
-    if (calculate_ibox==true) {
-       calc_ibox(box);
-       calculate_ibox = false;
-    }
-    
-    double vdir[3];
-    vdir[0] = ibox[0]*r[0]+ibox[3]*r[1]+ibox[6]*r[2];
-    vdir[1] = ibox[1]*r[0]+ibox[4]*r[1]+ibox[7]*r[2];
-    vdir[2] = ibox[2]*r[0]+ibox[5]*r[1]+ibox[8]*r[2];
-
-    vdir[0] = fmod(fmod(vdir[0],1.0)+1.5,1.0)-0.5;
-    vdir[1] = fmod(fmod(vdir[1],1.0)+1.5,1.0)-0.5;
-    vdir[2] = fmod(fmod(vdir[2],1.0)+1.5,1.0)-0.5;
-
-    r[0] = box[0]*vdir[0]+box[3]*vdir[1]+box[6]*vdir[2];
-    r[1] = box[1]*vdir[0]+box[4]*vdir[1]+box[7]*vdir[2];
-    r[2] = box[2]*vdir[0]+box[5]*vdir[1]+box[8]*vdir[2];
-}
-
-void QSC::calc_distance(const double *box, const double *coords, int i, int j, 
+void QSC::calc_distance(const double *box, const double *R, int i, int j, 
                         struct distance *d)
 {
-    double r[3];
-    r[0] = coords[3*i]   - coords[3*j];
-    r[1] = coords[3*i+1] - coords[3*j+1];
-    r[2] = coords[3*i+2] - coords[3*j+2];
+        double diffRX = R[3*i]   - R[3*j];
+        double diffRY = R[3*i+1] - R[3*j+1];
+        double diffRZ = R[3*i+2] - R[3*j+2];
 
-    pbc(r, box);
-
-    d->r = sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2]);
-    d->d[0] = r[0];
-    d->d[1] = r[1];
-    d->d[2] = r[2];
+        /* Orthogonal PBC */
+        diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); 
+        diffRY = diffRY-box[4]*floor(diffRY/box[4]+0.5);
+        diffRZ = diffRZ-box[8]*floor(diffRZ/box[8]+0.5);
+        
+        d->r = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
+        d->d[0] = diffRX;
+        d->d[1] = diffRY;
+        d->d[2] = diffRZ;
 }
 
 
