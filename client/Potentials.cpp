@@ -127,7 +127,7 @@ Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, 
     //     should also use Eigen
 
     // Eigen stores data in column-major format but we want row-major
-    Matrix<double, 3, Eigen::Dynamic> boxT= box.transpose();
+    Matrix<double, 3, 3> boxT= box.transpose();
     Matrix<double, 3, Eigen::Dynamic> positionsT = positions.transpose();
     Matrix<double, 3, Eigen::Dynamic> forcesT(3, (int)nAtoms);
 
