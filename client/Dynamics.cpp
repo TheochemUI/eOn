@@ -92,7 +92,7 @@ void Dynamics::fullSteps(double T)
 	    stoped = true;
 	}       
      }
-     
+
      AvgT=SumT/nsteps;
      VarT=SumT2/nsteps-AvgT*AvgT;
      printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
@@ -138,9 +138,10 @@ void Dynamics::Andersen(double T){
 
 void Dynamics::velocityScale(double T){
 	
-     double temp,new_v;
+     double temp,new_v,TKin,EKin;
      Matrix<double, Eigen::Dynamic, 1> mass;
      Matrix<double, Eigen::Dynamic, 3> velocity;
+     long nFreeCoord = matter->numberOfFreeAtoms()*3;
 
      temp = T;
      velocity = matter->getVelocities();
@@ -156,8 +157,16 @@ void Dynamics::velocityScale(double T){
 	       velocity(i,j) = new_v;
 	    }
      }
-
+     
+     matter->setVelocities(velocity);  
+     EKin=matter->getKineticEnergy();
+     TKin=(2*EKin/nFreeCoord/kb);
+//     printf("Tkin_1 = %lf\n",TKin);
+     velocity=velocity*sqrt(temp/TKin);
      matter->setVelocities(velocity);
+//   EKin=matter->getKineticEnergy();
+//   TKin=(2*EKin/nFreeCoord/kb);
+//   printf("Tkin_2 = %lf\n",TKin);
      
      return;
 }
