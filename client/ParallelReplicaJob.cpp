@@ -338,11 +338,18 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
 void ParallelReplicaJob::dephase(){
      long DH_steps = parameters->DephaseSteps;
      long i;
+     bool state;
 
      Dynamics DHdynamics(reactant,parameters);
      printf("Dephasing for %ld steps\n",DH_steps);
-     for(i=0l;i<DH_steps;i++){
+     for(i=0;i<DH_steps;i++){
           DHdynamics.oneStep(temp);
           md_fcalls++;
+     }
+     state=CheckState(reactant);
+     if(state == true){
+         printf("Error Dephasing: Get to the new state");
+     }else{
+         printf("Good Dephasing !");
      }
 }
