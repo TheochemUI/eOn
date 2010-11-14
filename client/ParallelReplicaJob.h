@@ -9,6 +9,7 @@ class ParallelReplicaJob: public Job {
     private:
 	void dynamics();
 	bool CheckState(Matter *matter);
+        bool CheckState_nq(Matter *matter);
 	void Refine(Matter *mdbuff[]);
         void saveData(int status,int bundleNumber);
         void dephase();
