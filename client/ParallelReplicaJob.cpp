@@ -202,6 +202,7 @@ void ParallelReplicaJob::dynamics()
     }
     return;
      
+    delete transition;
     for(long i =0; i < check_steps;i++){
 	    delete[] mdbuff[i];
 	}
@@ -226,6 +227,36 @@ bool ParallelReplicaJob::CheckState(Matter *matter)
      };
      return true;
 }
+
+bool ParallelReplicaJob::CheckState_nq(Matter *matter) // checkstate without quench
+{
+     double distance = 0.0, D_tmp;
+     double MoveCut = 2.0;
+     Matter tmp(parameters);
+     tmp = *matter;
+     long nAtoms = tmp.numberOfAtoms();
+ 
+     for(long int i=0;i<nAtoms;i++){
+         if(!tmp.getFixed(i)){
+              D_tmp = tmp.distance(*min1,i);
+              //printf("number of Atom = %ld, Displacement = %lf\n",i,D_tmp);
+              if(D_tmp >= MoveCut){
+                 distance += D_tmp;
+	      }
+	 }
+     }
+    
+//     printf("Total Moved Distance = %lf\n",distance);
+#ifndef NDEBUG
+     printf("Total Moved Distance = %lf\n",distance);
+#endif
+     if (distance <= parameters->PRD_MaxMovedDist){
+        return false;
+     };
+     return true;
+}
+
+
 
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber){
@@ -336,20 +367,78 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
 }
 
 void ParallelReplicaJob::dephase(){
-     long DH_steps = parameters->DephaseSteps;
-     long i;
-     bool state;
 
+     long  DHsteps = parameters->DephaseSteps,i = 0,step_buff = 0;
+     long  scType = parameters->DH_CheckType;
+     long  DHcorrect = parameters->DephaseConstrain;
+     bool  state = false, stop = false;
+     Matrix<double, Eigen::Dynamic, 3> velocity;      
+     Matter *initial;
+     Matter *buff;
+     initial = new Matter(parameters);      
+     buff = new Matter(parameters);
+     *initial = *reactant;
+     *buff = *reactant;
+
+//     printf("scType = %ld\n",scType);
+//    printf("DH constrain = %ld\n", DHcorrect);
+    
      Dynamics DHdynamics(reactant,parameters);
-     printf("Dephasing for %ld steps\n",DH_steps);
-     for(i=0;i<DH_steps;i++){
-          DHdynamics.oneStep(temp);
-          md_fcalls++;
-     }
-     state=CheckState(reactant);
-     if(state == true){
-         printf("Error Dephasing: Get to the new state");
-     }else{
-         printf("Good Dephasing !");
+     printf("Dephasing for %ld steps\n",DHsteps);
+
+     while(!stop){             
+
+           DHdynamics.oneStep(temp);
+           md_fcalls++;
+          
+           if(i % 1000 == 0){
+
+              if(scType == 1){
+     	         state = CheckState(reactant);
+              }else if(scType == 2){
+                 state = CheckState_nq(reactant);
+              }else { 
+  	         printf("Unknown CheckState method in Dephase Step, Use default value\n");
+                 state = CheckState(reactant);
+	      }
+
+//              reactant->matter2xyz("movie", true);
+
+       	      if(state == true){
+                 if(DHcorrect == 1){
+                    printf("Dephasing Warning: Get to the new state at step %ld, Dephase again\n",i);            
+                    i = 0;
+                    *reactant = *initial;
+                    state = false;
+                 }else if(DHcorrect ==2){
+                    printf("Dephasing Warning: Get to the new state at step %ld, Now inverse the Momentum and restart from step %ld\n",i,step_buff);
+                    i = step_buff;
+                    *reactant = *buff;
+                    velocity = reactant->getVelocities();
+                    velocity = velocity*(-1);
+                    reactant->setVelocities(velocity);
+                    state = false;
+                 }else{
+		       printf("Unknown Constrain method in Dephase Step, Use default value\n");
+                       DHcorrect = 1;
+                 }
+     	      }else{
+		  *buff = *reactant;
+                  step_buff = i;
+              }
+
+         //     printf(" Steps = %ld ; State = %d \n", i, state);
+           }
+
+           if(i == DHsteps){  
+              stop = true;
+              state=CheckState(reactant);
+              if(state == false){
+                 printf("Dephasing Succeeded !\n");
+              }else{
+                 printf("Warning:Dephasing Failed, Now in a new State!\n");
+              }
+           }
+           i++;
      }
 }

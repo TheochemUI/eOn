@@ -97,6 +97,8 @@ public:
     long   RefineAccuracy;
     long   mdSteps;
     long   DephaseSteps;
+    long   DephaseConstrain;
+    long   DH_CheckType;
     long   CheckFreq;
     long   NewRelaxSteps;
     bool   BondBoost;
