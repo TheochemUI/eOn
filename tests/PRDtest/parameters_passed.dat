@@ -7,21 +7,9 @@ JOB_TYPE=PARALLELREPLICA
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED=1288728573
+RANDOM_SEED=1289754821
 
 # describtion POTENTIAL_TAG
-# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
-# 1 = lennard-jones potential
-# 2 = morse
-# 3 = emt
-# 4 = edip
-# 5 = VASP
-# 6 = Tersoff
-# 7 = Stilling Weber
-# 8 = Lenosky
-# 9 = Lennard-jones binary
-# 10 = Aluminum
-# 12 = Quantum Sutton-Chen
 POTENTIAL_TAG= 3
 
 # describtion POTENTIAL_NO_TRANSLATION
@@ -33,10 +21,12 @@ POTENTIAL_NO_TRANSLATION=1
 TIMESTEP=0.2
 TEMPERATURE=350.0
 mdSTEPS=1
-Dephase_Steps=300
+Dephase_Steps=20000
+Dephase_Constrain=2
+Dephase_CheckType=1
 PRD_MaxMovedDist=2.5
 mdRefine=1
-mdAutoStop=0
+mdAutoStop=1
 RefineAccuracy=5
 CheckFreq=1000
 NewRelaxStep=5
