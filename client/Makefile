@@ -1,5 +1,5 @@
 #C compiler settings
-CXXFLAGS += -O2 -Wall -Wfatal-errors
+CXXFLAGS += -O2 -Wall -Wfatal-errors -DEIGEN_DONT_VECTORIZE
 
 #Ensures all code is statically linked on a Linux machine
 UNAME := $(shell uname)
