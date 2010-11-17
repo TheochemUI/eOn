@@ -29,7 +29,6 @@ class ParallelReplicaJob: public Job {
 	Matter *min2;
         Matter *transition;
         double SPtime; 
-        double temp;
         double RLtime;
         double *SPtimebuff;
 	long min_fcalls;
