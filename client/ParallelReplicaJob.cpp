@@ -121,6 +121,12 @@ void ParallelReplicaJob::dynamics()
  
     printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
            parameters->mdTemperature, 10*parameters->mdSteps*parameters->mdTimeStep,10*parameters->mdTimeStep);
+
+    long tenthSteps = parameters->mdSteps/10;
+    //This prevents and edge case division by zero if mdSteps is < 10
+    if (tenthSteps == 0) {
+        tenthSteps = parameters->mdSteps;
+    }
     while(!stoped){
 
         if(boost && !newstate){
