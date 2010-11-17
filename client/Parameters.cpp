@@ -15,6 +15,7 @@
  */
 
 #include <errno.h>
+#include <time.h>
 #include "Parameters.h"
 #include "Hessian.h"
 #include "INIFile.h"
