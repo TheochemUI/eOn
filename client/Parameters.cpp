@@ -18,6 +18,7 @@
 #include "Parameters.h"
 #include "Hessian.h"
 #include "INIFile.h"
+#include "HelperFunctions.h"
 
 Parameters::Parameters(){
 
@@ -137,7 +138,6 @@ int Parameters::load(string filename)
 
     fh = fopen(filename.c_str(), "rb");
     if (fh == NULL) {
-        fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
         return 1;
     }
     int error = load(fh);
@@ -154,6 +154,16 @@ int Parameters::load(FILE *file){
     {
         // if we succesfully read the file, then parse it as an INI
         randomSeed = ini.GetValueL("Default", "RANDOM_SEED", randomSeed);
+        // Initialize random generator
+        if(randomSeed < 0)
+        {
+            unsigned i = time(NULL);
+            randomSeed = i;
+            helper_functions::random(i);
+        }else{
+            helper_functions::random(randomSeed);
+        }
+        printf("Random seed is: %ld\n", randomSeed);
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
         potentialNoTranslation = ini.GetValueL("Default", 
                                                "POTENTIAL_NO_TRANSLATION", 
@@ -272,13 +282,13 @@ int Parameters::load(FILE *file){
         displaceCutoffs = ini.GetValue("DisplacementSampling", "CUTOFFS", displaceCutoffs);
         displaceMagnitudes = ini.GetValue("DisplacementSampling", "MAGNITUDES", displaceMagnitudes);
 
-	mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
- 	mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
-	mdSteps = ini.GetValueL("Dynamics","mdSTEPS",mdSteps);
+        mdTimeStep = ini.GetValueF("Dynamics","TIMESTEP",mdTimeStep);
+        mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
+        mdSteps = ini.GetValueL("Dynamics","mdSTEPS",mdSteps);
         DephaseSteps = ini.GetValueL("Dynamics","Dephase_Steps",DephaseSteps);
         DephaseConstrain = ini.GetValueL("Dynamics","Dephase_Constrain",DephaseConstrain);
         DH_CheckType = ini.GetValueL("Dynamics","Dephase_CheckType",DH_CheckType);
-	PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
+        PRD_MaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",PRD_MaxMovedDist);  
 		mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics","mdAutoStop",mdAutoStop);
 		RefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",RefineAccuracy);
