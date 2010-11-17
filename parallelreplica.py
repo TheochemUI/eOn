@@ -16,6 +16,8 @@ from cStringIO import StringIO
 import logging
 import logging.handlers
 logger = logging.getLogger('pr')
+import numpy
+numpy.seterr(all='raise')
 import optparse
 import os
 import shutil
@@ -61,7 +63,7 @@ def parallelreplica():
 
 def step(current_time, current_state, states, transition):
     next_state = states.get_product_state(current_state.number, transition['process_id'])
-    next_state.zero_search_count()
+    next_state.zero_time()
     dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
     proc = current_state.get_process(transition['process_id'])
     dynamics.append(current_state.number, transition['process_id'],
@@ -139,24 +141,23 @@ def make_searches(comm, current_state, wuid):
     f = open(parameters_path)
     invariants['parameters_passed.dat'] = StringIO(''.join(f.readlines()))
     f.close()
+
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
     searches = []
     for i in range(num_to_make):
         search = {}
-        # The search dictionary contains the following key-value pairs:
-        # id - CurrentState_WUID
         search['id'] = "%d_%d" % (current_state.number, wuid)
         search['reactant_passed.con']  = reactIO
-        searches.append(search) 
+        param_ini_str = "[Default]\nrandom_seed=%i" % int(numpy.random.random()*10**9)
+        paramIO = StringIO(param_ini_str)
+        search['parameters_passed.dat'] = paramIO
+        searches.append(search)
         wuid += 1
 
-    try:
-        comm.submit_jobs(searches, invariants)
-        logger.info( str(num_to_make) + " searches created") 
-    except:
-        logger.exception("Failed to submit searches.")
+    comm.submit_jobs(searches, invariants)
+    logger.info( str(num_to_make) + " searches created") 
     return wuid
 
 def register_results(comm, current_state, states):
@@ -188,23 +189,19 @@ def register_results(comm, current_state, states):
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 1:
-            process_id = state.add_process(result)
+            result['results']['transition_time'] += state.get_time()
             time = result['results']['transition_time']
+            process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
-            # if this is a faster transition record it
-            if not transition or transition['time'] > time:
+            if not transition:
                 transition = {'process_id':process_id, 'time':time}
-
+            state.zero_time()
+        else:
+            state.inc_time(result['results']['transition_time'])
         num_registered += 1
-        state.inc_search_count()
         
     logger.info("%i (result) searches processed", num_registered)
 
-    if transition:
-        num_searches = state.get_search_count()
-        logger.info("fastest time: %e", transition['time'])
-        transition['time'] *= num_searches
-        logger.info("real time: %e", transition['time'])
 
     return num_registered, transition
 
@@ -216,6 +213,10 @@ def main():
     options, args = optpar.parse_args()
 
     config.init()
+
+    if config.comm_job_bundle_size != 1:
+        print "error: Parallel Replica only supports a bundle size of 1"
+        sys.exit(1)
 
     if options.no_submit:
         config.comm_search_buffer_size = 0

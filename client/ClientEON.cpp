@@ -27,12 +27,13 @@
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
 #include "TestJob.h"
-#include "HelperFunctions.h"
-using namespace helper_functions;
 
 #include <dirent.h>
+#include <errno.h>
 #include <string.h>
 #include <time.h>
+
+Parameters parameters;
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -124,24 +125,11 @@ int main(int argc, char **argv)
     printf("Bundle size of %i\n", bundleSize);
     #endif
 
-    // store all the runtime parameters received from the server
-    Parameters parameters; 
-    string parameters_passed("parameters_passed.dat");
-    int error = parameters.load(parameters_passed);
+    int error = parameters.load("parameters_passed.dat");
     if (error) {
+        fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
         boinc_finish(1);
     }
- 
-    // Initialize random generator
-    if(parameters.randomSeed < 0)
-    {
-        unsigned i = time(NULL);
-        parameters.randomSeed = i;
-        helper_functions::random(i);
-    }else{
-        helper_functions::random(parameters.randomSeed);
-    }
-    printf("Random seed is: %ld\n", parameters.randomSeed);
 
     // Determine what type of job we are running according 
     // to the parameters file. 
@@ -174,6 +162,10 @@ int main(int argc, char **argv)
         boinc_fraction_done(1.0);
     }else{
         for (int i=0; i<bundleSize; i++) {
+            char buff[100];
+            snprintf(buff, 100, "parameters_passed_%i.dat", i);
+            string parametersFilename(buff);
+            parameters.load(parametersFilename);
             job->run(i);
             boinc_fraction_done((double)(i+1)/(bundleSize));
         }

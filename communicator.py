@@ -592,14 +592,9 @@ class Local(Communicator):
             for result in bundle:
                 yield result
 
-
-        #jobdirs = [ os.path.join(self.scratchpath, d) for d in os.listdir(self.scratchpath) 
-        #                if os.path.isdir(os.path.join(self.scratchpath,d)) ]
-        #results = []
-        #for jobdir in self.unbundle(jobdirs):
-        #    shutil.move(jobdir, os.path.join(resultspath, os.path.split(jobdir)[1]))
-        #    results.append(os.path.split(jobdir)[1])
-        #return results
+        #Clean out scratch directory
+        for name in os.listdir(self.scratchpath):
+            shutil.rmtree(os.path.join(self.scratchpath, name))
 
     def check_job(self, job):
         p, jobpath = job
@@ -616,10 +611,6 @@ class Local(Communicator):
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
         
-        #Clean out scratch directory
-        for name in os.listdir(self.scratchpath):
-            shutil.rmtree(os.path.join(self.scratchpath, name))
-
         for jobpath in self.make_bundles(data, invariants):
             #move the job directory to the scratch directory
             #update jobpath to be in the scratch directory
