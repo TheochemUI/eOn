@@ -150,8 +150,10 @@ int Parameters::load(FILE *file){
     CIniFile ini;
     ini.CaseInsensitive();
     int error=0;
+    printf("List of non-default parameters: ");
     if(ini.ReadFile(file))
     {
+        printf("\n\n");
         // if we succesfully read the file, then parse it as an INI
         randomSeed = ini.GetValueL("Default", "RANDOM_SEED", randomSeed);
         // Initialize random generator

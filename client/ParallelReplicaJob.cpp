@@ -16,6 +16,18 @@
 #include "ParallelReplicaJob.h"
 #include "ConjugateGradients.h"
 
+#ifdef BOINC
+    #include <boinc/boinc_api.h>
+    #include <boinc/diagnostics.h>    
+    #include <boinc/filesys.h>        
+#ifdef WIN32
+    #include <boinc/boinc_win.h>
+    #include <boinc/win_util.h>
+#endif
+#else
+    #include "false_boinc.h"
+#endif
+
 ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 {
     parameters = params;
@@ -57,7 +69,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
         
-    printf("Now running Parralel Replica Dynamics\n");
+    printf("Now running Parallel Replica Dynamics\n\n");
 
     dynamics();
 
@@ -68,13 +80,12 @@ void ParallelReplicaJob::run(int bundleNumber)
  
     saveData(newstate,bundleNumber);
     
-    //printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
-    printf("Physical Transition Time = %lf\n",SPtime);
     if(newstate){
-       // printf("New state has been found with %ld steps (%lf fs)!\n", final_refined,SPtime);
-        printf("New state has been found !\n");
+        printf("New state has been found\n");
+        printf("Transition Time: %.2e\n", SPtime*1e-15);
     }else{
-       printf("New state has not been found in this %ld Dynamics steps (%lf fs) !\n",parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
+       printf("New state has not been found in this %ld dynamics steps (%.2f fs)\n",
+            parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
     }
 
     delete min1;
@@ -106,10 +117,12 @@ void ParallelReplicaJob::dynamics()
     }
         
     PRdynamics.velocityScale(parameters->mdTemperature);
-     dephase();   
+    dephase();   
  
+    printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
+           parameters->mdTemperature, 10*parameters->mdSteps*parameters->mdTimeStep,10*parameters->mdTimeStep);
     while(!stoped){
-  		
+
         if(boost && !newstate){
            SPtime += Bbm.boost();
         }
@@ -126,11 +139,11 @@ void ParallelReplicaJob::dynamics()
         ncheck++;
         nsteps++;
 
-	if(parameters->mdRefine && remember && !newstate ){
+        if(parameters->mdRefine && remember && !newstate ){
             *mdbuff[ncheck-1] = *reactant;
           //  stepsbuff[ncheck-1] = nsteps;
             SPtimebuff[ncheck-1] = SPtime;
-	}
+        }
 
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
         
@@ -148,40 +161,50 @@ void ParallelReplicaJob::dynamics()
             }
         }
        
-	if (status && !newstate){
-            nexam ++;
-	    if (nexam >= relax_steps){
-                nexam = 0;
-                ncheck = 0; 	
-		        newstate = CheckState(reactant);
-                //stoped = newstate;
-                status = false;
-                if(newstate == false){
-                   remember = true;
-                }else{
-                    *transition = *reactant;
-                    steps_tmp = nsteps;
-                    //printf("steps_tmp = %ld\n",steps_tmp);
-                    //nsteps_refined = nsteps + 1;
-                    if(parameters->mdAutoStop){
-                       //printf("haha AutoStop here !\n");
-                       stoped = true;
+        if (status && !newstate){
+                nexam ++;
+            if (nexam >= relax_steps){
+                    nexam = 0;
+                    ncheck = 0; 	
+                    newstate = CheckState(reactant);
+                    //stoped = newstate;
+                    status = false;
+                    if(newstate == false){
+                       remember = true;
+                    }else{
+                        *transition = *reactant;
+                        steps_tmp = nsteps;
+                        //printf("steps_tmp = %ld\n",steps_tmp);
+                        //nsteps_refined = nsteps + 1;
+                        if(parameters->mdAutoStop){
+                           stoped = true;
+                        }
+                remember = false;
                     }
-   		    remember = false;
                 }
-            }
-	}
+        }
 
-	//printf("%ld  ncheck = %ld nexam = %ld\n ",nsteps,ncheck,nexam);
-
+  		
         if (nsteps >= parameters->mdSteps ){
            stoped = true;
-        }       
+        }
+
+        if (nsteps % 500 == 0) {
+            // Since we only have a bundle size of 1 we can play with boinc_fraction_done
+            // directly. When we have done parameters->mdSteps number of steps we aren't 
+            // quite done so I increase the max steps by 5%.
+            boinc_fraction_done((double)nsteps/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
+        }
+
+        if (nsteps % (parameters->mdSteps/10) == 0 || nsteps == parameters->mdSteps) {
+            printf("progress: %3.0f%%, step %7ld/%ld\n", (double)100.0*nsteps/parameters->mdSteps,
+                   nsteps, parameters->mdSteps);
+        }
+
     }
-    printf("nsteps = %ld \n", nsteps);
     AvgT=SumT/nsteps;
     VarT=SumT2/nsteps-AvgT*AvgT;
-    printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
+    printf("\nTemperature : Average = %lf ; Variance = %lf ; Factor = %lf\n\n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
     //Here we use Binary Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
@@ -337,8 +360,8 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[]){
      long a1, b1, test , initial, final, diff, RefineAccuracy;
      bool ytest;
 
-     printf("Now started to refine the Final Point!\n");
      RefineAccuracy = parameters->RefineAccuracy; 
+     printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
      ytest = false;
      
      initial = 0;
@@ -444,7 +467,7 @@ void ParallelReplicaJob::dephase(){
               stop = true;
               state=CheckState(reactant);
               if(state == false){
-                 printf("Dephasing Succeeded !\n");
+                 printf("Dephasing successful\n");
               }else{
                  printf("Warning:Dephasing Failed, Now in a new State!\n");
               }

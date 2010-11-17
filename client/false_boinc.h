@@ -27,7 +27,7 @@ inline int boinc_resolve_filename(const char *str1, char *str2, size_t n)
 
 inline void boinc_fraction_done(double frac)
 {
-    #ifndef NDEBUG
+    #ifdef BOINC_DEBUG
     printf("%.1f%% done\n", frac*100);
     #endif
 }

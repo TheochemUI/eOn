@@ -87,7 +87,8 @@ bool CIniFile::ReadFile(FILE *file)
 	      valuename.erase(j, 1);
 	    }
 	  }
-	  printf("%s|\n", valuename.c_str());
+	  //Print out the non-default values
+	  printf("%s ", CheckCase(valuename).c_str());
 	  value = line.substr( pLeft + 1);
 	  for (int j=0; j<value.length();j++) {
 	      if (value[j] == ' ') {
