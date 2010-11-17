@@ -68,7 +68,7 @@ void ParallelReplicaJob::run(int bundleNumber)
  
     saveData(newstate,bundleNumber);
     
-    printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
+    //printf("Total Simulated Physical Time = %lf\n",SPtime+RLtime);
     printf("Physical Transition Time = %lf\n",SPtime);
     if(newstate){
        // printf("New state has been found with %ld steps (%lf fs)!\n", final_refined,SPtime);
@@ -201,13 +201,14 @@ void ParallelReplicaJob::dynamics()
         *transition = *reactant;
         SPtime = SPtimebuff[nsteps_refined-1];
        
-       
+        /*
         for(long i = 0; i<relax_steps;i++){
             PRdynamics.oneStep(parameters->mdTemperature);
             totsteps ++;
             RLtime += 10*parameters->mdTimeStep;
             md_fcalls ++;
         }
+        */
     }
     return;
      
@@ -285,9 +286,9 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
      long total_fcalls = min_fcalls + md_fcalls;
 
      fprintf(fileResults, "%d termination_reason\n", status);
-     fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
+     //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
      fprintf(fileResults, "%e transition_time\n", SPtime*1e-15);
-     fprintf(fileResults, "%e relax_time\n", RLtime*1e-15);
+     //fprintf(fileResults, "%e relax_time\n", RLtime*1e-15);
      fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
      fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
      fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
