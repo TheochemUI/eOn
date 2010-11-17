@@ -202,7 +202,7 @@ void ParallelReplicaJob::dynamics()
             boinc_fraction_done((double)nsteps/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
         }
 
-        if (nsteps % (parameters->mdSteps/10) == 0 || nsteps == parameters->mdSteps) {
+        if (nsteps % tenthSteps == 0 || nsteps == parameters->mdSteps) {
             printf("progress: %3.0f%%, step %7ld/%ld\n", (double)100.0*nsteps/parameters->mdSteps,
                    nsteps, parameters->mdSteps);
         }
