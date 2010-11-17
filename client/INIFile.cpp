@@ -89,6 +89,11 @@ bool CIniFile::ReadFile(FILE *file)
 	  }
 	  printf("%s|\n", valuename.c_str());
 	  value = line.substr( pLeft + 1);
+	  for (int j=0; j<value.length();j++) {
+	      if (value[j] == ' ') {
+	          value.erase(j,1);
+          }
+      }
 	  SetValue( keyname, valuename, value);
 	  break;
 	  

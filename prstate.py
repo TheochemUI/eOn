@@ -120,20 +120,19 @@ class PRState(state.State):
                               "time":              time
                              }
     
-    def get_search_count(self):
+    def get_time(self):
         self.load_info()
         try:        
-            return self.info.getint("MetaData", "search_count")
+            return self.info.getfloat("MetaData", "accumulated_time")
         except:
             return 0
 
-    def inc_search_count(self):
-        search_count = self.get_search_count()+1
-        self.info.set("MetaData", "search_count", str(search_count))
+    def inc_time(self, timeinc):
+        time = self.get_time()
+        self.info.set("MetaData", "accumulated_time", str(time+timeinc))
         self.save_info()
 
-    def zero_search_count(self):
+    def zero_time(self):
         self.load_info()
-        search_count = 0
-        self.info.set("MetaData", "search_count", str(search_count))
+        self.info.set("MetaData", "accumulated_time", "0.0")
         self.save_info()

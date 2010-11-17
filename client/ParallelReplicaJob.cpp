@@ -19,7 +19,6 @@
 ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 {
     parameters = params;
-    temp = parameters->mdTemperature;
     nsteps = 0;
     nsteps_refined = 0;
     SPtime = 0.0;
@@ -106,7 +105,7 @@ void ParallelReplicaJob::dynamics()
         Bbm.initial();
     }
         
-    PRdynamics.velocityScale(temp);
+    PRdynamics.velocityScale(parameters->mdTemperature);
      dephase();   
  
     while(!stoped){
@@ -121,7 +120,7 @@ void ParallelReplicaJob::dynamics()
         SumT += TKin;
         SumT2 += TKin*TKin;
 
-        PRdynamics.oneStep(temp); 
+        PRdynamics.oneStep(parameters->mdTemperature); 
 
         md_fcalls++;
         ncheck++;
@@ -204,7 +203,7 @@ void ParallelReplicaJob::dynamics()
        
        
         for(long i = 0; i<relax_steps;i++){
-            PRdynamics.oneStep(temp);
+            PRdynamics.oneStep(parameters->mdTemperature);
             totsteps ++;
             RLtime += 10*parameters->mdTimeStep;
             md_fcalls ++;
@@ -398,7 +397,7 @@ void ParallelReplicaJob::dephase(){
 
      while(!stop){             
 
-           DHdynamics.oneStep(temp);
+           DHdynamics.oneStep(parameters->mdTemperature);
            md_fcalls++;
           
            if(i % 1000 == 0){

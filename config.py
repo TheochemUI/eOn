@@ -9,7 +9,10 @@
 ##
 ##-----------------------------------------------------------------------------------
 import ConfigParser
+import logging
+logger = logging.getLogger('config')
 import StringIO
+import numpy
 import os.path
 import sys
 import string
@@ -52,6 +55,9 @@ def init(config_file = ""):
         config.debug_random_seed   = parser.getint('Debug', 'random_seed')
     except:
         config.debug_random_seed   = None
+    if config.debug_random_seed:
+        numpy.random.seed(config.debug_random_seed)
+        logger.debug("Set random state from seed")
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
     config.debug_list_search_results = parser.getboolean('Debug', 'list_search_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
