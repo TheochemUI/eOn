@@ -335,6 +335,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber){
      }
      fileReactant = fopen(filename, "wb");
      min1->matter2con(fileReactant);
+     fclose(fileReactant);
 
      if (bundleNumber != -1) {
          snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
