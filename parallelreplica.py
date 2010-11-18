@@ -50,7 +50,6 @@ def parallelreplica():
     num_registered, transition = register_results(comm, current_state, states)
 
     if transition:
-        logger.log("following process:", transition)
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
 
@@ -194,7 +193,7 @@ def register_results(comm, current_state, states):
             time = result['results']['transition_time']
             process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
-            if not transition and current_state==state:
+            if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
         else:
