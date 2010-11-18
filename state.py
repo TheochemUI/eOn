@@ -67,12 +67,6 @@ class State:
                 f.write(self.search_result_header)
                 f.close()
 
-    def __eq__(self, other):
-        return self.number == other.number
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
     def __repr__(self):
         return "State #%i" % self.number
 
