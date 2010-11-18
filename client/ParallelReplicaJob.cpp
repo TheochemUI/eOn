@@ -224,7 +224,7 @@ void ParallelReplicaJob::dynamics()
         Refine(mdbuff);
          printf("nsteps_refined=%ld\n",nsteps_refined); 
         long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
-        long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
+        //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
         printf("final_step = %ld\n",final_refined);
         *reactant = *mdbuff[nsteps_refined-1];
         *transition = *reactant;
