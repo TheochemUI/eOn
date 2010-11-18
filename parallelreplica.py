@@ -50,6 +50,7 @@ def parallelreplica():
     num_registered, transition = register_results(comm, current_state, states)
 
     if transition:
+        logger.log("following process:", transition)
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
 
@@ -193,7 +194,7 @@ def register_results(comm, current_state, states):
             time = result['results']['transition_time']
             process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
-            if not transition:
+            if not transition and current_state==state:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
         else:
@@ -236,26 +237,26 @@ def main():
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
-                        config.path_scratch]
-                if config.debug_keep_all_results:
-                    rmdirs.append(os.path.join(config.path_root, "old_searches"))
-                for i in rmdirs:
-                    if os.path.isdir(i):
-                        shutil.rmtree(i)
-                        #XXX: ugly way to remove all empty directories containing this one
-                        os.mkdir(i)
-                        os.removedirs(i)
-                
-                dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
-                info_path = os.path.join(config.path_results, "info.txt") 
-                log_path = os.path.join(config.path_results, "pr.log") 
-                for i in [info_path, dynamics_path, log_path]:
-                    if os.path.isfile(i):
-                        os.remove(i)
-                
-                print "Reset."
-                sys.exit(0)
+            rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
+                    config.path_scratch]
+            if config.debug_keep_all_results:
+                rmdirs.append(os.path.join(config.path_root, "old_searches"))
+            for i in rmdirs:
+                if os.path.isdir(i):
+                    shutil.rmtree(i)
+                    #XXX: ugly way to remove all empty directories containing this one
+                    os.mkdir(i)
+                    os.removedirs(i)
+            
+            dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
+            info_path = os.path.join(config.path_results, "info.txt") 
+            log_path = os.path.join(config.path_results, "pr.log") 
+            for i in [info_path, dynamics_path, log_path]:
+                if os.path.isfile(i):
+                    os.remove(i)
+            
+            print "Reset."
+        sys.exit(0)
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
