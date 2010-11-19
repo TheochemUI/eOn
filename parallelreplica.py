@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("current time is %e", time)
+    logger.info("simulation time is %e", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -48,6 +48,7 @@ def parallelreplica():
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
     num_registered, transition = register_results(comm, current_state, states)
+    logger.info("time in current state is %e", current_state.get_time())
 
     if transition:
         current_state, previous_state = step(time, current_state, states, transition)
