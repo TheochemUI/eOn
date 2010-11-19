@@ -35,6 +35,7 @@ class Atoms:
         p.free = self.free.copy()
         p.box = self.box.copy()
         p.names = self.names[:]
+        p.mass = self.mass
         return p
 
     def free_r(self):
