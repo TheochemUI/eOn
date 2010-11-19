@@ -22,6 +22,7 @@ class Atoms:
         self.free = numpy.ones(n_atoms)
         self.box = numpy.zeros((3,3))
         self.names = ['']*n_atoms
+        self.mass = numpy.zeros(n_atoms)
 
     def __len__(self):
         '''
