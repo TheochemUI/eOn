@@ -701,12 +701,6 @@ class Script(Communicator):
             raise CommunicatorError("'%s' returned a non-zero exit status"%cmdname)
 
     def submit_jobs(self, data, invariants):
-        #Clean out scratch directory
-        for name in os.listdir(self.scratchpath):
-            if name == "script_job_ids":
-                continue
-            shutil.rmtree(os.path.join(self.scratchpath, name))
-
         for jobpath in self.make_bundles(data, invariants):
             # submit_job.sh jobname jobpath
             # should return a jobid
