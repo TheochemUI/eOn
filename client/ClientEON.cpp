@@ -31,7 +31,12 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
-#include <time.h>
+
+#ifndef WIN32
+    #include <time.h>
+    #include <sys/time.h>
+    #include <sys/resource.h>
+#endif
 
 Parameters parameters;
 
@@ -104,6 +109,9 @@ int main(int argc, char **argv)
 	if(rc){
 		boinc_finish(rc);
 	}
+
+
+    unsigned beginTime = time(NULL);
 
     #ifdef BOINC
     //We want to uncompress our input file
@@ -179,5 +187,19 @@ int main(int argc, char **argv)
     create_archive(resolved, ".", result_pattern); 
     #endif
 
+    unsigned long endTime = time(NULL);
+    unsigned long realTime = endTime-beginTime;
+    double utime=0, stime=0;
+    #ifndef WIN32
+    struct rusage r_usage;
+
+    if (getrusage(RUSAGE_SELF, &r_usage)!=0) {
+        fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
+    }
+    utime = (double)r_usage.ru_utime.tv_sec + (double)r_usage.ru_utime.tv_usec/1000000.0;
+    stime = (double)r_usage.ru_stime.tv_sec + (double)r_usage.ru_stime.tv_usec/1000000.0;
+    #endif
+    printf("\ntiming information:\nreal %10ld seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
+           realTime,utime, stime);
     boinc_finish(0);
 }
