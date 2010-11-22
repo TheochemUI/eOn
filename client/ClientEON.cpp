@@ -111,7 +111,13 @@ int main(int argc, char **argv)
 	}
 
 
-    unsigned beginTime = time(NULL);
+    #ifdef WIN32
+    time_t beginTime = time(NULL);
+    #else
+    struct timeval beginTime;
+    gettimeofday(&beginTime, NULL);
+    printf("seconds: %ld\n", beginTime.tv_sec);
+    #endif
 
     #ifdef BOINC
     //We want to uncompress our input file
@@ -187,19 +193,28 @@ int main(int argc, char **argv)
     create_archive(resolved, ".", result_pattern); 
     #endif
 
-    unsigned long endTime = time(NULL);
-    unsigned long realTime = endTime-beginTime;
-    double utime=0, stime=0;
-    #ifndef WIN32
-    struct rusage r_usage;
+    // Timing Information
+    double utime=0, stime=0, rtime=0;
+    #ifdef WIN32
+    time_t endTime = time(NULL);
+    time_t realTime = endTime-beginTime;
+    rtime = (double)realTime;
+    #else
+    struct timeval endTime;
+    gettimeofday(&endTime, NULL);
+    rtime = (double)(endTime.tv_sec-beginTime.tv_sec) + 
+            (double)(endTime.tv_usec-beginTime.tv_usec)/1000000.0;
 
+    struct rusage r_usage;
     if (getrusage(RUSAGE_SELF, &r_usage)!=0) {
         fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
     }
     utime = (double)r_usage.ru_utime.tv_sec + (double)r_usage.ru_utime.tv_usec/1000000.0;
     stime = (double)r_usage.ru_stime.tv_sec + (double)r_usage.ru_stime.tv_usec/1000000.0;
     #endif
-    printf("\ntiming information:\nreal %10ld seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
-           realTime,utime, stime);
+
+    printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
+           rtime,utime, stime);
+
     boinc_finish(0);
 }
