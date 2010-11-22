@@ -480,7 +480,7 @@ def get_displacement(reactant, indices=None):
     elif config.disp_type == 'leastcoordinated':
         disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices, cutoff=config.disp_cutoff, use_covalent=config.disp_use_covalent, covalent_scale=config.disp_covalent_scale)
     elif config.disp_type == 'water':
-        disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation)
+        disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation, config.molecule_list, config.disp_at_random)
     else:
         raise ValueError()
     return disp
