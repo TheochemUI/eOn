@@ -31,9 +31,9 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 
 #ifndef WIN32
-    #include <time.h>
     #include <sys/time.h>
     #include <sys/resource.h>
 #endif
