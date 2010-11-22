@@ -156,6 +156,8 @@ def init(config_file = ""):
     if config.disp_type == 'water':
         config.stdev_translation = parser.getfloat('Displacement', 'stdev_translation')
         config.stdev_rotation = parser.getfloat('Displacement', 'stdev_rotation')
+        config.molecule_list = eval(parser.get('Displacement', 'molecule_list'))
+        config.disp_at_random = parser.getint('Displacement', 'disp_at_random')
     else:
         config.disp_size = parser.getfloat('Displacement', 'size')
         config.disp_radius = parser.getfloat('Displacement', 'radius')
