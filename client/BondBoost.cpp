@@ -185,14 +185,14 @@ double BondBoost::Booststeps(){
      }
      
      A_EPS_M=(1.0-Epsr_MAX*Epsr_MAX)*(1.0-Epsr_MAX*Epsr_MAX)/(1.0-PRR*PRR*Epsr_MAX*Epsr_MAX);
-
+/*
      for (i=0;i<nBBs;i++){
          printf("Boost::Distance between Atoms %ld and %ld is %lf, EQ= %lf; EPSR_Q=%lf\n",BBAList[2*i],BBAList[2*i+1],CBBLList(i,0),EBBLList(i,0),Epsr_Q[i]);
      }
 
      printf("Boost::Epsr_MAX= %lf, Atoms %ld and %ld\n",Epsr_MAX,BBAList[2*Mi],BBAList[2*Mi+1]);
      printf("Boost::A_EPS_M= %lf\n",A_EPS_M);
-   
+*/   
      if(Epsr_MAX < 1.0){
         for(i=0;i<nBBs;i++){
 	    Sum_V +=DVMAX*(1.0-Epsr_Q[i]*Epsr_Q[i])/double(nBBs);
@@ -222,7 +222,7 @@ double BondBoost::Booststeps(){
             else if( abs(Epsr_Q[i]) == Epsr_MAX ){
   		        Fact_1 = 2.0*A_EPS_M*DVMAX*Epsr_Q[i]/QRR/EBBLList(i,0)/double(nBBs);
                         double Fact_tmp1=(1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i]);
-                        double Fact_tmp2=(1.0-Epsr_Q[i]*Epsr_Q[i])
+                        double Fact_tmp2=(1.0-Epsr_Q[i]*Epsr_Q[i]);
  		        Fact_2 = 2.0*Fact_tmp2*Epsr_Q[i]*(2.0*Fact_tmp1-PRR*PRR*Fact_tmp2)/QRR/QRR/EBBLList(i,0)/Fact_tmp1/Fact_tmp1; 
         	    Dforce=Fact_1+Sum_V*Fact_2;
 
