@@ -32,7 +32,7 @@ void BondBoost::initial(){
   bool flag  = 1;
   
   nBBs = 0;
-  nReg = 0;
+  nReg = 1;
   nBAs = matter->numberOfFreeAtoms();
   nRAs = nAtoms - nBAs;//nRestAtoms
   nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; //number of Bonds involved with Tagged Atoms
@@ -75,7 +75,7 @@ void BondBoost::initial(){
   for(i=0; i< nRAs;i++){
       printf("nRestAtoms %ld: %ld\n",i,RAList[i]);
   }
-*/  
+*/ 
 }
 
 double BondBoost::boost(){
@@ -89,40 +89,36 @@ double BondBoost::boost(){
     SDtime_B = 0.0;
     SDtime = 0.0;
     SPtime = 0.0;
-
-    if(nReg < RMDS){
+    if(nReg <= RMDS){
         flag = 0;
     }
     else{ 
         flag = 1; 
     }
-    
+   
     if( flag == 0 ){
         TABL_tmp=Rmdsteps();
         TABLList = TABLList + (1.0/RMDS)*TABL_tmp;
         nReg ++;
-        
         SDtime += dt;
         SPtime += dt;
-/*        // TEST PRINT
-        for(long i=0;i<nTABs;i++){
-              printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABL_tmp(i,0));
+        // TEST PRINT
+/*	for(long i=nTABs-1;i<nTABs;i++){
+              printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABLList(i,0));
         }
         
         printf("\n");
-        for(long i=0;i<nTABs;i++){
-              printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABLList(i,0));
-        }
 */        // TEST END
     }
     else{ 
+       //    printf("nreg = %ld; RMDS=%ld\n", nReg,RMDS);
            if( nReg == RMDS+1){
               // printf("First steps = RMDS+1\n");
                nBBs = BondSelect();
         
-        //       for (long i=0;i<nBBs;i++){
-        //           printf("Equilibrium Distance between Atoms %ld and %ld is %lf\n",BBAList[2*i],BBAList[2*i+1],EBBLList(i,0));
-        //       }
+           //   for (long i=0;i<nBBs;i++){
+           //          printf("Equilibrium Distance between Atoms %ld and %ld is %lf\n",BBAList[2*i],BBAList[2*i+1],EBBLList(i,0));
+           //    }
            }
 
            Epsr_Q = new double[nBBs];           
@@ -133,9 +129,10 @@ double BondBoost::boost(){
            nReg ++;
            AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
     	//   printf("AVE_BOOST_FACT=%E;nReg = %ld\n",AVE_Boost_Fact,nReg);
-    }
+        //  printf("nReg=%ld, boost_dt = %lf,SPtime = %lf\n",nReg-1,boost_dt,SPtime);
+     }
 
-    return SPtime;
+    return boost_dt;
 }
 
 double BondBoost::Booststeps(){
@@ -183,18 +180,19 @@ double BondBoost::Booststeps(){
          Epsr_Q[i]=(CBBLList(i,0)-EBBLList(i,0))/EBBLList(i,0)/QRR;
          if (abs(Epsr_Q[i]) >= Epsr_MAX ){
              Epsr_MAX = abs(Epsr_Q[i]);
+             Mi=i;
          }
      }
      
      A_EPS_M=(1.0-Epsr_MAX*Epsr_MAX)*(1.0-Epsr_MAX*Epsr_MAX)/(1.0-PRR*PRR*Epsr_MAX*Epsr_MAX);
-/*
+
      for (i=0;i<nBBs;i++){
-         printf("Boost::Distance between Atoms %ld and %ld is %lf; EPSR_Q=%lf\n",BBAList[2*i],BBAList[2*i+1],CBBLList(i,0),Epsr_Q[i]);
+         printf("Boost::Distance between Atoms %ld and %ld is %lf, EQ= %lf; EPSR_Q=%lf\n",BBAList[2*i],BBAList[2*i+1],CBBLList(i,0),EBBLList(i,0),Epsr_Q[i]);
      }
 
-     printf("Boost::Epsr_MAX= %lf\n",Epsr_MAX);
+     printf("Boost::Epsr_MAX= %lf, Atoms %ld and %ld\n",Epsr_MAX,BBAList[2*Mi],BBAList[2*Mi+1]);
      printf("Boost::A_EPS_M= %lf\n",A_EPS_M);
-*/   
+   
      if(Epsr_MAX < 1.0){
         for(i=0;i<nBBs;i++){
 	    Sum_V +=DVMAX*(1.0-Epsr_Q[i]*Epsr_Q[i])/double(nBBs);
@@ -223,7 +221,9 @@ double BondBoost::Booststeps(){
 	    }	
             else if( abs(Epsr_Q[i]) == Epsr_MAX ){
   		        Fact_1 = 2.0*A_EPS_M*DVMAX*Epsr_Q[i]/QRR/EBBLList(i,0)/double(nBBs);
- 		        Fact_2 = 2.0*(1.0-(Epsr_Q[i])*Epsr_Q[i])*Epsr_Q[i]*(2.0*(1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i])-PRR*PRR*(1.0-(Epsr_Q[i])*Epsr_Q[i]))/QRR/EBBLList(i,0)/(1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i])/(1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i]); 
+                        double Fact_tmp1=(1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i]);
+                        double Fact_tmp2=(1.0-Epsr_Q[i]*Epsr_Q[i])
+ 		        Fact_2 = 2.0*Fact_tmp2*Epsr_Q[i]*(2.0*Fact_tmp1-PRR*PRR*Fact_tmp2)/QRR/QRR/EBBLList(i,0)/Fact_tmp1/Fact_tmp1; 
         	    Dforce=Fact_1+Sum_V*Fact_2;
 
 		        AtomI_1 = BBAList[2*i];
@@ -281,7 +281,7 @@ double BondBoost::Booststeps(){
    	    Boost_Fact = 0.0;
 	    //Ave_Boost_Fact =
      }
-
+     //printf("boost_fact=%lf\n",Boost_Fact);
      //update bdt;
      bdt = dt*exp(Boost_Fact/kb/Temp);
      //printf("bdt = %E\n",bdt);
@@ -318,9 +318,11 @@ Matrix<double, Eigen::Dynamic,1> BondBoost::Rmdsteps() {
          printf("Total Involved Bond number does not equal counted number\n");
      }
 
-//     for(i=0;i<count;i++){
-//         printf("Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABL_t(i,0));
-//    }
+     //printf("test here\n");
+/*     for(i=count-1;i<count;i++){
+         printf("test ::Distance beweem Atoms %ld and %ld is %lf\n",TABAList[2*i],TABAList[2*i+1],TABL_t(i,0));
+    }
+*/
      return TABL_t;
 }
 

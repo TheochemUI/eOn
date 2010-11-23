@@ -54,7 +54,7 @@ void Dynamics::VerletStep1()
      matter->setVelocities(velocities);  // First update velocities
 
      positions += velocities * parameters->mdTimeStep * dtScale;
-     positions = matter->pbc(positions);
+     //positions = matter->pbc(positions);
      matter->setPositions(positions); // Update Positions
         
 };
