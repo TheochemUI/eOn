@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------`
 // eOn is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -45,7 +45,7 @@ void Dynamics::VerletStep1()
      Matrix<double, Eigen::Dynamic, 3> positions;
      Matrix<double, Eigen::Dynamic, 3> velocities;
      Matrix<double, Eigen::Dynamic, 3> accelerations;
-
+      
      positions = matter->getPositions();
      velocities = matter->getVelocities();
      accelerations = matter->getAccelerations();
@@ -54,7 +54,9 @@ void Dynamics::VerletStep1()
      matter->setVelocities(velocities);  // First update velocities
 
      positions += velocities * parameters->mdTimeStep * dtScale;
+     positions = matter->pbc(positions);
      matter->setPositions(positions); // Update Positions
+        
 };
 
 void Dynamics::VerletStep2()
