@@ -227,7 +227,7 @@ void Matter::setBoundary(int axis, Vector3d bound)
     cellBoundaries.row(axis)=bound;
     if(usePeriodicBoundaries)
     {
-        applyPeriodicBoundary(axis);
+        applyPeriodicBoundary();
     }
     recomputePotential=true;
 }
@@ -237,7 +237,7 @@ void Matter::setBoundary(int axis1, int axis2, double val)
     cellBoundaries(axis1,axis2)=val;
     if(usePeriodicBoundaries)
     {
-        applyPeriodicBoundary(axis1);
+        applyPeriodicBoundary();
     }
     recomputePotential=true;
 }
@@ -246,9 +246,7 @@ void Matter::setBoundary(int axis1, int axis2, double val)
 void Matter::activatePeriodicBoundaries()
 {
     usePeriodicBoundaries=true;
-    applyPeriodicBoundary(0);
-    applyPeriodicBoundary(1);
-    applyPeriodicBoundary(2);
+    applyPeriodicBoundary();
 }
 
 
@@ -266,7 +264,7 @@ void Matter::setPosition(long int indexAtom, int axis, double position)
 {
     positions(indexAtom,axis)=position;
     if(usePeriodicBoundaries){ 
-        applyPeriodicBoundary(indexAtom, axis);
+        applyPeriodicBoundary();
     }
     recomputePotential=true;
 }
@@ -670,33 +668,23 @@ void Matter::clearMemory()
 
 
 void Matter::applyPeriodicBoundary() // Transform the coordinate to use the minimum image convention.
-{
-    applyPeriodicBoundary(0);
-    applyPeriodicBoundary(1);
-    applyPeriodicBoundary(2);
-}
-
-
-void Matter::applyPeriodicBoundary(int axis) 
-{
-    for(long int i=0; i<nAtoms; i++)
+{ 
+    Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
+    Matrix<double, Eigen::Dynamic, 3> ddiff = positions*ibox;
+   
+    int i,j;
+    for(i=0; i<ddiff.rows(); i++)
     {
-        applyPeriodicBoundary(i, axis);
+        for(j=0; j<3; j++)
+        {
+            ddiff(i,j) = fmod(ddiff(i,j), 1.0);
+        }
     }
+
+    positions= ddiff*cellBoundaries;
 }
 
 
-void Matter::applyPeriodicBoundary(long atom, int axis)
-{
-    //TODO: implement this correctly (do we even need it??)
-    return;
-    //while(positions_[atom*3+axis]>cellBoundaries_[axis]) {
-    //    positions_[atom*3+axis]-=cellBoundaries_[axis];
-    //};
-    //while(positions_[atom*3+axis]<= 0.0) {
-    //    positions_[atom*3+axis]+=cellBoundaries_[axis];
-    //};
-}
 
 double Matter::maxForce(void)
 {

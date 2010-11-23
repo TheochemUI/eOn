@@ -126,8 +126,6 @@ private:
     void initialiseDataMembers(Parameters *parameters);
     void clearMemory(); ///< Clear all dynamically allocated memory.
     void applyPeriodicBoundary();
-    void applyPeriodicBoundary(int axis);
-    void applyPeriodicBoundary(long atom, int axis);
     void applyPeriodicBoundary(double & component, int axis);
     void applyPeriodicBoundary(Matrix<double, Eigen::Dynamic, 3> & diff);
 };
