@@ -117,7 +117,8 @@ public:
     double BBQRR; 
     double BBPRR; 
     double BBQcut;
-
+ 
+    double ThermoType;
     double Andersen_Alpha;
     double Andersen_Tcol;
   

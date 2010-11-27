@@ -106,6 +106,7 @@ Parameters::Parameters(){
     BBRMDS = 0;
 
     //default parameters used by Thermostat
+    ThermoType=1;//1) Andersen+Verlet;2) Nose-Hoover+Verlet
     Andersen_Alpha=0.2; //collision strength
     Andersen_Tcol=10; //collision frequency in unit of dt
     return;
@@ -312,7 +313,7 @@ int Parameters::load(FILE *file){
         
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
-
+        ThermoType = ini.GetValueL("Thermo","ThermoType",ThermoType);
         Andersen_Alpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",Andersen_Alpha);
         Andersen_Tcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",Andersen_Tcol);
 

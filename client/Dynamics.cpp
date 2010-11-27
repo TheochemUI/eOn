@@ -19,7 +19,16 @@ Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
     parameters = parameters_passed;
     dtScale = 1.0; //in unit of 10fs
     kb=1.0/11604.5; //Kb in unit of eV
-	nAtoms = matter->numberOfAtoms();
+    nAtoms = matter->numberOfAtoms();
+/*
+    if(parameters->ThermoType == 1){
+       printf("Dynamics Using Andersen Thermostat and Verlet Integration\n");
+    }
+    else if(parameters->ThermoType == 2){
+       printf("Dynamics Using Nose-Hoover Thermostat and Verlet Integration\n");
+    }
+*/
+
 
 };
 
@@ -30,12 +39,16 @@ Dynamics::~Dynamics()
 };
 
 
-void Dynamics::oneStep(double T)
-{
+void Dynamics::oneStep(double T){
     double temp = T;
-    Andersen(temp); //Wait to be implemented later;
-    VerletStep1();
-    VerletStep2();
+    if(parameters->ThermoType == 1){
+       Andersen(temp);
+       VerletStep1();
+       VerletStep2();
+    }
+    else if(parameters->ThermoType == 2){
+      printf("hi test here\n");//wait to be implemented
+    }
     return;
 };
 
