@@ -50,16 +50,16 @@ public:
     void fullSteps(double T); 
     void Andersen(double T);
     void velocityScale(double T);
-
+    void NH_Verlet(double T);
 private:
     long nAtoms;///< Number of free coordinates.
 
     Matter *matter;///< Pointer to atom object \b outside the scope of the class.    
     Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters. 
-
+  
     double dtScale;
     double kb;
-
+    bool init;
 };
 
 #endif
