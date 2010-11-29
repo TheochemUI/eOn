@@ -66,6 +66,8 @@ void ParallelReplicaJob::run(int bundleNumber)
     *min1 = *reactant;   
     *transition = *reactant;
     ConjugateGradients cgMin1(min1, parameters);
+    cgMin1.setOutput(1);
+    printf("\nMinimizing initial reactant\n");
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
         
@@ -205,7 +207,9 @@ void ParallelReplicaJob::dynamics()
 
         //stdout Progress
         if (nsteps % tenthSteps == 0 || nsteps == parameters->mdSteps) {
-            printf("progress: %3.0f%%, step %7ld/%ld\n", (double)100.0*nsteps/parameters->mdSteps,
+            double maxAtomDistance = reactant->perAtomNorm(*min1);
+            printf("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
+                   (double)100.0*nsteps/parameters->mdSteps, maxAtomDistance,
                    nsteps, parameters->mdSteps);
         }
 
@@ -251,17 +255,12 @@ void ParallelReplicaJob::dynamics()
 
 bool ParallelReplicaJob::CheckState(Matter *matter)
 {
-     double distance; 
      Matter tmp(parameters);
      tmp = *matter;
      ConjugateGradients cgMin(&tmp, parameters);
      cgMin.fullRelax();
      min_fcalls += tmp.getForceCalls();
 
-     distance = tmp.perAtomNorm(*min1);
-#ifndef NDEBUG
-     printf("Max Atom Displacement = %lf\n",distance);
-#endif
      if (tmp == *min1) {
         return false;
      };
