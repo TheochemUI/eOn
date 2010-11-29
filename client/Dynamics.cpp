@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------------`
+//-----------------------------------------------------------------------------------
 // eOn is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -200,7 +200,7 @@ void Dynamics::velocityScale(double T){
 
 void Dynamics::NH_Verlet(double T){
      double temp = T;
-     double smass = 2;
+     double smass = parameters->NoseMass;
      Matrix<double, Eigen::Dynamic, 3> v;
      Matrix<double, Eigen::Dynamic, 3> p;
      Matrix<double, Eigen::Dynamic, 3> d2;
