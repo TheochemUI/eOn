@@ -12,6 +12,6 @@ LIB := libEDIP.a
 
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
-	ranlib $@
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)

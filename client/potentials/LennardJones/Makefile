@@ -2,8 +2,8 @@ OBJECTS = LJ.o
 CXXFLAGS += -I../..
 LIB := libLJ.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 

@@ -2,8 +2,8 @@ OBJECTS = bopfox.o
 CXXFLAGS += -I../..
 LIB := libbopfox.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 

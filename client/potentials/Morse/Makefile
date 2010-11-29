@@ -2,8 +2,8 @@ OBJECTS = Morse.o
 CXXFLAGS += -I../..
 LIB := libMorse.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 

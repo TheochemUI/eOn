@@ -4,8 +4,8 @@ CXXFLAGS += -O3 -I../..
 CFLAGS += -O3 -I../..
 LIB := libEMT.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 
