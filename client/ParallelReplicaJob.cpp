@@ -160,7 +160,7 @@ void ParallelReplicaJob::dynamics()
         }
 #endif
         if (ncheck == check_steps && !newstate){
-  	    ncheck = 0; // reinitial the ncheck
+  	        ncheck = 0; // reinitial the ncheck
             status = CheckState(reactant);
             if(status == true){
                remember = false;
@@ -195,6 +195,7 @@ void ParallelReplicaJob::dynamics()
            stoped = true;
         }
 
+        //BOINC Progress
         if (nsteps % 500 == 0) {
             // Since we only have a bundle size of 1 we can play with boinc_fraction_done
             // directly. When we have done parameters->mdSteps number of steps we aren't 
@@ -202,6 +203,7 @@ void ParallelReplicaJob::dynamics()
             boinc_fraction_done((double)nsteps/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
         }
 
+        //stdout Progress
         if (nsteps % tenthSteps == 0 || nsteps == parameters->mdSteps) {
             printf("progress: %3.0f%%, step %7ld/%ld\n", (double)100.0*nsteps/parameters->mdSteps,
                    nsteps, parameters->mdSteps);
@@ -257,11 +259,10 @@ bool ParallelReplicaJob::CheckState(Matter *matter)
      min_fcalls += tmp.getForceCalls();
 
      distance = tmp.perAtomNorm(*min1);
-     
 #ifndef NDEBUG
-     printf("Total Moved Distance = %lf\n",distance);
+     printf("Max Atom Displacement = %lf\n",distance);
 #endif
-     if (distance <= parameters->PRD_MaxMovedDist){
+     if (tmp == *min1) {
         return false;
      };
      return true;

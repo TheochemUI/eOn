@@ -21,6 +21,7 @@ class MinimizersInterface{
     
 public:
     virtual ~MinimizersInterface(){};
+    void virtual setOutput(int level) = 0; // Print to stdout?
     void virtual oneStep() = 0; // Do one iteration
     void virtual fullRelax() = 0; // Relax the Matter object corresponding to the pointer that was passed.
     bool virtual isItConverged(double convergeCriterion) = 0; // Determine if the norm of the force vector is below the convergeCriterion

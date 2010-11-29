@@ -26,6 +26,7 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 {
     initialize(matter, parameters);
     totalForceCalls = 0;
+    outputLevel = 0;
 };
 
 
@@ -122,8 +123,10 @@ void ConjugateGradients::fullRelax(){
         oneStep();
         converged = isItConverged(parameters->convergedRelax);
         ++i;
+        if (outputLevel > 0) {
+            printf("min = %d, max force = %lf\n", i, matter->maxForce());
+        }
         #ifndef NDEBUG
-        printf("min = %d, max force = %lf\n", i, matter->maxForce());
         if (i % 10 == 0)
             matter->matter2xyz(min.str(), true);
         #endif
@@ -148,6 +151,11 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
 //std::cout<<diff<<"\n";
     return(diff < convergeCriterion);
 };
+
+void ConjugateGradients::setOutput(int level)
+{
+
+}
 
 
 void ConjugateGradients::determineSearchDirection(){

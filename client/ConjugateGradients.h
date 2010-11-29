@@ -43,6 +43,7 @@ public:
     void oneStep(); // do one iteration
     void fullRelax(); // relax the Matter object at the pointer that was passed with the constructor
     bool isItConverged(double convergeCriterion);
+    void setOutput(int level);
     //----Functions used when forces are modified (saddle point search)----
     /** Performs and infinitesimal step along the search direction.
     @param[out]  *posStep  Double array containing the modified positions of the atoms.
@@ -60,6 +61,7 @@ public:
  
 private:
     long nAtoms; // number of free coordinates
+    int outputLevel;
 
     Matter *matter; // pointer to atom object outside the scope of the class
     Parameters *parameters; // pointer to a structure outside the scope of the class containing runtime parameters
