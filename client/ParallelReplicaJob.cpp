@@ -256,8 +256,8 @@ bool ParallelReplicaJob::CheckState(Matter *matter)
      cgMin.fullRelax();
      min_fcalls += tmp.getForceCalls();
 
-
-     distance = tmp.distanceTo(*min1);
+     distance = tmp.perAtomNorm(*min1);
+     
 #ifndef NDEBUG
      printf("Total Moved Distance = %lf\n",distance);
 #endif
