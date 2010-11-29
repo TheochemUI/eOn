@@ -124,7 +124,7 @@ void ConjugateGradients::fullRelax(){
         converged = isItConverged(parameters->convergedRelax);
         ++i;
         if (outputLevel > 0) {
-            printf("min = %d, max force = %lf\n", i, matter->maxForce());
+            printf("min = %3d, max force = %10.5lf\n", i, matter->maxForce());
         }
         #ifndef NDEBUG
         if (i % 10 == 0)
@@ -154,7 +154,7 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
 
 void ConjugateGradients::setOutput(int level)
 {
-
+    outputLevel = level;
 }
 
 

@@ -41,6 +41,7 @@ void MinimizationJob::run(int bundleNumber)
     printf("\nBeginning minimization of %s\n", reactant_passed.c_str());
 
     ConjugateGradients cgMin(reactant, parameters);
+    cgMin.setOutput(1);
     cgMin.fullRelax();
 
     if (cgMin.isItConverged(parameters->convergedRelax)) {
