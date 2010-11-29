@@ -1,4 +1,9 @@
 #C compiler settings
+CC=$(CROSS)gcc
+CXX=$(CROSS)g++
+LD=$(CROSS)ld
+RANLIB=$(CROSS)ranlib
+
 CXXFLAGS += -O2 -Wall -Wfatal-errors
 
 #Ensures all code is statically linked on a Linux machine
@@ -7,14 +12,18 @@ ifeq ($(UNAME), Linux)
    LDFLAGS += -static
 endif
 
+ifdef WIN32
+	CXXFLAGS += -DWIN32
+endif
+
 #Fortran compiler settings
 ifdef NO_FORTRAN
     CXXFLAGS += -DNO_FORTRAN
 else
     # gfortran
-    FC = gfortran
+    FC = $(CROSS)gfortran
     FFLAGS += -O2
-    AR = ar cru
+    AR = $(CROSS)ar cru
     LDFLAGS += -lgfortran
     # ifort
     #FC = ifort
@@ -84,9 +93,13 @@ POTENTIALS += "+QSC"
 POTDIRS += ./potentials/platinum-water/
 LIBS += ./potentials/platinum-water/libplatinum-water.a
 POTENTIALS += "+Pt-H2O"
+ifndef WIN32
 POTDIRS += ./potentials/VASP
 LIBS += ./potentials/VASP/libVASP.a
 POTENTIALS += "+VASP"
+else
+POTENTIALS += "-VASP"
+endif
 POTDIRS += ./potentials/bopfox
 LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
@@ -117,7 +130,7 @@ all: $(POTDIRS) $(FPOTDIRS) client
 	@echo "POTENTIALS: $(POTENTIALS)"
 
 client: $(OBJECTS) $(LIBS)
-	g++  -o $@ $^ $(LDFLAGS)
+	$(CROSS)g++  -o $@ $^ $(LDFLAGS)
 
 include Depend.mk
 
@@ -127,11 +140,10 @@ $(LIBS):
 $LIBS: $(POTDIRS) $(FPOTDIRS)
 
 $(POTDIRS):
-	$(MAKE) -C $@
+	$(MAKE) -C $@ CC=$(CC) CXX=$(CXX) LD=$(LD) AR="$(AR)" RANLIB=$(RANLIB)
 
 $(FPOTDIRS):
-	@echo $(AR)
-	export FC=$(FC); export FFLAGS=$(FFLAGS); export AR="$(AR)"; $(MAKE) -C $@
+	$(MAKE) -C $@ CC=$(CC) CXX=$(CXX) LD=$(LD) AR="$(AR)" FC=$(FC) FFLAGS=$(FFLAGS) RANLIB=$(RANLIB)
 
 clean:
 	rm -f $(OBJECTS) client
