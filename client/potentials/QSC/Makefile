@@ -2,8 +2,8 @@ OBJECTS = QSC.o
 CXXFLAGS += -I../.. -Wall -pedantic -O2
 LIB := libQSC.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 test : CXXFLAGS += -DQSC_STANDALONE
