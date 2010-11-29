@@ -130,11 +130,11 @@ const Matter& Matter::operator=(const Matter& matter)
     return *this;
 }
 
-
-bool Matter::operator==(const Matter& matter) {//To compare two matter objects, if all differences in positions are bellow getMaxDifferencePos, they are considered equal
+// Two matter objects are considered the same if all 
+// differences in positions are bellow getMaxDifferencePos.
+bool Matter::operator==(const Matter& matter) {
     return (parameters->maxDifferencePos) > perAtomNorm(matter);
 }
-
 
 double Matter::distanceTo(const Matter& matter) 
 {
