@@ -2,8 +2,8 @@ OBJECTS = VASP.o
 CXXFLAGS += -I../.. -Wall -pedantic
 LIB := libVASP.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 

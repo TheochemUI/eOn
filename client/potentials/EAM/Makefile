@@ -2,8 +2,8 @@ OBJECTS = EAM.o
 CXXFLAGS += -I../.. -Wall -pedantic -Wextra -O0 -g
 LIB := libEAM.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 test : CXXFLAGS += -DEAM_STANDALONE

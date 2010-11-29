@@ -3,8 +3,8 @@ OBJECTS := ccl.o potential_base.o spce_ccl.o tip4p.o zhu_philpott_for_eon.o \
 CXXFLAGS += -I..
 LIB := libplatinum-water.a
 $(LIB) : $(OBJECTS)
-	ar cru $@ $^
-	ranlib $@
+	$(AR) $@ $^
+	$(RANLIB) $@
 clean :
 	rm -f $(OBJECTS) $(LIB)
 .PHONY : clean

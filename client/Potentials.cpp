@@ -29,7 +29,9 @@
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
+#ifndef WIN32
 #include "potentials/VASP/VASP.h"
+#endif
 #include "potentials/bopfox/bopfox.h"
 #ifdef BOPFOX
     #include "potentials/bop/bop.h"
@@ -102,10 +104,12 @@ Potentials::Potentials(Parameters *parameters){
         interface_ = new EDIP();
         interface_->initialize();
     }
+#ifndef WIN32
     else if(parameters_->potentialTag == POT_VASP){
         interface_ = new VASP();
         interface_->initialize();
     }		
+#endif
     else if(parameters_->potentialTag == POT_BOPFOX){
         interface_ = new bopfox();
         interface_->initialize();
