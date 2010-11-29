@@ -39,6 +39,7 @@ public:
     
     void fullRelax();///< Relax the Matter object corresponding to the pointer that was passed with the constructor.
     bool isItConverged(double convergeCriterion);///< Determine if the norm of the force vector is bellow the \a convergeCriterion.
+    void setOutput(int level);
     
 private:
     long nAtoms;///< Number of free coordinates.

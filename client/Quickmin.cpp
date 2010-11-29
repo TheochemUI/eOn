@@ -42,6 +42,11 @@ Quickmin::~Quickmin()
     return;
 };
 
+void Quickmin::setOutput(int level)
+{
+
+}
+
 
 void Quickmin::oneStep()
 {
