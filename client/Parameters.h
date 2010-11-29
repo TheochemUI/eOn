@@ -118,10 +118,10 @@ public:
     double BBPRR; 
     double BBQcut;
  
-    double ThermoType;
+    long   ThermoType;
     double Andersen_Alpha;
     double Andersen_Tcol;
-  
+    double NoseMass;
 private:
     string toLowerCase(string s);
 };
