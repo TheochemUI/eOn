@@ -25,7 +25,9 @@ extern "C"
 {
     //void boplib_example_eam_(void);
     void bopini_(void);
-    void boplib_calc_ef_(long *N, const double *R, const double *box, double *U, double *F);    
+    void tsse_print_(void);
+    //void boplib_calc_ef_(long *N, const double *R, double *box, double *U, double *F);    
+    void boplib_calc_ef_(long *N, const double *R, double *box, double *U, double *F, int *scfconv);    
     //void force_(const long int *N, const double *R, double *F, double *U, const double* bx, const double* by, const double* bz);
 }    
 //extern "C" 
@@ -45,6 +47,7 @@ public:
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
     void writeFOX(long N, const double *R, int const *atomicNrs, const double *box);
     static bool initialized;
+    static bool firstforce;
 };
 #endif
 
