@@ -145,7 +145,7 @@ int main(int argc, char **argv)
     }
 
     if (parameters.saveStdout == true) {
-        freopen("stdout.txt", "w", stdout);
+        freopen("stdout.dat", "w", stdout);
     }
 
     // System Information
