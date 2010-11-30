@@ -170,26 +170,26 @@ void ParallelReplicaJob::dynamics()
         }
        
         if (status && !newstate){
-                nexam ++;
+            nexam++;
             if (nexam >= relax_steps){
-                    nexam = 0;
-                    ncheck = 0; 	
-                    newstate = CheckState(reactant);
-                    //stoped = newstate;
-                    status = false;
-                    if(newstate == false){
-                       remember = true;
-                    }else{
-                        *transition = *reactant;
-                        steps_tmp = nsteps;
-                        //printf("steps_tmp = %ld\n",steps_tmp);
-                        //nsteps_refined = nsteps + 1;
-                        if(parameters->mdAutoStop){
-                           stoped = true;
-                        }
-                remember = false;
+                nexam = 0;
+                ncheck = 0; 	
+                newstate = CheckState(reactant);
+                //stoped = newstate;
+                status = false;
+                if(newstate == false){
+                   remember = true;
+                }else{
+                    *transition = *reactant;
+                    steps_tmp = nsteps;
+                    //printf("steps_tmp = %ld\n",steps_tmp);
+                    //nsteps_refined = nsteps + 1;
+                    if(parameters->mdAutoStop){
+                       stoped = true;
                     }
+                    remember = false;
                 }
+            }
         }
 
   		
@@ -228,7 +228,7 @@ void ParallelReplicaJob::dynamics()
     if(parameters->mdRefine && newstate){     
         
         Refine(mdbuff);
-         printf("nsteps_refined=%ld\n",nsteps_refined); 
+        printf("nsteps_refined=%ld\n",nsteps_refined); 
         long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
         printf("final_step = %ld\n",final_refined);
