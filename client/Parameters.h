@@ -48,6 +48,8 @@ public:
     double convergedRelax; // converge criterion during relaxation [eV/A]
     long maximumIterations; // max iterations for saddle point searches and minimization
 
+    bool saveStdout;
+
     double cgCurvatureStep; // finite difference step size used in conjugate gradients
     double cgMaxMoveFullRelax; // maximum displacement vector for a step during minimization
     double qmTimeStep; // time step size used in Quickmin
