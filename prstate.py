@@ -40,7 +40,8 @@ class PRState(state.State):
 
     def add_process(self, result):
         """ Adds a process to this State. """
-        
+        state.State.add_process(self, result)
+
         resultdata = result["results"] #The information from the result.dat file
         
         # We may not already have the energy for this State.  If not, it should be in the result data.
