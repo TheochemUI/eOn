@@ -36,6 +36,7 @@
 #ifndef WIN32
     #include <sys/time.h>
     #include <sys/resource.h>
+    #include <sys/utsname.h>
 #endif
 
 Parameters parameters;
@@ -110,13 +111,11 @@ int main(int argc, char **argv)
 		boinc_finish(rc);
 	}
 
-
     #ifdef WIN32
     time_t beginTime = time(NULL);
     #else
     struct timeval beginTime;
     gettimeofday(&beginTime, NULL);
-    printf("seconds: %ld\n", beginTime.tv_sec);
     #endif
 
     #ifdef BOINC
@@ -144,6 +143,26 @@ int main(int argc, char **argv)
         fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
         boinc_finish(1);
     }
+
+    if (parameters.saveStdout == true) {
+        freopen("stdout.txt", "w", stdout);
+    }
+
+    // System Information
+    #ifndef WIN32
+    struct utsname systemInfo;
+    int status = uname(&systemInfo);
+    if (status == 0) {
+        printf("%s %s %s %s %s\n", 
+               systemInfo.sysname, systemInfo.nodename, systemInfo.release,
+               systemInfo.version, systemInfo.machine);
+    }else{
+        printf("unknown\n");
+    }
+    #else
+    printf("Windows\n");
+    #endif
+
 
     // Determine what type of job we are running according 
     // to the parameters file. 
@@ -192,6 +211,7 @@ int main(int argc, char **argv)
     rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
     create_archive(resolved, ".", result_pattern); 
     #endif
+
 
     // Timing Information
     double utime=0, stime=0, rtime=0;

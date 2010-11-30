@@ -35,6 +35,9 @@ Parameters::Parameters(){
     minimizeBox = 0;
     maxDifferencePos = 0.1;
 
+    //Debug Options
+    saveStdout=false;
+
     /*
     This is now defined in Epicenters, but it should be moved back as a parameter
     neighborCutoff = 3.3; 
@@ -210,6 +213,8 @@ int Parameters::load(FILE *file){
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
             error = 1;
         }
+
+        saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
         processSearchMinimizeFirst = ini.GetValueL("ProcessSearch", "minimize_first",
                                                    processSearchMinimizeFirst);
