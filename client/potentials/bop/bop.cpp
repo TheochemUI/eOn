@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 bool  bop::initialized = false;
+bool  bop::firstforce = false;
 
 const char *elements[] = {"Unknown", "H","He","Li","Be","B","C","N","O",
            "F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc",
@@ -61,15 +62,44 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     double *atomEnergies = new double[N];
     // Initialize positions.
 
+    //JR start: this does not compile, use old definition    
+   // double *bopbox=box;
     double bopbox[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     bopbox[0] = box[0];
     bopbox[4] = box[4];
     bopbox[8] = box[8];
-
-//    double *bopbox = box;
+   //JR end
+    
+    //JR start : include a flag to quit eon if SC not converged in bopfox
+    int scfconv;
+    scfconv = 0;
 
     // Call the FU function.
-    boplib_calc_ef_(&N, R, box, atomEnergies, F);      
+    //boplib_calc_ef_(&N, R, bopbox, atomEnergies, F);      
+    boplib_calc_ef_(&N, R, bopbox, atomEnergies, F, &scfconv); 
+    if(scfconv == -1){
+	    //print into bopfox output
+	    printf("\n\n  !!ERROR!! SCF not converged in bopfox, exiting program..\n\n");
+	    fflush(stdout);
+	    //redirect back to standart out and print again
+	    dup2(fd, fileno(stdout));
+	    close(fd);
+	    printf("\n\n  !!ERROR!! SCF not converged in bopfox, exiting program..\n\n");
+	    exit(1);
+    }
+    //JR end    
+    
+   
+    //JR: print out current structure and energies and forces
+    //writeFOX(N, R, atomicNrs, box);
+    //tsse_print_();
+    //if(!firstforce)
+    //{
+      //  system("mv struc.bx struc-unrelaxed.bx");
+      //  system("mv struc.EnFo.bx struc-unrelaxed.EnFo.bx");
+      //  firstforce = true;
+    //}
+    //JR end
     
     // Redirect stdout to... stdout?? Something like that.
     fflush(stdout);
@@ -95,14 +125,23 @@ void bop::writeFOX(long N, const double *R, int const *atomicNrs, const double *
     FILE *struc = fopen("struc.bx", "w");
     fprintf(struc, "StrucName = struc\n");
     fprintf(struc, "aLat = 1.0\n");
-    fprintf(struc, "a1 =  %.8lf   %.8lf   %.8lf\n", box[0], 0.0, 0.0);
-    fprintf(struc, "a2 =  %.8lf   %.8lf   %.8lf\n", 0.0, box[1], 0.0);
-    fprintf(struc, "a3 =  %.8lf   %.8lf   %.8lf\n", 0.0, 0.0, box[2]);
+    //JR start: modify printing of structure file in case of non-orthogonal box!
+    fprintf(struc, "a1 =  %.8lf   %.8lf   %.8lf\n", box[0], box[1], box[2]);
+    fprintf(struc, "a2 =  %.8lf   %.8lf   %.8lf\n", box[3], box[4], box[5]);
+    fprintf(struc, "a3 =  %.8lf   %.8lf   %.8lf\n", box[6], box[7], box[8]);
+    //JR end
     fprintf(struc, "coord = cartesian\n");
     for(int i = 0; i < N; i++)
     {
         fprintf(struc, "%s   %.8lf   %.8lf   %.8lf   %d\n", elements[atomicNrs[i]], R[i * 3 + 0], R[i * 3 + 1], R[i * 3 + 2], i);
     }
+    //JR start: quick fix for magnetic Fe
+    fprintf(struc, "magnetisation = defined\n");
+    for(int i=0; i < N; i++){
+        fprintf(struc, "0.0 0.0 2.5\n");
+    }
+    fprintf(struc, "\n");
+    //JR end
     fclose(struc);
     return;
 }
