@@ -729,7 +729,8 @@ def main():
                         #XXX: ugly way to remove all empty directories containing this one
                         os.mkdir(i)
                         os.removedirs(i)
-                
+                if os.path.isfile(os.path.join(config.path_root, "searchdata")):
+                    os.remove(os.path.join(config.path_root, "searchdata"))
                 askmc_data_path = os.path.join(config.path_results, "askmc_data.txt")
                 if os.path.isfile(askmc_data_path):
                     os.remove(askmc_data_path)
