@@ -51,6 +51,7 @@ class AKMCState(state.State):
 
     def add_process(self, result):
         """ Adds a process to this State. """
+        state.State.add_process(self, result)
         
         self.set_good_saddle_count(self.get_good_saddle_count() + 1) 
          
