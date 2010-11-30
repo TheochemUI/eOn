@@ -7,7 +7,8 @@
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
 //
-//-----------------------------------------------------------------------------------#include "bop.h"
+//-----------------------------------------------------------------------------------
+#include "bop.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,10 +61,15 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     double *atomEnergies = new double[N];
     // Initialize positions.
 
-    double *bopbox=box;
+    double bopbox[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    bopbox[0] = box[0];
+    bopbox[4] = box[4];
+    bopbox[8] = box[8];
+
+//    double *bopbox = box;
 
     // Call the FU function.
-    boplib_calc_ef_(&N, R, bopbox, atomEnergies, F);      
+    boplib_calc_ef_(&N, R, box, atomEnergies, F);      
     
     // Redirect stdout to... stdout?? Something like that.
     fflush(stdout);
