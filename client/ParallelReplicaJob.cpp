@@ -66,7 +66,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     *min1 = *reactant;   
     *transition = *reactant;
     ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.setOutput(1);
+    cgMin1.setOutput(0);
     printf("\nMinimizing initial reactant\n");
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
@@ -75,7 +75,7 @@ void ParallelReplicaJob::run(int bundleNumber)
 
     dynamics();
 
-    *min2 = *reactant;   
+    *min2 = *transition;   
     ConjugateGradients cgMin2(min2, parameters);
     cgMin2.fullRelax();
     min_fcalls += min2->getForceCalls();
