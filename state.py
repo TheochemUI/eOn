@@ -70,6 +70,10 @@ class State:
     def __repr__(self):
         return "State #%i" % self.number
 
+    def add_process(self, result):
+        if 'stdout.dat' in result:
+            open(self.proc_stdout_path(id), 'w').writelines(result['stdout.dat'].getvalue())
+
     def get_energy(self):
         """ Loads the info file if it is not already loaded and returns the energy, or None
             if it is not there. """
@@ -115,6 +119,8 @@ class State:
         return os.path.join(self.procdata_path, "product_%d.con" % id)
     def proc_results_path(self, id):
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
+    def proc_stdout_path(self, id):
+        return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
 
     def get_process(self, id):
         self.load_process_table()

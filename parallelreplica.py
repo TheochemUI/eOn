@@ -23,7 +23,6 @@ import os
 import shutil
 import sys
 
-import atoms
 import communicator
 import config
 import io
