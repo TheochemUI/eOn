@@ -7,7 +7,8 @@
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
 //
-//-----------------------------------------------------------------------------------#ifndef BOP_POTENTIAL
+//-----------------------------------------------------------------------------------
+#ifndef BOP_POTENTIAL
 #define BOP_POTENTIAL
 
 #include "../../PotentialsInterface.h"
@@ -24,7 +25,7 @@ extern "C"
 {
     //void boplib_example_eam_(void);
     void bopini_(void);
-    void boplib_calc_ef_(long *N, const double *R, double *box, double *U, double *F);    
+    void boplib_calc_ef_(long *N, const double *R, const double *box, double *U, double *F);    
     //void force_(const long int *N, const double *R, double *F, double *U, const double* bx, const double* by, const double* bz);
 }    
 //extern "C" 

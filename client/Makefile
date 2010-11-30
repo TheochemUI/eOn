@@ -38,7 +38,7 @@ endif
 #Fortran compiler settings
 ifdef BOPFOX
     CXXFLAGS += -DBOPFOX
-    LDFLAGS += libbopfox.a
+    LDFLAGS += libbopfox.a -lgfortran
     POTDIRS += ./potentials/bop
     LIBS += ./potentials/bop/libbop.a
     POTENTIALS += "+bop"
