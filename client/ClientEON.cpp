@@ -240,6 +240,7 @@ int main(int argc, char **argv)
            rtime,utime, stime);
 
     if (parameters.saveStdout == true) {
+        fflush(stdoutdat);
         fclose(stdoutdat);
     }
 
