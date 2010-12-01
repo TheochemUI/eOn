@@ -594,7 +594,10 @@ class Local(Communicator):
 
         #Clean out scratch directory
         for name in os.listdir(self.scratchpath):
-            shutil.rmtree(os.path.join(self.scratchpath, name))
+            path_name = os.path.join(self.scratchpath, name)
+            if not os.path.isdir(path_name):
+                continue
+            shutil.rmtree(path_name)
 
     def check_job(self, job):
         p, jobpath = job
