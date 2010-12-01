@@ -218,6 +218,11 @@ void ParallelReplicaJob::dynamics()
     VarT=SumT2/nsteps-AvgT*AvgT;
     printf("\nTemperature : Average = %lf ; Variance = %lf ; Factor = %lf\n\n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
 
+    if (isfinite(AvgT)==0) {
+        printf("Infinite average temperature, something went wrong!\n");
+        newstate = false;
+    }
+
     //Here we use Binary Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
 	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
