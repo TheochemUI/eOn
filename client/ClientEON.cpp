@@ -145,7 +145,9 @@ int main(int argc, char **argv)
     }
 
     if (parameters.saveStdout == true) {
-        freopen("stdout.dat", "w", stdout);
+        //This is kinda a hack, but its for debugging only.
+        //A bundle size of 1 must be used for this to work.
+        freopen("stdout_0.dat", "w", stdout);
     }
 
     // System Information
