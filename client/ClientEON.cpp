@@ -144,10 +144,11 @@ int main(int argc, char **argv)
         boinc_finish(1);
     }
 
+    FILE *stdoutdat;
     if (parameters.saveStdout == true) {
         //This is kinda a hack, but its for debugging only.
         //A bundle size of 1 must be used for this to work.
-        freopen("stdout_0.dat", "w", stdout);
+        stdoutdat = freopen("stdout_0.dat", "w", stdout);
     }
 
     // System Information
@@ -237,6 +238,10 @@ int main(int argc, char **argv)
 
     printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime, stime);
+
+    if (parameters.saveStdout == true) {
+        fclose(stdoutdat);
+    }
 
     boinc_finish(0);
 }
