@@ -263,7 +263,12 @@ def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
     t1 = unix_time.time()
     if os.path.isdir(config.path_searches_in):
-        shutil.rmtree(config.path_searches_in)    
+        if config.debug_keep_all_results:
+            if not os.path.isdir(os.path.join(config.path_root, "results")):
+                os.makedirs(os.path.join(config.path_root, "results"))
+            for d in os.listdir(config.path_searches_in):
+                shutil.move(os.path.join(config.path_searches_in, d), os.path.join(config.path_root, "results", d))
+        shutil.rmtree(config.path_searches_in)  
     os.makedirs(config.path_searches_in)
     
     #Function used by communicator to determine whether to discard a result
