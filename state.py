@@ -72,6 +72,7 @@ class State:
 
     def add_process(self, result):
         if 'stdout.dat' in result:
+            id = self.get_num_procs()
             open(self.proc_stdout_path(id), 'w').writelines(result['stdout.dat'].getvalue())
 
     def get_energy(self):
