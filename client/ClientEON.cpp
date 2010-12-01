@@ -209,13 +209,6 @@ int main(int argc, char **argv)
 
     delete job;
 
-    #ifdef BOINC
-    //XXX: Error handling!
-    rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
-    create_archive(resolved, ".", result_pattern); 
-    #endif
-
-
     // Timing Information
     double utime=0, stime=0, rtime=0;
     #ifdef WIN32
@@ -240,9 +233,14 @@ int main(int argc, char **argv)
            rtime,utime, stime);
 
     if (parameters.saveStdout == true) {
-        fflush(stdoutdat);
         fclose(stdoutdat);
     }
+
+    #ifdef BOINC
+    //XXX: Error handling!
+    rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
+    create_archive(resolved, ".", result_pattern); 
+    #endif
 
     boinc_finish(0);
 }
