@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Matter.h
- *===============================================
-*/
+
 #ifndef Matter_H
 #define Matter_H
 
@@ -36,7 +31,7 @@ struct MatterPrivateData {
     Matrix<int, Eigen::Dynamic, 1> isFixed; // array of bool, false for movable atom, true for fixed
     Matrix<double, 3, 3> cellBoundaries; // boundaries of the cell
     mutable double potentialEnergy; // potential energy
-	long nsteps; //liang added for test
+    long nsteps; // liang added for test
 };
 
 /** Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
@@ -92,7 +87,7 @@ public:
     double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
- 
+
     long getForceCalls() const; // return how many force calls that have been performed
     void resetForceCalls(); // zeroing the value of force calls
 

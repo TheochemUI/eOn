@@ -19,14 +19,14 @@ class EAM
                    double *U, const double *fullbox);
     private:
         struct element_parameters {
-            const int Z;                //Atomic Number
-            const double Dm;            //Morse potential well depth
-            const double alphaM;        //Curvative at Morse minimum
-            const double Rm;            //Position of Morse minimum
-            const double beta1;         //Density parameter 1
-            const double beta2;         //Density parameter 2
-            const double r_cut;         //Cutoff distance
-            const double func_coeff[9]; //8th order poly for embedding function
+            const int Z;                // Atomic Number
+            const double Dm;            // Morse potential well depth
+            const double alphaM;        // Curvative at Morse minimum
+            const double Rm;            // Position of Morse minimum
+            const double beta1;         // Density parameter 1
+            const double beta2;         // Density parameter 2
+            const double r_cut;         // Cutoff distance
+            const double func_coeff[9]; // 8th order poly for embedding function
         };
         static const element_parameters el_params[];
         // Variables

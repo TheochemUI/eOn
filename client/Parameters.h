@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Parameters.h
- *===============================================
- */
 
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
@@ -30,6 +24,7 @@ using namespace std;
 
 /** Contains all runtime parameters and results. No functionality just bookkeeping.*/
 class Parameters {
+
 public:
     Parameters();
     ~Parameters();
@@ -55,8 +50,7 @@ public:
     double qmTimeStep; // time step size used in Quickmin
 
     double maxDifferencePos; // The distance criterion for comparing geometries
-//    double neighborCutoff; // radius used in the local atomic structure analysis
-//GH: this needs to be a parameter instead of a #define in Epicenters
+    double neighborCutoff; // radius used in the local atomic structure analysis
 
     long processSearchMinimizeFirst;
 
@@ -91,40 +85,44 @@ public:
     double dimerMaxIterations;
     
     long   displaceNSamples;
-    long   displaceIterMax;             // The maximum number of rotations to perform on the dimer.
-    double displaceTorqueConvergence;   // The convergence criteria of the dimer rotation.
-    double displaceMaxCurvature;        // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
-    double displaceMaxDE;               // The maximum dE for which a sample is considered good.
+    long   displaceIterMax;             // maximum number of rotations to perform on the dimer
+    double displaceTorqueConvergence;   // convergence criteria of the dimer rotation
+    double displaceMaxCurvature;        // maximum curvature for which a sample is considered good; used to avoid shallow but negative curvatures
+    double displaceMaxDE;               // maximum dE for which a sample is considered good
     string displaceCutoffs;
     string displaceMagnitudes;
     
-    double lanczosConvergence; // Difference between the lowest eignevalues of two successive iterations.
-    int lanczosIteration; // maximum number of iteration
+    double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
+    int lanczosIteration; // maximum number of iterations
 
     double mdTimeStep;
     double mdTemperature;
-    double PRD_MaxMovedDist;
+    double mdMaxMovedDist;
     bool   mdRefine;
     bool   mdAutoStop;
-    long   RefineAccuracy;
+    long   mdRefineAccuracy;
     long   mdSteps;
-    long   DephaseSteps;
-    long   DephaseConstrain;
-    long   DH_CheckType;
-    long   CheckFreq;
-    long   NewRelaxSteps;
-    bool   BondBoost;
-    long   BBRMDS;
-    double BBDVMAX;
-    double BBQRR; 
-    double BBPRR; 
-    double BBQcut;
+    long   mdDephaseSteps;
+    long   mdDephaseConstrain;
+    long   mdDephaseCheckType;
+    long   mdCheckFreq;
+    long   mdRelaxSteps;
+
+    bool   bondBoost;
+    long   bondBoostRMDS;
+    double bondBoostDVMAX;
+    double bondBoostQRR; 
+    double bondBoostPRR; 
+    double bondBoostQcut;
  
-    long   ThermoType;
-    double Andersen_Alpha;
-    double Andersen_Tcol;
-    double NoseMass;
+    enum ThermoType {ANDERSEN,NOSE_HOVER};
+    ThermoType thermoType;
+    double thermoAndersenAlpha;
+    double thermoAndersenTcol;
+    double thermoNoseMass;
+
 private:
     string toLowerCase(string s);
+
 };
 #endif

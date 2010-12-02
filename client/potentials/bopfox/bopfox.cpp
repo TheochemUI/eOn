@@ -6,8 +6,9 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
-//-----------------------------------------------------------------------------------#include <iostream>
+//-----------------------------------------------------------------------------------
+
+#include <iostream>
 #include <cstdio>
 #include <stdlib.h>
 #include <unistd.h>

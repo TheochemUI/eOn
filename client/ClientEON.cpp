@@ -6,14 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Client
- *===============================================
- */
-
 
 #include "Constants.h"
 #include "Parameters.h"
@@ -117,15 +110,15 @@ int getBundleSize(void) {
 int main(int argc, char **argv) 
 {
     int rc;
-	// BOINC is started
-	rc = boinc_init();
-	if(rc){
-		boinc_finish(rc);
-	}
+    // BOINC is started
+    rc = boinc_init();
+    if(rc){
+        boinc_finish(rc);
+    }
 
-	// Floating Point Trapping. It is platform specific!
-	// This causes the program to crash on divison by zero,
-	// invalid operations, and overflows.
+    // Floating Point Trapping. It is platform specific!
+    // This causes the program to crash on divison by zero,
+    // invalid operations, and overflows.
     #ifdef LINUX
         feenableexcept(FE_DIVBYZERO|FE_INVALID|FE_OVERFLOW);
     #endif
@@ -141,7 +134,6 @@ int main(int argc, char **argv)
         cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
         _controlfp(cw,_MCW_EM);
     #endif
-
 
     #ifdef WIN32
     time_t beginTime = time(NULL);
@@ -203,7 +195,7 @@ int main(int argc, char **argv)
     // Determine what type of job we are running according 
     // to the parameters file. 
     Job *job=NULL;
-	
+
     if (parameters.jobType == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearchJob(&parameters);
     }else if (parameters.jobType == Parameters::MINIMIZATION) {
@@ -211,17 +203,17 @@ int main(int argc, char **argv)
     }else if (parameters.jobType == Parameters::HESSIAN) {
         job = new HessianJob(&parameters);
     }else if (parameters.jobType == Parameters::PARALLEL_REPLICA) {
-	    job =  new ParallelReplicaJob(&parameters);
+        job =  new ParallelReplicaJob(&parameters);
     }else if (parameters.jobType == Parameters::REPLICA_EXCHANGE) {
         job =  new ReplicaExchangeJob(&parameters);
     }else if (parameters.jobType == Parameters::DIMER_DR) {
-	    job =  new DimerDrJob(&parameters);
+        job =  new DimerDrJob(&parameters);
     }else if (parameters.jobType == Parameters::DIMER_ROTATION) {
-	    job =  new DimerRotationJob(&parameters);
+        job =  new DimerRotationJob(&parameters);
     }else if (parameters.jobType == Parameters::DISPLACEMENT_SAMPLING) {
-	    job =  new DisplacementSamplingJob(&parameters);
+        job =  new DisplacementSamplingJob(&parameters);
     }else if (parameters.jobType == Parameters::TEST) {
-	    job =  new TestJob(&parameters);
+        job =  new TestJob(&parameters);
     }
 
 

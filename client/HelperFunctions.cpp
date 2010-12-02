@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON HelperFunctions.cpp
- *===============================================
- */
 
 #include "HelperFunctions.h"
 
@@ -59,7 +53,6 @@ double helper_functions::randomDouble(){
     return(random());
 }
 
-
 // Random value in interval
 double helper_functions::randomDouble(int max){
     double dmax = double(max);
@@ -75,16 +68,16 @@ double helper_functions::randomDouble(double dmax){
     return(dmax*randomDouble());
 }
 
-double helper_functions::guaRandom(double avg,double std){
-	double r=2,v1,v2,l,result;
+double helper_functions::gaussRandom(double avg,double std){
+    double r=2,v1,v2,l,result;
     while (r >= 1){
-	    v1=2.0*randomDouble()-1.0;
-		v2=2.0*randomDouble()-1.0;
-	    r=v1*v1+v2*v2;
-	}
-    l=v1*sqrt(-2.0*log(r)/r);
-	result=avg+std*l;
-	return(result);
+        v1 = 2.0*randomDouble()-1.0;
+        v2 = 2.0*randomDouble()-1.0;
+        r = v1*v1+v2*v2;
+    }
+    l = v1*sqrt(-2.0*log(r)/r);
+    result = avg+std*l;
+    return(result);
 }
 
 // Vector functions.
@@ -102,38 +95,33 @@ double helper_functions::length(const double *v1, long numFreeCoord){
     return(sqrt(dot(v1, v1, numFreeCoord)));
 }
 
-void helper_functions::add(double *result, const double *v1, 
-                           const double *v2, long size){
+void helper_functions::add(double *result, const double *v1, const double *v2, long size){
     for(int i=0;i<size;i++) {
         result[i] = v1[i]+v2[i];
     };
     return;
 }
 
-void helper_functions::subtract(double *result, const double *v1, 
-                                const double * v2, long size){
+void helper_functions::subtract(double *result, const double *v1, const double * v2, long size){
     for(int i=0;i<size;i++)
         result[i] = v1[i]-v2[i];
     return;
 }
 
-void helper_functions::multiplyScalar(double *result, const double *v1, 
-                                      double scalar, long size) {
+void helper_functions::multiplyScalar(double *result, const double *v1, double scalar, long size) {
     for(int i=0;i<size;i++) {
         result[i] = v1[i]*scalar;
     };
     return;
 }
 
-void helper_functions::divideScalar(double *result, const double *v1, 
-                                    double scalar, long size){
+void helper_functions::divideScalar(double *result, const double *v1, double scalar, long size){
     for(int i=0;i<size;i++)
         result[i] = v1[i]/scalar;
     return;
 }
 
-void helper_functions::copyRightIntoLeft(double *result, const double *v1, 
-                                         long size){
+void helper_functions::copyRightIntoLeft(double *result, const double *v1, long size){
     for(int i=0;i<size;i++)
         result[i] = v1[i];
     return;
@@ -153,15 +141,14 @@ Matrix<double, Eigen::Dynamic, 3> helper_functions::makeOrthogonal(const Matrix<
 }
 
 // result contains v1 projection on v2 
-void helper_functions::makeProjection(double *result, const double *v1, 
-                                      const double *v2, long size){
+void helper_functions::makeProjection(double *result, const double *v1, const double *v2, long size){
     double *tempListDouble;
     double tempDouble;
     tempListDouble = new double[size];
-    
+
     tempDouble = dot(v1, v2, size);
     multiplyScalar(result, v2, tempDouble, size);
-    
+
     delete [] tempListDouble;
     return;
 }

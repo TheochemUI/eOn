@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- * EON SaddlePoint.cpp
- *===============================================
- */
 
 #include "SaddlePoint.h"
 #ifdef WITH_LANCZOS
@@ -179,13 +173,12 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     long j, indexEpiCenter = 0;
     double diffR;
 
-    
     Matrix<double, Eigen::Dynamic, 3> initialDisplacement(nAtoms, 3);
     initialDisplacement.setZero(); 
-    
+
     if(parameters->saddleTypePerturbation == dispNotFccOrHcp)
     {
-        indexEpiCenter = EpiCenters::cnaEpiCenter(matter);            
+        indexEpiCenter = EpiCenters::cnaEpiCenter(matter, parameters->neighborCutoff);
     }
     else if(parameters->saddleTypePerturbation == dispLastAtom)
     {
@@ -193,14 +186,14 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     }
     else if(parameters->saddleTypePerturbation == dispMinCoordinated)
     {
-        indexEpiCenter = EpiCenters::minimalCoordinatedEpiCenter(matter);
+        indexEpiCenter = EpiCenters::minCoordinatedEpiCenter(matter, parameters->neighborCutoff);
     }
     else
     {
         indexEpiCenter = EpiCenters::randomFreeAtomEpiCenter(matter);
     }
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
- 
+
     // To keep track of free coordinates when setting atoms that have moved
     // Create an array containing initialDisplacement_ of atoms 
     // in the vicinity of the epicenter atom
@@ -221,7 +214,7 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     }
     initialDisplacement.normalize();
     initialDisplacement *= parameters->saddleNormPerturbation;
- 
+
     //XXX: There is probably a more idomatic way to do this with Eigen
     for(int i = 0; i < 3 * nAtoms; i++)
     {
@@ -239,7 +232,7 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     
     // Sets the initial mode for the SP search
     mode = initialDisplacement;
- 
+
     return;
 }
 
@@ -247,7 +240,7 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Ei
  
     Matrix<double, Eigen::Dynamic, 3> proj;
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
- 
+
     if (0 < eigenValue){
         if (parameters->saddlePerpendicularForceRatio > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
@@ -255,12 +248,12 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Ei
             force = d*force - (1+d)*proj;
         }
         else {
-            // Follow eigenmode
+            // follow eigenmode
             force = -proj;
         }
     }
     else{
-        // Reversing force parallel to eigenmode
+        // reversing force parallel to eigenmode
         force += -2*proj;
     }
     return force;
@@ -273,7 +266,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     Matrix<double, Eigen::Dynamic, 3> displacedPos;
     //----- Initialize end -----
     //std::cout<<"relaxFromSaddle\n";
- 
+
     // Displace saddle point configuration along the lowest eigenmode and minimize
     *min1 = *saddle;
     //XXX: the distance displced from the saddle should be a parameter
@@ -282,7 +275,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
     forceCallsMinimization += cgMin1.totalForceCalls;
- 
+
     *min2 = *saddle;
     displacedPos = posSaddle + eigenMode * 0.2;
     min2->setPositions(displacedPos);
@@ -304,9 +297,9 @@ void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
 void SaddlePoint::jumpToConvexRegion(){
     long forceCallsSaddle;
     long iterations = 0;
- 
+
     Matrix<double, Eigen::Dynamic, 3> pos = saddle->getPositions();
- 
+
     forceCallsSaddle = saddle->getForceCalls();
 
     if(parameters->saddleTypePerturbation!=dispNone){
@@ -349,7 +342,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     long concaveSeries = 0;
     double maxStep;
     double energySaddle;
- 
+
     Matrix<double, Eigen::Dynamic, 3> forcesStep;
     Matrix<double, Eigen::Dynamic, 3> posStep;
     Matrix<double, Eigen::Dynamic, 3> forces;
@@ -359,18 +352,18 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     //----- Initialize end -----
     //std::cout<<"searchForSaddlePoint\n";
     forces = saddle->getForces();
- 
+
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
     forces = correctingForces(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-	#ifndef NDEBUG
-    	static int run;
-    	ostringstream climb;
-    	climb << "climb_" << run;
-    	initial->matter2xyz(climb.str(), false);
-    	saddle->matter2xyz(climb.str(), true);
-    	++run;
+    #ifndef NDEBUG
+        static int run;
+        ostringstream climb;
+        climb << "climb_" << run;
+        initial->matter2xyz(climb.str(), false);
+        saddle->matter2xyz(climb.str(), true);
+        ++run;
         if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
@@ -432,7 +425,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             } else {
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
-            };
+            }
             saddle->matter2xyz(climb.str(), true);
         #endif
         energySaddle = saddle->getPotentialEnergy();

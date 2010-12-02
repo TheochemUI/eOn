@@ -24,22 +24,22 @@
     REAL(8) :: cos_x_ik, cos_y_ik, cos_z_ik, one_o_a_ik, gam_o_a_ik, fact
     REAL(8) :: xik,yik,zik,rik, rik2, invrik,rhoik,xxx
 
-    INTEGER,PARAMETER :: MAXNATOMS=20000,                                        &
-    &		         MAXNEI=20,                                            &
+    INTEGER,PARAMETER :: MAXNATOMS=20000,                                      &
+    &                    MAXNEI=20,                                            &
     &                    P=4
     REAL(8),PARAMETER :: SIGMA = 2.0951D0,                                     &
-    &    	         ALPHA = 1.8d0,                                        &
+    &                    ALPHA = 1.8d0,                                        &
     &                    RCUT = (ALPHA * SIGMA),                               &
     &                    RSKIN = 4.0d0,                                        &
     &                    invsig=1.0d0/SIGMA,                                   &
     &                    EPSILON = 2.16826D0 * 1.06767385d0,                   & !* 1.07d0
     &                    LAMBDA = 21.0d0,                                      & !* 1.07d0
-    &			 A =  7.049556277D0,                                   &
-    &			 BETA = 0.6022245584D0,                                &
-    &			 GAMMA = 1.2D0,                                        &
-    &			 ONE_THIRD = (1.0d0/ 3.0d0),                           &
-    &			 A_EPS = (A * EPSILON),                                &
-    &			 PI = 3.14159265358979D0
+    &                    A =  7.049556277D0,                                   &
+    &                    BETA = 0.6022245584D0,                                &
+    &                    GAMMA = 1.2D0,                                        &
+    &                    ONE_THIRD = (1.0d0/ 3.0d0),                           &
+    &                    A_EPS = (A * EPSILON),                                &
+    &                    PI = 3.14159265358979D0
 
     LOGICAL,SAVE :: initflag=.true. , indupd=.true.
     REAL(8),DIMENSION(MAXNATOMS),SAVE :: xold,yold,zold
@@ -132,7 +132,7 @@
           rij = sqrt(rij2)
           invrij = 1.0d0 / rij
           rhoij = rij * invsig
-	  cos_x_ij = xij * invrij
+          cos_x_ij = xij * invrij
           cos_y_ij = yij * invrij
           cos_z_ij = zij * invrij
         
@@ -292,23 +292,23 @@
         Rij(2)=Rij(2)-by*ANINT(Rij(2)/by)
         Rij(3)=Rij(3)-bz*ANINT(Rij(3)/bz)
         dR0=SQRT(DOT_PRODUCT(Rij,Rij))
-	IF(i == 1) THEN
+        IF(i == 1) THEN
           dR1=dR0
-	ELSE IF(i == 2) THEN
-	  IF(dR1 > dR0) THEN
+        ELSE IF(i == 2) THEN
+          IF(dR1 > dR0) THEN
             dR2=dR0
-	  ELSE
-	    dR2=dR1
-	    dR1=dR0
-	  END IF
-	ELSE
-	  IF(dR1 < dR0) THEN
-	    dR2=dR1
-	    dR1=dR0
-	  ELSE IF(dR2 < dR0) THEN
-	    dR2=dR0
-	  END IF
-	END IF
+          ELSE
+            dR2=dR1
+            dR1=dR0
+          END IF
+        ELSE
+          IF(dR1 < dR0) THEN
+            dR2=dR1
+            dR1=dR0
+          ELSE IF(dR2 < dR0) THEN
+            dR2=dR0
+          END IF
+        END IF
       END DO
       IF((dR1+dR2) > (RSKIN-RCUT)) THEN
         indupd=.true.

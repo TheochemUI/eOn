@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include <cstdlib>
 
 #include "Matter.h"
@@ -67,7 +67,7 @@ void ReplicaExchangeJob::run(int bundleNumber)
         printf("%ld replica : numAtoms = %ld \n", i, numAtoms);
         printf("%ld replica : Temperature = %lf \n", i, ReplicaTemp[i]);
     }
-      
+
     for(j= 0; j< nsteps; j++){
         printf("Steps %ld", j);
         for(i= 1; i< NumofReplica; i++){
@@ -80,8 +80,7 @@ void ReplicaExchangeJob::run(int bundleNumber)
         }
        printf("\n");
     }
-   
-    
+ 
     for(i=1;i<NumofReplica;i++){   
         AvgT=SumT[i]/nsteps;
         VarT=SumT2[i]/nsteps-AvgT*AvgT;

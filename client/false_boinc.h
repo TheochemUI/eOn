@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #ifndef FALSE_BOINC_H
 #define FALSE_BOINC_H
 #include <cstring>

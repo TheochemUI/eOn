@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 // serves as an interface between emt potentials provided by CamposASE and dynamics provided by EON
 
 #ifndef EFFECTIVE_MEDIUM_THEORY
