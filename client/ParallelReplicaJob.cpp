@@ -110,7 +110,7 @@ void ParallelReplicaJob::dynamics()
     Matter *mdbuff[check_steps];
     for(long i =0; i < check_steps;i++){
     mdbuff[i] = new Matter(parameters);
-}
+    }
 
     Dynamics PRdynamics(reactant,parameters);
     BondBoost Bbm(reactant,parameters);
@@ -228,7 +228,7 @@ void ParallelReplicaJob::dynamics()
 
     if(parameters->mdRefine && newstate){
 
-        Refine(mdbuff);
+        nsteps_refined = Refine(mdbuff,check_steps);
         printf("nsteps_refined=%ld\n",nsteps_refined); 
         long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
@@ -362,9 +362,9 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
 }
 
 
-void ParallelReplicaJob::Refine(Matter *mdbuff[])
+long ParallelReplicaJob::Refine(Matter *buff[],long length)
 {
-    long a1, b1, test , initial, final, diff, RefineAccuracy;
+    long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
     bool ytest;
 
     RefineAccuracy = parameters->mdRefineAccuracy; 
@@ -372,7 +372,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[])
     ytest = false;
 
     initial = 0;
-    final = check_steps - 1;
+    final = length - 1;
     a1 = initial;
     b1 = final;
     diff = final - initial;
@@ -382,7 +382,7 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[])
     while(diff > RefineAccuracy)
     {
         test = a1+int((b1-a1)/2);
-        ytest = checkState(mdbuff[test]);
+        ytest = checkState(buff[test]);
 
         if ( ytest == 0 ){
             a1 = test;
@@ -400,86 +400,60 @@ void ParallelReplicaJob::Refine(Matter *mdbuff[])
     //   printf("Insert Point %ld; Test ytest = %d ; New Boundary [ %ld, %ld ] \n",test,ytest,a1,b1);
     }
 
-    nsteps_refined = int((a1+b1)/2);
+    refined = int((a1+b1)/2);
     //printf("Refined mdsteps = %ld\n",nsteps_refined);
-    return;
+    return refined;
 }
 
 
 void ParallelReplicaJob::dephase()
 {
-    long  dephaseSteps = parameters->mdDephaseSteps,i = 0, step_buff = 0;
-    long  scType = parameters->mdDephaseCheckType;
-    long  dephaseCorrect = parameters->mdDephaseConstrain;
-    bool  state = false, stop = false;
+    long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
+    long  n, new_n, nbuff, dh_refined;
+    bool  state = false;
     Matrix<double, Eigen::Dynamic, 3> velocity;      
-    Matter *initial;
-    Matter *buff;
-    initial = new Matter(parameters);      
-    buff = new Matter(parameters);
-    *initial = *reactant;
-    *buff = *reactant;
-
-//    printf("scType = %ld\n",scType);
-//    printf("dephase constrain = %ld\n", dephaseCorrect);
 
     Dynamics dephaseDynamics(reactant,parameters);
     printf("Dephasing for %ld steps\n",dephaseSteps);
+    
+    n  = 0;
+    new_n = 0;
+    while(n < dephaseSteps){
 
-    while(!stop){
-
-        dephaseDynamics.oneStep(parameters->mdTemperature);
-        md_fcalls++;
-
-        if(i % 1000 == 0){
-
-            if(scType == 1){
-                state = checkState(reactant);
-            }else if(scType == 2){
-                state = checkState_nq(reactant);
-            }else{ 
-                printf("Unknown CheckState method in dephase step, use default value\n");
-                state = checkState(reactant);
-            }
-
-//           reactant->matter2xyz("movie", true);
-
-            if(state == true){
-                if(dephaseCorrect == 1){
-                    printf("Dephasing Warning: in a new state at step %ld, dephase again\n",i);            
-                    i = 0;
-                    *reactant = *initial;
-                    state = false;
-                }else if(dephaseCorrect ==2){
-                    printf("Dephasing Warning: in a new state at step %ld, now inverse the momentum and restart from step %ld\n",i,step_buff);
-                    i = step_buff;
-                    *reactant = *buff;
-                    velocity = reactant->getVelocities();
-                    velocity = velocity*(-1);
-                    reactant->setVelocities(velocity);
-                    state = false;
-                }else{
-                    printf("Unknown constrain method in dephase step, use default value\n");
-                    dephaseCorrect = 1;
-                }
-            }else{
-                *buff = *reactant;
-                step_buff = i;
-            }
-
-        //     printf(" Steps = %ld ; State = %d \n", i, state);
+        nbuff = dephaseSteps-n;
+//        printf("nbuff = %ld\n",nbuff);
+        Matter *DHbuff[nbuff];
+        for(i=0; i<nbuff; i++){
+           DHbuff[i] = new Matter(parameters);
         }
 
-        if(i == dephaseSteps){  
-            stop = true;
-            state = checkState(reactant);
-            if(state == false){
-                printf("Dephasing successful\n");
-            }else{
-                printf("Warning: Dephasing failed, now in a new state!\n");
-            }
+        for(i=0; i<nbuff; i++){
+           dephaseDynamics.oneStep(parameters->mdTemperature);
+           dh_fcalls++;
+           *DHbuff[i] = *reactant;
         }
-        i++;
-    }
+        
+        state = checkState(reactant);
+//       printf("state = %d\n",state);  
+        if(state == true){
+            dh_refined = Refine(DHbuff,nbuff);
+            printf("refined step = %ld\n",dh_refined);
+            new_n = dh_refined-parameters->mdRefineAccuracy;
+            new_n = (new_n > 0)?new_n:0;
+            printf("Dephasing Warning: in a new state,now inverse the momentum and restart from step %ld\n",n+new_n);
+            *reactant = *DHbuff[new_n];
+            velocity = reactant->getVelocities();
+            velocity = velocity*(-1);
+            reactant->setVelocities(velocity);
+            n = n + new_n;
+        }else{
+            n = n + nbuff;
+            printf("Successful Dephasing for %ld steps \n",n);            
+        }
+   
+       for(i=0; i<nbuff;i++){
+           delete DHbuff[i];
+       }
+   }
 }
 

@@ -83,12 +83,10 @@ Parameters::Parameters(){
     mdTemperature = 300.0;
     mdSteps = 1000;
     mdDephaseSteps = 200;
-    mdDephaseConstrain = 2;
-    mdDephaseCheckType = 1;
     mdMaxMovedDist = 2.0;
     mdRefine = false;
     mdAutoStop = false;
-    mdRefineAccuracy = 20;
+    mdRefineAccuracy = 10;
     mdCheckFreq = 500;
     mdRelaxSteps = 500;
 
@@ -251,8 +249,6 @@ int Parameters::load(FILE *file){
         mdTemperature = ini.GetValueF("Dynamics","TEMPERATURE",mdTemperature);
         mdSteps = ini.GetValueL("Dynamics","mdSTEPS",mdSteps);
         mdDephaseSteps = ini.GetValueL("Dynamics","Dephase_Steps",mdDephaseSteps);
-        mdDephaseConstrain = ini.GetValueL("Dynamics","Dephase_Constrain",mdDephaseConstrain);
-        mdDephaseCheckType = ini.GetValueL("Dynamics","Dephase_CheckType",mdDephaseCheckType);
         mdMaxMovedDist = ini.GetValueF("Dynamics","PRD_MaxMovedDist",mdMaxMovedDist);  
         mdRefine = ini.GetValueB("Dynamics","mdRefine",mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics","mdAutoStop",mdAutoStop);

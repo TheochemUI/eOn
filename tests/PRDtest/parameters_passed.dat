@@ -7,7 +7,9 @@ JOB_TYPE=PARALLELREPLICA
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED=1289754821
+RANDOM_SEED=-1
+
+MAX_DIFFERENCE_POS=1.5
 
 # describtion POTENTIAL_TAG
 POTENTIAL_TAG= 3
@@ -19,12 +21,12 @@ POTENTIAL_NO_TRANSLATION=1
 
 [Dynamics]
 TIMESTEP=0.2
-TEMPERATURE=500.0
-mdSTEPS=2000
-Dephase_Steps=0
+TEMPERATURE=350.0
+mdSTEPS=200000
+Dephase_Steps=10
 Dephase_Constrain=2
 Dephase_CheckType=1
-PRD_MaxMovedDist=2.5
+#PRD_MaxMovedDist=8
 mdRefine=1
 mdAutoStop=1
 RefineAccuracy=5
@@ -40,7 +42,7 @@ PRR=0.95
 Qcut=3.0
  
 [Thermo]
-ThermoType=2
+ThermoType=1
 NoseMass=1.5
 Andersen_Alpha=0.1
 Andersen_Tcol=10.0
