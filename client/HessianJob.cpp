@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include "HessianJob.h"
 #include "Matter.h"
 #include "Hessian.h"
@@ -66,15 +66,15 @@ void HessianJob::run(int bundleNumber)
         strncpy(resultsname, "results.dat", STRING_SIZE);
         strncpy(modename, "mode.dat", STRING_SIZE);
     }
-	fileResults = fopen(resultsname, "wb");
-	fileMode = fopen(modename, "wb");
+    fileResults = fopen(resultsname, "wb");
+    fileMode = fopen(modename, "wb");
 
-	fprintf(fileResults, "%s good\n", failed ? "false" : "true");
-	fprintf(fileResults, "%d force_calls\n", Potentials::fcalls);
+    fprintf(fileResults, "%s good\n", failed ? "false" : "true");
+    fprintf(fileResults, "%d force_calls\n", Potentials::fcalls);
     fprintf(fileResults, "%d hessian_size\n", hessian.getHessian(parameters->hessianKind).rows());
-	if(!failed)
+    if(!failed)
     {
-	    fprintf(fileResults, "%f mode_product\n", modeProduct);
+        fprintf(fileResults, "%f mode_product\n", modeProduct);
         
         VectorXd modes = hessian.getModes(parameters->hessianKind);
         for(int i=0; i<modes.size(); i++)
@@ -87,8 +87,5 @@ void HessianJob::run(int bundleNumber)
     delete product;
     delete saddle;
 }
-    
-    
-
-    
+ 
 

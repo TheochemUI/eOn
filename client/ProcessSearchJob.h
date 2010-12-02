@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON ProcessSearchJob.h
- *===============================================
- */
+
 #ifndef PROCESSSEARCHJOB_H
 #define PROCESSSEARCHJOB_H
 

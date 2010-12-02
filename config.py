@@ -134,7 +134,6 @@ def init(config_file = ""):
         config.kdb_keep = parser.get('KDB', 'keep')
         config.kdb_rhsco = parser.getfloat('KDB', 'rhsco')
 
-
     #Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
     config.recycling_save_sugg = parser.getboolean('Recycling', 'save_suggestions')

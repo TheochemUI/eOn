@@ -146,7 +146,6 @@ class AKMCState(state.State):
         return id
 
 
-
     def append_search_result(self, result, comment):
         if self.statelist.list_search_results:
             try:
@@ -163,7 +162,6 @@ class AKMCState(state.State):
                 f.close()
             except:
                 logger.warning("Failed to append search result.")
-        
 
 
     def get_ratetable(self):
@@ -177,8 +175,7 @@ class AKMCState(state.State):
             if proc['barrier'] < lowest + (self.statelist.kT * self.statelist.thermal_window):
                 table.append((id, proc['rate']))
         return table
-        
-        
+ 
 
     def get_confidence(self):
         """ The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique 
@@ -203,18 +200,26 @@ class AKMCState(state.State):
         rt = self.get_ratetable()
         Nf = 0.0
         Ns = 0.0
+        conf = 0.0
+        #GH print "\nIn confidence"
         for r in rt:
             if self.statelist.filter_hole:
+                #GH print "filter_hole"
                 if self.proc_in_hole(r[0]):
                     Ns += prc[r[0]]
                     Nf += 1
             else:
                 Ns += prc[r[0]]
                 Nf += 1
+            #GH print " proc:",r[0]," Nf:",Nf," dgen:",prc[r[0]]," Ns:",Ns
         if Nf < 1 or Ns < 1:
-            return 0.0
-        return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
-
+            conf = 0.0
+            #GH return 0.0
+        else:
+            conf = 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
+        #GH return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
+        #GH print " conf: ",conf
+        return conf
 
 
     def proc_in_hole(self, procid):
@@ -246,8 +251,7 @@ class AKMCState(state.State):
         pnih.append(procid)
         self.set_procs_not_in_hole(pnih)
         return False
-                
-        
+ 
 
     def get_procs_in_hole(self):
         self.load_info()
@@ -255,7 +259,6 @@ class AKMCState(state.State):
             return eval(self.info.get("MetaData", "procs in hole"))
         except:
             return []
-
 
 
     def get_procs_not_in_hole(self):
@@ -266,19 +269,16 @@ class AKMCState(state.State):
             return []
 
 
-
     def set_procs_in_hole(self, procs):
         self.load_info()
         self.info.set("MetaData", "procs in hole", repr(procs))
         self.save_info()
 
 
-
     def set_procs_not_in_hole(self, procs):
         self.load_info()
         self.info.set("MetaData", "procs not in hole", repr(procs))
         self.save_info()
-
 
 
     def load_process_table(self):
@@ -300,7 +300,6 @@ class AKMCState(state.State):
                                                "rate":              float(l[self.RATE]), 
                                                "repeats":           int  (l[self.REPEATS])}
 
-    
 
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
@@ -314,7 +313,6 @@ class AKMCState(state.State):
                                                   proc['product_prefactor'], proc['barrier'],
                                                   proc['rate'], proc['repeats']))
             f.close() 
-
 
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy, 
@@ -334,7 +332,8 @@ class AKMCState(state.State):
                               "barrier":          barrier, 
                               "rate":             rate, 
                               "repeats":          repeats}
-    
+
+ 
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
             barrier stored in info if the barrier parameter is lower and returns the (possibly new)
@@ -349,13 +348,15 @@ class AKMCState(state.State):
             self.info.set("MetaData", "lowest barrier", "%f" % lowest)
             self.save_info()        
         return lowest
-        
+
+ 
     def get_lowest_barrier(self):
         self.load_info()
         try:
             return self.info.getfloat("MetaData", "lowest barrier")
         except:
             return 1e300
+
 
     def get_unique_saddle_count(self):
         if self.unique_saddle_count is None:
@@ -367,11 +368,13 @@ class AKMCState(state.State):
         else:
             return self.unique_saddle_count
 
+
     def set_unique_saddle_count(self, num):
         self.unique_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "unique_saddles", "%d" % num)
         self.save_info()        
+
 
     def get_good_saddle_count(self):
         if self.good_saddle_count is None:
@@ -383,11 +386,13 @@ class AKMCState(state.State):
         else:
             return self.good_saddle_count
 
+
     def set_good_saddle_count(self, num):
         self.good_saddle_count = num
         self.load_info()
         self.info.set("MetaData", "good_saddles", "%d" % num)
         self.save_info()        
+
 
     def get_proc_repeat_count(self):
         self.load_info()
@@ -398,6 +403,7 @@ class AKMCState(state.State):
                 self.proc_repeat_count = [0]
         return self.proc_repeat_count
 
+
     def inc_proc_repeat_count(self, procid):
         self.get_proc_repeat_count()
         if procid == len(self.proc_repeat_count):
@@ -407,8 +413,10 @@ class AKMCState(state.State):
         self.info.set("MetaData", "proc repeat count", repr(self.proc_repeat_count))
         self.save_info()        
 
+
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
+
 
     def get_bad_saddle_count(self):
         if self.bad_saddle_count is None:
@@ -425,6 +433,7 @@ class AKMCState(state.State):
         self.load_info()
         self.info.set("MetaData", "bad_saddles", "%d" % num)
         self.save_info()        
+
 
     def register_bad_saddle(self, result, store = False):
         """ Registers a bad saddle. """
@@ -449,17 +458,20 @@ class AKMCState(state.State):
             open(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'].getvalue())
             open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'].getvalue())
 
+
     # Utility functions for loading process .con and mode files.
     def get_process_saddle(self, id):
         return io.loadcon(self.proc_saddle_path(id))
     def get_process_mode(self, id):
         return io.load_mode(self.proc_mode_path(id))
 
+
     # Utility functions for compiling procdata paths, whether the files exist or not.    
     def proc_saddle_path(self, id):
         return os.path.join(self.procdata_path, "saddle_%d.con" % id)
     def proc_mode_path(self, id):
         return os.path.join(self.procdata_path, "mode_%d.dat" % id)
+
 
 # Lambert-W function: http://keithbriggs.info/software/LambertW.py
 def lambertw(z):

@@ -7,36 +7,34 @@ REACTANT_STATE_TAG=0
 RANDOM_SEED=-1
 
 # describtion POTENTIAL_TAG
-# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
-# 1 = lennard-jones potential
+# 0 = a new potential provided by the user
+# 1 = Lennard-Jones potential
 # 2 = morse
 # 3 = emt
 # 4 = edip
 # 5 = VASP
 # 6 = Tersoff
-# 7 = Stilling Weber
+# 7 = Stillinger-Weber
 # 8 = Lenosky
-# 9 = Lennard-jones binary
+# 9 = Lennard-Jones binary
 # 10 = Aluminum
-# 12 = Quantum Sutton-Chen
+# 12 = quantum Sutton-Chen
 POTENTIAL_TAG=10
 
-# describtion POTENTIAL_NO_TRANSLATION
+# description POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
 # 1 = translation of the system is prevented
 POTENTIAL_NO_TRANSLATION=1
 
-# describtion GET_PREFACTORS_TAG
+# description GET_PREFACTORS_TAG
 # 0 = processes prefactors are not determined
 # 1 = processes prefactors are determined
 GET_PREFACTORS_TAG=1
 
-
-maximum_iterations=512
-
+MAXIMUM_ITERATIONS=512
 
 [Saddle_Point]
-# describtion LOWEST_EIGENMODE_DETERMINATION_SP
+# description LOWEST_EIGENMODE_DETERMINATION_SP
 # 1 = dimer method
 # 2 = lanczos method
 LOWEST_EIGENMODE_DETERMINATION=1

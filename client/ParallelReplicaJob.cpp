@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include <cstdlib>
 
 #include "Matter.h"
@@ -35,8 +35,8 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     nsteps_refined = 0;
     SPtime = 0.0;
     RLtime = 0.0;
-    check_steps = parameters->CheckFreq;
-    relax_steps = parameters->NewRelaxSteps;
+    check_steps = parameters->mdCheckFreq;
+    relax_steps = parameters->mdRelaxSteps;
     SPtimebuff = new double[check_steps];
     newstate = false;
     min_fcalls = 0;
@@ -79,7 +79,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     ConjugateGradients cgMin2(min2, parameters);
     cgMin2.fullRelax();
     min_fcalls += min2->getForceCalls();
- 
+
     saveData(newstate,bundleNumber);
     
     if(newstate){
@@ -87,7 +87,7 @@ void ParallelReplicaJob::run(int bundleNumber)
         printf("Transition Time: %.2e\n", SPtime*1e-15);
     }else{
        printf("New state has not been found in this %ld dynamics steps (%.2f fs)\n",
-            parameters->mdSteps,10*parameters->mdSteps*parameters->mdTimeStep);
+            parameters->mdSteps,10.18*parameters->mdSteps*parameters->mdTimeStep);
     }
 
     delete min1;
@@ -100,29 +100,29 @@ void ParallelReplicaJob::run(int bundleNumber)
 void ParallelReplicaJob::dynamics()
 {
     bool   status = false, remember = true, stoped = false;
-    bool   boost = parameters->BondBoost;
+    bool   boost = parameters->bondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   ncheck = 0, nexam = 0, steps_tmp = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
-    double EKin=0.0, kb = 1.0/11604.5;
-    double TKin=0.0, SumT = 0.0, SumT2 = 0.0, AvgT, VarT;
-    
+    double kinE = 0.0, kb = 1.0/11604.5;
+    double kinT = 0.0, sumT = 0.0, sumT2 = 0.0, avgT, varT;
+
     Matter *mdbuff[check_steps];
     for(long i =0; i < check_steps;i++){
-	    mdbuff[i] = new Matter(parameters);
-	}
+    mdbuff[i] = new Matter(parameters);
+}
 
     Dynamics PRdynamics(reactant,parameters);
     BondBoost Bbm(reactant,parameters);
     if(boost){   
         Bbm.initial();
     }
-        
+
     PRdynamics.velocityScale(parameters->mdTemperature);
-    dephase();   
- 
+    dephase();
+
     printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
-           parameters->mdTemperature, 10*parameters->mdSteps*parameters->mdTimeStep,10*parameters->mdTimeStep);
+    parameters->mdTemperature, 10.18*parameters->mdSteps*parameters->mdTimeStep, 10.18*parameters->mdTimeStep);
 
     long tenthSteps = parameters->mdSteps/10;
     //This prevents and edge case division by zero if mdSteps is < 10
@@ -132,16 +132,16 @@ void ParallelReplicaJob::dynamics()
     while(!stoped){
 
         if(boost && !newstate){
-           SPtime += Bbm.boost();
+            SPtime += Bbm.boost();
         }
-        else{ SPtime += 10*parameters->mdTimeStep;}
+        else{ SPtime += 10.18*parameters->mdTimeStep;}
                 
-        EKin = reactant->getKineticEnergy();
-        TKin = (2*EKin/nFreeCoord/kb); 
-        SumT += TKin;
-        SumT2 += TKin*TKin;
+        kinE = reactant->getKineticEnergy();
+        kinT = (2*kinE/nFreeCoord/kb); 
+        sumT += kinT;
+        sumT2 += kinT*kinT;
 
-        PRdynamics.oneStep(parameters->mdTemperature); 
+        PRdynamics.oneStep(parameters->mdTemperature);
 
         md_fcalls++;
         ncheck++;
@@ -154,46 +154,44 @@ void ParallelReplicaJob::dynamics()
         }
 
         //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
-        
 
-#ifndef NDEBUG           
-        if (ncheck == check_steps && !newstate){            
+#ifndef NDEBUG
+        if (ncheck == check_steps && !newstate){
            reactant->matter2xyz("movie", true);
         }
 #endif
         if (ncheck == check_steps && !newstate){
-  	        ncheck = 0; // reinitial the ncheck
-            status = CheckState(reactant);
+            ncheck = 0; // reinitialize the ncheck
+            status = checkState(reactant);
             if(status == true){
-               remember = false;
+                remember = false;
             }
         }
-       
+
         if (status && !newstate){
             nexam++;
             if (nexam >= relax_steps){
                 nexam = 0;
                 ncheck = 0; 	
-                newstate = CheckState(reactant);
+                newstate = checkState(reactant);
                 //stoped = newstate;
                 status = false;
                 if(newstate == false){
-                   remember = true;
+                    remember = true;
                 }else{
                     *transition = *reactant;
                     steps_tmp = nsteps;
                     //printf("steps_tmp = %ld\n",steps_tmp);
                     //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
-                       stoped = true;
+                        stoped = true;
                     }
                     remember = false;
                 }
             }
         }
 
-  		
-        if (nsteps >= parameters->mdSteps ){
+        if (nsteps >= parameters->mdSteps){
            stoped = true;
         }
 
@@ -212,26 +210,24 @@ void ParallelReplicaJob::dynamics()
                    (double)100.0*nsteps/parameters->mdSteps, maxAtomDistance,
                    nsteps, parameters->mdSteps);
         }
-
     }
-    AvgT=SumT/nsteps;
-    VarT=SumT2/nsteps-AvgT*AvgT;
-    printf("\nTemperature : Average = %lf ; Variance = %lf ; Factor = %lf\n\n", AvgT,VarT,VarT/AvgT/AvgT*nFreeCoord/2);
+    avgT=sumT/nsteps;
+    varT=sumT2/nsteps-avgT*avgT;
+    printf("\nTemperature : Average = %lf ; Variance = %lf ; Factor = %lf\n\n", avgT,varT,varT/avgT/avgT*nFreeCoord/2);
 
-    if (isfinite(AvgT)==0) {
+    if (isfinite(avgT)==0) {
         printf("Infinite average temperature, something went wrong!\n");
         newstate = false;
     }
 
     //Here we use Binary Search to refine the result; 	
     //for(long i =0; i < check_steps;i++){
-	//	printf("%ld refine steps %ld\n",i,stepsbuff[i]);		
-	//}
+    //  printf("%ld refine steps %ld\n",i,stepsbuff[i]);
+    //}
     //nsteps = nsteps + 1;
-    
-   
-    if(parameters->mdRefine && newstate){     
-        
+
+    if(parameters->mdRefine && newstate){
+
         Refine(mdbuff);
         printf("nsteps_refined=%ld\n",nsteps_refined); 
         long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
@@ -240,7 +236,7 @@ void ParallelReplicaJob::dynamics()
         *reactant = *mdbuff[nsteps_refined-1];
         *transition = *reactant;
         SPtime = SPtimebuff[nsteps_refined-1];
-       
+
         /*
         for(long i = 0; i<relax_steps;i++){
             PRdynamics.oneStep(parameters->mdTemperature);
@@ -251,239 +247,239 @@ void ParallelReplicaJob::dynamics()
         */
     }
     return;
-     
+
     delete transition;
     for(long i =0; i < check_steps;i++){
-	    delete[] mdbuff[i];
-	}
-};
-
-bool ParallelReplicaJob::CheckState(Matter *matter)
-{
-     Matter tmp(parameters);
-     tmp = *matter;
-     ConjugateGradients cgMin(&tmp, parameters);
-     cgMin.fullRelax();
-     min_fcalls += tmp.getForceCalls();
-
-     if (tmp == *min1) {
-        return false;
-     };
-     return true;
+        delete[] mdbuff[i];
+    }
 }
 
-bool ParallelReplicaJob::CheckState_nq(Matter *matter) // checkstate without quench
+bool ParallelReplicaJob::checkState(Matter *matter)
 {
-     double distance = 0.0, D_tmp;
-     double MoveCut = 2.0;
-     Matter tmp(parameters);
-     tmp = *matter;
-     long nAtoms = tmp.numberOfAtoms();
- 
-     for(long int i=0;i<nAtoms;i++){
-         if(!tmp.getFixed(i)){
-              D_tmp = tmp.distance(*min1,i);
-              //printf("number of Atom = %ld, Displacement = %lf\n",i,D_tmp);
-              if(D_tmp >= MoveCut){
-                 distance += D_tmp;
-	      }
-	 }
-     }
-    
+    Matter tmp(parameters);
+    tmp = *matter;
+    ConjugateGradients cgMin(&tmp, parameters);
+    cgMin.fullRelax();
+    min_fcalls += tmp.getForceCalls();
+
+    if (tmp == *min1) {
+        return false;
+    }
+    return true;
+}
+
+
+bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without quench
+{
+    double distance = 0.0, D_tmp;
+    double MoveCut = 2.0;
+    Matter tmp(parameters);
+    tmp = *matter;
+    long nAtoms = tmp.numberOfAtoms();
+
+    for(long int i=0;i<nAtoms;i++){
+        if(!tmp.getFixed(i)){
+            D_tmp = tmp.distance(*min1,i);
+            //printf("number of Atom = %ld, Displacement = %lf\n",i,D_tmp);
+            if(D_tmp >= MoveCut){
+                distance += D_tmp;
+            }
+        }
+    }
+
 //     printf("Total Moved Distance = %lf\n",distance);
 #ifndef NDEBUG
-     printf("Total Moved Distance = %lf\n",distance);
+    printf("Total Moved Distance = %lf\n",distance);
 #endif
-     if (distance <= parameters->PRD_MaxMovedDist){
+    if (distance <= parameters->mdMaxMovedDist){
         return false;
-     };
-     return true;
+    }
+    return true;
 }
 
 
+void ParallelReplicaJob::saveData(int status,int bundleNumber)
+{
+    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle;
 
+    char filename[STRING_SIZE];
 
-void ParallelReplicaJob::saveData(int status,int bundleNumber){
-     FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle;
-
-     char filename[STRING_SIZE];
-
-     if (bundleNumber != -1) {
-         snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-     }else{
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
+    }else{
          strncpy(filename, "results.dat", STRING_SIZE);
-     }
-     fileResults = fopen(filename, "wb");
-     ///XXX: min_fcalls isn't quite right it should get them from
-     //      the minimizer. But right now the minimizers are in
-     //      the SaddlePoint object. They will be taken out eventually.
-     long total_fcalls = min_fcalls + md_fcalls;
+    }
+    fileResults = fopen(filename, "wb");
+    ///XXX: min_fcalls isn't quite right it should get them from
+    //      the minimizer. But right now the minimizers are in
+    //      the SaddlePoint object. They will be taken out eventually.
+    long total_fcalls = min_fcalls + md_fcalls;
 
-     fprintf(fileResults, "%d termination_reason\n", status);
-     //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
-     fprintf(fileResults, "%e transition_time\n", SPtime*1e-15);
-     //fprintf(fileResults, "%e relax_time\n", RLtime*1e-15);
-     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
-     fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
-     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
-     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
-     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
-     fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
-     fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
-     fclose(fileResults);
+    fprintf(fileResults, "%d termination_reason\n", status);
+    //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
+    fprintf(fileResults, "%e transition_time\n", SPtime*1e-15);
+    //fprintf(fileResults, "%e relax_time\n", RLtime*1e-15);
+    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
+    fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
+    fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
+    fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
+    fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
+    fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
+    fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
+    fclose(fileResults);
 
-     if (bundleNumber != -1) {
-         snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-     }else{
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
+    }else{
          strncpy(filename, "reactant.con", STRING_SIZE);
-     }
-     fileReactant = fopen(filename, "wb");
-     min1->matter2con(fileReactant);
-     fclose(fileReactant);
+    }
+    fileReactant = fopen(filename, "wb");
+    min1->matter2con(fileReactant);
+    fclose(fileReactant);
 
-     if (bundleNumber != -1) {
-         snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
-     }else{
-         strncpy(filename, "product.con", STRING_SIZE);
-     }
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "product.con", STRING_SIZE);
+    }
 
-     fileProduct = fopen(filename, "wb");
-     min2->matter2con(fileProduct);
-     fclose(fileProduct);
+    fileProduct = fopen(filename, "wb");
+    min2->matter2con(fileProduct);
+    fclose(fileProduct);
   
-     if (bundleNumber != -1) {
-         snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
-     }else{
-         strncpy(filename, "saddle.con", STRING_SIZE);
-     }
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "saddle.con", STRING_SIZE);
+    }
 
-     fileSaddle = fopen(filename, "wb");
-     transition->matter2con(fileSaddle);
-     fclose(fileSaddle);
+    fileSaddle = fopen(filename, "wb");
+    transition->matter2con(fileSaddle);
+    fclose(fileSaddle);
 
-
-     return;
+    return;
 }
 
 
-void ParallelReplicaJob::Refine(Matter *mdbuff[]){
-   
-     long a1, b1, test , initial, final, diff, RefineAccuracy;
-     bool ytest;
+void ParallelReplicaJob::Refine(Matter *mdbuff[])
+{
+    long a1, b1, test , initial, final, diff, RefineAccuracy;
+    bool ytest;
 
-     RefineAccuracy = parameters->RefineAccuracy; 
-     printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
-     ytest = false;
-     
-     initial = 0;
-     final = check_steps - 1;
-     a1 = initial;
-     b1 = final;
-     diff = final - initial;
-     test = int((b1-a1)/2);
-     //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
+    RefineAccuracy = parameters->mdRefineAccuracy; 
+    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
+    ytest = false;
 
-     while(diff > RefineAccuracy){
+    initial = 0;
+    final = check_steps - 1;
+    a1 = initial;
+    b1 = final;
+    diff = final - initial;
+    test = int((b1-a1)/2);
+    //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
 
-         test = a1+int((b1-a1)/2);
-         ytest = CheckState(mdbuff[test]);
-         
-         if ( ytest == 0 ){
-             a1 = test;
-             b1 = b1;
-         }
-         else if ( ytest == 1 ){
-             a1 = a1;
-             b1 = test;
-         }
-         else { 
-             printf("Refine Step Failed ! \n");
-             exit(1);
-         }
-         diff = abs( b1 - a1 );
-     //    printf("Insert Point %ld; Test ytest = %d ; New Bondary [ %ld, %ld ] \n",test,ytest,a1,b1);
-     }
+    while(diff > RefineAccuracy)
+    {
+        test = a1+int((b1-a1)/2);
+        ytest = checkState(mdbuff[test]);
 
-    
-     nsteps_refined = int((a1+b1)/2);
-     //printf("Refined mdsteps = %ld\n",nsteps_refined);
-     return;
+        if ( ytest == 0 ){
+            a1 = test;
+            b1 = b1;
+        }
+        else if ( ytest == 1 ){
+            a1 = a1;
+            b1 = test;
+        }
+        else { 
+            printf("Refine Step Failed ! \n");
+            exit(1);
+        }
+        diff = abs( b1 - a1 );
+    //   printf("Insert Point %ld; Test ytest = %d ; New Boundary [ %ld, %ld ] \n",test,ytest,a1,b1);
+    }
+
+    nsteps_refined = int((a1+b1)/2);
+    //printf("Refined mdsteps = %ld\n",nsteps_refined);
+    return;
 }
 
-void ParallelReplicaJob::dephase(){
 
-     long  DHsteps = parameters->DephaseSteps,i = 0,step_buff = 0;
-     long  scType = parameters->DH_CheckType;
-     long  DHcorrect = parameters->DephaseConstrain;
-     bool  state = false, stop = false;
-     Matrix<double, Eigen::Dynamic, 3> velocity;      
-     Matter *initial;
-     Matter *buff;
-     initial = new Matter(parameters);      
-     buff = new Matter(parameters);
-     *initial = *reactant;
-     *buff = *reactant;
+void ParallelReplicaJob::dephase()
+{
+    long  dephaseSteps = parameters->mdDephaseSteps,i = 0, step_buff = 0;
+    long  scType = parameters->mdDephaseCheckType;
+    long  dephaseCorrect = parameters->mdDephaseConstrain;
+    bool  state = false, stop = false;
+    Matrix<double, Eigen::Dynamic, 3> velocity;      
+    Matter *initial;
+    Matter *buff;
+    initial = new Matter(parameters);      
+    buff = new Matter(parameters);
+    *initial = *reactant;
+    *buff = *reactant;
 
-//     printf("scType = %ld\n",scType);
-//    printf("DH constrain = %ld\n", DHcorrect);
-    
-     Dynamics DHdynamics(reactant,parameters);
-     printf("Dephasing for %ld steps\n",DHsteps);
+//    printf("scType = %ld\n",scType);
+//    printf("dephase constrain = %ld\n", dephaseCorrect);
 
-     while(!stop){             
+    Dynamics dephaseDynamics(reactant,parameters);
+    printf("Dephasing for %ld steps\n",dephaseSteps);
 
-           DHdynamics.oneStep(parameters->mdTemperature);
-           md_fcalls++;
-          
-           if(i % 1000 == 0){
+    while(!stop){
 
-              if(scType == 1){
-     	         state = CheckState(reactant);
-              }else if(scType == 2){
-                 state = CheckState_nq(reactant);
-              }else { 
-  	         printf("Unknown CheckState method in Dephase Step, Use default value\n");
-                 state = CheckState(reactant);
-	      }
+        dephaseDynamics.oneStep(parameters->mdTemperature);
+        md_fcalls++;
 
-//              reactant->matter2xyz("movie", true);
+        if(i % 1000 == 0){
 
-       	      if(state == true){
-                 if(DHcorrect == 1){
-                    printf("Dephasing Warning: Get to the new state at step %ld, Dephase again\n",i);            
+            if(scType == 1){
+                state = checkState(reactant);
+            }else if(scType == 2){
+                state = checkState_nq(reactant);
+            }else{ 
+                printf("Unknown CheckState method in dephase step, use default value\n");
+                state = checkState(reactant);
+            }
+
+//           reactant->matter2xyz("movie", true);
+
+            if(state == true){
+                if(dephaseCorrect == 1){
+                    printf("Dephasing Warning: in a new state at step %ld, dephase again\n",i);            
                     i = 0;
                     *reactant = *initial;
                     state = false;
-                 }else if(DHcorrect ==2){
-                    printf("Dephasing Warning: Get to the new state at step %ld, Now inverse the Momentum and restart from step %ld\n",i,step_buff);
+                }else if(dephaseCorrect ==2){
+                    printf("Dephasing Warning: in a new state at step %ld, now inverse the momentum and restart from step %ld\n",i,step_buff);
                     i = step_buff;
                     *reactant = *buff;
                     velocity = reactant->getVelocities();
                     velocity = velocity*(-1);
                     reactant->setVelocities(velocity);
                     state = false;
-                 }else{
-		       printf("Unknown Constrain method in Dephase Step, Use default value\n");
-                       DHcorrect = 1;
-                 }
-     	      }else{
-		  *buff = *reactant;
-                  step_buff = i;
-              }
+                }else{
+                    printf("Unknown constrain method in dephase step, use default value\n");
+                    dephaseCorrect = 1;
+                }
+            }else{
+                *buff = *reactant;
+                step_buff = i;
+            }
 
-         //     printf(" Steps = %ld ; State = %d \n", i, state);
-           }
+        //     printf(" Steps = %ld ; State = %d \n", i, state);
+        }
 
-           if(i == DHsteps){  
-              stop = true;
-              state=CheckState(reactant);
-              if(state == false){
-                 printf("Dephasing successful\n");
-              }else{
-                 printf("Warning:Dephasing Failed, Now in a new State!\n");
-              }
-           }
-           i++;
-     }
+        if(i == dephaseSteps){  
+            stop = true;
+            state = checkState(reactant);
+            if(state == false){
+                printf("Dephasing successful\n");
+            }else{
+                printf("Warning: Dephasing failed, now in a new state!\n");
+            }
+        }
+        i++;
+    }
 }
+

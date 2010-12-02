@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON QMBox.cpp
- *===============================================
- */
 
 #include "QMBox.h"
 #include "HelperFunctions.h"
@@ -30,17 +24,18 @@ QMBox::QMBox(Matter *matter, Parameters *parameters)
     dR = 0.001;
     dT = 0.01;
     qmBox_ = new Quickmin(matter_, parameters);
-};
+}
 
-QMBox::~QMBox(){
 
+QMBox::~QMBox()
+{
     // matter_ should not be deleted
     // parameters_ should not be deleted
     // forces_ should not be deleted
     // Are pointers to objects outside the scope
     
     return;
-};
+}
 
 
 void QMBox::increment_velocity()
@@ -76,6 +71,7 @@ void QMBox::increment_velocity()
     return;
 }
 
+
 void QMBox::oneStep()
 {
     increment_velocity();
@@ -97,7 +93,7 @@ void QMBox::oneStep()
     matter_->setPositions(pos);
     qmBox_->oneStep();
     return;
-};
+}
 
 
 void QMBox::fullRelax()
@@ -114,7 +110,7 @@ void QMBox::fullRelax()
     }
     forceCallsTemp = matter_->getForceCalls() - forceCallsTemp;
     return;
-};
+}
 
 
 bool QMBox::isItConverged(double convergeCriterion)
@@ -133,8 +129,7 @@ bool QMBox::isItConverged(double convergeCriterion)
         }
     }
     return true;
-};
-
+}
 
 
 //void QMBox::oneStepPart2(double *freeForces)
@@ -189,6 +184,5 @@ bool QMBox::isItConverged(double convergeCriterion)
 //    delete [] positions;
 //    delete [] velocity;
 //    return;
-//};
-
+//}
 

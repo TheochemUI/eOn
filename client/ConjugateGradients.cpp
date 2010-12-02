@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON ConjugateGradients.cpp
- *===============================================
- */
+
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
 
@@ -27,15 +22,15 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
     initialize(matter, parameters);
     totalForceCalls = 0;
     outputLevel = 0;
-};
+}
 
 
-ConjugateGradients::ConjugateGradients(Matter *matter, 
-                                       Parameters *parameters, 
+ConjugateGradients::ConjugateGradients(Matter *matter,
+                                       Parameters *parameters,
                                        Matrix<double, Eigen::Dynamic, 3> forces){
     initialize(matter, parameters);
     force = forces; 
-};
+}
 
 
 void ConjugateGradients::initialize(Matter *matter_passed, Parameters *parameters_passed)
@@ -43,9 +38,9 @@ void ConjugateGradients::initialize(Matter *matter_passed, Parameters *parameter
     // note that it is the pointer that is copied
     matter = matter_passed;
     parameters = parameters_passed;
- 
+
     nAtoms =  matter->numberOfAtoms();
-    
+
     direction.resize(nAtoms,3);
     directionOld.resize(nAtoms,3);
     directionNorm.resize(nAtoms,3);
@@ -58,11 +53,9 @@ void ConjugateGradients::initialize(Matter *matter_passed, Parameters *parameter
 
     force.setZero();
     forceOld.setZero();
- 
-
 
     return;
-};
+}
 
 
 ConjugateGradients::~ConjugateGradients(){
@@ -72,7 +65,7 @@ ConjugateGradients::~ConjugateGradients(){
     // Are pointers to objects outside the scope
  
     return;
-};
+}
 
 
 void ConjugateGradients::oneStep(){
@@ -88,6 +81,7 @@ void ConjugateGradients::oneStep(){
     force = matter->getForces();
     pos = matter->getPositions();
     determineSearchDirection();
+
     // move system an infinitesimal step to determine the optimal step size along the search line
     posStep = pos + directionNorm * parameters->cgCurvatureStep;
     matter->setPositions(posStep);
@@ -103,7 +97,7 @@ void ConjugateGradients::oneStep(){
     totalForceCalls += forceCallsTemp;
 
     return;
-};
+}
 
 
 void ConjugateGradients::fullRelax(){
@@ -132,7 +126,7 @@ void ConjugateGradients::fullRelax(){
         #endif
     }
     return;
-};
+}
 
 
 bool ConjugateGradients::isItConverged(double convergeCriterion){
@@ -150,7 +144,8 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
 //    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);    
 //std::cout<<diff<<"\n";
     return(diff < convergeCriterion);
-};
+}
+
 
 void ConjugateGradients::setOutput(int level)
 {
@@ -187,7 +182,7 @@ void ConjugateGradients::determineSearchDirection(){
     directionOld = direction;
     forceOld = force;
     return;
-};
+}
 
 
 double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, 
@@ -214,7 +209,7 @@ double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBefor
         }
     }
     return step;
-};
+}
 
 // Specific functions when forces are modified 
 
@@ -224,7 +219,7 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::makeInfinitesimalStepModif
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
     return directionNorm * parameters->cgCurvatureStep + pos;
-};
+}
 
 
 Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
@@ -239,10 +234,10 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
 
     // Move system
     return pos + directionNorm * step;
-};
+}
 
 
 void ConjugateGradients::setForces(Matrix<double, Eigen::Dynamic, 3> forces){
     force = forces;
     return;
-};
+}
