@@ -23,7 +23,7 @@ class ParallelReplicaJob: public Job
         void dynamics();
         bool checkState(Matter *matter);
         bool checkState_nq(Matter *matter);
-        void Refine(Matter *mdbuff[]);
+        long Refine(Matter *mdbuff[],long length);
         void saveData(int status,int bundleNumber);
         void dephase();
         Parameters *parameters;
@@ -36,6 +36,7 @@ class ParallelReplicaJob: public Job
         double *SPtimebuff;
         long min_fcalls;
         long md_fcalls;
+        long dh_fcalls;
         long nsteps;
         long nsteps_refined;
         long check_steps;
