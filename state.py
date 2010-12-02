@@ -152,3 +152,19 @@ class State:
     def get_process_table(self):
         self.load_process_table()
         return self.procs
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
