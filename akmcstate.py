@@ -90,10 +90,11 @@ class AKMCState(state.State):
                     if dist > self.statelist.epsilon_r:
                         break
                 else:
-                    self.procs[id]['repeats'] += 1
-                    self.save_process_table()
                     self.append_search_result(result, "repeat-%d" % id)
-                    self.inc_proc_repeat_count(id)
+                    if result['type'] == "random":
+                        self.procs[id]['repeats'] += 1
+                        self.save_process_table()
+                        self.inc_proc_repeat_count(id)
                     return None
 
         # This appears to be a unique process.

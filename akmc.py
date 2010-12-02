@@ -744,6 +744,8 @@ def main():
                 for i in [info_path, dynamics_path, log_path]:
                     if os.path.isfile(i):
                         os.remove(i)
+                if os.path.isdir(os.path.join(config.path_root, "results")):
+                    shutil.rmtree(os.path.join(config.path_root, "results"))
                 
                 print "Reset."
                 sys.exit(0)
