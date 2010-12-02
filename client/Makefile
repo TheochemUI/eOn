@@ -2,16 +2,34 @@
 CC=$(CROSS)gcc
 CXX=$(CROSS)g++
 LD=$(CROSS)ld
+AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
 
 CXXFLAGS += -O2 -Wall -Wfatal-errors
 
+#If we aren't doing a cross compile, guess our platform.
+ifndef CROSS
 #Ensures all code is statically linked on a Linux machine
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-   LDFLAGS += -static
+   CXXFLAGS += -DLINUX
+   LINUX=1
+endif
+ifeq ($(UNAME), Darwin)
+   OSX=1
+endif
+ifeq ($(UNAME), CYGWIN_NT-5.1)
+   WIN32=1
+endif
 endif
 
+ifdef LINUX
+	LDFLAGS += -static
+	CXXFLAGS += -DLINUX
+endif
+ifdef OSX
+	CXXFLAGS += -DOSX
+endif
 ifdef WIN32
 	CXXFLAGS += -DWIN32
 endif
@@ -22,17 +40,17 @@ ifdef NO_FORTRAN
 else
     # gfortran
     FC = $(CROSS)gfortran
-    FFLAGS += -O2
-    AR = $(CROSS)ar cru
+    FFLAGS += -O2 -ffpe-trap=invalid,zero,overflow
+    FAR = $(CROSS)ar cru
     LDFLAGS += -lgfortran
     # ifort
     #FC = ifort
-    #FFLAGS += -O2
+    #FFLAGS += -O2 -fpe0
     # Linux linking
-    #AR = ar cru
+    #FAR = ar cru
     #LDFLAGS += -limf -lsvml -lifcore -ldl
     # OSX linking
-    #AR = ifort -staticlib -o
+    #FAR = ifort -staticlib -o
 endif
 
 #Fortran compiler settings
@@ -140,10 +158,10 @@ $(LIBS):
 $LIBS: $(POTDIRS) $(FPOTDIRS)
 
 $(POTDIRS):
-	$(MAKE) -C $@ CC=$(CC) CXX=$(CXX) LD=$(LD) AR="$(AR)" RANLIB=$(RANLIB)
+	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(AR)" RANLIB="$(RANLIB)"
 
 $(FPOTDIRS):
-	$(MAKE) -C $@ CC=$(CC) CXX=$(CXX) LD=$(LD) AR="$(AR)" FC=$(FC) FFLAGS=$(FFLAGS) RANLIB=$(RANLIB)
+	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(FAR)" FC="$(FC)" FFLAGS="$(FFLAGS)" RANLIB="$(RANLIB)"
 
 clean:
 	rm -f $(OBJECTS) client
