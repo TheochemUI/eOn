@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include"LJ.h"
 
 LJ::LJ(){
@@ -71,7 +71,7 @@ void LJ::force(long N, const double *R, const int *atomicNrs, double *F, double 
                 *U = *U+b*(a-1)-cuttOffU;
 
                 dU=-6*b/diffR*(2*a-1);
-                //F is the negative derivative
+                // F is the negative derivative
                 F[ 3*i ]=F[ 3*i ] - dU*diffRX/diffR;
                 F[3*i+1]=F[3*i+1] - dU*diffRY/diffR;
                 F[3*i+2]=F[3*i+2] - dU*diffRZ/diffR;

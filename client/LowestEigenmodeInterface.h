@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON LowestEigenmodeInterface.h
- *===============================================
- */
 
 #ifndef LOWEST_EIGENMODE_INTERFACE_H
 #define LOWEST_EIGENMODE_INTERFACE_H

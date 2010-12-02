@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include "DisplacementSamplingJob.h"
 #include "ConjugateGradients.h"
 #include "Matter.h"
@@ -71,7 +71,7 @@ void DisplacementSamplingJob::run(int bundleNumber)
                 reactant->con2matter("reactant_passed.con");
                 double e0 = reactant->getPotentialEnergy();
 
-                long epicenter = EpiCenters::minimalCoordinatedEpiCenter(reactant);
+                long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,parameters->neighborCutoff);
                 
                 // Create a random displacement.
                 Matrix<double, Eigen::Dynamic, 3> displacement;        
@@ -92,7 +92,7 @@ void DisplacementSamplingJob::run(int bundleNumber)
                 }
                 
                 displacement.normalize(); 
-                displacement *= guaRandom(0.0, magnitude);
+                displacement *= gaussRandom(0.0, magnitude);
                 
                 reactant->setPositions(reactant->getPositions() + displacement);
                 
@@ -114,40 +114,11 @@ void DisplacementSamplingJob::run(int bundleNumber)
 
                 delete d;
                 delete reactant;
-                
             }
-
             fprintf(results, "%15f   %15f   %15f\n", cutoff, magnitude, nGood / nSamples);
-
         }
     }
-    
     fclose(results);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

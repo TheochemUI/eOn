@@ -6,13 +6,13 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #ifndef MORSE
 #define MORSE
 /** @file
       @brief Morse potential for platinum
-      @author Anonymous (possibly A. Pedersen or G. Henkelman ), revision: Jean Claude C. Berthet
+      @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean Claude C. Berthet
       @date Unknown, revision: 2010, University of Iceland
       */
 //#include "LJBinary.h"

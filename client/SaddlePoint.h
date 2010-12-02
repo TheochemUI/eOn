@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON SaddlePoint.h
- *===============================================
-*/
+
 #ifndef SADDLE_POINT_H
 #define SADDLE_POINT_H
 
@@ -65,7 +60,7 @@ public:
     SaddlePoint(Matter * initial, Matter *saddle, Parameters *parameters);
 
     ~SaddlePoint(); // destructor
- 
+
     /** Initialized the object.
     @param[in]  *initial     Initial state (minimum)
     @param[in]  *saddle      Where to start the saddle point search (may be equal to initial)
@@ -90,7 +85,7 @@ public:
     long forceCallsSaddlePointConcave;
     long forceCallsSaddlePointConvex;
     long forceCallsMinimization;
-    
+
 private:
     Matter * initial;
     Matter *saddle; // pointer to atom object outside the scope of the class
@@ -104,7 +99,7 @@ private:
     long status; // keep track of where problems occured
 
     void clean(); // clean up dynamical allocated memory
- 
+
     void displaceStateAndSetMode(Matter *matter); // displacing the atomic positions in @matter according to values in Parameters, being centered on the atom determined by one of the EpiCenter functions and set the initial mode accordingly  
     Matrix<double, Eigen::Dynamic, 3> correctingForces(Matrix<double, Eigen::Dynamic, 3> force); // projected min-mode force
 
@@ -112,10 +107,10 @@ private:
     @param[out]  *min1   Matter object containing one of the minima connected to the saddle point
     @param[out]  *min2   Matter object containing other of the minima connected to the saddle point */
     void relaxFromSaddle(Matter *min1, Matter *min2);
- 
+
     void jumpToConvexRegion();
     void displaceInConcaveRegion();
- 
+
     void searchForSaddlePoint(double initialEnergy);
     void addForceCallsSaddlePoint(long fcalls, double eigenvalue);
 

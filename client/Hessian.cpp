@@ -6,10 +6,9 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-#include <math.h>
 
+#include <math.h>
 #include "Hessian.h"
 
 Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)
@@ -92,12 +91,12 @@ void Hessian::calculate(int which)
     }
     else
     {
-		int loop = 0;
-		do {
-			double minDisp = parameters->hessianMinDisplacement + loop * 0.1;		
-			atoms = movedAtoms(minDisp);
-			loop = loop + 1;
-		} while (parameters->hessianMaxSize < atoms.rows()*3);
+        int loop = 0;
+        do {
+            double minDisp = parameters->hessianMinDisplacement + loop * 0.1;
+            atoms = movedAtoms(minDisp);
+            loop = loop + 1;
+        } while (parameters->hessianMaxSize < atoms.rows()*3);
     }
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
@@ -120,7 +119,7 @@ void Hessian::calculate(int which)
 
     int i, j; 
     for(i = 0; i<size; i++)
-    { 
+    {
         posDisplace.setZero(); 
         
         // Displacing one coordinate
@@ -194,7 +193,7 @@ VectorXi Hessian::movedAtoms(double const distance)
 
     diffProd.cwise() *= saddle->getFree();
     diffReact.cwise() *= saddle->getFree();
-    
+
     int nMoved = 0;
     for(int i=0; i<nAtoms; i++)
     {
@@ -224,6 +223,3 @@ VectorXi Hessian::movedAtoms(double const distance)
     return (VectorXi)moved.block(0,0,nMoved,1);
 }
 
-
-    
-    

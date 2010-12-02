@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON HelperFunctions.h
- *===============================================
- */
+
 #ifndef HELPER_FUNCTIONS_H
 #define HELPER_FUNCTIONS_H
 
@@ -44,7 +39,7 @@ namespace helper_functions {
     double randomDouble(int max); // random value between 0 and max
     double randomDouble(long max); // random value between 0 and max
     double randomDouble(double max); // random value between 0 and max
-    double guaRandom(double avg,double std);//Guassion Random Number with avg and std;
+    double gaussRandom(double avg, double std); // Gaussion random number with avg and std;
     /* the dot product of the two (v1 v2) double arrays being passed in of length size */
     double dot(const double *v1, const double *v2, long size);
 

@@ -8,6 +8,7 @@
 // http://www.gnu.org/licenses/
 //
 //-----------------------------------------------------------------------------------
+
 #ifndef bopfox_POTENTIAL
 #define bopfox_POTENTIAL
 

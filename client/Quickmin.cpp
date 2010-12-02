@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Quickmin.cpp
- *===============================================
- */
 
 #include "Quickmin.h"
 #include "HelperFunctions.h"
@@ -32,20 +26,17 @@ Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
     nAtoms = matter->numberOfAtoms();
     velocity.resize(nAtoms, 3);
     velocity.setZero();
-
-};
+}
 
 
 Quickmin::~Quickmin()
 {
     /* matter_, parameters_, and forces_ should not be deleted. They are pointers to objects outside the scope.*/
     return;
-};
+}
 
 void Quickmin::setOutput(int level)
-{
-
-}
+{ }
 
 
 void Quickmin::oneStep()
@@ -56,7 +47,7 @@ void Quickmin::oneStep()
     forces = matter->getForces();
     oneStepPart2(forces);
     return;
-};
+}
 
 
 void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
@@ -65,12 +56,12 @@ void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
 
     velocity += force * .5 * parameters->qmTimeStep * dtScale;
     velocity = velocity.cwise() * matter->getFree();
-    
-    positions = matter->getPositions();       
+
+    positions = matter->getPositions();
     positions += velocity * parameters->qmTimeStep * dtScale;
     matter->setPositions(positions);  
-};
-    
+}
+
 
 void Quickmin::oneStepPart2(Matrix<double, Eigen::Dynamic, 3> force)
 {
@@ -92,7 +83,7 @@ void Quickmin::oneStepPart2(Matrix<double, Eigen::Dynamic, 3> force)
         velocity = force * dotVelocityForces/dotForcesForces;
 //        dtScale_ *= 1.01;
     }
-};
+}
 
 
 void Quickmin::fullRelax()
@@ -107,7 +98,7 @@ void Quickmin::fullRelax()
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
     return;
-};
+}
 
 
 bool Quickmin::isItConverged(double convergeCriterion)
@@ -122,6 +113,5 @@ bool Quickmin::isItConverged(double convergeCriterion)
         }
     }
     return(diff < convergeCriterion);
-};
-
+}
 

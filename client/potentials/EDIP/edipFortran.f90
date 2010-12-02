@@ -1022,8 +1022,8 @@
                 dx = -rel(1,n)
                 dy = -rel(2,n)
                 dz = -rel(3,n)
-	        r=rel(4,n)
-	        rinv=rel(5,n)
+                r=rel(4,n)
+                rinv=rel(5,n)
                 rmainv = 1.d0/(r-par_a)
                 s2_t0(n2) = par_cap_A*dexp(par_sig*rmainv)
                 s2_t1(n2) = (par_cap_B*rinv)**par_rh

@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Matter.cpp
- *===============================================
- */
 
 #include "Matter.h"
 #include "Constants.h"
@@ -52,7 +46,7 @@ namespace {
             }
             i++;
         }
-        //Invalid symbol.
+        // invalid symbol
         return -1;
     }
  
@@ -124,8 +118,8 @@ const Matter& Matter::operator=(const Matter& matter)
     strcpy(headerCon5,matter.headerCon5);
     strcpy(headerCon6,matter.headerCon6);
 
-	//liang add here nsteps for test:
-	nsteps = matter.nsteps;
+    // liang add here nsteps for test:
+    nsteps = matter.nsteps;
 
     return *this;
 }
@@ -208,7 +202,7 @@ void Matter::resize(const long int length)
 }
 
 
-long int Matter::numberOfAtoms() const {return(nAtoms);}// return the number of atoms
+long int Matter::numberOfAtoms() const {return(nAtoms);} // return the number of atoms
 
 
 Vector3d Matter::getBoundary(int axis) const
@@ -276,7 +270,8 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() const
 }
 
 
-void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {//Update Matter with the new positions of the free atoms given in array 'pos'
+void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
+// update Matter with the new positions of the free atoms given in array 'pos'
     positions = pos;
     if(usePeriodicBoundaries)
     {
@@ -286,7 +281,8 @@ void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {//Update
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {// return forces applied on all atoms in array 'force' 
+Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
+// return forces applied on all atoms in array 'force' 
     computePotential();
     Matrix<double, Eigen::Dynamic, 3> ret= forces;
     int i;
@@ -301,11 +297,13 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {// return forces applied 
 }
 
 
-double Matter::distance(long index1, long index2) const{// return distance between the atoms with index1 and index2
+double Matter::distance(long index1, long index2) const{
+// return distance between the atoms with index1 and index2
     return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
-double Matter::pdistance(long index1, long index2,int axis) const{// return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)              
+double Matter::pdistance(long index1, long index2,int axis) const{
+// return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)
     Matrix<double, 1, 3> ret;
     ret.setZero();
     for(int i=0;i<3;i++){
@@ -318,8 +316,8 @@ double Matter::pdistance(long index1, long index2,int axis) const{// return proj
 }
 
 
-
-double Matter::distance(const Matter& matter, long index) const {// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
+double Matter::distance(const Matter& matter, long index) const {
+// return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
     return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
 
@@ -447,20 +445,20 @@ bool Matter::matter2con(FILE *file) const
     long int i;
     int j;
     long int Nfix=0; // Nfix to store the number of fixed atoms
-    int Ncomponent=0; // Used to store the number of components (eg water: two components H and O)
-    int first[MAXC]; // To store the position of the first atom of each component plus at the end the total number of atoms
+    int Ncomponent=0; // used to store the number of components (eg water: two components H and O)
+    int first[MAXC]; // to store the position of the first atom of each component plus at the end the total number of atoms
     double mass[MAXC];
     long atomicNrs[MAXC];
     first[0]=0;
     if(numberOfAtoms()>0) {
-        if(getFixed(0)) Nfix=1;//count the number of fixed atoms
+        if(getFixed(0)) Nfix=1; // count the number of fixed atoms
         mass[0]=getMass(0);
         atomicNrs[0]=getAtomicNr(0);
     };
     j=0;
     for(i=1;i<numberOfAtoms();i++) {
-        if(getFixed(i)) Nfix++; //count the number of fixed atoms
-        if(getAtomicNr(i) != atomicNrs[j]) { // Check if there is a second component
+        if(getFixed(i)) Nfix++; // count the number of fixed atoms
+        if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
             j++;
             if(j>=MAXC) {
                 std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
@@ -530,7 +528,7 @@ bool Matter::con2matter(std::string filename) {
     return(state);
 }
 
-    
+
 bool Matter::con2matter(FILE *file) {
     char line[255]; // Temporary string of character to read from the file.
     fgets(headerCon1,sizeof(line),file);
@@ -540,12 +538,12 @@ bool Matter::con2matter(FILE *file) {
         cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
         return false; // return false for error
     };
- 
+
     long int i; int j;
- 
+
     fgets(headerCon2,sizeof(line),file);
- 
- 
+
+
     double lengths[3];
     // The third line contains the length of the periodic cell
     fgets(line,sizeof(line),file);
@@ -582,17 +580,17 @@ bool Matter::con2matter(FILE *file) {
  
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
- 
+
     fgets(line,sizeof(line),file);
     int Ncomponent; // Number of components is the number of different types of atoms. For instance H2O (water) has two component (H and O).
     if(sscanf(line,"%d",&Ncomponent)==0) {
         std::cout << "The number of components cannot be read. One component is assumed instead\n";
         Ncomponent=1;
-    };
+    }
     if((Ncomponent>MAXC)||(Ncomponent<1)) {
         cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
         return false;
-    };
+    }
     /* to store the position of the 
         first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/ 
     long int first[MAXC+1];
@@ -602,7 +600,7 @@ bool Matter::con2matter(FILE *file) {
     for(j=0; j<Ncomponent; j++) {
         fscanf(file, "%ld", &Natoms);
         first[j+1]=Natoms+first[j];
-    };    
+    }    
     fgets(line, sizeof(line), file); // Discard the rest of the line
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
     double mass[MAXC];
@@ -610,7 +608,7 @@ bool Matter::con2matter(FILE *file) {
         fscanf(file, "%lf", &mass[j]);
 //        mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     };
-    fgets(line,sizeof(line),file); //Discard rest of the line
+    fgets(line,sizeof(line),file); // discard rest of the line
     int atomicNr;
     int fixed;
     double x,y,z;
@@ -629,8 +627,8 @@ bool Matter::con2matter(FILE *file) {
             setPosition(i, 1, y);
             setPosition(i, 2, z);
             setFixed(i, static_cast<bool>(fixed));
-        };
-    };
+        }
+    }
     if(usePeriodicBoundaries)
     { 
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
@@ -692,16 +690,16 @@ double Matter::maxForce(void)
     computePotential();
     
     //I think this can be done in one line with the rowwise method
-	double maxForce = 0.0;
+    double maxForce = 0.0;
     for(int i = 0; i < nAtoms; i++)
     {
         if(getFixed(i))
         {
             continue;
         }
-		maxForce = max(forces.row(i).norm(), maxForce);
-	}
-	return maxForce;
+        maxForce = max(forces.row(i).norm(), maxForce);
+    }
+    return maxForce;
 }
 
 
@@ -724,7 +722,7 @@ bool Matter::isItConverged(double convergeCriterion)
         }
     }
     return(diff < convergeCriterion);
-};
+}
 
 Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 {
@@ -742,27 +740,27 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 
 Matrix<double, Eigen::Dynamic, 3> Matter::getVelocities() const
 {
-   return velocities.cwise() * getFree(); 
+    return velocities.cwise() * getFree(); 
 }
 
 void Matter::setVelocities(const Matrix<double, Eigen::Dynamic, 3> v)
 {
-   velocities = v.cwise()*getFree(); 
+    velocities = v.cwise()*getFree(); 
 }
 
 void Matter::setForces(const Matrix<double, Eigen::Dynamic, 3> f)
 {
-       forces = f.cwise()*getFree();
+    forces = f.cwise()*getFree();
 }
 
 
 Matrix<double, Eigen::Dynamic, 3> Matter::getAccelerations()
 {
-   Matrix<double, Eigen::Dynamic, 3> ret =  getForces().cwise() * getFree(); 
-   ret.col(0).cwise()/=masses;
-   ret.col(1).cwise()/=masses;
-   ret.col(2).cwise()/=masses;
-   return ret;
+    Matrix<double, Eigen::Dynamic, 3> ret =  getForces().cwise() * getFree(); 
+    ret.col(0).cwise()/=masses;
+    ret.col(1).cwise()/=masses;
+    ret.col(2).cwise()/=masses;
+    return ret;
 }
 
 Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const
