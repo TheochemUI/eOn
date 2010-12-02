@@ -6,9 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-
 #include "Job.h"
 #include "Parameters.h"
 #include "Eigen/Eigen"

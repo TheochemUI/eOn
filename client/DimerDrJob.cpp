@@ -6,7 +6,6 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
 #include "DimerDrJob.h"
 #include "ConjugateGradients.h"
@@ -70,5 +69,4 @@ void DimerDrJob::run(int bundleNumber)
         fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
     }
     fclose(results);
-    
 }

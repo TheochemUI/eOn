@@ -6,13 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON ProcessSearchJob.cpp
- *===============================================
- */
 
 #include "ProcessSearchJob.h"
 #include "Constants.h"
@@ -126,8 +120,8 @@ int ProcessSearchJob::doProcessSearch(void)
         printf("initial != min1\n");
         if((!min1->isItConverged(parameters->convergedRelax))  &&
            (!min2->isItConverged(parameters->convergedRelax))) {
-            //the isItConverged in Matter doesn't work so this needs to be fixed.
-            //return statusBadMinima;
+            // the isItConverged in Matter doesn't work so this needs to be fixed.
+            // return statusBadMinima;
         }
         return statusBadNotConnected;
     }
@@ -180,8 +174,8 @@ int ProcessSearchJob::doProcessSearch(void)
     prefactorsValues[0] = 1;
     prefactorsValues[1] = 1;
     
-    //This may have large numerical error
-    //products are calculated this way in order to avoid overflow
+    // This may have large numerical error
+    // products are calculated this way in order to avoid overflow
     for(int i=0; i<saddleModes.size(); i++)
     {
         prefactorsValues[0] *= reactModes[i];

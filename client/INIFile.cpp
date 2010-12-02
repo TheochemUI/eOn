@@ -80,7 +80,7 @@ bool CIniFile::ReadFile(FILE *file)
 	  
 	case '=':
 	  valuename = line.substr( 0, pLeft);
-	  for(int j = 0; j < valuename.length(); j++)
+	  for(int j = 0; j < int(valuename.length()); j++)
 	  {
 	    if(valuename[j] == ' ')
 	    {
@@ -90,7 +90,7 @@ bool CIniFile::ReadFile(FILE *file)
 	  //Print out the non-default values
 	  printf("%s ", CheckCase(valuename).c_str());
 	  value = line.substr( pLeft + 1);
-	  for (int j=0; j<value.length();j++) {
+	  for (int j=0; j<int(value.length());j++) {
 	      if (value[j] == ' ') {
 	          value.erase(j,1);
           }

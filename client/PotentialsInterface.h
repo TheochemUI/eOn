@@ -6,13 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON PotentialsInterface.h
- *===============================================
- */
+
 #ifndef POTENTIALS_INTERFACE_H
 #define POTENTIALS_INTERFACE_H
 
@@ -22,8 +17,8 @@ public:
     virtual ~PotentialsInterface();
     void virtual initialize() = 0;
     void virtual cleanMemory() = 0;
-    //One should implement the method cleanMemory instead a destructor 
-    //as the desctructor call cause troubles when linking towards the potential libraries
+    // One should implement the method cleanMemory instead a destructor 
+    // as the desctructor call cause troubles when linking towards the potential libraries
 
     
     /* A similar function should be provided by the force calculator.

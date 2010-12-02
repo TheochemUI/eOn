@@ -6,16 +6,9 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-/*
- *===============================================
- *  EON Potentials.cpp
- *===============================================
- */
 
 #include "Constants.h"
-
 #include "Potentials.h"
 #include "potentials/NewPotential/NewPotential.h"
 #include "potentials/EDIP/EDIP.h"

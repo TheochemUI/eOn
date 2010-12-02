@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include "DimerRotationJob.h"
 #include "ConjugateGradients.h"
 #include "Matter.h"
@@ -100,5 +100,4 @@ void DimerRotationJob::run(int bundleNumber)
         fprintf(results, "%14.8f    %15.8f\n", dRots[dRoti], (curvature1 - curvature2) / dRots[dRoti]);
     }
     fclose(results);
-    
 }

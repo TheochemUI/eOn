@@ -6,7 +6,7 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 int create_archive(char *outname, char *path, int (*d_match)(char *));
 int extract_archive(char *filename);

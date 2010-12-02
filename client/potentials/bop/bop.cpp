@@ -6,8 +6,8 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
+
 #include "bop.h"
 #include <assert.h>
 #include <stdlib.h>
