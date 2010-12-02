@@ -33,6 +33,18 @@
 #include <string.h>
 #include <time.h>
 
+//Includes for FPE trapping
+#ifdef OSX
+    #include <xmmintrin.h>
+#endif
+#ifdef LINUX
+    #include <fenv.h>
+#endif
+#ifdef WIN32
+    #include <float.h>
+#endif
+
+
 #ifndef WIN32
     #include <sys/time.h>
     #include <sys/resource.h>
@@ -111,6 +123,26 @@ int main(int argc, char **argv)
 		boinc_finish(rc);
 	}
 
+	// Floating Point Trapping. It is platform specific!
+	// This causes the program to crash on divison by zero,
+	// invalid operations, and overflows.
+    #ifdef LINUX
+        feenableexcept(FE_DIVBYZERO|FE_INVALID|FE_OVERFLOW);
+    #endif
+    #ifdef OSX
+        _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK()
+                               & ~_MM_MASK_INVALID 
+                               & ~_MM_MASK_DIV_ZERO
+                               & ~_MM_MASK_OVERFLOW);
+    #endif 
+    #ifdef WIN32
+        unsigned int cw;
+        cw  = _controlfp(0,0) & _MCW_EM;
+        cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
+        _controlfp(cw,_MCW_EM);
+    #endif
+
+
     #ifdef WIN32
     time_t beginTime = time(NULL);
     #else
@@ -134,6 +166,7 @@ int main(int argc, char **argv)
     #endif
 
     int bundleSize = getBundleSize();
+
     #ifndef NDEBUG
     printf("Bundle size of %i\n", bundleSize);
     #endif
@@ -152,7 +185,9 @@ int main(int argc, char **argv)
     }
 
     // System Information
-    #ifndef WIN32
+    #ifdef WIN32
+    printf("Windows\n");
+    #else
     struct utsname systemInfo;
     int status = uname(&systemInfo);
     if (status == 0) {
@@ -162,8 +197,6 @@ int main(int argc, char **argv)
     }else{
         printf("unknown\n");
     }
-    #else
-    printf("Windows\n");
     #endif
 
 
