@@ -30,9 +30,10 @@ public:
     ~Parameters();
     int load(string filename);
     int load(FILE *file);
-/** All input parameters. If one would use values different from the default values these should be specified in the file with the name set in (Constants::PARMS_FILE_NAME).*/
-    enum JobType {PROCESS_SEARCH, SADDLE_SEARCH, MINIMIZATION, PARALLEL_REPLICA, REPLICA_EXCHANGE, HESSIAN, DIMER_DR, DIMER_ROTATION, DISPLACEMENT_SAMPLING, TEST};
-    JobType jobType;
+
+/** input parameters.*/
+
+    long jobType; // indicate which type of job will be run
     long randomSeed; // seed for random generator
     long reactantStateTag; // tag to describe to which reactant state the saddle point connects
     long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
@@ -58,7 +59,7 @@ public:
     long saddleMaxJumpAttempts; // how many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what
     long saddleMaxIterations; // max iterations for saddle point searches and minimization [GH: fix comment]
     long saddleMaxIterationsConcave; // max iterations for saddle point searches and minimization [GH: fix comment]
-    long saddleLowestEigenmodeDetermination; // the algorithm to be used for lowest eigenmode determination; compare with values in Constants.cpp (now in SaddlePoint.h)
+    long saddleMinModeMethod; // the algorithm to be used for lowest eigenmode determination
     long saddleTypePerturbation; // displacement type to use; compare with values in Constants.cpp (now in SaddlePoint.h)
     double saddleConverged; // converge criterion during saddle point search [eV/A]
     double saddleMaxStepSize; // Max length of the norm of the displacement when positive eigenvalue [A]
@@ -66,7 +67,7 @@ public:
     double saddleNormPerturbation; // The norm or the perturbation vector [A]
     double saddleMaxSinglePerturbation; // max value of displacement in x, y and z direction for atoms being perturbated [A]
     double saddleWithinRadiusPerturbated; // Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePerturbation_SP_ [A]
-    double saddlePerpendicularForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
+    double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
     long hessianMaxSize; // if specified, the size of the hessian determined will be equal or smaller than this value
     int hessianKind;
@@ -108,6 +109,11 @@ public:
     bool   mdDephaseLoopStop;
     long   mdDephaseLoopMax;
 
+    long thermoType;
+    double thermoAndersenAlpha;
+    double thermoAndersenTcol;
+    double thermoNoseMass;
+
     bool   bondBoost;
     long   bondBoostRMDS;
     double bondBoostDVMAX;
@@ -115,12 +121,6 @@ public:
     double bondBoostPRR; 
     double bondBoostQcut;
  
-    enum ThermoType {ANDERSEN,NOSE_HOVER};
-    ThermoType thermoType;
-    double thermoAndersenAlpha;
-    double thermoAndersenTcol;
-    double thermoNoseMass;
-
 private:
     string toLowerCase(string s);
 
