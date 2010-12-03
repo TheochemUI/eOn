@@ -82,13 +82,15 @@ Parameters::Parameters(){
     mdTimeStep = 0.1;
     mdTemperature = 300.0;
     mdSteps = 1000;
-    mdDephaseSteps = 200;
     mdMaxMovedDist = 2.0;
     mdRefine = false;
     mdAutoStop = false;
     mdRefineAccuracy = 10;
     mdCheckFreq = 500;
     mdRelaxSteps = 500;
+    mdDephaseSteps = 200;
+    mdDephaseLoopStop = false;
+    mdDephaseLoopMax = 5;
 
     // default parameters used by hyperdynamics
     bondBoost = false ;
@@ -255,7 +257,9 @@ int Parameters::load(FILE *file){
         mdRefineAccuracy = ini.GetValueL("Dynamics","RefineAccuracy",mdRefineAccuracy);
         mdCheckFreq = ini.GetValueL("Dynamics","CheckFreq", mdCheckFreq);
         mdRelaxSteps = ini.GetValueL("Dynamics","newRelaxStep",mdRelaxSteps);
-
+        mdDephaseLoopStop = ini.GetValueB("Dynamics","Dephase_LoopStop",mdDephaseLoopStop);
+        mdDephaseLoopMax = ini.GetValueL("Dynamics","Dephase_LoopMax",mdDephaseLoopMax);
+         
         lanczosConvergence = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergence);
         lanczosIteration = ini.GetValueL("Lanczos", "ITERATION", lanczosIteration);
 

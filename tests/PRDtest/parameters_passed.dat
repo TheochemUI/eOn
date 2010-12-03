@@ -22,10 +22,8 @@ POTENTIAL_NO_TRANSLATION=1
 [Dynamics]
 TIMESTEP=0.2
 TEMPERATURE=350.0
-mdSTEPS=200000
-Dephase_Steps=10
-Dephase_Constrain=2
-Dephase_CheckType=1
+mdSTEPS=20000
+Dephase_Steps=1000
 #PRD_MaxMovedDist=8
 mdRefine=1
 mdAutoStop=1
@@ -44,5 +42,4 @@ Qcut=3.0
 [Thermo]
 ThermoType=1
 NoseMass=1.5
-Andersen_Alpha=0.1
 Andersen_Tcol=10.0
