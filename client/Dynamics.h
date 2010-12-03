@@ -24,6 +24,12 @@ USING_PART_OF_NAMESPACE_EIGEN
 class Dynamics {
 
 public:
+
+    enum{
+        ANDERSEN,
+        NOSE_HOVER
+    };
+
     /** Constructor to be used when a structure is minimized.
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
     @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.*/
@@ -37,7 +43,7 @@ public:
     void fullSteps(double temperature); 
     void andersen(double temperature);
     void velocityScale(double temperature);
-    void nosehoverVerlet(double temperature);
+    void noseHoverVerlet(double temperature);
 
 
 private:

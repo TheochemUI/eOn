@@ -12,6 +12,9 @@
 #include <time.h>
 #include "Parameters.h"
 #include "Hessian.h"
+#include "Job.h"
+#include "Dynamics.h"
+#include "SaddlePoint.h"
 #include "INIFile.h"
 #include "HelperFunctions.h"
 
@@ -19,7 +22,7 @@ Parameters::Parameters(){
 
     // Default values
 
-    jobType = PROCESS_SEARCH;
+    jobType = Job::PROCESS_SEARCH;
     randomSeed = -1;
     reactantStateTag = 0;
     potentialTag = 1;
@@ -44,7 +47,7 @@ Parameters::Parameters(){
     // default parameters for saddle point determination
     saddleTypePerturbation = 1;
     saddleRefine = false;
-    saddleLowestEigenmodeDetermination = 1;
+    saddleMinModeMethod = SaddlePoint::MINMODE_DIMER;
     saddleConverged = 0.025;
     saddleMaxJumpAttempts = 0;
     saddleMaxStepSize = 0.2;
@@ -54,7 +57,7 @@ Parameters::Parameters(){
     saddleMaxSinglePerturbation = 0.1;
     saddleMaxIterations = 512;
     saddleMaxIterationsConcave = 256;
-    saddlePerpendicularForceRatio = 0.0;
+    saddlePerpForceRatio = 0.0;
 
     // default parameters for Hessian determination
     hessianKind = 0;
@@ -101,7 +104,7 @@ Parameters::Parameters(){
     bondBoostRMDS = 0;
 
     // default parameters used by thermostat
-    thermoType = ANDERSEN;
+    thermoType = Dynamics::ANDERSEN;
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10; // collision frequency in unit of dt
     thermoNoseMass = 0;
@@ -177,25 +180,25 @@ int Parameters::load(FILE *file){
         jobTypeString = ini.GetValue("Default", "JOB_TYPE", "processsearch");
         jobTypeString = toLowerCase(jobTypeString);
         if (jobTypeString == "processsearch") {
-            jobType = PROCESS_SEARCH;
+            jobType = Job::PROCESS_SEARCH;
         }else if (jobTypeString == "saddlesearch") {
-            jobType = SADDLE_SEARCH;
+            jobType = Job::SADDLE_SEARCH;
         }else if (jobTypeString == "minimization") {
-            jobType = MINIMIZATION;
+            jobType = Job::MINIMIZATION;
         }else if (jobTypeString == "hessian") {
-            jobType = HESSIAN;
+            jobType = Job::HESSIAN;
         }else if (jobTypeString == "parallelreplica"){
-            jobType = PARALLEL_REPLICA;
+            jobType = Job::PARALLEL_REPLICA;
         }else if (jobTypeString == "replicaexchange"){
-            jobType = REPLICA_EXCHANGE;         
+            jobType = Job::REPLICA_EXCHANGE;         
         }else if (jobTypeString == "dimerdr"){
-            jobType = DIMER_DR;
+            jobType = Job::DIMER_DR;
         }else if (jobTypeString == "dimerrotation"){
-            jobType = DIMER_ROTATION;
+            jobType = Job::DIMER_ROTATION;
         }else if (jobTypeString == "displacementsampling"){
-            jobType = DISPLACEMENT_SAMPLING;
+            jobType = Job::DISPLACEMENT_SAMPLING;
         }else if (jobTypeString == "test"){
-            jobType = TEST;
+            jobType = Job::TEST;
         }
         else{
             fprintf(stderr, "Unknown JOB_TYPE: %s\n", jobTypeString.c_str());
@@ -205,8 +208,14 @@ int Parameters::load(FILE *file){
         processSearchMinimizeFirst = ini.GetValueL("ProcessSearch", "minimize_first", processSearchMinimizeFirst);
         saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
+        string minModeType = ini.GetValue("dimer", "lanczos");
+        minModeType = toLowerCase(minModeType);
+        if(minModeType == "dimer"){
+            saddleMinModeMethod = SaddlePoint::MINMODE_DIMER;
+        }else if(minModeType == "lanczos"){
+            saddleMinModeMethod = SaddlePoint::MINMODE_LANCZOS;
+        }
         saddleTypePerturbation = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION", saddleTypePerturbation);
-        saddleLowestEigenmodeDetermination = ini.GetValueL("Saddle_Point", "LOWEST_EIGENMODE_DETERMINATION", saddleLowestEigenmodeDetermination);
         saddleRefine = ini.GetValueB("Saddle_Point", "REFINE", saddleRefine); 
         saddleConverged = ini.GetValueF("Saddle_Point", "CONVERGED", saddleConverged);
         saddleMaxJumpAttempts = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS", saddleMaxJumpAttempts);
@@ -217,7 +226,7 @@ int Parameters::load(FILE *file){
         saddleWithinRadiusPerturbated = ini.GetValueF("Saddle_Point", "WITHIN_RADIUS_PERTURBATED", saddleWithinRadiusPerturbated);
         saddleMaxIterations = ini.GetValueL("Saddle_Point", "MAX_ITERATIONS", saddleMaxIterations);
         saddleMaxIterations = ini.GetValueL("Saddle_Point", "MAX_ITERATIONS_CONCAVE", saddleMaxIterationsConcave);
-        saddlePerpendicularForceRatio = ini.GetValueF("Default", "PERPENDICULAR_FORCE_RATIO", saddlePerpendicularForceRatio);
+        saddlePerpForceRatio = ini.GetValueF("Default", "perp_force_ratio", saddlePerpForceRatio);
 
         string hessianType = ini.GetValue("Hessian", "Type", "reactant");
         hessianType = toLowerCase(hessianType);
@@ -238,6 +247,9 @@ int Parameters::load(FILE *file){
         dimerWindowLow = ini.GetValueF("Dimer", "WINDOW_LOW", dimerWindowLow);
         dimerSeparation = ini.GetValueF("Dimer", "SEPARATION", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "ANGLE", dimerRotationAngle);
+
+        lanczosConvergence = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergence);
+        lanczosIteration = ini.GetValueL("Lanczos", "ITERATION", lanczosIteration);
 
         displaceNSamples = ini.GetValueL("DisplacementSampling", "NSAMPLES", displaceNSamples);
         displaceIterMax = ini.GetValueL("DisplacementSampling", "ITERMAX", displaceIterMax);
@@ -260,8 +272,17 @@ int Parameters::load(FILE *file){
         mdDephaseLoopStop = ini.GetValueB("Dynamics","Dephase_LoopStop",mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics","Dephase_LoopMax",mdDephaseLoopMax);
          
-        lanczosConvergence = ini.GetValueF("Lanczos", "CONVERGENCE", lanczosConvergence);
-        lanczosIteration = ini.GetValueL("Lanczos", "ITERATION", lanczosIteration);
+        string thermoTypeString;
+        thermoTypeString = ini.GetValue("Dynamics", "thermo_type", "andersen");
+        thermoTypeString = toLowerCase(thermoTypeString);
+        if (thermoTypeString == "andersen") {
+            thermoType = Dynamics::ANDERSEN;
+        }else if (thermoTypeString == "nosehover") {
+            thermoType = Dynamics::NOSE_HOVER;
+        }
+        thermoAndersenAlpha = ini.GetValueF("Dynamics","ANDERSEN_ALPHA",thermoAndersenAlpha);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","ANDERSEN_TCOL",thermoAndersenTcol);
+        thermoNoseMass = ini.GetValueF("Dynamics","NoseMass",thermoNoseMass);
 
         bondBoost = ini.GetValueB("Hyper","BondBoost",bondBoost);
         bondBoostRMDS = ini.GetValueL("Hyper","RMDS",bondBoostRMDS);
@@ -272,17 +293,6 @@ int Parameters::load(FILE *file){
 
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
-        string thermoTypeString;
-        thermoTypeString = ini.GetValue("Default", "THERMO_TYPE", "andersen");
-        thermoTypeString = toLowerCase(thermoTypeString);
-        if (thermoTypeString == "andersen") {
-            thermoType = ANDERSEN;
-        }else if (thermoTypeString == "nosehover") {
-            thermoType = NOSE_HOVER;
-        }
-        thermoAndersenAlpha = ini.GetValueF("Thermo","ANDERSEN_ALPHA",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Thermo","ANDERSEN_TCOL",thermoAndersenTcol);
-        thermoNoseMass = ini.GetValueF("Thermo","NoseMass",thermoNoseMass);
     }
     else
     {
