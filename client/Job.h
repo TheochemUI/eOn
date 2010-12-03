@@ -12,6 +12,18 @@
 #define JOB_H
 class Job { 
     public:
+        enum{
+            PROCESS_SEARCH,
+            SADDLE_SEARCH,
+            MINIMIZATION,
+            PARALLEL_REPLICA,
+            REPLICA_EXCHANGE,
+            HESSIAN,
+            DIMER_DR,
+            DIMER_ROTATION,
+            DISPLACEMENT_SAMPLING,
+            TEST
+        };
         virtual ~Job() {}
         virtual void run(int bundleNumber)=0;
 };

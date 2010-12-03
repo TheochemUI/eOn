@@ -39,13 +39,13 @@ Dynamics::~Dynamics()
 void Dynamics::oneStep(double temperature)
 {
     andersen(temperature);
-    if(parameters->thermoType == parameters->ANDERSEN){
+    if(parameters->thermoType == ANDERSEN){
        andersen(temperature);
        verletStep1();
        verletStep2();
     }
-    else if(parameters->thermoType == parameters->NOSE_HOVER){
-       nosehoverVerlet(temperature);
+    else if(parameters->thermoType == NOSE_HOVER){
+       noseHoverVerlet(temperature);
     }
     return;
 }
@@ -189,7 +189,7 @@ void Dynamics::velocityScale(double temperature)
     return;
 }
 
-void Dynamics::nosehoverVerlet(double temperature){
+void Dynamics::noseHoverVerlet(double temperature){
     double smass = parameters->thermoNoseMass;
     Matrix<double, Eigen::Dynamic, 3> v;
     Matrix<double, Eigen::Dynamic, 3> p;

@@ -21,28 +21,6 @@ USING_PART_OF_NAMESPACE_EIGEN
 
 using namespace std;
 
-// Return codes passed from server to client to indicate calculation status
-#define statusGood  0
-#define statusInit  1
-#define statusBadNoConvex  2
-#define statusBadHighEnergy  3
-#define statusBadMaxConcaveIterations  4
-#define statusBadMaxIterations  5
-#define statusBadNotConnected  6
-#define statusBadPrefactor  7
-#define statusBadHighBarrier  8
-#define statusBadMinima  9
-
-// Constants used to displace atoms before a saddle search
-#define dispNone  0
-#define dispNotFccOrHcp  1
-#define dispMinCoordinated  2
-#define dispLastAtom  3
-
-// Constants used to determine minmode following method
-#define minmodeDimer  1
-#define minmodeLanczos  2
-
 class Matter;
 class Parameters;
 class LowestEigenmodeInterface;
@@ -50,6 +28,34 @@ class LowestEigenmodeInterface;
 /** Rely on the dimer method for saddle point determination. The object rely on an object being able to determine the lowest eigenmode and a function to determine where a displacement prior the saddle point search should be centered.*/
 class SaddlePoint {
 public:
+
+    // Return codes passed from server to client to indicate calculation status
+    enum{
+        statusGood=0,
+        statusInit,
+        statusBadNoConvex,
+        statusBadHighEnergy,
+        statusBadMaxConcaveIterations,
+        statusBadMaxIterations,
+        statusBadNotConnected,
+        statusBadPrefactor,
+        statusBadHighBarrier,
+        statusBadMinima
+    };
+
+    // Constants used to displace atoms before a saddle search
+    enum{
+        dispNone=0,
+        dispNotFccOrHcp,
+        dispMinCoordinated,
+        dispLastAtom
+    };
+
+    // Methods for finding the minimum mode
+    enum{
+        MINMODE_DIMER,
+        MINMODE_LANCZOS
+    };
  
     SaddlePoint(); // The object shall be initialized later with SaddlePoint::initialize
  
@@ -57,7 +63,7 @@ public:
     @param[in]  initial      Pointer to where the initial state (minimum) shall be stored.
     @param[in]  saddle       Pointer to where the conformation where to start the saddle point search. It will also be used to return the saddle point.
     @param[in]  *parameters  Pointer to the Parameter object containing the runtime parameters */
-    SaddlePoint(Matter * initial, Matter *saddle, Parameters *parameters);
+    SaddlePoint(Matter *initial, Matter *saddle, Parameters *parameters);
 
     ~SaddlePoint(); // destructor
 
@@ -66,7 +72,7 @@ public:
     @param[in]  *saddle      Where to start the saddle point search (may be equal to initial)
     @param[in]  *parameters  Pointer to the Parameter object containing the runtime parameters
     */
-    void initialize(Matter * initial, Matter *saddle, Parameters *parameters);
+    void initialize(Matter *initial, Matter *saddle, Parameters *parameters);
 
     /** Try to determine a nearby saddle point
     @param[out]  *min1     Pointer to Matter object containing one of the minima connected to the saddle point
@@ -87,7 +93,7 @@ public:
     long forceCallsMinimization;
 
 private:
-    Matter * initial;
+    Matter *initial;
     Matter *saddle; // pointer to atom object outside the scope of the class
     Parameters *parameters; // pointer to a structure outside the scope of the class containing runtime parameters
     LowestEigenmodeInterface *lowestEigenmode; // pointer to the method used to determine the lowest eigenmode
