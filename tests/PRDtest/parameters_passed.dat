@@ -9,7 +9,7 @@ JOB_TYPE=PARALLELREPLICA
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
 
-MAX_DIFFERENCE_POS=1.5
+MAX_DIFFERENCE_POS=1.0
 
 # describtion POTENTIAL_TAG
 POTENTIAL_TAG= 3
@@ -22,13 +22,12 @@ POTENTIAL_NO_TRANSLATION=1
 [Dynamics]
 TIMESTEP=0.2
 TEMPERATURE=350.0
-mdSTEPS=20000
+mdSTEPS=50000
 Dephase_Steps=1000
-#PRD_MaxMovedDist=8
 mdRefine=1
 mdAutoStop=1
 RefineAccuracy=5
-CheckFreq=1000
+CHECKSTEP=1000
 NewRelaxStep=500
 
 [Hyper]

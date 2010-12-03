@@ -86,7 +86,7 @@ Parameters::Parameters(){
     mdRefine = false;
     mdAutoStop = false;
     mdRefineAccuracy = 10;
-    mdCheckFreq = 500;
+    mdCheckFreq = 1000;
     mdRelaxSteps = 500;
     mdDephaseSteps = 200;
     mdDephaseLoopStop = false;

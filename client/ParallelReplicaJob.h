@@ -37,6 +37,7 @@ class ParallelReplicaJob: public Job
         long min_fcalls;
         long md_fcalls;
         long dh_fcalls;
+        long rf_fcalls;
         long nsteps;
         long nsteps_refined;
         long check_steps;
