@@ -105,7 +105,7 @@ int ProcessSearchJob::doProcessSearch(void)
     status = saddlePoint->locate(min1, min2);
     fCallsSaddle += Potentials::fcalls - f1;
 
-    if (status != SaddlePoint::statusInit) {
+    if (status != SaddlePoint::STATUS_INIT) {
         return status;
     }
 
@@ -123,7 +123,7 @@ int ProcessSearchJob::doProcessSearch(void)
             // the isItConverged in Matter doesn't work so this needs to be fixed.
             // return statusBadMinima;
         }
-        return SaddlePoint::statusBadNotConnected;
+        return SaddlePoint::STATUS_BAD_NOT_CONNECTED;
     }
 
     //if((!min1->isItConverged(parameters->convergedRelax)))
@@ -138,7 +138,7 @@ int ProcessSearchJob::doProcessSearch(void)
     if (*initial==*min2) {
         /* both minima are the initial state */
         printf("both minima are the initial state");
-        return SaddlePoint::statusBadNotConnected;
+        return SaddlePoint::STATUS_BAD_NOT_CONNECTED;
     }
 
 
@@ -148,7 +148,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if((parameters->saddleMaxEnergy < barriersValues[0]) || 
        (parameters->saddleMaxEnergy < barriersValues[1])) {
-        return SaddlePoint::statusBadHighBarrier;
+        return SaddlePoint::STATUS_BAD_HIGH_BARRIER;
     }
 
     /* Perform the dynamical matrix caluclation */
@@ -157,17 +157,17 @@ int ProcessSearchJob::doProcessSearch(void)
     reactModes = hessian->getModes(Hessian::REACTANT);
     if(reactModes.size() == 0)
     {
-        return SaddlePoint::statusBadPrefactor;
+        return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
     saddleModes = hessian->getModes(Hessian::SADDLE);
     if(saddleModes.size() == 0)
     {
-        return SaddlePoint::statusBadPrefactor;
+        return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
     prodModes = hessian->getModes(Hessian::PRODUCT);
     if(prodModes.size() == 0)
     {
-        return SaddlePoint::statusBadPrefactor;
+        return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
     fCallsPrefactors += Potentials::fcalls - f1; 
 
@@ -193,14 +193,14 @@ int ProcessSearchJob::doProcessSearch(void)
     /* Check that the prefactors are in the correct range */
     if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
        (prefactorsValues[0]<parameters->hessianPrefactorMin)){
-        return SaddlePoint::statusBadPrefactor;
+        return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
     if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
        (prefactorsValues[1]<parameters->hessianPrefactorMin)){
-        return SaddlePoint::statusBadPrefactor;
+        return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
 
-    return SaddlePoint::statusGood;
+    return SaddlePoint::STATUS_GOOD;
 }
 
 void ProcessSearchJob::saveData(int status, int bundleNumber){
@@ -277,30 +277,31 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
 
 void ProcessSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
-    if(status == SaddlePoint::statusGood)
+    if(status == SaddlePoint::STATUS_GOOD)
         fprintf(stdout, "Successful.\n");
 
-    else if(status == SaddlePoint::statusBadNoConvex)
+    else if(status == SaddlePoint::STATUS_BAD_NO_CONVEX)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
    
-    else if(status == SaddlePoint::statusBadHighEnergy)
+    else if(status == SaddlePoint::STATUS_BAD_HIGH_ENERGY)
         fprintf(stdout, "Saddle search, barrier too high.\n");
         
-    else if(status == SaddlePoint::statusBadMaxConcaveIterations) 
+    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS) 
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
-    else if(status == SaddlePoint::statusBadMaxIterations)
+    else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
 
-    else if(status == SaddlePoint::statusBadNotConnected)
+    else if(status == SaddlePoint::STATUS_BAD_NOT_CONNECTED)
         fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
 
-    else if(status == SaddlePoint::statusBadPrefactor)
+    else if(status == SaddlePoint::STATUS_BAD_PREFACTOR)
             fprintf(stdout, "Prefactors, not within window as defined in Constants\n");
 
-    else if(status == SaddlePoint::statusBadHighBarrier)
+    else if(status == SaddlePoint::STATUS_BAD_HIGH_BARRIER)
         fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
-    else if (status == SaddlePoint::statusBadMinima)
+
+    else if (status == SaddlePoint::STATUS_BAD_MINIMA)
         fprintf(stdout, "Minima were not able to be matched to the initial reactant\n"
                 "because they did not converge\n");
     else

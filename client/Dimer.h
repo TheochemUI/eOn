@@ -26,12 +26,10 @@ USING_PART_OF_NAMESPACE_EIGEN
 
 #define PI 3.141592653589793
 
-/** Use the dimer method to estimate the lowest eigenvector of the Hessian and its corresponding eigenvalue (curvature). In this version a 'fictive' dimer is used, only one dimer configuration is calculated explicitly whereas the other configuration is estimated with forward differencing relative to the center of the dimer*/
+// The dimer method to find the lowest curvature mode
 class Dimer : public LowestEigenmodeInterface{
+
 public:
-    /** Constructor where object is initialized.
-    @param[in]      *matter                    Pointer to Matter object. Only used to initialize the dimer object. The pointer is not stored.
-    @param[in]      *parameters                Pointer to the Parameter object containing the runtime parameters.*/    
     Dimer(Matter const *matter, Parameters *parameters);
     
     ~Dimer();///< Destructor.
@@ -48,8 +46,8 @@ private:
     Matter *matterInitial;///< Used for the center of the dimer.
     Matter *matterDimer;///< Used for the one of the configurations defining the dimer.
     Matrix<double, Eigen::Dynamic, 3> directionNorm;///< Direction descring how matterDimer_ is displaced relative to matterInitial_.
-    Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNorm;///< Used to store the normal of plane in which the dimer is ratated.
-    double eigenvalue;///< An estimate for the lowest eigenvale, its most important feature is wheter it is negative (concave region) or positive (convex region).
+    Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNorm;///< Used to store the normal of plane in which the dimer is rotated.
+    double eigenvalue;///< An estimate for the lowest eigenvalue, its most important feature is wheter it is negative (concave region) or positive (convex region).
     long nFreeCoord;///< Number of free coordinates.
     int nAtoms;
     Parameters *parameters;///< Pointer to the runtime parameters. Note that the structure is used to store how many force calls that was used in the locating the eigenmodes.

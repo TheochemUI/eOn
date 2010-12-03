@@ -71,7 +71,7 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
             exit(EXIT_FAILURE);
         #endif
     }
-    status = statusInit;
+    status = STATUS_INIT;
 
     return;
 }
@@ -142,12 +142,12 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
     }
     fprintf(stdout, "  Saddle point displaced.\n");
 
-    if(status == statusInit)
+    if(status == STATUS_INIT)
     {
        searchForSaddlePoint(initialEnergy);
     }
         
-    if(status == statusInit)
+    if(status == STATUS_INIT)
     {
         fprintf(stdout, "    Saddle point determined.\n");        
         relaxFromSaddle(min1, min2);
@@ -176,15 +176,15 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     Matrix<double, Eigen::Dynamic, 3> initialDisplacement(nAtoms, 3);
     initialDisplacement.setZero(); 
 
-    if(parameters->saddleTypePerturbation == dispNotFccOrHcp)
+    if(parameters->saddleDisplacementType == DISP_NOT_FCC_OR_HCP)
     {
         indexEpiCenter = EpiCenters::cnaEpiCenter(matter, parameters->neighborCutoff);
     }
-    else if(parameters->saddleTypePerturbation == dispLastAtom)
+    else if(parameters->saddleDisplacementType == DISP_LAST_ATOM)
     {
         indexEpiCenter = EpiCenters::lastAtom(matter);
     }
-    else if(parameters->saddleTypePerturbation == dispMinCoordinated)
+    else if(parameters->saddleDisplacementType == DISP_MIN_COORDINATED)
     {
         indexEpiCenter = EpiCenters::minCoordinatedEpiCenter(matter, parameters->neighborCutoff);
     }
@@ -269,7 +269,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
 
     // Displace saddle point configuration along the lowest eigenmode and minimize
     *min1 = *saddle;
-    //XXX: the distance displced from the saddle should be a parameter
+    //XXX: the distance displaced from the saddle should be a parameter
     displacedPos = posSaddle - eigenMode * 0.2;
     min1->setPositions(displacedPos);
     ConjugateGradients cgMin1(min1, parameters);
@@ -302,7 +302,7 @@ void SaddlePoint::jumpToConvexRegion(){
 
     forceCallsSaddle = saddle->getForceCalls();
 
-    if(parameters->saddleTypePerturbation!=dispNone){
+    if(parameters->saddleDisplacementType!=DISP_NONE){
         do{
             saddle->setPositions(pos);
             displaceStateAndSetMode(saddle);
@@ -315,7 +315,7 @@ void SaddlePoint::jumpToConvexRegion(){
                (iterations < parameters->saddleMaxJumpAttempts));
     }
     if(0 < eigenValue)
-        status = statusBadNoConvex;
+        status = STATUS_BAD_NO_CONVEX;
 
     forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
     addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
@@ -436,11 +436,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     {
         if(parameters->saddleMaxIterations <= iterations) 
         {
-            status = statusBadMaxIterations;
+            status = STATUS_BAD_MAX_ITERATIONS;
         }
         if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy) 
         {
-            status = statusBadHighBarrier;
+            status = STATUS_BAD_HIGH_BARRIER;
         }
     }
     return; 
