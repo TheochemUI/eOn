@@ -86,7 +86,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     
     if(newstate){
         printf("New state has been found\n");
-        printf("Transition Time: %.2e\n", SPtime*1e-15);
+        printf("Transition Time: %.2e s\n", SPtime*1.018e-14);
     }else{
        printf("New state has not been found in this %ld dynamics steps (%.2f fs)\n",
             parameters->mdSteps,10.18*parameters->mdSteps*parameters->mdTimeStep);
@@ -136,7 +136,7 @@ void ParallelReplicaJob::dynamics()
         if(boost && !newstate){
             SPtime += Bbm.boost();
         }
-        else{ SPtime += 10.18*parameters->mdTimeStep;}
+        else{ SPtime += parameters->mdTimeStep;}
                 
         kinE = reactant->getKineticEnergy();
         kinT = (2*kinE/nFreeCoord/kb); 
@@ -318,9 +318,9 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     long total_fcalls = min_fcalls + md_fcalls + dh_fcalls + rf_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
-    //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
-    fprintf(fileResults, "%e transition_time\n", SPtime*1e-15);
-    //fprintf(fileResults, "%e relax_time\n", RLtime*1e-15);
+    //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-14);
+    fprintf(fileResults, "%e transition_time_s\n", SPtime*1.018e-14);
+    //fprintf(fileResults, "%e relax_time\n", RLtime*1e-14);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
