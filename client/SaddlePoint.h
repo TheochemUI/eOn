@@ -25,30 +25,34 @@ class Matter;
 class Parameters;
 class LowestEigenmodeInterface;
 
-/** Rely on the dimer method for saddle point determination. The object rely on an object being able to determine the lowest eigenmode and a function to determine where a displacement prior the saddle point search should be centered.*/
-class SaddlePoint {
+/** Find a saddle point using a minimum mode following method.
+    Requires a function to determine the epicenter of atomic displacements from a minimum.
+    Requires a method to find the minimum mode */
+class SaddlePoint
+{
+
 public:
 
     // Return codes passed from server to client to indicate calculation status
     enum{
-        statusGood=0,
-        statusInit,
-        statusBadNoConvex,
-        statusBadHighEnergy,
-        statusBadMaxConcaveIterations,
-        statusBadMaxIterations,
-        statusBadNotConnected,
-        statusBadPrefactor,
-        statusBadHighBarrier,
-        statusBadMinima
+        STATUS_GOOD,
+        STATUS_INIT,
+        STATUS_BAD_NO_CONVEX,
+        STATUS_BAD_HIGH_ENERGY,
+        STATUS_BAD_MAX_CONCAVE_ITERATIONS,
+        STATUS_BAD_MAX_ITERATIONS,
+        STATUS_BAD_NOT_CONNECTED,
+        STATUS_BAD_PREFACTOR,
+        STATUS_BAD_HIGH_BARRIER,
+        STATUS_BAD_MINIMA,
     };
 
     // Constants used to displace atoms before a saddle search
     enum{
-        dispNone=0,
-        dispNotFccOrHcp,
-        dispMinCoordinated,
-        dispLastAtom
+        DISP_NONE,
+        DISP_NOT_FCC_OR_HCP,
+        DISP_MIN_COORDINATED,
+        DISP_LAST_ATOM
     };
 
     // Methods for finding the minimum mode
@@ -59,25 +63,20 @@ public:
  
     SaddlePoint(); // The object shall be initialized later with SaddlePoint::initialize
  
-    /** Constructor where object is initialized.
-    @param[in]  initial      Pointer to where the initial state (minimum) shall be stored.
-    @param[in]  saddle       Pointer to where the conformation where to start the saddle point search. It will also be used to return the saddle point.
-    @param[in]  *parameters  Pointer to the Parameter object containing the runtime parameters */
+    /** Constructor
+    @param[in]  initial      initial state minimum
+    @param[in]  saddle       conformation where to start the saddle point search; also used to return the final saddle point.
+    @param[in]  *parameters  runtime parameters */
     SaddlePoint(Matter *initial, Matter *saddle, Parameters *parameters);
 
     ~SaddlePoint(); // destructor
 
-    /** Initialized the object.
-    @param[in]  *initial     Initial state (minimum)
-    @param[in]  *saddle      Where to start the saddle point search (may be equal to initial)
-    @param[in]  *parameters  Pointer to the Parameter object containing the runtime parameters
-    */
     void initialize(Matter *initial, Matter *saddle, Parameters *parameters);
 
-    /** Try to determine a nearby saddle point
-    @param[out]  *min1     Pointer to Matter object containing one of the minima connected to the saddle point
-    @param[out]  *min2     Pointer to Matter object containing the other minima connected to the saddle point
-    The values returned is true if the calculation converged.*/
+    /** Determine a nearby saddle point
+    @param[out]  *min1     one of the minima connected to the saddle point
+    @param[out]  *min2     the other minima connected to the saddle point
+    The value returned is true if the calculation converges. */
     long locate(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
     long getnFreeCoord() const;
@@ -94,24 +93,24 @@ public:
 
 private:
     Matter *initial;
-    Matter *saddle; // pointer to atom object outside the scope of the class
-    Parameters *parameters; // pointer to a structure outside the scope of the class containing runtime parameters
-    LowestEigenmodeInterface *lowestEigenmode; // pointer to the method used to determine the lowest eigenmode
+    Matter *saddle;
+    Parameters *parameters;
+    LowestEigenmodeInterface *lowestEigenmode; // method used to determine the lowest eigenmode
  
-    double eigenValue; // containing an estimate for the lowest eigenvalue
-    Matrix<double, Eigen::Dynamic, 3> eigenMode; // double array for the lowest eigenmode
-    Matrix<double, Eigen::Dynamic, 3> initialDisplacement; //RT: used to keep track of the initial displacement
+    double eigenValue; // estimate for the lowest eigenvalue
+    Matrix<double, Eigen::Dynamic, 3> eigenMode; // lowest eigenmode
+    Matrix<double, Eigen::Dynamic, 3> initialDisplacement;
     long nFreeCoord; // number of free coordinates
-    long status; // keep track of where problems occured
+    long status;
 
     void clean(); // clean up dynamical allocated memory
 
-    void displaceStateAndSetMode(Matter *matter); // displacing the atomic positions in @matter according to values in Parameters, being centered on the atom determined by one of the EpiCenter functions and set the initial mode accordingly  
-    Matrix<double, Eigen::Dynamic, 3> correctingForces(Matrix<double, Eigen::Dynamic, 3> force); // projected min-mode force
+    void displaceStateAndSetMode(Matter *matter); // make a displacement of atoms centered on the EpiCenter atom and set the initial mode accordingly  
+    Matrix<double, Eigen::Dynamic, 3> correctingForces(Matrix<double, Eigen::Dynamic, 3> force); // projected minmode force
 
-    /** Determine the two minima connected to the saddle point, by displacing the positions in the saddle point by either adding or subtracting a part of the lowest eigenmode
-    @param[out]  *min1   Matter object containing one of the minima connected to the saddle point
-    @param[out]  *min2   Matter object containing other of the minima connected to the saddle point */
+    /** Determine the two minima connected to the saddle point by displacing forward and backward along the lowest eigenmode from the saddle and minimizing
+    @param[out]  *min1   one minima connected to the saddle point
+    @param[out]  *min2   the other minima connected to the saddle point */
     void relaxFromSaddle(Matter *min1, Matter *min2);
 
     void jumpToConvexRegion();

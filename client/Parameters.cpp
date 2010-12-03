@@ -45,7 +45,7 @@ Parameters::Parameters(){
     processSearchMinimizeFirst = 0;
 
     // default parameters for saddle point determination
-    saddleTypePerturbation = 1;
+    saddleDisplacementType = SaddlePoint::DISP_MIN_COORDINATED;
     saddleRefine = false;
     saddleMinModeMethod = SaddlePoint::MINMODE_DIMER;
     saddleConverged = 0.025;
@@ -55,8 +55,7 @@ Parameters::Parameters(){
     saddleNormPerturbation = 0.1;
     saddleWithinRadiusPerturbated = 4.0;
     saddleMaxSinglePerturbation = 0.1;
-    saddleMaxIterations = 512;
-    saddleMaxIterationsConcave = 256;
+    saddleMaxIterations = 1000;
     saddlePerpForceRatio = 0.0;
 
     // default parameters for Hessian determination
@@ -168,34 +167,34 @@ int Parameters::load(FILE *file){
         printf("Random seed is: %ld\n", randomSeed);
 
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
-        potentialNoTranslation = ini.GetValueL("Default", "POTENTIAL_NO_TRANSLATION", potentialNoTranslation);
-        minimizeOnly = ini.GetValueL("Default", "MINIMIZE_ONLY", minimizeOnly);
-        minimizeBox = ini.GetValueL("Default", "MINIMIZE_BOX", minimizeBox);
-        convergedRelax = ini.GetValueF("Default", "CONVERGED_RELAX", convergedRelax);
-        maximumIterations = ini.GetValueL("Default", "MAXIMUM_ITERATIONS", maximumIterations);
-        maxDifferencePos = ini.GetValueF("Default", "MAX_DIFFERENCE_POS", maxDifferencePos);
-        neighborCutoff = ini.GetValueF("Default", "NEIGHBOR_CUTOFF", neighborCutoff);
+        potentialNoTranslation = ini.GetValueL("Default", "potential_no_translation", potentialNoTranslation);
+        minimizeOnly = ini.GetValueL("Default", "minimize_only", minimizeOnly);
+        minimizeBox = ini.GetValueL("Default", "minimze_box", minimizeBox);
+        convergedRelax = ini.GetValueF("Default", "converged_relax", convergedRelax);
+        maximumIterations = ini.GetValueL("Default", "maximum_iterations", maximumIterations);
+        maxDifferencePos = ini.GetValueF("Default", "max_difference_pos", maxDifferencePos);
+        neighborCutoff = ini.GetValueF("Default", "neighbor_cutoff", neighborCutoff);
 
         string jobTypeString;
-        jobTypeString = ini.GetValue("Default", "JOB_TYPE", "processsearch");
+        jobTypeString = ini.GetValue("Default", "job_type", "process_search");
         jobTypeString = toLowerCase(jobTypeString);
-        if (jobTypeString == "processsearch") {
+        if (jobTypeString == "process_search") {
             jobType = Job::PROCESS_SEARCH;
-        }else if (jobTypeString == "saddlesearch") {
+        }else if (jobTypeString == "saddle_search") {
             jobType = Job::SADDLE_SEARCH;
         }else if (jobTypeString == "minimization") {
             jobType = Job::MINIMIZATION;
         }else if (jobTypeString == "hessian") {
             jobType = Job::HESSIAN;
-        }else if (jobTypeString == "parallelreplica"){
+        }else if (jobTypeString == "parallel_replica"){
             jobType = Job::PARALLEL_REPLICA;
-        }else if (jobTypeString == "replicaexchange"){
+        }else if (jobTypeString == "replica_exchange"){
             jobType = Job::REPLICA_EXCHANGE;         
-        }else if (jobTypeString == "dimerdr"){
+        }else if (jobTypeString == "dimer_dr"){
             jobType = Job::DIMER_DR;
-        }else if (jobTypeString == "dimerrotation"){
+        }else if (jobTypeString == "dimer_rotation"){
             jobType = Job::DIMER_ROTATION;
-        }else if (jobTypeString == "displacementsampling"){
+        }else if (jobTypeString == "displacement_sampling"){
             jobType = Job::DISPLACEMENT_SAMPLING;
         }else if (jobTypeString == "test"){
             jobType = Job::TEST;
@@ -208,14 +207,24 @@ int Parameters::load(FILE *file){
         processSearchMinimizeFirst = ini.GetValueL("ProcessSearch", "minimize_first", processSearchMinimizeFirst);
         saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
-        string minModeType = ini.GetValue("dimer", "lanczos");
-        minModeType = toLowerCase(minModeType);
-        if(minModeType == "dimer"){
+        string minModeMethodString = ini.GetValue("Saddle_Point", "lanczos");
+        minModeMethodString = toLowerCase(minModeMethodString);
+        if(minModeMethodString == "dimer"){
             saddleMinModeMethod = SaddlePoint::MINMODE_DIMER;
-        }else if(minModeType == "lanczos"){
+        }else if(minModeMethodString == "lanczos"){
             saddleMinModeMethod = SaddlePoint::MINMODE_LANCZOS;
         }
-        saddleTypePerturbation = ini.GetValueL("Saddle_Point", "TYPE_PERTURBATION", saddleTypePerturbation);
+        string displacementTypeString = ini.GetValue("Saddle_Point", "displacement_method");
+        displacementTypeString = toLowerCase(displacementTypeString);
+        if(displacementTypeString == "none"){ 
+            saddleDisplacementType = SaddlePoint::DISP_NONE;
+        }else if(displacementTypeString == "not_fcc_or_hcp"){
+            saddleDisplacementType = SaddlePoint::DISP_NOT_FCC_OR_HCP;
+        }else if(displacementTypeString == "min_coordinated"){
+            saddleDisplacementType = SaddlePoint::DISP_MIN_COORDINATED;
+        }else if(displacementTypeString == "not_last_atom"){
+            saddleDisplacementType = SaddlePoint::DISP_LAST_ATOM;
+        }
         saddleRefine = ini.GetValueB("Saddle_Point", "REFINE", saddleRefine); 
         saddleConverged = ini.GetValueF("Saddle_Point", "CONVERGED", saddleConverged);
         saddleMaxJumpAttempts = ini.GetValueL("Saddle_Point", "MAX_JUMP_ATTEMPTS", saddleMaxJumpAttempts);
@@ -225,8 +234,7 @@ int Parameters::load(FILE *file){
         saddleMaxSinglePerturbation = ini.GetValueF("Saddle_Point", "MAX_SINGLE_PERTURBATION", saddleMaxSinglePerturbation);
         saddleWithinRadiusPerturbated = ini.GetValueF("Saddle_Point", "WITHIN_RADIUS_PERTURBATED", saddleWithinRadiusPerturbated);
         saddleMaxIterations = ini.GetValueL("Saddle_Point", "MAX_ITERATIONS", saddleMaxIterations);
-        saddleMaxIterations = ini.GetValueL("Saddle_Point", "MAX_ITERATIONS_CONCAVE", saddleMaxIterationsConcave);
-        saddlePerpForceRatio = ini.GetValueF("Default", "perp_force_ratio", saddlePerpForceRatio);
+        saddlePerpForceRatio = ini.GetValueF("Saddle_Point", "perp_force_ratio", saddlePerpForceRatio);
 
         string hessianType = ini.GetValue("Hessian", "Type", "reactant");
         hessianType = toLowerCase(hessianType);
