@@ -35,9 +35,9 @@ SaddlePoint::~SaddlePoint(){
     return;
 }
 
-SaddlePoint::SaddlePoint(Matter * initial_passed, Matter *saddlepassed, Parameters *parameterspassed){
+SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed){
     lowestEigenmode = 0;
-    initialize(initial_passed, saddlepassed, parameterspassed);
+    initialize(initialPassed, saddlePassed, parametersPassed);
     return;
 }
 
@@ -50,19 +50,19 @@ void SaddlePoint::clean(){
     return;
 }
 
-void SaddlePoint::initialize(Matter * initial_passed, Matter *saddlepassed, Parameters *parameterspassed)
+void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
 {
     clean();
-    initial=initial_passed;
-    saddle = saddlepassed;
-    parameters = parameterspassed;
-    eigenMode.resize(saddlepassed->numberOfAtoms(), 3);
+    initial=initialPassed;
+    saddle = saddlePassed;
+    parameters = parametersPassed;
+    eigenMode.resize(saddlePassed->numberOfAtoms(), 3);
     eigenMode.setZero();
-    if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
+    if(parameters->saddleMinModeMethod == MINMODE_DIMER)
     {
         lowestEigenmode=new Dimer(saddle, parameters);
     }
-    else if(parameters->saddleLowestEigenmodeDetermination == minmodeLanczos)
+    else if(parameters->saddleMinModeMethod == MINMODE_LANCZOS)
     {
         #ifdef LANCZOS_FOR_EON_HPP
             lowestEigenmode = new Lanczos(saddle, parameters);
@@ -242,9 +242,9 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Ei
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
 
     if (0 < eigenValue){
-        if (parameters->saddlePerpendicularForceRatio > 0.0) {
+        if (parameters->saddlePerpForceRatio > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
-            double const d=parameters->saddlePerpendicularForceRatio;
+            double const d=parameters->saddlePerpForceRatio;
             force = d*force - (1+d)*proj;
         }
         else {
@@ -364,7 +364,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         initial->matter2xyz(climb.str(), false);
         saddle->matter2xyz(climb.str(), true);
         ++run;
-        if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)
+        if(parameters->saddleMinModeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
             printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Force", "Torque", 
@@ -416,7 +416,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            if(parameters->saddleLowestEigenmodeDetermination == minmodeDimer)        
+            if(parameters->saddleMinModeMethod == MINMODE_DIMER)        
             {
                 double *stats = lowestEigenmode->stats;
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 

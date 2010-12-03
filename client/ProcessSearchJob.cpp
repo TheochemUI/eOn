@@ -105,7 +105,7 @@ int ProcessSearchJob::doProcessSearch(void)
     status = saddlePoint->locate(min1, min2);
     fCallsSaddle += Potentials::fcalls - f1;
 
-    if (status != statusInit) {
+    if (status != SaddlePoint::statusInit) {
         return status;
     }
 
@@ -123,7 +123,7 @@ int ProcessSearchJob::doProcessSearch(void)
             // the isItConverged in Matter doesn't work so this needs to be fixed.
             // return statusBadMinima;
         }
-        return statusBadNotConnected;
+        return SaddlePoint::statusBadNotConnected;
     }
 
     //if((!min1->isItConverged(parameters->convergedRelax)))
@@ -138,7 +138,7 @@ int ProcessSearchJob::doProcessSearch(void)
     if (*initial==*min2) {
         /* both minima are the initial state */
         printf("both minima are the initial state");
-        return statusBadNotConnected;
+        return SaddlePoint::statusBadNotConnected;
     }
 
 
@@ -148,7 +148,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if((parameters->saddleMaxEnergy < barriersValues[0]) || 
        (parameters->saddleMaxEnergy < barriersValues[1])) {
-        return statusBadHighBarrier;
+        return SaddlePoint::statusBadHighBarrier;
     }
 
     /* Perform the dynamical matrix caluclation */
@@ -157,17 +157,17 @@ int ProcessSearchJob::doProcessSearch(void)
     reactModes = hessian->getModes(Hessian::REACTANT);
     if(reactModes.size() == 0)
     {
-        return statusBadPrefactor;
+        return SaddlePoint::statusBadPrefactor;
     }
     saddleModes = hessian->getModes(Hessian::SADDLE);
     if(saddleModes.size() == 0)
     {
-        return statusBadPrefactor;
+        return SaddlePoint::statusBadPrefactor;
     }
     prodModes = hessian->getModes(Hessian::PRODUCT);
     if(prodModes.size() == 0)
     {
-        return statusBadPrefactor;
+        return SaddlePoint::statusBadPrefactor;
     }
     fCallsPrefactors += Potentials::fcalls - f1; 
 
@@ -193,14 +193,14 @@ int ProcessSearchJob::doProcessSearch(void)
     /* Check that the prefactors are in the correct range */
     if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
        (prefactorsValues[0]<parameters->hessianPrefactorMin)){
-        return statusBadPrefactor;
+        return SaddlePoint::statusBadPrefactor;
     }
     if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
        (prefactorsValues[1]<parameters->hessianPrefactorMin)){
-        return statusBadPrefactor;
+        return SaddlePoint::statusBadPrefactor;
     }
 
-    return statusGood;
+    return SaddlePoint::statusGood;
 }
 
 void ProcessSearchJob::saveData(int status, int bundleNumber){
@@ -277,30 +277,30 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
 
 void ProcessSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
-    if(status == statusGood)
+    if(status == SaddlePoint::statusGood)
         fprintf(stdout, "Successful.\n");
 
-    else if(status == statusBadNoConvex)
+    else if(status == SaddlePoint::statusBadNoConvex)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
    
-    else if(status == statusBadHighEnergy)
+    else if(status == SaddlePoint::statusBadHighEnergy)
         fprintf(stdout, "Saddle search, barrier too high.\n");
         
-    else if(status == statusBadMaxConcaveIterations) 
+    else if(status == SaddlePoint::statusBadMaxConcaveIterations) 
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
-    else if(status == statusBadMaxIterations)
+    else if(status == SaddlePoint::statusBadMaxIterations)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
 
-    else if(status == statusBadNotConnected)
+    else if(status == SaddlePoint::statusBadNotConnected)
         fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
 
-    else if(status == statusBadPrefactor)
+    else if(status == SaddlePoint::statusBadPrefactor)
             fprintf(stdout, "Prefactors, not within window as defined in Constants\n");
 
-    else if(status == statusBadHighBarrier)
+    else if(status == SaddlePoint::statusBadHighBarrier)
         fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
-    else if (status == statusBadMinima)
+    else if (status == SaddlePoint::statusBadMinima)
         fprintf(stdout, "Minima were not able to be matched to the initial reactant\n"
                 "because they did not converge\n");
     else
