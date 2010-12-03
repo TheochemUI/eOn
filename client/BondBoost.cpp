@@ -81,7 +81,7 @@ void BondBoost::initial()
 double BondBoost::boost()
 {
     long RMDS = parameters->bondBoostRMDS;
-    double dt = 10*parameters->mdTimeStep;
+    double dt = parameters->mdTimeStep;
     double boost_dt = 0.0, AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
@@ -152,7 +152,7 @@ double BondBoost::Booststeps(){
     AddForce.setZero();
     NewForce.setZero();
 
-    dt = 10.18*parameters->mdTimeStep;
+    dt = parameters->mdTimeStep;
     Temp = parameters->mdTemperature;
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
