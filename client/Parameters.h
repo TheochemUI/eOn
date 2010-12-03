@@ -56,11 +56,10 @@ public:
     long processSearchMinimizeFirst;
 
     bool saddleRefine; // refine saddle point
-    long saddleMaxJumpAttempts; // how many times the initial displacement should try to bring the system directly to convex region. If 0 a search is started after the displacement no matter what
-    long saddleMaxIterations; // max iterations for saddle point searches and minimization [GH: fix comment]
-    long saddleMaxIterationsConcave; // max iterations for saddle point searches and minimization [GH: fix comment]
+    long saddleMaxJumpAttempts; // number of initial displacements to bring the system directly to a convex region;  if 0, a search is always started after the displacement
+    long saddleMaxIterations; // max iterations for saddle point searches and minimization
     long saddleMinModeMethod; // the algorithm to be used for lowest eigenmode determination
-    long saddleTypePerturbation; // displacement type to use; compare with values in Constants.cpp (now in SaddlePoint.h)
+    long saddleDisplacementType; // displacement type to use
     double saddleConverged; // converge criterion during saddle point search [eV/A]
     double saddleMaxStepSize; // Max length of the norm of the displacement when positive eigenvalue [A]
     double saddleMaxEnergy; // Energy above product state that will cause termination of the saddle point search [eV]
