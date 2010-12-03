@@ -103,10 +103,10 @@ public:
     long   mdRefineAccuracy;
     long   mdSteps;
     long   mdDephaseSteps;
-    long   mdDephaseConstrain;
-    long   mdDephaseCheckType;
     long   mdCheckFreq;
     long   mdRelaxSteps;
+    bool   mdDephaseLoopStop;
+    long   mdDephaseLoopMax;
 
     bool   bondBoost;
     long   bondBoostRMDS;

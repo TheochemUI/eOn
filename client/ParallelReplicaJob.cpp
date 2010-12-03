@@ -409,7 +409,7 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
 void ParallelReplicaJob::dephase()
 {
     long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
-    long  n, new_n, nbuff, dh_refined;
+    long  n,nloop, new_n, nbuff, dh_refined;
     bool  state = false;
     Matrix<double, Eigen::Dynamic, 3> velocity;      
 
@@ -418,9 +418,11 @@ void ParallelReplicaJob::dephase()
     
     n  = 0;
     new_n = 0;
+    nloop= 0;
     while(n < dephaseSteps){
 
         nbuff = dephaseSteps-n;
+        nloop ++;
 //        printf("nbuff = %ld\n",nbuff);
         Matter *DHbuff[nbuff];
         for(i=0; i<nbuff; i++){
@@ -437,7 +439,7 @@ void ParallelReplicaJob::dephase()
 //       printf("state = %d\n",state);  
         if(state == true){
             dh_refined = Refine(DHbuff,nbuff);
-            printf("refined step = %ld\n",dh_refined);
+            printf("nloop = %ld; refined step = %ld\n",nloop,dh_refined);
             new_n = dh_refined-parameters->mdRefineAccuracy;
             new_n = (new_n > 0)?new_n:0;
             printf("Dephasing Warning: in a new state,now inverse the momentum and restart from step %ld\n",n+new_n);
@@ -453,6 +455,13 @@ void ParallelReplicaJob::dephase()
    
        for(i=0; i<nbuff;i++){
            delete DHbuff[i];
+       }
+
+       if(parameters->mdDephaseLoopStop){
+           if(nloop > parameters->mdDephaseLoopMax){
+              printf("Reach Dephase Loop Maximum, Stop Dephasing! Dephsed for %ld steps\n ",n);
+              break;    
+           }
        }
    }
 }
