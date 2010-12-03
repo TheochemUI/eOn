@@ -41,6 +41,8 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     newstate = false;
     min_fcalls = 0;
     md_fcalls = 0;
+    rf_fcalls = 0;
+    dh_fcalls = 0;
 }
 
 ParallelReplicaJob::~ParallelReplicaJob(){ }
@@ -313,7 +315,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     ///XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
     //      the SaddlePoint object. They will be taken out eventually.
-    long total_fcalls = min_fcalls + md_fcalls;
+    long total_fcalls = min_fcalls + md_fcalls + dh_fcalls + rf_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
     //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-15);
@@ -324,8 +326,11 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
-    fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
+    fprintf(fileResults, "%ld force_calls_dephase\n", dh_fcalls);
     fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
+    fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
+    fprintf(fileResults, "%ld force_calls_refine\n", rf_fcalls);
+
     fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
     fclose(fileResults);
 
@@ -365,6 +370,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
 long ParallelReplicaJob::Refine(Matter *buff[],long length)
 {
     long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
+    long tmp_fcalls;
     bool ytest;
 
     RefineAccuracy = parameters->mdRefineAccuracy; 
@@ -378,7 +384,9 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
     diff = final - initial;
     test = int((b1-a1)/2);
     //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
-
+  
+    tmp_fcalls = min_fcalls ;
+    min_fcalls = 0;
     while(diff > RefineAccuracy)
     {
         test = a1+int((b1-a1)/2);
@@ -399,6 +407,9 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
         diff = abs( b1 - a1 );
     //   printf("Insert Point %ld; Test ytest = %d ; New Boundary [ %ld, %ld ] \n",test,ytest,a1,b1);
     }
+
+    rf_fcalls = min_fcalls;
+    min_fcalls = tmp_fcalls;
 
     refined = int((a1+b1)/2);
     //printf("Refined mdsteps = %ld\n",nsteps_refined);
