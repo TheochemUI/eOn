@@ -7,5 +7,13 @@ import io, atoms
 
 p1 = io.loadcon(sys.argv[1])
 p2 = io.loadcon(sys.argv[2])
-print max(atoms.per_atom_norm(p1.r - p2.r, p1.box))
+distances = atoms.per_atom_norm(p1.r - p2.r, p1.box)
 
+max_i=0
+max_d=0.0
+for i in range(len(distances)):
+    if distances[i]>max_d:
+        max_d = distances[i]
+        max_i = i
+
+print "max distance: %f atom index: %i" % (max_d, max_i)
