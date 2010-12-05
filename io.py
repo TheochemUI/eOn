@@ -11,8 +11,10 @@
 '''
 Con(figuration) i/o library
 '''
-import os
+import logging
+logger = logging.getLogger('io')
 import numpy
+import os
 import struct
 
 import atoms
