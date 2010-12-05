@@ -100,6 +100,7 @@ public:
     double mdMaxMovedDist;
     bool   mdRefine;
     bool   mdAutoStop;
+    long   mdRecordAccuracy;
     long   mdRefineAccuracy;
     long   mdSteps;
     long   mdDephaseSteps;
