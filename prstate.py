@@ -76,7 +76,7 @@ class PRState(state.State):
         self.append_process_table(id =                id, 
                                   product =           -1, 
                                   product_energy =    resultdata["potential_energy_product"],
-                                  time =              resultdata["transition_time"]) 
+                                  time =              resultdata["transition_time_s"]) 
 
         # This was a unique process, so return the id.
         return id
