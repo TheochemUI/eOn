@@ -189,15 +189,15 @@ def register_results(comm, current_state, states):
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 1:
-            result['results']['transition_time'] += state.get_time()
-            time = result['results']['transition_time']
+            result['results']['transition_time_s'] += state.get_time()
+            time = result['results']['transition_time_s']
             process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
             if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
         else:
-            state.inc_time(result['results']['transition_time'])
+            state.inc_time(result['results']['transition_time_s'])
         num_registered += 1
         
     logger.info("%i (result) searches processed", num_registered)
