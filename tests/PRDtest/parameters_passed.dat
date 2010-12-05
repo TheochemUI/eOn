@@ -2,7 +2,7 @@
 
 REACTANT_STATE_TAG=0
 
-JOB_TYPE=PARALLELREPLICA
+JOB_TYPE=PARALLEL_REPLICA
 #JOB_TYPE=MINIMIZATION
 
 # describtion RANDOM_SEED
@@ -26,8 +26,9 @@ mdSTEPS=50000
 Dephase_Steps=1000
 mdRefine=1
 mdAutoStop=1
-RefineAccuracy=5
-CheckFreq=1000
+RecordAccuracy=5
+RefineAccuracy=1
+CheckFreq=10000
 NewRelaxStep=500
 
 [Hyper]
