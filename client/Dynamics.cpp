@@ -195,7 +195,7 @@ void Dynamics::noseHoverVerlet(double temperature){
 //    printf("ut = %e\n",ut);
 
     fact = (am2kg/ev2j)*(ul/ut)*(ul/ut);
-    nFree = nAtoms*3.0;
+    nFree = nAtoms*3;
     eps = 0.0;
     es = 0.0;
     v = matter->getVelocities();
