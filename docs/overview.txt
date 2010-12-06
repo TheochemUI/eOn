@@ -26,8 +26,8 @@ to the server, which summarizes the results and sends out more jobs.
 
    download
    installation
-   server configuration <server_config>
-   client configuration <client_config>
+   Server configuration <server_config>
+   Client configuration <client_config>
 
 
 
