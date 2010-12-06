@@ -20,6 +20,3 @@ done on a single processor, it is done on many client computers worldwide.
 After finishing its calculation, each client computer sends it's results back 
 to the server, which summarizes the results and sends out more jobs.
 
-TEST2
-
-
