@@ -267,8 +267,10 @@ brackets.
     * **getPrefactorsTag** [0]
     * **reactantStateTag** [0]
 
-
-
+Sample parameters.dat file
+--------------------------------
+.. literalinclude:: ../sample/parameters.dat
+    :language: none
 
 
 
