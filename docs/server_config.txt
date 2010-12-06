@@ -257,7 +257,9 @@ Default values for the keys are listed next to the key in square brackets.
 **target_trajectory** [False]
     Follow another akmc simulation.
     
-
+Default config.ini
+--------------------------------
+.. literalinclude:: ../default_config.ini
 
 
 
