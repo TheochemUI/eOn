@@ -272,6 +272,11 @@ Sample parameters.dat file
 .. literalinclude:: ../sample/parameters.dat
     :language: none
 
+parameters.cpp
+--------------------------------
+.. literalinclude:: ../client/Parameters.cpp
+    :language: cpp
+
 
 
 
