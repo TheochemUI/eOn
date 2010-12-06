@@ -1,0 +1,18 @@
+.. eOn documentation master file, created by
+   sphinx-quickstart on Tue Nov 30 14:44:45 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Contents
+===============================
+
+.. toctree::
+   :maxdepth: 2
+
+   overview
+   download
+   installation
+   server configuration <server_config>
+   client configuration <client_config>
+
+
