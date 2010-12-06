@@ -38,8 +38,7 @@ public:
     ~Dynamics();///< Destructor.
 
     void oneStep(double temperature);	
-    void verletStep1();
-    void verletStep2();
+    void andersenVerlet(double temperature);
     void fullSteps(double temperature); 
     void andersen(double temperature);
     void velocityScale(double temperature);
