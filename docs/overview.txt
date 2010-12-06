@@ -1,0 +1,24 @@
+================================
+eOn: Long timescale dynamics
+================================
+
+A common problem in theoretical chemistry, condensed matter physics and 
+materials science is the calculation of the time evolution of an atomic scale 
+system where, for example, chemical reactions and/or diffusion occur. 
+Generally the events of interest are quite rare (many orders of magnitude 
+slower than the vibrational movements of the atoms), and therefore direct 
+simulations, tracking every movement of the atoms, would take thousands of 
+years of computer calculations on the fastest present day computer before a 
+single event of interest can be expected to occur, hence the name eon, which is
+an indefinitely long period of time.
+
+Our research group is interested in calculating the long time dynamics of 
+systems. We have developed a method for doing this through distributed 
+computing where a server sends out small data packets for calculation to 
+clients, e.g. over the internet. So, instead of the entire calculation being 
+done on a single processor, it is done on many client computers worldwide. 
+After finishing its calculation, each client computer sends it's results back 
+to the server, which summarizes the results and sends out more jobs.
+
+
+

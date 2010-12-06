@@ -1,0 +1,265 @@
+================================
+Client configuration
+================================
+
+The eOn client uses a single configuration file, parameters,dat.
+
+\[Default\]
+--------------------------------
+**job_type** [PROCESS_SEARCH]
+    ???
+    
+**randomSeed** [-1]
+    ???
+    
+**potential_tag** [1]
+    ???
+    
+**potential_no_translation** [0]
+    ???
+    
+**minimize_only** [0]
+    (should be removed and replaced w/ minimization job)
+    
+**minimize_box** [0]
+    (should be removed and replaced w/ lattice minimization job)
+    
+**max_difference_pos** [0.1]
+    ???
+    
+**converged_relax** [0.005]
+    ???
+    
+**maximum_iterations** [512]
+    ???
+
+**neighbor_cutoff** [3.3]
+    ???
+    
+**THERMO_TYPE** [andersen]
+    ???
+    
+
+\[ProcessSearch\]
+--------------------------------
+**minimize_first** [0]
+    ???
+    
+
+\[debug\]
+--------------------------------
+**save_stdout** [false]
+    ???
+    
+
+\[saddle_point\]
+--------------------------------
+**type_perturbation** [1]
+    ???
+    
+**LOWEST_EIGENMODE_DETERMINATION** [1]
+    ???
+    
+**REFINE** [false]
+    ???
+    
+**CONVERGED** [0.025]
+    ???
+    
+**MAX_JUMP_ATTEMPTS** [0]
+    ???
+    
+**MAX_STEP_SIZE** [0.2]
+    ???
+    
+**MAX_ENERGY** [20.0]
+    ???
+    
+**NORM_PERTURBATION** [0.1]
+    ???
+    
+**MAX_SINGLE_PERTURBATION** [0.1]
+    ???
+    
+**WITHIN_RADIUS_PERTURBATED** [4.0]
+    ???
+    
+**MAX_ITERATIONS** [512]
+    ???
+    
+**MAX_ITERATIONS_CONCAVE** [256]
+    ???
+    
+**PERPENDICULAR_FORCE_RATIO** [0.0]
+    ???
+    
+
+\[Hessian\]
+--------------------------------
+**Type** [reactant]
+    ???
+    
+**MAX_SIZE** [0]
+    ???
+    
+**WITHIN_RADIUS_DISPLACED** [5.0]
+    ???
+    
+**MIN_DISPLACEMENT** [0.25]
+    ???
+    
+
+\[Dimer\]
+--------------------------------
+**ROTATIONS_HIGH** [8]
+    ???
+    
+**ROTATIONS_LOW** [1]
+    ???
+    
+**WINDOW_HIGH** [1.0]
+    ???
+    
+**WINDOW_LOW** [0.1]
+    ???
+    
+**SEPARATION** [0.0001]
+    ???
+    
+**ANGLE** [0.005]
+    ???
+    
+
+\[DisplacementSampling\]
+--------------------------------
+**NSAMPLES** [32]
+    ???
+    
+**ITERMAX** [32]
+    ???
+    
+**TORQUE_CONVERGENCE** [0.01]
+    ???
+    
+**MAX_CURVATURE** [-0.1]
+    ???
+    
+**MAX_DE** [10.0]
+    ???
+    
+**CUTOFFS** ["0.0 3.3"]
+    ???
+    
+**MAGNITUDES** ["0.0625 0.125 0.25"]
+    ???
+    
+
+\[Dynamics\]
+--------------------------------
+**TIMESTEP** [0.1]
+    ???
+    
+**TEMPERATURE** [300]
+    ???
+    
+**mdSTEPS** [1000]
+    ???
+    
+**Dephase_Steps** [200]
+    ???
+    
+**Dephase_Constrain** [2]
+    ???
+    
+**Dephase_CheckType** [1]
+    ???
+    
+**PRD_MaxMovedDist** [2]
+    ???
+    
+**mdRefine** [false]
+    ???
+    
+**mdAutoStop** [false]
+    ???
+    
+**RefineAccuracy** [20]
+    ???
+    
+**CheckFreq** [500]
+    ???
+    
+**newRelaxStep** [500]
+    ???
+    
+
+\[Lanczos\]
+--------------------------------
+**CONVERGENCE**
+    ???
+    
+**ITERATION**
+    ???
+    
+
+\[Hyper\]
+--------------------------------
+**BondBoost** [false]
+    ???
+    
+**RMDS** [0]
+    ???
+    
+**DVMAX** [0.0]
+    ???
+    
+**QRR** [0.0001]
+    ???
+    
+**PRR** [0.95]
+    ???
+    
+**Qcut** [3.0]
+    ???
+    
+
+\[CG\]
+--------------------------------
+**CURVATURE_STEP** [0.001]
+    ???
+    
+
+\[Thermo\]
+--------------------------------
+**ANDERSEN_ALPHA** [0.2]
+    ???
+    
+**ANDERSEN_TCOL** [10]
+    ???
+    
+**NoseMass** [0]
+    ???
+    
+
+XXX NOT READ IN XXX
+--------------------------------
+    * **cgMaxMoveFullRelax** [0.2]
+    * **qmTimeStep** [0.1]
+    * **hessianPrefactorMax** [10e20]
+    * **hessianPrefactorMin** [10e8]
+    * **getPrefactorsTag** [0]
+    * **reactantStateTag** [0]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
