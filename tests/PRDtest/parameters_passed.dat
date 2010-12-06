@@ -7,12 +7,12 @@ JOB_TYPE=PARALLEL_REPLICA
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED=1291406328
+RANDOM_SEED=1291668085
 
 MAX_DIFFERENCE_POS=1.0
 
 # describtion POTENTIAL_TAG
-POTENTIAL_TAG= 3
+POTENTIAL_TAG= 10
 
 # describtion POTENTIAL_NO_TRANSLATION
 # 0 = the system is free to translate
@@ -26,20 +26,19 @@ mdSTEPS=50000
 Dephase_Steps=1000
 mdRefine=1
 mdAutoStop=1
-RecordAccuracy=5
+RecordAccuracy=25
 RefineAccuracy=1
-CheckFreq=10000
+CheckFreq=5000
 NewRelaxStep=500
+ThermoType=1
+Andersen_Tcol=10.0
+ANDERSEN_ALPHA=0.2
 
 [Hyper]
-BondBoost=1
+BondBoost=0
 RMDS=200
 DVMAX=0.15
 QRR=0.2
 PRR=0.95
 Qcut=3.0
  
-[Thermo]
-ThermoType=1
-NoseMass=1.5
-Andersen_Tcol=10.0
