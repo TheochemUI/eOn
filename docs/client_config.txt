@@ -2,7 +2,23 @@
 Client configuration
 ================================
 
-The eOn client uses a single configuration file, parameters,dat.
+The eOn client uses a single configuration file, parameters,dat. The format of 
+the file is the *.ini* format. The *.ini* format consists of sections, keys, 
+and values.  Each section header is surrounded by square brackets, and is 
+followed by the key/value pairs. For example, to set the *job_type* key of 
+the *[Default]* section to the value *process_search*, your config.ini file 
+would include the lines:
+
+.. code-block:: none
+
+    [Default]
+    job_type = process_search
+    
+The following is a list of parameters.dat sections and their corresponding 
+keys. Default values for the keys are listed next to the key in square 
+brackets.
+
+
 
 \[Default\]
 --------------------------------
@@ -241,8 +257,9 @@ The eOn client uses a single configuration file, parameters,dat.
     ???
     
 
-XXX NOT READ IN XXX
---------------------------------
+.. note::
+    These are apparently not read in:
+    
     * **cgMaxMoveFullRelax** [0.2]
     * **qmTimeStep** [0.1]
     * **hessianPrefactorMax** [10e20]
