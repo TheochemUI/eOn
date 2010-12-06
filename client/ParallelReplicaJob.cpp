@@ -104,16 +104,18 @@ void ParallelReplicaJob::dynamics()
     bool   status = false, remember = true, stoped = false;
     bool   boost = parameters->bondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
-    long   ncheck = 0, nexam = 0, steps_tmp = 0;
+    long   RecordAccuracy = parameters->mdRecordAccuracy, mdbufflength;
+    long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0;
     Matrix<double, Eigen::Dynamic, 3> velocities;
     double kinE = 0.0, kb = 1.0/11604.5;
     double kinT = 0.0, sumT = 0.0, sumT2 = 0.0, avgT, varT;
 
-    Matter *mdbuff[check_steps];
-    for(long i =0; i < check_steps;i++){
-    mdbuff[i] = new Matter(parameters);
+    mdbufflength = int(check_steps/RecordAccuracy)+1;
+    Matter *mdbuff[mdbufflength];
+    for(long i =0; i < mdbufflength;i++){
+        mdbuff[i] = new Matter(parameters);
     }
-
+    printf("RecordAccuracy = %ld; mdbufflength = %ld\n",RecordAccuracy,mdbufflength);
     Dynamics PRdynamics(reactant,parameters);
     BondBoost Bbm(reactant,parameters);
     if(boost){   
@@ -131,6 +133,7 @@ void ParallelReplicaJob::dynamics()
     if (tenthSteps == 0) {
         tenthSteps = parameters->mdSteps;
     }
+   
     while(!stoped){
 
         if(boost && !newstate){
@@ -150,12 +153,14 @@ void ParallelReplicaJob::dynamics()
         nsteps++;
 
         if(parameters->mdRefine && remember && !newstate ){
-            *mdbuff[ncheck-1] = *reactant;
-          //  stepsbuff[ncheck-1] = nsteps;
-            SPtimebuff[ncheck-1] = SPtime;
+            if(ncheck % RecordAccuracy == 0){
+                nrecord ++;
+                *mdbuff[nrecord-1] = *reactant;
+                SPtimebuff[nrecord-1] = SPtime;
+            }
         }
-
-        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,EKin,TKin); 
+        
+        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,kinE,kinT); 
 
 #ifndef NDEBUG
         if (ncheck == check_steps && !newstate){
@@ -164,6 +169,7 @@ void ParallelReplicaJob::dynamics()
 #endif
         if (ncheck == check_steps && !newstate){
             ncheck = 0; // reinitialize the ncheck
+            nrecord = 0;
             status = checkState(reactant);
             if(status == true){
                 remember = false;
@@ -175,16 +181,14 @@ void ParallelReplicaJob::dynamics()
             if (nexam >= relax_steps){
                 nexam = 0;
                 ncheck = 0; 	
+                nrecord = 0;
                 newstate = checkState(reactant);
-                //stoped = newstate;
                 status = false;
                 if(newstate == false){
                     remember = true;
                 }else{
                     *transition = *reactant;
                     steps_tmp = nsteps;
-                    //printf("steps_tmp = %ld\n",steps_tmp);
-                    //nsteps_refined = nsteps + 1;
                     if(parameters->mdAutoStop){
                         stoped = true;
                     }
@@ -196,7 +200,7 @@ void ParallelReplicaJob::dynamics()
         if (nsteps >= parameters->mdSteps){
            stoped = true;
         }
-
+ 
         //BOINC Progress
         if (nsteps % 500 == 0) {
             // Since we only have a bundle size of 1 we can play with boinc_fraction_done
@@ -222,36 +226,22 @@ void ParallelReplicaJob::dynamics()
         newstate = false;
     }
 
-    //Here we use Binary Search to refine the result; 	
-    //for(long i =0; i < check_steps;i++){
-    //  printf("%ld refine steps %ld\n",i,stepsbuff[i]);
-    //}
-    //nsteps = nsteps + 1;
-
+    //printf("mdbufflength = %ld; nrecord = %ld\n",mdbufflength, nrecord);
     if(parameters->mdRefine && newstate){
-
-        nsteps_refined = Refine(mdbuff,check_steps);
+        nsteps_refined = Refine(mdbuff,mdbufflength);
         printf("nsteps_refined=%ld\n",nsteps_refined); 
-        long final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined+1;
+        long final_refined = steps_tmp-check_steps-relax_steps+(nsteps_refined+1)*RecordAccuracy;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
         printf("final_step = %ld\n",final_refined);
         *reactant = *mdbuff[nsteps_refined-1];
         *transition = *reactant;
         SPtime = SPtimebuff[nsteps_refined-1];
 
-        /*
-        for(long i = 0; i<relax_steps;i++){
-            PRdynamics.oneStep(parameters->mdTemperature);
-            totsteps ++;
-            RLtime += 10*parameters->mdTimeStep;
-            md_fcalls ++;
-        }
-        */
     }
     return;
 
     delete transition;
-    for(long i =0; i < check_steps;i++){
+    for(long i =0; i < mdbufflength;i++){
         delete[] mdbuff[i];
     }
 }
@@ -282,14 +272,12 @@ bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without que
     for(long int i=0;i<nAtoms;i++){
         if(!tmp.getFixed(i)){
             D_tmp = tmp.distance(*min1,i);
-            //printf("number of Atom = %ld, Displacement = %lf\n",i,D_tmp);
             if(D_tmp >= MoveCut){
                 distance += D_tmp;
             }
         }
     }
 
-//     printf("Total Moved Distance = %lf\n",distance);
 #ifndef NDEBUG
     printf("Total Moved Distance = %lf\n",distance);
 #endif
@@ -318,9 +306,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     long total_fcalls = min_fcalls + md_fcalls + dh_fcalls + rf_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);
-    //fprintf(fileResults, "%e total_physical_time\n", (SPtime+RLtime)*1e-14);
     fprintf(fileResults, "%e transition_time_s\n", SPtime*1.018e-14);
-    //fprintf(fileResults, "%e relax_time\n", RLtime*1e-14);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
@@ -383,7 +369,6 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
     b1 = final;
     diff = final - initial;
     test = int((b1-a1)/2);
-    //printf("diff = %ld , ReAcc = %ld\n", diff,RefineAccuracy);
   
     tmp_fcalls = min_fcalls ;
     min_fcalls = 0;
@@ -405,7 +390,6 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
             exit(1);
         }
         diff = abs( b1 - a1 );
-    //   printf("Insert Point %ld; Test ytest = %d ; New Boundary [ %ld, %ld ] \n",test,ytest,a1,b1);
     }
 
     rf_fcalls = min_fcalls;
@@ -434,7 +418,6 @@ void ParallelReplicaJob::dephase()
 
         nbuff = dephaseSteps-n;
         nloop ++;
-//        printf("nbuff = %ld\n",nbuff);
         Matter *DHbuff[nbuff];
         for(i=0; i<nbuff; i++){
            DHbuff[i] = new Matter(parameters);
@@ -447,7 +430,6 @@ void ParallelReplicaJob::dephase()
         }
         
         state = checkState(reactant);
-//       printf("state = %d\n",state);  
         if(state == true){
             dh_refined = Refine(DHbuff,nbuff);
             printf("nloop = %ld; refined step = %ld\n",nloop,dh_refined);
