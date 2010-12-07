@@ -38,9 +38,6 @@ Parameters::Parameters(){
     //Debug Options
     saveStdout=false;
 
-    // default parameter for relaxation   
-    convergedRelax = 0.005;
-
     // default parameters for process search
     processSearchMinimizeFirst = 0;
 
@@ -79,6 +76,7 @@ Parameters::Parameters(){
     cgCurvatureStep = 0.001;
     cgMaxMoveFullRelax = 0.2;
     qmTimeStep = 0.1;
+    convergedRelax = 0.005;
 
     // default parameters used by parallel repica dynamics
     mdTimeStep = 0.1;
@@ -169,10 +167,18 @@ int Parameters::load(FILE *file){
 
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
         potentialNoTranslation = ini.GetValueL("Default", "potential_no_translation", potentialNoTranslation);
+
         minimizeOnly = ini.GetValueL("Default", "minimize_only", minimizeOnly);
         minimizeBox = ini.GetValueL("Default", "minimze_box", minimizeBox);
         convergedRelax = ini.GetValueF("Default", "converged_relax", convergedRelax);
         maximumIterations = ini.GetValueL("Default", "maximum_iterations", maximumIterations);
+        cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
+        cgMaxMoveFullRelax = ini.GetValueF("CG","max_move_full_relax", cgMaxMoveFullRelax);
+        qmTimeStep = ini.GetValueF("QM","time_step", qmTimeStep);
+        
+
+
+
         maxDifferencePos = ini.GetValueF("Default", "max_difference_pos", maxDifferencePos);
         neighborCutoff = ini.GetValueF("Default", "neighbor_cutoff", neighborCutoff);
 
@@ -301,7 +307,6 @@ int Parameters::load(FILE *file){
         bondBoostPRR = ini.GetValueF("Hyper","PRR",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyper","Qcut",bondBoostQcut);
 
-        cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
 
     }
     else
