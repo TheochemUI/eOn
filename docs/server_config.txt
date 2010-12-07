@@ -171,17 +171,6 @@ Default values for the keys are listed next to the key in square brackets.
     ???
     
 
-\[KDB\]
---------------------------------
-**use_kdb** [False]
-    Turn kdb on/off.
-    
-**wait** [False]
-    Wait for the query to finish before submitting jobs.
-    
-**keep** [False]
-    Keep the saddle suggestions. (where?)
-    
 
 \[Superbasins\]
 --------------------------------
