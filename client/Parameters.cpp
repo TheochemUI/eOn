@@ -26,7 +26,6 @@ Parameters::Parameters(){
     randomSeed = -1;
     reactantStateTag = 0;
     potentialTag = 1;
-    potentialNoTranslation = 0;
     getPrefactorsTag = 0;
     minimizeOnly = 0;
     minimizeBox = 0;
@@ -166,7 +165,6 @@ int Parameters::load(FILE *file){
         printf("Random seed is: %ld\n", randomSeed);
 
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
-        potentialNoTranslation = ini.GetValueL("Default", "potential_no_translation", potentialNoTranslation);
 
         minimizeOnly = ini.GetValueL("Default", "minimize_only", minimizeOnly);
         minimizeBox = ini.GetValueL("Default", "minimze_box", minimizeBox);
