@@ -29,8 +29,10 @@ class ParallelReplicaJob: public Job
         Parameters *parameters;
         Matter *reactant;
         Matter *min1;
-        Matter *min2;
-        Matter *transition;
+        Matter *fin1;
+        Matter *fin2;
+        Matter *saddle;
+        Matter *final;
         double SPtime; 
         double RLtime;
         double *SPtimebuff;
