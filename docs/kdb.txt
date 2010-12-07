@@ -1,0 +1,53 @@
+================
+Kinetic Database 
+================
+
+One of the bottlenecks in an aKMC simulation is performing the saddle point 
+searches.  The kinetic database is used to ameliorate this cost by 
+storing information about processes as they are found and using it to predict 
+future saddle points.
+
+In the following figure, the hydrogen of a carboxyl group on an Au(111) surface 
+transfers to the other oxygen (a). In this process, the hydrogen is determined 
+to be the only moving atom, and the two oxygen atoms to be its neighbors. The 
+other atoms are stripped from the system and the resulting configurations are 
+stored in the database (b). If in the future the system passes through a state 
+with a local configuration closely resembling either minimum of (b), the 
+kinetic database will suggest a saddle to converge with a dimer search. The 
+dimer starts with this suggested configuration and mode, and if it is a good 
+suggestion, converges very rapidly to the saddle.
+
+.. image:: kdb_insert.png
+    :align: center
+
+
+Dependencies
+------------
+The kinetic database is a separate application from eOn. It can be found in 
+*vtstscripts* located `here <http://theory.cm.utexas.edu/vtsttools/scripts/>`_.
+This is a Perl script and so requires that Perl be installed, and the 
+vtstscripts directory must be in your path.
+
+
+Configuration
+-------------
+Settings for the kinetic database can be altered in your *config.ini* file
+under the **[kdb]** section. These are the options:
+
+**use_kdb** [False]
+    Turn kdb on/off.
+    
+**wait** [False]
+    Wait for the query to finish before submitting jobs (for debugging purposes).
+    
+**keep** [False]
+    Keep the saddle suggestions (for debugging purposes).
+    
+A typical configuration using the kinetic database might look like this:
+
+.. code-block:: none
+
+    [kdb]
+    use_kdb = True
+    wait = False
+    keep = False
