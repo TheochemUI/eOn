@@ -24,7 +24,7 @@ POTENTIAL_TAG=3
 maximum_iterations=512
 
 [ProcessSearch]
-minimize_first=1
+minimize_first=True
 
 [Saddle_Point]
 # describtion LOWEST_EIGENMODE_DETERMINATION_SP
@@ -33,7 +33,7 @@ minimize_first=1
 LOWEST_EIGENMODE_DETERMINATION=1
 
 # Refine saddle point.
-REFINE=1
+REFINE=True
 
 # tweakable parameters
 converged_Relax=0.001

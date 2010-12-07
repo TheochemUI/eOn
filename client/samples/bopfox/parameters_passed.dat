@@ -25,7 +25,7 @@ POTENTIAL_TAG=16
 # describtion GET_PREFACTORS_TAG
 # 0 = processes prefactors are not determined
 # 1 = processes prefactors are determined
-GET_PREFACTORS_TAG=1
+GET_PREFACTORS_TAG=True
 
 
 maximum_iterations=512
@@ -38,7 +38,7 @@ maximum_iterations=512
 LOWEST_EIGENMODE_DETERMINATION=1
 
 # Refine saddle point.
-REFINE=1
+REFINE=True
 
 # tweakable parameters
 converged_Relax=0.001
