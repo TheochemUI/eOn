@@ -61,12 +61,16 @@ void ParallelReplicaJob::run(int bundleNumber)
 
     reactant = new Matter(parameters);
     min1 = new Matter(parameters);
-    min2 = new Matter(parameters);
-    transition = new Matter(parameters);
-
+    fin1 = new Matter(parameters);
+    fin2 = new Matter(parameters);
+    saddle = new Matter(parameters);
+    final = new Matter(parameters);
+    
     reactant->con2matter(reactant_passed);
     *min1 = *reactant;   
-    *transition = *reactant;
+    *saddle = *reactant;
+    *fin1 = *reactant;
+    *fin2 = *reactant;
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.setOutput(0);
     printf("\nMinimizing initial reactant\n");
@@ -77,15 +81,10 @@ void ParallelReplicaJob::run(int bundleNumber)
 
     dynamics();
 
-    *min2 = *transition;   
-    ConjugateGradients cgMin2(min2, parameters);
-    cgMin2.fullRelax();
-    min_fcalls += min2->getForceCalls();
-
     saveData(newstate,bundleNumber);
     
     if(newstate){
-        printf("New state has been found\n");
+     //   printf("New state has been found\n");
         printf("Transition Time: %.2e s\n", SPtime*1.018e-14);
     }else{
        printf("New state has not been found in this %ld dynamics steps (%.2f fs)\n",
@@ -93,9 +92,11 @@ void ParallelReplicaJob::run(int bundleNumber)
     }
 
     delete min1;
-    delete min2;
+    delete fin1;
+    delete fin2;
     delete reactant;
-    delete transition;
+    delete saddle;
+    delete final;
     delete[] SPtimebuff;
 }
 
@@ -105,7 +106,7 @@ void ParallelReplicaJob::dynamics()
     bool   boost = parameters->bondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   RecordAccuracy = parameters->mdRecordAccuracy, mdbufflength;
-    long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0;
+    long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0, final_refined;
     Matrix<double, Eigen::Dynamic, 3> velocities;
     double kinE = 0.0, kb = 1.0/11604.5;
     double kinT = 0.0, sumT = 0.0, sumT2 = 0.0, avgT, varT;
@@ -187,7 +188,7 @@ void ParallelReplicaJob::dynamics()
                 if(newstate == false){
                     remember = true;
                 }else{
-                    *transition = *reactant;
+                    printf("Found New State !\n");
                     steps_tmp = nsteps;
                     if(parameters->mdAutoStop){
                         stoped = true;
@@ -226,21 +227,46 @@ void ParallelReplicaJob::dynamics()
         newstate = false;
     }
 
+    final_refined = steps_tmp;
     //printf("mdbufflength = %ld; nrecord = %ld\n",mdbufflength, nrecord);
     if(parameters->mdRefine && newstate){
         nsteps_refined = Refine(mdbuff,mdbufflength);
-        printf("nsteps_refined=%ld\n",nsteps_refined); 
-        long final_refined = steps_tmp-check_steps-relax_steps+(nsteps_refined+1)*RecordAccuracy;
+        //printf("nsteps_refined=%ld\n",nsteps_refined); 
+        final_refined = steps_tmp-check_steps-relax_steps+(nsteps_refined+1)*RecordAccuracy;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
-        printf("final_step = %ld\n",final_refined);
-        *reactant = *mdbuff[nsteps_refined-1];
-        *transition = *reactant;
-        SPtime = SPtimebuff[nsteps_refined-1];
+        //printf("final_step = %ld\n",final_refined);
+        *reactant = *mdbuff[nsteps_refined];
+        *saddle = *reactant;
+        SPtime = SPtimebuff[nsteps_refined];
+    }
 
+    printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
+    for(long i = 0; i<relax_steps;i++){
+        PRdynamics.oneStep(parameters->mdTemperature);
+        md_fcalls ++;
+    }
+ 
+    *fin1 = *saddle;
+    ConjugateGradients SaddleMin(fin1, parameters);
+    SaddleMin.fullRelax();
+    min_fcalls += fin1->getForceCalls();
+
+
+    *fin2 = *reactant;
+    ConjugateGradients RelaxMin(fin2, parameters);
+    RelaxMin.fullRelax();
+    min_fcalls += fin2->getForceCalls();
+
+    if(*fin2 == *fin1){
+       *final = *fin1;
+       printf("Transition followed by a stable state !\n");
+    }else{
+       *final = *fin2;
+       printf("Transition followed by a mega-stable state; using fin2 as product.con\n");
+       SPtime = SPtime + relax_steps;
     }
     return;
 
-    delete transition;
     for(long i =0; i < mdbufflength;i++){
         delete[] mdbuff[i];
     }
@@ -253,7 +279,8 @@ bool ParallelReplicaJob::checkState(Matter *matter)
     ConjugateGradients cgMin(&tmp, parameters);
     cgMin.fullRelax();
     min_fcalls += tmp.getForceCalls();
-
+    
+    //printf("Max Single Moved distance = %lf\n", tmp.perAtomNorm(*min1));
     if (tmp == *min1) {
         return false;
     }
@@ -309,7 +336,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     fprintf(fileResults, "%e transition_time_s\n", SPtime*1.018e-14);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
-    fprintf(fileResults, "%lf potential_energy_product\n", min2->getPotentialEnergy());
+    fprintf(fileResults, "%lf potential_energy_product\n", final->getPotentialEnergy());
     fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
     fprintf(fileResults, "%ld force_calls_dephase\n", dh_fcalls);
@@ -317,7 +344,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
     fprintf(fileResults, "%ld force_calls_refine\n", rf_fcalls);
 
-    fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
+    fprintf(fileResults, "%lf moved_distance\n",final->distanceTo(*min1));
     fclose(fileResults);
 
     if (bundleNumber != -1) {
@@ -336,7 +363,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     }
 
     fileProduct = fopen(filename, "wb");
-    min2->matter2con(fileProduct);
+    final->matter2con(fileProduct);
     fclose(fileProduct);
   
     if (bundleNumber != -1) {
@@ -346,7 +373,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     }
 
     fileSaddle = fopen(filename, "wb");
-    transition->matter2con(fileSaddle);
+    saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
     return;
@@ -374,6 +401,8 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
     min_fcalls = 0;
     while(diff > RefineAccuracy)
     {
+
+     //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
         test = a1+int((b1-a1)/2);
         ytest = checkState(buff[test]);
 
@@ -389,13 +418,13 @@ long ParallelReplicaJob::Refine(Matter *buff[],long length)
             printf("Refine Step Failed ! \n");
             exit(1);
         }
-        diff = abs( b1 - a1 );
+        diff = abs( b1 - a1 ); 
     }
 
     rf_fcalls = min_fcalls;
     min_fcalls = tmp_fcalls;
 
-    refined = int((a1+b1)/2);
+    refined = int((a1+b1)/2)+1;
     //printf("Refined mdsteps = %ld\n",nsteps_refined);
     return refined;
 }
