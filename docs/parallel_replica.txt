@@ -9,6 +9,7 @@ The Parallel Replica job needs parameters.dat. In order to run Parallel Replica,
 --------------------------------
 For detailed information about Parallel Replica method, please refer to the following paper:
 ::
+
    A. F. Voter, “Parallel replica method for dynamics of infrequent events”, Phys Rev B 57 13985 (1998)  
 
 **TIMESTEP** [0.1]
