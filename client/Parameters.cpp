@@ -25,9 +25,9 @@ Parameters::Parameters(){
     jobType = Job::PROCESS_SEARCH;
     randomSeed = -1;
     potentialTag = 1;
-    getPrefactorsTag = 0;
-    minimizeOnly = 0;
-    minimizeBox = 0;
+    getPrefactorsTag = false;
+    minimizeOnly = false;
+    minimizeBox = false;
     maxDifferencePos = 0.1;
 
     // for finding Epicenters
@@ -37,7 +37,7 @@ Parameters::Parameters(){
     saveStdout=false;
 
     // default parameters for process search
-    processSearchMinimizeFirst = 0;
+    processSearchMinimizeFirst = false;
 
     // default parameters for saddle point determination
     saddleDisplacementType = SaddlePoint::DISP_MIN_COORDINATED;
@@ -164,8 +164,8 @@ int Parameters::load(FILE *file){
 
         potentialTag = ini.GetValueL("Default", "POTENTIAL_TAG", potentialTag);
 
-        minimizeOnly = ini.GetValueL("Default", "minimize_only", minimizeOnly);
-        minimizeBox = ini.GetValueL("Default", "minimze_box", minimizeBox);
+        minimizeOnly = ini.GetValueB("Default", "minimize_only", minimizeOnly);
+        minimizeBox = ini.GetValueB("Default", "minimze_box", minimizeBox);
         convergedRelax = ini.GetValueF("Default", "converged_relax", convergedRelax);
         maximumIterations = ini.GetValueL("Default", "maximum_iterations", maximumIterations);
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
@@ -207,7 +207,7 @@ int Parameters::load(FILE *file){
             error = 1;
         }
 
-        processSearchMinimizeFirst = ini.GetValueL("ProcessSearch", "minimize_first", processSearchMinimizeFirst);
+        processSearchMinimizeFirst = ini.GetValueB("ProcessSearch", "minimize_first", processSearchMinimizeFirst);
         saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
         string minModeMethodString = ini.GetValue("Saddle_Point", "lanczos");

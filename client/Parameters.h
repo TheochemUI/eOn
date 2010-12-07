@@ -36,9 +36,9 @@ public:
     long jobType; // indicate which type of job will be run
     long randomSeed; // seed for random generator
     long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
-    long minimizeOnly; // only perform minimization, not saddle search
-    long minimizeBox; // also minimize the box dimensions if minimize_only_ is true
-    long getPrefactorsTag; // tag to describe if the prefactors should be determined. 
+    bool minimizeOnly; // only perform minimization, not saddle search
+    bool minimizeBox; // also minimize the box dimensions if minimize_only_ is true
+    bool getPrefactorsTag; // tag to describe if the prefactors should be determined. 
     double convergedRelax; // converge criterion during relaxation [eV/A]
     long maximumIterations; // max iterations for saddle point searches and minimization
 
@@ -51,7 +51,7 @@ public:
     double maxDifferencePos; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
 
-    long processSearchMinimizeFirst;
+    bool processSearchMinimizeFirst;
 
     bool saddleRefine; // refine saddle point
     long saddleMaxJumpAttempts; // number of initial displacements to bring the system directly to a convex region;  if 0, a search is always started after the displacement
