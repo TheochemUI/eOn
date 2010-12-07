@@ -1,0 +1,74 @@
+================================
+EON
+================================
+
+The EON program contains a set of algorithms used primarily to model the 
+evolution of atomic scale systems over long time scales.  Standard molecular
+dynamics algorithms, based upon solving Newton's equations, are limited by
+the femtosecond time scale of atomic vibrations.  EON simulations are designed
+for rare event systems where the interesting dynamics can be described by fast
+transition between stable states.  In each algorithm, the residence time in
+the stable states is modeled with statisical mechanics, and the important
+state-to-state dynamics are modeled stochastically.
+
+The following contains general options which are common to the algorithms.
+
+\[Default\] (client side section, needs renaming)
+--------------------------------
+
+Parameters for controlling saddle point searches on the client side.
+
+**job_type** [none]
+    | process_search - saddle point searches, e.g. used with aKMC
+    | saddle_search -
+    | minimization - find the minimum from an initial configuration
+    | hessian - calculate the Hessian matrix (prefactor?) for a configuration
+    | parallel_replica
+    | replica_exchange
+    | dimer_dr
+    | dimer_rotation
+    | displacement_sampling
+    | test
+
+**potential_type** [none]
+    | user 
+    | lj - Lennard-Jones
+    | morse - parameters for Pt
+    | emt - effective medium theory, for metals
+    | edip - 
+    | vasp - Vienna Ab-Initio Simulation Program
+    | tersoff - pair potential with angular terms, e.g. for Si
+    | sw - Stillinger-Weber potential, e.g. for Si
+    | lenosky - another form for covalent bonding as in Si
+    | aluminum - embedded atom method parameterized for Al
+    | eam - generally embedded atom method potential by Voter and Chen
+    | qsc - Quantum Sutton Chen potential for metals
+    | zpice - water on Pt
+    | tip4p - point charge model for water
+    | bopfox - bond order potential
+
+**random_seed** [-1]
+
+**potential_no_translation** [0]
+    | eliminate center-of-mass motion
+    | GH: poorly named and broken
+
+**get_prefactor** [0]
+
+**minimize_only** [0]
+    GH: should be boolian, and moved to akmc?
+
+**minimize_box** [0]
+    GH: should be boolian
+
+**max_difference_pos** [0.1]
+    | maximum distance for which two configurations are considered the same
+    | GH: should be combined with server-side variable
+
+**saveStdout** [false]
+    GH: should move to debug?
+
+**converged_relax** [0.005]
+    force below which a configuration is considered minimzed
+
+
