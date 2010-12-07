@@ -37,7 +37,6 @@ public:
     long randomSeed; // seed for random generator
     long reactantStateTag; // tag to describe to which reactant state the saddle point connects
     long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
-    long potentialNoTranslation; // translation will be removed, handled in the potential class   
     long minimizeOnly; // only perform minimization, not saddle search
     long minimizeBox; // also minimize the box dimensions if minimize_only_ is true
     long getPrefactorsTag; // tag to describe if the prefactors should be determined. 

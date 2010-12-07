@@ -645,6 +645,17 @@ void Matter::computePotential()
             forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
             forceCalls = forceCalls+1;
             recomputePotential=false;
+            
+            if(isFixed.sum()==0){
+                Vector3d tempForce(3);
+                tempForce = forces.colwise().sum()/nAtoms;
+
+                for(long int i=0; i<nAtoms; i++) 
+                {
+                    forces.row(i) -= tempForce.transpose();
+                }
+            }
+
         }
         else {
             cerr << "No potential associated with the atomic structure." << endl;
