@@ -18,4 +18,6 @@ Contents
    akmc
    communicator
    kdb
+   coarse-graining
+   minimization
 
