@@ -22,10 +22,6 @@ RANDOM_SEED=-1
 # 12 = Quantum Sutton-Chen
 POTENTIAL_TAG=16
 
-# describtion POTENTIAL_NO_TRANSLATION
-# 0 = the system is free to translate
-# 1 = translation of the system is prevented
-POTENTIAL_NO_TRANSLATION=1
 
 # describtion GET_PREFACTORS_TAG
 # 0 = processes prefactors are not determined

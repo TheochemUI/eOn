@@ -142,16 +142,7 @@ Matrix<double, Eigen::Dynamic, 3> Potentials::force(long nAtoms, Matrix<double, 
 
     Matrix<double, Eigen::Dynamic, 3> forces = forcesT.transpose();  
 
-    if(parameters_->potentialNoTranslation){
-        //XXX: What does this do?
-        Vector3d tempForce(3);
-        tempForce = forces.colwise().sum()/nAtoms;
-
-        for(long int i=0; i<nAtoms; i++) 
-        {
-            forces.row(i) -= tempForce.transpose();
-        }
-    }
+    
 
     fcalls+=1;
     return forces;
