@@ -85,19 +85,7 @@ void Hessian::calculate(int which)
     //Determine which atoms moved in the process
     int size=0;
     VectorXi atoms;
-    if(parameters->hessianMaxSize == 0)
-    {
-        atoms = movedAtoms(parameters->hessianMinDisplacement);
-    }
-    else
-    {
-        int loop = 0;
-        do {
-            double minDisp = parameters->hessianMinDisplacement + loop * 0.1;
-            atoms = movedAtoms(minDisp);
-            loop = loop + 1;
-        } while (parameters->hessianMaxSize < atoms.rows()*3);
-    }
+    atoms = movedAtoms(parameters->hessianMinDisplacement);
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
     assert(size > 0);
