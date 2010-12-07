@@ -313,6 +313,16 @@ double CIniFile::GetValueF(string const keyname, string const valuename, double 
   return atof( GetValue( keyname, valuename, svalue).c_str()); 
 }
 
+bool CIniFile::GetValueB(string const keyname, string const valuename, bool const defValue) const
+{
+  char svalue[MAX_VALUEDATA];
+
+  if(!defValue){sprintf( svalue, "False");}
+  else{sprintf( svalue, "True");}
+  string val = GetValue( keyname, valuename, svalue);
+  return (val[0] == 'T' || val[0] =='t'); 
+}
+
 // 16 variables may be a bit of over kill, but hey, it's only code.
 unsigned CIniFile::GetValueV( string const keyname, string const valuename, char *format,
 			      void *v1, void *v2, void *v3, void *v4,
