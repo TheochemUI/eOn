@@ -1,7 +1,7 @@
 [Default]
 # The type of job to run. Current options are
 # ProcessSearch and Minimization
-JOB_TYPE=ProcessSearch
+JOB_TYPE=Process_Search
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
@@ -20,11 +20,6 @@ RANDOM_SEED=-1
 # 10 = Aluminum
 # 12 = QSC
 POTENTIAL_TAG=3
-
-# describtion POTENTIAL_NO_TRANSLATION
-# 0 = the system is free to translate
-# 1 = translation of the system is prevented
-POTENTIAL_NO_TRANSLATION=1
 
 maximum_iterations=512
 
