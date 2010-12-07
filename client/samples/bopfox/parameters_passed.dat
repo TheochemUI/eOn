@@ -1,7 +1,6 @@
 [Default]
 #job_type=minimization
 
-REACTANT_STATE_TAG=0
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator

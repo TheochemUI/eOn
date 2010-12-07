@@ -24,7 +24,6 @@ Parameters::Parameters(){
 
     jobType = Job::PROCESS_SEARCH;
     randomSeed = -1;
-    reactantStateTag = 0;
     potentialTag = 1;
     getPrefactorsTag = 0;
     minimizeOnly = 0;
