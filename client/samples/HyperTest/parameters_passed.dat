@@ -1,6 +1,5 @@
 [Default]
 
-REACTANT_STATE_TAG=0
 
 JOB_TYPE=PARALLEL_REPLICA
 #JOB_TYPE=MINIMIZATION
@@ -14,10 +13,6 @@ MAX_DIFFERENCE_POS=1.0
 # describtion POTENTIAL_TAG
 POTENTIAL_TAG= 10
 
-# describtion POTENTIAL_NO_TRANSLATION
-# 0 = the system is free to translate
-# 1 = translation of the system is prevented
-POTENTIAL_NO_TRANSLATION=1
 
 [Dynamics]
 TIMESTEP=0.2
