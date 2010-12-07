@@ -173,7 +173,7 @@ int Parameters::load(FILE *file){
         convergedRelax = ini.GetValueF("Default", "converged_relax", convergedRelax);
         maximumIterations = ini.GetValueL("Default", "maximum_iterations", maximumIterations);
         cgCurvatureStep = ini.GetValueF("CG","CURVATURE_STEP", cgCurvatureStep);
-        cgMaxMoveFullRelax = ini.GetValueF("CG","max_move_full_relax", cgMaxMoveFullRelax);
+        cgMaxMoveFullRelax = ini.GetValueF("CG","max_move", cgMaxMoveFullRelax);
         qmTimeStep = ini.GetValueF("QM","time_step", qmTimeStep);
         
 
