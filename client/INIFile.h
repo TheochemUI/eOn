@@ -109,9 +109,7 @@ public:
   string GetValue(string const keyname, string const valuename, string const defValue = "") const; 
   int    GetValueI(string const keyname, string const valuename, int const defValue = 0) const;
   long    GetValueL(string const keyname, string const valuename, long const defValue = 0) const;
-  bool   GetValueB(string const keyname, string const valuename, bool const defValue = false) const {
-    return bool( GetValueI( keyname, valuename, int( defValue)));
-  }
+  bool   GetValueB(string const keyname, string const valuename, bool const defValue = false) const;
   double   GetValueF(string const keyname, string const valuename, double const defValue = 0.0) const;
   // This is a variable length formatted GetValue routine. All these voids
   // are required because there is no vsscanf() like there is a vsprintf().
