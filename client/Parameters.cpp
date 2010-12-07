@@ -55,7 +55,6 @@ Parameters::Parameters(){
 
     // default parameters for Hessian determination
     hessianKind = 0;
-    hessianMaxSize = 0;
     hessianMinDisplacement = 0.25;
     hessianWithinRadiusDisplaced = 5.0;
     hessianPrefactorMax = 10e20;
@@ -249,7 +248,6 @@ int Parameters::load(FILE *file){
         }else if(hessianType == "product"){
             hessianKind = Hessian::PRODUCT;
         }
-        hessianMaxSize = ini.GetValueL("Hessian", "MAX_SIZE", hessianMaxSize);
         hessianWithinRadiusDisplaced = ini.GetValueF("Hessian", "WITHIN_RADIUS_DISPLACED", hessianWithinRadiusDisplaced);
         hessianMinDisplacement = ini.GetValueF("Hessian", "MIN_DISPLACEMENT", hessianMinDisplacement);
  
