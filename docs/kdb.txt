@@ -34,14 +34,23 @@ Configuration
 Settings for the kinetic database can be altered in your *config.ini* file
 under the **[kdb]** section. These are the options:
 
-``use_kdb`` False]
-    Turn kdb on/off.
+``use_kdb`` 
+
+    **default**: False
     
-**wait** [False]
-    Wait for the query to finish before submitting jobs (for debugging purposes).
+    **description**: Turn kdb on/off.
     
-**keep** [False]
-    Keep the saddle suggestions (for debugging purposes).
+``wait`` 
+
+    **default**: False
+    
+    **description**: Wait for the query to finish before submitting jobs (for debugging purposes).
+    
+``keep`` 
+
+    **default**: False
+    
+    **description**: Keep the saddle suggestions (for debugging purposes).
     
 A typical configuration using the kinetic database might look like this:
 
