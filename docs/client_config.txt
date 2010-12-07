@@ -146,29 +146,7 @@ brackets.
     ???
     
 
-\[DisplacementSampling\]
---------------------------------
-**NSAMPLES** [32]
-    ???
-    
-**ITERMAX** [32]
-    ???
-    
-**TORQUE_CONVERGENCE** [0.01]
-    ???
-    
-**MAX_CURVATURE** [-0.1]
-    ???
-    
-**MAX_DE** [10.0]
-    ???
-    
-**CUTOFFS** ["0.0 3.3"]
-    ???
-    
-**MAGNITUDES** ["0.0625 0.125 0.25"]
-    ???
-    
+
 
 \[Dynamics\]
 --------------------------------
