@@ -191,6 +191,7 @@ void ParallelReplicaJob::dynamics()
                     remember = true;
                 }else{
                     printf("Found New State !\n");
+                    *final = * reactant;
                     steps_tmp = nsteps;
                     if(parameters->mdAutoStop){
                         stoped = true;
@@ -234,7 +235,7 @@ void ParallelReplicaJob::dynamics()
     if(parameters->mdRefine && newstate){
         nsteps_refined = Refine(mdbuff,mdbufflength);
         //printf("nsteps_refined=%ld\n",nsteps_refined); 
-        final_refined = steps_tmp-check_steps-relax_steps+(nsteps_refined+1)*RecordAccuracy;
+        final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined*RecordAccuracy;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
         //printf("final_step = %ld\n",final_refined);
         *reactant = *mdbuff[nsteps_refined];
@@ -242,18 +243,19 @@ void ParallelReplicaJob::dynamics()
         SPtime = SPtimebuff[nsteps_refined];
     
         printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
-        for(long i = 0; i<relax_steps;i++){
-            PRdynamics.oneStep(parameters->mdTemperature);
-            md_fcalls ++;
+        
+        long relaxbufflength = int(relax_steps/RecordAccuracy)+1;
+        if(nsteps_refined < mdbufflength - relaxbufflength ){
+            *final = *mdbuff[nsteps_refined+relaxbufflength];
         }
- 
+    
         *fin1 = *saddle;
         ConjugateGradients SaddleMin(fin1, parameters);
         SaddleMin.fullRelax();
         min_fcalls += fin1->getForceCalls();
 
 
-        *fin2 = *reactant;
+        *fin2 = *final;
         ConjugateGradients RelaxMin(fin2, parameters);
         RelaxMin.fullRelax();
         min_fcalls += fin2->getForceCalls();
@@ -319,7 +321,7 @@ bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without que
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber)
 {
-    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle;
+    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle, *fileMega;
 
     char filename[STRING_SIZE];
 
@@ -378,6 +380,15 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
+    if (bundleNumber != -1) {
+        snprintf(filename, STRING_SIZE, "mega_%i.con", bundleNumber);
+    }else{
+        strncpy(filename, "mega.con", STRING_SIZE);
+    }
+
+    fileMega = fopen(filename, "wb");
+    fin1->matter2con(fileMega);
+    fclose(fileMega);
     return;
 }
 
