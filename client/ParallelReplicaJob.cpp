@@ -71,12 +71,14 @@ void ParallelReplicaJob::run(int bundleNumber)
     *saddle = *reactant;
     *fin1 = *reactant;
     *fin2 = *reactant;
+
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.setOutput(0);
     printf("\nMinimizing initial reactant\n");
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
-        
+    *final = *min1;    
+
     printf("Now running Parallel Replica Dynamics\n\n");
 
     dynamics();
@@ -238,33 +240,33 @@ void ParallelReplicaJob::dynamics()
         *reactant = *mdbuff[nsteps_refined];
         *saddle = *reactant;
         SPtime = SPtimebuff[nsteps_refined];
-    }
-
-    printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
-    for(long i = 0; i<relax_steps;i++){
-        PRdynamics.oneStep(parameters->mdTemperature);
-        md_fcalls ++;
-    }
+    
+        printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
+        for(long i = 0; i<relax_steps;i++){
+            PRdynamics.oneStep(parameters->mdTemperature);
+            md_fcalls ++;
+        }
  
-    *fin1 = *saddle;
-    ConjugateGradients SaddleMin(fin1, parameters);
-    SaddleMin.fullRelax();
-    min_fcalls += fin1->getForceCalls();
+        *fin1 = *saddle;
+        ConjugateGradients SaddleMin(fin1, parameters);
+        SaddleMin.fullRelax();
+        min_fcalls += fin1->getForceCalls();
 
 
-    *fin2 = *reactant;
-    ConjugateGradients RelaxMin(fin2, parameters);
-    RelaxMin.fullRelax();
-    min_fcalls += fin2->getForceCalls();
+        *fin2 = *reactant;
+        ConjugateGradients RelaxMin(fin2, parameters);
+        RelaxMin.fullRelax();
+        min_fcalls += fin2->getForceCalls();
 
-    if(*fin2 == *fin1){
-       *final = *fin1;
-       printf("Transition followed by a stable state !\n");
-    }else{
-       *final = *fin2;
-       printf("Transition followed by a mega-stable state; using fin2 as product.con\n");
-       SPtime = SPtime + relax_steps;
-    }
+        if(*fin2 == *fin1){
+           *final = *fin1;
+           printf("Transition followed by a stable state !\n");
+        }else{
+           *final = *fin2;
+           printf("Transition followed by a mega-stable state; using fin2 as product.con\n");
+           SPtime = SPtime + relax_steps;
+        }
+   }
     return;
 
     for(long i =0; i < mdbufflength;i++){
