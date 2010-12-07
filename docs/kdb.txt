@@ -34,7 +34,7 @@ Configuration
 Settings for the kinetic database can be altered in your *config.ini* file
 under the **[kdb]** section. These are the options:
 
-**use_kdb** [False]
+``use_kdb`` False]
     Turn kdb on/off.
     
 **wait** [False]
