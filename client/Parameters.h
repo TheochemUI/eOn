@@ -35,7 +35,6 @@ public:
 
     long jobType; // indicate which type of job will be run
     long randomSeed; // seed for random generator
-    long reactantStateTag; // tag to describe to which reactant state the saddle point connects
     long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
     long minimizeOnly; // only perform minimization, not saddle search
     long minimizeBox; // also minimize the box dimensions if minimize_only_ is true
