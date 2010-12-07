@@ -7,7 +7,7 @@ JOB_TYPE=PARALLEL_REPLICA
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
-RANDOM_SEED=1291700461
+RANDOM_SEED=1291700615
 
 MAX_DIFFERENCE_POS=1.0
 
