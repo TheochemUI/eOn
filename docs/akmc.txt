@@ -114,7 +114,7 @@ more efficient by getting them started in the right part of configuration space.
     When using undercoordinated as the epicenter type, choose only atoms with
     a coordination equal to or less than this.
 
-**disp_at_random** [1 (boolean?)]
+**disp_at_random** [True (boolean?)]
     ??? (boolean?)
 
 Also client side, listed with a separate section
@@ -257,8 +257,7 @@ Debug
 Parameters that are generally used to help debug calculations.
 
 **keep_bad_saddles** [false]
-    Keep data about bad saddles. What is bad, what is kept, and where is it
-    kept?)
+    Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the ``badprocdata`` directory within the state directory for that search. 
 
 **keep_all_result_files** [false]
     Stores all result files in main_directory/results
