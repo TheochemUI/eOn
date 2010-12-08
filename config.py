@@ -161,23 +161,23 @@ def init(config_file = ""):
     if config.sb_recycling_on:
         config.sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
-    #Superbasins
-    config.sb_on = parser.getboolean('Superbasins', 'use_superbasins')
+    #Coarse Graining
+    config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
     if config.sb_on:
         config.sb_path = parser.get('Paths', 'superbasins')
-        config.sb_scheme = parser.get('Superbasins', 'scheme')
+        config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
         if config.sb_scheme == 'transition_counting':
-            config.sb_tc_ntrans = parser.getint('Superbasins', 'number_of_transitions')
+            config.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif config.sb_scheme == 'energy_level':
-            config.sb_el_energy_increment = parser.getfloat('Superbasins', 'energy_increment')
+            config.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
 
-    config.askmc_on = parser.getboolean('Superbasins','use_askmc')
+    config.askmc_on = parser.getboolean('Coarse Graining','use_askmc')
     if config.askmc_on:
-        config.askmc_confidence = parser.getfloat('Superbasins','askmc_confidence')
-        config.askmc_alpha = parser.getfloat('Superbasins','askmc_barrier_raise_param')
-        config.askmc_gamma = parser.getfloat('Superbasins','askmc_high_barrier_def')
-        config.askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
-        config.askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
+        config.askmc_confidence = parser.getfloat('Coarse Graining','askmc_confidence')
+        config.askmc_alpha = parser.getfloat('Coarse Graining','askmc_barrier_raise_param')
+        config.askmc_gamma = parser.getfloat('Coarse Graining','askmc_high_barrier_def')
+        config.askmc_barrier_test_on = parser.getboolean('Coarse Graining','askmc_barrier_test_on')
+        config.askmc_connections_test_on = parser.getboolean('Coarse Graining','askmc_connections_test_on')
 
     #Debug options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')

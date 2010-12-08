@@ -35,7 +35,16 @@ General
         arc:
 
 
-``job_bundle_size``
+``job_queue_size``
+
+    Default: 1
+
+    The number of jobs that should be kept running. The current number of
+    searches is the current number of running jobs times the ``job_bundle_size``.
+    Every time eon is run it will check to see how many searches running and submit
+    more if the number is less than ``search_buffer_size``.
+
+``jobs_per_bundle``
 
     Default: 1
 
@@ -45,14 +54,6 @@ General
     more than one client job (*e.g.*, process search, dimer, minimization) can be
     run at the same time.
 
-``search_buffer_size``
-
-    Default: 1
-
-    The number of searches that should be kept running. The current number of
-    searches is the current number of running jobs times the ``job_bundle_size``.
-    Every time eon is run it will check to see how many searches running and submit
-    more if the number is less than ``search_buffer_size``.
 
 Local
 =====
