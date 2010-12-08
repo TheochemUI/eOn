@@ -32,9 +32,11 @@ For detailed information about Parallel Replica and Bond-Boost, please refer to 
    "Accelerated molecular-dynamics of rare events with the bond-boost method"
                R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
 
-Main
--------------------------------
-In order to run Parallel Replica, please set **job** to *parallel_replica* in **[Main]**.
+
+
+In order to run Parallel Replica, please set **job** to *parallel_replica* and **temperature** to what you want in your simulation in **[Main]**.
+
+**job** = *parallel_replica*
 
 **temperature** [300]
   Temperature during the Molecular Dynamics run. At the beginning, the code will scale the velocities to that temperature. And the thermostat you choose will maintain the temperature during the MD run. And the simulation termperature in this code is calculated as:
