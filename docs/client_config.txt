@@ -247,7 +247,7 @@ brackets.
 
 Sample parameters.dat file
 --------------------------------
-.. literalinclude:: ../sample/parameters.dat
+.. literalinclude:: ../samples/PtIsland/parameters.dat
     :language: none
 
 parameters.cpp
