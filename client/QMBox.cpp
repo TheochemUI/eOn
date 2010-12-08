@@ -105,7 +105,7 @@ void QMBox::fullRelax()
     {
         oneStep();
         printf("%12.8f   %12.8f   %12.8f   %12.8f   %12.8f\n", boxforce_[0], boxforce_[1], boxforce_[2], matter_->getPotentialEnergy(), dT);
-        converged = isItConverged(parameters_->convergedRelax);
+        converged = isItConverged(parameters_->convergedForceRelax);
 //        std::cout<<matter_->potentialEnergy()<<"\n";
     }
     forceCallsTemp = matter_->getForceCalls() - forceCallsTemp;

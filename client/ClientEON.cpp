@@ -198,23 +198,23 @@ int main(int argc, char **argv)
     // to the parameters file. 
     Job *job=NULL;
 
-    if (parameters.jobType == Job::PROCESS_SEARCH) {
+    if (parameters.job == Job::PROCESS_SEARCH) {
         job = new ProcessSearchJob(&parameters);
-    }else if (parameters.jobType == Job::MINIMIZATION) {
+    }else if (parameters.job == Job::MINIMIZATION) {
         job = new MinimizationJob(&parameters);
-    }else if (parameters.jobType == Job::HESSIAN) {
+    }else if (parameters.job == Job::HESSIAN) {
         job = new HessianJob(&parameters);
-    }else if (parameters.jobType == Job::PARALLEL_REPLICA) {
+    }else if (parameters.job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(&parameters);
-    }else if (parameters.jobType == Job::REPLICA_EXCHANGE) {
+    }else if (parameters.job == Job::REPLICA_EXCHANGE) {
         job =  new ReplicaExchangeJob(&parameters);
-    }else if (parameters.jobType == Job::DIMER_DR) {
+    }else if (parameters.job == Job::DIMER_DR) {
         job =  new DimerDrJob(&parameters);
-    }else if (parameters.jobType == Job::DIMER_ROTATION) {
+    }else if (parameters.job == Job::DIMER_ROTATION) {
         job =  new DimerRotationJob(&parameters);
-    }else if (parameters.jobType == Job::DISPLACEMENT_SAMPLING) {
+    }else if (parameters.job == Job::DISPLACEMENT_SAMPLING) {
         job =  new DisplacementSamplingJob(&parameters);
-    }else if (parameters.jobType == Job::TEST) {
+    }else if (parameters.job == Job::TEST) {
         job =  new TestJob(&parameters);
     }
 

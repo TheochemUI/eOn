@@ -13,12 +13,9 @@ the harmonic approximation to transition state theory (hTST).
 The hTST approximation of a transition rate is calculated from the energy difference
 between the saddle point along the minimum energy path for the transition and the
 initial minimum.  The vibrational modes at these points are also used to calculate
-the prefactor.  An hTST rate is of the standard Arrhenius form
-
-Rate = nu Exp(-dE/kT)
-
-where nu is the product of all positive modes at the minimum divided by those at the
-saddle, dE is the energy barrier, and kT is the thermal enregy.
+the prefactor.  An hTST rate is of the standard Arrhenius form *R = v* exp(-*dE/kT*)
+where *v* is the product of all positive modes at the minimum divided by those at the
+saddle, *dE* is the energy barrier, and *kT* is the thermal enregy.
 
 In order to propogate the dynamics within aKMC, a list of all possible rates leading
 away from the current stable state to any other state is required.  Formally, there
@@ -48,13 +45,13 @@ on the server-side and minmode following saddle point searching options on the c
 Each option is specified in the config.ini file under the section name given.  Default
 values for each option is given along with a brief description.
 
-\[aKMC\]
---------------------------------
+aKMC
+-----
 
-Parameters for the aKMC algorithm on the server side.
+Parameters found in the [aKMC] section.
 
 **temperature** [300]
-    The temperature, in kelvins, of the simulation.
+    The temperature of the simulation, in Kelvin.
 
 **max_kmc_steps** [100000]
     The maximum number of transitions per execution of the server.
@@ -63,28 +60,17 @@ Parameters for the aKMC algorithm on the server side.
     Processes with barriers within this number of kT above the lowest barrier
     will be used in the rate table.
 
-**maximum_thermally_accessible_window** [2]
-    Processes with barriers between the smallest barrier and this multiplied by
-    thermally_accessible_window will be stored, in the event that they are
-    thermally accessible later. Processes with barriers beyond this
-    will be discarded.
+**maximum_thermally_accessible_window** [40]
+    Processes with barriers within this number of kT above the lowest barrier
+    will be stored, in the event that they are thermally accessible later.
+    Processes with barriers higher than this window will be discarded.
 
 **confidence** [0.99]
     The confidence criterion for moving to the next state.
 
 
-\[Default\] (name needs changing, perhaps move some variables to job-specific sections)
---------------------------------
-
-General client-side options.
-
-**reactant_state_tag** [0]
-    ??
-
-
-
-\[Displacement\]
---------------------------------
+Displacement
+-------------
 
 A saddle search is initiated by making a local displacement of atoms from their
 position at the minimum of the current state.  This displacement can be done
@@ -93,14 +79,18 @@ parameters.  If the user knows something about the local environment where react
 are likely to take place in the system, this informationcan be used to make saddle searches
 more efficient by getting them started in the right part of configuration space.
 
-**type** [random]
-    Epicenter selection criterion. Options are: *random*, *leastcoordinated*,
-    and *undercoordinated*. The *random* option will select an atom at random
-    from the free atoms in the configuration. The *leastcoordinated* option
-    will determine the lowest coordination number of all atoms in the
-    configuration and select one atom at random with that coordination number.
-    The *undercoordinated* option will select a random atom with coordination
-    less than *maximum_coordination*.
+**type**
+
+    Default: *random*
+
+    Options:
+
+        *random*: Select an atom at random from the free atoms in the configuration.
+
+        *least_coordinated*: Determine the lowest coordination number of all atoms in the
+        configuration and select one atom at random with that coordination number.
+
+        *under_coordinated* Select a random atom with coordination less than *maximum_coordination*.
 
 **radius** [5.0]
     Atoms within this distance of the epicenter will be displaced. (angstroms)
@@ -111,27 +101,18 @@ more efficient by getting them started in the right part of configuration space.
 **cutoff** [3.3]
     Atoms within this distance of each other are considered neighbors.
 
-**use_covalent** [False]
+**use_covalent** [false]
     Use the covalent radii of atoms to determine neighbors.
 
 **covalent_scale** [1.3]
     Multiply covalent radii by this amount before determining neighbors.
 
-**brute_neighbors** [False]
+**brute_neighbors** [false]
     Determine neighbors by brute force (use this with nonorthogonal boxes).
 
 **maximum_coordination** [11]
     When using undercoordinated as the epicenter type, choose only atoms with
     a coordination equal to or less than this.
-
-**stdev_translation** [0.2]
-    ???
-
-**stdev_rotation** [1.0]
-    ???
-
-**molecule_list** [???]
-    ???
 
 **disp_at_random** [1 (boolean?)]
     ??? (boolean?)
@@ -139,20 +120,26 @@ more efficient by getting them started in the right part of configuration space.
 Also client side, listed with a separate section
 
 
-\[ProcessSearch\]
+Process Search
+--------------
 
-**minimize_first** [0]
-    GH: should be boolean and moved
+The aKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.
+
+**minimize_first** [false]
+    Minimize the initial state before doing any saddle searches.
 
 
-\[Saddle_Point\]
+Saddle Search
+-------------
+
+Parameters specific to minimum mode following saddle point searches.
 
 **displacement_type** [none]
     | not_fcc_or_hcp
     | min_coordinated
     | not_last_atom
 
-**refine** [false]
+**client_displace** [false]
     ?? why would we not refine, for hessian or minimization?
 
 **converged** [0.025]
@@ -190,13 +177,8 @@ Also client side, listed with a separate section
     mix in some of the perpendicular force in convex regions
 
 
-\[Default\]
-
-**neighbor_cutoff** [3.3]
-    radius around epicenter atoms for which neighbor atoms are displaced
-
-
-\[Dimer\]
+Dimer
+-----
 
 Options for controlling the dimer minimum mode finding method on the client side.
 
@@ -206,49 +188,43 @@ Options for controlling the dimer minimum mode finding method on the client side
 **finite_diff_angle** [0.005]
     Finite difference angle over which the dimer is rotated to find the lowest curvature.
 
-**rotations_high** [8]
+**rotations_max** [8]
     Maximum number of rotations allowed for the dimer in each step.
 
-**rotations_low** [1]
+**rotations_min** [1]
     Minimum number of rotations allowed for the dimer in each step.
 
-**window_high** [1.0]
+**window_max** [1.0]
     High rotational force above which the dimer rotates up to rotations_high times.
     GH: this will go away with Kastner's rotation scheme
 
-**window_low** [0.1]
+**window_min** [0.1]
     Low rotational force above which the dimer rotates only once and below which is does not rotate.
     GH: this will go away with Kastner's rotation scheme
 
-\[Hessian\]
+Hessian
+-------
 
 Options for controlling how Hessian matricies are calculated.
 
 **hessian_type** [reactant]
-    | reactant
-    | saddle
-    | product
-    | Which structure is used to calculate the Hessian from
-
-**max_size** [0]
-    ?? perhaps zero means any size
+    The Hessian to be calculated has to be one of *reactant*, *saddle*, or *product*.
 
 **min_displacement** [0.25]
-    ??
+    Minimum amount that an atom has to move to be included in the Hessian calculation.
 
 **within_radius** [0.5]
-    Atoms within this radius of moving atoms are included in the Hessian
+    Atoms within this radius of moving atoms are included in the Hessian.
 
 **prefactor_min** [10e8]
-    Minimum value for a resonable prefactor
+    Minimum value for a resonable prefactor.
 
 **prefactor_max** [10e20]
-    Maximum value for a resonable prefactor
+    Maximum value for a resonable prefactor.
 
 
-
-\[Paths\]
---------------------------------
+Paths
+-----
 
 Location of files related to the sending and receiving aKMC data on the server.
 
@@ -275,31 +251,31 @@ Location of files related to the sending and receiving aKMC data on the server.
     For extra files needed by the client for the potential.
 
 
-\[Debug\]
---------------------------------
+Debug
+-----
 
 Parameters that are generally used to help debug calculations.
 
-**keep_bad_saddles** [False]
+**keep_bad_saddles** [false]
     Keep data about bad saddles. What is bad, what is kept, and where is it
     kept?)
 
-**keep_all_result_files** [False]
+**keep_all_result_files** [false]
     Stores all result files in main_directory/results
 
 **random_seed** [random]
     The random seed. "random" for a random random seed.
 
-**register_extra_results** [False]
+**register_extra_results** [false]
     Register processes found for a state after leaving that state.
 
-**list_search_results** [True]
+**list_search_results** [true]
     ???
 
-**use_mean_time** [False]
+**use_mean_time** [false]
     Select transition times from the mean of the exponential distribution of escape times.
 
-**target_trajectory** [False]
+**target_trajectory** [false]
     Follow the state-to-state trajectory of another akmc simulation.
 
 

@@ -94,7 +94,7 @@ void Quickmin::fullRelax()
     while(!converged)
     {
         oneStep();
-        converged = isItConverged(parameters->convergedRelax);
+        converged = isItConverged(parameters->convergedForceRelax);
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
     return;
