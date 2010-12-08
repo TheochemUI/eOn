@@ -129,7 +129,6 @@ def make_searches(comm, current_state, wuid):
     if num_to_make == 0:
         return wuid
     
-    parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
     
     invariants = {}
@@ -138,8 +137,8 @@ def make_searches(comm, current_state, wuid):
     io.savecon(reactIO, reactant)
     #invariants['reactant_passed.con']=reactIO
     
-    f = open(parameters_path)
-    invariants['parameters_passed.dat'] = StringIO(''.join(f.readlines()))
+    f = open(config.config_path)
+    invariants['config.ini'] = StringIO(''.join(f.readlines()))
     f.close()
 
     #Merge potential files into invariants
@@ -152,7 +151,7 @@ def make_searches(comm, current_state, wuid):
         search['reactant_passed.con']  = reactIO
         param_ini_str = "[Main]\nrandom_seed=%i" % int(numpy.random.random()*10**9)
         paramIO = StringIO(param_ini_str)
-        search['parameters_passed.dat'] = paramIO
+        search['config.ini'] = paramIO
         searches.append(search)
         wuid += 1
 
