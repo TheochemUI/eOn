@@ -80,7 +80,7 @@ class ASKMC:
         if sb_recycling_on:
             self.sb_recycling_on = True
         else:
-            self.sb_recycling_ont = False
+            self.sb_recycling_on = False
 
     def compile_process_table(self, current_state):
         """ Load the normal process table, and replace all the rates edited by AS-KMC. """
