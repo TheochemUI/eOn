@@ -49,13 +49,13 @@ In order to run Parallel Replica, please set **job** to *parallel_replica* in [M
 Dynamics
 --------------------------------
 
-**timestep** [1]
+**time_step** [1]
   The length of each MD step. The unit of **timestep** is *1 fs* and default value is *1*.
     
 **auto_stop** [false]
   Whether or not stop the job when a new state is found. For boinc communicator this value should be set to *false*. 
     
-**max_steps** [1000]
+**steps** [1000]
    The maxium number of MD steps. The job will only be stopped when the steps of MD run reaches **max_steps**, if **auto_stop** is set to be *false*.
     
 **dephase_steps** [200]
