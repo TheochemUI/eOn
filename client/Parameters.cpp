@@ -69,12 +69,17 @@ Parameters::Parameters(){
     dimerRotationsMax = 8;
     dimerRotationsMin = 1;
 
-    // default parameters used by the optimizers
+    // [Minimizers]
     maximumIterations=512;
+    convergedForceRelax = 0.005;
+
+    // [Conjugate Gradients]
     cgCurvatureStep = 0.001;
     cgMaxMoveFullRelax = 0.2;
+
+    //[Quick Min]
     qmTimeStep = 0.1;
-    convergedForceRelax = 0.005;
+    qmMaxMove = 0.2;
 
     // [Parallel Replica]
     mdTimeStep = 0.1;
