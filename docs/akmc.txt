@@ -55,30 +55,32 @@ with a brief description.
 AKMC
 -----
 
-Parameters found in the [AKMC] section.
+Parameters found in the **[AKMC]** section.
 
-``max_kmc_steps``
+**max_kmc_steps**
 
     Default: 100000
 
     The maximum number of transitions per execution of the server.
 
-``thermally_accessible_window``
+**thermally_accessible_window**
 
     Default: 20
 
     Processes with barriers within this number of kT above the lowest barrier
-    will be used in the rate table.
+    will be used in the rate table and for confidence calculations.
 
-``max_thermally_accessible_window``
+**thermally_accessible_buffer**
 
-    Default: 40
+    Default: 20
 
-    Processes with barriers within this number of kT above the lowest barrier
-    will be stored, in the event that they are thermally accessible later.
-    Processes with barriers higher than this window will be discarded.
+    Processes with barriers of **thermally_accessible_window** +
+    **thermally_accessible_buffer** will be stored, in the event that they are
+    thermally accessible later, but are not used in the rate table or for the
+    confidence calculations. Processes with barriers higher than the sum of
+    these two values will be discarded.
 
-``confidence`` 
+**confidence** 
     
     Default: 0.99
 
@@ -87,179 +89,199 @@ Parameters found in the [AKMC] section.
 Process Search
 --------------
 
-The aKMC method can ask clients to do a saddle search, find connecting minima,
+The AKMC method can ask clients to do a saddle search, find connecting minima,
 and calculate prefactors all within the Process Search job type.
 
-``minimize_first`` 
+**minimize_first** 
 
     Default: false
 
     Every time a process search is run by a client the reactant will be
     minimized first before doing any saddle searches.
 
+**prefactor_min** 
+
+    Default: 10e8
+
+    Minimum value for a resonable prefactor.
+
+**prefactor_max** 
+    
+    Default: 10e20
+    Maximum value for a resonable prefactor.
+
+**default_prefactor**
+
+    Default: 0
+
+    Calculate prefactor if zero, otherwise use given value instead of doing a
+    full prefactor calculation.
+
+
 Saddle Search
 -------------
 
 A saddle search is initiated by making a local displacement of atoms from their
 position at the minimum of the current state.  This displacement can be done
-using the different strategies indicated by the ``type`` option, and the
+using the different strategies indicated by the **displace_type** option, and the
 following parameters.  If the user knows something about the local environment
-where reactions are likely to take place in the system, this informationcan be
+where reactions are likely to take place in the system, this information can be
 used to make saddle searches more efficient by getting them started in the
 right part of configuration space.
 
-``type``
+**displace_type**
 
-    Default: ``Random``
+    Default: Random
 
     Options:
 
-        ``random``: Select an atom at random from the free atoms in the
+        *random*: Select an atom at random from the free atoms in the
         configuration.
 
-        ``least_coordinated``: Determine the lowest coordination number of all
+        *least_coordinated*: Determine the lowest coordination number of all
         atoms in the configuration and select one atom at random with that
         coordination number.
 
-        ``under_coordinated`` Select a random atom with coordination less than
-        ``maximum_coordination``.
+        *under_coordinated*: Select a random atom with coordination less than
+        *displace_max_coordination*.
 
-``radius`` 
+**displace_radius** 
 
     Default: 5.0
     
     Atoms within this distance of the epicenter will be displaced.
 
-``magnitude``
+**displace_magnitude**
 
     Default: 0.01
 
     The standard deviation of the magnitude of the displacement.
 
-``maximum_coordination``
+**displace_max_coordination**
 
     Default: 11
 
-    When using ``undercoordinated`` as the displacement type, choose only atoms with
+    When using *undercoordinated* as the displacement type, choose only atoms with
     a coordination equal to or less than this.
 
-``converged`` [0.025]
-    | force for which a saddle is considered converged
-    | GH: should combine with server and/or general options
+**min_mode_method**
 
-``min_mode_method`` [dimer]
-    | dimer
-    | lanczos
-    | method to find the minimum mode
+    Default: dimer
 
-``max_step_size`` [0.2]
-    maxmimum amount that a configuration should move in a saddle search
+    Options:
 
-``max_energy`` [20.0]
-    energy at wich a saddle search is considered bad and terminated
+        *dimer*: Use the dimer min-mode method.
+        *lanczos*: Use the Lanczos min-mode method.
 
-``norm_perturbation`` [0.1]
-    GH: displacement distance? move to displacement / combine with server? 
+**max_energy** 
 
-``within_radius_perturbated`` [4.0]
-    GH: combine with server and must change the name
-
-``max_single_perturbation`` [0.1]
-    GH: combine with server parameter
-
-``max_iterations`` [1000]
-    maximum number of iterations for a saddle point search
-
-``perp_force_ratio`` [0.0]
-    mix in some of the perpendicular force in convex regions
+    Default: 20.0
+    The energy at which a saddle search is considered bad and terminated.
 
 Dimer
 -----
 
 Options for controlling the dimer minimum mode finding method on the client side.
 
-``separation`` [0.0001]
-    Separation between dimer images.
+**separation** 
 
-``finite_diff_angle`` [0.005]
-    Finite difference angle over which the dimer is rotated to find the lowest curvature.
+    Default: 0.001
 
-``rotations_max`` [8]
+    Separation between dimer images. 
+
+**finite_diff_angle**
+
+    Default: 0.005
+
+    Finite difference angle over which the dimer is rotated to find the lowest
+    curvature.
+
+**rotations_max** 
+
+    Default: 8
+
     Maximum number of rotations allowed for the dimer in each step.
 
-``rotations_min`` [1]
+**rotations_min** 
+
+    Default: 1
+
     Minimum number of rotations allowed for the dimer in each step.
 
-``window_max`` [1.0]
-    High rotational force above which the dimer rotates up to rotations_high times.
-    GH: this will go away with Kastner's rotation scheme
+**window_max** 
+    
+    Default: 1.0
 
-``window_min`` [0.1]
-    Low rotational force above which the dimer rotates only once and below which is does not rotate.
-    GH: this will go away with Kastner's rotation scheme
+    High rotational force above which the dimer rotates up to rotations_high
+    times.  GH: this will go away with Kastner's rotation scheme
+
+**window_min** 
+
+    Default: 0.1
+
+    Low rotational force above which the dimer rotates only once and below
+    which is does not rotate.  GH: this will go away with Kastner's rotation
+    scheme
 
 Hessian
 -------
 
 Options for controlling how Hessian matricies are calculated.
 
-``hessian_type`` [reactant]
-    The Hessian to be calculated has to be one of *reactant*, *saddle*, or *product*.
+**type** 
 
-``min_displacement`` [0.25]
-    Minimum amount that an atom has to move to be included in the Hessian calculation.
+    Default: reactant
 
-``within_radius`` [0.5]
+    The Hessian to be calculated has to be one of *reactant*, *saddle*, or
+    *product*.
+
+**min_displacement** 
+
+    Default: 0.25
+
+    Minimum amount that an atom has to move to be included in the Hessian
+    calculation.
+
+**within_radius** 
+
+    Default: 5.0
+
     Atoms within this radius of moving atoms are included in the Hessian.
-
-``prefactor_min`` [10e8]
-    Minimum value for a resonable prefactor.
-
-``prefactor_max`` [10e20]
-    Maximum value for a resonable prefactor.
-
 
 Debug
 -----
 
-Parameters that are generally used to help debug calculations.
+Parameters that are generally used to help debug calculations added under
+**[Debug]** section.
 
-``keep_bad_saddles`` 
+**keep_bad_saddles** 
 
     Default: false
 
     Keep data about bad saddles. If true, the result files for failed saddle
-    searches are kept in the ``badprocdata`` directory within the state
+    searches are kept in the *badprocdata* directory within the state
     directory for that search. 
 
-``keep_all_result_files`` 
+**keep_all_result_files** 
 
     Default: false
 
     Stores all result files in main_directory/results
 
-``register_extra_results``
+**register_extra_results**
 
     Default: false
 
     Register processes found for a state after leaving that state.
 
-``list_search_results`` [true]
-    ???
-
-``use_mean_time`` 
+**use_mean_time** 
 
     Default: false
 
     Select transition times from the mean of the exponential distribution of escape times.
 
-``target_trajectory`` 
+**target_trajectory** 
 
-    Default: false
+    Default: None
 
     Follow the state-to-state trajectory of another akmc simulation.
-
-
-Default config.ini
---------------------------------
-.. literalinclude:: ../default_config.ini

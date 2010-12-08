@@ -8,98 +8,101 @@ and general parameters which are shared between job types.
 Main
 ----
 
-These are options that go in the [Main] section of ``config.ini``.
+These are options that go in the **[Main]** section of "config.ini".
 
-``job``
+**job**
 
-    Default: ``None``
+    Default: *None*
 
     Options:
 
-        ``akmc``: Run an adaptive kinetic monte carlo simulation.
+        *akmc*: Run an adaptive kinetic monte carlo simulation.
          
-        ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+        *parallel_replica*: Calculate the rare-event dynamics of the system by
+        combining transitions observed from multiple trajectories run in
+        parallel.
 
-        ``process_search``: Combined saddle search, minimizations, and prefactor calculations.  Used by the aKMC method.
+        *process_search*: Combined saddle search, minimizations, and prefactor
+        calculations.  Used by the aKMC method.
 
-        ``saddle_search``: Do a saddle point search using a minimum mode method.
+        *saddle_search*: Do a saddle point search using a minimum mode method.
 
-        ``minimizaion``: Find the minimum from an initial configuration.
+        *minimizaion*: Find the minimum from an initial configuration.
 
-        ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.
+        *hessian*: Calculate the Hessian matrix for the specified configuration
+        in a process.
 
-        ``dimer_dr``: Rye is changing this.
+        *dimer_dr*: Rye is changing this.
 
-        ``dimer_rotation``: Rye is changing this.
+        *dimer_rotation*: Rye is changing this.
 
-        ``displacement_sampling``:  Job to sample different displacement methods and parameters to see which are the most efficient.
+        *displacement_sampling*: Job to sample different displacement methods
+        and parameters to see which are the most efficient.
 
 
-``potential``
+**potential**
 
-    Default: ``None``
+    Default: *None*
 
     Options:
 
-        ``lj_rh``: Lennard-Jones poential for rhodium.
+        *lj_rh*: Lennard-Jones poential for rhodium.
 
-        ``morse_pt``: Morse potential for platinum.
+        *morse_pt*: Morse potential for platinum.
 
-        ``emt``: Effective medium theory, for metals.
+        *emt*: Effective medium theory, for metals.
 
-        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+        *edip*: Environment-Dependent Interatomic Potential, for carbon.
 
-        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
+        *vasp*: Vienna Ab-Initio Simulation Program (VASP) interface.
 
-        ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
+        *tersoff_si*: Tersoff pair potential with angular terms, for silicon.
 
-        ``sw_si``: Stillinger-Weber potential, for silicon.
+        *sw_si*: Stillinger-Weber potential, for silicon.
 
-        ``lenosky_si``: Lenosky potential, for silicon.
+        *lenosky_si*: Lenosky potential, for silicon.
 
-        ``eam_al``: Embedded atom method parameterized for aluminum.
+        *eam_al*: Embedded atom method parameterized for aluminum.
 
-        ``qsc``: Quantum Sutton Chen potential, for metals.
+        *qsc*: Quantum Sutton Chen potential, for metals.
 
-        ``zpice``: Water on platinum.
+        *zpice*: Water on platinum.
 
-        ``tip4p``: Point charge model for water.
+        *tip4p*: Point charge model for water.
 
-        ``bopfox``: Bond order potential, for metals.
+        *bopfox*: Bond order potential, for metals.
 
-        ``bop``: Bond order potential, for metals.
-
-
-``temperature`` 
+**temperature**
 
     Default: 300
 
     The temperature of the simulation, in Kelvin.
 
-``random_seed``
+**random_seed**
 
-    Default: None
+    Default: -1
 
-    When set to a previously used seed a simulation can be repeated.
+    Takes an integer number for the random seed. If this number is less than
+    zero the current time is used as the random seed.
 
 Structure Comparison
---------------------------------
+--------------------
 
-``energy_difference`` 
+**energy_difference**
 
     Default: 0.01
 
     How close in energy two configurations must be to be considered 
     energetically equivalent.
     
-``distance_difference``
+**distance_difference**
     
     Default: 0.05
 
     The maximum distance two mapped atoms may be for two configurations to be 
     considered equivalent.
     
-``use_identical`` 
+**indistinguishable_atoms**
 
     Default: True
 
@@ -107,25 +110,25 @@ Structure Comparison
     atoms of the same element. That is to say the numbering of the atoms does
     not affect the structural comparison.
 
-``neighbor_cutoff``
+**neighbor_cutoff**
 
     Default: 3.3
 
     Atoms within this distance of each other are considered neighbors.
 
-``use_covalent``
+**use_covalent**
 
     Default: False
 
     Use the covalent radii of atoms to determine neighbors.
 
-``covalent_scale``
+**covalent_scale**
 
     Default: 1.3
 
     Multiply covalent radii by this amount before determining neighbors.
 
-``brute_neighbors``
+**brute_neighbors**
 
     Default: False
 
@@ -136,7 +139,7 @@ Paths
 
 Location of files related to the sending and receiving data on the server.
 
-``main_directory`` 
+**main_directory**
 
     Default: ./
 
@@ -144,50 +147,34 @@ Location of files related to the sending and receiving data on the server.
     initial reactant are here and by default all of the simulation data will be
     stored under this directory.
 
-``searches_in``
+**searches_in**
 
-    Default: ``main_directory``/searches/in/
+    Default: **main_directory**/searches/in/
 
     ???
 
-``states``
+**states**
 
-    Default: ``main_directory``/states/
+    Default: **main_directory**/states/
 
     Where all of the information about individual states is located.
 
-``scratch`` [main_directory/searches/scratch/]
+**scratch** [main_directory/searches/scratch/]
 
     ???
 
-``potential_files``
+**potential_files**
 
-    Default: ``main_directory``/potfiles
+    Default: **main_directory**/potfiles
 
     For extra files needed by the client for the potential.
 
 
-General simulation parameters from client?
-------------------------------------------
+Debug
+-----
 
-Options in the [Main] section.
+**save_stdout** 
 
-``calculate_prefactor`` [true]
-    Calculate prefactor if true, otherwise assume a standard value of xxx.
+    Default: false
 
-``minimize_only`` [false]
-    Only minimize the structure.  ``Should be moved?``
-
-``minimize_box`` [false]
-    Minimize the box dimentions.
-
-``max_difference_pos`` [0.1]
-    Maximum distance for which two configurations are considered the same. ``Should be combined with server-side variable and moved to [Sructure Comparison]``
-
-``save_stdout`` [false]
-    Save the standard output from the client and report it back to the server. ``Should move to debug?``
-
-``converged_relax`` [0.005]
-    Force below which a configuration is considered minimzed. ``Should be combined with server-side variable and moved to [Sructure Comparison]``
-
-
+    Save the standard output from the client to a file named stdout_0.dat

@@ -14,9 +14,9 @@ Contents
    installation
    eon
    akmc
+   optimizers
    coarse-graining
    kdb
-   minimization
    parallel_replica
    communicator
    server configuration <server_config>
