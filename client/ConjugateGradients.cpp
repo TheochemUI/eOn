@@ -83,7 +83,7 @@ void ConjugateGradients::oneStep(){
     determineSearchDirection();
 
     // move system an infinitesimal step to determine the optimal step size along the search line
-    posStep = pos + directionNorm * parameters->cgCurvatureStep;
+    posStep = pos + directionNorm * parameters->optFiniteDiffStep;
     matter->setPositions(posStep);
     forceAfterStep = matter->getForces();
  
@@ -197,7 +197,7 @@ double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBefor
     // Determine curvature
     projectedForce1 = (forceBeforeStep.cwise() * directionNorm).sum();
     projectedForce2 = (forceAfterStep.cwise() * directionNorm).sum();
-    curvature = (projectedForce1-projectedForce2)/parameters->cgCurvatureStep;
+    curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDiffStep;
     
     if(curvature < 0)
         step = maxStep;
@@ -218,7 +218,7 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::makeInfinitesimalStepModif
     determineSearchDirection();
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
-    return directionNorm * parameters->cgCurvatureStep + pos;
+    return directionNorm * parameters->optFiniteDiffStep + pos;
 }
 
 
