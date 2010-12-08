@@ -513,7 +513,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     invariants['reactant_passed.con']=reactIO
     
     ini_changes = [ ('Main', 'job', 'process_search') ]
-    invariants['config.ini'] = io.modify_config(config.config_path, ini_changes)
+    invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
 
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
