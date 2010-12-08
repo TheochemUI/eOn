@@ -58,11 +58,11 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     parameters = parametersPassed;
     eigenMode.resize(saddlePassed->numberOfAtoms(), 3);
     eigenMode.setZero();
-    if(parameters->saddleMinModeMethod == MINMODE_DIMER)
+    if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
     {
         lowestEigenmode=new Dimer(saddle, parameters);
     }
-    else if(parameters->saddleMinModeMethod == MINMODE_LANCZOS)
+    else if(parameters->saddleMinmodeMethod == MINMODE_LANCZOS)
     {
         #ifdef LANCZOS_FOR_EON_HPP
             lowestEigenmode = new Lanczos(saddle, parameters);
@@ -124,7 +124,7 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
-    if (parameters->saddleRefine) {
+    if (!parameters->saddleDisplace) {
         lowestEigenmode->startNewSearchAndCompute(saddle, mode);
         eigenMode = lowestEigenmode->getEigenvector();
         eigenValue = lowestEigenmode->getEigenvalue();
@@ -132,13 +132,9 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
     else
     {
         if(parameters->saddleMaxJumpAttempts <= 0)
-        {
             displaceInConcaveRegion();
-        }
         else
-        {
             jumpToConvexRegion();
-        }
     }
     fprintf(stdout, "  Saddle point displaced.\n");
 
@@ -173,18 +169,18 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     long j, indexEpiCenter = 0;
     double diffR;
 
-    Matrix<double, Eigen::Dynamic, 3> initialDisplacement(nAtoms, 3);
-    initialDisplacement.setZero(); 
+    Matrix<double, Eigen::Dynamic, 3> initialDisplace(nAtoms, 3);
+    initialDisplace.setZero(); 
 
-    if(parameters->saddleDisplacementType == DISP_NOT_FCC_OR_HCP)
+    if(parameters->saddleDisplaceType == DISP_NOT_FCC_OR_HCP)
     {
         indexEpiCenter = EpiCenters::cnaEpiCenter(matter, parameters->neighborCutoff);
     }
-    else if(parameters->saddleDisplacementType == DISP_LAST_ATOM)
+    else if(parameters->saddleDisplaceType == DISP_LAST_ATOM)
     {
         indexEpiCenter = EpiCenters::lastAtom(matter);
     }
-    else if(parameters->saddleDisplacementType == DISP_MIN_COORDINATED)
+    else if(parameters->saddleDisplaceType == DISP_MIN_COORDINATED)
     {
         indexEpiCenter = EpiCenters::minCoordinatedEpiCenter(matter, parameters->neighborCutoff);
     }
@@ -195,7 +191,7 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
 
     // To keep track of free coordinates when setting atoms that have moved
-    // Create an array containing initialDisplacement_ of atoms 
+    // Create an array containing initialDisplace_ of atoms 
     // in the vicinity of the epicenter atom
     j = 0;
     for(int i = 0; i < nAtoms; i++)
@@ -203,35 +199,35 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
         if(matter->getFixed(i) == false)
         {
             diffR = matter->distance(i, indexEpiCenter);
-            if(diffR < parameters->saddleWithinRadiusPerturbated)
+            if(diffR < parameters->saddleWithinRadiusDisplace)
             {
-                initialDisplacement(i,0) = 2 * randomDouble() - 1;
-                initialDisplacement(i,1) = 2 * randomDouble() - 1;
-                initialDisplacement(i,2) = 2 * randomDouble() - 1;
+                initialDisplace(i,0) = 2 * randomDouble() - 1;
+                initialDisplace(i,1) = 2 * randomDouble() - 1;
+                initialDisplace(i,2) = 2 * randomDouble() - 1;
             }
         }
         j++;
     }
-    initialDisplacement.normalize();
-    initialDisplacement *= parameters->saddleNormPerturbation;
+    initialDisplace.normalize();
+    initialDisplace *= parameters->saddleNormDisplace;
 
     //XXX: There is probably a more idomatic way to do this with Eigen
     for(int i = 0; i < 3 * nAtoms; i++)
     {
-        if(parameters->saddleMaxSinglePerturbation < initialDisplacement[i])
+        if(parameters->saddleMaxSingleDisplace < initialDisplace[i])
         {
-            initialDisplacement[i] = parameters->saddleMaxSinglePerturbation;
+            initialDisplace[i] = parameters->saddleMaxSingleDisplace;
         }
-        else if(initialDisplacement[i] < -parameters->saddleMaxSinglePerturbation)
+        else if(initialDisplace[i] < -parameters->saddleMaxSingleDisplace)
         {
-            initialDisplacement[i] = -parameters->saddleMaxSinglePerturbation;
+            initialDisplace[i] = -parameters->saddleMaxSingleDisplace;
         }
     }
-    // Adding the initialDisplacement
-    matter->setPositions(matter->getPositions() + initialDisplacement);
+    // Adding the initialDisplace
+    matter->setPositions(matter->getPositions() + initialDisplace);
     
     // Sets the initial mode for the SP search
-    mode = initialDisplacement;
+    mode = initialDisplace;
 
     return;
 }
@@ -302,7 +298,7 @@ void SaddlePoint::jumpToConvexRegion(){
 
     forceCallsSaddle = saddle->getForceCalls();
 
-    if(parameters->saddleDisplacementType!=DISP_NONE){
+    if(parameters->saddleDisplaceType!=DISP_NONE){
         do{
             saddle->setPositions(pos);
             displaceStateAndSetMode(saddle);
@@ -364,7 +360,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         initial->matter2xyz(climb.str(), false);
         saddle->matter2xyz(climb.str(), true);
         ++run;
-        if(parameters->saddleMinModeMethod == MINMODE_DIMER)
+        if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
             printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Force", "Torque", 
@@ -403,7 +399,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         cgSaddle.setForces(forces);
         if(eigenValue < 0)
         {
-            converged = cgSaddle.isItConverged(parameters->saddleConverged);
+            converged = cgSaddle.isItConverged(parameters->saddleConvergedForce);
             concaveSeries = 0;
         }
         else
@@ -416,7 +412,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         iterations++;
         #ifndef NDEBUG
-            if(parameters->saddleMinModeMethod == MINMODE_DIMER)        
+            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)        
             {
                 double *stats = lowestEigenmode->stats;
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 

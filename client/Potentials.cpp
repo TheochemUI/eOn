@@ -37,87 +37,76 @@ int Potential::fcalls = 0;
 // which potential to use is decided at preprocessor level
 Potential::Potential(Parameters *parameters){
     parameters_ = parameters;
-//_______________________    
-// To use a new potential.
-// An interface should be created in the file NewPotential_interface.cpp. 
-// Code will stop at runtime if used and no new potential has been defined!
-    if(parameters_->potentialType == POT_USER){
-        //interface_ = new NewPotential();
-        //interface_->initialize();
-        printf("The new potential must be commented in Potentials.cpp.\n");
-        std::exit(1);
-    }
-//_______________________  
-    else if(parameters_->potentialType == POT_LJ){
+
+    if(parameters_->potential == POT_LJ_RH){
         interface_ = new LJ();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_MORSE){
+    else if(parameters_->potential == POT_MORSE_PT){
         interface_ = new Morse();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_EMT){
+    else if(parameters_->potential == POT_EMT){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
-    //else if(parameters_->potentialType == POT_EAM){
+    //else if(parameters_->potential == POT_EAM){
     //    interface_ = new EAM();
     //    interface_->initialize();
     //}
-    else if(parameters_->potentialType == POT_QSC){
+    else if(parameters_->potential == POT_QSC){
         interface_ = new QSC();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_ZPICE){
+    else if(parameters_->potential == POT_ZPICE){
         interface_ = new ZpIce();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_TIP4P){
+    else if(parameters_->potential == POT_TIP4P){
         interface_ = new Tip4p();
         interface_->initialize();
     }
 #ifndef NO_FORTRAN
-    else if(parameters_->potentialType == POT_ALUMINUM){
+    else if(parameters_->potential == POT_EAM_AL){
         interface_ = new Aluminum();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_LENOSKY){
+    else if(parameters_->potential == POT_LENOSKY_SI){
         interface_ = new Lenosky();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_SW){
+    else if(parameters_->potential == POT_SW_SI){
         interface_ = new SW();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_TERSOFF){
+    else if(parameters_->potential == POT_TERSOFF_SI){
         interface_ = new Tersoff();
         interface_->initialize();
     }
-    else if(parameters_->potentialType == POT_EDIP){
+    else if(parameters_->potential == POT_EDIP){
         interface_ = new EDIP();
         interface_->initialize();
     }
 #ifndef WIN32
-    else if(parameters_->potentialType == POT_VASP){
+    else if(parameters_->potential == POT_VASP){
         interface_ = new VASP();
         interface_->initialize();
     }		
 #endif
-    else if(parameters_->potentialType == POT_BOPFOX){
+    else if(parameters_->potential == POT_BOPFOX){
         interface_ = new bopfox();
         interface_->initialize();
     }
- 
 
 #endif
 #ifdef BOPFOX
-    else if(parameters_->potentialType == POT_BOP){
+    else if(parameters_->potential == POT_BOP){
         interface_ = new bop();
         interface_->initialize();
     }
 #endif
     else{
-        printf("Potential tag not recognized: %ld\n", parameters_->potentialType);
+        printf("Potential tag not recognized: %ld\n", parameters_->potential);
         std::exit(1);
     }	
 };

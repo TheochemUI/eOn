@@ -22,10 +22,10 @@ Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
     nAtoms = matter->numberOfAtoms();
     init = true;
 /*
-    if(parameters->ThermoType == 1){
+    if(parameters->Thermostat == 1){
        printf("Dynamics Using Andersen Thermostat and Verlet Integration\n");
     }
-    else if(parameters->ThermoType == 2){
+    else if(parameters->Thermostat == 2){
        printf("Dynamics Using Nose-Hoover Thermostat and Verlet Integration\n");
     }
 */
@@ -38,11 +38,11 @@ Dynamics::~Dynamics()
 
 void Dynamics::oneStep(double temperature)
 {
-    if(parameters->thermoType == ANDERSEN){
+    if(parameters->thermostat == ANDERSEN){
        andersen(temperature);
        andersenVerlet();
     }
-    else if(parameters->thermoType == NOSE_HOVER){
+    else if(parameters->thermostat == NOSE_HOVER){
        noseHoverVerlet(temperature);
     }
     return;

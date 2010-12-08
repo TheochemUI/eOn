@@ -12,13 +12,13 @@ Contents
    overview
    download
    installation
-   server configuration <server_config>
-   client configuration <client_config>
-   Parallel Replica <parallel_replica>
    eon
    akmc
-   communicator
-   kdb
    coarse-graining
+   kdb
    minimization
+   Parallel Replica <parallel_replica>
+   communicator
+   server configuration <server_config>
+   client configuration <client_config>
 

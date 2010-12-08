@@ -1,74 +1,104 @@
-================================
-EON
-================================
+====
+Main
+====
 
-The EON program contains a set of algorithms used primarily to model the 
-evolution of atomic scale systems over long time scales.  Standard molecular
-dynamics algorithms, based upon solving Newton's equations, are limited by
-the femtosecond time scale of atomic vibrations.  EON simulations are designed
-for rare event systems where the interesting dynamics can be described by fast
-transition between stable states.  In each algorithm, the residence time in
-the stable states is modeled with statisical mechanics, and the important
-state-to-state dynamics are modeled stochastically.
+The following contains general options which specify the calculation to be done
+and general parameters which are shared between job types.
 
-The following contains general options which are common to the algorithms.
+Job
+---
 
-\[Default\] (client side section, needs renaming)
---------------------------------
+Option is in the [Main] section.
 
-Parameters for controlling saddle point searches on the client side.
+**job**
 
-**job_type** [none]
-    | process_search - saddle point searches, e.g. used with aKMC
-    | saddle_search -
-    | minimization - find the minimum from an initial configuration
-    | hessian - calculate the Hessian matrix (prefactor?) for a configuration
-    | parallel_replica
-    | replica_exchange
-    | dimer_dr
-    | dimer_rotation
-    | displacement_sampling
-    | test
+    Default: *none*
 
-**potential_type** [none]
-    | user 
-    | lj - Lennard-Jones
-    | morse - parameters for Pt
-    | emt - effective medium theory, for metals
-    | edip - 
-    | vasp - Vienna Ab-Initio Simulation Program
-    | tersoff - pair potential with angular terms, e.g. for Si
-    | sw - Stillinger-Weber potential, e.g. for Si
-    | lenosky - another form for covalent bonding as in Si
-    | aluminum - embedded atom method parameterized for Al
-    | eam - generally embedded atom method potential by Voter and Chen
-    | qsc - Quantum Sutton Chen potential for metals
-    | zpice - water on Pt
-    | tip4p - point charge model for water
-    | bopfox - bond order potential
+    Options:
+
+        *process_search*: Combined saddle search, minimizations, and prefactor calculations.  Used by the aKMC method.
+
+        *saddle_search*: Do a saddle point search using a minimum mode method.
+
+        *minimizaion*: Find the minimum from an initial configuration.
+
+        *hessian*: Calculate the Hessian matrix for the specified configuration in a process.
+
+        *parallel_replica*: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+
+        *replica_exchange*: Use a collection of trajectories at multiple temperatures to improve the sampling of a state.
+
+        *dimer_dr*: Rye is changing this.
+
+        *dimer_rotation*: Rye is changing this.
+
+        *displacement_sampling*:  Job to sample different displacement methods and parameters to see which are the most efficient.
+
+
+Potential
+---------
+
+Option is in the [Main] section.
+
+**potential**
+
+    Default: *none*
+
+    Options:
+
+        *lj_rh*: Lennard-Jones poential for rhodium.
+
+        *morse_pt*: Morse potential for platinum.
+
+        *emt*: Effective medium theory, for metals.
+
+        *edip*: Environment-Dependent Interatomic Potential, for carbon.
+
+        *vasp*: Vienna Ab-Initio Simulation Program (VASP) interface.
+
+        *tersoff_si*: Tersoff pair potential with angular terms, for silicon.
+
+        *sw_si*: Stillinger-Weber potential, for silicon.
+
+        *lenosky_si*: Lenosky potential, for silicon.
+
+        *eam_al*: Embedded atom method parameterized for aluminum.
+
+        *qsc*: Quantum Sutton Chen potential, for metals.
+
+        *zpice*: Water on platinum.
+
+        *tip4p*: Point charge model for water.
+
+        *bopfox*: Bond order potential, for metals.
+
+        *bop*: Bond order potential, for metals.
+
+
+General simulation parameters
+-----------------------------
+
+Options in the [Main] section.
 
 **random_seed** [-1]
+    When set to a positive value, a serial simulation can be repeated (usually for debugging purposes).
 
-**potential_no_translation** [0]
-    | eliminate center-of-mass motion
-    | GH: poorly named and broken
+**calculate_prefactor** [true]
+    Calculate prefactor if true, otherwise assume a standard value of xxx.
 
-**get_prefactor** [0]
+**minimize_only** [false]
+    Only minimize the structure.  *Should be moved?*
 
-**minimize_only** [0]
-    GH: should be boolian, and moved to akmc?
-
-**minimize_box** [0]
-    GH: should be boolian
+**minimize_box** [false]
+    Minimize the box dimentions.
 
 **max_difference_pos** [0.1]
-    | maximum distance for which two configurations are considered the same
-    | GH: should be combined with server-side variable
+    Maximum distance for which two configurations are considered the same. *Should be combined with server-side variable and moved to [Sructure Comparison]*
 
 **save_stdout** [false]
-    GH: should move to debug?
+    Save the standard output from the client and report it back to the server. *Should move to debug?*
 
 **converged_relax** [0.005]
-    force below which a configuration is considered minimzed
+    Force below which a configuration is considered minimzed. *Should be combined with server-side variable and moved to [Sructure Comparison]*
 
 

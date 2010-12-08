@@ -115,7 +115,7 @@ void ConjugateGradients::fullRelax(){
     while(!converged and i < parameters->maximumIterations) 
     {
         oneStep();
-        converged = isItConverged(parameters->convergedRelax);
+        converged = isItConverged(parameters->convergedForceRelax);
         ++i;
         if (outputLevel > 0) {
             printf("min = %3d, max force = %10.5lf\n", i, matter->maxForce());

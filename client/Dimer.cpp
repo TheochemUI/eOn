@@ -108,26 +108,26 @@ void Dimer::estimateLowestEigenmode()
         // Calculate the magnitude of the torque on the dimer
         torqueMagnitude = rotationalForce.squaredNorm();
 
-        double torqueLimitHigh = parameters->dimerWindowHigh;
-        double torqueLimitLow = parameters->dimerWindowLow;
-        int torqueMaxRotations = parameters->dimerRotationsHigh;
-        int torqueMinRotations = parameters->dimerRotationsLow;
+        double torqueLimitMax = parameters->dimerWindowMax;
+        double torqueLimitMin = parameters->dimerWindowMin;
+        int torqueMaxRotations = parameters->dimerRotationsMax;
+        int torqueMinRotations = parameters->dimerRotationsMin;
   
         if(!std::isnormal(torqueMagnitude))
         {
-            printf("Warning, numerical glitch in torque magnitude. Setting torque magnitude to torqueLimitHigh + 1.0\n");
-            torqueMagnitude = torqueLimitHigh + 1.0;
+            printf("Warning, numerical glitch in torque magnitude. Setting torque magnitude to torqueLimitMax + 1.0\n");
+            torqueMagnitude = torqueLimitMax + 1.0;
         }
         
-        if(torqueMagnitude > torqueLimitHigh && rotations >= torqueMaxRotations)
+        if(torqueMagnitude > torqueLimitMax && rotations >= torqueMaxRotations)
         {
             doneRotating = true;
         }
-        else if(torqueMagnitude < torqueLimitHigh && torqueMagnitude >= torqueLimitLow && rotations >= torqueMinRotations)
+        else if(torqueMagnitude < torqueLimitMax && torqueMagnitude >= torqueLimitMin && rotations >= torqueMinRotations)
         {
             doneRotating = true;
         }
-        else if(torqueMagnitude < torqueLimitLow)
+        else if(torqueMagnitude < torqueLimitMin)
         {
             doneRotating = true;
         }
