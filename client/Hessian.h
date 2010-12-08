@@ -29,7 +29,6 @@ public:
     Hessian(Matter *reactant, Matter *saddle, Matter *product, Parameters *params);
     ~Hessian();
 
-    double getModeProduct(int which);
     Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(int which);
     VectorXd getModes(int which);
 
@@ -39,12 +38,11 @@ private:
     Matter *saddle;
     Parameters *parameters;
 
-    double modeProducts[3];
     Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessians[3];
     VectorXd modes[3];
 
     VectorXi movedAtoms(const double distance);
-    void calculate(int which);
+    bool calculate(int which);
 };
 
 #endif
