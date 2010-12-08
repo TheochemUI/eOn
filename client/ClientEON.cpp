@@ -165,7 +165,7 @@ int main(int argc, char **argv)
     printf("Bundle size of %i\n", bundleSize);
     #endif
 
-    int error = parameters.load("config.ini");
+    int error = parameters.load("config_passed.ini");
     if (error) {
         fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
         boinc_finish(1);
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
     }else{
         for (int i=0; i<bundleSize; i++) {
             char buff[100];
-            snprintf(buff, 100, "config_%i.ini", i);
+            snprintf(buff, 100, "config_passed_%i.ini", i);
             string parametersFilename(buff);
             parameters.load(parametersFilename);
             job->run(i);
