@@ -318,12 +318,12 @@ int Parameters::load(FILE *file){
         mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         mdDephaseSteps = ini.GetValueL("Dynamics", "dephase_steps", mdDephaseSteps);
-        mdRefine = ini.GetValueB("Dynamics", "refine", mdRefine);
+        mdRefine = ini.GetValueB("Dynamics", "refine_transition_time", mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics", "auto_stop", mdAutoStop);
         mdRecordAccuracy = ini.GetValueL("Dynamics", "record_resolution", mdRecordAccuracy);
-        mdRefineAccuracy = ini.GetValueL("Dynamics", "refine_resolution", mdRefineAccuracy);
+        mdRefineAccuracy = ini.GetValueL("Dynamics", "bisection_accuracy", mdRefineAccuracy);
         mdCheckFreq = ini.GetValueL("Dynamics", "check_period", mdCheckFreq);
-        mdRelaxSteps = ini.GetValueL("Dynamics", "relax_step", mdRelaxSteps);
+        mdRelaxSteps = ini.GetValueL("Dynamics", "post_transition_steps", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
 
@@ -338,7 +338,7 @@ int Parameters::load(FILE *file){
             thermostat = Dynamics::NOSE_HOVER;
         }
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_tcol",thermoAndersenTcol);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collison_steps",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
  
         string hyperString;
