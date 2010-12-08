@@ -136,7 +136,7 @@ OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
     debug.o HelperFunctions.o Matter.o Parameters.o\
     PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
-    ParallelReplicaJob.o Dynamics.o  BondBoost.o ReplicaExchangeJob.o  \
+    ParallelReplicaJob.o Dynamics.o  BondBoost.o  \
 	DimerDrJob.o DimerRotationJob.o DisplacementSamplingJob.o \
 	TestJob.o
 

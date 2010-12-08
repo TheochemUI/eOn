@@ -15,7 +15,6 @@
 #include "MinimizationJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
-#include "ReplicaExchangeJob.h"
 #include "DimerDrJob.h"
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
@@ -206,8 +205,6 @@ int main(int argc, char **argv)
         job = new HessianJob(&parameters);
     }else if (parameters.job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(&parameters);
-    }else if (parameters.job == Job::REPLICA_EXCHANGE) {
-        job =  new ReplicaExchangeJob(&parameters);
     }else if (parameters.job == Job::DIMER_DR) {
         job =  new DimerDrJob(&parameters);
     }else if (parameters.job == Job::DIMER_ROTATION) {

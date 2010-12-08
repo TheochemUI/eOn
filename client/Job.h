@@ -17,7 +17,6 @@ class Job {
             SADDLE_SEARCH,
             MINIMIZATION,
             PARALLEL_REPLICA,
-            REPLICA_EXCHANGE,
             HESSIAN,
             DIMER_DR,
             DIMER_ROTATION,
