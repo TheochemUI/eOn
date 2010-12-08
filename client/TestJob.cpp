@@ -49,7 +49,7 @@ void TestJob::checkFullSearch(void){
     string displacement_passed("displacement_test.con");
     string mode_passed("mode_test.dat");
     
-    parameters->potentialType = Potential::POT_EMT;
+    parameters->potential = Potential::POT_EMT;
     
     initial = new Matter(parameters);
     displacement = new Matter(parameters);
@@ -136,7 +136,7 @@ void TestJob::checkFullSearch(void){
 void TestJob::checkMode(void){
 
     string reactant_passed("reactant_test.con");
-    parameters->potentialType = 1;  // always LJ in test
+    parameters->potential = 1;  // always LJ in test
     Matter *saddle = new Matter(parameters);
     saddle->con2matter(reactant_passed);
     
@@ -153,11 +153,11 @@ void TestJob::checkPotentials(void)
     printf("Checks the potential energy and the max force.\n");
     printf("Reported as OK if within a tolerance of: %f\n\n",tolerance);
     
-    energyDiff = getEnergyDiff(Potential::POT_LJ, -1475.984331);
+    energyDiff = getEnergyDiff(Potential::POT_LJ_RH, -1475.984331);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: LJ energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_LJ, 2.007213);
+        forceDiff = getForceDiff(Potential::POT_LJ_RH, 2.007213);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: LJ force difference: %f\n", forceDiff);
         }else{
@@ -189,11 +189,11 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-    energyDiff = getEnergyDiff(Potential::POT_TERSOFF,-1035.809985 );
+    energyDiff = getEnergyDiff(Potential::POT_TERSOFF_SI,-1035.809985 );
     if (abs(energyDiff) > tolerance){
         printf("WARNING: Tersoff energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_TERSOFF, 11.145002);
+        forceDiff = getForceDiff(Potential::POT_TERSOFF_SI, 11.145002);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: Tersoff force difference: %f\n", forceDiff);
         }else{
@@ -201,11 +201,11 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-    energyDiff = getEnergyDiff(Potential::POT_SW, -1449.795645);
+    energyDiff = getEnergyDiff(Potential::POT_SW_SI, -1449.795645);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: SW energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_SW, 2.530904);
+        forceDiff = getForceDiff(Potential::POT_SW_SI, 2.530904);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: SW force difference: %f\n", forceDiff);
         }else{
@@ -213,11 +213,11 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-    energyDiff = getEnergyDiff(Potential::POT_LENOSKY, -1410.679106);
+    energyDiff = getEnergyDiff(Potential::POT_LENOSKY_SI, -1410.679106);
     if (abs(energyDiff) > tolerance){
         printf("Lenosky energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_LENOSKY, 2.320168);
+        forceDiff = getForceDiff(Potential::POT_LENOSKY_SI, 2.320168);
         if (abs(forceDiff) > tolerance){
             printf("Lenosky force difference: %f\n", forceDiff);
         }else{
@@ -232,11 +232,11 @@ void TestJob::checkPotentials(void)
 //        printf("OK: LJBinary\n");
 //    } 
 
-    energyDiff = getEnergyDiff(Potential::POT_ALUMINUM, -1206.825825);
+    energyDiff = getEnergyDiff(Potential::POT_EAM_AL, -1206.825825);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: Aluminum energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_ALUMINUM, 0.000246);
+        forceDiff = getForceDiff(Potential::POT_EAM_AL, 0.000246);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: Aluminum force difference: %f\n", forceDiff);
         }else{
@@ -297,10 +297,10 @@ void TestJob::checkPotentials(void)
 //    } 
 }
 
-double TestJob::getEnergyDiff(long potType, double refEnergy)
+double TestJob::getEnergyDiff(long pot, double refEnergy)
 {
     string reactant_passed("reactant_test.con");
-    parameters->potentialType = potType;
+    parameters->potential = pot;
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
 //    printf("Energy: %f\n", reactant->getPotentialEnergy());
@@ -308,10 +308,10 @@ double TestJob::getEnergyDiff(long potType, double refEnergy)
 }
 
 
-double TestJob::getForceDiff(long potType, double refForce)
+double TestJob::getForceDiff(long pot, double refForce)
 {
     string reactant_passed("reactant_test.con");
-    parameters->potentialType = potType;
+    parameters->potential = pot;
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
 //    printf("Force: %f\n", reactant->maxForce());

@@ -39,10 +39,10 @@ void DisplacementSamplingJob::run(int bundleNumber)
     double max_dE = parameters->displaceMaxDE;
     int nSamples = parameters->displaceNSamples;;
 
-    parameters->dimerRotationsHigh = 1;
-    parameters->dimerRotationsLow = 1;
-    parameters->dimerWindowHigh = 0.0;
-    parameters->dimerWindowLow = 0.0;
+    parameters->dimerRotationsMax = 1;
+    parameters->dimerRotationsMin = 1;
+    parameters->dimerWindowMax = 0.0;
+    parameters->dimerWindowMin = 0.0;
 
     std::stringstream cutoffStream(parameters->displaceCutoffs);
     while(true)

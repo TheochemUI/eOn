@@ -11,7 +11,7 @@
 #include"LJ.h"
 
 LJ::LJ(){
-    // Values from Andri
+    // Values from Voter
     this->setParameters(7830.0*8.61738573e-5, 2.2*2.47, 2.47);
 }
 

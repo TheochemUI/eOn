@@ -61,14 +61,14 @@ void ProcessSearchJob::run(int bundleNumber)
         fCallsMin += Potential::fcalls - fi;
     }
 
-    if (parameters->saddleRefine) {
+    if (!parameters->saddleDisplace) {
         saddle->con2matter(displacement_passed);
     }
 
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->saddleRefine) {
+    if (!parameters->saddleDisplace) {
         *min1 = *min2 = *initial;
     }else{
         *saddle = *min1 = *min2 = *initial;
@@ -76,7 +76,7 @@ void ProcessSearchJob::run(int bundleNumber)
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (parameters->saddleRefine) {
+    if (!parameters->saddleDisplace) {
         saddlePoint->loadMode(mode_passed);
     }
 
@@ -118,8 +118,8 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if ((*initial==*min1) == false) {
         printf("initial != min1\n");
-        if((!min1->isItConverged(parameters->convergedRelax))  &&
-           (!min2->isItConverged(parameters->convergedRelax))) {
+        if((!min1->isItConverged(parameters->convergedForceRelax))  &&
+           (!min2->isItConverged(parameters->convergedForceRelax))) {
             // the isItConverged in Matter doesn't work so this needs to be fixed.
             // return statusBadMinima;
         }
@@ -220,7 +220,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%ld potential_tyep\n", parameters->potentialType);
+    fprintf(fileResults, "%ld potential_tyep\n", parameters->potential);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
