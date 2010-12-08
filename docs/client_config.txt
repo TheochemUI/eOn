@@ -245,11 +245,6 @@ brackets.
     * **getPrefactorsTag** [0]
     * **reactantStateTag** [0]
 
-Sample parameters.dat file
---------------------------------
-.. literalinclude:: ../samples/PtIsland/parameters.dat
-    :language: none
-
 parameters.cpp
 --------------------------------
 .. literalinclude:: ../client/Parameters.cpp
