@@ -46,3 +46,4 @@ class ParallelReplicaJob: public Job
         long relax_steps;
         bool newstate;
 };
+

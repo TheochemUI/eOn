@@ -112,7 +112,7 @@ public:
     double thermoAndersenTcol;
     double thermoNoseMass;
 
-    bool   bondBoost;
+    long   biasPotential; 
     long   bondBoostRMDS;
     double bondBoostDVMAX;
     double bondBoostQRR; 

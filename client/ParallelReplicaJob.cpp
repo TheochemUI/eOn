@@ -105,7 +105,6 @@ void ParallelReplicaJob::run(int bundleNumber)
 void ParallelReplicaJob::dynamics()
 {
     bool   status = false, remember = true, stoped = false;
-    bool   boost = parameters->bondBoost;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   RecordAccuracy = parameters->mdRecordAccuracy, mdbufflength;
     long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0, final_refined;
@@ -119,9 +118,11 @@ void ParallelReplicaJob::dynamics()
         mdbuff[i] = new Matter(parameters);
     }
     printf("RecordAccuracy = %ld; mdbufflength = %ld\n",RecordAccuracy,mdbufflength);
+    
     Dynamics PRdynamics(reactant,parameters);
     BondBoost Bbm(reactant,parameters);
-    if(boost){   
+
+    if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
         Bbm.initial();
     }
 
@@ -139,9 +140,10 @@ void ParallelReplicaJob::dynamics()
    
     while(!stoped){
 
-        if(boost && !newstate){
+        if(parameters->biasPotential == Hyperdynamics::BOND_BOOST && !newstate){
             SPtime += Bbm.boost();
         }
+
         else{ SPtime += parameters->mdTimeStep;}
                 
         kinE = reactant->getKineticEnergy();
