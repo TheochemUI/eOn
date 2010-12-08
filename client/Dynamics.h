@@ -20,7 +20,6 @@
 #include "Eigen/Eigen"
 USING_PART_OF_NAMESPACE_EIGEN
 
-/** Functionality relying on the conjugate gradients algorithm. The object minimizes a Matter object or modified forces passed in.*/
 class Dynamics {
 
 public:
@@ -30,12 +29,9 @@ public:
         NOSE_HOVER
     };
 
-    /** Constructor to be used when a structure is minimized.
-    @param[in]   *matter        Pointer to the Matter object to be relaxed.
-    @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.*/
     Dynamics(Matter *matter, Parameters *parameters);
 
-    ~Dynamics();///< Destructor.
+    ~Dynamics();
 
     void oneStep(double temperature);	
     void andersenVerlet();
@@ -46,10 +42,10 @@ public:
 
 
 private:
-    long nAtoms;///< Number of free coordinates.
+    long nAtoms;
 
-    Matter *matter;///< Pointer to atom object \b outside the scope of the class.
-    Parameters *parameters;///< Pointer to a structure outside the scope of the class containing runtime parameters.
+    Matter *matter;
+    Parameters *parameters;
   
     double dtScale;
     double kb;
