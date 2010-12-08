@@ -165,8 +165,6 @@ int Parameters::load(FILE *file){
             job = Job::HESSIAN;
         }else if (jobString == "parallel_replica"){
             job = Job::PARALLEL_REPLICA;
-        }else if (jobString == "replica_exchange"){
-            job = Job::REPLICA_EXCHANGE;         
         }else if (jobString == "dimer_dr"){
             job = Job::DIMER_DR;
         }else if (jobString == "dimer_rotation"){
@@ -360,8 +358,6 @@ int Parameters::load(FILE *file){
         }
 
         // [Hyperdynamics] //
-
-        bondBoost = ini.GetValueB("Hyperdynamics","bond_boost",bondBoost);
         bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
