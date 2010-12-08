@@ -4,8 +4,10 @@ Installation
 
 Dependencies
 --------------------------------
+* python (>=2.4)
+* numpy (>=1.2.1)
+* make
+* gcc (>=4.2)
+* (optional) gfortran or ifort
 
-
-
-
-
+In order to use the BOINC communicator, a BOINC server is needed. For more information, see ?
