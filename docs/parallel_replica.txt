@@ -20,7 +20,7 @@ In order to work with distributed architectures, we used a little different way 
                               \right.
                                 \end{equation}
 
-In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost** = *T* in [Hyperdynamics] section.
+In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost** = *True* in [Hyperdynamics] section.
 
 For detailed information about Parallel Replica and Bond-Boost, please refer to the following paper:
 
@@ -49,8 +49,8 @@ In order to run Parallel Replica, please set **job** to *parallel_replica* in [M
 Dynamics
 --------------------------------
 
-**timestep** [0.1]
-  The length of each MD step. The unit of **timestep** is *10 fs* and default value is *0.1* (*1 fs*). 
+**timestep** [1]
+  The length of each MD step. The unit of **timestep** is *1 fs* and default value is *1*.
     
 **auto_stop** [false]
   Whether or not stop the job when a new state is found. For boinc communicator this value should be set to *false*. 
@@ -64,8 +64,8 @@ Dynamics
 **check_period** [500]
   How frequent you check the state of system. Every **check_period** steps, the current structure and the initial one will be compared  to tell whether a newstate has been reached. Also note when you set **refine** as *true*, the code will keep an buff array consisted by **int(check_period/record_resolution)+1** Matter objects, which may increase the usage of memory.
 
-**refine** [true] 
-  Whether or not the exact transition step is refined. When this option is turned on, the code will keep an array consisted by **int(check_period/record_resolution)+1** Matter objects. And Binary search algorithm is employed to determine the exact transition step. Otherwise the transition step would be the first newstate we found. This function could help to reduce state-check frequecy without lowering the accuracy. And the accuracy of transition time is **record_resolution*timestep**;
+**refine** [True] 
+  Whether or not the exact transition step is refined. When this option is turned on, the code will keep an array consisted by **int(check_period/record_resolution)+1** Matter objects. And Binary search algorithm is employed to determine the exact transition step. Otherwise the transition step would be the first newstate we found. This function could help to reduce state-check frequecy without lowering the accuracy. And the accuracy of transition time is **record_resolution*timestep**.
 
 ::
     
@@ -89,7 +89,7 @@ Dynamics
   Thermostat method you choose to perform NVT ensemble molecular dynamics. Currently only Andersen thermostat is available and well tested. Nose-Hoover thermostat is implmented but doesn't work correctly. 
 
 **andersen_alpha** [0.2]
-  The collision strength :math:`\alpha` in Andersen thermostat. If a collision happened, the new velocity is 
+  The collision strength :math:`\alpha` in Andersen thermostat. If a collision happened, the new velocity is: 
 
 .. math::
 
@@ -104,8 +104,8 @@ Dynamics
 Hyperdynamics
 --------------------------------
 
-**bond_boost** [false]
-   Switch to determine whether a boost-potential is added to run Hyperdynamics
+**bond_boost** [False]
+   Switch to determine whether a boost-potential is added to run Hyperdynamics.
 
 **max_dv** [0.0]
   The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
@@ -114,7 +114,7 @@ Hyperdynamics
   The empirical threshold parameter, which defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
   
 **curvature** [0.9]
-  The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*
+  The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*.
 
 **rcut** [3.0]
   All bonds which belong to the tagged atoms and are shorter than a cutoff of Qcut will be boostd.
