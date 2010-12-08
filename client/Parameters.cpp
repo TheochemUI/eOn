@@ -338,7 +338,7 @@ int Parameters::load(FILE *file){
             thermostat = Dynamics::NOSE_HOVER;
         }
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collison_steps",thermoAndersenTcol);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
  
         string hyperString;
