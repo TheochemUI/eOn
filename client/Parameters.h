@@ -37,9 +37,6 @@ public:
     long   job; // indicate which type of job will be run
     long   randomSeed; // seed for random generator
     long   potential; // tag to describe which potential to use
-    bool   minimizeOnly; // only perform minimization, not saddle search
-    bool   minimizeBox; // also minimize the box dimensions if minimize_only_ is true
-    bool   calculatePrefactor; // flag to determine if prefactors should be determined. 
     double temperature;
 
     // [Structure Comparison] //
@@ -48,6 +45,10 @@ public:
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
+    double processSearchDefaultPrefactor; // default prefactor; calculate explicitly if zero
+    double processSearchPrefactorMax; // max prefactor allowed
+    double processSearchPrefactorMin; // min prefactor allowed
+
 
     // [Saddle Search]
     bool   saddleDisplace; // do saddle search displacements client-side
@@ -57,28 +58,26 @@ public:
     long   saddleDisplaceType; // displacement type to use
     double saddleMaxStepSize; // Max length of the norm of the displacement when positive eigenvalue
     double saddleMaxEnergy; // Energy above product state that will cause termination of the saddle point search
-    double saddleNormDisplace; // The norm of the displacement vector
+    double saddleDisplaceMagnitude; // The norm of the displacement vector
     double saddleMaxSingleDisplace; // max value of displacement in x, y and z direction for atoms being displaced
-    double saddleWithinRadiusDisplace; // Atoms within this radius this of the one defining the center of the displacement are also being displaced with the value sizePerturbation_SP_ 
+    double saddleDisplaceRadius; // Atoms within this radius of the displacement atoms are also displaced
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
-    // [Optimizer]
+    // [Optimizers]
     long   optMaxIterations; // max iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
-    double cgCurvatureStep; // finite difference step size used in conjugate gradients
-    double qmTimeStep; // time step size used in Quickmin
-    double qmMaxMove; // time step size used in Quickmin
+    double optFiniteDiffStep; // finite difference step size used in conjugate gradients
+    double optTimeStep; // time step size used in quickmin
 
     // [Dimer]
+    double dimerSeparation; // distance between the two dimer images
+    double dimerRotationAngle; // finite difference rotation angle
+    double dimerMaxIterations;
     long   dimerRotationsMax;
     long   dimerRotationsMin;
     double dimerWindowMax;
     double dimerWindowMin;
-    //long dimerRotationsNewSearch; // number of iteration before starting a new saddle point search used in dimer
-    double dimerSeparation; // distance between the two dimer images
-    double dimerRotationAngle; // finite difference rotation angle
-    double dimerMaxIterations;
    
     // [Lanczos]
     double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
