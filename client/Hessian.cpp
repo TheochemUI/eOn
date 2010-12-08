@@ -196,7 +196,7 @@ VectorXi Hessian::movedAtoms(double const distance)
             {
                 double diffRSaddle = saddle->distance(i,j);
                 
-                if(diffRSaddle<parameters->hessianWithinRadiusDisplaced 
+                if(diffRSaddle<parameters->hessianWithinRadius
                    && (!saddle->getFixed(j)))
                 {
                     if(!(moved.cwise() == j).any())

@@ -79,7 +79,7 @@ void Matter::initialiseDataMembers(Parameters *params)
     forceCalls = 0;
     nsteps = 0;
     parameters = params;
-    potential = new Potentials(parameters);
+    potential = new Potential(parameters);
 }
 
 Matter::Matter(const Matter& matter)
@@ -178,7 +178,7 @@ void Matter::resize(const long int length)
  
     if(length>0) 
     {
-        potential = new Potentials(parameters);
+        potential = new Potential(parameters);
         
         nAtoms = length;
         positions.resize(length, 3);
@@ -633,7 +633,7 @@ bool Matter::con2matter(FILE *file) {
     { 
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
-    //    potential_ = new Potentials(parameters_);
+    //    potential_ = new Potential(parameters_);
     return(true);
 }
 

@@ -55,10 +55,10 @@ void ProcessSearchJob::run(int bundleNumber)
 
     if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
-        int fi = Potentials::fcalls;
+        int fi = Potential::fcalls;
         ConjugateGradients cgMin(initial, parameters);
         cgMin.fullRelax();
-        fCallsMin += Potentials::fcalls - fi;
+        fCallsMin += Potential::fcalls - fi;
     }
 
     if (parameters->saddleRefine) {
@@ -101,9 +101,9 @@ int ProcessSearchJob::doProcessSearch(void)
     Matter matterTemp(parameters);
     long status;
     int f1;
-    f1 = Potentials::fcalls;
+    f1 = Potential::fcalls;
     status = saddlePoint->locate(min1, min2);
-    fCallsSaddle += Potentials::fcalls - f1;
+    fCallsSaddle += Potential::fcalls - f1;
 
     if (status != SaddlePoint::STATUS_INIT) {
         return status;
@@ -153,7 +153,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
     /* Perform the dynamical matrix caluclation */
     VectorXd reactModes, saddleModes, prodModes;
-    f1 = Potentials::fcalls;
+    f1 = Potential::fcalls;
     reactModes = hessian->getModes(Hessian::REACTANT);
     if(reactModes.size() == 0)
     {
@@ -169,7 +169,7 @@ int ProcessSearchJob::doProcessSearch(void)
     {
         return SaddlePoint::STATUS_BAD_PREFACTOR;
     }
-    fCallsPrefactors += Potentials::fcalls - f1; 
+    fCallsPrefactors += Potential::fcalls - f1; 
 
     prefactorsValues[0] = 1;
     prefactorsValues[1] = 1;
@@ -220,8 +220,8 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%ld potential_tag\n", parameters->potentialTag);
-    fprintf(fileResults, "%d total_force_calls\n", Potentials::fcalls);
+    fprintf(fileResults, "%ld potential_tyep\n", parameters->potentialType);
+    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
@@ -296,14 +296,13 @@ void ProcessSearchJob::printEndState(int status) {
         fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
 
     else if(status == SaddlePoint::STATUS_BAD_PREFACTOR)
-            fprintf(stdout, "Prefactors, not within window as defined in Constants\n");
+            fprintf(stdout, "Prefactors, not within window\n");
 
     else if(status == SaddlePoint::STATUS_BAD_HIGH_BARRIER)
-        fprintf(stdout, "Energy barriers, not within window as defined in Constants\n");
+        fprintf(stdout, "Energy barriers, not within window\n");
 
     else if (status == SaddlePoint::STATUS_BAD_MINIMA)
-        fprintf(stdout, "Minima were not able to be matched to the initial reactant\n"
-                "because they did not converge\n");
+        fprintf(stdout, "Minima, from saddle did not converge\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
 
