@@ -150,7 +150,7 @@ def make_searches(comm, current_state, wuid):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
         search['reactant_passed.con']  = reactIO
-        param_ini_str = "[Default]\nrandom_seed=%i" % int(numpy.random.random()*10**9)
+        param_ini_str = "[Main]\nrandom_seed=%i" % int(numpy.random.random()*10**9)
         paramIO = StringIO(param_ini_str)
         search['parameters_passed.dat'] = paramIO
         searches.append(search)

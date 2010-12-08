@@ -11,14 +11,18 @@
 import ConfigParser
 import logging
 logger = logging.getLogger('config')
-import StringIO
 import numpy
 import os.path
 import sys
 import string
 import config
 
+config.init_done = False
+
 def init(config_file = ""):
+    if config.init_done:
+        return None
+
     parser = ConfigParser.SafeConfigParser()
 
     parser.read(os.path.join(sys.path[0], 'default_config.ini'))
@@ -37,27 +41,30 @@ def init(config_file = ""):
         print >> sys.stderr, "You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory."
         sys.exit(2)        
 
+    #Main options
+    config.main_job = parser.get('Main', 'job')
+    config.main_temperature = parser.getfloat('Main', 'temperature')
+    try:
+        config.main_random_seed = parser.getint('Main', 'random_seed')
+    except:
+        config.main_random_seed = None
+    if config.main_random_seed:
+        numpy.random.seed(config.main_random_seed)
+        logger.debug("Set random seed from config.ini")
+
     #aKMC options
-    config.akmc_temperature = parser.getfloat('aKMC', 'temperature')
-    config.akmc_confidence  = parser.getfloat('aKMC', 'confidence')
-    config.akmc_thermal_window = parser.getfloat('aKMC', 'thermally_accessible_window')
-    config.akmc_max_thermal_window = parser.getfloat('aKMC', 'maximum_thermally_accessible_window') *akmc_thermal_window
-    config.akmc_max_kmc_steps = parser.getint('aKMC', 'max_kmc_steps')
+    config.akmc_confidence  = parser.getfloat('AKMC', 'confidence')
+    config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
+    config.akmc_max_thermal_window = parser.getfloat('AKMC', 'max_thermally_accessible_window')
+    config.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
 
     #Debug Options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
-    if debug_interactive_shell:
+    if config.debug_interactive_shell:
         import signal, code
         signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
     config.debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
     config.debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
-    try:
-        config.debug_random_seed   = parser.getint('Debug', 'random_seed')
-    except:
-        config.debug_random_seed   = None
-    if config.debug_random_seed:
-        numpy.random.seed(config.debug_random_seed)
-        logger.debug("Set random state from seed")
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
     config.debug_list_search_results = parser.getboolean('Debug', 'list_search_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
@@ -120,10 +127,6 @@ def init(config_file = ""):
         else:
             config.comm_blacklist = []
 
-    #
-    #displacement options
-    #
-
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
     if config.kdb_on:
@@ -146,22 +149,23 @@ def init(config_file = ""):
     if config.sb_recycling_on:
         config.sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
+    #
+    #Displacement options
+    #
+
     #Random Displacement
     config.disp_type = parser.get('Displacement', 'type')
-    config.disp_brute_neighbors = parser.getboolean('Displacement', 'brute_neighbors')
-    config.disp_cutoff = parser.getfloat('Displacement', 'cutoff')
-    config.disp_use_covalent = parser.getboolean('Displacement', 'use_covalent')
-    config.disp_covalent_scale = parser.getfloat('Displacement', 'covalent_scale')
+
     if config.disp_type == 'water':
         config.stdev_translation = parser.getfloat('Displacement', 'stdev_translation')
         config.stdev_rotation = parser.getfloat('Displacement', 'stdev_rotation')
         config.molecule_list = eval(parser.get('Displacement', 'molecule_list'))
         config.disp_at_random = parser.getint('Displacement', 'disp_at_random')
     else:
-        config.disp_size = parser.getfloat('Displacement', 'size')
+        config.disp_magnitude= parser.getfloat('Displacement', 'magnitude')
         config.disp_radius = parser.getfloat('Displacement', 'radius')
     if config.disp_type == 'undercoordinated':
-        config.disp_max_coord = parser.getint('Displacement', 'maximum_coordination')
+        config.disp_max_coord = parser.getint('Displacement', 'max_coordination')
 
     #Superbasins
     config.sb_on = parser.getboolean('Superbasins', 'use_superbasins')
@@ -181,9 +185,14 @@ def init(config_file = ""):
         config.askmc_barrier_test_on = parser.getboolean('Superbasins','askmc_barrier_test_on')
         config.askmc_connections_test_on = parser.getboolean('Superbasins','askmc_connections_test_on')
 
-    #State comparison
+    #Structure Comparison options
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
     config.comp_eps_r = parser.getfloat('Structure Comparison', 'distance_difference')
     config.comp_use_identical = parser.getboolean('Structure Comparison', 'use_identical')
+    config.comp_brute_neighbors = parser.getboolean('Structure Comparison', 'brute_neighbors')
+    config.comp_neighbor_cutoff = parser.getfloat('Structure Comparison', 'neighbor_cutoff')
+    config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
+    config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
+
 
     del parser
