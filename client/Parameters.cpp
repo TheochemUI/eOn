@@ -201,8 +201,6 @@ int Parameters::load(FILE *file){
 
         minimizeOnly = ini.GetValueB("Main", "minimize_only", minimizeOnly);
         minimizeBox = ini.GetValueB("Main", "minimze_box", minimizeBox);
-        convergedForceRelax = ini.GetValueF("Main", "converged_force_relax", convergedForceRelax);
-        maximumIterations = ini.GetValueL("Main", "maximum_iterations", maximumIterations);
         
         maxDifferencePos = ini.GetValueF("Default", "max_difference_pos", maxDifferencePos);
         neighborCutoff = ini.GetValueF("Default", "neighbor_cutoff", neighborCutoff);
@@ -240,14 +238,14 @@ int Parameters::load(FILE *file){
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
 
-        string minmodeMethodString = ini.GetValue("Saddle Search", "minmode_method");
+        string minmodeMethodString = ini.GetValue("Saddle Search", "minmode_method", "dimer");
         minmodeMethodString = toLowerCase(minmodeMethodString);
         if(minmodeMethodString == "dimer"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
         }else if(minmodeMethodString == "lanczos"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_LANCZOS;
         }
-        string displaceString = ini.GetValue("Saddle Search", "displace"); // undocumented
+        string displaceString = ini.GetValue("Saddle Search", "displace", "none"); // undocumented
         displaceString = toLowerCase(displaceString);
         if(displaceString == "none"){ 
             saddleDisplaceType = SaddlePoint::DISP_NONE;
@@ -280,6 +278,8 @@ int Parameters::load(FILE *file){
             hessianType = Hessian::PRODUCT;
         }
 
+        convergedForceRelax = ini.GetValueF("Minimizer", "converged_force", convergedForceRelax);
+        maximumIterations = ini.GetValueL("Minimizer", "max_iterations", maximumIterations);
         cgCurvatureStep = ini.GetValueF("Conjugate Gradients","curvature_step", cgCurvatureStep);
         cgMaxMoveFullRelax = ini.GetValueF("Conjugate Gradients","max_move", cgMaxMoveFullRelax);
         qmTimeStep = ini.GetValueF("Quick Min","time_step", qmTimeStep);
