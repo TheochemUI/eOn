@@ -488,11 +488,10 @@ def get_displacement(reactant, indices=None):
         raise ValueError()
     return disp
 
-
-
 def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
     reactant = current_state.get_reactant()
-    num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size #XXX:what if the user changes the bundle size?
+    #XXX:what if the user changes the bundle size?
+    num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size 
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
@@ -513,11 +512,11 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     io.savecon(reactIO, reactant)
     invariants['reactant_passed.con']=reactIO
     
-    f = open(config.config_path)
-    invariants['config.ini'] = StringIO.StringIO(''.join(f.readlines()))
-    f.close()
+    ini_changes = [ ('Main', 'job', 'process_search') ]
+    invariants['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
-    invariants = dict(invariants,  **io.load_potfiles(config.path_pot)) #Merge potential files into invariants
+    #Merge potential files into invariants
+    invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
     t1 = unix_time.time()
     if config.recycling_on:
