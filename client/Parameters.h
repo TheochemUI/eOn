@@ -47,6 +47,7 @@ public:
     double cgCurvatureStep; // finite difference step size used in conjugate gradients
     double cgMaxMoveFullRelax; // maximum displacement vector for a step during minimization
     double qmTimeStep; // time step size used in Quickmin
+    double qmMaxMove; // time step size used in Quickmin
 
     double maxDifferencePos; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis

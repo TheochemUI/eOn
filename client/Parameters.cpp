@@ -283,6 +283,7 @@ int Parameters::load(FILE *file){
         cgCurvatureStep = ini.GetValueF("Conjugate Gradients","curvature_step", cgCurvatureStep);
         cgMaxMoveFullRelax = ini.GetValueF("Conjugate Gradients","max_move", cgMaxMoveFullRelax);
         qmTimeStep = ini.GetValueF("Quick Min","time_step", qmTimeStep);
+        qmMaxMove = ini.GetValueF("Quick Min","max_move", qmMaxMove);
 
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);

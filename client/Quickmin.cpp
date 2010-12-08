@@ -58,7 +58,18 @@ void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
     velocity = velocity.cwise() * matter->getFree();
 
     positions = matter->getPositions();
-    positions += velocity * parameters->qmTimeStep * dtScale;
+    Matrix<double, Eigen::Dynamic, 3> update = velocity * parameters->qmTimeStep * dtScale;
+    double maxmoved = 0.0;
+    for(int i=0; i < matter->numberOfAtoms(); i++)
+    {
+        maxmoved = max(maxmoved, update.row(i).norm());
+    }
+    double scale = 1.0;
+    if(maxmoved > parameters->qmMaxMove)
+    {
+        scale = parameters->qmMaxMove/maxmoved;
+    }
+    positions += update*scale;
     matter->setPositions(positions);  
 }
 
