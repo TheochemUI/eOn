@@ -88,7 +88,7 @@ bool CIniFile::ReadFile(FILE *file)
 	    }
 	  }
 	  //Print out the non-default values
-	  printf("%s ", CheckCase(valuename).c_str());
+	  //printf("%s ", CheckCase(valuename).c_str());
 	  value = line.substr( pLeft + 1);
 	  for (int j=0; j<int(value.length());j++) {
 	      if (value[j] == ' ') {
@@ -281,18 +281,18 @@ string CIniFile::GetValue( string const keyname, string const valuename, string 
   long keyID = FindKey( keyname);
   if ( keyID == noID)
   {
-    printf("Using default value for %s: %s\n", valuename.c_str(), defValue.c_str());
+    printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
     return defValue;
   }
 
   long valueID = FindValue( unsigned(keyID), valuename);
   if ( valueID == noID)
   {
-    printf("Using default value for %s: %s\n", valuename.c_str(), defValue.c_str());
+    printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
     return defValue;
   }
 
-  printf("Using user-specified value for %s: %s\n", valuename.c_str(), keys[keyID].values[valueID].c_str());
+  printf("* [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), keys[keyID].values[valueID].c_str());
   return keys[keyID].values[valueID];
 }
 
