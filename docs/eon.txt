@@ -26,8 +26,6 @@ Option is in the [Main] section.
 
         *parallel_replica*: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
 
-        *replica_exchange*: Use a collection of trajectories at multiple temperatures to improve the sampling of a state.
-
         *dimer_dr*: Rye is changing this.
 
         *dimer_rotation*: Rye is changing this.
