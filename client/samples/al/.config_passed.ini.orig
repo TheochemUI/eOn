@@ -7,18 +7,6 @@ JOB=Process_Search
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
 
-# describtion POTENTIAL_TAG
-# 1 = lennard-jones potential
-# 2 = morse
-# 3 = emt
-# 4 = edip
-# 5 = VASP
-# 6 = Tersoff
-# 7 = Stilling Weber
-# 8 = Lenosky
-# 9 = Lennard-jones binary
-# 10 = Aluminum
-# 12 = QSC
 potential=eam_al
 
 maximum_iterations=512
@@ -27,16 +15,9 @@ maximum_iterations=512
 minimize_first=True
 
 [Saddle Search]
-# describtion LOWEST_EIGENMODE_DETERMINATION_SP
-# 1 = dimer method
-# 2 = lanczos method
-LOWEST_EIGENMODE_DETERMINATION=1
-
-# Refine saddle point.
-REFINE=True
+minmode_method = dimer
 
 # tweakable parameters
-converged_Relax=0.001
 converged=0.001
 max_Energy=10.000000
 
