@@ -286,6 +286,8 @@ int Parameters::load(FILE *file){
 
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
+        hessianPrefactorMax = ini.GetValueF("Hessian", "prefactor_max", hessianPrefactorMax);
+        hessianPrefactorMin = ini.GetValueF("Hessian", "prefactor_min", hessianPrefactorMin);
  
         dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
