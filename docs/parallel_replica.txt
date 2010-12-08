@@ -38,7 +38,10 @@ In order to run Parallel Replica, please set **job** to *parallel_replica* and *
 
 **job** = *parallel_replica*
 
-**temperature** [300]
+**temperature** 
+
+  Default: 300.0
+
   Temperature during the Molecular Dynamics run. At the beginning, the code will scale the velocities to that temperature. And the thermostat you choose will maintain the temperature during the MD run. And the simulation termperature in this code is calculated as:
 
   .. math::
