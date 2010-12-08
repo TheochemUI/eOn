@@ -126,11 +126,11 @@ void ParallelReplicaJob::dynamics()
         Bbm.initial();
     }
 
-    PRdynamics.velocityScale(parameters->mdTemperature);
+    PRdynamics.velocityScale(parameters->temperature);
     dephase();
 
     printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
-    parameters->mdTemperature, 10.18*parameters->mdSteps*parameters->mdTimeStep, 10.18*parameters->mdTimeStep);
+    parameters->temperature, 10.18*parameters->mdSteps*parameters->mdTimeStep, 10.18*parameters->mdTimeStep);
 
     long tenthSteps = parameters->mdSteps/10;
     //This prevents and edge case division by zero if mdSteps is < 10
@@ -151,7 +151,7 @@ void ParallelReplicaJob::dynamics()
         sumT += kinT;
         sumT2 += kinT*kinT;
 
-        PRdynamics.oneStep(parameters->mdTemperature);
+        PRdynamics.oneStep(parameters->temperature);
 
         md_fcalls++;
         ncheck++;
@@ -468,7 +468,7 @@ void ParallelReplicaJob::dephase()
         }
 
         for(i=0; i<nbuff; i++){
-           dephaseDynamics.oneStep(parameters->mdTemperature);
+           dephaseDynamics.oneStep(parameters->temperature);
            dh_fcalls++;
            *DHbuff[i] = *reactant;
         }

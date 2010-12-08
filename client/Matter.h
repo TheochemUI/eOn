@@ -16,25 +16,25 @@
 
 #include "Eigen/Eigen"
 USING_PART_OF_NAMESPACE_EIGEN
-/* This structure is used as a inherited by Matter. It contains data about an atomic structure. It is used when a fast and direct access to the private data members is required in Matter. It should not be used alone.
-@warning Use carefully. Avoid it and use Matter instead if possible.
-@see Matter */
+
+/* This structure is used as a inherited by Matter. It contains data about an atomic structure. It is used when a fast and direct access to the private data members is required in Matter. It should not be used alone.  Use carefully. Avoid it and use Matter instead if possible. */
+
 struct MatterPrivateData {
     Parameters *parameters;
  
     long int nAtoms; // number of atoms
-    Matrix<double, Eigen::Dynamic, 3> positions; // array of 3N positions
-    Matrix<double, Eigen::Dynamic, 3> velocities; // array of 3N velocities
-    Matrix<double, Eigen::Dynamic, 3> forces; // array of 3N forces
-    Matrix<double, Eigen::Dynamic, 1> masses; // array of masses
-    Matrix<int, Eigen::Dynamic, 1> atomicNrs; // array of atomic numbers
+    Matrix<double, Eigen::Dynamic, 3> positions; // positions
+    Matrix<double, Eigen::Dynamic, 3> velocities; // velocities
+    Matrix<double, Eigen::Dynamic, 3> forces; // forces
+    Matrix<double, Eigen::Dynamic, 1> masses; // masses
+    Matrix<int, Eigen::Dynamic, 1> atomicNrs; // atomic numbers
     Matrix<int, Eigen::Dynamic, 1> isFixed; // array of bool, false for movable atom, true for fixed
     Matrix<double, 3, 3> cellBoundaries; // boundaries of the cell
     mutable double potentialEnergy; // potential energy
-    long nsteps; // liang added for test
 };
 
-/** Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
+/* Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
+
 class Matter : private MatterPrivateData {
 public:
     Matter(Parameters *parameters); // the number of atoms shall be set later using resize()
@@ -42,7 +42,7 @@ public:
     Matter(const Matter& matter); // create a copy of matter
     ~Matter(); // Destructor
     const Matter& operator=(const Matter& matter); // copy the matter object
-    bool operator==(const Matter& matter); // true if differences in positions are below maxDifferencePos
+    bool operator==(const Matter& matter); // true if differences in positions are below differenceDistance
     double distanceTo(const Matter& matter); // the distance to the given matter object
     double perAtomNorm(const Matter& matter); // the maximum distance between two atoms in the Matter objects
     void setPotential(); // set potential function to use
@@ -53,9 +53,7 @@ public:
     void setBoundary(int axis, Vector3d); // set the length of the periodic cell for the axis specified
     void setBoundary(int axis1, int axis2, double val); // set the length of the periodic cell for the axis specified
     void activatePeriodicBoundaries(); // activate the periodic boundary conditions
-    /* When the function is called, coordinates are recalculated to fit the minimum image convention (i.e. coordinates within[-cellBoundaries_[X]/2;+cellBoundaries_[X]/2], etc...). Subsequently, coordinates are also recalculated each time these are modified. */
     void deactivatePeriodicBoundaries(); // deactivate periodic boundary conditions
-    /* @param  constraints  set to zero to remove any constraints.*/
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
 
@@ -94,32 +92,31 @@ public:
     bool isItConverged(double convergeCriterion);
     double maxForce(void);
 
-    bool con2matter(std::string filename); // Read con file into Matter, return true if successful
-    bool con2matter(FILE *file);/* Read con file and load data into Matter. Support up to ten components (ten types of atoms). 
-    @return Returns true if successfull.*/    
-    bool matter2con(std::string filename) const;///< Print @em .con file from data in Class Matter. 
-    bool matter2con(FILE *file) const;///< Print @em .con file from data in Class Matter. 
-    void matter2xyz(std::string filename, bool append=false /*Append if file already exists*/) const;/**< Print @em .xyz file based on data stored in Class Matter. 
-    @param append  Matters if file @filename already exists. When true, append new data to the existing file.*/
+    bool con2matter(std::string filename); // read con file into Matter, return true if successful
+    bool con2matter(FILE *file); // read con file and load data into Matter, return true if successful
+    bool matter2con(std::string filename) const; // print con file from data in Class Matter
+    bool matter2con(FILE *file) const; // print con file from data in Class Matter
+    void matter2xyz(std::string filename, bool append=false) const; // print xyz file from data in Matter
     
     Matrix<double, Eigen::Dynamic, 3> getFree() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-    Potential *potential;/// Pointer to function calculating the energy and forces.
-    bool usePeriodicBoundaries;///< Boolean telling periodic boundaries are used.
-    mutable bool recomputePotential; ///< Boolean telling if the potential energy and forces need to be recalculated.
-    mutable long forceCalls; ///< Keeping track of how many force calls that have been performed.
+    Potential *potential; // pointer to function calculating the energy and forces
+    bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
+    mutable bool recomputePotential; // boolean indicating if the potential energy and forces need to be recalculated
+    mutable long forceCalls; // keep track of how many force calls have been performed
 
-    char headerCon1[100];///< To contain headerline 1 from CON file that is not used in this code.
-    char headerCon2[100];///< To contain headerline 2 from CON file that is not used in this code.
-    char headerCon4[100];///< To contain headerline 4 from CON file that is not used in this code.
-    char headerCon5[100];///< To contain headerline 5 from CON file that is not used in this code.
-    char headerCon6[100];///< To contain headerline 6 from CON file that is not used in this code.
+    // CON file header information, which is not used in the eon code
+    char headerCon1[STRING_SIZE];
+    char headerCon2[STRING_SIZE];
+    char headerCon4[STRING_SIZE];
+    char headerCon5[STRING_SIZE];
+    char headerCon6[STRING_SIZE];
     
     void computePotential();
     void initialiseDataMembers(Parameters *parameters);
-    void clearMemory(); ///< Clear all dynamically allocated memory.
+    void clearMemory(); // clear dynamically allocated memory
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double & component, int axis);
     void applyPeriodicBoundary(Matrix<double, Eigen::Dynamic, 3> & diff);
