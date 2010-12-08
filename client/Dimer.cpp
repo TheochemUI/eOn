@@ -44,7 +44,7 @@ Dimer::~Dimer()
 {
     delete matterInitial;
     delete matterDimer;
-    delete stats;
+    delete [] stats;
 }
 
 void Dimer::moveAndCompute(Matter const *matter)
