@@ -20,7 +20,6 @@ Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)
 
     for(int i=0; i<3; i++)
     {
-        modeProducts[i] = -1;
         modes[i].resize(0);
         hessians[i].resize(0,0);
     }
@@ -31,20 +30,15 @@ Hessian::~Hessian()
 {
 }
 
-double Hessian::getModeProduct(int which)
-{
-    if(modeProducts[which] == -1)
-    {
-        calculate(which);
-    }
-    return modeProducts[which];
-}
 
 Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(int which)
 {
     if(hessians[which].rows() == 0)
     {
-        calculate(which);
+        if (!calculate(which))
+        {
+            hessians[which].resize(0,0);
+        }
     }
     return hessians[which];
 }
@@ -53,12 +47,15 @@ VectorXd Hessian::getModes(int which)
 {
     if(modes[which].rows() == 0)
     {
-        calculate(which);
+        if (!calculate(which))
+        {
+            modes[which].resize(0);
+        }
     }
     return modes[which];
 }
 
-void Hessian::calculate(int which)
+bool Hessian::calculate(int which)
 {
     Matter *curr;
     assert(saddle->numberOfAtoms() == reactant->numberOfAtoms());
@@ -76,7 +73,7 @@ void Hessian::calculate(int which)
             break;
         default:
             cerr<<"Hessian can't deterimine which structure to use"<<endl;
-            return;
+            return false;
             break;
     }
 
@@ -137,36 +134,31 @@ void Hessian::calculate(int which)
     VectorXd freqs = es.eigenvalues();
 
     int nNeg = 0;
-    double prod = 1;
     for(i=0; i<size; i++)
     {
         if(freqs(i) < 0)
         {
             nNeg++;
         }
-        else
-        {
-            prod *= freqs(i);
-        }
     }
     if(which == SADDLE)
     {
         if(nNeg!=1)
         {
-            return;
+            return false;
         }
     }
     else
     {
         if(nNeg!=0)
         {
-            return;
+            return false;
         }
     }
 
-    modeProducts[which] = prod;
     modes[which] = freqs;
     hessians[which] = hessian;    
+    return true;
 }
 
 VectorXi Hessian::movedAtoms(double const distance)
