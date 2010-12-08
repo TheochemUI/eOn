@@ -21,16 +21,25 @@ General
 
 ``type``
 
-    Options: **local**, cluster, boinc, arc
 
-    Each type of communicator has specific options which are listed in their
-    respective sections.
+    Default: local
+    
+    Options: 
+
+        **local**:
+
+        cluster:
+
+        boinc:
+
+        arc:
+
 
 ``job_bundle_size``
 
     Default: 1
 
-    Short lived jobs can adversely effect performance in some situations. For
+    Short lived jobs can adversely affect performance in some situations. For
     example, when using empirical potentials to do saddle searches a single search
     might only take several seconds on modern CPUs. In order to improve performance
     more than one client job (*e.g.*, process search, dimer, minimization) can be
@@ -75,9 +84,7 @@ in ``tools/clusters/sge6.2``. They will most likely need to be modified to run
 on your system.
 
 ``script_path``
-    
     Default: ./
-
     The path to the user defined scripts for submitting jobs to the communicator.
     
 ``name_prefix``
@@ -162,7 +169,7 @@ Todo
 Examples
 ========
 
-These examples only submit a single search as the ``job_bundle_size`` defaults to 1.
+These examples only submit a single search as the ``search_buffer_size`` defaults to 1.
 
 Local
 -----

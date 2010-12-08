@@ -218,7 +218,6 @@ int main(int argc, char **argv)
         job =  new TestJob(&parameters);
     }
 
-
     // If no bundles run once; otherwise, run bundleSize number of times.
     if (bundleSize == 0) {
         job->run(-1);
