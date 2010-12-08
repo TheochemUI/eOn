@@ -134,7 +134,7 @@ bool ConjugateGradients::isItConverged(double convergeCriterion){
  
     for(int i=0;i<nAtoms;i++)
     {
-        diff = force.row(i).norm();//-forceOld_[i]);
+        diff = force.row(i).norm();
         if(convergeCriterion < diff)
         {
             break;
