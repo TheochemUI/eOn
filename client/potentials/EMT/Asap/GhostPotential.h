@@ -20,10 +20,10 @@
 /// need to check if the Atoms are really GhostAtoms and then call a
 /// few helper functions).
 
-class GhostPotential : public Potential
+class GhostPotential : public AsapPotential
 {
 public:
-  GhostPotential(Potential *p) : potential(p) {}
+  GhostPotential(AsapPotential *p) : potential(p) {}
 
   /// Check if the ghost atoms want the neighbor list updated.
 
@@ -60,7 +60,7 @@ public:
   double GetLatticeConstant() const {return potential->GetLatticeConstant();}
 
 protected:
-  Potential *potential;  ///< Pointer to the wrapped potential.
+  AsapPotential *potential;  ///< Pointer to the wrapped potential.
 };
 
 #endif // GHOSTPOTENTIAL_H
