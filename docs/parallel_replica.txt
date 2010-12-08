@@ -2,93 +2,101 @@
 Parallel Replica
 ================================
 
-The Parallel Replica job needs parameters.dat. In order to run Parallel Replica, please set Job_Type to parallel_replica in [Default]. For regular MD  all the parameters could be set in the [Dynamics] section in parameters.dat. Our Parallel Replica could also be combined with Hyper-Dynamics using Bond-Boost method. You can use this feature by setting BondBoost=1 in [Hyper] section and set other tags in the [Hyper] section.
+In order to run Parallel Replica, please set **job** to *parallel_replica in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost**=T in [Hyperdynamics] section.
+For detailed information about Parallel Replica and Bond-Boost, please refer to the following paper:
+::
+
+   "Parallel replica method for dynamics of infrequent events”
+                                        A. F. Voter, Phys Rev B 57 13985 (1998)
+
+   "Accelerated molecular-dynamics of rare events with the bond-boost method"
+               R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
+
+Main
+-------------------------------
+In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main].
+
+**temperature** [300]
+  Temperature during the Molecular Dynamics run. At the beginning, the code will scale the velocities to that temperature. And the thermostat you choose will maintain the temperature during the MD run. And the simulation termperature in this code is calculated as:
+
+  .. math::
+
+     T_k = \frac{2 E_{kin}}{k_B*N_{freedom}}
 
 
-\[Dynamics\]
+
+
+Dynamics
 --------------------------------
-For detailed information about Parallel Replica method, please refer to the following paper:
-::
 
-   A. F. Voter, “Parallel replica method for dynamics of infrequent events”, Phys Rev B 57 13985 (1998)  
-
-**TIMESTEP** [0.1]
- The length of each MD step. The unit of TimeStep is 10 fs and default value is 0.1 (1 fs). 
+**timestep** [0.1]
+  The length of each MD step. The unit of **timestep** is *10 fs* and default value is *0.1* (*1 fs*). 
     
-**TEMPERATURE** [300]
-  TEMPERATURE controls the temperature during the Molecular Dynamics run. At the beginning, the code will scale the velocities to that temperature. And the thermostat you choose will maintain the temperature during the MD run. And the simulation termperature in this code is calculated as:
-
-.. math::
-
-   T_k = \frac{2 E_{kin}}{k_B*N_{freedom}}
-
-**mdAutoStop** [false]
-  mdAutoStop controls whether stop the job when a new state is found. For boinc communicator this value should be set to false. 
-
-**mdSTEPS** [1000]
-  mdSTEPS sets the maxium number of MD steps. The job will only be stopped when the steps of MD run reaches mdSTEPS if mdAutoStop is set to be false.
+**auto_stop** [false]
+  Whether or not stop the job when a new state is found. For boinc communicator this value should be set to *false*. 
     
-**Dephase_Steps** [200]
-  Dephase_Steps sets the steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the divding surface to prevent the occurring of transitions during this period. 
+**max_steps** [1000]
+   The maxium number of MD steps. The job will only be stopped when the steps of MD run reaches **max_steps**, if **auto_stop** is set to be *false*.
+    
+**dephase_steps** [200]
+  Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the divding surface to prevent the occurring of transitions during this period. 
 
-**CheckFreq** [500]
-  ChekFreq determines how frequent you check the state of system. Every CheckFreq steps, the current structure and the initial one will be compared  to tell whether a newstate has been reached. Also note: when you set mdRefine as true, the code will keep an buff array consisted by int(CheckFreq/RecordAccuracy)+1 Matter objects, which may increase the usage of memory.
+**check_period** [500]
+  How frequent you check the state of system. Every **check_period** steps, the current structure and the initial one will be compared  to tell whether a newstate has been reached. Also note when you set **refine** as *true*, the code will keep an buff array consisted by **int(check_period/record_resolution)+1** Matter objects, which may increase the usage of memory.
 
-**mdRefine** [true] 
-  mdRefine determines whether the exact transition step is refined. When this option is turned on, the code will keep an array consisted by int(CheckFreq/RecordAccuracy)+1 Matter objects. And Binary search algorithm is employed to determine the exact transition step with an accuracy of RefineAccuracy. Otherwise the transition step would be the first newstate we checked. This function could help to reduce state-check frequecy without lowering the accuracy. And the accuracy of transition time is RecordAccuracy*RefineAccuracy*TimeStep;
+**refine** [true] 
+  Whether or not the exact transition step is refined. When this option is turned on, the code will keep an array consisted by **int(check_period/record_resolution)+1** Matter objects. And Binary search algorithm is employed to determine the exact transition step. Otherwise the transition step would be the first newstate we found. This function could help to reduce state-check frequecy without lowering the accuracy. And the accuracy of transition time is **record_resolution*timestep**;
 
 ::
+    
+        refine = T
+        record_resolution = 1
 
-  mdRefine=1
-  RecordAccuracy=1
-  RefineAccuracy=1
-
-**RecordAccuracy** [1]
-  RecordAccuracy controls how often the system is recorded to the buff array when mdRefine is activated. By raising the value of RecordAccuracy you may lower the accuarcy of transition time but largely reduce the usage of memory and speed up the Refinement of transition step.
+**record_resolution** [1]
+  How often the system is recorded to the buff array when **refine** option is activated. By raising the value of **record_resolution** you may lower the accuarcy of transition time but largely reduce the usage of memory and speed up the refinement of transition step.
   
-**RefineAccuracy** [20]
-  RefineAccuracy controls the accuracy of  Binary search in the transition step Refinement. The Binary search would stop when the length of search interval is smaller than the RefineAccuracy. 
-         
-**newRelaxStep** [500]
-   an additional newRelaxStep of MD run will be performed after a new state has been found. A state check will also be employed after these newRelaxSteps to confirm the state found before is a real new state. This additional check could help to avoid recrossing and mega-stable state. It is recommended to set this value approximately around Dephase_Steps.
+**relax_steps** [500]
+   Number of additional MD run which will be  performed after a new state has been found. A state check will also be employed after these **relax_steps** to confirm the state found before is a real new state. This additional check could help to avoid recrossing and mega-stable state. It is recommended to set this value approximately around **dephase_steps**.
 
-**Thermo_Type** [andersen]
-  Thermo_Type controls the thermostat method you choose to perform NVT ensemble molecular dynamics. Currently only Andersen thermostat is available and well tested. Nose-hoover thermostat is implmented but doesn't work. 
+**thermo_type** 
+  Default: *andersen*
+  Options:
+         *andersen*: Andersen thermostat with Verlet algorithm
 
-**ANDERSEN_ALPHA** [0.2]
-  Andersen_Alpha determines the collision strength in Andersen thermostat. If a collision happened, the new velocity is 
+         *nose-hoover*::Nose-Hover thermostat with Verlet algorithm(not available now)
+
+  Thermostat method you choose to perform NVT ensemble molecular dynamics. Currently only Andersen thermostat is available and well tested. Nose-Hoover thermostat is implmented but doesn't work correctly. 
+
+**andersen_alpha** [0.2]
+  The collision strength :math:`\alpha` in Andersen thermostat. If a collision happened, the new velocity is 
 
 .. math::
 
   V_{new} = \sqrt{(1-\alpha^2)}*V_{old}+\alpha*V_{guassian}
 
-**ANDERSEN_TCOL** [10]
-  Andersen_Tcol determines the collision frequency in Andersen thermostat. 
+**andersen_tcol** [10]
+  The collision frequency in Andersen thermostat. 
     
-**NoseMass** [0]
-  NoseMass set the effective mass of the additional degree of freedom in Nose-Hoover thermostat, which determines rate of the heat transfer.
+**nose_mass** [0]
+  The effective mass of the additional degree of freedom in Nose-Hoover thermostat, which determines rate of the heat transfer.
     
-\[Hyper\]
+Hyperdynamics
 --------------------------------
-For detailed information about Bond-Boost method and its parameters, please refer to the following paper:
-::
 
-  R. A. Miron and K. A. Fichthorn, "Accelerated molecular-dynamics of rare events with the bond-boost method", J. Chem. Phys. 119, 6210 (2003)
+**bond_boost** [false]
+   Switch to determine whether a boost-potential is added to run Hyperdynamics
 
-**BondBoost** [false]
-   BondBoost is a switch to determine whether a boost-potential is added to run Hyper-Dynamics
-
-**DVMAX** [0.0]
-  DVMAX is the magnitude of the total boost potential. It should be smaller than the barrier of any transition.
+**max_dv** [0.0]
+  The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
   
-**QRR** [0.001]
-  QRR is the empirical threshold parameter, which defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
+**stretch_threshold** [0.001]
+  The empirical threshold parameter, which defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
   
-**PRR** [0.9]
-  PRR controls the curvature near the dividing suface, it should has a value <= 1. We recommend the value to be 0.9-0.98
+**curvature** [0.9]
+  The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*
 
-**Qcut** [3.0]
-  Qcut determines how many bonds will be boosted. All bonds which belong to the tagged atoms and are shorter than a cutoff of Qcut will be boostd.
+**rcut** [3.0]
+  All bonds which belong to the tagged atoms and are shorter than a cutoff of Qcut will be boostd.
 
 
 
