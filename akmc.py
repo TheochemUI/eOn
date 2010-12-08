@@ -505,7 +505,6 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     else:
         pass_indices = None
     disp = get_displacement(reactant, indices = pass_indices)
-    parameters_path = os.path.join(config.path_root, "parameters.dat")
     searches = []
     
     invariants = {}
@@ -514,8 +513,8 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     io.savecon(reactIO, reactant)
     invariants['reactant_passed.con']=reactIO
     
-    f = open(parameters_path)
-    invariants['parameters_passed.dat'] = StringIO.StringIO(''.join(f.readlines()))
+    f = open(config.config_path)
+    invariants['config.ini'] = StringIO.StringIO(''.join(f.readlines()))
     f.close()
 
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot)) #Merge potential files into invariants

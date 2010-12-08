@@ -165,7 +165,7 @@ int main(int argc, char **argv)
     printf("Bundle size of %i\n", bundleSize);
     #endif
 
-    int error = parameters.load("parameters_passed.dat");
+    int error = parameters.load("config.ini");
     if (error) {
         fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
         boinc_finish(1);
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
     }else{
         for (int i=0; i<bundleSize; i++) {
             char buff[100];
-            snprintf(buff, 100, "parameters_passed_%i.dat", i);
+            snprintf(buff, 100, "config_%i.ini", i);
             string parametersFilename(buff);
             parameters.load(parametersFilename);
             job->run(i);
@@ -259,7 +259,6 @@ int main(int argc, char **argv)
            rtime,utime,stime);
 
     #ifdef OSX
-    task_t task = MACH_PORT_NULL;
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
