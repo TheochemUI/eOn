@@ -117,6 +117,9 @@ Hyperdynamics
   
 **bb_dvmax** [0.0]
   Bond-Boost paramerter. The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
+ 
+**bb_rmd_steps** [200]
+  Bond-Boost paramerter. Number of regular MD run to get the equilibrium bond length before boost potential is added.
   
 **bb_stretch_threshold** [0.001]
   Bond-Boost paramerter, defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
