@@ -35,7 +35,7 @@ class Displace:
         #temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
 
-        self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.disp_brute_neighbors)
+        self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
 
     def make_displacement(self):
         '''Writes the displacement_passed.con and mode_passed.dat to
