@@ -1,9 +1,29 @@
 ================================
 Parallel Replica
 ================================
+Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do accelerated-MD simulation. The only assumption made in this method is that the reactions satisfy frst order kinetics: PRD boosts the simulation linearly with the number of replicas and can be easily combined with with other methods for extending the MD time scale, e.g. Hyperdynamics method, giving a multiplicative effect in the time scale gain.
+  .. math::
 
-In order to run Parallel Replica, please set **job** to *parallel_replica in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost**=T in [Hyperdynamics] section.
+     Pr(t) = k\ exp(- k\ t)
+
+In Voter's approach (which is suitable to mpi simulation),  N replicas of the system are made at first and then the momentum in each replica is randomized and dephasing stage is employed to decorrlecate their motions. The simulation clock starts after this dephasing stage and stops when the first transitions is detected in any of replica. Because those N trajectories are independent, thery can explore the phase space N times faster than using a single trajectory. The overall simulation clock is advanced by the sum of all the simulation times in relicas. 
+
+In order to work with distributed architectures, we used a little different way to run PRD. The replica generating and dephasing stage is exactly the same. We make all replicas run the same length of MD steps (:math:`max\_time=max\_step*time\_step`). Results will only be reported back until the client finished those steps. The server accumluate the the simulation clock by :math:`dt` until the first transition is reported back.
+  .. math::
+
+         dt=\begin{equation}
+           \left\{
+              \begin{aligned}
+                   max\_time & \        {\rm Failed\ to\ transit}  \\
+                   transition\_time &\  {\rm Successful\ transited} \\
+                           \end{aligned}
+                              \right.
+                                \end{equation}
+
+In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost** = *T* in [Hyperdynamics] section.
+
 For detailed information about Parallel Replica and Bond-Boost, please refer to the following paper:
+
 ::
 
    "Parallel replica method for dynamics of infrequent events”
@@ -21,7 +41,7 @@ In order to run Parallel Replica, please set **job** to *parallel_replica* in [M
 
   .. math::
 
-     T_k = \frac{2 E_{kin}}{k_B*N_{freedom}}
+     T_k = \frac{2\ E_{kin}}{k_B\ N_{freedom}}
 
 
 
@@ -61,9 +81,10 @@ Dynamics
 **thermo_type** 
   Default: *andersen*
   Options:
-         *andersen*: Andersen thermostat with Verlet algorithm
 
-         *nose-hoover*::Nose-Hover thermostat with Verlet algorithm(not available now)
+         *andersen* : Andersen thermostat with Verlet algorithm
+
+         *nose-hoover* : Nose-Hover thermostat with Verlet algorithm(not available now)
 
   Thermostat method you choose to perform NVT ensemble molecular dynamics. Currently only Andersen thermostat is available and well tested. Nose-Hoover thermostat is implmented but doesn't work correctly. 
 
