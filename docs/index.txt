@@ -17,7 +17,7 @@ Contents
    coarse-graining
    kdb
    minimization
-   Parallel Replica <parallel_replica>
+   parallel_replica
    communicator
    server configuration <server_config>
    client configuration <client_config>
