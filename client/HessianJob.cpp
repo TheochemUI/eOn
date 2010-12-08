@@ -49,9 +49,9 @@ void HessianJob::run(int bundleNumber)
     product->con2matter(product_passed);
 
     Hessian hessian(reactant, saddle, product, parameters);
-    double modeProduct = hessian.getModeProduct(parameters->hessianType);
+    VectorXd modes = hessian.getModes(parameters->hessianType);
 
-    bool failed = modeProduct<0;
+    bool failed = modes.size()==0;
 
     FILE *fileResults;
     FILE *fileMode;
@@ -74,9 +74,6 @@ void HessianJob::run(int bundleNumber)
     fprintf(fileResults, "%d hessian_size\n", hessian.getHessian(parameters->hessianType).rows());
     if(!failed)
     {
-        fprintf(fileResults, "%f mode_product\n", modeProduct);
-        
-        VectorXd modes = hessian.getModes(parameters->hessianType);
         for(int i=0; i<modes.size(); i++)
         {
             fprintf(fileMode, "%f\n", modes[i]);
