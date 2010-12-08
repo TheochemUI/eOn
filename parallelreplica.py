@@ -137,9 +137,8 @@ def make_searches(comm, current_state, wuid):
     io.savecon(reactIO, reactant)
     #invariants['reactant_passed.con']=reactIO
     
-    f = open(config.config_path)
-    invariants['config.ini'] = StringIO(''.join(f.readlines()))
-    f.close()
+    ini_changes = [ ('Main', 'job', 'parallel_replica') ]
+    invariants['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))

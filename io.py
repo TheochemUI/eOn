@@ -11,15 +11,16 @@
 '''
 Con(figuration) i/o library
 '''
+import ConfigParser
+from cStringIO import StringIO
 import logging
 logger = logging.getLogger('io')
 import numpy
 import os
-import struct
 
 import atoms
+import config
 
-from cStringIO import StringIO
 
 def length_angle_to_box(boxlengths, angles):
     box = numpy.zeros( (3,3) )
@@ -191,6 +192,16 @@ def save_results_dat(fileout, results):
     
     for key in results:
         print >> f, results[key], key
+
+def modify_config(config_path, changes):
+    parser = ConfigParser.SafeConfigParser()
+    parser.read(config.config_path)
+    for change in changes:
+        parser.set(*change)
+    config_str_io = StringIO()
+    parser.write(config_str_io)
+    config_str_io.seek(0)
+    return config_str_io
 
 def parse_results(filein):
     '''
