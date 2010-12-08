@@ -20,7 +20,7 @@ In order to work with distributed architectures, we used a little different way 
                               \right.
                                 \end{equation}
 
-In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bias_potential** = *bond_boost* in [Hyperdynamics] section.
+In order to run Parallel Replica, please set **job** to *parallel_replica* in **[Main]**. For regular MD all the parameters could be set in the **[Dynamics]** section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bias_potential** = *bond_boost* in **[Hyperdynamics]** section.
 
 For detailed information about Parallel Replica and Bond-Boost, please refer to the following paper:
 
@@ -34,7 +34,7 @@ For detailed information about Parallel Replica and Bond-Boost, please refer to 
 
 Main
 -------------------------------
-In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main].
+In order to run Parallel Replica, please set **job** to *parallel_replica* in **[Main]**.
 
 **temperature** [300]
   Temperature during the Molecular Dynamics run. At the beginning, the code will scale the velocities to that temperature. And the thermostat you choose will maintain the temperature during the MD run. And the simulation termperature in this code is calculated as:
@@ -52,7 +52,7 @@ Dynamics
 **time_step** [1]
   The length of each MD step. The unit of **timestep** is *1 fs* and default value is *1*.
     
-**auto_stop** [false]
+**auto_stop** [False]
   Whether or not stop the job when a new state is found. For boinc communicator this value should be set to *false*. 
     
 **steps** [1000]
