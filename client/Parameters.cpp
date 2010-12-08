@@ -16,6 +16,7 @@
 #include "Hessian.h"
 #include "Job.h"
 #include "Dynamics.h"
+#include "BondBoost.h"
 #include "Potentials.h"
 #include "SaddlePoint.h"
 
@@ -82,22 +83,22 @@ Parameters::Parameters(){
     qmMaxMove = 0.2;
 
     // [Parallel Replica]
-    mdTimeStep = 0.1;
+    mdTimeStep = 1;
     mdTemperature = 300.0;
     mdSteps = 1000;
     mdMaxMovedDist = 2.0;
     mdRefine = false;
     mdAutoStop = false;
     mdRecordAccuracy = 1;
-    mdRefineAccuracy = 10;
-    mdCheckFreq = 1000;
+    mdRefineAccuracy = 1;
+    mdCheckFreq = 500;
     mdRelaxSteps = 500;
     mdDephaseSteps = 200;
     mdDephaseLoopStop = false;
     mdDephaseLoopMax = 5;
 
     // [Hyperdynamics]
-    bondBoost = false ;
+    biasPotential = Hyperdynamics::NONE;
     bondBoostDVMAX = 0.0;
     bondBoostQRR = 0.0001; // can not be set to 0
     bondBoostPRR = 0.95;
@@ -312,16 +313,16 @@ int Parameters::load(FILE *file){
         displaceMagnitudes = ini.GetValue("DisplacementSampling", "magnitudes", displaceMagnitudes);
 
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
-        mdTemperature = ini.GetValueF("Dynamics", "temperature", mdTemperature);
-        mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
+        mdTimeStep = mdTimeStep * 0.1 ; //transfer the time unit from fs to 10 fs 
+        mdTemperature = ini.GetValueF("Main", "temperature", mdTemperature);
+        mdSteps = ini.GetValueL("Dynamics", "max_steps", mdSteps);
         mdDephaseSteps = ini.GetValueL("Dynamics", "dephase_steps", mdDephaseSteps);
-        mdMaxMovedDist = ini.GetValueF("Dynamics", "parrep_max_moved_dist", mdMaxMovedDist);  
         mdRefine = ini.GetValueB("Dynamics", "refine", mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics", "auto_stop", mdAutoStop);
         mdRecordAccuracy = ini.GetValueL("Dynamics", "record_accuracy", mdRecordAccuracy);
         mdRefineAccuracy = ini.GetValueL("Dynamics", "refine_accuracy", mdRefineAccuracy);
-        mdCheckFreq = ini.GetValueL("Dynamics", "check_freq", mdCheckFreq);
-        mdRelaxSteps = ini.GetValueL("Dynamics", "new_relax_step", mdRelaxSteps);
+        mdCheckFreq = ini.GetValueL("Dynamics", "check_period", mdCheckFreq);
+        mdRelaxSteps = ini.GetValueL("Dynamics", "relax_step", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
          
@@ -337,13 +338,21 @@ int Parameters::load(FILE *file){
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_tcol",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
+ 
+        string hyperString;
+        hyperString = ini.GetValue("Hyperdynamics","bias_potential","none");
+        hyperString = toLowerCase(hyperString);
+        if (hyperString == "none"){
+            biasPotential = Hyperdynamics::NONE;
+        }else if (hyperString == "bond_boost"){
+            biasPotential = Hyperdynamics::BOND_BOOST;
+        }
 
-        bondBoost = ini.GetValueB("Hyperdynamics","bond_boost",bondBoost);
-        bondBoostRMDS = ini.GetValueL("Hyperdynamics","RMDS",bondBoostRMDS);
-        bondBoostDVMAX = ini.GetValueF("Hyperdynamics","DVMAX",bondBoostDVMAX);
-        bondBoostQRR = ini.GetValueF("Hyperdynamics","QRR",bondBoostQRR );
-        bondBoostPRR = ini.GetValueF("Hyperdynamics","PRR",bondBoostPRR );
-        bondBoostQcut= ini.GetValueF("Hyperdynamics","Qcut",bondBoostQcut);
+        bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
+        bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
+        bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
+        bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
+        bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
 
     }
     else

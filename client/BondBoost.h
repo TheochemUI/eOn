@@ -57,4 +57,13 @@ private:
     double SDtime_B;
 };
 
+class Hyperdynamics {
+        public:
+            enum{
+                NONE,
+                BOND_BOOST
+            };
+};
+
+
 #endif
