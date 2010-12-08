@@ -223,8 +223,6 @@ int Parameters::load(FILE *file){
             job = Job::HESSIAN;
         }else if (jobString == "parallel_replica"){
             job = Job::PARALLEL_REPLICA;
-        }else if (jobString == "replica_exchange"){
-            job = Job::REPLICA_EXCHANGE;         
         }else if (jobString == "dimer_dr"){
             job = Job::DIMER_DR;
         }else if (jobString == "dimer_rotation"){
