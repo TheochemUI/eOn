@@ -88,7 +88,7 @@ void ConjugateGradients::oneStep(){
     forceAfterStep = matter->getForces();
  
     // move system optimal step
-    step = stepSize(force, forceAfterStep, parameters->cgMaxMoveFullRelax);
+    step = stepSize(force, forceAfterStep, parameters->optMaxMove);
     //cout<<"Step: "<<step<<endl;
     pos += step*directionNorm;
     matter->setPositions(pos);
@@ -112,10 +112,10 @@ void ConjugateGradients::fullRelax(){
     ++run;
     #endif
     int i=0;
-    while(!converged and i < parameters->maximumIterations) 
+    while(!converged and i < parameters->optMaxIterations) 
     {
         oneStep();
-        converged = isItConverged(parameters->convergedForceRelax);
+        converged = isItConverged(parameters->optConvergedForce);
         ++i;
         if (outputLevel > 0) {
             printf("min = %3d, max force = %10.5lf\n", i, matter->maxForce());

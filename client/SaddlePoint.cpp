@@ -403,7 +403,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         cgSaddle.setForces(forces);
         if(eigenValue < 0)
         {
-            converged = cgSaddle.isItConverged(parameters->saddleConvergedForce);
+            converged = cgSaddle.isItConverged(parameters->optConvergedForce);
             concaveSeries = 0;
         }
         else

@@ -22,47 +22,46 @@
 
 Parameters::Parameters(){
 
-    // [Main]
+    // [Main] //
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
     potential = Potential::POT_LJ_RH;
     calculatePrefactor = true;
     minimizeOnly = false;
     minimizeBox = false;
-    maxDifferencePos = 0.1;
+    temperature = 300.0;
 
-    // for finding Epicenters
+    // [Structure Comparison] //
+    distanceDifference = 0.1;
     neighborCutoff = 3.3;
 
-    // [Debug] options
+    // [Debug] //
     saveStdout = false;
 
-    // [Process Search] default parameters
+    // [Process Search] //
     processSearchMinimizeFirst = false;
 
-    // [Saddle Search] default parameters
+    // [Saddle Search] //
     saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
     saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
-    saddleConvergedForce = 0.025;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
-    // undocumented
-    saddleDisplace = false;
-    saddleNormDisplace = 0.1;
-    saddleWithinRadiusDisplace = 4.0;
-    saddleMaxSingleDisplace = 0.1;
-    saddleMaxJumpAttempts = 0;
-    saddlePerpForceRatio = 0.0;
+    saddleDisplace = false; // undocumented
+    saddleNormDisplace = 0.1; // undocumented
+    saddleWithinRadiusDisplace = 4.0; // undocumented
+    saddleMaxSingleDisplace = 0.1; // undocumented
+    saddleMaxJumpAttempts = 0; // undocumented
+    saddlePerpForceRatio = 0.0; // undocumented
 
-    // [Hessian] determination
-    hessianType = Hessian::REACTANT;
-    hessianMinDisplacement = 0.25;
-    hessianWithinRadius = 5.0;
-    hessianPrefactorMax = 10e20;
-    hessianPrefactorMin = 10e8;
+    // [Optimizer] //
+    optMaxIterations=1000;
+    optConvergedForce = 0.005;
+    optMaxMove = 0.2;
+    cgCurvatureStep = 0.001;
+    qmTimeStep = 0.1;
 
-    // [Dimer] method
+    // [Dimer] //
     dimerSeparation = 0.0001;
     dimerRotationAngle = 0.005;
     dimerWindowMax = 1.0;
@@ -70,21 +69,15 @@ Parameters::Parameters(){
     dimerRotationsMax = 8;
     dimerRotationsMin = 1;
 
-    // [Minimizers]
-    maximumIterations=512;
-    convergedForceRelax = 0.005;
+    // [Hessian] //
+    hessianType = Hessian::REACTANT;
+    hessianMinDisplacement = 0.25;
+    hessianWithinRadius = 5.0;
+    hessianPrefactorMax = 10e20;
+    hessianPrefactorMin = 10e8;
 
-    // [Conjugate Gradients]
-    cgCurvatureStep = 0.001;
-    cgMaxMoveFullRelax = 0.2;
-
-    //[Quick Min]
-    qmTimeStep = 0.1;
-    qmMaxMove = 0.2;
-
-    // [Parallel Replica]
+    // [Parallel Replica] //
     mdTimeStep = 1;
-    mdTemperature = 300.0;
     mdSteps = 1000;
     mdMaxMovedDist = 2.0;
     mdRefine = false;
@@ -97,7 +90,7 @@ Parameters::Parameters(){
     mdDephaseLoopStop = false;
     mdDephaseLoopMax = 5;
 
-    // [Hyperdynamics]
+    // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
     bondBoostDVMAX = 0.0;
     bondBoostQRR = 0.0001; // can not be set to 0
@@ -111,7 +104,7 @@ Parameters::Parameters(){
     thermoAndersenTcol = 10; // collision frequency in unit of dt
     thermoNoseMass = 0;
 
-    // [Displacement Sampling]
+    // [Displacement Sampling] //
     displaceNSamples = 32; // The number of samples to take.
     displaceIterMax = 32; // The maximum number of rotations to perform on the dimer.
     displaceTorqueConvergence = 0.01; // The convergence criteria of the dimer rotation.
@@ -156,6 +149,36 @@ int Parameters::load(FILE *file){
     {
         printf("\n\n");
         // if we succesfully read the file, then parse it as an INI
+
+        // [Main] //
+
+        string jobString;
+        jobString = ini.GetValue("Main", "job", "process_search");
+        jobString = toLowerCase(jobString);
+        if (jobString == "process_search") {
+            job = Job::PROCESS_SEARCH;
+        }else if (jobString == "saddle_search") {
+            job = Job::SADDLE_SEARCH;
+        }else if (jobString == "minimization") {
+            job = Job::MINIMIZATION;
+        }else if (jobString == "hessian") {
+            job = Job::HESSIAN;
+        }else if (jobString == "parallel_replica"){
+            job = Job::PARALLEL_REPLICA;
+        }else if (jobString == "replica_exchange"){
+            job = Job::REPLICA_EXCHANGE;         
+        }else if (jobString == "dimer_dr"){
+            job = Job::DIMER_DR;
+        }else if (jobString == "dimer_rotation"){
+            job = Job::DIMER_ROTATION;
+        }else if (jobString == "displacement_sampling"){
+            job = Job::DISPLACEMENT_SAMPLING;
+        }else if (jobString == "test"){
+            job = Job::TEST;
+        }else{
+            fprintf(stderr, "Unknown job_type: %s\n", jobString.c_str());
+            error = 1;
+        }
 
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         // Initialize random generator
@@ -207,40 +230,18 @@ int Parameters::load(FILE *file){
 
         minimizeOnly = ini.GetValueB("Main", "minimize_only", minimizeOnly);
         minimizeBox = ini.GetValueB("Main", "minimze_box", minimizeBox);
+        temperature = ini.GetValueF("Main", "temperature", temperature);
         
-        maxDifferencePos = ini.GetValueF("Default", "max_difference_pos", maxDifferencePos);
-        neighborCutoff = ini.GetValueF("Default", "neighbor_cutoff", neighborCutoff);
+        // [Structure Comparison] //
 
-        string jobString;
-        jobString = ini.GetValue("Main", "job", "process_search");
-        jobString = toLowerCase(jobString);
-        if (jobString == "process_search") {
-            job = Job::PROCESS_SEARCH;
-        }else if (jobString == "saddle_search") {
-            job = Job::SADDLE_SEARCH;
-        }else if (jobString == "minimization") {
-            job = Job::MINIMIZATION;
-        }else if (jobString == "hessian") {
-            job = Job::HESSIAN;
-        }else if (jobString == "parallel_replica"){
-            job = Job::PARALLEL_REPLICA;
-        }else if (jobString == "dimer_dr"){
-            job = Job::DIMER_DR;
-        }else if (jobString == "dimer_rotation"){
-            job = Job::DIMER_ROTATION;
-        }else if (jobString == "displacement_sampling"){
-            job = Job::DISPLACEMENT_SAMPLING;
-        }else if (jobString == "test"){
-            job = Job::TEST;
-        }
-        else{
-            fprintf(stderr, "Unknown job_type: %s\n", jobString.c_str());
-            error = 1;
-        }
+        distanceDifference = ini.GetValueF("Structure Comparison", "max_difference_pos", distanceDifference);
+        neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
 
-        saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
+        // [Process Search] //
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
+
+        // [Saddle Search] //
 
         string minmodeMethodString = ini.GetValue("Saddle Search", "minmode_method", "dimer");
         minmodeMethodString = toLowerCase(minmodeMethodString);
@@ -260,7 +261,6 @@ int Parameters::load(FILE *file){
         }else if(displaceString == "not_last_atom"){
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
-        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
@@ -272,6 +272,31 @@ int Parameters::load(FILE *file){
         saddleNormDisplace = ini.GetValueF("Saddle Search", "norm_displace", saddleNormDisplace); //undocumented
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
 
+        // [Optimizer] //
+
+        optConvergedForce = ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
+        optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
+        optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
+        cgCurvatureStep = ini.GetValueF("Optimizer","curvature_step", cgCurvatureStep);
+        qmTimeStep = ini.GetValueF("Optimizer","time_step", qmTimeStep);
+        qmMaxMove = ini.GetValueF("Optimizer","max_move", qmMaxMove);
+
+        // [Dimer] //
+
+        dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
+        dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
+        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);
+        dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
+        dimerWindowMax = ini.GetValueF("Dimer", "window_max", dimerWindowMax);
+        dimerWindowMin = ini.GetValueF("Dimer", "window_min", dimerWindowMin);
+
+        // [Lanczos] //
+
+        lanczosConvergence = ini.GetValueF("Lanczos", "convergence", lanczosConvergence);
+        lanczosIteration = ini.GetValueL("Lanczos", "iteration", lanczosIteration);
+
+        // [Hessian] //
+
         string hessianString = ini.GetValue("Hessian", "type", "reactant");
         hessianString = toLowerCase(hessianString);
         if(hessianString == "reactant"){
@@ -281,41 +306,26 @@ int Parameters::load(FILE *file){
         }else if(hessianString == "product"){
             hessianType = Hessian::PRODUCT;
         }
-
-        convergedForceRelax = ini.GetValueF("Minimizer", "converged_force", convergedForceRelax);
-        maximumIterations = ini.GetValueL("Minimizer", "max_iterations", maximumIterations);
-        cgCurvatureStep = ini.GetValueF("Conjugate Gradients","curvature_step", cgCurvatureStep);
-        cgMaxMoveFullRelax = ini.GetValueF("Conjugate Gradients","max_move", cgMaxMoveFullRelax);
-        qmTimeStep = ini.GetValueF("Quick Min","time_step", qmTimeStep);
-        qmMaxMove = ini.GetValueF("Quick Min","max_move", qmMaxMove);
-
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
         hessianPrefactorMax = ini.GetValueF("Hessian", "prefactor_max", hessianPrefactorMax);
         hessianPrefactorMin = ini.GetValueF("Hessian", "prefactor_min", hessianPrefactorMin);
  
-        dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
-        dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
-        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);
-        dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
-        dimerWindowMax = ini.GetValueF("Dimer", "window_max", dimerWindowMax);
-        dimerWindowMin = ini.GetValueF("Dimer", "window_min", dimerWindowMin);
+        // [Displacement Sampling] //
 
-        lanczosConvergence = ini.GetValueF("Lanczos", "convergence", lanczosConvergence);
-        lanczosIteration = ini.GetValueL("Lanczos", "iteration", lanczosIteration);
+        displaceNSamples = ini.GetValueL("Displacement Sampling", "samples", displaceNSamples);
+        displaceIterMax = ini.GetValueL("Displacement Sampling", "iter_max", displaceIterMax);
+        displaceTorqueConvergence = ini.GetValueF("Displacement Sampling", "torque_convergence", displaceTorqueConvergence);
+        displaceMaxCurvature = ini.GetValueF("Displacement Sampling", "max_curvature", displaceMaxCurvature);
+        displaceMaxDE = ini.GetValueF("Displacement Sampling", "max_de", displaceMaxDE);
+        displaceCutoffs = ini.GetValue("Displacement Sampling", "cutoffs", displaceCutoffs);
+        displaceMagnitudes = ini.GetValue("Displacement Sampling", "magnitudes", displaceMagnitudes);
 
-        displaceNSamples = ini.GetValueL("DisplacementSampling", "samples", displaceNSamples);
-        displaceIterMax = ini.GetValueL("DisplacementSampling", "iter_max", displaceIterMax);
-        displaceTorqueConvergence = ini.GetValueF("DisplacementSampling", "torque_convergence", displaceTorqueConvergence);
-        displaceMaxCurvature = ini.GetValueF("DisplacementSampling", "max_curvature", displaceMaxCurvature);
-        displaceMaxDE = ini.GetValueF("DisplacementSampling", "max_de", displaceMaxDE);
-        displaceCutoffs = ini.GetValue("DisplacementSampling", "cutoffs", displaceCutoffs);
-        displaceMagnitudes = ini.GetValue("DisplacementSampling", "magnitudes", displaceMagnitudes);
+        // [Molecular Dynamics] //
 
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
-        mdTimeStep = mdTimeStep * 0.1 ; //transfer the time unit from fs to 10 fs 
-        mdTemperature = ini.GetValueF("Main", "temperature", mdTemperature);
-        mdSteps = ini.GetValueL("Dynamics", "max_steps", mdSteps);
+        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10 fs 
+        mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         mdDephaseSteps = ini.GetValueL("Dynamics", "dephase_steps", mdDephaseSteps);
         mdRefine = ini.GetValueB("Dynamics", "refine", mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics", "auto_stop", mdAutoStop);
@@ -325,7 +335,9 @@ int Parameters::load(FILE *file){
         mdRelaxSteps = ini.GetValueL("Dynamics", "relax_step", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
-         
+
+        // [Thermostat] //
+
         string thermostatString;
         thermostatString = ini.GetValue("Dynamics", "thermostat", "andersen");
         thermostatString = toLowerCase(thermostatString);
@@ -334,7 +346,6 @@ int Parameters::load(FILE *file){
         }else if (thermostatString == "nosehover") {
             thermostat = Dynamics::NOSE_HOVER;
         }
-
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_tcol",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
@@ -348,11 +359,18 @@ int Parameters::load(FILE *file){
             biasPotential = Hyperdynamics::BOND_BOOST;
         }
 
+        // [Hyperdynamics] //
+
+        bondBoost = ini.GetValueB("Hyperdynamics","bond_boost",bondBoost);
         bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
+
+        // [Debug] //
+
+        saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
     }
     else
