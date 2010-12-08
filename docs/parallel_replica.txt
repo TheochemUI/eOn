@@ -6,7 +6,7 @@ Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do 
 
      Pr(t) = k\ exp(- k\ t)
 
-In Voter's approach (which is suitable to mpi simulation),  N replicas of the system are made at first and then the momentum in each replica is randomized and dephasing stage is employed to decorrlecate their motions. The simulation clock starts after this dephasing stage and stops when the first transitions is detected in any of replica. Because those N trajectories are independent, thery can explore the phase space N times faster than using a single trajectory. The overall simulation clock is advanced by the sum of all the simulation times in relicas. 
+In Voter's approach,  N replicas of the system are made at first and then the momentum in each replica is randomized and dephasing stage is employed to decorrlecate their motions. The simulation clock starts after this dephasing stage and stops when the first transitions is detected in any of replica. Because those N trajectories are independent, thery can explore the phase space N times faster than using a single trajectory. The overall simulation clock is advanced by the sum of all the simulation times in relicas. 
 
 In order to work with distributed architectures, we used a little different way to run PRD. The replica generating and dephasing stage is exactly the same. We make all replicas run the same length of MD steps (:math:`max\_time=max\_step*time\_step`). Results will only be reported back until the client finished those steps. The server accumluate the the simulation clock by :math:`dt` until the first transition is reported back.
   .. math::
@@ -20,7 +20,7 @@ In order to work with distributed architectures, we used a little different way 
                               \right.
                                 \end{equation}
 
-In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bondboost** = *True* in [Hyperdynamics] section.
+In order to run Parallel Replica, please set **job** to *parallel_replica* in [Main]. For regular MD all the parameters could be set in the [Dynamics] section. Our Parallel Replica could also be combined with Hyperdynamics using Bond-Boost method. You can use this feature by setting **bias_potential** = *bond_boost* in [Hyperdynamics] section.
 
 For detailed information about Parallel Replica and Bond-Boost, please refer to the following paper:
 
@@ -80,6 +80,7 @@ Dynamics
 
 **thermo_type** 
   Default: *andersen*
+
   Options:
 
          *andersen* : Andersen thermostat with Verlet algorithm
@@ -104,20 +105,27 @@ Dynamics
 Hyperdynamics
 --------------------------------
 
-**bond_boost** [False]
-   Switch to determine whether a boost-potential is added to run Hyperdynamics.
+**bias_potentialt** 
+   Default: *none*
 
-**max_dv** [0.0]
-  The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
-  
-**stretch_threshold** [0.001]
-  The empirical threshold parameter, which defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
-  
-**curvature** [0.9]
-  The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*.
+   Options:
+            *none* : with no bias potential, run regular MD 
 
-**rcut** [3.0]
-  All bonds which belong to the tagged atoms and are shorter than a cutoff of Qcut will be boostd.
+            *bond_boost* : bond boost method from K. A. Fichthorn
+   
+   Options for different types of bias potential in Hyperdynamics. 
+  
+**bb_dvmax** [0.0]
+  Bond-Boost paramerter. The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
+  
+**bb_stretch_threshold** [0.001]
+  Bond-Boost paramerter, defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
+  
+**bb_ds_curvature** [0.9]
+  Bond-Boost paramerter. The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*.
+
+**bb_rcut** [3.0]
+  Bond-Boost paramerter. All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be boostd.
 
 
 
