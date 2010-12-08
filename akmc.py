@@ -52,7 +52,7 @@ def akmc(config):
     # 6) Write out the state of the simulation    
     
     # Define constants. 
-    kT = config.akmc_temperature/11604.5 #in eV
+    kT = config.main_temperature/11604.5 #in eV
     
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
@@ -212,16 +212,15 @@ def get_akmc_metadata():
         previous_state_num = -1
         first_run = True
 
-    if config.debug_random_seed:
+    if config.main_random_seed:
         try:
             parser = ConfigParser.RawConfigParser()
             parser.read(metafile)
             seed = parser.get("aKMC Metadata", "random_state")
-            from numpy import array, uint32
             numpy.random.set_state(eval(seed))
             logger.debug("Set random state from previous run's state")
         except:
-            numpy.random.seed(config.debug_random_seed)
+            numpy.random.seed(config.main_random_seed)
             logger.debug("Set random state from seed")
 
     return start_state_num, time, wuid, searchdata, previous_state_num, first_run
@@ -240,7 +239,7 @@ def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previ
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
     parser.set('Simulation Information', 'first_run', str(False))
-    if config.debug_random_seed:
+    if config.main_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
 
@@ -342,9 +341,9 @@ def register_results(comm, current_state, states, searchdata = None):
 
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
-        superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_tc_ntrans)
+        superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
-        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.akmc_temperature / 11604.5, config.sb_el_energy_increment)
+        superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_el_energy_increment)
     return superbasining
 
 
@@ -478,11 +477,11 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
 
 def get_displacement(reactant, indices=None):
     if config.disp_type == 'random':
-        disp = displace.Random(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices)
+        disp = displace.Random(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices)
     elif config.disp_type == 'undercoordinated':
-        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_size, config.disp_radius, hole_epicenters=indices, cutoff=config.disp_cutoff, use_covalent=config.disp_use_covalent, covalent_scale=config.disp_covalent_scale)
+        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
     elif config.disp_type == 'leastcoordinated':
-        disp = displace.Leastcoordinated(reactant, config.disp_size, config.disp_radius, hole_epicenters=indices, cutoff=config.disp_cutoff, use_covalent=config.disp_use_covalent, covalent_scale=config.disp_covalent_scale)
+        disp = displace.Leastcoordinated(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
     elif config.disp_type == 'water':
         disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation, config.molecule_list, config.disp_at_random)
     else:
@@ -668,7 +667,7 @@ def main():
         optpar.error("the options %s are mutually exclusive" % ", ".join(offending_options))
 
     if len(options.movie_type) > 0:
-        states = get_statelist(config.akmc_temperature / 11604.5)
+        states = get_statelist(config.main_temperature / 11604.5)
         movie.make_movie(options.movie_type, config.path_root, states)
         sys.exit(0)
 
@@ -678,7 +677,7 @@ def main():
         sys.exit(1)
 
     if options.print_status:
-        states = get_statelist(config.akmc_temperature / 11604.5)
+        states = get_statelist(config.main_temperature / 11604.5)
         start_state_num, time, wuid, searchdata, previous_state_num = get_akmc_metadata()
 
         print
