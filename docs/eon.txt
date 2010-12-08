@@ -65,7 +65,7 @@ Parameters for controlling saddle point searches on the client side.
     | maximum distance for which two configurations are considered the same
     | GH: should be combined with server-side variable
 
-**saveStdout** [false]
+**save_stdout** [false]
     GH: should move to debug?
 
 **converged_relax** [0.005]

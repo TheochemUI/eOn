@@ -21,7 +21,7 @@ class emt_parameters;
 /// Stoltze's ARTwork program, and documented in
 ///   - K. W. Jacobsen, P. Stoltze and J. K. Nørskov,
 ///     Surf. Sci. vol. 366, p. 394-402 (1996).
-class EMT : public Potential
+class EMT : public AsapPotential
 {
 public:
   /// Create an EMT potential optionally using a parameter provider.

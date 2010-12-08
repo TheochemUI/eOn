@@ -231,7 +231,7 @@ void Atoms::DeformAtoms(SuperCell *newSuperCell)
 }
 #endif
 
-void Atoms::SetCalculator(Potential *potential)
+void Atoms::SetCalculator(AsapPotential *potential)
 {
   this->potential = potential;
   potential->SetAtoms(this);

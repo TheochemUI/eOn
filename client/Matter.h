@@ -106,7 +106,7 @@ public:
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-    Potentials *potential;/// Pointer to function calculating the energy and forces.
+    Potential *potential;/// Pointer to function calculating the energy and forces.
     bool usePeriodicBoundaries;///< Boolean telling periodic boundaries are used.
     mutable bool recomputePotential; ///< Boolean telling if the potential energy and forces need to be recalculated.
     mutable long forceCalls; ///< Keeping track of how many force calls that have been performed.

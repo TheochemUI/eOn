@@ -35,10 +35,10 @@ public:
 
     long jobType; // indicate which type of job will be run
     long randomSeed; // seed for random generator
-    long potentialTag; // tag to describe which potential to use. Compare with values in Constants.cpp
+    long potentialType; // tag to describe which potential to use
     bool minimizeOnly; // only perform minimization, not saddle search
     bool minimizeBox; // also minimize the box dimensions if minimize_only_ is true
-    bool getPrefactorsTag; // tag to describe if the prefactors should be determined. 
+    bool getPrefactor; // flag to determine if prefactors should be determined. 
     double convergedRelax; // converge criterion during relaxation [eV/A]
     long maximumIterations; // max iterations for saddle point searches and minimization
 
@@ -63,12 +63,12 @@ public:
     double saddleMaxEnergy; // Energy above product state that will cause termination of the saddle point search [eV]
     double saddleNormPerturbation; // The norm or the perturbation vector [A]
     double saddleMaxSinglePerturbation; // max value of displacement in x, y and z direction for atoms being perturbated [A]
-    double saddleWithinRadiusPerturbated; // Atoms within this radius this of the one defining the center of the displacement are also being dispalced with the value sizePerturbation_SP_ [A]
+    double saddleWithinRadiusPerturbated; // Atoms within this radius this of the one defining the center of the displacement are also being displaced with the value sizePerturbation_SP_ [A]
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
-    int hessianKind;
+    int hessianType;
     double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian [A]
-    double hessianWithinRadiusDisplaced; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A]
+    double hessianWithinRadius; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian [A]
     double hessianPrefactorMax; // max prefactor allowed
     double hessianPrefactorMin; // min prefactor allowed
 
@@ -82,10 +82,10 @@ public:
     double dimerMaxIterations;
     
     long   displaceNSamples;
-    long   displaceIterMax;             // maximum number of rotations to perform on the dimer
-    double displaceTorqueConvergence;   // convergence criteria of the dimer rotation
-    double displaceMaxCurvature;        // maximum curvature for which a sample is considered good; used to avoid shallow but negative curvatures
-    double displaceMaxDE;               // maximum dE for which a sample is considered good
+    long   displaceIterMax; // maximum number of rotations to perform on the dimer
+    double displaceTorqueConvergence; // convergence criteria of the dimer rotation
+    double displaceMaxCurvature; // maximum curvature for which a sample is considered good; used to avoid shallow but negative curvatures
+    double displaceMaxDE; // maximum dE for which a sample is considered good
     string displaceCutoffs;
     string displaceMagnitudes;
     
