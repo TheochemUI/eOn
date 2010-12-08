@@ -1,7 +1,7 @@
-[Default]
+[Main]
 # The type of job to run. Current options are
 # ProcessSearch and Minimization
-JOB_TYPE=Process_Search
+JOB=Process_Search
 
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
@@ -19,14 +19,14 @@ RANDOM_SEED=-1
 # 9 = Lennard-jones binary
 # 10 = Aluminum
 # 12 = QSC
-POTENTIAL_TAG=3
+potential=eam_al
 
 maximum_iterations=512
 
-[ProcessSearch]
+[Process Search]
 minimize_first=True
 
-[Saddle_Point]
+[Saddle Search]
 # describtion LOWEST_EIGENMODE_DETERMINATION_SP
 # 1 = dimer method
 # 2 = lanczos method
