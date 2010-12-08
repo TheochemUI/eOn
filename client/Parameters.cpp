@@ -324,13 +324,13 @@ int Parameters::load(FILE *file){
         // [Molecular Dynamics] //
 
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
-        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10 fs 
+        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         mdDephaseSteps = ini.GetValueL("Dynamics", "dephase_steps", mdDephaseSteps);
         mdRefine = ini.GetValueB("Dynamics", "refine", mdRefine);
         mdAutoStop = ini.GetValueB("Dynamics", "auto_stop", mdAutoStop);
-        mdRecordAccuracy = ini.GetValueL("Dynamics", "record_accuracy", mdRecordAccuracy);
-        mdRefineAccuracy = ini.GetValueL("Dynamics", "refine_accuracy", mdRefineAccuracy);
+        mdRecordAccuracy = ini.GetValueL("Dynamics", "record_resolution", mdRecordAccuracy);
+        mdRefineAccuracy = ini.GetValueL("Dynamics", "refine_resolution", mdRefineAccuracy);
         mdCheckFreq = ini.GetValueL("Dynamics", "check_period", mdCheckFreq);
         mdRelaxSteps = ini.GetValueL("Dynamics", "relax_step", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
