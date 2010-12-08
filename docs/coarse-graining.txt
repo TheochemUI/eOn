@@ -23,6 +23,10 @@ Projective Dynamics
 
 Accelerated Superbasin Kinetic Monte Carlo
 --------------------------------------------
+    The basic process of AS-KMC involves gradually raising process barriers found to be inside of a superbasin such that exiting from the basin gradually becomes more likely. The method is designed to raise all the barriers in the superbasin simultaneously. Once a particular barrier has been crossed a certain number of times, :math:`N_f` (more on determining :math:`N_f` shortly), a check is performed to determine whether or not the current state is part of a superbasin. This is called the Superbasin Criterion. In the Superbasin Criterion, a search is performed, originating at the current state and proceeding outward through all low-barrier processes to adjacent states, and then through all low-barrier processes from each of these states, etc. For each low-barrier process found, if the process has been followed fewer than :math:`N_f` times, the Superbasin Criterion fails and no barriers are raised. Thus, in the outward-expanding search from the originating state, the search continues until either a low-barrier process has been seen fewer than :math:`N_f` times (and the Criterion fails) or until all connected low-barrier processes have been found and have been crossed at least :math:`N_f` times (the edges of the superbasin are then deﬁned and the Criterion passes). If the Superbasin Criterion passes, al l the low-barrier processes (each of which as been crossed :math:`N_f` times) are raised.
+
+    Several parameters dictate the functioning of the AS-KMC method. These parameters dictate how much the barriers are raised each time the Superbasin Criterion passes(**askmc_barrier_raise_param**), what deﬁnes a “low-barrier” for use in the Superbasin Criterion(**askmc_high_barrier_def**), and the approximate amount of error the user might expect in eventual superbasin exit direction and time compared to normal kmc simulation (**askmc_confidence**). 
+
 **use_askmc** [False]
     This option determines whether the AS-KMC coarse-graining method will be used. This mutually excludes the **use_superbasins** option.
 
@@ -36,10 +40,10 @@ Accelerated Superbasin Kinetic Monte Carlo
     This parameter sets how high a barrier must be to be considered “high” in AS-KMC. (:math:`\gamma` in the reference.)
 
 **askmc_barrier_test_on** [True]
-    This parameter determines whether to ensure no low barriers are missed. **What goes wrong if low barriers are missed?**
+    Because the implemented Superbasin Criterion actually only considers processes which have been passed over at least once, there is some chance that a low-barrier process in a superbasin might have not been visited at all while all other low-barrier processes have been visited at least :math:`N_f` times. This is unlikely, but this test veriﬁes that such has not happened, considering even processes which have not been visited when determining if the Superbasin Criterion has first, because the implemented Superbasin Criterion actually only considers processes which have been passed over at least once, there is some chance that a low-barrier process in a superbasin might have not been visited at all while all other low-barrier processes have been visited at least :math:`N_f` times. This is unlikely, but this test veriﬁes that such has not happened, considering even processes which have not been visited when determining if the Superbasin Criterion has passed. This check should not add signiﬁcant overhead.     
     
 **askmc_connections_test_on** [False]
-    This parameter determines whether to ensure no internal low-barrier connections are missed. **What goes wrong if internal low-barriers are missed? What is an internal low barrier?**
+    This parameter determines whether to ensure that there are no processes which connect states in the deﬁned superbasin which have not been visited yet and which have a low-barrier. This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when ﬁnding product states of unvisited processes.
 
 
 
