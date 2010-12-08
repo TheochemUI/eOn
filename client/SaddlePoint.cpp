@@ -27,6 +27,7 @@ SaddlePoint::SaddlePoint(){
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
     forceCallsMinimization = 0;
+    eigenValue = 0;
     return;
 }
 
@@ -37,6 +38,7 @@ SaddlePoint::~SaddlePoint(){
 
 SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed){
     lowestEigenmode = 0;
+    eigenValue = 0;
     initialize(initialPassed, saddlePassed, parametersPassed);
     return;
 }
@@ -47,6 +49,7 @@ void SaddlePoint::clean(){
         delete lowestEigenmode;
         lowestEigenmode = 0;
     }
+    eigenValue = 0;
     return;
 }
 
@@ -72,6 +75,7 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
         #endif
     }
     status = STATUS_INIT;
+    eigenValue = 0;
 
     return;
 }
