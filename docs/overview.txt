@@ -15,7 +15,7 @@ state-to-state dynamics are modeled stochastically.
 .. toctree::
    :maxdepth: 1
 
-   download
+   Obtaining the Code <download>
    installation
 
 
