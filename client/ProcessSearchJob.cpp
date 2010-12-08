@@ -141,7 +141,6 @@ int ProcessSearchJob::doProcessSearch(void)
         return SaddlePoint::STATUS_BAD_NOT_CONNECTED;
     }
 
-
     /* Calculate the barriers */
     barriersValues[0] = saddle->getPotentialEnergy()-min1->getPotentialEnergy();
     barriersValues[1] = saddle->getPotentialEnergy()-min2->getPotentialEnergy();
@@ -151,55 +150,60 @@ int ProcessSearchJob::doProcessSearch(void)
         return SaddlePoint::STATUS_BAD_HIGH_BARRIER;
     }
 
-    /* Perform the dynamical matrix caluclation */
-    VectorXd reactModes, saddleModes, prodModes;
-    f1 = Potential::fcalls;
-    reactModes = hessian->getModes(Hessian::REACTANT);
-    if(reactModes.size() == 0)
+    if(!parameters->processSearchDefaultPrefactor)
     {
-        return SaddlePoint::STATUS_BAD_PREFACTOR;
-    }
-    saddleModes = hessian->getModes(Hessian::SADDLE);
-    if(saddleModes.size() == 0)
-    {
-        return SaddlePoint::STATUS_BAD_PREFACTOR;
-    }
-    prodModes = hessian->getModes(Hessian::PRODUCT);
-    if(prodModes.size() == 0)
-    {
-        return SaddlePoint::STATUS_BAD_PREFACTOR;
-    }
-    fCallsPrefactors += Potential::fcalls - f1; 
-
-    prefactorsValues[0] = 1;
-    prefactorsValues[1] = 1;
-    
-    // This may have large numerical error
-    // products are calculated this way in order to avoid overflow
-    for(int i=0; i<saddleModes.size(); i++)
-    {
-        prefactorsValues[0] *= reactModes[i];
-        prefactorsValues[1] *= prodModes[i];
-        if(saddleModes[i]>0)
+        /* Perform the dynamical matrix caluclation */
+        VectorXd reactModes, saddleModes, prodModes;
+        f1 = Potential::fcalls;
+        reactModes = hessian->getModes(Hessian::REACTANT);
+        if(reactModes.size() == 0)
         {
-            prefactorsValues[0] /= saddleModes[i];
-            prefactorsValues[1] /= saddleModes[i];
+            return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
+        saddleModes = hessian->getModes(Hessian::SADDLE);
+        if(saddleModes.size() == 0)
+        {
+            return SaddlePoint::STATUS_BAD_PREFACTOR;
+        }
+        prodModes = hessian->getModes(Hessian::PRODUCT);
+        if(prodModes.size() == 0)
+        {
+            return SaddlePoint::STATUS_BAD_PREFACTOR;
+        }
+        fCallsPrefactors += Potential::fcalls - f1; 
 
-    }
-    prefactorsValues[0] = sqrt(prefactorsValues[0])/(2*M_PI*10.18e-15);
-    prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
+        prefactorsValues[0] = 1;
+        prefactorsValues[1] = 1;
+    
+        // This may have large numerical error
+        // products are calculated this way in order to avoid overflow
+        for(int i=0; i<saddleModes.size(); i++)
+        {
+            prefactorsValues[0] *= reactModes[i];
+            prefactorsValues[1] *= prodModes[i];
+            if(saddleModes[i]>0)
+            {
+                prefactorsValues[0] /= saddleModes[i];
+                prefactorsValues[1] /= saddleModes[i];
+            }
 
-    /* Check that the prefactors are in the correct range */
-    if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
-       (prefactorsValues[0]<parameters->hessianPrefactorMin)){
-        return SaddlePoint::STATUS_BAD_PREFACTOR;
-    }
-    if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
-       (prefactorsValues[1]<parameters->hessianPrefactorMin)){
-        return SaddlePoint::STATUS_BAD_PREFACTOR;
-    }
+        }
+        prefactorsValues[0] = sqrt(prefactorsValues[0])/(2*M_PI*10.18e-15);
+        prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
 
+        /* Check that the prefactors are in the correct range */
+        if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
+           (prefactorsValues[0]<parameters->hessianPrefactorMin)){
+            return SaddlePoint::STATUS_BAD_PREFACTOR;
+        }
+        if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
+           (prefactorsValues[1]<parameters->hessianPrefactorMin)){
+            return SaddlePoint::STATUS_BAD_PREFACTOR;
+        }
+    }else{ // use the default prefactor value specified
+        prefactorsValues[0]=parameters->processSearchDefaultPrefactor;
+        prefactorsValues[1]=parameters->processSearchDefaultPrefactor;
+    }
     return SaddlePoint::STATUS_GOOD;
 }
 

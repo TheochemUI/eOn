@@ -26,9 +26,6 @@ Parameters::Parameters(){
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
     potential = Potential::POT_LJ_RH;
-    calculatePrefactor = true;
-    minimizeOnly = false;
-    minimizeBox = false;
     temperature = 300.0;
 
     // [Structure Comparison] //
@@ -40,6 +37,7 @@ Parameters::Parameters(){
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
+    processSearchDefaultPrefactor = 0;
 
     // [Saddle Search] //
     saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
@@ -47,22 +45,22 @@ Parameters::Parameters(){
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
-    saddleDisplace = false; // undocumented
-    saddleNormDisplace = 0.1; // undocumented
-    saddleWithinRadiusDisplace = 4.0; // undocumented
+    saddleDisplace = false;
+    saddleDisplaceRadius = 4.0;
+    saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 0.1; // undocumented
     saddleMaxJumpAttempts = 0; // undocumented
     saddlePerpForceRatio = 0.0; // undocumented
 
-    // [Optimizer] //
+    // [Optimizers] //
     optMaxIterations=1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
-    cgCurvatureStep = 0.001;
-    qmTimeStep = 0.1;
+    optFiniteDiffStep = 0.001;
+    optTimeStep = 0.1;
 
     // [Dimer] //
-    dimerSeparation = 0.0001;
+    dimerSeparation = 0.001;
     dimerRotationAngle = 0.005;
     dimerWindowMax = 1.0;
     dimerWindowMin = 0.1;
@@ -178,6 +176,7 @@ int Parameters::load(FILE *file){
             error = 1;
         }
 
+        temperature = ini.GetValueF("Main", "temperature", temperature);
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         // Initialize random generator
         if(randomSeed < 0){
@@ -225,10 +224,6 @@ int Parameters::load(FILE *file){
             fprintf(stderr, "Unknown potential: %s\n", potentialString.c_str());
             error = 1;
         }
-
-        minimizeOnly = ini.GetValueB("Main", "minimize_only", minimizeOnly);
-        minimizeBox = ini.GetValueB("Main", "minimze_box", minimizeBox);
-        temperature = ini.GetValueF("Main", "temperature", temperature);
         
         // [Structure Comparison] //
 
@@ -238,6 +233,9 @@ int Parameters::load(FILE *file){
         // [Process Search] //
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
+        processSearchDefaultPrefactor = ini.GetValueF("Process Search", "default_prefactor", processSearchDefaultPrefactor);
+        processSearchPrefactorMax = ini.GetValueF("Process Search", "prefactor_max", processSearchPrefactorMax);
+        processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
 
         // [Saddle Search] //
 
@@ -248,7 +246,7 @@ int Parameters::load(FILE *file){
         }else if(minmodeMethodString == "lanczos"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_LANCZOS;
         }
-        string displaceString = ini.GetValue("Saddle Search", "displace", "none"); // undocumented
+        string displaceString = ini.GetValue("Saddle Search", "displace_type", "none"); // undocumented
         displaceString = toLowerCase(displaceString);
         if(displaceString == "none"){ 
             saddleDisplaceType = SaddlePoint::DISP_NONE;
@@ -259,25 +257,22 @@ int Parameters::load(FILE *file){
         }else if(displaceString == "not_last_atom"){
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
-        saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
+        saddleDisplaceMagnitude = ini.GetValueB("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
+        saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
 
-        saddleDisplace = ini.GetValueB("Saddle Search", "displace", saddleDisplace); //undocumented
         saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace); //undocumented
-        saddleWithinRadiusDisplace= ini.GetValueF("Saddle Search", "within_radius_displace", saddleWithinRadiusDisplace); //undocumented
-        saddleNormDisplace = ini.GetValueF("Saddle Search", "norm_displace", saddleNormDisplace); //undocumented
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
 
-        // [Optimizer] //
+        // [Optimizers] //
 
-        optConvergedForce = ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
-        optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
-        optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
-        cgCurvatureStep = ini.GetValueF("Optimizer","curvature_step", cgCurvatureStep);
-        qmTimeStep = ini.GetValueF("Optimizer","time_step", qmTimeStep);
-        qmMaxMove = ini.GetValueF("Optimizer","max_move", qmMaxMove);
+        optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
+        optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
+        optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
+        optFiniteDiffStep = ini.GetValueF("Optimizers","finite_diff_step", optFiniteDiffStep);
+        optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
 
         // [Dimer] //
 
@@ -306,8 +301,6 @@ int Parameters::load(FILE *file){
         }
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
-        hessianPrefactorMax = ini.GetValueF("Hessian", "prefactor_max", hessianPrefactorMax);
-        hessianPrefactorMin = ini.GetValueF("Hessian", "prefactor_min", hessianPrefactorMin);
  
         // [Displacement Sampling] //
 
