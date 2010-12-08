@@ -54,20 +54,20 @@ void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
 {
     Matrix<double, Eigen::Dynamic, 3> positions;
 
-    velocity += force * .5 * parameters->qmTimeStep * dtScale;
+    velocity += force * .5 * parameters->optTimeStep * dtScale;
     velocity = velocity.cwise() * matter->getFree();
 
     positions = matter->getPositions();
-    Matrix<double, Eigen::Dynamic, 3> update = velocity * parameters->qmTimeStep * dtScale;
+    Matrix<double, Eigen::Dynamic, 3> update = velocity * parameters->optTimeStep * dtScale;
     double maxmoved = 0.0;
     for(int i=0; i < matter->numberOfAtoms(); i++)
     {
         maxmoved = max(maxmoved, update.row(i).norm());
     }
     double scale = 1.0;
-    if(maxmoved > parameters->qmMaxMove)
+    if(maxmoved > parameters->optMaxMove)
     {
-        scale = parameters->qmMaxMove/maxmoved;
+        scale = parameters->optMaxMove/maxmoved;
     }
     positions += update*scale;
     matter->setPositions(positions);  
@@ -79,7 +79,7 @@ void Quickmin::oneStepPart2(Matrix<double, Eigen::Dynamic, 3> force)
     double dotVelocityForces;
     double dotForcesForces;
     forces = force;
-    velocity += force * 0.5 * parameters->qmTimeStep * dtScale;
+    velocity += force * 0.5 * parameters->optTimeStep * dtScale;
     velocity = velocity.cwise() * matter->getFree();
     dotVelocityForces = (velocity.cwise() * force).sum();
     // Zeroing all velocities if they are not orthogonal to the forces

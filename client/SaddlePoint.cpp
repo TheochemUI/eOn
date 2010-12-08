@@ -203,7 +203,7 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
         if(matter->getFixed(i) == false)
         {
             diffR = matter->distance(i, indexEpiCenter);
-            if(diffR < parameters->saddleWithinRadiusDisplace)
+            if(diffR < parameters->saddleDisplaceRadius)
             {
                 initialDisplace(i,0) = 2 * randomDouble() - 1;
                 initialDisplace(i,1) = 2 * randomDouble() - 1;
@@ -213,7 +213,7 @@ void SaddlePoint::displaceStateAndSetMode(Matter *matter)
         j++;
     }
     initialDisplace.normalize();
-    initialDisplace *= parameters->saddleNormDisplace;
+    initialDisplace *= parameters->saddleDisplaceMagnitude;
 
     //XXX: There is probably a more idomatic way to do this with Eigen
     for(int i = 0; i < 3 * nAtoms; i++)
