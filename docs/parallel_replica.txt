@@ -51,22 +51,40 @@ In order to run Parallel Replica, please set **job** to *parallel_replica* and *
 Dynamics
 --------------------------------
 
-**time_step** [1]
+**time_step** 
+
+  Default: 1.0
+
   The length of each MD step. The unit of **timestep** is *1 fs* and default value is *1*.
     
-**auto_stop** [False]
+**auto_stop** 
+ 
+  Default: False
+
   Whether or not stop the job when a new state is found. For boinc communicator this value should be set to *false*. 
     
-**steps** [1000]
+**steps** 
+
+   Default: 1000
+
    The maxium number of MD steps. The job will only be stopped when the steps of MD run reaches **max_steps**, if **auto_stop** is set to be *false*.
     
-**dephase_steps** [200]
+**dephase_steps** 
+   
+  Default: 200
+
   Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the divding surface to prevent the occurring of transitions during this period. 
 
-**check_period** [500]
+**check_period** 
+
+  Default: 500
+
   How frequent you check the state of system. Every **check_period** steps, the current structure and the initial one will be compared  to tell whether a newstate has been reached. Also note when you set **refine** as *true*, the code will keep an buff array consisted by **int(check_period/record_resolution)+1** Matter objects, which may increase the usage of memory.
 
-**refine** [True] 
+**refine** 
+
+  Default: True
+
   Whether or not the exact transition step is refined. When this option is turned on, the code will keep an array consisted by **int(check_period/record_resolution)+1** Matter objects. And Binary search algorithm is employed to determine the exact transition step. Otherwise the transition step would be the first newstate we found. This function could help to reduce state-check frequecy without lowering the accuracy. And the accuracy of transition time is **record_resolution*timestep**.
 
 ::
@@ -74,13 +92,20 @@ Dynamics
         refine = T
         record_resolution = 1
 
-**record_resolution** [1]
+**record_resolution** 
+
+  Default: 1 
+ 
   How often the system is recorded to the buff array when **refine** option is activated. By raising the value of **record_resolution** you may lower the accuarcy of transition time but largely reduce the usage of memory and speed up the refinement of transition step.
   
-**relax_steps** [500]
+**relax_steps** 
+
+  Default: 500
+
    Number of additional MD run which will be  performed after a new state has been found. A state check will also be employed after these **relax_steps** to confirm the state found before is a real new state. This additional check could help to avoid recrossing and mega-stable state. It is recommended to set this value approximately around **dephase_steps**.
 
 **thermo_type** 
+
   Default: *andersen*
 
   Options:
@@ -91,23 +116,33 @@ Dynamics
 
   Thermostat method you choose to perform NVT ensemble molecular dynamics. Currently only Andersen thermostat is available and well tested. Nose-Hoover thermostat is implmented but doesn't work correctly. 
 
-**andersen_alpha** [0.2]
+**andersen_alpha** 
+
+  Default: 0.2
+
   The collision strength :math:`\alpha` in Andersen thermostat. If a collision happened, the new velocity is: 
 
 .. math::
 
   V_{new} = \sqrt{(1-\alpha^2)}*V_{old}+\alpha*V_{guassian}
 
-**andersen_tcol** [10]
+**andersen_tcol** 
+
+  Default: 10.0
+
   The collision frequency in Andersen thermostat. 
     
-**nose_mass** [0]
+**nose_mass** 
+
+  Default: 0.0
+
   The effective mass of the additional degree of freedom in Nose-Hoover thermostat, which determines rate of the heat transfer.
     
 Hyperdynamics
 --------------------------------
 
 **bias_potentialt** 
+
    Default: *none*
 
    Options:
@@ -117,19 +152,34 @@ Hyperdynamics
    
    Options for different types of bias potential in Hyperdynamics. 
   
-**bb_dvmax** [0.0]
+**bb_dvmax** 
+
+  Default: 0.0
+
   Bond-Boost paramerter. The magnitude of the total boost potential. It should be smaller than the barrier of any transition.
  
-**bb_rmd_steps** [200]
+**bb_rmd_steps** 
+
+  Default: 200
+ 
   Bond-Boost paramerter. Number of regular MD run to get the equilibrium bond length before boost potential is added.
   
-**bb_stretch_threshold** [0.001]
+**bb_stretch_threshold** 
+
+  Default: 0.001
+
   Bond-Boost paramerter, defines the dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression  at any transtion state. 
   
-**bb_ds_curvature** [0.9]
+**bb_ds_curvature** 
+
+  Default: 0.90 
+
   Bond-Boost paramerter. The curvature near the dividing suface, it should has a value <= 1. We recommend the value to be *0.9-0.98*.
 
-**bb_rcut** [3.0]
+**bb_rcut** 
+
+  Default: 3.0
+ 
   Bond-Boost paramerter. All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be boostd.
 
 
