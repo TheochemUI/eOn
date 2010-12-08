@@ -26,10 +26,10 @@ typedef double symTensor[6];
 ///     special functionalily, such as ParallelPotential (implementing
 ///     parallel simulations) or QCPotential (implementing the
 ///     QuasiContinuum method).
-class Potential
+class AsapPotential
 {
 public:
-  virtual ~Potential() {}
+  virtual ~AsapPotential() {}
   
   /// Set the atoms belonging to this potential.
 

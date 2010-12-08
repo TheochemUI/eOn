@@ -10,7 +10,7 @@ using std::set;
 
 class SuperCell;
 // class Vec;
-class Potential;
+class AsapPotential;
 
 // Atomic positions are stored in a vector<Vec>:
 //
@@ -53,10 +53,10 @@ class Atoms
   virtual void SetUnitCell(const Vec newbasis[3], bool fix);
   
   /// Set a Potential.  An eventual old Potential is not deallocated.
-  virtual void SetCalculator(Potential *potential);
+  virtual void SetCalculator(AsapPotential *potential);
 
   /// Get a pointer to the Potential.
-  Potential *GetPotential() const {return potential;}
+  AsapPotential *GetPotential() const {return potential;}
 
   /// Update the change pointer.
   
@@ -200,7 +200,7 @@ class Atoms
   virtual void SetNumberOfAtoms(int n);
   
  protected:
-  Potential *potential;  ///< A pointer to the potential.
+  AsapPotential *potential;  ///< A pointer to the potential.
   SuperCell *superCell;  ///< A pointer to the supercell.
   vector<Vec> positions; ///< Contains the Cartesian positions.
   vector<Vec> pos_translations; ///< \brief Translations applied to the
