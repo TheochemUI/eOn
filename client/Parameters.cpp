@@ -145,7 +145,7 @@ int Parameters::load(FILE *file){
     CIniFile ini;
     ini.CaseInsensitive();
     int error=0;
-    printf("List of non-default parameters: ");
+    //printf("List of non-default parameters: ");
     if(ini.ReadFile(file))
     {
         printf("\n\n");
