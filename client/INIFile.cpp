@@ -280,12 +280,19 @@ string CIniFile::GetValue( string const keyname, string const valuename, string 
 {
   long keyID = FindKey( keyname);
   if ( keyID == noID)
+  {
+    printf("Using default value for %s: %s\n", valuename.c_str(), defValue.c_str());
     return defValue;
+  }
 
   long valueID = FindValue( unsigned(keyID), valuename);
   if ( valueID == noID)
+  {
+    printf("Using default value for %s: %s\n", valuename.c_str(), defValue.c_str());
     return defValue;
+  }
 
+  printf("Using user-specified value for %s: %s\n", valuename.c_str(), keys[keyID].values[valueID].c_str());
   return keys[keyID].values[valueID];
 }
 
