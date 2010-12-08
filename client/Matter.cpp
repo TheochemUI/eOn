@@ -29,12 +29,14 @@ namespace {
            "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
            "Fr","Ra","Ac","Th","Pa","U", NULL};
 
+
     // guess the atom type from the atomic mass,
     std::string mass2atom(double atomicmass) {
         return elementArray[int(atomicmass+.5)];
     }
 
-    const int MAXC=10; // Maximum number of components for functions matter2con and con2matter
+    const int MAXC=100; // maximum number of components for functions matter2con and con2matter
+
 
     int symbol2atomicNumber(char const * symbol)
     {
@@ -69,6 +71,7 @@ Matter::Matter(Parameters *parameters, const long int nAtoms)
     initialiseDataMembers(parameters);
 }
 
+
 void Matter::initialiseDataMembers(Parameters *params)
 {
     nAtoms = 0;
@@ -77,10 +80,10 @@ void Matter::initialiseDataMembers(Parameters *params)
     usePeriodicBoundaries = true;
     recomputePotential = true;
     forceCalls = 0;
-    nsteps = 0;
     parameters = params;
     potential = new Potential(parameters);
 }
+
 
 Matter::Matter(const Matter& matter)
 {
@@ -118,24 +121,22 @@ const Matter& Matter::operator=(const Matter& matter)
     strcpy(headerCon5,matter.headerCon5);
     strcpy(headerCon6,matter.headerCon6);
 
-    // liang add here nsteps for test:
-    nsteps = matter.nsteps;
-
     return *this;
 }
 
-// Two matter objects are considered the same if all 
-// differences in positions are bellow getMaxDifferencePos.
+
+// Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
-    return (parameters->maxDifferencePos) > perAtomNorm(matter);
+    return (parameters->distanceDifference) > perAtomNorm(matter);
 }
 
+
+// Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter& matter) 
 {
-    /* RT: Returns the distance to the given matter object. */
-
     return pbc(positions - matter.positions).norm();
 }
+
 
 Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff) const
 {
@@ -154,10 +155,10 @@ Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> 
     return ddiff*cellBoundaries;
 }
 
+
+// Returns the maximum distance between two atoms in the Matter objects. 
 double Matter::perAtomNorm(const Matter& matter) 
 {
-    /* RT: Returns the maximum distance between two atoms in the Matter objects. */
-
     long i = 0;
     double max_distance = 0.0;
 
@@ -175,7 +176,6 @@ double Matter::perAtomNorm(const Matter& matter)
 
 void Matter::resize(const long int length)
 {
- 
     if(length>0) 
     {
         potential = new Potential(parameters);
@@ -202,7 +202,10 @@ void Matter::resize(const long int length)
 }
 
 
-long int Matter::numberOfAtoms() const {return(nAtoms);} // return the number of atoms
+long int Matter::numberOfAtoms() const
+{
+    return(nAtoms);
+}
 
 
 Vector3d Matter::getBoundary(int axis) const
@@ -249,7 +252,8 @@ void Matter::deactivatePeriodicBoundaries()
     usePeriodicBoundaries=false;
 }
 
-double Matter::getPosition(long int indexAtom, int axis) const {
+double Matter::getPosition(long int indexAtom, int axis) const
+{
     return positions(indexAtom,axis);
 }
 
@@ -264,14 +268,15 @@ void Matter::setPosition(long int indexAtom, int axis, double position)
 }
 
 
+//return coordinates of free atoms in array 'pos'
 Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() const
-{//return coordinates of free atoms in array 'pos'
+{
     return positions;
 }
 
 
-void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
 // update Matter with the new positions of the free atoms given in array 'pos'
+void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
     positions = pos;
     if(usePeriodicBoundaries)
     {
@@ -281,8 +286,8 @@ void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
 // return forces applied on all atoms in array 'force' 
+Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
     computePotential();
     Matrix<double, Eigen::Dynamic, 3> ret= forces;
     int i;
@@ -297,13 +302,16 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
 }
 
 
-double Matter::distance(long index1, long index2) const{
 // return distance between the atoms with index1 and index2
+double Matter::distance(long index1, long index2) const
+{
     return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
-double Matter::pdistance(long index1, long index2,int axis) const{
+
 // return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)
+double Matter::pdistance(long index1, long index2,int axis) const
+{
     Matrix<double, 1, 3> ret;
     ret.setZero();
     for(int i=0;i<3;i++){
@@ -316,8 +324,9 @@ double Matter::pdistance(long index1, long index2,int axis) const{
 }
 
 
-double Matter::distance(const Matter& matter, long index) const {
 // return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
+double Matter::distance(const Matter& matter, long index) const
+{
     return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
 
@@ -346,7 +355,9 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr)
     recomputePotential=true;
 }
 
-int Matter::getFixed(long int indexAtom) const {
+
+int Matter::getFixed(long int indexAtom) const
+{
     return(isFixed[indexAtom]);
 }
 
@@ -384,11 +395,14 @@ double Matter::getMechanicalEnergy()
 }
 
 
-long int Matter::numberOfFreeAtoms() const {
+long int Matter::numberOfFreeAtoms() const
+{
     return nAtoms - isFixed.sum();
 }
 
-long Matter::getForceCalls() const{
+
+long Matter::getForceCalls() const
+{
     return(forceCalls);
 }
 
@@ -426,7 +440,8 @@ void Matter::matter2xyz(std::string filename, bool append /*Append if file alrea
 
 
 // Print atomic coordinates to a .con file
-bool Matter::matter2con(std::string filename) const {
+bool Matter::matter2con(std::string filename) const
+{
     bool state;
     FILE *file;
     int pos=filename.find_last_of('.');
@@ -493,7 +508,7 @@ bool Matter::matter2con(FILE *file) const
     }
     fprintf(file, "\n");  
     for(j=0; j<Ncomponent; j++) {
-//        mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
+        // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
     };
     fprintf(file, "\n");
@@ -606,7 +621,7 @@ bool Matter::con2matter(FILE *file) {
     double mass[MAXC];
     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
         fscanf(file, "%lf", &mass[j]);
-//        mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
+        // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     };
     fgets(line,sizeof(line),file); // discard rest of the line
     int atomicNr;
@@ -664,10 +679,10 @@ void Matter::computePotential()
     };
 }
 
+
+// the pointer to parameters should not be deleted, it is a reference to shared data delete parameters_;
 void Matter::clearMemory()
 {
-    // the pointer to parameters should not be deleted, it is a reference to shared data
-    //delete parameters_;
  
     if (potential!=0){
         delete potential;
@@ -676,7 +691,8 @@ void Matter::clearMemory()
 }
 
 
-void Matter::applyPeriodicBoundary() // Transform the coordinate to use the minimum image convention.
+// Transform the coordinate to use the minimum image convention.
+void Matter::applyPeriodicBoundary()
 { 
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
     Matrix<double, Eigen::Dynamic, 3> ddiff = positions*ibox;
@@ -692,7 +708,6 @@ void Matter::applyPeriodicBoundary() // Transform the coordinate to use the mini
 
     positions= ddiff*cellBoundaries;
 }
-
 
 
 double Matter::maxForce(void)
@@ -735,6 +750,7 @@ bool Matter::isItConverged(double convergeCriterion)
     return(diff < convergeCriterion);
 }
 
+
 Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 {
     Matrix<double, Eigen::Dynamic, 3> ret(nAtoms,3);
@@ -749,15 +765,18 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
     return ret;
 }
 
+
 Matrix<double, Eigen::Dynamic, 3> Matter::getVelocities() const
 {
     return velocities.cwise() * getFree(); 
 }
 
+
 void Matter::setVelocities(const Matrix<double, Eigen::Dynamic, 3> v)
 {
     velocities = v.cwise()*getFree(); 
 }
+
 
 void Matter::setForces(const Matrix<double, Eigen::Dynamic, 3> f)
 {
@@ -773,6 +792,7 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getAccelerations()
     ret.col(2).cwise()/=masses;
     return ret;
 }
+
 
 Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const
 {

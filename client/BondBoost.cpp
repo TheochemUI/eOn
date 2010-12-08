@@ -153,7 +153,7 @@ double BondBoost::Booststeps(){
     NewForce.setZero();
 
     dt = parameters->mdTimeStep;
-    Temp = parameters->mdTemperature;
+    Temp = parameters->temperature;
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;

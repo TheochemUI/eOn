@@ -33,33 +33,28 @@ public:
 
 /** input parameters.*/
 
+    // [Main] //
     long   job; // indicate which type of job will be run
     long   randomSeed; // seed for random generator
     long   potential; // tag to describe which potential to use
     bool   minimizeOnly; // only perform minimization, not saddle search
     bool   minimizeBox; // also minimize the box dimensions if minimize_only_ is true
     bool   calculatePrefactor; // flag to determine if prefactors should be determined. 
-    double convergedForceRelax; // force criterion for minimization convergence
-    long   maximumIterations; // max iterations for saddle point searches and minimization
+    double temperature;
 
-    bool   saveStdout;
-
-    double cgCurvatureStep; // finite difference step size used in conjugate gradients
-    double cgMaxMoveFullRelax; // maximum displacement vector for a step during minimization
-    double qmTimeStep; // time step size used in Quickmin
-    double qmMaxMove; // time step size used in Quickmin
-
-    double maxDifferencePos; // The distance criterion for comparing geometries
+    // [Structure Comparison] //
+    double distanceDifference; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
 
+    // [Process Search] //
     bool   processSearchMinimizeFirst;
 
+    // [Saddle Search]
     bool   saddleDisplace; // do saddle search displacements client-side
     long   saddleMaxJumpAttempts; // number of initial displacements to bring the system directly to a convex region;  if 0, a search is always started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
     long   saddleMinmodeMethod; // the algorithm to be used for lowest eigenmode determination
     long   saddleDisplaceType; // displacement type to use
-    double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddleMaxStepSize; // Max length of the norm of the displacement when positive eigenvalue
     double saddleMaxEnergy; // Energy above product state that will cause termination of the saddle point search
     double saddleNormDisplace; // The norm of the displacement vector
@@ -67,12 +62,15 @@ public:
     double saddleWithinRadiusDisplace; // Atoms within this radius this of the one defining the center of the displacement are also being displaced with the value sizePerturbation_SP_ 
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
-    int    hessianType;
-    double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian
-    double hessianWithinRadius; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian
-    double hessianPrefactorMax; // max prefactor allowed
-    double hessianPrefactorMin; // min prefactor allowed
+    // [Optimizer]
+    long   optMaxIterations; // max iterations for saddle point searches and minimization
+    double optMaxMove; // maximum displacement vector for a step during optimization
+    double optConvergedForce; // force convergence criterion required for an optimization
+    double cgCurvatureStep; // finite difference step size used in conjugate gradients
+    double qmTimeStep; // time step size used in Quickmin
+    double qmMaxMove; // time step size used in Quickmin
 
+    // [Dimer]
     long   dimerRotationsMax;
     long   dimerRotationsMin;
     double dimerWindowMax;
@@ -81,7 +79,19 @@ public:
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
-    
+   
+    // [Lanczos]
+    double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
+    int    lanczosIteration; // maximum number of iterations
+
+    // [Hessian]
+    int    hessianType;
+    double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian
+    double hessianWithinRadius; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian
+    double hessianPrefactorMax; // max prefactor allowed
+    double hessianPrefactorMin; // min prefactor allowed
+
+    // [Displacement Sampling] 
     long   displaceNSamples;
     long   displaceIterMax; // maximum number of rotations to perform on the dimer
     double displaceTorqueConvergence; // convergence criteria of the dimer rotation
@@ -89,12 +99,9 @@ public:
     double displaceMaxDE; // maximum dE for which a sample is considered good
     string displaceCutoffs;
     string displaceMagnitudes;
-    
-    double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
-    int    lanczosIteration; // maximum number of iterations
 
+    // [Molecular Dynamics]
     double mdTimeStep;
-    double mdTemperature;
     double mdMaxMovedDist;
     bool   mdRefine;
     bool   mdAutoStop;
@@ -107,11 +114,13 @@ public:
     bool   mdDephaseLoopStop;
     long   mdDephaseLoopMax;
 
+    // [Thermostat]
     long   thermostat;
     double thermoAndersenAlpha;
     double thermoAndersenTcol;
     double thermoNoseMass;
 
+    // [Bond Boost]
     long   biasPotential; 
     long   bondBoostRMDS;
     double bondBoostDVMAX;
@@ -119,6 +128,9 @@ public:
     double bondBoostPRR; 
     double bondBoostQcut;
  
+    // [Debug] //
+    bool   saveStdout;
+
 private:
     string toLowerCase(string s);
 

@@ -44,7 +44,7 @@ void MinimizationJob::run(int bundleNumber)
     cgMin.setOutput(1);
     cgMin.fullRelax();
 
-    if (cgMin.isItConverged(parameters->convergedForceRelax)) {
+    if (cgMin.isItConverged(parameters->optConvergedForce)) {
         printf("Minimization converged within tolerence\n");
     }else{
         printf("Minimization did not converge to tolerence!\n"
