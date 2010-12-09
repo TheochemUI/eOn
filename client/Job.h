@@ -17,6 +17,7 @@ class Job {
             SADDLE_SEARCH,
             MINIMIZATION,
             PARALLEL_REPLICA,
+            BASIN_HOPPING,
             HESSIAN,
             DIMER_DR,
             DIMER_ROTATION,

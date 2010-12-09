@@ -110,6 +110,10 @@ Parameters::Parameters(){
     displaceMaxDE = 10.0; // The maximum dE for which a sample is considered good. XXX: Should use saddleMaxEnergy?
     displaceCutoffs = "0.0 3.3";
     displaceMagnitudes = "0.0625 0.125 0.25";
+
+    // Basin Hopping
+    basinHoppingStepSize = 0.1;
+    basinHoppingSteps = 10000;
 }
 
 Parameters::~Parameters(){
@@ -159,10 +163,12 @@ int Parameters::load(FILE *file){
             job = Job::SADDLE_SEARCH;
         }else if (jobString == "minimization") {
             job = Job::MINIMIZATION;
-        }else if (jobString == "hessian") {
-            job = Job::HESSIAN;
         }else if (jobString == "parallel_replica"){
             job = Job::PARALLEL_REPLICA;
+        }else if (jobString == "basin_hopping") {
+            job = Job::BASIN_HOPPING;
+        }else if (jobString == "hessian") {
+            job = Job::HESSIAN;
         }else if (jobString == "dimer_dr"){
             job = Job::DIMER_DR;
         }else if (jobString == "dimer_rotation"){
@@ -356,6 +362,10 @@ int Parameters::load(FILE *file){
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
+
+        // [Basin Hopping]
+        basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
+        basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
 
         // [Debug] //
 
