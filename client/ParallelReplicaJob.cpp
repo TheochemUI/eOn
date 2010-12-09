@@ -39,6 +39,7 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     relax_steps = parameters->mdRelaxSteps;
     SPtimebuff = new double[check_steps];
     newstate = false;
+    meta = false;
     min_fcalls = 0;
     md_fcalls = 0;
     rf_fcalls = 0;
@@ -267,8 +268,9 @@ void ParallelReplicaJob::dynamics()
            printf("Transition followed by a stable state !\n");
         }else{
            *final = *fin2;
-           printf("Transition followed by a mega-stable state; using fin2 as product.con\n");
+           printf("Transition followed by a meta-stable state; using fin2 as product.con\n");
            SPtime = SPtime + relax_steps;
+           meta = true;
         }
    }
     return;
@@ -323,7 +325,7 @@ bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without que
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber)
 {
-    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle, *fileMega;
+    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle, *fileMeta;
 
     char filename[STRING_SIZE];
 
@@ -382,15 +384,17 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "mega_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "mega.con", STRING_SIZE);
-    }
+    if(meta){
+       if (bundleNumber != -1) {
+           snprintf(filename, STRING_SIZE, "meta_%i.con", bundleNumber);
+       }else{
+           strncpy(filename, "meta.con", STRING_SIZE);
+       }
 
-    fileMega = fopen(filename, "wb");
-    fin1->matter2con(fileMega);
-    fclose(fileMega);
+       fileMeta = fopen(filename, "wb");
+       fin1->matter2con(fileMeta);
+       fclose(fileMeta);
+    }
     return;
 }
 
