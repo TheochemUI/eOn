@@ -6,10 +6,9 @@
 ##
 ## A copy of the GNU General Public License is available at
 ## http://www.gnu.org/licenses/
-##
 ##-----------------------------------------------------------------------------------
-""" The statelist module. """
 
+""" The statelist module. """
 
 import logging
 logger = logging.getLogger('statelist')
