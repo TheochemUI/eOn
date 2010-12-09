@@ -6,8 +6,8 @@
 ##
 ## A copy of the GNU General Public License is available at
 ## http://www.gnu.org/licenses/
-##
 ##-----------------------------------------------------------------------------------
+
 import ConfigParser
 import logging
 logger = logging.getLogger('config')
@@ -66,7 +66,7 @@ def init(config_file = ""):
     #aKMC options
     config.akmc_confidence  = parser.getfloat('AKMC', 'confidence')
     config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
-    config.akmc_max_thermal_window = parser.getfloat('AKMC', 'max_thermally_accessible_window')
+    config.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
     config.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
 
     #path options
