@@ -88,8 +88,8 @@ def init(config_file = ""):
     #communicator options
     config.comm_type = parser.get('Communicator', 'type')
     #print comm_type
-    config.comm_job_bundle_size = parser.getint('Communicator', 'job_bundle_size')
-    config.comm_search_buffer_size = parser.getint('Communicator', 'search_buffer_size')
+    config.comm_job_bundle_size = parser.getint('Communicator', 'jobs_per_bundle')
+    config.comm_search_buffer_size = parser.getint('Communicator', 'num_jobs')
     config.path_scratch = parser.get('Paths', 'scratch')
     #print path_scratch
     if config.comm_type == 'local':
