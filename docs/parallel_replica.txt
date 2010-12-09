@@ -166,26 +166,26 @@ Hyperdynamics
 
     *none* : with no bias potential, run regular MD 
 
-    *bond_boost* : bond boost method from K. A. Fichthorn
+    *bond_boost* : bond boost method from Miron and Fichthorn
    
 **bb_dvmax**:
 
     Default: 0.0
 
-    Bond-Boost parameter. The magnitude of the boost potential. It should be
+    The magnitude of the bond-boost bias potential. It should be
     smaller than the barrier of any transition.
 
 **bb_rmd_steps**: 
 
-  Default: 200
+    Default: 200
  
-  Bond-Boost parameter. Number of regular MD run to get the equilibrium bond length before boost potential is added.
+    Number of MD steps used to determine the equilibrium bond length before the bias potential is added.
   
 **bb_stretch_threshold**:
 
     Default: 0.001
 
-    Bond-Boost parameter, defines the dividing surface. It should be smaller
+    Defines the bond-boost dividing surface. It should be smaller
     than the maximum fractional nearest-neighbor bond stretch or compression
     at any transition state. 
   
@@ -193,12 +193,12 @@ Hyperdynamics
 
     Default: 0.90 
 
-    Bond-Boost parameter. The curvature near the dividing surface, it should
+    The curvature near the bond-boost dividing surface, it should
     has a value <= 1. We recommend the value to be *0.9-0.98*.
 
 **bb_rcut**: 
 
     Default: 3.0
 
-    Bond-Boost parameter. All bonds which belong to the tagged atoms and are
-    shorter than a cutoff of rcut will be boostedd.
+    All bonds which belong to the tagged atoms and are
+    shorter than a cutoff of rcut will be included in the bond-boost potential.
