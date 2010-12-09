@@ -9,7 +9,7 @@ dynamics algorithms, based upon solving Newton's equations, are limited by
 the femtosecond time scale of atomic vibrations.  EON simulations are designed
 for rare event systems where the interesting dynamics can be described by fast
 transition between stable states.  In each algorithm, the residence time in
-the stable states is modeled with statisical mechanics, and the important
+the stable states is modeled with statistical mechanics, and the important
 state-to-state dynamics are modeled stochastically.
 
 .. toctree::
@@ -17,5 +17,14 @@ state-to-state dynamics are modeled stochastically.
 
    Obtaining the Code <download>
    installation
+   The eon application and general options <eon>
+   akmc
+   optimizers
+   coarse-graining
+   kdb
+   parallel_replica
+   communicator
+   server configuration <server_config>
+   client configuration <client_config>
 
 

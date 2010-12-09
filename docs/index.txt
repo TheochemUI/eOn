@@ -19,5 +19,6 @@ Contents
    kdb
    parallel_replica
    communicator
+   configuration
    server configuration <server_config>
    client configuration <client_config>
