@@ -44,4 +44,3 @@ for i in range(len(unit)):
         sys.exit()
         
 print passstr
-
