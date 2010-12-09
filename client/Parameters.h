@@ -126,6 +126,10 @@ public:
     double bondBoostQRR; 
     double bondBoostPRR; 
     double bondBoostQcut;
+
+    // Basin Hopping
+    double basinHoppingStepSize;
+    long   basinHoppingSteps;
  
     // [Debug] //
     bool   saveStdout;
