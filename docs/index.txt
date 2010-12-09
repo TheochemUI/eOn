@@ -13,12 +13,10 @@ Contents
    download
    installation
    eon
+   potentials
+   communicator
    akmc
+   parallel_replica
    optimizers
    coarse-graining
    kdb
-   parallel_replica
-   communicator
-   configuration
-   server configuration <server_config>
-   client configuration <client_config>
