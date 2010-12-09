@@ -1,0 +1,38 @@
+==============
+Optimizers
+==============
+
+The eon client provides two optimizers quick-min and conjugate gradients. These
+options are in the **[Optimizers]** section. 
+
+**max_iterations**:
+
+    Default: 1000
+
+    The maximum number of optimization iterations that the will be performed.
+
+**converged_force**:
+
+    Default: 0.005
+
+    When the maximum force (in eV/angstrom) on any one atom is smaller than
+    this value, the structure is considered minimized.
+
+**max_move**:
+
+    Default: 0.2
+
+    Maximum distance that an atom may be moved in a single optimization step.
+
+**time_step**:
+
+    Default: 0.1
+
+    The dynamical timestep for the quickmin algorithm.
+
+
+**finite_diff_step**:
+
+    Default: 0.001
+
+    The finite difference step size.
