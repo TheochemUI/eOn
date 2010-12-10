@@ -2,6 +2,7 @@
 import config
 
 import akmc
+import basinhopping
 import parallelreplica
 
 def main():
@@ -11,6 +12,8 @@ def main():
         akmc.main()
     elif job == 'parallel_replica':
         parallelreplica.main()
+    elif job == 'basin_hopping':
+        basinhopping.main()
     else:
         #TODO: Work on running the client directly for unknown job types
         import communicator
