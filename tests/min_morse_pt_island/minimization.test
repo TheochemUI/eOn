@@ -1,0 +1,113 @@
+Bundle size of 0
+
+
+* [Main] job: minimization
+  [Main] temperature: 300.000000
+  [Main] random_seed: -1
+Random seed is: 1291955868
+* [Main] potential: morse_pt
+  [Structure Comparison] max_difference_pos: 0.100000
+  [Structure Comparison] neighbor_cutoff: 3.300000
+  [Process Search] minimize_first: False
+  [Process Search] default_prefactor: 0.000000
+  [Process Search] prefactor_max: 0.000000
+  [Process Search] prefactor_min: 0.000000
+  [Saddle Search] minmode_method: dimer
+  [Saddle Search] displace_type: none
+  [Saddle Search] displace_magnitude: True
+  [Saddle Search] displace_radius: 4.000000
+  [Saddle Search] max_energy: 20.000000
+  [Saddle Search] max_iterations: 1000
+  [Saddle Search] max_jump_attempts: 0
+  [Saddle Search] max_single_displace: 0.100000
+  [Saddle Search] perp_force_ratio: 0.000000
+* [Optimizers] converged_force: 0.001
+  [Optimizers] max_iterations: 1000
+  [Optimizers] max_move: 0.200000
+  [Optimizers] finite_diff_step: 0.001000
+  [Optimizers] time_step: 0.100000
+  [Dimer] separation: 0.001000
+  [Dimer] finite_diff_angle: 0.005000
+  [Dimer] rotations_max: 8
+  [Dimer] rotations_min: 1
+  [Dimer] window_max: 1.000000
+  [Dimer] window_min: 0.100000
+  [Lanczos] convergence: 0.000000
+  [Lanczos] iteration: 0
+  [Hessian] type: reactant
+  [Hessian] within_radius: 5.000000
+  [Hessian] min_displacement: 0.250000
+  [Displacement Sampling] samples: 32
+  [Displacement Sampling] iter_max: 32
+  [Displacement Sampling] torque_convergence: 0.010000
+  [Displacement Sampling] max_curvature: -0.100000
+  [Displacement Sampling] max_de: 10.000000
+  [Displacement Sampling] cutoffs: 0.0 3.3
+  [Displacement Sampling] magnitudes: 0.0625 0.125 0.25
+  [Dynamics] time_step: 1.000000
+  [Dynamics] steps: 1000
+  [Dynamics] dephase_steps: 200
+  [Dynamics] refine_transition_time: False
+  [Dynamics] auto_stop: False
+  [Dynamics] record_resolution: 1
+  [Dynamics] bisection_accuracy: 1
+  [Dynamics] check_period: 500
+  [Dynamics] post_transition_steps: 500
+  [Dynamics] dephase_loop_stop: False
+  [Dynamics] dephase_loop_max: 5
+  [Dynamics] thermostat: andersen
+  [Dynamics] andersen_alpha: 0.200000
+  [Dynamics] andersen_collision_steps: 10.000000
+  [Dynamics] nose_mass: 0.000000
+  [Hyperdynamics] bias_potential: none
+  [Hyperdynamics] bb_rmd_steps: 0
+  [Hyperdynamics] bb_dvmax: 0.000000
+  [Hyperdynamics] bb_stretch_threshold: 0.000100
+  [Hyperdynamics] bb_ds_curvature: 0.950000
+  [Hyperdynamics] bb_rcut: 3.000000
+  [Basin Hopping] step_size: 0.100000
+  [Basin Hopping] steps: 10000.000000
+  [Debug] save_stdout: False
+Darwin guelph.bngnet 10.5.0 Darwin Kernel Version 10.5.0: Fri Nov  5 23:20:39 PDT 2010; root:xnu-1504.9.17~1/RELEASE_I386 i386
+
+Beginning minimization of reactant_passed.con
+min =   1, max force =    2.34451
+min =   2, max force =    2.26959
+min =   3, max force =    2.08526
+min =   4, max force =    1.57790
+min =   5, max force =    1.05568
+min =   6, max force =    0.45517
+min =   7, max force =    0.47212
+min =   8, max force =    0.19603
+min =   9, max force =    0.08934
+min =  10, max force =    0.08529
+min =  11, max force =    0.04805
+min =  12, max force =    0.03942
+min =  13, max force =    0.02907
+min =  14, max force =    0.02049
+min =  15, max force =    0.01442
+min =  16, max force =    0.01194
+min =  17, max force =    0.00856
+min =  18, max force =    0.00714
+min =  19, max force =    0.00645
+min =  20, max force =    0.00568
+min =  21, max force =    0.00403
+min =  22, max force =    0.00353
+min =  23, max force =    0.00273
+min =  24, max force =    0.00149
+min =  25, max force =    0.00121
+min =  26, max force =    0.00130
+min =  27, max force =    0.00070
+min =  28, max force =    0.00061
+Minimization converged within tolerence
+Saving result to reactant.con
+Final Energy: 39864.582466
+
+timing information:
+real      0.428 seconds
+user      0.290 seconds
+sys       0.005 seconds
+
+memory usage:
+resident size (MB):     1.07
+virtual size (MB):   2414.01
