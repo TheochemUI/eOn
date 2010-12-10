@@ -129,7 +129,7 @@ Default: True
 
     *andersen*: Andersen thermostat with Verlet algorithm
 
-    *nose-hoover*: Nose-Hover thermostat with Verlet algorithm (not currently available)
+    *nose_hoover*: Nose-Hover thermostat with Verlet algorithm (not currently available)
 
 **andersen_alpha**:
 

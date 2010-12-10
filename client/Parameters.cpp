@@ -340,7 +340,7 @@ int Parameters::load(FILE *file){
         thermostatString = toLowerCase(thermostatString);
         if (thermostatString == "andersen") {
             thermostat = Dynamics::ANDERSEN;
-        }else if (thermostatString == "nosehover") {
+        }else if (thermostatString == "nose_hoover") {
             thermostat = Dynamics::NOSE_HOVER;
         }
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
