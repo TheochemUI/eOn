@@ -6,9 +6,9 @@ import sys
 failstr = "\n\nXXXXX XXXXX FAILED TEST 1 XXXXX XXXXX\n\n"
 passstr = "\n\n+++++ +++++ PASSED TEST 1 +++++ +++++\n\n"
 
-os.system("echo 'y' | ../../akmc.py --reset")
+os.system("echo 'y' | ../../eon.py --reset")
 for i in range(67):
-    retval = os.system("../../akmc.py")
+    retval = os.system("../../eon.py")
     if retval:
         print failstr
         sys.exit(1)
