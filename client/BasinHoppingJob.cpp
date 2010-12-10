@@ -45,6 +45,10 @@ void BasinHoppingJob::run(int bundleNumber)
 
     double currentEnergy = tmpMatter->getPotentialEnergy();
 
+    double minimumEnergy = currentEnergy;
+    Matter *minimumEnergyStructure = new Matter(parameters);
+    *minimumEnergyStructure = *current;
+
     for (int step=0; step<parameters->basinHoppingSteps; step++)
     {
 
@@ -78,16 +82,33 @@ void BasinHoppingJob::run(int bundleNumber)
         if (randomDouble(1.0)<min(1.0, p)) {
             *current = *trial;
             currentEnergy = tmpMatter->getPotentialEnergy();
+            if (abs(deltaE)>parameters->structureComparisonEnergyDifference) {
+                *current = *tmpMatter;
+                if (currentEnergy < minimumEnergy) {
+                    minimumEnergy = currentEnergy;
+                    *minimumEnergyStructure = *current;
+                }
+            }
             tmpMatter->matter2xyz("movie", true);
         }
         printf("step: %10i energy: %10.8f c_energy: %10.8f min_fc: %ld\n",
                step, currentEnergy, current->getPotentialEnergy(),
                cgMin.totalForceCalls);
-            
     }
-}
 
-void BasinHoppingJob::saveData(int status, int bundleNumber)
-{
+    /* Save Results */
 
+    FILE *fileResults, *fileProduct;
+
+    fileResults = fopen("results_0.dat", "wb");
+
+    fprintf(fileResults, "%d termination_reason\n", 0);
+    fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
+    fclose(fileResults);
+
+    fileProduct = fopen("product_0.con", "wb");
+    minimumEnergyStructure->matter2con(fileProduct);
+    fclose(fileProduct);
+  
+    return;
 }
