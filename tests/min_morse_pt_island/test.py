@@ -30,6 +30,6 @@ if abs(u-r)/u > 0.01:
     sys.exit()
 
 #passed, so delete files"
-os.system("rm -f minimization.txt min_0.xyz min.con")
+os.system("rm -f minimization.txt min_0.xyz")
 print passstr
 
