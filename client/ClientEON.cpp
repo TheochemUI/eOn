@@ -74,7 +74,8 @@ int result_pattern(char *filename)
         }else if (filename[0] == '.') {
             return 0;
         }else if (strstr(filename+strlen(filename)-3, "con") == NULL && 
-                  strstr(filename+strlen(filename)-3, "dat") == NULL) {
+                  strstr(filename+strlen(filename)-3, "dat") == NULL &&
+                  strstr(filename+strlen(filename)-3, "ini") == NULL) {
             return 0;
         }
         return 1;
