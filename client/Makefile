@@ -39,18 +39,18 @@ ifdef NO_FORTRAN
     CXXFLAGS += -DNO_FORTRAN
 else
     # gfortran
-    #FC = $(CROSS)gfortran
-    #FFLAGS += -O2 -ffpe-trap=invalid,zero,overflow
-    #FAR = $(CROSS)ar cru
-    #LDFLAGS += -lgfortran
+    FC = $(CROSS)gfortran
+    FFLAGS += -O2 -ffpe-trap=invalid,zero,overflow
+    FAR = $(CROSS)ar cru
+    LDFLAGS += -lgfortran
     # ifort
-    FC = ifort
-    FFLAGS += -O2 -fpe0
+    #FC = ifort
+    #FFLAGS += -O2 -fpe0
     # Linux linking
     #FAR = ar cru
     #LDFLAGS += -limf -lsvml -lifcore -ldl
     # OSX linking
-    FAR = ifort -staticlib -o
+    #FAR = ifort -staticlib -o
 endif
 
 #Fortran compiler settings
