@@ -9,8 +9,6 @@
 ##-----------------------------------------------------------------------------------
 
 import ConfigParser
-import logging
-logger = logging.getLogger('config')
 import numpy
 import os.path
 import sys
@@ -22,6 +20,7 @@ config.init_done = False
 def init(config_file = ""):
     if config.init_done:
         return None
+    config.init_done = True
 
     parser = ConfigParser.SafeConfigParser()
 
@@ -46,13 +45,13 @@ def init(config_file = ""):
     #Main options
     config.main_job = parser.get('Main', 'job')
     config.main_temperature = parser.getfloat('Main', 'temperature')
+
     try:
         config.main_random_seed = parser.getint('Main', 'random_seed')
+        numpy.random.seed(config.main_random_seed)
+        print "Using random seed %i from config.ini"%config.main_random_seed
     except:
         config.main_random_seed = None
-    if config.main_random_seed:
-        numpy.random.seed(config.main_random_seed)
-        logger.debug("Set random seed from config.ini")
 
     #Structure Comparison options
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
