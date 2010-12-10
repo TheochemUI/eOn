@@ -365,7 +365,7 @@ int Parameters::load(FILE *file){
 
         // [Basin Hopping]
         basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
-        basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
+        basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
 
         // [Debug] //
 
