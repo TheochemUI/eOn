@@ -181,12 +181,30 @@ def main():
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-            print "Reset."
-        sys.exit(0)
+                rmdirs = [config.path_searches_out, config.path_searches_in, config.path_scratch]
+                for i in rmdirs:
+                    if os.path.isdir(i):
+                        shutil.rmtree(i)
+                        #XXX: ugly way to remove all empty directories containing this one
+                        os.mkdir(i)
+                        os.removedirs(i)
+                log_path = os.path.join(config.path_results, "bh.log") 
+                wuid_path = os.path.join(config.path_results, "wuid.dat") 
+                min_path = os.path.join(config.path_results, "min_energy.con") 
+                mine_path = os.path.join(config.path_results, "min_energy.dat") 
+                for i in [log_path, wuid_path, min_path, mine_path]:
+                    if os.path.isfile(i):
+                        os.remove(i)
+                print "Reset."
+                sys.exit(0)
+        else:
+            print "Not resetting."
+            sys.exit(1)
+
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=os.path.join(config.path_results, "pr.log"),
+            filename=os.path.join(config.path_results, "bh.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
