@@ -2,7 +2,6 @@
 
 import os
 import sys
-import commands
 
 failstr = "\n\nXXXXX XXXXX FAILED TEST 2 XXXXX XXXXX\n\n"
 passstr = "\n\n+++++ +++++ PASSED TEST 2 +++++ +++++\n\n"
@@ -32,4 +31,3 @@ if abs(u-r)/u > 0.01:
 #passed, so delete files"
 os.system("rm -f minimization.txt min_0.xyz")
 print passstr
-
