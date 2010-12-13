@@ -1,13 +1,13 @@
-Bundle size of 0
 
 
 * [Main] job: minimization
   [Main] temperature: 300.000000
   [Main] random_seed: -1
-Random seed is: 1291955868
+Random seed is: 1292277275
 * [Main] potential: morse_pt
   [Structure Comparison] max_difference_pos: 0.100000
   [Structure Comparison] neighbor_cutoff: 3.300000
+  [Structure Comparison] energy_difference: 0.010000
   [Process Search] minimize_first: False
   [Process Search] default_prefactor: 0.000000
   [Process Search] prefactor_max: 0.000000
@@ -67,8 +67,10 @@ Random seed is: 1291955868
   [Hyperdynamics] bb_rcut: 3.000000
   [Basin Hopping] step_size: 0.100000
   [Basin Hopping] steps: 10000.000000
+  [Basin Hopping] single_atom_displace: False
+  [Basin Hopping] stay_minimized: False
   [Debug] save_stdout: False
-Darwin guelph.bngnet 10.5.0 Darwin Kernel Version 10.5.0: Fri Nov  5 23:20:39 PDT 2010; root:xnu-1504.9.17~1/RELEASE_I386 i386
+Darwin wel-dhcp-142-5.cm.utexas.edu 9.8.0 Darwin Kernel Version 9.8.0: Wed Jul 15 16:55:01 PDT 2009; root:xnu-1228.15.4~1/RELEASE_I386 i386
 
 Beginning minimization of reactant_passed.con
 min =   1, max force =    2.34451
@@ -104,10 +106,10 @@ Saving result to reactant.con
 Final Energy: 39864.582466
 
 timing information:
-real      0.428 seconds
-user      0.290 seconds
-sys       0.005 seconds
+real      0.432 seconds
+user      0.430 seconds
+sys       0.003 seconds
 
 memory usage:
-resident size (MB):     1.07
-virtual size (MB):   2414.01
+resident size (MB):     1.24
+virtual size (MB):    621.24
