@@ -2,45 +2,24 @@
 
 import os
 import sys
+sys.path.insert(0, "../")
+from ndiff import ndiff
 
-failstr = "\n\nXXXXX XXXXX FAILED TEST 1 XXXXX XXXXX\n\n"
-passstr = "\n\n+++++ +++++ PASSED TEST 1 +++++ +++++\n\n"
+test_path = os.path.split(os.path.realpath(__file__))[0]
+test_name = os.path.basename(test_path)
 
-os.system("echo 'y' | ../../eon.py --reset")
-for i in range(67):
-    retval = os.system("../../eon.py")
+os.system("../../eon.py --reset --force --quiet")
+for i in range(15):
+    retval = os.system("../../eon.py --quiet")
     if retval:
-        print failstr
+        print "%s: problem running eon.py" % test_name
         sys.exit(1)
 
-unit = open("dynamics.test", 'r').readlines()[2:]
-result = open("dynamics.txt", 'r').readlines()[2:]
-
-if len(unit) != len(result):
-    print failstr
+same, max_rel_err, reason = ndiff("dynamics.test", "dynamics.txt", 0.01)
+if same:
+    print "%s: passed with maximum relative error of %.3e"%(test_name,max_rel_err)
+    os.system("../../eon.py --reset --force --quiet")
+    sys.exit(0)
+else:
+    print "%s: failed %s"%(test_name,reason)
     sys.exit(1)
-
-for i in range(len(unit)):
-    unitLine = unit[i].strip().split()
-    resultLine = result[i].strip().split()
-    if unitLine[1] != resultLine[1]:
-        print failstr
-        sys.exit()
-    if unitLine[2] != resultLine[2]:
-        print failstr
-        sys.exit()
-    if unitLine[3] != resultLine[3]:
-        print failstr
-        sys.exit()
-    u = float(unitLine[4])
-    r = float(resultLine[4])
-    if abs(u-r)/u > 0.01:
-        print failstr
-        sys.exit()
-    u = float(unitLine[5])
-    r = float(resultLine[5])
-    if abs(u-r)/u > 0.01:
-        print failstr
-        sys.exit()
-        
-print passstr

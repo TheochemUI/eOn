@@ -22,25 +22,25 @@ def relative_error(x,y):
     else:
         return 0.0
 
-def ndiff(filename1, filename2, rel_tol=0.0, quiet=False, silent=False):
+def ndiff(filename1, filename2, rel_tol=0.0, quiet=True):
     f1 = open(filename1).readlines()
     f2 = open(filename2).readlines()
 
     same = True
-
     max_rel_err = 0.0
+    reason = ""
 
     if len(f1) != len(f2):
-        print "files are of different length"
-        return False
+        reason = "files are of different length"
+        return False, max_rel_err, reason
 
     for i in range(len(f1)):
         r1 = f1[i].split()
         r2 = f2[i].split()
 
         if len(r1) != len(r2):
-            print "line %i has a different number of records" % (i+1)
-            return False
+            reason = "line %i has a different number of records" % (i+1)
+            return False, max_rel_err, reason
 
         for j in range(len(r1)):
             r1_isnum=False
@@ -53,13 +53,13 @@ def ndiff(filename1, filename2, rel_tol=0.0, quiet=False, silent=False):
                 r2_isnum = True
 
             if r1_isnum != r2_isnum:
-                print "record %i on line %i are not of matching types" % (j+1,i+1)
-                return False
+                reason = "record %i on line %i are not of matching types" % (j+1,i+1)
+                return False, max_rel_err, reason
 
             if r1_isnum == False and r2_isnum == False:
                 if r1[j] != r2[j]:
-                    print "record %i on line %i are not matching strings" % (j+1,i+1)
-                    return False
+                    reason = "record %i on line %i are not matching strings" % (j+1,i+1)
+                    return False, max_rel_err, reason
             else:
                 rel_err = relative_error(r1[j],r2[j])
 
@@ -70,10 +70,9 @@ def ndiff(filename1, filename2, rel_tol=0.0, quiet=False, silent=False):
                     if not quiet:
                         print "relative error of %.3e of record %i on line %i" % (rel_err,j+1,i+1)
                     same = False
+                    reason = "maximum relative error exceeds tolerance %.3e" % rel_tol
     
-    if not silent:
-        print "maximum relative error %.3e" % max_rel_err
-    return same
+    return same, max_rel_err, reason
 
 def main():
     usage = "usage: %prog [options] filename1 filename2"
@@ -98,7 +97,7 @@ def main():
     if options.silent:
         options.quiet = True
 
-    same = ndiff(args[0], args[1], options.relerr, options.quiet, options.silent)
+    same = ndiff(args[0], args[1], options.relerr, options.quiet)
 
     if same:
         sys.exit(0)
