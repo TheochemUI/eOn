@@ -13,8 +13,8 @@
  *  EON MinimizersInterface.h
  *===============================================
  */
-#ifndef MINIMIZERS_INTERFACE_H
-#define MINIMIZERS_INTERFACE_H
+#ifndef MINIMIZERSINTERFACE_H
+#define MINIMIZERSINTERFACE_H
 
 /* Define the interface for the potential */
 class MinimizersInterface{

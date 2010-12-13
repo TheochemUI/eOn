@@ -8,7 +8,7 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include "SaddlePoint.h"
+#include "SaddleSearch.h"
 #ifdef WITH_LANCZOS
     #include "Lanczos/lanczos_for_eon.hpp"
 #endif
@@ -26,7 +26,7 @@ SaddlePoint::SaddlePoint(){
     lowestEigenmode = 0;
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
-    forceCallsMinimization = 0;
+//    forceCallsMinimization = 0;
     eigenValue = 0;
     return;
 }
@@ -56,7 +56,7 @@ void SaddlePoint::clean(){
 void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
 {
     clean();
-    initial=initialPassed;
+    initial = initialPassed;
     saddle = saddlePassed;
     parameters = parametersPassed;
     eigenMode.resize(saddlePassed->numberOfAtoms(), 3);
@@ -118,7 +118,7 @@ void SaddlePoint::saveMode(FILE *modeFile)
     return;
 }
 
-long SaddlePoint::locate(Matter *min1, Matter *min2) {
+long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
     double initialEnergy;
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
@@ -147,12 +147,12 @@ long SaddlePoint::locate(Matter *min1, Matter *min2) {
        searchForSaddlePoint(initialEnergy);
     }
         
-    if(status == STATUS_INIT)
-    {
-        fprintf(stdout, "    Saddle point determined.\n");        
-        relaxFromSaddle(min1, min2);
-        fprintf(stdout, "    Minima determined.\n");
-    }
+//    if(status == STATUS_INIT)
+//    {
+//        fprintf(stdout, "    Saddle point determined.\n");        
+//        relaxFromSaddle(min1, min2);
+//        fprintf(stdout, "    Minima determined.\n");
+//    }
     return(status);
 }
 
@@ -258,7 +258,7 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Ei
     }
     return force;
 }
-
+/*
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
  
     Matrix<double, Eigen::Dynamic, 3> posSaddle = saddle->getPositions();
@@ -285,7 +285,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
 
     return;
 }
-
+*/
 void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
     if(0 < eigenvalue)
         forceCallsSaddlePointConcave += fcalls;
@@ -450,3 +450,9 @@ LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
 {
       return lowestEigenmode;
 }
+
+Matrix<double, Eigen::Dynamic, 3> SaddlePoint::getSaddlePositions()
+{
+      return saddle->getPositions();	
+}
+

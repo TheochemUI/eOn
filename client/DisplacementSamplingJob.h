@@ -8,6 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef DISPLACEMENTSAMPLINGJOB_H
+#define DISPLACEMENTSAMPLINGJOB_H
+
 #include "Job.h"
 #include "Parameters.h"
 #include "Eigen/Eigen"
@@ -22,3 +25,5 @@ class DisplacementSamplingJob: public Job {
     private:
         Parameters *parameters;
 };
+
+#endif

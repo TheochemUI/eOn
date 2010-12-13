@@ -8,6 +8,10 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef DIMERROTATIONJOB_H
+#define DIMERROTATIONJOB_H
+
+
 #include "Job.h"
 #include "Parameters.h"
 #include "Eigen/Eigen"
@@ -22,3 +26,5 @@ class DimerRotationJob: public Job {
     private:
         Parameters *parameters;
 };
+
+#endif

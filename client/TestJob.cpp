@@ -11,7 +11,7 @@
 #include "Matter.h"
 #include "Constants.h"
 #include "Potentials.h"
-#include "SaddlePoint.h"
+#include "SaddleSearch.h"
 
 #include <stdlib.h>
 
@@ -43,6 +43,7 @@ void TestJob::checkFullSearch(void){
     Matter *displacement; 
     Matter *min1;
     Matter *min2; 
+    Matter *matterTemp; 
     SaddlePoint *saddlePoint;     
     
     string reactant_passed("reactant_test.con");
@@ -56,6 +57,7 @@ void TestJob::checkFullSearch(void){
     saddle = new Matter(parameters);
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
+    matterTemp = new Matter(parameters);
 
     saddle->con2matter(displacement_passed);
     initial->con2matter(reactant_passed);
@@ -65,8 +67,37 @@ void TestJob::checkFullSearch(void){
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
     saddlePoint->loadMode(mode_passed);
-    status = saddlePoint->locate(min1, min2);
-    printf("---Output for saddle point search end---\n\n");    
+    status = saddlePoint->locate();
+	printf("---Output for saddle point search end---\n\n");
+	
+	printf("---Output relax from saddle point search start---\n");    
+	// relax from the saddle point located
+	
+	Matrix<double, Eigen::Dynamic, 3> posSaddle = saddlePoint->getSaddlePositions();
+	Matrix<double, Eigen::Dynamic, 3> displacedPos;
+	
+	*min1 = *saddle;
+	//XXX: the distance displaced from the saddle should be a parameter
+	displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
+	min1->setPositions(displacedPos);
+	ConjugateGradients cgMin1(min1, parameters);
+	cgMin1.fullRelax();
+//	fCallsMin += cgMin1.totalForceCalls;
+	
+	*min2 = *saddle;
+	displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
+	min2->setPositions(displacedPos);
+	ConjugateGradients cgMin2(min2, parameters);  
+	cgMin2.fullRelax();
+//	fCallsMin += cgMin2.totalForceCalls;
+	
+    // If min2 corresponds to initial state swap min1 && min2
+    if(!(*initial==*min1) && ((*initial==*min2))){
+        *matterTemp = *min1;
+        *min1 = *min2;
+        *min2 = *matterTemp;
+    }
+	printf("---Output relax from saddle point search end---\n");
     
     // checking the energies of the obtained configurations
     diffM1 = abs(min1->getPotentialEnergy()-45.737426);

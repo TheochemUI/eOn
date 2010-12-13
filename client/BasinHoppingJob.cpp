@@ -94,7 +94,7 @@ void BasinHoppingJob::run(int bundleNumber)
     {
 
         Matrix<double, Eigen::Dynamic, 3> displacement;
-        if(parameters->basinHoppingDisplaceSingle)
+        if(parameters->basinHoppingSingleAtomDisplace)
         {
             displacement = displaceSingle();
         }

@@ -13,7 +13,7 @@
 
 #include "Matter.h"
 #include "Parameters.h"
-#include "SaddlePoint.h"
+#include "SaddleSearch.h"
 #include "Hessian.h"
 #include "Job.h"
 
