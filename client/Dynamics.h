@@ -39,8 +39,8 @@ public:
     void andersen(double temperature);
     void velocityScale(double temperature);
     void noseHoverVerlet(double temperature);
-
-
+    void noseHoverVerlet2(double temperature);
+   
 private:
     long nAtoms;
 
@@ -50,6 +50,7 @@ private:
     double dtScale;
     double kb;
     bool init;
+    double vxi1,vxi2,xi1,xi2;
 };
 
 #endif
