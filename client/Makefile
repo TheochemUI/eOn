@@ -7,6 +7,10 @@ RANLIB=$(CROSS)ranlib
 
 CXXFLAGS += -O2 -Wall -Wfatal-errors
 
+ifndef DEBUG
+	NDEBUG=1
+endif
+
 #If we aren't doing a cross compile, guess our platform.
 ifndef CROSS
 #Ensures all code is statically linked on a Linux machine
