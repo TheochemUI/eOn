@@ -181,98 +181,84 @@ void Dynamics::velocityScale(double temperature)
 
 void Dynamics::noseHoverVerlet(double temperature){
     double smass = parameters->thermoNoseMass;
-    Matrix<double, Eigen::Dynamic, 3> v;
-    Matrix<double, Eigen::Dynamic, 3> p;
-    Matrix<double, Eigen::Dynamic, 3> d2;
-    Matrix<double, Eigen::Dynamic, 3> d3;
-    Matrix<double, Eigen::Dynamic, 3> d2c;
-    double s1,s2,s3,s4,fact,sqq,svel,sc;
-    double ev2j = 1.60217733E-19, am2kg = 1.6605402E-27, bolkev = 8.6173857E-5;
-    double kinE,error,tmp,eps,es;
-    long nFree,i,j;
-    bool stop;
-    double ul=1.0E-10, ut = parameters->mdTimeStep*dtScale*1.0E-14;
-//    printf("ut = %e\n",ut);
+    Matrix<double, Eigen::Dynamic, 3> vel;
+    Matrix<double, Eigen::Dynamic, 3> pos;
+    Matrix<double, Eigen::Dynamic, 3> acc;
+    double q1,q2,g1,g2,s,dt,dt2,dt4,dt8;
+    double bolkev = 8.6173857E-5;
+    double kinE,Temp;
+    long nFree;
+   
+    dt = parameters->mdTimeStep;
+    dt2 = 0.5 * dt;
+    dt4 = 0.25 * dt;
+    dt8 = 0.125 * dt;
+    nFree = matter->numberOfFreeAtoms()*3;
+    q1 = q2 = smass;
+    g1 = 0.0;
+    g2 = 0.0;
+    Temp = bolkev*temperature; //imposed termperature
 
-    fact = (am2kg/ev2j)*(ul/ut)*(ul/ut);
-    nFree = nAtoms*3;
-    eps = 0.0;
-    es = 0.0;
-    v = matter->getVelocities();
-    p = matter->getPositions();
-    d2c = matter->getAccelerations();
-
-    if(smass > 0){
-        sqq = smass * fact;
-    }else{
-        sqq = 1.0;
-    }
+    vel = matter->getVelocities();
+    pos = matter->getPositions();
+    acc = matter->getAccelerations();
 
     if(init == true){
         init = false;
-        kinE = matter->getKineticEnergy();
-        s1 = 1.0;
-        s2 = 0.0;
-        s3 = 0.0;
-        if(smass > 0){
-            s3 = (kinE-nFree*bolkev*temperature/2.0)*s1/sqq;
-        }
-        s4 = 0.0;
+        vxi1 = 0.0;
+        vxi2 = 0.0;
+        xi1 = 0.0;
+        xi2 = 0.0;
     }
+    kinE =  matter->getKineticEnergy();
 
-    d2 = v;
-    svel = s2;
-    long Iter = 0;
-    stop = false;
-    error = 0.0;
-    while(!stop){
-        if(smass > 0){
-            sc = svel/s1;
-        }else{
-            sc = 0.0;
-        }
+    g2 = (q1*vxi1*vxi1 - Temp);
+    vxi2 += g2 * dt4;
+    vxi1 *= exp(-vxi2*dt8);
+    g1 = (2*kinE-nFree*Temp)/q1;
+    vxi1 += g1 * dt4;
+    vxi1 *= exp(-vxi2*dt8);
+    xi1 += vxi1*dt2;
+    xi2 += vxi2*dt2;
+    s = exp(-vxi1*dt2);
+    vel *= s;
+    kinE *= s*s;
+    vxi1 *= exp(-vxi2*dt8);
+    g1 = (2*kinE-nFree*Temp)/q1;
+    vxi1 += g1*dt4;
+    vxi1 *=  exp(-vxi2*dt8);
+    g2 = (q1*vxi1*vxi1-Temp)/q2;
+    vxi2 += g2*dt4;
 
-        kinE = matter->getKineticEnergy();
-        for(i=0;i<nAtoms;i++){
-            for(j=0;j<3;j++){
-                error += (v(i,j)+d2c(i,j)-sc*0.5*d2(i,j)-d2(i,j))*(v(i,j)+d2c(i,j)-sc*0.5*d2(i,j)-d2(i,j));
-                d2(i,j) = v(i,j)+d2c(i,j)-sc*0.5*d2(i,j);
-            }
-        }
- 
-        if(smass > 0){
-            tmp = (s2+s1*((kinE-nFree*bolkev*temperature/2.0)/sqq+0.5*sc*sc)-svel);
-            tmp = tmp * tmp;
-            error += tmp;
-            svel = s2+s1*((kinE-nFree*bolkev*temperature/2.0)/sqq+0.5*sc*sc);
-        }
+    pos += vel * dt2;
+    matter->setPositions(pos);
 
-        Iter++;
-        if(Iter >= 10){ stop = true; }
-        else if(sqrt(error)<1E-10){ stop = true; }
-    }
-                 
-//FINAL VERLET STEP
-    if (smass > 0){
-        sc = svel/s1;
-        eps = 0.5*sqq*(svel/s1)*(svel/s1);
-        es = nFree*bolkev*temperature*log(s1);
-    }
-    else{
-        sc = 0.0;
-        eps = 0.0;
-        es = 0.0;
-    }
 
-    v += 2.0*d2c-sc*d2;
-    p += v;
+    acc = matter->getAccelerations();
+    vel += acc * dt;
+    pos += vel * dt2;
+    kinE =  matter->getKineticEnergy();
 
-    if (smass > 0){
-        s2 += s1*((2*kinE-bolkev*temperature*nFree)/sqq+sc*sc);
-        s1 += s2;
-    }
+    g2 = (q1*vxi1*vxi1 - Temp);
+    vxi2 += g2 * dt4;
+    vxi1 *= exp(-vxi2*dt8);
+    g1 = (2*kinE-nFree*Temp)/q1;
+    vxi1 += g1 * dt4;
+    vxi1 *= exp(-vxi2*dt8);
+    xi1 += vxi1*dt2;
+    xi2 += vxi2*dt2;
+    s = exp(-vxi1*dt2);
+    vel *= s;
+    kinE *= s*s;
+    vxi1 *= exp(-vxi2*dt8);
+    g1 = (2*kinE-nFree*Temp)/q1;
+    vxi1 += g1*dt4;
+    vxi1 *=  exp(-vxi2*dt8);
+    g2 = (q1*vxi1*vxi1-Temp)/q2;
+    vxi2 += g2*dt4;
 
-    matter->setVelocities(v);
-    matter->setPositions(p);
+    matter->setPositions(pos);    
+    matter->setVelocities(vel);
     return;
 }
+
