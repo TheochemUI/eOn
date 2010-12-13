@@ -12,7 +12,6 @@ ifndef CROSS
 #Ensures all code is statically linked on a Linux machine
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-   CXXFLAGS += -DLINUX
    LINUX=1
 endif
 ifeq ($(UNAME), Darwin)
