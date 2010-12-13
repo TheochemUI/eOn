@@ -3,15 +3,14 @@
 import os
 import sys
 
-failstr = "\n\nXXXXX XXXXX FAILED TEST 2 XXXXX XXXXX\n\n"
-passstr = "\n\n+++++ +++++ PASSED TEST 2 +++++ +++++\n\n"
+test_path = os.path.split(os.path.realpath(__file__))[0]
+test_name = os.path.basename(test_path)
 
 # this first command will echo the output to stdout as well
 #os.system("../../client/client | tee minimization.txt")
-print "\nRunning min_morse_pt_island test\n";
 os.system("../../client/client > minimization.txt")
 
-for line in open("minimization.test"):
+for line in open("minimization.txt"):
     if "Final Energy" in line:
         energydata = line.strip().split()
         u = float(energydata[2])
@@ -21,13 +20,15 @@ for line in open("minimization.test"):
         energydata = line.strip().split()
         r = float(energydata[2])
 
-print "Test energy: ",u
-print "Ref energy : ",r
+#print "Test energy: ",u
+#print "Ref energy : ",r
 
-if abs(u-r)/u > 0.01:
-    print failstr
-    sys.exit()
+rel_err = abs(u-r)/u
 
-#passed, so delete files"
-os.system("rm -f minimization.txt min_0.xyz")
-print passstr
+if rel_err > 0.01:
+    print "%s: failed relative error of %.3f exeeds tolerence" % (test_name,rel_err)
+    sys.exit(1)
+else:
+    #passed, so delete files
+    print "%s: passed relative error %.3e" % (test_name, rel_err)
+    os.system("rm -f minimization.txt min_0.xyz")

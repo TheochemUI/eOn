@@ -17,7 +17,7 @@ for i in range(15):
 
 same, max_rel_err, reason = ndiff("dynamics.test", "dynamics.txt", 0.01)
 if same:
-    print "%s: passed with maximum relative error of %.3e"%(test_name,max_rel_err)
+    print "%s: passed maximum relative error of %.3e"%(test_name,max_rel_err)
     os.system("../../eon.py --reset --force --quiet")
     sys.exit(0)
 else:
