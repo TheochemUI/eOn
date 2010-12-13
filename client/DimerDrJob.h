@@ -7,6 +7,11 @@
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
+
+#ifndef DIMERDRJOB_H
+#define DIMERDRJOB_H
+
+
 #include "Job.h"
 #include "Parameters.h"
 #include "Eigen/Eigen"
@@ -20,3 +25,5 @@ class DimerDrJob: public Job {
     private:
         Parameters *parameters;
 };
+
+#endif

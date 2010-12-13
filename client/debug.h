@@ -8,6 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef DEBUG_H
+#define DEBUG_H
+
 #include <csignal>
 #include <iostream>
 #define debug 1
@@ -24,4 +27,6 @@
                   std::cerr << __FILE__ << ':' << __FUNCTION__ << ':' << __LINE__ << std::endl; \
                    raise(SIGINT); \
             }
+#endif
+
 #endif

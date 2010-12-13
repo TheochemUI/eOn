@@ -8,8 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef FALSE_BOINC_H
-#define FALSE_BOINC_H
+#ifndef FALSEBOINC_H
+#define FALSEBOINC_H
+
 #include <cstring>
 #include <stdlib.h>
 // For degugging

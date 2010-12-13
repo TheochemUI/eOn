@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef Matter_H
-#define Matter_H
+#ifndef MATTER_H
+#define MATTER_H
 
 #include "Parameters.h"
 #include "Potentials.h"

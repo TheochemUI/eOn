@@ -102,13 +102,33 @@ int ProcessSearchJob::doProcessSearch(void)
     long status;
     int f1;
     f1 = Potential::fcalls;
-    status = saddlePoint->locate(min1, min2);
+    status = saddlePoint->locate();//(min1, min2);
     fCallsSaddle += Potential::fcalls - f1;
 
     if (status != SaddlePoint::STATUS_INIT) {
         return status;
     }
+	
+	// relax from the saddle point located
+	
+	Matrix<double, Eigen::Dynamic, 3> posSaddle = saddlePoint->getSaddlePositions();
+	Matrix<double, Eigen::Dynamic, 3> displacedPos;
 
+	*min1 = *saddle;
+	//XXX: the distance displaced from the saddle should be a parameter
+	displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
+	min1->setPositions(displacedPos);
+	ConjugateGradients cgMin1(min1, parameters);
+	cgMin1.fullRelax();
+	fCallsMin += cgMin1.totalForceCalls;
+		
+	*min2 = *saddle;
+	displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
+	min2->setPositions(displacedPos);
+	ConjugateGradients cgMin2(min2, parameters);  
+	cgMin2.fullRelax();
+	fCallsMin += cgMin2.totalForceCalls;
+	
     // If min2 corresponds to initial state swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){
         matterTemp = *min1;
@@ -226,7 +246,8 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%ld potential_tyep\n", parameters->potential);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
-    fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
+    fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
+//    fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
     fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());

@@ -128,13 +128,13 @@ public:
     double bondBoostPRR; 
     double bondBoostQcut;
 
-    // Basin Hopping
+    // [Basin Hopping]
     double basinHoppingStepSize;
     long   basinHoppingSteps;
     bool   basinHoppingStayMinimized;
-    bool   basinHoppingDisplaceSingle;
- 
-    // [Debug] //
+    bool   basinHoppingSingleAtomDisplace;
+
+    // [Debug]
     bool   saveStdout;
 
 private:
