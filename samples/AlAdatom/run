@@ -7,7 +7,7 @@ else
    exit 1
 fi
 nrun=20
-for i in `seq 1 $nrun`
+for (( i=1; i<$nrun; i++ ))
 do
 rand=$RANDOM
 ./init
