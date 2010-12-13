@@ -14,3 +14,5 @@ temperature=100
 [Basin Hopping]
 step_size=0.1
 steps=100
+single_atom_displace=false
+stay_minimized=false

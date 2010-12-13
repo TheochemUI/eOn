@@ -131,14 +131,14 @@ else
     LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
 endif
 
-OBJECTS += ClientEON.o INIFile.o SaddlePoint.o Dimer.o\
-    EpiCenters.o Hessian.o ConjugateGradients.o\
-    debug.o HelperFunctions.o Matter.o Parameters.o\
-    PotentialsInterface.o Potentials.o QMBox.o Quickmin.o SaddlePoint.o \
+OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
+    EpiCenters.o Hessian.o ConjugateGradients.o \
+    debug.o HelperFunctions.o Matter.o Parameters.o \
+    PotentialsInterface.o Potentials.o QMBox.o Quickmin.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  \
 	DimerDrJob.o DimerRotationJob.o DisplacementSamplingJob.o \
-	TestJob.o BasinHoppingJob.o
+	TestJob.o BasinHoppingJob.o SaddleSearchJob.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo
@@ -170,3 +170,4 @@ clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) ; do $(MAKE) -C $$pot clean ; done
 
 .PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all
+# DO NOT DELETE

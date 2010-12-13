@@ -8,6 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef MINIMAZATIONJOB_H
+#define MINIMAZATIONJOB_H
+
 #include "Job.h"
 #include "Parameters.h"
 
@@ -19,3 +22,5 @@ class MinimizationJob: public Job {
     private:
         Parameters *parameters;
 };
+
+#endif

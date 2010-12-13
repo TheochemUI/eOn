@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef SADDLE_POINT_H
-#define SADDLE_POINT_H
+#ifndef SADDLESEARCH_H
+#define SADDLESEARCH_H
 
 #include "Matter.h"
 #include "LowestEigenmodeInterface.h" 
@@ -77,9 +77,11 @@ public:
     @param[out]  *min1     one of the minima connected to the saddle point
     @param[out]  *min2     the other minima connected to the saddle point
     The value returned is true if the calculation converges. */
-    long locate(Matter *min1, Matter *min2);
+    long locate();//(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
     long getnFreeCoord() const;
+	
+	Matrix<double, Eigen::Dynamic, 3> getSaddlePositions();
     Matrix<double, Eigen::Dynamic, 3> getEigenMode();
 
     Matrix<double, Eigen::Dynamic, 3> mode;
@@ -89,7 +91,7 @@ public:
 
     long forceCallsSaddlePointConcave;
     long forceCallsSaddlePointConvex;
-    long forceCallsMinimization;
+//    long forceCallsMinimization;
 
 private:
     Matter *initial;
@@ -111,7 +113,7 @@ private:
     /** Determine the two minima connected to the saddle point by displacing forward and backward along the lowest eigenmode from the saddle and minimizing
     @param[out]  *min1   one minima connected to the saddle point
     @param[out]  *min2   the other minima connected to the saddle point */
-    void relaxFromSaddle(Matter *min1, Matter *min2);
+//    void relaxFromSaddle(Matter *min1, Matter *min2);
 
     void jumpToConvexRegion();
     void displaceInConcaveRegion();

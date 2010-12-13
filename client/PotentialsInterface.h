@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef POTENTIALS_INTERFACE_H
-#define POTENTIALS_INTERFACE_H
+#ifndef POTENTIALSINTERFACE_H
+#define POTENTIALSINTERFACE_H
 
 /** Defining the interface for the potential.*/
 class PotentialsInterface{

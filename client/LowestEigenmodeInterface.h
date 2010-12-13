@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef LOWEST_EIGENMODE_INTERFACE_H
-#define LOWEST_EIGENMODE_INTERFACE_H
+#ifndef LOWESTEIGENMODEINTERFACE_H
+#define LOWESTEIGENMODEINTERFACE_H
 
 #include "Matter.h"
 
