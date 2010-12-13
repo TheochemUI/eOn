@@ -31,4 +31,4 @@ if rel_err > 0.01:
 else:
     #passed, so delete files
     print "%s: passed relative error %.3e" % (test_name, rel_err)
-    os.system("rm -f minimization.txt min_0.xyz")
+    os.system("rm -f minimization.txt min_0.xyz reactant.con")
