@@ -8,8 +8,13 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef TESTJOB_H
+#define TESTJOB_H
+
 #include "Job.h"
 #include "Parameters.h"
+#include "ConjugateGradients.h"
+
 
 class TestJob: public Job {
     public:
@@ -25,3 +30,5 @@ class TestJob: public Job {
         double getEnergyDiff(long potTag, double refEnergy);
         double getForceDiff(long potTag, double refForce);
 };
+
+#endif

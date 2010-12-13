@@ -8,6 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#ifndef PARALLELREPLICAJOB_H
+#define PARALLELREPLICAJOB_H
+
 #include "Job.h"
 #include "Parameters.h"
 
@@ -48,3 +51,4 @@ class ParallelReplicaJob: public Job
         bool meta;
 };
 
+#endif

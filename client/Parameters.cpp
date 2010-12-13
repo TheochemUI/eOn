@@ -18,7 +18,7 @@
 #include "Dynamics.h"
 #include "BondBoost.h"
 #include "Potentials.h"
-#include "SaddlePoint.h"
+#include "SaddleSearch.h"
 
 Parameters::Parameters(){
 
@@ -112,11 +112,11 @@ Parameters::Parameters(){
     displaceCutoffs = "0.0 3.3";
     displaceMagnitudes = "0.0625 0.125 0.25";
 
-    // Basin Hopping
+    // [Basin Hopping]
     basinHoppingStepSize = 0.1;
     basinHoppingSteps = 10000;
+    basinHoppingSingleAtomDisplace = false;
     basinHoppingStayMinimized = false;
-    basinHoppingDisplaceSingle = false;
 }
 
 Parameters::~Parameters(){
@@ -239,7 +239,6 @@ int Parameters::load(FILE *file){
         distanceDifference = ini.GetValueF("Structure Comparison", "max_difference_pos", distanceDifference);
         neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
         structureComparisonEnergyDifference = ini.GetValueF("Structure Comparison", "energy_difference", structureComparisonEnergyDifference);
-
         // [Process Search] //
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
@@ -344,7 +343,7 @@ int Parameters::load(FILE *file){
         thermostatString = toLowerCase(thermostatString);
         if (thermostatString == "andersen") {
             thermostat = Dynamics::ANDERSEN;
-        }else if (thermostatString == "nose_hoover") {
+        }else if (thermostatString == "nosehover") {
             thermostat = Dynamics::NOSE_HOVER;
         }
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
@@ -369,12 +368,11 @@ int Parameters::load(FILE *file){
 
         // [Basin Hopping]
         basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
-        basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
-        basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized");
-        basinHoppingDisplaceSingle = ini.GetValueB("Basin Hopping", "displace_single");
+        basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
+        basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
+        basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized", basinHoppingStayMinimized);
 
         // [Debug] //
-
         saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
 
     }

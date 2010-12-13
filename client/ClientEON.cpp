@@ -12,6 +12,7 @@
 #include "Parameters.h"
 #include "Job.h"
 #include "ProcessSearchJob.h"
+#include "SaddleSearchJob.h"
 #include "MinimizationJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
@@ -74,8 +75,7 @@ int result_pattern(char *filename)
         }else if (filename[0] == '.') {
             return 0;
         }else if (strstr(filename+strlen(filename)-3, "con") == NULL && 
-                  strstr(filename+strlen(filename)-3, "dat") == NULL &&
-                  strstr(filename+strlen(filename)-3, "ini") == NULL) {
+                  strstr(filename+strlen(filename)-3, "dat") == NULL) {
             return 0;
         }
         return 1;
@@ -172,7 +172,7 @@ int main(int argc, char **argv)
         boinc_finish(1);
     }
 
-    FILE *stdoutdat;
+    FILE *stdoutdat=NULL;
     if (parameters.saveStdout == true) {
         //This is kinda a hack, but its for debugging only.
         //A bundle size of 1 must be used for this to work.
@@ -201,6 +201,8 @@ int main(int argc, char **argv)
 
     if (parameters.job == Job::PROCESS_SEARCH) {
         job = new ProcessSearchJob(&parameters);
+    }else if (parameters.job == Job::SADDLE_SEARCH) {
+        job = new SaddleSearchJob(&parameters);
     }else if (parameters.job == Job::MINIMIZATION) {
         job = new MinimizationJob(&parameters);
     }else if (parameters.job == Job::HESSIAN) {

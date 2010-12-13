@@ -8,26 +8,32 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef BASINHOPPINGJOB_H
-#define BASINHOPPINGJOB_H
+#ifndef SADDLESEARCHJOB_H
+#define SADDLESEARCHJOB_H
 
 #include "Matter.h"
 #include "Parameters.h"
+#include "SaddleSearch.h"
 #include "Job.h"
 
-class BasinHoppingJob : public Job {
+class SaddleSearchJob : public Job {
     public:
-        BasinHoppingJob(Parameters *params);
-        ~BasinHoppingJob(void);
+        SaddleSearchJob(Parameters *params);
+        ~SaddleSearchJob(void);
         void run(int bundleNumber);
 
     private:
-        Matrix<double, Eigen::Dynamic, 3> displaceRandom();
-        Matrix<double, Eigen::Dynamic, 3> displaceSingle();
+        int  doSaddleSearch();
+        void printEndState(int status);
+        void saveData(int status, int bundleNumber);
 
         Parameters *parameters;
-        Matter *current;
-        Matter *trial;  // initial configuration.
+        SaddlePoint *saddlePoint; 
+        Matter *initial;      // initial configuration.
+        Matter *saddle;       // configuration used during the saddle point search.
+        Matter *displacement; // configuration used during the saddle point search.
+
+        int fCallsSaddle;
 };
 
 #endif
