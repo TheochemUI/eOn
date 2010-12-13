@@ -29,6 +29,47 @@ BasinHoppingJob::BasinHoppingJob (Parameters *params)
 BasinHoppingJob::~BasinHoppingJob()
 {}
 
+Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceRandom()
+{
+    // Create a random displacement.
+    Matrix<double, Eigen::Dynamic, 3> displacement;        
+    displacement.resize(trial->numberOfAtoms(), 3);
+    displacement.setZero();
+
+    for(int i = 0; i < trial->numberOfAtoms(); i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            if(!trial->getFixed(i))
+            {
+                displacement(i, j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
+            }
+        }
+    }
+    return displacement;
+}
+
+Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceSingle()
+{
+    // Create a random displacement.
+    Matrix<double, Eigen::Dynamic, 3> displacement;        
+    displacement.resize(trial->numberOfAtoms(), 3);
+    displacement.setZero();
+    
+    long ra = (long)randomDouble(trial->numberOfAtoms());
+    while(trial->getFixed(ra))
+    {
+        ra = (long)random(trial->numberOfAtoms());
+    }
+
+    for(int j = 0; j < 3; j++)
+    {
+        displacement(ra, j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
+    }
+    
+    return displacement;
+}
+
 void BasinHoppingJob::run(int bundleNumber)
 {
     current = new Matter(parameters);
@@ -52,20 +93,14 @@ void BasinHoppingJob::run(int bundleNumber)
     for (int step=0; step<parameters->basinHoppingSteps; step++)
     {
 
-        // Create a random displacement.
-        Matrix<double, Eigen::Dynamic, 3> displacement;        
-        displacement.resize(trial->numberOfAtoms(), 3);
-        displacement.setZero();
-
-        for(int i = 0; i < trial->numberOfAtoms(); i++)
+        Matrix<double, Eigen::Dynamic, 3> displacement;
+        if(parameters->basinHoppingDisplaceSingle)
         {
-                for(int j = 0; j < 3; j++)
-                {
-                    if(!trial->getFixed(i))
-                    {
-                        displacement(i, j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
-                    }
-                }
+            displacement = displaceSingle();
+        }
+        else
+        {
+            displacement = displaceRandom();
         }
         
         trial->setPositions(current->getPositions() + displacement);
@@ -79,12 +114,19 @@ void BasinHoppingJob::run(int bundleNumber)
 
         double p = exp(-deltaE / (parameters->temperature*8.617343e-5));
 
-        if (randomDouble(1.0)<min(1.0, p)) {
+        if (randomDouble(1.0)<min(1.0, p)) 
+        {
             *current = *trial;
-            currentEnergy = tmpMatter->getPotentialEnergy();
-            if (abs(deltaE)>parameters->structureComparisonEnergyDifference) {
+            if(parameters->basinHoppingStayMinimized)
+            {
                 *current = *tmpMatter;
-                if (currentEnergy < minimumEnergy) {
+            }
+            currentEnergy = tmpMatter->getPotentialEnergy();
+            if (abs(deltaE)>parameters->structureComparisonEnergyDifference) 
+            {
+                *current = *tmpMatter;
+                if (currentEnergy < minimumEnergy) 
+                {
                     minimumEnergy = currentEnergy;
                     *minimumEnergyStructure = *current;
                 }

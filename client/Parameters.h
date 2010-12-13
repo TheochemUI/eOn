@@ -131,6 +131,8 @@ public:
     // Basin Hopping
     double basinHoppingStepSize;
     long   basinHoppingSteps;
+    bool   basinHoppingStayMinimized;
+    bool   basinHoppingDisplaceSingle;
  
     // [Debug] //
     bool   saveStdout;

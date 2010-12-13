@@ -115,6 +115,8 @@ Parameters::Parameters(){
     // Basin Hopping
     basinHoppingStepSize = 0.1;
     basinHoppingSteps = 10000;
+    basinHoppingStayMinimized = false;
+    basinHoppingDisplaceSingle = false;
 }
 
 Parameters::~Parameters(){
@@ -368,6 +370,8 @@ int Parameters::load(FILE *file){
         // [Basin Hopping]
         basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
         basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
+        basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized");
+        basinHoppingDisplaceSingle = ini.GetValueB("Basin Hopping", "displace_single");
 
         // [Debug] //
 

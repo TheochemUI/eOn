@@ -13,7 +13,8 @@ class BasinHoppingJob : public Job {
 
     private:
         void saveData(int status, int bundleNumber);
-
+        Matrix<double, Eigen::Dynamic, 3> displaceRandom();
+        Matrix<double, Eigen::Dynamic, 3> displaceSingle();
         Parameters *parameters;
         Matter *current;
         Matter *trial;  // initial configuration.
