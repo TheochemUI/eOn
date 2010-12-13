@@ -1,4 +1,3 @@
 cp .config.ini config.ini
 cp .reactant.con reactant.con
-cp .parameters.dat parameters.dat
 
