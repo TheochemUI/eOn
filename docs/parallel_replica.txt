@@ -153,7 +153,7 @@ Default: True
         
 **nose_mass**:
 
-  Default: 0.0
+  Default: 1.0
 
   The effective mass of the additional degree of freedom in the Nose-Hoover
   thermostat, which determines the rate of heat transfer.
