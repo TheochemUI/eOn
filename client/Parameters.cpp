@@ -201,6 +201,8 @@ int Parameters::load(FILE *file){
         potentialString = toLowerCase(potentialString);
         if(potentialString == "lj_rh"){
             potential = Potential::POT_LJ_RH;
+        }else if(potentialString == "lj_wales"){
+            potential = Potential::POT_LJ_WALES;
         }else if(potentialString == "morse_pt"){
             potential = Potential::POT_MORSE_PT;
         }else if(potentialString == "emt"){
@@ -321,7 +323,13 @@ int Parameters::load(FILE *file){
         displaceCutoffs = ini.GetValue("Displacement Sampling", "cutoffs", displaceCutoffs);
         displaceMagnitudes = ini.GetValue("Displacement Sampling", "magnitudes", displaceMagnitudes);
 
-        // [Molecular Dynamics] //
+        displaceNSamples = ini.GetValueL("DisplacementSampling", "samples", displaceNSamples);
+        displaceIterMax = ini.GetValueL("DisplacementSampling", "max_iterations", displaceIterMax);
+        displaceTorqueConvergence = ini.GetValueF("DisplacementSampling", "torque_convergence", displaceTorqueConvergence);
+        displaceMaxCurvature = ini.GetValueF("DisplacementSampling", "max_curvature", displaceMaxCurvature);
+        displaceMaxDE = ini.GetValueF("DisplacementSampling", "max_de", displaceMaxDE);
+        displaceCutoffs = ini.GetValue("DisplacementSampling", "cutoffs", displaceCutoffs);
+        displaceMagnitudes = ini.GetValue("DisplacementSampling", "magnitudes", displaceMagnitudes);
 
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
         mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 
