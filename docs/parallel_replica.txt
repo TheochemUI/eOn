@@ -84,7 +84,7 @@ Dynamics
 
 **check_period**: 
 
-Default: 500
+    Default: 500
 
     How frequently the state of system is checked. Every **check_period**
     steps, the current structure and the initial one will be compared  to tell
@@ -95,7 +95,7 @@ Default: 500
 
 **refine_transition_time**: 
 
-Default: True
+    Default: True
 
     Whether or not the transition time is refined. When this option is turned
     on, the code will keep an array consisted by
@@ -153,10 +153,10 @@ Default: True
         
 **nose_mass**:
 
-  Default: 1.0
-
-  The effective mass of the additional degree of freedom in the Nose-Hoover
-  thermostat, which determines the rate of heat transfer.
+    Default: 1.0
+    
+    The effective mass of the additional degree of freedom in the Nose-Hoover
+    thermostat, which determines the rate of heat transfer.
     
 Hyperdynamics
 -------------
@@ -167,9 +167,9 @@ Hyperdynamics
 
     Options:
 
-    *none* : with no bias potential, run regular MD 
+        *none* : with no bias potential, run regular MD 
 
-    *bond_boost* : bond boost method from Miron and Fichthorn
+        *bond_boost* : bond boost method from Miron and Fichthorn
    
 **bb_dvmax**:
 
