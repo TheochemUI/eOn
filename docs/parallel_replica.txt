@@ -143,7 +143,7 @@ Default: True
 
     .. math::
 
-      V_{new} = \sqrt{(1-\alpha^2)}*V_{old}+\alpha*V_{\mathrm{gaussian}}
+      V_{\mathrm{new}} = \sqrt{(1-\alpha^2)}*V_{\mathrm{old}}+\alpha*V_{\mathrm{gaussian}}
 
 **andersen_collision_steps**: 
 
