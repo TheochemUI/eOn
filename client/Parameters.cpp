@@ -101,7 +101,7 @@ Parameters::Parameters(){
     thermostat = Dynamics::ANDERSEN;
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10; // collision frequency in unit of dt
-    thermoNoseMass = 0;
+    thermoNoseMass = 1.0;
 
     // [Displacement Sampling] //
     displaceNSamples = 32; // The number of samples to take.
