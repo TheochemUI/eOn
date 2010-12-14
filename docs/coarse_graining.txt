@@ -1,3 +1,5 @@
+.. _coarse_graining:
+
 ================
 Coarse-Graining
 ================
@@ -78,13 +80,13 @@ Accelerated Superbasin Kinetic Monte Carlo
     low-barrier process has been seen fewer than :math:`N_f` times (and the
     Criterion fails) or until all connected low-barrier processes have been
     found and have been crossed at least :math:`N_f` times (the edges of the
-    superbasin are then deﬁned and the Criterion passes). If the Superbasin
-    Criterion passes, al l the low-barrier processes (each of which as been
+    superbasin are then defined and the Criterion passes). If the Superbasin
+    Criterion passes, all the low-barrier processes (each of which as been
     crossed :math:`N_f` times) are raised.
 
     Several parameters dictate the functioning of the AS-KMC method. These
     parameters dictate how much the barriers are raised each time the
-    Superbasin Criterion passes(**askmc_barrier_raise_param**), what deﬁnes a
+    Superbasin Criterion passes(**askmc_barrier_raise_param**), what defines a
     “low-barrier” for use in the Superbasin
     Criterion(**askmc_high_barrier_def**), and the approximate amount of error
     the user might expect in eventual superbasin exit direction and time
@@ -125,16 +127,16 @@ Accelerated Superbasin Kinetic Monte Carlo
     processes which have been passed over at least once, there is some chance
     that a low-barrier process in a superbasin might have not been visited at
     all while all other low-barrier processes have been visited at least
-    :math:`N_f` times. This is unlikely, but this test veriﬁes that such has
+    :math:`N_f` times. This is unlikely, but this test verifies that such has
     not happened, considering even processes which have not been visited when
     determining if the Superbasin Criterion has first, because the implemented
     Superbasin Criterion actually only considers processes which have been
     passed over at least once, there is some chance that a low-barrier process
     in a superbasin might have not been visited at all while all other
     low-barrier processes have been visited at least :math:`N_f` times. This is
-    unlikely, but this test veriﬁes that such has not happened, considering
+    unlikely, but this test verifies that such has not happened, considering
     even processes which have not been visited when determining if the
-    Superbasin Criterion has passed. This check should not add signiﬁcant
+    Superbasin Criterion has passed. This check should not add significant
     overhead.     
     
 **askmc_connections_test_on**:
