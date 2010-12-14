@@ -49,7 +49,9 @@ These are options that go in the **[Main]** section of "config.ini".
 
     Options:
 
-        *lj_rh*: Lennard-Jones poential for rhodium.
+        *lj_rh*: Lennard-Jones potential for rhodium.
+
+        *lj_wales*: Lennard-Jones potential in reduced units (:math:`\epsilon = \sigma = 1`).
 
         *morse_pt*: Morse potential for platinum.
 

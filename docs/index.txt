@@ -16,8 +16,8 @@ Contents
    potentials
    eon
    akmc
-   coarse_graining
-   kdb
-   optimizers
    parallel_replica
    basin_hopping
+   optimizers
+   coarse_graining
+   kdb
