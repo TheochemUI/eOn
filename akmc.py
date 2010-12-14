@@ -605,6 +605,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
 def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
+    optpar.add_option("-f", "--force", action="store_true", dest="force", default = False, help="force a reset, no questions asked")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     optpar.add_option("-m", "--movie", action="store", dest="movie_type", default = "", help="Specify the type of movie to make [dynamics, states, fastestpath, fastestfullpath, graph, processes]. Process movies are specified like so: --movie processes,statenumber,processlimit. Where processes is the string processes, statenumber is the number of the state that you want to view, and process limit is the maximum number of processes you would like in the movie. The returned processes are reverse sorted by rate such that the fastest processes is the first in the movie.")
@@ -712,7 +713,10 @@ def main():
             
         sys.exit(0)
     elif options.reset:
-        res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
+        if options.force:
+            res = 'y'
+        else:
+            res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
                 rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
                         config.path_scratch]
@@ -744,7 +748,8 @@ def main():
                 if os.path.isdir(os.path.join(config.path_root, "results")):
                     shutil.rmtree(os.path.join(config.path_root, "results"))
                 
-                print "Reset."
+                if not options.quiet:
+                    print "Reset."
                 sys.exit(0)
         else:
             print "Not resetting."
