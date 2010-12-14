@@ -49,7 +49,6 @@ def init(config_file = ""):
     try:
         config.main_random_seed = parser.getint('Main', 'random_seed')
         numpy.random.seed(config.main_random_seed)
-        print "Using random seed %i from config.ini"%config.main_random_seed
     except:
         config.main_random_seed = None
 
