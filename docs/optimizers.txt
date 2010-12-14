@@ -18,7 +18,7 @@ options are in the **[Optimizers]** section.
 
     Default: 0.005
 
-    When the maximum force (in eV/angstrom) on any one atom is smaller than
+    When the maximum force (in eV/A) on any one atom is smaller than
     this value, the structure is considered minimized.
 
 **max_move**:
