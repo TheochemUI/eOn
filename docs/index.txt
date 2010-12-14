@@ -12,11 +12,12 @@ Contents
    overview
    download
    installation
-   eon
-   potentials
    communicator
+   potentials
+   eon
    akmc
-   parallel_replica
-   optimizers
-   coarse-graining
+   coarse_graining
    kdb
+   optimizers
+   parallel_replica
+   basin_hopping

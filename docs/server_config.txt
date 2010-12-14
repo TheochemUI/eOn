@@ -110,9 +110,9 @@ Default values for the keys are listed next to the key in square brackets.
 \[Displacement\]
 --------------------------------
 **type** [random]
-    Epicenter selection criterion. Options are: *random*, *leastcoordinated*, 
-    and *undercoordinated*. The *random* option will select an atom at random 
-    from the free atoms in the configuration. The *leastcoordinated* option 
+    Epicenter selection criterion. Options are: *random*, *least_coordinated*, 
+    and *under_coordinated*. The *random* option will select an atom at random 
+    from the free atoms in the configuration. The *least_coordinated* option 
     will determine the lowest coordination number of all atoms in the 
     configuration and select one atom at random with that coordination number. 
     The *undercoordinated* option will select a random atom with coordination 
