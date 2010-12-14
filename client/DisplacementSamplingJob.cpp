@@ -43,7 +43,7 @@ void DisplacementSamplingJob::run(int bundleNumber)
     parameters->dimerRotationsMin = 1;
     parameters->dimerWindowMax = 0.0;
     parameters->dimerWindowMin = 0.0;
-
+    
     std::stringstream cutoffStream(parameters->displaceCutoffs);
     while(true)
     {
@@ -53,6 +53,8 @@ void DisplacementSamplingJob::run(int bundleNumber)
         {
             break;
         }
+        
+        
         std::stringstream magnitudeStream(parameters->displaceMagnitudes);
         while(true)
         {
@@ -74,12 +76,13 @@ void DisplacementSamplingJob::run(int bundleNumber)
                 long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,parameters->neighborCutoff);
                 
                 // Create a random displacement.
-                Matrix<double, Eigen::Dynamic, 3> displacement;        
+                Matrix<double, Eigen::Dynamic, 3> displacement;  
+                      
                 displacement.resize(reactant->numberOfAtoms(), 3);
                 displacement.setZero();
                 for(int i = 0; i < reactant->numberOfAtoms(); i++)
                 {
-                    if(reactant->distance(epicenter, i) < cutoff)
+                    if(reactant->distance(epicenter, i) <= cutoff)
                     {
                         for(int j = 0; j < 3; j++)
                         {

@@ -90,11 +90,14 @@ bool CIniFile::ReadFile(FILE *file)
 	  //Print out the non-default values
 	  //printf("%s ", CheckCase(valuename).c_str());
 	  value = line.substr( pLeft + 1);
-	  for (int j=0; j<int(value.length());j++) {
-	      if (value[j] == ' ') {
-	          value.erase(j,1);
-          }
-      }
+	  while (value[0] == ' ')
+	  {
+	    value.erase(0, 1);
+	  }
+	  while (value[value.length() - 1] == ' ')
+	  {
+	    value.erase(value.length() - 1, 1);
+	  }
 	  SetValue( keyname, valuename, value);
 	  break;
 	  
