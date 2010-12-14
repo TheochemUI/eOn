@@ -59,7 +59,7 @@ Dynamics
 
     Default: 1.0
 
-    The length of each MD step in femptoseconds.
+    The length of each MD step in femtoseconds.
 
 **auto_stop**: 
  

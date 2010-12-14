@@ -10,8 +10,8 @@ each section is a list of configuration options and their corresponding values.
 The following is a list of all sections, keys, possible and default values, and
 descriptions of each.
 
-.. include:: config-akmc.txt
+.. include:: config_akmc.txt
 
-.. include:: config-process-search.txt
+.. include:: config_process_search.txt
 
 
