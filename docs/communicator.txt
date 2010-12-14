@@ -1,6 +1,10 @@
+
+.. _communicator:
+
 ============
 Communicator
 ============
+
 
 Eon has a server client architecture for running its calculations. The
 simulation data is stored on the server and clients are sent jobs and return
