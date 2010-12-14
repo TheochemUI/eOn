@@ -55,9 +55,9 @@ options on the client-side.  Each option is specified in the config.ini file
 under the section name given.  Default values for each option is given along
 with a brief description.
 
-.. include:: config-akmc.txt
+.. include:: config_akmc.txt
 
-.. include:: config-process-search.txt
+.. include:: config_process_search.txt
 
 
 
@@ -104,7 +104,7 @@ right part of configuration space.
 
     Default: 11
 
-    When using *undercoordinated* as the displacement type, choose only atoms with
+    When using *under_coordinated* as the displacement type, choose only atoms with
     a coordination equal to or less than this.
 
 **min_mode_method**
@@ -114,6 +114,7 @@ right part of configuration space.
     Options:
 
         *dimer*: Use the dimer min-mode method.
+
         *lanczos*: Use the Lanczos min-mode method.
 
 **max_energy** 

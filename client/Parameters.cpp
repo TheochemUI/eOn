@@ -104,15 +104,15 @@ Parameters::Parameters(){
     thermoNoseMass = 1.0;
 
     // [Displacement Sampling] //
-    displaceNSamples = 32; // The number of samples to take.
-    displaceIterMax = 32; // The maximum number of rotations to perform on the dimer.
-    displaceTorqueConvergence = 0.01; // The convergence criteria of the dimer rotation.
-    displaceMaxCurvature = -0.1; // The maximum curvature for which a sample is considered good. Used to avoid shallow but negative curvatures.
-    displaceMaxDE = 10.0; // The maximum dE for which a sample is considered good. XXX: Should use saddleMaxEnergy?
+    displaceNSamples = 32; // number of samples to take
+    displaceIterMax = 32; // maximum number of rotations to perform on the dimer
+    displaceTorqueConvergence = 0.01; // convergence criteria of the dimer rotation
+    displaceMaxCurvature = -0.1; // maximum curvature which considered good; avoid shallow but negative curvatures
+    displaceMaxDE = 10.0; // maximum dE which is considered good; should use saddleMaxEnergy?
     displaceCutoffs = "0.0 3.3";
     displaceMagnitudes = "0.0625 0.125 0.25";
 
-    // [Basin Hopping]
+    // [Basin Hopping] //
     basinHoppingStepSize = 0.1;
     basinHoppingSteps = 10000;
     basinHoppingSingleAtomDisplace = false;
@@ -366,7 +366,7 @@ int Parameters::load(FILE *file){
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
 
-        // [Basin Hopping]
+        // [Basin Hopping] //
         basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
