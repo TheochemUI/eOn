@@ -11,8 +11,8 @@
 #include"lj_wales.h"
 
 lj_wales::lj_wales(){
-    // Values from Voter
-    this->setParameters(1.0, 7.0, 1.0);
+    // Reduced units
+    this->setParameters(1.0, 30.0, 1.0);
 }
 
 lj_wales::lj_wales(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
