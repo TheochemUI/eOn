@@ -8,6 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#include <stdio.h>
+#include <string>
+
 #include "BasinHoppingJob.h"
 #include "Constants.h"
 #include "ConjugateGradients.h"
@@ -15,8 +18,17 @@
 #include "Potentials.h"
 #include "HelperFunctions.h"
 
-#include <stdio.h>
-#include <string>
+#ifdef BOINC
+    #include <boinc/boinc_api.h>
+    #include <boinc/diagnostics.h>    
+    #include <boinc/filesys.h>        
+#ifdef WIN32
+    #include <boinc/boinc_win.h>
+    #include <boinc/win_util.h>
+#endif
+#else
+    #include "false_boinc.h"
+#endif
 
 using namespace std;
 using namespace helper_functions;
@@ -136,6 +148,7 @@ void BasinHoppingJob::run(int bundleNumber)
         printf("step: %10i energy: %10.8f c_energy: %10.8f min_fc: %ld\n",
                step, currentEnergy, current->getPotentialEnergy(),
                cgMin.totalForceCalls);
+        boinc_fraction_done((double)(step+1)/(double)parameters->basinHoppingSteps);
     }
 
     /* Save Results */
