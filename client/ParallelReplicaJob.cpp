@@ -46,7 +46,10 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     dh_fcalls = 0;
 }
 
-ParallelReplicaJob::~ParallelReplicaJob(){ }
+ParallelReplicaJob::~ParallelReplicaJob()
+{ 
+    delete[] SPtimebuff;
+}
 
 void ParallelReplicaJob::run(int bundleNumber)
 {
@@ -100,7 +103,6 @@ void ParallelReplicaJob::run(int bundleNumber)
     delete reactant;
     delete saddle;
     delete final;
-    delete[] SPtimebuff;
 }
 
 void ParallelReplicaJob::dynamics()
