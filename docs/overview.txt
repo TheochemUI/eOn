@@ -16,7 +16,7 @@ state-to-state dynamics are modeled stochastically.
 * :ref:`The eon application and general options <eon>`
 * :ref:`akmc`
 * :ref:`optimizers`
-* :ref:`coarse-graining`
+* :ref:`coarse_graining`
 * :ref:`kdb`
 * :ref:`parallel_replica`
 * :ref:`communicator`
