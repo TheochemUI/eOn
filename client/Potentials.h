@@ -23,8 +23,7 @@ class Potential{
 public:
 
     enum{
-        POT_LJ_RH,
-        POT_LJ_WALES,
+        POT_LJ,
         POT_MORSE_PT,
         POT_EMT,
         POT_EDIP,

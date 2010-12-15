@@ -12,7 +12,7 @@
 
 LJ::LJ(){
     // Values from Voter
-    this->setParameters(7830.0*8.61738573e-5, 2.2*2.47, 2.47);
+    this->setParameters(1.0, 15.0, 1.0);
 }
 
 LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){

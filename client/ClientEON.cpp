@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 
     int error = parameters.load("config_passed.ini");
     if (error) {
-        fprintf(stderr, "problem loading parameters file:%s\n", strerror(errno));
+        fprintf(stderr, "\nproblem loading parameters file\n");
         boinc_finish(1);
     }
 
