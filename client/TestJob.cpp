@@ -184,11 +184,11 @@ void TestJob::checkPotentials(void)
     printf("Checks the potential energy and the max force.\n");
     printf("Reported as OK if within a tolerance of: %f\n\n",tolerance);
     
-    energyDiff = getEnergyDiff(Potential::POT_LJ_RH, -1475.984331);
+    energyDiff = getEnergyDiff(Potential::POT_LJ, -1475.984331);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: LJ energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff(Potential::POT_LJ_RH, 2.007213);
+        forceDiff = getForceDiff(Potential::POT_LJ, 2.007213);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: LJ force difference: %f\n", forceDiff);
         }else{
