@@ -11,7 +11,7 @@
 #include"lj_wales.h"
 
 lj_wales::lj_wales(){
-    // Reduced units
+    // Reduced units, with huge cutoff
     this->setParameters(1.0, 30.0, 1.0);
 }
 
