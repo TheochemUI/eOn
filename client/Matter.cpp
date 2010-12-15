@@ -109,6 +109,8 @@ const Matter& Matter::operator=(const Matter& matter)
     isFixed = matter.isFixed;
     cellBoundaries = matter.cellBoundaries;
     velocities = matter.velocities; 
+
+    parameters = matter.parameters;
     
     usePeriodicBoundaries = matter.usePeriodicBoundaries;
  
