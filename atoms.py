@@ -214,7 +214,8 @@ def coordination_numbers(p, cutoff, brute=False):
     return [len(l) for l in nl]
 
 def least_coordinated(p, cutoff, brute=False):
-    """ Returns a list of atom indices in p with the lowest coordination numbers for unfrozen atoms"""
+    """ Returns a list of atom indices in p with the lowest coordination numbers 
+        for unfrozen atoms"""
     cn = coordination_numbers(p, cutoff, brute)
     maxcoord = max(cn)
     mincoord = min(cn)
@@ -226,6 +227,96 @@ def least_coordinated(p, cutoff, brute=False):
         if len(least) > 0:
             return least
         mincoord += 1
+
+
+def getMappings(a, b, mappings = None):
+    """ A recursive depth-first search for a complete set of mappings from atoms
+        in configuration a to atoms in configuration b. Do not use the mappings
+        argument, this is only used internally for recursion. 
+        
+        Returns None if no mapping was found, or a dictionary mapping atom 
+        indices a to atom indices b.
+        
+        Note: If a and b are mirror images, this function will still return a 
+        mapping from a to b, even though it may not be possible to align them 
+        through translation and rotation. """
+    # If this is the top-level user call, create and loop through top-level
+    # mappings.
+    if mappings == None:
+        # Find the least common coordination number in b.
+        bCoordinations = coordination_numbers(b, 3.3)
+        bCoordinationsCounts = {}
+        for coordination in bCoordinations:
+            if coordination in bCoordinationsCounts:
+                bCoordinationsCounts[coordination] += 1
+            else:
+                bCoordinationsCounts[coordination] = 1
+        bLeastCommonCoordination = bCoordinationsCounts.keys()[0]
+        for coordination in bCoordinationsCounts.keys():
+            if bCoordinationsCounts[coordination] < bCoordinationsCounts[bLeastCommonCoordination]:
+                bLeastCommonCoordination = coordination
+        # Find one atom in a with the least common coordination number in b. 
+        # If it does not exist, return None.
+        aCoordinations = coordination_numbers(a, 3.3)
+        try:
+            aAtom = aCoordinations.index(bLeastCommonCoordination)
+        except ValueError:
+            return None
+        # Create a mapping from the atom chosen from a to each of the atoms with
+        # the least common coordination number in b, and recurse.
+        for i in range(len(bCoordinations)):
+            if bCoordinations[i] == bLeastCommonCoordination:
+                # Make sure the element types are the same.
+                if a.names[aAtom] != b.names[i]:
+                    continue
+                mappings = getMappings(a, b, {aAtom:i})
+                # If the result is not none, then we found a successful mapping.
+                if mappings is not None:
+                    return mappings
+        # There were no mappings.        
+        return None
+    
+    # This is a recursed invocation of this function.
+    else:
+        # Find an atom from a that has not yet been mapped.
+        unmappedA = 0
+        while unmappedA < len(a):
+            if unmappedA not in mappings.keys():
+                break
+            unmappedA += 1
+        # Calculate the distances from unmappedA to all mapped a atoms.
+        distances = {}
+        for i in mappings.keys():
+            distances[i] = numpy.linalg.norm(pbc(a.r[unmappedA] - a.r[i], a.box))
+        # Loop over each unmapped b atom. Compare the distances between it and 
+        # the mapped b atoms to the corresponding distances between unmappedA 
+        # and the mapped atoms. If everything is similar, create a new mapping
+        # and recurse.
+        for bAtom in range(len(b)):
+            if bAtom not in mappings.values():
+                for aAtom in distances:
+                    # Break if type check fails.
+                    if b.names[bAtom] != a.names[unmappedA]:
+                        break
+                    # Break if distance check fails  
+                    bDist = numpy.linalg.norm(pbc(b.r[bAtom] - b.r[mappings[aAtom]], b.box))  
+                    if abs(distances[aAtom] - bDist) > 0.05:
+                        break
+                else:
+                    # All distances were good, so create a new mapping.
+                    newMappings = mappings.copy()
+                    newMappings[unmappedA] = bAtom
+                    # If this is now a complete mapping from a to b, return it.
+                    if len(newMappings) == len(a):
+                        return newMappings
+                    # Otherwise, recurse.
+                    newMappings = getMappings(a, b, newMappings)
+                    # Pass any successful mapping up the recursion chain. 
+                    if newMappings is not None:
+                        return newMappings     
+        # There were no mappings.   
+        return None 
+        
 
 elements = {}
 elements[  0] = elements[ 'Xx'] = {'symbol':  'Xx', 'name':       'unknown', 'mass':   1.00000000, 'radius':  1.0000, 'color': [1.000, 0.078, 0.576]}
