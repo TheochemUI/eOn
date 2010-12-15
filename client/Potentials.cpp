@@ -15,7 +15,6 @@
 #include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
 #include "potentials/LennardJones/LJ.h"
-#include "potentials/lj_wales/lj_wales.h"
 #include "potentials/SW/SW.h"
 #include "potentials/Tersoff/Tersoff.h"
 #include "potentials/Aluminum/Aluminum.h"
@@ -39,12 +38,8 @@ int Potential::fcalls = 0;
 Potential::Potential(Parameters *parameters){
     parameters_ = parameters;
 
-    if(parameters_->potential == POT_LJ_RH){
+    if(parameters_->potential == POT_LJ){
         interface_ = new LJ();
-        interface_->initialize();
-    }
-    else if(parameters_->potential == POT_LJ_WALES){
-        interface_ = new lj_wales();
         interface_->initialize();
     }
     else if(parameters_->potential == POT_MORSE_PT){
