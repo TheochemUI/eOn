@@ -284,14 +284,14 @@ string CIniFile::GetValue( string const keyname, string const valuename, string 
   long keyID = FindKey( keyname);
   if ( keyID == noID)
   {
-    printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
+    //printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
     return defValue;
   }
 
   long valueID = FindValue( unsigned(keyID), valuename);
   if ( valueID == noID)
   {
-    printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
+    //printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
     return defValue;
   }
 

@@ -1045,9 +1045,7 @@ Potentials.o: Potentials.cpp Constants.h Potentials.h Parameters.h \
  potentials/EMT/Asap/Vec.h potentials/EMT/../../PotentialsInterface.h \
  potentials/Morse/Morse.h potentials/Morse/../../PotentialsInterface.h \
  potentials/LennardJones/LJ.h \
- potentials/LennardJones/../../PotentialsInterface.h \
- potentials/lj_wales/lj_wales.h \
- potentials/lj_wales/../../PotentialsInterface.h potentials/SW/SW.h \
+ potentials/LennardJones/../../PotentialsInterface.h potentials/SW/SW.h \
  potentials/SW/../../PotentialsInterface.h potentials/Tersoff/Tersoff.h \
  potentials/Tersoff/../../PotentialsInterface.h \
  potentials/Aluminum/Aluminum.h \

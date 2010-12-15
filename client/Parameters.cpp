@@ -25,7 +25,7 @@ Parameters::Parameters(){
     // [Main] //
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
-    potential = Potential::POT_LJ_RH;
+    potential = Potential::POT_LJ;
     temperature = 300.0;
 
     // [Structure Comparison] //
@@ -152,7 +152,6 @@ int Parameters::load(FILE *file){
     //printf("List of non-default parameters: ");
     if(ini.ReadFile(file))
     {
-        printf("\n\n");
         // if we succesfully read the file, then parse it as an INI
 
         // [Main] //
@@ -195,14 +194,11 @@ int Parameters::load(FILE *file){
         }else{
             helper_functions::random(randomSeed);
         }
-        printf("Random seed is: %ld\n", randomSeed);
 
         string potentialString = ini.GetValue("Main", "potential");
         potentialString = toLowerCase(potentialString);
-        if(potentialString == "lj_rh"){
-            potential = Potential::POT_LJ_RH;
-        }else if(potentialString == "lj_wales"){
-            potential = Potential::POT_LJ_WALES;
+        if(potentialString == "lj"){
+            potential = Potential::POT_LJ;
         }else if(potentialString == "morse_pt"){
             potential = Potential::POT_MORSE_PT;
         }else if(potentialString == "emt"){
@@ -232,7 +228,7 @@ int Parameters::load(FILE *file){
         }else if(potentialString == "bop"){
             potential = Potential::POT_BOP;
         }else{
-            fprintf(stderr, "Unknown potential: %s\n", potentialString.c_str());
+            fprintf(stderr, "  Error: Unknown potential: %s\n", potentialString.c_str());
             error = 1;
         }
         
