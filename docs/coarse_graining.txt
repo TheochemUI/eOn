@@ -1,7 +1,7 @@
 .. _coarse_graining:
 
 ================
-Coarse-Graining
+Coarse Graining
 ================
 
 In AKMC simulations where there are vastly different rates, the simulation can
