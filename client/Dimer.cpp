@@ -22,14 +22,11 @@ using namespace helper_functions;
 
 Dimer::Dimer(Matter const *matter, Parameters *params)
 {
-    long nAllCoord;
     parameters     = params;
     matterInitial  = new Matter(parameters);
     matterDimer    = new Matter(parameters);
     *matterInitial = *matter;
     *matterDimer   = *matter;
-    nAllCoord   = 3 * matter->numberOfAtoms();
-    nFreeCoord = 3 * matter->numberOfFreeAtoms();  
     nAtoms = matter->numberOfAtoms();
     
     directionNorm.resize(nAtoms, 3);
@@ -47,17 +44,10 @@ Dimer::~Dimer()
     delete [] stats;
 }
 
-void Dimer::moveAndCompute(Matter const *matter)
+// was startNewSearchAndCompute: AndCompute what?  suggest renaming to initialize
+void Dimer::initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
 {
     *matterInitial = *matter;
-    estimateLowestEigenmode();
-    return;
-}
-
-void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
-{
-    *matterInitial = *matter;
-    
     rotationalPlaneNorm.setZero();
 
     // Create an initial direction for the dimer
@@ -65,7 +55,16 @@ void Dimer::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen:
     directionNorm.normalize();
 }
 
-void Dimer::estimateLowestEigenmode()
+// where is the move part?  Then Compute what? suggest merging with compute
+/* void Dimer::moveAndCompute(Matter const *matter)
+{
+    *matterInitial = *matter;
+    estimateLowestEigenmode();
+    return;
+}*/
+
+// was estimateLowestEigenmode. rename to compute
+void Dimer::compute(Matter const *matter)
 {
     long rotations = 0;
     long forceCallsInitial;
@@ -76,7 +75,8 @@ void Dimer::estimateLowestEigenmode()
     double lengthRotationalForceOld;
     double torqueMagnitude = 0.0;
     bool doneRotating = false;
-    
+
+    *matterInitial = *matter; 
     rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
     forceDimer1AlongRotationalPlaneNorm = 0;
     forceDimer2AlongRotationalPlaneNorm = 0;
@@ -135,7 +135,7 @@ void Dimer::estimateLowestEigenmode()
         // rotational force along the rotational planes normal
         forceDimer1AlongRotationalPlaneNorm = (rotationalForce.cwise()*rotationalPlaneNorm).sum();
 
-        rotateDimerAndNormalizeAndOrthogonalize(parameters->dimerRotationAngle);
+        rotate(parameters->dimerRotationAngle);
         
         if(!doneRotating)
         {
@@ -156,7 +156,7 @@ void Dimer::estimateLowestEigenmode()
                 rotationAngle = rotationAngle + M_PI / 2;
             }
 
-            rotateDimerAndNormalizeAndOrthogonalize(rotationAngle);
+            rotate(rotationAngle);
 
             rotationalPlaneNormOld = rotationalPlaneNorm; //XXX: Is this copying correctly???
 
@@ -267,7 +267,7 @@ void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationa
     return;
 }
 
-void Dimer::rotateDimerAndNormalizeAndOrthogonalize(double rotationAngle)
+void Dimer::rotate(double rotationAngle)
 {
     double cosAngle, sinAngle;
 
