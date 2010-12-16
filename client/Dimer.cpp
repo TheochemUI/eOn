@@ -108,30 +108,8 @@ void Dimer::compute(Matter const *matter)
         // Calculate the magnitude of the torque on the dimer
         torqueMagnitude = rotationalForce.squaredNorm();
 
-        double torqueLimitMax = parameters->dimerWindowMax;
-        double torqueLimitMin = parameters->dimerWindowMin;
-        int torqueMaxRotations = parameters->dimerRotationsMax;
-        int torqueMinRotations = parameters->dimerRotationsMin;
-  
-        if(!std::isnormal(torqueMagnitude))
-        {
-            printf("Warning, numerical glitch in torque magnitude. Setting torque magnitude to torqueLimitMax + 1.0\n");
-            torqueMagnitude = torqueLimitMax + 1.0;
-        }
-        
-        if(torqueMagnitude > torqueLimitMax && rotations >= torqueMaxRotations)
-        {
-            doneRotating = true;
-        }
-        else if(torqueMagnitude < torqueLimitMax && torqueMagnitude >= torqueLimitMin && rotations >= torqueMinRotations)
-        {
-            doneRotating = true;
-        }
-        else if(torqueMagnitude < torqueLimitMin)
-        {
-            doneRotating = true;
-        }
-                
+        assert(!std::isnormal(torqueMagnitude));
+ 
         // rotational force along the rotational planes normal
         forceDimer1AlongRotationalPlaneNorm = (rotationalForce.cwise()*rotationalPlaneNorm).sum();
 
@@ -163,10 +141,15 @@ void Dimer::compute(Matter const *matter)
             rotations++;
         }
  
-    #ifndef NDEBUG
-        printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
-        torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
-    #endif
+        if (rotationAngle < (parameters->dimerConvergedRotation/360.0) * (2.0 * PI))
+        {
+            doneRotating = true;
+        }
+ 
+        #ifndef FOO
+            printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
+            torqueMagnitude, curvature, (rotationAngle * 180.0) / PI, rotations);
+        #endif
 
     }
     stats[0] = torqueMagnitude;
