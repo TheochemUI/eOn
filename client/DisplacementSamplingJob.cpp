@@ -101,12 +101,12 @@ void DisplacementSamplingJob::run(int bundleNumber)
                 
                 Dimer *d = new Dimer(reactant, parameters);
                 
-                d->startNewSearchAndCompute(reactant, displacement);
-                d->moveAndCompute(reactant);
+                d->initialize(reactant, displacement);
+                d->compute(reactant);
                 int iterCount = 0;
                 while(d->stats[0] > torqueConvergence && iterCount < iterMax)
                 {
-                    d->moveAndCompute(reactant);
+                    d->compute(reactant);
                     iterCount++;
                 }
                 double e1 = reactant->getPotentialEnergy();

@@ -79,6 +79,9 @@ public:
     long   dimerRotationsMin;
     double dimerWindowMax;
     double dimerWindowMin;
+    bool   dimerImproved;
+    double dimerConvergedRotation;
+
    
     // [Lanczos]
     double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
