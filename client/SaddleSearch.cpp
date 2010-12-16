@@ -123,13 +123,14 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
 
-
     fprintf(stdout, "  Saddle point search started.\n");
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
     if (!parameters->saddleDisplace) {
-        lowestEigenmode->startNewSearchAndCompute(saddle, mode);
+//        lowestEigenmode->startNewSearchAndCompute(saddle, mode);
+        lowestEigenmode->initialize(saddle, mode);
+        lowestEigenmode->compute(saddle);   // GH: added this because it seems to make sense
         eigenMode = lowestEigenmode->getEigenvector();
         eigenValue = lowestEigenmode->getEigenvalue();
     }
@@ -146,10 +147,10 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
     {
        searchForSaddlePoint(initialEnergy);
     }
-        
+
 //    if(status == STATUS_INIT)
 //    {
-//        fprintf(stdout, "    Saddle point determined.\n");        
+//        fprintf(stdout, "    Saddle point determined.\n");
 //        relaxFromSaddle(min1, min2);
 //        fprintf(stdout, "    Minima determined.\n");
 //    }
@@ -166,8 +167,7 @@ Matrix<double, Eigen::Dynamic, 3> SaddlePoint::getEigenMode()
     return eigenMode;
 }
 
-// Displace state and sets mode
-void SaddlePoint::displaceStateAndSetMode(Matter *matter)
+void SaddlePoint::displaceAndSetMode(Matter *matter)
 {
     long nAtoms = saddle->numberOfAtoms();
     long j, indexEpiCenter = 0;
@@ -260,7 +260,7 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Ei
 }
 /*
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
- 
+
     Matrix<double, Eigen::Dynamic, 3> posSaddle = saddle->getPositions();
 
     Matrix<double, Eigen::Dynamic, 3> displacedPos;
@@ -305,9 +305,10 @@ void SaddlePoint::jumpToConvexRegion(){
     if(parameters->saddleDisplaceType!=DISP_NONE){
         do{
             saddle->setPositions(pos);
-            displaceStateAndSetMode(saddle);
+            displaceAndSetMode(saddle);
             
-            lowestEigenmode->startNewSearchAndCompute(saddle, mode);
+            lowestEigenmode->initialize(saddle, mode);
+            lowestEigenmode->compute(saddle);
             eigenMode = lowestEigenmode->getEigenvector();
             eigenValue = lowestEigenmode->getEigenvalue();
             iterations++;
@@ -325,9 +326,10 @@ void SaddlePoint::jumpToConvexRegion(){
 
 void SaddlePoint::displaceInConcaveRegion()
 {
-    displaceStateAndSetMode(saddle);
+    displaceAndSetMode(saddle);
     
-    lowestEigenmode->startNewSearchAndCompute(saddle, mode);
+    lowestEigenmode->initialize(saddle, mode);
+    lowestEigenmode->compute(saddle);
     eigenMode = lowestEigenmode->getEigenvector();
     eigenValue = lowestEigenmode->getEigenvalue();
 
@@ -395,7 +397,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         saddle->setPositions(pos);
         forces = saddle->getForces();
         // The new lowest eigenvalue
-        lowestEigenmode->moveAndCompute(saddle);
+        lowestEigenmode->compute(saddle);
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
         // Updating the conjugated object to the new configuration

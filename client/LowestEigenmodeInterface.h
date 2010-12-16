@@ -20,16 +20,18 @@ USING_PART_OF_NAMESPACE_EIGEN //It hurts every time I type this
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
 class LowestEigenmodeInterface{
+
 public:
-    virtual ~LowestEigenmodeInterface() {}
-    void virtual startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>) = 0; 
-    void virtual moveAndCompute(Matter const *matter) = 0;  
-    double virtual getEigenvalue() = 0;
+
     double *stats;
-    
-    /// Return eigenvector.
-    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector()=0;
-        /** Set initial direction manually.*/
-    virtual void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)=0;
+
+    virtual ~LowestEigenmodeInterface() {}
+    void virtual initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>) = 0;
+    void virtual compute(Matter const *matter) = 0;
+    double virtual getEigenvalue() = 0;
+    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector() = 0;
+    virtual void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector) = 0;
+
 };
+
 #endif
