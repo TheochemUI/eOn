@@ -63,10 +63,6 @@ Parameters::Parameters(){
     // [Dimer] //
     dimerSeparation = 0.001;
     dimerRotationAngle = 0.005;
-    dimerWindowMax = 1.0;
-    dimerWindowMin = 0.1;
-    dimerRotationsMax = 8;
-    dimerRotationsMin = 1;
     dimerImproved = false;
     dimerConvergedRotation = 5.0; // degrees
 
@@ -287,10 +283,6 @@ int Parameters::load(FILE *file){
 
         dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
-        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);
-        dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
-        dimerWindowMax = ini.GetValueF("Dimer", "window_max", dimerWindowMax);
-        dimerWindowMin = ini.GetValueF("Dimer", "window_min", dimerWindowMin);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
 
