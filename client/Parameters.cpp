@@ -67,6 +67,8 @@ Parameters::Parameters(){
     dimerWindowMin = 0.1;
     dimerRotationsMax = 8;
     dimerRotationsMin = 1;
+    dimerImproved = false;
+    dimerConvergedRotation = 5.0; // degrees
 
     // [Hessian] //
     hessianType = Hessian::REACTANT;
@@ -289,6 +291,8 @@ int Parameters::load(FILE *file){
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
         dimerWindowMax = ini.GetValueF("Dimer", "window_max", dimerWindowMax);
         dimerWindowMin = ini.GetValueF("Dimer", "window_min", dimerWindowMin);
+        dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
+        dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
 
         // [Lanczos] //
 
