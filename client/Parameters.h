@@ -75,10 +75,6 @@ public:
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     double dimerMaxIterations;
-    long   dimerRotationsMax;
-    long   dimerRotationsMin;
-    double dimerWindowMax;
-    double dimerWindowMin;
     bool   dimerImproved;
     double dimerConvergedRotation;
 
