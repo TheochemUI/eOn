@@ -91,7 +91,6 @@ public:
 
     long forceCallsSaddlePointConcave;
     long forceCallsSaddlePointConvex;
-//    long forceCallsMinimization;
 
 private:
     Matter *initial;
@@ -113,9 +112,7 @@ private:
     /** Determine the two minima connected to the saddle point by displacing forward and backward along the lowest eigenmode from the saddle and minimizing
     @param[out]  *min1   one minima connected to the saddle point
     @param[out]  *min2   the other minima connected to the saddle point */
-//    void relaxFromSaddle(Matter *min1, Matter *min2);
 
-    void jumpToConvexRegion();
     void displaceInConcaveRegion();
 
     void searchForSaddlePoint(double initialEnergy);

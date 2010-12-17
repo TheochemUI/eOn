@@ -127,20 +127,16 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
-    if (!parameters->saddleDisplace) {
-//        lowestEigenmode->startNewSearchAndCompute(saddle, mode);
-        lowestEigenmode->initialize(saddle, mode);
-        lowestEigenmode->compute(saddle);   // GH: added this because it seems to make sense
-        eigenMode = lowestEigenmode->getEigenvector();
-        eigenValue = lowestEigenmode->getEigenvalue();
-    }
-    else
+    if (parameters->saddleDisplace) 
     {
-        if(parameters->saddleMaxJumpAttempts <= 0)
-            displaceInConcaveRegion();
-        else
-            jumpToConvexRegion();
+        displaceAndSetMode(saddle);
     }
+    
+    lowestEigenmode->initialize(saddle, mode);
+    lowestEigenmode->compute(saddle);
+    eigenMode = lowestEigenmode->getEigenvector();
+    eigenValue = lowestEigenmode->getEigenvalue();
+    
     fprintf(stdout, "  Saddle point displaced.\n");
 
     if(status == STATUS_INIT)
@@ -291,36 +287,6 @@ void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
         forceCallsSaddlePointConcave += fcalls;
     else
         forceCallsSaddlePointConvex += fcalls;
-    return;
-}
-
-void SaddlePoint::jumpToConvexRegion(){
-    long forceCallsSaddle;
-    long iterations = 0;
-
-    Matrix<double, Eigen::Dynamic, 3> pos = saddle->getPositions();
-
-    forceCallsSaddle = saddle->getForceCalls();
-
-    if(parameters->saddleDisplaceType!=DISP_NONE){
-        do{
-            saddle->setPositions(pos);
-            displaceAndSetMode(saddle);
-            
-            lowestEigenmode->initialize(saddle, mode);
-            lowestEigenmode->compute(saddle);
-            eigenMode = lowestEigenmode->getEigenvector();
-            eigenValue = lowestEigenmode->getEigenvalue();
-            iterations++;
-        }while((0 < eigenValue) && 
-               (iterations < parameters->saddleMaxJumpAttempts));
-    }
-    if(0 < eigenValue)
-        status = STATUS_BAD_NO_CONVEX;
-
-    forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
-    addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
-
     return;
 }
 
