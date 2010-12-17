@@ -14,4 +14,6 @@ descriptions of each.
 
 .. include:: config_process_search.txt
 
+.. include:: config_dimer.txt
+
 
