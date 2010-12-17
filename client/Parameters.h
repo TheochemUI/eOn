@@ -77,6 +77,11 @@ public:
     double dimerMaxIterations;
     bool   dimerImproved;
     double dimerConvergedRotation;
+    // old parameters
+    long   dimerRotationsMax;
+    long   dimerRotationsMin;
+    double dimerTorqueMax;
+    double dimerTorqueMin;
 
    
     // [Lanczos]

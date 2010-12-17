@@ -65,6 +65,11 @@ Parameters::Parameters(){
     dimerRotationAngle = 0.005;
     dimerImproved = false;
     dimerConvergedRotation = 5.0; // degrees
+    // old, for comparison with Improved dimer method, will be removed later
+    dimerTorqueMin = 0.1;
+    dimerTorqueMax = 1.0;
+    dimerRotationsMin = 1;
+    dimerRotationsMax = 8;
 
     // [Hessian] //
     hessianType = Hessian::REACTANT;
@@ -285,6 +290,11 @@ int Parameters::load(FILE *file){
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
+        // old, for comparison with Improved dimer method, will be removed later
+        dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
+        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);
+        dimerTorqueMin = ini.GetValueF("Dimer", "torque_min", dimerTorqueMin);
+        dimerTorqueMax = ini.GetValueF("Dimer", "torque_max", dimerTorqueMax);
 
         // [Lanczos] //
 
