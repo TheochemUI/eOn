@@ -6,26 +6,25 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-#ifndef JOB_H
-#define JOB_H
-class Job { 
+
+#ifndef DISTRIBUTEDREPLICAJOB_H
+#define DISTRIBUTEDREPLICAJOB_H
+
+#include "Job.h"
+#include "Parameters.h"
+
+class DistributedReplicaJob: public Job
+{
+
     public:
-        enum{
-            PROCESS_SEARCH,
-            SADDLE_SEARCH,
-            MINIMIZATION,
-            PARALLEL_REPLICA,
-            DISTRIBUTED_REPLICA,
-            BASIN_HOPPING,
-            HESSIAN,
-            DIMER_DR,
-            DIMER_ROTATION,
-            DISPLACEMENT_SAMPLING,
-            TEST
-        };
-        virtual ~Job() {}
-        virtual void run(int bundleNumber)=0;
+        DistributedReplicaJob(Parameters *params);
+        ~DistributedReplicaJob(void);
+        void run(int bundleNumber);
+
+    private:
+        Parameters *parameters;
+        Matter *reactant;
 };
+
 #endif
