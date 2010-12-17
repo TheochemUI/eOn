@@ -170,6 +170,8 @@ int Parameters::load(FILE *file){
             job = Job::MINIMIZATION;
         }else if (jobString == "parallel_replica"){
             job = Job::PARALLEL_REPLICA;
+        }else if (jobString == "distributed_replica"){
+                        job = Job::DISTRIBUTED_REPLICA;
         }else if (jobString == "basin_hopping") {
             job = Job::BASIN_HOPPING;
         }else if (jobString == "hessian") {
