@@ -17,18 +17,10 @@ Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
 {
     matter = matter_passed;    
     parameters = parameters_passed;
-    dtScale = 1.0; // in unit of 10fs
+    dt = parameters->mdTimeStep;
     kb = 1.0/11604.5; // Kb in unit of eV
     nAtoms = matter->numberOfAtoms();
     init = true;
-/*
-    if(parameters->Thermostat == 1){
-       printf("Dynamics Using Andersen Thermostat and Verlet Integration\n");
-    }
-    else if(parameters->Thermostat == 2){
-       printf("Dynamics Using Nose-Hoover Thermostat and Verlet Integration\n");
-    }
-*/
 }
 
 Dynamics::~Dynamics()
@@ -45,6 +37,9 @@ void Dynamics::oneStep(double temperature)
     else if(parameters->thermostat == NOSE_HOVER){
        noseHoverVerlet(temperature);
     }
+    else if(parameters->thermostat == LANGEVIN){
+       langevinVerlet(temperature);
+    }
     return;
 }
 
@@ -58,16 +53,16 @@ void Dynamics::andersenVerlet()
      velocities = matter->getVelocities();
      accelerations = matter->getAccelerations();
 
-     velocities += accelerations * 0.5 * parameters->mdTimeStep * dtScale;
+     velocities += accelerations * 0.5 * dt;
      matter->setVelocities(velocities);  // first update velocities
 
-     positions += velocities * parameters->mdTimeStep * dtScale;
+     positions += velocities * dt;
      matter->setPositions(positions); // update positions
 
     velocities = matter->getVelocities();
     accelerations = matter->getAccelerations();
 
-    velocities += accelerations * 0.5 * parameters->mdTimeStep * dtScale;
+    velocities += accelerations * 0.5 * dt;
     matter->setVelocities(velocities); // second update velocities
 }
 
@@ -184,12 +179,11 @@ void Dynamics::noseHoverVerlet(double temperature){
     Matrix<double, Eigen::Dynamic, 3> vel;
     Matrix<double, Eigen::Dynamic, 3> pos;
     Matrix<double, Eigen::Dynamic, 3> acc;
-    double q1,q2,g1,g2,s,dt,dt2,dt4,dt8;
+    double q1,q2,g1,g2,s,dt2,dt4,dt8;
     double bolkev = 8.6173857E-5;
     double kinE,Temp;
     long nFree;
    
-    dt = parameters->mdTimeStep;
     dt2 = 0.5 * dt;
     dt4 = 0.25 * dt;
     dt8 = 0.125 * dt;
@@ -262,4 +256,51 @@ void Dynamics::noseHoverVerlet(double temperature){
     return;
 }
 
+void Dynamics::langevinVerlet(double temperature){
+
+     Matrix<double, Eigen::Dynamic, 1> mass;
+     Matrix<double, Eigen::Dynamic, 3> pos;
+     Matrix<double, Eigen::Dynamic, 3> vel;
+     Matrix<double, Eigen::Dynamic, 3> acc;
+     Matrix<double, Eigen::Dynamic, 3> friction;
+     Matrix<double, Eigen::Dynamic, 3> noise;
+     double gamma;
+     
+     gamma = parameters->thermoLangvinFriction;
+     pos = matter->getPositions();
+     vel = matter->getVelocities();   
+
+     acc = matter->getAccelerations();
+     noise = matter->getAccelerations();
+     mass = matter->getMasses();
+
+     friction = - gamma * vel;
+     for (long int i = 0;i<nAtoms;i++){
+        if(!matter->getFixed(i)){
+            for (int j = 0; j < 3; j++){
+                noise(i,j) =  sqrt(4*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);                
+            }
+        }
+     }       
+     acc = acc + friction + noise;
+
+     vel += acc * 0.5 * dt;//first calculated velocites v(n+1/2)
+     pos += vel * dt;
+     matter->setPositions(pos); // update positions x(n+1)
+
+
+     acc =  matter->getAccelerations();
+     friction = - gamma * vel;
+     for (long int i = 0;i<nAtoms;i++){
+        if(!matter->getFixed(i)){
+            for (int j = 0; j < 3; j++){
+                noise(i,j) =  sqrt(4*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);                
+            }
+        }
+     } 
+
+     acc = acc + friction + noise;
+     vel += acc * 0.5 * dt;
+     matter->setVelocities(vel); // second update velocities v(n+1)
+}
 

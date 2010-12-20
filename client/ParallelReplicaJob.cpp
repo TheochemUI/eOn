@@ -168,7 +168,7 @@ void ParallelReplicaJob::dynamics()
             }
         }
         
-        //printf("MDsteps %ld Ekin = %lf Tkin = %lf \n",nsteps,kinE,kinT); 
+       // printf("MDsteps %ld Ekin= %lf Tkin= %lf \n",nsteps,kinE,kinT); 
 
 #ifndef NDEBUG
         if (ncheck == check_steps && !newstate){
