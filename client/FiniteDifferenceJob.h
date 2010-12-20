@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef DIMERDRJOB_H
-#define DIMERDRJOB_H
+#ifndef FINITEDIFFERENCE_H
+#define FINITEDIFFERENCE_H
 
 
 #include "Job.h"
@@ -17,10 +17,10 @@
 #include "Eigen/Eigen"
 USING_PART_OF_NAMESPACE_EIGEN
 
-class DimerDrJob: public Job {
+class FiniteDifferenceJob: public Job {
     public:
-        DimerDrJob(Parameters *params);
-        ~DimerDrJob(void);
+        FiniteDifferenceJob(Parameters *params);
+        ~FiniteDifferenceJob(void);
         void run(int bundleNumber);
     private:
         Parameters *parameters;

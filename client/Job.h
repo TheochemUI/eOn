@@ -20,7 +20,7 @@ class Job {
             DISTRIBUTED_REPLICA,
             BASIN_HOPPING,
             HESSIAN,
-            DIMER_DR,
+            FINITE_DIFFERENCE,
             DIMER_ROTATION,
             DISPLACEMENT_SAMPLING,
             TEST

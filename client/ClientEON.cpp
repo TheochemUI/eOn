@@ -18,7 +18,7 @@
 #include "ParallelReplicaJob.h"
 #include "DistributedReplicaJob.h"
 #include "BasinHoppingJob.h"
-#include "DimerDrJob.h"
+#include "FiniteDifferenceJob.h"
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
 #include "TestJob.h"
@@ -214,8 +214,8 @@ int main(int argc, char **argv)
         job =  new DistributedReplicaJob(&parameters);
     }else if (parameters.job == Job::BASIN_HOPPING) {
         job =  new BasinHoppingJob(&parameters);
-    }else if (parameters.job == Job::DIMER_DR) {
-        job =  new DimerDrJob(&parameters);
+    }else if (parameters.job == Job::FINITE_DIFFERENCE) {
+        job =  new FiniteDifferenceJob(&parameters);
     }else if (parameters.job == Job::DIMER_ROTATION) {
         job =  new DimerRotationJob(&parameters);
     }else if (parameters.job == Job::DISPLACEMENT_SAMPLING) {
