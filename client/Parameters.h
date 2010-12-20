@@ -123,6 +123,7 @@ public:
     double thermoAndersenAlpha;
     double thermoAndersenTcol;
     double thermoNoseMass;
+    double thermoLangvinFriction;
 
     // [Bond Boost]
     long   biasPotential; 

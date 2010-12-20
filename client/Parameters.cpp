@@ -105,6 +105,7 @@ Parameters::Parameters(){
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10; // collision frequency in unit of dt
     thermoNoseMass = 1.0;
+    thermoLangvinFriction = 0.005;
 
     // [Displacement Sampling] //
     displaceNSamples = 32; // number of samples to take
@@ -357,11 +358,15 @@ int Parameters::load(FILE *file){
             thermostat = Dynamics::ANDERSEN;
         }else if (thermostatString == "nosehover") {
             thermostat = Dynamics::NOSE_HOVER;
+        }else if (thermostatString == "langevin") {
+            thermostat = Dynamics::LANGEVIN;
         }
+        
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
- 
+        thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
+         
         string hyperString;
         hyperString = ini.GetValue("Hyperdynamics","bias_potential","none");
         hyperString = toLowerCase(hyperString);

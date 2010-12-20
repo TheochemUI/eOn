@@ -134,6 +134,8 @@ Dynamics
 
     *nose_hoover*: Nose-Hover thermostat with Verlet algorithm 
 
+    *langevin*: Langevin thermostat with Verlet algorithm
+
 **andersen_alpha**:
 
     Default: 0.2
@@ -157,7 +159,13 @@ Dynamics
     
     The effective mass of the additional degree of freedom in the Nose-Hoover
     thermostat, which determines the rate of heat transfer.
-    
+
+**langevin_friction**:
+
+    Default: 0.01
+
+    The damping coefficient for Langevin dynamics, in unit of 1000 :math:`ps^{-1}`.
+
 Hyperdynamics
 -------------
 
