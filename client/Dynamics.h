@@ -26,7 +26,8 @@ public:
 
     enum{
         ANDERSEN,
-        NOSE_HOVER
+        NOSE_HOVER,
+        LANGEVIN          
     };
 
     Dynamics(Matter *matter, Parameters *parameters);
@@ -40,6 +41,8 @@ public:
     void velocityScale(double temperature);
     void noseHoverVerlet(double temperature);
     void noseHoverVerlet2(double temperature);
+    void langevinVerlet(double temperature);
+  //  Matrix<double, Eigen::Dynamic, 3> langevinAcc(double temperature);
    
 private:
     long nAtoms;
@@ -47,7 +50,7 @@ private:
     Matter *matter;
     Parameters *parameters;
   
-    double dtScale;
+    double dt;
     double kb;
     bool init;
     double vxi1,vxi2,xi1,xi2;
