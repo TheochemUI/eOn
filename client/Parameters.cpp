@@ -177,8 +177,8 @@ int Parameters::load(FILE *file){
             job = Job::BASIN_HOPPING;
         }else if (jobString == "hessian") {
             job = Job::HESSIAN;
-        }else if (jobString == "dimer_dr"){
-            job = Job::DIMER_DR;
+        }else if (jobString == "finite_difference"){
+            job = Job::FINITE_DIFFERENCE;
         }else if (jobString == "dimer_rotation"){
             job = Job::DIMER_ROTATION;
         }else if (jobString == "displacement_sampling"){
