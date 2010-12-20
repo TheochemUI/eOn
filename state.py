@@ -95,12 +95,6 @@ class State:
         """ Loads the reactant.con into a point and returns it. """
         return io.loadcon(self.reactant_path)
 
-    def load_info(self):
-        """ Loads the info file if it has not been loaded. """
-        if self.info == None:
-            self.info = SafeConfigParser()
-            self.info.read(self.info_path)
-
     def save_info(self):
         """ Saves the info object if it exists. """
         if self.info == None:

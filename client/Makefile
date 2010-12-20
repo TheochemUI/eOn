@@ -140,7 +140,7 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     PotentialsInterface.o Potentials.o QMBox.o Quickmin.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o\
-	DimerDrJob.o DimerRotationJob.o DisplacementSamplingJob.o \
+	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
