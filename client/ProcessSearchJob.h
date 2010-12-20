@@ -41,7 +41,7 @@ class ProcessSearchJob : public Job {
         double prefactorsValues[2];
 
         int fCallsSaddle;
-        int fCallsMin;
+        long fCallsMin;
         int fCallsPrefactors;
 };
 
