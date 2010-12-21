@@ -92,6 +92,11 @@ Parameters::Parameters(){
     mdDephaseLoopStop = false;
     mdDephaseLoopMax = 5;
 
+    // [Distributed Replica] //
+    drBalanceSteps = 500;
+    drSamplingSteps = 500;
+    drTargetTemperature = 300.0;
+
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
     bondBoostDVMAX = 0.0;
@@ -348,6 +353,11 @@ int Parameters::load(FILE *file){
         mdRelaxSteps = ini.GetValueL("Dynamics", "post_transition_steps", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
+
+        // [Distributed Replica] //
+        drBalanceSteps = ini.GetValueL("Distributed Replica", "balance_steps", drBalanceSteps);
+        drSamplingSteps = ini.GetValueL("Distributed Replica", "sampling_steps", drSamplingSteps);
+        drTargetTemperature = ini.GetValueF("Distributed Replica", "target_temperature", drTargetTemperature);
 
         // [Thermostat] //
 

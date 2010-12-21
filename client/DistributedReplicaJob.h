@@ -13,6 +13,8 @@
 
 #include "Job.h"
 #include "Parameters.h"
+#include "Eigen/Eigen"
+USING_PART_OF_NAMESPACE_EIGEN
 
 class DistributedReplicaJob: public Job
 {
@@ -21,10 +23,22 @@ class DistributedReplicaJob: public Job
         DistributedReplicaJob(Parameters *params);
         ~DistributedReplicaJob(void);
         void run(int bundleNumber);
+        void balanceStep();
+        void samplingStep();
+        void saveData(int bundleNumber);
 
     private:
         Parameters *parameters;
         Matter *reactant;
+        Matter *final;
+        Matter *min1;
+        Matter *min2;
+        long bl_fcalls;
+        long sp_fcalls;
+        long min_fcalls;
+        long rf_fcalls;
+        bool save_refine;
+        double temperature;
 };
 
 #endif
