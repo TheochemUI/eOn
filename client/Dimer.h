@@ -49,8 +49,8 @@ private:
 
     Matter *matterCenter; // center of the dimer
     Matter *matterDimer; //one configuration of the dimer
-    Matrix<double, Eigen::Dynamic, 3> directionNorm; // direction along the dimer
-    Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNorm; // direction normal to the plane of dimer rotation 
+    Matrix<double, Eigen::Dynamic, 3> direction; // direction along the dimer
+    Matrix<double, Eigen::Dynamic, 3> rotationalPlane; // direction normal to the plane of dimer rotation 
     double eigenvalue; // current curvature along the dimer
     int nAtoms;
     Parameters *parameters;
