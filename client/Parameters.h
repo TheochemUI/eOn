@@ -125,6 +125,11 @@ public:
     double thermoNoseMass;
     double thermoLangvinFriction;
 
+    // [Thermostat]
+    long drBalanceSteps;
+    long drSamplingSteps;
+    double drTargetTemperature;
+
     // [Bond Boost]
     long   biasPotential; 
     long   bondBoostRMDS;

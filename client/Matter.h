@@ -56,6 +56,7 @@ public:
     void deactivatePeriodicBoundaries(); // deactivate periodic boundary conditions
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
+    void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
 
     Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff) const;
     
@@ -94,10 +95,13 @@ public:
 
     bool con2matter(std::string filename); // read con file into Matter, return true if successful
     bool con2matter(FILE *file); // read con file and load data into Matter, return true if successful
+    bool convel2matter(std::string filename); // read con file with both coordinates and velocities into Matter
+    bool convel2matter(FILE *file); // read con file with both coordinates and velocities and load data into Matter
     bool matter2con(std::string filename) const; // print con file from data in Class Matter
     bool matter2con(FILE *file) const; // print con file from data in Class Matter
+    bool matter2convel(std::string filename) const; // print con file with both coordinates and velocities  in Class Matter
+    bool matter2convel(FILE *file) const; // print con file with both coordinates and velocities from data in Class Matter
     void matter2xyz(std::string filename, bool append=false) const; // print xyz file from data in Matter
-    
     Matrix<double, Eigen::Dynamic, 3> getFree() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
