@@ -366,8 +366,8 @@ int Parameters::load(FILE *file){
         thermostatString = toLowerCase(thermostatString);
         if (thermostatString == "andersen") {
             thermostat = Dynamics::ANDERSEN;
-        }else if (thermostatString == "nosehover") {
-            thermostat = Dynamics::NOSE_HOVER;
+        }else if (thermostatString == "nose_hoover") {
+            thermostat = Dynamics::NOSE_HOOVER;
         }else if (thermostatString == "langevin") {
             thermostat = Dynamics::LANGEVIN;
         }

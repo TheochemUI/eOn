@@ -14,13 +14,13 @@ reactions satisfy first order kinetics.
      \mathrm{Pr}(t) = k \exp (-k t)
 
 PRD boosts the simulation linearly with the number of replicas and can be
-easily combined with with other methods for extending the MD time scale, e.g.
-Hyperdynamics method, giving a multiplicative effect in the time scale gain.
+easily combined with other methods for extending the MD time scale, e.g.
+Hyperdynamics method, giving a multiplicative effect in the time scale. 
 
 In Voter's approach,  N replicas of the system are made at first and then the
 momentum in each replica is randomized and dephasing stage is employed to
 decorrelate their motions. The simulation clock starts after this dephasing
-stage and stops when the first transitions is detected in any of replica.
+stage and stops when the first transition is detected in any of replicas.
 Because those N trajectories are independent, they can explore the phase space
 N times faster than using a single trajectory. The overall simulation clock is
 advanced by the sum of all the simulation times in replicas. 

@@ -129,7 +129,7 @@ void ParallelReplicaJob::dynamics()
         Bbm.initial();
     }
 
-    PRdynamics.velocityScale(parameters->temperature);
+    PRdynamics.initialVel(parameters->temperature);
     dephase();
 
     printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
@@ -282,6 +282,7 @@ void ParallelReplicaJob::dynamics()
     }
 }
 
+
 bool ParallelReplicaJob::checkState(Matter *matter)
 {
     Matter tmp(parameters);
@@ -289,14 +290,12 @@ bool ParallelReplicaJob::checkState(Matter *matter)
     ConjugateGradients cgMin(&tmp, parameters);
     cgMin.fullRelax();
     min_fcalls += tmp.getForceCalls();
-    
-    //printf("Max Single Moved distance = %lf\n", tmp.perAtomNorm(*min1));
+
     if (tmp == *min1) {
         return false;
     }
     return true;
 }
-
 
 bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without quench
 {
