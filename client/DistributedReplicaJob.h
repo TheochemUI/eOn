@@ -26,6 +26,7 @@ class DistributedReplicaJob: public Job
         void balanceStep();
         void samplingStep();
         void saveData(int bundleNumber);
+        bool checkState(Matter *matter);
 
     private:
         Parameters *parameters;
