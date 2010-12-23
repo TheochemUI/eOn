@@ -34,8 +34,8 @@ void Dynamics::oneStep(double temperature)
        andersen(temperature);
        andersenVerlet();
     }
-    else if(parameters->thermostat == NOSE_HOVER){
-       noseHoverVerlet(temperature);
+    else if(parameters->thermostat == NOSE_HOOVER){
+       noseHooverVerlet(temperature);
     }
     else if(parameters->thermostat == LANGEVIN){
        langevinVerlet(temperature);
@@ -77,7 +77,7 @@ void Dynamics::fullSteps(double temperature)
     long nFreeCoord = matter->numberOfFreeAtoms()*3; 
     forceCallsTemp = matter->getForceCalls();  
 
-    velocityScale(temperature);
+    initialVel(temperature);
 
     while(!stoped)
     {
@@ -140,7 +140,7 @@ void Dynamics::andersen(double temperature)
     return;
 }
 
-void Dynamics::velocityScale(double temperature)
+void Dynamics::initialVel(double temperature)
 {
     double vNew, kinT, kinE;
     Matrix<double, Eigen::Dynamic, 1> mass;
@@ -155,7 +155,6 @@ void Dynamics::velocityScale(double temperature)
         if(!matter->getFixed(i))
         for (int j = 0; j < 3; j++)
         {
-           // printf("mass[%ld] = %lf\n",i,mass(i));
            vNew = sqrt(kb*temperature/mass[i])*gaussRandom(0.0,1.0);
            velocity(i,j) = vNew;
         }
@@ -164,17 +163,34 @@ void Dynamics::velocityScale(double temperature)
     matter->setVelocities(velocity);  
     kinE = matter->getKineticEnergy();
     kinT = (2*kinE/nFreeCoord/kb);
-//    printf("Tkin_1 = %lf\n",kinT);
     velocity = velocity*sqrt(temperature/kinT);
     matter->setVelocities(velocity);
-//    kinE = matter->getKineticEnergy();
-//    kinT = (2*EKin/nFreeCoord/kb);
-//    printf("Tkin_2 = %lf\n",kinT);
+
 
     return;
 }
 
-void Dynamics::noseHoverVerlet(double temperature){
+void Dynamics::velRescaling(double temperature)
+{
+    double  kinT, kinE;
+    Matrix<double, Eigen::Dynamic, 1> mass;
+    Matrix<double, Eigen::Dynamic, 3> velocity;
+    long nFreeCoord = matter->numberOfFreeAtoms()*3;
+
+    velocity = matter->getVelocities();
+    mass = matter->getMasses();
+
+    matter->setVelocities(velocity);  
+    kinE = matter->getKineticEnergy();
+    kinT = (2*kinE/nFreeCoord/kb);
+//    printf("Tkin_1 = %lf\n",kinT);
+    velocity = velocity*sqrt(temperature/kinT);
+    matter->setVelocities(velocity);
+
+    return;
+}
+
+void Dynamics::noseHooverVerlet(double temperature){
     double smass = parameters->thermoNoseMass;
     Matrix<double, Eigen::Dynamic, 3> vel;
     Matrix<double, Eigen::Dynamic, 3> pos;
@@ -303,4 +319,5 @@ void Dynamics::langevinVerlet(double temperature){
      vel += acc * 0.5 * dt;
      matter->setVelocities(vel); // second update velocities v(n+1)
 }
+
 

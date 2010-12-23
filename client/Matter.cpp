@@ -904,8 +904,8 @@ bool Matter::convel2matter(std::string filename) {
     FILE *file;
     // Add the .con extension to filename if it is not already there.
     int pos=filename.find_last_of('.');
-    if(filename.compare(pos+1, 6, "convel")){
-        filename+=".convel";
+    if(filename.compare(pos+1, 3, "con")){
+        filename+=".con";
     };
     file=fopen(filename.c_str(), "rb");
     if (!file) {

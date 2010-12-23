@@ -97,19 +97,45 @@ void DistributedReplicaJob::run(int bundleNumber)
 }
 
 void DistributedReplicaJob::balanceStep(){
-    long n, bSteps;
+    long n, bSteps,nloop;
+    bool bl_new,stop;
+    Matter *initial;
+    
     n = 0;
+    nloop = 0;
+    bl_new = false;
+    stop = false;
     bSteps = parameters->drBalanceSteps;
+    initial = new Matter(parameters);
+    *initial = *reactant;
 
     Dynamics balanceDynamics(reactant,parameters);
-    printf("Balancing for %ld steps\n",bSteps);
+    printf("Balancing for %ld steps :",bSteps);
 
-    while(n < bSteps){
-        balanceDynamics.oneStep(parameters->temperature);
-        n++;
-        bl_fcalls++;
+    balanceDynamics.velRescaling(parameters->temperature);
+    while(!stop){
+        while(n < bSteps){
+           balanceDynamics.oneStep(parameters->temperature);
+           n++;
+           bl_fcalls++;
+        }
+        bl_new = checkState(reactant);
+        if(bl_new){
+            *reactant = *initial;
+            stop = false;
+            nloop ++;
+        }else{
+            printf(" Succeed!\n");
+            stop = true;
+        }
+        if(nloop >= 5){ 
+            *reactant = *initial;
+            printf("Warning - The system is in a meta-stable state!\n");
+            stop = true;
+        }
     }
     return;
+    delete initial;
 }
 
 void DistributedReplicaJob::samplingStep(){
@@ -185,7 +211,22 @@ void DistributedReplicaJob::saveData(int bundleNumber){
     final->matter2convel(fileProduct);
     fclose(fileProduct);
  
-
     return;
 
 }
+
+
+bool DistributedReplicaJob::checkState(Matter *matter)
+{
+    Matter tmp(parameters);
+    tmp = *matter;
+    ConjugateGradients cgMin(&tmp, parameters);
+    cgMin.fullRelax();
+    min_fcalls += tmp.getForceCalls();
+
+    if (tmp == *min1) {
+        return false;
+    }
+    return true;
+}
+

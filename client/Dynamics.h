@@ -26,7 +26,7 @@ public:
 
     enum{
         ANDERSEN,
-        NOSE_HOVER,
+        NOSE_HOOVER,
         LANGEVIN          
     };
 
@@ -38,9 +38,9 @@ public:
     void andersenVerlet();
     void fullSteps(double temperature); 
     void andersen(double temperature);
-    void velocityScale(double temperature);
-    void noseHoverVerlet(double temperature);
-    void noseHoverVerlet2(double temperature);
+    void initialVel(double temperature);
+    void velRescaling(double temperature);
+    void noseHooverVerlet(double temperature);
     void langevinVerlet(double temperature);
   //  Matrix<double, Eigen::Dynamic, 3> langevinAcc(double temperature);
    
