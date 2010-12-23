@@ -24,9 +24,9 @@ class ParallelReplicaJob: public Job
 
     private:
         void dynamics();
+        long Refine(Matter *mdbuff[],long length);
         bool checkState(Matter *matter);
         bool checkState_nq(Matter *matter);
-        long Refine(Matter *mdbuff[],long length);
         void saveData(int status,int bundleNumber);
         void dephase();
         Parameters *parameters;
