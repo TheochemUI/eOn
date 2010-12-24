@@ -119,7 +119,8 @@ void DistributedReplicaJob::balanceStep(){
            n++;
            bl_fcalls++;
         }
-        bl_new = checkState(reactant);
+        bl_new = balanceDynamics.checkState(reactant,min1);
+    
         if(bl_new){
             *reactant = *initial;
             stop = false;
@@ -134,6 +135,8 @@ void DistributedReplicaJob::balanceStep(){
             stop = true;
         }
     }
+
+    min_fcalls += balanceDynamics.getMinfcalls();
     return;
     delete initial;
 }
@@ -228,5 +231,55 @@ bool DistributedReplicaJob::checkState(Matter *matter)
         return false;
     }
     return true;
+
+}
+
+long DistributedReplicaJob::Refine(Matter *buff[],long length)
+{
+    long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
+    long tmp_fcalls;
+    bool ytest;
+
+    RefineAccuracy = parameters->mdRefineAccuracy; 
+    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
+    ytest = false;
+
+    initial = 0;
+    final = length - 1;
+    a1 = initial;
+    b1 = final;
+    diff = final - initial;
+    test = int((b1-a1)/2);
+  
+    tmp_fcalls = min_fcalls ;
+    min_fcalls = 0;
+    while(diff > RefineAccuracy)
+    {
+
+     //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
+        test = a1+int((b1-a1)/2);
+        ytest = checkState(buff[test]);
+
+        if ( ytest == 0 ){
+            a1 = test;
+            b1 = b1;
+        }
+        else if ( ytest == 1 ){
+            a1 = a1;
+            b1 = test;
+        }
+        else { 
+            printf("Refine Step Failed ! \n");
+            exit(1);
+        }
+        diff = abs( b1 - a1 ); 
+    }
+
+    rf_fcalls = min_fcalls;
+    min_fcalls = tmp_fcalls;
+
+    refined = int((a1+b1)/2)+1;
+    //printf("Refined mdsteps = %ld\n",nsteps_refined);
+    return refined;
 }
 

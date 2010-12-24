@@ -42,6 +42,12 @@ public:
     void velRescaling(double temperature);
     void noseHooverVerlet(double temperature);
     void langevinVerlet(double temperature);
+    long getMDfcalls();
+    long getMinfcalls();
+    long getRefinefcalls();
+    bool checkState(Matter *matter,Matter *min1);
+    long Refine(Matter *buff[],long length,Matter *min1);
+
   //  Matrix<double, Eigen::Dynamic, 3> langevinAcc(double temperature);
    
 private:
@@ -50,6 +56,9 @@ private:
     Matter *matter;
     Parameters *parameters;
   
+    long min_fcalls;
+    long md_fcalls;
+    long rf_fcalls;
     double dt;
     double kb;
     bool init;
