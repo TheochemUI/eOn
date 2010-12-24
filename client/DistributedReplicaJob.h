@@ -27,7 +27,7 @@ class DistributedReplicaJob: public Job
         void samplingStep();
         void saveData(int bundleNumber);
         bool checkState(Matter *matter);
-
+        long Refine(Matter *buff[],long length);
     private:
         Parameters *parameters;
         Matter *reactant;

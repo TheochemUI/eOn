@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "Dynamics.h"
+#include "ConjugateGradients.h"
 #include <math.h>
 
 using namespace helper_functions;
@@ -21,6 +22,9 @@ Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
     kb = 1.0/11604.5; // Kb in unit of eV
     nAtoms = matter->numberOfAtoms();
     init = true;
+    min_fcalls = 0;
+    md_fcalls = 0;
+    rf_fcalls = 0;
 }
 
 Dynamics::~Dynamics()
@@ -40,6 +44,7 @@ void Dynamics::oneStep(double temperature)
     else if(parameters->thermostat == LANGEVIN){
        langevinVerlet(temperature);
     }
+    md_fcalls ++;
     return;
 }
 
@@ -320,4 +325,78 @@ void Dynamics::langevinVerlet(double temperature){
      matter->setVelocities(vel); // second update velocities v(n+1)
 }
 
+long Dynamics::getMDfcalls(){
+     return md_fcalls;
+}
+
+long Dynamics::getMinfcalls(){
+    return min_fcalls;
+}
+
+long Dynamics::getRefinefcalls(){
+    return rf_fcalls;
+}
+
+bool Dynamics::checkState(Matter *matter, Matter *min1){
+    
+    Matter tmp(parameters);
+    tmp = *matter;
+    ConjugateGradients cgMin(&tmp, parameters);
+    cgMin.fullRelax();
+    min_fcalls += tmp.getForceCalls();
+
+    if (tmp == *min1) {
+        return false;
+    }
+    return true;
+}
+
+long Dynamics::Refine(Matter *buff[],long length,Matter *min1)
+{
+    long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
+    long tmp_fcalls;
+    bool ytest;
+
+    RefineAccuracy = parameters->mdRefineAccuracy; 
+    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
+    ytest = false;
+
+    initial = 0;
+    final = length - 1;
+    a1 = initial;
+    b1 = final;
+    diff = final - initial;
+    test = int((b1-a1)/2);
+  
+    tmp_fcalls = min_fcalls ;
+    min_fcalls = 0;
+    while(diff > RefineAccuracy)
+    {
+
+     //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
+        test = a1+int((b1-a1)/2);
+        ytest = checkState(buff[test],min1);
+
+        if ( ytest == 0 ){
+            a1 = test;
+            b1 = b1;
+        }
+        else if ( ytest == 1 ){
+            a1 = a1;
+            b1 = test;
+        }
+        else { 
+            printf("Refine Step Failed ! \n");
+            exit(1);
+        }
+        diff = abs( b1 - a1 ); 
+    }
+
+    rf_fcalls = min_fcalls;
+    min_fcalls = tmp_fcalls;
+
+    refined = int((a1+b1)/2)+1;
+    //printf("Refined mdsteps = %ld\n",nsteps_refined);
+    return refined;
+}
 
