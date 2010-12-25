@@ -46,7 +46,7 @@ public:
     long getMinfcalls();
     long getRefinefcalls();
     bool checkState(Matter *matter,Matter *min1);
-    long Refine(Matter *buff[],long length,Matter *min1);
+    long refine(Matter *buff[],long length,Matter *min1);
 
   //  Matrix<double, Eigen::Dynamic, 3> langevinAcc(double temperature);
    

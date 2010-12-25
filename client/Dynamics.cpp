@@ -351,7 +351,7 @@ bool Dynamics::checkState(Matter *matter, Matter *min1){
     return true;
 }
 
-long Dynamics::Refine(Matter *buff[],long length,Matter *min1)
+long Dynamics::refine(Matter *buff[],long length,Matter *min1)
 {
     long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
     long tmp_fcalls;
