@@ -142,19 +142,60 @@ void DistributedReplicaJob::balanceStep(){
 }
 
 void DistributedReplicaJob::samplingStep(){
-    long n, sSteps;
+    long n, sSteps,ncheck,srefined,nsample,buff_refined;
+    long check_steps, mdbufflength,new_n;
+    bool status;
+    Matrix<double, Eigen::Dynamic, 3> velocity;
     n = 0;
-    sSteps = parameters->drBalanceSteps;
+    ncheck = 0;
+    nsample = 0;
+    status = false;
+    sSteps = parameters->drSamplingSteps;
+    check_steps = parameters->mdCheckFreq;
+    mdbufflength = check_steps;
+    Matter *mdbuff[mdbufflength];
+    for(long i =0; i < mdbufflength;i++){
+        mdbuff[i] = new Matter(parameters);
+    }
 
     Dynamics samplingDynamics(reactant,parameters);
     printf("Sampling for %ld steps\n",sSteps);
 
     while(n < sSteps){
         samplingDynamics.oneStep(parameters->temperature);
-        n++;
-        sp_fcalls++;
+        n++;       
+        *mdbuff[ncheck] = *reactant;
+        ncheck ++;
+        if(ncheck == check_steps){
+            status = samplingDynamics.checkState(reactant,min1);
+            ncheck = 0;
+            if(status){
+                nsample ++;
+                buff_refined = samplingDynamics.refine(mdbuff,mdbufflength,min1);
+         //       buff_refined = Refine(mdbuff,mdbufflength);
+                new_n = buff_refined - parameters->mdRefineAccuracy;
+                new_n = (new_n > 0)?new_n:0;
+                srefined = new_n + n - ncheck;
+                printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
+                *reactant = *mdbuff[new_n];  
+                if(save_refine){
+                    char sbuff[STRING_SIZE];
+                    string sample_saved("sample_saved");
+                    snprintf(sbuff, STRING_SIZE, "_%ld.convel", nsample);
+                    sample_saved += sbuff;
+                    reactant->matter2convel(sample_saved);
+                }               
+                velocity = reactant->getVelocities();
+                velocity *= (-1);
+                reactant->setVelocities(velocity);
+                n = srefined;
+            }
+        }
+            
     }
-
+   
+    status = samplingDynamics.checkState(reactant,min1);
+    printf("final_status = %d\n",status);
     *final = *reactant;
     *min2 = *final;
     ConjugateGradients cgMin2(min2, parameters);     
@@ -218,68 +259,4 @@ void DistributedReplicaJob::saveData(int bundleNumber){
 
 }
 
-
-bool DistributedReplicaJob::checkState(Matter *matter)
-{
-    Matter tmp(parameters);
-    tmp = *matter;
-    ConjugateGradients cgMin(&tmp, parameters);
-    cgMin.fullRelax();
-    min_fcalls += tmp.getForceCalls();
-
-    if (tmp == *min1) {
-        return false;
-    }
-    return true;
-
-}
-
-long DistributedReplicaJob::Refine(Matter *buff[],long length)
-{
-    long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
-    long tmp_fcalls;
-    bool ytest;
-
-    RefineAccuracy = parameters->mdRefineAccuracy; 
-    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
-    ytest = false;
-
-    initial = 0;
-    final = length - 1;
-    a1 = initial;
-    b1 = final;
-    diff = final - initial;
-    test = int((b1-a1)/2);
-  
-    tmp_fcalls = min_fcalls ;
-    min_fcalls = 0;
-    while(diff > RefineAccuracy)
-    {
-
-     //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
-        test = a1+int((b1-a1)/2);
-        ytest = checkState(buff[test]);
-
-        if ( ytest == 0 ){
-            a1 = test;
-            b1 = b1;
-        }
-        else if ( ytest == 1 ){
-            a1 = a1;
-            b1 = test;
-        }
-        else { 
-            printf("Refine Step Failed ! \n");
-            exit(1);
-        }
-        diff = abs( b1 - a1 ); 
-    }
-
-    rf_fcalls = min_fcalls;
-    min_fcalls = tmp_fcalls;
-
-    refined = int((a1+b1)/2)+1;
-    //printf("Refined mdsteps = %ld\n",nsteps_refined);
-    return refined;
-}
 
