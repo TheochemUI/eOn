@@ -1,0 +1,420 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\begin{document}
+\title{eOn Documentation}
+%\author{Henkelman Group}
+\maketitle
+\section{Getting the Code}
+The code is available to users with an account on theory.cm.utexas.edu. It can
+be checked out of the subversion repository with the following command:
+\begin{verbatim}
+    svn checkout svn+ssh://username@theory.cm.utexas.edu/Groups/svn/eon 
+\end{verbatim}
+This will fetch a copy of the latest code to a local directory eon.
+The work flow for making changes, after editing the files, is to first see what
+files you have modified:
+\begin{verbatim}
+    svn status
+\end{verbatim}
+This will give you a one line per changed file output of what you have done
+since you checked out the code. It is often a good idea to run:
+\begin{verbatim}
+    svn update
+\end{verbatim}
+next to make sure that no other developers have committed changes since you
+checked out your copy of the code you should run:
+\begin{verbatim}
+    svn update
+\end{verbatim}
+to get the latest copy of the code. It is possible that some other developer
+modified the same file in the same places that you have. This means that there
+will be some conflicts to resolve. This is a rare thing to happen and you
+should read the \href{http://svnbook.red-bean.com/en/1.5/index.html}{online documentation} to figure out how to handle it. Once you have seen what changes you have made with `svn status` and ensured that you have the latest version of the code with `svn update` you should commit your changes to the repository:
+\begin{verbatim}
+    svn commit -m "a brief message describing your changes"
+\end{verbatim}
+
+\section{Introduction}
+
+\section{Input Files}
+Three input files are required to run an akmc simulation. The config.ini file
+which sets the options for the server code. The parameters.dat file which is
+passed on to the client and the initial configuration of the chemical system to
+be modeled.
+
+\subsection{config.ini}
+
+\subsubsection{aKMC}
+
+\noindent\textbf{Option}:  temperature
+
+\noindent\textbf{Input}:  \emph{300} (Kelvin)
+
+\noindent\textbf{Option}:  thermally\_accessible\_window
+
+\noindent\textbf{Input}:  \emph{20} (kT)
+
+\noindent\textbf{Option}:  maximum\_thermally\_accessible\_window
+
+\noindent\textbf{Input}:  \emph{2}
+
+\noindent\textbf{Option}:  confidence
+
+\noindent\textbf{Input}:  \emph{0.95}
+
+\noindent\textbf{Option}:  max\_kmc\_steps
+
+\noindent\textbf{Input}:  \emph{100000}
+
+\subsubsection{Paths}
+
+\noindent\textbf{Option}:  main\_directory
+
+\noindent\textbf{Input}:  \emph{.}
+
+\noindent\textbf{Option}:  searches\_out
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/searches/out/}
+
+\noindent\textbf{Option}:  searches\_in
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/searches/in/}
+
+\noindent\textbf{Option}:  states
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/states/}
+
+\noindent\textbf{Option}:  results
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s}
+
+\noindent\textbf{Option}:  scratch
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/searches/scratch/}
+
+\noindent\textbf{Option}:  kdb
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/kdbscratch/}
+
+\noindent\textbf{Option}:  superbasins
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/superbasins/}
+
+\noindent\textbf{Option}:  superbasin\_recycling
+
+\noindent\textbf{Input}:  \emph{\%(main\_directory)s/SB\_recycling/}
+
+\subsubsection{Communicator}
+
+\noindent\textbf{Option}:  type
+
+\noindent\textbf{Input}:  \emph{local}, mpi, boinc, cluster, arc
+
+\noindent\textbf{Option}:  search\_buffer\_size
+
+\noindent\textbf{Input}:  \emph{100}
+
+\noindent\textbf{Option}:  job\_bundle\_size
+
+\noindent\textbf{Input}:  \emph{10}
+
+\noindent\textbf{Option}:  client\_path
+
+\noindent\textbf{Input}:  \emph{eonclient}
+
+\noindent\textbf{Option}:  number\_of\_CPUs
+
+\noindent\textbf{Input}:  \emph{1}
+
+\noindent\textbf{Option}:  mpi\_command
+
+\noindent\textbf{Input}: \emph{mpirun -np \%(number\_of\_CPUs)s mpi\_wrapper}
+
+\subsubsection{Displacement}
+
+\noindent\textbf{Option}:  type
+
+\noindent\textbf{Input}:  \emph{random}, undercoordinated, leastcoordinated
+
+\noindent\textbf{Option}:  radius
+
+\noindent\textbf{Input}:  \emph{5.0} (\AA)
+
+\noindent\textbf{Option}:  size
+
+\noindent\textbf{Input}:  \emph{0.01} (\AA)
+
+\noindent\textbf{Option}:  maximum\_coordination
+
+\noindent\textbf{Input}:  \emph{11}
+
+\subsubsection{Recycling}
+
+\noindent\textbf{Option}:  use\_recycling
+
+\noindent\textbf{Input}:  \emph{False}, True (to become default True?)
+
+Whether or not recycling is implemented to try to recycle saddles from reference states.
+
+\noindent\textbf{Option}:  save\_suggestions
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not the saddle suggestions that the recycler makes are saved.
+
+\noindent\textbf{Option}:  displace\_moved\_only
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not to only center displacements around atoms which moved getting from the recycling reference state to the current state.
+
+\noindent\textbf{Option}:  move\_distance
+
+\noindent\textbf{Input}:  \emph{0.2} (\AA)
+
+The distance an atom must have moved from the reference state to the current state for it to be considered ``moved.''
+
+\noindent\textbf{Option}:  use\_sb\_recycling
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not to try to find corresponding states in a new superbasin when exiting a superbasin and recycle from these rather than the immediately previous state.
+
+\subsubsection{KDB}
+
+\noindent\textbf{Option}:  use\_kdb
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\noindent\textbf{Option}:  wait
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\noindent\textbf{Option}:  keep
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\subsubsection{Superbasins}
+
+\noindent\textbf{Option}:  use\_superbasins
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not superbasining is implemented (mutually exclusive with use\_askmc).
+
+\noindent\textbf{Option}:  scheme
+
+\noindent\textbf{Input}:  \emph{transition\_counting}, energy\_level
+
+Which sheme is used to define superbasins during the simulation.
+
+\noindent\textbf{Option}:  number\_of\_transitions
+
+\noindent\textbf{Input}:  \emph{5}
+
+If ``scheme'' is set to number\_of\_transitions, this is the number of times a barrier between two states must be seen before the states are ``superbasined.''
+
+\noindent\textbf{Option}:  energy\_increment
+
+\noindent\textbf{Input}:  \emph{0.1}
+
+Each time the state is visited a separate ``copy'' of its energy level is raised by 0.1 eV.  When the energy of the copy reaches that of the barrier between states, those states are ``superbasined.''
+
+XXX?  I'm not exactly sure how these ``superbasin (novotny)'' ones work, so please check over them.
+
+\noindent\textbf{Option}:  use\_askmc
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not accelerated superbasin kmc is implemented (mutually exclusive with use\_superbasins).
+
+\noindent\textbf{Option}:  askmc\_confidence
+
+\noindent\textbf{Input}:  (0.0 - 1.0), \emph{0.9}
+
+The confidence for AS-KMC.
+
+\noindent\textbf{Option}:  askmc\_barrier\_raise\_param
+
+\noindent\textbf{Input}:  \emph{1.5}
+
+The parameter which sets how much the barriers are raised during AS-KMC.
+
+\noindent\textbf{Option}:  askmc\_high\_barrier\_def
+
+\noindent\textbf{Input}:  \emph{2}
+
+The parameter which defines how high a barrier must be to be considered ``high'' in AS-KMC.
+
+\noindent\textbf{Option}:  askmc\_barrier\_test\_on
+
+\noindent\textbf{Input}:  \emph{True}, False
+
+Whether or not the test to ensure no low barriers are missed during AS-KMC will be implemented.
+
+\noindent\textbf{Option}:  askmc\_connections\_test\_on
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Whether or not the test to ensure no internal low-barrier connections are missed during AS-KMC will be implemented.
+
+\subsubsection{Structure Comparison}
+
+\noindent\textbf{Option}:  energy\_difference
+
+\noindent\textbf{Input}:  \emph{0.1} (eV)
+
+\noindent\textbf{Option}:  distance\_difference
+
+\noindent\textbf{Input}:  \emph{0.05} (eV)
+
+\noindent\textbf{Option}:  use\_identical
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\subsubsection{Debug}
+
+\noindent\textbf{Option}:  keep\_bad\_saddles
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\noindent\textbf{Option}:  keep\_all\_result\_files
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\noindent\textbf{Option}:  random\_seed
+
+\noindent\textbf{Input}:  \emph{random}, integer
+
+\noindent\textbf{Option}:  register\_extra\_results
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\noindent\textbf{Option}:  list\_search\_results
+
+\noindent\textbf{Input}:  \emph{True}, False
+
+\noindent\textbf{Option}:  use\_mean\_time
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\subsection{parameters.dat}
+
+\subsection{reactant.con}
+
+\section{Output Files}
+
+\section{Config Options}
+
+\subsection{Recycling}
+
+\subsubsection{use\_recycling}
+
+\noindent\textbf{Input}:  \emph{False}, True (to become default True?)
+
+Recycling is a process whereby the saddle searches designed to find available processes for a given state take suggestions from a reference state.  This can lead to moderate computational speedup, because the suggested displacements for the saddle searches are often quite close to the actual saddle, and thus convergence to the saddle requires fewer force calls.  To obtain the displacement / mode suggestions, the reference state (normally the previous state unless ``Recycling $\to$ use\_sb\_recycling'' is set to True) and the current state are analyzed such that each atom is classified as either having moved significantly or not moved significantly getting from the reference state to the current state.  Then for each viable process found for the reference state, a corresponding process is recommended to the current state.  This is done by stepping through each atom in the reference state, and if it is ``unmoved'' compared to the current state, then its position in the suggested saddle is taken as that of its position in the process saddle of the reference state.  If it is ``moved'' compared to the current state, then whatever motion it took in the process saddle is applied to the current state.  Recycling meta-data is stored in the directory of each state (``main directory''/states/``\#''/recycling\_info).
+
+For example, consider the case of two, non-adjacent adatoms on a 100 surface, each of which has four available processes, moving up/left/down/right.  If, for example, the left one shifts to the left, the system is in a new state, but if recycling is on, much information can be gleaned from the previous state.  The recycler steps through those 8 known processes from the previous state, and in each of the four in which the right (unmoved) adatom moves, its location in the saddle will be suggested directly.  In each of the four in which the left (moved) adatom moves, its motion in the process will be applied to the current state, so it should have be reasonably close in each case to the four movement directions along the surface.  Thus, recycling can lower the computational cost of finding saddle points.
+
+A few options are available with recycling:
+
+\subsubsection{save\_suggestions}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+If save\_suggestions is turned on, a sub-directory in each state directory called saddle\_suggestions is created and the coordinate files of the suggestions are saved there.
+
+\subsubsection{displace\_moved\_only}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+If this option is set to True, then the displacements which are made after recycling suggestions have been completed are centered only around the atoms which moved getting from the reference state to the current state.  If there is not a list of moved atoms available (for example, if the system is still at state 0), then the displacement defined under ``Displacement $\to$ type'' is used.  This can significantly decrease the number of searches required per state, but assumes that atoms which are not `close' to moved atoms will only have processes which were available in the reference state.
+
+\subsubsection{move\_distance}
+
+\noindent\textbf{Input}:  0.2 (\AA)
+
+This defines the distance an atom must have been displaced from the reference state to the current state for it to be considered ``moved.''
+
+\subsubsection{use\_sb\_recycling}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+This option dictates whether ``superbasin recycling'' is turned on.  When set to true, this monitors the development of superbasins, and makes the assumption that when a superbasin is exited from, it is possible that the next state may be in a similar superbasin.  In that case, rather than always using the previous state as the reference state for recycling, this will try to find corresponding states in a new superbasin and recycle from a better reference state to achieve highest recycle success.
+
+Perhaps the easiest example involves a trimer and a single adatom on a 100 surface in which the rotation of the trimer may be considered a superbasin and the movement of the adatom is the most likely `escape' from the superbasin to a new state.  However, the trimer is likely to again be in a rotating basin.  Thus when a superbasin is exited from, this method determines what ``corresponding states'' are likely to look like by finding the process from each superbasin state which involves similar movement to the process which led to the superbasin exit.  If no such process exists for any of the superbasin states, then normal recycling resumes.  Otherwise, superbasin recycling provides (hopefully) more appropriate reference states to the states in the new superbasin as they are stepped to in akmc.
+
+\subsection{Superbasins}
+
+\subsubsection{use\_superbasins}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+\subsubsection{scheme}
+
+\noindent\textbf{Input}:  \emph{transition\_counting}, energy\_level
+
+\subsubsection{number\_of\_transitions}
+
+\noindent\textbf{Input}:  \emph{5}
+
+\subsubsection{energy\_increment}
+
+\noindent\textbf{Input}:  \emph{0.1}
+
+\subsubsection{use\_askmc}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+The accelerated superbasin kmc (AS-KMC) method was proposed by Chatterjee and Voter \footnote{J. Chem. Phys. {\bf 132}, 194101 (2010)} to accelerate exit from superbasins during a KMC simulation, sacrificing the accuracy of intra-superbasin dynamics, but maintaining the accuracy in superbasin exit time and direction.  This can drastically increase the timescales achievable in KMC simulations.
+
+The basic process of AS-KMC involves gradually raising process barriers found to be inside of a superbasin such that exiting from the basin gradually becomes more likely.  The method is designed to raise all the barriers in the superbasin simultaneously.  Once a particular barrier has been crossed a certain number of times, $N_f$ (more on determining $N_f$ shortly), a check is performed to determine whether or not the current state is part of a superbasin.  This is called the Superbasin Criterion.  In the Superbasin Criterion, a search is performed, originating at the current state and proceeding outward through all low-barrier processes to adjacent states, and then through all low-barrier processes from each of these states, etc.  For each low-barrier process found, if the process has been followed fewer than $N_f$ times, the Superbasin Criterion fails and no barriers are raised.  Thus, in the outward-expanding search from the originating state, the search continues until either a low-barrier process has been seen fewer than $N_f$ times (and the Criterion fails) or until all connected low-barrier processes have been found and have been crossed at least $N_f$ times (the edges of the superbasin are then defined and the Criterion passes).  If the Superbasin Criterion  passes, \emph{all} the low-barrier processes (each of which as been crossed $N_f$ times) are raised.
+
+Note, that this method may be contrasted to the other implemented method to accelerate superbasin exit, referred to in the config file as Superbasins $\to$ use\_superbasins.  This method involves determining that the current state is in a superbasin by one of a number of methods, then, given the states in the superbasin, calculating the exact rates corresponding to exiting from the superbasin.  Thus, no intra-superbasin dynamics are preserved (even inaccurate dynamics), but it may be expected that less error might result from using the other method.
+
+Several parameters dictate the functioning of the AS-KMC method.  These parameters dictate (1) how much the barriers are raised each time the Superbasin Criterion passes, (2) what defines a ``low-barrier'' for use in the Superbasin Criterion, and (3) the approximate amount of error the user might expect in eventual superbasin exit direction and time compared to normal KMC simulation.  Also, two of these parameters in combination determine $N_f$, the number of times each low-barrier process must be seen before barriers may be raised in a superbasin.
+
+\subsubsection{askmc\_barrier\_raise\_param}
+
+\noindent\textbf{Input}:  \emph{1.5}
+
+(1) $\alpha$ -- When barriers are raised in the simulation, they are raised such that the new rate constant is equal to the previous rate constant divided by $\alpha$. Chatterjee and Voter recommend a value of 2 for many systems; however, when the time scales from the system are not known and time scales may overlap, they recommend letting $1 \le \alpha \le \gamma^{1/2} \ll N_f$.
+
+\subsubsection{askmc\_high\_barrier\_def}
+
+\noindent\textbf{Input}:  \emph{2}
+
+(2) $\gamma$ -- When performing the Superbasin Criterion, a process is considered a ``low-barrier'' process only in relation to the original process that started the Superbasin Criterion ($\text{the process seen with number of sightings}~\ge N_f$).  If the process in question has a barrier less than  $ln(\gamma) \cdot kT$ more than the original process, it is considered to be a low-barrier process.  Chatterjee and Voter recommend a value of 2 for most systems.
+
+\subsubsection{askmc\_confidence}
+
+\noindent\textbf{Input}:  (0.0 - 1.0), \emph{0.9}
+
+(3) $\delta$ -- $\delta$ is a basic measure of the expected error in superbasin exit direction and time.  Given a value for $\delta$, the value of $N_f$ is calculated based on the following:
+
+\begin{equation}
+N_f \ge \frac{\alpha - 1}{\delta} \cdot ln(\frac{1}{\delta}) \nonumber
+\end{equation}
+
+Therefore, as $\delta$ approaches $0$, $N_f$ approaches $\infty$ and the simulation will be carried out nearly like normal KMC because the Superbasin Criterion will be rarely checked and pass.  Thus no superbasin acceleration will be achieved either.  Thus the higher the value of delta, the greater the computational speedup and the higher possible error.
+
+In this software, ``confidence'' is set by the user, rather than $\delta$ directly, to avoid confusion with ``confidence'' and ``error''.  Thus to achieve a delta of 0.2, the user would enter a confidence of 0.8.
+
+Finally, because these simulations are actually AKMC, two extra options are provided to ensure the accuracy of the Superbasin Criterion:
+
+\subsubsection{askmc\_barrier\_test\_on}
+
+\noindent\textbf{Input}:  \emph{True}, False
+
+First, because the implemented Superbasin Criterion actually only considers processes which have been passed over at least once, there is some chance that a low-barrier process in a superbasin might have not been visited at all while all other low-barrier processes have been visited at least $N_f$ times.  This is unlikely, but this test verifies that such has not happened, considering even processes which have not been visited when determining if the Superbasin Criterion has passed.  This check should not add significant overhead.
+
+\subsubsection{askmc\_connections\_test\_on}
+
+\noindent\textbf{Input}:  \emph{False}, True
+
+Second, there is a method, connections test, to ensure that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier.  This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when finding product states of unvisited processes.
+
+\end{document}

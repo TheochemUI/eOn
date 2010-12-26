@@ -1,0 +1,191 @@
+
+.. _akmc:
+
+================================
+Adaptive kinetic Monte Carlo
+================================
+
+The adaptive kinetic Monte Carlo (aKMC) method is a method to course grain
+molecular dynamics for rare event systems.  A rare event system is one in which
+the interesting dynamics is governed by short transitions between stable
+states.  The fast vibrational motion within a stable state is considered to be
+in equilibrium and described statisitcally.  A transition between states is
+assumed to be first order, since it is a rare events, and the rate of the
+transition is calculated from the harmonic approximation to transition state
+theory (hTST).
+
+The hTST approximation of a transition rate is calculated from the energy
+difference between the saddle point along the minimum energy path for the
+transition and the initial minimum.  The vibrational modes at these points are
+also used to calculate the prefactor.  An hTST rate is of the standard
+Arrhenius form :math:`R = v \exp (-\Delta E/kT)` where :math:`v` is the product
+of all positive modes at the minimum divided by those at the saddle,
+:math:`\Delta E` is the energy barrier, and :math:`kT` is the thermal enregy.
+
+In order to propogate the dynamics within aKMC, a list of all possible rates
+leading away from the current stable state to any other state is required.
+Formally, there are an enourmously large number of such transitions (also
+called processes) available in a typical atomic system, but in fact only the
+transitions with the fastest rates with the highest probability of happening
+are required.  The search for processes is then limited to those with rates on
+the same order as the fastest processes found.
+
+The search for possible processes is the primary task of the aKMC simulations.
+Each client does a minimum mode (minmode) following search from the miminum of
+the current state and tries to find a saddle point which connects from the
+minimum in the current state to an adjacent state.  A saddle point is connected
+to a state if a minimization initiated along the negative mode at the saddle
+converges to the minimum of that state.
+
+Each client is tasked with one or more such searches.  It climbs from the
+minimum to a saddle, and if successful, it minimizes on either side of the
+saddle to determine the connecting states.  The prefactor for the transition is
+also calculated by finite difference and the hTST rate is calculated.  These
+data are reported back to the server.
+
+The server is reponsible for the time evolution of the system by the KMC
+algorithm.  Each process leading to a new state is tabulated in a rate table
+and one transition is selected stochastically with a probability proportional
+to its rate.  The transition time is drawn from a first-order distribution for
+the total rate of escape from the state.
+
+The following describes options for running an aKMC simulation, including both
+KMC options on the server-side and minmode following saddle point searching
+options on the client-side.  Each option is specified in the config.ini file
+under the section name given.  Default values for each option is given along
+with a brief description.
+
+.. include:: config_akmc.txt
+
+.. include:: config_process_search.txt
+
+
+
+Saddle Search
+-------------
+
+A saddle search is initiated by making a local displacement of atoms from their
+position at the minimum of the current state.  This displacement can be done
+using the different strategies indicated by the **displace_type** option, and the
+following parameters.  If the user knows something about the local environment
+where reactions are likely to take place in the system, this information can be
+used to make saddle searches more efficient by getting them started in the
+right part of configuration space.
+
+**displace_type**
+
+    Default: Random
+
+    Options:
+
+        *random*: Select an atom at random from the free atoms in the
+        configuration.
+
+        *least_coordinated*: Determine the lowest coordination number of all
+        atoms in the configuration and select one atom at random with that
+        coordination number.
+
+        *under_coordinated*: Select a random atom with coordination less than
+        *displace_max_coordination*.
+
+**displace_radius** 
+
+    Default: 5.0
+    
+    Atoms within this distance of the epicenter will be displaced.
+
+**displace_magnitude**
+
+    Default: 0.01
+
+    The standard deviation of the magnitude of the displacement.
+
+**displace_max_coordination**
+
+    Default: 11
+
+    When using *under_coordinated* as the displacement type, choose only atoms with
+    a coordination equal to or less than this.
+
+**min_mode_method**
+
+    Default: dimer
+
+    Options:
+
+        *dimer*: Use the dimer min-mode method.
+
+        *lanczos*: Use the Lanczos min-mode method.
+
+**max_energy** 
+
+    Default: 20.0
+    The energy at which a saddle search is considered bad and terminated.
+
+
+.. include:: config_dimer.txt
+
+
+
+Hessian
+-------
+
+Options for controlling how Hessian matricies are calculated.
+
+**type** 
+
+    Default: reactant
+
+    The Hessian to be calculated has to be one of *reactant*, *saddle*, or
+    *product*.
+
+**min_displacement** 
+
+    Default: 0.25
+
+    Minimum amount that an atom has to move to be included in the Hessian
+    calculation.
+
+**within_radius** 
+
+    Default: 5.0
+
+    Atoms within this radius of moving atoms are included in the Hessian.
+
+Debug
+-----
+
+Parameters that are generally used to help debug calculations added under
+**[Debug]** section.
+
+**keep_bad_saddles** 
+
+    Default: false
+
+    Keep data about bad saddles. If true, the result files for failed saddle
+    searches are kept in the *badprocdata* directory within the state
+    directory for that search. 
+
+**keep_all_result_files** 
+
+    Default: false
+
+    Stores all result files in main_directory/results
+
+**register_extra_results**
+
+    Default: false
+
+    Register processes found for a state after leaving that state.
+
+**use_mean_time** 
+
+    Default: false
+
+    Select transition times from the mean of the exponential distribution of escape times.
+
+**target_trajectory** 
+
+    Default: None
+
+    Follow the state-to-state trajectory of another akmc simulation.
