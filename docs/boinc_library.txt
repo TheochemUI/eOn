@@ -1,0 +1,26 @@
+
+.. _boinc_library:
+
+=============
+BOINC library
+=============
+
+When BOINC is applied to handle communication a series of addition dependencies must be fulfilled. On an Ubuntu 10 installation all these dependencies can be obtained via the package manager. As the client code is compiled against a *BOINC library*, this library must be created first (`CompileApp <http://boinc.berkeley.edu/trac/wiki/CompileApp>`_).
+
+Dependencies
+------------
+
+* ``libarchive-dev``
+* ``libssl-dev``
+* ``libcurl4-gnutls-dev``
+
+Installation
+------------
+
+Following should the client BOINC library by build with the commands::
+
+    ./configure --disable-server --disable-client LDFLAGS=-static-libgcc
+    make
+    sudo make install
+
+Where the install option makes the created libraries and header files accessible system wide.
