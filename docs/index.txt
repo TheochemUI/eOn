@@ -12,6 +12,7 @@ Contents
    overview
    download
    installation
+   setup
    communicator
    potentials
    eon
