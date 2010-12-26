@@ -1,0 +1,4 @@
+cp .displacement_passed.con.orig displacement_passed.con
+cp .config_passed.ini.orig config_passed.ini
+cp .mode_passed.dat.orig mode_passed.dat
+cp .reactant_passed.con.orig reactant_passed.con

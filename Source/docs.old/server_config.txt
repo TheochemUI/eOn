@@ -1,0 +1,269 @@
+================================
+Server configuration
+================================
+
+The eOn server uses a single configuration file, config.ini. The format of the
+file is the *.ini* format. The *.ini* format consists of sections, keys, and
+values.  Each section header is surrounded by square brackets, and is followed
+by the key/value pairs. For example, to set the *temperature* key of the 
+*[akmc]* section to the value *450*, your config.ini file would include the 
+lines:
+
+.. code-block:: none
+
+    [akmc]
+    temperature = 450
+    
+The following is a list of config.ini sections and their corresponding keys.
+Default values for the keys are listed next to the key in square brackets.
+
+\[aKMC\]
+--------------------------------
+**temperature** [300]
+    The temperature, in kelvins, that the simulation will run at. 
+
+**thermally_accessible_window** [20]
+    Processes with barriers within this number of kT above the lowest barrier 
+    will be used in the rate table.
+
+**maximum_thermally_accessible_window** [2] 
+    Processes with barriers between the smallest barrier and this multiplied by
+    thermally_accessible_window will be stored, in the event that they are 
+    thermally accessible later. Processes with barriers beyond this 
+    will be discarded.
+
+**confidence** [0.99]
+    The confidence criterion for moving to the next state.
+
+**max_kmc_steps** [100000]
+    The maximum number of steps per execution of akmc.py.
+    
+
+\[Paths\]
+--------------------------------
+**main_directory** [./]
+    The root of the simulation directory. Configuration files
+    and the initial reactant are here.
+
+**searches_out** [main_directory/searches/out/]
+    ???
+
+**searches_in** [main_directory/searches/in/]
+    ???
+
+**states** [main_directory/states/]
+    Where all of the information about individual states is 
+    located.
+
+**results** [main_directory/]
+    ??? 
+
+**scratch** [main_directory/searches/scratch/]
+    ???
+
+**kdb** [main_directory/kdbscratch/]
+    Where kdb keeps its temporary files.
+
+**superbasins** [main_directory/superbasins/]
+    ???
+
+**superbasin_recycling** [main_directory/SB_recycling]
+    ???
+
+**potential_files** [main_directory/potfiles]
+    For extra files needed by the client for the potential.
+
+
+\[Communicator\]
+--------------------------------
+**type** [local]
+    ???
+
+**search_buffer_size** [1]
+    ???
+
+**job_bundle_size** [1]
+    ???
+
+**client_path** [eonclient]
+    The path to the eon client binary. For local communicator.
+
+**number_of_CPUs** [1]
+    The number of CPUs to run with on the local communicator.
+
+**script_path** [.]
+    ???
+    
+**name_prefix** [akmc]
+    ???
+    
+**queued_jobs** [queued_jobs.sh]
+    ???
+    
+**cancel_job** [cancel_job.sh]
+    ???
+
+**submit_job** [submit_job.sh]
+    ???
+
+
+\[Displacement\]
+--------------------------------
+**type** [random]
+    Epicenter selection criterion. Options are: *random*, *least_coordinated*, 
+    and *under_coordinated*. The *random* option will select an atom at random 
+    from the free atoms in the configuration. The *least_coordinated* option 
+    will determine the lowest coordination number of all atoms in the 
+    configuration and select one atom at random with that coordination number. 
+    The *undercoordinated* option will select a random atom with coordination 
+    less than *maximum_coordination*.
+
+**radius** [5.0]
+    Atoms within this distance of the epicenter will be displaced. (angstroms) 
+                                                                       
+**size** [0.01]
+    The standard deviation of the magnitude of the displacement. (angstroms)
+    
+**cutoff** [3.3]
+    Atoms within this distance of each other are considered neighbors.
+    
+**use_covalent** [False]
+    Use the covalent radii of atoms to determine neighbors.
+
+**covalent_scale** [1.3]
+    Multiply covalent radii by this amount before determining neighbors.
+    
+**brute_neighbors** [False]
+    Determine neighbors by brute force (use this with nonorthogonal boxes).
+
+**maximum_coordination** [11]
+    When using undercoordinated as the epicenter type, choose only atoms with
+    a coordination equal to or less than this.    
+
+**stdev_translation** [0.2]
+    ???
+
+**stdev_rotation** [1.0]
+    ???
+
+**molecule_list** [???]
+    ???
+
+**disp_at_random** [1 (boolean?)]
+    ??? (boolean?)
+
+    
+\[Recycling\]
+--------------------------------
+**use_recycling** [False]
+    Turn recycling on/off.
+    
+**save_suggestions** [False]
+    Store the recycling saddle point suggestions. (where are they stored?)
+    
+**displace_moved_only** [False]
+    ???
+    
+**move_distance** [0.2]
+    ???
+    
+**use_sb_recycling** [False]
+    ???
+    
+
+
+\[Superbasins\]
+--------------------------------
+**use_superbasins** [False]
+    ???
+    
+**scheme** [transition_counting]
+    ???
+    
+**number_of_transitions** [5]
+    ???
+    
+**energy_increment** [0.01]
+    ???
+    
+**use_askmc** [False]
+    ???
+    
+**askmc_confidence** [0.9]
+    ???
+    
+**askmc_barrier_raise_param** [1.5]
+    ???
+    
+**askmc_high_barrier_def** [2]
+    ???
+    
+**askmc_barrier_test_on** [True]
+    ???
+    
+**askmc_connections_test_on** [False]
+    ???
+    
+
+\[Structure Comparison\]
+--------------------------------
+**energy_difference** [0.01]
+    How close in energy two configurations must be to be considered 
+    energetically equivalent.
+    
+**distance_difference** [0.05]
+    The maximum distance two mapped atoms may be for two configurations to be 
+    considered equivalent.
+    
+**use_identical** [True]
+    Turns identical on/off.
+
+**neighbor_cutoff** [3.3]
+    Atoms within this distance of each other are considered neighbors.
+
+**use_covalent** [False]
+    Use the covalent radii of atoms to determine neighbors.
+
+**covalent_scale** [1.3]
+    Multiply covalent radii by this amount before determining neighbors.
+
+**brute_neighbors** [False]
+    Determine neighbors by brute force (use this with nonorthogonal boxes).
+
+    
+
+\[Debug\]
+--------------------------------
+**keep_bad_saddles** [False]
+    Keep data about bad saddles ()What is bad, what is kept, and where is it 
+    kept?)
+    
+**interactive_shell** [True]
+    ??? (we have an interactive shell?)
+    
+**keep_all_result_files** [False]
+    Stores all result files in main_directory/results
+    
+**random_seed** [random]
+    The random seed. "random" for a random random seed.
+    
+**register_extra_results** [False]
+    Register processes found for a state after leaving that state.
+    
+**list_search_results** [True]
+    ???
+    
+**use_mean_time** [False]
+    ???
+    
+**target_trajectory** [False]
+    Follow another akmc simulation.
+    
+Default config.ini
+--------------------------------
+.. literalinclude:: ../default_config.ini
+
+
+
+
+

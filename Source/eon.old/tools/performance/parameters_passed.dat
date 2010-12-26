@@ -1,0 +1,56 @@
+[Default]
+REACTANT_STATE_TAG=0
+
+# describtion RANDOM_SEED
+# -1 = time is used to seed the random generator
+RANDOM_SEED=-1
+
+# describtion POTENTIAL_TAG
+# 0 = a new potential provided by the user, code will crash at runtime if used and no new potential has been defined!
+# 1 = lennard-jones potential
+# 2 = morse
+# 3 = emt
+# 4 = edip
+# 5 = VASP
+# 6 = Tersoff
+# 7 = Stilling Weber
+# 8 = Lenosky
+# 9 = Lennard-jones binary
+# 10 = Aluminum
+POTENTIAL_TAG=2
+
+# describtion POTENTIAL_NO_TRANSLATION
+# 0 = the system is free to translate
+# 1 = translation of the system is prevented
+POTENTIAL_NO_TRANSLATION=1
+
+# describtion GET_PREFACTORS_TAG
+# 0 = processes prefactors are not determined
+# 1 = processes prefactors are determined
+GET_PREFACTORS_TAG=0
+
+maximum_iterations=512
+
+
+
+[Saddle_Point]
+# describtion LOWEST_EIGENMODE_DETERMINATION
+# 1 = dimer method
+# 2 = lanczos method
+LOWEST_EIGENMODE_DETERMINATION=1
+# Refine saddle point.
+REFINE=0
+
+TYPE_PERTURBATION=2
+
+# tweakable parameters
+converged_Relax=0.001
+converged=0.001
+max_Energy=10.000000
+
+[Hessian]
+min_Displacement=0.250000
+within_Radius_Displaced=3.500000
+
+[Dimer]
+rotations=2

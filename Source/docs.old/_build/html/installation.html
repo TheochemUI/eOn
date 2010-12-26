@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; eOn v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/eon.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="top" title="eOn v1.0 documentation" href="index.html" />
+    <link rel="next" title="Setup" href="setup.html" />
+    <link rel="prev" title="Download" href="download.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="setup.html" title="Setup"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="download.html" title="Download"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Eon is divided up into two separate programs: a server and a client. The client
+does most of the computation (<cite>e.g.</cite> saddle searches, minimizations, and
+molecular dynamics) while the server creates the input for the client and
+processes its results.</p>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><dl class="first docutils">
+<dt>Server</dt>
+<dd><ul class="first last simple">
+<li>python (&gt;=2.4)</li>
+<li>numpy (&gt;=1.2.1)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Client</dt>
+<dd><ul class="first last simple">
+<li>make</li>
+<li>gcc (&gt;=4.0)</li>
+<li>(optional) gfortran or Intel Fortran Compiler</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="server-installation">
+<h2>Server Installation<a class="headerlink" href="#server-installation" title="Permalink to this headline">¶</a></h2>
+<p>It is most convenient to install eon to a directory in your <tt class="docutils literal"><span class="pre">$HOME</span></tt> folder.
+For the purposes of this guide we will assume that you have installed eon to
+<tt class="docutils literal"><span class="pre">$HOME/eon</span></tt>. You will want to either add this directory to your <tt class="docutils literal"><span class="pre">$PATH</span></tt> or
+make a symlink from the main eon program (<tt class="docutils literal"><span class="pre">eon.py</span></tt>) to a directory that is in
+your <tt class="docutils literal"><span class="pre">$PATH</span></tt>.</p>
+</div>
+<div class="section" id="client-installation">
+<h2>Client Installation<a class="headerlink" href="#client-installation" title="Permalink to this headline">¶</a></h2>
+<p>The client source code is located in a folder named <tt class="docutils literal"><span class="pre">client</span></tt> under the main
+eon directory.  For most situations you will only need to run the make command
+and a binary named <tt class="docutils literal"><span class="pre">client</span></tt> will be built in this directory.</p>
+<p>If you wish to use the potentials that depend on fortran you will need a
+fortran compiler. However, this is optional and you can compile the client
+without fortran support by running the command <tt class="docutils literal"><span class="pre">make</span> <span class="pre">NO_FORTRAN=1</span></tt>. If you
+are using gfortran the supplied Makefile should work out of the box. If you are
+using the Intel Fortran Compiler (ifort) you will need to edit the Makefile to
+change <tt class="docutils literal"><span class="pre">FC</span></tt> (fortran compiler), <tt class="docutils literal"><span class="pre">FFLAGS</span></tt> (fortran compiler flags), and
+<tt class="docutils literal"><span class="pre">FAR</span></tt> (fortran archiver) variables to work for your system.</p>
+<p>For most setups the binary <tt class="docutils literal"><span class="pre">client</span></tt> should be copied to a directory in your
+<tt class="docutils literal"><span class="pre">$PATH</span></tt> and named <tt class="docutils literal"><span class="pre">eonclient</span></tt>. Otherwise you will need to give the path to
+the client binary in your <tt class="docutils literal"><span class="pre">config.ini</span></tt>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Installation</a><ul>
+<li><a class="reference external" href="#dependencies">Dependencies</a></li>
+<li><a class="reference external" href="#server-installation">Server Installation</a></li>
+<li><a class="reference external" href="#client-installation">Client Installation</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="download.html"
+                                  title="previous chapter">Download</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="setup.html"
+                                  title="next chapter">Setup</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/installation.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="setup.html" title="Setup"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="download.html" title="Download"
+             >previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>
