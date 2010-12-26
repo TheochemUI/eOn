@@ -1,0 +1,207 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+
+\usepackage{amsmath}
+
+\begin{document}
+\title{eOn Install Documentation}
+\author{Jonsson Group}
+\maketitle
+
+\section{Package manager}
+The different components of a Boinc installation might be obtained using a package manager.  However, we have not tried such an installation.
+
+\section{Boinc client libraries on Ubuntu 10}
+Take a look at http://boinc.berkeley.edu/trac/wiki/ServerIntro, which served as inspiration for this text. In this document \texttt{...} is used to represent a path that depends on the specific installation.
+%
+\subsection{Prerequisites}
+Start by ensuring that all the packages listed below are installed:
+\begin{itemize}
+\item libssl-dev
+\item libglut3-dev
+\item glutg3-dev
+\item libglui-dev
+\item libglitz-glx1-dev
+\item libsdl1.2-dev
+\item libcurl4-gnutls-dev
+\item freeglut3
+\item freeglut3-dev
+\item libsm-dev
+\item libice-dev
+\item libxmu-dev
+\item libxi-dev
+\item libx11-dev
+\item libjpeg62-dev
+\item libgtk2.0-0
+\item libgtk2.0-0-dev
+\end{itemize}
+%
+\subsection{Making the Boinc client libraries}
+%Build the boinc client libraries.
+\begin{verbatim}
+	./configure --disable-server
+	make
+	sudo make install
+\end{verbatim}
+Where the install option makes the created libraries and header files accessible system wide.
+%
+\section{Boinc server setup on Ubuntu 10}
+Take a look at http://boinc.berkeley.edu/trac/wiki/ServerIntro, which served as inspiration for this text.
+%
+\subsection{Prerequisites}
+Start by ensuring that all the packages listed below are installed:
+\begin{itemize}
+\item apache2-mpm-prefork
+\item libapache2-mod-php5
+\item mysql-client-5.0
+\item mysql-server-5.0
+\item php5-mysql
+\item php5-cli
+\item php5-gd
+\item phpmyadmin
+\item python-mysqldb
+\item libmysql++-dev
+\item libssl-dev
+\end{itemize}
+%
+\subsubsection{boincadm user}
+Make a new user(boincadm) to handle boinc:
+\begin{verbatim}	
+sudo useradd -m -s /bin/bash boincadm
+\end{verbatim}
+%
+Add www-data to group boincadm with:
+\begin{verbatim}
+sudo usermod -G boincadm www-data
+\end{verbatim}
+%
+\subsubsection{MySQL}
+Start mysql:
+\begin{verbatim}
+mysql -h localhost -u root [-p] 
+\end{verbatim}
+Where the \texttt{-p} only should be used if the MySQL \texttt{root} user got a password.
+%
+Configure mysql
+\begin{verbatim}
+GRANT ALL ON *.* TO 'boincadm'@'localhost';
+SET PASSWORD FOR 'boincadm'@'localhost'='XXX'; 
+exit 
+\end{verbatim}
+%
+where \texttt{XXX} represents the password.
+%
+\subsection{Making the Boinc server software using boincadm}
+Start by changing user to boincadm:
+\begin{verbatim}
+su boincadm
+\end{verbatim}
+It might be nesseary to use \texttt{sudo}.
+
+Get the latest stable code from BOINC
+\begin{verbatim}
+svn co http://boinc.berkeley.edu/svn/branches/server_stable
+\end{verbatim}
+%
+Rename the obtained folder to boinc
+\begin{verbatim}
+mv server_stable boinc
+cd boinc
+\end{verbatim}
+%
+Build boinc server. 
+\begin{verbatim}
+./_autosetup   
+./configure --disable-client
+make 
+\end{verbatim}
+%
+If \texttt{./autosetup} complains about a too old version of autoreconf the change line \texttt{if check\_version autoreconf 2.58} to \texttt{if check\_version /usr/bin/autoreconf2.50} in this file.
+%
+\section{Making a project}
+Make sure the hostname is the same as the address used when connecting to the computer. This setting are specified in \texttt{/etc/hosts} and \texttt{/etc/hostname}.
+
+Enter the Boinc tools directiory and create a new project:
+\begin{verbatim}
+cd .../boinc/tools
+./make_project eon 
+\end{verbatim}
+where \texttt{eon} can be replaced with another project name if preferred.  
+Follow the instructions in the created readme file until the command bin/xadd.
+
+\subsection{Secure the ops page}
+Go to eon/html/ops and run:
+\begin{verbatim}
+cd .../eon/html/ops
+htpasswd -c .htpasswd USERNAME
+\end{verbatim}
+where \texttt{USERNAME} is the name of the user that should have access to the \texttt{ops} page.  
+In \texttt{eon/html/project/project.inc} edit \texttt{function auth\_ops()} by changing the default deny access \texttt{auth\_ops\_deny()} to \texttt{//auth\_ops\_deny()}.
+\begin{verbatim}
+cd .../eon/html/project/
+nano  project.inc
+\end{verbatim}
+
+\subsection{Prepare the eOn to use the Boinc Communicator}
+Go to the root of the project and replace \texttt{project.xml} with the one provided by the eon source code in the directory boinc
+\begin{verbatim}
+cd .../eon
+mv project.xml project.xml.org
+cp /PATH_EON_SOURCE_CODE/boinc/project.xml .
+\end{verbatim}
+%
+Furthermore copy the template files:
+\begin{verbatim}
+cp /PATH_EON_SOURCE_CODE/boinc/client_re.xml ./template/client_re.xml
+cp /PATH_EON_SOURCE_CODE/boinc/client_wu.xml ./template/client_wu.xml
+\end{verbatim}
+%
+Compile the eon client with Boinc support but without fortran potentials:
+\begin{verbatim}
+cd /PATH_EON_SOURCE_CODE/client
+make BOINC=1 NO_FORTRAN=1
+\end{verbatim}
+%
+Copy the obtained executeable to the application area of the Boinc project
+\begin{verbatim}
+cd .../eon/apps/
+mkdir client
+cd client
+mkdir client_VERSION_PLATFORM
+cd client_VERSION_PLATFORM
+cp /PATH_EON_SOURCE_CODE/client client_VERSION_PLATFORM
+\end{verbatim}
+where the \texttt{client\_VERSION\_PLATFORM} would be \texttt{client\_1.0\_i686-pc-linux-gnu} for the first version (\texttt{1.0}) of the executeable running on intel architecture on a linux platform (\texttt{i686-pc-linux-gnu}).
+Add the following deamons to the \texttt{.../eon/config.xml}:
+\begin{verbatim}
+<daemon>
+  <cmd>
+    sample_trivial_validator -d 3 -app client
+  </cmd>
+</daemon>
+<daemon>
+  <cmd>
+    sample_assimilator -d 3 -app client
+  </cmd>
+</daemon> 
+\end{verbatim}
+%
+To get the newly added application into the Boinc go to the root and run:
+\begin{verbatim}
+cd .../eon
+./bin/xadd
+./bin/update_versions
+./bin/start
+\end{verbatim}
+%
+Add the environmental variable \texttt{BOINC\_PROJECT\_DIR} containing the path to the project:
+\begin{verbatim}
+cd
+nano .bash_profile
+BOINC_PROJECT_DIR=".../eon"
+export BOINC_PROJECT_DIR
+\end{verbatim}
+and finally change the paths stated in the eon configuration file \texttt{config.ini} among the eon server files.
+
+\end{document}
