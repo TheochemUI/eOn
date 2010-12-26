@@ -1,3 +1,0 @@
-echo "y"|../../eon.py -R
-rm -rf config.ini reactant.con
-
