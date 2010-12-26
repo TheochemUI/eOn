@@ -1,0 +1,64 @@
+c  Comconf.cmn
+c   EAMe93:
+c   EAMc92:   add circular FPI with fixed or free center.  
+c                 Change tags for FPI to be > 100.
+c   EAM version b91: more atoms allowed and add FPI with fixed ends (tag 10-19)           
+
+
+      CHARACTER*1 CPHEAD
+
+      COMMON /CONF1/ RA(MAXCOO),pmass,volm,AMASS(MAXCOMP),
+     +       aveRA(MAXCOO),sumRA(MAXCOO),raNoPBC(MAXCOO)
+               
+      COMMON /CONF2/ VA(MAXCOO),FA(MAXCOO),volv,Potpat(MAXATOMS),
+     +               djnudge(maxcoo), djnnudge(maxcoo), 
+     +               fuperpT2(MAXCOO), faT2(MAXCOO),indupdproj
+c                              these last two are used for nudging;
+c                       indupdproj is 1 if hyperplane projections should be updated.
+
+      COMMON /CONF3/ itag(MAXATOMS),NATOMS,NATYPE,NATMS(MAXCOMP)
+
+      COMMON /permafrost/ rinfraperm(MAXCOO),
+     +                ninfraperm,nAinfraperm,
+     +                naperm,iperm(MAXATOMS),itinfraperm(MAXATOMS)
+c                       itinfraperm(i) gives the type of infraperm atom i
+
+      COMMON /harmcntr/ harmcntr(MAXCOO),harmspr(MAXATOMS),
+     +                  nharm,iharm(MAXATOMS)
+
+      COMMON /FPI/   sprconFPI(MAXFPI),enerFPI(MAXFPI),cntrFA(MAXFPI),
+     +               nFPI,nFPIstr,nFPIcir,nFPIcnt,nFPIcom(MAXCOMP),
+     +               itagFPI(MAXFPI),numIMAGE,
+     +               iFPI(MAXFPI),nimFPI(MAXFPI),numFPI(MAXFPI),
+     +               naconstr,iconstr(MAXATOMS),
+     +               indallinchains,indallfixend,ifirsttag
+cAllinCh                      add indallinchains and indallfixend and ifirsttag
+c                                                                                         
+c             The index of rigid (permafrost) atoms is stored in array iperm.             
+c             The array itag contains tags for each atom that indicates whether           
+c             external constraints are to be placed on the atom (rigid or                 
+c             harmonic restoring force, Feynman Path Integral).                           
+c             FPI:                                                                        
+c                   nFPI is the number of quantum particles represented by FPI.           
+c                   nFPIcom(10) is the number of FPI chains for each component.           
+c                   itagFPI(k) gives the tag value for FPI chain number k.                
+c                   iFPI(i) points at the first image in FPI number i.                    
+c                   nimFPI(i) gives the number of images in FPI number i.                 
+c                          (it is assumed the images are consecutive).                    
+c                ### current implementation assumes all FPI have same length ##           
+c                   sprconFPI(i) gives the spring constant between images in              
+c                          each FPI.                          
+c                   numFPI(i) gives the number of the FPI that has tag i                  
+c                          dimension is MAXFPI                      
+c                   enerFPI(l) gives the energy of the configuration that                 
+c                          includes all classical atoms and the `l-th' image              
+c                          of all FPI chains.  It does not include the inter-             
+c                          action between images of FPI.                                  
+c                   cntrFA(ip) gives the total force on a FPI # ip if it is a
+c                          constrained centroid FPI (tags 300 to 399).
+c                                                                                         
+      COMMON /CONF4/ CPHEAD(MAXCOMP,80)
+c                                                                                         
+
+      COMMON /langevin/ ilangevin(MAXCOO),nlangevin
+ 

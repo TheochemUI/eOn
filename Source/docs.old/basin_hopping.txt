@@ -1,0 +1,20 @@
+=============
+Basin Hopping
+=============
+
+Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
+
+These are options that go in the **[Basin Hopping]** section of "config.ini".
+
+**step_size**
+
+    Default: *0.1*
+
+    Mean displacement in each degree of freedom
+
+**steps**
+
+    Default: *10000*
+
+    Total number of steps.
+

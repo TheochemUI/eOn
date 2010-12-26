@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Kinetic Database &mdash; eOn v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/eon.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="top" title="eOn v1.0 documentation" href="index.html" />
+    <link rel="prev" title="Coarse Graining" href="coarse_graining.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="coarse_graining.html" title="Coarse Graining"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="kinetic-database">
+<span id="kdb"></span><h1>Kinetic Database<a class="headerlink" href="#kinetic-database" title="Permalink to this headline">¶</a></h1>
+<p>One of the bottlenecks in an aKMC simulation is performing the saddle point
+searches.  The kinetic database is used to ameliorate this cost by
+storing information about processes as they are found and using it to predict
+future saddle points.</p>
+<p>In the following figure, the hydrogen of a carboxyl group on an Au(111) surface
+transfers to the other oxygen (a). In this process, the hydrogen is determined
+to be the only moving atom, and the two oxygen atoms to be its neighbors. The
+other atoms are stripped from the system and the resulting configurations are
+stored in the database (b). If in the future the system passes through a state
+with a local configuration closely resembling either minimum of (b), the
+kinetic database will suggest a saddle to converge with a dimer search. The
+dimer starts with this suggested configuration and mode, and if it is a good
+suggestion, converges very rapidly to the saddle.</p>
+<div align="center" class="align-center"><img alt="_images/kdb_insert.png" class="align-center" src="_images/kdb_insert.png" /></div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The kinetic database is a separate application from eOn. It can be found in
+<em>vtstscripts</em> located <a class="reference external" href="http://theory.cm.utexas.edu/vtsttools/scripts/">here</a>.
+This is a Perl script and so requires that Perl be installed, and the
+vtstscripts directory must be in your path.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Settings for the kinetic database can be altered in your <em>config.ini</em> file
+under the <strong>[kdb]</strong> section. These are the options:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">use_kdb</span></tt></div>
+<div class="line-block">
+<div class="line"><strong>default</strong>: False</div>
+<div class="line"><strong>description</strong>: Turn kdb on/off.</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">wait</span></tt></div>
+<div class="line-block">
+<div class="line"><strong>default</strong>: False</div>
+<div class="line"><strong>description</strong>: Wait for the query to finish before submitting jobs (for debugging purposes).</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">keep</span></tt></div>
+<div class="line-block">
+<div class="line"><strong>default</strong>: False</div>
+<div class="line"><strong>description</strong>: Keep the saddle suggestions (for debugging purposes).</div>
+</div>
+</div>
+<div class="section" id="example-configuration">
+<h3>Example configuration<a class="headerlink" href="#example-configuration" title="Permalink to this headline">¶</a></h3>
+<p>A typical configuration using the kinetic database might look like this:</p>
+<div class="highlight-none"><div class="highlight"><pre>[kdb]
+use_kdb = True
+wait = False
+keep = False
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Kinetic Database</a><ul>
+<li><a class="reference external" href="#dependencies">Dependencies</a></li>
+<li><a class="reference external" href="#configuration">Configuration</a><ul>
+<li><a class="reference external" href="#example-configuration">Example configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="coarse_graining.html"
+                                  title="previous chapter">Coarse Graining</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/kdb.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="coarse_graining.html" title="Coarse Graining"
+             >previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>

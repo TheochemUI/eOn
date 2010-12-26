@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Parallel Replica &mdash; eOn v1.0 documentation</title>
+    <link rel="stylesheet" href="_static/eon.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="top" title="eOn v1.0 documentation" href="index.html" />
+    <link rel="next" title="Basin Hopping" href="basin_hopping.html" />
+    <link rel="prev" title="Adaptive kinetic Monte Carlo" href="akmc.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="basin_hopping.html" title="Basin Hopping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="akmc.html" title="Adaptive kinetic Monte Carlo"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="parallel-replica">
+<span id="id1"></span><h1>Parallel Replica<a class="headerlink" href="#parallel-replica" title="Permalink to this headline">¶</a></h1>
+<p>Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do
+accelerated-MD simulation. The only assumption made in this method is that the
+reactions satisfy first order kinetics.</p>
+<div class="math">
+\[\mathrm{Pr}(t) = k \exp (-k t)\]</div>
+<p>PRD boosts the simulation linearly with the number of replicas and can be
+easily combined with other methods for extending the MD time scale, e.g.
+Hyperdynamics method, giving a multiplicative effect in the time scale.</p>
+<p>In Voter&#8217;s approach,  N replicas of the system are made at first and then the
+momentum in each replica is randomized and dephasing stage is employed to
+decorrelate their motions. The simulation clock starts after this dephasing
+stage and stops when the first transition is detected in any of replicas.
+Because those N trajectories are independent, they can explore the phase space
+N times faster than using a single trajectory. The overall simulation clock is
+advanced by the sum of all the simulation times in replicas.</p>
+<p>In order to work with distributed computing, we have modified the traditional
+scheme for running PRD. The replica generating and dephasing stage is exactly
+the same.  However, we make all replicas run the same number of MD steps to
+avoid biasing the successful transition trajectories. In other words, results
+will only be reported back when the clients finish their full trajectories. The
+server increments the simulation time <span class="math">\(t\)</span> until the first transition
+occurs.</p>
+<p>In order to run Parallel Replica, set <strong>job</strong> to <em>parallel_replica</em> in the
+<strong>[Main]</strong> section. For regular MD all the parameters can be set in the
+<strong>[Dynamics]</strong> section. Our parallel replica can also be combined with
+Hyperdynamics by using Bond-Boost method. You can use this feature by setting
+<strong>bias_potential</strong> to <em>bond_boost</em> in the <strong>[Hyperdynamics]</strong> section.</p>
+<p>For detailed information about Parallel Replica and Bond-Boost, please refer to
+papers by:</p>
+<div class="highlight-python"><pre>"Parallel replica method for dynamics of infrequent events”
+                                     A. F. Voter, Phys Rev B 57 13985 (1998)
+
+"Accelerated molecular-dynamics of rare events with the bond-boost method"
+            R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)</pre>
+</div>
+<p>The temperature for the dynamics run is set in the <strong>[Main]</strong> section.</p>
+<div class="section" id="dynamics">
+<h2>Dynamics<a class="headerlink" href="#dynamics" title="Permalink to this headline">¶</a></h2>
+<p><strong>time_step</strong>:</p>
+<blockquote>
+<p>Default: 1.0</p>
+<p>The length of each MD step in femtoseconds.</p>
+</blockquote>
+<p><strong>auto_stop</strong>:</p>
+<blockquote>
+<p>Default: false</p>
+<p>Whether or not stop the job when a new state is found. For boinc communicator
+this value should be set to <em>false</em>.</p>
+</blockquote>
+<p><strong>steps</strong>:</p>
+<blockquote>
+<p>Default: 1000</p>
+<p>The number of MD steps to run.</p>
+</blockquote>
+<p><strong>dephase_steps</strong>:</p>
+<blockquote>
+<p>Default: 200</p>
+<p>Number of steps used to decorrelate the replica trajectories. The momenta
+will be inversed when reaching the dividing surface to prevent transitions
+occurring during this period.</p>
+</blockquote>
+<p><strong>check_period</strong>:</p>
+<blockquote>
+<p>Default: 500</p>
+<p>How frequently the state of system is checked. Every <strong>check_period</strong>
+steps, the current structure and the initial one will be compared  to tell
+whether a newstate has been reached. Also note when you set <strong>refine</strong> as
+<em>true</em>, the code will keep a buffer array consisting of
+<strong>check_period/record_resolution+1</strong> atomic configurations, which may
+increase the usage of memory.</p>
+</blockquote>
+<p><strong>refine_transition_time</strong>:</p>
+<blockquote>
+<p>Default: True</p>
+<p>Whether or not the transition time is refined. When this option is turned
+on, the code will keep an array consisted by
+<strong>check_period/record_resolution+1</strong> atomic configurations. A Binary search
+algorithm is employed to determine the transition step. Otherwise the
+transition step would be the first in which a new state was found. This
+function reduces the need for a smaller check_period.  And the accuracy of
+transition time is <strong>record_resolution*timestep</strong>.</p>
+</blockquote>
+<p><strong>record_resolution</strong>:</p>
+<blockquote>
+<p>Default: 1</p>
+<p>How often the system is recorded to the buffer array when the
+<strong>refine_transition_time</strong> option is activated. Increasing the value of
+<strong>record_resolution</strong> lowers the accuracy of the transition time estimate
+but also reduces memory usage and speeds up refinement of the transition
+step.</p>
+</blockquote>
+<p><strong>post_transition_steps</strong>:</p>
+<blockquote>
+<p>Default: 500</p>
+<p>Number of MD steps which will be performed after a new state has been found.
+A state check will be employed after these <strong>post_transition_steps</strong> to
+confirm that the state is stable. This additional check helps avoid
+meta-stable states. A value similar to <strong>dephase_steps</strong> is recommended.</p>
+</blockquote>
+<p><strong>thermo_type</strong>:</p>
+<blockquote>
+<p>Default: <em>andersen</em></p>
+<p>Options:</p>
+<p><em>andersen</em>: Andersen thermostat with Verlet algorithm</p>
+<p><em>nose_hoover</em>: Nose-Hover thermostat with Verlet algorithm</p>
+<p><em>langevin</em>: Langevin thermostat with Verlet algorithm</p>
+</blockquote>
+<p><strong>andersen_alpha</strong>:</p>
+<blockquote>
+<p>Default: 0.2</p>
+<p>The collision strength <span class="math">\(\alpha\)</span> in the Andersen thermostat. If a
+collision happened, the new velocity is:</p>
+<div class="math">
+\[V_{\mathrm{new}} = \sqrt{(1-\alpha^2)}*V_{\mathrm{old}}+\alpha*V_{\mathrm{gaussian}}\]</div>
+</blockquote>
+<p><strong>andersen_collision_steps</strong>:</p>
+<blockquote>
+<p>Default: 10.0</p>
+<p>The collision period (in MD steps) for the Andersen thermostat.</p>
+</blockquote>
+<p><strong>nose_mass</strong>:</p>
+<blockquote>
+<p>Default: 1.0</p>
+<p>The effective mass of the additional degree of freedom in the Nose-Hoover
+thermostat, which determines the rate of heat transfer.</p>
+</blockquote>
+<p><strong>langevin_friction</strong>:</p>
+<blockquote>
+<p>Default: 0.01</p>
+<p>The damping coefficient for Langevin dynamics, in unit of 1000 <span class="math">\(ps^{-1}\)</span>.</p>
+</blockquote>
+</div>
+<div class="section" id="hyperdynamics">
+<h2>Hyperdynamics<a class="headerlink" href="#hyperdynamics" title="Permalink to this headline">¶</a></h2>
+<p><strong>bias_potential</strong>:</p>
+<blockquote>
+<p>Default: <em>none</em></p>
+<p>Options:</p>
+<blockquote>
+<p><em>none</em> : with no bias potential, run regular MD</p>
+<p><em>bond_boost</em> : bond boost method from Miron and Fichthorn</p>
+</blockquote>
+</blockquote>
+<p><strong>bb_dvmax</strong>:</p>
+<blockquote>
+<p>Default: 0.0</p>
+<p>The magnitude of the bond-boost bias potential. It should be
+smaller than the barrier of any transition.</p>
+</blockquote>
+<p><strong>bb_rmd_steps</strong>:</p>
+<blockquote>
+<p>Default: 200</p>
+<p>Number of MD steps used to determine the equilibrium bond length before the bias potential is added.</p>
+</blockquote>
+<p><strong>bb_stretch_threshold</strong>:</p>
+<blockquote>
+<p>Default: 0.001</p>
+<p>Defines the bond-boost dividing surface. It should be smaller
+than the maximum fractional nearest-neighbor bond stretch or compression
+at any transition state.</p>
+</blockquote>
+<p><strong>bb_ds_curvature</strong>:</p>
+<blockquote>
+<p>Default: 0.90</p>
+<p>The curvature near the bond-boost dividing surface, it should
+has a value &lt;= 1. We recommend the value to be <em>0.9-0.98</em>.</p>
+</blockquote>
+<p><strong>bb_rcut</strong>:</p>
+<blockquote>
+<p>Default: 3.0</p>
+<p>All bonds which belong to the tagged atoms and are
+shorter than a cutoff of rcut will be included in the bond-boost potential.</p>
+</blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Parallel Replica</a><ul>
+<li><a class="reference external" href="#dynamics">Dynamics</a></li>
+<li><a class="reference external" href="#hyperdynamics">Hyperdynamics</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="akmc.html"
+                                  title="previous chapter">Adaptive kinetic Monte Carlo</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="basin_hopping.html"
+                                  title="next chapter">Basin Hopping</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/parallel_replica.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="basin_hopping.html" title="Basin Hopping"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="akmc.html" title="Adaptive kinetic Monte Carlo"
+             >previous</a> |</li>
+        <li><a href="index.html">eOn v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>
