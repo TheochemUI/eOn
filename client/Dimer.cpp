@@ -95,7 +95,7 @@ void Dimer::compute(Matter const *matter)
 
         // calculate the torque on the dimer
         torque = rotationalForce.squaredNorm();
-        assert(!std::isnormal(torque));
+//        assert(!std::isnormal(torque));
 
         // old dimer convergence scheme
         if(!parameters->dimerImproved)
@@ -146,7 +146,7 @@ void Dimer::compute(Matter const *matter)
             }
         }
  
-        #ifndef FOO
+        #ifndef NDEBUG
             printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
             torque, curvature, rotationAngle*(180.0/M_PI), rotations);
         #endif

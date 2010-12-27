@@ -38,13 +38,6 @@ public:
     void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector); // set the dimer direction (eigenvector)
     Matrix<double, Eigen::Dynamic, 3>  getEigenvector();  // return the current eigenvector
 
-    // stats information
-    long totalForceCalls;
-    double statsTorque;
-    double statsCurvature;
-    double statsAngle;
-    double statsRotations;
-
 private:
 
     Matter *matterCenter; // center of the dimer
