@@ -141,7 +141,7 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o\
 	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \
-	TestJob.o BasinHoppingJob.o SaddleSearchJob.o
+	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

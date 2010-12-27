@@ -105,13 +105,13 @@ void DisplacementSamplingJob::run(int bundleNumber)
                 d->initialize(reactant, displacement);
                 d->compute(reactant);
                 int iterCount = 0;
-                while(d->stats[0] > torqueConvergence && iterCount < iterMax)
+                while(d->statsTorque > torqueConvergence && iterCount < iterMax)
                 {
                     d->compute(reactant);
                     iterCount++;
                 }
                 double e1 = reactant->getPotentialEnergy();
-                if(e1 - e0 < max_dE && d->stats[1] < maxCurvature)
+                if(e1 - e0 < max_dE && d->statsCurvature < maxCurvature)
                 {
                     nGood++;
                 }

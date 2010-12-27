@@ -15,6 +15,7 @@
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
 #include "Dimer.h"
+#include "ImprovedDimer.h"
 #include "EpiCenters.h"
 #include "Constants.h"
 
@@ -63,7 +64,15 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     eigenMode.setZero();
     if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
     {
-        lowestEigenmode=new Dimer(saddle, parameters);
+        if(parameters->dimerImproved)
+        {
+            lowestEigenmode=new ImprovedDimer(saddle, parameters);
+        }
+        else
+        {
+            lowestEigenmode=new Dimer(saddle, parameters);
+        }
+        
     }
     else if(parameters->saddleMinmodeMethod == MINMODE_LANCZOS)
     {
@@ -386,11 +395,14 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         #ifndef NDEBUG
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)        
             {
-                double *stats = lowestEigenmode->stats;
-                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", iterations, 
-                       sqrt((saddle->getForces().cwise().square()).sum()), stats[0], 
-                       saddle->getPotentialEnergy(), stats[1], stats[2], (int)stats[3], stepSize);
-            } else {
+                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", 
+                       iterations, sqrt((saddle->getForces().cwise().square()).sum()), 
+                       lowestEigenmode->statsTorque, saddle->getPotentialEnergy(), 
+                       lowestEigenmode->statsCurvature, lowestEigenmode->statsAngle, 
+                       (int)lowestEigenmode->statsRotations, stepSize);
+            }
+            else 
+            {
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
             }
