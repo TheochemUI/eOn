@@ -23,7 +23,12 @@ class LowestEigenmodeInterface{
 
 public:
 
-    double *stats;
+    // stats information
+    long totalForceCalls;
+    double statsTorque;
+    double statsCurvature;
+    double statsAngle;
+    long statsRotations;
 
     virtual ~LowestEigenmodeInterface() {}
     void virtual initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>) = 0;
