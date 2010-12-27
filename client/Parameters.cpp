@@ -266,20 +266,27 @@ int Parameters::load(FILE *file){
         }
         string displaceString = ini.GetValue("Saddle Search", "displace_type", "none"); // undocumented
         displaceString = toLowerCase(displaceString);
-        if(displaceString == "none"){ 
+        if(displaceString == "none")
+        { 
             saddleDisplaceType = SaddlePoint::DISP_NONE;
-        }else if(displaceString == "not_fcc_or_hcp"){
+        }
+        else if(displaceString == "not_fcc_or_hcp")
+        {
             saddleDisplaceType = SaddlePoint::DISP_NOT_FCC_OR_HCP;
-        }else if(displaceString == "min_coordinated"){
+        }
+        else if(displaceString == "min_coordinated")
+        {
             saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
-        }else if(displaceString == "not_last_atom"){
+        }
+        else if(displaceString == "not_last_atom")
+        {
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
         saddleDisplaceMagnitude = ini.GetValueB("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
+        saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
-
         saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace); //undocumented
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
