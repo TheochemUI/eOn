@@ -137,7 +137,7 @@ endif
 OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     EpiCenters.o Hessian.o ConjugateGradients.o \
     debug.o HelperFunctions.o Matter.o Parameters.o \
-    PotentialsInterface.o Potentials.o QMBox.o Quickmin.o \
+    PotentialsInterface.o Potentials.o Quickmin.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o\
 	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \
