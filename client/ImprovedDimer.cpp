@@ -81,7 +81,7 @@ void ImprovedDimer::compute(Matter const *matter)
         // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
         double d_C_tau_d_phi = 2 * ((g1 - g0).cwise() * Theta).sum() / delta;
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2 * abs(C_tau)));
-        statsAngle = 360 * (phi_prime / (2 * M_PI));
+        statsAngle = phi_prime * (180.0 / M_PI);
         
         if(phi_prime > phi_tol)
         {
@@ -112,6 +112,8 @@ void ImprovedDimer::compute(Matter const *matter)
                 phi_min += M_PI * 0.5;
                 C_tau_min = 0.5 * a0 + a1 * cos(2 * phi_min) + b1 * sin(2 * phi_min);
             }
+
+            statsAngle = phi_min * (180.0 / M_PI);
             
             // Upate x1, tau, and C_tau.
             Matrix<double, Eigen::Dynamic, 3> x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
