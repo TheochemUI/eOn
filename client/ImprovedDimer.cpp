@@ -58,6 +58,8 @@ void ImprovedDimer::compute(Matter const *matter)
     double phi_min = 0.0;
     
     statsRotations = 0;
+
+    Matter *x1p = new Matter(parameters);
     
     do // while we have not reached phi_tol or maximum rotations.
     {
@@ -81,8 +83,6 @@ void ImprovedDimer::compute(Matter const *matter)
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2 * abs(C_tau)));
         statsAngle = 360 * (phi_prime / (2 * M_PI));
         
-        Matter *x1p = new Matter(parameters);
-        
         if(phi_prime > phi_tol)
         {
             double b1 = 0.5 * d_C_tau_d_phi;
@@ -94,20 +94,26 @@ void ImprovedDimer::compute(Matter const *matter)
             x1p->setPositions(x1_rp);
             Matrix<double, Eigen::Dynamic, 3> g1_prime = -x1p->getForces();
 
-            // Calculate C_tau_prime
+            // Calculate C_tau_prime.
             Matrix<double, Eigen::Dynamic, 3> tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
             double C_tau_prime = ((g1_prime - g0).cwise() * tau_prime).sum() / delta;
             
-            
+            // Calculate phi_min.
             double a1 = C_tau - C_tau_prime + b1 * sin(2 * phi_prime) / (1 - cos(2 * phi_prime));
             double a0 = 2 * (C_tau - a1);
             phi_min = 0.5 * atan(b1 / a1);
+            
+            // Determine the curvature for phi_min.
             double C_tau_min = 0.5 * a0 + a1 * cos(2 * phi_min) + b1 * sin(2 * phi_min);
+            
+            // If the curvature is being maximized, push it over pi/2.
             if(C_tau_min > C_tau)
             {
                 phi_min += M_PI * 0.5;
                 C_tau_min = 0.5 * a0 + a1 * cos(2 * phi_min) + b1 * sin(2 * phi_min);
             }
+            
+            // Upate x1, tau, and C_tau.
             Matrix<double, Eigen::Dynamic, 3> x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
@@ -123,6 +129,8 @@ void ImprovedDimer::compute(Matter const *matter)
         }
         
     } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);
+ 
+    delete x1p;
     
 }
 
