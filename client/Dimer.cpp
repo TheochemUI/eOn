@@ -137,15 +137,6 @@ void Dimer::compute(Matter const *matter)
             rotations++;
         }
 
-        // improved dimer convergence scheme
-        if(parameters->dimerImproved)
-        { 
-            if (rotationAngle < parameters->dimerConvergedRotation*(180.0/M_PI))
-            {
-                doneRotating = true;
-            }
-        }
- 
         #ifndef NDEBUG
             printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
             torque, curvature, rotationAngle*(180.0/M_PI), rotations);
