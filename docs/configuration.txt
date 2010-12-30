@@ -16,4 +16,10 @@ descriptions of each.
 
 .. include:: config_dimer.txt
 
+.. include:: config_saddle_search.txt
+
+.. include:: config_hessian.txt
+
+.. include:: config_debug.txt
+
 
