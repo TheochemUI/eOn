@@ -1,0 +1,26 @@
+Hessian
+-------
+
+Options for controlling how Hessian matricies are calculated.
+
+**type** 
+
+    Default: reactant
+
+    The Hessian to be calculated has to be one of *reactant*, *saddle*, or
+    *product*.
+
+**min_displacement** 
+
+    Default: 0.25
+
+    Minimum amount that an atom has to move to be included in the Hessian
+    calculation.
+
+**within_radius** 
+
+    Default: 5.0
+
+    Atoms within this radius of moving atoms are included in the Hessian.
+
+
