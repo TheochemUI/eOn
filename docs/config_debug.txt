@@ -1,0 +1,37 @@
+Debug
+-----
+
+Parameters that are generally used to help debug calculations added under
+**[Debug]** section.
+
+**keep_bad_saddles** 
+
+    Default: false
+
+    Keep data about bad saddles. If true, the result files for failed saddle
+    searches are kept in the *badprocdata* directory within the state
+    directory for that search. 
+
+**keep_all_result_files** 
+
+    Default: false
+
+    Stores all result files in main_directory/results
+
+**register_extra_results**
+
+    Default: false
+
+    Register processes found for a state after leaving that state.
+
+**use_mean_time** 
+
+    Default: false
+
+    Select transition times from the mean of the exponential distribution of escape times.
+
+**target_trajectory** 
+
+    Default: None
+
+    Follow the state-to-state trajectory of another akmc simulation.
