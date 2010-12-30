@@ -22,3 +22,4 @@ Contents
    optimizers
    coarse_graining
    kdb
+   configuration
