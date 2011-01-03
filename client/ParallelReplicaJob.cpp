@@ -86,7 +86,6 @@ void ParallelReplicaJob::run(int bundleNumber)
     printf("Now running Parallel Replica Dynamics\n\n");
 
     dynamics();
-
     saveData(newstate,bundleNumber);
     
     if(newstate){
@@ -156,7 +155,6 @@ void ParallelReplicaJob::dynamics()
 
         PRdynamics.oneStep(parameters->temperature);
 
-        md_fcalls++;
         ncheck++;
         nsteps++;
 
@@ -178,7 +176,7 @@ void ParallelReplicaJob::dynamics()
         if (ncheck == check_steps && !newstate){
             ncheck = 0; // reinitialize the ncheck
             nrecord = 0;
-            status = checkState(reactant);
+            status = PRdynamics.checkState(reactant,min1);
             if(status == true){
                 remember = false;
             }
@@ -190,7 +188,7 @@ void ParallelReplicaJob::dynamics()
                 nexam = 0;
                 ncheck = 0; 	
                 nrecord = 0;
-                newstate = checkState(reactant);
+                newstate = PRdynamics.checkState(reactant,min1);
                 status = false;
                 if(newstate == false){
                     remember = true;
@@ -236,9 +234,10 @@ void ParallelReplicaJob::dynamics()
     }
 
     final_refined = steps_tmp;
+
     //printf("mdbufflength = %ld; nrecord = %ld\n",mdbufflength, nrecord);
     if(parameters->mdRefine && newstate){
-        nsteps_refined = Refine(mdbuff,mdbufflength);
+        nsteps_refined = PRdynamics.refine(mdbuff,mdbufflength,min1);
         //printf("nsteps_refined=%ld\n",nsteps_refined); 
         final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined*RecordAccuracy;
         //long totsteps = nsteps-check_steps-relax_steps+nsteps_refined+1; 
@@ -274,55 +273,18 @@ void ParallelReplicaJob::dynamics()
            SPtime = SPtime + relax_steps;
            meta = true;
         }
-   }
+    }
+
+    min_fcalls += PRdynamics.getMinfcalls();
+    rf_fcalls += PRdynamics.getRefinefcalls();
+    md_fcalls += PRdynamics.getMDfcalls();
+
     return;
 
     for(long i =0; i < mdbufflength;i++){
         delete[] mdbuff[i];
     }
 }
-
-
-bool ParallelReplicaJob::checkState(Matter *matter)
-{
-    Matter tmp(parameters);
-    tmp = *matter;
-    ConjugateGradients cgMin(&tmp, parameters);
-    cgMin.fullRelax();
-    min_fcalls += tmp.getForceCalls();
-
-    if (tmp == *min1) {
-        return false;
-    }
-    return true;
-}
-
-bool ParallelReplicaJob::checkState_nq(Matter *matter) // checkstate without quench
-{
-    double distance = 0.0, D_tmp;
-    double MoveCut = 2.0;
-    Matter tmp(parameters);
-    tmp = *matter;
-    long nAtoms = tmp.numberOfAtoms();
-
-    for(long int i=0;i<nAtoms;i++){
-        if(!tmp.getFixed(i)){
-            D_tmp = tmp.distance(*min1,i);
-            if(D_tmp >= MoveCut){
-                distance += D_tmp;
-            }
-        }
-    }
-
-#ifndef NDEBUG
-    printf("Total Moved Distance = %lf\n",distance);
-#endif
-    if (distance <= parameters->mdMaxMovedDist){
-        return false;
-    }
-    return true;
-}
-
 
 void ParallelReplicaJob::saveData(int status,int bundleNumber)
 {
@@ -399,57 +361,6 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     return;
 }
 
-
-long ParallelReplicaJob::Refine(Matter *buff[],long length)
-{
-    long a1, b1, test, refined , initial, final, diff, RefineAccuracy;
-    long tmp_fcalls;
-    bool ytest;
-
-    RefineAccuracy = parameters->mdRefineAccuracy; 
-    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
-    ytest = false;
-
-    initial = 0;
-    final = length - 1;
-    a1 = initial;
-    b1 = final;
-    diff = final - initial;
-    test = int((b1-a1)/2);
-  
-    tmp_fcalls = min_fcalls ;
-    min_fcalls = 0;
-    while(diff > RefineAccuracy)
-    {
-
-     //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
-        test = a1+int((b1-a1)/2);
-        ytest = checkState(buff[test]);
-
-        if ( ytest == 0 ){
-            a1 = test;
-            b1 = b1;
-        }
-        else if ( ytest == 1 ){
-            a1 = a1;
-            b1 = test;
-        }
-        else { 
-            printf("Refine Step Failed ! \n");
-            exit(1);
-        }
-        diff = abs( b1 - a1 ); 
-    }
-
-    rf_fcalls = min_fcalls;
-    min_fcalls = tmp_fcalls;
-
-    refined = int((a1+b1)/2)+1;
-    //printf("Refined mdsteps = %ld\n",nsteps_refined);
-    return refined;
-}
-
-
 void ParallelReplicaJob::dephase()
 {
     long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
@@ -474,13 +385,12 @@ void ParallelReplicaJob::dephase()
 
         for(i=0; i<nbuff; i++){
            dephaseDynamics.oneStep(parameters->temperature);
-           dh_fcalls++;
            *DHbuff[i] = *reactant;
         }
         
-        state = checkState(reactant);
+        state = dephaseDynamics.checkState(reactant,min1);
         if(state == true){
-            dh_refined = Refine(DHbuff,nbuff);
+            dh_refined = dephaseDynamics.refine(DHbuff,nbuff,min1);
             printf("nloop = %ld; refined step = %ld\n",nloop,dh_refined);
             new_n = dh_refined-parameters->mdRefineAccuracy;
             new_n = (new_n > 0)?new_n:0;
@@ -506,5 +416,8 @@ void ParallelReplicaJob::dephase()
            }
        }
    }
+   min_fcalls += dephaseDynamics.getMinfcalls(); 
+   rf_fcalls += dephaseDynamics.getRefinefcalls();
+   dh_fcalls += dephaseDynamics.getMDfcalls();
 }
 
