@@ -44,7 +44,7 @@ void Dynamics::oneStep(double temperature)
     else if(parameters->thermostat == LANGEVIN){
        langevinVerlet(temperature);
     }
-    md_fcalls ++;
+
     return;
 }
 
@@ -57,6 +57,7 @@ void Dynamics::andersenVerlet()
      positions = matter->getPositions();
      velocities = matter->getVelocities();
      accelerations = matter->getAccelerations();
+     md_fcalls ++;
 
      velocities += accelerations * 0.5 * dt;
      matter->setVelocities(velocities);  // first update velocities
@@ -64,11 +65,12 @@ void Dynamics::andersenVerlet()
      positions += velocities * dt;
      matter->setPositions(positions); // update positions
 
-    velocities = matter->getVelocities();
-    accelerations = matter->getAccelerations();
+     velocities = matter->getVelocities();
+     accelerations = matter->getAccelerations();
+     md_fcalls ++;
 
-    velocities += accelerations * 0.5 * dt;
-    matter->setVelocities(velocities); // second update velocities
+     velocities += accelerations * 0.5 * dt;
+     matter->setVelocities(velocities); // second update velocities
 }
 
 void Dynamics::fullSteps(double temperature)
@@ -217,6 +219,7 @@ void Dynamics::noseHooverVerlet(double temperature){
     vel = matter->getVelocities();
     pos = matter->getPositions();
     acc = matter->getAccelerations();
+    md_fcalls ++;
 
     if(init == true){
         init = false;
@@ -250,6 +253,7 @@ void Dynamics::noseHooverVerlet(double temperature){
 
 
     acc = matter->getAccelerations();
+    md_fcalls ++;
     vel += acc * dt;
     pos += vel * dt2;
     kinE =  matter->getKineticEnergy();
@@ -292,7 +296,8 @@ void Dynamics::langevinVerlet(double temperature){
      vel = matter->getVelocities();   
 
      acc = matter->getAccelerations();
-     noise = matter->getAccelerations();
+     md_fcalls ++;
+     noise = acc;
      mass = matter->getMasses();
 
      friction = - gamma * vel;
@@ -311,6 +316,7 @@ void Dynamics::langevinVerlet(double temperature){
 
 
      acc =  matter->getAccelerations();
+     md_fcalls ++;
      friction = - gamma * vel;
      for (long int i = 0;i<nAtoms;i++){
         if(!matter->getFixed(i)){

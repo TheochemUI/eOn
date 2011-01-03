@@ -117,7 +117,6 @@ void DistributedReplicaJob::balanceStep(){
         while(n < bSteps){
            balanceDynamics.oneStep(parameters->temperature);
            n++;
-           bl_fcalls++;
         }
         bl_new = balanceDynamics.checkState(reactant,min1);
     
@@ -137,6 +136,7 @@ void DistributedReplicaJob::balanceStep(){
     }
 
     min_fcalls += balanceDynamics.getMinfcalls();
+    bl_fcalls += balanceDynamics.getMDfcalls();
     return;
     delete initial;
 }
@@ -171,20 +171,25 @@ void DistributedReplicaJob::samplingStep(){
             ncheck = 0;
             if(status){
                 nsample ++;
-                buff_refined = samplingDynamics.refine(mdbuff,mdbufflength,min1);
-         //       buff_refined = Refine(mdbuff,mdbufflength);
-                new_n = buff_refined - parameters->mdRefineAccuracy;
-                new_n = (new_n > 0)?new_n:0;
-                srefined = new_n + n - ncheck;
-                printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
-                *reactant = *mdbuff[new_n];  
                 if(save_refine){
+                    buff_refined = samplingDynamics.refine(mdbuff,mdbufflength,min1);
+         //         buff_refined = Refine(mdbuff,mdbufflength);
+                    new_n = buff_refined - parameters->mdRefineAccuracy;
+                    new_n = (new_n > 0)?new_n:0;
+                    srefined = new_n + n - ncheck;
+                    printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
+                    *reactant = *mdbuff[new_n];  
+             
                     char sbuff[STRING_SIZE];
                     string sample_saved("sample_saved");
                     snprintf(sbuff, STRING_SIZE, "_%ld.convel", nsample);
                     sample_saved += sbuff;
                     reactant->matter2convel(sample_saved);
-                }               
+                } 
+                else{
+                    *reactant = *mdbuff[0];
+                    srefined = n - ncheck;
+                }              
                 velocity = reactant->getVelocities();
                 velocity *= (-1);
                 reactant->setVelocities(velocity);
@@ -203,7 +208,10 @@ void DistributedReplicaJob::samplingStep(){
     printf("\nMinimizing final product\n");     
     cgMin2.fullRelax();     
     min_fcalls += min2->getForceCalls();
-
+      
+    min_fcalls += samplingDynamics.getMinfcalls();
+    sp_fcalls += samplingDynamics.getMDfcalls();
+    rf_fcalls += samplingDynamics.getRefinefcalls();
     return;
 }
 
@@ -231,6 +239,7 @@ void DistributedReplicaJob::saveData(int bundleNumber){
     fprintf(fileResults, "%ld force_calls_balance\n", bl_fcalls);
     fprintf(fileResults, "%ld force_calls_sampling\n", sp_fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);
+    fprintf(fileResults, "%ld force_calls_refine\n", rf_fcalls);
     fprintf(fileResults, "%ld force_calls_total\n", total_fcalls);
 
     fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
