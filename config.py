@@ -134,7 +134,7 @@ def init(config_file = ""):
     else:
         config.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
         config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
-    if config.disp_type == 'displace_undercoordinated':
+    if config.disp_type == 'under_coordinated':
         config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
 
     #KDB
