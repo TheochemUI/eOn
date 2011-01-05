@@ -61,11 +61,12 @@ void ImprovedDimer::compute(Matter const *matter)
 
     Matter *x1p = new Matter(parameters);
     
+    // Calculate the gradients on x0 and x1, g0 and g1, respectively.
+    Matrix<double, Eigen::Dynamic, 3> g0 = -x0->getForces();
+    Matrix<double, Eigen::Dynamic, 3> g1 = -x1->getForces();
+
     do // while we have not reached phi_tol or maximum rotations.
     {
-        // Calculate the gradients on x0 and x1, g0 and g1, respectively.
-        Matrix<double, Eigen::Dynamic, 3> g0 = -x0->getForces();
-        Matrix<double, Eigen::Dynamic, 3> g1 = -x1->getForces();
         
         // Calculate the rotational force, F_R.
         Matrix<double, Eigen::Dynamic, 3> F_R = -2 * (g1 - g0) + 2 * ((g1 - g0).cwise() * tau).sum() * tau;
@@ -115,11 +116,16 @@ void ImprovedDimer::compute(Matter const *matter)
 
             statsAngle = phi_min * (180.0 / M_PI);
             
-            // Upate x1, tau, and C_tau.
+            // Update x1, tau, and C_tau.
             Matrix<double, Eigen::Dynamic, 3> x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
             C_tau = C_tau_min;
+            
+            // Calculate the new g1.
+            g1 = g1 * (sin(phi_prime - phi_min)/sin(phi_prime)) + g1_prime*(sin(phi_min)/sin(phi_prime)) + 
+                 g0 * (1-cos(phi_min)-sin(phi_min)*tan(phi_prime * 0.5));
+            
             
             statsRotations += 1;
 
