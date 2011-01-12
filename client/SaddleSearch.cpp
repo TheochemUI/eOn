@@ -142,7 +142,7 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
     }
     
     lowestEigenmode->initialize(saddle, mode);
-    lowestEigenmode->compute(saddle);
+//    lowestEigenmode->compute(saddle);
     eigenMode = lowestEigenmode->getEigenvector();
     eigenValue = lowestEigenmode->getEigenvalue();
     
@@ -241,7 +241,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     return;
 }
 
-Matrix<double,Eigen::Dynamic, 3> SaddlePoint::correctingForces(Matrix<double, Eigen::Dynamic, 3> force){
+Matrix<double,Eigen::Dynamic, 3> SaddlePoint::projectedForce(Matrix<double, Eigen::Dynamic, 3> force){
  
     Matrix<double, Eigen::Dynamic, 3> proj;
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
@@ -332,7 +332,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
-    forces = correctingForces(forces);
+    forces = projectedForce(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
     #ifndef NDEBUG
         static int run;
@@ -361,7 +361,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         // Determining the optimal step
         saddle->setPositions(posStep);
         forcesStep = saddle->getForces();
-        forcesStep = correctingForces(forcesStep);
+        forcesStep = projectedForce(forcesStep);
         
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
@@ -376,7 +376,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
         // Updating the conjugated object to the new configuration
-        forces = correctingForces(forces);
+        forces = projectedForce(forces);
         cgSaddle.setForces(forces);
         if(eigenValue < 0)
         {
