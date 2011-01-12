@@ -95,17 +95,15 @@ void Dimer::compute(Matter const *matter)
 
         // calculate the torque on the dimer
         torque = rotationalForce.squaredNorm();
-//        assert(!std::isnormal(torque));
+        assert(std::isnormal(torque));
 
-        // old dimer convergence scheme
-        if(!parameters->dimerImproved)
+        // convergence scheme
+        if((torque > parameters->dimerTorqueMax && rotations >= parameters->dimerRotationsMax) ||
+           (torque < parameters->dimerTorqueMax && torque >= parameters->dimerTorqueMin 
+            && rotations >= parameters->dimerRotationsMin) ||
+           (torque < parameters->dimerTorqueMin))
         {
-            if((torque > parameters->dimerTorqueMax && rotations >= parameters->dimerRotationsMax) ||
-               (torque < parameters->dimerTorqueMax && torque >= parameters->dimerTorqueMin && rotations >= parameters->dimerRotationsMin) ||
-               (torque < parameters->dimerTorqueMin))
-            {
-                doneRotating = true;
-            }
+            doneRotating = true;
         }
 
         // rotational force along the rotational planes normal
