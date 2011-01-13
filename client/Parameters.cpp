@@ -41,12 +41,12 @@ Parameters::Parameters(){
     processSearchDefaultPrefactor = 0;
 
     // [Saddle Search] //
-    saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
+    saddleDisplaceType = 0;//SaddlePoint::DISP_MIN_COORDINATED;
     saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
-    saddleDisplace = false;
+//    saddleDisplace = false;
     saddleDisplaceRadius = 4.0;
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 0.1; // undocumented
@@ -238,6 +238,8 @@ int Parameters::load(FILE *file){
             potential = Potential::POT_BOPFOX;
         }else if(potentialString == "bop"){
             potential = Potential::POT_BOP;
+        }else if(potentialString == "lammps"){
+            potential = Potential::POT_LAMMPS;
         }else{
             fprintf(stderr, "  Error: Unknown potential: %s\n", potentialString.c_str());
             error = 1;

@@ -38,6 +38,7 @@ public:
         POT_TIP4P,
         POT_BOPFOX,
         POT_BOP,
+        POT_LAMMPS,
         N_POTS
     };
 

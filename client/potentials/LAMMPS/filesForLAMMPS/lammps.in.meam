@@ -1,0 +1,10 @@
+units           metal   
+atom_style      atomic
+atom_modify	map array
+read_data       lammps.conf
+
+#=- Potential parameters -=##
+pair_style meam
+pair_coeff * * library.meam Si92 NULL Si92
+
+

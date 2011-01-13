@@ -73,6 +73,8 @@ public:
 
     void initialize(Matter *initial, Matter *saddle, Parameters *parameters);
 
+    void displaceAndSetMode(Matter *matter); // make a displacement of atoms centered on the EpiCenter atom and set the initial mode accordingly  
+
     /** Determine a nearby saddle point
     @param[out]  *min1     one of the minima connected to the saddle point
     @param[out]  *min2     the other minima connected to the saddle point
@@ -106,7 +108,6 @@ private:
 
     void clean(); // clean up dynamical allocated memory
 
-    void displaceAndSetMode(Matter *matter); // make a displacement of atoms centered on the EpiCenter atom and set the initial mode accordingly  
     Matrix<double, Eigen::Dynamic, 3> projectedForce(Matrix<double, Eigen::Dynamic, 3> force); // projected minmode force
 
     /** Determine the two minima connected to the saddle point by displacing forward and backward along the lowest eigenmode from the saddle and minimizing

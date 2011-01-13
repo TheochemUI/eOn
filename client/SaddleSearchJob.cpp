@@ -59,15 +59,18 @@ void SaddleSearchJob::run(int bundleNumber)
         fCallsMin += Potential::fcalls - fi;
     }
 */
-    if (!parameters->saddleDisplace) {
+    if (!parameters->saddleDisplaceType) {
         saddle->con2matter(displacement_passed);
     }
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (!parameters->saddleDisplace) {
+    if (!parameters->saddleDisplaceType) {
         saddlePoint->loadMode(mode_passed);
     }
+    else {
+        saddlePoint->displaceAndSetMode(saddle);
+    }    
 
     int status = doSaddleSearch();
 
