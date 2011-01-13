@@ -23,11 +23,14 @@
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
 #ifndef WIN32
-#include "potentials/VASP/VASP.h"
+    #include "potentials/VASP/VASP.h"
 #endif
 #include "potentials/bopfox/bopfox.h"
 #ifdef BOPFOX
     #include "potentials/bop/bop.h"
+#endif
+#ifdef LAMMPS_POT
+    #include "potentials/LAMMPS/LAMMPS_EON.h"
 #endif
 
 #include <cstdlib>
@@ -97,11 +100,16 @@ Potential::Potential(Parameters *parameters){
         interface_ = new bopfox();
         interface_->initialize();
     }
-
 #endif
 #ifdef BOPFOX
     else if(parameters_->potential == POT_BOP){
         interface_ = new bop();
+        interface_->initialize();
+    }
+#endif
+#ifdef LAMMPS_POT
+    else if(parameters_->potential == POT_LAMMPS){
+        interface_ = new lammps_eon();
         interface_->initialize();
     }
 #endif
