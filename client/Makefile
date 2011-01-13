@@ -65,6 +65,14 @@ ifdef BOPFOX
     POTENTIALS += "+bop"
 endif
 
+ifdef LAMMPS_POT
+#   CXXFLAGS += -I./potentials/LAMMPS/src/STUBS
+# CAUSING PROBLEMS IN USING -DLAMMPS MUST BE SOMETHING DIFFERENT!
+   CXXFLAGS += -DLAMMPS_POT #-I./potentials/filesFromLAMMPS
+   POTDIRS += ./potentials/LAMMPS
+   LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libmpi.a ./potentials/LAMMPS/libmeam.a 
+   POTENTIALS += "+LAMMPS"
+endif
 
 # define BOINC to link against boinc libs
 ifdef BOINC
