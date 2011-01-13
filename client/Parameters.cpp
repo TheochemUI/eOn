@@ -41,12 +41,11 @@ Parameters::Parameters(){
     processSearchDefaultPrefactor = 0;
 
     // [Saddle Search] //
-    saddleDisplaceType = 0;//SaddlePoint::DISP_MIN_COORDINATED;
+    saddleDisplaceType = SaddlePoint::DISP_NONE;
     saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
-//    saddleDisplace = false;
     saddleDisplaceRadius = 4.0;
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 0.1; // undocumented

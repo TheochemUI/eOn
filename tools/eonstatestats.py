@@ -8,10 +8,18 @@ states = sys.argv[1:]
 num_states = len(sys.argv)-1
 #print "num_states: ",num_states
 
+if(len(states) == 0):
+    state_main_dir = "states/"
+    state_listdir = os.listdir(state_main_dir)
+    for dir in state_listdir:
+        state_dir = state_main_dir+dir
+        if(os.path.isdir(state_dir)):
+            states.append(dir)
+
 for state in states:
 
-    print "state:",state
-    state_dir = "states/"+str(state)
+    print "\nstate:",state
+    state_dir = state_main_dir+str(state)
 
     # read the search data for the state
     if(os.path.isdir(state_dir)):
@@ -54,3 +62,5 @@ for state in states:
         print " fcalls sad : {0:.2f}".format(float(fc_sad)/float(num_good))
         print " fcalls min : {0:.2f}".format(fc_min/num_good)
         print " fcalls dyn : {0:.2f}".format(fc_dyn/num_good)
+
+print ""
