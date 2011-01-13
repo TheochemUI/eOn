@@ -61,14 +61,14 @@ void ProcessSearchJob::run(int bundleNumber)
         fCallsMin += Potential::fcalls - fi;
     }
 
-    if (!parameters->saddleDisplace) {
+    if (!parameters->saddleDisplaceType) {
         saddle->con2matter(displacement_passed);
     }
-
+    
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (!parameters->saddleDisplace) {
+    if (!parameters->saddleDisplaceType) {
         *min1 = *min2 = *initial;
     }else{
         *saddle = *min1 = *min2 = *initial;
@@ -76,9 +76,13 @@ void ProcessSearchJob::run(int bundleNumber)
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (!parameters->saddleDisplace) {
+    if (!parameters->saddleDisplaceType) {
         saddlePoint->loadMode(mode_passed);
     }
+    else{
+        saddlePoint->displaceAndSetMode(saddle);
+    }
+    
 
     hessian = new Hessian(min1, saddle, min2, parameters);
 

@@ -6,11 +6,10 @@ BasinHoppingJob.o: BasinHoppingJob.cpp BasinHoppingJob.h Matter.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -64,11 +63,10 @@ BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Parameters.h Constants.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -122,11 +120,10 @@ ClientEON.o: ClientEON.cpp Constants.h Parameters.h Job.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -185,11 +182,10 @@ ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -241,11 +237,10 @@ Dimer.o: Dimer.cpp Dimer.h debug.h Eigen/Eigen Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -299,11 +294,10 @@ DimerRotationJob.o: DimerRotationJob.cpp DimerRotationJob.h Job.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -357,11 +351,10 @@ DisplacementSamplingJob.o: DisplacementSamplingJob.cpp \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -416,11 +409,10 @@ DistributedReplicaJob.o: DistributedReplicaJob.cpp Matter.h Parameters.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -474,11 +466,10 @@ Dynamics.o: Dynamics.cpp Dynamics.h MinimizersInterface.h Matter.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -531,11 +522,10 @@ EpiCenters.o: EpiCenters.cpp EpiCenters.h Matter.h Parameters.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -588,11 +578,10 @@ FiniteDifferenceJob.o: FiniteDifferenceJob.cpp FiniteDifferenceJob.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -644,11 +633,10 @@ HelperFunctions.o: HelperFunctions.cpp HelperFunctions.h Eigen/Eigen \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -699,11 +687,10 @@ Hessian.o: Hessian.cpp Hessian.h Eigen/Eigen Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -756,11 +743,10 @@ HessianJob.o: HessianJob.cpp HessianJob.h Job.h Parameters.h Constants.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -812,11 +798,10 @@ ImprovedDimer.o: ImprovedDimer.cpp ImprovedDimer.h debug.h Eigen/Eigen \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -870,11 +855,10 @@ Matter.o: Matter.cpp Matter.h Parameters.h Constants.h Potentials.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -927,11 +911,10 @@ MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -984,11 +967,10 @@ ParallelReplicaJob.o: ParallelReplicaJob.cpp Matter.h Parameters.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1042,11 +1024,10 @@ Parameters.o: Parameters.cpp Parameters.h Constants.h INIFile.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1101,11 +1082,10 @@ Potentials.o: Potentials.cpp Constants.h Potentials.h Parameters.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1186,11 +1166,10 @@ ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1244,11 +1223,10 @@ Quickmin.o: Quickmin.cpp Quickmin.h MinimizersInterface.h Matter.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1301,11 +1279,10 @@ SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Parameters.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1359,11 +1336,10 @@ SaddleSearchJob.o: SaddleSearchJob.cpp SaddleSearchJob.h Matter.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \
@@ -1418,11 +1394,10 @@ TestJob.o: TestJob.cpp TestJob.h Job.h Parameters.h Constants.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
  Eigen/src/Core/MathFunctions.h Eigen/src/Core/GenericPacketMath.h \
- Eigen/src/Core/arch/SSE/PacketMath.h Eigen/src/Core/Functors.h \
- Eigen/src/Core/MatrixBase.h Eigen/src/Core/Coeffs.h \
- Eigen/src/Core/Assign.h Eigen/src/Core/MatrixStorage.h \
- Eigen/src/Core/NestByValue.h Eigen/src/Core/Flagged.h \
- Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
+ Eigen/src/Core/Functors.h Eigen/src/Core/MatrixBase.h \
+ Eigen/src/Core/Coeffs.h Eigen/src/Core/Assign.h \
+ Eigen/src/Core/MatrixStorage.h Eigen/src/Core/NestByValue.h \
+ Eigen/src/Core/Flagged.h Eigen/src/Core/Matrix.h Eigen/src/Core/Cwise.h \
  Eigen/src/Core/CwiseBinaryOp.h Eigen/src/Core/CwiseUnaryOp.h \
  Eigen/src/Core/CwiseNullaryOp.h Eigen/src/Core/Dot.h \
  Eigen/src/Core/Product.h Eigen/src/Core/DiagonalProduct.h \

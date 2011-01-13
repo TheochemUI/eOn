@@ -136,7 +136,7 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
-    if (parameters->saddleDisplace) 
+    if (parameters->saddleDisplaceType) 
     {
         displaceAndSetMode(saddle);
     }
