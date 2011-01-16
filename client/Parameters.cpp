@@ -19,6 +19,7 @@
 #include "BondBoost.h"
 #include "Potentials.h"
 #include "SaddleSearch.h"
+#include "ImprovedDimer.h"
 
 Parameters::Parameters(){
 
@@ -64,7 +65,8 @@ Parameters::Parameters(){
     dimerRotationAngle = 0.005;
     dimerImproved = false;
     dimerConvergedRotation = 5.0; // degrees
-    // old, for comparison with Improved dimer method, will be removed later
+    dimerOptimizer = ImprovedDimer::OPT_SD;
+    // old, for comparison with improved dimer method, will be removed later
     dimerTorqueMin = 0.1;
     dimerTorqueMax = 1.0;
     dimerRotationsMin = 1;
@@ -306,6 +308,16 @@ int Parameters::load(FILE *file){
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
+        string dimerOptString;
+        dimerOptString = ini.GetValue("Dimer", "optimizer", "steepest_descent");
+        dimerOptString = toLowerCase(dimerOptString);
+        if (dimerOptString == "steepest_descent") {
+            dimerOptimizer = ImprovedDimer::OPT_SD;
+        }else if (dimerOptString == "conjugate_gradient") {
+            dimerOptimizer = ImprovedDimer::OPT_CG;
+        }else if (dimerOptString == "lbfgs") {
+            dimerOptimizer = ImprovedDimer::OPT_LBFGS;
+        }
         // old, for comparison with Improved dimer method, will be removed later
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
         dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);

@@ -30,27 +30,39 @@ class ImprovedDimer : public LowestEigenmodeInterface
 
     public:
 
-        ImprovedDimer(Matter const *matter, Parameters *parameters);
-        ~ImprovedDimer();
+    // Optimization for the dimer
+    enum{
+        OPT_SD,
+        OPT_CG,
+        OPT_LBFGS
+    };
 
-        void initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>);
-        void compute(Matter const *matter); 
-        double getEigenvalue();
-        void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
-        Matrix<double, Eigen::Dynamic, 3>  getEigenvector();
+    ImprovedDimer(Matter const *matter, Parameters *parameters);
+    ~ImprovedDimer();
 
-        Parameters *parameters;
+    void initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>);
+    void compute(Matter const *matter); 
+    double getEigenvalue();
+    void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
+    Matrix<double, Eigen::Dynamic, 3>  getEigenvector();
 
-        Matter *x0;                             // Center Image
-        Matter *x1;                             // Forward image.
-        Matrix<double, Eigen::Dynamic, 3> tau;  // Dimer direction.
-        double C_tau;                           // Curvature along tau.
+    Parameters *parameters;
 
+    Matter *x0;                                 // Center Image
+    Matter *x1;                                 // Forward image.
+    Matrix<double, Eigen::Dynamic, 3> tau;      // Dimer direction.
+    Matrix<double, Eigen::Dynamic, 3> Theta;    // Dimer rotation direction.
+    Matrix<double, Eigen::Dynamic, 3> F_R;      // Dimer rotational force.
+    double C_tau;                               // Curvature along tau.
+
+    // parameters used for conjugate gradients
+    Matrix<double, Eigen::Dynamic, 3> F_R_Old;
+    Matrix<double, Eigen::Dynamic, 3> ThetaOld;
+    double a, b, gamma;
+    bool init_cg;
 };
 
 #endif
-
-
 
 
 
