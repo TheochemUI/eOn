@@ -77,6 +77,7 @@ public:
     double dimerMaxIterations;
     bool   dimerImproved;
     double dimerConvergedRotation;
+    long   dimerOptimizer;
     // old parameters
     long   dimerRotationsMax;
     long   dimerRotationsMin;

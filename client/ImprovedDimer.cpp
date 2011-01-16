@@ -42,6 +42,10 @@ void ImprovedDimer::initialize(Matter const *matter, Matrix<double, Eigen::Dynam
     
     Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
     x1->setPositions(x0_r + tau * parameters->dimerSeparation);
+
+    if(parameters->dimerOptimizer == OPT_CG){
+        init_cg = true;
+    }
 }
 
 void ImprovedDimer::compute(Matter const *matter)
@@ -52,11 +56,17 @@ void ImprovedDimer::compute(Matter const *matter)
     Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
     x1->setPositions(x0_r + tau * parameters->dimerSeparation);
 
+    // other vectors
+    Matrix<double, Eigen::Dynamic, 3> x1_rp;
+    Matrix<double, Eigen::Dynamic, 3> x1_r;
+    Matrix<double, Eigen::Dynamic, 3> tau_prime;
+    Matrix<double, Eigen::Dynamic, 3> g1_prime;
+
     double delta = parameters->dimerSeparation * 0.5;
     double phi_tol = 2 * M_PI * (parameters->dimerConvergedRotation/360.0);
     double phi_prime = 0.0;
     double phi_min = 0.0;
-    
+
     statsRotations = 0;
 
     Matter *x1p = new Matter(parameters);
@@ -69,12 +79,48 @@ void ImprovedDimer::compute(Matter const *matter)
     {
         
         // Calculate the rotational force, F_R.
-        Matrix<double, Eigen::Dynamic, 3> F_R = -2 * (g1 - g0) + 2 * ((g1 - g0).cwise() * tau).sum() * tau;
-        statsTorque = F_R.norm();
+        F_R = -2 * (g1 - g0) + 2 * ((g1 - g0).cwise() * tau).sum() * tau;
+        statsTorque = F_R.norm() / delta;
         
         // Determine the step direction, Theta. (steepest descent)
-        Matrix<double, Eigen::Dynamic, 3> Theta = F_R / F_R.norm();
-        
+        cout <<"opt: "<<parameters->dimerOptimizer<<endl;
+        if(parameters->dimerOptimizer == OPT_SD) // steepest descent
+        {
+            cout <<"into dimer SD\n";
+            Theta = F_R / F_R.norm();
+        }
+        else if(parameters->dimerOptimizer == OPT_CG) // conjugate gradients
+        {
+            cout <<"into dimer CG\n";
+            if(init_cg){
+                init_cg = false;
+                gamma = 0;
+            }else{  
+                a = fabs((F_R.cwise() * F_R_Old).sum());
+                b = F_R_Old.squaredNorm();
+                cout <<"a: "<<a<<" b: "<<b<<endl;
+                if(a<0.5*b)
+                    gamma = (F_R.cwise() * (F_R - F_R_Old)).sum()/b;
+                else 
+                    gamma = 0;
+            }
+
+            if(gamma == 0)
+                Theta = F_R;
+            else
+                Theta = F_R + ThetaOld * F_R_Old.norm() * gamma;
+
+            Theta = Theta - (Theta.cwise() * tau).sum() * tau;
+            Theta = Theta / Theta.norm();
+
+            F_R_Old = F_R;
+            ThetaOld = Theta;
+        }
+        else if(parameters->dimerOptimizer == OPT_LBFGS) // quasi-newton
+        {
+            // LBFGS not implemented yet
+        }
+
         // Calculate the curvature along tau, C_tau.
         C_tau = ((g1 - g0).cwise() * tau).sum() / delta;
         statsCurvature = C_tau;    
@@ -90,13 +136,13 @@ void ImprovedDimer::compute(Matter const *matter)
             
             // Calculate g1_prime. 
             x0_r = x0->getPositions();    
-            Matrix<double, Eigen::Dynamic, 3> x1_rp = x0_r + (tau * cos(phi_prime) + Theta * sin(phi_prime)) * delta;
+            x1_rp = x0_r + (tau * cos(phi_prime) + Theta * sin(phi_prime)) * delta;
             *x1p = *x1;
             x1p->setPositions(x1_rp);
-            Matrix<double, Eigen::Dynamic, 3> g1_prime = -x1p->getForces();
+            g1_prime = -x1p->getForces();
 
             // Calculate C_tau_prime.
-            Matrix<double, Eigen::Dynamic, 3> tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
+            tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
             double C_tau_prime = ((g1_prime - g0).cwise() * tau_prime).sum() / delta;
             
             // Calculate phi_min.
@@ -117,7 +163,7 @@ void ImprovedDimer::compute(Matter const *matter)
             statsAngle = phi_min * (180.0 / M_PI);
             
             // Update x1, tau, and C_tau.
-            Matrix<double, Eigen::Dynamic, 3> x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
+            x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
             C_tau = C_tau_min;

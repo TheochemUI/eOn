@@ -44,7 +44,7 @@ public:
         STATUS_BAD_NOT_CONNECTED,
         STATUS_BAD_PREFACTOR,
         STATUS_BAD_HIGH_BARRIER,
-        STATUS_BAD_MINIMA,
+        STATUS_BAD_MINIMA
     };
 
     // Constants used to displace atoms before a saddle search
