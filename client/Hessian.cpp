@@ -92,7 +92,6 @@ bool Hessian::calculate(int which)
     matterTemp = *curr;
     
     double dr = 1e-6; // value used by graeme 1e-4;
-    double tdr = 2*dr;
     
     Matrix<double, Eigen::Dynamic, 3> pos = curr->getPositions();
     Matrix<double, Eigen::Dynamic, 3> posDisplace(nAtoms, 3);
@@ -103,6 +102,7 @@ bool Hessian::calculate(int which)
     Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian(size, size);
 
     int i, j; 
+    force1 = matterTemp.getForces();
     for(i = 0; i<size; i++)
     {
         posDisplace.setZero(); 
@@ -110,17 +110,13 @@ bool Hessian::calculate(int which)
         // Displacing one coordinate
         posDisplace(atoms(i/3), i%3)  = dr;
         
-        posTemp = pos - posDisplace;
-        matterTemp.setPositions(posTemp);
-        force1 = matterTemp.getForces();
-        
         posTemp = pos + posDisplace; 
         matterTemp.setPositions(posTemp);
         force2 = matterTemp.getForces();
         
         for(j=0; j<size; j++)
         {     
-            hessian(i,j) = -(force2(atoms(j/3), j%3)-force1(atoms(j/3), j%3))/tdr;
+            hessian(i,j) = -(force2(atoms(j/3), j%3)-force1(atoms(j/3), j%3))/dr;
             double effMass=sqrt(saddle->getMass(j/3)*saddle->getMass(i/3));
             hessian(i,j)/=effMass;
         }
