@@ -17,19 +17,21 @@
 #include "Eigen/Eigen"
 USING_PART_OF_NAMESPACE_EIGEN
 
+typedef Eigen::Matrix<double,Eigen::Dynamic,3> AtomMatrix;
+
 /* This structure is used as a inherited by Matter. It contains data about an atomic structure. It is used when a fast and direct access to the private data members is required in Matter. It should not be used alone.  Use carefully. Avoid it and use Matter instead if possible. */
 
 struct MatterPrivateData {
     Parameters *parameters;
  
     long int nAtoms; // number of atoms
-    Matrix<double, Eigen::Dynamic, 3> positions; // positions
-    Matrix<double, Eigen::Dynamic, 3> velocities; // velocities
-    Matrix<double, Eigen::Dynamic, 3> forces; // forces
-    Matrix<double, Eigen::Dynamic, 1> masses; // masses
-    Matrix<int, Eigen::Dynamic, 1> atomicNrs; // atomic numbers
-    Matrix<int, Eigen::Dynamic, 1> isFixed; // array of bool, false for movable atom, true for fixed
-    Matrix<double, 3, 3> cellBoundaries; // boundaries of the cell
+    AtomMatrix positions; // positions
+    AtomMatrix velocities; // velocities
+    AtomMatrix forces; // forces
+    VectorXd masses; // masses
+    VectorXi atomicNrs; // atomic numbers
+    VectorXi isFixed; // array of bool, false for movable atom, true for fixed
+    Matrix3d cellBoundaries; // boundaries of the cell
     mutable double potentialEnergy; // potential energy
 };
 
@@ -58,17 +60,20 @@ public:
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
     void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
 
-    Matrix<double, Eigen::Dynamic, 3> pbc(Matrix<double, Eigen::Dynamic, 3> diff) const;
+    AtomMatrix pbc(AtomMatrix diff) const;
     
-    Matrix<double, Eigen::Dynamic, 3> getPositions() const; // return coordinates of free atoms in array pos
-    void setPositions(const Matrix<double, Eigen::Dynamic, 3> pos); // update Matter with the new positions of the free atoms given in array pos
+    AtomMatrix getPositions() const; // return coordinates of free atoms in array pos
+    VectorXd getPositionsV() const;
+    void setPositions(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos
+    void setPositionsV(const VectorXd pos);
     
-    Matrix<double, Eigen::Dynamic, 3> getVelocities() const; 
-    void setVelocities(const Matrix<double, Eigen::Dynamic, 3> v); 
-    void setForces(const Matrix<double, Eigen::Dynamic, 3> f);
-    Matrix<double, Eigen::Dynamic, 3> getAccelerations(); 
+    AtomMatrix getVelocities() const; 
+    void setVelocities(const AtomMatrix v); 
+    void setForces(const AtomMatrix f);
+    AtomMatrix getAccelerations(); 
 
-    Matrix<double, Eigen::Dynamic, 3> getForces(); // return forces applied on all atoms in array force 
+    AtomMatrix getForces(); // return forces applied on all atoms in array force 
+    VectorXd   getForcesV();
 
     double getMass(long int atom) const; // return the mass of the atom specified
     void setMass(long int atom, double mass); // set the mass of an atom
@@ -102,7 +107,7 @@ public:
     bool matter2convel(std::string filename) const; // print con file with both coordinates and velocities  in Class Matter
     bool matter2convel(FILE *file) const; // print con file with both coordinates and velocities from data in Class Matter
     void matter2xyz(std::string filename, bool append=false) const; // print xyz file from data in Matter
-    Matrix<double, Eigen::Dynamic, 3> getFree() const;
+    AtomMatrix getFree() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
@@ -123,7 +128,7 @@ private:
     void clearMemory(); // clear dynamically allocated memory
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double & component, int axis);
-    void applyPeriodicBoundary(Matrix<double, Eigen::Dynamic, 3> & diff);
+    void applyPeriodicBoundary(AtomMatrix & diff);
 };
 
 #endif
