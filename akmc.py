@@ -217,6 +217,7 @@ def get_akmc_metadata():
             parser = ConfigParser.RawConfigParser()
             parser.read(metafile)
             seed = parser.get("aKMC Metadata", "random_state")
+            from numpy import array,uint32
             numpy.random.set_state(eval(seed))
             logger.debug("Set random state from previous run's state")
         except:
