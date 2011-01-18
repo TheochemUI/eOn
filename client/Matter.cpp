@@ -140,10 +140,10 @@ double Matter::distanceTo(const Matter& matter)
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::pbc(Matrix<double, Eigen::Dynamic, 3> diff) const
+AtomMatrix Matter::pbc(AtomMatrix diff) const
 {
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
-    Matrix<double, Eigen::Dynamic, 3> ddiff = diff*ibox;
+    AtomMatrix ddiff = diff*ibox;
    
     int i,j;
     for(i=0; i<diff.rows(); i++)
@@ -166,7 +166,7 @@ double Matter::perAtomNorm(const Matter& matter)
 
     if(matter.numberOfAtoms() == nAtoms)
     {
-        Matrix<double, Eigen::Dynamic, 3> diff = pbc(positions - matter.positions);
+        AtomMatrix diff = pbc(positions - matter.positions);
         for(i = 0; i < nAtoms; i++)
         {
             max_distance = max(diff.row(i).norm(), max_distance);
@@ -277,14 +277,19 @@ void Matter::setVelocity(long int indexAtom, int axis, double vel)
 
 
 //return coordinates of free atoms in array 'pos'
-Matrix<double, Eigen::Dynamic, 3> Matter::getPositions() const
+AtomMatrix Matter::getPositions() const
 {
     return positions;
 }
 
+VectorXd Matter::getPositionsV() const
+{
+    return VectorXd::Map(positions.data(),3*numberOfAtoms());
+}
+
 
 // update Matter with the new positions of the free atoms given in array 'pos'
-void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
+void Matter::setPositions(const AtomMatrix pos) {
     positions = pos;
     if(usePeriodicBoundaries)
     {
@@ -293,11 +298,16 @@ void Matter::setPositions(const Matrix<double, Eigen::Dynamic, 3> pos) {
     recomputePotential=true;
 }
 
+// Same but takes vector instead of n x 3 matrix
+void Matter::setPositionsV(const VectorXd pos) {
+    setPositions(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
+}
+
 
 // return forces applied on all atoms in array 'force' 
-Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
+AtomMatrix Matter::getForces() {
     computePotential();
-    Matrix<double, Eigen::Dynamic, 3> ret= forces;
+    AtomMatrix ret= forces;
     int i;
     for(i=0; i<nAtoms; i++)
     {
@@ -307,6 +317,10 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getForces() {
         }
     }
     return ret;
+}
+
+VectorXd Matter::getForcesV() {
+    return VectorXd::Map(getForces().data(),3*numberOfAtoms());
 }
 
 
@@ -703,7 +717,7 @@ void Matter::clearMemory()
 void Matter::applyPeriodicBoundary()
 { 
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
-    Matrix<double, Eigen::Dynamic, 3> ddiff = positions*ibox;
+    AtomMatrix ddiff = positions*ibox;
    
     int i,j;
     for(i=0; i<ddiff.rows(); i++)
@@ -759,9 +773,9 @@ bool Matter::isItConverged(double convergeCriterion)
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
+AtomMatrix Matter::getFree() const
 {
-    Matrix<double, Eigen::Dynamic, 3> ret(nAtoms,3);
+    AtomMatrix ret(nAtoms,3);
     int i,j;
     for(i=0;i<nAtoms;i++)
     {
@@ -774,27 +788,27 @@ Matrix<double, Eigen::Dynamic, 3> Matter::getFree() const
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getVelocities() const
+AtomMatrix Matter::getVelocities() const
 {
     return velocities.cwise() * getFree(); 
 }
 
 
-void Matter::setVelocities(const Matrix<double, Eigen::Dynamic, 3> v)
+void Matter::setVelocities(const AtomMatrix v)
 {
     velocities = v.cwise()*getFree(); 
 }
 
 
-void Matter::setForces(const Matrix<double, Eigen::Dynamic, 3> f)
+void Matter::setForces(const AtomMatrix f)
 {
     forces = f.cwise()*getFree();
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> Matter::getAccelerations()
+AtomMatrix Matter::getAccelerations()
 {
-    Matrix<double, Eigen::Dynamic, 3> ret =  getForces().cwise() * getFree(); 
+    AtomMatrix ret =  getForces().cwise() * getFree(); 
     ret.col(0).cwise()/=masses;
     ret.col(1).cwise()/=masses;
     ret.col(2).cwise()/=masses;
