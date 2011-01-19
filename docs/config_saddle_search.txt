@@ -25,6 +25,12 @@ right part of configuration space.
         *under_coordinated*: Select a random atom with coordination less than
         *displace_max_coordination*.
 
+**max_iterations**
+
+    Default: 1000
+    
+    The maximum number of translation steps to be taken.
+
 **displace_radius** 
 
     Default: 5.0
