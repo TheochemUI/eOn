@@ -131,7 +131,7 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
 		vaspRunning();
             
     }
-	printf("\n");
+	printf("\n-----------------------\n");
     readFU(N, F, U);
     remove("FU");
     vaspRunCount++;

@@ -50,8 +50,8 @@ void SaddleSearchJob::run(int bundleNumber)
     saddle = new Matter(parameters);
 
     initial->con2matter(reactant_passed);
-
- /*   if (parameters->processSearchMinimizeFirst) {
+/*
+    if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
         int fi = Potential::fcalls;
         ConjugateGradients cgMin(initial, parameters);
@@ -62,7 +62,9 @@ void SaddleSearchJob::run(int bundleNumber)
     if (!parameters->saddleDisplaceType) {
         saddle->con2matter(displacement_passed);
     }
-
+    else {
+        *saddle = *initial;
+    }
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
     if (!parameters->saddleDisplaceType) {
