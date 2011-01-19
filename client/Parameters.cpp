@@ -281,7 +281,7 @@ int Parameters::load(FILE *file){
         {
             saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
         }
-        else if(displaceString == "not_last_atom")
+        else if(displaceString == "last_atom")
         {
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
