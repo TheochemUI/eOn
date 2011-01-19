@@ -569,12 +569,12 @@ bool Matter::con2matter(std::string filename) {
 bool Matter::con2matter(FILE *file) {
     char line[255]; // Temporary string of character to read from the file.
     fgets(headerCon1,sizeof(line),file);
-    if (strchr(headerCon1,'\r')) {
-        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
-        with the new line charater (\n). C recognises only the \n as the end of line. */
-        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
-        return false; // return false for error
-    };
+//    if (strchr(headerCon1,'\r')) {
+//        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
+//        with the new line charater (\n). C recognises only the \n as the end of line. */
+//        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
+//        return false; // return false for error
+//    };
 
     long int i; int j;
 
@@ -936,12 +936,12 @@ bool Matter::convel2matter(std::string filename) {
 bool Matter::convel2matter(FILE *file) {
     char line[255]; // Temporary string of character to read from the file.
     fgets(headerCon1,sizeof(line),file);
-    if (strchr(headerCon1,'\r')) {
-        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
-        with the new line charater (\n). C recognises only the \n as the end of line. */
-        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
-        return false; // return false for error
-    };
+//    if (strchr(headerCon1,'\r')) {
+//        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
+//        with the new line charater (\n). C recognises only the \n as the end of line. */
+//        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
+//        return false; // return false for error
+//    };
 
     long int i; int j;
 
