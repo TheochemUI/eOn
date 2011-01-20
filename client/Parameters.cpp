@@ -285,7 +285,7 @@ int Parameters::load(FILE *file){
         {
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
-        saddleDisplaceMagnitude = ini.GetValueB("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
+        saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
