@@ -74,20 +74,20 @@ public:
     // [Dimer]
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
-    double dimerMaxIterations;
-    bool   dimerImproved;
-    double dimerConvergedRotation;
-    long   dimerOptimizer;
+    bool   dimerImproved; // turn on the improved dimer method
+    double dimerConvergedRotation; // stop rotating when angle drops below this value
+    long   dimerMaxIterations; // maximum number of rotation iterations
+    long   dimerOptimizer; // method to determine the next rotation direction
     // old parameters
     long   dimerRotationsMax;
     long   dimerRotationsMin;
     double dimerTorqueMax;
     double dimerTorqueMin;
 
-   
     // [Lanczos]
-    double lanczosConvergence; // difference between the lowest eignevalues of two successive iterations
-    int    lanczosIteration; // maximum number of iterations
+    double lanczosSeparation; // finite difference distance
+    double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
+    long   lanczosMaxIterations; // maximum number of iterations
 
     // [Hessian]
     int    hessianType;
