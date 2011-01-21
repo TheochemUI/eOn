@@ -70,9 +70,11 @@ void SaddleSearchJob::run(int bundleNumber)
     if (!parameters->saddleDisplaceType) {
         saddlePoint->loadMode(mode_passed);
     }
-    else {
-        saddlePoint->displaceAndSetMode(saddle);
-    }    
+    // Initialization is done in SaddleSearch for the case
+    // where the displacement is done on the client
+    //else{
+    //    saddlePoint->displaceAndSetMode(saddle);
+    //}
 
     int status = doSaddleSearch();
 
