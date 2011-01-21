@@ -72,6 +72,11 @@ Parameters::Parameters(){
     dimerRotationsMin = 1;
     dimerRotationsMax = 8;
 
+    // [Lanczos] //
+    lanczosSeparation = 0.001;
+    lanczosTolerance = 0.001;
+    lanczosMaxIterations = 20;
+
     // [Hessian] //
     hessianType = Hessian::REACTANT;
     hessianMinDisplacement = 0.25;
@@ -285,7 +290,7 @@ int Parameters::load(FILE *file){
         {
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
-        saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
+        saddleDisplaceMagnitude = ini.GetValueB("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
@@ -308,6 +313,7 @@ int Parameters::load(FILE *file){
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
+        dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
         string dimerOptString;
         dimerOptString = ini.GetValue("Dimer", "optimizer", "steepest_descent");
         dimerOptString = toLowerCase(dimerOptString);
@@ -326,8 +332,9 @@ int Parameters::load(FILE *file){
 
         // [Lanczos] //
 
-        lanczosConvergence = ini.GetValueF("Lanczos", "convergence", lanczosConvergence);
-        lanczosIteration = ini.GetValueL("Lanczos", "iteration", lanczosIteration);
+        lanczosSeparation = ini.GetValueF("Lanczos", "separation", lanczosSeparation);
+        lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
+        lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
         // [Hessian] //
 

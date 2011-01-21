@@ -82,12 +82,12 @@ void ImprovedDimer::compute(Matter const *matter)
         F_R = -2 * (g1 - g0) + 2 * ((g1 - g0).cwise() * tau).sum() * tau;
         statsTorque = F_R.norm() / delta;
         
-        // Determine the step direction, Theta. (steepest descent)
+        // Determine the step direction, theta. (steepest descent)
         cout <<"opt: "<<parameters->dimerOptimizer<<endl;
         if(parameters->dimerOptimizer == OPT_SD) // steepest descent
         {
             cout <<"into dimer SD\n";
-            Theta = F_R / F_R.norm();
+            theta = F_R / F_R.norm();
         }
         else if(parameters->dimerOptimizer == OPT_CG) // conjugate gradients
         {
@@ -106,15 +106,15 @@ void ImprovedDimer::compute(Matter const *matter)
             }
 
             if(gamma == 0)
-                Theta = F_R;
+                theta = F_R;
             else
-                Theta = F_R + ThetaOld * F_R_Old.norm() * gamma;
+                theta = F_R + thetaOld * F_R_Old.norm() * gamma;
 
-            Theta = Theta - (Theta.cwise() * tau).sum() * tau;
-            Theta = Theta / Theta.norm();
+            theta = theta - (theta.cwise() * tau).sum() * tau;
+            theta = theta / theta.norm();
 
             F_R_Old = F_R;
-            ThetaOld = Theta;
+            thetaOld = theta;
         }
         else if(parameters->dimerOptimizer == OPT_LBFGS) // quasi-newton
         {
@@ -126,7 +126,7 @@ void ImprovedDimer::compute(Matter const *matter)
         statsCurvature = C_tau;    
         
         // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
-        double d_C_tau_d_phi = 2 * ((g1 - g0).cwise() * Theta).sum() / delta;
+        double d_C_tau_d_phi = 2 * ((g1 - g0).cwise() * theta).sum() / delta;
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2 * abs(C_tau)));
         statsAngle = phi_prime * (180.0 / M_PI);
         
@@ -136,7 +136,7 @@ void ImprovedDimer::compute(Matter const *matter)
             
             // Calculate g1_prime. 
             x0_r = x0->getPositions();    
-            x1_rp = x0_r + (tau * cos(phi_prime) + Theta * sin(phi_prime)) * delta;
+            x1_rp = x0_r + (tau * cos(phi_prime) + theta * sin(phi_prime)) * delta;
             *x1p = *x1;
             x1p->setPositions(x1_rp);
             g1_prime = -x1p->getForces();
@@ -163,7 +163,7 @@ void ImprovedDimer::compute(Matter const *matter)
             statsAngle = phi_min * (180.0 / M_PI);
             
             // Update x1, tau, and C_tau.
-            x1_r = x0_r + (tau * cos(phi_min) + Theta * sin(phi_min)) * delta;
+            x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
             C_tau = C_tau_min;
