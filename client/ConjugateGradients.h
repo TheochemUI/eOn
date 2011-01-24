@@ -15,8 +15,7 @@
 #include "Matter.h"
 #include "MinimizersInterface.h"
 
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN
+#include "Eigen.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing a Matter object or modified forces being passed in.*/
 class ConjugateGradients : public MinimizersInterface{
