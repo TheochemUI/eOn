@@ -16,8 +16,7 @@
 #include <cassert>
 #include "debug.h"
 
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN
+#include "Eigen.h"
 
 #include "Matter.h"
 #include "HelperFunctions.h"

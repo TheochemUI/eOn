@@ -13,9 +13,7 @@
 
 #include "Parameters.h"
 #include "PotentialsInterface.h"
-
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN
+#include "Eigen.h"
 
 /* Class serving as a wrapper between the force calculator and the Matter object */
 class Potential{

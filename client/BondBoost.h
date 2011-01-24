@@ -15,9 +15,7 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 
-#include "Eigen/Eigen"
-
-USING_PART_OF_NAMESPACE_EIGEN
+#include "Eigen.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
 class BondBoost {
