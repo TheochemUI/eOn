@@ -15,8 +15,7 @@
 
 #include "Parameters.h"
 
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN //It hurts every time I type this
+#include "Eigen.h"
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
 class LowestEigenmodeInterface{
