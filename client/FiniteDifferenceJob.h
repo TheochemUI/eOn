@@ -14,8 +14,7 @@
 
 #include "Job.h"
 #include "Parameters.h"
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN
+#include "Eigen.h"
 
 class FiniteDifferenceJob: public Job {
     public:

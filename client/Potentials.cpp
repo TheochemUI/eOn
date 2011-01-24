@@ -124,24 +124,17 @@ Potential::~Potential(){
 };
 
 // An alike function should be provided by the force calculator.
-Matrix<double, Eigen::Dynamic, 3> Potential::force(long nAtoms, Matrix<double, Eigen::Dynamic, 3> positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box) 
+AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box) 
 {
     //XXX: For now, this just serves as a wrapper for the potentials
     //     and converts from Matrix to double[]s. Later, the potentials
     //     should also use Eigen
 
     // Eigen stores data in column-major format but we want row-major
-    Matrix<double, 3, 3> boxT= box.transpose();
-    Matrix<double, 3, Eigen::Dynamic> positionsT = positions.transpose();
-    Matrix<double, 3, Eigen::Dynamic> forcesT(3, (int)nAtoms);
+    AtomMatrix forces(nAtoms,3);
 
-    interface_->force(nAtoms, positionsT.data(), atomicNrs.data(), forcesT.data(), energy, boxT.data());
-
-    Matrix<double, Eigen::Dynamic, 3> forces = forcesT.transpose();  
-
-    
+    interface_->force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
 
     fcalls+=1;
     return forces;
 };
-

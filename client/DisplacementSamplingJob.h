@@ -13,9 +13,8 @@
 
 #include "Job.h"
 #include "Parameters.h"
-#include "Eigen/Eigen"
+#include "Eigen.h"
 
-USING_PART_OF_NAMESPACE_EIGEN
 
 class DisplacementSamplingJob: public Job {
     public:

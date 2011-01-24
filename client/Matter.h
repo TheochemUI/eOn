@@ -14,10 +14,7 @@
 #include "Parameters.h"
 #include "Potentials.h"
 
-#include "Eigen/Eigen"
-USING_PART_OF_NAMESPACE_EIGEN
-
-typedef Eigen::Matrix<double,Eigen::Dynamic,3> AtomMatrix;
+#include "Eigen.h"
 
 /* This structure is used as a inherited by Matter. It contains data about an atomic structure. It is used when a fast and direct access to the private data members is required in Matter. It should not be used alone.  Use carefully. Avoid it and use Matter instead if possible. */
 
