@@ -27,12 +27,9 @@ import statelist
 
 class AKMCStateList(statelist.StateList):
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, state_path, kT, thermal_window, max_thermal_window, 
-                 epsilon_e, epsilon_r, use_identical, initial_state = None, 
-                 list_search_results = False, filter_hole = False):
-        statelist.StateList.__init__(self, state_path, epsilon_e, epsilon_r,
-                                     use_identical, akmcstate.AKMCState, list_search_results, 
-                                     initial_state)
+    def __init__(self, kT, thermal_window, max_thermal_window, 
+                  initial_state = None, filter_hole = False):
+        statelist.StateList.__init__(self, akmcstate.AKMCState, initial_state)
         # aKMC data.
         self.kT = kT
         self.thermal_window = thermal_window
@@ -117,7 +114,7 @@ class AKMCStateList(statelist.StateList):
                     for state in energetically_close:
                         p = state.get_reactant()
                         if self.use_identical:
-                            if atoms.identical(p, pnew, self.epsilon_r):
+                            if atoms.identical(p, pnew):
                                 # Update the reactant state to point at the new state id.
                                 self.register_process(i.number, state.number, j)                            
                         else:
