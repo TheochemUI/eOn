@@ -94,6 +94,9 @@ def loadcon(filein):
     index = 0
     for i in range(num_types):
         name = con.readline().strip()
+        if abs(1.0-mass_of_type[i]) < 1e-6 and name != "H":
+            logger.warning("WARNING: Mass of %s set to 1.0", name)
+
         con.readline() #skip meaningless line
         for j in range(num_each_type[i]):
             vals = con.readline().split()
