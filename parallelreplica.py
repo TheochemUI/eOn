@@ -77,12 +77,7 @@ def step(current_time, current_state, states, transition):
 
 def get_statelist():
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return prstatelist.PRStateList(config.path_states, 
-                               config.comp_eps_e, 
-                               config.comp_eps_r, 
-                               config.comp_use_identical, 
-                               config.debug_list_search_results, 
-                               initial_state_path)
+    return prstatelist.PRStateList(initial_state_path)
 
 def get_pr_metadata():
     if not os.path.isdir(config.path_results):

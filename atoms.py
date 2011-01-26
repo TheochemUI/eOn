@@ -9,6 +9,7 @@
 ##-----------------------------------------------------------------------------------
 
 """ The atoms module. """
+import config
 
 import numpy
 import logging
@@ -83,7 +84,7 @@ def per_atom_norm_gen(v, box, ibox = None):
     for d in diff:
         yield numpy.linalg.norm(d)
 
-def identical(atoms1, atoms2, epsilon_r):
+def identical(atoms1, atoms2):
     '''
     Determines whether two structures are identical if atoms of the same element are
     considered indistinguishable.
@@ -92,6 +93,7 @@ def identical(atoms1, atoms2, epsilon_r):
         epsilon_r:  distance (in angstroms) that two atoms must be seperated by in order to be considered different
     '''
     #XXX: n^2
+    epsilon_r = config.comp_eps_r
     if len(atoms1) != len(atoms2):
         return False
     
