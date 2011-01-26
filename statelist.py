@@ -26,18 +26,17 @@ import state
 
 class StateList:
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, state_path, epsilon_e, epsilon_r, use_identical, StateClass,
-                 list_search_results=None, initial_state = None):
+    def __init__(self, StateClass, initial_state = None):
         ''' Check to see if state_path exists and that state zero exists.
             Initializes state zero when passed a initial_state only if state
             zero doesn't already exist. '''
 
-        self.path = state_path
-        self.epsilon_e = epsilon_e
-        self.epsilon_r = epsilon_r
-        self.use_identical = use_identical
+        self.path = config.path_states
+        self.epsilon_e = config.comp_eps_e
+        self.epsilon_r = config.comp_eps_r
+        self.use_identical = config.comp_use_identical
         self.StateClass = StateClass
-        self.list_search_results = list_search_results
+        self.list_search_results = config.debug_list_search_results
 
         # Paths
         self.state_table_path = os.path.join(self.path, "state_table")
@@ -101,7 +100,7 @@ class StateList:
                 for id in energetically_close:
                     p = self.get_state(id).get_reactant()
                     if self.use_identical:
-                        if atoms.identical(p, pnew, self.epsilon_r):
+                        if atoms.identical(p, pnew):
 
                             # Update the reactant state to point at the new state id.
                             self.register_process(st.number, id, process_id)                            
