@@ -30,11 +30,11 @@ public:
     long statsRotations;
 
     virtual ~LowestEigenmodeInterface() {}
-    void virtual initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>) = 0;
+    void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
     void virtual compute(Matter const *matter) = 0;
     double virtual getEigenvalue() = 0;
     virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector() = 0;
-    virtual void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector) = 0;
+    virtual void setEigenvector(AtomMatrix const eigenvector) = 0;
 
 };
 
