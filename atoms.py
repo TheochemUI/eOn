@@ -230,6 +230,71 @@ def least_coordinated(p, cutoff, brute=False):
             return least
         mincoord += 1
 
+def cna(p, cutoff, brute=False):
+    """ Returns a list of cna numbers for all atoms in p 
+        Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
+    can_values = numpy.zeros(len(p))
+    nr_FCC = numpy.zeros(len(p))
+    nr_HCP = numpy.zeros(len(p))
+
+    nl = neighbor_list(p, cutoff, brute)
+    
+    # loops over all the atoms
+    for a2 in range(len(p)):
+        nl_a2 = nl[a2]
+        # loops over the atoms neighboring a2
+        for n2 in range(len(nl_a2)):
+            a1 = nl_a2[n2];
+            if a1 < a2:
+                common = []
+                nl_a1 = nl[a1]
+                # loops over the atoms neighboring a1
+                for n1 in range(len(nl_a1)):
+                    a3 = nl_a1[n1]
+                    # checks if atom a_3 is a common neighbor to a1 and a2
+                    for m2 in range(len(nl_a2)):
+                        if a3 == nl_a2[m2]:
+                            common.append(a3)
+                # determines the connectivity of common neighbors
+                if len(common) == 4:
+                    bonds_nr = 0
+                    bonds_sum = 0
+                    for j2 in range(1,4):
+                        nl_j2 = nl[common[j2]]
+                        for j1 in range(j2):
+                            for n in range(len(nl_j2)):
+                                if common[j1] == nl_j2[n]:
+                                    bonds_nr += 1
+                                    bonds_sum += j1 + j2
+                
+                    if bonds_nr == 2:
+                        if bonds_sum == 6:
+                            nr_FCC[a1] += 1
+                            nr_FCC[a2] += 1
+                        else:
+                            nr_HCP[a1] += 1
+                            nr_HCP[a2] += 1
+
+    # 2: fcc (421), 1: hcp (422), 0: other
+    for i in range(len(p)):
+        if len(nl[i]) == 12:
+            if nr_FCC[i] == 12:
+                can_values[i] = 2
+            elif (nr_FCC[i] == 6) and (nr_HCP[i] == 6):
+                can_values[i] = 1
+    return can_values
+    
+def not_HCP_or_FCC(p, cutoff, brute=False):
+    """ Returns a list of indexes for the atoms with cna = 0 """
+    not_cna = []
+    cna_numbers = cna(p, cutoff, brute)
+    for i in range(len(cna_numbers)):
+        if cna_numbers[i] == 0:
+            not_cna.append(i)
+    print numpy.array(cna_numbers)
+    return not_cna
+
+    
 
 def getMappings(a, b, mappings = None):
     """ A recursive depth-first search for a complete set of mappings from atoms

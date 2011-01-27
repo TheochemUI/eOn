@@ -478,6 +478,10 @@ def get_displacement(reactant, indices=None):
         disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
     elif config.disp_type == 'least_coordinated':
         disp = displace.Leastcoordinated(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
+    elif config.disp_type == 'not_FCC_HCP_coordinated':
+        disp = displace.NotFCCorHCP(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
+    elif config.disp_type == 'listed_atoms':
+        disp = displace.ListedAtoms(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
     elif config.disp_type == 'water':
         disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation, config.molecule_list, config.disp_at_random)
     else:
