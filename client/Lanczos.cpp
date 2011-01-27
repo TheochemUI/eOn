@@ -8,139 +8,155 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-// Lanczos method taken from Andri Arnaldsson implementation in the vtstcode
-// using the structure of the ImprovedDimer code
-
 #include "Lanczos.h"
 
 using namespace helper_functions;
 
 Lanczos::Lanczos(Matter const *matter, Parameters *params)
 {
-    parameters    = params;
-    x0            = new Matter(parameters);
-    x1            = new Matter(parameters);
-    *x0           = *matter;
-    *x1           = *matter;
-
-//    tau.setZero(matter->numberOfAtoms(), 3);
-    w.setZero(matter->numberOfAtoms(), 3);
-    q.setZero(matter->numberOfAtoms(), 3);
-    qold.setZero(matter->numberOfAtoms(), 3);
-    z.setZero(matter->numberOfAtoms(), 3);
-
-    d.setZero(parameters->lanczosMaxIterations);
-    e.setZero(parameters->lanczosMaxIterations);
-    a.setZero(parameters->lanczosMaxIterations);
-    b.setZero(parameters->lanczosMaxIterations);
-
-    PP = new Matrix<double, Eigen::Dynamic, 3>[parameters->lanczosMaxIterations];
-    for(long i=0; i<parameters->lanczosMaxIterations; i++)
-    {
-        PP[i].setZero(matter->numberOfAtoms(), 3);
-    }
-
+    parameters = params;
     totalForceCalls = 0;
+    lowestEv.resize(matter->numberOfAtoms(),3);
+    lowestEv.setZero();
+    lowestEw = 0.0;
 }
 
 Lanczos::~Lanczos()
 {
-    delete x0;
-    delete x1;
-    delete [] PP;
 }
 
-void Lanczos::initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
+void Lanczos::initialize(Matter const *matter, AtomMatrix displacement)
 {
-    *x0 = *matter;
-    *x1 = *matter;
-    tau = displacement.cwise() * matter->getFree();
-    tau.normalize();
-    
-    Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
-    x1->setPositions(x0_r + tau * parameters->lanczosSeparation);
+    r.resize(3*matter->numberOfFreeAtoms());
+    int j=0;
+    for (int i=0;i<matter->numberOfAtoms();i++) {
+        if (!matter->getFixed(i)) {
+            r.segment<3>(j) = displacement.row(i);
+            j++;
+        }
+    }
+    r.normalize();
+    lowestEv = displacement.normalized();
 }
 
 void Lanczos::compute(Matter const *matter)
 {
-    
-    *x0 = *matter;
-    *x1 = *matter;
-    Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
-    Matrix<double, Eigen::Dynamic, 3> f0 = x0->getForces();
-    Matrix<double, Eigen::Dynamic, 3> f1;
+    int size = 3*matter->numberOfFreeAtoms();
+    MatrixXd T(size,size), Q(size,size);
+    T.setZero();
+    VectorXd u(size);
+    Matter *tmpMatter = new Matter(parameters);
+    *tmpMatter = *matter;
+    double dr = parameters->lanczosSeparation;
+    double alpha, beta=r.norm();
+    VectorXd force1, force2;
+    double ew=0.0, ewOld=0.0, ewChange;
+    VectorXd evT;
+    force1 = tmpMatter->getForcesFreeV();
 
-    double dR = parameters->lanczosSeparation;
-    long i = 0;
-    q.setZero(matter->numberOfAtoms(), 3);
-    beta = 1;
+    int i=0;
+    for (i=0;i<size;i++) {
+        Q.col(i) = r/beta;
 
-    do // while we have not reached tolerance or maximum iterations
-    {
-        qold = q;
-        q = w / beta;
-        P[i] = q;
-        
-        x1->setPositions(x0_r + q * parameters->lanczosSeparation);
-        f1 = x1->getForces();
-
-        z = f1 - f0;
-        w = z - beta * qold;
-        alpha = (w.cwise() * q).sum();
-        d(i) = alpha;
-        w = w - alpha * q;
-        beta = w.norm();
-        e(i) = beta;
-        // Check the eigenvalues
-        if(i > 1){
-            a = -d / dR;
-            b = -e / dR;
-            // Replace with a proper tridiagonalizer such as: 
-            // CALL dsterf(it,aa(1:it),bb(1:it),info)
-            fullMatrix.setZero(iteration,iteration);
-            for(long j = 0, j < i, j++){
-                fullMatrix(j,j) = a(j);
-                if(j>0){
-                    fullMatrix(j,j-1) = b(j-1);
-                    fullMatrix(j-1,j) = b(j-1);
-                }
+        // Full Gram-Schmidt orthogonalization
+        // FOR TESTING ONLY
+        if (i>0) {
+            VectorXd h(size);
+            h.setZero();
+            for (int j=0;j<i;j++) {
+                h += Q.col(j).dot(Q.col(i))*Q.col(j);
             }
-            Eigen::SelfAdjointEigenSolver<MatrixXd> es(fullMatrix);
-            VectorXd eigval = es.eigenvalues();
-            eigvalMin = eigval(1);
-            eigvalChange = abs((eigvalMin-eigvalMinOld)/eigvalMinOld);
+            Q.col(i) -= h;
         }
 
-        if(i > 0){
-            eigvalMinOld = eigvalMin;
+        tmpMatter->setPositionsFreeV(matter->getPositionsFreeV()+dr*Q.col(i));
+        force2 = tmpMatter->getForcesFreeV();
+
+        u = -(force2-force1)/dr;
+        if (i==0) {
+            r = u;
         }else{
-            eigValOld = - alpha / dR;
+            r = u-beta*Q.col(i-1);
         }
-        #ifndef NDEBUG
-//            printf("LANCZOS   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
-//            F_R.norm(), C_tau, phi_min*(180.0/M_PI), statsRotations);
-        #endif
-        
-    } while(eigvalChange > parameters->lanczosTolerance and iteration < parameters->lanczosMaxIterations);
+        alpha = Q.col(i).dot(r);
+        r = r-alpha*Q.col(i);
+        beta = r.norm();
 
-    Eigen::SelfAdjointEigenSolver<MatrixXd> es(fullMatrix);
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> eigvec = es.eigenvectors();
-    tau = eigvec(1);
+        //Add to Tridiagonal Matrix
+        T(i,i) = alpha;
+        if (i>0) {
+            T(i-1,i) = beta;
+            T(i,i-1) = beta;
+        }
+
+        //Check Eigenvalues
+        if (i>1) {
+            Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0,0,i+1,i+1));
+            ew = es.eigenvalues()(0); 
+            printf("lz ew: %f\n",ew);
+            evT = es.eigenvectors().col(0);
+            ewChange = fabs((ew-ewOld)/ewOld);
+            ewOld = ew;
+            if (ewChange < parameters->lanczosTolerance) {
+                break;
+            }
+        }else{
+            ewOld = -alpha/dr;
+            ewChange = ewOld;
+        }
+
+        if (i >= parameters->lanczosMaxIterations) {
+            printf("Hit max lanczos iterations\n");
+            break;
+        }
+    }
+    VectorXd ev = Q.block(0,0,size,i+1)*evT;
+    ev.normalize();
+    r=ev;
+    lowestEw = ew;
+
+    lowestEv.resize(matter->numberOfAtoms(),3);
+    int j=0;
+    for (i=0;i<matter->numberOfAtoms();i++) {
+        if (!matter->getFixed(i)) {
+            lowestEv.row(i) = ev.segment<3>(j);
+            j++;
+        }
+    }
+
+    printf("Building exact hessian\n");
+    VectorXd posDisplace(size);
+    MatrixXd hessian(size,size);
+    hessian.setZero();
+    for (i=0;i<size;i++) {
+        posDisplace = matter->getPositionsFreeV();
+        posDisplace(i) += dr;
+        tmpMatter->setPositionsFreeV(posDisplace);
+        force2 = tmpMatter->getForcesFreeV();
+        hessian.col(i) = -(force2-force1)/dr;
+    }
+    hessian = (hessian+hessian.transpose())/2;
+    printf("Solving eigensystem\n");
+    Eigen::SelfAdjointEigenSolver<MatrixXd> esH(hessian);
+    double exactEw = esH.eigenvalues()(0);
+    printf("lanczosEw: %f\n", ew);
+    printf("exactEw: %f\n", exactEw);
+    VectorXd exactEv = esH.eigenvectors().col(0);
+    printf("ew diff: %e ev dot: %e\n\n", exactEw-ew, exactEv.dot(ev));
+    delete tmpMatter;
 }
 
 double Lanczos::getEigenvalue()
 {
-    return C_tau;
+    return lowestEw;
 }
 
-void Lanczos::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
+void Lanczos::setEigenvector(AtomMatrix const eigenvector)
 {
-    tau   = eigenvector;
-    C_tau = 0.0;
+    printf("Not implemented\n");
 }
 
-Matrix<double, Eigen::Dynamic, 3> Lanczos::getEigenvector()
+AtomMatrix Lanczos::getEigenvector()
 {
-    return tau;
+    return lowestEv;
 }
-

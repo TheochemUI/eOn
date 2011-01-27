@@ -61,8 +61,12 @@ public:
     
     AtomMatrix getPositions() const; // return coordinates of free atoms in array pos
     VectorXd getPositionsV() const;
+    AtomMatrix getPositionsFree() const; // return coordinates of free atoms in array pos
+    VectorXd getPositionsFreeV() const;
     void setPositions(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos
     void setPositionsV(const VectorXd pos);
+    void setPositionsFree(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos
+    void setPositionsFreeV(const VectorXd pos);
     
     AtomMatrix getVelocities() const; 
     void setVelocities(const AtomMatrix v); 
@@ -71,6 +75,8 @@ public:
 
     AtomMatrix getForces(); // return forces applied on all atoms in array force 
     VectorXd   getForcesV();
+    AtomMatrix getForcesFree();
+    VectorXd   getForcesFreeV();
 
     double getMass(long int atom) const; // return the mass of the atom specified
     void setMass(long int atom, double mass); // set the mass of an atom
