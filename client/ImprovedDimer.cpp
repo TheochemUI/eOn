@@ -25,6 +25,10 @@ ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
     tau.resize(matter->numberOfAtoms(), 3);
     tau.setZero();
     totalForceCalls = 0;
+
+    if(parameters->dimerOptimizer == OPT_CG){
+        init_cg = true;
+    }
 }
 
 ImprovedDimer::~ImprovedDimer()
@@ -33,24 +37,10 @@ ImprovedDimer::~ImprovedDimer()
     delete x1;
 }
 
-void ImprovedDimer::initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
+void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 {
-    *x0 = *matter;
-    *x1 = *matter;
-    tau = displacement.cwise() * matter->getFree();
+    tau = initialDirection.cwise() * matter->getFree();
     tau.normalize();
-    
-    Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
-    x1->setPositions(x0_r + tau * parameters->dimerSeparation);
-
-    if(parameters->dimerOptimizer == OPT_CG){
-        init_cg = true;
-    }
-}
-
-void ImprovedDimer::compute(Matter const *matter)
-{
-    
     *x0 = *matter;
     *x1 = *matter;
     Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
@@ -95,16 +85,18 @@ void ImprovedDimer::compute(Matter const *matter)
             }else{  
                 a = fabs((F_R.cwise() * F_R_Old).sum());
                 b = F_R_Old.squaredNorm();
-                if(a<0.5*b)
+                if(a<0.5*b) {
                     gamma = (F_R.cwise() * (F_R - F_R_Old)).sum()/b;
-                else 
+                }else{ 
                     gamma = 0;
+                }
             }
 
-            if(gamma == 0)
+            if(gamma == 0) {
                 theta = F_R;
-            else
+            }else{
                 theta = F_R + thetaOld * F_R_Old.norm() * gamma;
+            }
 
             theta = theta - (theta.cwise() * tau).sum() * tau;
             theta = theta / theta.norm();
@@ -187,12 +179,6 @@ void ImprovedDimer::compute(Matter const *matter)
 double ImprovedDimer::getEigenvalue()
 {
     return C_tau;
-}
-
-void ImprovedDimer::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
-{
-    tau   = eigenvector;
-    C_tau = 0.0;
 }
 
 Matrix<double, Eigen::Dynamic, 3> ImprovedDimer::getEigenvector()

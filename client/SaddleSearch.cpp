@@ -14,6 +14,7 @@
 #include "Lanczos.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
+#include "ExactMinMode.h"
 #include "EpiCenters.h"
 #include "Constants.h"
 
@@ -76,6 +77,10 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     {
         lowestEigenmode = new Lanczos(saddle, parameters);
     }
+    else if(parameters->saddleMinmodeMethod == MINMODE_EXACT)
+    {
+        lowestEigenmode = new ExactMinMode(saddle, parameters);
+    }
     status = STATUS_INIT;
     eigenValue = 0;
 
@@ -134,10 +139,10 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
         displaceAndSetMode(saddle);
     }
     
-    lowestEigenmode->initialize(saddle, mode);
+    //lowestEigenmode->initialize(saddle, mode);
 //    lowestEigenmode->compute(saddle);
-    eigenMode = lowestEigenmode->getEigenvector();
-    eigenValue = lowestEigenmode->getEigenvalue();
+    //eigenMode = lowestEigenmode->getEigenvector();
+    //eigenValue = lowestEigenmode->getEigenvalue();
     
     fprintf(stdout, "  Saddle point displaced.\n");
 
@@ -296,8 +301,7 @@ void SaddlePoint::displaceInConcaveRegion()
 {
     displaceAndSetMode(saddle);
     
-    lowestEigenmode->initialize(saddle, mode);
-    lowestEigenmode->compute(saddle);
+    lowestEigenmode->compute(saddle,mode);
     eigenMode = lowestEigenmode->getEigenvector();
     eigenValue = lowestEigenmode->getEigenvalue();
 
@@ -323,6 +327,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     //std::cout<<"searchForSaddlePoint\n";
     forces = saddle->getForces();
 
+    lowestEigenmode->compute(saddle,mode);
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
@@ -365,7 +370,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         saddle->setPositions(pos);
         forces = saddle->getForces();
         // The new lowest eigenvalue
-        lowestEigenmode->compute(saddle);
+        lowestEigenmode->compute(saddle,eigenMode);
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
         // Updating the conjugated object to the new configuration

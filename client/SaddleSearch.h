@@ -57,7 +57,8 @@ public:
     // Methods for finding the minimum mode
     enum{
         MINMODE_DIMER,
-        MINMODE_LANCZOS
+        MINMODE_LANCZOS,
+        MINMODE_EXACT
     };
  
     SaddlePoint(); // The object shall be initialized later with SaddlePoint::initialize

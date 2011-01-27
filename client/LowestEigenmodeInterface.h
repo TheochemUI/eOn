@@ -11,11 +11,9 @@
 #ifndef LOWESTEIGENMODEINTERFACE_H
 #define LOWESTEIGENMODEINTERFACE_H
 
-#include "Matter.h"
-
-#include "Parameters.h"
-
 #include "Eigen.h"
+#include "Matter.h"
+#include "Parameters.h"
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
 class LowestEigenmodeInterface{
@@ -30,12 +28,12 @@ public:
     long statsRotations;
 
     virtual ~LowestEigenmodeInterface() {}
-    void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
-    void virtual compute(Matter const *matter) = 0;
-    double virtual getEigenvalue() = 0;
-    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector() = 0;
-    virtual void setEigenvector(AtomMatrix const eigenvector) = 0;
 
+    //void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
+    void virtual compute(Matter const *matter, AtomMatrix direction) = 0;
+
+    double virtual getEigenvalue() = 0;
+    virtual AtomMatrix getEigenvector() = 0;
 };
 
 #endif

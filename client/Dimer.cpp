@@ -34,27 +34,8 @@ Dimer::~Dimer()
     delete matterDimer;
 }
 
-// was startNewSearchAndCompute: this is not a search, and compute what?  suggest renaming to initialize
-void Dimer::initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> displacement)
-{
-    *matterCenter = *matter;
-    rotationalPlane.setZero();
-
-    // create an initial direction for the dimer
-    direction = displacement.cwise() * matter->getFree();
-    direction.normalize();
-}
-
-// where is the move part?  Then Compute what? suggest merging with compute
-/* void Dimer::moveAndCompute(Matter const *matter)
-{
-    *matterCenter = *matter;
-    estimateLowestEigenmode();
-    return;
-}*/
-
 // was estimateLowestEigenmode. rename to compute
-void Dimer::compute(Matter const *matter)
+void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
 {
     long rotations = 0;
     long forceCallsCenter;
@@ -76,8 +57,8 @@ void Dimer::compute(Matter const *matter)
     rotationalForce.setZero();
     rotationalForceOld.setZero();
     rotationalPlaneOld.setZero();
-    Matrix<double, Eigen::Dynamic, 3> initialDirection = direction;
     initialDirection.normalize();
+    direction = initialDirection;
     
     statsAngle = 0;
     lengthRotationalForceOld = 0;
@@ -161,12 +142,6 @@ void Dimer::compute(Matter const *matter)
 double Dimer::getEigenvalue()
 {
     return eigenvalue;
-}
-
-void Dimer::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
-{
-    direction = eigenvector;
-    eigenvalue=0.0;
 }
 
 Matrix<double, Eigen::Dynamic, 3> Dimer::getEigenvector()

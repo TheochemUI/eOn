@@ -32,17 +32,16 @@ public:
     ~Dimer();
         
     void initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>); // initialize the dimer
-    void compute(Matter const *matter); // compute the lowest eigenmode
+    void compute(Matter const *matter, AtomMatrix initialDirection); // compute the lowest eigenmode
     double getEigenvalue(); // return the current eigenvalue
-    void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector); // set the dimer direction (eigenvector)
-    Matrix<double, Eigen::Dynamic, 3>  getEigenvector();  // return the current eigenvector
+    AtomMatrix getEigenvector();  // return the current eigenvector
 
 private:
 
     Matter *matterCenter; // center of the dimer
     Matter *matterDimer; //one configuration of the dimer
-    Matrix<double, Eigen::Dynamic, 3> direction; // direction along the dimer
-    Matrix<double, Eigen::Dynamic, 3> rotationalPlane; // direction normal to the plane of dimer rotation 
+    AtomMatrix direction; // direction along the dimer
+    AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation 
     double eigenvalue; // current curvature along the dimer
     int nAtoms;
     Parameters *parameters;

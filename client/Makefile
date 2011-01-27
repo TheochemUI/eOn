@@ -147,9 +147,10 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     debug.o HelperFunctions.o Matter.o Parameters.o \
     PotentialsInterface.o Potentials.o Quickmin.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
-    ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o\
+    ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o \
 	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \
-	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o Lanczos.o
+	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o Lanczos.o \
+	ExactMinMode.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

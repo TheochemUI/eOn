@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef LANCZOS_H
-#define LANCZOS_H
+#ifndef EXACTMINMODE_H
+#define EXACTMINMODE_H
 
 #include <math.h>
 #include <cmath>
@@ -23,13 +23,13 @@
 #include "LowestEigenmodeInterface.h"
 
 // dimer method to find the lowest curvature mode
-class Lanczos : public LowestEigenmodeInterface
+class ExactMinMode: public LowestEigenmodeInterface
 {
 
     public:
 
-    Lanczos(Matter const *matter, Parameters *parameters);
-    ~Lanczos();
+    ExactMinMode(Matter const *matter, Parameters *parameters);
+    ~ExactMinMode();
     
     void compute(Matter const *matter, AtomMatrix direction); 
     double getEigenvalue();
@@ -44,6 +44,3 @@ class Lanczos : public LowestEigenmodeInterface
 };
 
 #endif
-
-
-
