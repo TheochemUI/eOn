@@ -271,6 +271,8 @@ int Parameters::load(FILE *file){
             saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
         }else if(minmodeMethodString == "lanczos"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_LANCZOS;
+        }else if(minmodeMethodString == "exact") {
+            saddleMinmodeMethod = SaddlePoint::MINMODE_EXACT;
         }
         string displaceString = ini.GetValue("Saddle Search", "displace_type", "none"); // undocumented
         displaceString = toLowerCase(displaceString);
