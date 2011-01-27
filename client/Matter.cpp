@@ -287,6 +287,24 @@ VectorXd Matter::getPositionsV() const
     return VectorXd::Map(positions.data(),3*numberOfAtoms());
 }
 
+AtomMatrix Matter::getPositionsFree() const
+{
+    AtomMatrix ret(numberOfFreeAtoms(),3);
+    int i,j=0;
+    for(i=0;i<nAtoms;i++)
+    {
+        if (!isFixed(i)) {
+            ret.row(j) = positions.row(i);
+            j++;
+        }
+    }
+    return ret;
+}
+
+VectorXd Matter::getPositionsFreeV() const
+{
+    return VectorXd::Map(getPositionsFree().data(),3*numberOfFreeAtoms());
+}
 
 // update Matter with the new positions of the free atoms given in array 'pos'
 void Matter::setPositions(const AtomMatrix pos) {
@@ -303,6 +321,23 @@ void Matter::setPositionsV(const VectorXd pos) {
     setPositions(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
 }
 
+void Matter::setPositionsFree(const AtomMatrix pos)
+{
+    int i,j=0;
+    for(i=0;i<nAtoms;i++)
+    {
+        if (!isFixed(i)) {
+            positions.row(i) = pos.row(j);
+            j+=1;
+        }
+    }
+    recomputePotential=true;
+}
+
+void Matter::setPositionsFreeV(const VectorXd pos)
+{
+    setPositionsFree(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
+}
 
 // return forces applied on all atoms in array 'force' 
 AtomMatrix Matter::getForces() {
@@ -323,6 +358,24 @@ VectorXd Matter::getForcesV() {
     return VectorXd::Map(getForces().data(),3*numberOfAtoms());
 }
 
+AtomMatrix Matter::getForcesFree() {
+    AtomMatrix allForces = getForces();
+    AtomMatrix ret(numberOfFreeAtoms(),3);
+    int i,j=0;
+    for(i=0; i<nAtoms; i++)
+    {
+        if(!isFixed[i])
+        {
+            ret.row(j) = allForces.row(i);
+            j++;
+        }
+    }
+    return ret;
+}
+
+VectorXd Matter::getForcesFreeV() {
+    return VectorXd::Map(getForcesFree().data(),3*numberOfFreeAtoms());
+}
 
 // return distance between the atoms with index1 and index2
 double Matter::distance(long index1, long index2) const
