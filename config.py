@@ -136,6 +136,8 @@ def init(config_file = ""):
         config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
     if config.disp_type == 'under_coordinated':
         config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
+    if config.disp_type == 'listed_atoms':
+        config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
 
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
