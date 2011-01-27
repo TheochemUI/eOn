@@ -9,11 +9,9 @@
 //-----------------------------------------------------------------------------------
 
 #include "SaddleSearch.h"
-#ifdef WITH_LANCZOS
-    #include "Lanczos/lanczos_for_eon.hpp"
-#endif
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
+#include "Lanczos.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "EpiCenters.h"
@@ -76,12 +74,7 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     }
     else if(parameters->saddleMinmodeMethod == MINMODE_LANCZOS)
     {
-        #ifdef LANCZOS_FOR_EON_HPP
-            lowestEigenmode = new Lanczos(saddle, parameters);
-        #else
-            std::cerr << "Lanczos not available. Compile client application with option LANCZOS\n";
-            exit(EXIT_FAILURE);
-        #endif
+        lowestEigenmode = new Lanczos(saddle, parameters);
     }
     status = STATUS_INIT;
     eigenValue = 0;

@@ -83,22 +83,18 @@ void ImprovedDimer::compute(Matter const *matter)
         statsTorque = F_R.norm() / delta;
         
         // Determine the step direction, theta. (steepest descent)
-        cout <<"opt: "<<parameters->dimerOptimizer<<endl;
         if(parameters->dimerOptimizer == OPT_SD) // steepest descent
         {
-            cout <<"into dimer SD\n";
             theta = F_R / F_R.norm();
         }
         else if(parameters->dimerOptimizer == OPT_CG) // conjugate gradients
         {
-            cout <<"into dimer CG\n";
             if(init_cg){
                 init_cg = false;
                 gamma = 0;
             }else{  
                 a = fabs((F_R.cwise() * F_R_Old).sum());
                 b = F_R_Old.squaredNorm();
-                cout <<"a: "<<a<<" b: "<<b<<endl;
                 if(a<0.5*b)
                     gamma = (F_R.cwise() * (F_R - F_R_Old)).sum()/b;
                 else 
