@@ -145,6 +145,50 @@ class Leastcoordinated(Displace):
         epicenter = self.leastcoordinated_atoms[numpy.random.randint(len(self.leastcoordinated_atoms))] 
         return self.get_displacement(epicenter)
 
+class NotFCCorHCP(Displace):
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+
+        self.not_HCP_or_FCC_atoms = []
+
+        self.coordination_distance = cutoff
+
+        self.not_HCP_or_FCC_atoms = atoms.not_HCP_or_FCC(self.reactant, 
+                self.coordination_distance)
+
+        self.not_HCP_or_FCC_atoms = [ i for i in self.not_HCP_or_FCC_atoms
+                                        if self.reactant.free[i] == 1]
+
+        self.not_HCP_or_FCC_atoms = self.filter_epicenters(self.not_HCP_or_FCC_atoms)
+
+        if len(self.not_HCP_or_FCC_atoms) == 0:
+            errmsg = "The atoms without FCC or HCP coordination are all frozen."
+            raise DisplaceError(errmsg)
+
+    def make_displacement(self):
+        """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
+        epicenter = self.not_HCP_or_FCC_atoms[numpy.random.randint(len(self.not_HCP_or_FCC_atoms))] 
+        return self.get_displacement(epicenter)
+        
+class ListedAtoms(Displace):
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+
+        #each item in this list is the index of a free atom
+        self.listed_atoms = [ i for i in config.disp_listed_atoms 
+                if self.reactant.free[i] ]
+        
+        self.listed_atoms = self.filter_epicenters(self.listed_atoms)
+
+        if len(self.listed_atoms) == 0: 
+            raise DisplaceError("None of the listed atoms are free.")
+
+    def make_displacement(self):
+        """Select a listed atom and displace all atoms in a radius about it."""
+        #chose a random atom from the supplied list
+        epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))] 
+        return self.get_displacement(epicenter)
+
 class Random(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
