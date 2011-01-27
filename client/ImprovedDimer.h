@@ -39,11 +39,9 @@ class ImprovedDimer : public LowestEigenmodeInterface
     ImprovedDimer(Matter const *matter, Parameters *parameters);
     ~ImprovedDimer();
 
-    void initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>);
-    void compute(Matter const *matter); 
+    void compute(Matter const *matter, AtomMatrix initialDirection);
     double getEigenvalue();
-    void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
-    Matrix<double, Eigen::Dynamic, 3>  getEigenvector();
+    AtomMatrix getEigenvector();
 
     Parameters *parameters;
 
