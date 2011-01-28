@@ -44,19 +44,26 @@ class Displace:
 
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
-        #get neighboring atoms to the atom_index atom
-        #and add the selected atom to the list
-        displaced_atoms = self.neighbors_list[atom_index] + [atom_index]
-
-        displacement = numpy.zeros(self.reactant.r.shape)
-        for i in range(len(displaced_atoms)):
-            #don't displace frozen atoms
-            if not self.reactant.free[displaced_atoms[i]]:
-                continue
-            #Displace one of the free atoms by a gaussian distributed
-            #random number with a standard deviation of self.std_dev.
-            displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
         
+        displacement_norm = 0.
+        displacement = numpy.zeros(self.reactant.r.shape)
+
+        #ensures that the total displacement vector exceeds a given length
+        while (displacement_norm <= config.disp_min_norm):
+            #get neighboring atoms to the atom_index atom
+            #and add the selected atom to the list
+            displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
+                    
+            displacement = numpy.zeros(self.reactant.r.shape)
+            for i in range(len(displaced_atoms)):
+                #don't displace frozen atoms
+                if not self.reactant.free[displaced_atoms[i]]:
+                    continue
+                #Displace one of the free atoms by a gaussian distributed
+                #random number with a standard deviation of self.std_dev.
+                displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
+            displacement_norm = numpy.sqrt(numpy.sum(displacement.flatten()**2))
+
         displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
         return displacement_atoms, displacement
