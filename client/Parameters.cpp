@@ -73,7 +73,7 @@ Parameters::Parameters(){
     dimerRotationsMax = 8;
 
     // [Lanczos] //
-    lanczosSeparation = 0.001;
+    lanczosFiniteDiff = 0.001;
     lanczosTolerance = 0.001;
     lanczosMaxIterations = 20;
 
@@ -334,7 +334,7 @@ int Parameters::load(FILE *file){
 
         // [Lanczos] //
 
-        lanczosSeparation = ini.GetValueF("Lanczos", "separation", lanczosSeparation);
+        lanczosFiniteDiff = ini.GetValueF("Lanczos", "finite_diff_step", lanczosFiniteDiff);
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
