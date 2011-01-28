@@ -35,7 +35,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     Matter *tmpMatter = new Matter(parameters);
     *tmpMatter = *matter;
 
-    double dr = parameters->lanczosSeparation;
+    double dr = parameters->lanczosFiniteDiff;
     VectorXd force1, force2;
     double ew=0.0, ewOld=0.0, ewChange;
     VectorXd evT;
