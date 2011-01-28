@@ -59,13 +59,12 @@ with a brief description.
 
 .. include:: config_process_search.txt
 
+.. include:: config_saddle_search.txt
+
 .. include:: config_dimer.txt
 
-.. include:: config_saddle_search.txt
+.. include:: config_lanczos.txt
 
 .. include:: config_hessian.txt
 
 .. include:: config_debug.txt
-
-
-

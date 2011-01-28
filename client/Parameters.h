@@ -85,7 +85,7 @@ public:
     double dimerTorqueMin;
 
     // [Lanczos]
-    double lanczosSeparation; // finite difference distance
+    double lanczosFiniteDiff ; // finite difference distance
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
 
