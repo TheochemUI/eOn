@@ -285,13 +285,12 @@ def cna(p, cutoff, brute=False):
     return can_values
     
 def not_HCP_or_FCC(p, cutoff, brute=False):
-    """ Returns a list of indexes for the atoms with cna = 0 """
+    """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
     cna_numbers = cna(p, cutoff, brute)
     for i in range(len(cna_numbers)):
         if cna_numbers[i] == 0:
             not_cna.append(i)
-    print numpy.array(cna_numbers)
     return not_cna
 
     

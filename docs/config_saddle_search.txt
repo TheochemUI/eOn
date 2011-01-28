@@ -48,6 +48,15 @@ right part of configuration space.
 
     The standard deviation of the magnitude of the displacement.
 
+**displace_min_norm**
+
+    Default: 0.0
+
+    The total length of the displacement vector is ensured to exceeds this value.
+    Is useful when only a few degrees of freedoms are displaced to guarantee 
+    that the starting point for the saddle point search is significantly different
+    from the initial minimum.  
+
 **displace_max_coordination**
 
     Default: 11
