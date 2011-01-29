@@ -249,7 +249,7 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%ld potential_type\n", parameters->potential);
+    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
 //    fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
