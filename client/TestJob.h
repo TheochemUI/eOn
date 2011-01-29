@@ -27,8 +27,8 @@ class TestJob: public Job {
         void checkFullSearch(void);
         void checkMode(void);        
         void checkPotentials(void);
-        double getEnergyDiff(long potTag, double refEnergy);
-        double getForceDiff(long potTag, double refForce);
+        double getEnergyDiff(string potTag, double refEnergy);
+        double getForceDiff(string potTag, double refForce);
 };
 
 #endif
