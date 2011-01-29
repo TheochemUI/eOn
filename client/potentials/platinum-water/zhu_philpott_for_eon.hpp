@@ -9,9 +9,9 @@ University of Iceland
 #define FORCEFIELDS_ZHU_PHILPOTT_FOR_EON_HPP
 #include "zhu_philpott.hpp"
 #include "tip4p.hpp"
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
-class ZpIce : public PotentialsInterface, private forcefields::ZhuPhilpott<> {
+class ZpIce : public Potential, private forcefields::ZhuPhilpott<> {
 public:
     ZpIce();
     // Functions
@@ -23,7 +23,7 @@ public:
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };
 
-class Tip4p : public PotentialsInterface, private forcefields::Tip4p {
+class Tip4p : public Potential, private forcefields::Tip4p {
 public:
     Tip4p();
     // Functions

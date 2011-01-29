@@ -12,9 +12,9 @@
 #ifndef bopfox_POTENTIAL
 #define bopfox_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
-class bopfox : public PotentialsInterface
+class bopfox : public Potential
 {
 
     public:

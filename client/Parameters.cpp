@@ -17,7 +17,6 @@
 #include "Job.h"
 #include "Dynamics.h"
 #include "BondBoost.h"
-#include "Potentials.h"
 #include "SaddleSearch.h"
 #include "ImprovedDimer.h"
 

@@ -11,10 +11,10 @@
 #ifndef NEWPOTENTIAL_INTERFACE
 #define NEWPOTENTIAL_INTERFACE
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
 /** Template to use if user want to provide potential.*/
-class NewPotential : public PotentialsInterface{
+class NewPotential : public Potential{
 
 private:
 //	Variables
