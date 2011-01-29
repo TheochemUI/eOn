@@ -12,7 +12,7 @@
 #define MATTER_H
 
 #include "Parameters.h"
-#include "Potentials.h"
+#include "Potential.h"
 
 #include "Eigen.h"
 

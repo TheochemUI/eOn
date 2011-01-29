@@ -10,7 +10,7 @@
 #include "TestJob.h"
 #include "Matter.h"
 #include "Constants.h"
-#include "Potentials.h"
+#include "Potential.h"
 #include "SaddleSearch.h"
 
 #include <stdlib.h>

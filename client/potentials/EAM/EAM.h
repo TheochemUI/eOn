@@ -2,12 +2,12 @@
 #include <iostream>
 
 #ifndef EAM_STANDALONE
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 #endif
     
 class EAM 
 #ifndef EAM_STANDALONE
-: public PotentialsInterface
+: public Potential
 #endif
 {    
     public:
