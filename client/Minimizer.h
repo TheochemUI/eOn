@@ -15,13 +15,14 @@
 class Minimizer
 {
     
-public:
-    virtual ~Minimizer(){};
-    void virtual setOutput(int level) = 0;
-    void virtual oneStep() = 0;
-    void virtual fullRelax() = 0;
-    bool virtual isItConverged(double convergeCriterion) = 0; 
-    long totalForceCalls;
+    public:
+    
+        virtual ~Minimizer(){};
+        void virtual setOutput(int level) = 0;
+        void virtual oneStep() = 0;
+        void virtual fullRelax() = 0;
+        bool virtual isItConverged(double convergeCriterion) = 0; 
+        long totalForceCalls;
 
 };
 

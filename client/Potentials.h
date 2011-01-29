@@ -20,26 +20,6 @@ class Potential{
 
 public:
 
-    enum{
-        POT_LJ,
-        POT_MORSE_PT,
-        POT_EMT,
-        POT_EDIP,
-        POT_VASP,
-        POT_TERSOFF_SI,
-        POT_SW_SI,
-        POT_LENOSKY_SI,
-        POT_LJBINARY,
-        POT_EAM_AL,
-        POT_QSC,
-        POT_ZPICE,
-        POT_TIP4P,
-        POT_BOPFOX,
-        POT_BOP,
-        POT_LAMMPS,
-        N_POTS
-    };
-
     Potential(Parameters *parameters);
  
     ~Potential();
