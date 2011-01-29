@@ -13,12 +13,12 @@
 
 #include "Parameters.h"
 #include "Matter.h"
-#include "MinimizersInterface.h"
+#include "Minimizer.h"
 
 #include "Eigen.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing a Matter object or modified forces being passed in.*/
-class ConjugateGradients : public MinimizersInterface{
+class ConjugateGradients : public Minimizer{
 
 public:
     /** Constructor to be used when a structure is minimized.
