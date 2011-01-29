@@ -34,9 +34,9 @@ public:
 /** input parameters.*/
 
     // [Main] //
-    long   job; // indicate which type of job will be run
-    long   randomSeed; // seed for random generator
-    long   potential; // tag to describe which potential to use
+    long   job;
+    long   randomSeed;
+    string potential;
     double temperature;
 
     // [Structure Comparison] //

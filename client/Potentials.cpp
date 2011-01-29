@@ -41,74 +41,70 @@ int Potential::fcalls = 0;
 Potential::Potential(Parameters *parameters){
     parameters_ = parameters;
 
-    if(parameters_->potential == POT_LJ){
+    if(parameters_->potential == "lj"){
         interface_ = new LJ();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_MORSE_PT){
+    else if(parameters_->potential == "morse_pt"){
         interface_ = new Morse();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_EMT){
+    else if(parameters_->potential == "emt"){
         interface_ = new EffectiveMediumTheory();
         interface_->initialize();
     }
-    //else if(parameters_->potential == POT_EAM){
-    //    interface_ = new EAM();
-    //    interface_->initialize();
-    //}
-    else if(parameters_->potential == POT_QSC){
+    else if(parameters_->potential == "qsc"){
         interface_ = new QSC();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_ZPICE){
+    else if(parameters_->potential == "zpice"){
         interface_ = new ZpIce();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_TIP4P){
+    else if(parameters_->potential == "tip4p"){
         interface_ = new Tip4p();
         interface_->initialize();
     }
 #ifndef NO_FORTRAN
-    else if(parameters_->potential == POT_EAM_AL){
+    else if(parameters_->potential == "eam_al"){
         interface_ = new Aluminum();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_LENOSKY_SI){
+    else if(parameters_->potential == "lenosky_si"){
         interface_ = new Lenosky();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_SW_SI){
+    else if(parameters_->potential == "sw_si"){
         interface_ = new SW();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_TERSOFF_SI){
+    else if(parameters_->potential == "tersoff_si"){
         interface_ = new Tersoff();
         interface_->initialize();
     }
-    else if(parameters_->potential == POT_EDIP){
+    else if(parameters_->potential == "edip"){
         interface_ = new EDIP();
         interface_->initialize();
     }
 #ifndef WIN32
-    else if(parameters_->potential == POT_VASP){
+    else if(parameters_->potential == "vasp"){
         interface_ = new VASP();
         interface_->initialize();
     }		
 #endif
-    else if(parameters_->potential == POT_BOPFOX){
+    else if(parameters_->potential == "bopfox"){
         interface_ = new bopfox();
         interface_->initialize();
     }
 #endif
 #ifdef BOPFOX
-    else if(parameters_->potential == POT_BOP){
+    else if(parameters_->potential == "bop"){
         interface_ = new bop();
         interface_->initialize();
     }
 #endif
 #ifdef LAMMPS_POT
-    else if(parameters_->potential == POT_LAMMPS){
+    else if(parameters_->potential == "lammps"){
         interface_ = new lammps_eon();
         interface_->initialize();
     }
