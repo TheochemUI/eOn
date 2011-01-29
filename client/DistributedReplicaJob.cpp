@@ -235,7 +235,7 @@ void DistributedReplicaJob::saveData(int bundleNumber){
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%lf potential_energy_product\n", final->getPotentialEnergy());
-    fprintf(fileResults, "%ld potential_type\n", parameters->potential);
+    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%ld force_calls_balance\n", bl_fcalls);
     fprintf(fileResults, "%ld force_calls_sampling\n", sp_fcalls);
     fprintf(fileResults, "%ld force_calls_minimization\n", min_fcalls);

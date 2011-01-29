@@ -308,7 +308,7 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", min1->getPotentialEnergy());
     fprintf(fileResults, "%lf potential_energy_product\n", final->getPotentialEnergy());
-    fprintf(fileResults, "%ld potential_type\n", parameters->potential);
+    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%ld total_force_calls\n", total_fcalls);
     fprintf(fileResults, "%ld force_calls_dephase\n", dh_fcalls);
     fprintf(fileResults, "%ld force_calls_dynamics\n", md_fcalls);
