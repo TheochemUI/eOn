@@ -11,14 +11,14 @@
 #ifndef QUICKMIN_H
 #define QUICKMIN_H
 
-#include "MinimizersInterface.h"
+#include "Minimizer.h"
 #include "Matter.h"
 //#include "HelperFunctions.h"
 //#include "Constants.h"
 //#include "Parameters.h"
 
 /** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing an Matter object or modified forces being passed in.*/
-class Quickmin : public MinimizersInterface{
+class Quickmin : public Minimizer{
 
 public:
     /** Constructor to be used when a structure is minimized.
