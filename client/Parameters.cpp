@@ -26,7 +26,7 @@ Parameters::Parameters(){
     // [Main] //
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
-    potential = Potential::POT_LJ;
+    potential = "lj";
     temperature = 300.0;
 
     // [Structure Comparison] //
@@ -212,44 +212,7 @@ int Parameters::load(FILE *file){
             helper_functions::random(randomSeed);
         }
 
-        string potentialString = ini.GetValue("Main", "potential");
-        potentialString = toLowerCase(potentialString);
-        if(potentialString == "lj"){
-            potential = Potential::POT_LJ;
-        }else if(potentialString == "morse_pt"){
-            potential = Potential::POT_MORSE_PT;
-        }else if(potentialString == "emt"){
-            potential = Potential::POT_EMT;
-        }else if(potentialString == "edip"){
-            potential = Potential::POT_EDIP;
-        }else if(potentialString == "vasp"){
-            potential = Potential::POT_VASP;
-        }else if(potentialString == "tersoff_si"){
-            potential = Potential::POT_TERSOFF_SI;
-        }else if(potentialString == "sw_si"){
-            potential = Potential::POT_SW_SI;
-        }else if(potentialString == "lenosky_si"){
-            potential = Potential::POT_LENOSKY_SI;
-        }else if(potentialString == "ljbinary"){
-            potential = Potential::POT_LJBINARY;
-        }else if(potentialString == "eam_al"){
-            potential = Potential::POT_EAM_AL;
-        }else if(potentialString == "qsc"){
-            potential = Potential::POT_QSC;
-        }else if(potentialString == "zpice"){
-            potential = Potential::POT_ZPICE;
-        }else if(potentialString == "tip4p"){
-            potential = Potential::POT_TIP4P;
-        }else if(potentialString == "bopfox"){
-            potential = Potential::POT_BOPFOX;
-        }else if(potentialString == "bop"){
-            potential = Potential::POT_BOP;
-        }else if(potentialString == "lammps"){
-            potential = Potential::POT_LAMMPS;
-        }else{
-            fprintf(stderr, "  Error: Unknown potential: %s\n", potentialString.c_str());
-            error = 1;
-        }
+        potential = toLowerCase(ini.GetValue("Main", "potential"));
         
         // [Structure Comparison] //
 
