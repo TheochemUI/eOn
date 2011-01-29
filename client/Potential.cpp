@@ -89,7 +89,7 @@ int Potential::fcalls = 0;
 
 Potential::~Potential()
 {
-    //cleanMemory();
+    cleanMemory();
 };
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box) 
