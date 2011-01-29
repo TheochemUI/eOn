@@ -78,7 +78,7 @@ Potential* Potential::getPotential(Parameters *parameters)
     #endif
     else
     {
-        printf("Potential tag not recognized: %ld\n", parameters->potential);
+        printf("Potential tag not recognized: %s\n", parameters->potential.c_str());
         std::exit(1);
     }	
     pot->initialize();
