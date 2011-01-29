@@ -11,7 +11,7 @@
 #include "HessianJob.h"
 #include "Matter.h"
 #include "Hessian.h"
-#include "Potentials.h"
+#include "Potential.h"
 
 HessianJob::HessianJob(Parameters *params)
 {

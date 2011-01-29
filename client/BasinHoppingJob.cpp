@@ -15,7 +15,7 @@
 #include "Constants.h"
 #include "ConjugateGradients.h"
 #include "false_boinc.h"
-#include "Potentials.h"
+#include "Potential.h"
 #include "HelperFunctions.h"
 
 #ifdef BOINC

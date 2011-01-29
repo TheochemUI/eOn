@@ -1,10 +1,10 @@
 #ifndef QSC_STANDALONE
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 #endif
 
 class QSC
 #ifndef QSC_STANDALONE
-: public PotentialsInterface
+: public Potential
 #endif
 {    
     public:

@@ -11,9 +11,9 @@
 #ifndef VASP_POTENTIAL
 #define VASP_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
-class VASP : public PotentialsInterface
+class VASP : public Potential
 {
 
     public:

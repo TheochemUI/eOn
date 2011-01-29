@@ -11,7 +11,7 @@
 #ifndef TERSOFF_POTENTIAL
 #define TERSOFF_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
     /** External function implemented in Fortran. Calculate interactions between atoms using forcefield Tersoff.
     @param[in]	N           Number of atoms.
@@ -25,7 +25,7 @@ extern "C" {
 }    
 
 /** Tersoff potential.*/
-class Tersoff : public PotentialsInterface{    
+class Tersoff : public Potential{    
 public:
 // Functions
 	// constructor

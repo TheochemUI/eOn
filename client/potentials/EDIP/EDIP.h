@@ -11,7 +11,7 @@
 #ifndef EDIP_POTENTIAL
 #define EDIP_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
     /** External function implemented in Fortran. Calculate interactions between molecules of water using forcefield EDIP.
     @param[in]	N           Number of atoms.
@@ -25,7 +25,7 @@ extern "C" {
 }    
 
 /** EDIP potential.*/
-class EDIP : public PotentialsInterface{    
+class EDIP : public Potential{    
 public:
 // Functions
 	// constructor 
