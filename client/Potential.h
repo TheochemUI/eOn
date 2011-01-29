@@ -31,7 +31,7 @@ class Potential
                                                 double *energy, Matrix<double, 3, 3> box);
      
         void virtual initialize() = 0;
-        void virtual cleanMemory() = 0;
+        void virtual cleanMemory(){};
         void virtual force(long nAtoms, const double *positions, 
                            const int *atomicNrs, double *forces, double *energy, 
                            const double *box) = 0;
