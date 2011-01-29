@@ -229,7 +229,10 @@ def parse_results(filein):
             try:
                 results[line[1]] = int(line[0])
             except ValueError:
-                logger.warning("couldn't parse int in results.dat: %s", line)
+                try:
+                    results[line[1]] = line[0]
+                except ValueError:
+                    logger.warning("couldn't parse string in results.dat: %s", line)
 
     return results
 
