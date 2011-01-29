@@ -1,7 +1,7 @@
 #include "zhu_philpott_for_eon.hpp"
 
 ZpIce::ZpIce() :
-    PotentialsInterface(),
+    Potential(),
     forcefields::ZhuPhilpott<>(8.5, 1.0)
 {}
 
@@ -18,7 +18,7 @@ void ZpIce::force(long N, const double *R, const int *atomicNrs, double *F, doub
 }
 
 Tip4p::Tip4p() :
-    PotentialsInterface(),
+    Potential(),
     forcefields::Tip4p(8.5, 1.0)
 {}
 

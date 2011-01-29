@@ -11,7 +11,7 @@
 #ifndef BOP_POTENTIAL
 #define BOP_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
     /** External function implemented in Fortran. Calculate interactions between molecules of water using forcefield bop.
     @param[in]	N           Number of atoms.
@@ -36,7 +36,7 @@ extern "C"
 //}    
 
 /** bop potential.*/
-class bop : public PotentialsInterface
+class bop : public Potential
 {     
 public:
     bop(void);

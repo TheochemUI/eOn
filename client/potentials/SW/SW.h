@@ -11,7 +11,7 @@
 #ifndef SW_POTENTIAL
 #define SW_POTENTIAL
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
     /** External function implemented in Fortran. Calculate interactions between atoms using forcefield SW.
     @param[in]	N           Number of atoms.
@@ -25,7 +25,7 @@ extern "C" {
 }    
 
 /** SW potential.*/
-class SW : public PotentialsInterface{    
+class SW : public Potential{    
 public:
 // Functions
 	// constructor

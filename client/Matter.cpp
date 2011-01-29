@@ -81,7 +81,7 @@ void Matter::initialiseDataMembers(Parameters *params)
     recomputePotential = true;
     forceCalls = 0;
     parameters = params;
-    potential = new Potential(parameters);
+    potential = Potential::getPotential(parameters);
 }
 
 
@@ -180,7 +180,7 @@ void Matter::resize(const long int length)
 {
     if(length>0) 
     {
-        potential = new Potential(parameters);
+        potential = Potential::getPotential(parameters);
         
         nAtoms = length;
         positions.resize(length, 3);

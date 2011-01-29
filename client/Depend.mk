@@ -1,7 +1,7 @@
 BasinHoppingJob.o: BasinHoppingJob.cpp BasinHoppingJob.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h Eigen.h \
- Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Parameters.h Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -55,7 +55,7 @@ BasinHoppingJob.o: BasinHoppingJob.cpp BasinHoppingJob.h Matter.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Job.h \
  ConjugateGradients.h Minimizer.h false_boinc.h HelperFunctions.h
 BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Parameters.h Constants.h \
- Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense Eigen/Core \
+ Potential.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
@@ -111,9 +111,9 @@ BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Parameters.h Constants.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
  HelperFunctions.h
 ClientEON.o: ClientEON.cpp Constants.h Parameters.h Job.h \
- ProcessSearchJob.h Matter.h Potentials.h PotentialsInterface.h Eigen.h \
- Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ ProcessSearchJob.h Matter.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -172,8 +172,8 @@ ClientEON.o: ClientEON.cpp Constants.h Parameters.h Job.h \
  false_boinc.h
 Compression.o: Compression.cpp Compression.h
 ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h \
- Parameters.h Constants.h Matter.h Potentials.h PotentialsInterface.h \
- Eigen.h Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
+ Parameters.h Constants.h Matter.h Potential.h Eigen.h Eigen/Dense \
+ Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
@@ -281,8 +281,8 @@ Dimer.o: Dimer.cpp Dimer.h debug.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h \
- HelperFunctions.h LowestEigenmodeInterface.h
+ Parameters.h Constants.h Potential.h HelperFunctions.h \
+ LowestEigenmodeInterface.h
 DimerRotationJob.o: DimerRotationJob.cpp DimerRotationJob.h Job.h \
  Parameters.h Constants.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
@@ -338,8 +338,7 @@ DimerRotationJob.o: DimerRotationJob.cpp DimerRotationJob.h Job.h \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
- ConjugateGradients.h Matter.h Potentials.h PotentialsInterface.h \
- Minimizer.h HelperFunctions.h
+ ConjugateGradients.h Matter.h Potential.h Minimizer.h HelperFunctions.h
 DisplacementSamplingJob.o: DisplacementSamplingJob.cpp \
  DisplacementSamplingJob.h Job.h Parameters.h Constants.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
@@ -395,13 +394,12 @@ DisplacementSamplingJob.o: DisplacementSamplingJob.cpp \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
- ConjugateGradients.h Matter.h Potentials.h PotentialsInterface.h \
- Minimizer.h HelperFunctions.h EpiCenters.h Dimer.h debug.h \
- LowestEigenmodeInterface.h
+ ConjugateGradients.h Matter.h Potential.h Minimizer.h HelperFunctions.h \
+ EpiCenters.h Dimer.h debug.h LowestEigenmodeInterface.h
 DistributedReplicaJob.o: DistributedReplicaJob.cpp Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -456,9 +454,9 @@ DistributedReplicaJob.o: DistributedReplicaJob.cpp Matter.h Parameters.h \
  Minimizer.h HelperFunctions.h DistributedReplicaJob.h Job.h \
  ConjugateGradients.h false_boinc.h
 Dynamics.o: Dynamics.cpp Dynamics.h Minimizer.h Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -512,9 +510,9 @@ Dynamics.o: Dynamics.cpp Dynamics.h Minimizer.h Matter.h Parameters.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
  HelperFunctions.h ConjugateGradients.h
 EpiCenters.o: EpiCenters.cpp EpiCenters.h Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -621,8 +619,8 @@ ExactMinMode.o: ExactMinMode.cpp ExactMinMode.h debug.h Eigen.h \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h \
- HelperFunctions.h LowestEigenmodeInterface.h
+ Parameters.h Constants.h Potential.h HelperFunctions.h \
+ LowestEigenmodeInterface.h
 FiniteDifferenceJob.o: FiniteDifferenceJob.cpp FiniteDifferenceJob.h \
  Job.h Parameters.h Constants.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
@@ -678,7 +676,7 @@ FiniteDifferenceJob.o: FiniteDifferenceJob.cpp FiniteDifferenceJob.h \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Potentials.h PotentialsInterface.h EpiCenters.h HelperFunctions.h
+ Potential.h EpiCenters.h HelperFunctions.h
 HelperFunctions.o: HelperFunctions.cpp HelperFunctions.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -787,11 +785,11 @@ Hessian.o: Hessian.cpp Hessian.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h
+ Parameters.h Constants.h Potential.h
 HessianJob.o: HessianJob.cpp HessianJob.h Job.h Parameters.h Constants.h \
- Matter.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Matter.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -898,8 +896,8 @@ ImprovedDimer.o: ImprovedDimer.cpp ImprovedDimer.h debug.h Eigen.h \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h \
- HelperFunctions.h LowestEigenmodeInterface.h
+ Parameters.h Constants.h Potential.h HelperFunctions.h \
+ LowestEigenmodeInterface.h
 Lanczos.o: Lanczos.cpp Lanczos.h debug.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
@@ -954,12 +952,11 @@ Lanczos.o: Lanczos.cpp Lanczos.h debug.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h \
- HelperFunctions.h LowestEigenmodeInterface.h
-Matter.o: Matter.cpp Matter.h Parameters.h Constants.h Potentials.h \
- PotentialsInterface.h Eigen.h Eigen/Dense Eigen/Core \
- Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
- Eigen/src/Core/util/Constants.h \
+ Parameters.h Constants.h Potential.h HelperFunctions.h \
+ LowestEigenmodeInterface.h
+Matter.o: Matter.cpp Matter.h Parameters.h Constants.h Potential.h \
+ Eigen.h Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
+ Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1012,10 +1009,9 @@ Matter.o: Matter.cpp Matter.h Parameters.h Constants.h Potentials.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h
 MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
- Parameters.h Constants.h ConjugateGradients.h Matter.h Potentials.h \
- PotentialsInterface.h Eigen.h Eigen/Dense Eigen/Core \
- Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
- Eigen/src/Core/util/Constants.h \
+ Parameters.h Constants.h ConjugateGradients.h Matter.h Potential.h \
+ Eigen.h Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
+ Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1068,9 +1064,9 @@ MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Minimizer.h
 ParallelReplicaJob.o: ParallelReplicaJob.cpp Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1179,13 +1175,11 @@ Parameters.o: Parameters.cpp Parameters.h Constants.h INIFile.h \
  Eigen/src/Sparse/SparseDiagonalProduct.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h Hessian.h \
- Matter.h Potentials.h PotentialsInterface.h Job.h Dynamics.h Minimizer.h \
- BondBoost.h SaddleSearch.h LowestEigenmodeInterface.h ImprovedDimer.h \
- debug.h
-Potentials.o: Potentials.cpp Constants.h Potentials.h Parameters.h \
- PotentialsInterface.h Eigen.h Eigen/Dense Eigen/Core \
- Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
- Eigen/src/Core/util/Constants.h \
+ Matter.h Potential.h Job.h Dynamics.h Minimizer.h BondBoost.h \
+ SaddleSearch.h LowestEigenmodeInterface.h ImprovedDimer.h debug.h
+Potential.o: Potential.cpp Constants.h Potential.h Parameters.h Eigen.h \
+ Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
+ Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1238,38 +1232,29 @@ Potentials.o: Potentials.cpp Constants.h Potentials.h Parameters.h \
  Eigen/src/Sparse/TriangularSolver.h Eigen/src/Sparse/SparseLLT.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
  potentials/NewPotential/NewPotential.h \
- potentials/NewPotential/../../PotentialsInterface.h \
- potentials/EDIP/EDIP.h potentials/EDIP/../../PotentialsInterface.h \
- potentials/EMT/EffectiveMediumTheory.h potentials/EMT/Asap/Atoms.h \
- potentials/EMT/Asap/Vec.h potentials/EMT/Asap/EMT.h \
- potentials/EMT/Asap/Potential.h potentials/EMT/Asap/Exception.h \
- potentials/EMT/Asap/EMTParameterProvider.h \
- potentials/EMT/Asap/TinyMatrix.h potentials/EMT/Asap/SuperCell.h \
- potentials/EMT/Asap/Vec.h potentials/EMT/../../PotentialsInterface.h \
- potentials/Morse/Morse.h potentials/Morse/../../PotentialsInterface.h \
- potentials/LennardJones/LJ.h \
- potentials/LennardJones/../../PotentialsInterface.h potentials/SW/SW.h \
- potentials/SW/../../PotentialsInterface.h potentials/Tersoff/Tersoff.h \
- potentials/Tersoff/../../PotentialsInterface.h \
- potentials/Aluminum/Aluminum.h \
- potentials/Aluminum/../../PotentialsInterface.h potentials/EAM/EAM.h \
- potentials/EAM/../../PotentialsInterface.h potentials/Lenosky/Lenosky.h \
- potentials/Lenosky/../../PotentialsInterface.h potentials/QSC/QSC.h \
- potentials/QSC/../../PotentialsInterface.h \
+ potentials/NewPotential/../../Potential.h potentials/EDIP/EDIP.h \
+ potentials/EDIP/../../Potential.h potentials/Morse/Morse.h \
+ potentials/Morse/../../Potential.h potentials/LennardJones/LJ.h \
+ potentials/LennardJones/../../Potential.h potentials/SW/SW.h \
+ potentials/SW/../../Potential.h potentials/Tersoff/Tersoff.h \
+ potentials/Tersoff/../../Potential.h potentials/Aluminum/Aluminum.h \
+ potentials/Aluminum/../../Potential.h potentials/EAM/EAM.h \
+ potentials/EAM/../../Potential.h potentials/Lenosky/Lenosky.h \
+ potentials/Lenosky/../../Potential.h potentials/QSC/QSC.h \
+ potentials/QSC/../../Potential.h \
  potentials/platinum-water/zhu_philpott_for_eon.hpp \
  potentials/platinum-water/zhu_philpott.hpp \
  potentials/platinum-water/spce_ccl.hpp potentials/platinum-water/ccl.hpp \
  potentials/platinum-water/potential_base.hpp \
  potentials/platinum-water/zhu_philpott_parameters.hpp \
  potentials/platinum-water/tip4p.hpp \
- potentials/platinum-water/../../PotentialsInterface.h \
- potentials/VASP/VASP.h potentials/VASP/../../PotentialsInterface.h \
- potentials/bopfox/bopfox.h potentials/bopfox/../../PotentialsInterface.h
-PotentialsInterface.o: PotentialsInterface.cpp PotentialsInterface.h
+ potentials/platinum-water/../../Potential.h potentials/VASP/VASP.h \
+ potentials/VASP/../../Potential.h potentials/bopfox/bopfox.h \
+ potentials/bopfox/../../Potential.h
 ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h Eigen.h \
- Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Parameters.h Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1324,9 +1309,9 @@ ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
  LowestEigenmodeInterface.h Hessian.h Job.h ConjugateGradients.h \
  Minimizer.h false_boinc.h
 Quickmin.o: Quickmin.cpp Quickmin.h Minimizer.h Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1380,9 +1365,9 @@ Quickmin.o: Quickmin.cpp Quickmin.h Minimizer.h Matter.h Parameters.h \
  Eigen/src/Sparse/SparseLDLT.h Eigen/src/Sparse/SparseLU.h \
  HelperFunctions.h
 SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Parameters.h \
- Constants.h Potentials.h PotentialsInterface.h Eigen.h Eigen/Dense \
- Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1438,9 +1423,9 @@ SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Parameters.h \
  HelperFunctions.h Lanczos.h debug.h Dimer.h ImprovedDimer.h \
  ExactMinMode.h EpiCenters.h
 SaddleSearchJob.o: SaddleSearchJob.cpp SaddleSearchJob.h Matter.h \
- Parameters.h Constants.h Potentials.h PotentialsInterface.h Eigen.h \
- Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ Parameters.h Constants.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -1495,9 +1480,9 @@ SaddleSearchJob.o: SaddleSearchJob.cpp SaddleSearchJob.h Matter.h \
  LowestEigenmodeInterface.h Job.h ConjugateGradients.h Minimizer.h \
  false_boinc.h
 TestJob.o: TestJob.cpp TestJob.h Job.h Parameters.h Constants.h \
- ConjugateGradients.h Matter.h Potentials.h PotentialsInterface.h Eigen.h \
- Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableMSVCWarnings.h \
- Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
+ ConjugateGradients.h Matter.h Potential.h Eigen.h Eigen/Dense Eigen/Core \
+ Eigen/src/Core/util/DisableMSVCWarnings.h Eigen/src/Core/util/Macros.h \
+ Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \

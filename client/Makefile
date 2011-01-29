@@ -104,9 +104,9 @@ ifdef WITH_LANCZOS
     LDFLAGS += -lgsl -lgslcblas
 endif
 #Potentials
-POTDIRS += ./potentials/EMT/
-LIBS += ./potentials/EMT/libEMT.a
-POTENTIALS += "+EMT "
+#POTDIRS += ./potentials/EMT/
+#LIBS += ./potentials/EMT/libEMT.a
+POTENTIALS += "-EMT "
 POTDIRS += ./potentials/Morse/
 LIBS += ./potentials/Morse/libMorse.a
 POTENTIALS += "+MORSE "
@@ -145,7 +145,7 @@ endif
 OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     EpiCenters.o Hessian.o ConjugateGradients.o \
     debug.o HelperFunctions.o Matter.o Parameters.o \
-    PotentialsInterface.o Potentials.o Quickmin.o \
+    Potential.o Quickmin.o \
     ProcessSearchJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o \
 	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \

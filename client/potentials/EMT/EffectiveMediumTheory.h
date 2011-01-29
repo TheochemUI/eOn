@@ -19,10 +19,10 @@
 #include"Asap/Vec.h"
 
 //#include "../../system_unit.h" // unit converters
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/
-class EffectiveMediumTheory : public PotentialsInterface {
+class EffectiveMediumTheory : public Potential {
 
 private:
 //	Variables

@@ -17,12 +17,12 @@
 //#include "LAMMPSsrc/atom.h"
 //#include "LAMMPSsrc/library.h"
 
-#include "../../PotentialsInterface.h"
+#include "../../Potential.h"
 
 static LAMMPS_NS::LAMMPS* LAMMPSObj = NULL;
 
 /** LAMMPS potentials.*/
-class lammps_eon : public PotentialsInterface {
+class lammps_eon : public Potential {
 
 private:
 //	Variables
