@@ -65,6 +65,7 @@ public:
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
     // [Optimizers]
+    string optMethod;
     long   optMaxIterations; // max iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
