@@ -9,13 +9,11 @@
 //-----------------------------------------------------------------------------------
 
 #include "ExactMinMode.h"
-
-using namespace helper_functions;
+#include <cmath>
 
 ExactMinMode::ExactMinMode(Matter const *matter, Parameters *params)
 {
     parameters = params;
-    totalForceCalls = 0;
     lowestEv.resize(matter->numberOfAtoms(),3);
     lowestEv.setZero();
     lowestEw = 0.0;
