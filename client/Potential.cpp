@@ -78,7 +78,7 @@ Potential* Potential::getPotential(Parameters *parameters)
     #endif
     else
     {
-        printf("Potential tag not recognized: %s\n", parameters->potential.c_str());
+        printf("Unknown Potential: %s\n", parameters->potential.c_str());
         std::exit(1);
     }	
     pot->initialize();
@@ -92,9 +92,8 @@ Potential::~Potential()
     cleanMemory();
 };
 
-AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, Matrix<int, Eigen::Dynamic, 1> atomicNrs, double *energy, Matrix<double, 3, 3> box) 
+AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNrs, double *energy, Matrix3d box) 
 {
-    // Eigen stores data in column-major format but we want row-major
     AtomMatrix forces(nAtoms,3);
 
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
@@ -103,19 +102,3 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, Matrix<int, Eigen
 
     return forces;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
