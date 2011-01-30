@@ -14,7 +14,6 @@
 #include <math.h>
 #include <cmath>
 #include <cassert>
-#include "debug.h"
 
 #include "Eigen.h"
 

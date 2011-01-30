@@ -11,15 +11,8 @@
 #ifndef IMPROVEDDIMER_H
 #define IMPROVEDDIMER_H
 
-#include <math.h>
-#include <cmath>
-#include <cassert>
-#include "debug.h"
-
 #include "Eigen.h"
-
 #include "Matter.h"
-#include "HelperFunctions.h"
 #include "Parameters.h"
 #include "LowestEigenmodeInterface.h"
 
