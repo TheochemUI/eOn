@@ -20,16 +20,16 @@ class Potential
     public:
 
         ~Potential();
-        
+
         static Potential* getPotential(Parameters *parameters);
 
         static int fcalls;
 
-        Matrix<double, Eigen::Dynamic, 3> force(long nAtoms, 
-                                                Matrix<double, Eigen::Dynamic, 3> positions, 
-                                                Matrix<int, Eigen::Dynamic, 1> atomicNrs, 
-                                                double *energy, Matrix<double, 3, 3> box);
-     
+        Matrix<double, Eigen::Dynamic, 3> force(long nAtoms,
+                                                AtomMatrix positions,
+                                                VectorXi atomicNrs,
+                                                double *energy, Matrix3d box);
+
         void virtual initialize() = 0;
         void virtual cleanMemory(){};
         void virtual force(long nAtoms, const double *positions, 

@@ -12,7 +12,7 @@
 #include "Constants.h"
 
 #include <cmath>
-#include<cstdlib>
+#include <cstdlib>
 #include <cassert>
 
 
@@ -735,7 +735,7 @@ void Matter::computePotential()
             forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
             forceCalls = forceCalls+1;
             recomputePotential=false;
-            
+
             if(isFixed.sum()==0){
                 Vector3d tempForce(3);
                 tempForce = forces.colwise().sum()/nAtoms;
