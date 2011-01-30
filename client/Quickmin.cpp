@@ -21,10 +21,8 @@ Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
 {
     matter = matter_passed;    
     parameters = parameters_passed;
-    dtScale = 1.0;
-    
-    nAtoms = matter->numberOfAtoms();
-    velocity.resize(nAtoms, 3);
+    dt = parameters_passed->optTimeStep;
+    velocity.resize(matter->numberOfAtoms(), 3);
     velocity.setZero();
     outputLevel = 0;    
 }
@@ -38,64 +36,37 @@ Quickmin::~Quickmin()
 
 void Quickmin::oneStep()
 {
-    Matrix<double, Eigen::Dynamic, 3> forces;
-    forces = matter->getForces();
-    oneStepPart1(forces);
-    forces = matter->getForces();
-    oneStepPart2(forces);
-    return;
-}
-
-void Quickmin::setOutput(int level)
-{
-    outputLevel = level;
-}
-
-
-void Quickmin::oneStepPart1(Matrix<double, Eigen::Dynamic, 3> force)
-{
+    Matrix<double, Eigen::Dynamic, 3> forces = matter->getForces();
+    if((velocity.cwise() * forces).sum() < 0)
+    {
+        dt *= 0.5;
+        velocity.setZero();
+    }
+    else
+    {
+        dt *= 1.1;    
+    }
+    velocity += forces * dt;
     Matrix<double, Eigen::Dynamic, 3> positions;
-
-    velocity += force * .5 * parameters->optTimeStep * dtScale;
-    velocity = velocity.cwise() * matter->getFree();
-
     positions = matter->getPositions();
-    Matrix<double, Eigen::Dynamic, 3> update = velocity * parameters->optTimeStep * dtScale;
+    Matrix<double, Eigen::Dynamic, 3> step = velocity * dt;
     double maxmoved = 0.0;
     for(int i=0; i < matter->numberOfAtoms(); i++)
     {
-        maxmoved = max(maxmoved, update.row(i).norm());
+        maxmoved = max(maxmoved, step.row(i).norm());
     }
     double scale = 1.0;
     if(maxmoved > parameters->optMaxMove)
     {
         scale = parameters->optMaxMove/maxmoved;
     }
-    positions += update*scale;
+    positions += step*scale;
     matter->setPositions(positions);  
 }
 
-
-void Quickmin::oneStepPart2(Matrix<double, Eigen::Dynamic, 3> force)
+void Quickmin::setOutput(int level)
 {
-    double dotVelocityForces;
-    double dotForcesForces;
-    forces = force;
-    velocity += force * 0.5 * parameters->optTimeStep * dtScale;
-    velocity = velocity.cwise() * matter->getFree();
-    dotVelocityForces = (velocity.cwise() * force).sum();
-    // Zeroing all velocities if they are not orthogonal to the forces
-    if(dotVelocityForces < 0)
-    {
-        velocity.setZero();
-        dtScale *= 0.99;
-    }    
-    else
-    {
-        dotForcesForces = force.squaredNorm();
-        velocity = force * dotVelocityForces/dotForcesForces;
-//        dtScale_ *= 1.01;
-    }
+    outputLevel = level;
 }
 
 
@@ -111,8 +82,8 @@ void Quickmin::fullRelax()
         converged = isItConverged(parameters->optConvergedForce);
         i++;
         if (outputLevel > 0) {
-            printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", i, matter->maxForce(),
-                   matter->getPotentialEnergy());
+            printf("step = %3d, max force = %8.5lf, energy: %10.4f, dt: %8.5f\n", i, matter->maxForce(),
+                   matter->getPotentialEnergy(), dt);
         }
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
@@ -122,8 +93,9 @@ void Quickmin::fullRelax()
 
 bool Quickmin::isItConverged(double convergeCriterion)
 {
+    Matrix<double, Eigen::Dynamic, 3> forces = matter->getForces();
     double diff = 0;
-    for(int i=0;i<nAtoms;i++)
+    for(int i=0;i<matter->numberOfAtoms();i++)
     {
         diff = forces.row(i).norm();
         if(convergeCriterion < diff)

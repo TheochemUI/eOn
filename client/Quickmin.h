@@ -18,27 +18,20 @@ class Quickmin : public Minimizer
 {
 
     public:
-        Quickmin(Matter *matter, Parameters *parameters);
+        Matter *matter;
+        Parameters *parameters;
+        double dt;
 
+        Quickmin(Matter *matter, Parameters *parameters);
         ~Quickmin();
 
         void oneStep();
-        void oneStepPart1(Matrix<double, Eigen::Dynamic, 3> forces);
-        void oneStepPart2(Matrix<double, Eigen::Dynamic, 3> forces);
-        
         void fullRelax();
         bool isItConverged(double convergeCriterion);
         void setOutput(int level);
         
     private:
-        long nAtoms;
         int outputLevel;
-        Matter *matter;
-        Parameters *parameters;
-
-        Matrix<double, Eigen::Dynamic, 3> forces;
-        double dtScale;
-
         Matrix<double, Eigen::Dynamic, 3> velocity; 
 };
 
