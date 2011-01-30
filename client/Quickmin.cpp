@@ -26,6 +26,7 @@ Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
     nAtoms = matter->numberOfAtoms();
     velocity.resize(nAtoms, 3);
     velocity.setZero();
+    outputLevel = 0;    
 }
 
 
@@ -35,10 +36,6 @@ Quickmin::~Quickmin()
     return;
 }
 
-void Quickmin::setOutput(int level)
-{ }
-
-
 void Quickmin::oneStep()
 {
     Matrix<double, Eigen::Dynamic, 3> forces;
@@ -47,6 +44,11 @@ void Quickmin::oneStep()
     forces = matter->getForces();
     oneStepPart2(forces);
     return;
+}
+
+void Quickmin::setOutput(int level)
+{
+    outputLevel = level;
 }
 
 
@@ -102,10 +104,16 @@ void Quickmin::fullRelax()
     bool converged = false;
     long forceCallsTemp;
     forceCallsTemp = matter->getForceCalls();  
+    int i = 0;
     while(!converged)
     {
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
+        i++;
+        if (outputLevel > 0) {
+            printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", i, matter->maxForce(),
+                   matter->getPotentialEnergy());
+        }
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
     return;

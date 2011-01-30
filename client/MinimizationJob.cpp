@@ -9,7 +9,9 @@
 //-----------------------------------------------------------------------------------
 
 #include "MinimizationJob.h"
+#include "Minimizer.h"
 #include "ConjugateGradients.h"
+#include "Quickmin.h"
 #include "Matter.h"
 #include "Constants.h"
 
@@ -40,11 +42,20 @@ void MinimizationJob::run(int bundleNumber)
 
     printf("\nBeginning minimization of %s\n", reactant_passed.c_str());
 
-    ConjugateGradients cgMin(reactant, parameters);
-    cgMin.setOutput(1);
-    cgMin.fullRelax();
+    Minimizer* mizer;
+    if(parameters->optMethod == "cg")
+    {
+        mizer = new ConjugateGradients(reactant, parameters);
+    }
+    else if(parameters->optMethod == "qm")
+    {
+        mizer = new Quickmin(reactant, parameters);
+    }
 
-    if (cgMin.isItConverged(parameters->optConvergedForce)) {
+    mizer->setOutput(1);
+    mizer->fullRelax();
+
+    if (mizer->isItConverged(parameters->optConvergedForce)) {
         printf("Minimization converged within tolerence\n");
     }else{
         printf("Minimization did not converge to tolerence!\n"

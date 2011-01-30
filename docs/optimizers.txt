@@ -8,6 +8,18 @@ Optimizers
 The eon client provides two optimizers quick-min and conjugate gradients. These
 options are in the **[Optimizers]** section. 
 
+**method**:
+    
+    Default: cg
+    
+    The optimization method to use.
+    
+    Options:
+        
+        *cg*: Conjugate gradient
+        *qm*: Quickmin
+
+
 **max_iterations**:
 
     Default: 1000
