@@ -11,36 +11,27 @@
 #ifndef LANCZOS_H
 #define LANCZOS_H
 
-#include <math.h>
-#include <cmath>
-#include <cassert>
-#include "debug.h"
-
 #include "Eigen.h"
 #include "Matter.h"
-#include "HelperFunctions.h"
 #include "Parameters.h"
 #include "LowestEigenmodeInterface.h"
 
-// dimer method to find the lowest curvature mode
+// Lanczos method to find the lowest curvature mode
 class Lanczos : public LowestEigenmodeInterface
 {
 
     public:
-
-    Lanczos(Matter const *matter, Parameters *parameters);
-    ~Lanczos();
-    
-    void compute(Matter const *matter, AtomMatrix direction); 
-    double getEigenvalue();
-    AtomMatrix getEigenvector();
-    void setEigenvector(AtomMatrix const eigenvector);
-
-    Parameters *parameters;
+        Lanczos(Matter const *matter, Parameters *parameters);
+        ~Lanczos();
+        
+        void compute(Matter const *matter, AtomMatrix direction); 
+        double getEigenvalue();
+        AtomMatrix getEigenvector();
 
     private:
-    AtomMatrix lowestEv;
-    double lowestEw;
+        Parameters *parameters;
+        AtomMatrix lowestEv;
+        double lowestEw;
 };
 
 #endif

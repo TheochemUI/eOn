@@ -8,14 +8,17 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include "Lanczos.h"
+// This Lanczos algorithm is implemented as described in this paper:
+// R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson, 
+// Comparison of methods for finding saddle points without knowledge of the final states, 
+// J. Chem. Phys. 121, 9776-9792 (2004).
 
-using namespace helper_functions;
+#include "Lanczos.h"
+#include <cmath>
 
 Lanczos::Lanczos(Matter const *matter, Parameters *params)
 {
     parameters = params;
-    totalForceCalls = 0;
     lowestEv.resize(matter->numberOfAtoms(),3);
     lowestEv.setZero();
     lowestEw = 0.0;
@@ -25,6 +28,8 @@ Lanczos::~Lanczos()
 {
 }
 
+// The 1 character variables in this method match the variables in the
+// equations in the paper given at the top of this file.
 void Lanczos::compute(Matter const *matter, AtomMatrix direction)
 {
     int size = 3*matter->numberOfFreeAtoms();
@@ -32,15 +37,8 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     T.setZero();
     VectorXd u(size), r(size);
 
-    Matter *tmpMatter = new Matter(parameters);
-    *tmpMatter = *matter;
-
-    double dr = parameters->lanczosFiniteDiff;
-    VectorXd force1, force2;
-    double ew=0.0, ewOld=0.0, ewChange;
-    VectorXd evT;
-    force1 = tmpMatter->getForcesFreeV();
-
+    // Convert the AtomMatrix of all the atoms into
+    // a single column vector with just the free coordinates.
     int i,j;
     for (i=0,j=0;i<matter->numberOfAtoms();i++) {
         if (!matter->getFixed(i)) {
@@ -51,12 +49,22 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     r.normalize();
 
     double alpha, beta=r.norm();
-    VectorXd evEst, evOldEst;
+    double ew=0, ewOld=0, ewAbsRelErr;
+    double dr = parameters->lanczosFiniteDiff;
+    VectorXd evEst, evOldEst, evT;
+
+    VectorXd force1, force2;
+    Matter *tmpMatter = new Matter(parameters);
+    *tmpMatter = *matter;
+    force1 = tmpMatter->getForcesFreeV();
+
     for (i=0;i<size;i++) {
         Q.col(i) = r/beta;
 
+        // Finite difference force in the direction of the ith Lanczos vector
         tmpMatter->setPositionsFreeV(matter->getPositionsFreeV()+dr*Q.col(i));
         force2 = tmpMatter->getForcesFreeV();
+
         u = -(force2-force1)/dr;
 
         if (i==0) {
@@ -81,19 +89,21 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
             Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0,0,i+1,i+1));
             ew = es.eigenvalues()(0); 
             evT = es.eigenvectors().col(0);
-            ewChange = fabs((ew-ewOld)/ewOld);
+            ewAbsRelErr = fabs((ew-ewOld)/ewOld);
             ewOld = ew;
+
+            //Convert eigenvector of T matrix to eigenvector of full Hessian
             evEst = Q.block(0,0,size,i+1)*evT;
             evEst.normalize();
-            printf("rotation angle: %f ewdiff: %f\n", acos(fabs(evEst.dot(evOldEst)))*(180/M_PI), ewChange);
-            if (ewChange < parameters->lanczosTolerance) {
-                printf("ew converged\n");
+
+            //printf("rotation angle: %f ewdiff: %f\n", acos(fabs(evEst.dot(evOldEst)))*(180/M_PI), ewChange);
+            if (ewAbsRelErr < parameters->lanczosTolerance) {
                 break;
             }
             evOldEst = evEst;
         }else{
             ewOld = -alpha/dr;
-            ewChange = ewOld;
+            ewAbsRelErr = ewOld;
             evOldEst = Q.col(0);
         }
 
@@ -102,10 +112,10 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
         }
     }
 
-    //Convert eigenvector of T matrix to eigenvector of full Hessian
-    //VectorXd ev = Q.block(0,0,size,i+1)*evT;
-
     lowestEw = ew;
+
+    // Convert back from free atom coordinate column vector
+    // to AtomMatrix style.
     lowestEv.resize(matter->numberOfAtoms(),3);
     for (i=0,j=0;i<matter->numberOfAtoms();i++) {
         if (!matter->getFixed(i)) {
