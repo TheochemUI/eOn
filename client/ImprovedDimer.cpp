@@ -12,8 +12,8 @@
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
 #include "ImprovedDimer.h"
-
-using namespace helper_functions;
+#include <cmath>
+#include <cassert>
 
 ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
 {

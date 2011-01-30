@@ -11,14 +11,8 @@
 #ifndef EXACTMINMODE_H
 #define EXACTMINMODE_H
 
-#include <math.h>
-#include <cmath>
-#include <cassert>
-#include "debug.h"
-
 #include "Eigen.h"
 #include "Matter.h"
-#include "HelperFunctions.h"
 #include "Parameters.h"
 #include "LowestEigenmodeInterface.h"
 
@@ -28,19 +22,18 @@ class ExactMinMode: public LowestEigenmodeInterface
 
     public:
 
-    ExactMinMode(Matter const *matter, Parameters *parameters);
-    ~ExactMinMode();
-    
-    void compute(Matter const *matter, AtomMatrix direction); 
-    double getEigenvalue();
-    AtomMatrix getEigenvector();
-    void setEigenvector(AtomMatrix const eigenvector);
+        ExactMinMode(Matter const *matter, Parameters *parameters);
+        ~ExactMinMode();
+        
+        void compute(Matter const *matter, AtomMatrix direction); 
+        double getEigenvalue();
+        AtomMatrix getEigenvector();
 
-    Parameters *parameters;
 
     private:
-    AtomMatrix lowestEv;
-    double lowestEw;
+        Parameters *parameters;
+        AtomMatrix lowestEv;
+        double lowestEw;
 };
 
 #endif
