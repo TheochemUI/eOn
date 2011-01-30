@@ -53,7 +53,8 @@ Parameters::Parameters(){
     saddlePerpForceRatio = 0.0; // undocumented
 
     // [Optimizers] //
-    optMaxIterations=1000;
+    optMethod = "cg";
+    optMaxIterations = 1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
     optFiniteDiffStep = 0.001;
@@ -265,6 +266,7 @@ int Parameters::load(FILE *file){
 
         // [Optimizers] //
 
+        optMethod = toLowerCase(ini.GetValue("Optimizers", "method", optMethod));
         optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
