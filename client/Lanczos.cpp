@@ -51,6 +51,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     r.normalize();
 
     double alpha, beta=r.norm();
+    VectorXd evEst, evOldEst;
     for (i=0;i<size;i++) {
         Q.col(i) = r/beta;
 
@@ -82,28 +83,33 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
             evT = es.eigenvectors().col(0);
             ewChange = fabs((ew-ewOld)/ewOld);
             ewOld = ew;
+            evEst = Q.block(0,0,size,i+1)*evT;
+            evEst.normalize();
+            printf("rotation angle: %f ewdiff: %f\n", acos(fabs(evEst.dot(evOldEst)))*(180/M_PI), ewChange);
             if (ewChange < parameters->lanczosTolerance) {
+                printf("ew converged\n");
                 break;
             }
+            evOldEst = evEst;
         }else{
             ewOld = -alpha/dr;
             ewChange = ewOld;
+            evOldEst = Q.col(0);
         }
 
         if (i >= parameters->lanczosMaxIterations) {
-            printf("Hit max lanczos iterations\n");
             break;
         }
     }
 
     //Convert eigenvector of T matrix to eigenvector of full Hessian
-    VectorXd ev = Q.block(0,0,size,i+1)*evT;
+    //VectorXd ev = Q.block(0,0,size,i+1)*evT;
 
     lowestEw = ew;
     lowestEv.resize(matter->numberOfAtoms(),3);
     for (i=0,j=0;i<matter->numberOfAtoms();i++) {
         if (!matter->getFixed(i)) {
-            lowestEv.row(i) = ev.segment<3>(j);
+            lowestEv.row(i) = evEst.segment<3>(j);
             j+=3;
         }
     }

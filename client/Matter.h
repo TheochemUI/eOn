@@ -20,8 +20,7 @@
 
 struct MatterPrivateData {
     Parameters *parameters;
- 
-    long int nAtoms; // number of atoms
+    long nAtoms; // number of atoms
     AtomMatrix positions; // positions
     AtomMatrix velocities; // velocities
     AtomMatrix forces; // forces
