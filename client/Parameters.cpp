@@ -239,7 +239,11 @@ int Parameters::load(FILE *file){
         }
         string displaceString = ini.GetValue("Saddle Search", "displace_type", "none");
         displaceString = toLowerCase(displaceString);
-
+//        if(displaceString == "none")
+//        { 
+//            saddleDisplaceType = SaddlePoint::DISP_NONE;
+//        }
+//        else if(displaceString == "not_FCC_HCP_coordinated_client")
         if(displaceString == "client_not_fcc_hcp_coordinated")
         {
             saddleDisplaceType = SaddlePoint::DISP_NOT_FCC_OR_HCP;
