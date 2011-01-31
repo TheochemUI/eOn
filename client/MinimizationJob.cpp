@@ -42,7 +42,7 @@ void MinimizationJob::run(int bundleNumber)
 
     printf("\nBeginning minimization of %s\n", reactant_passed.c_str());
 
-    Minimizer* mizer;
+    Minimizer* mizer=NULL;
     if(parameters->optMethod == "cg")
     {
         mizer = new ConjugateGradients(reactant, parameters);
@@ -50,6 +50,8 @@ void MinimizationJob::run(int bundleNumber)
     else if(parameters->optMethod == "qm")
     {
         mizer = new Quickmin(reactant, parameters);
+    }else{
+        printf("Unknown optMethod: %s\n", parameters->optMethod.c_str());
     }
 
     mizer->setOutput(1);

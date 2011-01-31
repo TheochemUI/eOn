@@ -13,6 +13,7 @@
 
 #include "Minimizer.h"
 #include "Matter.h"
+#include "Parameters.h"
 
 class Quickmin : public Minimizer
 {
@@ -36,4 +37,3 @@ class Quickmin : public Minimizer
 };
 
 #endif
-

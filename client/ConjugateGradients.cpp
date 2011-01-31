@@ -9,13 +9,8 @@
 //-----------------------------------------------------------------------------------
 
 #include "ConjugateGradients.h"
-#include "HelperFunctions.h"
-
 #include <cassert>
 #include <cmath>
-
-using namespace helper_functions;
-
 
 ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 {
