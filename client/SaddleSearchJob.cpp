@@ -71,7 +71,7 @@ void SaddleSearchJob::run(int bundleNumber)
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // displacement was passed from the server        
+        // mode was passed from the server        
         saddlePoint->loadMode(mode_passed);
     }
     // displacement and mode where made on the client
