@@ -30,6 +30,16 @@ right part of configuration space.
         *not_FCC_HCP_coordinated*: Select an atom that is not in a local HCP or
         FCC coordination.
 
+	*client_least_coordinated*: Displacement is made on the client centered on
+	an atom with the minimal coordination.
+
+        *client_not_FCC_HCP_coordinated*: Displacement is made on the client 
+	centered on an atom that is not in a local HCP or FCC coordination.
+
+	*client_last_atom*: Displacement is made on the client centered on the 
+	last atom in the configuration.
+
+
 **max_iterations**
 
     Default: 1000
@@ -86,3 +96,9 @@ right part of configuration space.
     The individual index should be seperated by a ','
     10, 20,-1 would be the 10, 20 and the last atom.
 
+**client_max_single_displace**
+    Default: 10.
+
+    Only functional when displacement is done on the client.  Defines the
+    maximal allowed absolute value for a single component in the
+    displacement vector.
