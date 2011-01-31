@@ -64,7 +64,8 @@ void SaddleSearchJob::run(int bundleNumber)
         saddle->con2matter(displacement_passed);
     }
     else {
-        // displacement will be made on the client
+        // displacement and mode will be made on the client
+        // in saddlePoint->initialize(...) 
         *saddle = *initial;
     }
     saddlePoint = new SaddlePoint();
