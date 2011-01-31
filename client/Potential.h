@@ -25,10 +25,8 @@ class Potential
 
         static int fcalls;
 
-        Matrix<double, Eigen::Dynamic, 3> force(long nAtoms,
-                                                AtomMatrix positions,
-                                                VectorXi atomicNrs,
-                                                double *energy, Matrix3d box);
+        AtomMatrix force(long nAtoms, AtomMatrix positions,
+                         VectorXi atomicNrs, double *energy, Matrix3d box);
 
         void virtual initialize() = 0;
         void virtual cleanMemory(){};

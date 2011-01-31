@@ -1,7 +1,7 @@
 // Emacs: this is -*- C++ -*-
 
-#ifndef POTENTIAL_H
-#define POTENTIAL_H
+#ifndef ASAP_POTENTIAL_H
+#define ASAP_POTENTIAL_H
 
 #include <assert.h>
 #include "Exception.h"
