@@ -19,7 +19,7 @@ class Potential
 
     public:
 
-        ~Potential();
+        virtual ~Potential();
 
         static Potential* getPotential(Parameters *parameters);
 
