@@ -63,9 +63,12 @@ void ProcessSearchJob::run(int bundleNumber)
     
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
+
+//    if (parameters->saddleDisplaceType == SaddlePoint::LOAD) {
+//        saddle->con2matter(displacement_passed);
+//    }
     
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // displacement was passed from the server
         saddle->con2matter(displacement_passed);
         *min1 = *min2 = *initial;
     }else{
@@ -76,9 +79,7 @@ void ProcessSearchJob::run(int bundleNumber)
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // mode was passed from the server        
         saddlePoint->loadMode(mode_passed);
     }
     // displacement and mode where made on the client
