@@ -104,9 +104,9 @@ ifdef WITH_LANCZOS
     LDFLAGS += -lgsl -lgslcblas
 endif
 #Potentials
-#POTDIRS += ./potentials/EMT/
-#LIBS += ./potentials/EMT/libEMT.a
-POTENTIALS += "-EMT "
+POTDIRS += ./potentials/EMT/
+LIBS += ./potentials/EMT/libEMT.a
+POTENTIALS += "+EMT "
 POTDIRS += ./potentials/Morse/
 LIBS += ./potentials/Morse/libMorse.a
 POTENTIALS += "+MORSE "
@@ -161,6 +161,9 @@ all: $(POTDIRS) $(FPOTDIRS) client
 
 client: $(OBJECTS) $(LIBS)
 	$(CROSS)g++  -o $@ $^ $(LDFLAGS)
+
+libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(LIBS)
+	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o
 
 include Depend.mk
 

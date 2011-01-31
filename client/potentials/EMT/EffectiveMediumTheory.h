@@ -13,12 +13,11 @@
 #ifndef EFFECTIVE_MEDIUM_THEORY
 #define EFFECTIVE_MEDIUM_THEORY
 
-#include"Asap/Atoms.h"
-#include"Asap/EMT.h"
-#include"Asap/SuperCell.h"
-#include"Asap/Vec.h"
+#include "Asap/Atoms.h"
+#include "Asap/EMT.h"
+#include "Asap/SuperCell.h"
+#include "Asap/Vec.h"
 
-//#include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/
@@ -43,4 +42,5 @@ public:
     void initialize() {};
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };
+
 #endif

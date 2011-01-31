@@ -12,7 +12,7 @@
 #include "Potential.h"
 #include "potentials/NewPotential/NewPotential.h"
 #include "potentials/EDIP/EDIP.h"
-//#include "potentials/EMT/EffectiveMediumTheory.h"
+#include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
 #include "potentials/LennardJones/LJ.h"
 #include "potentials/SW/SW.h"
@@ -35,7 +35,7 @@
 
 #include <cstdlib>
 
-Potential* Potential::getPotential(Parameters *parameters)
+Potential *Potential::getPotential(Parameters *parameters)
 {
     Potential* pot;
     if(parameters->potential == "lj")
