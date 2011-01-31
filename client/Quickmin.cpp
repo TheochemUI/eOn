@@ -9,13 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "Quickmin.h"
-#include "HelperFunctions.h"
-#include "Constants.h"
-#include "Parameters.h"
-
 #include <cmath>
-using namespace helper_functions;
-
 
 Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
 {
@@ -82,8 +76,8 @@ void Quickmin::fullRelax()
         converged = isItConverged(parameters->optConvergedForce);
         i++;
         if (outputLevel > 0) {
-            printf("step = %3d, max force = %8.5lf, energy: %10.4f, dt: %8.5f\n", i, matter->maxForce(),
-                   matter->getPotentialEnergy(), dt);
+            printf("step = %3d, max force = %8.5lf, energy: %10.4f, dt: %8.5f\n", i, 
+                   matter->maxForce(), matter->getPotentialEnergy(), dt);
         }
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
