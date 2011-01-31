@@ -60,30 +60,29 @@ void ProcessSearchJob::run(int bundleNumber)
         cgMin.fullRelax();
         fCallsMin += Potential::fcalls - fi;
     }
-
-    if (!parameters->saddleDisplaceType) {
-        saddle->con2matter(displacement_passed);
-    }
     
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
-
-    if (!parameters->saddleDisplaceType) {
+    
+    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+        // displacement was passed from the server
+        saddle->con2matter(displacement_passed);
         *min1 = *min2 = *initial;
     }else{
+        // displacement and mode will be made on the client
+        // in saddlePoint->initialize(...) 
         *saddle = *min1 = *min2 = *initial;
     }
 
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (!parameters->saddleDisplaceType) {
+    
+    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+        // mode was passed from the server        
         saddlePoint->loadMode(mode_passed);
     }
-    // Initialization is done in SaddleSearch for the case
-    // where the displacement is done on the client
-    //else{
-    //    saddlePoint->displaceAndSetMode(saddle);
-    //}
+    // displacement and mode where made on the client
+    // in saddlePoint->initialize(...) 
 
     hessian = new Hessian(min1, saddle, min2, parameters);
 

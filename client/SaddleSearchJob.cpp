@@ -59,22 +59,24 @@ void SaddleSearchJob::run(int bundleNumber)
         fCallsMin += Potential::fcalls - fi;
     }
 */
-    if (!parameters->saddleDisplaceType) {
+    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+        // displacement was passed from the server        
         saddle->con2matter(displacement_passed);
     }
     else {
+        // displacement and mode will be made on the client
+        // in saddlePoint->initialize(...) 
         *saddle = *initial;
     }
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
-    if (!parameters->saddleDisplaceType) {
+    
+    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+        // mode was passed from the server        
         saddlePoint->loadMode(mode_passed);
     }
-    // Initialization is done in SaddleSearch for the case
-    // where the displacement is done on the client
-    //else{
-    //    saddlePoint->displaceAndSetMode(saddle);
-    //}
+    // displacement and mode where made on the client
+    // in saddlePoint->initialize(...) 
 
     int status = doSaddleSearch();
 
