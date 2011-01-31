@@ -134,6 +134,8 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region 
+
+    // the displacement is done on the client
     if (parameters->saddleDisplaceType) 
     {
         displaceAndSetMode(saddle);
@@ -191,7 +193,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     {
         indexEpiCenter = EpiCenters::minCoordinatedEpiCenter(matter, parameters->neighborCutoff);
     }
-    else
+    else if(parameters->saddleDisplaceType == DISP_RANDOM)
     {
         indexEpiCenter = EpiCenters::randomFreeAtomEpiCenter(matter);
     }

@@ -48,10 +48,11 @@ public:
 
     // Constants used to displace atoms before a saddle search
     enum{
-        DISP_NONE,
+        DISP_LOAD,
         DISP_NOT_FCC_OR_HCP,
         DISP_MIN_COORDINATED,
-        DISP_LAST_ATOM
+        DISP_LAST_ATOM,
+        DISP_RANDOM
     };
 
     // Methods for finding the minimum mode

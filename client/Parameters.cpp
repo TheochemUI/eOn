@@ -41,15 +41,15 @@ Parameters::Parameters(){
     processSearchDefaultPrefactor = 0;
 
     // [Saddle Search] //
-    saddleDisplaceType = SaddlePoint::DISP_NONE;
+    saddleDisplaceType = SaddlePoint::DISP_LOAD;
     saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
     saddleDisplaceRadius = 4.0;
     saddleDisplaceMagnitude = 0.1;
-    saddleMaxSingleDisplace = 0.1; // undocumented
-    saddleMaxJumpAttempts = 0; // undocumented
+    saddleMaxSingleDisplace = 10.;
+//    saddleMaxJumpAttempts = 0; // undocumented
     saddlePerpForceRatio = 0.0; // undocumented
 
     // [Optimizers] //
@@ -237,31 +237,38 @@ int Parameters::load(FILE *file){
         }else if(minmodeMethodString == "exact") {
             saddleMinmodeMethod = SaddlePoint::MINMODE_EXACT;
         }
-        string displaceString = ini.GetValue("Saddle Search", "displace_type", "none"); // undocumented
+        string displaceString = ini.GetValue("Saddle Search", "displace_type", "none");
         displaceString = toLowerCase(displaceString);
-        if(displaceString == "none")
-        { 
-            saddleDisplaceType = SaddlePoint::DISP_NONE;
-        }
-        else if(displaceString == "not_fcc_or_hcp")
+
+        if(displaceString == "client_not_fcc_hcp_coordinated")
         {
             saddleDisplaceType = SaddlePoint::DISP_NOT_FCC_OR_HCP;
         }
-        else if(displaceString == "min_coordinated")
+        else if(displaceString == "client_least_coordinated")
         {
             saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
         }
-        else if(displaceString == "last_atom")
+        else if(displaceString == "client_last_atom")
         {
             saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
         }
+        else if(displaceString == "client_random")
+        {
+            saddleDisplaceType = SaddlePoint::DISP_RANDOM;
+        }        
+        // default is a displacement made on the server
+        else
+        { 
+            saddleDisplaceType = SaddlePoint::DISP_LOAD;
+        }
+        
         saddleDisplaceMagnitude = ini.GetValueB("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
-        saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
-        saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace); //undocumented
+//        saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
+        saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
 
         // [Optimizers] //
