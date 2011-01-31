@@ -11,13 +11,13 @@
 #ifndef CG_H
 #define CG_H
 
-#include "Parameters.h"
+#include "Eigen.h"
 #include "Matter.h"
 #include "Minimizer.h"
+#include "Parameters.h"
 
-#include "Eigen.h"
-
-/** Functionality relying on the conjugate gradients algorithm. The object is capable of minimizing a Matter object or modified forces being passed in.*/
+/* Functionality relying on the conjugate gradients algorithm.
+ * The object is capable of minimizing a Matter object or modified forces being passed in.*/
 class ConjugateGradients : public Minimizer{
 
 public:
@@ -30,8 +30,8 @@ public:
     @param[in]   *matter        Pointer to the Matter object to be relaxed.
     @param[in]   *parameters    Pointer to the Parameter object containing the runtime parameters.
     @param[in]   *forces        Double array containing the forces acting on the matter.*/
-    ConjugateGradients(Matter *matter, Parameters *parameters, Matrix<double, Eigen::Dynamic, 3> forces);
-  
+    ConjugateGradients(Matter *matter, Parameters *parameters, AtomMatrix forces);
+
     ~ConjugateGradients();///< Destructor.
 
     void oneStep(); // do one iteration
