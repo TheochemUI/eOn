@@ -56,8 +56,14 @@ Projective Dynamics
 
     Default: 0.1
 
-    If the energy level scheme is being used (scheme=energy_level), **Jean
-    Claude: document this**
+    If the energy level scheme is being used (scheme=energy_level).
+    Each state, the first time it is visited, is assigned an energy level first
+    equal to the energy of the minimum. Every time the state is visited again
+    by the Monte Carlo simulation, the energy level is increased by:
+    :math:`\epsilon=\epsilon_0\frac{E_{sp}-E_{min}}{E_{sp}-E_{global\ min}}`
+    where :math:`E_{sp}` is the energy of the saddle point, :math:`E_{min}` the energy of the 
+    minimum, and :math:`E_{global\ min}` the energy of the global minimum.
+    :math:`\epsilon_0` is the parameter controlled by the user through 'energy_increment'.
 
 
 Accelerated Superbasin Kinetic Monte Carlo

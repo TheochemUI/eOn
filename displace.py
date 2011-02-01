@@ -221,7 +221,7 @@ class Water(Displace):
         """reactant: structure to be displaced\n"""\
         """stdev_translation: translational standard deviation (Angstrom)\n"""\
         """stdev_rotation: rotational standard deviation (radian)"""\
-        """molecules: list of indices of the molecules to displace or None to displace all the molecules.""" 
+        """molecules: list of indices of the molecules to displace or None to displace all the molecules."""\
         """random: if 0 displace all molecules in molecule_list, if 'random > 0' picked up at random in 'molecule_list' a number of molecules equal to the number soted in 'random' and displace only these."""
         assert(isinstance(molecule_list, list))
         self.reactant=reactant
