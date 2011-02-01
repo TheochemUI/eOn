@@ -366,7 +366,8 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
             sb = superbasining.get_containing_superbasin(current_state)
 
         if config.sb_on and sb:
-            mean_time, next_state = sb.step(current_state, states.get_product_state)
+            mean_time, next_state, exit_state_index, exit_process_index, sb_id = sb.step(current_state, states.get_product_state)
+
         else:
             if config.askmc_on:
                 rate_table = asKMC.get_ratetable(current_state)
@@ -374,6 +375,7 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
                 rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
                 logger.error("No processes in rate table, but confidence has been reached")
+
             ratesum = 0.0
             for i in range(len(rate_table)):
                 ratesum += rate_table[i][1]
@@ -449,13 +451,15 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
             proc_id_out = -1
         else:
             proc_id_out = rate_table[nsid][0]
+
         dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
         if proc_id_out != -1:            
             proc = current_state.get_process(proc_id_out)
             dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, proc['barrier'], proc['rate'])
         else:
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
-            dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, 0, 0)
+            dynamics.append_sb(exit_state_index, exit_process_index, next_state.number, mean_time, time, sb_id)
+
         logger.info("stepped from state %i to state %i", current_state.number, next_state.number)
         
         previous_state = current_state

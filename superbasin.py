@@ -17,14 +17,17 @@ logger = logging.getLogger('superbasin')
 
 class Superbasin:
  
-    def __init__(self, path, kT, state_list = None, get_state = None):
+    def __init__(self, path, id, kT, state_list = None, get_state = None):
         assert(isinstance(kT, float))
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
         self.kT = kT
-        self.path = path
+        
+        self.id = id
+        self.path = path+str(self.id)
+        
         if not os.path.isfile(self.path):
             self.states = state_list
             self.state_numbers = [i.number for i in self.states]
@@ -81,24 +84,31 @@ class Superbasin:
         
         #XXX: Only process in the thermally accesbile window should be on this rate table
         process_table=exit_state.get_process_table()
+
+        # determine all process OUT of the superbasin
         for proc_id in process_table:
             process = process_table[proc_id]
             if process['product'] not in self.state_numbers:
                 rate_table.append([proc_id, process['rate']])
                 ratesum += process['rate']
         
+        # picks the process to leave the superbasin
         p = 0.0
         u = numpy.random.random_sample()
         for i in range(len(rate_table)):
             p += rate_table[i][1]/ratesum
             if p>=u:
-                exit_process_index = rate_table[i][0]
+                exit_proc_id = rate_table[i][0]
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
-        absorbing_state = get_product_state(exit_state.number, exit_process_index)
+        product_state = get_product_state(exit_state.number, exit_proc_id)
         assert(time >= 0.0)
-        return time, absorbing_state
+
+        # store what the accepted process for the exit state connects to 
+        process_table[exit_proc_id]["product"] = product_state.number
+
+        return time, product_state, exit_state.number, exit_proc_id, self.id
 
     def contains_state(self, state):
         return state in self.states
@@ -176,9 +186,16 @@ class Superbasin:
         self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
         f.close()        
 
-    def delete(self):
-        logger.debug('deleting %s' % self.path)
-        os.remove(self.path)
+    def delete(self, storage=None):
+        if storage is None:
+            logger.debug('deleting %s' % self.path)
+            os.remove(self.path)
+        else:
+            logger.debug('storing %s' % self.path)
+            path_storage = storage+str(self.id)
+            os.rename(self.path, path_storage)
+        
         self.states = None
         self.probability_matrix = None
         self.mean_residence_times = None
+    

@@ -361,6 +361,12 @@ class Dynamics:
         f.close()
         self.next_step += 1
 
+    def append_sb(self, reactant_id, process_id, product_id, step_time, total_time, basin_id):
+        f = open(self.filename, 'a')
+        f.write("%12d  %12d  %12d  %12d  %12e  %12e  %12d\n" % (self.next_step, reactant_id, process_id, product_id, step_time, total_time, basin_id))
+        f.close()
+        self.next_step += 1
+
     def get(self):
         f = open(self.filename, 'r')
         lines = f.readlines()[2:]
