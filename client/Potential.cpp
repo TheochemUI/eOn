@@ -42,8 +42,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new LJ();
     else if(parameters->potential == "morse_pt")
         pot = new Morse();
-//    else if(parameters->potential == "emt")
-//        pot = new EffectiveMediumTheory();
+    else if(parameters->potential == "emt")
+        pot = new EffectiveMediumTheory();
     else if(parameters->potential == "qsc")
         pot = new QSC();
     else if(parameters->potential == "zpice")
