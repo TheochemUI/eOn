@@ -59,7 +59,7 @@ public:
 
     AtomMatrix pbc(AtomMatrix diff) const;
     
-    AtomMatrix getPositions() const; // return coordinates of free atoms in array pos
+    AtomMatrix getPositions() const; // return coordinates of atoms in array pos
     VectorXd getPositionsV() const;
     AtomMatrix getPositionsFree() const; // return coordinates of free atoms in array pos
     VectorXd getPositionsFreeV() const;

@@ -276,7 +276,7 @@ void Matter::setVelocity(long int indexAtom, int axis, double vel)
 
 
 
-//return coordinates of free atoms in array 'pos'
+//return coordinates of atoms in array 'pos'
 AtomMatrix Matter::getPositions() const
 {
     return positions;
