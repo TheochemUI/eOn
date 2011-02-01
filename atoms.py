@@ -234,7 +234,7 @@ def least_coordinated(p, cutoff, brute=False):
 
 
 
-def rotMatch(a, b):
+def rot_match(a, b):
     if len(a) != len(b):
         return False
     
@@ -268,17 +268,13 @@ def rotMatch(a, b):
     n[1][3] = szx+sxz
 
     n[2][3] = syz + szy
-    print n
-    print
+
     n += n.transpose()
-    print n
-    print
+
     n[0][0] = sxx + syy + szz
     n[1][1] = sxx-syy-szz
     n[2][2] = -sxx + syy -szz
     n[3][3] = -sxx -syy + szz
-    print n
-    print
 
     w,v = numpy.linalg.eig(n)
     maxw = 0
@@ -287,14 +283,6 @@ def rotMatch(a, b):
         if w[i] > maxw:
             maxw = w[i]
             maxv = v[:,i]
-    print 'w:',w
-    print
-    print 'maxw:',maxw
-    print
-    print 'v:',v
-    print
-    print 'maxv:',maxv, 'norm:', numpy.linalg.norm(maxv)
-    print
    
     R = numpy.zeros((3,3))
     
@@ -319,10 +307,7 @@ def rotMatch(a, b):
     R[2][1] = 2*(cd+ab) 
     R[2][2] = aa - bb - cc + dd
     
-    print R
-
     tb.r = numpy.dot(tb.r, R.transpose())
-    
 
     dist = max(per_atom_norm(ta.r - tb.r, ta.box))
     return dist < config.comp_eps_r
