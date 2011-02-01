@@ -38,7 +38,7 @@ class SuperbasinScheme:
             if i != 'storage':
 
                 self.next_sb_num = max(self.next_sb_num, int(i))
-                self.superbasins.append(superbasin.Superbasin(self.path, id, self.kT, get_state = states.get_state))
+                self.superbasins.append(superbasin.Superbasin(self.path, i, self.kT, get_state = states.get_state))
             
         self.next_sb_num += 1
         self.read_data()
