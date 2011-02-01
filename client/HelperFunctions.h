@@ -12,6 +12,7 @@
 #define HELPER_FUNCTIONS_H
 
 #include "Eigen.h"
+#include "Matter.h"
 // Random number generator constants
 
 #define IM 2147483647
@@ -70,5 +71,8 @@ namespace helper_functions {
 
     /* the projection of v1 on v2, of length size and store in result */
     void makeProjection(double *result, const double *v1, const double *v2, long size);
+
+    bool rot_match(const Matter *m1, const Matter *m2, const double max_diff);
+
 }
 #endif
