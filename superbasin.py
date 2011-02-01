@@ -25,7 +25,7 @@ class Superbasin:
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
         self.kT = kT
         
-        self.id = id
+        self.id = int(id)
         self.path = path+str(self.id)
         
         if not os.path.isfile(self.path):
