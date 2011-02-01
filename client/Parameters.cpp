@@ -51,6 +51,7 @@ Parameters::Parameters(){
     saddleMaxSingleDisplace = 10.;
 //    saddleMaxJumpAttempts = 0; // undocumented
     saddlePerpForceRatio = 0.0; // undocumented
+    saddleLocalizationFraction = 1.0;
 
     // [Optimizers] //
     optMethod = "cg";
@@ -274,6 +275,7 @@ int Parameters::load(FILE *file){
 //        saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
+        saddleLocalizationFraction = ini.GetValueF("Saddle Search", "localization_fraction", saddleLocalizationFraction); //undocumented
 
         // [Optimizers] //
 

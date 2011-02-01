@@ -33,6 +33,8 @@
 /* Collection of supporting functions that handle arrays of doubles as vectors and different random number generators */
 namespace helper_functions {
 
+    AtomMatrix localize(AtomMatrix original, double cutoffFraction);
+
     double random(long newSeed=0); // random number generator from numerical recipies
     double randomDouble(); // random value between 0 and 1
     double randomDouble(int max); // random value between 0 and max
