@@ -11,6 +11,7 @@
 """ The atoms module. """
 import config
 
+from math import sqrt, cos, sin
 import numpy
 import logging
 logger = logging.getLogger('atoms')
@@ -230,13 +231,154 @@ def least_coordinated(p, cutoff, brute=False):
             return least
         mincoord += 1
 
+
+
+
+def rotMatch(a, b):
+    if len(a) != len(b):
+        return False
+    
+    acm = sum(a.r)/len(a)
+    bcm = sum(b.r)/len(b)
+    
+    ta = a.copy()
+    tb = b.copy()
+    ta.r -= acm
+    tb.r -= bcm
+    
+    #Horn, J. Opt. Soc. Am. A, 1987
+    m = numpy.dot(tb.r.transpose(), ta.r)
+
+    sxx = m[0][0]
+    sxy = m[0][1]
+    sxz = m[0][2]
+    syx = m[1][0]
+    syy = m[1][1]
+    syz = m[1][2]
+    szx = m[2][0]
+    szy = m[2][1]
+    szz = m[2][2]
+
+    n = numpy.zeros((4,4))
+    n[0][1] = syz-szy
+    n[0][2] = szx-sxz
+    n[0][3] = sxy-syx
+
+    n[1][2] = sxy+syx
+    n[1][3] = szx+sxz
+
+    n[2][3] = syz + szy
+    print n
+    print
+    n += n.transpose()
+    print n
+    print
+    n[0][0] = sxx + syy + szz
+    n[1][1] = sxx-syy-szz
+    n[2][2] = -sxx + syy -szz
+    n[3][3] = -sxx -syy + szz
+    print n
+    print
+
+    w,v = numpy.linalg.eig(n)
+    maxw = 0
+    maxv = 0
+    for i in range(len(w)):
+        if w[i] > maxw:
+            maxw = w[i]
+            maxv = v[:,i]
+    print 'w:',w
+    print
+    print 'maxw:',maxw
+    print
+    print 'v:',v
+    print
+    print 'maxv:',maxv, 'norm:', numpy.linalg.norm(maxv)
+    print
+   
+    R = numpy.zeros((3,3))
+    
+    aa = maxv[0]**2
+    bb = maxv[1]**2
+    cc = maxv[2]**2
+    dd = maxv[3]**2
+    ab = maxv[0]*maxv[1]
+    ac = maxv[0]*maxv[2]
+    ad = maxv[0]*maxv[3]
+    bc = maxv[1]*maxv[2]
+    bd = maxv[1]*maxv[3]
+    cd = maxv[2]*maxv[3]
+    
+    R[0][0] = aa + bb - cc - dd
+    R[0][1] = 2*(bc-ad) 
+    R[0][2] = 2*(bd+ac) 
+    R[1][0] = 2*(bc+ad) 
+    R[1][1] = aa - bb + cc - dd
+    R[1][2] = 2*(cd-ab) 
+    R[2][0] = 2*(bd-ac) 
+    R[2][1] = 2*(cd+ab) 
+    R[2][2] = aa - bb - cc + dd
+    
+    print R
+
+    tb.r = numpy.dot(tb.r, R.transpose())
+    
+
+    dist = max(per_atom_norm(ta.r - tb.r, ta.box))
+    return dist < config.comp_eps_r
+
+    ### This gives the RMSD faster, but does not give the optimial rotation
+    ### this could be amended by solving for the eigenvector corresponding to the largest eigenvalue
+    ### Theobald, Acta Crystallographica A, 2005
+    #
+    ##could be faster if done explicitly
+    #c0 = numpy.linalg.det(k)
+    #c1 = -8*numpy.linalg.det(m)
+    #c2 = -2*numpy.trace(numpy.dot(m.transpose(), m))
+
+    #ga = numpy.trace(numpy.dot(ta.r.transpose(), ta.r))
+    #gb = numpy.trace(numpy.dot(tb.r.transpose(), tb.r))
+    #
+    #lold = 0.0
+    #l = (ga + gb)/2.0
+    #while abs(lold - l) > 0.00001:
+    #    lold = l
+    #    l -= (l**4 + c2*l**2 + c1*l + c0)/(4*l**3 + 2*c2*l + c1)
+    #rmsd = sqrt((ga + gb - 2*l)/len(a))
+    #return rmsd < config.comp_rot_rmsd
+    
+    
+
+def rotm(axis, theta):
+    '''
+    Gives the matrix representing a rotation of theta radians about axis
+    '''
+    u = axis[0]
+    v = axis[1]
+    w = axis[2]
+    u2 = u*u
+    v2 = v*v
+    w2 = w*w
+    ct = cos(theta)
+    st = sin(theta)
+    mag = numpy.linalg.norm(axis)
+    if (mag*mag == 0 or theta == 0.0):
+        return numpy.identity(3)
+    return numpy.array([
+        [u2 +(v2 +w2)*ct, u*v*(1-ct)-w*mag*st, u*w*(1-ct)+v*mag*st],
+        [u*v*(1-ct)+w*mag*st, v2 +(u2 +w2)*ct, v*w*(1-ct)-u*mag*st],
+        [u*w*(1-ct)-v*mag*st, v*w*(1-ct)+u*mag*st, w2 +(v2 +u2)*ct]
+        ])/(mag*mag)
+    
+
+
+
 def cna(p, cutoff, brute=False):
     """ Returns a list of cna numbers for all atoms in p 
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     can_values = numpy.zeros(len(p))
     nr_FCC = numpy.zeros(len(p))
     nr_HCP = numpy.zeros(len(p))
-
     nl = neighbor_list(p, cutoff, brute)
     
     # loops over all the atoms
@@ -505,4 +647,4 @@ elements[116] = elements['Uuh'] = {'symbol': 'Uuh', 'name':           'Uuh', 'ma
 elements[117] = elements['Uus'] = {'symbol': 'Uus', 'name':           'Uus', 'mass': 294.00000000, 'radius':  1.7000, 'color': [0.922, 0.000, 0.149]}
 elements[118] = elements['Uuo'] = {'symbol': 'Uuo', 'name':           'Uuo', 'mass': 296.00000000, 'radius':  1.7000, 'color': [0.922, 0.000, 0.149]}    
     
-    
+
