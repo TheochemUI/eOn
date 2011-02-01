@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <cassert>
+#include <iostream>
 
 // Atom Matrix localizor
 AtomMatrix helper_functions::localize(AtomMatrix original, double cutoffFraction)
@@ -180,3 +181,103 @@ void helper_functions::makeProjection(double *result, const double *v1, const do
     delete [] tempListDouble;
     return;
 }
+
+bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const double max_diff)
+{
+
+    AtomMatrix r1 = m1->getPositions();
+    AtomMatrix r2 = m2->getPositions();
+    
+    //Align centroids
+    Eigen::VectorXd c1(3);
+    Eigen::VectorXd c2(3);
+
+    c1[0] = r1.col(0).sum();
+    c1[1] = r1.col(1).sum();
+    c1[2] = r1.col(2).sum();
+    c2[0] = r1.col(0).sum();
+    c2[1] = r1.col(1).sum();
+    c2[2] = r1.col(2).sum();
+
+    for(int i = 0; i < r1.rows(); i++)
+    {
+        r1(i,0) -= c1[0]; 
+        r1(i,1) -= c1[1]; 
+        r1(i,2) -= c1[2]; 
+        
+        r2(i,0) -= c2[0]; 
+        r2(i,1) -= c2[1]; 
+        r2(i,2) -= c2[2]; 
+    }
+
+    //Determine optimal rotation
+    //Horn, J. Opt. Soc. Am. A, 1987
+    Eigen::Matrix3d m = r1.transpose() * r2;
+
+    double sxx = m(0,0); 
+    double sxy = m(0,1);
+    double sxz = m(0,2);
+    double syx = m(1,0);
+    double syy = m(1,1);
+    double syz = m(1,2);
+    double szx = m(2,0);
+    double szy = m(2,1);
+    double szz = m(2,2);
+
+    Eigen::Matrix4d n;
+    n.setZero();
+    n(0,1) = syz-szy;
+    n(0,2) = szx-sxz;
+    n(0,3) = sxy-syx;
+                
+    n(1,2) = sxy+syx;
+    n(1,3) = szx+sxz;
+
+    n(2,3) = syz+szy;
+
+    n += n.transpose();
+
+    n(0,0) = sxx + syy + szz;
+    n(1,1) = sxx-syy-szz;
+    n(2,2) = -sxx + syy -szz;
+    n(3,3) = -sxx -syy + szz;
+
+    Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
+    Eigen::Vector4d maxv = es.eigenvectors().col(3);
+   
+    Eigen::Matrix3d R; 
+    
+    double aa = maxv[0]*maxv[0];
+    double bb = maxv[1]*maxv[1];
+    double cc = maxv[2]*maxv[2];
+    double dd = maxv[3]*maxv[3];
+    double ab = maxv[0]*maxv[1];
+    double ac = maxv[0]*maxv[2];
+    double ad = maxv[0]*maxv[3];
+    double bc = maxv[1]*maxv[2];
+    double bd = maxv[1]*maxv[3];
+    double cd = maxv[2]*maxv[3];
+    
+    R(0,0) = aa + bb - cc - dd;
+    R(0,1) = 2*(bc-ad);
+    R(0,2) = 2*(bd+ac);
+    R(1,0) = 2*(bc+ad);
+    R(1,1) = aa - bb + cc - dd;
+    R(1,2) = 2*(cd-ab); 
+    R(2,0) = 2*(bd-ac); 
+    R(2,1) = 2*(cd+ab); 
+    R(2,2) = aa - bb - cc + dd;
+    cout<<R<<endl; 
+    r2 = r2 * R.transpose();
+
+    for(int i=0; i<r1.rows(); i++)
+    {
+        double diff = (r2.row(i) - r1.row(i)).norm();
+        if( diff > max_diff)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
