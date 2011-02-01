@@ -217,7 +217,7 @@ int Parameters::load(FILE *file){
         
         // [Structure Comparison] //
 
-        distanceDifference = ini.GetValueF("Structure Comparison", "max_difference_pos", distanceDifference);
+        distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
         neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
         structureComparisonEnergyDifference = ini.GetValueF("Structure Comparison", "energy_difference", structureComparisonEnergyDifference);
         // [Process Search] //
