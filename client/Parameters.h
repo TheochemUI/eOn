@@ -63,6 +63,7 @@ public:
     double saddleMaxSingleDisplace; // max value of displacement in x, y and z direction for atoms being displaced
     double saddleDisplaceRadius; // Atoms within this radius of the displacement atoms are also displaced
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
+    double saddleLocalizationFraction; // Minimum fraction of the mode vector maintained after localization
 
     // [Optimizers]
     string optMethod;

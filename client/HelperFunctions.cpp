@@ -13,6 +13,34 @@
 #include <math.h>
 #include <cassert>
 
+// Atom Matrix localizor
+AtomMatrix helper_functions::localize(AtomMatrix original, double cutoffFraction)
+{
+    AtomMatrix temp = original;
+    double originalNorm = original.norm();
+    AtomMatrix local = original;
+    local.setZero();
+    while (local.norm() < originalNorm * cutoffFraction)
+    {
+        double maxmoved = 0.0;
+        int maxi = 0;
+        for(int i = 0; i < temp.rows(); i++)
+        {
+            if(temp.row(i).norm() > maxmoved)
+            {
+                maxmoved = temp.row(i).norm();
+                maxi = i;
+            }
+        }
+        local.row(maxi) = temp.row(maxi);
+        temp.row(maxi).setZero();
+    }        
+    return local;
+}
+
+
+
+
 // Random number generator
 
 double helper_functions::random(long newSeed){
