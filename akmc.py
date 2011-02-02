@@ -610,6 +610,7 @@ def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-f", "--force", action="store_true", dest="force", default = False, help="force a reset, no questions asked")
+    optpar.add_option("-r", "--restart", action="store_true", dest="restart", default = False, help="restart the aKMC simulations from a clean dynamics.txt file")
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     optpar.add_option("-m", "--movie", action="store", dest="movie_type", default = "", help="Specify the type of movie to make [dynamics, states, fastestpath, fastestfullpath, graph, processes]. Process movies are specified like so: --movie processes,statenumber,processlimit. Where processes is the string processes, statenumber is the number of the state that you want to view, and process limit is the maximum number of processes you would like in the movie. The returned processes are reverse sorted by rate such that the fastest processes is the first in the movie.")
@@ -757,6 +758,57 @@ def main():
                 sys.exit(0)
         else:
             print "Not resetting."
+            sys.exit(1)
+
+    elif options.restart:
+        string_sb_clear = ""
+    
+        if options.force:
+            res = 'y'
+        else:
+            res = raw_input("Are you sure you want to restart (remove dynamics.txt, info.txt and akmc.log)? (y/N) ").lower()
+        if len(res)>0 and res[0] == 'y':
+
+            # remove akmc data that are specific for a trajectory
+            dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
+            info_path = os.path.join(config.path_results, "info.txt") 
+            log_path = os.path.join(config.path_results, "akmc.log") 
+            for i in [info_path, dynamics_path, log_path]:
+                if os.path.isfile(i):
+                    os.remove(i)
+                    
+            if config.sb_on:
+                if options.force:
+                    res = 'y'
+                else:
+                    res = raw_input("Should the superbasins be removed? (y/N) ").lower()
+
+                # remove superbasin data (specific for a trajectory)                                        
+                if len(res)>0 and res[0] == 'y':
+                    # remove directory superbasins
+                    if os.path.isdir(config.sb_path):
+                        shutil.rmtree(config.sb_path)
+                        #XXX: ugly way to remove all empty directories containing this one
+                        os.mkdir(config.sb_path)
+                        os.removedirs(config.sb_path)
+                
+                    #remove superbasins files from states dirctories
+                    state_dirs = os.listdir(config.path_states)
+                    for i in state_dirs:
+                        if i != 'state_table':
+                            superbasin_file = os.path.join(config.path_states, i)
+                            superbasin_file = os.path.join(superbasin_file, config.sb_state_file)
+                            if os.path.isfile(superbasin_file):
+                                os.remove(superbasin_file)
+
+                    string_sb_clear = " with directory 'superbasins' and files named '"
+                    string_sb_clear += str(config.sb_state_file) + "' removed" 
+            
+            if not options.quiet:
+                print "Restart"+string_sb_clear+"."
+            sys.exit(0)
+        else:
+            print "Not restarting."
             sys.exit(1)
 
     if lock.aquirelock():
