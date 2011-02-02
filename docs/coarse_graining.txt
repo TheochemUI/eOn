@@ -18,6 +18,12 @@ dynamics direction and time. Both methods cannot be used simultaneously.
 
 Options for these methods go in the **[Coarse Graining]** section.
 
+**state_file**
+    Default: superbasin
+
+    File name for the state specific data stored within each of the state 
+    directories.
+
 Projective Dynamics
 --------------------
 
