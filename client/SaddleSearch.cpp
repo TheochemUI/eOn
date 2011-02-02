@@ -304,11 +304,6 @@ void SaddlePoint::displaceInConcaveRegion()
     
     lowestEigenmode->compute(saddle,mode);
     eigenMode = lowestEigenmode->getEigenvector();
-    if(parameters->saddleLocalizationFraction < 1.0)
-    {
-        eigenMode = localize(eigenMode, parameters->saddleLocalizationFraction);
-        eigenMode.normalize();
-    }
     eigenValue = lowestEigenmode->getEigenvalue();
 
     return;
@@ -336,11 +331,6 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     lowestEigenmode->compute(saddle,mode);
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
-    if(parameters->saddleLocalizationFraction < 1.0)
-    {
-        eigenMode = localize(eigenMode, parameters->saddleLocalizationFraction);
-        eigenMode.normalize();
-    }
     forces = projectedForce(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
     #ifndef NDEBUG
@@ -384,11 +374,6 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         lowestEigenmode->compute(saddle,eigenMode);
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
-        if(parameters->saddleLocalizationFraction < 1.0)
-        {
-            eigenMode = localize(eigenMode, parameters->saddleLocalizationFraction);
-            eigenMode.normalize();
-        }
         // Updating the conjugated object to the new configuration
         forces = projectedForce(forces);
         cgSaddle.setForces(forces);

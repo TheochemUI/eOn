@@ -11,9 +11,12 @@
 // An implementation of Johannes Kästner and Paul Sherwood's improved dimer.
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
+#include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include <cmath>
 #include <cassert>
+
+using namespace helper_functions;
 
 ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
 {
@@ -154,6 +157,11 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
+            if(parameters->saddleLocalizationAtoms > 0)
+            {
+                tau = localize(tau, parameters->saddleLocalizationAtoms);
+                tau.normalize();
+            }
             C_tau = C_tau_min;
             
             // Calculate the new g1.
