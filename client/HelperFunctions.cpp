@@ -15,13 +15,16 @@
 #include <iostream>
 
 // Atom Matrix localizor
-AtomMatrix helper_functions::localize(AtomMatrix original, double cutoffFraction)
+AtomMatrix helper_functions::localize(AtomMatrix original, int maxAtoms)
 {
     AtomMatrix temp = original;
-    double originalNorm = original.norm();
+    if(temp.rows() <= maxAtoms)
+    {
+        return temp;
+    }
     AtomMatrix local = original;
     local.setZero();
-    while (local.norm() < originalNorm * cutoffFraction)
+    for(int i = 0; i < maxAtoms; i++)
     {
         double maxmoved = 0.0;
         int maxi = 0;
