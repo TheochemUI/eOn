@@ -164,6 +164,7 @@ def init(config_file = ""):
 
     #Coarse Graining
     config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
+    config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
     if config.sb_on:
         config.sb_path = parser.get('Paths', 'superbasins')
         config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')

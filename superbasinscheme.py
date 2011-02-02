@@ -127,7 +127,7 @@ class TransitionCounting(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for start_state in self.count:
-            data_path = os.path.join(start_state.path, 'superbasin_tc')
+            data_path = os.path.join(start_state.path, config.sb_state_file)
             f = open(data_path, 'w')
             for end_state in self.count[start_state]:
                 print >> f, end_state.number, self.count[start_state][end_state]
@@ -140,7 +140,7 @@ class TransitionCounting(SuperbasinScheme):
         try:
             return self.count[state]
         except:
-            data_path = os.path.join(state.path, 'superbasin_tc')
+            data_path = os.path.join(start_state.path, config.sb_state_file)
             self.count[state] = {}
             if os.path.isfile(data_path):
                 f = open(data_path, 'r')
@@ -210,7 +210,7 @@ class EnergyLevel(SuperbasinScheme):
         logger.debug('reading')
         for i in range(self.states.get_num_states()):
             state = self.states.get_state(i)
-            data_path = os.path.join(state.path, 'superbasin_el')
+            data_path = os.path.join(start_state.path, config.sb_state_file)
             if os.path.isfile(data_path):
                 f = open(data_path, 'r')
                 self.levels[self.states.get_state(i)] = float(f.read().strip())
@@ -219,7 +219,7 @@ class EnergyLevel(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for i in self.levels:
-            data_path = os.path.join(i.path, 'superbasin_el')
+            data_path = os.path.join(start_state.path, config.sb_state_file)
             f = open(data_path, 'w')
             print >> f, "%f\n" % self.levels[i]
             f.close()
