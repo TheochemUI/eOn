@@ -60,6 +60,7 @@ class AKMCStateList(statelist.StateList):
                 if abs(proc["saddle_energy"] - esaddle) < self.epsilon_e:
                     energetically_close.append(id)
             if len(energetically_close) > 0:
+                #Does this code actually work? Why would it be a good idea to compare a reactant to a saddle?
                 saddle_config = reactant.get_reactant()
                 for id in energetically_close:
                     temp_config = product.get_process_saddle(id)
@@ -109,11 +110,6 @@ class AKMCStateList(statelist.StateList):
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        if self.use_identical:
-                            if atoms.identical(p, pnew):
-                                # Update the reactant state to point at the new state id.
-                                self.register_process(i.number, state.number, j)                            
-                        else:
-                            dist = max(atoms.per_atom_norm(p.r - pnew.r, p.box))
-                            if dist < self.epsilon_r:
-                                self.register_process(i.number, state.number, j)                            
+                        if atoms.match(p, pnew, True):
+                            # Update the reactant state to point at the new state id.
+                            self.register_process(i.number, state.number, j)                            
