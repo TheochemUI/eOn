@@ -15,9 +15,10 @@ import shutil
 import logging
 logger = logging.getLogger('state')
 from ConfigParser import SafeConfigParser 
-
+import tarfile
 
 import io
+
 
 
 class State:
@@ -43,6 +44,7 @@ class State:
         self.reactant_path = os.path.join(self.path, "reactant.con")
         self.proctable_path = os.path.join(self.path, "processtable")
         self.search_result_path = os.path.join(self.path, "search_results.txt")
+        self.tar_path = os.path.join(self.path, "procdata.tar")
 
         # If this state does not exist on disk, create it.
         if not os.path.isdir(self.path):
@@ -113,6 +115,17 @@ class State:
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
     def proc_stdout_path(self, id):
         return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
+    
+    def tar_procdata(self):
+        if not self.procdata_tarred:
+            tar = tarfile.TarFile(self.tar_path, 'w')
+            for i in os.listdir(self.procdata_path):
+                tar.add(i)
+                os.unlink(i)
+            tar.close()
+        else:
+            logger.warning("Attempted to tar an already tarred procdata")
+        self.procdata_tarred = True
 
     def get_process(self, id):
         self.load_process_table()
