@@ -11,12 +11,9 @@
 """ The state module. """
 
 import os
-import shutil
 import math
 import logging
 logger = logging.getLogger('state')
-from ConfigParser import SafeConfigParser 
-import StringIO
 
 import numpy
 

@@ -12,16 +12,11 @@
 
 import logging
 logger = logging.getLogger('statelist')
-import math
 import os
-import shutil
-import sys
 
-from ConfigParser import SafeConfigParser 
 
 import atoms
 import config
-import state
 
 
 class StateList:
