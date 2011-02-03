@@ -248,7 +248,6 @@ def rot_match(a, b):
     
     #Horn, J. Opt. Soc. Am. A, 1987
     m = numpy.dot(tb.r.transpose(), ta.r)
-
     sxx = m[0][0]
     sxy = m[0][1]
     sxz = m[0][2]
@@ -306,7 +305,6 @@ def rot_match(a, b):
     R[2][0] = 2*(bd-ac) 
     R[2][1] = 2*(cd+ab) 
     R[2][2] = aa - bb - cc + dd
-    
     tb.r = numpy.dot(tb.r, R.transpose())
 
     dist = max(per_atom_norm(ta.r - tb.r, ta.box))
