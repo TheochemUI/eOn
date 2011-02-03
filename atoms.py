@@ -233,11 +233,25 @@ def least_coordinated(p, cutoff, brute=False):
 
 
 
-
-def rot_match(a, b):
-    if len(a) != len(b):
+def match(a,b,indistinguishable):
+    if len(a)!=len(b):
         return False
     
+    if config.comp_check_rotation:
+        if indistinguishable and config.comp_use_identical:
+            return get_mappings(a,b)
+        else:
+            return rot_match(a,b)
+    else:
+        if indistinguishable and config.comp_use_identical:
+            return identical(a,b)
+        else:
+            return max(per_atom_norm(a.r-b.r, a.box))<config.comp_eps_r
+
+
+def rot_match(a, b):
+    if not (a.free.all() and b.free.all()):
+        logger.warning("Comparing structures with frozen atoms with rotational matching. This may indicate that check_rotation is set incorrectly and could lead to unexpected behavior")
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
     
@@ -420,7 +434,7 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
 
     
 
-def getMappings(a, b, mappings = None):
+def get_mappings(a, b, mappings = None):
     """ A recursive depth-first search for a complete set of mappings from atoms
         in configuration a to atoms in configuration b. Do not use the mappings
         argument, this is only used internally for recursion. 
@@ -460,7 +474,7 @@ def getMappings(a, b, mappings = None):
                 # Make sure the element types are the same.
                 if a.names[aAtom] != b.names[i]:
                     continue
-                mappings = getMappings(a, b, {aAtom:i})
+                mappings = get_mappings(a, b, {aAtom:i})
                 # If the result is not none, then we found a successful mapping.
                 if mappings is not None:
                     return mappings
@@ -501,7 +515,7 @@ def getMappings(a, b, mappings = None):
                     if len(newMappings) == len(a):
                         return newMappings
                     # Otherwise, recurse.
-                    newMappings = getMappings(a, b, newMappings)
+                    newMappings = get_mappings(a, b, newMappings)
                     # Pass any successful mapping up the recursion chain. 
                     if newMappings is not None:
                         return newMappings     

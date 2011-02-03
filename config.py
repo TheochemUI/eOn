@@ -56,6 +56,7 @@ def init(config_file = ""):
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
     config.comp_eps_r = parser.getfloat('Structure Comparison', 'distance_difference')
     config.comp_use_identical = parser.getboolean('Structure Comparison', 'indistinguishable_atoms')
+    config.comp_check_rotation = parser.getboolean('Structure Comparison', 'check_rotation')
     config.comp_brute_neighbors = parser.getboolean('Structure Comparison', 'brute_neighbors')
     config.comp_neighbor_cutoff = parser.getfloat('Structure Comparison', 'neighbor_cutoff')
     config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
