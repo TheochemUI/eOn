@@ -51,6 +51,7 @@ class State:
             os.mkdir(self.path)
             os.mkdir(self.procdata_path)
             shutil.copy(reactant_path, self.reactant_path)
+            #This name could be trouble if we import the config module as well
             config = SafeConfigParser()
             config.add_section("MetaData")
             config.set("MetaData", "previous state", str(previous_state_num))            
