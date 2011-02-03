@@ -10,6 +10,7 @@
 
 #include "Matter.h"
 #include "Constants.h"
+#include "HelperFunctions.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -129,7 +130,14 @@ const Matter& Matter::operator=(const Matter& matter)
 
 // Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
-    return (parameters->distanceDifference) > perAtomNorm(matter);
+    if(parameters->checkRotation)
+    {
+        return helper_functions::rot_match(this, &matter, parameters->distanceDifference);
+    }
+    else
+    {
+        return (parameters->distanceDifference) > perAtomNorm(matter);
+    }
 }
 
 
