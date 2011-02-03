@@ -12,16 +12,12 @@
 
 import os
 import shutil
-import math
 import logging
 logger = logging.getLogger('state')
 from ConfigParser import SafeConfigParser 
-import StringIO
 
-import numpy
 
 import io
-import atoms
 
 
 class State:
