@@ -76,16 +76,18 @@ class Superbasin:
         return time, exit_state_index
 
     def step(self, entry_state, get_product_state):
-        time, exit_state_index=self.pick_exit_state(entry_state)
-        exit_state=self.states[exit_state_index]
-        #make a rate table for the exit state
+        time, exit_state_index = self.pick_exit_state(entry_state)
+        assert(time >= 0.0)
+        exit_state = self.states[exit_state_index]
+
+        # Make a rate table for all the exit state.  All processes are 
+        # needed as the might be a discrepancy in time scale
+        # and it might be dangerous to weed out low rate events
         rate_table = []
         ratesum = 0.0
-        
-        #XXX: Only process in the thermally accesbile window should be on this rate table
-        process_table=exit_state.get_process_table()
+        process_table = exit_state.get_process_table()
 
-        # determine all process OUT of the superbasin
+        # Determine all process OUT of the superbasin
         for proc_id in process_table:
             process = process_table[proc_id]
             if process['product'] not in self.state_numbers:
@@ -102,13 +104,14 @@ class Superbasin:
                 break
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
+        
         product_state = get_product_state(exit_state.number, exit_proc_id)
-        assert(time >= 0.0)
 
         # store what the accepted process for the exit state connects to 
-        process_table[exit_proc_id]["product"] = product_state.number
+        #MUST ALSO ENSURE DETAILED BALANCE, SOMEHOW USE register_process
+        exit_state.save_process_table()
 
-        return time, product_state, exit_state.number, exit_proc_id, self.id
+        return time, exit_state, product_state, exit_proc_id, self.id
 
     def contains_state(self, state):
         return state in self.states

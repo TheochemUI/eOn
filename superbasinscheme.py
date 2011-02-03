@@ -194,7 +194,7 @@ class EnergyLevel(SuperbasinScheme):
                 barrier = min(proc_tab[key]['barrier'], barrier)
         
         if barrier > 1e199:
-            logger.warning("Start and end state have no connections")
+            logger.warning("Start and end state have no direct connection")
             return
         
         saddle_energy = barrier + start_state.get_energy()
@@ -210,7 +210,6 @@ class EnergyLevel(SuperbasinScheme):
     def read_data(self):
         logger.debug('reading')
         for i in range(self.states.get_num_states()):
-            print i
             state = self.states.get_state(i)
             data_path = os.path.join(state.path, config.sb_state_file)
             if os.path.isfile(data_path):
