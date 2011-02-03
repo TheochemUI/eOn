@@ -198,9 +198,11 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     c1[0] = r1.col(0).sum();
     c1[1] = r1.col(1).sum();
     c1[2] = r1.col(2).sum();
-    c2[0] = r1.col(0).sum();
-    c2[1] = r1.col(1).sum();
-    c2[2] = r1.col(2).sum();
+    c2[0] = r2.col(0).sum();
+    c2[1] = r2.col(1).sum();
+    c2[2] = r2.col(2).sum();
+    c1/=r1.rows();
+    c2/=r2.rows();
 
     for(int i = 0; i < r1.rows(); i++)
     {
@@ -270,9 +272,11 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     R(2,0) = 2*(bd-ac); 
     R(2,1) = 2*(cd+ab); 
     R(2,2) = aa - bb - cc + dd;
-    cout<<R<<endl; 
-    r2 = r2 * R.transpose();
 
+    //Eigen is transposed relative to numpy
+    r2 = r2 * R;
+    
+    
     for(int i=0; i<r1.rows(); i++)
     {
         double diff = (r2.row(i) - r1.row(i)).norm();
