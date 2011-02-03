@@ -113,6 +113,13 @@ Structure Comparison
     atoms of the same element. That is to say the numbering of the atoms does
     not affect the structural comparison.
 
+**check_rotation**
+
+    Default: False
+
+    Finds optimal overlap of structures via rotation before comparing them. Use
+    this option in systems where structures can become rotated, such as nanoparticles.
+
 **neighbor_cutoff**
 
     Default: 3.3

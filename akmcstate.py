@@ -18,6 +18,7 @@ logger = logging.getLogger('state')
 import numpy
 
 import atoms
+import config
 import io
 import state
 
@@ -79,14 +80,10 @@ class AKMCState(state.State):
             #load the saddle
             result["saddle"] = io.loadcon(result["saddle.con"])
             p0 = result["saddle"]
-            ibox = numpy.linalg.inv(p0.box)
+            #ibox = numpy.linalg.inv(p0.box)
             for id in energetically_close:
                 p1 = io.loadcon(self.proc_saddle_path(id))
-                
-                for dist in atoms.per_atom_norm_gen(p1.free_r() - p0.free_r(), p1.box, ibox):
-                    if dist > self.statelist.epsilon_r:
-                        break
-                else:
+                if atoms.match(p1,p0,False):
                     self.append_search_result(result, "repeat-%d" % id)
                     if result['type'] == "random":
                         self.procs[id]['repeats'] += 1
