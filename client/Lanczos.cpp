@@ -51,7 +51,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     double alpha, beta=r.norm();
     double ew=0, ewOld=0, ewAbsRelErr;
     double dr = parameters->lanczosFiniteDiff;
-    VectorXd evEst, evOldEst, evT;
+    VectorXd evEst, evT;
 
     VectorXd force1, force2;
     Matter *tmpMatter = new Matter(parameters);
@@ -75,7 +75,6 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
         alpha = Q.col(i).dot(r);
         r = r-alpha*Q.col(i);
 
-        //Add to Tridiagonal Matrix
         T(i,i) = alpha;
         if (i>0) {
             T(i-1,i) = beta;
@@ -84,8 +83,17 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
 
         beta = r.norm();
 
+        if (beta <= 1e-10*fabs(alpha)) {
+            /* If Q(0) is an eigenvector (or a linear combination of a subset of eignevectors)
+            then the lanczos cannot complete the basis of vector Q.*/
+            if (i == 0) {
+                ew = alpha;
+                evEst = Q.col(0);
+            }
+            break;
+        }
         //Check Eigenvalues
-        if (i>1) {
+        if (i >= 1) {
             Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0,0,i+1,i+1));
             ew = es.eigenvalues()(0); 
             evT = es.eigenvectors().col(0);
@@ -100,11 +108,10 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
             if (ewAbsRelErr < parameters->lanczosTolerance) {
                 break;
             }
-            evOldEst = evEst;
         }else{
-            ewOld = -alpha/dr;
-            ewAbsRelErr = ewOld;
-            evOldEst = Q.col(0);
+            ew = alpha;
+            ewOld = ew;
+            evEst = Q.col(0);
         }
 
         if (i >= parameters->lanczosMaxIterations) {

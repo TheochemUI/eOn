@@ -30,7 +30,7 @@ These are options that go in the **[Main]** section of "config.ini".
 
         *saddle_search*: Do a saddle point search using a minimum mode method.
 
-        *minimizaion*: Find the minimum from an initial configuration.
+        *minimization*: Find the minimum from an initial configuration.
 
         *hessian*: Calculate the Hessian matrix for the specified configuration
         in a process.

@@ -23,7 +23,7 @@
 #include <gsl/gsl_matrix.h>
 //#include <gsl/gsl_eigen.h>
 #include "gsl_eigen.h"
-#include "lanczos.hpp"
+#include "oldlanczos.hpp"
 
 using namespace blitz;
 using namespace gradient_scanning;
