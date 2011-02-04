@@ -18,7 +18,6 @@ export WITH_LANCZOS=1
 @endcode
 */
 #include <blitz/array.h>
-#include "../Eigen/Eigen"
 
 #include "../Constants.h"
 #include "../Parameters.h"
@@ -26,7 +25,7 @@ export WITH_LANCZOS=1
 
 #include "lanczos_for_eon.hpp"
 #include "tools.hpp"
-#include "lanczos.hpp"
+#include "oldlanczos.hpp"
 
 using namespace blitz;
 namespace gs=gradient_scanning;
@@ -60,28 +59,32 @@ namespace {
     }
 } // end anonymous
 
-Lanczos::Lanczos(Matter *const, Parameters *parameters) : matter_(parameters)
+OldLanczos::OldLanczos(Matter *const, Parameters *parameters) : matter_(parameters)
 {
-    setConvergenceLimit(parameters->lanczosConvergence);
-    setIterationLimit(parameters->lanczosIteration);
-    setFiniteDifference(1e-5); //Angstrom
-    setInitial(PREVIOUS);
+    setConvergenceLimit(parameters->lanczosTolerance);
+    setIterationLimit(parameters->lanczosMaxIterations);
+    setFiniteDifference(parameters->lanczosFiniteDiff); //Angstrom
+    setInitial(USER);
     assert(getIterationLimit() > 0);
 }
 
-void Lanczos::startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> matrix)
+void OldLanczos::compute(Matter const *matter, AtomMatrix direction)
 {
-    eigenvector_.free();
-    moveAndCompute(matter);
-}
-
-void Lanczos::moveAndCompute(Matter const *matter)
-{
-    Array<double, 1> coordinates(3*matter->numberOfFreeAtoms()), gradient;
-    int const n=matter->numberOfAtoms();
+    int const nfree=matter->numberOfFreeAtoms();
+    eigenvector_.resize(nfree*3);
+    int i, j;
+    for (i=0,j=0;i<nfree;i++) {
+        if (!matter->getFixed(i)) {
+            eigenvector_(j) = direction(i, 0);
+            eigenvector_(j+1) = direction(i, 1);
+            eigenvector_(j+2) = direction(i, 2);
+            j+=3;
+        }
+    }
+    Array<double, 1> coordinates(3*nfree), gradient;
     double * data=coordinates.data();
-    int j=0;
-    for (int i=0; i<n; ++i) {
+    j=0;
+    for (i=0; i<nfree; ++i) {
         if (not matter->getFixed(i)) {
             for (int a=0; a<3; ++a) {    
                 data[j]=matter->getPosition(i, a);
@@ -94,12 +97,12 @@ void Lanczos::moveAndCompute(Matter const *matter)
     minimumMode(static_cast<gs::GradientObject&>(forcefield), coordinates, eigenvalue_, eigenvector_, gradient);
 }
 
-double Lanczos::getEigenvalue()
+double OldLanczos::getEigenvalue()
 {
     return eigenvalue_;
 }
 
-Matrix<double, Eigen::Dynamic, 3> Lanczos::getEigenvector()
+Matrix<double, Eigen::Dynamic, 3> OldLanczos::getEigenvector()
 {
     int const n=matter_.numberOfAtoms();
     Matrix<double, Eigen::Dynamic, 3> result(n, 3);
@@ -120,7 +123,7 @@ Matrix<double, Eigen::Dynamic, 3> Lanczos::getEigenvector()
     return result;
 }
 
-void Lanczos::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
+void OldLanczos::setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector)
 {
     int const n=matter_.numberOfAtoms();
     int j=0;
