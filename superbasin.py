@@ -75,6 +75,7 @@ class Superbasin:
         print 'pick up p:', p
         return time, exit_state_index
 
+
     def step(self, entry_state, get_product_state):
         time, exit_state_index = self.pick_exit_state(entry_state)
         assert(time >= 0.0)
@@ -105,11 +106,10 @@ class Superbasin:
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
         
+        # When requesting the product state the process 
+        # gets added to the tables of events for both the forward 
+        # and reverse process
         product_state = get_product_state(exit_state.number, exit_proc_id)
-
-        # store what the accepted process for the exit state connects to 
-        #MUST ALSO ENSURE DETAILED BALANCE, SOMEHOW USE register_process
-        exit_state.save_process_table()
 
         return time, exit_state, product_state, exit_proc_id, self.id
 

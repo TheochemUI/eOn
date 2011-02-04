@@ -360,14 +360,16 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
                             config.askmc_connections_test_on, config.sb_recycling_on,
                             config.path_root, config.akmc_thermal_window,
                             recycle_path = pass_rec_path)
+
     while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
         steps += 1
+
+        # The system might be in a superbasin
         if config.sb_on:
             sb = superbasining.get_containing_superbasin(current_state)
-
+            
         if config.sb_on and sb:
             mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
-
         else:
             if config.askmc_on:
                 rate_table = asKMC.get_ratetable(current_state)
@@ -438,11 +440,14 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
                     break
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
-            
+
+        # Accounting for time
         if config.debug_use_mean_time:
             time += mean_time
         else:
             time -= mean_time*math.log(1 - numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
+
+        # Pass transition information to extension schemes
         if config.askmc_on:
             asKMC.register_transition(current_state, next_state)
         if config.sb_on:
@@ -453,6 +458,7 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
         else:
             proc_id_out = rate_table[nsid][0]
 
+        # Write data to disk
         dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
         if proc_id_out != -1:            
             proc = current_state.get_process(proc_id_out)
