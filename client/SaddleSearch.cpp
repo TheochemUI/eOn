@@ -12,6 +12,7 @@
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
 #include "Lanczos.h"
+#include "lanczos_for_eon.hpp"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "ExactMinMode.h"
@@ -75,6 +76,10 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     else if(parameters->saddleMinmodeMethod == MINMODE_LANCZOS)
     {
         lowestEigenmode = new Lanczos(saddle, parameters);
+    }
+    else if(parameters->saddleMinmodeMethod == MINMODE_OLDLANCZOS)
+    {
+        lowestEigenmode = new OldLanczos(saddle, parameters);
     }
     else if(parameters->saddleMinmodeMethod == MINMODE_EXACT)
     {
@@ -328,7 +333,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     //std::cout<<"searchForSaddlePoint\n";
     forces = saddle->getForces();
 
-    lowestEigenmode->compute(saddle,mode);
+    lowestEigenmode->compute(saddle, mode);
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);

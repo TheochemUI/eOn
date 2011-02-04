@@ -7,24 +7,26 @@
 #ifndef LANCZOS_FOR_EON_HPP
 #define LANCZOS_FOR_EON_HPP
 #include "../LowestEigenmodeInterface.h"
-#include "lanczos.hpp"
+#include "oldlanczos.hpp"
+
 /** Lanczos class compatible with EON.
       */
-class Lanczos : private gradient_scanning::Lanczos, public LowestEigenmodeInterface {
+class OldLanczos : private gradient_scanning::Lanczos, public LowestEigenmodeInterface {
 public:
     /** Constructor.
     @param[in]      *parameters                Pointer to the Parameter object containing the runtime parameters.*/    
-    Lanczos(Matter *const, Parameters *parameters);
-    ~Lanczos() {};///< Destructor.
-    void virtual startNewSearchAndCompute(Matter const *matter, Matrix<double, Eigen::Dynamic, 3> matrix); 
-    void virtual moveAndCompute(Matter const *matter);  
-    double virtual getEigenvalue();
+    OldLanczos(Matter *const, Parameters *parameters);
+    ~OldLanczos() {};///< Destructor.
+
+    void compute(Matter const *matter, AtomMatrix direction);
+
+    double getEigenvalue();
     /// Return eigenvector.
-    virtual Matrix<double, Eigen::Dynamic, 3> getEigenvector();
+    Matrix<double, Eigen::Dynamic, 3> getEigenvector();
         /** Set initial direction manually.*/
-    virtual void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
+    void setEigenvector(Matrix<double, Eigen::Dynamic, 3> const eigenvector);
 private:
-    Lanczos();
+    OldLanczos();
     blitz::Array<double, 1> eigenvector_;///< Back up eigenvector for last Lanczos.
     double eigenvalue_;
     Matter matter_;
