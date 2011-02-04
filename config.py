@@ -44,6 +44,7 @@ def init(config_file = ""):
 
     #Main options
     config.main_job = parser.get('Main', 'job')
+    print 'config.main_job', config.main_job
     config.main_temperature = parser.getfloat('Main', 'temperature')
 
     try:

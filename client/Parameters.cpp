@@ -232,12 +232,14 @@ int Parameters::load(FILE *file){
 
         // [Saddle Search] //
 
-        string minmodeMethodString = ini.GetValue("Saddle Search", "minmode_method", "dimer");
+        string minmodeMethodString = ini.GetValue("Saddle Search", "min_mode_method", "dimer");
         minmodeMethodString = toLowerCase(minmodeMethodString);
         if(minmodeMethodString == "dimer"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
         }else if(minmodeMethodString == "lanczos"){
             saddleMinmodeMethod = SaddlePoint::MINMODE_LANCZOS;
+        }else if(minmodeMethodString == "oldlanczos"){
+            saddleMinmodeMethod = SaddlePoint::MINMODE_OLDLANCZOS;
         }else if(minmodeMethodString == "exact") {
             saddleMinmodeMethod = SaddlePoint::MINMODE_EXACT;
         }
