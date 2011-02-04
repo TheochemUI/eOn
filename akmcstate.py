@@ -457,6 +457,8 @@ class AKMCState(state.State):
     # Utility functions for loading process .con and mode files.
     def get_process_saddle(self, id):
         return io.loadcon(self.proc_saddle_path(id))
+    def get_process_product(self, id):
+        return io.loadcon(self.proc_product_path(id))
     def get_process_mode(self, id):
         return io.load_mode(self.proc_mode_path(id))
 
