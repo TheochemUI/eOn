@@ -12,7 +12,7 @@
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
 #include "Lanczos.h"
-#include "lanczos_for_eon.hpp"
+#include "Lanczos/lanczos_for_eon.hpp"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "ExactMinMode.h"
