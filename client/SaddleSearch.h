@@ -59,8 +59,6 @@ public:
     enum{
         MINMODE_DIMER,
         MINMODE_LANCZOS,
-        #warning deprecated
-        MINMODE_OLDLANCZOS, // remove when tests finished
         MINMODE_EXACT
     };
  
