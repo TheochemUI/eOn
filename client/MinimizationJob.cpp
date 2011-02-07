@@ -12,6 +12,7 @@
 #include "Minimizer.h"
 #include "ConjugateGradients.h"
 #include "Quickmin.h"
+#include "QuickminBox.h"
 #include "Matter.h"
 #include "Constants.h"
 
@@ -50,6 +51,10 @@ void MinimizationJob::run(int bundleNumber)
     else if(parameters->optMethod == "qm")
     {
         mizer = new Quickmin(reactant, parameters);
+    }
+    else if(parameters->optMethod == "box")
+    {
+        mizer = new QuickminBox(reactant, parameters);
     }else{
         printf("Unknown optMethod: %s\n", parameters->optMethod.c_str());
     }
