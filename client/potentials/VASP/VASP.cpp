@@ -74,7 +74,7 @@ void VASP::spawnVASP()
         setvbuf(stdout, (char*)NULL, _IONBF, 0); //non-buffered output
     }else{
         /* We are the child */
-        int outFd = open("vaspout", O_APPEND|O_CREAT|O_WRONLY);
+        int outFd = open("vaspout", O_CREAT|O_WRONLY|O_TRUNC, 0644);
         dup2(outFd, 1);
         dup2(outFd, 2);
 
@@ -121,17 +121,17 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
         spawnVASP();
     }
 
-	printf("vasp force call");
-	fflush(stdout);
+	//printf("vasp force call");
+	//fflush(stdout);
     while(access("FU", F_OK) == -1)
     {
         sleep(1);
-		printf(".");
-		fflush(stdout);
+		//printf(".");
+		//fflush(stdout);
 		vaspRunning();
             
     }
-	printf("\n");
+	//printf("\n");
     readFU(N, F, U);
     remove("FU");
     vaspRunCount++;
