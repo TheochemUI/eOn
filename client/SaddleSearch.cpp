@@ -198,6 +198,10 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     }
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
 
+    initialDisplace(indexEpiCenter,0) = gaussRandom(0., parameters->saddleDisplaceMagnitude); 
+    initialDisplace(indexEpiCenter,1) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
+    initialDisplace(indexEpiCenter,2) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
+
     // To keep track of free coordinates when setting atoms that have moved
     // Create an array containing initialDisplace_ of atoms 
     // in the vicinity of the epicenter atom
@@ -209,15 +213,13 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
             diffR = matter->distance(i, indexEpiCenter);
             if(diffR < parameters->saddleDisplaceRadius)
             {
-                initialDisplace(i,0) = 2 * randomDouble() - 1;
-                initialDisplace(i,1) = 2 * randomDouble() - 1;
-                initialDisplace(i,2) = 2 * randomDouble() - 1;
+                initialDisplace(i,0) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
+                initialDisplace(i,1) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
+                initialDisplace(i,2) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
             }
         }
         j++;
     }
-    initialDisplace.normalize();
-    initialDisplace *= parameters->saddleDisplaceMagnitude;
 
     //XXX: There is probably a more idomatic way to do this with Eigen
     for(int i = 0; i < 3 * nAtoms; i++)
@@ -233,9 +235,10 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     }
     // Adding the initialDisplace
     matter->setPositions(matter->getPositions() + initialDisplace);
-    
+
     // Sets the initial mode for the SP search
     mode = initialDisplace;
+    mode.normalize();
 
     return;
 }
