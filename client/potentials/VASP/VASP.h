@@ -26,7 +26,7 @@ class VASP : public Potential
 
 
     private:
-        void writeNEWCAR(long N, const double *R, const int *atomicNrs,
+        void writePOSCAR(long N, const double *R, const int *atomicNrs,
                          const double *box);
         void readFU(long N, double *F, double *U);
         void spawnVASP();

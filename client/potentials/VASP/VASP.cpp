@@ -114,7 +114,7 @@ bool VASP::vaspRunning()
 void VASP::force(long N, const double *R, const int *atomicNrs, double *F, 
                  double *U, const double *box)
 {
-    writeNEWCAR(N, R, atomicNrs, box);
+    writePOSCAR(N, R, atomicNrs, box);
 
     if(!vaspRunning())
     {
@@ -139,39 +139,34 @@ void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
 }
 
 
-void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs, 
+void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs, 
                        const double *box)
 {
     // Positions are scaled 
     long i = 0;
     long i_old = 0;
-    FILE *NEWCAR;
+    FILE *POSCAR;
     
-    if(firstRun) {
-        NEWCAR = fopen("POSCAR","w");
-        firstRun = false;
-    }else{
-        NEWCAR = fopen("NEWCAR","w");
-    }
+    POSCAR = fopen("POSCAR","w");
 
     // header line (treated as a comment)
     i_old = 0;
-    fprintf(NEWCAR, "%d ", atomicNrs[0]);
+    fprintf(POSCAR, "%d ", atomicNrs[0]);
     for(i = 0; i < N; i++)
     {
         if(atomicNrs[i] != atomicNrs[i_old])
         {
-            fprintf(NEWCAR, "%d ", atomicNrs[i]);
+            fprintf(POSCAR, "%d ", atomicNrs[i]);
             i_old = i;
         }
     }
-    fprintf(NEWCAR, ": Atomic numbers\n");
+    fprintf(POSCAR, ": Atomic numbers\n");
     
     // boundary box
-    fprintf(NEWCAR, "1.0\n");
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[2], box[3]);
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
-    fprintf(NEWCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
+    fprintf(POSCAR, "1.0\n");
+    fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[2], box[3]);
+    fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
+    fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
 
     // the number of atoms of each of the the different atomic types
     i_old = 0;
@@ -179,19 +174,23 @@ void VASP::writeNEWCAR(long N, const double *R, const int *atomicNrs,
     {
         if(atomicNrs[i] != atomicNrs[i_old])
         {
-            fprintf(NEWCAR, "%li ", i - i_old);
+            fprintf(POSCAR, "%li ", i - i_old);
             i_old = i;
         }
     }
-    fprintf(NEWCAR, "%li\n", N - i_old);
+    fprintf(POSCAR, "%li\n", N - i_old);
 
     // coordinates for all atoms
-    fprintf(NEWCAR, "Cartesian\n");
+    fprintf(POSCAR, "Cartesian\n");
     for(i = 0; i < N; i++)
     {
-        fprintf(NEWCAR, "%.19f\t%.19f\t%.19f\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
+        fprintf(POSCAR, "%.19f\t%.19f\t%.19f\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
+    fclose(POSCAR);
+
+    FILE *NEWCAR = fopen("NEWCAR", "w");
     fclose(NEWCAR);
+
     return;
 }
 
