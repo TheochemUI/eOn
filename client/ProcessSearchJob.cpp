@@ -119,14 +119,14 @@ int ProcessSearchJob::doProcessSearch(void)
 
 	*min1 = *saddle;
 	//XXX: the distance displaced from the saddle should be a parameter
-	displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
+	displacedPos = posSaddle - saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
 	min1->setPositions(displacedPos);
 	ConjugateGradients cgMin1(min1, parameters);
 	cgMin1.fullRelax();
 	fCallsMin += cgMin1.totalForceCalls;
 		
 	*min2 = *saddle;
-	displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
+	displacedPos = posSaddle + saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
 	min2->setPositions(displacedPos);
 	ConjugateGradients cgMin2(min2, parameters);  
 	cgMin2.fullRelax();
@@ -181,16 +181,25 @@ int ProcessSearchJob::doProcessSearch(void)
         reactModes = hessian->getModes(Hessian::REACTANT);
         if(reactModes.size() == 0)
         {
+            #ifndef NDEBUG
+                printf("Reactant bad prefactor.\n");
+            #endif
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
         saddleModes = hessian->getModes(Hessian::SADDLE);
         if(saddleModes.size() == 0)
         {
+            #ifndef NDEBUG
+                printf("Saddle bad prefactor.\n");
+            #endif
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
         prodModes = hessian->getModes(Hessian::PRODUCT);
         if(prodModes.size() == 0)
         {
+            #ifndef NDEBUG
+                printf("Product bad prefactor.\n");
+            #endif
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
         fCallsPrefactors += Potential::fcalls - f1; 
