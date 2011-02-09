@@ -29,3 +29,11 @@ and calculate prefactors all within the Process Search job type.
     Calculate prefactor if zero, otherwise use given value instead of doing a
     full prefactor calculation.
 
+**minimization_offset**
+
+    Default: 0.2
+    
+    After a saddle is found, images are placed on either side of the saddle along
+    the mode and minimized to ensure that the saddle is connected to the original
+    minimum and to locate the product state. This is the distance those images 
+    are displaced from the saddle.
