@@ -50,7 +50,7 @@ public:
     double processSearchDefaultPrefactor; // default prefactor; calculate explicitly if zero
     double processSearchPrefactorMax; // max prefactor allowed
     double processSearchPrefactorMin; // min prefactor allowed
-
+    double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
 
     // [Saddle Search]
 //    bool   saddleDisplace; // do saddle search displacements client-side

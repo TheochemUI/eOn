@@ -40,6 +40,7 @@ Parameters::Parameters(){
     // [Process Search] //
     processSearchMinimizeFirst = false;
     processSearchDefaultPrefactor = 0;
+    processSearchMinimizationOffset = 0.2;
 
     // [Saddle Search] //
     saddleDisplaceType = SaddlePoint::DISP_LOAD;
@@ -229,7 +230,7 @@ int Parameters::load(FILE *file){
         processSearchDefaultPrefactor = ini.GetValueF("Process Search", "default_prefactor", processSearchDefaultPrefactor);
         processSearchPrefactorMax = ini.GetValueF("Process Search", "prefactor_max", processSearchPrefactorMax);
         processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
-
+        processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
         // [Saddle Search] //
 
         string minmodeMethodString = ini.GetValue("Saddle Search", "min_mode_method", "dimer");
