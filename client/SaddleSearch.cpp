@@ -340,8 +340,8 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         static int run;
         ostringstream climb;
         climb << "climb_" << run;
-        initial->matter2xyz(climb.str(), false);
-        saddle->matter2xyz(climb.str(), true);
+        initial->matter2con(climb.str(), false);
+        saddle->matter2con(climb.str(), true);
         ++run;
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
@@ -408,7 +408,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
             }
-            saddle->matter2xyz(climb.str(), true);
+            saddle->matter2con(climb.str(), true);
         #endif
         energySaddle = saddle->getPotentialEnergy();
     }while(!converged && 

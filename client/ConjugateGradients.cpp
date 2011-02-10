@@ -103,7 +103,7 @@ void ConjugateGradients::fullRelax(){
     static int run=0;
     ostringstream min;
     min << "min_" << run;
-    matter->matter2xyz(min.str(), false);
+    matter->matter2con(min.str(), false);
     ++run;
     #endif
     int i=0;
@@ -118,7 +118,7 @@ void ConjugateGradients::fullRelax(){
         }
         #ifndef NDEBUG
         if (i % 10 == 0)
-            matter->matter2xyz(min.str(), true);
+            matter->matter2con(min.str(), true);
         #endif
     }
     return;
