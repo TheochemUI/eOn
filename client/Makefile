@@ -162,8 +162,8 @@ all: $(POTDIRS) $(FPOTDIRS) client
 client: $(OBJECTS) $(LIBS)
 	$(CROSS)g++  -o $@ $^ $(LDFLAGS)
 
-libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(LIBS)
-	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o
+libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
+	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
 
 include Depend.mk
 
