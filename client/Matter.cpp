@@ -501,15 +501,11 @@ void Matter::matter2xyz(std::string filename, bool append /*Append if file alrea
     FILE * file;
     long int i;
     filename+=".xyz";
-    #ifdef _FILESYS_
-        std::string resfile;
-        boinc_resolve_filename_s(filename.c_str(), resfile);
-        if (append) file=boinc_fopen(resfile.c_str(),"a");
-        else file=boinc_fopen(resfile.c_str(),"w");
-    #else
-        if (append) file=fopen(filename.c_str(),"a");
-        else file=fopen(filename.c_str(),"w");
-    #endif
+    if (append) {
+        file=fopen(filename.c_str(),"ab");
+    }else{
+        file=fopen(filename.c_str(),"wb");
+    }
     if(file==0) {
         cerr << "Can't create file " << filename << endl;
         exit(1);
@@ -523,7 +519,7 @@ void Matter::matter2xyz(std::string filename, bool append /*Append if file alrea
 
 
 // Print atomic coordinates to a .con file
-bool Matter::matter2con(std::string filename) const
+bool Matter::matter2con(std::string filename, bool append) const
 {
     bool state;
     FILE *file;
@@ -531,7 +527,11 @@ bool Matter::matter2con(std::string filename) const
     if(filename.compare(pos+1, 3, "con")){
         filename+=".con";
     };
-    file = fopen(filename.c_str(),"w");     
+    if (append) {
+        file = fopen(filename.c_str(), "ab");
+    }else{
+        file = fopen(filename.c_str(),"wb");     
+    }
     state = matter2con(file);
     fclose(file); 
     return(state);
