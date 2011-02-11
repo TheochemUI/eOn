@@ -25,7 +25,7 @@ QSC::QSC()
 
 QSC::~QSC()
 {
-    //cleanMemory();
+    cleanMemory();
 }
 
 void QSC::initialize() {}

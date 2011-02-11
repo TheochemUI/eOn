@@ -80,17 +80,12 @@ Potential *Potential::getPotential(Parameters *parameters)
     {
         printf("Unknown Potential: %s\n", parameters->potential.c_str());
         std::exit(1);
-    }	
+    }
     pot->initialize();
     return pot;
 };
 
 int Potential::fcalls = 0;
-
-Potential::~Potential()
-{
-    cleanMemory();
-};
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNrs, double *energy, Matrix3d box) 
 {

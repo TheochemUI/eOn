@@ -19,7 +19,8 @@ class Potential
 
     public:
 
-        virtual ~Potential();
+        Potential(){}
+        virtual ~Potential(){}
 
         static Potential* getPotential(Parameters *parameters);
 
@@ -29,7 +30,6 @@ class Potential
                          VectorXi atomicNrs, double *energy, Matrix3d box);
 
         void virtual initialize() = 0;
-        void virtual cleanMemory(){};
         void virtual force(long nAtoms, const double *positions, 
                            const int *atomicNrs, double *forces, double *energy, 
                            const double *box) = 0;
