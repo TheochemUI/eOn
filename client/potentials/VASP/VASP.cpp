@@ -51,7 +51,7 @@ void VASP::cleanMemory(void)
 	vaspRunCount--;
 	if(vaspRunCount < 1) {
 		FILE *stopcar = fopen("STOPCAR", "w");
-		fprintf(stopcar, "LABORT = .TRUE.");
+		fprintf(stopcar, "LABORT = .TRUE.\n");
 		fclose(stopcar);
 	}
     return;
