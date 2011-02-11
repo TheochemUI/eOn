@@ -128,7 +128,6 @@ private:
     
     void computePotential();
     void initialiseDataMembers(Parameters *parameters);
-    void clearMemory(); // clear dynamically allocated memory
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double & component, int axis);
     void applyPeriodicBoundary(AtomMatrix & diff);

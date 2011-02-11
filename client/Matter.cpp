@@ -94,7 +94,10 @@ Matter::Matter(const Matter& matter)
 
 Matter::~Matter()
 {
-    clearMemory();
+    if (potential!=0){
+        delete potential;
+        potential=0;
+    }
 }
 
 
@@ -760,17 +763,6 @@ void Matter::computePotential()
             exit(1);
         };
     };
-}
-
-
-// the pointer to parameters should not be deleted, it is a reference to shared data delete parameters_;
-void Matter::clearMemory()
-{
- 
-    if (potential!=0){
-        delete potential;
-        potential=0;
-    }
 }
 
 
