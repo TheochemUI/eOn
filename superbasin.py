@@ -16,7 +16,8 @@ logger = logging.getLogger('superbasin')
 
 
 class Superbasin:
- 
+    """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
+    """based on Novotny's Absorbing Markov Chain algorithm."""
     def __init__(self, path, id, kT, state_list = None, get_state = None):
         assert(isinstance(kT, float))
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
@@ -37,7 +38,8 @@ class Superbasin:
             self.read_data(get_state)
 
 
-    def pick_exit_state(self, entry_state):        
+    def pick_exit_state(self, entry_state):
+        """Chosse an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
         for i in range(len(self.state_numbers)):
             if entry_state.number == self.state_numbers[i]:
                 entry_state_index = i
@@ -77,6 +79,9 @@ class Superbasin:
 
 
     def step(self, entry_state, get_product_state):
+        """Perform a Monte Carlo transition: leave the basin."""\
+        """The function returns a residence time as well as information to indenfity what saddle point was to leave the basin,"""\
+        """from what state and to what state the system is moving to."""
         time, exit_state_index = self.pick_exit_state(entry_state)
         assert(time >= 0.0)
         exit_state = self.states[exit_state_index]
@@ -116,7 +121,10 @@ class Superbasin:
     def contains_state(self, state):
         return state in self.states
 
-    def _calculate_stuff(self): 
+    def _calculate_stuff(self):
+        """Build the transient and recurrent matrices."""\
+        """Calculate the fundamental matrix in order to be able to calculate the mean resisdence time"""\
+        """and exit probablities any initial distribution."""
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
         sum=0.0
