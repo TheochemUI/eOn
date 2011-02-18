@@ -43,7 +43,7 @@ right part of configuration space.
 **max_iterations**
 
     Default: 1000
-    
+
     The maximum number of translation steps to be taken.
 
 **displace_radius** 
