@@ -17,6 +17,7 @@ import numpy
 import logging
 logger = logging.getLogger('kdb')    
 
+import config
 import io
 
 
@@ -24,42 +25,39 @@ import io
 class KDB:
 
 
-    def __init__(self, kdbpath, querypath, addpath):
-        self.path = kdbpath
-        self.querypath = querypath
-        self.addpath = addpath
-
+    def __init__(self):
+        pass
 
     def add_process(self, state, process_id):
         logger.debug("Adding process.")
         try:
-            os.makedirs(self.path)
+            os.makedirs(config.kdb_scratch_path)
         except OSError:
             pass
-        p = state.get_process_reactant(process_id)
-        io.saveposcar(os.path.join(self.path, "REACTANT"), p)
-        p = state.get_process_saddle(process_id)
-        io.saveposcar(os.path.join(self.path, "SADDLE"), p)
-        p = state.get_process_product(process_id)
-        io.saveposcar(os.path.join(self.path, "PRODUCT"), p)
         mode = state.get_process_mode(process_id)
-        f = open(os.path.join(self.path, "MODE"), 'w')
+        f = open(os.path.join(config.kdb_scratch_path, "MODE"), 'w')
         for m in mode:
             f.write("%f %f %f\n" % (m[0], m[1], m[2]))
         f.close()
-        sp = subprocess.Popen([self.addpath, "REACTANT", "PRODUCT", "SADDLE", "MODE"], 
-                              cwd = self.path, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        sp = subprocess.Popen([config.kdb_addpath, 
+                              state.proc_reactant_path(process_id), 
+                              state.proc_saddle_path(process_id),
+                              state.proc_product_path(process_id),
+                              os.path.join(config.kdb_scratch_path, "MODE"),
+                              "--kdbdir=%s" % config.kdb_path], 
+                              stdout = subprocess.PIPE, 
+                              stderr = subprocess.PIPE)
         sp.wait()
         return sp.communicate()[0].strip()
                 
 
-    def query(self, state, rhsco = 1.0, wait = False):
+    def query(self, state, wait = False):
         # If the path already exists, remove it and create a new one.
-        if os.path.isdir(self.path):
+        if os.path.isdir(config.kdb_scratch_path):
             # See if there is a PID file for a possibly already running query process.
-            if os.path.exists(os.path.join(self.path, "PID")):
+            if os.path.exists(os.path.join(config.kdb_scratch_path, "PID")):
                 # If so, try to kill it.
-                f = open(os.path.join(self.path, "PID") , 'r')
+                f = open(os.path.join(config.kdb_scratch_path, "PID") , 'r')
                 pid = int(f.readline())
                 f.close()
                 try:
@@ -68,15 +66,19 @@ class KDB:
                     # Probably wasn't running.
                     pass
             # Delete the scratch path.
-            shutil.rmtree(self.path)        
-        # Create the scratch path and save the POSCAR
-        os.makedirs(self.path)
-        p = state.get_reactant()
-        io.saveposcar(os.path.join(self.path, "POSCAR"), p)
-        sp = subprocess.Popen([self.querypath, "POSCAR", "--rhsco=%f" % rhsco], cwd = self.path, 
-                stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            shutil.rmtree(config.kdb_scratch_path)        
+        # Create the scratch path
+        os.makedirs(config.kdb_scratch_path)
+        kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
+        rp = os.path.abspath(state.reactant_path)
+        if state.number == 0:
+            rp = os.path.abspath(os.path.join(config.path_root, "reactant.con"))
+        sp = subprocess.Popen([config.kdb_querypath, rp, "--kdbdir=%s" % kdbpath], 
+                              cwd = config.kdb_scratch_path,
+                              stdout = subprocess.PIPE, 
+                              stderr = subprocess.PIPE)
         # Save the PID of this running process.
-        f = open(os.path.join(self.path, "PID"), 'w')
+        f = open(os.path.join(config.kdb_scratch_path, "PID"), 'w')
         f.write("%d" % sp.pid)
         f.close()
         if wait:
@@ -84,22 +86,22 @@ class KDB:
 
 
     def make_suggestion(self, keep_path = None):
-        if os.path.isdir(os.path.join(self.path, "kdbmatches")):
-            dones = glob.glob(os.path.join(self.path, "kdbmatches",".done_*"))
+        if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
+            dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches",".done_*"))
             if len(dones) > 0:
                 number = dones[0].split("_")[1]
-                displacement = io.loadposcar(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
-                mode = [[float(i) for i in l.strip().split()] for l in open(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
+                displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                mode = [[float(i) for i in l.strip().split()] for l in open(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
                 if keep_path is not None:
                     if not os.path.isdir(keep_path):
                         os.mkdir(keep_path)
-                    shutil.move(os.path.join(self.path, "kdbmatches", ".done_%s" % number), os.path.join(keep_path, ".done_%s" % number))
-                    shutil.move(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number), os.path.join(keep_path, "SADDLE_%s" % number))
-                    shutil.move(os.path.join(self.path, "kdbmatches", "MODE_%s" % number), os.path.join(keep_path, "MODE_%s" % number))
+                    shutil.move(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number), os.path.join(keep_path, ".done_%s" % number))
+                    shutil.move(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number), os.path.join(keep_path, "SADDLE_%s" % number))
+                    shutil.move(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number), os.path.join(keep_path, "MODE_%s" % number))
                 else:
-                    os.remove(os.path.join(self.path, "kdbmatches", ".done_%s" % number))
-                    os.remove(os.path.join(self.path, "kdbmatches", "SADDLE_%s" % number))
-                    os.remove(os.path.join(self.path, "kdbmatches", "MODE_%s" % number))
+                    os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number))
+                    os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                    os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
                 return displacement, mode
         return None, None
                 

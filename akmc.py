@@ -66,7 +66,7 @@ def akmc(config):
 
     # If kdb is being used, initialize it.
     if config.kdb_on:
-        kdber = kdb.KDB(config.kdb_path, config.kdb_querypath, config.kdb_addpath)
+        kdber = kdb.KDB()
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
@@ -98,12 +98,12 @@ def akmc(config):
         num_cancelled = comm.cancel_state(start_state_num)
         logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
         if config.kdb_on:
-            kdber.query(current_state, rhsco = config.kdb_rhsco, wait = config.kdb_wait)
+            kdber.query(current_state, wait = config.kdb_wait)
     
     # If this is the first execution of akmc.py for this simulation, run kdbquery if it's on.
     if first_run:
         if config.kdb_on:
-            kdber.query(current_state, rhsco = config.kdb_rhsco, wait = config.kdb_wait)
+            kdber.query(current_state, wait = config.kdb_wait)
     
     # Create new work.
     recycler = None
@@ -334,14 +334,12 @@ def register_results(comm, current_state, states, searchdata = None):
     return num_registered
 
 
-
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
     elif config.sb_scheme == 'energy_level':
         superbasining = superbasinscheme.EnergyLevel(config.sb_path, states, config.main_temperature / 11604.5, config.sb_el_energy_increment)
     return superbasining
-
 
 
 def kmc_step(current_state, states, time, kT, superbasining, previous_state_num = None):
@@ -712,7 +710,6 @@ def main():
         comm = get_communicator()
         print "Saddle Searches"
         print "---------------" 
-        #print "Searches currently running:", comm.thingy()
         print "Searches in queue:", comm.get_queue_size() 
         print
 
@@ -734,6 +731,7 @@ def main():
                         config.path_scratch]
                 if config.kdb_on:
                     rmdirs.append(config.kdb_path) 
+                    rmdirs.append(config.kdb_scratch_path) 
                 if config.sb_on:
                     rmdirs.append(config.sb_path)
                 if config.sb_recycling_on:

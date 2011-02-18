@@ -76,6 +76,7 @@ def init(config_file = ""):
     config.path_states       = parser.get('Paths', 'states')
     config.path_results      = parser.get('Paths', 'results')
     config.path_pot          = parser.get('Paths', 'potential_files')
+    
 
     #Rye-requested check
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
@@ -145,12 +146,12 @@ def init(config_file = ""):
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
     if config.kdb_on:
+        config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
         config.kdb_path = parser.get('Paths', 'kdb')
         config.kdb_addpath = parser.get('KDB', 'addpath')
         config.kdb_querypath = parser.get('KDB', 'querypath')
         config.kdb_wait = parser.get('KDB', 'wait')
         config.kdb_keep = parser.get('KDB', 'keep')
-        config.kdb_rhsco = parser.getfloat('KDB', 'rhsco')
 
     #Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
