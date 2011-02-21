@@ -150,6 +150,7 @@ public:
 
     // [Debug]
     bool   saveStdout;
+    bool   writeMovies;
 
 private:
     string toLowerCase(string s);
