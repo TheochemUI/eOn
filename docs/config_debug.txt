@@ -35,3 +35,9 @@ Parameters that are generally used to help debug calculations added under
     Default: None
 
     Follow the state-to-state trajectory of another akmc simulation.
+
+**write_movies**
+
+    Defaul: False
+
+    Causes the client to output movies of minimizations and saddle searches.
