@@ -36,6 +36,7 @@ Parameters::Parameters(){
 
     // [Debug] //
     saveStdout = false;
+    writeMovies = false;
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
@@ -403,6 +404,7 @@ int Parameters::load(FILE *file){
 
         // [Debug] //
         saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
+        writeMovies= ini.GetValueB("Debug", "write_movies", writeMovies);
 
     }
     else

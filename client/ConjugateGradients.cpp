@@ -99,13 +99,14 @@ void ConjugateGradients::fullRelax(){
     bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
-    #ifndef NDEBUG
-    static int run=0;
-    ostringstream min;
-    min << "min_" << run;
-    matter->matter2con(min.str(), false);
-    ++run;
-    #endif
+    if(parameters->writeMovies)
+    {
+        static int run=0;
+        ostringstream min;
+        min << "min_" << run;
+        matter->matter2xyz(min.str(), false);
+        ++run;
+    }
     int i=0;
     while(!converged and i < parameters->optMaxIterations) 
     {
