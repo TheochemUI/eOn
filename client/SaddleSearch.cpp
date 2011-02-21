@@ -336,13 +336,16 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-    #ifndef NDEBUG
+    if(parameters->writeMovies)
+    {
         static int run;
         ostringstream climb;
         climb << "climb_" << run;
         initial->matter2con(climb.str(), false);
         saddle->matter2con(climb.str(), true);
         ++run;
+    }
+    #ifndef NDEBUG
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");    
