@@ -69,12 +69,12 @@ void Quickmin::fullRelax()
     bool converged = false;
     long forceCallsTemp;
     forceCallsTemp = matter->getForceCalls();  
+    static int run=0;
+    ostringstream min;
+    min << "min_" << run;
     if(parameters->writeMovies)
     {
-        static int run=0;
-        ostringstream min;
-        min << "min_" << run;
-        matter->matter2xyz(min.str(), false);
+        matter->matter2con(min.str(), false);
         ++run;
     }
     int i = 0;
@@ -86,6 +86,10 @@ void Quickmin::fullRelax()
         if (outputLevel > 0) {
             printf("step = %3d, max force = %8.5lf, energy: %10.4f, dt: %8.5f\n", i, 
                    matter->maxForce(), matter->getPotentialEnergy(), dt);
+        }
+        if(parameters->writeMovies)
+        {
+            matter->matter2con(min.str(), true);
         }
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
