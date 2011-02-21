@@ -336,11 +336,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
+    static int run=0;
+    ostringstream climb;
+    climb << "climb_" << run;
     if(parameters->writeMovies)
     {
-        static int run;
-        ostringstream climb;
-        climb << "climb_" << run;
         initial->matter2con(climb.str(), false);
         saddle->matter2con(climb.str(), true);
         ++run;
@@ -411,8 +411,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
                        sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
             }
-            saddle->matter2con(climb.str(), true);
         #endif
+        if(parameters->writeMovies){
+            saddle->matter2con(climb.str(), true);
+        }
         energySaddle = saddle->getPotentialEnergy();
     }while(!converged && 
            (iterations < parameters->saddleMaxIterations) && 

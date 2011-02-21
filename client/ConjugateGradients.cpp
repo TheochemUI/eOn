@@ -99,12 +99,12 @@ void ConjugateGradients::fullRelax(){
     bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
+    static int run=0;
+    ostringstream min;
+    min << "min_" << run;
     if(parameters->writeMovies)
     {
-        static int run=0;
-        ostringstream min;
-        min << "min_" << run;
-        matter->matter2xyz(min.str(), false);
+        matter->matter2con(min.str(), false);
         ++run;
     }
     int i=0;
@@ -117,10 +117,10 @@ void ConjugateGradients::fullRelax(){
             printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", i, matter->maxForce(),
                    matter->getPotentialEnergy());
         }
-        #ifndef NDEBUG
-        if (i % 10 == 0)
+        if(parameters->writeMovies)
+        {
             matter->matter2con(min.str(), true);
-        #endif
+        }
     }
     return;
 }
