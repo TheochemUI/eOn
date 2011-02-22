@@ -38,6 +38,6 @@ Parameters that are generally used to help debug calculations added under
 
 **write_movies**
 
-    Defaul: False
+    Default: False
 
     Causes the client to output movies of minimizations and saddle searches.
