@@ -113,8 +113,8 @@ int getBundleSize(void) {
 
 int main(int argc, char **argv) 
 {
-    int rc;
     // BOINC is started
+    int rc;
     rc = boinc_init();
     if(rc){
         boinc_finish(rc);
