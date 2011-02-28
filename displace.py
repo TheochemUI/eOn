@@ -71,15 +71,12 @@ class Displace:
     def filter_epicenters(self, epicenters):
         '''Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
            If Displace.hole_epicenters is None, all of the epicenters are accepted.'''
-        cutoff = 9.9 #The size of the hole. TODO: this should be parameterized.
         if self.hole_epicenters == None:
             return epicenters
         new_epicenters = []
         for e in epicenters:
-            for h in self.hole_epicenters:
-                if numpy.linalg.norm(atoms.pbc(self.reactant.r[h] - self.reactant.r[e], self.reactant.box)) < cutoff:
-                    new_epicenters.append(e)
-                    break
+            if e in self.hole_epicenters:
+                new_epicenters.append(e)
         return new_epicenters
 
     def save_files(self, path, displacement):
