@@ -189,7 +189,6 @@ def get_akmc_metadata():
         except:
             wuid = 0
         try:
-#            searchdata = eval(parser.get("aKMC Metadata", 'searchdata'))
             sd = open(os.path.join(config.path_root, "searchdata"), "r")
             searchdata = pickle.load(sd)
             sd.close()
@@ -509,7 +508,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
         return wuid
     # If we plan to only displace atoms that moved getting to the current state.
     if config.disp_moved_only and current_state.number != 0:
-        pass_indices = recycler.get_moved_indices()
+        pass_indices = recycler.process_atoms
     else:
         pass_indices = None
     disp = get_displacement(reactant, indices = pass_indices)
