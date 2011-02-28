@@ -39,6 +39,7 @@ right part of configuration space.
 	*client_last_atom*: Displacement is made on the client centered on the 
 	last atom in the configuration.
 
+.. _saddle_max_iterations:
 
 **max_iterations**
 
@@ -83,6 +84,8 @@ right part of configuration space.
         *dimer*: Use the dimer min-mode method.
 
         *lanczos*: Use the Lanczos min-mode method.
+
+.. _saddle_max_energy:
 
 **max_energy** 
 
