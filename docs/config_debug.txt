@@ -11,6 +11,21 @@ Parameters that are generally used to help debug calculations added under
     Keep data about bad saddles. If true, the result files for failed saddle
     searches are kept in the *badprocdata* directory within the state
     directory for that search. 
+    
+    Each bad search will have 5 files: the starting structure (reactant.con), the saddle (saddle.con), the reaction product (product.con), the lowest eigenmode at the saddle (mode.dat), and a file detailing the results of the saddle search (results.dat). The reason for failure can be found in the results.dat under the field termination_reason. The termination reasons are:
+
+    =====  ===== 
+    0      Success
+    1      Unknown Error
+    2      A convex region of the potential could not be found
+    3      The energy of the saddle search exceeded :ref:`max_energy <saddle_max_energy>`
+    4      Unused
+    5      The number of iterations in the saddle search exceeded :ref:`max_iterations <saddle_max_iterations>`
+    6      The saddle is not connected to the initial minimum
+    7      The prefactor is either not defined or is outside of reasonable bounds
+    8      The barrier found exceeded :ref:`max_energy <saddle_max_energy>`
+    9      The saddle is not connected to the initial minimum, and one or both of the minimizations from the saddle did not converge 
+    =====  =====
 
 **keep_all_result_files** 
 
