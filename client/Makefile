@@ -1,6 +1,6 @@
 #C compiler settings
-CC=$(CROSS)gcc
-CXX=$(CROSS)g++
+CC=$(CROSS)gcc$(GCC_SUFFIX)
+CXX=$(CROSS)g++$(GCC_SUFFIX)
 LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
@@ -82,9 +82,12 @@ ifdef BOINC
     CXXFLAGS += -DNDEBUG -DBOINC
     OBJECTS += Compression.o
     ifdef WIN32
-        LDFLAGS += -static -lboinc_api -lboinc -larchive -lz
+        LDFLAGS += -lboinc_api -lboinc -larchive -lz
     else
-        LDFLAGS += -static -lboinc_api -lboinc -lpthread -larchive -lz
+        LDFLAGS += -lboinc_api -lboinc -lpthread -larchive -lz
+    endif
+    ifndef OSX
+        LDFLAGS += -static
     endif
 else
     BOINC=No
@@ -160,7 +163,7 @@ all: $(POTDIRS) $(FPOTDIRS) client
 	@echo "POTENTIALS: $(POTENTIALS)"
 
 client: $(OBJECTS) $(LIBS)
-	$(CROSS)g++  -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
