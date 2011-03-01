@@ -383,6 +383,8 @@ class Dynamics:
                          "prefactor":   float(split[7])})
         return data
 
+
+
 def load_potfiles(pot_dir):
     ret = {}
     if os.path.isdir(pot_dir):
