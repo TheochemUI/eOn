@@ -317,8 +317,6 @@ class Recycling:
             self.curr_reactant = self.current_state.get_reactant()
             self.ref_reactant = self.ref_state.get_reactant()
 
-            self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant)
-
             # Make a vector of distances between previous
             # current positions for each atom in the state.
             diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r, 
@@ -400,7 +398,6 @@ class Recycling:
         self.num_procs = int(lines[2].split('=')[1].strip())
         self.moved = eval(lines[3].split('=')[1].strip())
         self.unmoved = eval(lines[4].split('=')[1].strip())
-        self.process_atoms = eval(lines[5].split('=')[1].strip())
 
     def write_recycling_metadata(self):
         """ Write the recycling metadata file located in the current state's directory. """
@@ -411,7 +408,6 @@ class Recycling:
         fo.write("Number of processes = %d\n" %(self.num_procs))
         fo.write("Indices of 'moved' atoms = %s\n" %(repr(self.moved)))
         fo.write("Indices of 'unmoved' atoms = %s\n" %(repr(self.unmoved)))
-        fo.write("Indices of 'process' atoms = %s\n" %(repr(self.process_atoms)))
 
     def get_moved_indices(self):
         """ Return the indices of atoms that moved in the process getting
