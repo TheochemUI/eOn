@@ -20,7 +20,6 @@ config.init_done = False
 def init(config_file = ""):
     if config.init_done:
         return None
-    config.init_done = True
 
     parser = ConfigParser.SafeConfigParser()
 
@@ -46,6 +45,7 @@ def init(config_file = ""):
     config.main_job = parser.get('Main', 'job')
     print 'config.main_job', config.main_job
     config.main_temperature = parser.getfloat('Main', 'temperature')
+    config.kT = main_temperature/11604.5 #in eV
 
     try:
         config.main_random_seed = parser.getint('Main', 'random_seed')
@@ -68,6 +68,7 @@ def init(config_file = ""):
     config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
     config.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
     config.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
+    config.akmc_sampling_criteria = parser.get('AKMC', 'sampling_criteria')
 
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')
@@ -76,7 +77,17 @@ def init(config_file = ""):
     config.path_states       = parser.get('Paths', 'states')
     config.path_results      = parser.get('Paths', 'results')
     config.path_pot          = parser.get('Paths', 'potential_files')
+    config.path_coarse_states = parser.get('Paths', 'coarse_states')
+
     
+    #files options
+    config.file_dynamics      = parser.get('Files', 'dynamics')
+    config.file_superbasin    = parser.get('Files', 'superbasin')
+    config.file_state         = parser.get('Files', 'state')
+    config.file_state_table   = parser.get('Files', 'state_table')
+    config.file_process_table = parser.get('Files', 'process_table')
+    config.file_akmc          = parser.get('Files', 'akmc')
+    config.file_coarse        = parser.get('Files', 'coarse')
 
     #Rye-requested check
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
@@ -146,12 +157,12 @@ def init(config_file = ""):
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
     if config.kdb_on:
-        config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
         config.kdb_path = parser.get('Paths', 'kdb')
         config.kdb_addpath = parser.get('KDB', 'addpath')
         config.kdb_querypath = parser.get('KDB', 'querypath')
         config.kdb_wait = parser.get('KDB', 'wait')
         config.kdb_keep = parser.get('KDB', 'keep')
+        config.kdb_rhsco = parser.getfloat('KDB', 'rhsco')
 
     #Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
@@ -167,7 +178,6 @@ def init(config_file = ""):
 
     #Coarse Graining
     config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
-    config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
     if config.sb_on:
         config.sb_path = parser.get('Paths', 'superbasins')
         config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
@@ -196,4 +206,10 @@ def init(config_file = ""):
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
     config.debug_target_trajectory = parser.get('Debug', 'target_trajectory')
 
+    config.init_done = True
+    
+    
+    
+    
+    
     del parser

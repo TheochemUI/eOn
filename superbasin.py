@@ -16,8 +16,7 @@ logger = logging.getLogger('superbasin')
 
 
 class Superbasin:
-    """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
-    """based on Novotny's Absorbing Markov Chain algorithm."""
+ 
     def __init__(self, path, id, kT, state_list = None, get_state = None):
         assert(isinstance(kT, float))
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
@@ -31,17 +30,16 @@ class Superbasin:
         
         if not os.path.isfile(self.path):
             self.states = state_list
-            self.state_numbers = [i.number for i in self.states]
+            self.state_numbers = [i.get_nr() for i in self.states]
             self._calculate_stuff()
             self.write_data()
         else:
             self.read_data(get_state)
 
 
-    def pick_exit_state(self, entry_state):
-        """Chosse an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
+    def pick_exit_state(self, entry_state):        
         for i in range(len(self.state_numbers)):
-            if entry_state.number == self.state_numbers[i]:
+            if entry_state.get_nr() == self.state_numbers[i]:
                 entry_state_index = i
                 break
         else:
@@ -51,6 +49,7 @@ class Superbasin:
         if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
             logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
+        print probability_vector
         probability_vector /= numpy.sum(probability_vector)
         
         u = numpy.random.random_sample()
@@ -79,9 +78,6 @@ class Superbasin:
 
 
     def step(self, entry_state, get_product_state):
-        """Perform a Monte Carlo transition: leave the basin."""\
-        """The function returns a residence time as well as information to indenfity what saddle point was to leave the basin,"""\
-        """from what state and to what state the system is moving to."""
         time, exit_state_index = self.pick_exit_state(entry_state)
         assert(time >= 0.0)
         exit_state = self.states[exit_state_index]
@@ -114,17 +110,14 @@ class Superbasin:
         # When requesting the product state the process 
         # gets added to the tables of events for both the forward 
         # and reverse process
-        product_state = get_product_state(exit_state.number, exit_proc_id)
+        product_state = get_product_state(exit_state.get_nr(), exit_proc_id)
 
         return time, exit_state, product_state, exit_proc_id, self.id
 
     def contains_state(self, state):
         return state in self.states
 
-    def _calculate_stuff(self):
-        """Build the transient and recurrent matrices."""\
-        """Calculate the fundamental matrix in order to be able to calculate the mean resisdence time"""\
-        """and exit probablities any initial distribution."""
+    def _calculate_stuff(self): 
         recurrent_vector = numpy.zeros(len(self.states))
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
         sum=0.0
@@ -167,7 +160,8 @@ class Superbasin:
                 logger.debug('Transient matrix:\n%s' % str(transient_matrix))
                 logger.debug('Recurrent vector:\n%s' % str(recurrent_vector))
                 logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix))
-            
+
+        print self.probability_matrix
 
 
     def write_data(self):

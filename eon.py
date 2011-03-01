@@ -4,6 +4,7 @@ import config
 import akmc
 import basinhopping
 import parallelreplica
+import coarse_space
 
 def main():
     config.init()
@@ -14,6 +15,8 @@ def main():
         parallelreplica.main()
     elif job == 'basin_hopping':
         basinhopping.main()
+    elif job == 'coarse':
+        coarse_space.main()
     else:
         #TODO: Work on running the client directly for unknown job types
         import communicator
