@@ -6,27 +6,21 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//
 //-----------------------------------------------------------------------------------
-#ifndef JOB_H
-#define JOB_H
-class Job { 
+
+#ifndef POINTJOB_H
+#define POINTJOB_H
+
+#include "Job.h"
+#include "Parameters.h"
+
+class PointJob: public Job {
     public:
-        enum{
-            PROCESS_SEARCH,
-            SADDLE_SEARCH,
-            MINIMIZATION,
-            PARALLEL_REPLICA,
-            DISTRIBUTED_REPLICA,
-            BASIN_HOPPING,
-            HESSIAN,
-            FINITE_DIFFERENCE,
-            DIMER_ROTATION,
-            DISPLACEMENT_SAMPLING,
-            POINT,
-            TEST
-        };
-        virtual ~Job() {}
-        virtual void run(int bundleNumber)=0;
+        PointJob(Parameters *params);
+        ~PointJob(void);
+        void run(int bundleNumber);
+    private:
+        Parameters *parameters;
 };
+
 #endif
