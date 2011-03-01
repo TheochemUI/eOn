@@ -86,7 +86,7 @@ ifdef BOINC
     else
         LDFLAGS += -lboinc_api -lboinc -lpthread -larchive -lz
     endif
-    ifndef OSX
+    ifdef LINUX
         LDFLAGS += -static
     endif
 else
