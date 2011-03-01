@@ -101,7 +101,7 @@ class ASKMC:
         """ Generate a rate table according to the kT and thermal_window. """
         current_state_procs = self.compile_process_table(current_state)
         # Find the lowest barrier process for the state.
-        lowest = 1e300
+        lowest = float("infinity")
         for process_id in current_state_procs.keys():
             barrier = current_state_procs[process_id]["barrier"]
             if barrier < lowest:
