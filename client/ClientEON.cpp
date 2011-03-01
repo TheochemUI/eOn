@@ -284,7 +284,7 @@ int main(int argc, char **argv)
     #ifdef BOINC
     //XXX: Error handling!
     rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
-    char dirToCompress = ".";
+    char dirToCompress[] = ".";
     create_archive(resolved, dirToCompress, result_pattern); 
     #endif
 
