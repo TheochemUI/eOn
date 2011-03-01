@@ -184,6 +184,8 @@ int Parameters::load(FILE *file){
             job = Job::SADDLE_SEARCH;
         }else if (jobString == "minimization") {
             job = Job::MINIMIZATION;
+        }else if (jobString == "point") {
+            job = Job::POINT;
         }else if (jobString == "parallel_replica"){
             job = Job::PARALLEL_REPLICA;
         }else if (jobString == "distributed_replica"){

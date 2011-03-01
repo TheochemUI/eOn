@@ -14,6 +14,7 @@
 #include "ProcessSearchJob.h"
 #include "SaddleSearchJob.h"
 #include "MinimizationJob.h"
+#include "PointJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
 #include "DistributedReplicaJob.h"
@@ -206,6 +207,8 @@ int main(int argc, char **argv)
         job = new SaddleSearchJob(&parameters);
     }else if (parameters.job == Job::MINIMIZATION) {
         job = new MinimizationJob(&parameters);
+    }else if (parameters.job == Job::POINT) {
+        job = new PointJob(&parameters);
     }else if (parameters.job == Job::HESSIAN) {
         job = new HessianJob(&parameters);
     }else if (parameters.job == Job::PARALLEL_REPLICA) {
