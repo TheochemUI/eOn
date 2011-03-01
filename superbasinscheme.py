@@ -42,7 +42,7 @@ class SuperbasinScheme:
                 self.superbasins.append(superbasin.Superbasin(self.path, i, self.kT, get_state = states.get_state))
             
         self.next_sb_num += 1
-        self.read_state_data()
+        self.read_data()
 
     def get_containing_superbasin(self, state):
         for i in self.superbasins:
@@ -77,7 +77,7 @@ class SuperbasinScheme:
 
         self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, self.kT, state_list = new_sb_states)) 
         
-        logger.info("Created superbasin with states " + str([i.get_nr() for i in new_sb_states]))
+        logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
     
     def register_transition(self, start_state, end_state):
@@ -86,7 +86,7 @@ class SuperbasinScheme:
     def write_data(self):
         raise NotImplementedError()
     
-    def read_state_data(self):
+    def read_data(self):
         raise NotImplementedError()
 
     def __del__(self):
@@ -128,20 +128,20 @@ class TransitionCounting(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for start_state in self.count:
-            data_path = os.path.join(start_state.get_path(), config.file_superbasin)
+            data_path = os.path.join(start_state.path, config.sb_state_file)
             f = open(data_path, 'w')
             for end_state in self.count[start_state]:
-                print >> f, end_state.get_nr(), self.count[start_state][end_state]
+                print >> f, end_state.number, self.count[start_state][end_state]
             f.close()
 
-    def read_state_data(self):
+    def read_data(self):
         self.count = {}
 
     def get_count(self, state):
         try:
             return self.count[state]
         except:
-            data_path = os.path.join(state.get_path(), config.file_superbasin)
+            data_path = os.path.join(state.path, config.sb_state_file)
             self.count[state] = {}
             if os.path.isfile(data_path):
                 f = open(data_path, 'r')
@@ -187,13 +187,13 @@ class EnergyLevel(SuperbasinScheme):
         #saddle energy is the total energy of the saddle
         largest_level = max(self.levels[start_state], self.levels[end_state])
        
-        barrier = float("inf")
+        barrier = 1e200
         proc_tab = start_state.get_process_table()
         for key in proc_tab:
-            if proc_tab[key]['product'] == end_state.get_nr():
+            if proc_tab[key]['product'] == end_state.number:
                 barrier = min(proc_tab[key]['barrier'], barrier)
         
-        if barrier == float("inf"):
+        if barrier > 1e199:
             logger.warning("Start and end state have no direct connection")
             return
         
@@ -206,13 +206,13 @@ class EnergyLevel(SuperbasinScheme):
                     self.levels[i] = largest_level
             self.make_basin([start_state, end_state])
 
-    def read_state_data(self):
+
+    def read_data(self):
         logger.debug('reading')
         for i in range(self.states.get_num_states()):
             state = self.states.get_state(i)
-            data_path = os.path.join(state.get_path(), config.file_superbasin)
+            data_path = os.path.join(state.path, config.sb_state_file)
             if os.path.isfile(data_path):
-
                 f = open(data_path, 'r')
                 self.levels[self.states.get_state(i)] = float(f.read().strip())
                 f.close()
@@ -220,8 +220,7 @@ class EnergyLevel(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for i in self.levels:
-            data_path = os.path.join(i.get_path(), config.file_superbasin)
-
+            data_path = os.path.join(i.path, config.sb_state_file)
             f = open(data_path, 'w')
             print >> f, "%f\n" % self.levels[i]
             f.close()

@@ -187,11 +187,6 @@ void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
         fprintf(POSCAR, "%.19f\t%.19f\t%.19f\t T T T\n", R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
     fclose(POSCAR);
-    
-//    while(access("POSCAR", F_OK) == -1)
-//    {
-//        sleep(1);
-//    }
 
     FILE *NEWCAR = fopen("NEWCAR", "w");
     fclose(NEWCAR);
