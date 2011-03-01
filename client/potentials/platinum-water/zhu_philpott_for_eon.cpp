@@ -2,8 +2,7 @@
 
 ZpIce::ZpIce() :
     Potential(),
-    forcefields::ZhuPhilpott<>(6.5, 2.0) // small structure
-//    forcefields::ZhuPhilpott<>(8.5, 1.0) // large structure
+    forcefields::ZhuPhilpott<>(8.5, 1.0)
 {}
 
 void ZpIce::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
@@ -20,8 +19,7 @@ void ZpIce::force(long N, const double *R, const int *atomicNrs, double *F, doub
 
 Tip4p::Tip4p() :
     Potential(),
-    forcefields::Tip4p(6.5, 2.0) // small structure
-//    forcefields::Tip4p(8.5, 1.0) // large structure
+    forcefields::Tip4p(8.5, 1.0)
 {}
 
 void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
