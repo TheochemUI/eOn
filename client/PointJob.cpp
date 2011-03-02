@@ -23,7 +23,7 @@ void PointJob::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed");
-    string data_out("result.dat");
+    string data_out("result");
 
     if (bundleNumber < 0) {
         reactant_passed += ".con";
@@ -41,6 +41,6 @@ void PointJob::run(int bundleNumber)
     printf("Energy: %f\n", reactant->getPotentialEnergy());
 
     FILE *fileResults = fopen(data_out.c_str(), "wb");
-    fprintf(fileResults, "Energy: %f", reactant->getPotentialEnergy());
+    fprintf(fileResults, "Energy: %f\n", reactant->getPotentialEnergy());
     fclose(fileResults);
 }
