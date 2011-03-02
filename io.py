@@ -140,7 +140,12 @@ def savecon(fileout, p, w = 'w'):
             atom_count[name] = 1
     print >> con, len(name_order)
     print >> con, " ".join([str(atom_count[i]) for i in name_order])
-    print >> con, " ".join(["%.4f"%p.mass[i] for i in range(len(p.mass)) if i==0 or p.mass[i]!=p.mass[i-1]])
+    printmasses = []
+    index = 0
+    for i in range(len(name_order)):
+        printmasses.append(p.mass[index])
+        index += atom_count[name_order[i]]
+    print >> con, " ".join(["%.4f"% i for i in printmasses])
     index = 0
     for i in range(len(name_order)):
         print >> con, name_order[i]
