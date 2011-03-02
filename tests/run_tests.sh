@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tests="akmc_eam_al_trimer min_morse_pt_island"
+tests="akmc_eam_al_trimer min_morse_pt_island potentials"
 
 echo "Running tests"
 echo
