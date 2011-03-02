@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import shutil
 import os
-import subprocess
 import sys
 
 if not os.path.isfile("../../client/client"):
@@ -41,7 +40,12 @@ for test in tests:
 allpassed = True
 print "%-30s\t%-20s\t%-5s" % ("File", "Potential", "Pass")
 for test in tests:
-    print "%-30s\t%-20s\t%-5s" % (test['file'], test['potential'], test['pass'])
+    out = "%-30s\t%-20s\t%-5s" % (test['file'], test['potential'], test['pass'])
+    if test['pass']:
+        print '\033[92m'+out+'\033[0m'
+    else:
+        print '\033[91m'+out+'\033[0m'
+
     if not test['pass']:
         allpassed = False
 
