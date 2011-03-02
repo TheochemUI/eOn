@@ -15,6 +15,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
+#include <string.h>
 
 
 using namespace std;
@@ -45,6 +46,7 @@ namespace {
 
         while (elementArray[i] != NULL) {
             if (strcmp(symbol, elementArray[i]) == 0) {
+                cout<<"i"<<i<<"symbol"<<symbol<<endl;
                 return i;
             }
             i++;
@@ -698,18 +700,45 @@ bool Matter::con2matter(FILE *file) {
     long int Natoms=0;
     first[0]=0;
     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
+    fgets(line, sizeof(line), file);
+    char * split = strtok(line, " ");
     for(j=0; j<Ncomponent; j++) {
-        fscanf(file, "%ld", &Natoms);
+        if(split == NULL)
+        {
+            cerr << "input con file does not list the number of each component" <<endl;
+            return false;
+        }
+        if(sscanf(split, "%ld", &Natoms)!=1)
+        {
+            cerr << "input con file does not list the number of each component" <<endl;
+            return false;
+        }
+        cout<<"Split"<<split<<endl;
+        cout<<Natoms<<endl;
         first[j+1]=Natoms+first[j];
+        split = strtok(NULL, " ");
     }    
-    fgets(line, sizeof(line), file); // Discard the rest of the line
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
     double mass[MAXC];
+    fgets(line, sizeof(line), file);
+    split = strtok(line, " ");
     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
-        fscanf(file, "%lf", &mass[j]);
+        if(split == NULL)
+        {
+            cerr << "input con file does not list enough masses" <<endl;
+            return false;
+        }
+        if(sscanf(split, "%ld", &Natoms)!=1)
+        {
+            cerr << "input con file does not list enough masses" <<endl;
+            return false;
+        }
+        sscanf(line, "%lf", &mass[j]);
+        cout<<"Split"<<split<<endl;
+        cout<<mass[j]<<endl;
+        split = strtok(NULL, " ");
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     };
-    fgets(line,sizeof(line),file); // discard rest of the line
     int atomicNr;
     int fixed;
     double x,y,z;
@@ -717,6 +746,7 @@ bool Matter::con2matter(FILE *file) {
         char symbol[3];
         fgets(line,sizeof(line),file);
         sscanf(line, "%2s\n", symbol);
+        cout<<line<<endl;
         atomicNr=symbol2atomicNumber(symbol);
         fgets(line,sizeof(line),file); // skip one line
         for (i=first[j]; i<first[j+1]; i++){
