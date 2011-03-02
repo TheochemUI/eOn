@@ -23,7 +23,7 @@ void PointJob::run(int bundleNumber)
 {
     char buff[STRING_SIZE];
     string reactant_passed("reactant_passed");
-    string data_out("result");
+    string data_out("results");
 
     if (bundleNumber < 0) {
         reactant_passed += ".con";
