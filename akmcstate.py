@@ -55,7 +55,7 @@ class AKMCState(state.State):
          
         resultdata = result["results"] #The information from the result.dat file
         
-        # We may not already have the energy for this State.  If not, it should be in the result data.
+        # We may not already have the energy for this State.  If not, it should be placed in the result data.
         if self.get_energy() == None:
             self.set_energy(resultdata["potential_energy_reactant"])
 
@@ -80,15 +80,16 @@ class AKMCState(state.State):
             #load the saddle
             result["saddle"] = io.loadcon(result["saddle.con"])
             p0 = result["saddle"]
-            #ibox = numpy.linalg.inv(p0.box)
             for id in energetically_close:
                 p1 = io.loadcon(self.proc_saddle_path(id))
-                if atoms.match(p1,p0,False):
+                if atoms.match(p1, p0, False):
                     self.append_search_result(result, "repeat-%d" % id)
+                    self.procs[id]['repeats'] += 1
+                    self.save_process_table()
+                    if id in self.get_relevant_procids():
+                        self.inc_repeats()
                     if result['type'] == "random":
-                        self.procs[id]['repeats'] += 1
-                        self.save_process_table()
-                        self.inc_proc_repeat_count(id)
+                        self.inc_proc_random_count(id)
                     return None
 
         # This appears to be a unique process.
@@ -106,6 +107,10 @@ class AKMCState(state.State):
             logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
         
+        # Reset the repeat count.
+        self.reset_repeats()
+        
+        # Respond to finding a new lowest barrier.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
@@ -115,9 +120,6 @@ class AKMCState(state.State):
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
-
-        # Keep track of the number of searches, Ns.
-        self.inc_proc_repeat_count(id)
 
         # Move the relevant files into the procdata directory.
         open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
@@ -136,6 +138,10 @@ class AKMCState(state.State):
                                   barrier =           barrier, 
                                   rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT), 
                                   repeats =           0)
+
+        # If this is a random search type, add this proc to the random proc dict.
+        if result['type'] == "random":
+            self.inc_proc_random_count(id)
 
         # This was a unique process, so return the id.
         return id
@@ -171,6 +177,12 @@ class AKMCState(state.State):
                 table.append((id, proc['rate']))
         return table
  
+    def get_relevant_procids(self):
+        rt = self.get_ratetable()
+        rps = []
+        for r in rt:
+            rps.append(r[0])
+        return rps
 
     def get_confidence(self):
         """ The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique 
@@ -187,95 +199,64 @@ class AKMCState(state.State):
             to be the number of searches that resulted in a process on the rate table.
             
             When using recycling or kdb, it is useful to ignore processes that occur outside
-            the hole, or the region in which the last process took place.  Focusing on this
+            the hole, the region in which the last process took place.  Focusing on this
             region means you can do possibly far fewer searches to reach confidence. When using
             the hole to filter processes, Nf and Ns only take into account processes that 
             intersect the hole. """
-        prc = self.get_proc_repeat_count()
-        rt = self.get_ratetable()
-        Nf = 0.0
-        Ns = 0.0
-        conf = 0.0
-        #GH print "\nIn confidence"
-        for r in rt:
-            if self.statelist.filter_hole:
-                #GH print "filter_hole"
-                if self.proc_in_hole(r[0]):
-                    Ns += prc[r[0]]
+        if config.akmc_confidence_scheme == "new":
+            rt = self.get_ratetable()
+            prc = self.get_proc_random_count()
+            Nf = 0.0
+            Ns = 0.0
+            for r in rt:
+                if r[0] in prc:
                     Nf += 1
-            else:
-                Ns += prc[r[0]]
-                Nf += 1
-            #GH print " proc:",r[0]," Nf:",Nf," dgen:",prc[r[0]]," Ns:",Ns
-        if Nf < 1 or Ns < 1:
-            conf = 0.0
-            #GH return 0.0
+                    Ns += prc[r[0]]
+            if Ns < 1:
+                return 0.0
+            if Nf < 1:
+                Nf = 1.0
+            return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
         else:
-            conf = 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
-        #GH return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
-        #GH print " conf: ",conf
-        return conf
+            Nr = self.get_repeats()
+            if Nr < 1:
+                return 0.0
+            else:
+                return 1.0 - 1.0/Nr
 
-
-    def proc_in_hole(self, procid):
-        """ Returns True if the given process intersects the previous state/current state hole,
-            False if not. """
-        if self.get_previous_state() == -1:
-            return True
-        if procid in self.get_procs_in_hole():
-            return True
-        if procid in self.get_procs_not_in_hole():
-            return False
-        ps = self.statelist.get_state(self.get_previous_state()).get_reactant()
-        cs = self.get_reactant()
-        pan = atoms.per_atom_norm(ps.r - cs.r, ps.box)
-        hole_atoms = []
-        for i in range(len(pan)):
-            if pan[i] > 0.2:
-                hole_atoms.append(i)
-        pp = self.get_process_product(procid)
-        pan = atoms.per_atom_norm(pp.r - cs.r, cs.box)
-        for i in range(len(pan)):
-            if pan[i] > 0.2:
-                if i in hole_atoms:
-                    pih = self.get_procs_in_hole()
-                    pih.append(procid)
-                    self.set_procs_in_hole(pih)
-                    return True
-        pnih = self.get_procs_not_in_hole()
-        pnih.append(procid)
-        self.set_procs_not_in_hole(pnih)
-        return False
- 
-
-    def get_procs_in_hole(self):
+    def get_proc_random_count(self):
         self.load_info()
         try:
-            return eval(self.info.get("MetaData", "procs in hole"))
+            return eval(self.info.get("MetaData", "proc repeat count"))
         except:
-            return []
+            return {}
 
+    def inc_proc_random_count(self, procid):
+        self.load_info()
+        prc = self.get_proc_random_count()
+        if procid not in prc:
+            prc[procid] = 1
+        else:
+            prc[procid] += 1                
+        self.info.set("MetaData", "proc repeat count", repr(prc))
+        self.save_info()        
 
-    def get_procs_not_in_hole(self):
+    def reset_repeats(self):
+        self.load_info()
+        self.info.set("MetaData", "repeats", "0")
+        self.save_info()        
+        
+    def get_repeats(self):
         self.load_info()
         try:
-            return eval(self.info.get("MetaData", "procs not in hole"))
+            return self.info.getint("MetaData", "repeats")
         except:
-            return []
-
-
-    def set_procs_in_hole(self, procs):
-        self.load_info()
-        self.info.set("MetaData", "procs in hole", repr(procs))
+            return 0
+    
+    def inc_repeats(self):
+        self.info.set("MetaData", "repeats", str(self.get_repeats() + 1))
         self.save_info()
-
-
-    def set_procs_not_in_hole(self, procs):
-        self.load_info()
-        self.info.set("MetaData", "procs not in hole", repr(procs))
-        self.save_info()
-
-
+    
     def load_process_table(self):
         """ Load the process table.  If the process table is not loaded, load it.  If it is 
             loaded, do nothing. """
@@ -389,24 +370,6 @@ class AKMCState(state.State):
         self.save_info()        
 
 
-    def get_proc_repeat_count(self):
-        self.load_info()
-        if self.proc_repeat_count is None:
-            try:
-                self.proc_repeat_count = eval(self.info.get("MetaData", "proc repeat count"))
-            except:
-                self.proc_repeat_count = [0]
-        return self.proc_repeat_count
-
-
-    def inc_proc_repeat_count(self, procid):
-        self.get_proc_repeat_count()
-        if procid == len(self.proc_repeat_count):
-            self.proc_repeat_count.append(1)
-        elif procid < len(self.proc_repeat_count) and procid >= 0:
-            self.proc_repeat_count[procid] += 1                
-        self.info.set("MetaData", "proc repeat count", repr(self.proc_repeat_count))
-        self.save_info()        
 
 
     def get_total_saddle_count(self):
