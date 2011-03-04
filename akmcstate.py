@@ -203,6 +203,20 @@ class AKMCState(state.State):
             region means you can do possibly far fewer searches to reach confidence. When using
             the hole to filter processes, Nf and Ns only take into account processes that 
             intersect the hole. """
+        alpha = 1.0
+        if config.akmc_confidence_correction:
+            rt = self.get_ratetable()
+            prc = self.get_proc_random_count()
+            mn = 1e300
+            mx = 0
+            for r in rt:
+                if r[0] in prc:
+                    mn = min(mn, prc[r[0]])
+                    mx = max(mx, prc[r[0]])
+            if mx < 1:
+                alpha = 1.0
+            else:
+                alpha = float(mn)/mx
         if config.akmc_confidence_scheme == "new":
             rt = self.get_ratetable()
             prc = self.get_proc_random_count()
@@ -216,13 +230,14 @@ class AKMCState(state.State):
                 return 0.0
             if Nf < 1:
                 Nf = 1.0
-            return 1.0 + (Nf/Ns) * lambertw(-math.exp(-1.0 / (Nf/Ns))/(Nf/Ns))
+            return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
         else:
             Nr = self.get_repeats()
             if Nr < 1:
                 return 0.0
             else:
-                return 1.0 - 1.0/Nr
+                return max(0.0, 1.0 - 1.0/(alpha*Nr))
+            
 
     def get_proc_random_count(self):
         self.load_info()
