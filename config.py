@@ -64,10 +64,11 @@ def init(config_file = ""):
     config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
 
     #aKMC options
-    config.akmc_confidence  = parser.getfloat('AKMC', 'confidence')
-    config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
-    config.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
-    config.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
+    config.akmc_confidence          = parser.getfloat('AKMC', 'confidence')
+    config.akmc_thermal_window      = parser.getfloat('AKMC', 'thermally_accessible_window')
+    config.akmc_max_thermal_window  = parser.getfloat('AKMC', 'thermally_accessible_buffer')
+    config.akmc_max_kmc_steps       = parser.getint('AKMC', 'max_kmc_steps')
+    config.akmc_confidence_scheme   = parser.get('AKMC', 'confidence_scheme')
 
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')
