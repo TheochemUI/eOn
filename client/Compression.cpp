@@ -44,7 +44,7 @@ int create_archive(char *outname, char *path,
     archive_write_set_format_pax_restricted(a);
     archive_write_open_filename(a, outname);
 
-    for (int i=0;i<filenames.size();i++) {
+    for (unsigned int i=0;i<filenames.size();i++) {
         stat(filenames[i].c_str(), &st);
         entry = archive_entry_new();
         archive_entry_set_pathname(entry, filenames[i].c_str());
