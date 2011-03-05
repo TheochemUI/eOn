@@ -20,7 +20,7 @@ class FiniteDifferenceJob: public Job {
     public:
         FiniteDifferenceJob(Parameters *params);
         ~FiniteDifferenceJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
 };

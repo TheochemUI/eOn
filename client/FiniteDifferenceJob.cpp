@@ -23,7 +23,7 @@ FiniteDifferenceJob::FiniteDifferenceJob(Parameters *params)
 
 FiniteDifferenceJob::~FiniteDifferenceJob(){ }
 
-void FiniteDifferenceJob::run(int bundleNumber)
+std::vector<std::string> FiniteDifferenceJob::run(void)
 {
     // No bundling for this job, so bundleNumber is ignored.
     
@@ -74,6 +74,9 @@ void FiniteDifferenceJob::run(int bundleNumber)
         fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
     }
     fclose(results);
+
+    std::vector<std::string> empty;
+    return empty;
 }
 
 

@@ -23,10 +23,12 @@ TestJob::TestJob(Parameters *params)
 
 TestJob::~TestJob(){ }
 
-void TestJob::run(int bundleNumber)
+std::vector<std::string> TestJob::run(void)
 {
     checkPotentials();
     checkFullSearch();
+    std::vector<std::string> empty;
+    return empty;
 }
 
 void TestJob::checkFullSearch(void){

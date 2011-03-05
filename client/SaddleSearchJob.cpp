@@ -28,37 +28,18 @@ SaddleSearchJob::SaddleSearchJob(Parameters *params)
 SaddleSearchJob::~SaddleSearchJob()
 {}
 
-void SaddleSearchJob::run(int bundleNumber)
+std::vector<std::string> SaddleSearchJob::run(void)
 {
-    char buff[STRING_SIZE];
     string reactant_passed("reactant_passed.con");
-    string displacement_passed("displacement_passed");
-    string mode_passed("mode_passed");
-
-    if (bundleNumber < 0) {
-        displacement_passed += ".con";
-        mode_passed += ".dat";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        displacement_passed += buff;
-        snprintf(buff, STRING_SIZE, "_%i.dat", bundleNumber);
-        mode_passed += buff;
-    }
+    string displacement_passed("displacement_passed.con");
+    string mode_passed("mode_passed.dat");
 
     initial = new Matter(parameters);
     displacement = new Matter(parameters);
     saddle = new Matter(parameters);
 
     initial->con2matter(reactant_passed);
-/*
-    if (parameters->processSearchMinimizeFirst) {
-        printf("Minimizing initial structure\n");
-        int fi = Potential::fcalls;
-        ConjugateGradients cgMin(initial, parameters);
-        cgMin.fullRelax();
-        fCallsMin += Potential::fcalls - fi;
-    }
-*/
+
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
         // displacement was passed from the server        
         saddle->con2matter(displacement_passed);
@@ -74,18 +55,18 @@ void SaddleSearchJob::run(int bundleNumber)
         // mode was passed from the server        
         saddlePoint->loadMode(mode_passed);
     }
-    // displacement and mode where made on the client
-    // in saddlePoint->initialize(...) 
 
     int status = doSaddleSearch();
 
     printEndState(status);
-    saveData(status, bundleNumber);
+    saveData(status);
 
     delete saddlePoint;
     delete initial;
     delete displacement;
     delete saddle; 
+
+    return returnFiles;
 }
 
 int SaddleSearchJob::doSaddleSearch()
@@ -104,76 +85,35 @@ int SaddleSearchJob::doSaddleSearch()
     return status;
 }
 
-void SaddleSearchJob::saveData(int status, int bundleNumber){
+void SaddleSearchJob::saveData(int status){
     FILE *fileResults, *fileSaddle, *fileMode;
 
-    char filename[STRING_SIZE];
-
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-    }else{
-        strncpy(filename, "results.dat", STRING_SIZE);
-    }
-	fileResults = fopen(filename, "wb");
-	///XXX: min_fcalls isn't quite right it should get them from
-	//      the minimizer. But right now the minimizers are in
-	//      the SaddlePoint object. They will be taken out eventually.
+    std::string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
+    fileResults = fopen(resultsFilename.c_str(), "wb");
+    ///XXX: min_fcalls isn't quite right it should get them from
+    //      the minimizer. But right now the minimizers are in
+    //      the SaddlePoint object. They will be taken out eventually.
     
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_tyep\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
-//    fprintf(fileResults, "%ld force_calls_minimization\n", saddlePoint->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-//    fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());
-//    fprintf(fileResults, "%f potential_energy_product\n", min2->getPotentialEnergy());
-//    fprintf(fileResults, "%f barrier_reactant_to_product\n", barriersValues[0]);
-//    fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
-//    fprintf(fileResults, "%f displacement_saddle_distance\n",
-//            displacement->perAtomNorm(*saddle));
-//    fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
-//    fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
-//    fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
-	fclose(fileResults);
+    fclose(fileResults);
 
-//    if (bundleNumber != -1) {
-//        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-//    }else{
-//        strncpy(filename, "reactant.con", STRING_SIZE);
-//    }
-//	fileReactant = fopen(filename, "wb");
-//    min1->matter2con(fileReactant);
-//
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "mode_%i.dat", bundleNumber);
-    }else{
-        strncpy(filename, "mode.dat", STRING_SIZE);
-    }
-    fileMode = fopen(filename, "wb");
+    std::string modeFilename("mode.dat");
+    returnFiles.push_back(modeFilename);
+    fileMode = fopen(modeFilename.c_str(), "wb");
     saddlePoint->saveMode(fileMode);
     fclose(fileMode);
-//	fclose(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "saddle.con", STRING_SIZE);
-    }
-	fileSaddle = fopen(filename, "wb");
+    std::string saddleFilename("saddle.con");
+    returnFiles.push_back(saddleFilename);
+    fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
-	fclose(fileSaddle);
-
-//    if (bundleNumber != -1) {
-//        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
-//    }else{
-//        strncpy(filename, "product.con", STRING_SIZE);
-//    }
-//	fileProduct = fopen(filename, "wb");
-//	min2->matter2con(fileProduct);
-//    fclose(fileProduct);
-
-    return;
+    fclose(fileSaddle);
 }
 
 void SaddleSearchJob::printEndState(int status) {
@@ -192,18 +132,6 @@ void SaddleSearchJob::printEndState(int status) {
 
     else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
-
-//    else if(status == SaddlePoint::STATUS_BAD_NOT_CONNECTED)
-//        fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
-
-//    else if(status == SaddlePoint::STATUS_BAD_PREFACTOR)
-//            fprintf(stdout, "Prefactors, not within window\n");
-
-//    else if(status == SaddlePoint::STATUS_BAD_HIGH_BARRIER)
-//        fprintf(stdout, "Energy barriers, not within window\n");
-
-//    else if (status == SaddlePoint::STATUS_BAD_MINIMA)
-//        fprintf(stdout, "Minima, from saddle did not converge\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
 

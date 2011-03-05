@@ -46,7 +46,7 @@ BasinHoppingJob::~BasinHoppingJob()
     delete trial;
 }
 
-void BasinHoppingJob::run(int bundleNumber)
+std::vector<std::string> BasinHoppingJob::run(void)
 {
     Matter *tmpMatter = new Matter(parameters);
 
@@ -87,7 +87,7 @@ void BasinHoppingJob::run(int bundleNumber)
         double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
         if (abs(deltaE)>50.0) {
             printf("ERROR: huge deltaE: %f\n", deltaE);
-            return;
+            return returnFiles;
         }
         double p = exp(-deltaE / (parameters->temperature*8.617343e-5));
 
@@ -120,21 +120,25 @@ void BasinHoppingJob::run(int bundleNumber)
 
     FILE *fileResults, *fileProduct;
 
-    fileResults = fopen("results_0.dat", "wb");
+    std::string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
+    fileResults = fopen(resultsFilename.c_str(), "wb");
 
     fprintf(fileResults, "%d termination_reason\n", 0);
     fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fclose(fileResults);
 
-    fileProduct = fopen("product_0.con", "wb");
+    std::string productFilename("product.con");
+    returnFiles.push_back(productFilename);
+    fileProduct = fopen(productFilename.c_str(), "wb");
     minimumEnergyStructure->matter2con(fileProduct);
     fclose(fileProduct);
 
     delete tmpMatter;
     delete minimumEnergyStructure;
   
-    return;
+    return returnFiles;
 }
 
 Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceRandom()

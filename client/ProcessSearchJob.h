@@ -21,12 +21,14 @@ class ProcessSearchJob : public Job {
     public:
         ProcessSearchJob(Parameters *params);
         ~ProcessSearchJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
 
     private:
         int  doProcessSearch(void);
         void printEndState(int status);
-        void saveData(int status, int bundleNumber);
+        void saveData(int status);
+
+        std::vector<std::string> returnFiles;
 
         Hessian *hessian;
         Parameters *parameters;

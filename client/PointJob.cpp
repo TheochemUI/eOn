@@ -19,21 +19,12 @@ PointJob::PointJob(Parameters *params)
 
 PointJob::~PointJob(){ }
 
-void PointJob::run(int bundleNumber)
+std::vector<std::string> PointJob::run(void)
 {
-    char buff[STRING_SIZE];
-    string reactant_passed("reactant_passed");
-    string data_out("results");
-
-    if (bundleNumber < 0) {
-        reactant_passed += ".con";
-        data_out += ".dat";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        reactant_passed += buff;
-        snprintf(buff, STRING_SIZE, "_%i.dat", bundleNumber);
-        data_out += buff;
-    }
+    std::vector<std::string> returnFiles;
+    string reactant_passed("reactant_passed.con");
+    string data_out("results.dat");
+    returnFiles.push_back(data_out);
 
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
@@ -41,6 +32,8 @@ void PointJob::run(int bundleNumber)
     printf("Energy: %f\n", reactant->getPotentialEnergy());
 
     FILE *fileResults = fopen(data_out.c_str(), "wb");
-    fprintf(fileResults, "Energy: %f\n", reactant->getPotentialEnergy());
+    fprintf(fileResults, "%f Energy\n", reactant->getPotentialEnergy());
     fclose(fileResults);
+
+    return returnFiles;
 }

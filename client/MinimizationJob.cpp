@@ -23,20 +23,13 @@ MinimizationJob::MinimizationJob(Parameters *params)
 
 MinimizationJob::~MinimizationJob(){ }
 
-void MinimizationJob::run(int bundleNumber)
+std::vector<std::string> MinimizationJob::run(void)
 {
-    char buff[STRING_SIZE];
-    string reactant_passed("reactant_passed");
-    string reactant_output("reactant");
+    string reactant_passed("reactant_passed.con");
+    string reactant_output("reactant.con");
 
-    if (bundleNumber < 0) {
-        reactant_passed += ".con";
-        reactant_output += ".con";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        reactant_passed += buff;
-        reactant_output += buff;
-    }
+    std::vector<std::string> returnFiles;
+    returnFiles.push_back(reactant_output);
 
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
@@ -72,4 +65,6 @@ void MinimizationJob::run(int bundleNumber)
     printf("Saving result to %s\n", reactant_output.c_str());
     reactant->matter2con(reactant_output);
     printf("Final Energy: %f\n", reactant->getPotentialEnergy());
+
+    return returnFiles;
 }

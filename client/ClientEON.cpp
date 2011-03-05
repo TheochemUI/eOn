@@ -8,23 +8,11 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#include "Bundling.h"
 #include "Constants.h"
 #include "Parameters.h"
 #include "Job.h"
-#include "ProcessSearchJob.h"
-#include "SaddleSearchJob.h"
-#include "MinimizationJob.h"
-#include "PointJob.h"
-#include "HessianJob.h"
-#include "ParallelReplicaJob.h"
-#include "DistributedReplicaJob.h"
-#include "BasinHoppingJob.h"
-#include "FiniteDifferenceJob.h"
-#include "DimerRotationJob.h"
-#include "DisplacementSamplingJob.h"
-#include "TestJob.h"
 
-#include <dirent.h>
 #include <errno.h>
 #include <string.h>
 #include <time.h>
@@ -67,60 +55,12 @@ Parameters parameters;
 #include "Compression.h"
 const char BOINC_INPUT_ARCHIVE[] = "input.tgz";
 const char BOINC_RESULT_ARCHIVE[] = "result.tgz";
-
-// This will match any file that doesn't have the string "passed",
-// has either a "con" or "dat" in it, and doesn't start with a period.
-int result_pattern(char *filename)
-{
-        if (strstr(filename, "passed") != NULL) {
-            return 0; 
-        }else if (filename[0] == '.') {
-            return 0;
-        }else if (strstr(filename+strlen(filename)-3, "con") == NULL && 
-                  strstr(filename+strlen(filename)-3, "dat") == NULL) {
-            return 0;
-        }
-        return 1;
-}
 #endif
 
-int getBundleSize(void) {
-    DIR *dir;
-    struct dirent *dp;
-    int num_bundle=0;
+void enableFPE(void);
 
-    dir = opendir(".");
-
-    while ((dp=readdir(dir))) {
-        if (dp->d_name[0] == '.') {
-            continue;
-        }
-        if (strstr(dp->d_name, "passed")==NULL) {
-            continue;
-        }
-        char *ch = strrchr(dp->d_name, '_')+1;
-        char *cch = strrchr(dp->d_name, '.');
-        *cch = '\0';
-        if (isdigit(*ch)) {
-            int i=atoi(ch)+1;
-            if (i>num_bundle) {
-                num_bundle = i;
-            }
-        }
-    }
-
-    return num_bundle;
-}
-
-int main(int argc, char **argv) 
+void enableFPE(void)
 {
-    // BOINC is started
-    int rc;
-    rc = boinc_init();
-    if(rc){
-        boinc_finish(rc);
-    }
-
     // Floating Point Trapping. It is platform specific!
     // This causes the program to crash on divison by zero,
     // invalid operations, and overflows.
@@ -139,48 +79,10 @@ int main(int argc, char **argv)
         cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
         _controlfp(cw,_MCW_EM);
     #endif
+}
 
-    #ifdef WIN32
-    time_t beginTime = time(NULL);
-    #else
-    struct timeval beginTime;
-    gettimeofday(&beginTime, NULL);
-    #endif
-
-    #ifdef BOINC
-    //We want to uncompress our input file
-    char resolved[STRING_SIZE];
-    rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
-    if (rc) {
-        // 
-        fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
-        boinc_finish(rc);
-    };
-    if (extract_archive(resolved) != 0) {
-        printf("error extracting input archive\n");
-        boinc_finish(1);
-    }
-    #endif
-
-    int bundleSize = getBundleSize();
-
-    #ifndef NDEBUG
-    printf("Bundle size of %i\n", bundleSize);
-    #endif
-
-    int error = parameters.load("config_passed.ini");
-    if (error) {
-        fprintf(stderr, "\nproblem loading parameters file\n");
-        boinc_finish(1);
-    }
-
-    FILE *stdoutdat=NULL;
-    if (parameters.saveStdout == true) {
-        //This is kinda a hack, but its for debugging only.
-        //A bundle size of 1 must be used for this to work.
-        stdoutdat = freopen("stdout_0.dat", "w", stdout);
-    }
-
+void printSystemInfo()
+{
     // System Information
     #ifdef WIN32
     printf("Windows\n");
@@ -195,54 +97,79 @@ int main(int argc, char **argv)
         printf("unknown\n");
     }
     #endif
+}
 
 
-    // Determine what type of job we are running according 
-    // to the parameters file. 
-    Job *job=NULL;
+int main(int argc, char **argv) 
+{
 
-    if (parameters.job == Job::PROCESS_SEARCH) {
-        job = new ProcessSearchJob(&parameters);
-    }else if (parameters.job == Job::SADDLE_SEARCH) {
-        job = new SaddleSearchJob(&parameters);
-    }else if (parameters.job == Job::MINIMIZATION) {
-        job = new MinimizationJob(&parameters);
-    }else if (parameters.job == Job::POINT) {
-        job = new PointJob(&parameters);
-    }else if (parameters.job == Job::HESSIAN) {
-        job = new HessianJob(&parameters);
-    }else if (parameters.job == Job::PARALLEL_REPLICA) {
-        job =  new ParallelReplicaJob(&parameters);
-    }else if (parameters.job == Job::DISTRIBUTED_REPLICA) {
-        job =  new DistributedReplicaJob(&parameters);
-    }else if (parameters.job == Job::BASIN_HOPPING) {
-        job =  new BasinHoppingJob(&parameters);
-    }else if (parameters.job == Job::FINITE_DIFFERENCE) {
-        job =  new FiniteDifferenceJob(&parameters);
-    }else if (parameters.job == Job::DIMER_ROTATION) {
-        job =  new DimerRotationJob(&parameters);
-    }else if (parameters.job == Job::DISPLACEMENT_SAMPLING) {
-        job =  new DisplacementSamplingJob(&parameters);
-    }else if (parameters.job == Job::TEST) {
-        job =  new TestJob(&parameters);
+    #ifdef BOINC
+    // BOINC is started
+    int rc;
+    rc = boinc_init();
+    if(rc){
+        boinc_finish(rc);
     }
 
-    // If no bundles run once; otherwise, run bundleSize number of times.
+    //We want to uncompress our input file
+    char resolved[STRING_SIZE];
+    rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
+    if (rc) {
+        // 
+        fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
+        boinc_finish(rc);
+    };
+    if (extract_archive(resolved) != 0) {
+        printf("error extracting input archive\n");
+        boinc_finish(1);
+    }
+    #endif
+
+    enableFPE();
+    printSystemInfo();
+
+    #ifdef WIN32
+    time_t beginTime = time(NULL);
+    #else
+    struct timeval beginTime;
+    gettimeofday(&beginTime, NULL);
+    #endif
+
+    int bundleSize = getBundleSize();
     if (bundleSize == 0) {
-        job->run(-1);
-        boinc_fraction_done(1.0);
-    }else{
-        for (int i=0; i<bundleSize; i++) {
-            char buff[100];
-            snprintf(buff, 100, "config_passed_%i.ini", i);
-            string parametersFilename(buff);
-            parameters.load(parametersFilename);
-            job->run(i);
-            boinc_fraction_done((double)(i+1)/(bundleSize));
-        }
+        bundleSize = 1;
+    }else if (bundleSize == -1) {
+        //Not using bundling
+        bundleSize = 1;
     }
 
-    delete job;
+    std::vector<std::string> bundledFilenames;
+    for (int i=0;i<bundleSize;i++) {
+
+        std::vector<std::string> unbundledFilenames = unbundle(i);
+
+        int error = parameters.load("config_passed.ini");
+        if (error) {
+            fprintf(stderr, "\nproblem loading parameters file\n");
+            boinc_finish(1);
+        }
+
+        // Determine what type of job we are running according 
+        // to the parameters file. 
+        Job *job=Job::getJob(&parameters);
+        if (job == NULL) {
+            printf("error: Unknown job\n");
+            return 1;
+        }
+        std::vector<std::string> filenames = job->run();
+
+        bundle(i, filenames, &bundledFilenames);
+
+        deleteUnbundledFiles(unbundledFilenames);
+
+        boinc_fraction_done((double)(i+1)/(bundleSize));
+        delete job;
+    }
 
     // Timing Information
     double utime=0, stime=0, rtime=0;
@@ -280,9 +207,6 @@ int main(int argc, char **argv)
     unsigned int vs  = t_info.virtual_size;
     printf("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n", (double)rss/1024/1024, (double)vs/1024/1024);
     #endif
-    if (parameters.saveStdout == true) {
-        fclose(stdoutdat);
-    }
 
     #ifdef BOINC
     //XXX: Error handling!
