@@ -19,7 +19,7 @@ class BasinHoppingJob : public Job {
     public:
         BasinHoppingJob(Parameters *params);
         ~BasinHoppingJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
 
     private:
         Matrix<double, Eigen::Dynamic, 3> displaceRandom();
@@ -28,6 +28,8 @@ class BasinHoppingJob : public Job {
         Parameters *parameters;
         Matter *current;
         Matter *trial;  // initial configuration.
+
+        std::vector<std::string> returnFiles;
 };
 
 #endif

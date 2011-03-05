@@ -20,7 +20,7 @@ class DimerRotationJob: public Job {
     public:
         DimerRotationJob(Parameters *params);
         ~DimerRotationJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
 };

@@ -35,7 +35,6 @@ Parameters::Parameters(){
     checkRotation = false;
 
     // [Debug] //
-    saveStdout = false;
     writeMovies = false;
 
     // [Process Search] //
@@ -405,7 +404,6 @@ int Parameters::load(FILE *file){
         basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized", basinHoppingStayMinimized);
 
         // [Debug] //
-        saveStdout= ini.GetValueB("Debug", "save_stdout", saveStdout);
         writeMovies= ini.GetValueB("Debug", "write_movies", writeMovies);
 
     }

@@ -20,14 +20,14 @@ class ParallelReplicaJob: public Job
     public:
         ParallelReplicaJob(Parameters *params);
         ~ParallelReplicaJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
 
     private:
         void dynamics();
         long Refine(Matter *mdbuff[],long length);
         bool checkState(Matter *matter);
         bool checkState_nq(Matter *matter);
-        void saveData(int status,int bundleNumber);
+        void saveData(int status);
         void dephase();
         Parameters *parameters;
         Matter *reactant;
@@ -49,6 +49,7 @@ class ParallelReplicaJob: public Job
         long relax_steps;
         bool newstate;
         bool meta;
+        std::vector<std::string> returnFiles;
 };
 
 #endif
