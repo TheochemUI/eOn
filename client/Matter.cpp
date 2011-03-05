@@ -46,7 +46,6 @@ namespace {
 
         while (elementArray[i] != NULL) {
             if (strcmp(symbol, elementArray[i]) == 0) {
-                cout<<"i"<<i<<"symbol"<<symbol<<endl;
                 return i;
             }
             i++;
@@ -713,8 +712,6 @@ bool Matter::con2matter(FILE *file) {
             cerr << "input con file does not list the number of each component" <<endl;
             return false;
         }
-        cout<<"Split"<<split<<endl;
-        cout<<Natoms<<endl;
         first[j+1]=Natoms+first[j];
         split = strtok(NULL, " ");
     }    
@@ -734,8 +731,6 @@ bool Matter::con2matter(FILE *file) {
             return false;
         }
         sscanf(line, "%lf", &mass[j]);
-        cout<<"Split"<<split<<endl;
-        cout<<mass[j]<<endl;
         split = strtok(NULL, " ");
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     };
@@ -746,7 +741,6 @@ bool Matter::con2matter(FILE *file) {
         char symbol[3];
         fgets(line,sizeof(line),file);
         sscanf(line, "%2s\n", symbol);
-        cout<<line<<endl;
         atomicNr=symbol2atomicNumber(symbol);
         fgets(line,sizeof(line),file); // skip one line
         for (i=first[j]; i<first[j+1]; i++){
