@@ -212,7 +212,7 @@ int main(int argc, char **argv)
     //XXX: Error handling!
     rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
     char dirToCompress[] = ".";
-    create_archive(resolved, dirToCompress, result_pattern); 
+    create_archive(resolved, dirToCompress, bundledFilenames); 
     #endif
 
     boinc_finish(0);
