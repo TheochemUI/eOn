@@ -18,7 +18,7 @@ class PointJob: public Job {
     public:
         PointJob(Parameters *params);
         ~PointJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
 };

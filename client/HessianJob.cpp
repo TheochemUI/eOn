@@ -22,23 +22,13 @@ HessianJob::~HessianJob()
 {
 }
 
-void HessianJob::run(int bundleNumber)
+std::vector<std::string> HessianJob::run(void)
 {
-    char buff[STRING_SIZE];
-    string reactant_passed("reactant_passed");
-    string saddle_passed("saddle_passed");
-    string product_passed("product_passed");
+    string reactant_passed("reactant_passed.con");
+    string saddle_passed("saddle_passed.con");
+    string product_passed("product_passed.con");
 
-    if (bundleNumber < 0) {
-        reactant_passed += ".con";
-        saddle_passed += ".con";
-        product_passed += ".con";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        reactant_passed += buff;
-        saddle_passed += buff;
-        product_passed += buff;
-    }
+    std::vector<std::string> returnFiles;
 
     Matter *reactant = new Matter(parameters);
     Matter *saddle = new Matter(parameters);
@@ -56,18 +46,14 @@ void HessianJob::run(int bundleNumber)
     FILE *fileResults;
     FILE *fileMode;
 
-    char resultsname[STRING_SIZE];
-    char modename[STRING_SIZE];
+    std::string results_file("results.dat");
+    std::string mode_file("mode.dat");
 
-    if (bundleNumber != -1) {
-        snprintf(resultsname, STRING_SIZE, "results_%i.dat", bundleNumber);
-        snprintf(modename, STRING_SIZE, "mode_%i.dat", bundleNumber);
-    }else{
-        strncpy(resultsname, "results.dat", STRING_SIZE);
-        strncpy(modename, "mode.dat", STRING_SIZE);
-    }
-    fileResults = fopen(resultsname, "wb");
-    fileMode = fopen(modename, "wb");
+    returnFiles.push_back(results_file);
+    returnFiles.push_back(mode_file);
+
+    fileResults = fopen(results_file.c_str(), "wb");
+    fileMode = fopen(mode_file.c_str(), "wb");
 
     fprintf(fileResults, "%s good\n", failed ? "false" : "true");
     fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
@@ -83,6 +69,8 @@ void HessianJob::run(int bundleNumber)
     delete reactant;
     delete product;
     delete saddle;
+
+    return returnFiles;
 }
  
 

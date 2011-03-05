@@ -18,7 +18,7 @@ class MinimizationJob: public Job {
     public:
         MinimizationJob(Parameters *params);
         ~MinimizationJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
 };

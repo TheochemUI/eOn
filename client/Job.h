@@ -10,6 +10,10 @@
 //-----------------------------------------------------------------------------------
 #ifndef JOB_H
 #define JOB_H
+#include "Parameters.h"
+#include <vector>
+#include <string>
+
 class Job { 
     public:
         enum{
@@ -26,7 +30,10 @@ class Job {
             POINT,
             TEST
         };
+
         virtual ~Job() {}
-        virtual void run(int bundleNumber)=0;
+        virtual std::vector<std::string> run()=0;
+
+        static Job *getJob(Parameters *parameters);
 };
 #endif

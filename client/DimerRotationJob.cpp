@@ -23,7 +23,7 @@ DimerRotationJob::DimerRotationJob(Parameters *params)
 
 DimerRotationJob::~DimerRotationJob(){ }
 
-void DimerRotationJob::run(int bundleNumber)
+std::vector<std::string> DimerRotationJob::run(void)
 {
     // No bundling for this job, so bundleNumber is ignored.
     
@@ -100,4 +100,7 @@ void DimerRotationJob::run(int bundleNumber)
         fprintf(results, "%14.8f    %15.8f\n", dRots[dRoti], (curvature1 - curvature2) / dRots[dRoti]);
     }
     fclose(results);
+
+    std::vector<std::string> empty;
+    return empty;
 }

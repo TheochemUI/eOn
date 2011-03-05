@@ -29,7 +29,8 @@
 // This function will create a gzipped tar file (outname)
 // which contains the files matched by the function pattern_match.
 // Pattern_match should return 0 on no match and 1 on match.
-int create_archive(char *outname, char *path, int (*pattern_match)(char *))
+int create_archive(char *outname, char *path, 
+                   const std::vector<std::string> &filenames)
 {
     struct archive *a;
     struct archive_entry *entry;
@@ -37,44 +38,27 @@ int create_archive(char *outname, char *path, int (*pattern_match)(char *))
     char buff[BUFFER_SIZE];
     int len;
     int fd;
-    DIR *dp;
-    struct dirent *ep;
 
     a = archive_write_new();
     archive_write_set_compression_gzip(a);
     archive_write_set_format_pax_restricted(a);
     archive_write_open_filename(a, outname);
 
-    dp = opendir(path);
-    if (dp != NULL) {
-        while ((ep = readdir(dp))) {
-            /* This had to be removed for win32 compat :(
-            if (ep->d_type != DT_REG) {
-                continue;
-            }
-            */
-            if (pattern_match(ep->d_name)==0) {
-                continue;
-            }
-            stat(ep->d_name, &st);
-            entry = archive_entry_new();
-            archive_entry_set_pathname(entry, ep->d_name);
-            archive_entry_set_size(entry, st.st_size);
-            archive_entry_set_filetype(entry, AE_IFREG);
-            archive_entry_set_perm(entry, 0644);
-            archive_write_header(a, entry);
-            fd = open(ep->d_name, O_RDONLY);
+    for (int i=0;i<filenames.size();i++) {
+        stat(filenames[i].c_str(), &st);
+        entry = archive_entry_new();
+        archive_entry_set_pathname(entry, filenames[i].c_str());
+        archive_entry_set_size(entry, st.st_size);
+        archive_entry_set_filetype(entry, AE_IFREG);
+        archive_entry_set_perm(entry, 0644);
+        archive_write_header(a, entry);
+        fd = open(filenames[i].c_str(), O_RDONLY);
+        len = read(fd, buff, sizeof(buff));
+        while (len > 0) {
+            archive_write_data(a, buff, len);
             len = read(fd, buff, sizeof(buff));
-            while (len > 0) {
-                archive_write_data(a, buff, len);
-                len = read(fd, buff, sizeof(buff));
-            }
-            close(fd);
-            archive_entry_free(entry);
         }
-        closedir(dp);
-    }else{
-        printf("error opening directory\n");
+        close(fd);
     }
 
     archive_write_close(a);

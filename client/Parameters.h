@@ -149,7 +149,6 @@ public:
     bool   basinHoppingSingleAtomDisplace;
 
     // [Debug]
-    bool   saveStdout;
     bool   writeMovies;
 
 private:

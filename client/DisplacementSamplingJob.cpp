@@ -26,7 +26,7 @@ DisplacementSamplingJob::DisplacementSamplingJob(Parameters *params)
 
 DisplacementSamplingJob::~DisplacementSamplingJob(){ }
 
-void DisplacementSamplingJob::run(int bundleNumber)
+std::vector<std::string> DisplacementSamplingJob::run(void)
 {
     // No bundling for this job, so bundleNumber is ignored.
     
@@ -122,6 +122,8 @@ void DisplacementSamplingJob::run(int bundleNumber)
         }
     }
     fclose(results);
+    std::vector<std::string> empty;
+    return empty;
 }
 
 

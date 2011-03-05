@@ -28,22 +28,11 @@ ProcessSearchJob::ProcessSearchJob (Parameters *params)
 ProcessSearchJob::~ProcessSearchJob()
 {}
 
-void ProcessSearchJob::run(int bundleNumber)
+std::vector<std::string> ProcessSearchJob::run(void)
 {
-    char buff[STRING_SIZE];
     string reactant_passed("reactant_passed.con");
-    string displacement_passed("displacement_passed");
-    string mode_passed("mode_passed");
-
-    if (bundleNumber < 0) {
-        displacement_passed += ".con";
-        mode_passed += ".dat";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        displacement_passed += buff;
-        snprintf(buff, STRING_SIZE, "_%i.dat", bundleNumber);
-        mode_passed += buff;
-    }
+    string displacement_passed("displacement_passed.con");
+    string mode_passed("mode_passed.dat");
 
     initial = new Matter(parameters);
     displacement = new Matter(parameters);
@@ -88,7 +77,7 @@ void ProcessSearchJob::run(int bundleNumber)
     int status = doProcessSearch();
 
     printEndState(status);
-    saveData(status, bundleNumber);
+    saveData(status);
 
     delete hessian;
     delete saddlePoint;
@@ -97,6 +86,8 @@ void ProcessSearchJob::run(int bundleNumber)
     delete saddle; 
     delete min1; 
     delete min2; 
+
+    return returnFiles;
 }
 
 int ProcessSearchJob::doProcessSearch(void)
@@ -239,17 +230,12 @@ int ProcessSearchJob::doProcessSearch(void)
     return SaddlePoint::STATUS_GOOD;
 }
 
-void ProcessSearchJob::saveData(int status, int bundleNumber){
+void ProcessSearchJob::saveData(int status){
     FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
-    char filename[STRING_SIZE];
-
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-    }else{
-        strncpy(filename, "results.dat", STRING_SIZE);
-    }
-	fileResults = fopen(filename, "wb");
+    std::string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
+	fileResults = fopen(resultsFilename.c_str(), "wb");
 	///XXX: min_fcalls isn't quite right it should get them from
 	//      the minimizer. But right now the minimizers are in
 	//      the SaddlePoint object. They will be taken out eventually.
@@ -273,39 +259,27 @@ void ProcessSearchJob::saveData(int status, int bundleNumber){
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
 	fclose(fileResults);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "reactant.con", STRING_SIZE);
-    }
-	fileReactant = fopen(filename, "wb");
+    std::string reactantFilename("reactant.con");
+    returnFiles.push_back(reactantFilename);
+	fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "mode_%i.dat", bundleNumber);
-    }else{
-        strncpy(filename, "mode.dat", STRING_SIZE);
-    }
-    fileMode = fopen(filename, "wb");
+    std::string modeFilename("mode.dat");
+    returnFiles.push_back(modeFilename);
+    fileMode = fopen(modeFilename.c_str(), "wb");
     saddlePoint->saveMode(fileMode);
     fclose(fileMode);
 	fclose(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "saddle.con", STRING_SIZE);
-    }
-	fileSaddle = fopen(filename, "wb");
+    std::string saddleFilename("saddle.con");
+    returnFiles.push_back(saddleFilename);
+	fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
 	fclose(fileSaddle);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "product.con", STRING_SIZE);
-    }
-	fileProduct = fopen(filename, "wb");
+    std::string productFilename("product.con");
+    returnFiles.push_back(productFilename);
+	fileProduct = fopen(productFilename.c_str(), "wb");
 	min2->matter2con(fileProduct);
     fclose(fileProduct);
 
