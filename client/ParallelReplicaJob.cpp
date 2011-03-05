@@ -51,17 +51,9 @@ ParallelReplicaJob::~ParallelReplicaJob()
     delete[] SPtimebuff;
 }
 
-void ParallelReplicaJob::run(int bundleNumber)
+std::vector<std::string> ParallelReplicaJob::run(void)
 {
-    char buff[STRING_SIZE];
-    string reactant_passed("reactant_passed");
-
-    if (bundleNumber < 0) {
-        reactant_passed += ".con";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        reactant_passed += buff;
-    }
+    string reactant_passed("reactant_passed.con");
 
     reactant = new Matter(parameters);
     min1 = new Matter(parameters);
@@ -86,7 +78,7 @@ void ParallelReplicaJob::run(int bundleNumber)
     printf("Now running Parallel Replica Dynamics\n\n");
 
     dynamics();
-    saveData(newstate,bundleNumber);
+    saveData(newstate);
     
     if(newstate){
      //   printf("New state has been found\n");
@@ -102,6 +94,8 @@ void ParallelReplicaJob::run(int bundleNumber)
     delete reactant;
     delete saddle;
     delete final;
+
+    return returnFiles;
 }
 
 void ParallelReplicaJob::dynamics()
@@ -286,18 +280,14 @@ void ParallelReplicaJob::dynamics()
     }
 }
 
-void ParallelReplicaJob::saveData(int status,int bundleNumber)
+void ParallelReplicaJob::saveData(int status)
 {
     FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle, *fileMeta;
 
-    char filename[STRING_SIZE];
+    std::string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-    }else{
-         strncpy(filename, "results.dat", STRING_SIZE);
-    }
-    fileResults = fopen(filename, "wb");
+    fileResults = fopen(resultsFilename.c_str(), "wb");
     ///XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
     //      the SaddlePoint object. They will be taken out eventually.
@@ -318,45 +308,32 @@ void ParallelReplicaJob::saveData(int status,int bundleNumber)
     fprintf(fileResults, "%lf moved_distance\n",final->distanceTo(*min1));
     fclose(fileResults);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-    }else{
-         strncpy(filename, "reactant.con", STRING_SIZE);
-    }
-    fileReactant = fopen(filename, "wb");
+    std::string reactantFilename("reactant.con");
+    returnFiles.push_back(reactantFilename);
+    fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
     fclose(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "product_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "product.con", STRING_SIZE);
-    }
+    std::string productFilename("product.con");
+    returnFiles.push_back(productFilename);
 
-    fileProduct = fopen(filename, "wb");
+    fileProduct = fopen(productFilename.c_str(), "wb");
     final->matter2con(fileProduct);
     fclose(fileProduct);
   
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "saddle_%i.con", bundleNumber);
-    }else{
-        strncpy(filename, "saddle.con", STRING_SIZE);
-    }
+    std::string saddleFilename("saddle.con");
+    returnFiles.push_back(saddleFilename);
 
-    fileSaddle = fopen(filename, "wb");
+    fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
     if(meta){
-       if (bundleNumber != -1) {
-           snprintf(filename, STRING_SIZE, "meta_%i.con", bundleNumber);
-       }else{
-           strncpy(filename, "meta.con", STRING_SIZE);
-       }
-
-       fileMeta = fopen(filename, "wb");
-       fin1->matter2con(fileMeta);
-       fclose(fileMeta);
+        std::string metaFilename("meta.con");
+        returnFiles.push_back(metaFilename);
+        fileMeta = fopen(metaFilename.c_str(), "wb");
+        fin1->matter2con(fileMeta);
+        fclose(fileMeta);
     }
     return;
 }

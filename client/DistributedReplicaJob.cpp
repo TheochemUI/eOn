@@ -49,30 +49,16 @@ DistributedReplicaJob::~DistributedReplicaJob()
 
 }
 
-void DistributedReplicaJob::run(int bundleNumber)
+std::vector<std::string> DistributedReplicaJob::run(void)
 {
-    char buff[STRING_SIZE];
-    string reactant_passed("reactant_passed");
-
-    if (bundleNumber < 0) {
-        reactant_passed += ".con";
-    }else{
-        snprintf(buff, STRING_SIZE, "_%i.con", bundleNumber);
-        reactant_passed += buff;
-    }
+    string reactantPassedFilename("reactant_passed.con");
 
     reactant = new Matter(parameters);
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
     final = new Matter(parameters);
 
-    reactant->convel2matter(reactant_passed);
-
-  /*
-    Matrix<double, Eigen::Dynamic, 3> vel;
-    vel = reactant->getVelocities();
-    printf("%lf %lf %lf\n",vel(0,0),vel(0,1),vel(0,2));
- */
+    reactant->convel2matter(reactantPassedFilename);
 
     *min1 = *reactant;
     *min2 = *reactant;
@@ -88,12 +74,14 @@ void DistributedReplicaJob::run(int bundleNumber)
 
     balanceStep();
     samplingStep();
-    saveData(bundleNumber);
+    saveData();
 
     delete reactant;
     delete min1;
     delete min2;
     delete final;
+
+    return returnFiles;
 }
 
 void DistributedReplicaJob::balanceStep(){
@@ -215,18 +203,14 @@ void DistributedReplicaJob::samplingStep(){
     return;
 }
 
-void DistributedReplicaJob::saveData(int bundleNumber){
+void DistributedReplicaJob::saveData(void)
+{
  
     FILE *fileResults, *fileReactant, *fileProduct;
 
-    char filename[STRING_SIZE];
-
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "results_%i.dat", bundleNumber);
-    }else{
-         strncpy(filename, "results.dat", STRING_SIZE);
-    }
-    fileResults = fopen(filename, "wb");
+    std::string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
+    fileResults = fopen(resultsFilename.c_str(), "wb");
     ///XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
     //      the SaddlePoint object. They will be taken out eventually.
@@ -245,22 +229,15 @@ void DistributedReplicaJob::saveData(int bundleNumber){
     fprintf(fileResults, "%lf moved_distance\n",min2->distanceTo(*min1));
     fclose(fileResults);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "reactant_%i.con", bundleNumber);
-    }else{
-         strncpy(filename, "reactant.con", STRING_SIZE);
-    }
-    fileReactant = fopen(filename, "wb");
+    std::string reactantFilename("reactant.con");
+    returnFiles.push_back(reactantFilename);
+    fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
     fclose(fileReactant);
 
-    if (bundleNumber != -1) {
-        snprintf(filename, STRING_SIZE, "product_%i.convel", bundleNumber);
-    }else{
-        strncpy(filename, "product.convel", STRING_SIZE);
-    }
-
-    fileProduct = fopen(filename, "wb");
+    std::string productVelFilename("product.convel");
+    returnFiles.push_back(productVelFilename); 
+    fileProduct = fopen(productVelFilename.c_str(), "wb");
     final->matter2convel(fileProduct);
     fclose(fileProduct);
  

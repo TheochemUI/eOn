@@ -19,7 +19,7 @@ class HessianJob : public Job
 public:
     HessianJob(Parameters *params);
     ~HessianJob();
-    void run(int bundleNumber);
+    std::vector<std::string> run(void);
 private:
     Parameters *parameters;
 };

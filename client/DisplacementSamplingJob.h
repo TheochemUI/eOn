@@ -20,7 +20,7 @@ class DisplacementSamplingJob: public Job {
     public:
         DisplacementSamplingJob(Parameters *params);
         ~DisplacementSamplingJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
 };

@@ -20,7 +20,7 @@ class TestJob: public Job {
     public:
         TestJob(Parameters *params);
         ~TestJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
     private:
         Parameters *parameters;
         double tolerance;

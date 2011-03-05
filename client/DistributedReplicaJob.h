@@ -21,11 +21,12 @@ class DistributedReplicaJob: public Job
     public:
         DistributedReplicaJob(Parameters *params);
         ~DistributedReplicaJob(void);
-        void run(int bundleNumber);
+        std::vector<std::string> run(void);
         void balanceStep();
         void samplingStep();
-        void saveData(int bundleNumber);
     private:
+        std::vector<std::string> returnFiles;
+        void saveData();
         Parameters *parameters;
         Matter *reactant;
         Matter *final;
