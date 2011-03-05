@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "Bundling.h"
+#include "CommandLine.h"
 #include "Constants.h"
 #include "Parameters.h"
 #include "Job.h"
@@ -102,6 +103,11 @@ void printSystemInfo()
 
 int main(int argc, char **argv) 
 {
+
+    if (argc > 1) {
+        commandLine(argc, argv);
+        return 0;
+    }
 
     #ifdef BOINC
     // BOINC is started
