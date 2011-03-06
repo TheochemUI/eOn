@@ -63,7 +63,8 @@ class AKMCState(state.State):
         oldlowest = self.get_lowest_barrier()
         barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
         lowest = self.update_lowest_barrier(barrier)
-        ediff = (barrier - lowest) - (self.statelist.kT * self.statelist.max_thermal_window)
+        ediff = (barrier - lowest) - (self.statelist.kT *
+                (self.statelist.thermal_window+self.statelist.max_thermal_window))
         if ediff > 0.0:
             self.append_search_result(result, "barrier > max_thermal_window")
             return None
