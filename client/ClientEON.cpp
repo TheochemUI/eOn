@@ -141,18 +141,23 @@ int main(int argc, char **argv)
     gettimeofday(&beginTime, NULL);
     #endif
 
+    bool bundlingEnabled = true;
     int bundleSize = getBundleSize();
     if (bundleSize == 0) {
         bundleSize = 1;
     }else if (bundleSize == -1) {
         //Not using bundling
         bundleSize = 1;
+        bundlingEnabled = false;
     }
 
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
 
-        std::vector<std::string> unbundledFilenames = unbundle(i);
+        std::vector<std::string> unbundledFilenames;
+        if (bundlingEnabled) {
+            unbundledFilenames = unbundle(i);
+        }
 
         int error = parameters.load("config_passed.ini");
         if (error) {
@@ -164,14 +169,17 @@ int main(int argc, char **argv)
         // to the parameters file. 
         Job *job=Job::getJob(&parameters);
         if (job == NULL) {
-            printf("error: Unknown job\n");
+            printf("error: Unknown job: %s\n", parameters.potential.c_str());
             return 1;
         }
         std::vector<std::string> filenames = job->run();
 
-        bundle(i, filenames, &bundledFilenames);
-
-        deleteUnbundledFiles(unbundledFilenames);
+        if (bundlingEnabled) {
+            bundle(i, filenames, &bundledFilenames);
+            deleteUnbundledFiles(unbundledFilenames);
+        }else{
+            bundledFilenames = filenames;
+        }
 
         boinc_fraction_done((double)(i+1)/(bundleSize));
         delete job;
