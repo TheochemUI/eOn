@@ -10,7 +10,8 @@ using namespace std;
 
 void singlePoint(Parameters *parameters, Matter *matter)
 {
-    printf("Energy: %f\n", matter->getPotentialEnergy());
+    printf("Energy:         %f\n", matter->getPotentialEnergy());
+    printf("Max atom force: %g\n", matter->maxForce());
 }
 
 void minimize(Parameters *parameters, Matter *matter, string confileout)
@@ -37,7 +38,7 @@ void usage(void)
     fprintf(stderr, fmtStr, "s", "Single point energy of inputConfile");
 
     fprintf(stderr, "Required Options:\n");
-    fprintf(stderr, fmtStr, "p", "The potential (qsc)");
+    fprintf(stderr, fmtStr, "p", "The potential (e.g. qsc, lj, eam_al)");
 }
 
 void commandLine(int argc, char **argv)
