@@ -4,6 +4,7 @@ LIB := libQSC.a
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
 	$(RANLIB) $@
+QSC.o: Parameters.h
 clean :
 	rm -f $(OBJECTS) $(LIB)
 test : CXXFLAGS += -DQSC_STANDALONE
