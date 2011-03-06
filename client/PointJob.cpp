@@ -29,10 +29,12 @@ std::vector<std::string> PointJob::run(void)
     Matter *reactant = new Matter(parameters);
     reactant->con2matter(reactant_passed);
 
-    printf("Energy: %f\n", reactant->getPotentialEnergy());
+    printf("Energy:         %f\n", reactant->getPotentialEnergy());
+    printf("Max atom force: %g\n", reactant->maxForce());
 
     FILE *fileResults = fopen(data_out.c_str(), "wb");
     fprintf(fileResults, "%f Energy\n", reactant->getPotentialEnergy());
+    fprintf(fileResults, "%f Max_Force\n", reactant->maxForce());
     fclose(fileResults);
 
     return returnFiles;
