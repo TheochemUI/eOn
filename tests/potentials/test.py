@@ -32,7 +32,7 @@ for test in tests:
     os.system("../../client/client > /dev/null")
 
     result = open("results.dat",'r')
-    energy = float(result.readline().split()[1])
+    energy = float(result.readline().split()[0])
     result.close()
 
     test['pass'] = abs(energy - test['energy']) <= test['tolerance']
