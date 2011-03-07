@@ -169,9 +169,12 @@ void bundle(int number, std::vector<std::string> filenames,
             *ch = '\0';
             fileEnding = new char[filename.length()];
             strncpy(fileEnding, ch+1, filename.length());
-            snprintf(newFilename, stringSize, "%s_%i.%s", 
+            char *buff = new char[stringSize];
+            snprintf(buff, stringSize, "%s_%i.%s", 
                      newFilename, number, fileEnding);
+            strncpy(newFilename, buff, stringSize);
             delete fileEnding;
+            delete buff;
         }else{
             snprintf(newFilename, stringSize, "%s_%i", 
                      newFilename, number);
