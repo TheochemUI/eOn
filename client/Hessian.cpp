@@ -129,6 +129,32 @@ bool Hessian::calculate(int which)
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
     VectorXd freqs = es.eigenvalues();
 
+    //If we are checking for rotation, then the system has no frozen atoms and
+    //can rotate and translate. This gives effectively zero eigenvalues. We
+    //need to remove them from the prefactor calculation. 
+    if(parameters->checkRotation)
+    {
+        VectorXd newfreqs(size - 6);
+        int nremoved = 0;
+        for(i=0; i<size; i++)
+        {
+            if(abs(freqs(i)) > 1e-6) //XXX: Hardcoded
+            {
+                newfreqs(i-nremoved) = freqs(i);
+            }
+            else
+            {
+                nremoved++;
+            }
+        }
+        if(nremoved != 6)
+        {
+            cout<<"Error: Found "<<nremoved<<" trivial eigenmodes instead of 6."<<endl;
+            return false;
+        }
+        freqs = newfreqs;
+    }
+    
     int nNeg = 0;
     for(i=0; i<size; i++)
     {
@@ -141,6 +167,7 @@ bool Hessian::calculate(int which)
     {
         if(nNeg!=1)
         {
+            cout<<"Error: "<<nNeg<<" negative modes at the saddle"<<endl;
             return false;
         }
     }
@@ -148,6 +175,7 @@ bool Hessian::calculate(int which)
     {
         if(nNeg!=0)
         {
+            cout<<"Error: "<<nNeg<<" negative modes at the reactant/product"<<endl;
             return false;
         }
     }
