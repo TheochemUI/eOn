@@ -25,6 +25,7 @@ Parameters that are generally used to help debug calculations added under
     7      The prefactor is either not defined or is outside of reasonable bounds
     8      The barrier found exceeded :ref:`max_energy <saddle_max_energy>`
     9      The saddle is not connected to the initial minimum, and one or both of the minimizations from the saddle did not converge 
+    10     Calculation of the hessian at the reactant, product, or saddle failed
     =====  =====
 
 **keep_all_result_files** 
