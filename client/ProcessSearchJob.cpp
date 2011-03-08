@@ -173,25 +173,25 @@ int ProcessSearchJob::doProcessSearch(void)
         if(reactModes.size() == 0)
         {
             #ifndef NDEBUG
-                printf("Reactant bad prefactor.\n");
+                printf("Reactant bad hessian.\n");
             #endif
-            return SaddlePoint::STATUS_BAD_PREFACTOR;
+            return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         saddleModes = hessian->getModes(Hessian::SADDLE);
         if(saddleModes.size() == 0)
         {
             #ifndef NDEBUG
-                printf("Saddle bad prefactor.\n");
+                printf("Saddle bad hessian.\n");
             #endif
-            return SaddlePoint::STATUS_BAD_PREFACTOR;
+            return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         prodModes = hessian->getModes(Hessian::PRODUCT);
         if(prodModes.size() == 0)
         {
             #ifndef NDEBUG
-                printf("Product bad prefactor.\n");
+                printf("Product bad hessian.\n");
             #endif
-            return SaddlePoint::STATUS_BAD_PREFACTOR;
+            return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         fCallsPrefactors += Potential::fcalls - f1; 
 
@@ -217,10 +217,12 @@ int ProcessSearchJob::doProcessSearch(void)
         /* Check that the prefactors are in the correct range */
         if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
            (prefactorsValues[0]<parameters->hessianPrefactorMin)){
+            cout<<"Bad reactant-to-saddle prefactor:"<<prefactorsValues[0]<<endl;
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
         if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
            (prefactorsValues[1]<parameters->hessianPrefactorMin)){
+            cout<<"Bad product-to-saddle prefactor:"<<prefactorsValues[1]<<endl;
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
     }else{ // use the default prefactor value specified
@@ -308,6 +310,9 @@ void ProcessSearchJob::printEndState(int status) {
 
     else if(status == SaddlePoint::STATUS_BAD_PREFACTOR)
             fprintf(stdout, "Prefactors, not within window\n");
+
+    else if(status == SaddlePoint::STATUS_FAILED_PREFACTOR)
+            fprintf(stdout, "Prefactors, hessian calculation failed\n");
 
     else if(status == SaddlePoint::STATUS_BAD_HIGH_BARRIER)
         fprintf(stdout, "Energy barriers, not within window\n");
