@@ -169,7 +169,10 @@ VectorXi Hessian::movedAtoms(double const distance)
 
     diffProd.cwise() *= saddle->getFree();
     diffReact.cwise() *= saddle->getFree();
-
+    cout<<"---diffProd---"<<endl;
+    cout<<diffProd<<endl;
+    cout<<"---diffReact---"<<endl;
+    cout<<diffReact<<endl;
     int nMoved = 0;
     for(int i=0; i<nAtoms; i++)
     {
