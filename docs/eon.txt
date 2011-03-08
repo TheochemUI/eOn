@@ -67,7 +67,7 @@ These are options that go in the **[Main]** section of "config.ini".
 
         *eam_al*: Embedded atom method parameterized for aluminum.
 
-        *qsc*: Quantum Sutton Chen potential, for metals.
+        *qsc*: Quantum Sutton-Chen potential, for FCC metals.
 
         *zpice*: Water on platinum.
 
