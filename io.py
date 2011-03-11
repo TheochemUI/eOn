@@ -386,8 +386,9 @@ class ini(SCP):
             name = self.filenames
         else:
             name = self.filenames[-1]
-        with open(name, 'wb') as configfile:        
-            self.write(configfile)
+        configfile = open(name, 'wb')
+        self.write(configfile)
+        configfile.close()
 
 
 class Dynamics:
