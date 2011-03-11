@@ -343,6 +343,52 @@ def saveposcar(fileout, p, w='w', direct = False):
             print >> poscar, posline
             
 
+from ConfigParser import SafeConfigParser as SCP
+class ini(SCP):
+
+    def __init__(self, filenames):
+        self.loaded = False
+        self.filenames = filenames
+        SCP.__init__(self)
+    
+    def read(self):
+        self.loaded = True
+        SCP.read(self, self.filenames)
+        
+    def get(self, section, option, default=None):
+        if not self.loaded:
+            self.read()
+        try:
+            value = SCP.get(self, section, option)
+        except:
+            if default == None:
+                raise NameError("Section or option missing, no default specified.")
+            return default
+        try:
+            return int(value)
+        except ValueError:
+            pass
+        try:
+            return float(value)
+        except ValueError:
+            pass
+        if value.lower() == 'true':
+            return True
+        if value.lower() == 'false':
+            return False
+        return value        
+        
+    def set(self, section, option, value):
+        if section not in self.sections():
+            self.add_section(section)
+        SCP.set(self, section, option, str(value))
+        if type(self.filenames) == str:  
+            name = self.filenames
+        else:
+            name = self.filenames[-1]
+        with open(name, 'wb') as configfile:        
+            self.write(configfile)
+
 
 class Dynamics:
     """ The Dynamics class handles I/O for the dynamics.txt file of an aKMC simulation. """
