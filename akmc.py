@@ -173,43 +173,26 @@ def get_akmc_metadata():
     # read in metadata
     # do we want custom metadata locations?
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.SafeConfigParser() 
+    parser = io.ini(metafile) 
     if os.path.isfile(metafile):
-        parser.read(metafile)
-        try:
-            start_state_num = parser.getint("Simulation Information",'current_state')
-        except:
-            start_state_num = 0 #Sadly, ConfigParser doesn't have a better way of specifying defaults
-        try:
-            time = parser.getfloat("Simulation Information", 'time_simulated') 
-        except:
-            time = 0.0
-        try:
-            wuid = parser.getint("aKMC Metadata", 'wu_id') 
-        except:
-            wuid = 0
+        start_state_num = parser.get("Simulation Information",'current_state', 0)
+        time = parser.get("Simulation Information", 'time_simulated', 0.0) 
+        wuid = parser.get("aKMC Metadata", 'wu_id', 0) 
+        previous_state_num = parser.get("Simulation Information", "previous_state", -1)
+        first_run = parser.get("Simulation Information", "first_run", True)
         try:
             sd = open(os.path.join(config.path_root, "searchdata"), "r")
             searchdata = pickle.load(sd)
             sd.close()
         except:
             searchdata={}
-        try:
-            previous_state_num = parser.getint("Simulation Information", "previous_state")
-        except:
-            previous_state_num = -1
-        try:
-            first_run = parser.getboolean("Simulation Information", "first_run")
-        except:
-        
-            first_run = True
     else:
         time = 0
         start_state_num = 0
         wuid = 0
-        searchdata = {}
         previous_state_num = -1
         first_run = True
+        searchdata = {}
 
     if config.main_random_seed:
         try:
