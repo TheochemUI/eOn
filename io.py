@@ -377,6 +377,13 @@ class ini(SCP):
         if value.lower() == 'false':
             return False
         return value        
+    
+    def getint(self, *args):
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
+    def getfloat(self, *args):
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
+    def getboolean(self, *args):
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
         
     def set(self, section, option, value):
         if section not in self.sections():
