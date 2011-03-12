@@ -241,37 +241,24 @@ class AKMCState(state.State):
             
 
     def get_proc_random_count(self):
-        self.load_info()
-        try:
-            return eval(self.info.get("MetaData", "proc repeat count"))
-        except:
-            return {}
+        return eval(self.info.get("MetaData", "proc repeat count", "{}"))
 
     def inc_proc_random_count(self, procid):
-        self.load_info()
         prc = self.get_proc_random_count()
         if procid not in prc:
             prc[procid] = 1
         else:
             prc[procid] += 1                
         self.info.set("MetaData", "proc repeat count", repr(prc))
-        self.save_info()        
 
     def reset_repeats(self):
-        self.load_info()
-        self.info.set("MetaData", "repeats", "0")
-        self.save_info()        
+        self.info.set("MetaData", "repeats", 0)
         
     def get_repeats(self):
-        self.load_info()
-        try:
-            return self.info.getint("MetaData", "repeats")
-        except:
-            return 0
+        return self.info.get("MetaData", "repeats", 0)
     
     def inc_repeats(self):
-        self.info.set("MetaData", "repeats", str(self.get_repeats() + 1))
-        self.save_info()
+        self.info.set("MetaData", "repeats", self.get_repeats())
     
     def load_process_table(self):
         """ Load the process table.  If the process table is not loaded, load it.  If it is 
@@ -330,60 +317,39 @@ class AKMCState(state.State):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
             barrier stored in info if the barrier parameter is lower and returns the (possibly new)
             lowest barrier. """
-        self.load_info()
-        try:
-            lowest = self.info.getfloat("MetaData", "lowest barrier")
-        except:
-            lowest = 1e300
+        lowest = self.info.get("MetaData", "lowest barrier", 1e300)
         if barrier < lowest:
             lowest = barrier
-            self.info.set("MetaData", "lowest barrier", "%f" % lowest)
-            self.save_info()        
+            self.info.set("MetaData", "lowest barrier", lowest)
         return lowest
 
  
     def get_lowest_barrier(self):
-        self.load_info()
-        try:
-            return self.info.getfloat("MetaData", "lowest barrier")
-        except:
-            return 1e300
+        return self.info.get("MetaData", "lowest barrier", 1e300)
 
 
     def get_unique_saddle_count(self):
         if self.unique_saddle_count is None:
-            self.load_info()
-            try:
-                return self.info.getint("MetaData", "unique_saddles")
-            except:
-                return 0
+            return self.info.get("MetaData", "unique_saddles", 0)
         else:
             return self.unique_saddle_count
 
 
     def set_unique_saddle_count(self, num):
         self.unique_saddle_count = num
-        self.load_info()
-        self.info.set("MetaData", "unique_saddles", "%d" % num)
-        self.save_info()        
+        self.info.set("MetaData", "unique_saddles", num)
 
 
     def get_good_saddle_count(self):
         if self.good_saddle_count is None:
-            self.load_info()
-            try:
-                return self.info.getint("MetaData", "good_saddles")
-            except:
-                return 0
+            return self.info.get("MetaData", "good_saddles", 0)
         else:
             return self.good_saddle_count
 
 
     def set_good_saddle_count(self, num):
         self.good_saddle_count = num
-        self.load_info()
-        self.info.set("MetaData", "good_saddles", "%d" % num)
-        self.save_info()        
+        self.info.set("MetaData", "good_saddles", num)
 
 
 
@@ -394,19 +360,13 @@ class AKMCState(state.State):
 
     def get_bad_saddle_count(self):
         if self.bad_saddle_count is None:
-            self.load_info()
-            try:
-                return self.info.getint("MetaData", "bad_saddles")
-            except:
-                return 0
+            return self.info.get("MetaData", "bad_saddles", 0)
         else:
             return self.bad_saddle_count
 
     def set_bad_saddle_count(self, num):
         self.bad_saddle_count = num
-        self.load_info()
-        self.info.set("MetaData", "bad_saddles", "%d" % num)
-        self.save_info()        
+        self.info.set("MetaData", "bad_saddles", num)
 
 
     def register_bad_saddle(self, result, store = False):
