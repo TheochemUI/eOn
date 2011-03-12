@@ -355,13 +355,13 @@ class ini(SCP):
         self.loaded = True
         SCP.read(self, self.filenames)
         
-    def get(self, section, option, default=None):
+    def get(self, section, option, default="ini_no_default"):
         if not self.loaded:
             self.read()
         try:
             value = SCP.get(self, section, option)
         except:
-            if default == None:
+            if default == "ini_no_default":
                 raise NameError("Section or option missing, no default specified.")
             return default
         try:

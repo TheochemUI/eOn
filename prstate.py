@@ -115,18 +115,12 @@ class PRState(state.State):
                              }
     
     def get_time(self):
-        self.load_info()
-        try:        
-            return self.info.getfloat("MetaData", "accumulated_time")
-        except:
-            return 0
+        return self.info.get("MetaData", "accumulated_time", 0.0)
 
     def inc_time(self, timeinc):
         time = self.get_time()
-        self.info.set("MetaData", "accumulated_time", str(time+timeinc))
-        self.save_info()
+        self.info.set("MetaData", "accumulated_time", time + timeinc)
 
     def zero_time(self):
-        self.load_info()
         self.info.set("MetaData", "accumulated_time", "0.0")
-        self.save_info()
+
