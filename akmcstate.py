@@ -42,11 +42,6 @@ class AKMCState(state.State):
 
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
-        # Statistics
-        self.good_saddle_count = None
-        self.bad_saddle_count = None
-        self.unique_saddle_count = None
-
     def add_process(self, result):
         """ Adds a process to this State. """
         state.State.add_process(self, result)
@@ -329,43 +324,26 @@ class AKMCState(state.State):
 
 
     def get_unique_saddle_count(self):
-        if self.unique_saddle_count is None:
-            return self.info.get("MetaData", "unique_saddles", 0)
-        else:
-            return self.unique_saddle_count
-
+        return self.info.get("MetaData", "unique_saddles", 0)
 
     def set_unique_saddle_count(self, num):
-        self.unique_saddle_count = num
         self.info.set("MetaData", "unique_saddles", num)
 
 
     def get_good_saddle_count(self):
-        if self.good_saddle_count is None:
-            return self.info.get("MetaData", "good_saddles", 0)
-        else:
-            return self.good_saddle_count
+        return self.info.get("MetaData", "good_saddles", 0)
 
 
     def set_good_saddle_count(self, num):
-        self.good_saddle_count = num
         self.info.set("MetaData", "good_saddles", num)
-
-
-
 
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
 
-
     def get_bad_saddle_count(self):
-        if self.bad_saddle_count is None:
-            return self.info.get("MetaData", "bad_saddles", 0)
-        else:
-            return self.bad_saddle_count
+        return self.info.get("MetaData", "bad_saddles", 0)
 
     def set_bad_saddle_count(self, num):
-        self.bad_saddle_count = num
         self.info.set("MetaData", "bad_saddles", num)
 
 
