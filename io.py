@@ -451,10 +451,190 @@ def load_potfiles(pot_dir):
             ret[i] = b
     return ret
     
+class TableException(Exception):
+    pass
 
+class Table:
+    """
+    A class that provides a nice io abstraction for table like data.  The data
+    is saved in a pretty printed format. Also provides nice data retrival
+    methods.
+
+    >>> t = Table("sample.tbl", ['id', 'name', 'age' ])
+    >>> t.addrow({'id':0,'name':"Sam","age":24})
+    >>> t.addrow({'id':1,'name':"David","age":50})
+    >>> t.addrow({'id':2,'name':"Anna","age":21})
+    >>> t #doctest: +NORMALIZE_WHITESPACE
+        id name  age
+        -- ----- --- 
+        0  Sam   24  
+        1  David 50  
+        2  Anna  21 
+
+    Rows can be accessed directly:
+    >>> t.rows[1] #doctest: +SKIP
+        {'age': 50, 'id': 1, 'name': 'David'}
+    >>> t.maxvalue('age') #doctest: +NORMALIZE_WHITESPACE
+        50
+    >>> t.minrow('age') #doctest: +NORMALIZE_WHITESPACE +SKIP
+        {'age': 21, 'id': 2, 'name': 'Anna'}
+    >>> sorted(t.minrow('id').items()) #doctest: +NORMALIZE_WHITESPACE
+        [('age', 24), ('id', 0), ('name', 'Sam')]
+    >>> len(t) #doctest: +NORMALIZE_WHITESPACE
+        3
+    >>> t.write() #doctest: +SKIP
+
+    The table can be loaded from disk without specifying columns. This is
+    slightly unsafe because the columns can't be checked, but it could cut down
+    on the verbosity in some places.
+    >>> t2 = Table("sample.tbl") #doctest: +SKIP
+"""
+
+    floatprecision = 4
+    def __init__(self, filename, columns=None, overwrite=False):
+        self.filename = filename
+        self.columns = columns
+        self.rows = []
+        self.columntypes = {}
+        self.columnwidths = {}
+        if os.path.isfile(filename) and not overwrite:
+            self.read(filename)
+        else:
+            if self.columns == None:
+                raise TableException("columns aren't optional for new tables")
+            
+            for c in self.columns:
+                self.columnwidths[c] = len(c)
+
+    def read(self, filename):
+        f = open(self.filename, "r")
+        filecolumns = f.readline().split()
+        if self.columns != None:
+            if filecolumns != self.columns:
+                raise TableException("column name mismatch: %s"%filename)
+        else:
+            self.columns = filecolumns
+
+        for c in self.columns:
+            self.columnwidths[c] = len(c)
+
+        #skip comment line
+        f.readline()
+
+        for line in f:
+            fields = line.split()
+            row = {}
+            coli = 0
+            for field in fields:
+                try:
+                    field = int(field)
+                except ValueError:
+                    try:
+                        field = float(field)
+                    except ValueError:
+                        pass
+                row[self.columns[coli]] = field 
+                coli += 1
+            self.addrow(row)
+        f.close()
+
+    def __repr__(self):
+        f = StringIO()
+        self.writefilehandle(f)
+        return f.getvalue()
+
+    def __len__(self):
+        return len(self.rows)
+
+    def write(self):
+        f = open(self.filename, "w")
+        self.writefilehandle(f)
+        f.close()
+
+    def writefilehandle(self, filehandle):
+        f = filehandle
+        line = ' '.join([ "%-*s"%(self.columnwidths[c], c) for c in self.columns ])
+        f.write(line+"\n")
+
+        line = ''
+        for c in self.columns:
+            line += '-'*self.columnwidths[c]+' '
+        f.write(line+'\n')
+
+        for row in self.rows:
+            line = ""
+            for c in self.columns:
+                if self.columntypes[c] == float:
+                    line += "%#-*.*G " % (self.columnwidths[c],self.floatprecision,
+                                         row[c])
+                else:
+                    line += "%-*s " % (self.columnwidths[c],row[c])
+            f.write(line+"\n")
+
+    def addrow(self, row):
+        mismatched_columns = set(self.columns).symmetric_difference(set(row.keys()))
+        if len(mismatched_columns) != 0:
+            raise TableException("mismatched columns %s"%str(mismatched_columns))
+
+        if len(self.rows) == 0:
+            for c in row:
+                self.columntypes[c] = type(row[c])
+        else:
+            for c in row:
+                if type(row[c]) != self.columntypes[c]:
+                    raise TableException("type mismatch for column %s"%c)
+
+        for c in row:
+            if self.columntypes[c] == float:
+                self.columnwidths[c] = max(self.columnwidths[c], self.floatprecision+5)
+            else:
+                self.columnwidths[c] = max(self.columnwidths[c], len(str(row[c])))
+        
+        self.rows.append(row)
+
+    def delrow(self, column, value):
+        rows_to_delete = []
+        for row in self.rows:
+            if row[column] == value:
+                rows_to_delete.append(row)
+        map(self.rows.remove, rows_to_delete)
+        return len(rows_to_delete)
+
+    def findvalue(self, column, func):
+        value = None
+        for row in self.rows:
+            if value == None:
+                value = row[column]
+                continue
+            value = func(value, row[column])
+        return value
+
+    def findrow(self, column, func):
+        value = None
+        for row in self.rows:
+            if value == None:
+                value = row
+                continue
+
+            if func(row[column],value[column])==row[column]:
+                value = row
+        return value
+
+    def minvalue(self, column):
+        return self.findvalue(column, min)
+    def minrow(self, column):
+        return self.findrow(column, min)
+    def maxvalue(self, column):
+        return self.findvalue(column, max)
+    def maxrow(self, column):
+        return self.findrow(column, max)
+
+    def getcolumn(self, column):
+        results = []
+        for row in self.rows:
+            results.append(row[column])
+        return results
 
 if __name__=='__main__':
-    import sys
-    a=loadcon(sys.argv[1])
-    print a.box
-    savecon("test.con", a)
+    import doctest
+    doctest.testmod()
