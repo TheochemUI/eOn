@@ -28,7 +28,7 @@ private:
 //	Variables
 	long numberOfAtoms;
 // Functions
-	void makeNewLAMMPS(long N, const double *box);
+	void makeNewLAMMPS(long N, const int *atomicNrs, const double *box);
 
 public:
 // Functions
