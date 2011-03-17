@@ -461,6 +461,7 @@ class Table:
     methods.
 
     >>> t = Table("sample.tbl", ['id', 'name', 'age' ])
+    >>> t.eagerwrite = False
     >>> t.addrow({'id':0,'name':"Sam","age":24})
     >>> t.addrow({'id':1,'name':"David","age":50})
     >>> t.addrow({'id':2,'name':"Anna","age":21})
@@ -482,6 +483,8 @@ class Table:
         [('age', 24), ('id', 0), ('name', 'Sam')]
     >>> len(t) #doctest: +NORMALIZE_WHITESPACE
         3
+    >>> sum(t.getcolumn('age')) #doctest: +NORMALIZE_WHITESPACE
+        95
     >>> t.write() #doctest: +SKIP
 
     The table can be loaded from disk without specifying columns. This is
@@ -490,15 +493,27 @@ class Table:
     >>> t2 = Table("sample.tbl") #doctest: +SKIP
 """
 
+    #XXX: This is the number of digits that a floating point number gets
+    #     serialized with. Should it be some sort of config option? Or
+    #     is there just a good default?
     floatprecision = 4
+    eagerwrite = True
+
     def __init__(self, filename, columns=None, overwrite=False):
         self.filename = filename
         self.columns = columns
         self.rows = []
         self.columntypes = {}
         self.columnwidths = {}
-        if os.path.isfile(filename) and not overwrite:
-            self.read(filename)
+        self.initialized = False
+        self.overwrite = overwrite
+
+    def init(self):
+        """Checks to see if self.filename exists. If it does self.rows
+           will be initialized from disk."""
+        self.initialized = True
+        if os.path.isfile(self.filename) and not self.overwrite:
+            self.read(self.filename)
         else:
             if self.columns == None:
                 raise TableException("columns aren't optional for new tables")
@@ -507,6 +522,7 @@ class Table:
                 self.columnwidths[c] = len(c)
 
     def read(self, filename):
+        self.eagerwrite = False
         f = open(self.filename, "r")
         filecolumns = f.readline().split()
         if self.columns != None:
@@ -537,16 +553,23 @@ class Table:
                 coli += 1
             self.addrow(row)
         f.close()
+        self.eagerwrite = True
 
     def __repr__(self):
+        if not self.initialized:
+            self.init()
         f = StringIO()
         self.writefilehandle(f)
         return f.getvalue()
 
     def __len__(self):
+        if not self.initialized:
+            self.init()
         return len(self.rows)
 
     def write(self):
+        if not self.initialized:
+            self.init()
         f = open(self.filename, "w")
         self.writefilehandle(f)
         f.close()
@@ -572,6 +595,8 @@ class Table:
             f.write(line+"\n")
 
     def addrow(self, row):
+        if not self.initialized:
+            self.init()
         mismatched_columns = set(self.columns).symmetric_difference(set(row.keys()))
         if len(mismatched_columns) != 0:
             raise TableException("mismatched columns %s"%str(mismatched_columns))
@@ -591,16 +616,24 @@ class Table:
                 self.columnwidths[c] = max(self.columnwidths[c], len(str(row[c])))
         
         self.rows.append(row)
+        if self.eagerwrite:
+            self.write()
 
     def delrow(self, column, value):
+        if not self.initialized:
+            self.init()
         rows_to_delete = []
         for row in self.rows:
             if row[column] == value:
                 rows_to_delete.append(row)
         map(self.rows.remove, rows_to_delete)
+        if self.eagerwrite:
+            self.write()
         return len(rows_to_delete)
 
     def findvalue(self, column, func):
+        if not self.initialized:
+            self.init()
         value = None
         for row in self.rows:
             if value == None:
@@ -610,6 +643,8 @@ class Table:
         return value
 
     def findrow(self, column, func):
+        if not self.initialized:
+            self.init()
         value = None
         for row in self.rows:
             if value == None:
@@ -630,6 +665,8 @@ class Table:
         return self.findrow(column, max)
 
     def getcolumn(self, column):
+        if not self.initialized:
+            self.init()
         results = []
         for row in self.rows:
             results.append(row[column])
