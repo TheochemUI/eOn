@@ -15,6 +15,7 @@
 // customize by adding new LAMMPS-specific functions
 
 #include "stdio.h"
+#include <iostream>
 
 #include "mpi.h"
 #include "string.h"
@@ -434,13 +435,13 @@ void lammps_get_forces(void *ptr, double *forces)
   delete [] copy;
 }
 
-double lammps_get_energy(void *ptr)
+//double lammps_get_energy(void *ptr)
+void lammps_get_energy(void *ptr, double *energy)
 {
     
-    double* E;
+  double* E;
   LAMMPS *lmp = (LAMMPS *) ptr;
-  Compute *computePE;
   char id[9] = {'t', 'h', 'e', 'r', 'm', 'o', '_', 'p', 'e'}; 
   E = (double*)lammps_extract_compute(lmp, id, 0, 0);
-  return *E;
+  memcpy(energy, E, sizeof(double));
 }

@@ -29,8 +29,8 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
     }
     lammps_put_coords(LAMMPSObj, pos);
     lammps_command(LAMMPSObj,"run 0");  
-    *U = lammps_get_energy(LAMMPSObj);
-    lammps_get_forces(LAMMPSObj,F);
+    lammps_get_energy(LAMMPSObj, U);
+    lammps_get_forces(LAMMPSObj, F);
 
     delete [] pos;
     return;
