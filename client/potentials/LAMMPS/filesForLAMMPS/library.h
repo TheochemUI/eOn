@@ -42,8 +42,7 @@ void lammps_get_coords(void *, double *);
 void lammps_put_coords(void *, double *);
 
 void lammps_get_forces(void *, double *);
-double lammps_get_energy(void *ptr);
-//void lammps_get_energy(void *ptr, double *E);
+void lammps_get_energy(void *, double *);
 
 #ifdef __cplusplus
 }
