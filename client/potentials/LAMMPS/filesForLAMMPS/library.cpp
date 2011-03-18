@@ -441,7 +441,7 @@ void lammps_get_energy(void *ptr, double *energy)
     
   double* E;
   LAMMPS *lmp = (LAMMPS *) ptr;
-  char id[9] = {'t', 'h', 'e', 'r', 'm', 'o', '_', 'p', 'e', '\0'}; 
+  char id[10] = {'t', 'h', 'e', 'r', 'm', 'o', '_', 'p', 'e', '\0'}; 
   E = (double*)lammps_extract_compute(lmp, id, 0, 0);
   memcpy(energy, E, sizeof(double));
 }
