@@ -258,12 +258,14 @@ void Matter::activatePeriodicBoundaries()
 {
     usePeriodicBoundaries=true;
     applyPeriodicBoundary();
+    recomputePotential=true;
 }
 
 
 void Matter::deactivatePeriodicBoundaries()
 {
     usePeriodicBoundaries=false;
+    recomputePotential=true;
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const
@@ -1132,4 +1134,3 @@ bool Matter::convel2matter(FILE *file) {
     //    potential_ = new Potential(parameters_);
     return(true);
 }
-
