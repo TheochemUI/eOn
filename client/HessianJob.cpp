@@ -57,7 +57,8 @@ std::vector<std::string> HessianJob::run(void)
 
     fprintf(fileResults, "%s good\n", failed ? "false" : "true");
     fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
-    fprintf(fileResults, "%d hessian_size\n", hessian.getHessian(parameters->hessianType).rows());
+    fprintf(fileResults, "%d hessian_size\n", 
+            (int)hessian.getHessian(parameters->hessianType).rows());
     if(!failed)
     {
         for(int i=0; i<modes.size(); i++)
