@@ -134,6 +134,8 @@ const Matter& Matter::operator=(const Matter& matter)
 
 // Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
+    
+    
     if(parameters->checkRotation)
     {
         return helper_functions::rot_match(this, &matter, parameters->distanceDifference);
@@ -213,6 +215,7 @@ void Matter::resize(const long int length)
         isFixed.resize(length);
         isFixed.setZero();      
     }
+    recomputePotential = true;
 }
 
 
@@ -761,6 +764,7 @@ bool Matter::con2matter(FILE *file) {
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
     //    potential_ = new Potential(parameters_);
+    recomputePotential = true;
     return(true);
 }
 
@@ -988,7 +992,6 @@ bool Matter::matter2convel(FILE *file) const
             fprintf(file,"%.3f\t%.3f\t%.3f\t%d\t%ld\n", velocities(i, 0), velocities(i, 1), velocities(i, 2), getFixed(i), i);
         };
     };
-
     return true;
 }
 
