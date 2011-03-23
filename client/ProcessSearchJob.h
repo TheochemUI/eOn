@@ -30,7 +30,6 @@ class ProcessSearchJob : public Job {
 
         std::vector<std::string> returnFiles;
 
-        Hessian *hessian;
         Parameters *parameters;
         SaddlePoint *saddlePoint; 
         Matter *initial;      // initial configuration.
