@@ -202,6 +202,9 @@ double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBefor
         step = projectedForce1/curvature;
         if(maxStep < fabs(step)){
             // Calculated is too large
+            #ifndef NDEBUG            
+                cout<<"CG exceeded max step"<<endl;
+            #endif
             step = sign(step)*maxStep;
         }
     }
