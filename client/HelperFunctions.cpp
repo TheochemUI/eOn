@@ -240,7 +240,7 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
 
     n(2,3) = syz+szy;
 
-    n += n.transpose();
+    n += n.transpose().eval();
 
     n(0,0) = sxx + syy + szz;
     n(1,1) = sxx-syy-szz;
