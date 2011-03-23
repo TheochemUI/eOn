@@ -72,14 +72,12 @@ std::vector<std::string> ProcessSearchJob::run(void)
     // displacement and mode where made on the client
     // in saddlePoint->initialize(...) 
 
-    hessian = new Hessian(min1, saddle, min2, parameters);
 
     int status = doProcessSearch();
 
     printEndState(status);
     saveData(status);
 
-    delete hessian;
     delete saddlePoint;
     delete initial;
     delete displacement;
@@ -166,10 +164,12 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if(!parameters->processSearchDefaultPrefactor)
     {
+
+        Hessian hessian(min1, saddle, min2, parameters);
         /* Perform the dynamical matrix caluclation */
         VectorXd reactModes, saddleModes, prodModes;
         f1 = Potential::fcalls;
-        reactModes = hessian->getModes(Hessian::REACTANT);
+        reactModes = hessian.getModes(Hessian::REACTANT);
         if(reactModes.size() == 0)
         {
             #ifndef NDEBUG
@@ -177,7 +177,7 @@ int ProcessSearchJob::doProcessSearch(void)
             #endif
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
-        saddleModes = hessian->getModes(Hessian::SADDLE);
+        saddleModes = hessian.getModes(Hessian::SADDLE);
         if(saddleModes.size() == 0)
         {
             #ifndef NDEBUG
@@ -185,7 +185,7 @@ int ProcessSearchJob::doProcessSearch(void)
             #endif
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
-        prodModes = hessian->getModes(Hessian::PRODUCT);
+        prodModes = hessian.getModes(Hessian::PRODUCT);
         if(prodModes.size() == 0)
         {
             #ifndef NDEBUG
