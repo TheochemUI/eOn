@@ -418,6 +418,7 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
                 else:
                     logger.warning("Warning: failed to select rate. p = " + str(p))
                     break
+                    
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
 
