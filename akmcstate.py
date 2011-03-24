@@ -269,7 +269,7 @@ class AKMCState(state.State):
         return self.info.get("MetaData", "repeats", 0)
     
     def inc_repeats(self):
-        self.info.set("MetaData", "repeats", self.get_repeats())
+        self.info.set("MetaData", "repeats", self.get_repeats() + 1)
     
     def load_process_table(self):
         """ Load the process table.  If the process table is not loaded, load it.  If it is 
