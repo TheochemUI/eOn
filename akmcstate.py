@@ -82,10 +82,10 @@ class AKMCState(state.State):
                     self.append_search_result(result, "repeat-%d" % id)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
-                    if id in self.get_relevant_procids():
-                        self.inc_repeats()
                     if result['type'] == "random":
                         self.inc_proc_random_count(id)
+                        if id in self.get_relevant_procids():
+                            self.inc_repeats()
                     return None
 
         # This appears to be a unique process.
@@ -227,6 +227,22 @@ class AKMCState(state.State):
             if Nf < 1:
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
+        elif config.akmc_confidence_scheme == "boltzmann":
+            rt = self.get_ratetable()
+            prc = self.get_proc_random_count()
+            Nf = 0.0
+            Ns = 0.0
+            for r in rt:
+                if r[0] in prc:
+                    Nf += r[1]
+                    Ns += prc[r[0]] * r[1]
+            if Ns < 1:
+                return 0.0
+            if Nf < 1:
+                Nf = 1.0
+            conf = 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
+            print "CONF", conf
+            return conf
         else:
             Nr = self.get_repeats()
             if Nr < 1:
