@@ -18,6 +18,8 @@
 
 namespace LAMMPS_NS {
 
+typedef int bigint;
+
 class Atom : protected Pointers {
  public:
   char *atom_style;
@@ -25,14 +27,14 @@ class Atom : protected Pointers {
 
   // atom counts
 
-  double natoms;                // total # of atoms in system, could be 0
+  bigint natoms;                // total # of atoms in system, could be 0
   int nlocal,nghost;            // # of owned and ghost atoms on this proc
   int nmax;                     // max # of owned+ghost in arrays on this proc
   int tag_enable;               // 0/1 if atom ID tags are defined
   int molecular;                // 0 = atomic, 1 = molecular system
 
+  bigint nbonds,nangles,ndihedrals,nimpropers;
   int ntypes,nbondtypes,nangletypes,ndihedraltypes,nimpropertypes;
-  int nbonds,nangles,ndihedrals,nimpropers;
   int bond_per_atom,angle_per_atom,dihedral_per_atom,improper_per_atom;
   int extra_bond_per_atom;
 
@@ -107,7 +109,7 @@ class Atom : protected Pointers {
   // spatial sorting of atoms
 
   int sortfreq;             // sort atoms every this many steps, 0 = off
-  int nextsort;             // next timestep to sort on
+  bigint nextsort;          // next timestep to sort on
 
   // functions
 
@@ -159,7 +161,7 @@ class Atom : protected Pointers {
 
   void *extract(char *);
 
-  double memory_usage();
+  bigint memory_usage();
   int memcheck(const char *);
 
   // functions for global to local ID mapping

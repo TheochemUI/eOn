@@ -46,6 +46,10 @@ Copy the needed headers files:
  cp $LAMMPS/src/library.h .
  cp $LAMMPS/src/STUBS/mpi.h .
 
+If using a newer versions of LAMMPS, atom.h must changed by adding:
+ namespace LAMMPS_NS {
+ typedef int bigint;
+
 Go one directory back and fetch the libraries:
 
  cd ..
