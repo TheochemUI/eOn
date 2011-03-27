@@ -1,6 +1,6 @@
 #C compiler settings
 CC=$(CROSS)gcc$(GCC_SUFFIX)
-CXX=$(CROSS)g++$(GCC_SUFFIX)
+CXX=$(CROSS)mpic++$(GCC_SUFFIX)
 LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
@@ -17,6 +17,7 @@ ifndef CROSS
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
    LINUX=1
+   #LDFLAGS += -static
 endif
 ifeq ($(UNAME), Darwin)
    OSX=1
@@ -27,7 +28,6 @@ endif
 endif
 
 ifdef LINUX
-	LDFLAGS += -static
 	CXXFLAGS += -DLINUX
 endif
 ifdef OSX
@@ -72,6 +72,10 @@ ifdef LAMMPS_POT
    POTDIRS += ./potentials/LAMMPS
    LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libmpi.a ./potentials/LAMMPS/libmeam.a 
    POTENTIALS += "+LAMMPS"
+endif
+
+ifdef MPIGPAW
+	CXXFLAGS  += -DMPIGPAW
 endif
 
 # define BOINC to link against boinc libs
@@ -135,6 +139,13 @@ endif
 POTDIRS += ./potentials/bopfox
 LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
+ifdef MPIGPAW
+POTENTIALS += "+GPAW"
+POTDIRS += ./potentials/GPAW
+LIBS += ./potentials/GPAW/libGPAW.a
+else
+POTENTIALS += "-GPAW"
+endif
 
 
 ifdef NO_FORTRAN
