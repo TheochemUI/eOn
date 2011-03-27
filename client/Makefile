@@ -1,6 +1,6 @@
 #C compiler settings
 CC=$(CROSS)gcc$(GCC_SUFFIX)
-CXX=$(CROSS)mpic++$(GCC_SUFFIX)
+CXX=$(CROSS)gcc++$(GCC_SUFFIX)
 LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
@@ -17,7 +17,7 @@ ifndef CROSS
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
    LINUX=1
-   #LDFLAGS += -static
+   LDFLAGS += -static
 endif
 ifeq ($(UNAME), Darwin)
    OSX=1
