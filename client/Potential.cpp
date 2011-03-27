@@ -32,6 +32,9 @@
 #ifdef LAMMPS_POT
     #include "potentials/LAMMPS/LAMMPS_EON.h"
 #endif
+#ifdef MPIGPAW
+    #include "potentials/GPAW/GPAW.h"
+#endif
 
 #include <cstdlib>
 
@@ -75,6 +78,10 @@ Potential *Potential::getPotential(Parameters *parameters)
     #ifdef LAMMPS_POT
     else if(parameters->potential == "lammps")
         pot = new lammps_eon();
+    #endif
+    #ifdef MPIGPAW
+    else if(parameters->potential == "gpaw")
+        pot = new GPAW();
     #endif
     else
     {
