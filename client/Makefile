@@ -1,6 +1,6 @@
 #C compiler settings
 CC=$(CROSS)gcc$(GCC_SUFFIX)
-CXX=$(CROSS)gcc++$(GCC_SUFFIX)
+CXX=$(CROSS)g++$(GCC_SUFFIX)
 LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
