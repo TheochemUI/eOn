@@ -24,7 +24,6 @@ Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
 
 Quickmin::~Quickmin()
 {
-    /* matter_, parameters_, and forces_ should not be deleted. They are pointers to objects outside the scope.*/
     return;
 }
 

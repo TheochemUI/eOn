@@ -54,21 +54,21 @@ public:
 
     // [Saddle Search]
 //    bool   saddleDisplace; // do saddle search displacements client-side
-    long   saddleMaxJumpAttempts; // number of initial displacements to bring the system directly to a convex region;  if 0, a search is always started after the displacement
+    long   saddleMaxJumpAttempts; // number of initial displacements of the system to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
-    long   saddleMinmodeMethod; // the algorithm to be used for lowest eigenmode determination
+    long   saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
     long   saddleDisplaceType; // displacement type to use
-    double saddleMaxStepSize; // Max length of the norm of the displacement when positive eigenvalue
-    double saddleMaxEnergy; // Energy above product state that will cause termination of the saddle point search
-    double saddleDisplaceMagnitude; // The norm of the displacement vector
-    double saddleMaxSingleDisplace; // max value of displacement in x, y and z direction for atoms being displaced
-    double saddleDisplaceRadius; // Atoms within this radius of the displacement atoms are also displaced
+    double saddleMaxStepSize; // maximum length of the norm of the displacement when positive eigenvalue
+    double saddleMaxEnergy; // energy above product state that will cause termination of the saddle point search
+    double saddleDisplaceMagnitude; // norm of the displacement vector
+    double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z direction for atoms being displaced
+    double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
-    int saddleLocalizationAtoms; // Maximum number of atoms to consider part of the mode.
+    int    saddleMaxLocalizedAtoms; // maximum number of atoms to consider part of the mode
 
     // [Optimizers]
     string optMethod;
-    long   optMaxIterations; // max iterations for saddle point searches and minimization
+    long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
     double optFiniteDiffStep; // finite difference step size used in conjugate gradients
@@ -107,6 +107,17 @@ public:
     double displaceMaxDE; // maximum dE for which a sample is considered good
     string displaceCutoffs;
     string displaceMagnitudes;
+
+    // [Nudged Elastic Band]
+    long   nebImages;
+    double nebSpring;
+    bool   nebClimb;
+    string nebOptMethod;
+    long   nebOptMaxIterations; // maximum iterations for saddle point searches and minimization
+    double nebOptMaxMove; // maximum displacement vector for a step during optimization
+    double nebOptConvergedForce; // force convergence criterion required for an optimization
+    double nebOptFiniteDiffStep; // finite difference step size used in conjugate gradients
+    double nebOptTimeStep; // time step size used in quickmin
 
     // [Molecular Dynamics]
     double mdTimeStep;

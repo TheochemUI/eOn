@@ -157,9 +157,9 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
-            if(parameters->saddleLocalizationAtoms > 0)
+            if(parameters->saddleMaxLocalizedAtoms > 0)
             {
-                tau = localize(tau, parameters->saddleLocalizationAtoms);
+                tau = localize(tau, parameters->saddleMaxLocalizedAtoms);
                 tau.normalize();
             }
             C_tau = C_tau_min;
