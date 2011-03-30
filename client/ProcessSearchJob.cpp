@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <string>
+//#include <cassert>
 
 using namespace std;
 
@@ -40,7 +41,11 @@ std::vector<std::string> ProcessSearchJob::run(void)
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
 
-    initial->con2matter(reactant_passed);
+//    assert(initial->con2matter(reactant_passed));
+    if (!initial->con2matter(reactant_passed)) {
+        exit(1);
+    }
+
 
     if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
