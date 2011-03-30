@@ -53,7 +53,7 @@ Parameters::Parameters(){
     saddleMaxSingleDisplace = 10.;
 //    saddleMaxJumpAttempts = 0; // undocumented
     saddlePerpForceRatio = 0.0; // undocumented
-    saddleLocalizationAtoms = 0; // undocumented
+    saddleMaxLocalizedAtoms = 0; // undocumented
 
     // [Optimizers] //
     optMethod = "cg";
@@ -218,7 +218,8 @@ int Parameters::load(FILE *file){
         }
 
         potential = toLowerCase(ini.GetValue("Main", "potential"));
-        
+//GH        fprintf(stderr, "potential: %s\n", potential.c_str());
+
         // [Structure Comparison] //
 
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
@@ -281,7 +282,7 @@ int Parameters::load(FILE *file){
 //        saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
-        saddleLocalizationAtoms = ini.GetValueF("Saddle Search", "localization_atoms", saddleLocalizationAtoms); //undocumented
+        saddleMaxLocalizedAtoms = ini.GetValueF("Saddle Search", "max_localized_atoms", saddleMaxLocalizedAtoms); //undocumented
 
         // [Optimizers] //
 
@@ -344,6 +345,20 @@ int Parameters::load(FILE *file){
         displaceMaxDE = ini.GetValueF("Displacement Sampling", "max_de", displaceMaxDE);
         displaceCutoffs = ini.GetValue("Displacement Sampling", "cutoffs", displaceCutoffs);
         displaceMagnitudes = ini.GetValue("Displacement Sampling", "magnitudes", displaceMagnitudes);
+
+        // [Nudged Elastic Band]
+
+        nebImages = ini.GetValueL("NEB", "images", nebImages);
+        nebClimb = ini.GetValueB("NEB", "climb", nebClimb);
+        nebSpring = ini.GetValueF("NEB", "spring", nebSpring);
+        nebOptMethod = toLowerCase(ini.GetValue("NEB", "method", nebOptMethod));
+        nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
+        nebOptMaxIterations = ini.GetValueL("NEB", "max_iterations", nebOptMaxIterations);
+        nebOptMaxMove = ini.GetValueF("NEB","max_move", nebOptMaxMove);
+        nebOptFiniteDiffStep = ini.GetValueF("NEB","finite_diff_step", nebOptFiniteDiffStep);
+        nebOptTimeStep = ini.GetValueF("NEB","time_step", nebOptTimeStep);
+
+        // [Molecular Dynamics] //
 
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
         mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 

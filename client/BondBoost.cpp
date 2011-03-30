@@ -33,11 +33,11 @@ void BondBoost::initial()
   nBBs = 0;
   nReg = 1;
   nBAs = matter->numberOfFreeAtoms();
-  nRAs = nAtoms - nBAs; //nRestAtoms
-  nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; //number of Bonds involved with Tagged Atoms
-  BAList = new long[nBAs]; //BoostAtomsList
-  RAList = new long[nRAs]; //RestAtomsList
-  TABAList = new long[2*nTABs]; //CorrespondingAtomsList of TABLList
+  nRAs = nAtoms - nBAs; // nRestAtoms
+  nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; // number of Bonds involved with Tagged Atoms
+  BAList = new long[nBAs]; // BoostAtomsList
+  RAList = new long[nRAs]; // RestAtomsList
+  TABAList = new long[2*nTABs]; // CorrespondingAtomsList of TABLList
   TABLList.setZero(nTABs,1);
 
   printf("BondBoost Used !\n");
