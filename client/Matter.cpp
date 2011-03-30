@@ -31,14 +31,12 @@ namespace {
            "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
            "Fr","Ra","Ac","Th","Pa","U", NULL};
 
-
     // guess the atom type from the atomic mass,
     std::string mass2atom(double atomicmass) {
         return elementArray[int(atomicmass+.5)];
     }
 
     const int MAXC=100; // maximum number of components for functions matter2con and con2matter
-
 
     int symbol2atomicNumber(char const * symbol)
     {
@@ -63,18 +61,18 @@ namespace {
 
 Matter::Matter(Parameters *parameters)
 {
-    initialiseDataMembers(parameters);
+    InitializeDataMembers(parameters);
 }
 
 
 Matter::Matter(Parameters *parameters, const long int nAtoms)
 {
     resize(nAtoms); // prepare memory for nAtoms
-    initialiseDataMembers(parameters);
+    InitializeDataMembers(parameters);
 }
 
 
-void Matter::initialiseDataMembers(Parameters *params)
+void Matter::InitializeDataMembers(Parameters *params)
 {
     nAtoms = 0;
     cellBoundaries.resize(3,3);
@@ -134,8 +132,7 @@ const Matter& Matter::operator=(const Matter& matter)
 
 // Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
-    
-    
+
     if(parameters->checkRotation)
     {
         return helper_functions::rot_match(this, &matter, parameters->distanceDifference);
@@ -230,6 +227,7 @@ Vector3d Matter::getBoundary(int axis) const
     return(cellBoundaries.row(axis));
 }
 
+
 double Matter::getBoundary(int axis1, int axis2) const
 {
     return cellBoundaries(axis1, axis2);
@@ -238,38 +236,40 @@ double Matter::getBoundary(int axis1, int axis2) const
 
 void Matter::setBoundary(int axis, Vector3d bound)
 {
-    cellBoundaries.row(axis)=bound;
+    cellBoundaries.row(axis) = bound;
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary();
     }
-    recomputePotential=true;
+    recomputePotential = true;
 }
+
 
 void Matter::setBoundary(int axis1, int axis2, double val)
 {
-    cellBoundaries(axis1,axis2)=val;
+    cellBoundaries(axis1,axis2) = val;
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary();
     }
-    recomputePotential=true;
+    recomputePotential = true;
 }
 
 
 void Matter::activatePeriodicBoundaries()
 {
-    usePeriodicBoundaries=true;
+    usePeriodicBoundaries = true;
     applyPeriodicBoundary();
-    recomputePotential=true;
+    recomputePotential = true;
 }
 
 
 void Matter::deactivatePeriodicBoundaries()
 {
-    usePeriodicBoundaries=false;
-    recomputePotential=true;
+    usePeriodicBoundaries = false;
+    recomputePotential = true;
 }
+
 
 double Matter::getPosition(long int indexAtom, int axis) const
 {
@@ -279,11 +279,11 @@ double Matter::getPosition(long int indexAtom, int axis) const
 
 void Matter::setPosition(long int indexAtom, int axis, double position)
 {
-    positions(indexAtom,axis)=position;
+    positions(indexAtom,axis) = position;
     if(usePeriodicBoundaries){ 
         applyPeriodicBoundary();
     }
-    recomputePotential=true;
+    recomputePotential = true;
 }
 
 void Matter::setVelocity(long int indexAtom, int axis, double vel)
@@ -292,23 +292,24 @@ void Matter::setVelocity(long int indexAtom, int axis, double vel)
 }
 
 
-
 //return coordinates of atoms in array 'pos'
 AtomMatrix Matter::getPositions() const
 {
     return positions;
 }
 
+
 VectorXd Matter::getPositionsV() const
 {
     return VectorXd::Map(positions.data(),3*numberOfAtoms());
 }
 
+
 AtomMatrix Matter::getPositionsFree() const
 {
     AtomMatrix ret(numberOfFreeAtoms(),3);
     int i,j=0;
-    for(i=0;i<nAtoms;i++)
+    for(i=0; i<nAtoms; i++)
     {
         if (!isFixed(i)) {
             ret.row(j) = positions.row(i);
@@ -318,48 +319,57 @@ AtomMatrix Matter::getPositionsFree() const
     return ret;
 }
 
+
 VectorXd Matter::getPositionsFreeV() const
 {
     return VectorXd::Map(getPositionsFree().data(),3*numberOfFreeAtoms());
 }
 
+
 // update Matter with the new positions of the free atoms given in array 'pos'
-void Matter::setPositions(const AtomMatrix pos) {
+void Matter::setPositions(const AtomMatrix pos)
+{
     positions = pos;
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary();
     }
-    recomputePotential=true;
+    recomputePotential = true;
 }
 
+
 // Same but takes vector instead of n x 3 matrix
-void Matter::setPositionsV(const VectorXd pos) {
+void Matter::setPositionsV(const VectorXd pos)
+{
     setPositions(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
 }
 
+
 void Matter::setPositionsFree(const AtomMatrix pos)
 {
-    int i,j=0;
-    for(i=0;i<nAtoms;i++)
+    int i,j = 0;
+    for(i=0; i<nAtoms; i++)
     {
         if (!isFixed(i)) {
             positions.row(i) = pos.row(j);
             j+=1;
         }
     }
-    recomputePotential=true;
+    recomputePotential = true;
 }
+
 
 void Matter::setPositionsFreeV(const VectorXd pos)
 {
     setPositionsFree(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
 }
 
+
 // return forces applied on all atoms in array 'force' 
-AtomMatrix Matter::getForces() {
+AtomMatrix Matter::getForces()
+{
     computePotential();
-    AtomMatrix ret= forces;
+    AtomMatrix ret = forces;
     int i;
     for(i=0; i<nAtoms; i++)
     {
@@ -371,14 +381,18 @@ AtomMatrix Matter::getForces() {
     return ret;
 }
 
-VectorXd Matter::getForcesV() {
+
+VectorXd Matter::getForcesV()
+{
     return VectorXd::Map(getForces().data(),3*numberOfAtoms());
 }
 
-AtomMatrix Matter::getForcesFree() {
+
+AtomMatrix Matter::getForcesFree()
+{
     AtomMatrix allForces = getForces();
     AtomMatrix ret(numberOfFreeAtoms(),3);
-    int i,j=0;
+    int i,j = 0;
     for(i=0; i<nAtoms; i++)
     {
         if(!isFixed[i])
@@ -390,9 +404,12 @@ AtomMatrix Matter::getForcesFree() {
     return ret;
 }
 
-VectorXd Matter::getForcesFreeV() {
+
+VectorXd Matter::getForcesFreeV()
+{
     return VectorXd::Map(getForcesFree().data(),3*numberOfFreeAtoms());
 }
+
 
 // return distance between the atoms with index1 and index2
 double Matter::distance(long index1, long index2) const
@@ -406,7 +423,7 @@ double Matter::pdistance(long index1, long index2,int axis) const
 {
     Matrix<double, 1, 3> ret;
     ret.setZero();
-    for(int i=0;i<3;i++){
+    for(int i=0; i<3; i++){
         ret(0,i) = 0.0;
         if(i == axis){
             ret(0,i) = positions(index1,axis)-positions(index2,axis);
@@ -443,8 +460,8 @@ long Matter::getAtomicNr(long int indexAtom) const
 
 void Matter::setAtomicNr(long int indexAtom, long atomicNr)
 {
-    atomicNrs[indexAtom]=atomicNr;
-    recomputePotential=true;
+    atomicNrs[indexAtom] = atomicNr;
+    recomputePotential = true;
 }
 
 
@@ -475,8 +492,8 @@ double Matter::getKineticEnergy() const
 {
     double K=0;
     for(long int i=0; i<nAtoms; i++) {
-            if(!isFixed[i]) K+=masses[i]*0.5*velocities.row(i).squaredNorm();
-    };
+        if(!isFixed[i]) K += masses[i]*0.5*velocities.row(i).squaredNorm();
+    }
     return K;
 }
 
@@ -506,23 +523,24 @@ void Matter::resetForceCalls(){
 
 
 // Print atomic coordinate to a .xyz file
-void Matter::matter2xyz(std::string filename, bool append /*Append if file already exist*/) const {
+void Matter::matter2xyz(std::string filename, bool append /*Append if file already exist*/) const
+{
     FILE * file;
     long int i;
-    filename+=".xyz";
+    filename += ".xyz";
     if (append) {
-        file=fopen(filename.c_str(),"ab");
+        file = fopen(filename.c_str(),"ab");
     }else{
-        file=fopen(filename.c_str(),"wb");
+        file = fopen(filename.c_str(),"wb");
     }
     if(file==0) {
         cerr << "Can't create file " << filename << endl;
         exit(1);
-    };
+    }
     fprintf(file,"%ld\nGenerated by EON\n", numberOfAtoms());
     for(i=0;i<numberOfAtoms();i++) {
         fprintf(file,"%s\t%f\t%f\t%f\n", atomicNumber2symbol(getAtomicNr(i)), getPosition(i, 0), getPosition(i, 1), getPosition(i, 2));
-    };
+    }
     fclose(file);
 }
 
@@ -532,9 +550,9 @@ bool Matter::matter2con(std::string filename, bool append) const
 {
     bool state;
     FILE *file;
-    int pos=filename.find_last_of('.');
+    int pos = filename.find_last_of('.');
     if(filename.compare(pos+1, 3, "con")){
-        filename+=".con";
+        filename += ".con";
     };
     if (append) {
         file = fopen(filename.c_str(), "ab");
@@ -551,19 +569,19 @@ bool Matter::matter2con(FILE *file) const
 {
     long int i;
     int j;
-    long int Nfix=0; // Nfix to store the number of fixed atoms
-    int Ncomponent=0; // used to store the number of components (eg water: two components H and O)
+    long int Nfix = 0; // Nfix to store the number of fixed atoms
+    int Ncomponent = 0; // used to store the number of components (eg water: two components H and O)
     int first[MAXC]; // to store the position of the first atom of each component plus at the end the total number of atoms
     double mass[MAXC];
     long atomicNrs[MAXC];
-    first[0]=0;
+    first[0] = 0;
     if(numberOfAtoms()>0) {
-        if(getFixed(0)) Nfix=1; // count the number of fixed atoms
-        mass[0]=getMass(0);
-        atomicNrs[0]=getAtomicNr(0);
+        if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
+        mass[0] = getMass(0);
+        atomicNrs[0] = getAtomicNr(0);
     };
     j=0;
-    for(i=1;i<numberOfAtoms();i++) {
+    for(i=1; i<numberOfAtoms(); i++) {
         if(getFixed(i)) Nfix++; // count the number of fixed atoms
         if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
             j++;
@@ -571,13 +589,13 @@ bool Matter::matter2con(FILE *file) const
                 std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
                 return false;
             };
-            mass[j]=getMass(i);
-            atomicNrs[j]=getAtomicNr(i);
-            first[j]=i;
-        };
-    };
-    first[j+1]=numberOfAtoms();
-    Ncomponent=j+1;
+            mass[j] = getMass(i);
+            atomicNrs[j] = getAtomicNr(i);
+            first[j] = i;
+        }
+    }
+    first[j+1] = numberOfAtoms();
+    Ncomponent = j+1;
  
     fputs(headerCon1, file);
     fputs(headerCon2, file);
@@ -602,54 +620,55 @@ bool Matter::matter2con(FILE *file) const
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
-    };
+    }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
         fprintf(file, "Coordinates of Component %d\n", j+1);
         for(i=first[j]; i<first[j+1]; i++) {
             fprintf(file,"%.3f\t%.3f\t%.3f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
-        };
-    };
+        }
+    }
     return true;
 }
 
 
 // Load atomic coordinates from a .con file
-bool Matter::con2matter(std::string filename) {
+bool Matter::con2matter(std::string filename)
+{
     bool state;
     FILE *file;
     // Add the .con extension to filename if it is not already there.
-    int pos=filename.find_last_of('.');
+    int pos = filename.find_last_of('.');
     if(filename.compare(pos+1, 3, "con")){
-        filename+=".con";
-    };
-    file=fopen(filename.c_str(), "rb");
+        filename += ".con";
+    }
+    file = fopen(filename.c_str(), "rb");
     if (!file) {
         cerr << "File " << filename << " was not found.\n";
         return(false);
-    };
- 
+    }
     state = con2matter(file);
     fclose(file);
     return(state);
 }
 
 
-bool Matter::con2matter(FILE *file) {
+bool Matter::con2matter(FILE *file)
+{
     char line[255]; // Temporary string of character to read from the file.
     fgets(headerCon1,sizeof(line),file);
+
 //    if (strchr(headerCon1,'\r')) {
 //        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
 //        with the new line charater (\n). C recognises only the \n as the end of line. */
 //        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
 //        return false; // return false for error
-//    };
+//    }
 
     long int i; int j;
 
     fgets(headerCon2,sizeof(line),file);
-
 
     double lengths[3];
     // The third line contains the length of the periodic cell
@@ -689,10 +708,10 @@ bool Matter::con2matter(FILE *file) {
     fgets(headerCon6,sizeof(line),file);
 
     fgets(line,sizeof(line),file);
-    int Ncomponent; // Number of components is the number of different types of atoms. For instance H2O (water) has two component (H and O).
-    if(sscanf(line,"%d",&Ncomponent)==0) {
+    int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
+    if(sscanf(line,"%d",&Ncomponent) == 0) {
         std::cout << "The number of components cannot be read. One component is assumed instead\n";
-        Ncomponent=1;
+        Ncomponent = 1;
     }
     if((Ncomponent>MAXC)||(Ncomponent<1)) {
         cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
@@ -701,8 +720,8 @@ bool Matter::con2matter(FILE *file) {
     /* to store the position of the 
         first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/ 
     long int first[MAXC+1];
-    long int Natoms=0;
-    first[0]=0;
+    long int Natoms = 0;
+    first[0] = 0;
     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
     fgets(line, sizeof(line), file);
     char * split = strtok(line, " ");
@@ -717,7 +736,7 @@ bool Matter::con2matter(FILE *file) {
             cerr << "input con file does not list the number of each component" <<endl;
             return false;
         }
-        first[j+1]=Natoms+first[j];
+        first[j+1] = Natoms+first[j];
         split = strtok(NULL, " ");
     }    
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
@@ -738,7 +757,7 @@ bool Matter::con2matter(FILE *file) {
         sscanf(line, "%lf", &mass[j]);
         split = strtok(NULL, " ");
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
-    };
+    }
     int atomicNr;
     int fixed;
     double x,y,z;
@@ -746,7 +765,7 @@ bool Matter::con2matter(FILE *file) {
         char symbol[3];
         fgets(line,sizeof(line),file);
         sscanf(line, "%2s\n", symbol);
-        atomicNr=symbol2atomicNumber(symbol);
+        atomicNr = symbol2atomicNumber(symbol);
         fgets(line,sizeof(line),file); // skip one line
         for (i=first[j]; i<first[j+1]; i++){
             setMass(i, mass[j]);
@@ -775,9 +794,9 @@ void Matter::computePotential()
         if(potential) {
             forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
             forceCalls = forceCalls+1;
-            recomputePotential=false;
+            recomputePotential = false;
 
-            if(isFixed.sum()==0){
+            if(isFixed.sum() == 0){
                 Vector3d tempForce(3);
                 tempForce = forces.colwise().sum()/nAtoms;
 
@@ -791,8 +810,8 @@ void Matter::computePotential()
         else {
             cerr << "No potential associated with the atomic structure." << endl;
             exit(1);
-        };
-    };
+        }
+    }
 }
 
 
@@ -810,8 +829,7 @@ void Matter::applyPeriodicBoundary()
             ddiff(i,j) = fmod(ddiff(i,j), 1.0);
         }
     }
-
-    positions= ddiff*cellBoundaries;
+    positions = ddiff*cellBoundaries;
 }
 
 
@@ -838,14 +856,13 @@ bool Matter::isItConverged(double convergeCriterion)
 {
     double diff=0;
 
-    for(int i=0;i<nAtoms;i++)
+    for(int i=0; i<nAtoms; i++)
     {
         if(getFixed(i))
         {
             continue;
         }
         diff = forces.row(i).norm();
-        
 
         if(convergeCriterion < diff)
         { 
@@ -860,9 +877,9 @@ AtomMatrix Matter::getFree() const
 {
     AtomMatrix ret(nAtoms,3);
     int i,j;
-    for(i=0;i<nAtoms;i++)
+    for(i=0; i<nAtoms; i++)
     {
-        for(j=0;j<3;j++)
+        for(j=0; j<3; j++)
         {
             ret(i,j) = double(!bool(isFixed(i)));
         }
@@ -879,22 +896,22 @@ AtomMatrix Matter::getVelocities() const
 
 void Matter::setVelocities(const AtomMatrix v)
 {
-    velocities = v.cwise()*getFree(); 
+    velocities = v.cwise() * getFree(); 
 }
 
 
 void Matter::setForces(const AtomMatrix f)
 {
-    forces = f.cwise()*getFree();
+    forces = f.cwise() * getFree();
 }
 
 
 AtomMatrix Matter::getAccelerations()
 {
-    AtomMatrix ret =  getForces().cwise() * getFree(); 
-    ret.col(0).cwise()/=masses;
-    ret.col(1).cwise()/=masses;
-    ret.col(2).cwise()/=masses;
+    AtomMatrix ret = getForces().cwise() * getFree(); 
+    ret.col(0).cwise() /= masses;
+    ret.col(1).cwise() /= masses;
+    ret.col(2).cwise() /= masses;
     return ret;
 }
 
@@ -904,14 +921,15 @@ Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const
     return masses;
 }
 
+
 bool Matter::matter2convel(std::string filename) const
 {
     bool state;
     FILE *file;
     int pos=filename.find_last_of('.');
     if(filename.compare(pos+1, 6, "convel")){
-        filename+=".convel";
-    };
+        filename += ".convel";
+    }
     file = fopen(filename.c_str(),"w");     
     state = matter2convel(file);
     fclose(file); 
@@ -923,33 +941,33 @@ bool Matter::matter2convel(FILE *file) const
 {
     long int i;
     int j;
-    long int Nfix=0; // Nfix to store the number of fixed atoms
-    int Ncomponent=0; // used to store the number of components (eg water: two components H and O)
+    long int Nfix = 0; // Nfix to store the number of fixed atoms
+    int Ncomponent = 0; // used to store the number of components (eg water: two components H and O)
     int first[MAXC]; // to store the position of the first atom of each component plus at the end the total number of atoms
     double mass[MAXC];
     long atomicNrs[MAXC];
-    first[0]=0;
-    if(numberOfAtoms()>0) {
-        if(getFixed(0)) Nfix=1; // count the number of fixed atoms
-        mass[0]=getMass(0);
-        atomicNrs[0]=getAtomicNr(0);
-    };
+    first[0] = 0;
+    if(numberOfAtoms() > 0) {
+        if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
+        mass[0] = getMass(0);
+        atomicNrs[0] = getAtomicNr(0);
+    }
     j=0;
-    for(i=1;i<numberOfAtoms();i++) {
+    for(i=1; i<numberOfAtoms(); i++) {
         if(getFixed(i)) Nfix++; // count the number of fixed atoms
         if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
             j++;
             if(j>=MAXC) {
                 std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
                 return false;
-            };
-            mass[j]=getMass(i);
-            atomicNrs[j]=getAtomicNr(i);
-            first[j]=i;
-        };
-    };
-    first[j+1]=numberOfAtoms();
-    Ncomponent=j+1;
+            }
+            mass[j] = getMass(i);
+            atomicNrs[j] = getAtomicNr(i);
+            first[j] = i;
+        }
+    }
+    first[j+1] = numberOfAtoms();
+    Ncomponent = j+1;
  
     fputs(headerCon1, file);
     fputs(headerCon2, file);
@@ -974,61 +992,62 @@ bool Matter::matter2convel(FILE *file) const
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
-    };
+    }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
         fprintf(file, "Coordinates of Component %d\n", j+1);
         for(i=first[j]; i<first[j+1]; i++) {
             fprintf(file,"%.3f\t%.3f\t%.3f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
-        };
-    };
-
+        }
+    }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]));
         fprintf(file, "Velocities of Component %d\n", j+1);
         for(i=first[j]; i<first[j+1]; i++) {
             fprintf(file,"%.3f\t%.3f\t%.3f\t%d\t%ld\n", velocities(i, 0), velocities(i, 1), velocities(i, 2), getFixed(i), i);
-        };
-    };
+        }
+    }
     return true;
 }
 
-bool Matter::convel2matter(std::string filename) {
+
+bool Matter::convel2matter(std::string filename)
+{
     bool state;
     FILE *file;
     // Add the .con extension to filename if it is not already there.
     int pos=filename.find_last_of('.');
     if(filename.compare(pos+1, 3, "con")){
-        filename+=".con";
-    };
+        filename += ".con";
+    }
     file=fopen(filename.c_str(), "rb");
     if (!file) {
         cerr << "File " << filename << " was not found.\n";
         return(false);
-    };
- 
+    }
     state = convel2matter(file);
     fclose(file);
     return(state);
 }
 
 
-bool Matter::convel2matter(FILE *file) {
+bool Matter::convel2matter(FILE *file)
+{
     char line[255]; // Temporary string of character to read from the file.
     fgets(headerCon1,sizeof(line),file);
+
 //    if (strchr(headerCon1,'\r')) {
 //        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
 //        with the new line charater (\n). C recognises only the \n as the end of line. */
 //        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
 //        return false; // return false for error
-//    };
+//    }
 
     long int i; int j;
 
     fgets(headerCon2,sizeof(line),file);
-
 
     double lengths[3];
     // The third line contains the length of the periodic cell
@@ -1068,8 +1087,8 @@ bool Matter::convel2matter(FILE *file) {
     fgets(headerCon6,sizeof(line),file);
 
     fgets(line,sizeof(line),file);
-    int Ncomponent; // Number of components is the number of different types of atoms. For instance H2O (water) has two component (H and O).
-    if(sscanf(line,"%d",&Ncomponent)==0) {
+    int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
+    if(sscanf(line,"%d",&Ncomponent) == 0) {
         std::cout << "The number of components cannot be read. One component is assumed instead\n";
         Ncomponent=1;
     }
@@ -1080,20 +1099,23 @@ bool Matter::convel2matter(FILE *file) {
     /* to store the position of the 
         first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/ 
     long int first[MAXC+1];
-    long int Natoms=0;
-    first[0]=0;
+    long int Natoms = 0;
+    first[0] = 0;
+
     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
     for(j=0; j<Ncomponent; j++) {
         fscanf(file, "%ld", &Natoms);
-        first[j+1]=Natoms+first[j];
-    }    
+        first[j+1] = Natoms+first[j];
+    }
+
     fgets(line, sizeof(line), file); // Discard the rest of the line
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
     double mass[MAXC];
     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
         fscanf(file, "%lf", &mass[j]);
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
-    };
+    }
+
     fgets(line,sizeof(line),file); // discard rest of the line
     int atomicNr;
     int fixed;
@@ -1128,7 +1150,6 @@ bool Matter::convel2matter(FILE *file) {
             setVelocity(i, 2, z);
         }
     }
-
 
     if(usePeriodicBoundaries)
     { 
