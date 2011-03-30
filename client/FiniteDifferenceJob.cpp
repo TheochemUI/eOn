@@ -7,6 +7,7 @@
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
+
 #include "FiniteDifferenceJob.h"
 #include "Matter.h"
 #include "Constants.h"

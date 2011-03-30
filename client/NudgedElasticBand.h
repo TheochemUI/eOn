@@ -8,19 +8,34 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef NEB_H
+#define NEB_H
 
-#include <string>
+#include <math.h>
+#include <cmath>
+#include <cassert>
 
-/* Collection of constants */
+#include "Eigen.h"
 
-#define STRING_SIZE 512
+#include "Matter.h"
+#include "HelperFunctions.h"
+#include "Parameters.h"
 
-namespace constants
-{
-    const std::string READ("rb"); // set the file to read
-    const std::string APPEND("ab"); // set the file to append
-    const std::string WRITE("wb"); // set the file to write
-}
+// NEB method for determining a minimum energy path between two matter objects
+class NEB {
+
+public:
+
+    NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *parameters);
+    ~NEB();
+
+    void compute(void);
+
+private:
+
+    long images;
+    Matter *neb[]; // NEB images
+
+};
+
 #endif

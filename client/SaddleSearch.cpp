@@ -64,11 +64,11 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     {
         if(parameters->dimerImproved)
         {
-            lowestEigenmode=new ImprovedDimer(saddle, parameters);
+            lowestEigenmode = new ImprovedDimer(saddle, parameters);
         }
         else
         {
-            lowestEigenmode=new Dimer(saddle, parameters);
+            lowestEigenmode = new Dimer(saddle, parameters);
         }
         
     }
