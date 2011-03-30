@@ -61,18 +61,18 @@ namespace {
 
 Matter::Matter(Parameters *parameters)
 {
-    InitializeDataMembers(parameters);
+    initializeDataMembers(parameters);
 }
 
 
 Matter::Matter(Parameters *parameters, const long int nAtoms)
 {
     resize(nAtoms); // prepare memory for nAtoms
-    InitializeDataMembers(parameters);
+    initializeDataMembers(parameters);
 }
 
 
-void Matter::InitializeDataMembers(Parameters *params)
+void Matter::initializeDataMembers(Parameters *params)
 {
     nAtoms = 0;
     cellBoundaries.resize(3,3);

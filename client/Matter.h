@@ -127,7 +127,7 @@ private:
     char headerCon6[STRING_SIZE];
     
     void computePotential();
-    void initialiseDataMembers(Parameters *parameters);
+    void initializeDataMembers(Parameters *parameters);
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double & component, int axis);
     void applyPeriodicBoundary(AtomMatrix & diff);
