@@ -43,7 +43,7 @@ void usage(void)
 
 void commandLine(int argc, char **argv)
 {
-    //no getopt on windows
+    // no getopt on windows
     #ifndef WIN32
     int c;
     bool sflag=false,mflag=false, pflag=false;
@@ -98,8 +98,6 @@ void commandLine(int argc, char **argv)
     }else{
         confile = argv[optind]; 
     }
-
-        
 
     Parameters *parameters = new Parameters;
     parameters->potential = potential;

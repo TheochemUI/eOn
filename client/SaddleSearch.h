@@ -109,7 +109,7 @@ private:
     long nFreeCoord; // number of free coordinates
     long status;
 
-    void clean(); // clean up dynamical allocated memory
+    void clean(); // clean up dynamically allocated memory
 
     Matrix<double, Eigen::Dynamic, 3> projectedForce(Matrix<double, Eigen::Dynamic, 3> force); // projected minmode force
 
