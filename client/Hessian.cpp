@@ -145,9 +145,13 @@ bool Hessian::calculate(int which)
     //If we are checking for rotation, then the system has no frozen atoms and
     //can rotate and translate. This gives effectively zero eigenvalues. We
     //need to remove them from the prefactor calculation. 
-    if(parameters->checkRotation)
+    //
+    //the second condition requires that every atom moves. Otherwise, we don't 
+    //get the 6 rotational and translational modes.
+    //XXX: what happens if the entire particle rotates about one atom or a line of atoms?
+    if(parameters->checkRotation && size==3*saddle->numberOfAtoms())
     {
-        VectorXd newfreqs(size - 6);
+        VectorXd newfreqs(size);
         int nremoved = 0;
         for(i=0; i<size; i++)
         {
