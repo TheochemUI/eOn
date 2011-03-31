@@ -708,7 +708,7 @@ bool Matter::con2matter(FILE *file)
     fgets(headerCon6,sizeof(line),file);
 
     fgets(line,sizeof(line),file);
-    int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
+    int Ncomponent; // Number of components or different types of atoms  (eg water: two components H and O)
     if(sscanf(line,"%d",&Ncomponent) == 0) {
         std::cout << "The number of components cannot be read. One component is assumed instead\n";
         Ncomponent = 1;
@@ -717,11 +717,13 @@ bool Matter::con2matter(FILE *file)
         cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
         return false;
     }
-    /* to store the position of the 
-        first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/ 
+
+    // stores the position of the first atom of each element
+    // 'MAXC+1': the last element is used to store the total number of atom
     long int first[MAXC+1];
     long int Natoms = 0;
     first[0] = 0;
+
     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
     fgets(line, sizeof(line), file);
     char * split = strtok(line, " ");
@@ -739,10 +741,12 @@ bool Matter::con2matter(FILE *file)
         first[j+1] = Natoms+first[j];
         split = strtok(NULL, " ");
     }    
+
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
     double mass[MAXC];
     fgets(line, sizeof(line), file);
     split = strtok(line, " ");
+
     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
         if(split == NULL)
         {
@@ -758,6 +762,7 @@ bool Matter::con2matter(FILE *file)
         split = strtok(NULL, " ");
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     }
+
     int atomicNr;
     int fixed;
     double x,y,z;
@@ -782,7 +787,7 @@ bool Matter::con2matter(FILE *file)
     { 
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
-    //    potential_ = new Potential(parameters_);
+    // potential_ = new Potential(parameters_);
     recomputePotential = true;
     return(true);
 }
@@ -835,10 +840,10 @@ void Matter::applyPeriodicBoundary()
 
 double Matter::maxForce(void)
 {
-    //Ensures that the forces are up to date
+    // Ensures that the forces are up to date
     computePotential();
     
-    //I think this can be done in one line with the rowwise method
+    // I think this can be done in one line with the rowwise method
     double maxForce = 0.0;
     for(int i = 0; i < nAtoms; i++)
     {
