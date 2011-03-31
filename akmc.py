@@ -35,7 +35,7 @@ import atoms
 import recycling
 import superbasinscheme
 import askmc
-import kdb
+import kdbing
 import movie
 
 import StringIO
@@ -66,7 +66,7 @@ def akmc(config):
 
     # If kdb is being used, initialize it.
     if config.kdb_on:
-        kdber = kdb.KDB()
+        kdber = kdbing.KDB()
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
