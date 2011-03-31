@@ -19,7 +19,7 @@ QSC::QSC()
 {
     cutoff = 6.0;
     verlet_skin = 0.5;
-    init=false;
+    init = false;
     return;
 }
 
@@ -124,8 +124,8 @@ void QSC::new_vlist(long N, const double *R, const double *box)
 
     for (int i=0; i<N; i++) {
         nlist[i] = 0;
-        for (int j=i+1;j<N; j++) {
-            calc_distance(box, R, i, j, &distances[i][j]);
+        for (int j=i+1; j<N; j++) {
+            calc_distance(box, R, i, R, j, &distances[i][j]);
             if (distances[i][j].r <= rv) {
                 vlist[i][nlist[i]] = j;
                 nlist[i] += 1;
@@ -137,27 +137,48 @@ void QSC::new_vlist(long N, const double *R, const double *box)
 void QSC::update_vlist(long N, const double *R, const double *box) 
 {
     bool update=false;
-    for (int i=0;i<3*N;i++) {
+    distance diff;
+    double dist_max1=0;
+    double dist_max2=0;
+    double dist_sum;
+    
+//    const double *myOldR = &oldR;
+    for (int i=0; i<3*N; i++) {
+// GH: looks broken to me
+/*
         double diff = oldR[i]-R[i];
-        diff = diff-box[0]*floor(diff/box[0]+0.5); 
+        diff = diff-box[0]*floor(diff/box[0]+0.5);
         if (fabs(diff) > verlet_skin) {
             update=true;
             break;
         }
+*/
+        calc_distance(box, oldR, i, R, i, &diff);
+        if(diff.r > dist_max1) {
+            dist_max2 = dist_max1;
+            dist_max1 = diff.r;
+        } else if(diff.r > dist_max2) {
+            dist_max2 = diff.r;
+        }
+        dist_sum = dist_max1+dist_max2;
+        if (dist_sum > verlet_skin) {
+            update = true;
+            break;
+        }
     }
 
-    if (update==true) {
+    if (update == true) {
         new_vlist(N, R, box);
     }else{
         for (int i=0; i<N; i++) {
             for (int k=0; k<nlist[i]; k++) {
                 int j = vlist[i][k];
-                calc_distance(box, R, i, j, &distances[i][j]);
+                calc_distance(box, R, i, R, j, &distances[i][j]);
             }
         }
     }
 
-    for (int i=0;i<3*N;i++) {
+    for (int i=0; i<3*N; i++) {
         oldR[i] = R[i];
     }
 }
@@ -268,12 +289,12 @@ inline double QSC::pair_potential(double r, double a, double n)
     return pow(a/r, n);
 }
 
-void QSC::calc_distance(const double *box, const double *R, int i, int j, 
+void QSC::calc_distance(const double *box, const double *R1, int i, const double *R2, int j, 
                         struct distance *d)
 {
-        double diffRX = R[3*i]   - R[3*j];
-        double diffRY = R[3*i+1] - R[3*j+1];
-        double diffRZ = R[3*i+2] - R[3*j+2];
+        double diffRX = R1[3*i]   - R2[3*j];
+        double diffRY = R1[3*i+1] - R2[3*j+1];
+        double diffRZ = R1[3*i+2] - R2[3*j+2];
 
         /* Orthogonal PBC */
         diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); 

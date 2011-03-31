@@ -56,7 +56,7 @@ class QSC
         double pair_potential(double r, double a, double n);
         void new_vlist(long N, const double *R, const double *box);
         void update_vlist(long N, const double *R, const double *box);
-        void calc_distance(const double *box, const double *R, int i, 
-                           int j, struct distance *d);
+        void calc_distance(const double *box, const double *R1, int i, 
+                           const double *R2, int j, struct distance *d);
         int int_comp(const void* a,const void* b);
 };

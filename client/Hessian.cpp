@@ -23,13 +23,11 @@ Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)
         modes[i].resize(0);
         hessians[i].resize(0,0);
     }
-
 }
 
 Hessian::~Hessian()
 {
 }
-
 
 Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(int which)
 {
@@ -80,7 +78,7 @@ bool Hessian::calculate(int which)
     int nAtoms = curr->numberOfAtoms();
 
     //Determine which atoms moved in the process
-    int size=0;
+    int size = 0;
     VectorXi atoms;
     atoms = movedAtoms(parameters->hessianMinDisplacement);
     size = atoms.rows()*3;
@@ -106,28 +104,39 @@ bool Hessian::calculate(int which)
     for(i = 0; i<size; i++)
     {
         posDisplace.setZero(); 
-        
+
         // Displacing one coordinate
-        posDisplace(atoms(i/3), i%3)  = dr;
-        
+        posDisplace(atoms(i/3), i%3) = dr;
+
         posTemp = pos + posDisplace; 
         matterTemp.setPositions(posTemp);
         force2 = matterTemp.getForces();
-        
+
+        // GH: debug
+        //cout <<"force"<<i<<endl<<force2<<endl;
+
         for(j=0; j<size; j++)
-        {     
+        {
             hessian(i,j) = -(force2(atoms(j/3), j%3)-force1(atoms(j/3), j%3))/dr;
-            double effMass=sqrt(saddle->getMass(j/3)*saddle->getMass(i/3));
-            hessian(i,j)/=effMass;
+            double effMass = sqrt(saddle->getMass(j/3)*saddle->getMass(i/3));
+            hessian(i,j) /= effMass;
         }
     }
 
     //Force hessian to be symmetric
     hessian = (hessian + hessian.transpose())/2;
 
-    
+    // GH: debug
+    cout <<"writing hessian"<<endl;
+    ofstream hessfile;
+    hessfile.open("hessian.dat");
+    hessfile <<hessian;
+
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
     VectorXd freqs = es.eigenvalues();
+
+    // GH debug
+    cout << "freqs\n" << freqs << endl;
 
     //If we are checking for rotation, then the system has no frozen atoms and
     //can rotate and translate. This gives effectively zero eigenvalues. We
@@ -179,7 +188,6 @@ bool Hessian::calculate(int which)
             return false;
         }
     }
-
     modes[which] = freqs;
     hessians[which] = hessian;    
     return true;

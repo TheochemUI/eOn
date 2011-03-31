@@ -22,7 +22,8 @@
 
 using namespace helper_functions;
 
-SaddlePoint::SaddlePoint(){
+SaddlePoint::SaddlePoint()
+{
     lowestEigenmode = 0;
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
@@ -30,19 +31,22 @@ SaddlePoint::SaddlePoint(){
     return;
 }
 
-SaddlePoint::~SaddlePoint(){
+SaddlePoint::~SaddlePoint()
+{
     clean();
     return;
 }
 
-SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed){
+SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
+{
     lowestEigenmode = 0;
     eigenValue = 0;
     initialize(initialPassed, saddlePassed, parametersPassed);
     return;
 }
 
-void SaddlePoint::clean(){
+void SaddlePoint::clean()
+{
     if(lowestEigenmode != 0)
     {
         delete lowestEigenmode;
@@ -86,15 +90,21 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     return;
 }
 
-void SaddlePoint::loadMode(string filename) {
+void SaddlePoint::loadMode(string filename)
+{
     FILE *modeFile;
-
     modeFile = fopen(filename.c_str(), constants::READ.c_str());
+    if (!modeFile) {
+        cerr << "File " << filename << " was not found.\n";
+        printf("Stop\n");
+        exit(1);
+    }
     loadMode(modeFile);
     fclose(modeFile);
 }
 
-void SaddlePoint::loadMode(FILE *modeFile){
+void SaddlePoint::loadMode(FILE *modeFile)
+{
     long nall=0, nfree=0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
     nFreeCoord = nfree;
@@ -124,7 +134,8 @@ void SaddlePoint::saveMode(FILE *modeFile)
     return;
 }
 
-long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
+long SaddlePoint::locate(void)
+{
     double initialEnergy;
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
@@ -140,11 +151,6 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
         displaceAndSetMode(saddle);
     }
     
-    //lowestEigenmode->initialize(saddle, mode);
-//    lowestEigenmode->compute(saddle);
-    //eigenMode = lowestEigenmode->getEigenvector();
-    //eigenValue = lowestEigenmode->getEigenvalue();
-    
     fprintf(stdout, "  Saddle point displaced.\n");
 
     if(status == STATUS_INIT)
@@ -152,12 +158,6 @@ long SaddlePoint::locate(void){//(Matter *min1, Matter *min2) {
        searchForSaddlePoint(initialEnergy);
     }
 
-//    if(status == STATUS_INIT)
-//    {
-//        fprintf(stdout, "    Saddle point determined.\n");
-//        relaxFromSaddle(min1, min2);
-//        fprintf(stdout, "    Minima determined.\n");
-//    }
     return(status);
 }
 
@@ -203,8 +203,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     initialDisplace(indexEpiCenter,2) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
 
     // To keep track of free coordinates when setting atoms that have moved
-    // Create an array containing initialDisplace_ of atoms 
-    // in the vicinity of the epicenter atom
+    // Create an array containing initialDisplace_ of atoms in the vicinity of the epicenter atom
     j = 0;
     for(int i = 0; i < nAtoms; i++)
     {
@@ -265,6 +264,7 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::projectedForce(Matrix<double, Eige
     }
     return force;
 }
+
 /*
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
 
@@ -293,6 +293,7 @@ void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
     return;
 }
 */
+
 void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
     if(0 < eigenvalue)
         forceCallsSaddlePointConcave += fcalls;
