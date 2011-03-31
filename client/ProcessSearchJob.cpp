@@ -41,11 +41,10 @@ std::vector<std::string> ProcessSearchJob::run(void)
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
 
-//    assert(initial->con2matter(reactant_passed));
     if (!initial->con2matter(reactant_passed)) {
+        printf("Stop\n");
         exit(1);
     }
-
 
     if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
@@ -60,7 +59,10 @@ std::vector<std::string> ProcessSearchJob::run(void)
     
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
         // displacement was passed from the server        
-        saddle->con2matter(displacement_passed);
+        if(!saddle->con2matter(displacement_passed)) {
+            printf("Stop\n");
+            exit(1);
+        }
         *min1 = *min2 = *initial;
     }else{
         // displacement and mode will be made on the client
@@ -76,7 +78,6 @@ std::vector<std::string> ProcessSearchJob::run(void)
     }
     // displacement and mode where made on the client
     // in saddlePoint->initialize(...) 
-
 
     int status = doProcessSearch();
 
@@ -125,7 +126,7 @@ int ProcessSearchJob::doProcessSearch(void)
 	ConjugateGradients cgMin2(min2, parameters);  
 	cgMin2.fullRelax();
 	fCallsMin += cgMin2.totalForceCalls;
-	
+
     // If min2 corresponds to initial state swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){
         matterTemp = *min1;
@@ -169,7 +170,6 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if(!parameters->processSearchDefaultPrefactor)
     {
-
         Hessian hessian(min1, saddle, min2, parameters);
         /* Perform the dynamical matrix caluclation */
         VectorXd reactModes, saddleModes, prodModes;
@@ -237,7 +237,8 @@ int ProcessSearchJob::doProcessSearch(void)
     return SaddlePoint::STATUS_GOOD;
 }
 
-void ProcessSearchJob::saveData(int status){
+void ProcessSearchJob::saveData(int status)
+{
     FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
 
     std::string resultsFilename("results.dat");
@@ -293,7 +294,8 @@ void ProcessSearchJob::saveData(int status){
     return;
 }
 
-void ProcessSearchJob::printEndState(int status) {
+void ProcessSearchJob::printEndState(int status)
+{
     fprintf(stdout, "Final state: ");
     if(status == SaddlePoint::STATUS_GOOD)
         fprintf(stdout, "Successful.\n");
