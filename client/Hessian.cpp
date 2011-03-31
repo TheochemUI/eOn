@@ -127,16 +127,20 @@ bool Hessian::calculate(int which)
     hessian = (hessian + hessian.transpose())/2;
 
     // GH: debug
-    cout <<"writing hessian"<<endl;
-    ofstream hessfile;
-    hessfile.open("hessian.dat");
-    hessfile <<hessian;
+    #ifndef NDEBUG
+        cout <<"writing hessian"<<endl;
+        ofstream hessfile;
+        hessfile.open("hessian.dat");
+        hessfile <<hessian;
+    #endif
 
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
     VectorXd freqs = es.eigenvalues();
 
     // GH debug
-    cout << "freqs\n" << freqs << endl;
+    #ifndef NDEBUG
+        cout << "freqs\n" << freqs << endl;
+    #endif
 
     //If we are checking for rotation, then the system has no frozen atoms and
     //can rotate and translate. This gives effectively zero eigenvalues. We
