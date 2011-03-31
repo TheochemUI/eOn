@@ -154,7 +154,7 @@ int main(int argc, char **argv)
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
 
-        printf("Beginning Job %d of %d", i, bundleSize);
+        printf("Beginning Job %d of %d\n", i, bundleSize);
         std::vector<std::string> unbundledFilenames;
         if (bundlingEnabled) {
             unbundledFilenames = unbundle(i);
