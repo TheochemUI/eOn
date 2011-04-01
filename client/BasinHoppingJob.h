@@ -22,8 +22,8 @@ class BasinHoppingJob : public Job {
         std::vector<std::string> run(void);
 
     private:
-        Matrix<double, Eigen::Dynamic, 3> displaceRandom();
-        Matrix<double, Eigen::Dynamic, 3> displaceSingle();
+        AtomMatrix displaceRandom();
+        AtomMatrix displaceSingle();
 
         Parameters *parameters;
         Matter *current;

@@ -27,53 +27,53 @@ BondBoost::~BondBoost()
 
 void BondBoost::initial()
 {
-  long i, j, k = 0, count = 0;
-  bool flag  = 1;
-  
-  nBBs = 0;
-  nReg = 1;
-  nBAs = matter->numberOfFreeAtoms();
-  nRAs = nAtoms - nBAs; // nRestAtoms
-  nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; // number of Bonds involved with Tagged Atoms
-  BAList = new long[nBAs]; // BoostAtomsList
-  RAList = new long[nRAs]; // RestAtomsList
-  TABAList = new long[2*nTABs]; // CorrespondingAtomsList of TABLList
-  TABLList.setZero(nTABs,1);
+    long i, j, k = 0, count = 0;
+    bool flag  = 1;
 
-  printf("BondBoost Used !\n");
-  for(i = 0;i < nAtoms; i++){
-      if(!matter->getFixed(i)){
-         BAList[k]=i;
-         k++;
-      }
-  }
+    nBBs = 0;
+    nReg = 1;
+    nBAs = matter->numberOfFreeAtoms();
+    nRAs = nAtoms - nBAs; // nRestAtoms
+    nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; // number of Bonds involved with Tagged Atoms
+    BAList = new long[nBAs]; // BoostAtomsList
+    RAList = new long[nRAs]; // RestAtomsList
+    TABAList = new long[2*nTABs]; // CorrespondingAtomsList of TABLList
+    TABLList.setZero(nTABs,1);
 
-  for(i = 0 ;i < nAtoms; i++){
-     flag = 1;
-     for (j = 0; j < nBAs; j++){
-         if(i == BAList[j]){
-             flag = 0;
-         }
-     }
-     if(flag == 1){
-         RAList[count] = i;   
-         count ++;
-     }
-  } 
-  
-  if(count != nRAs){
-      printf("Error: nRestAtoms does not equal to counted number!\n");
-  }
+    printf("BondBoost Used !\n");
+    for(i = 0;i < nAtoms; i++){
+        if(!matter->getFixed(i)){
+            BAList[k]=i;
+            k++;
+        }
+    }
+
+    for(i = 0 ;i < nAtoms; i++){
+        flag = 1;
+        for (j = 0; j < nBAs; j++){
+            if(i == BAList[j]){
+                flag = 0;
+            }
+        }
+        if(flag == 1){
+            RAList[count] = i;   
+            count ++;
+        }
+    }
+
+    if(count != nRAs){
+        printf("Error: nRestAtoms does not equal to counted number!\n");
+    }
 
 // TEST PRINT
 /*
-  for(i=0 ;i< nBAs;i++){
-      printf("nBoostAtoms %ld: %ld\n",i,BAList[i]);
-  }
+    for(i=0 ;i< nBAs;i++){
+        printf("nBoostAtoms %ld: %ld\n",i,BAList[i]);
+    }
 
-  for(i=0; i< nRAs;i++){
-      printf("nRestAtoms %ld: %ld\n",i,RAList[i]);
-  }
+    for(i=0; i< nRAs;i++){
+        printf("nRestAtoms %ld: %ld\n",i,RAList[i]);
+    }
 */ 
 }
 
@@ -95,7 +95,7 @@ double BondBoost::boost()
         flag = 1;
     }
 
-    if( flag == 0 ){
+    if(flag == 0){
         TABL_tmp=Rmdsteps();
         TABLList = TABLList + (1.0/RMDS)*TABL_tmp;
         nReg ++;
@@ -108,7 +108,7 @@ double BondBoost::boost()
 
         printf("\n");
 */        // TEST END
-    }else{ 
+    }else{
        //    printf("nreg = %ld; RMDS=%ld\n", nReg,RMDS);
         if( nReg == RMDS+1){
               // printf("First steps = RMDS+1\n");
@@ -133,18 +133,19 @@ double BondBoost::boost()
     return boost_dt;
 }
 
-double BondBoost::Booststeps(){
+double BondBoost::Booststeps()
+{
     long i,j,Mi;
     long AtomI_1,AtomI_2;
     double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
     double Dforce, Fact_1, Fact_2, Mforce, dt, bdt, Temp, kb;
     double Ri[3] = {0.0} , R = 0.0;
 
-    Matrix<double, Eigen::Dynamic, 3> OldForce(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> Free(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> AddForce(nBBs,3);
-    Matrix<double, Eigen::Dynamic, 3> TADF(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> NewForce(nAtoms,3);
+    AtomMatrix OldForce(nAtoms,3);
+    AtomMatrix Free(nAtoms,3);
+    AtomMatrix AddForce(nBBs,3);
+    AtomMatrix TADF(nAtoms,3);
+    AtomMatrix NewForce(nAtoms,3);
  
     OldForce.setZero();
     TADF.setZero();
@@ -168,13 +169,13 @@ double BondBoost::Booststeps(){
     Fact_1 = 0.0;
     Fact_2 = 0.0;
 
-    for(i=0;i<nBBs;i++){
+    for(i=0; i<nBBs; i++){
         AtomI_1 = BBAList[2*i];
         AtomI_2 = BBAList[2*i+1];
         CBBLList(i,0) = matter->distance(AtomI_1,AtomI_2);
     }
 
-    for (i=0;i<nBBs;i++){
+    for (i=0; i<nBBs; i++){
         Epsr_Q[i] = (CBBLList(i,0)-EBBLList(i,0))/EBBLList(i,0)/QRR;
         if (abs(Epsr_Q[i]) >= Epsr_MAX ){
             Epsr_MAX = abs(Epsr_Q[i]);
@@ -287,7 +288,8 @@ double BondBoost::Booststeps(){
 }
 
 
-Matrix<double, Eigen::Dynamic,1> BondBoost::Rmdsteps() {
+Matrix<double, Eigen::Dynamic,1> BondBoost::Rmdsteps()
+{
     Matrix<double, Eigen::Dynamic, 1> TABL_t(nTABs,1);
     long count = 0, i, j;
 
@@ -323,7 +325,8 @@ Matrix<double, Eigen::Dynamic,1> BondBoost::Rmdsteps() {
     return TABL_t;
 }
 
-long BondBoost::BondSelect(){
+long BondBoost::BondSelect()
+{
     long count = 0,i,nBBs_tmp = 0;
     double Qcutoff = parameters->bondBoostQcut;
 

@@ -38,21 +38,19 @@ class ImprovedDimer : public LowestEigenmodeInterface
 
     Parameters *parameters;
 
-    Matter *x0;                                 // Center Image
-    Matter *x1;                                 // Forward image.
-    Matrix<double, Eigen::Dynamic, 3> tau;      // Dimer direction.
-    Matrix<double, Eigen::Dynamic, 3> theta;    // Dimer rotation direction.
-    Matrix<double, Eigen::Dynamic, 3> F_R;      // Dimer rotational force.
-    double C_tau;                               // Curvature along tau.
+    Matter *x0;          // Center image
+    Matter *x1;          // Forward image
+    AtomMatrix tau;      // Dimer direction
+    AtomMatrix theta;    // Dimer rotation direction
+    AtomMatrix F_R;      // Dimer rotational force
+    double C_tau;        // Curvature along tau
 
     // parameters used for conjugate gradients
-    Matrix<double, Eigen::Dynamic, 3> F_R_Old;
-    Matrix<double, Eigen::Dynamic, 3> thetaOld;
+    AtomMatrix F_R_Old;
+    AtomMatrix thetaOld;
     double a, b, gamma;
     bool init_cg;
 };
 
 #endif
-
-
 

@@ -91,11 +91,11 @@ bool Hessian::calculate(int which)
     
     double dr = 1e-6; // value used by graeme 1e-4;
     
-    Matrix<double, Eigen::Dynamic, 3> pos = curr->getPositions();
-    Matrix<double, Eigen::Dynamic, 3> posDisplace(nAtoms, 3);
-    Matrix<double, Eigen::Dynamic, 3> posTemp(nAtoms, 3);
-    Matrix<double, Eigen::Dynamic, 3> force1(nAtoms, 3);
-    Matrix<double, Eigen::Dynamic, 3> force2(nAtoms, 3);
+    AtomMatrix pos = curr->getPositions();
+    AtomMatrix posDisplace(nAtoms, 3);
+    AtomMatrix posTemp(nAtoms, 3);
+    AtomMatrix force1(nAtoms, 3);
+    AtomMatrix force2(nAtoms, 3);
 
     Matrix <double, Eigen::Dynamic, Eigen::Dynamic> hessian(size, size);
 
@@ -208,8 +208,8 @@ VectorXi Hessian::movedAtoms(double const distance)
     VectorXi moved(nAtoms);
     moved.setConstant(-1);
 
-    Matrix<double, Eigen::Dynamic, 3> diffProd = saddle->pbc(saddle->getPositions() - product->getPositions());
-    Matrix<double, Eigen::Dynamic, 3> diffReact = saddle->pbc(saddle->getPositions() - reactant->getPositions());
+    AtomMatrix diffProd = saddle->pbc(saddle->getPositions() - product->getPositions());
+    AtomMatrix diffReact = saddle->pbc(saddle->getPositions() - reactant->getPositions());
 
     diffProd.cwise() *= saddle->getFree();
     diffReact.cwise() *= saddle->getFree();

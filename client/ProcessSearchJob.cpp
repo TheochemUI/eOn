@@ -106,26 +106,26 @@ int ProcessSearchJob::doProcessSearch(void)
     if (status != SaddlePoint::STATUS_INIT) {
         return status;
     }
-	
-	// relax from the saddle point located
-	
-	Matrix<double, Eigen::Dynamic, 3> posSaddle = saddlePoint->getSaddlePositions();
-	Matrix<double, Eigen::Dynamic, 3> displacedPos;
 
-	*min1 = *saddle;
-	//XXX: the distance displaced from the saddle should be a parameter
-	displacedPos = posSaddle - saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
-	min1->setPositions(displacedPos);
-	ConjugateGradients cgMin1(min1, parameters);
-	cgMin1.fullRelax();
-	fCallsMin += cgMin1.totalForceCalls;
-		
-	*min2 = *saddle;
-	displacedPos = posSaddle + saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
-	min2->setPositions(displacedPos);
-	ConjugateGradients cgMin2(min2, parameters);  
-	cgMin2.fullRelax();
-	fCallsMin += cgMin2.totalForceCalls;
+    // relax from the saddle point located
+
+    AtomMatrix posSaddle = saddlePoint->getSaddlePositions();
+    AtomMatrix displacedPos;
+
+    *min1 = *saddle;
+    //XXX: the distance displaced from the saddle should be a parameter
+    displacedPos = posSaddle - saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
+    min1->setPositions(displacedPos);
+    ConjugateGradients cgMin1(min1, parameters);
+    cgMin1.fullRelax();
+    fCallsMin += cgMin1.totalForceCalls;
+
+    *min2 = *saddle;
+    displacedPos = posSaddle + saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
+    min2->setPositions(displacedPos);
+    ConjugateGradients cgMin2(min2, parameters);  
+    cgMin2.fullRelax();
+    fCallsMin += cgMin2.totalForceCalls;
 
     // If min2 corresponds to initial state swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){
@@ -202,7 +202,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
         prefactorsValues[0] = 1;
         prefactorsValues[1] = 1;
-    
+
         // This may have large numerical error
         // products are calculated this way in order to avoid overflow
         for(int i=0; i<saddleModes.size(); i++)
@@ -243,11 +243,11 @@ void ProcessSearchJob::saveData(int status)
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
-	fileResults = fopen(resultsFilename.c_str(), "wb");
-	///XXX: min_fcalls isn't quite right it should get them from
-	//      the minimizer. But right now the minimizers are in
-	//      the SaddlePoint object. They will be taken out eventually.
-    
+    fileResults = fopen(resultsFilename.c_str(), "wb");
+    ///XXX: min_fcalls isn't quite right it should get them from
+    //      the minimizer. But right now the minimizers are in
+    //      the SaddlePoint object. They will be taken out eventually.
+
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
@@ -265,11 +265,11 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
-	fclose(fileResults);
+    fclose(fileResults);
 
     std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
-	fileReactant = fopen(reactantFilename.c_str(), "wb");
+    fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
 
     std::string modeFilename("mode.dat");
@@ -277,18 +277,18 @@ void ProcessSearchJob::saveData(int status)
     fileMode = fopen(modeFilename.c_str(), "wb");
     saddlePoint->saveMode(fileMode);
     fclose(fileMode);
-	fclose(fileReactant);
+    fclose(fileReactant);
 
     std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
-	fileSaddle = fopen(saddleFilename.c_str(), "wb");
+    fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
-	fclose(fileSaddle);
+    fclose(fileSaddle);
 
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
-	fileProduct = fopen(productFilename.c_str(), "wb");
-	min2->matter2con(fileProduct);
+    fileProduct = fopen(productFilename.c_str(), "wb");
+    min2->matter2con(fileProduct);
     fclose(fileProduct);
 
     return;
@@ -302,11 +302,11 @@ void ProcessSearchJob::printEndState(int status)
 
     else if(status == SaddlePoint::STATUS_BAD_NO_CONVEX)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
-   
+
     else if(status == SaddlePoint::STATUS_BAD_HIGH_ENERGY)
         fprintf(stdout, "Saddle search, barrier too high.\n");
-        
-    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS) 
+
+    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
     else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)

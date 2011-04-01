@@ -29,7 +29,7 @@ DisplacementSamplingJob::~DisplacementSamplingJob(){ }
 std::vector<std::string> DisplacementSamplingJob::run(void)
 {
     // No bundling for this job, so bundleNumber is ignored.
-    
+
     FILE *results = fopen("results.dat", "w");
     fprintf(results, "%15s   %15s   %15s\n", "cutoff", "magnitude", "fraction good");
 
@@ -44,7 +44,7 @@ std::vector<std::string> DisplacementSamplingJob::run(void)
     parameters->dimerTorqueMax = 0.0;
     parameters->dimerTorqueMin = 0.0;
     parameters->dimerImproved = false;
-    
+
     std::stringstream cutoffStream(parameters->displaceCutoffs);
     while(true)
     {
@@ -65,7 +65,7 @@ std::vector<std::string> DisplacementSamplingJob::run(void)
             {
                 break;
             }
-    
+
             double nGood = 0;
 
             for(int k = 0; k < nSamples; k++)
@@ -75,10 +75,10 @@ std::vector<std::string> DisplacementSamplingJob::run(void)
                 double e0 = reactant->getPotentialEnergy();
 
                 long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,parameters->neighborCutoff);
-                
+
                 // Create a random displacement.
-                Matrix<double, Eigen::Dynamic, 3> displacement;  
-                      
+                AtomMatrix displacement;
+
                 displacement.resize(reactant->numberOfAtoms(), 3);
                 displacement.setZero();
                 for(int i = 0; i < reactant->numberOfAtoms(); i++)
@@ -94,14 +94,14 @@ std::vector<std::string> DisplacementSamplingJob::run(void)
                         }
                     }
                 }
-                
-                displacement.normalize(); 
+
+                displacement.normalize();
                 displacement *= gaussRandom(0.0, magnitude);
-                
+
                 reactant->setPositions(reactant->getPositions() + displacement);
-                
+
                 Dimer *d = new Dimer(reactant, parameters);
-                
+
                 d->compute(reactant, displacement);
                 int iterCount = 0;
                 while(d->statsTorque > torqueConvergence && iterCount < iterMax)
