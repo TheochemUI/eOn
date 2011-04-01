@@ -30,17 +30,17 @@ std::vector<std::string> DimerRotationJob::run(void)
     // Load the displacement con file and get the position.
     Matter *displacement = new Matter(parameters);
     displacement->con2matter("displacement_passed.con");
-    Matrix<double, Eigen::Dynamic, 3> dimer1;    
-    dimer1 = displacement->getPositions();        
+    AtomMatrix dimer1;
+    dimer1 = displacement->getPositions();
 
     // Load and normalize the mode.
     FILE *modeFile = fopen("mode_passed.dat", "r");
-    Matrix<double, Eigen::Dynamic, 3> mode;    
+    AtomMatrix mode;    
     long nall = 0, nfree = 0;
     fscanf(modeFile, "%ld %ld", &nall, &nfree);
     mode.resize(nall/3, 3);
     mode.setZero();
-    for (int i = 0; i < nall / 3; i++) 
+    for (int i = 0; i < nall / 3; i++)
     {
         for(int j = 0; j < 3; j++)
         {
@@ -51,7 +51,7 @@ std::vector<std::string> DimerRotationJob::run(void)
     mode.normalize();
 
     // Create the rotationPlaneNorm.
-    Matrix<double, Eigen::Dynamic, 3> rotationPlaneNorm;        
+    AtomMatrix rotationPlaneNorm;
     rotationPlaneNorm = mode;
     for(int i = 0; i < nall / 3; i ++)
     {
@@ -67,9 +67,9 @@ std::vector<std::string> DimerRotationJob::run(void)
     double projectedForceA, projectedForceB, curvature1;
     double dRots[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0, 1.5, 2.0};
     int ndRots = 16;
-    Matrix<double, Eigen::Dynamic, 3> dimer2;    
-    Matrix<double, Eigen::Dynamic, 3> forceA;    
-    Matrix<double, Eigen::Dynamic, 3> forceB;    
+    AtomMatrix dimer2;
+    AtomMatrix forceA;
+    AtomMatrix forceB;
 
     forceA = displacement->getForces();
     dimer2 = dimer1 + mode * parameters->dimerSeparation;
@@ -77,12 +77,12 @@ std::vector<std::string> DimerRotationJob::run(void)
     forceB = displacement->getForces();
     projectedForceA = (mode.cwise() * forceA).sum();
     projectedForceB = (mode.cwise() * forceB).sum();
-    curvature1 = (projectedForceB - projectedForceA) / (2.0 * parameters->dimerSeparation);    
+    curvature1 = (projectedForceB - projectedForceA) / (2.0 * parameters->dimerSeparation);
     
     // Loop over values of dimer dRot and print the output to results.dat.
     FILE *results = fopen("results.dat", "w");
     fprintf(results, "%14s    %15s\n", "dRot", "dCurvature/dRot");
-    Matrix<double, Eigen::Dynamic, 3> mode2;    
+    AtomMatrix mode2;    
     double cosAngle, sinAngle, curvature2;
     for (int dRoti = 0; dRoti < ndRots; dRoti++)
     {
@@ -96,7 +96,7 @@ std::vector<std::string> DimerRotationJob::run(void)
         forceB = displacement->getForces();
         projectedForceA = (mode2.cwise() * forceA).sum();
         projectedForceB = (mode2.cwise() * forceB).sum();
-        curvature2 = (projectedForceB - projectedForceA) / (2.0 * parameters->dimerSeparation);        
+        curvature2 = (projectedForceB - projectedForceA) / (2.0 * parameters->dimerSeparation);
         fprintf(results, "%14.8f    %15.8f\n", dRots[dRoti], (curvature1 - curvature2) / dRots[dRoti]);
     }
     fclose(results);

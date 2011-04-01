@@ -33,7 +33,7 @@ class Quickmin : public Minimizer
         
     private:
         int outputLevel;
-        Matrix<double, Eigen::Dynamic, 3> velocity; 
+        AtomMatrix velocity;
 };
 
 #endif

@@ -13,13 +13,13 @@
 
 QuickminBox::QuickminBox(Matter *matter_passed, Parameters *parameters_passed)
 {
-    matter = matter_passed;    
+    matter = matter_passed;
     parameters = parameters_passed;
     dt = parameters_passed->optTimeStep;
     velocity.resize(matter->numberOfAtoms(), 3);
     velocity.setZero();
     boxXv = boxYv = boxZv = boxXf = boxYf = boxZf = 0.0;
-    outputLevel = 0;    
+    outputLevel = 0;
 }
 
 
@@ -49,7 +49,7 @@ void QuickminBox::oneStep()
     boxYf = -(eY - e0)/dR;
     boxZf = -(eZ - e0)/dR;
 
-    Matrix<double, Eigen::Dynamic, 3> forces = matter->getForces();
+    AtomMatrix forces = matter->getForces();
     if((velocity.cwise() * forces).sum() < 0 || (boxXv * boxXf + boxYv * boxYf + boxZv * boxZf) < 0.0)
     {
         dt *= 0.5;
@@ -58,7 +58,7 @@ void QuickminBox::oneStep()
     }
     else
     {
-        dt *= 1.1;    
+        dt *= 1.1;
     }
 
     boxXv += boxXf * dt;
@@ -75,9 +75,9 @@ void QuickminBox::oneStep()
     matter->setBoundary(2, boxv.normalized() * (boxv.norm() + stepZ));
 
     velocity += forces * dt;
-    Matrix<double, Eigen::Dynamic, 3> positions;
+    AtomMatrix positions;
     positions = matter->getPositions();
-    Matrix<double, Eigen::Dynamic, 3> step = velocity * dt;
+    AtomMatrix step = velocity * dt;
     double maxmoved = 0.0;
     for(int i=0; i < matter->numberOfAtoms(); i++)
     {
@@ -122,7 +122,7 @@ void QuickminBox::fullRelax()
 
 bool QuickminBox::isItConverged(double convergeCriterion)
 {
-    Matrix<double, Eigen::Dynamic, 3> forces = matter->getForces();
+    AtomMatrix forces = matter->getForces();
     double diff = 0;
     if(sqrt(boxXf*boxXf + boxYf*boxYf + boxZf*boxZf) > convergeCriterion)
     {

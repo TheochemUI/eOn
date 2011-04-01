@@ -9,7 +9,8 @@
 
 int copyfile(char *, char *);
 
-int getBundleSize(void) {
+int getBundleSize(void)
+{
     DIR *dir;
     struct dirent *dp;
     int num_bundle=-1;
