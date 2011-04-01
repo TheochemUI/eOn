@@ -31,7 +31,7 @@ QuickminBox::~QuickminBox()
 
 void QuickminBox::oneStep()
 {
-    double dR = parameters->optFiniteDiffStep;
+    double dR = parameters->optFiniteDist;
     Vector3d boxv = matter->getBoundary(0);
     matter->setBoundary(0, boxv.normalized() * (boxv.norm() + dR));
     double eX = matter->getPotentialEnergy();
