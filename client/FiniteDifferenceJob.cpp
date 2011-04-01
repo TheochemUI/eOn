@@ -71,7 +71,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
         posB = posA + displacement * dRs[dRi];
         reactant->setPositions(posB);
         forceB = reactant->getForces();
-        curvature = (forceB.sum() - forceA.sum()) / dRs[dRi];
+        curvature = ((forceB - forceA).cwise() * displacement).sum() / dRs[dRi];
         fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
     }
     fclose(results);
