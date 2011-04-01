@@ -220,13 +220,13 @@ int ProcessSearchJob::doProcessSearch(void)
         prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
 
         /* Check that the prefactors are in the correct range */
-        if((prefactorsValues[0]>parameters->hessianPrefactorMax) ||
-           (prefactorsValues[0]<parameters->hessianPrefactorMin)){
+        if((prefactorsValues[0]>parameters->processSearchPrefactorMax) ||
+           (prefactorsValues[0]<parameters->processSearchPrefactorMin)){
             cout<<"Bad reactant-to-saddle prefactor:"<<prefactorsValues[0]<<endl;
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }
-        if((prefactorsValues[1]>parameters->hessianPrefactorMax) ||
-           (prefactorsValues[1]<parameters->hessianPrefactorMin)){
+        if((prefactorsValues[1]>parameters->processSearchPrefactorMax) ||
+           (prefactorsValues[1]<parameters->processSearchPrefactorMin)){
             cout<<"Bad product-to-saddle prefactor:"<<prefactorsValues[1]<<endl;
             return SaddlePoint::STATUS_BAD_PREFACTOR;
         }

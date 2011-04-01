@@ -71,7 +71,7 @@ public:
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
-    double optFiniteDiffStep; // finite difference step size used in conjugate gradients
+    double optFiniteDist; // finite difference step size used in conjugate gradients
     double optTimeStep; // time step size used in quickmin
 
     // [Dimer]
@@ -88,22 +88,21 @@ public:
     double dimerTorqueMin;
 
     // [Lanczos]
-    double lanczosFiniteDiff ; // finite difference distance
+    double lanczosFiniteDist ; // finite difference distance
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
 
     // [Hessian]
     int    hessianType;
-    double hessianMinDisplacement; // atomic displacement between min1 and the saddle point or min2 and the saddle point causing the atom to be accounted for in the Hessian
-    double hessianWithinRadius; // atoms within this radius of one the atom considered displace are also accounted for in the Hessian
-    double hessianPrefactorMax; // max prefactor allowed
-    double hessianPrefactorMin; // min prefactor allowed
+    double hessianFiniteDist; // finite difference distance
+    double hessianMinDisplacement; // atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
+    double hessianWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
 
     // [Displacement Sampling] 
     long   displaceNSamples;
     long   displaceIterMax; // maximum number of rotations to perform on the dimer
     double displaceTorqueConvergence; // convergence criteria of the dimer rotation
-    double displaceMaxCurvature; // maximum curvature for which a sample is considered good; used to avoid shallow but negative curvatures
+    double displaceMaxCurvature; // maximum curvature which is considered good; used to avoid soft negative curvatures
     double displaceMaxDE; // maximum dE for which a sample is considered good
     string displaceCutoffs;
     string displaceMagnitudes;
@@ -116,7 +115,7 @@ public:
     long   nebOptMaxIterations; // maximum iterations for saddle point searches and minimization
     double nebOptMaxMove; // maximum displacement vector for a step during optimization
     double nebOptConvergedForce; // force convergence criterion required for an optimization
-    double nebOptFiniteDiffStep; // finite difference step size used in conjugate gradients
+    double nebOptFiniteDist; // finite difference step size used in conjugate gradients
     double nebOptTimeStep; // time step size used in quickmin
 
     // [Molecular Dynamics]
