@@ -166,7 +166,7 @@ long SaddlePoint::getnFreeCoord() const
     return nFreeCoord;
 }
 
-Matrix<double, Eigen::Dynamic, 3> SaddlePoint::getEigenMode() 
+AtomMatrix SaddlePoint::getEigenMode() 
 {
     return eigenMode;
 }
@@ -177,7 +177,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     long j, indexEpiCenter = 0;
     double diffR;
 
-    Matrix<double, Eigen::Dynamic, 3> initialDisplace(nAtoms, 3);
+    AtomMatrix initialDisplace(nAtoms, 3);
     initialDisplace.setZero(); 
 
     if(parameters->saddleDisplaceType == DISP_NOT_FCC_OR_HCP)
@@ -242,9 +242,9 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     return;
 }
 
-Matrix<double,Eigen::Dynamic, 3> SaddlePoint::projectedForce(Matrix<double, Eigen::Dynamic, 3> force){
+AtomMatrix SaddlePoint::projectedForce(AtomMatrix force){
  
-    Matrix<double, Eigen::Dynamic, 3> proj;
+    AtomMatrix proj;
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
 
     if (0 < eigenValue){
@@ -268,9 +268,9 @@ Matrix<double,Eigen::Dynamic, 3> SaddlePoint::projectedForce(Matrix<double, Eige
 /*
 void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
 
-    Matrix<double, Eigen::Dynamic, 3> posSaddle = saddle->getPositions();
+    AtomMatrix posSaddle = saddle->getPositions();
 
-    Matrix<double, Eigen::Dynamic, 3> displacedPos;
+    AtomMatrix displacedPos;
     //----- Initialize end -----
     //std::cout<<"relaxFromSaddle\n";
 
@@ -322,10 +322,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     double maxStep;
     double energySaddle;
 
-    Matrix<double, Eigen::Dynamic, 3> forcesStep;
-    Matrix<double, Eigen::Dynamic, 3> posStep;
-    Matrix<double, Eigen::Dynamic, 3> forces;
-    Matrix<double, Eigen::Dynamic, 3> pos;
+    AtomMatrix forcesStep;
+    AtomMatrix posStep;
+    AtomMatrix forces;
+    AtomMatrix pos;
 
     pos = saddle->getPositions();
     //----- Initialize end -----
@@ -337,7 +337,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-    static int run=0;
+    static int run = 0;
     ostringstream climb;
     climb << "climb_" << run;
     if(parameters->writeMovies)
@@ -394,17 +394,17 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             converged = false;
             concaveSeries = concaveSeries + 1;
         }
-        forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;        
+        forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
         addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
 
         iterations++;
         #ifndef NDEBUG
-            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)        
+            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
-                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n", 
-                       iterations, sqrt((saddle->getForces().cwise().square()).sum()), 
-                       lowestEigenmode->statsTorque, saddle->getPotentialEnergy(), 
-                       lowestEigenmode->statsCurvature, lowestEigenmode->statsAngle, 
+                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n",
+                       iterations, sqrt((saddle->getForces().cwise().square()).sum()),
+                       lowestEigenmode->statsTorque, saddle->getPotentialEnergy(),
+                       lowestEigenmode->statsCurvature, lowestEigenmode->statsAngle,
                        (int)lowestEigenmode->statsRotations, stepSize);
             }
             else 
@@ -439,7 +439,7 @@ LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
       return lowestEigenmode;
 }
 
-Matrix<double, Eigen::Dynamic, 3> SaddlePoint::getSaddlePositions()
+AtomMatrix SaddlePoint::getSaddlePositions()
 {
       return saddle->getPositions();	
 }

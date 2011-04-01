@@ -40,21 +40,21 @@ void TestJob::checkFullSearch(void){
     long status;
     bool ok=1;
     double diffM1, diffM2, diffSP;
-    
-    Matter *initial;      
+
+    Matter *initial;
     Matter *saddle;
     Matter *displacement; 
     Matter *min1;
     Matter *min2; 
     Matter *matterTemp; 
-    SaddlePoint *saddlePoint;     
-    
+    SaddlePoint *saddlePoint;
+
     string reactant_passed("reactant_test.con");
     string displacement_passed("displacement_test.con");
     string mode_passed("mode_test.dat");
-    
+
     parameters->potential = "emt";
-    
+
     initial = new Matter(parameters);
     displacement = new Matter(parameters);
     saddle = new Matter(parameters);
@@ -71,46 +71,46 @@ void TestJob::checkFullSearch(void){
     saddlePoint->initialize(initial, saddle, parameters);
     saddlePoint->loadMode(mode_passed);
     status = saddlePoint->locate();
-	printf("---Output for saddle point search end---\n\n");
-	
-	printf("---Output relax from saddle point search start---\n");    
-	// relax from the saddle point located
-	
-	Matrix<double, Eigen::Dynamic, 3> posSaddle = saddlePoint->getSaddlePositions();
-	Matrix<double, Eigen::Dynamic, 3> displacedPos;
-	
-	*min1 = *saddle;
-	//XXX: the distance displaced from the saddle should be a parameter
-	displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
-	min1->setPositions(displacedPos);
-	ConjugateGradients cgMin1(min1, parameters);
-	cgMin1.fullRelax();
-//	fCallsMin += cgMin1.totalForceCalls;
-	
-	*min2 = *saddle;
-	displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
-	min2->setPositions(displacedPos);
-	ConjugateGradients cgMin2(min2, parameters);  
-	cgMin2.fullRelax();
-//	fCallsMin += cgMin2.totalForceCalls;
-	
+    printf("---Output for saddle point search end---\n\n");
+
+    printf("---Output relax from saddle point search start---\n");    
+    // relax from the saddle point located
+
+    AtomMatrix posSaddle = saddlePoint->getSaddlePositions();
+    AtomMatrix displacedPos;
+
+    *min1 = *saddle;
+    //XXX: the distance displaced from the saddle should be a parameter
+    displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
+    min1->setPositions(displacedPos);
+    ConjugateGradients cgMin1(min1, parameters);
+    cgMin1.fullRelax();
+//  fCallsMin += cgMin1.totalForceCalls;
+
+    *min2 = *saddle;
+    displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
+    min2->setPositions(displacedPos);
+    ConjugateGradients cgMin2(min2, parameters);  
+    cgMin2.fullRelax();
+//  fCallsMin += cgMin2.totalForceCalls;
+
     // If min2 corresponds to initial state swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){
         *matterTemp = *min1;
         *min1 = *min2;
         *min2 = *matterTemp;
     }
-	printf("---Output relax from saddle point search end---\n");
+    printf("---Output relax from saddle point search end---\n");
     
     // checking the energies of the obtained configurations
     diffM1 = abs(min1->getPotentialEnergy()-45.737426);
     diffM2 = abs(min2->getPotentialEnergy()-45.737433);
     diffSP = abs(saddle->getPotentialEnergy()-46.284511);
-    
+
     if ((diffM1 < tolerance) and
         (diffM2 < tolerance) and
         (diffSP < tolerance)){
-        ok *= 1; 
+        ok *= 1;
         printf("OK: Saddle search structural energies\n");
     }
     else{
@@ -127,7 +127,7 @@ void TestJob::checkFullSearch(void){
             printf("WARNING: Minimum 1 not within energy tolerance: %f\n", diffM2);
         }
     }
-    
+
     // checking the structures of the obtained configurations
     diffM1 = abs((min1->getPositions()).row(384).norm()-19.123375);
     diffM2 = abs((min2->getPositions()).row(384).norm()-19.527995);
@@ -136,7 +136,7 @@ void TestJob::checkFullSearch(void){
     if ((diffM1 < tolerance) and
         (diffM2 < tolerance) and
         (diffSP < tolerance)){
-        ok *= 1; 
+        ok *= 1;
         printf("OK: Saddle search, adatom positions\n");
     }
     else{
@@ -153,7 +153,6 @@ void TestJob::checkFullSearch(void){
             printf("WARNING: Minimum 1, adatom not within position tolerance: %f\n", diffM1);
         }
     }
-    
 
     if (ok){
         printf("Saddle search tests all good\n");
@@ -197,7 +196,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: LJ\n");
         }
-    }    
+    }
     
     energyDiff = getEnergyDiff("emt", 46.086312);
     if (abs(energyDiff) > tolerance){
@@ -209,7 +208,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: EMT\n");
         }
-    } 
+    }
     
     energyDiff = getEnergyDiff("edip" ,-1033.250950);
     if (abs(energyDiff) > tolerance){
@@ -221,7 +220,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: EDIP\n");
         }
-    } 
+    }
 
     energyDiff = getEnergyDiff("tersoff_si",-1035.809985 );
     if (abs(energyDiff) > tolerance){
@@ -233,7 +232,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: Tersoff\n");
         }
-    } 
+    }
 
     energyDiff = getEnergyDiff("sw_si", -1449.795645);
     if (abs(energyDiff) > tolerance){
@@ -245,7 +244,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: SW\n");
         }
-    } 
+    }
 
     energyDiff = getEnergyDiff("lenosky_si", -1410.679106);
     if (abs(energyDiff) > tolerance){

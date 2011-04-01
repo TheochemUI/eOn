@@ -17,8 +17,8 @@
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>    
-    #include <boinc/filesys.h>        
+    #include <boinc/diagnostics.h>
+    #include <boinc/filesys.h>
 #ifdef WIN32
     #include <boinc/boinc_win.h>
     #include <boinc/win_util.h>
@@ -45,7 +45,7 @@ DistributedReplicaJob::DistributedReplicaJob(Parameters *params)
 }
 
 DistributedReplicaJob::~DistributedReplicaJob()
-{ 
+{
 
 }
 
@@ -70,7 +70,7 @@ std::vector<std::string> DistributedReplicaJob::run(void)
     cgMin1.fullRelax();
     min_fcalls += min1->getForceCalls();
 
-    printf("Now running Distributed Replica Simulation\n\n"); 
+    printf("Now running Distributed Replica Simulation\n\n");
 
     balanceStep();
     samplingStep();
@@ -88,7 +88,7 @@ void DistributedReplicaJob::balanceStep(){
     long n, bSteps,nloop;
     bool bl_new,stop;
     Matter *initial;
-    
+
     n = 0;
     nloop = 0;
     bl_new = false;
@@ -107,7 +107,7 @@ void DistributedReplicaJob::balanceStep(){
            n++;
         }
         bl_new = balanceDynamics.checkState(reactant,min1);
-    
+
         if(bl_new){
             *reactant = *initial;
             stop = false;
@@ -133,7 +133,7 @@ void DistributedReplicaJob::samplingStep(){
     long n, sSteps,ncheck,srefined,nsample,buff_refined;
     long check_steps, mdbufflength,new_n;
     bool status;
-    Matrix<double, Eigen::Dynamic, 3> velocity;
+    AtomMatrix velocity;
     n = 0;
     ncheck = 0;
     nsample = 0;
@@ -151,7 +151,7 @@ void DistributedReplicaJob::samplingStep(){
 
     while(n < sSteps){
         samplingDynamics.oneStep(parameters->temperature);
-        n++;       
+        n++;
         *mdbuff[ncheck] = *reactant;
         ncheck ++;
         if(ncheck == check_steps){
@@ -167,36 +167,36 @@ void DistributedReplicaJob::samplingStep(){
                     srefined = new_n + n - ncheck;
                     printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
                     *reactant = *mdbuff[new_n];  
-             
+
                     char sbuff[STRING_SIZE];
                     string sample_saved("sample_saved");
                     snprintf(sbuff, STRING_SIZE, "_%ld.convel", nsample);
                     sample_saved += sbuff;
                     reactant->matter2convel(sample_saved);
-                } 
+                }
                 else{
                     *reactant = *mdbuff[0];
                     srefined = n - ncheck;
-                }              
+                }
                 velocity = reactant->getVelocities();
                 velocity *= (-1);
                 reactant->setVelocities(velocity);
                 n = srefined;
             }
         }
-            
+
     }
-   
+
     status = samplingDynamics.checkState(reactant,min1);
     printf("final_status = %d\n",status);
     *final = *reactant;
     *min2 = *final;
-    ConjugateGradients cgMin2(min2, parameters);     
-    cgMin2.setOutput(0);     
-    printf("\nMinimizing final product\n");     
-    cgMin2.fullRelax();     
+    ConjugateGradients cgMin2(min2, parameters);
+    cgMin2.setOutput(0);
+    printf("\nMinimizing final product\n");
+    cgMin2.fullRelax();
     min_fcalls += min2->getForceCalls();
-      
+
     min_fcalls += samplingDynamics.getMinfcalls();
     sp_fcalls += samplingDynamics.getMDfcalls();
     rf_fcalls += samplingDynamics.getRefinefcalls();
@@ -236,7 +236,7 @@ void DistributedReplicaJob::saveData(void)
     fclose(fileReactant);
 
     std::string productVelFilename("product.convel");
-    returnFiles.push_back(productVelFilename); 
+    returnFiles.push_back(productVelFilename);
     fileProduct = fopen(productVelFilename.c_str(), "wb");
     final->matter2convel(fileProduct);
     fclose(fileProduct);

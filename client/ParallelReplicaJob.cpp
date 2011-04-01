@@ -104,7 +104,7 @@ void ParallelReplicaJob::dynamics()
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long   RecordAccuracy = parameters->mdRecordAccuracy, mdbufflength;
     long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0, final_refined;
-    Matrix<double, Eigen::Dynamic, 3> velocities;
+    AtomMatrix velocities;
     double kinE = 0.0, kb = 1.0/11604.5;
     double kinT = 0.0, sumT = 0.0, sumT2 = 0.0, avgT, varT;
 
@@ -343,7 +343,7 @@ void ParallelReplicaJob::dephase()
     long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
     long  n,nloop, new_n, nbuff, dh_refined;
     bool  state = false;
-    Matrix<double, Eigen::Dynamic, 3> velocity;      
+    AtomMatrix velocity;      
 
     Dynamics dephaseDynamics(reactant,parameters);
     printf("Dephasing for %ld steps\n",dephaseSteps);

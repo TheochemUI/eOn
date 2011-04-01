@@ -85,11 +85,11 @@ public:
     long locate();//(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
     long getnFreeCoord() const;
-	
-	Matrix<double, Eigen::Dynamic, 3> getSaddlePositions();
-    Matrix<double, Eigen::Dynamic, 3> getEigenMode();
 
-    Matrix<double, Eigen::Dynamic, 3> mode;
+    AtomMatrix getSaddlePositions();
+    AtomMatrix getEigenMode();
+
+    AtomMatrix mode;
     void loadMode(string filename);
     void loadMode(FILE * modeFile);
     void saveMode(FILE * modeFile);
@@ -104,14 +104,14 @@ private:
     LowestEigenmodeInterface *lowestEigenmode; // method used to determine the lowest eigenmode
  
     double eigenValue; // estimate for the lowest eigenvalue
-    Matrix<double, Eigen::Dynamic, 3> eigenMode; // lowest eigenmode
-    Matrix<double, Eigen::Dynamic, 3> initialDisplacement;
+    AtomMatrix eigenMode; // lowest eigenmode
+    AtomMatrix initialDisplacement;
     long nFreeCoord; // number of free coordinates
     long status;
 
     void clean(); // clean up dynamically allocated memory
 
-    Matrix<double, Eigen::Dynamic, 3> projectedForce(Matrix<double, Eigen::Dynamic, 3> force); // projected minmode force
+    AtomMatrix projectedForce(AtomMatrix force); // projected minmode force
 
     /** Determine the two minima connected to the saddle point by displacing forward and backward along the lowest eigenmode from the saddle and minimizing
     @param[out]  *min1   one minima connected to the saddle point

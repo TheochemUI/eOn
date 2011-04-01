@@ -51,15 +51,15 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
     rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
     rotationalForce1 = 0;
     rotationalForce2 = 0;
-    Matrix<double, Eigen::Dynamic, 3> rotationalForce(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> rotationalForceOld(nAtoms, 3);
-    Matrix<double, Eigen::Dynamic, 3> rotationalPlaneOld(nAtoms, 3);
+    AtomMatrix rotationalForce(nAtoms,3);
+    AtomMatrix rotationalForceOld(nAtoms, 3);
+    AtomMatrix rotationalPlaneOld(nAtoms, 3);
     rotationalForce.setZero();
     rotationalForceOld.setZero();
     rotationalPlaneOld.setZero();
     initialDirection.normalize();
     direction = initialDirection;
-    
+
     statsAngle = 0;
     lengthRotationalForceOld = 0;
     forceCallsCenter = matterCenter->getForceCalls();
@@ -144,19 +144,19 @@ double Dimer::getEigenvalue()
     return eigenvalue;
 }
 
-Matrix<double, Eigen::Dynamic, 3> Dimer::getEigenvector()
+AtomMatrix Dimer::getEigenvector()
 {
       return direction;
 }
 
-double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalForce){
- 
+double Dimer::calcRotationalForce(AtomMatrix &rotationalForce)
+{
     double projectedForceA, projectedForceB;
-    Matrix<double, Eigen::Dynamic, 3> posCenter(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> posDimer(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> forceCenter(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> forceA(nAtoms,3);
-    Matrix<double, Eigen::Dynamic, 3> forceB(nAtoms,3);
+    AtomMatrix posCenter(nAtoms,3);
+    AtomMatrix posDimer(nAtoms,3);
+    AtomMatrix forceCenter(nAtoms,3);
+    AtomMatrix forceA(nAtoms,3);
+    AtomMatrix forceB(nAtoms,3);
 
     posCenter = matterCenter->getPositions();
 
@@ -166,11 +166,11 @@ double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalF
     // obtain the force for the dimer configuration
     matterDimer->setPositions(posDimer);
     forceA = matterDimer->getForces();
- 
+
     // use forward difference to obtain the force for configuration B
     forceCenter = matterCenter->getForces();
     forceB = 2*forceCenter - forceA;
- 
+
     projectedForceA = (direction.cwise() * forceA).sum();
     projectedForceB = (direction.cwise() * forceB).sum();
 
@@ -185,10 +185,11 @@ double Dimer::calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &rotationalF
     return (projectedForceB-projectedForceA)/(2*parameters->dimerSeparation);
 }
 
-void Dimer::determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationalForce,
-                                     Matrix<double, Eigen::Dynamic, 3> &rotationalForceOld,
-                                     Matrix<double, Eigen::Dynamic, 3> rotationalPlaneOld,
-                                     double* lengthRotationalForceOld){
+void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
+                                     AtomMatrix &rotationalForceOld,
+                                     AtomMatrix rotationalPlaneOld,
+                                     double* lengthRotationalForceOld)
+{
     double a, b, gamma = 0;
 
     a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
@@ -221,7 +222,7 @@ void Dimer::rotate(double rotationAngle)
 
     cosAngle = cos(rotationAngle);
     sinAngle = sin(rotationAngle);
- 
+
     direction = direction * cosAngle + rotationalPlane * sinAngle;
     rotationalPlane = rotationalPlane * cosAngle - direction * sinAngle;
     direction.normalize();

@@ -20,8 +20,8 @@
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>    
-    #include <boinc/filesys.h>        
+    #include <boinc/diagnostics.h>
+    #include <boinc/filesys.h>
 #ifdef WIN32
     #include <boinc/boinc_win.h>
     #include <boinc/win_util.h>
@@ -33,7 +33,7 @@
 using namespace std;
 using namespace helper_functions;
 
-BasinHoppingJob::BasinHoppingJob (Parameters *params)
+BasinHoppingJob::BasinHoppingJob(Parameters *params)
 {
     parameters = params;
     current = new Matter(parameters);
@@ -67,7 +67,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     for (int step=0; step<parameters->basinHoppingSteps; step++)
     {
 
-        Matrix<double, Eigen::Dynamic, 3> displacement;
+        AtomMatrix displacement;
         if(parameters->basinHoppingSingleAtomDisplace)
         {
             displacement = displaceSingle();
@@ -76,7 +76,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         {
             displacement = displaceRandom();
         }
-        
+
         trial->setPositions(current->getPositions() + displacement);
 
         *tmpMatter = *trial;
@@ -141,10 +141,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
     return returnFiles;
 }
 
-Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceRandom()
+AtomMatrix BasinHoppingJob::displaceRandom()
 {
     // Create a random displacement.
-    Matrix<double, Eigen::Dynamic, 3> displacement;        
+    AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
 
@@ -161,10 +161,10 @@ Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceRandom()
     return displacement;
 }
 
-Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceSingle()
+AtomMatrix BasinHoppingJob::displaceSingle()
 {
     // Create a random displacement.
-    Matrix<double, Eigen::Dynamic, 3> displacement;        
+    AtomMatrix displacement;        
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
     
@@ -178,6 +178,6 @@ Matrix<double, Eigen::Dynamic, 3> BasinHoppingJob::displaceSingle()
     {
         displacement(ra,j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
     }
-    
+
     return displacement;
 }

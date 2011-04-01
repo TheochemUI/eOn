@@ -43,11 +43,10 @@ AtomMatrix helper_functions::localize(AtomMatrix original, int maxAtoms)
 }
 
 
-
-
 // Random number generator
 
-double helper_functions::random(long newSeed){
+double helper_functions::random(long newSeed)
+{
     static long seed = -1;
     if(newSeed){
         seed=-newSeed;}
@@ -168,7 +167,7 @@ void helper_functions::normalize(double *v1, long size){
 }
 
 // Make v1 orthogonal to v2 
-Matrix<double, Eigen::Dynamic, 3> helper_functions::makeOrthogonal(const Matrix<double, Eigen::Dynamic, 3> v1, const Matrix<double, Eigen::Dynamic, 3> v2){
+AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2){
     return v1 - (v1.cwise()*v2).sum() * v2.normalized();
 }
 
@@ -187,7 +186,6 @@ void helper_functions::makeProjection(double *result, const double *v1, const do
 
 bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const double max_diff)
 {
-
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
     
@@ -249,9 +247,9 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
 
     Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
     Eigen::Vector4d maxv = es.eigenvectors().col(3);
-   
+
     Eigen::Matrix3d R; 
-    
+
     double aa = maxv[0]*maxv[0];
     double bb = maxv[1]*maxv[1];
     double cc = maxv[2]*maxv[2];
@@ -262,7 +260,7 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     double bc = maxv[1]*maxv[2];
     double bd = maxv[1]*maxv[3];
     double cd = maxv[2]*maxv[3];
-    
+
     R(0,0) = aa + bb - cc - dd;
     R(0,1) = 2*(bc-ad);
     R(0,2) = 2*(bd+ac);
@@ -275,8 +273,8 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
 
     //Eigen is transposed relative to numpy
     r2 = r2 * R;
-    
-    
+
+
     for(int i=0; i<r1.rows(); i++)
     {
         double diff = (r2.row(i) - r1.row(i)).norm();
