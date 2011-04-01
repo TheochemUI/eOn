@@ -78,7 +78,7 @@ void ConjugateGradients::oneStep()
     determineSearchDirection();
 
     // move system an infinitesimal step to determine the optimal step size along the search line
-    posStep = pos + directionNorm * parameters->optFiniteDiffStep;
+    posStep = pos + directionNorm * parameters->optFiniteDist;
     matter->setPositions(posStep);
     forceAfterStep = matter->getForces();
  
@@ -195,7 +195,7 @@ double ConjugateGradients::stepSize(AtomMatrix forceBeforeStep, AtomMatrix force
     // Determine curvature
     projectedForce1 = (forceBeforeStep.cwise() * directionNorm).sum();
     projectedForce2 = (forceAfterStep.cwise() * directionNorm).sum();
-    curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDiffStep;
+    curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDist;
     
     if(curvature < 0)
         step = maxStep;
@@ -219,7 +219,7 @@ AtomMatrix ConjugateGradients::makeInfinitesimalStepModifiedForces(AtomMatrix po
     determineSearchDirection();
     // Move system an infinitesimal step 
     // to determine the optimal step size along the search line
-    return directionNorm * parameters->optFiniteDiffStep + pos;
+    return directionNorm * parameters->optFiniteDist + pos;
 }
 
 

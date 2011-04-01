@@ -41,6 +41,8 @@ Parameters::Parameters(){
     processSearchMinimizeFirst = false;
     processSearchDefaultPrefactor = 0;
     processSearchMinimizationOffset = 0.2;
+    processSearchPrefactorMax = 10e20;
+    processSearchPrefactorMin = 10e8;
 
     // [Saddle Search] //
     saddleDisplaceType = SaddlePoint::DISP_LOAD;
@@ -60,7 +62,7 @@ Parameters::Parameters(){
     optMaxIterations = 1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
-    optFiniteDiffStep = 0.001;
+    optFiniteDist = 0.001;
     optTimeStep = 0.1;
 
     // [Dimer] //
@@ -76,16 +78,15 @@ Parameters::Parameters(){
     dimerRotationsMax = 8;
 
     // [Lanczos] //
-    lanczosFiniteDiff = 0.001;
+    lanczosFiniteDist = 0.001;
     lanczosTolerance = 0.001;
     lanczosMaxIterations = 20;
 
     // [Hessian] //
     hessianType = Hessian::REACTANT;
+    hessianFiniteDist = 1e-4;
     hessianMinDisplacement = 0.25;
     hessianWithinRadius = 5.0;
-    hessianPrefactorMax = 10e20;
-    hessianPrefactorMin = 10e8;
 
     // [Parallel Replica] //
     mdTimeStep = 1;
@@ -234,6 +235,7 @@ int Parameters::load(FILE *file){
         processSearchPrefactorMax = ini.GetValueF("Process Search", "prefactor_max", processSearchPrefactorMax);
         processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
         processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
+
         // [Saddle Search] //
 
         string minmodeMethodString = ini.GetValue("Saddle Search", "min_mode_method", "dimer");
@@ -290,7 +292,7 @@ int Parameters::load(FILE *file){
         optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
-        optFiniteDiffStep = ini.GetValueF("Optimizers","finite_diff_step", optFiniteDiffStep);
+        optFiniteDist = ini.GetValueF("Optimizers","finite_dist", optFiniteDist);
         optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
 
         // [Dimer] //
@@ -318,7 +320,7 @@ int Parameters::load(FILE *file){
 
         // [Lanczos] //
 
-        lanczosFiniteDiff = ini.GetValueF("Lanczos", "finite_diff_step", lanczosFiniteDiff);
+        lanczosFiniteDist = ini.GetValueF("Lanczos", "finite_dist", lanczosFiniteDist);
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
@@ -333,6 +335,7 @@ int Parameters::load(FILE *file){
         }else if(hessianString == "product"){
             hessianType = Hessian::PRODUCT;
         }
+        hessianFiniteDist = ini.GetValueF("Hessian", "finite_dist", hessianFiniteDist);
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
  
@@ -355,7 +358,7 @@ int Parameters::load(FILE *file){
         nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
         nebOptMaxIterations = ini.GetValueL("NEB", "max_iterations", nebOptMaxIterations);
         nebOptMaxMove = ini.GetValueF("NEB","max_move", nebOptMaxMove);
-        nebOptFiniteDiffStep = ini.GetValueF("NEB","finite_diff_step", nebOptFiniteDiffStep);
+        nebOptFiniteDist = ini.GetValueF("NEB","finite_dist", nebOptFiniteDist);
         nebOptTimeStep = ini.GetValueF("NEB","time_step", nebOptTimeStep);
 
         // [Molecular Dynamics] //

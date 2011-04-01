@@ -89,7 +89,8 @@ bool Hessian::calculate(int which)
     Matter matterTemp(parameters);
     matterTemp = *curr;
     
-    double dr = 1e-6; // value used by graeme 1e-4;
+//    double dr = 1e-6; // value used by graeme 1e-4;
+    double dr = parameters->hessianFiniteDist;
     
     AtomMatrix pos = curr->getPositions();
     AtomMatrix posDisplace(nAtoms, 3);
