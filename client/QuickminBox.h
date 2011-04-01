@@ -22,7 +22,7 @@ class QuickminBox : public Minimizer
         Matter *matter;
         Parameters *parameters;
         double dt;
-        Matrix<double, Eigen::Dynamic, 3> velocity; 
+        AtomMatrix velocity; 
         double boxXv, boxYv, boxZv, boxXf, boxYf, boxZf;
 
         QuickminBox(Matter *matter, Parameters *parameters);

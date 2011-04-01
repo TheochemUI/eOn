@@ -20,9 +20,8 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 }
 
 
-ConjugateGradients::ConjugateGradients(Matter *matter,
-                                       Parameters *parameters,
-                                       Matrix<double, Eigen::Dynamic, 3> forces){
+ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters, AtomMatrix forces)
+{
     initialize(matter, parameters);
     force = forces; 
 }
@@ -53,22 +52,23 @@ void ConjugateGradients::initialize(Matter *matter_passed, Parameters *parameter
 }
 
 
-ConjugateGradients::~ConjugateGradients(){
-
+ConjugateGradients::~ConjugateGradients()
+{
     // matter should not be deleted
     // parameters should not be deleted
     // Are pointers to objects outside the scope
- 
+
     return;
 }
 
 
-void ConjugateGradients::oneStep(){
+void ConjugateGradients::oneStep()
+{
     long forceCallsTemp;
     double step;
-    Matrix<double, Eigen::Dynamic, 3> pos;
-    Matrix<double, Eigen::Dynamic, 3> posStep;
-    Matrix<double, Eigen::Dynamic, 3> forceAfterStep;
+    AtomMatrix pos;
+    AtomMatrix posStep;
+    AtomMatrix forceAfterStep;
     //----- Initialize end -----
     //std::cout<<"oneStep\n";
 
@@ -95,11 +95,12 @@ void ConjugateGradients::oneStep(){
 }
 
 
-void ConjugateGradients::fullRelax(){
+void ConjugateGradients::fullRelax()
+{
     bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
-    static int run=0;
+    static int run = 0;
     ostringstream min;
     min << "min_" << run;
     if(parameters->writeMovies)
@@ -107,7 +108,7 @@ void ConjugateGradients::fullRelax(){
         matter->matter2con(min.str(), false);
         ++run;
     }
-    int i=0;
+    int i = 0;
     while(!converged and i < parameters->optMaxIterations) 
     {
         oneStep();
@@ -126,10 +127,11 @@ void ConjugateGradients::fullRelax(){
 }
 
 
-bool ConjugateGradients::isItConverged(double convergeCriterion){
-    double diff=0;
+bool ConjugateGradients::isItConverged(double convergeCriterion)
+{
+    double diff = 0;
  
-    for(int i=0;i<nAtoms;i++)
+    for(int i=0; i<nAtoms; i++)
     {
         diff = force.row(i).norm();
         if(convergeCriterion < diff)
@@ -157,7 +159,7 @@ void ConjugateGradients::determineSearchDirection(){
 
     a = fabs((force.cwise() * forceOld).sum());
     b = forceOld.squaredNorm();
-    if(a<0.5*b)
+    if(a < 0.5*b)
     {
         // Polak-Ribiere way to determine how much to mix in of old direction
         gamma = (force.cwise() * (force - forceOld)).sum()/b;
@@ -182,9 +184,8 @@ void ConjugateGradients::determineSearchDirection(){
 }
 
 
-double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, 
-                                    Matrix<double, Eigen::Dynamic, 3> forceAfterStep,
-                                    double maxStep){
+double ConjugateGradients::stepSize(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep)
+{
     double projectedForce1;
     double projectedForce2;
     double step, curvature;
@@ -213,7 +214,7 @@ double ConjugateGradients::stepSize(Matrix<double, Eigen::Dynamic, 3> forceBefor
 
 // Specific functions when forces are modified 
 
-Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::makeInfinitesimalStepModifiedForces(Matrix<double, Eigen::Dynamic, 3> pos){
+AtomMatrix ConjugateGradients::makeInfinitesimalStepModifiedForces(AtomMatrix pos){
  
     determineSearchDirection();
     // Move system an infinitesimal step 
@@ -222,10 +223,10 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::makeInfinitesimalStepModif
 }
 
 
-Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
-        Matrix<double, Eigen::Dynamic, 3> pos,
-        Matrix<double, Eigen::Dynamic, 3> forceBeforeStep, 
-        Matrix<double, Eigen::Dynamic, 3> forceAfterStep,
+AtomMatrix ConjugateGradients::getNewPosModifiedForces(
+        AtomMatrix pos,
+        AtomMatrix forceBeforeStep,
+        AtomMatrix forceAfterStep,
         double maxStep)
 {
     double step;
@@ -237,7 +238,7 @@ Matrix<double, Eigen::Dynamic, 3> ConjugateGradients::getNewPosModifiedForces(
 }
 
 
-void ConjugateGradients::setForces(Matrix<double, Eigen::Dynamic, 3> forces){
+void ConjugateGradients::setForces(AtomMatrix forces){
     force = forces;
     return;
 }

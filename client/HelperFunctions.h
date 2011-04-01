@@ -67,7 +67,7 @@ namespace helper_functions {
     void normalize(double *v1, long size);
 
     /* the orthogonal part of v1 to v2, of length size and store in result */
-    Matrix<double, Eigen::Dynamic, 3> makeOrthogonal(const Matrix<double, Eigen::Dynamic, 3> v1, const Matrix<double, Eigen::Dynamic, 3> v2);
+    AtomMatrix makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2);
 
     /* the projection of v1 on v2, of length size and store in result */
     void makeProjection(double *result, const double *v1, const double *v2, long size);

@@ -46,14 +46,14 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
     tau.normalize();
     *x0 = *matter;
     *x1 = *matter;
-    Matrix<double, Eigen::Dynamic, 3> x0_r = x0->getPositions();
+    AtomMatrix x0_r = x0->getPositions();
     x1->setPositions(x0_r + tau * parameters->dimerSeparation);
 
     // other vectors
-    Matrix<double, Eigen::Dynamic, 3> x1_rp;
-    Matrix<double, Eigen::Dynamic, 3> x1_r;
-    Matrix<double, Eigen::Dynamic, 3> tau_prime;
-    Matrix<double, Eigen::Dynamic, 3> g1_prime;
+    AtomMatrix x1_rp;
+    AtomMatrix x1_r;
+    AtomMatrix tau_prime;
+    AtomMatrix g1_prime;
 
     double delta = parameters->dimerSeparation * 0.5;
     double phi_tol = 2 * M_PI * (parameters->dimerConvergedRotation/360.0);
@@ -65,8 +65,8 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
     Matter *x1p = new Matter(parameters);
     
     // Calculate the gradients on x0 and x1, g0 and g1, respectively.
-    Matrix<double, Eigen::Dynamic, 3> g0 = -x0->getForces();
-    Matrix<double, Eigen::Dynamic, 3> g1 = -x1->getForces();
+    AtomMatrix g0 = -x0->getForces();
+    AtomMatrix g1 = -x1->getForces();
 
     do // while we have not reached phi_tol or maximum rotations.
     {
@@ -189,7 +189,7 @@ double ImprovedDimer::getEigenvalue()
     return C_tau;
 }
 
-Matrix<double, Eigen::Dynamic, 3> ImprovedDimer::getEigenvector()
+AtomMatrix ImprovedDimer::getEigenvector()
 {
     return tau;
 }

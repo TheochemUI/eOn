@@ -30,7 +30,7 @@ public:
     Dimer(Matter const *matter, Parameters *parameters);
     ~Dimer();
         
-    void initialize(Matter const *matter, Matrix<double, Eigen::Dynamic, 3>); // initialize the dimer
+    void initialize(Matter const *matter, AtomMatrix); // initialize the dimer
     void compute(Matter const *matter, AtomMatrix initialDirection); // compute the lowest eigenmode
     double getEigenvalue(); // return the current eigenvalue
     AtomMatrix getEigenvector();  // return the current eigenvector
@@ -46,13 +46,13 @@ private:
     Parameters *parameters;
 
     // The rotational plane that is going to be used is determined with the conjugate gradient method
-    void determineRotationalPlane(Matrix<double, Eigen::Dynamic, 3> rotationalForce, 
-                                  Matrix<double, Eigen::Dynamic, 3> &rotationalForceOld, 
-                                  Matrix<double, Eigen::Dynamic, 3> rotationalPlaneNormOld,
+    void determineRotationalPlane(AtomMatrix rotationalForce, 
+                                  AtomMatrix &rotationalForceOld, 
+                                  AtomMatrix rotationalPlaneNormOld,
                                   double *lengthRotationalForceOld);
-    
+
     void rotate(double rotationAngle); // rotate the dimer by rotationAngle (radians)
-    double calcRotationalForce(Matrix<double, Eigen::Dynamic, 3> &forceDiffOrthogonalToDimer); // determine the rotational force on the dimer
+    double calcRotationalForce(AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force on the dimer
 
 };
 

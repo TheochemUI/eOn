@@ -21,15 +21,15 @@
 
 struct MatterPrivateData {
     Parameters *parameters;
-    long nAtoms; // number of atoms
-    AtomMatrix positions; // positions
-    AtomMatrix velocities; // velocities
-    AtomMatrix forces; // forces
-    VectorXd masses; // masses
-    VectorXi atomicNrs; // atomic numbers
+    long nAtoms;
+    AtomMatrix positions;
+    AtomMatrix velocities;
+    AtomMatrix forces;
+    VectorXd masses;
+    VectorXi atomicNrs;
     VectorXi isFixed; // array of bool, false for movable atom, true for fixed
-    Matrix3d cellBoundaries; // boundaries of the cell
-    mutable double potentialEnergy; // potential energy
+    Matrix3d cellBoundaries;
+    mutable double potentialEnergy;
 };
 
 /* Data describing an atomic structure. This class has been devised to handle information about an atomic structure such as positions, velocities, masses, etc. It also allow to associate a forcefield for the structure through a pointer to function (potential()). The class can read and save data to a .con file (atom2con() and con2atom()). It can also save to a .xyz file (atom2xyz()).*/
@@ -85,8 +85,8 @@ public:
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
     void setFixed(long int atom, int isFixed); // set the atom to fixed (true) or movable (false)
-    double getPotentialEnergy(); // return the potential energy
-    double getKineticEnergy() const; // return the Kinetic energy
+    double getPotentialEnergy();
+    double getKineticEnergy() const;
     double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic plus potential energy)
 
     double distance(long index1, long index2) const; // return the distance between two atoms in same configuration

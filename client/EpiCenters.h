@@ -15,14 +15,28 @@
 
 namespace EpiCenters
 {
-    long cnaEpiCenter(const Matter *matter, double neighborCutoff); // index of random atom that is free and neither FCC nor HCP coordinated
-    long minCoordinatedEpiCenter(const Matter *matter, double neighborCutoff); // index of a random atom that is free and minimally coordinated
-    long lastAtom(const Matter *matter); // index of last atom -- assumed to be free
-    long randomFreeAtomEpiCenter(const Matter *matter); // index of a random atom that is free
+    // index of random atom that is free and neither FCC nor HCP coordinated
+    long cnaEpiCenter(const Matter *matter, double neighborCutoff);
 
-    void cna(long *cna, const Matter *matter, double neighborCutoff); // do a common neighbor analysis
-    void coordination(long *coordinationVal, const Matter *matter, double neighborCutoff); // determine the coordination for individual atoms
-    void coordinationLessOrEqual(bool *result, long coordinationMaxVal, const Matter *matter, double neighborCutoff); // determine atoms with coordination <= coordinationMaxVal
-    long minCoordination(const Matter *matter, double neighborCutoff); // determine first minimally coordinated atom
+    // index of a random atom that is free and minimally coordinated
+    long minCoordinatedEpiCenter(const Matter *matter, double neighborCutoff);
+
+    // index of last atom -- assumed to be free
+    long lastAtom(const Matter *matter);
+
+     // index of a random atom that is free
+    long randomFreeAtomEpiCenter(const Matter *matter);
+
+    // do a common neighbor analysis
+    void cna(long *cna, const Matter *matter, double neighborCutoff);
+
+    // determine the coordination for individual atoms
+    void coordination(long *coordinationVal, const Matter *matter, double neighborCutoff);
+
+    // determine atoms with coordination <= coordinationMaxVal
+    void coordinationLessOrEqual(bool *result, long coordinationMaxVal, const Matter *matter, double neighborCutoff);
+
+    // determine first minimally coordinated atom
+    long minCoordination(const Matter *matter, double neighborCutoff);
 }
 #endif
