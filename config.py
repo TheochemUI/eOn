@@ -72,8 +72,8 @@ def init(config_file = ""):
     
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')
-    config.path_searches_out = parser.get('Paths', 'searches_out')
-    config.path_searches_in  = parser.get('Paths', 'searches_in')
+    config.path_jobs_out = parser.get('Paths', 'jobs_out')
+    config.path_jobs_in  = parser.get('Paths', 'jobs_in')
     config.path_states       = parser.get('Paths', 'states')
     config.path_results      = parser.get('Paths', 'results')
     config.path_pot          = parser.get('Paths', 'potential_files')
@@ -91,7 +91,7 @@ def init(config_file = ""):
     config.comm_type = parser.get('Communicator', 'type')
     #print comm_type
     config.comm_job_bundle_size = parser.getint('Communicator', 'jobs_per_bundle')
-    config.comm_search_buffer_size = parser.getint('Communicator', 'num_jobs')
+    config.comm_job_buffer_size = parser.getint('Communicator', 'num_jobs')
     config.path_scratch = parser.get('Paths', 'scratch')
     #print path_scratch
     if config.comm_type == 'local':

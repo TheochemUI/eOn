@@ -238,14 +238,14 @@ def get_statelist(kT):
 def register_results(comm, current_state, states, searchdata = None):
     logger.info("registering results")
     t1 = unix_time.time()
-    if os.path.isdir(config.path_searches_in):
+    if os.path.isdir(config.path_jobs_in):
         if config.debug_keep_all_results:
             if not os.path.isdir(os.path.join(config.path_root, "results")):
                 os.makedirs(os.path.join(config.path_root, "results"))
-            for d in os.listdir(config.path_searches_in):
-                shutil.move(os.path.join(config.path_searches_in, d), os.path.join(config.path_root, "results", d))
-        shutil.rmtree(config.path_searches_in)  
-    os.makedirs(config.path_searches_in)
+            for d in os.listdir(config.path_jobs_in):
+                shutil.move(os.path.join(config.path_jobs_in, d), os.path.join(config.path_root, "results", d))
+        shutil.rmtree(config.path_jobs_in)  
+    os.makedirs(config.path_jobs_in)
     
     #Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -255,7 +255,7 @@ def register_results(comm, current_state, states, searchdata = None):
                 states.get_state(state_num).get_confidence() < config.akmc_confidence)
 
     num_registered = 0
-    for result in comm.get_results(config.path_searches_in, keep_result): 
+    for result in comm.get_results(config.path_jobs_in, keep_result): 
         # The result dictionary contains the following key-value pairs:
         # reactant - an array of strings containing the reactant
         # saddle - an atoms object containing the saddle
@@ -302,7 +302,7 @@ def register_results(comm, current_state, states, searchdata = None):
                 break
     
     #Approximate number of searches recieved
-    tot_searches = len(os.listdir(config.path_searches_in)) * config.comm_job_bundle_size
+    tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
     
     t2 = unix_time.time()
     logger.info("%i (result) searches processed", num_registered)
@@ -485,7 +485,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     #XXX:what if the user changes the bundle size?
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size 
     logger.info("%i searches in the queue" % num_in_buffer)
-    num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
+    num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
     
     if num_to_make == 0:
@@ -626,7 +626,7 @@ def main():
         os.chdir(config.path_root)
 
     if options.no_submit:
-        config.comm_search_buffer_size = 0
+        config.comm_job_buffer_size = 0
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
@@ -710,7 +710,7 @@ def main():
         else:
             res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_searches_out, config.path_searches_in, config.path_states,
+                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_states,
                         config.path_scratch]
                 if config.kdb_on:
                     rmdirs.append(config.kdb_path) 
