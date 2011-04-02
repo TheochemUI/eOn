@@ -78,7 +78,7 @@ def basinhopping():
 def make_searches(comm, wuid, min_energy_con_path):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
-    num_to_make = max(config.comm_search_buffer_size - num_in_buffer, 0)
+    num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
     
     if num_to_make == 0:
@@ -116,9 +116,9 @@ def make_searches(comm, wuid, min_energy_con_path):
 
 def register_results(comm, min_energy):
     logger.info("registering results")
-    if os.path.isdir(config.path_searches_in):
-        shutil.rmtree(config.path_searches_in)    
-    os.makedirs(config.path_searches_in)
+    if os.path.isdir(config.path_jobs_in):
+        shutil.rmtree(config.path_jobs_in)    
+    os.makedirs(config.path_jobs_in)
     
     #Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -127,7 +127,7 @@ def register_results(comm, min_energy):
     new_min_energy_structure = None
     num_registered = 0
 
-    for result in comm.get_results(config.path_searches_in, keep_result): 
+    for result in comm.get_results(config.path_jobs_in, keep_result): 
         # The result dictionary contains the following key-value pairs:
         # product.con - an array of strings containing the reactant
         # results.dat - an array of strings containing the results
@@ -176,12 +176,12 @@ def main():
         sys.exit(1)
 
     if options.no_submit:
-        config.searches_in_buffer= 0
+        config.comm_job_buffer_size= 0
 
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_searches_out, config.path_searches_in, config.path_scratch]
+                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch]
                 for i in rmdirs:
                     if os.path.isdir(i):
                         shutil.rmtree(i)

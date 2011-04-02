@@ -101,8 +101,8 @@ class Communicator:
         return biggest + 1
 
     def unbundle(self, resultpath, keep_result):
-        '''This method unbundles multiple searches into multiple single 
-           searches so the akmc script can process them.'''
+        '''This method unbundles multiple jobs into multiple single 
+           jobs so the akmc script can process them.'''
 
         # These are the files in the result directory that we keep.
 
@@ -114,7 +114,7 @@ class Communicator:
             basename, dirname = os.path.split(jobpath)
             if not keep_result(dirname):
                 continue
-            # Need to figure out how many searches were bundled together
+            # Need to figure out how many jobs were bundled together
             # and then create the new job directories with the split files.
             bundle_size = self.get_bundle_size(jobpath)
             # Get the number at the end of the jobpath. Looks like path/to/job/#_#
@@ -479,7 +479,7 @@ class MPI(Communicator):
 
         self.mpicommand = mpicommand
 
-        #path to the saddle search executable
+        #path to the client
         if '/' in client:
             self.client = os.path.abspath(client)
             if not os.path.isfile(self.client):
@@ -520,6 +520,7 @@ class MPI(Communicator):
             shutil.rmtree(os.path.join(self.scratchpath, name))
 
         mpi_wrapper_args = [self.mpicommand, self.client]
+        #XXX: THIS CODE DOES NOT WORK ANY MORE
         for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
             mpi_wrapper_args.append(jobpath) 
 
@@ -546,7 +547,7 @@ class Local(Communicator):
         #number of cpus to use
         self.ncpus = ncpus
 
-        #path to the saddle search executable
+        #path to the client
         if '/' in client:
             self.client = os.path.abspath(client)
             if not os.path.isfile(self.client):
@@ -1072,13 +1073,3 @@ class ARC(Communicator):
 
 
 
-if __name__=='__main__':
-    import sys
-    if len(sys.argv) < 4:
-        print '%s: scratchdir jobdir resultsdir' % sys.argv[0]
-        sys.exit(1)
-    c = Local('eonclient', 2, sys.argv[1]) 
-    jobdirs = [ os.path.join(sys.argv[2], d) for d in os.listdir(sys.argv[2]) ]
-
-    c.submit_searches(jobdirs)
-    c.get_results(sys.argv[3])
