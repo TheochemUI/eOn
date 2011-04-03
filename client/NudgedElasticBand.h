@@ -26,6 +26,13 @@ class NEB {
 
 public:
 
+    // Optimization for the NEB
+    enum{
+        OPT_SD,
+        OPT_CG,
+        OPT_GLBFGS
+    };
+
     NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *parameters);
     ~NEB();
 
