@@ -189,7 +189,7 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
     
-    //Align centroids
+    // Align centroids
     Eigen::VectorXd c1(3);
     Eigen::VectorXd c2(3);
 

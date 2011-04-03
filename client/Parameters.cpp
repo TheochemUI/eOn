@@ -84,9 +84,28 @@ Parameters::Parameters(){
 
     // [Hessian] //
     hessianType = Hessian::REACTANT;
-    hessianFiniteDist = 1e-4;
+    hessianFiniteDist = 0.001;
     hessianMinDisplacement = 0.25;
     hessianWithinRadius = 5.0;
+
+    // [Displacement Sampling] //
+    displaceNSamples = 32; // number of samples to take
+    displaceIterMax = 32; // maximum number of rotations to perform on the dimer
+    displaceTorqueConvergence = 0.01; // convergence criteria of the dimer rotation
+    displaceMaxCurvature = -0.1; // maximum curvature which considered good; avoid shallow but negative curvatures
+    displaceMaxDE = 10.0; // maximum dE which is considered good; should use saddleMaxEnergy?
+    displaceCutoffs = "0.0 3.3";
+    displaceMagnitudes = "0.0625 0.125 0.25";
+
+    // [Nudged Elastic Band] //
+    nebSpring = 5.0;
+    nebClimbingImage = true;
+    nebOldTangent = false;
+    nebOptMaxIterations = 1000;
+    nebOptMaxMove = 0.2;
+    nebOptConvergedForce = 0.005;
+    nebOptFiniteDist = 0.001;
+    nebOptTimeStep = 0.1;
 
     // [Parallel Replica] //
     mdTimeStep = 1;
@@ -115,21 +134,12 @@ Parameters::Parameters(){
     bondBoostQcut = 3.0;
     bondBoostRMDS = 0;
 
-    // [Thermostat]
+    // [Thermostat] //
     thermostat = Dynamics::ANDERSEN;
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10; // collision frequency in unit of dt
     thermoNoseMass = 1.0;
     thermoLangvinFriction = 0.005;
-
-    // [Displacement Sampling] //
-    displaceNSamples = 32; // number of samples to take
-    displaceIterMax = 32; // maximum number of rotations to perform on the dimer
-    displaceTorqueConvergence = 0.01; // convergence criteria of the dimer rotation
-    displaceMaxCurvature = -0.1; // maximum curvature which considered good; avoid shallow but negative curvatures
-    displaceMaxDE = 10.0; // maximum dE which is considered good; should use saddleMaxEnergy?
-    displaceCutoffs = "0.0 3.3";
-    displaceMagnitudes = "0.0625 0.125 0.25";
 
     // [Basin Hopping] //
     basinHoppingStepSize = 0.1;
@@ -168,10 +178,9 @@ int Parameters::load(FILE *file){
     CIniFile ini;
     ini.CaseInsensitive();
     int error=0;
-    //printf("List of non-default parameters: ");
+
     if(ini.ReadFile(file))
     {
-        // if we succesfully read the file, then parse it as an INI
 
         // [Main] //
 
@@ -206,7 +215,6 @@ int Parameters::load(FILE *file){
             fprintf(stderr, "Unknown job_type: %s\n", jobString.c_str());
             error = 1;
         }
-
         temperature = ini.GetValueF("Main", "temperature", temperature);
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         // Initialize random generator
@@ -217,9 +225,13 @@ int Parameters::load(FILE *file){
         }else{
             helper_functions::random(randomSeed);
         }
-
         potential = toLowerCase(ini.GetValue("Main", "potential"));
-//GH        fprintf(stderr, "potential: %s\n", potential.c_str());
+
+
+        // [Debug] //
+
+        writeMovies= ini.GetValueB("Debug", "write_movies", writeMovies);
+
 
         // [Structure Comparison] //
 
@@ -228,6 +240,7 @@ int Parameters::load(FILE *file){
         structureComparisonEnergyDifference = ini.GetValueF("Structure Comparison", "energy_difference", structureComparisonEnergyDifference);
         checkRotation = ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
 
+
         // [Process Search] //
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
@@ -235,6 +248,7 @@ int Parameters::load(FILE *file){
         processSearchPrefactorMax = ini.GetValueF("Process Search", "prefactor_max", processSearchPrefactorMax);
         processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
         processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
+
 
         // [Saddle Search] //
 
@@ -270,21 +284,19 @@ int Parameters::load(FILE *file){
         {
             saddleDisplaceType = SaddlePoint::DISP_RANDOM;
         }        
-        // default is a displacement made on the server
-        else
+        else  // default is a displacement made on the server
         { 
             saddleDisplaceType = SaddlePoint::DISP_LOAD;
         }
-        
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
-//        saddleMaxJumpAttempts = ini.GetValueL("Saddle Search", "max_jump_attempts", saddleMaxJumpAttempts); //undocumented
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
         saddleMaxLocalizedAtoms = ini.GetValueF("Saddle Search", "max_localized_atoms", saddleMaxLocalizedAtoms); //undocumented
+
 
         // [Optimizers] //
 
@@ -295,10 +307,11 @@ int Parameters::load(FILE *file){
         optFiniteDist = ini.GetValueF("Optimizers","finite_dist", optFiniteDist);
         optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
 
+
         // [Dimer] //
 
         dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
-        dimerRotationAngle = ini.GetValueF("Dimer", "finite_diff_angle", dimerRotationAngle);
+        dimerRotationAngle = ini.GetValueF("Dimer", "finite_angle", dimerRotationAngle);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
         dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
@@ -318,11 +331,13 @@ int Parameters::load(FILE *file){
         dimerTorqueMin = ini.GetValueF("Dimer", "torque_min", dimerTorqueMin);
         dimerTorqueMax = ini.GetValueF("Dimer", "torque_max", dimerTorqueMax);
 
+
         // [Lanczos] //
 
         lanczosFiniteDist = ini.GetValueF("Lanczos", "finite_dist", lanczosFiniteDist);
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
+
 
         // [Hessian] //
 
@@ -339,6 +354,7 @@ int Parameters::load(FILE *file){
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
  
+
         // [Displacement Sampling] //
 
         displaceNSamples = ini.GetValueL("Displacement Sampling", "samples", displaceNSamples);
@@ -349,17 +365,20 @@ int Parameters::load(FILE *file){
         displaceCutoffs = ini.GetValue("Displacement Sampling", "cutoffs", displaceCutoffs);
         displaceMagnitudes = ini.GetValue("Displacement Sampling", "magnitudes", displaceMagnitudes);
 
+
         // [Nudged Elastic Band]
 
         nebImages = ini.GetValueL("NEB", "images", nebImages);
-        nebClimb = ini.GetValueB("NEB", "climb", nebClimb);
         nebSpring = ini.GetValueF("NEB", "spring", nebSpring);
-        nebOptMethod = toLowerCase(ini.GetValue("NEB", "method", nebOptMethod));
-        nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
+        nebClimbingImage = ini.GetValueB("NEB", "climbing_image", nebClimbingImage);
+        nebOldTangent = ini.GetValueB("NEB", "climbing_image", nebOldTangent);
+        nebOptMethod = toLowerCase(ini.GetValue("NEB", "opt_method", nebOptMethod));
         nebOptMaxIterations = ini.GetValueL("NEB", "max_iterations", nebOptMaxIterations);
         nebOptMaxMove = ini.GetValueF("NEB","max_move", nebOptMaxMove);
+        nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
         nebOptFiniteDist = ini.GetValueF("NEB","finite_dist", nebOptFiniteDist);
         nebOptTimeStep = ini.GetValueF("NEB","time_step", nebOptTimeStep);
+
 
         // [Molecular Dynamics] //
 
@@ -376,10 +395,13 @@ int Parameters::load(FILE *file){
         mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
 
+
         // [Distributed Replica] //
+
         drBalanceSteps = ini.GetValueL("Distributed Replica", "balance_steps", drBalanceSteps);
         drSamplingSteps = ini.GetValueL("Distributed Replica", "sampling_steps", drSamplingSteps);
         drTargetTemperature = ini.GetValueF("Distributed Replica", "target_temperature", drTargetTemperature);
+
 
         // [Thermostat] //
 
@@ -393,12 +415,19 @@ int Parameters::load(FILE *file){
         }else if (thermostatString == "langevin") {
             thermostat = Dynamics::LANGEVIN;
         }
-        
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
-         
+
+
+        // [Hyperdynamics] //
+
+        bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
+        bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
+        bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
+        bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
+        bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
         string hyperString;
         hyperString = ini.GetValue("Hyperdynamics","bias_potential","none");
         hyperString = toLowerCase(hyperString);
@@ -408,21 +437,13 @@ int Parameters::load(FILE *file){
             biasPotential = Hyperdynamics::BOND_BOOST;
         }
 
-        // [Hyperdynamics] //
-        bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
-        bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
-        bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
-        bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
-        bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
 
         // [Basin Hopping] //
+
         basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized", basinHoppingStayMinimized);
-
-        // [Debug] //
-        writeMovies= ini.GetValueB("Debug", "write_movies", writeMovies);
 
     }
     else

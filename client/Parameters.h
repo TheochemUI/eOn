@@ -110,7 +110,8 @@ public:
     // [Nudged Elastic Band]
     long   nebImages;
     double nebSpring;
-    bool   nebClimb;
+    bool   nebClimbingImage;
+    bool   nebOldTangent;
     string nebOptMethod;
     long   nebOptMaxIterations; // maximum iterations for saddle point searches and minimization
     double nebOptMaxMove; // maximum displacement vector for a step during optimization
