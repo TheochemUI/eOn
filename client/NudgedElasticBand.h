@@ -30,11 +30,15 @@ public:
     ~NEB();
 
     void compute(void);
+    void updateForces(void);
 
 private:
 
-    long images;
+    Parameters *parameters;
     Matter *neb[]; // NEB images
+    int nAtoms;
+    long images;
+    AtomMatrix *tangent;
 
 };
 
