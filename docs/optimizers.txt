@@ -8,7 +8,7 @@ Optimizers
 The eon client provides two optimizers quick-min and conjugate gradients. These
 options are in the **[Optimizers]** section. 
 
-**method**:
+**opt_method**:
     
     Default: cg
     
@@ -49,7 +49,7 @@ options are in the **[Optimizers]** section.
     The dynamical timestep for the quickmin algorithm.
 
 
-**finite_diff_step**:
+**finite_dist**:
 
     Default: 0.001
 

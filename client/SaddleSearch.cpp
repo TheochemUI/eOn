@@ -336,6 +336,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
+    // GH: this should be generalized to other optimizers
     ConjugateGradients cgSaddle(saddle, parameters, forces);
     static int run = 0;
     ostringstream climb;
@@ -372,7 +373,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
         #ifndef NDEBUG
-        double stepSize = sqrt(((saddle->getPositions() - pos).cwise().square()).sum());
+        double stepSize = (saddle->getPositions() - pos).norm();
         #endif
         // The system (saddle) is moved to a new configuration
         saddle->setPositions(pos);
@@ -402,7 +403,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n",
-                       iterations, sqrt((saddle->getForces().cwise().square()).sum()),
+                       iterations, saddle->getForces().norm(),
                        lowestEigenmode->statsTorque, saddle->getPotentialEnergy(),
                        lowestEigenmode->statsCurvature, lowestEigenmode->statsAngle,
                        (int)lowestEigenmode->statsRotations, stepSize);
@@ -410,7 +411,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             else 
             {
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
-                       sqrt((saddle->getForces().cwise().square()).sum()), saddle->getPotentialEnergy(), stepSize);
+                       saddle->getForces().norm(), saddle->getPotentialEnergy(), stepSize);
             }
         #endif
         if(parameters->writeMovies){
