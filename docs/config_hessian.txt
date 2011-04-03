@@ -10,6 +10,12 @@ Options for controlling how Hessian matricies are calculated.
     The Hessian to be calculated has to be one of *reactant*, *saddle*, or
     *product*.
 
+**finite_dist** 
+
+    Default: 1e-4
+
+    Finite difference distance between forces used to construct the Hessian.
+
 **min_displacement** 
 
     Default: 0.25

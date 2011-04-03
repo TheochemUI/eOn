@@ -67,4 +67,6 @@ with a brief description.
 
 .. include:: config_hessian.txt
 
+.. include:: config_neb.txt
+
 .. include:: config_debug.txt

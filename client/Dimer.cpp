@@ -169,7 +169,7 @@ double Dimer::calcRotationalForce(AtomMatrix &rotationalForce)
 
     // use forward difference to obtain the force for configuration B
     forceCenter = matterCenter->getForces();
-    forceB = 2*forceCenter - forceA;
+    forceB = 2.0*forceCenter - forceA;
 
     projectedForceA = (direction.cwise() * forceA).sum();
     projectedForceB = (direction.cwise() * forceB).sum();
@@ -190,16 +190,16 @@ void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
                                      AtomMatrix rotationalPlaneOld,
                                      double* lengthRotationalForceOld)
 {
-    double a, b, gamma = 0;
+    double a, b, gamma = 0.0;
 
     a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
     b = rotationalForceOld.squaredNorm();
-    if(a<0.5*b)
+    if(a < 0.5*b)
     {
         gamma = (rotationalForce.cwise() * (rotationalForce - rotationalForceOld)).sum()/b;
     }
     else
-        gamma = 0;
+        gamma = 0.0;
 
     // new rotational plane based on the current rotational force and the previous rotational plane force
     rotationalPlane = rotationalForce + rotationalPlaneOld * (*(lengthRotationalForceOld)) * gamma;

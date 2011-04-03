@@ -20,6 +20,7 @@ and calculate prefactors all within the Process Search job type.
 **prefactor_max** 
     
     Default: 10e20
+
     Maximum value for a resonable prefactor.
 
 **default_prefactor**

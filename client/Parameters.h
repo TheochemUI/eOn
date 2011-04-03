@@ -80,7 +80,7 @@ public:
     bool   dimerImproved; // turn on the improved dimer method
     double dimerConvergedRotation; // stop rotating when angle drops below this value
     long   dimerMaxIterations; // maximum number of rotation iterations
-    long   dimerOptimizer; // method to determine the next rotation direction
+    long   dimerOptRotMethod; // method to determine the next rotation direction
     // old parameters
     long   dimerRotationsMax;
     long   dimerRotationsMin;
@@ -112,12 +112,6 @@ public:
     double nebSpring;
     bool   nebClimbingImage;
     bool   nebOldTangent;
-    string nebOptMethod;
-    long   nebOptMaxIterations; // maximum iterations for saddle point searches and minimization
-    double nebOptMaxMove; // maximum displacement vector for a step during optimization
-    double nebOptConvergedForce; // force convergence criterion required for an optimization
-    double nebOptFiniteDist; // finite difference step size used in conjugate gradients
-    double nebOptTimeStep; // time step size used in quickmin
 
     // [Molecular Dynamics]
     double mdTimeStep;
