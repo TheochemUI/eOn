@@ -18,7 +18,7 @@ side.
     This is the convergence critera for relative error of the lowest
     eigenvalue.
 
-**finite_diff_step** 
+**finite_dist** 
 
     Default: 0.001
 

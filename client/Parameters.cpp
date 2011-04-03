@@ -19,6 +19,7 @@
 #include "BondBoost.h"
 #include "SaddleSearch.h"
 #include "ImprovedDimer.h"
+#include "NudgedElasticBand.h"
 
 Parameters::Parameters(){
 
@@ -70,7 +71,7 @@ Parameters::Parameters(){
     dimerRotationAngle = 0.005;
     dimerImproved = false;
     dimerConvergedRotation = 5.0; // degrees
-    dimerOptimizer = ImprovedDimer::OPT_SD;
+    dimerOptRotMethod = ImprovedDimer::OPT_CG;
     // old, for comparison with improved dimer method, will be removed later
     dimerTorqueMin = 0.1;
     dimerTorqueMax = 1.0;
@@ -92,7 +93,7 @@ Parameters::Parameters(){
     displaceNSamples = 32; // number of samples to take
     displaceIterMax = 32; // maximum number of rotations to perform on the dimer
     displaceTorqueConvergence = 0.01; // convergence criteria of the dimer rotation
-    displaceMaxCurvature = -0.1; // maximum curvature which considered good; avoid shallow but negative curvatures
+    displaceMaxCurvature = -0.1; // maximum curvature which is considered good; avoids shallow but negative curvatures
     displaceMaxDE = 10.0; // maximum dE which is considered good; should use saddleMaxEnergy?
     displaceCutoffs = "0.0 3.3";
     displaceMagnitudes = "0.0625 0.125 0.25";
@@ -101,11 +102,12 @@ Parameters::Parameters(){
     nebSpring = 5.0;
     nebClimbingImage = true;
     nebOldTangent = false;
-    nebOptMaxIterations = 1000;
-    nebOptMaxMove = 0.2;
-    nebOptConvergedForce = 0.005;
-    nebOptFiniteDist = 0.001;
-    nebOptTimeStep = 0.1;
+//    nebOptMethod = NEB::OPT_CG;
+//    nebOptMaxIterations = 1000;
+//    nebOptMaxMove = 0.2;
+//    nebOptConvergedForce = 0.005;
+//    nebOptFiniteDist = 0.001;
+//    nebOptTimeStep = 0.1;
 
     // [Parallel Replica] //
     mdTimeStep = 1;
@@ -300,7 +302,7 @@ int Parameters::load(FILE *file){
 
         // [Optimizers] //
 
-        optMethod = toLowerCase(ini.GetValue("Optimizers", "method", optMethod));
+        optMethod = toLowerCase(ini.GetValue("Optimizers", "opt_method", optMethod));
         optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
@@ -316,14 +318,14 @@ int Parameters::load(FILE *file){
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
         dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
         string dimerOptString;
-        dimerOptString = ini.GetValue("Dimer", "optimizer", "steepest_descent");
+        dimerOptString = ini.GetValue("Dimer", "opt_method", "sd");
         dimerOptString = toLowerCase(dimerOptString);
-        if (dimerOptString == "steepest_descent") {
-            dimerOptimizer = ImprovedDimer::OPT_SD;
-        }else if (dimerOptString == "conjugate_gradient") {
-            dimerOptimizer = ImprovedDimer::OPT_CG;
+        if (dimerOptString == "sd") {
+            dimerOptRotMethod = ImprovedDimer::OPT_SD;
+        }else if (dimerOptString == "cg") {
+            dimerOptRotMethod = ImprovedDimer::OPT_CG;
         }else if (dimerOptString == "lbfgs") {
-            dimerOptimizer = ImprovedDimer::OPT_LBFGS;
+            dimerOptRotMethod = ImprovedDimer::OPT_LBFGS;
         }
         // old, for comparison with Improved dimer method, will be removed later
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
@@ -372,12 +374,12 @@ int Parameters::load(FILE *file){
         nebSpring = ini.GetValueF("NEB", "spring", nebSpring);
         nebClimbingImage = ini.GetValueB("NEB", "climbing_image", nebClimbingImage);
         nebOldTangent = ini.GetValueB("NEB", "climbing_image", nebOldTangent);
-        nebOptMethod = toLowerCase(ini.GetValue("NEB", "opt_method", nebOptMethod));
-        nebOptMaxIterations = ini.GetValueL("NEB", "max_iterations", nebOptMaxIterations);
-        nebOptMaxMove = ini.GetValueF("NEB","max_move", nebOptMaxMove);
-        nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
-        nebOptFiniteDist = ini.GetValueF("NEB","finite_dist", nebOptFiniteDist);
-        nebOptTimeStep = ini.GetValueF("NEB","time_step", nebOptTimeStep);
+//        nebOptMethod = toLowerCase(ini.GetValue("NEB", "opt_method", nebOptMethod));
+//        nebOptMaxIterations = ini.GetValueL("NEB", "max_iterations", nebOptMaxIterations);
+//        nebOptMaxMove = ini.GetValueF("NEB","max_move", nebOptMaxMove);
+//        nebOptConvergedForce = ini.GetValueF("NEB", "converged_force", nebOptConvergedForce);
+//        nebOptFiniteDist = ini.GetValueF("NEB","finite_dist", nebOptFiniteDist);
+//        nebOptTimeStep = ini.GetValueF("NEB","time_step", nebOptTimeStep);
 
 
         // [Molecular Dynamics] //
