@@ -20,7 +20,7 @@
 #define NTAB 32
 #define NDIV (1+(IM-1)/NTAB)
 #define EPS 1.2e-7
-#define RNMX (1.0-EPS)         
+#define RNMX (1.0-EPS)
 #define IM1 2147483563
 #define IM2 2147483399
 #define IMM1 (IM1-1)

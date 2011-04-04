@@ -12,7 +12,7 @@
 #define SADDLESEARCH_H
 
 #include "Matter.h"
-#include "LowestEigenmodeInterface.h" 
+#include "LowestEigenmodeInterface.h"
 
 #include <string>
 
@@ -64,7 +64,7 @@ public:
  
     /** Constructor
     @param[in]  initial      initial state minimum
-    @param[in]  saddle       conformation where to start the saddle point search; also used to return the final saddle point.
+    @param[in]  saddle       conformation where to start the saddle point search; also used to return the final saddle point
     @param[in]  *parameters  runtime parameters */
     SaddlePoint(Matter *initial, Matter *saddle, Parameters *parameters);
 
@@ -72,7 +72,7 @@ public:
 
     void initialize(Matter *initial, Matter *saddle, Parameters *parameters);
 
-    void displaceAndSetMode(Matter *matter); // make a displacement of atoms centered on the EpiCenter atom and set the initial mode accordingly  
+    void displaceAndSetMode(Matter *matter); // make a displacement of atoms centered on the EpiCenter atom and set the initial mode accordingly
 
     /** Determine a nearby saddle point
     @param[out]  *min1     one of the minima connected to the saddle point
@@ -98,7 +98,7 @@ private:
     Matter *saddle;
     Parameters *parameters;
     LowestEigenmodeInterface *lowestEigenmode; // method used to determine the lowest eigenmode
- 
+
     double eigenValue; // estimate for the lowest eigenvalue
     AtomMatrix eigenMode; // lowest eigenmode
     AtomMatrix initialDisplacement;

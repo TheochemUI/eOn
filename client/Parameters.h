@@ -85,12 +85,11 @@ public:
     bool   dimerImproved; // turn on the improved dimer method
     double dimerConvergedRotation; // stop rotating when angle drops below this value
     long   dimerMaxIterations; // maximum number of rotation iterations
-    string dimerOptRotMethod; // method to determine the next rotation direction
-    // old parameters
-    long   dimerRotationsMax;
-    long   dimerRotationsMin;
-    double dimerTorqueMax;
-    double dimerTorqueMin;
+    string dimerOptMethod; // method to determine the next rotation direction
+    long   dimerRotationsMax; // old
+    long   dimerRotationsMin; // old
+    double dimerTorqueMax; // old
+    double dimerTorqueMin; // old
 
     // [Lanczos]
     double lanczosFiniteDist ; // finite difference distance
@@ -115,8 +114,9 @@ public:
     // [Nudged Elastic Band]
     long   nebImages;
     double nebSpring;
-    bool   nebClimbingImage;
+    bool   nebClimbingImageMethod;
     bool   nebOldTangent;
+    string nebOptMethod;
 
     // [Molecular Dynamics]
     double mdTimeStep;

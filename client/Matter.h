@@ -58,7 +58,7 @@ public:
     void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
 
     AtomMatrix pbc(AtomMatrix diff) const;
-    
+
     AtomMatrix getPositions() const; // return coordinates of atoms in array pos
     VectorXd getPositionsV() const;
     AtomMatrix getPositionsFree() const; // return coordinates of free atoms in array pos
@@ -67,13 +67,13 @@ public:
     void setPositionsV(const VectorXd pos);
     void setPositionsFree(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos
     void setPositionsFreeV(const VectorXd pos);
-    
-    AtomMatrix getVelocities() const; 
-    void setVelocities(const AtomMatrix v); 
+
+    AtomMatrix getVelocities() const;
+    void setVelocities(const AtomMatrix v);
     void setForces(const AtomMatrix f);
     AtomMatrix getAccelerations(); 
 
-    AtomMatrix getForces(); // return forces applied on all atoms in array force 
+    AtomMatrix getForces(); // return forces applied on all atoms in array force
     VectorXd   getForcesV();
     AtomMatrix getForcesFree();
     VectorXd   getForcesFreeV();
@@ -125,7 +125,7 @@ private:
     char headerCon4[STRING_SIZE];
     char headerCon5[STRING_SIZE];
     char headerCon6[STRING_SIZE];
-    
+
     void computePotential();
     void initializeDataMembers(Parameters *parameters);
     void applyPeriodicBoundary();

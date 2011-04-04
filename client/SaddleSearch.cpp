@@ -119,7 +119,7 @@ void SaddlePoint::loadMode(FILE *modeFile)
     nFreeCoord = nfree;
     mode.resize(nall/3, 3);
     mode.setZero();
-    for (int i=0; i < nall/3; i++) 
+    for (int i=0; i < nall/3; i++)
     {
         for(int j=0; j<3; j++)
         {
@@ -152,14 +152,14 @@ long SaddlePoint::locate(void)
     fprintf(stdout, "  Saddle point search started.\n");
 
     // either an initial displacement is performed and the search is started
-    // or a series of jumps is performed to reach a convex region 
+    // or a series of jumps is performed to reach a convex region
 
     // the displacement is done on the client
     if (parameters->saddleDisplaceType != DISP_LOAD) 
     {
         displaceAndSetMode(saddle);
     }
-    
+
     fprintf(stdout, "  Saddle point displaced.\n");
 
     if(status == STATUS_INIT)
@@ -187,7 +187,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     double diffR;
 
     AtomMatrix initialDisplace(nAtoms, 3);
-    initialDisplace.setZero(); 
+    initialDisplace.setZero();
 
     if(parameters->saddleDisplaceType == DISP_NOT_FCC_OR_HCP)
     {
@@ -207,7 +207,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     }
     printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
 
-    initialDisplace(indexEpiCenter,0) = gaussRandom(0., parameters->saddleDisplaceMagnitude); 
+    initialDisplace(indexEpiCenter,0) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
     initialDisplace(indexEpiCenter,1) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
     initialDisplace(indexEpiCenter,2) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
 
@@ -221,9 +221,9 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
             diffR = matter->distance(i, indexEpiCenter);
             if(diffR < parameters->saddleDisplaceRadius)
             {
-                initialDisplace(i,0) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
-                initialDisplace(i,1) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
-                initialDisplace(i,2) = gaussRandom(0, parameters->saddleDisplaceMagnitude); 
+                initialDisplace(i,0) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
+                initialDisplace(i,1) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
+                initialDisplace(i,2) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
             }
         }
         j++;
@@ -252,7 +252,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
 }
 
 AtomMatrix SaddlePoint::projectedForce(AtomMatrix force){
- 
+
     AtomMatrix proj;
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
 
@@ -359,26 +359,26 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     #ifndef NDEBUG
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
-            printf("DIMER ---------------------------------------------------------------------------------------------\n");    
+            printf("DIMER ---------------------------------------------------------------------------------------------\n");
             printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Force", "Torque", 
                    "Energy", "Curvature", "Angle", "Rotations", "Step Size");
-            printf("DIMER ---------------------------------------------------------------------------------------------\n");    
+            printf("DIMER ---------------------------------------------------------------------------------------------\n");
         }
         else {
-            printf("LANCZOS ---------------------------------------------------------------------------------------\n");    
+            printf("LANCZOS ---------------------------------------------------------------------------------------\n");
             printf("LANCZOS  %9s  %9s  %9s  %9s\n", "Step", "Force", "Energy", "Step Size");
-            printf("LANCZOS ---------------------------------------------------------------------------------------\n");    
+            printf("LANCZOS ---------------------------------------------------------------------------------------\n");
         };
     #endif
     do
     {
-        forceCallsSaddle = saddle->getForceCalls();        
+        forceCallsSaddle = saddle->getForceCalls();
         posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
         // Determining the optimal step
         saddle->setPositions(posStep);
         forcesStep = saddle->getForces();
         forcesStep = projectedForce(forcesStep);
-        
+
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
         #ifndef NDEBUG
@@ -419,7 +419,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             }
             else 
             {
-                printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations, 
+                printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations,
                        saddle->getForces().norm(), saddle->getPotentialEnergy(), stepSize);
             }
         #endif
@@ -432,16 +432,16 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
            (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
     if(!converged)
     {
-        if(parameters->saddleMaxIterations <= iterations) 
+        if(parameters->saddleMaxIterations <= iterations)
         {
             status = STATUS_BAD_MAX_ITERATIONS;
         }
-        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy) 
+        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy)
         {
             status = STATUS_BAD_HIGH_BARRIER;
         }
     }
-    return; 
+    return;
 }
 
 LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
@@ -451,6 +451,6 @@ LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
 
 AtomMatrix SaddlePoint::getSaddlePositions()
 {
-      return saddle->getPositions();	
+      return saddle->getPositions();
 }
 
