@@ -49,20 +49,16 @@ public:
     };
 
     // Constants used to displace atoms before a saddle search
-    enum{
-        DISP_LOAD,
-        DISP_NOT_FCC_OR_HCP,
-        DISP_MIN_COORDINATED,
-        DISP_LAST_ATOM,
-        DISP_RANDOM
-    };
+    static const string DISP_LOAD;
+    static const string DISP_NOT_FCC_OR_HCP;
+    static const string DISP_MIN_COORDINATED;
+    static const string DISP_LAST_ATOM;
+    static const string DISP_RANDOM;
 
     // Methods for finding the minimum mode
-    enum{
-        MINMODE_DIMER,
-        MINMODE_LANCZOS,
-        MINMODE_EXACT
-    };
+    static const string MINMODE_DIMER;
+    static const string MINMODE_LANCZOS;
+    static const string MINMODE_EXACT;
  
     SaddlePoint(); // The object shall be initialized later with SaddlePoint::initialize
  

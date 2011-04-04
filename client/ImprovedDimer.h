@@ -23,11 +23,9 @@ class ImprovedDimer : public LowestEigenmodeInterface
     public:
 
     // Optimization for the dimer
-    enum{
-        OPT_SD,
-        OPT_CG,
-        OPT_LBFGS
-    };
+    static const string OPT_SD;
+    static const string OPT_CG;
+    static const string OPT_LBFGS;
 
     ImprovedDimer(Matter const *matter, Parameters *parameters);
     ~ImprovedDimer();

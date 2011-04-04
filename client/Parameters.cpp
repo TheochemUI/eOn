@@ -20,43 +20,14 @@
 #include "SaddleSearch.h"
 #include "ImprovedDimer.h"
 #include "NudgedElasticBand.h"
-
-const string Parameters::LJ =            "lj";
-const string Parameters::EAM_AL =        "eam_al";
-const string Parameters::MORSE_PT =      "morse_pt";
-const string Parameters::EMT =           "emt";
-const string Parameters::QSC =           "qsc";
-const string Parameters::ZPICE =         "zpice";
-const string Parameters::TIP4P =         "tip4p";
-const string Parameters::LENOSKY_SI =    "lenosky_si";
-const string Parameters::SW_SI =         "sw_si";
-const string Parameters::TERSOFF_SI =    "tersoff_si";
-const string Parameters::EDIP =          "edip";
-const string Parameters::VASP =          "vasp";
-const string Parameters::BOPFOX =        "bopfox";
-const string Parameters::BOP =           "bop";
-const string Parameters::LAMMPS =        "lammps";
-const string Parameters::GPAW =          "gpaw";
-
-const string Parameters::PROCESS_SEARCH =           "process_search";
-const string Parameters::SADDLE_SEARCH =            "saddle_search";
-const string Parameters::MINIMIZATION =             "minimization";
-const string Parameters::POINT =                    "point";
-const string Parameters::PARALLEL_REPLICA =         "parallel_replica";
-const string Parameters::DISTRIBUTED_REPLICA =      "distributed_replica";
-const string Parameters::BASIN_HOPPING =            "basin_hopping";
-const string Parameters::HESSIAN =                  "hessian";
-const string Parameters::FINITE_DIFFERENCE =        "finite_difference";
-const string Parameters::DIMER_ROTATION =           "dimer_rotation";
-const string Parameters::DISPLACEMENT_SAMPLING =    "displacement_sampling";
-const string Parameters::TEST =                     "test";
+#include "Potential.h"
 
 Parameters::Parameters(){
 
     // [Main] //
-    job = Parameters::PROCESS_SEARCH;
+    job = Job::PROCESS_SEARCH;
     randomSeed = -1;
-    potential = Parameters::LJ;
+    potential = Potential::POT_LJ;
     temperature = 300.0;
 
     // [Structure Comparison] //
@@ -218,7 +189,9 @@ int Parameters::load(FILE *file){
 
         job = toLowerCase(ini.GetValue("Main", "job"));
         temperature = ini.GetValueF("Main", "temperature", temperature);
+        potential = toLowerCase(ini.GetValue("Main", "potential"));
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
+
         // Initialize random generator
         if(randomSeed < 0){
             unsigned i = time(NULL);
@@ -227,7 +200,6 @@ int Parameters::load(FILE *file){
         }else{
             helper_functions::random(randomSeed);
         }
-        potential = toLowerCase(ini.GetValue("Main", "potential"));
 
 
         // [Debug] //
@@ -254,42 +226,7 @@ int Parameters::load(FILE *file){
 
         // [Saddle Search] //
 
-        string minmodeMethodString = ini.GetValue("Saddle Search", "min_mode_method", "dimer");
-        minmodeMethodString = toLowerCase(minmodeMethodString);
-        if(minmodeMethodString == "dimer"){
-            saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
-        }else if(minmodeMethodString == "lanczos"){
-            saddleMinmodeMethod = SaddlePoint::MINMODE_LANCZOS;
-        }else if(minmodeMethodString == "exact") {
-            saddleMinmodeMethod = SaddlePoint::MINMODE_EXACT;
-        }
-        string displaceString = ini.GetValue("Saddle Search", "displace_type", "none");
-        displaceString = toLowerCase(displaceString);
-//        if(displaceString == "none")
-//        { 
-//            saddleDisplaceType = SaddlePoint::DISP_NONE;
-//        }
-//        else if(displaceString == "not_FCC_HCP_coordinated_client")
-        if(displaceString == "client_not_fcc_hcp_coordinated")
-        {
-            saddleDisplaceType = SaddlePoint::DISP_NOT_FCC_OR_HCP;
-        }
-        else if(displaceString == "client_least_coordinated")
-        {
-            saddleDisplaceType = SaddlePoint::DISP_MIN_COORDINATED;
-        }
-        else if(displaceString == "client_last_atom")
-        {
-            saddleDisplaceType = SaddlePoint::DISP_LAST_ATOM;
-        }
-        else if(displaceString == "client_random")
-        {
-            saddleDisplaceType = SaddlePoint::DISP_RANDOM;
-        }        
-        else  // default is a displacement made on the server
-        { 
-            saddleDisplaceType = SaddlePoint::DISP_LOAD;
-        }
+        saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", "dimer"));
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
@@ -298,6 +235,13 @@ int Parameters::load(FILE *file){
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
         saddleMaxLocalizedAtoms = ini.GetValueF("Saddle Search", "max_localized_atoms", saddleMaxLocalizedAtoms); //undocumented
+        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "displace_type", SaddlePoint::DISP_LOAD));
+        // XXX: This is a result of mixing our server/client config files.
+        if(saddleDisplaceType != SaddlePoint::DISP_NOT_FCC_OR_HCP &&
+           saddleDisplaceType != SaddlePoint::DISP_MIN_COORDINATED && 
+           saddleDisplaceType != SaddlePoint::DISP_LAST_ATOM && 
+           saddleDisplaceType != SaddlePoint::DISP_RANDOM){saddleDisplaceType = SaddlePoint::DISP_LOAD;}
+           
 
 
         // [Optimizers] //
@@ -317,16 +261,7 @@ int Parameters::load(FILE *file){
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedRotation = ini.GetValueF("Dimer", "converged_rotation", dimerConvergedRotation);
         dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
-        string dimerOptString;
-        dimerOptString = ini.GetValue("Dimer", "opt_method", "sd");
-        dimerOptString = toLowerCase(dimerOptString);
-        if (dimerOptString == "sd") {
-            dimerOptRotMethod = ImprovedDimer::OPT_SD;
-        }else if (dimerOptString == "cg") {
-            dimerOptRotMethod = ImprovedDimer::OPT_CG;
-        }else if (dimerOptString == "lbfgs") {
-            dimerOptRotMethod = ImprovedDimer::OPT_LBFGS;
-        }
+        dimerOptRotMethod = toLowerCase(ini.GetValue("Dimer", "opt_method", "sd"));
         // old, for comparison with Improved dimer method, will be removed later
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin);
         dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax);
@@ -343,15 +278,7 @@ int Parameters::load(FILE *file){
 
         // [Hessian] //
 
-        string hessianString = ini.GetValue("Hessian", "type", "reactant");
-        hessianString = toLowerCase(hessianString);
-        if(hessianString == "reactant"){
-            hessianType = Hessian::REACTANT;
-        }else if(hessianString == "saddle"){
-            hessianType = Hessian::SADDLE;
-        }else if(hessianString == "product"){
-            hessianType = Hessian::PRODUCT;
-        }
+        hessianType = toLowerCase(ini.GetValue("Hessian", "type", "reactant"));
         hessianFiniteDist = ini.GetValueF("Hessian", "finite_dist", hessianFiniteDist);
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
@@ -407,16 +334,7 @@ int Parameters::load(FILE *file){
 
         // [Thermostat] //
 
-        string thermostatString;
-        thermostatString = ini.GetValue("Dynamics", "thermostat", "andersen");
-        thermostatString = toLowerCase(thermostatString);
-        if (thermostatString == "andersen") {
-            thermostat = Dynamics::ANDERSEN;
-        }else if (thermostatString == "nose_hoover") {
-            thermostat = Dynamics::NOSE_HOOVER;
-        }else if (thermostatString == "langevin") {
-            thermostat = Dynamics::LANGEVIN;
-        }
+        thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
@@ -430,14 +348,7 @@ int Parameters::load(FILE *file){
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
-        string hyperString;
-        hyperString = ini.GetValue("Hyperdynamics","bias_potential","none");
-        hyperString = toLowerCase(hyperString);
-        if (hyperString == "none"){
-            biasPotential = Hyperdynamics::NONE;
-        }else if (hyperString == "bond_boost"){
-            biasPotential = Hyperdynamics::BOND_BOOST;
-        }
+        biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential","none"));
 
 
         // [Basin Hopping] //

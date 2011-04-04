@@ -11,6 +11,11 @@
 #include <math.h>
 #include "Hessian.h"
 
+const string Hessian::REACTANT =    "reactant";
+const string Hessian::SADDLE =      "saddle";
+const string Hessian::PRODUCT =     "product";
+
+
 Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)
 {
     reactant = react;
@@ -29,51 +34,52 @@ Hessian::~Hessian()
 {
 }
 
-Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(int which)
+int Hessian::whichNum(string which)
 {
-    if(hessians[which].rows() == 0)
+    if(which == REACTANT)   {return 0;}
+    if(which == SADDLE)     {return 1;}
+    if(which == PRODUCT)    {return 2;}
+    return -1;
+}    
+
+Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(string which)
+{
+    if(hessians[whichNum(which)].rows() == 0)
     {
         if (!calculate(which))
         {
-            hessians[which].resize(0,0);
+            hessians[whichNum(which)].resize(0,0);
         }
     }
-    return hessians[which];
+    return hessians[whichNum(which)];
 }
 
-VectorXd Hessian::getModes(int which)
+VectorXd Hessian::getModes(string which)
 {
-    if(modes[which].rows() == 0)
+    if(modes[whichNum(which)].rows() == 0)
     {
         if (!calculate(which))
         {
-            modes[which].resize(0);
+            modes[whichNum(which)].resize(0);
         }
     }
-    return modes[which];
+    return modes[whichNum(which)];
 }
 
-bool Hessian::calculate(int which)
+bool Hessian::calculate(string which)
 {
     Matter *curr;
     assert(saddle->numberOfAtoms() == reactant->numberOfAtoms());
     assert(saddle->numberOfAtoms() == product->numberOfAtoms());
-    switch(which)
+
+    if(which == REACTANT)       {curr = reactant;}
+    else if(which == SADDLE)    {curr = saddle;}
+    else if(which == PRODUCT)   {curr = product;}
+    else
     {
-        case REACTANT:
-            curr = reactant;
-            break;
-        case SADDLE:
-            curr = saddle;
-            break;
-        case PRODUCT:
-            curr = product;
-            break;
-        default:
-            cerr<<"Hessian can't deterimine which structure to use"<<endl;
-            return false;
-            break;
-    }
+        cerr<<"Hessian can't deterimine which structure to use"<<endl;
+        return false;
+    }    
 
     int nAtoms = curr->numberOfAtoms();
 
@@ -197,8 +203,8 @@ bool Hessian::calculate(int which)
             return false;
         }
     }
-    modes[which] = freqs;
-    hessians[which] = hessian;    
+    modes[whichNum(which)] = freqs;
+    hessians[whichNum(which)] = hessian;    
     return true;
 }
 

@@ -34,37 +34,7 @@ public:
 /** string constants: declared here, defined in Parameters.cpp. **/
 
     // potentials //    
-    static const string LJ;
-    static const string EAM_AL;
-    static const string MORSE_PT;
-    static const string EMT;
-    static const string QSC;
-    static const string ZPICE;
-    static const string TIP4P;
-    static const string LENOSKY_SI;
-    static const string SW_SI;
-    static const string TERSOFF_SI;
-    static const string EDIP;
-    static const string VASP;
-    static const string BOPFOX;
-    static const string BOP;
-    static const string LAMMPS;
-    static const string GPAW;
-
     // jobs //
-    static const string PROCESS_SEARCH;
-    static const string SADDLE_SEARCH;
-    static const string MINIMIZATION;
-    static const string POINT;
-    static const string PARALLEL_REPLICA;
-    static const string DISTRIBUTED_REPLICA;
-    static const string BASIN_HOPPING;
-    static const string HESSIAN;
-    static const string FINITE_DIFFERENCE;
-    static const string DIMER_ROTATION;
-    static const string DISPLACEMENT_SAMPLING;
-    static const string TEST;
-
 
 /** input parameters **/
 
@@ -91,8 +61,8 @@ public:
 //    bool   saddleDisplace; // do saddle search displacements client-side
     long   saddleMaxJumpAttempts; // number of initial displacements of the system to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
-    long   saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
-    long   saddleDisplaceType; // displacement type to use
+    string saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
+    string saddleDisplaceType; // displacement type to use
     double saddleMaxStepSize; // maximum length of the norm of the displacement when positive eigenvalue
     double saddleMaxEnergy; // energy above product state that will cause termination of the saddle point search
     double saddleDisplaceMagnitude; // norm of the displacement vector
@@ -115,7 +85,7 @@ public:
     bool   dimerImproved; // turn on the improved dimer method
     double dimerConvergedRotation; // stop rotating when angle drops below this value
     long   dimerMaxIterations; // maximum number of rotation iterations
-    long   dimerOptRotMethod; // method to determine the next rotation direction
+    string dimerOptRotMethod; // method to determine the next rotation direction
     // old parameters
     long   dimerRotationsMax;
     long   dimerRotationsMin;
@@ -128,7 +98,7 @@ public:
     long   lanczosMaxIterations; // maximum number of iterations
 
     // [Hessian]
-    int    hessianType;
+    string hessianType;
     double hessianFiniteDist; // finite difference distance
     double hessianMinDisplacement; // atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
     double hessianWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
@@ -163,7 +133,7 @@ public:
     long   mdDephaseLoopMax;
 
     // [Thermostat]
-    long   thermostat;
+    string thermostat;
     double thermoAndersenAlpha;
     double thermoAndersenTcol;
     double thermoNoseMass;
@@ -175,7 +145,7 @@ public:
     double drTargetTemperature;
 
     // [Bond Boost]
-    long   biasPotential; 
+    string biasPotential; 
     long   bondBoostRMDS;
     double bondBoostDVMAX;
     double bondBoostQRR; 
