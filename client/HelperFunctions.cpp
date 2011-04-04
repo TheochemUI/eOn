@@ -204,20 +204,20 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
 
     for(int i = 0; i < r1.rows(); i++)
     {
-        r1(i,0) -= c1[0]; 
-        r1(i,1) -= c1[1]; 
-        r1(i,2) -= c1[2]; 
-        
-        r2(i,0) -= c2[0]; 
-        r2(i,1) -= c2[1]; 
-        r2(i,2) -= c2[2]; 
+        r1(i,0) -= c1[0];
+        r1(i,1) -= c1[1];
+        r1(i,2) -= c1[2];
+
+        r2(i,0) -= c2[0];
+        r2(i,1) -= c2[1];
+        r2(i,2) -= c2[2];
     }
 
     //Determine optimal rotation
     //Horn, J. Opt. Soc. Am. A, 1987
     Eigen::Matrix3d m = r1.transpose() * r2;
 
-    double sxx = m(0,0); 
+    double sxx = m(0,0);
     double sxy = m(0,1);
     double sxz = m(0,2);
     double syx = m(1,0);
@@ -232,7 +232,7 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     n(0,1) = syz-szy;
     n(0,2) = szx-sxz;
     n(0,3) = sxy-syx;
-                
+
     n(1,2) = sxy+syx;
     n(1,3) = szx+sxz;
 
@@ -248,7 +248,7 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
     Eigen::Vector4d maxv = es.eigenvectors().col(3);
 
-    Eigen::Matrix3d R; 
+    Eigen::Matrix3d R;
 
     double aa = maxv[0]*maxv[0];
     double bb = maxv[1]*maxv[1];
@@ -273,7 +273,6 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
 
     //Eigen is transposed relative to numpy
     r2 = r2 * R;
-
 
     for(int i=0; i<r1.rows(); i++)
     {

@@ -104,22 +104,22 @@ const Matter& Matter::operator=(const Matter& matter)
 {
     resize(matter.numberOfAtoms());
     nAtoms = matter.nAtoms;
-    
+
     positions = matter.positions;
     forces = matter.forces;
     masses = matter.masses;
     atomicNrs = matter.atomicNrs;
     isFixed = matter.isFixed;
     cellBoundaries = matter.cellBoundaries;
-    velocities = matter.velocities; 
+    velocities = matter.velocities;
 
     parameters = matter.parameters;
     
     usePeriodicBoundaries = matter.usePeriodicBoundaries;
- 
+
     potentialEnergy = matter.potentialEnergy;
     recomputePotential = matter.recomputePotential;
- 
+
     strcpy(headerCon1,matter.headerCon1);
     strcpy(headerCon2,matter.headerCon2);
     strcpy(headerCon4,matter.headerCon4);
@@ -155,7 +155,7 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const
 {
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
     AtomMatrix ddiff = diff*ibox;
-   
+
     int i,j;
     for(i=0; i<diff.rows(); i++)
     {
@@ -169,7 +169,7 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const
 }
 
 
-// Returns the maximum distance between two atoms in the Matter objects. 
+// Returns the maximum distance between two atoms in the Matter objects.
 double Matter::perAtomNorm(const Matter& matter) 
 {
     long i = 0;
@@ -189,7 +189,7 @@ double Matter::perAtomNorm(const Matter& matter)
 
 void Matter::resize(const long int length)
 {
-    if(length>0) 
+    if(length>0)
     {
         potential = Potential::getPotential(parameters);
         
@@ -280,7 +280,7 @@ double Matter::getPosition(long int indexAtom, int axis) const
 void Matter::setPosition(long int indexAtom, int axis, double position)
 {
     positions(indexAtom,axis) = position;
-    if(usePeriodicBoundaries){ 
+    if(usePeriodicBoundaries){
         applyPeriodicBoundary();
     }
     recomputePotential = true;
@@ -740,7 +740,7 @@ bool Matter::con2matter(FILE *file)
         }
         first[j+1] = Natoms+first[j];
         split = strtok(NULL, " ");
-    }    
+    }
 
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
     double mass[MAXC];
@@ -895,13 +895,13 @@ AtomMatrix Matter::getFree() const
 
 AtomMatrix Matter::getVelocities() const
 {
-    return velocities.cwise() * getFree(); 
+    return velocities.cwise() * getFree();
 }
 
 
 void Matter::setVelocities(const AtomMatrix v)
 {
-    velocities = v.cwise() * getFree(); 
+    velocities = v.cwise() * getFree();
 }
 
 
@@ -913,7 +913,7 @@ void Matter::setForces(const AtomMatrix f)
 
 AtomMatrix Matter::getAccelerations()
 {
-    AtomMatrix ret = getForces().cwise() * getFree(); 
+    AtomMatrix ret = getForces().cwise() * getFree();
     ret.col(0).cwise() /= masses;
     ret.col(1).cwise() /= masses;
     ret.col(2).cwise() /= masses;
@@ -935,7 +935,7 @@ bool Matter::matter2convel(std::string filename) const
     if(filename.compare(pos+1, 6, "convel")){
         filename += ".convel";
     }
-    file = fopen(filename.c_str(),"w");     
+    file = fopen(filename.c_str(),"w");
     state = matter2convel(file);
     fclose(file); 
     return(state);
@@ -973,7 +973,7 @@ bool Matter::matter2convel(FILE *file) const
     }
     first[j+1] = numberOfAtoms();
     Ncomponent = j+1;
- 
+
     fputs(headerCon1, file);
     fputs(headerCon2, file);
     double lengths[3];
@@ -988,7 +988,7 @@ bool Matter::matter2convel(FILE *file) const
     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
     fputs(headerCon5, file);
     fputs(headerCon6, file);
- 
+
     fprintf(file, "%d\n", Ncomponent);
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%d ", first[j+1]-first[j]);
@@ -1062,7 +1062,7 @@ bool Matter::convel2matter(FILE *file)
     double angles[3];
     fgets(headerCon4,sizeof(line),file);
     // The fourth line contains the angles of the cell vectors
-    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]); 
+    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
 
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
         cellBoundaries(0,0) = lengths[0];
@@ -1157,7 +1157,7 @@ bool Matter::convel2matter(FILE *file)
     }
 
     if(usePeriodicBoundaries)
-    { 
+    {
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
     //    potential_ = new Potential(parameters_);

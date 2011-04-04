@@ -272,9 +272,9 @@ void EpiCenters::coordinationLessOrEqual(bool *result, long coordinationMaxVal, 
     coordinationVal = new long[nAtoms];
     //----- Initialize end -----
     //std::cout<<"coordinationLessOrEqual\n";
- 
+
     coordination(coordinationVal, matter, neighborCutoff);
- 
+
     for(int i=0; i<nAtoms; i++){
         if((coordinationVal[i]<coordinationMaxVal+1) && !(matter->getFixed(i)))
             result[i] = true;
@@ -300,9 +300,9 @@ long EpiCenters::minCoordination(const Matter *matter, double neighborCutoff)
     coordination(coordinationVal, matter, neighborCutoff);
     // LONG_MAX is a the maximal value a long can achieve, from library limits
     minCoordinationVal = LONG_MAX;
- 
+
     bool temp;
- 
+
     for(int i=0; i<nAtoms; i++){
         if((coordinationVal[i]<minCoordinationVal) && !(matter->getFixed(i))){
             temp=matter->getFixed(i);

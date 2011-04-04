@@ -40,18 +40,18 @@ std::vector<std::string> SaddleSearchJob::run(void)
     initial->con2matter(reactant_passed);
 
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // displacement was passed from the server        
+        // displacement was passed from the server
         saddle->con2matter(displacement_passed);
     }
     else {
         // displacement and mode will be made on the client
-        // in saddlePoint->initialize(...) 
+        // in saddlePoint->initialize(...)
         *saddle = *initial;
     }
     saddlePoint = new SaddlePoint();
     saddlePoint->initialize(initial, saddle, parameters);
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // mode was passed from the server        
+        // mode was passed from the server
         saddlePoint->loadMode(mode_passed);
     }
 
@@ -93,7 +93,7 @@ void SaddleSearchJob::saveData(int status){
     ///XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
     //      the SaddlePoint object. They will be taken out eventually.
-    
+
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_tyep\n", parameters->potential.c_str());
@@ -122,11 +122,11 @@ void SaddleSearchJob::printEndState(int status) {
 
     else if(status == SaddlePoint::STATUS_BAD_NO_CONVEX)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
-   
+
     else if(status == SaddlePoint::STATUS_BAD_HIGH_ENERGY)
         fprintf(stdout, "Saddle search, barrier too high.\n");
-        
-    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS) 
+
+    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
     else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)
