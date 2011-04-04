@@ -115,10 +115,10 @@ public:
   // are required because there is no vsscanf() like there is a vsprintf().
   // Only a maximum of 8 variable can be read.
   unsigned GetValueV( string const keyname, string const valuename, char *format,
-		      void *v1 = 0, void *v2 = 0, void *v3 = 0, void *v4 = 0,
-  		      void *v5 = 0, void *v6 = 0, void *v7 = 0, void *v8 = 0,
-  		      void *v9 = 0, void *v10 = 0, void *v11 = 0, void *v12 = 0,
-  		      void *v13 = 0, void *v14 = 0, void *v15 = 0, void *v16 = 0);
+                      void *v1 = 0, void *v2 = 0, void *v3 = 0, void *v4 = 0,
+                      void *v5 = 0, void *v6 = 0, void *v7 = 0, void *v8 = 0,
+                      void *v9 = 0, void *v10 = 0, void *v11 = 0, void *v12 = 0,
+                      void *v13 = 0, void *v14 = 0, void *v15 = 0, void *v16 = 0);
 
   // Sets value of [keyname] valuename =.
   // Specify the optional paramter as false (0) if you do not want it to create
@@ -136,7 +136,7 @@ public:
   // Deletes specified value.
   // Returns true if value existed and deleted, false otherwise.
   bool DeleteValue( string const keyname, string const valuename);
-  
+
   // Deletes specified key and all values contained within.
   // Returns true if key existed and deleted, false otherwise.
   bool DeleteKey(string keyname);

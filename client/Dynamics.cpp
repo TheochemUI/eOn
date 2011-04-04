@@ -191,7 +191,7 @@ void Dynamics::velRescaling(double temperature)
     velocity = matter->getVelocities();
     mass = matter->getMasses();
 
-    matter->setVelocities(velocity);  
+    matter->setVelocities(velocity);
     kinE = matter->getKineticEnergy();
     kinT = (2*kinE/nFreeCoord/kb);
 //    printf("Tkin_1 = %lf\n",kinT);
@@ -327,7 +327,7 @@ void Dynamics::langevinVerlet(double temperature)
                 noise(i,j) =  sqrt(4*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
             }
         }
-     } 
+     }
 
      acc = acc + friction + noise;
      vel += acc * 0.5 * dt;
@@ -376,7 +376,7 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
     b1 = final;
     diff = final - initial;
     test = int((b1-a1)/2);
-  
+
     tmp_fcalls = min_fcalls ;
     min_fcalls = 0;
     while(diff > RefineAccuracy)
@@ -394,11 +394,11 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
             a1 = a1;
             b1 = test;
         }
-        else { 
+        else {
             printf("Refine Step Failed ! \n");
             exit(1);
         }
-        diff = abs( b1 - a1 ); 
+        diff = abs( b1 - a1 );
     }
 
     rf_fcalls = min_fcalls;

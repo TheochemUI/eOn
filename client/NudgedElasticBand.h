@@ -26,18 +26,17 @@ class NEB {
 
 public:
 
-    // Optimization for the NEB
-    enum{
-        OPT_SD,
-        OPT_CG,
-        OPT_GLBFGS
-    };
+    // Optimization for the neb
+    static const string OPT_QM;
+    static const string OPT_CG;
+    static const string OPT_LBFGS;
 
     NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *parameters);
     ~NEB();
 
     void compute(void);
     void updateForces(void);
+    double convergenceForce(void);
 
 private:
 
@@ -45,7 +44,9 @@ private:
     Matter *neb[]; // NEB images
     int nAtoms;
     long images;
+    long climbingImage;
     AtomMatrix *tangent;
+    
 
 };
 
