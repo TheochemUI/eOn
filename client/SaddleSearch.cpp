@@ -22,6 +22,15 @@
 
 using namespace helper_functions;
 
+const string SaddlePoint::MINMODE_DIMER =           "dimer";
+const string SaddlePoint::MINMODE_LANCZOS =         "lanczos";
+const string SaddlePoint::MINMODE_EXACT =           "exact";
+const string SaddlePoint::DISP_LOAD =               "client_load";
+const string SaddlePoint::DISP_NOT_FCC_OR_HCP =     "client_not_fcc_hcp_coordinated";
+const string SaddlePoint::DISP_MIN_COORDINATED =    "client_least_coordinated";
+const string SaddlePoint::DISP_LAST_ATOM =          "client_last_atom";
+const string SaddlePoint::DISP_RANDOM =             "client_random";
+
 SaddlePoint::SaddlePoint()
 {
     lowestEigenmode = 0;
@@ -146,7 +155,7 @@ long SaddlePoint::locate(void)
     // or a series of jumps is performed to reach a convex region 
 
     // the displacement is done on the client
-    if (parameters->saddleDisplaceType) 
+    if (parameters->saddleDisplaceType != DISP_LOAD) 
     {
         displaceAndSetMode(saddle);
     }

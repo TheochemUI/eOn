@@ -19,17 +19,15 @@
 class Hessian
 {
 public:
-    enum
-    {
-        REACTANT = 0,
-        SADDLE,
-        PRODUCT
-    };
+    static const string REACTANT;
+    static const string SADDLE;
+    static const string PRODUCT;
+
     Hessian(Matter *reactant, Matter *saddle, Matter *product, Parameters *params);
     ~Hessian();
 
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(int which);
-    VectorXd getModes(int which);
+    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(string which);
+    VectorXd getModes(string which);
 
 private:
     Matter *reactant;
@@ -41,7 +39,8 @@ private:
     VectorXd modes[3];
 
     VectorXi movedAtoms(const double distance);
-    bool calculate(int which);
+    bool calculate(string which);
+    int whichNum(string which);
 };
 
 #endif
