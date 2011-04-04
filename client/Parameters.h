@@ -31,10 +31,45 @@ public:
     int load(string filename);
     int load(FILE *file);
 
-/** input parameters.*/
+/** string constants: declared here, defined in Parameters.cpp. **/
+
+    // potentials //    
+    static const string LJ;
+    static const string EAM_AL;
+    static const string MORSE_PT;
+    static const string EMT;
+    static const string QSC;
+    static const string ZPICE;
+    static const string TIP4P;
+    static const string LENOSKY_SI;
+    static const string SW_SI;
+    static const string TERSOFF_SI;
+    static const string EDIP;
+    static const string VASP;
+    static const string BOPFOX;
+    static const string BOP;
+    static const string LAMMPS;
+    static const string GPAW;
+
+    // jobs //
+    static const string PROCESS_SEARCH;
+    static const string SADDLE_SEARCH;
+    static const string MINIMIZATION;
+    static const string POINT;
+    static const string PARALLEL_REPLICA;
+    static const string DISTRIBUTED_REPLICA;
+    static const string BASIN_HOPPING;
+    static const string HESSIAN;
+    static const string FINITE_DIFFERENCE;
+    static const string DIMER_ROTATION;
+    static const string DISPLACEMENT_SAMPLING;
+    static const string TEST;
+
+
+/** input parameters **/
 
     // [Main] //
-    long   job;
+    string job;
     long   randomSeed;
     string potential;
     double temperature;
@@ -160,4 +195,5 @@ private:
     string toLowerCase(string s);
 
 };
+
 #endif

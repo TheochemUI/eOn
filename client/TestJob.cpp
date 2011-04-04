@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "Potential.h"
 #include "SaddleSearch.h"
+#include "Parameters.h"
 
 #include <stdlib.h>
 
@@ -186,11 +187,11 @@ void TestJob::checkPotentials(void)
     printf("Checks the potential energy and the max force.\n");
     printf("Reported as OK if within a tolerance of: %f\n\n",tolerance);
     
-    energyDiff = getEnergyDiff("lj", -1475.984331);
+    energyDiff = getEnergyDiff(Parameters::LJ, -1475.984331);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: LJ energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("lj", 2.007213);
+        forceDiff = getForceDiff(Parameters::LJ, 2.007213);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: LJ force difference: %f\n", forceDiff);
         }else{
@@ -198,11 +199,11 @@ void TestJob::checkPotentials(void)
         }
     }
     
-    energyDiff = getEnergyDiff("emt", 46.086312);
+    energyDiff = getEnergyDiff(Parameters::EMT, 46.086312);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: EMT energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("emt", 0.357493);
+        forceDiff = getForceDiff(Parameters::EMT, 0.357493);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: EMT force difference: %f\n", forceDiff);
         }else{
@@ -210,11 +211,11 @@ void TestJob::checkPotentials(void)
         }
     }
     
-    energyDiff = getEnergyDiff("edip" ,-1033.250950);
+    energyDiff = getEnergyDiff(Parameters::EDIP ,-1033.250950);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: EDIP energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("edip", 7.080115);
+        forceDiff = getForceDiff(Parameters::EDIP, 7.080115);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: EDIP force difference: %f\n", forceDiff);
         }else{
@@ -222,11 +223,11 @@ void TestJob::checkPotentials(void)
         }
     }
 
-    energyDiff = getEnergyDiff("tersoff_si",-1035.809985 );
+    energyDiff = getEnergyDiff(Parameters::TERSOFF_SI,-1035.809985 );
     if (abs(energyDiff) > tolerance){
         printf("WARNING: Tersoff energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("tersoff_si", 11.145002);
+        forceDiff = getForceDiff(Parameters::TERSOFF_SI, 11.145002);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: Tersoff force difference: %f\n", forceDiff);
         }else{
@@ -234,11 +235,11 @@ void TestJob::checkPotentials(void)
         }
     }
 
-    energyDiff = getEnergyDiff("sw_si", -1449.795645);
+    energyDiff = getEnergyDiff(Parameters::SW_SI, -1449.795645);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: SW energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("sw_si", 2.530904);
+        forceDiff = getForceDiff(Parameters::SW_SI, 2.530904);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: SW force difference: %f\n", forceDiff);
         }else{
@@ -246,11 +247,11 @@ void TestJob::checkPotentials(void)
         }
     }
 
-    energyDiff = getEnergyDiff("lenosky_si", -1410.679106);
+    energyDiff = getEnergyDiff(Parameters::LENOSKY_SI, -1410.679106);
     if (abs(energyDiff) > tolerance){
         printf("Lenosky energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("lenosky_si", 2.320168);
+        forceDiff = getForceDiff(Parameters::LENOSKY_SI, 2.320168);
         if (abs(forceDiff) > tolerance){
             printf("Lenosky force difference: %f\n", forceDiff);
         }else{
@@ -258,18 +259,11 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-//    energyDiff = getEnergyDiff(Potential::POT_LJBINARY,0);
-//    if (abs(energyDiff) > tolerance){
-//        printf("WARNING: LJBinary energy difference: %f\n", energyDiff);
-//    }else{
-//        printf("OK: LJBinary\n");
-//    } 
-
-    energyDiff = getEnergyDiff("eam_al", -1206.825825);
+    energyDiff = getEnergyDiff(Parameters::EAM_AL, -1206.825825);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: Aluminum energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("eam_al", 0.000246);
+        forceDiff = getForceDiff(Parameters::EAM_AL, 0.000246);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: Aluminum force difference: %f\n", forceDiff);
         }else{
@@ -277,18 +271,11 @@ void TestJob::checkPotentials(void)
         }
     } 
     
-//    energyDiff = getEnergyDiff(Potential::POT_EAM,0);
-//    if (abs(energyDiff) > tolerance){
-//        printf("WARNING: EAM energy difference: %f\n", energyDiff);
-//    }else{
-//        printf("OK: EAM\n");
-//    } 
-
-    energyDiff = getEnergyDiff("qsc", -1232.806318);
+    energyDiff = getEnergyDiff(Parameters::QSC, -1232.806318);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: QSC energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("qsc", 0.673444);
+        forceDiff = getForceDiff(Parameters::QSC, 0.673444);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: QSC force difference: %f\n", forceDiff);
         }else{
@@ -296,18 +283,11 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-//    energyDiff = getEnergyDiff(Potential::POT_ZPICE, 0);
-//    if (abs(energyDiff) > tolerance){
-//        printf("WARNING: ZPICE energy difference: %f\n", energyDiff);
-//    }else{
-//        printf("OK: ZPICE\n");
-//    } 
-
-    energyDiff = getEnergyDiff("tip4p", 4063.865115);
+    energyDiff = getEnergyDiff(Parameters::TIP4P, 4063.865115);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: TIP4P energy difference: %f\n", energyDiff);
     }else{
-        forceDiff = getForceDiff("tip4p", 73.655248);
+        forceDiff = getForceDiff(Parameters::TIP4P, 73.655248);
         if (abs(forceDiff) > tolerance){
             printf("WARNING: TIP4P force difference: %f\n", forceDiff);
         }else{
@@ -315,19 +295,6 @@ void TestJob::checkPotentials(void)
         }
     } 
 
-//    energyDiff = getEnergyDiff(Potential::POT_BOPFOX,0);
-//    if (abs(energyDiff) > tolerance){
-//        printf("WARNING: BOPFOX energy difference: %f\n", energyDiff);
-//    }else{
-//        printf("OK: BOPFOX\n");
-//    } 
-
-//    energyDiff = getEnergyDiff(Potential::POT_BOP,0);
-//    if (abs(energyDiff) > tolerance){
-//        printf("WARNING: BOP energy difference: %f\n", energyDiff);
-//    }else{
-//        printf("OK: BOP\n");
-//    } 
 }
 
 double TestJob::getEnergyDiff(string pot, double refEnergy)
