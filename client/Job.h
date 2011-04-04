@@ -16,20 +16,6 @@
 
 class Job { 
     public:
-        enum{
-            PROCESS_SEARCH,
-            SADDLE_SEARCH,
-            MINIMIZATION,
-            PARALLEL_REPLICA,
-            DISTRIBUTED_REPLICA,
-            BASIN_HOPPING,
-            HESSIAN,
-            FINITE_DIFFERENCE,
-            DIMER_ROTATION,
-            DISPLACEMENT_SAMPLING,
-            POINT,
-            TEST
-        };
 
         virtual ~Job() {}
         virtual std::vector<std::string> run()=0;

@@ -1,3 +1,4 @@
+#include "Parameters.h"
 #include "Job.h"
 #include "ProcessSearchJob.h"
 #include "SaddleSearchJob.h"
@@ -14,29 +15,29 @@
 
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;
-    if (parameters->job == Job::PROCESS_SEARCH) {
+    if (parameters->job == Parameters::PROCESS_SEARCH) {
         job = new ProcessSearchJob(parameters);
-    }else if (parameters->job == Job::SADDLE_SEARCH) {
+    }else if (parameters->job == Parameters::SADDLE_SEARCH) {
         job = new SaddleSearchJob(parameters);
-    }else if (parameters->job == Job::MINIMIZATION) {
+    }else if (parameters->job == Parameters::MINIMIZATION) {
         job = new MinimizationJob(parameters);
-    }else if (parameters->job == Job::POINT) {
+    }else if (parameters->job == Parameters::POINT) {
         job = new PointJob(parameters);
-    }else if (parameters->job == Job::HESSIAN) {
+    }else if (parameters->job == Parameters::HESSIAN) {
         job = new HessianJob(parameters);
-    }else if (parameters->job == Job::PARALLEL_REPLICA) {
+    }else if (parameters->job == Parameters::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-    }else if (parameters->job == Job::DISTRIBUTED_REPLICA) {
+    }else if (parameters->job == Parameters::DISTRIBUTED_REPLICA) {
         job =  new DistributedReplicaJob(parameters);
-    }else if (parameters->job == Job::BASIN_HOPPING) {
+    }else if (parameters->job == Parameters::BASIN_HOPPING) {
         job =  new BasinHoppingJob(parameters);
-    }else if (parameters->job == Job::FINITE_DIFFERENCE) {
+    }else if (parameters->job == Parameters::FINITE_DIFFERENCE) {
         job =  new FiniteDifferenceJob(parameters);
-    }else if (parameters->job == Job::DIMER_ROTATION) {
+    }else if (parameters->job == Parameters::DIMER_ROTATION) {
         job =  new DimerRotationJob(parameters);
-    }else if (parameters->job == Job::DISPLACEMENT_SAMPLING) {
+    }else if (parameters->job == Parameters::DISPLACEMENT_SAMPLING) {
         job =  new DisplacementSamplingJob(parameters);
-    }else if (parameters->job == Job::TEST) {
+    }else if (parameters->job == Parameters::TEST) {
         job =  new TestJob(parameters);
     }
 

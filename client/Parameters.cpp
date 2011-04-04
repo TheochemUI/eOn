@@ -21,12 +21,42 @@
 #include "ImprovedDimer.h"
 #include "NudgedElasticBand.h"
 
+const string Parameters::LJ =            "lj";
+const string Parameters::EAM_AL =        "eam_al";
+const string Parameters::MORSE_PT =      "morse_pt";
+const string Parameters::EMT =           "emt";
+const string Parameters::QSC =           "qsc";
+const string Parameters::ZPICE =         "zpice";
+const string Parameters::TIP4P =         "tip4p";
+const string Parameters::LENOSKY_SI =    "lenosky_si";
+const string Parameters::SW_SI =         "sw_si";
+const string Parameters::TERSOFF_SI =    "tersoff_si";
+const string Parameters::EDIP =          "edip";
+const string Parameters::VASP =          "vasp";
+const string Parameters::BOPFOX =        "bopfox";
+const string Parameters::BOP =           "bop";
+const string Parameters::LAMMPS =        "lammps";
+const string Parameters::GPAW =          "gpaw";
+
+const string Parameters::PROCESS_SEARCH =           "process_search";
+const string Parameters::SADDLE_SEARCH =            "saddle_search";
+const string Parameters::MINIMIZATION =             "minimization";
+const string Parameters::POINT =                    "point";
+const string Parameters::PARALLEL_REPLICA =         "parallel_replica";
+const string Parameters::DISTRIBUTED_REPLICA =      "distributed_replica";
+const string Parameters::BASIN_HOPPING =            "basin_hopping";
+const string Parameters::HESSIAN =                  "hessian";
+const string Parameters::FINITE_DIFFERENCE =        "finite_difference";
+const string Parameters::DIMER_ROTATION =           "dimer_rotation";
+const string Parameters::DISPLACEMENT_SAMPLING =    "displacement_sampling";
+const string Parameters::TEST =                     "test";
+
 Parameters::Parameters(){
 
     // [Main] //
-    job = Job::PROCESS_SEARCH;
+    job = Parameters::PROCESS_SEARCH;
     randomSeed = -1;
-    potential = "lj";
+    potential = Parameters::LJ;
     temperature = 300.0;
 
     // [Structure Comparison] //
@@ -186,37 +216,7 @@ int Parameters::load(FILE *file){
 
         // [Main] //
 
-        string jobString;
-        jobString = ini.GetValue("Main", "job", "process_search");
-        jobString = toLowerCase(jobString);
-        if (jobString == "process_search") {
-            job = Job::PROCESS_SEARCH;
-        }else if (jobString == "saddle_search") {
-            job = Job::SADDLE_SEARCH;
-        }else if (jobString == "minimization") {
-            job = Job::MINIMIZATION;
-        }else if (jobString == "point") {
-            job = Job::POINT;
-        }else if (jobString == "parallel_replica"){
-            job = Job::PARALLEL_REPLICA;
-        }else if (jobString == "distributed_replica"){
-            job = Job::DISTRIBUTED_REPLICA;
-        }else if (jobString == "basin_hopping") {
-            job = Job::BASIN_HOPPING;
-        }else if (jobString == "hessian") {
-            job = Job::HESSIAN;
-        }else if (jobString == "finite_difference"){
-            job = Job::FINITE_DIFFERENCE;
-        }else if (jobString == "dimer_rotation"){
-            job = Job::DIMER_ROTATION;
-        }else if (jobString == "displacement_sampling"){
-            job = Job::DISPLACEMENT_SAMPLING;
-        }else if (jobString == "test"){
-            job = Job::TEST;
-        }else{
-            fprintf(stderr, "Unknown job_type: %s\n", jobString.c_str());
-            error = 1;
-        }
+        job = toLowerCase(ini.GetValue("Main", "job"));
         temperature = ini.GetValueF("Main", "temperature", temperature);
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         // Initialize random generator
