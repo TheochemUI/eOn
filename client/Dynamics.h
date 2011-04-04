@@ -23,11 +23,9 @@ class Dynamics {
 
 public:
 
-    enum{
-        ANDERSEN,
-        NOSE_HOOVER,
-        LANGEVIN          
-    };
+    static const string ANDERSEN;
+    static const string NOSE_HOOVER;
+    static const string LANGEVIN;
 
     Dynamics(Matter *matter, Parameters *parameters);
 

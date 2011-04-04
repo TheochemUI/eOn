@@ -57,10 +57,8 @@ private:
 
 class Hyperdynamics {
         public:
-            enum{
-                NONE,
-                BOND_BOOST
-            };
+            static const string NONE;
+            static const string BOND_BOOST;
 };
 
 #endif

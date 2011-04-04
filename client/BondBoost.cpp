@@ -11,6 +11,10 @@
 #include "BondBoost.h"
 #include <math.h>
 
+const string Hyperdynamics::NONE = "none";
+const string Hyperdynamics::BOND_BOOST = "bond_boost";
+
+
 BondBoost::BondBoost(Matter *matt,Parameters *params)
 {
     matter = matt;    
