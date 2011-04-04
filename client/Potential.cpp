@@ -10,6 +10,7 @@
 
 #include "Constants.h"
 #include "Potential.h"
+#include "Parameters.h"
 #include "potentials/NewPotential/NewPotential.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/EMT/EffectiveMediumTheory.h"
@@ -41,46 +42,46 @@
 Potential *Potential::getPotential(Parameters *parameters)
 {
     Potential* pot;
-    if(parameters->potential == "lj")
+    if(parameters->potential == Parameters::LJ)
         pot = new LJ();
-    else if(parameters->potential == "morse_pt")
+    else if(parameters->potential == Parameters::MORSE_PT)
         pot = new Morse();
-    else if(parameters->potential == "emt")
+    else if(parameters->potential == Parameters::EMT)
         pot = new EffectiveMediumTheory();
-    else if(parameters->potential == "qsc")
+    else if(parameters->potential == Parameters::QSC)
         pot = new QSC();
-    else if(parameters->potential == "zpice")
+    else if(parameters->potential == Parameters::ZPICE)
         pot = new ZpIce();
-    else if(parameters->potential == "tip4p")
+    else if(parameters->potential == Parameters::TIP4P)
         pot = new Tip4p();
     #ifndef NO_FORTRAN
-    else if(parameters->potential == "eam_al")
+    else if(parameters->potential == Parameters::EAM_AL)
         pot = new Aluminum();
-    else if(parameters->potential == "lenosky_si")
+    else if(parameters->potential == Parameters::LENOSKY_SI)
         pot = new Lenosky();
-    else if(parameters->potential == "sw_si")
+    else if(parameters->potential == Parameters::SW_SI)
         pot = new SW();
-    else if(parameters->potential == "tersoff_si")
+    else if(parameters->potential == Parameters::TERSOFF_SI)
         pot = new Tersoff();
-    else if(parameters->potential == "edip")
+    else if(parameters->potential == Parameters::EDIP)
         pot = new EDIP();
     #ifndef WIN32
-    else if(parameters->potential == "vasp")
+    else if(parameters->potential == Parameters::VASP)
         pot = new VASP();
     #endif
-    else if(parameters->potential == "bopfox")
+    else if(parameters->potential == Parameters::BOPFOX)
         pot = new bopfox();
     #endif
     #ifdef BOPFOX
-    else if(parameters->potential == "bop")
+    else if(parameters->potential == Parameters::BOP)
         pot = new bop();
     #endif
     #ifdef LAMMPS_POT
-    else if(parameters->potential == "lammps")
+    else if(parameters->potential == Parameters::LAMMPS)
         pot = new lammps_eon();
     #endif
     #ifdef MPIGPAW
-    else if(parameters->potential == "gpaw")
+    else if(parameters->potential == Parameters::GPAW)
         pot = new GPAW();
     #endif
     else
