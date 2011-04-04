@@ -13,31 +13,44 @@
 #include "DisplacementSamplingJob.h"
 #include "TestJob.h"
 
+const string Job::PROCESS_SEARCH =           "process_search";
+const string Job::SADDLE_SEARCH =            "saddle_search";
+const string Job::MINIMIZATION =             "minimization";
+const string Job::POINT =                    "point";
+const string Job::PARALLEL_REPLICA =         "parallel_replica";
+const string Job::DISTRIBUTED_REPLICA =      "distributed_replica";
+const string Job::BASIN_HOPPING =            "basin_hopping";
+const string Job::HESSIAN =                  "hessian";
+const string Job::FINITE_DIFFERENCE =        "finite_difference";
+const string Job::DIMER_ROTATION =           "dimer_rotation";
+const string Job::DISPLACEMENT_SAMPLING =    "displacement_sampling";
+const string Job::TEST =                     "test";
+
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;
-    if (parameters->job == Parameters::PROCESS_SEARCH) {
+    if (parameters->job == Job::PROCESS_SEARCH) {
         job = new ProcessSearchJob(parameters);
-    }else if (parameters->job == Parameters::SADDLE_SEARCH) {
+    }else if (parameters->job == Job::SADDLE_SEARCH) {
         job = new SaddleSearchJob(parameters);
-    }else if (parameters->job == Parameters::MINIMIZATION) {
+    }else if (parameters->job == Job::MINIMIZATION) {
         job = new MinimizationJob(parameters);
-    }else if (parameters->job == Parameters::POINT) {
+    }else if (parameters->job == Job::POINT) {
         job = new PointJob(parameters);
-    }else if (parameters->job == Parameters::HESSIAN) {
+    }else if (parameters->job == Job::HESSIAN) {
         job = new HessianJob(parameters);
-    }else if (parameters->job == Parameters::PARALLEL_REPLICA) {
+    }else if (parameters->job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-    }else if (parameters->job == Parameters::DISTRIBUTED_REPLICA) {
+    }else if (parameters->job == Job::DISTRIBUTED_REPLICA) {
         job =  new DistributedReplicaJob(parameters);
-    }else if (parameters->job == Parameters::BASIN_HOPPING) {
+    }else if (parameters->job == Job::BASIN_HOPPING) {
         job =  new BasinHoppingJob(parameters);
-    }else if (parameters->job == Parameters::FINITE_DIFFERENCE) {
+    }else if (parameters->job == Job::FINITE_DIFFERENCE) {
         job =  new FiniteDifferenceJob(parameters);
-    }else if (parameters->job == Parameters::DIMER_ROTATION) {
+    }else if (parameters->job == Job::DIMER_ROTATION) {
         job =  new DimerRotationJob(parameters);
-    }else if (parameters->job == Parameters::DISPLACEMENT_SAMPLING) {
+    }else if (parameters->job == Job::DISPLACEMENT_SAMPLING) {
         job =  new DisplacementSamplingJob(parameters);
-    }else if (parameters->job == Parameters::TEST) {
+    }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }
 

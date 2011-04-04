@@ -39,49 +39,66 @@
 
 #include <cstdlib>
 
+const string Potential::POT_LJ =            "lj";
+const string Potential::POT_EAM_AL =        "eam_al";
+const string Potential::POT_MORSE_PT =      "morse_pt";
+const string Potential::POT_EMT =           "emt";
+const string Potential::POT_QSC =           "qsc";
+const string Potential::POT_ZPICE =         "zpice";
+const string Potential::POT_TIP4P =         "tip4p";
+const string Potential::POT_LENOSKY_SI =    "lenosky_si";
+const string Potential::POT_SW_SI =         "sw_si";
+const string Potential::POT_TERSOFF_SI =    "tersoff_si";
+const string Potential::POT_EDIP =          "edip";
+const string Potential::POT_VASP =          "vasp";
+const string Potential::POT_BOPFOX =        "bopfox";
+const string Potential::POT_BOP =           "bop";
+const string Potential::POT_LAMMPS =        "lammps";
+const string Potential::POT_GPAW =          "gpaw";
+
 Potential *Potential::getPotential(Parameters *parameters)
 {
     Potential* pot;
-    if(parameters->potential == Parameters::LJ)
+    if(parameters->potential == POT_LJ)
         pot = new LJ();
-    else if(parameters->potential == Parameters::MORSE_PT)
+    else if(parameters->potential == POT_MORSE_PT)
         pot = new Morse();
-    else if(parameters->potential == Parameters::EMT)
+    else if(parameters->potential == POT_EMT)
         pot = new EffectiveMediumTheory();
-    else if(parameters->potential == Parameters::QSC)
+    else if(parameters->potential == POT_QSC)
         pot = new QSC();
-    else if(parameters->potential == Parameters::ZPICE)
+    else if(parameters->potential == POT_ZPICE)
         pot = new ZpIce();
-    else if(parameters->potential == Parameters::TIP4P)
+    else if(parameters->potential == POT_TIP4P)
         pot = new Tip4p();
     #ifndef NO_FORTRAN
-    else if(parameters->potential == Parameters::EAM_AL)
+    else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
-    else if(parameters->potential == Parameters::LENOSKY_SI)
+    else if(parameters->potential == POT_LENOSKY_SI)
         pot = new Lenosky();
-    else if(parameters->potential == Parameters::SW_SI)
+    else if(parameters->potential == POT_SW_SI)
         pot = new SW();
-    else if(parameters->potential == Parameters::TERSOFF_SI)
+    else if(parameters->potential == POT_TERSOFF_SI)
         pot = new Tersoff();
-    else if(parameters->potential == Parameters::EDIP)
+    else if(parameters->potential == POT_EDIP)
         pot = new EDIP();
     #ifndef WIN32
-    else if(parameters->potential == Parameters::VASP)
+    else if(parameters->potential == POT_VASP)
         pot = new VASP();
     #endif
-    else if(parameters->potential == Parameters::BOPFOX)
+    else if(parameters->potential == POT_BOPFOX)
         pot = new bopfox();
     #endif
     #ifdef BOPFOX
-    else if(parameters->potential == Parameters::BOP)
+    else if(parameters->potential == POT_BOP)
         pot = new bop();
     #endif
     #ifdef LAMMPS_POT
-    else if(parameters->potential == Parameters::LAMMPS)
+    else if(parameters->potential == POT_LAMMPS)
         pot = new lammps_eon();
     #endif
     #ifdef MPIGPAW
-    else if(parameters->potential == Parameters::GPAW)
+    else if(parameters->potential == POT_GPAW)
         pot = new GPAW();
     #endif
     else
