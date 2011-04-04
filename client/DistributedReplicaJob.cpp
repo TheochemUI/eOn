@@ -205,7 +205,7 @@ void DistributedReplicaJob::samplingStep(){
 
 void DistributedReplicaJob::saveData(void)
 {
- 
+
     FILE *fileResults, *fileReactant, *fileProduct;
 
     std::string resultsFilename("results.dat");
@@ -240,7 +240,7 @@ void DistributedReplicaJob::saveData(void)
     fileProduct = fopen(productVelFilename.c_str(), "wb");
     final->matter2convel(fileProduct);
     fclose(fileProduct);
- 
+
     return;
 
 }

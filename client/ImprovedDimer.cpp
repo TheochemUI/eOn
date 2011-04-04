@@ -33,7 +33,7 @@ ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
     tau.setZero();
     totalForceCalls = 0;
 
-    if(parameters->dimerOptRotMethod == OPT_CG){
+    if(parameters->dimerOptMethod == OPT_CG){
         init_cg = true;
     }
 }
@@ -67,29 +67,29 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
     statsRotations = 0;
 
     Matter *x1p = new Matter(parameters);
-    
+
     // Calculate the gradients on x0 and x1, g0 and g1, respectively.
     AtomMatrix g0 = -x0->getForces();
     AtomMatrix g1 = -x1->getForces();
 
     do // while we have not reached phi_tol or maximum rotations.
     {
-        
+
         // Calculate the rotational force, F_R.
         F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).cwise() * tau).sum() * tau;
         statsTorque = F_R.norm() / delta;
-        
+
         // Determine the step direction, theta. (steepest descent)
-        if(parameters->dimerOptRotMethod == OPT_SD) // steepest descent
+        if(parameters->dimerOptMethod == OPT_SD) // steepest descent
         {
             theta = F_R / F_R.norm();
         }
-        else if(parameters->dimerOptRotMethod == OPT_CG) // conjugate gradients
+        else if(parameters->dimerOptMethod == OPT_CG) // conjugate gradients
         {
             if(init_cg){
                 init_cg = false;
                 gamma = 0.0;
-            }else{  
+            }else{
                 a = fabs((F_R.cwise() * F_R_Old).sum());
                 b = F_R_Old.squaredNorm();
                 if(a < 0.5*b) {
@@ -111,26 +111,26 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             F_R_Old = F_R;
             thetaOld = theta;
         }
-        else if(parameters->dimerOptRotMethod == OPT_LBFGS) // quasi-newton
+        else if(parameters->dimerOptMethod == OPT_LBFGS) // quasi-newton
         {
             // LBFGS not implemented yet
         }
 
         // Calculate the curvature along tau, C_tau.
         C_tau = ((g1 - g0).cwise() * tau).sum() / delta;
-        statsCurvature = C_tau;    
-        
+        statsCurvature = C_tau;
+
         // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
         double d_C_tau_d_phi = 2.0 * ((g1 - g0).cwise() * theta).sum() / delta;
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
         statsAngle = phi_prime * (180.0 / M_PI);
-        
+
         if(phi_prime > phi_tol)
         {
             double b1 = 0.5 * d_C_tau_d_phi;
-            
+
             // Calculate g1_prime. 
-            x0_r = x0->getPositions();    
+            x0_r = x0->getPositions();
             x1_rp = x0_r + (tau * cos(phi_prime) + theta * sin(phi_prime)) * delta;
             *x1p = *x1;
             x1p->setPositions(x1_rp);
@@ -139,15 +139,15 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             // Calculate C_tau_prime.
             tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
             double C_tau_prime = ((g1_prime - g0).cwise() * tau_prime).sum() / delta;
-            
+
             // Calculate phi_min.
             double a1 = C_tau - C_tau_prime + b1 * sin(2.0 * phi_prime) / (1.0 - cos(2.0 * phi_prime));
             double a0 = 2.0 * (C_tau - a1);
             phi_min = 0.5 * atan(b1 / a1);
-            
+
             // Determine the curvature for phi_min.
             double C_tau_min = 0.5 * a0 + a1 * cos(2.0 * phi_min) + b1 * sin(2.0 * phi_min);
-            
+
             // If the curvature is being maximized, push it over pi/2.
             if(C_tau_min > C_tau)
             {
@@ -156,7 +156,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             }
 
             statsAngle = phi_min * (180.0 / M_PI);
-            
+
             // Update x1, tau, and C_tau.
             x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositions(x1_r);
@@ -167,25 +167,24 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
                 tau.normalize();
             }
             C_tau = C_tau_min;
-            
+
             // Calculate the new g1.
             g1 = g1 * (sin(phi_prime - phi_min)/sin(phi_prime)) + g1_prime*(sin(phi_min)/sin(phi_prime)) + 
                  g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
-            
-            
+
             statsRotations += 1;
 
             #ifndef NDEBUG
                 printf("IDIMERRT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
                 F_R.norm(), C_tau, phi_min * (180.0 / M_PI), statsRotations);
             #endif
-            
+
         }
-        
+
     } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);
- 
+
     delete x1p;
-    
+
 }
 
 double ImprovedDimer::getEigenvalue()

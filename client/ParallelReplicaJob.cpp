@@ -18,8 +18,8 @@
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>    
-    #include <boinc/filesys.h>        
+    #include <boinc/diagnostics.h>
+    #include <boinc/filesys.h>
 #ifdef WIN32
     #include <boinc/boinc_win.h>
     #include <boinc/win_util.h>
@@ -61,7 +61,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     fin2 = new Matter(parameters);
     saddle = new Matter(parameters);
     final = new Matter(parameters);
-    
+
     reactant->con2matter(reactant_passed);
     *min1 = *reactant;   
     *saddle = *reactant;
@@ -141,7 +141,7 @@ void ParallelReplicaJob::dynamics()
         }
 
         else{ SPtime += parameters->mdTimeStep;}
-                
+
         kinE = reactant->getKineticEnergy();
         kinT = (2*kinE/nFreeCoord/kb); 
         sumT += kinT;
@@ -180,7 +180,7 @@ void ParallelReplicaJob::dynamics()
             nexam++;
             if (nexam >= relax_steps){
                 nexam = 0;
-                ncheck = 0; 	
+                ncheck = 0;
                 nrecord = 0;
                 newstate = PRdynamics.checkState(reactant,min1);
                 status = false;
@@ -239,19 +239,18 @@ void ParallelReplicaJob::dynamics()
         *reactant = *mdbuff[nsteps_refined];
         *saddle = *reactant;
         SPtime = SPtimebuff[nsteps_refined];
-    
+
         printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
         
         long relaxbufflength = int(relax_steps/RecordAccuracy)+1;
         if(nsteps_refined < mdbufflength - relaxbufflength ){
             *final = *mdbuff[nsteps_refined+relaxbufflength];
         }
-    
+
         *fin1 = *saddle;
         ConjugateGradients SaddleMin(fin1, parameters);
         SaddleMin.fullRelax();
         min_fcalls += fin1->getForceCalls();
-
 
         *fin2 = *final;
         ConjugateGradients RelaxMin(fin2, parameters);
@@ -343,7 +342,7 @@ void ParallelReplicaJob::dephase()
     long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
     long  n,nloop, new_n, nbuff, dh_refined;
     bool  state = false;
-    AtomMatrix velocity;      
+    AtomMatrix velocity;
 
     Dynamics dephaseDynamics(reactant,parameters);
     printf("Dephasing for %ld steps\n",dephaseSteps);
@@ -364,7 +363,7 @@ void ParallelReplicaJob::dephase()
            dephaseDynamics.oneStep(parameters->temperature);
            *DHbuff[i] = *reactant;
         }
-        
+
         state = dephaseDynamics.checkState(reactant,min1);
         if(state == true){
             dh_refined = dephaseDynamics.refine(DHbuff,nbuff,min1);
@@ -379,9 +378,9 @@ void ParallelReplicaJob::dephase()
             n = n + new_n;
         }else{
             n = n + nbuff;
-            printf("Successful Dephasing for %ld steps \n",n);            
+            printf("Successful Dephasing for %ld steps \n",n);
         }
-   
+
        for(i=0; i<nbuff;i++){
            delete DHbuff[i];
        }
@@ -389,11 +388,11 @@ void ParallelReplicaJob::dephase()
        if(parameters->mdDephaseLoopStop){
            if(nloop > parameters->mdDephaseLoopMax){
               printf("Reach Dephase Loop Maximum, Stop Dephasing! Dephsed for %ld steps\n ",n);
-              break;    
+              break;
            }
        }
    }
-   min_fcalls += dephaseDynamics.getMinfcalls(); 
+   min_fcalls += dephaseDynamics.getMinfcalls();
    rf_fcalls += dephaseDynamics.getRefinefcalls();
    dh_fcalls += dephaseDynamics.getMDfcalls();
 }

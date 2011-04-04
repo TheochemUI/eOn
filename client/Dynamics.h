@@ -31,7 +31,7 @@ public:
 
     ~Dynamics();
 
-    void oneStep(double temperature);	
+    void oneStep(double temperature);
     void andersenVerlet();
     void fullSteps(double temperature); 
     void andersen(double temperature);
@@ -52,7 +52,7 @@ private:
 
     Matter *matter;
     Parameters *parameters;
-  
+
     long min_fcalls;
     long md_fcalls;
     long rf_fcalls;

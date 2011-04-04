@@ -9,9 +9,15 @@
 //-----------------------------------------------------------------------------------
 
 #include "NudgedElasticBand.h"
+#include "ConjugateGradients.h"
+#include "Quickmin.h"
 #include <cassert>
 
 using namespace helper_functions;
+
+const string NEB::OPT_QM = "qm";
+const string NEB::OPT_CG = "cg";
+const string NEB::OPT_LBFGS = "lbfgs";
 
 NEB::NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *params)
 {
@@ -38,6 +44,7 @@ NEB::NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *par
     // Make sure that the endpoints know their energy
     neb[0]->getPotentialEnergy();
     neb[images+1]->getPotentialEnergy();
+    climbingImage = 0;
 }
 
 NEB::~NEB()
@@ -49,9 +56,97 @@ NEB::~NEB()
 
 void NEB::compute(void)
 {
+    long iterations = 0;
+    // optimizers
+    Quickmin *qm[images+2];
+    ConjugateGradients *cg[images+2];
+    // temporary variables for cg
+    AtomMatrix forcesStep;
+    AtomMatrix posStep;
+    AtomMatrix forces[images+2];
+    AtomMatrix pos[images+2];
+    
+    updateForces();
+
+    // Need to generalize this, but use QM for now
+    if( parameters->nebOptMethod == OPT_QM )
+    {
+        for(long i=1; i<images+1; i++) {
+            qm[i] = new Quickmin(neb[i], parameters); 
+        }
+    }
+    else if ( parameters->nebOptMethod == OPT_CG ) 
+    {
+        for(long i=1; i<images+1; i++) {
+            pos[i] = neb[i]->getPositions();
+            forces[i] = neb[i]->getForces();
+            cg[i] = new ConjugateGradients(neb[i], parameters, forces[i]);
+        }
+    }
+
+    while( convergenceForce() > parameters->optConvergedForce && iterations < parameters->optMaxIterations )
+    {
+
+        if( parameters->nebOptMethod == OPT_QM ) // Quickmin
+        {
+            for(long i=1; i<images+1; i++) {
+                qm[i]->oneStep();
+            }
+            updateForces();
+        }
+        else if( parameters->nebOptMethod == OPT_CG ) // Conjugate gradients
+        {
+            for(long i=1; i<images+1; i++)
+            {
+                posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
+                neb[i]->setPositions(posStep);
+            }
+            updateForces();
+            for(long i=1; i<images+1; i++)
+            {
+                forcesStep = neb[i]->getForces();
+                pos[i] = cg[i]->getNewPosModifiedForces(pos[i], forces[i], forcesStep, parameters->optMaxMove);
+                posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
+                neb[i]->setPositions(posStep);
+            }
+            updateForces();
+            for(long i=1; i<images+1; i++)
+            {
+                forces[i] = neb[i]->getForces();
+            }
+        }
+        iterations++;
+    }
+
+    // Cleanup
+    if( parameters->nebOptMethod == OPT_QM ) {
+        for(long i=1; i<images+1; i++) {
+            delete qm[i]; }
+     }else if( parameters->nebOptMethod == OPT_CG ) {
+        for(long i=1; i<images+1; i++) {
+            delete cg[i]; }
+    }
+
     return;
 }
 
+// generate the force value which is compared to the convergence criterion
+double NEB::convergenceForce(void)
+{
+    if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
+        return neb[climbingImage]->getForces().norm();
+    }
+    double fmax = neb[1]->getForces().norm();
+    for(long i=2; i<images+1; i++) {
+        if( fmax < neb[i]->getForces().norm() ) {
+            fmax = neb[i]->getForces().norm();
+        }
+    }
+    return fmax;
+}
+
+
+// Update the forces, do the projections, and add spring forces
 void NEB::updateForces(void)
 {
     // variables for tangent
@@ -132,20 +227,21 @@ void NEB::updateForces(void)
         // project the forces and add springs
         force = neb[i]->getForces();
 
-        if(parameters->nebClimbingImage && i==maxEnergyImage)
+        if(parameters->nebClimbingImageMethod && i==maxEnergyImage)
         {
             // we are at the climbing image
-            neb[i]->setForces( force - 2.0*(force.cwise()*tangent[i]).sum() * tangent[i]);
+            climbingImage = maxEnergyImage;
+            neb[i]->setForces( force - 2.0 * (force.cwise() * tangent[i]).sum() * tangent[i]);
         }
         else  // all non-climbing images
         {
             // calculate the force perpendicular to the tangent
-            forcePerp = force - (force.cwise()*tangent[i]).sum() * tangent[i];
+            forcePerp = force - (force.cwise() * tangent[i]).sum() * tangent[i];
 
             // calculate the spring force
             distPrev = (posPrev - pos).squaredNorm();
             distNext = (posNext - pos).squaredNorm();
-            forceSpringPar = parameters->nebSpring*(distNext-distPrev) * tangent[i];
+            forceSpringPar = parameters->nebSpring * (distNext-distPrev) * tangent[i];
 
             // sum the spring and potential forces for the neb force
             neb[i]->setForces( forceSpringPar + forcePerp );

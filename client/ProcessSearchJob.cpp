@@ -53,12 +53,12 @@ std::vector<std::string> ProcessSearchJob::run(void)
         cgMin.fullRelax();
         fCallsMin += Potential::fcalls - fi;
     }
-    
+
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
-    
+
     if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
-        // displacement was passed from the server        
+        // displacement was passed from the server
         if(!saddle->con2matter(displacement_passed)) {
             printf("Stop\n");
             exit(1);
@@ -66,7 +66,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
         *min1 = *min2 = *initial;
     }else{
         // displacement and mode will be made on the client
-        // in saddlePoint->initialize(...) 
+        // in saddlePoint->initialize(...)
         *saddle = *min1 = *min2 = *initial;
     }
 
@@ -77,7 +77,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
         saddlePoint->loadMode(mode_passed);
     }
     // displacement and mode where made on the client
-    // in saddlePoint->initialize(...) 
+    // in saddlePoint->initialize(...)
 
     int status = doProcessSearch();
 
@@ -87,9 +87,9 @@ std::vector<std::string> ProcessSearchJob::run(void)
     delete saddlePoint;
     delete initial;
     delete displacement;
-    delete saddle; 
-    delete min1; 
-    delete min2; 
+    delete saddle;
+    delete min1;
+    delete min2;
 
     return returnFiles;
 }
@@ -123,7 +123,7 @@ int ProcessSearchJob::doProcessSearch(void)
     *min2 = *saddle;
     displacedPos = posSaddle + saddlePoint->getEigenMode() * parameters->processSearchMinimizationOffset;
     min2->setPositions(displacedPos);
-    ConjugateGradients cgMin2(min2, parameters);  
+    ConjugateGradients cgMin2(min2, parameters);
     cgMin2.fullRelax();
     fCallsMin += cgMin2.totalForceCalls;
 
@@ -198,7 +198,7 @@ int ProcessSearchJob::doProcessSearch(void)
             #endif
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
-        fCallsPrefactors += Potential::fcalls - f1; 
+        fCallsPrefactors += Potential::fcalls - f1;
 
         prefactorsValues[0] = 1;
         prefactorsValues[1] = 1;

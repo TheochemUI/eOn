@@ -65,50 +65,50 @@ bool CIniFile::ReadFile(FILE *file)
       // Check that the user hasn't openned a binary file by checking the first
       // character of each line!
       if ( !isprint( line[0])) {
-	printf( "Failing on char %d\n", line[0]);
-	return false;
+        printf( "Failing on char %d\n", line[0]);
+        return false;
       }
       if (( pLeft = line.find_first_of(";#[=")) != string::npos) {
-	switch ( line[pLeft]) {
-	case '[':
-	  if ((pRight = line.find_last_of("]")) != string::npos &&
-	      pRight > pLeft) {
-	    keyname = line.substr( pLeft + 1, pRight - pLeft - 1);
-	    AddKeyName( keyname);
-	  }
-	  break;
-	  
-	case '=':
-	  valuename = line.substr( 0, pLeft);
-	  for(int j = 0; j < int(valuename.length()); j++)
-	  {
-	    if(valuename[j] == ' ')
-	    {
-	      valuename.erase(j, 1);
-	    }
-	  }
-	  //Print out the non-default values
-	  //printf("%s ", CheckCase(valuename).c_str());
-	  value = line.substr( pLeft + 1);
-	  while (value[0] == ' ')
-	  {
-	    value.erase(0, 1);
-	  }
-	  while (value[value.length() - 1] == ' ')
-	  {
-	    value.erase(value.length() - 1, 1);
-	  }
-	  SetValue( keyname, valuename, value);
-	  break;
-	  
-	case ';':
-	case '#':
-	  if ( !names.size())
-	    HeaderComment( line.substr( pLeft + 1));
-	  else
-	    KeyComment( keyname, line.substr( pLeft + 1));
-	  break;
-	}
+        switch ( line[pLeft]) {
+        case '[':
+          if ((pRight = line.find_last_of("]")) != string::npos &&
+              pRight > pLeft) {
+            keyname = line.substr( pLeft + 1, pRight - pLeft - 1);
+            AddKeyName( keyname);
+          }
+          break;
+
+        case '=':
+          valuename = line.substr( 0, pLeft);
+          for(int j = 0; j < int(valuename.length()); j++)
+          {
+            if(valuename[j] == ' ')
+            {
+              valuename.erase(j, 1);
+            }
+          }
+          //Print out the non-default values
+          //printf("%s ", CheckCase(valuename).c_str());
+          value = line.substr( pLeft + 1);
+          while (value[0] == ' ')
+          {
+            value.erase(0, 1);
+          }
+          while (value[value.length() - 1] == ' ')
+          {
+            value.erase(value.length() - 1, 1);
+          }
+          SetValue( keyname, valuename, value);
+          break;
+
+        case ';':
+        case '#':
+          if ( !names.size())
+            HeaderComment( line.substr( pLeft + 1));
+          else
+            KeyComment( keyname, line.substr( pLeft + 1));
+          break;
+        }
       }
     }
   }
@@ -304,7 +304,7 @@ int CIniFile::GetValueI(string const keyname, string const valuename, int const 
   char svalue[MAX_VALUEDATA];
 
   sprintf( svalue, "%d", defValue);
-  return atoi( GetValue( keyname, valuename, svalue).c_str()); 
+  return atoi( GetValue( keyname, valuename, svalue).c_str());
 }
 
 long CIniFile::GetValueL(string const keyname, string const valuename, long const defValue) const
@@ -312,7 +312,7 @@ long CIniFile::GetValueL(string const keyname, string const valuename, long cons
   char svalue[MAX_VALUEDATA];
 
   sprintf( svalue, "%ld", defValue);
-  return atol( GetValue( keyname, valuename, svalue).c_str()); 
+  return atol( GetValue( keyname, valuename, svalue).c_str());
 }
 
 double CIniFile::GetValueF(string const keyname, string const valuename, double const defValue) const
@@ -320,7 +320,7 @@ double CIniFile::GetValueF(string const keyname, string const valuename, double 
   char svalue[MAX_VALUEDATA];
 
   sprintf( svalue, "%f", defValue);
-  return atof( GetValue( keyname, valuename, svalue).c_str()); 
+  return atof( GetValue( keyname, valuename, svalue).c_str());
 }
 
 bool CIniFile::GetValueB(string const keyname, string const valuename, bool const defValue) const
@@ -330,15 +330,15 @@ bool CIniFile::GetValueB(string const keyname, string const valuename, bool cons
   if(!defValue){sprintf( svalue, "False");}
   else{sprintf( svalue, "True");}
   string val = GetValue( keyname, valuename, svalue);
-  return (val[0] == 'T' || val[0] =='t'); 
+  return (val[0] == 'T' || val[0] =='t');
 }
 
 // 16 variables may be a bit of over kill, but hey, it's only code.
 unsigned CIniFile::GetValueV( string const keyname, string const valuename, char *format,
-			      void *v1, void *v2, void *v3, void *v4,
-  			      void *v5, void *v6, void *v7, void *v8,
-  			      void *v9, void *v10, void *v11, void *v12,
-  			      void *v13, void *v14, void *v15, void *v16)
+                              void *v1, void *v2, void *v3, void *v4,
+                              void *v5, void *v6, void *v7, void *v8,
+                              void *v9, void *v10, void *v11, void *v12,
+                              void *v13, void *v14, void *v15, void *v16)
 {
   string   value;
   // va_list  args;
@@ -356,8 +356,8 @@ unsigned CIniFile::GetValueV( string const keyname, string const valuename, char
   // va_end( args);
 
   nVals = sscanf( value.c_str(), format,
-		  v1, v2, v3, v4, v5, v6, v7, v8,
-		  v9, v10, v11, v12, v13, v14, v15, v16);
+                  v1, v2, v3, v4, v5, v6, v7, v8,
+                  v9, v10, v11, v12, v13, v14, v15, v16);
 
   return nVals;
 }

@@ -67,7 +67,7 @@ void Quickmin::fullRelax()
 {
     bool converged = false;
     long forceCallsTemp;
-    forceCallsTemp = matter->getForceCalls();  
+    forceCallsTemp = matter->getForceCalls();
     static int run=0;
     ostringstream min;
     min << "min_" << run;
