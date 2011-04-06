@@ -45,7 +45,7 @@ Make sure the ``hostname`` is the same as the address used when connecting to th
 
     cd boinc/tools ./make_project eon
 
-where ``eon`` can be replaced with another project name if preferred. Follow the instructions in the created readme file until the command ``bin/xadd``.
+where ``eon`` can be replaced with another project name if preferred. Follow the instructions in the created readme file until the command ``bin/xadd``. Also make sure that the ``homedir`` where the project is located can be executed (has permission ``711`` rather than the default ``700``). 
 
 Secure ops Web Pages
 ^^^^^^^^^^^^^^^^^^^^
