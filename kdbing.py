@@ -50,6 +50,21 @@ class KDB:
         sp.wait()
         return sp.communicate()[0].strip()
                 
+    def is_querying(self):
+        if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
+            dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches",".done_*"))
+            if len(dones) > 0:
+                return True
+        if os.path.exists(os.path.join(config.kdb_scratch_path, "PID")):
+            f = open(os.path.join(config.kdb_scratch_path, "PID") , 'r')
+            pid = int(f.readline())
+            f.close()
+            try:
+                os.kill(pid, 0)
+                return True
+            except:
+                return False
+        return False
 
     def query(self, state, wait = False):
         # If the path already exists, remove it and create a new one.
