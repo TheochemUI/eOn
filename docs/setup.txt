@@ -55,7 +55,7 @@ To restrict access to the administrative web pages for the project execute go to
     cd projects/eon/html/ops 
     htpasswd -c .htpasswd USERNAME
 
-where ``USERNAME`` is the name of the user that should have access to the ops page. In ``eon/html/project/project.inc`` edit function ``auth_ops()`` by changing the default deny access ``auth_ops_deny()`` to ``//auth_ops_deny``()::
+where ``USERNAME`` is the name of the user that should have access to the ops page. In ``eon/html/project/project.inc`` edit function ``auth_ops()`` by changing the default deny access ``auth_ops_deny()`` to ``//auth_ops_deny()``::
 
     cd ../project/ 
     nano project.inc
