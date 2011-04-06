@@ -67,6 +67,10 @@ def akmc(config):
     # If kdb is being used, initialize it.
     if config.kdb_on:
         kdber = kdbing.KDB()
+        kdb_is_querying = kdber.is_querying()
+    else:
+        kdb_is_querying = False
+
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
@@ -91,13 +95,16 @@ def akmc(config):
         pass_superbasining = superbasining
     else:
         pass_superbasining = None
-    current_state, previous_state, time = kmc_step(current_state, states, time, kT, superbasining = pass_superbasining) 
+    
+    
+    num_queued_jobs = comm.get_queue_size() * config.comm_job_bundle_size 
+    current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining, num_queued_jobs, kdb_is_querying) 
             
     # If we took a step, cancel old jobs and start the kdbquery.
     if current_state.number != start_state_num:
         num_cancelled = comm.cancel_state(start_state_num)
         logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
-        if config.kdb_on:
+        if config.kdb_on and len(current_state.get_ratetable()) <= 1:
             kdber.query(current_state, wait = config.kdb_wait)
     
     # If this is the first execution of akmc.py for this simulation, run kdbquery if it's on.
@@ -324,7 +331,7 @@ def get_superbasin_scheme(states):
     return superbasining
 
 
-def kmc_step(current_state, states, time, kT, superbasining, previous_state_num = None):
+def kmc_step(current_state, states, time, kT, superbasining, num_queued_jobs, kdb_is_querying, previous_state_num = None):
     t1 = unix_time.time()
     previous_state = current_state 
     start_state_num = current_state.number
@@ -341,7 +348,10 @@ def kmc_step(current_state, states, time, kT, superbasining, previous_state_num 
                             config.path_root, config.akmc_thermal_window,
                             recycle_path = pass_rec_path)
 
-    while current_state.get_confidence() >= config.akmc_confidence and steps < config.akmc_max_kmc_steps:
+    while ((current_state.get_confidence() >= config.akmc_confidence and not config.kdb_only) or \
+          (config.kdb_only and len(current_state.get_ratetable()) > 0 and not kdb_is_querying and num_queued_jobs==0)) and \
+          steps < config.akmc_max_kmc_steps:
+          
         steps += 1
 
         # The system might be in a superbasin
@@ -563,7 +573,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                         searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "kdb"
                     except:
                         logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-        if not done:
+        if not done and not config.kdb_only:
             displacement, mode = disp.make_displacement() 
             if config.debug_list_search_results:                
                 try:
@@ -571,15 +581,17 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
                     searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "random"
                 except:
                     logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-        dispIO = StringIO.StringIO()
-        io.savecon(dispIO, displacement)
-        search['displacement_passed.con'] = dispIO
         
-        modeIO = StringIO.StringIO()
-        io.save_mode(modeIO, mode, reactant)
-        search['mode_passed.dat'] = modeIO
-        searches.append(search) 
-        wuid += 1
+        if displacement:
+            dispIO = StringIO.StringIO()
+            io.savecon(dispIO, displacement)
+            search['displacement_passed.con'] = dispIO
+            
+            modeIO = StringIO.StringIO()
+            io.save_mode(modeIO, mode, reactant)
+            search['mode_passed.dat'] = modeIO
+            searches.append(search) 
+            wuid += 1
 
     if config.recycling_on and nrecycled > 0:
         logger.debug("Recycled %i saddles" % nrecycled)
@@ -587,7 +599,7 @@ def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, re
     try:
         comm.submit_jobs(searches, invariants)
         t2 = unix_time.time()
-        logger.info( str(num_to_make) + " searches created") 
+        logger.info( str(len(searches)) + " searches created") 
         logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
     except:
         logger.exception("Failed to submit searches.")
