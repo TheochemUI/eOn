@@ -146,6 +146,7 @@ def init(config_file = ""):
 
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
+    config.kdb_only = parser.getboolean('KDB', 'kdb_only')
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
     config.kdb_path = parser.get('Paths', 'kdb')
     config.kdb_wait = parser.get('KDB', 'wait')
