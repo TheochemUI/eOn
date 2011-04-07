@@ -152,10 +152,10 @@ def init(config_file = ""):
     config.kdb_wait = parser.get('KDB', 'wait')
     config.kdb_keep = parser.get('KDB', 'keep')
     config.kdb_addpath = parser.get('KDB', 'addpath')
-    if config.kdb_addpath == False:
+    if config.kdb_addpath == "False":
         config.kdb_addpath = os.path.join(os.path.dirname(__file__), "kdb", "kdbinsert.py")
     config.kdb_querypath = parser.get('KDB', 'querypath')
-    if config.kdb_querypath == False:
+    if config.kdb_querypath == "False":
         config.kdb_querypath = os.path.join(os.path.dirname(__file__), "kdb", "kdbquery.py")
 
     #Recycling
