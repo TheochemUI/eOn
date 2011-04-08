@@ -81,7 +81,7 @@ void Matter::initializeDataMembers(Parameters *params)
     recomputePotential = true;
     forceCalls = 0;
     parameters = params;
-    potential = Potential::getPotential(parameters);
+    potential = NULL; 
 }
 
 
@@ -93,9 +93,8 @@ Matter::Matter(const Matter& matter)
 
 Matter::~Matter()
 {
-    if (potential!=0){
+    if (potential!=NULL){
         delete potential;
-        potential=0;
     }
 }
 
@@ -191,7 +190,11 @@ void Matter::resize(const long int length)
 {
     if(length>0)
     {
-        potential = Potential::getPotential(parameters);
+        if (potential)
+        {
+            delete potential;
+            potential = NULL;
+        }
         
         nAtoms = length;
         positions.resize(length, 3);
@@ -796,26 +799,25 @@ bool Matter::con2matter(FILE *file)
 void Matter::computePotential()
 {
     if(recomputePotential) {
-        if(potential) {
-            forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
-            forceCalls = forceCalls+1;
-            recomputePotential = false;
+        if(!potential)
+        {
+            potential = Potential::getPotential(parameters);
+        }
 
-            if(isFixed.sum() == 0){
-                Vector3d tempForce(3);
-                tempForce = forces.colwise().sum()/nAtoms;
+        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
+        forceCalls = forceCalls+1;
+        recomputePotential = false;
 
-                for(long int i=0; i<nAtoms; i++) 
-                {
-                    forces.row(i) -= tempForce.transpose();
-                }
+        if(isFixed.sum() == 0){
+            Vector3d tempForce(3);
+            tempForce = forces.colwise().sum()/nAtoms;
+
+            for(long int i=0; i<nAtoms; i++) 
+            {
+                forces.row(i) -= tempForce.transpose();
             }
+        }
 
-        }
-        else {
-            cerr << "No potential associated with the atomic structure." << endl;
-            exit(1);
-        }
     }
 }
 
