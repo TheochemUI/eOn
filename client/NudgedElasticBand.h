@@ -27,9 +27,12 @@ class NEB {
 public:
 
     // Optimization for the neb
-    static const string OPT_QM;
-    static const string OPT_CG;
-    static const string OPT_LBFGS;
+//    static const string OPT_QM;
+//    static const string OPT_CG;
+//    static const string OPT_LBFGS;
+    static const char OPT_QM[];
+    static const char OPT_CG[];
+    static const char OPT_LBFGS[];
 
     NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *parameters);
     ~NEB();

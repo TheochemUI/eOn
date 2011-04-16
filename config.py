@@ -96,6 +96,7 @@ def init(config_file = ""):
     #print path_scratch
     if config.comm_type == 'local':
         config.comm_local_client = parser.get('Communicator', 'client_path')
+        config.comm_local_client = parser.get('Communicator', 'client_path')
         config.comm_local_ncpus = parser.getint('Communicator', 'number_of_CPUs')
     if config.comm_type == 'cluster':
         config.comm_script_path = parser.get('Communicator', 'script_path')
