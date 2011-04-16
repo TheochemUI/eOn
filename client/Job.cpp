@@ -13,6 +13,7 @@
 #include "DisplacementSamplingJob.h"
 #include "TestJob.h"
 
+/*
 const string Job::PROCESS_SEARCH =           "process_search";
 const string Job::SADDLE_SEARCH =            "saddle_search";
 const string Job::MINIMIZATION =             "minimization";
@@ -25,6 +26,19 @@ const string Job::FINITE_DIFFERENCE =        "finite_difference";
 const string Job::DIMER_ROTATION =           "dimer_rotation";
 const string Job::DISPLACEMENT_SAMPLING =    "displacement_sampling";
 const string Job::TEST =                     "test";
+*/
+const char Job::PROCESS_SEARCH[] =           "process_search";
+const char Job::SADDLE_SEARCH[] =            "saddle_search";
+const char Job::MINIMIZATION[] =             "minimization";
+const char Job::POINT[] =                    "point";
+const char Job::PARALLEL_REPLICA[] =         "parallel_replica";
+const char Job::DISTRIBUTED_REPLICA[] =      "distributed_replica";
+const char Job::BASIN_HOPPING[] =            "basin_hopping";
+const char Job::HESSIAN[] =                  "hessian";
+const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
+const char Job::DIMER_ROTATION[] =           "dimer_rotation";
+const char Job::DISPLACEMENT_SAMPLING[] =    "displacement_sampling";
+const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;

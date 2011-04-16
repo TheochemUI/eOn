@@ -15,9 +15,12 @@
 
 using namespace helper_functions;
 
-const string NEB::OPT_QM = "qm";
-const string NEB::OPT_CG = "cg";
-const string NEB::OPT_LBFGS = "lbfgs";
+//const string NEB::OPT_QM = "qm";
+//const string NEB::OPT_CG = "cg";
+//const string NEB::OPT_LBFGS = "lbfgs";
+const char NEB::OPT_QM[] = "qm";
+const char NEB::OPT_CG[] = "cg";
+const char NEB::OPT_LBFGS[] = "lbfgs";
 
 NEB::NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *params)
 {
