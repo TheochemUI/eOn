@@ -23,9 +23,12 @@ class Dynamics {
 
 public:
 
-    static const string ANDERSEN;
-    static const string NOSE_HOOVER;
-    static const string LANGEVIN;
+//    static const string ANDERSEN;
+//    static const string NOSE_HOOVER;
+//    static const string LANGEVIN;
+    static const char ANDERSEN[];
+    static const char NOSE_HOOVER[];
+    static const char LANGEVIN[];
 
     Dynamics(Matter *matter, Parameters *parameters);
 

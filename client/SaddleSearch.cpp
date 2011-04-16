@@ -21,7 +21,7 @@
 #include <cstdlib>
 
 using namespace helper_functions;
-
+/*
 const string SaddlePoint::MINMODE_DIMER =           "dimer";
 const string SaddlePoint::MINMODE_LANCZOS =         "lanczos";
 const string SaddlePoint::MINMODE_EXACT =           "exact";
@@ -30,6 +30,15 @@ const string SaddlePoint::DISP_NOT_FCC_OR_HCP =     "client_not_fcc_hcp_coordina
 const string SaddlePoint::DISP_MIN_COORDINATED =    "client_least_coordinated";
 const string SaddlePoint::DISP_LAST_ATOM =          "client_last_atom";
 const string SaddlePoint::DISP_RANDOM =             "client_random";
+*/
+const char SaddlePoint::MINMODE_DIMER[] =           "dimer";
+const char SaddlePoint::MINMODE_LANCZOS[] =         "lanczos";
+const char SaddlePoint::MINMODE_EXACT[] =           "exact";
+const char SaddlePoint::DISP_LOAD[] =               "client_load";
+const char SaddlePoint::DISP_NOT_FCC_OR_HCP[] =     "client_not_fcc_hcp_coordinated";
+const char SaddlePoint::DISP_MIN_COORDINATED[] =    "client_least_coordinated";
+const char SaddlePoint::DISP_LAST_ATOM[] =          "client_last_atom";
+const char SaddlePoint::DISP_RANDOM[] =             "client_random";
 
 SaddlePoint::SaddlePoint()
 {

@@ -11,9 +11,12 @@
 #include <math.h>
 #include "Hessian.h"
 
-const string Hessian::REACTANT =    "reactant";
-const string Hessian::SADDLE =      "saddle";
-const string Hessian::PRODUCT =     "product";
+//const string Hessian::REACTANT =    "reactant";
+//const string Hessian::SADDLE =      "saddle";
+//const string Hessian::PRODUCT =     "product";
+const char Hessian::REACTANT[] =    "reactant";
+const char Hessian::SADDLE[] =      "saddle";
+const char Hessian::PRODUCT[] =     "product";
 
 
 Hessian::Hessian(Matter *react, Matter *sad, Matter *prod, Parameters* params)

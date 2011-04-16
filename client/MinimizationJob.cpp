@@ -25,6 +25,7 @@ MinimizationJob::~MinimizationJob(){ }
 
 std::vector<std::string> MinimizationJob::run(void)
 {
+    cout <<"hello";
     string reactant_passed("reactant_passed.con");
     string reactant_output("reactant.con");
 

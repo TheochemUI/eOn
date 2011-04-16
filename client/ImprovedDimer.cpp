@@ -18,9 +18,12 @@
 
 using namespace helper_functions;
 
-const string ImprovedDimer::OPT_SD = "sd";
-const string ImprovedDimer::OPT_CG = "cg";
-const string ImprovedDimer::OPT_LBFGS = "lbfgs";
+//const string ImprovedDimer::OPT_SD = "sd";
+//const string ImprovedDimer::OPT_CG = "cg";
+//const string ImprovedDimer::OPT_LBFGS = "lbfgs";
+const char ImprovedDimer::OPT_SD[] = "sd";
+const char ImprovedDimer::OPT_CG[] = "cg";
+const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
 
 ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
 {
