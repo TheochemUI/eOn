@@ -39,12 +39,21 @@ class KDB:
         for m in mode:
             f.write("%f %f %f\n" % (m[0], m[1], m[2]))
         f.close()
+        process = state.get_process(process_id)
+        barrier1 = process["saddle_energy"] - state.get_energy()
+        barrier2 = process["saddle_energy"] - process["product_energy"]
+        prefactor1 = process["prefactor"] 
+        prefactor2 = process["product_prefactor"] 
         sp = subprocess.Popen([config.kdb_addpath, 
                               state.proc_reactant_path(process_id), 
                               state.proc_saddle_path(process_id),
                               state.proc_product_path(process_id),
                               os.path.join(config.kdb_scratch_path, "MODE"),
-                              "--kdbdir=%s" % config.kdb_path], 
+                              "--kdbdir=%s" % config.kdb_path,
+                              "--barrier1=%f" % barrier1,
+                              "--barrier2=%f" % barrier2,
+                              "--prefactor1=%f" % prefactor1,
+                              "--prefactor2=%f" % prefactor2], 
                               stdout = subprocess.PIPE, 
                               stderr = subprocess.PIPE)
         sp.wait()
