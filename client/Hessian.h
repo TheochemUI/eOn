@@ -19,9 +19,12 @@
 class Hessian
 {
 public:
-    static const string REACTANT;
-    static const string SADDLE;
-    static const string PRODUCT;
+//    static const string REACTANT;
+//    static const string SADDLE;
+//    static const string PRODUCT;
+    static const char REACTANT[];
+    static const char SADDLE[];
+    static const char PRODUCT[];
 
     Hessian(Matter *reactant, Matter *saddle, Matter *product, Parameters *params);
     ~Hessian();

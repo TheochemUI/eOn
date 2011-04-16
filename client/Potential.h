@@ -22,6 +22,7 @@ class Potential
         Potential(){}
         virtual ~Potential(){}
 
+/*
         static const string POT_LJ;
         static const string POT_EAM_AL;
         static const string POT_MORSE_PT;
@@ -38,6 +39,23 @@ class Potential
         static const string POT_BOP;
         static const string POT_LAMMPS;
         static const string POT_GPAW;
+*/
+        static const char POT_LJ[];
+        static const char POT_EAM_AL[];
+        static const char POT_MORSE_PT[];
+        static const char POT_EMT[];
+        static const char POT_QSC[];
+        static const char POT_ZPICE[];
+        static const char POT_TIP4P[];
+        static const char POT_LENOSKY_SI[];
+        static const char POT_SW_SI[];
+        static const char POT_TERSOFF_SI[];
+        static const char POT_EDIP[];
+        static const char POT_VASP[];
+        static const char POT_BOPFOX[];
+        static const char POT_BOP[];
+        static const char POT_LAMMPS[];
+        static const char POT_GPAW[];
 
         static Potential* getPotential(Parameters *parameters);
 

@@ -14,9 +14,12 @@
 
 using namespace helper_functions;
 
-const string Dynamics::ANDERSEN = "andersen";
-const string Dynamics::NOSE_HOOVER = "nose_hoover";
-const string Dynamics::LANGEVIN = "langevin";
+//const string Dynamics::ANDERSEN = "andersen";
+//const string Dynamics::NOSE_HOOVER = "nose_hoover";
+//const string Dynamics::LANGEVIN = "langevin";
+const char Dynamics::ANDERSEN[] = "andersen";
+const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
+const char Dynamics::LANGEVIN[] = "langevin";
 
 Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
 {

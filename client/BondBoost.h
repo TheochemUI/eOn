@@ -57,8 +57,10 @@ private:
 
 class Hyperdynamics {
         public:
-            static const string NONE;
-            static const string BOND_BOOST;
+//            static const string NONE;
+//            static const string BOND_BOOST;
+            static const char NONE[];
+            static const char BOND_BOOST[];
 };
 
 #endif
