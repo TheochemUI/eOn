@@ -17,17 +17,21 @@ energy_neighbors_2 = [(1,1), (1,-1), (-1,1), (-1,-1)]
 energy_2 = 0.5 #relative strength of 2NN bonds
 
 class State:
-    states = []
+    states = {}
     
     @staticmethod
     def get_state(grid):
-        #TODO: hashing for linear comparison time
-        for i in State.states:
-            if grid == i.grid:
-                return i
+        #XXX: Hyper-lazy hash function. Still results in speed-up once things get all superbasiney.
+        gs = ""
+        for i in grid:
+            for j in i:
+                gs += "T" if j else "F"
+
+        if gs in State.states:
+            return State.states[gs]
         else:
             s = State(grid)
-            State.states.append(s)
+            State.states[gs] = s
             return s
 
     @staticmethod
