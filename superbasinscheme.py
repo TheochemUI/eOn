@@ -39,7 +39,7 @@ class SuperbasinScheme:
             if i != 'storage':
 
                 self.next_sb_num = max(self.next_sb_num, int(i))
-                self.superbasins.append(superbasin.Superbasin(self.path, i, self.kT, get_state = states.get_state))
+                self.superbasins.append(superbasin.Superbasin(self.path, i, get_state = states.get_state))
             
         self.next_sb_num += 1
         self.read_data()
@@ -75,7 +75,7 @@ class SuperbasinScheme:
         #Also, if confidence is changed and new processes are found, the superbasin
         #will ignore these new processes.
 
-        self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, self.kT, state_list = new_sb_states)) 
+        self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, state_list = new_sb_states)) 
         
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
