@@ -9,7 +9,6 @@
 ##-----------------------------------------------------------------------------------
 
 import os
-import math
 import numpy
 import logging
 logger = logging.getLogger('superbasin')
@@ -18,13 +17,11 @@ logger = logging.getLogger('superbasin')
 class Superbasin:
     """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
     """based on Novotny's Absorbing Markov Chain algorithm."""
-    def __init__(self, path, id, kT, state_list = None, get_state = None):
-        assert(isinstance(kT, float))
+    def __init__(self, path, id, state_list = None, get_state = None):
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
-        self.kT = kT
         
         self.id = int(id)
         self.path = path+str(self.id)
@@ -150,8 +147,6 @@ class Superbasin:
         #self.mean_residence_time = numpy.sum(fundamental_vector)
         
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
-        n=len(fundamental_matrix)
-        id=numpy.zeros((n, n))
         self.mean_residence_times = numpy.zeros(len(self.states))
         self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
         
