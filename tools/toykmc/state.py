@@ -1,6 +1,7 @@
 from __future__ import division
 import copy
 from math import exp
+import odict
 
 #tunes barrier size 
 dEsaddle = .1
@@ -17,16 +18,11 @@ energy_neighbors_2 = [(1,1), (1,-1), (-1,1), (-1,-1)]
 energy_2 = 0.5 #relative strength of 2NN bonds
 
 class State:
-    states = {}
+    states = odict.OrderedDict()
     
     @staticmethod
     def get_state(grid):
-        #XXX: Hyper-lazy hash function. Still results in speed-up once things get all superbasiney.
-        gs = ""
-        for i in grid:
-            for j in i:
-                gs += "T" if j else "F"
-
+        gs = State.gridhash(grid)
         if gs in State.states:
             return State.states[gs]
         else:
@@ -38,6 +34,16 @@ class State:
     def saddle_energy(s1, s2):
         return max(s1.energy, s2.energy) + dEsaddle/(max(abs(s1.energy-s2.energy),1))
     
+    #XXX: Ugly
+    @staticmethod
+    def gridhash(grid):
+        #XXX: Hyper-lazy hash function. Still results in speed-up once things get all superbasiney.
+        gs = ""
+        for i in grid:
+            for j in i:
+                gs += "T" if j else "F"
+        return gs
+        
 
     def __init__(self, grid, energy = None):
         self.grid = grid
@@ -65,6 +71,9 @@ class State:
         for z in energy_neighbors_2:
             e -= self.grid[(i+z[0])%self.h][(j+z[1])%self.w]*energy_2
         return e
+
+    def __eq__(self, other):
+        return self.grid == other.grid
 
     def get_rate_table(self):
         if self.rate_table:
