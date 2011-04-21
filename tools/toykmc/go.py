@@ -28,5 +28,6 @@ for i in xrange(100000):
     print "dt:", dt
     print "nsteps:", nsteps
     print "nstates:", len(State.states)
-    print "step rate:", 1/(time_f - time_i)
+    if time_f - time_i > 0:
+        print "step rate:", 1/(time_f - time_i)
 
