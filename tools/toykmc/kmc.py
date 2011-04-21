@@ -1,12 +1,19 @@
 import random
 from math import log
 from state import State
+import superbasinscheme
+
+from config import *
+
+if use_sb:
+    superbasining = superbasinscheme.TransitionCounting(50)
 
 def kmc(s):
     ratesum = 0.0
     
-    if s in superbasin:
-        rate_table, dt = #superbasin that s is in /step() 
+    dosb = use_sb and superbasining.get_containing_superbasin(s)
+    if dosb:
+        rate_table, dt, exit_state = superbasining.get_containing_superbasin(s).step(s)
     else:
         rate_table = s.get_rate_table()
         for proc in rate_table:
@@ -17,8 +24,13 @@ def kmc(s):
     for proc in rate_table:
         p += proc['rate']/ratesum
         if p>u:
-            return State.get_state(proc['product'].grid), dt
-            break
+            newst = State.get_state(proc['product'].grid)
+            if use_sb:
+                if dosb:
+                    superbasining.register_transition(exit_state, newst)
+                else:
+                    superbasining.register_transition(s, newst)
+            return newst, dt
     else:
         print "Failed to choose process"
         return None
