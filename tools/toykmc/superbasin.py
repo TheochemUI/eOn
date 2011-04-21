@@ -1,10 +1,9 @@
 import numpy
-from state import State 
 
 class Superbasin:
     """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
     """based on Novotny's Absorbing Markov Chain algorithm."""
-    def __init__(self, path, id, statelist):
+    def __init__(self, statelist):
         #TODO: reinstate statelist!!!!
         self.nstates = len(statelist)
         self.states = statelist
@@ -12,7 +11,7 @@ class Superbasin:
 
 
     def pick_exit_state(self, entry_state):
-        """Chosse an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
+       """Chosse an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
        entry_state_index = self.states.index(entry_state)
        if entry_state_index is None:
            raise ValueError('Passed entry state is not in this superbasin')
@@ -38,7 +37,7 @@ class Superbasin:
 
     
 
-    def step(self, entry_state, get_product_state):
+    def step(self, entry_state):
         """Perform a Monte Carlo transition: leave the basin."""\
         """The function returns a residence time as well as information to indenfity what saddle point was to leave the basin,"""\
         """from what state and to what state the system is moving to."""
@@ -49,14 +48,13 @@ class Superbasin:
         # needed as the might be a discrepancy in time scale
         # and it might be dangerous to weed out low rate events
         rate_table = []
-        ratesum = 0.0
-        process_table = exit_state.get_process_table()
+        process_table = exit_state.get_rate_table()
 
         # Determine all process OUT of the superbasin
         for proc in process_table:
             if proc['product'] not in self.states:
                 rate_table.append(proc)
-        return rate_table, time
+        return rate_table, time, exit_state
 
     def contains_state(self, state):
         return state in self.states
@@ -70,8 +68,8 @@ class Superbasin:
         transient_matrix= numpy.zeros((self.nstates, self.nstates))
         sum=0.0
         for i, item in enumerate(self.states):
-            proc_table = item.get_process_table()
-            for process in proc_table.values():
+            proc_table = item.get_rate_table()
+            for process in proc_table:
                 sum+=process['rate']
                 if process['product'] not in self.states: 
                     recurrent_vector[i] += process['rate']
