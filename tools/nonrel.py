@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import sys
+import pathfix
+import atoms
+import io
+
+a = io.loadcon(sys.argv[1])
+b = io.loadcon(sys.argv[2])
+
+c = atoms.nonrelative_motion(a, b)
+
+io.savecon(sys.argv[3], c)
+
