@@ -11,7 +11,7 @@
 """ The atoms module. """
 import config
 
-from math import sqrt, cos, sin
+from math import sqrt, cos, sin, acos
 import numpy
 import logging
 logger = logging.getLogger('atoms')
@@ -547,6 +547,63 @@ def get_mappings(a, b, mappings = None):
         # There were no mappings.   
         return None 
         
+def get_rotation_matrix(axis, theta):
+    axis = axis / numpy.linalg.norm(axis)
+    t = theta
+    T = 1.0 - cos(t)
+    rx, ry, rz = axis
+    rotmat = numpy.zeros((3, 3))
+    rotmat[0][0] = T*rx*rx + cos(t)
+    rotmat[0][1] = T*ry*rx + rz*sin(t)
+    rotmat[0][2] = T*rz*rx - ry*sin(t)
+    rotmat[1][0] = T*rx*ry - rz*sin(t)
+    rotmat[1][1] = T*ry*ry + cos(t)
+    rotmat[1][2] = T*rz*ry + rx*sin(t)
+    rotmat[2][0] = T*rx*rz + ry*sin(t)
+    rotmat[2][1] = T*ry*rz - rx*sin(t)
+    rotmat[2][2] = T*rz*rz + cos(t)
+    return rotmat
+
+def rotate(r, axis, center, angle):
+    new_r = r.copy()
+    if abs(angle) == 0.0:
+        return new_r
+    rotmat = get_rotation_matrix(axis, angle)
+    center = center.copy()
+    new_r -= center
+    new_r = numpy.dot(new_r, rotmat)
+    new_r += center
+    return new_r
+        
+        
+def nonrelative_motion(a, b):
+    b = b.copy()
+    b.r -= a.r[0] - b.r[0]
+    a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0]) 
+    b0b1 = (b.r[1] - b.r[0]) / numpy.linalg.norm(b.r[1] - b.r[0])
+    axis1 = numpy.cross(b0b1, a0a1) / numpy.linalg.norm(numpy.cross(b0b1, a0a1))
+    theta1 = acos((a0a1*b0b1).sum())
+    b.r = rotate(b.r, axis1, a.r[0], theta1)
+    axis2 = (a.r[2] - a.r[0]) / numpy.linalg.norm(a.r[2] - a.r[0])
+    va = a.r[2] - ((a.r[2] - a.r[0]) * axis2).sum() * axis2
+    va = va / numpy.linalg.norm(va)
+    vb = b.r[2] - ((b.r[2] - a.r[0]) * axis2).sum() * axis2
+    vb = vb / numpy.linalg.norm(vb)
+    theta2 = acos((va * vb).sum())
+    b.r = rotate(b.r, axis2, a.r[0], theta2)
+    return b
+    
+    
+    
+
+
+
+
+
+
+
+
+
 
 elements = {}
 elements[  0] = elements[ 'Xx'] = {'symbol':  'Xx', 'name':       'unknown', 'mass':   1.00000000, 'radius':  1.0000, 'color': [1.000, 0.078, 0.576]}
