@@ -365,7 +365,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         saddle->matter2con(climb.str(), true);
         ++run;
     }
-    #ifndef NDEBUG
+    if (parameters->quiet == false) {
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");
@@ -377,8 +377,8 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
             printf("LANCZOS  %9s  %9s  %9s  %9s\n", "Step", "Force", "Energy", "Step Size");
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
-        };
-    #endif
+        }
+    }
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
@@ -390,9 +390,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 
         maxStep = parameters->saddleMaxStepSize;
         pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-        #ifndef NDEBUG
         double stepSize = (saddle->getPositions() - pos).norm();
-        #endif
         // The system (saddle) is moved to a new configuration
         saddle->setPositions(pos);
         forces = saddle->getForces();
@@ -417,7 +415,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
 
         iterations++;
-        #ifndef NDEBUG
+        if (parameters->quiet == false) {
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n",
@@ -431,7 +429,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                 printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations,
                        saddle->getForces().norm(), saddle->getPotentialEnergy(), stepSize);
             }
-        #endif
+        }
         if(parameters->writeMovies){
             saddle->matter2con(climb.str(), true);
         }
