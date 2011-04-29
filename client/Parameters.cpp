@@ -29,6 +29,7 @@ Parameters::Parameters(){
     randomSeed = -1;
     potential = Potential::POT_LJ;
     temperature = 300.0;
+    quiet = false;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -183,6 +184,7 @@ int Parameters::load(FILE *file){
         temperature = ini.GetValueF("Main", "temperature", temperature);
         potential = toLowerCase(ini.GetValue("Main", "potential"));
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
+        quiet = ini.GetValueB("Main", "quiet", quiet);
 
         // Initialize random generator
         if(randomSeed < 0){
