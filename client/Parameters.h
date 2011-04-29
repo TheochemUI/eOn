@@ -43,6 +43,7 @@ public:
     long   randomSeed;
     string potential;
     double temperature;
+    bool   quiet;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
