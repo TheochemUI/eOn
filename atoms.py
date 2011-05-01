@@ -576,7 +576,10 @@ def rotate(r, axis, center, angle):
     return new_r
         
         
-def nonrelative_motion(a, b):
+def internal_motion(a, b):
+    """ Takes two atoms objects and returns the motion from a to b that is
+    entirely internal - no rotation or translation, in the form of a new atoms
+    object. """
     b = b.copy()
     b.r -= a.r[0] - b.r[0]
     a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0]) 
