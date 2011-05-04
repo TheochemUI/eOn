@@ -129,6 +129,9 @@ POTENTIALS += "+QSC"
 POTDIRS += ./potentials/platinum-water/
 LIBS += ./potentials/platinum-water/libplatinum-water.a
 POTENTIALS += "+Pt-H2O"
+POTDIRS += ./potentials/IMD/
+LIBS += ./potentials/IMD/libIMD.a
+POTENTIALS += "+IMD"
 ifndef WIN32
 POTDIRS += ./potentials/VASP
 LIBS += ./potentials/VASP/libVASP.a

@@ -1,0 +1,29 @@
+# simulation information
+simulation      1
+ensemble        cg
+
+# i/o file information
+coordname	imd_eon.in.conf
+outfiles	imd_eon.out
+use_header	0
+
+# potential information
+# parameters for EAM (Embedded Atom Method potentials)
+core_potential_file     AlH2-Phi-r2.dat
+embedding_energy_file   AlH2-F-Rho.dat
+atomic_e-density_file   AlH2-rho-r2.dat
+adp_upotfile		AlH2-dipole-r2.dat
+adp_wpotfile		AlH2-quadruple-r2.dat
+
+# sample information
+ntypes          2
+box_from_header	1
+pbc_dirs        1 1 1
+total_types     2
+
+# integrator information
+timestep        0.0001
+force_all	1
+force_int	1
+eng_int         1
+
