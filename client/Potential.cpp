@@ -12,6 +12,8 @@
 #include "Potential.h"
 #include "Parameters.h"
 #include "potentials/NewPotential/NewPotential.h"
+
+#include "potentials/IMD/IMD.h"
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
@@ -58,6 +60,7 @@ const string Potential::POT_LAMMPS =        "lammps";
 const string Potential::POT_GPAW =          "gpaw";
 */
 const char Potential::POT_LJ[] =            "lj";
+const char Potential::POT_IMD[] =           "imd";
 const char Potential::POT_EAM_AL[] =        "eam_al";
 const char Potential::POT_MORSE_PT[] =      "morse_pt";
 const char Potential::POT_EMT[] =           "emt";
@@ -79,6 +82,8 @@ Potential *Potential::getPotential(Parameters *parameters)
     Potential* pot;
     if(parameters->potential == POT_LJ)
         pot = new LJ();
+    else if(parameters->potential == POT_IMD)
+        pot = new IMD();
     else if(parameters->potential == POT_MORSE_PT)
         pot = new Morse();
     else if(parameters->potential == POT_EMT)
