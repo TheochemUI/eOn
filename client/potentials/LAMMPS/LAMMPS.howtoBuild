@@ -1,42 +1,41 @@
 0
-Get the LAMMPS source code:
- svn co svn://svn.icms.temple.edu/lammps-ro/trunk mylammps 
+Get the LAMMPS source code by fetching the tarball.
 
 (Optional libraries)
-If on of the more exotic potentials are to be used start by entering the library 'lib' and build it.
+If on of the more exotic potentials are to be used start by entering the library '$LAMMPS/lib' and build it.
 Here MEAM is used as an example:
  cd $LAMMPS/lib/meam
  make -f Makefile.gfortran
 
 1
 The interface to the LAMMPS library is defined in the files library.cpp and library.h
-Go to the LAMMPS 'src' directory and fetch these files from the EON directory 'filesForLAMMPS':
+Go to the '$LAMMPS/src' directory and fetch these files from the EON directory '$EON/client/potentials/LAMMPS/filesForLAMMPS/':
  cd $LAMMPS/src
- cp $EON/client/potential/LAMMPS/filesForLAMMPS/library.* .
+ cp $EON/client/potentials/LAMMPS/filesForLAMMPS/library.* .
 
 2
-Enter the 'STUBS' directory and build the fake MPI library for LAMMPS:
+Enter the '$LAMMPS/src/STUBS' directory and build the fake MPI library for LAMMPS:
  cd $LAMMPS/src/STUBS
  make
 
 3
-Enter the '$LAMMPS/MAKE' directory and change 'Makefile.serial':
+Enter the '$LAMMPS/src/MAKE' directory and change 'Makefile.serial':
  CC =		g++
  LINK =		g++
 
 4
-Go back to the root of and build LAMMPS (section 2.2 in LAMMPS documentation):
+Enter '$LAMMPS/src' and build LAMMPS (section 2.2 in LAMMPS documentation):
  cd $LAMMPS/src
  make yes-meam (Active optional library)
  make serial
 
 5
-Build LAMMPS as a library (section 2.4 in LAMMPS documentation):
+Stay in '$LAMMPS/src/MAKE' directory and build LAMMPS as a library (section 2.4 in LAMMPS documentation):
  make makelib
  make -f Makefile.lib serial
 
 6
-Go back to the directory in EON for the LAMMPS potential and enter the directory 'filesFromLAMMPS'.
+Go back to the directory in EON for the LAMMPS potential and enter the directory '$EON/client/potentials/LAMMPS/filesFromLAMMPS'.
 Copy the needed headers files:
 
  cd $EON/client/potential/LAMMPS/filesFromLAMMPS 
@@ -46,9 +45,9 @@ Copy the needed headers files:
  cp $LAMMPS/src/library.h .
  cp $LAMMPS/src/STUBS/mpi.h .
 
-If using a newer versions of LAMMPS, atom.h must changed by adding:
+If change atom.h by adding the line marked with the arrow:
  namespace LAMMPS_NS {
- typedef int bigint;
+ typedef int bigint;  <----
 
 Go one directory back and fetch the libraries:
 
@@ -58,7 +57,7 @@ Go one directory back and fetch the libraries:
  cp $LAMMPS/lib/meam/libmeam.a .
 
 7
-Go to eon root and build.
- cd $EON
+Go to eon '$EON/client' and build the EON client.
+ cd $EON/client
  make LAMMPS_POT=1
 
