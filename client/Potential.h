@@ -41,6 +41,7 @@ class Potential
         static const string POT_GPAW;
 */
         static const char POT_LJ[];
+        static const char POT_IMD[];
         static const char POT_EAM_AL[];
         static const char POT_MORSE_PT[];
         static const char POT_EMT[];
