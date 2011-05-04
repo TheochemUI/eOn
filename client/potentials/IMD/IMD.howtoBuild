@@ -1,19 +1,19 @@
-1
-Get IMD code from:
+0
+Get IMD by fetching a tarball from:
 http://www.itap.physik.uni-stuttgart.de/~imd/download/
 
-2
-Copy file from filesToIMD (imd_cg.c) to the IMD source directory (src)
- cp .../potentials/IMD/filesToIMD/imd_cg.c .../imd/src
+1
+Copy file from filesToIMD (imd_cg.c) to the IMD src directory
+ cp $EON/client/potentials/IMD/filesToIMD/imd_cg.c $IMD/src
 
-3
+2
 Enter IMD directory and compile the IMD code
- cp ../imd/src
+ cp $IMD/src
  make IMDSYS=x86-gcc3 imd_cg_eam_adp_nbl_writef
 
-Note that the created executable is copied to ~/bin/
+This creates an executable that is copied to ~/bin/
 and has the name imd_cg_eam_adp_nbl_writef
 
-4
-Fetch the created executable and rename it to imd_eon
- mv ~/bin/imd_cg_eam_adp_nbl_writef .../samples/IMD/imd_eon
+3
+For the created executable to work with EON it must be rename to 'imd_eon'
+ mv ~/bin/imd_cg_eam_adp_nbl_writef ~/bin/imd_eon/
