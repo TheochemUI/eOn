@@ -7,13 +7,30 @@ Copy file from filesToIMD (imd_cg.c) to the IMD src directory
  cp $EON/client/potentials/IMD/filesToIMD/imd_cg.c $IMD/src
 
 2
-Enter IMD directory and compile the IMD code
- cp $IMD/src
- make IMDSYS=x86-gcc3 imd_cg_eam_adp_nbl_writef
-
-This creates an executable that is copied to ~/bin/
-and has the name imd_cg_eam_adp_nbl_writef
+Enter IMD directory and create the directory 'bin':
+ cd $IMD
+ mkdir bin
 
 3
-For the created executable to work with EON it must be rename to 'imd_eon'
- mv ~/bin/imd_cg_eam_adp_nbl_writef ~/bin/imd_eon/
+Enter 'src' directory and change the Makefile by adding the section 'x86-eon'
+
+ cd $IMD/src
+
+ # generic x86 for eon
+ ifeq (x86-eon,${IMDSYS})
+    CC_SERIAL = gcc
+    BIN_DIR   = ../bin/
+    OPT_FLAGS += -O3
+    LFLAGS    += -static
+ endif
+
+4
+Compile the IMD code, which creates an executable located in '$IMD/bin':
+ 
+ make IMDSYS=x86-eon imd_cg_eam_adp_nbl_writef
+
+3
+For the created executable to work with EON it must be rename to 'imd_eon' and
+placed in a directory in the search path. As an example:
+
+ cp $IMD/bin/imd_cg_eam_adp_nbl_writef ~/bin/imd_eon
