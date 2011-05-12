@@ -42,7 +42,17 @@ pid_t VASP::vaspPID = 0;
 
 VASP::VASP(void)
 {
-	vaspRunCount++;
+    vaspRunCount++;
+    // deleting leftovers from previous run
+    system("rm -f TMPCAR");  system("rm -f CHG"); 
+    system("rm -f CHGCAR");  system("rm -f CONTCAR"); 
+    system("rm -f DOSCAR");  system("rm -f EIGENVAL");
+    system("rm -f IBZKPT");  system("rm -f NEWCAR"); 
+    system("rm -f FU");      system("rm -f OSZICAR"); 
+    system("rm -f OUTCAR");  system("rm -f PCDAT");
+    system("rm -f POSCAR");  system("rm -f TMPCAR"); 
+    system("rm -f WAVECAR"); system("rm -f XDATCAR");
+    
     return;
 }
 
@@ -83,10 +93,21 @@ void VASP::spawnVASP()
             fprintf(stderr, "problem resolving vasp filename\n");
             boinc_finish(1);
         }
-
-        if (execlp(vaspPath, "vasp", NULL) == -1) {
-            fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
-            boinc_finish(1);
+        if (0)
+	{
+            if (execlp(vaspPath, "vasp", NULL) == -1) 
+	    {
+	        fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
+                boinc_finish(1);
+	    }
+	}
+        else
+	{
+            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1) 
+	    {
+                fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
+                boinc_finish(1);
+	    }
         }
     }
 }
@@ -188,8 +209,18 @@ void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
     }
     fclose(POSCAR);
 
-    FILE *NEWCAR = fopen("NEWCAR", "w");
-    fclose(NEWCAR);
+    if (firstRun)
+    {
+         firstRun = false;
+    }
+    else
+    {
+         FILE *NEWCAR = fopen("NEWCAR", "w");
+         fclose(NEWCAR);
+     }
+
+//    FILE *NEWCAR = fopen("NEWCAR", "w");
+//    fclose(NEWCAR);
 
     return;
 }
