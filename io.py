@@ -25,18 +25,15 @@ import config
 def length_angle_to_box(boxlengths, angles):
     box = numpy.zeros( (3,3) )
     angles *= numpy.pi/180.0
-
     box[0][0] = 1.0
     box[1][0] = numpy.cos(angles[0])
     box[1][1] = numpy.sin(angles[0])
     box[2][0] = numpy.cos(angles[1])
     box[2][1] = (numpy.cos(angles[2])-box[1][0]*box[2][0])/box[1][1]
     box[2][2] = numpy.sqrt(1.0-box[2][0]**2-box[2][1]**2)
-
     box[0,:]*=boxlengths[0]
     box[1,:]*=boxlengths[1]
     box[2,:]*=boxlengths[2]
-
     return box
 
 def box_to_length_angle(box):
@@ -44,14 +41,34 @@ def box_to_length_angle(box):
     lengths[0] = numpy.linalg.norm(box[0,:])
     lengths[1] = numpy.linalg.norm(box[1,:])
     lengths[2] = numpy.linalg.norm(box[2,:])
-
     angles = numpy.zeros(3)
     angles[0] = numpy.arccos(numpy.dot(box[0,:]/lengths[0],box[1,:]/lengths[1]))
     angles[1] = numpy.arccos(numpy.dot(box[0,:]/lengths[0],box[2,:]/lengths[2]))
     angles[2] = numpy.arccos(numpy.dot(box[1,:]/lengths[1],box[2,:]/lengths[2]))
     angles *= 180.0/numpy.pi
-
     return lengths, angles
+    
+
+def loadcons(filename):
+    filein = open(filename, 'r')
+    p = []
+    while True:
+        try:
+            p.append(loadcon(filein))
+        except:
+            return p
+        
+    
+def loadposcars(filename):
+    filein = open(filename, 'r')
+    p = []
+    while True:
+        try:
+            p.append(loadposcar(filein))
+        except:
+            return p
+        
+    
 
 def loadcon(filein):
     '''
