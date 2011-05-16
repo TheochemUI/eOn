@@ -37,7 +37,7 @@ class Atoms:
         p.free = self.free.copy()
         p.box = self.box.copy()
         p.names = self.names[:]
-        p.mass = self.mass
+        p.mass = self.mass.copy()
         return p
 
     def free_r(self):
@@ -49,7 +49,13 @@ class Atoms:
                 temp[index] = self.r[i]
                 index += 1
         return temp
-
+    
+    def append(self, r, free, name, mass):
+        self.r = numpy.append(self.r, [r], 0)
+        self.free = numpy.append(self.free, free)
+        self.names.append(name)
+        self.mass = numpy.append(self.mass, mass)
+        
 def pbc(r, box, ibox = None):
     """
     Applies periodic boundary conditions.
