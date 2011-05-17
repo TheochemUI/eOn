@@ -144,21 +144,20 @@ class AKMCState(state.State):
 
 
     def append_search_result(self, result, comment):
-        if self.statelist.list_search_results:
-            try:
-                f = open(self.search_result_path, 'a')
-                resultdata = result['results']
-                f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
-                         result["type"], 
-                         resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
-                         resultdata["displacement_saddle_distance"],
-                         resultdata["force_calls_saddle"] ,
-                         resultdata["force_calls_minimization"] ,
-                         resultdata["force_calls_prefactors"],
-                         comment))
-                f.close()
-            except:
-                logger.warning("Failed to append search result.")
+        try:
+            f = open(self.search_result_path, 'a')
+            resultdata = result['results']
+            f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
+                     result["type"], 
+                     resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
+                     resultdata["displacement_saddle_distance"],
+                     resultdata["force_calls_saddle"] ,
+                     resultdata["force_calls_minimization"] ,
+                     resultdata["force_calls_prefactors"],
+                     comment))
+            f.close()
+        except:
+            logger.warning("Failed to append search result.")
 
 
     def get_ratetable(self):

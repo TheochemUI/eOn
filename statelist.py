@@ -31,7 +31,6 @@ class StateList:
         self.epsilon_r = config.comp_eps_r
         self.use_identical = config.comp_use_identical
         self.StateClass = StateClass
-        self.list_search_results = config.debug_list_search_results
 
         # Paths
         self.state_table_path = os.path.join(self.path, "state_table")
