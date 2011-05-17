@@ -198,7 +198,6 @@ def init(config_file = ""):
     config.debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
     config.debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
-    config.debug_list_search_results = parser.getboolean('Debug', 'list_search_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
     config.debug_target_trajectory = parser.get('Debug', 'target_trajectory')
 

@@ -56,10 +56,9 @@ class State:
             f = open(self.proctable_path, 'w')
             f.write(self.processtable_header)
             f.close()
-            if self.statelist.list_search_results:
-                f = open(self.search_result_path, 'w')
-                f.write(self.search_result_header)
-                f.close()
+            f = open(self.search_result_path, 'w')
+            f.write(self.search_result_header)
+            f.close()
 
     def __repr__(self):
         return "State #%i" % self.number
