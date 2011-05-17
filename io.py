@@ -479,9 +479,9 @@ class Table:
 
     >>> t = Table("sample.tbl", ['id', 'name', 'age' ])
     >>> t.eagerwrite = False
-    >>> t.addrow({'id':0,'name':"Sam","age":24})
-    >>> t.addrow({'id':1,'name':"David","age":50})
-    >>> t.addrow({'id':2,'name':"Anna","age":21})
+    >>> t.add_row({'id':0,'name':"Sam","age":24})
+    >>> t.add_row({'id':1,'name':"David","age":50})
+    >>> t.add_row({'id':2,'name':"Anna","age":21})
     >>> t #doctest: +NORMALIZE_WHITESPACE
         id name  age
         -- ----- --- 
@@ -492,11 +492,11 @@ class Table:
     Rows can be accessed directly:
     >>> t.rows[1] #doctest: +SKIP
         {'age': 50, 'id': 1, 'name': 'David'}
-    >>> t.maxvalue('age') #doctest: +NORMALIZE_WHITESPACE
+    >>> t.max_value('age') #doctest: +NORMALIZE_WHITESPACE
         50
-    >>> t.minrow('age') #doctest: +NORMALIZE_WHITESPACE +SKIP
+    >>> t.min_row('age') #doctest: +NORMALIZE_WHITESPACE +SKIP
         {'age': 21, 'id': 2, 'name': 'Anna'}
-    >>> sorted(t.minrow('id').items()) #doctest: +NORMALIZE_WHITESPACE
+    >>> sorted(t.min_row('id').items()) #doctest: +NORMALIZE_WHITESPACE
         [('age', 24), ('id', 0), ('name', 'Sam')]
     >>> len(t) #doctest: +NORMALIZE_WHITESPACE
         3
@@ -568,7 +568,7 @@ class Table:
                         pass
                 row[self.columns[coli]] = field 
                 coli += 1
-            self.addrow(row)
+            self.add_row(row)
         f.close()
         self.eagerwrite = True
 
@@ -611,7 +611,7 @@ class Table:
                     line += "%-*s " % (self.columnwidths[c],row[c])
             f.write(line+"\n")
 
-    def addrow(self, row):
+    def add_row(self, row):
         if not self.initialized:
             self.init()
         mismatched_columns = set(self.columns).symmetric_difference(set(row.keys()))
@@ -636,7 +636,7 @@ class Table:
         if self.eagerwrite:
             self.write()
 
-    def delrow(self, column, value):
+    def delete_row(self, column, value):
         if not self.initialized:
             self.init()
         rows_to_delete = []
@@ -648,7 +648,20 @@ class Table:
             self.write()
         return len(rows_to_delete)
 
-    def findvalue(self, column, func):
+    def delete_row_func(self, column, func):
+        if not self.initialized:
+            self.init()
+
+        rows_to_delete = []
+        for row in self.rows:
+            if func(row[column]):
+                rows_to_delete.append(row)
+        map(self.rows.remove, rows_to_delete)
+        if self.eagerwrite:
+            self.write()
+        return len(rows_to_delete)
+
+    def find_value(self, column, func):
         if not self.initialized:
             self.init()
         value = None
@@ -659,7 +672,7 @@ class Table:
             value = func(value, row[column])
         return value
 
-    def findrow(self, column, func):
+    def find_row(self, column, func):
         if not self.initialized:
             self.init()
         value = None
@@ -672,16 +685,26 @@ class Table:
                 value = row
         return value
 
-    def minvalue(self, column):
-        return self.findvalue(column, min)
-    def minrow(self, column):
-        return self.findrow(column, min)
-    def maxvalue(self, column):
-        return self.findvalue(column, max)
-    def maxrow(self, column):
-        return self.findrow(column, max)
+    def min_value(self, column):
+        return self.find_value(column, min)
+    def min_row(self, column):
+        return self.find_row(column, min)
+    def max_value(self, column):
+        return self.find_value(column, max)
+    def max_row(self, column):
+        return self.find_row(column, max)
 
-    def getcolumn(self, column):
+    def get_row(self, column, value):
+        if not self.initialized:
+            self.init()
+
+        for row in self.rows:
+            if row[column] == value:
+                return row
+
+        return None
+
+    def get_column(self, column):
         if not self.initialized:
             self.init()
         results = []

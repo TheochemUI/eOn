@@ -23,23 +23,17 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 numpy.seterr(all='raise')
-import cPickle as pickle
 
+import communicator
 import config
 import locking
-import communicator
 import akmcstatelist
-import displace
+import explorer
 import io
 import atoms
-import recycling
 import superbasinscheme
 import askmc
-import kdbing
 import movie
-
-import StringIO
-
 
 def akmc(config): 
      
@@ -56,123 +50,45 @@ def akmc(config):
     
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
-        logger.critical("Root directory does not exist, as such the reactant cannot exist. Exiting...")
+        logger.critical("Root directory does not exist, as such the " \
+                        "reactant cannot exist. Exiting...")
         sys.exit(1)
     
     # Load metadata, the state list, and the current state.
-    start_state_num, time, wuid, searchdata, previous_state_num, first_run = get_akmc_metadata()
+    start_state_num, time, previous_state_num, first_run = get_akmc_metadata()
+
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
-
-    # If kdb is being used, initialize it.
-    if config.kdb_on:
-        kdber = kdbing.KDB()
-        kdb_is_querying = kdber.is_querying()
+    if previous_state_num == -1:
+        previous_state = current_state
     else:
-        kdb_is_querying = False
+        previous_state = states.get_state(previous_state_num)
 
+    state_explorer = explorer.MinModeExplorer(states, previous_state, current_state)
+    state_explorer.explore()
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
     
-    # Create the communicator object.
-    comm = communicator.get_communicator()
-
-    # Handle any results returned through the communicator.
-    register_results(comm, current_state, states, searchdata)
-    
-    # Add processes to the database if we've reached confidence. 
-    if current_state.get_confidence() >= config.akmc_confidence:
-        if config.kdb_on:
-            logger.debug("Adding relevant processes to kinetic database.")
-            for process_id in current_state.get_process_ids():
-                output = kdber.add_process(current_state, process_id)
-                logger.debug("kdbaddpr.pl: %s" % output)
-
     # Take a KMC step, if it's time.
     if config.sb_on:
         pass_superbasining = superbasining
     else:
         pass_superbasining = None
-    
-    
-    num_queued_jobs = comm.get_queue_size() * config.comm_job_bundle_size 
-    current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining, num_queued_jobs, kdb_is_querying) 
+
+    current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining)
             
-    # If we took a step, cancel old jobs and start the kdbquery.
-    if current_state.number != start_state_num:
-        num_cancelled = comm.cancel_state(start_state_num)
-        logger.info("cancelled %i workunits from state %i", num_cancelled, start_state_num)
-        if config.kdb_on and len(current_state.get_ratetable()) <= 1:
-            kdber.query(current_state, wait = config.kdb_wait)
-    
-    # If this is the first execution of akmc.py for this simulation, run kdbquery if it's on.
-    if first_run:
-        if config.kdb_on:
-            kdber.query(current_state, wait = config.kdb_wait)
-    
-    # Create new work.
-    recycler = None
-    # If we *just* want to do simple recycling
-    if config.recycling_on and not config.sb_recycling_on:
-        recycler = recycling.Recycling(states, previous_state, current_state, 
-                        config.recycling_move_distance, config.recycling_save_sugg)
-    # Is super-basin recycling on? If so, figure out the superbasin method being used.
-    if config.sb_recycling_on:
-        if config.sb_on:
-            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
-                          config.recycling_move_distance, config.recycling_save_sugg,
-                          config.sb_recycling_path, sb_type = "novotny",
-                          superbasining = superbasining)
-        elif config.askmc_on:
-            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
-                          config.recycling_move_distance, config.recycling_save_sugg,
-                          config.sb_recycling_path, sb_type = "askmc",
-                          superbasining = None)
-        else:
-            sb_recycler = recycling.SB_Recycling(states, previous_state, current_state,
-                          config.recycling_move_distance, config.recycling_save_sugg,
-                          config.sb_recycling_path, sb_type = None,
-                          superbasining = None)
-        # If there's nothing that the superbasin recycler can do at this point,
-        # use the normal recycling process.
-        if (config.recycling_on and not sb_recycler.in_progress):
-            recycler = recycling.Recycling(states, previous_state, current_state, 
-                            config.recycling_move_distance, config.recycling_save_sugg)
-    
-    if current_state.get_confidence() < config.akmc_confidence:
-        if config.recycling_on and recycler:
-            pass_recycler = recycler
-        else:
-            pass_recycler = None
-        if config.kdb_on:
-            pass_kdb = kdber          	
-        else:
-            pass_kdb = None
-        if config.sb_recycling_on:
-            pass_sb_recycler = sb_recycler
-        else:
-            pass_sb_recycler = None
-        wuid = make_searches(comm, current_state, wuid, searchdata = searchdata, recycler = pass_recycler, kdber = pass_kdb, sb_recycler = pass_sb_recycler)
-    
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
 
-    for key in searchdata.keys():
-        #XXX: This may be buggy once superbasin recycling is implemented
-        if int(key.split('_')[0]) < current_state.number:
-            del searchdata[key]
-
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
 
-    write_akmc_metadata(parser, current_state.number, time, wuid, searchdata, previous_state_num)
+    write_akmc_metadata(parser, current_state.number, time, previous_state_num)
 
     parser.write(open(metafile, 'w')) 
-
-
 
 def get_akmc_metadata():
     if not os.path.isdir(config.path_results):
@@ -184,55 +100,36 @@ def get_akmc_metadata():
     if os.path.isfile(metafile):
         start_state_num = parser.get("Simulation Information",'current_state', 0)
         time = parser.get("Simulation Information", 'time_simulated', 0.0) 
-        wuid = parser.get("aKMC Metadata", 'wu_id', 0) 
         previous_state_num = parser.get("Simulation Information", "previous_state", -1)
         first_run = parser.get("Simulation Information", "first_run", True)
-        try:
-            sd = open(os.path.join(config.path_root, "searchdata"), "r")
-            searchdata = pickle.load(sd)
-            sd.close()
-        except:
-            searchdata={}
     else:
         time = 0
         start_state_num = 0
-        wuid = 0
         previous_state_num = -1
         first_run = True
-        searchdata = {}
 
     if config.main_random_seed:
         try:
             parser = ConfigParser.RawConfigParser()
             parser.read(metafile)
             seed = parser.get("aKMC Metadata", "random_state")
-            from numpy import array,uint32
             numpy.random.set_state(eval(seed))
             logger.debug("Set random state from previous run's state")
         except:
             numpy.random.seed(config.main_random_seed)
             logger.debug("Set random state from seed")
 
-    return start_state_num, time, wuid, searchdata, previous_state_num, first_run
+    return start_state_num, time, previous_state_num, first_run
 
-
-
-def write_akmc_metadata(parser, current_state_num, time, wuid, searchdata, previous_state_num):
+def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
-    parser.set('aKMC Metadata', 'wu_id', str(wuid))
-    #parser.set('aKMC Metadata', 'searchdata', repr(searchdata))
-    sd = open(os.path.join(config.path_root, "searchdata"), "w")
-    pickle.dump(searchdata, sd)
-    sd.close()
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
     parser.set('Simulation Information', 'first_run', str(False))
     if config.main_random_seed:
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
-
-
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con') 
@@ -242,87 +139,6 @@ def get_statelist(kT):
                                initial_state_path, 
                                filter_hole = config.disp_moved_only)  
 
-def register_results(comm, current_state, states, searchdata = None):
-    logger.info("registering results")
-    t1 = unix_time.time()
-    if os.path.isdir(config.path_jobs_in):
-        if config.debug_keep_all_results:
-            if not os.path.isdir(os.path.join(config.path_root, "results")):
-                os.makedirs(os.path.join(config.path_root, "results"))
-            for d in os.listdir(config.path_jobs_in):
-                shutil.move(os.path.join(config.path_jobs_in, d), os.path.join(config.path_root, "results", d))
-        shutil.rmtree(config.path_jobs_in)  
-    os.makedirs(config.path_jobs_in)
-    
-    #Function used by communicator to determine whether to discard a result
-    def keep_result(name):
-        state_num = int(name.split("_")[0])
-        return (config.debug_register_extra_results or \
-                state_num == current_state.number or \
-                states.get_state(state_num).get_confidence() < config.akmc_confidence)
-
-    num_registered = 0
-    for result in comm.get_results(config.path_jobs_in, keep_result): 
-        # The result dictionary contains the following key-value pairs:
-        # reactant - an array of strings containing the reactant
-        # saddle - an atoms object containing the saddle
-        # product - an array of strings containing the product
-        # mode - an array of strings conatining the mode
-        # results - a dictionary containing the key-value pairs in results.dat
-        # id - StateNumber_WUID
-        #
-        # The reactant, product, and mode are passed as lines of the files because
-        # the information contained in them is not needed for registering results
-        if config.debug_keep_all_results:
-            #XXX: We should only do these checks once to speed things up, but at the same time
-            #debug options don't have to be fast
-            #save_path = os.path.join(config.path_root, "old_searches")
-            #if not os.path.isdir(save_path):
-            #    os.mkdir(save_path)
-            #shutil.copytree(result_path, os.path.join(save_path, i))
-            #XXX: This is currently broken by the new result passing scheme. Should it be 
-            #     done in communicator?
-            pass
-        state_num = int(result['name'].split("_")[0])
-        id = int(result['name'].split("_")[1]) + result['number']
-        searchdata_id = "%d_%d" % (state_num, id)
-        # Store information about the search into result_data for the search_results.txt file in the state directory.
-        if config.debug_list_search_results:
-            try:
-                result['type'] = searchdata[searchdata_id]["type"]
-                del searchdata[searchdata_id]["type"]
-            except:
-                logger.warning("Could not find search data for search %s" % searchdata_id)
-            result['wuid'] = id
-            # Remove used information from the searchdata metadata.
-        
-        #read in the results
-        result['results'] = io.parse_results(result['results.dat'])
-        if result['results']['termination_reason'] == 0:
-            process_id = states.get_state(state_num).add_process(result)
-        else:
-            states.get_state(state_num).register_bad_saddle(result, config.debug_keep_bad_saddles)
-        num_registered += 1
-        
-        if current_state.get_confidence() >= config.akmc_confidence:
-            if not config.debug_register_extra_results:
-                break
-    
-    #Approximate number of searches recieved
-    tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
-    
-    t2 = unix_time.time()
-    logger.info("%i (result) searches processed", num_registered)
-    logger.info("Approximately %i (result) searches discarded." % (tot_searches - num_registered))
-    #logger.info("%i results discarded", len(results) - num_registered + discarded * config.comm_job_bundle_size)
-    if num_registered == 0:
-        logger.debug("0 results per second", num_registered)
-    else:
-        logger.debug("%.1f results per second", (num_registered/(t2-t1)))
-        
-    return num_registered
-
-
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
         superbasining = superbasinscheme.TransitionCounting(config.sb_path, states, config.main_temperature / 11604.5, config.sb_tc_ntrans)
@@ -331,10 +147,9 @@ def get_superbasin_scheme(states):
     return superbasining
 
 
-def kmc_step(current_state, states, time, kT, superbasining, num_queued_jobs, kdb_is_querying, previous_state_num = None):
+def kmc_step(current_state, states, time, kT, superbasining):
     t1 = unix_time.time()
     previous_state = current_state 
-    start_state_num = current_state.number
     steps = 0
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
@@ -348,9 +163,8 @@ def kmc_step(current_state, states, time, kT, superbasining, num_queued_jobs, kd
                             config.path_root, config.akmc_thermal_window,
                             recycle_path = pass_rec_path)
 
-    while ((current_state.get_confidence() >= config.akmc_confidence and not config.kdb_only) or \
-          (config.kdb_only and len(current_state.get_ratetable()) > 0 and not kdb_is_querying and num_queued_jobs==0)) and \
-          steps < config.akmc_max_kmc_steps:
+    while (current_state.get_confidence() >= config.akmc_confidence) and \
+            steps < config.akmc_max_kmc_steps:
           
         steps += 1
 
@@ -436,7 +250,9 @@ def kmc_step(current_state, states, time, kT, superbasining, num_queued_jobs, kd
         if config.debug_use_mean_time:
             time += mean_time
         else:
-            time -= mean_time*math.log(1 - numpy.random.random_sample())# numpy.random.random_sample() uses [0,1), which could produce issues with math.log()
+            #numpy.random.random_sample() uses [0,1)
+            #which could produce issues with math.log()
+            time -= mean_time*math.log(1 - numpy.random.random_sample())
 
         # Pass transition information to extension schemes
         if config.askmc_on:
@@ -469,142 +285,8 @@ def kmc_step(current_state, states, time, kT, superbasining, num_queued_jobs, kd
     logger.info("currently in state %i with confidence %.6f", current_state.number, current_state.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
+    logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
     return current_state, previous_state, time
-
-
-
-def get_displacement(reactant, indices=None):
-    if config.disp_type == 'random':
-        disp = displace.Random(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices)
-    elif config.disp_type == 'under_coordinated':
-        disp = displace.Undercoordinated(reactant, config.disp_max_coord, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
-    elif config.disp_type == 'least_coordinated':
-        disp = displace.Leastcoordinated(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
-    elif config.disp_type == 'not_FCC_HCP_coordinated':
-        disp = displace.NotFCCorHCP(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
-    elif config.disp_type == 'listed_atoms':
-        disp = displace.ListedAtoms(reactant, config.disp_magnitude, config.disp_radius, hole_epicenters=indices, cutoff=config.comp_neighbor_cutoff, use_covalent=config.comp_use_covalent, covalent_scale=config.comp_covalent_scale)
-    elif config.disp_type == 'water':
-        disp = displace.Water(reactant, config.stdev_translation, config.stdev_rotation, config.molecule_list, config.disp_at_random)
-    else:
-        raise ValueError()
-    return disp
-
-def make_searches(comm, current_state, wuid, searchdata = None, kdber = None, recycler = None, sb_recycler = None):
-    reactant = current_state.get_reactant()
-    #XXX:what if the user changes the bundle size?
-    num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size 
-    logger.info("%i searches in the queue" % num_in_buffer)
-    num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-    logger.info("making %i searches" % num_to_make)
-    
-    if num_to_make == 0:
-        return wuid
-    # If we plan to only displace atoms that moved getting to the current state.
-    if config.disp_moved_only and current_state.number != 0:
-        pass_indices = recycler.process_atoms
-    else:
-        pass_indices = None
-    disp = get_displacement(reactant, indices = pass_indices)
-    searches = []
-    
-    invariants = {}
-
-    reactIO = StringIO.StringIO()
-    io.savecon(reactIO, reactant)
-    invariants['reactant_passed.con']=reactIO
-    
-    ini_changes = [ ('Main', 'job', 'process_search') ]
-    invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
-
-    #Merge potential files into invariants
-    invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
-
-    t1 = unix_time.time()
-    if config.recycling_on:
-        nrecycled = 0
-    for i in range(num_to_make):
-        search = {}
-        # The search dictionary contains the following key-value pairs:
-        # id - CurrentState_WUID
-        # displacement - an atoms object containing the point the saddle search will start at
-        # mode - an Nx3 numpy array containing the initial mode 
-        search['id'] = "%d_%d" % (current_state.number, wuid)
-        done = False
-        # Do we want to try superbasin recycling? If yes, try. If we fail to recycle the basin,
-        # move to the next case
-        if (config.sb_recycling_on and current_state.number is not 0):
-            displacement, mode = sb_recycler.make_suggestion()
-            if displacement:
-                nrecycled += 1
-                if config.debug_list_search_results:
-                    try:
-                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
-                        searchdata["%d_%d" %(current_state.number, wuid)]["type"] = "recycling"
-                    except:
-                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-                done = True
-        # Do we want to do recycling? If yes, try. If we fail to recycle, we move to the next case
-        if (recycler and current_state.number is not 0):
-            displacement, mode = recycler.make_suggestion()
-            if displacement:
-                nrecycled += 1
-                if config.debug_list_search_results:                
-                    try:
-                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
-                        searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "recycling"
-                    except:
-                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-                done = True
-        if not done and config.kdb_on:
-            # Set up the path for keeping the suggestion if config.kdb_keep is set.
-            keep_path = None
-            if config.kdb_keep:
-                if not os.path.isdir(os.path.join(current_state.path, "kdbsuggestions")):
-                    os.mkdir(os.path.join(current_state.path, "kdbsuggestions"))
-                keep_path = os.path.join(current_state.path, "kdbsuggestions", str(wuid))
-            displacement, mode = kdber.make_suggestion(keep_path)
-            if displacement:
-                done = True
-                logger.info('Made a KDB suggestion')
-                if config.debug_list_search_results:                
-                    try:
-                        searchdata["%d_%d" %(current_state.number, wuid)] = {}
-                        searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "kdb"
-                    except:
-                        logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-        if not done and not config.kdb_only:
-            displacement, mode = disp.make_displacement() 
-            if config.debug_list_search_results:                
-                try:
-                    searchdata["%d_%d" %(current_state.number, wuid)] = {}
-                    searchdata["%d_%d" % (current_state.number, wuid)]["type"] = "random"
-                except:
-                    logger.warning("Failed to add searchdata for search %d_%d" % (current_state.number, wuid))
-        
-        if displacement:
-            dispIO = StringIO.StringIO()
-            io.savecon(dispIO, displacement)
-            search['displacement_passed.con'] = dispIO
-            
-            modeIO = StringIO.StringIO()
-            io.save_mode(modeIO, mode, reactant)
-            search['mode_passed.dat'] = modeIO
-            searches.append(search) 
-            wuid += 1
-
-    if config.recycling_on and nrecycled > 0:
-        logger.debug("Recycled %i saddles" % nrecycled)
-
-    try:
-        comm.submit_jobs(searches, invariants)
-        t2 = unix_time.time()
-        logger.info( str(len(searches)) + " searches created") 
-        logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
-    except:
-        logger.exception("Failed to submit searches.")
-    return wuid
-
 
 def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
@@ -682,7 +364,7 @@ def main():
 
     if options.print_status:
         states = get_statelist(config.main_temperature / 11604.5)
-        start_state_num, time, wuid, searchdata, previous_state_num = get_akmc_metadata()
+        start_state_num, time, previous_state_num, first_run = get_akmc_metadata()
 
         print
         print "General"
@@ -702,7 +384,7 @@ def main():
         print "Percentage bad saddles: %.1f" % (float(current_state.get_bad_saddle_count())/float(max(current_state.get_bad_saddle_count() + current_state.get_good_saddle_count(), 1)) * 100)
         print 
 
-        comm = get_communicator()
+        comm = communicator.get_communicator()
         print "Saddle Searches"
         print "---------------" 
         print "Searches in queue:", comm.get_queue_size() 
