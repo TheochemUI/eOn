@@ -129,15 +129,11 @@ place the following can easily be installed:
 
 * ``globus-gsi-cert-utils-progs``
 * ``globus-proxy-utils``
-* ``nordugrid-arc-client``
 * ``ca-nordugrid``
+* ``nordugrid-arc-client``
+* ``nordugrid-arc-python``
 
-In order to execute ``ARC``:   
-
-* ``PATH`` must contain ``/opt/nordugrid/bin``
-* ``PYTHONPATH`` must contain ``/opt/nordugrid/lib/pythonX.Y/site-packages/``, where ``X`` and ``Y``
-
-represent the version of ``python``, and your two personal access files must be located in the directory:
+In order to execute ``ARC`` your two personal access files must be located in the directory:
 
 * ``.globus``
     * ``userkey.pem``, your personal key that was created when the certificate was requested
