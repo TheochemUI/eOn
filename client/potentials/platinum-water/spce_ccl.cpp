@@ -201,7 +201,7 @@ void SpceCcl::computeTemplate(
         energy += polarisationEnergy_;
         for (int j=i-1; j >= 0; --j) {
             bool areFixed=false;
-            if (xh1 or xh2 or xo) {
+            if (xh1 and xh2 and xo) {
                 areFixed = xh1[i][0] and xh2[i][0] and xo[i][0];
                 // check if all the atoms of molecule j are fixed.
                 areFixed &= xh1[j][0] and xh2[j][0] and xo[j][0];
