@@ -13,6 +13,10 @@ import kdbing
 import recycling
 
 class Explorer:
+    def __init__(self):
+        self.wuid_path = os.path.join(config.path_scratch, "wuid")
+        self.load_wuid()
+
     def load_wuid(self):
         try:
             f = open(self.wuid_path)
@@ -28,13 +32,12 @@ class Explorer:
 
 class MinModeExplorer(Explorer):
     def __init__(self, states, previous_state, state):
+        Explorer.__init__(self)
         self.states = states
         self.state = state
         self.previous_state = previous_state
         self.comm = communicator.get_communicator()
 
-        self.wuid_path = os.path.join(config.path_scratch, "wuid")
-        self.load_wuid()
 
         job_table_path = os.path.join(config.path_root, "jobs.tbl")
         job_table_columns = [ 'state', 'wuid', 'type' ]
@@ -43,10 +46,66 @@ class MinModeExplorer(Explorer):
         #clean jobs from old states
         self.job_table.delete_row_func('state', lambda s: s != self.state.number)
 
+        if config.recycling_on: 
+            self.nrecycled = 0
+            self.recycler = recycling.Recycling(self.states,
+                                           self.previous_state, 
+                                           self.state, 
+                                           config.recycling_move_distance,
+                                           config.recycling_save_sugg)
+
+        # If we plan to only displace atoms that moved getting to the current state.
+        if config.disp_moved_only and self.state.number != 0:
+            moved_atoms = self.recycler.process_atoms
+        else:
+            moved_atoms = None
+
+
         if config.kdb_on:
             self.kdber = kdbing.KDB()
             if len(self.state.get_ratetable()) <= 1:
                 self.kdber.query(self.state, wait = config.kdb_wait)
+
+
+        self.reactant = self.state.get_reactant()
+        if config.disp_type == 'random':
+            self.displace = displace.Random(self.reactant, config.disp_magnitude, 
+                                   config.disp_radius, hole_epicenters=moved_atoms)
+        elif config.disp_type == 'under_coordinated':
+            self.displace = displace.Undercoordinated(self.reactant, config.disp_max_coord, 
+                                             config.disp_magnitude, 
+                                             config.disp_radius, 
+                                             hole_epicenters=moved_atoms, 
+                                             cutoff=config.comp_neighbor_cutoff,
+                                             use_covalent=config.comp_use_covalent,
+                                             covalent_scale=config.comp_covalent_scale)
+        elif config.disp_type == 'least_coordinated':
+            self.displace = displace.Leastcoordinated(self.reactant, config.disp_magnitude,
+                                             config.disp_radius, 
+                                             hole_epicenters=moved_atoms,
+                                             cutoff=config.comp_neighbor_cutoff,
+                                             use_covalent=config.comp_use_covalent, 
+                                             covalent_scale=config.comp_covalent_scale)
+        elif config.disp_type == 'not_FCC_HCP_coordinated':
+            self.displace = displace.NotFCCorHCP(self.reactant, config.disp_magnitude,
+                                        config.disp_radius, hole_epicenters=moved_atoms,
+                                        cutoff=config.comp_neighbor_cutoff,
+                                        use_covalent=config.comp_use_covalent,
+                                        covalent_scale=config.comp_covalent_scale)
+        elif config.disp_type == 'listed_atoms':
+            self.displace = displace.ListedAtoms(self.reactant, config.disp_magnitude, 
+                                        config.disp_radius, hole_epicenters=moved_atoms,
+                                        cutoff=config.comp_neighbor_cutoff,
+                                        use_covalent=config.comp_use_covalent,
+                                        covalent_scale=config.comp_covalent_scale)
+        elif config.disp_type == 'water':
+            self.displace = displace.Water(self.reactant, config.stdev_translation,
+                                  config.stdev_rotation, config.molecule_list, 
+                                  config.disp_at_random)
+        else:
+            logger.error("Unknown displacement type: %s", config.disp_type)
+            raise ValueError()
+
 
     def explore(self):
         self.register_results()
@@ -56,64 +115,37 @@ class MinModeExplorer(Explorer):
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("cancelled %i workunits from state %i", 
                         num_cancelled, self.state.number)
+            #XXX: Do we ever call explore a completed state twice?
             if config.kdb_on:
                 logger.debug("Adding relevant processes to kinetic database.")
                 for process_id in self.state.get_process_ids():
                     output = self.kdber.add_process(self.state, process_id)
                     logger.debug("kdbaddpr.pl: %s" % output)
 
+    def generate_displacement(self):
+        if config.recycling_on and self.state.number is not 0:
+            displacement, mode = self.recycler.make_suggestion()
+            if displacement:
+                self.nrecycled += 1
+                return displacement, mode, 'recycling'
 
-    def get_displacement(self, reactant, indices=None):
-        if config.disp_type == 'random':
-            disp = displace.Random(reactant, config.disp_magnitude, 
-                                   config.disp_radius, hole_epicenters=indices)
-        elif config.disp_type == 'under_coordinated':
-            disp = displace.Undercoordinated(reactant, config.disp_max_coord, 
-                                             config.disp_magnitude, 
-                                             config.disp_radius, 
-                                             hole_epicenters=indices, 
-                                             cutoff=config.comp_neighbor_cutoff,
-                                             use_covalent=config.comp_use_covalent,
-                                             covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'least_coordinated':
-            disp = displace.Leastcoordinated(reactant, config.disp_magnitude,
-                                             config.disp_radius, 
-                                             hole_epicenters=indices,
-                                             cutoff=config.comp_neighbor_cutoff,
-                                             use_covalent=config.comp_use_covalent, 
-                                             covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'not_FCC_HCP_coordinated':
-            disp = displace.NotFCCorHCP(reactant, config.disp_magnitude,
-                                        config.disp_radius, hole_epicenters=indices,
-                                        cutoff=config.comp_neighbor_cutoff,
-                                        use_covalent=config.comp_use_covalent,
-                                        covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'listed_atoms':
-            disp = displace.ListedAtoms(reactant, config.disp_magnitude, 
-                                        config.disp_radius, hole_epicenters=indices,
-                                        cutoff=config.comp_neighbor_cutoff,
-                                        use_covalent=config.comp_use_covalent,
-                                        covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'water':
-            disp = displace.Water(reactant, config.stdev_translation,
-                                  config.stdev_rotation, config.molecule_list, 
-                                  config.disp_at_random)
-        else:
-            raise ValueError()
-        return disp
+        if config.kdb_on:
+            # Set up the path for keeping the suggestion if config.kdb_keep is set.
+            #XXX: Should this code be in kdbing.py/kdb.py?
+            keep_path = None
+            if config.kdb_keep:
+                if not os.path.isdir(os.path.join(self.state.path, "kdbsuggestions")):
+                    os.mkdir(os.path.join(self.state.path, "kdbsuggestions"))
+                keep_path = os.path.join(self.state.path, "kdbsuggestions", str(self.wuid))
+            displacement, mode = self.kdber.make_suggestion(keep_path)
+            if displacement:
+                return displacement, mode, 'kdb'
+                logger.info('Made a KDB suggestion')
 
+        displacement, mode = self.displace.make_displacement() 
+        return displacement, mode, 'random'
 
     def make_searches(self):
-        recycler = None
-        # If we *just* want to do simple recycling
-        if config.recycling_on: 
-            recycler = recycling.Recycling(self.self.states,
-                                           self.self.previous_state, 
-                                           self.state, 
-                                           config.recycling_move_distance,
-                                           config.recycling_save_sugg)
-
-        reactant = self.state.get_reactant()
         #XXX:what if the user changes the bundle size?
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
         logger.info("%i searches in the queue" % num_in_buffer)
@@ -122,18 +154,13 @@ class MinModeExplorer(Explorer):
         
         if num_to_make == 0:
             return
-        # If we plan to only displace atoms that moved getting to the current state.
-        if config.disp_moved_only and self.state.number != 0:
-            pass_indices = recycler.process_atoms
-        else:
-            pass_indices = None
-        disp = self.get_displacement(reactant, indices = pass_indices)
+        
         searches = []
         
         invariants = {}
 
         reactIO = StringIO.StringIO()
-        io.savecon(reactIO, reactant)
+        io.savecon(reactIO, self.reactant)
         invariants['reactant_passed.con']=reactIO
         
         ini_changes = [ ('Main', 'job', 'process_search') ]
@@ -143,8 +170,6 @@ class MinModeExplorer(Explorer):
         invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
         t1 = time()
-        if config.recycling_on:
-            nrecycled = 0
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
@@ -152,35 +177,11 @@ class MinModeExplorer(Explorer):
             # displacement - an atoms object containing the point the saddle search will start at
             # mode - an Nx3 numpy array containing the initial mode 
             search['id'] = "%d_%d" % (self.state.number, self.wuid)
-            done = False
 
-            if (recycler and self.state.number is not 0):
-                displacement, mode = recycler.make_suggestion()
-                if displacement:
-                    nrecycled += 1
-                    self.job_table.add_row( {'state':self.state.number,
-                                             'wuid':self.wuid,
-                                             'type':'recycling'} )
-                    done = True
-            if not done and config.kdb_on:
-                # Set up the path for keeping the suggestion if config.kdb_keep is set.
-                keep_path = None
-                if config.kdb_keep:
-                    if not os.path.isdir(os.path.join(self.state.path, "kdbsuggestions")):
-                        os.mkdir(os.path.join(self.state.path, "kdbsuggestions"))
-                    keep_path = os.path.join(self.state.path, "kdbsuggestions", str(self.wuid))
-                displacement, mode = self.kdber.make_suggestion(keep_path)
-                if displacement:
-                    done = True
-                    logger.info('Made a KDB suggestion')
-                    self.job_table.add_row( {'state':self.state.number,
-                                             'wuid':self.wuid,
-                                             'type':'kdb'} )
-            if not done and not config.kdb_only:
-                displacement, mode = disp.make_displacement() 
-                self.job_table.add_row( {'state':self.state.number,
-                                         'wuid':self.wuid,
-                                         'type':'random'} )
+            displacement, mode, disp_type = self.generate_displacement()
+            self.job_table.add_row( {'state':self.state.number,
+                                     'wuid':self.wuid,
+                                     'type':disp_type} )
 
             if displacement:
                 dispIO = StringIO.StringIO()
@@ -188,15 +189,15 @@ class MinModeExplorer(Explorer):
                 search['displacement_passed.con'] = dispIO
                 
                 modeIO = StringIO.StringIO()
-                io.save_mode(modeIO, mode, reactant)
+                io.save_mode(modeIO, mode, self.reactant)
                 search['mode_passed.dat'] = modeIO
                 searches.append(search) 
                 self.wuid += 1
                 # eager write
                 self.save_wuid()
 
-        if config.recycling_on and nrecycled > 0:
-            logger.debug("Recycled %i saddles" % nrecycled)
+        if config.recycling_on and self.nrecycled > 0:
+            logger.info("recycled %i saddles" % self.nrecycled)
 
         try:
             self.comm.submit_jobs(searches, invariants)
