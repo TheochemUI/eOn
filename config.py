@@ -72,8 +72,9 @@ def init(config_file = ""):
     
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')
-    config.path_jobs_out = parser.get('Paths', 'jobs_out')
-    config.path_jobs_in  = parser.get('Paths', 'jobs_in')
+    config.path_jobs_out     = parser.get('Paths', 'jobs_out')
+    config.path_jobs_in      = parser.get('Paths', 'jobs_in')
+    config.path_incomplete   = parser.get('Paths', 'incomplete')
     config.path_states       = parser.get('Paths', 'states')
     config.path_results      = parser.get('Paths', 'results')
     config.path_pot          = parser.get('Paths', 'potential_files')
