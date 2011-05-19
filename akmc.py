@@ -153,10 +153,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
     steps = 0
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
-        if config.sb_recycling_on:
-            pass_rec_path = config.sb_recycling_path
-        else:
-            pass_rec_path = None
+        pass_rec_path = None
         asKMC = askmc.ASKMC(kT, states, config.askmc_confidence, config.askmc_alpha,
                             config.askmc_gamma, config.askmc_barrier_test_on,
                             config.askmc_connections_test_on, config.sb_recycling_on,
@@ -180,7 +177,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
             else:
                 rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
-                logger.error("No processes in rate table, but confidence has been reached")
+                logger.error("No processes in rate table, but confidence" \
+                             " has been reached")
 
             ratesum = 0.0
             for i in range(len(rate_table)):
@@ -455,7 +453,8 @@ def main():
             dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
             info_path = os.path.join(config.path_results, "info.txt") 
             log_path = os.path.join(config.path_results, "akmc.log") 
-            for i in [info_path, dynamics_path, log_path]:
+            jobs_path = os.path.join(config.path_results, "jobs.tbl")
+            for i in [info_path, dynamics_path, log_path, jobs_path]:
                 if os.path.isfile(i):
                     os.remove(i)
                     
