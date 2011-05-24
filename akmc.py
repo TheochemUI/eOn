@@ -428,7 +428,7 @@ def main():
                 info_path = os.path.join(config.path_results, "info.txt") 
                 log_path = os.path.join(config.path_results, "akmc.log")
                 jobs_path = os.path.join(config.path_results, "jobs.tbl") 
-                for i in [info_path, dynamics_path, log_path, jobs_path]]:
+                for i in [info_path, dynamics_path, log_path, jobs_path]:
                     if os.path.isfile(i):
                         os.remove(i)
                 if os.path.isdir(os.path.join(config.path_root, "results")):
