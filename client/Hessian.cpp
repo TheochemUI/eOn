@@ -122,19 +122,43 @@ bool Hessian::calculate(string which)
         matterTemp.setPositions(posTemp);
         force2 = matterTemp.getForces();
 
+        //To use central difference estimate of the hessian uncomment following (and divide by 2*dr) in the following.
+        //This does use an additional 'size' forcecalls and will generally not lead to very different results.
+        //In most cases, the additional accuracy is not worth the computation time.
+
+        /*
+        posTemp = pos - posDisplace; 
+        matterTemp.setPositions(posTemp);
+        force1 = matterTemp.getForces();
+        */
+
         // GH: debug
         //cout <<"force"<<i<<endl<<force2<<endl;
 
         for(j=0; j<size; j++)
         {
             hessian(i,j) = -(force2(atoms(j/3), j%3)-force1(atoms(j/3), j%3))/dr;
-            double effMass = sqrt(saddle->getMass(j/3)*saddle->getMass(i/3));
+            //get the effective mass of the moving atoms 
+            //double effMass = sqrt(saddle->getMass(j/3)*saddle->getMass(i/3));
+            double effMass = sqrt(saddle->getMass(atoms(j/3))*saddle->getMass(atoms(i/3)));
             hessian(i,j) /= effMass;
         }
     }
 
     //Force hessian to be symmetric
-    hessian = (hessian + hessian.transpose())/2;
+    
+    //hessian = (hessian + hessian.transpose())/2;  
+    //cannot be used, messes up the lower trianguler 
+    //transpose does not seem to be a hardcopy, rather just an index manipulation 
+
+    for(i=0; i<size; i++) {
+        for(j=0; j<i; j++) {
+            hessian(i,j) = ( hessian(i,j) + hessian(j,i) ) / 2;
+            hessian(j,i) = hessian(i,j);    
+        }
+    }
+
+
 
     // GH: debug
     #ifndef NDEBUG
