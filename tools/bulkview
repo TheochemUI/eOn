@@ -10,13 +10,11 @@ def abort():
     print "\n   usage: bulkview infile outfile"
     sys.exit()
 
-try:
-    p = io.loadposcars(sys.argv[1])
-except:
-    try:
-        p = io.loadcons(sys.argv[1])
-    except:
-        abort()
+p = io.loadposcars(sys.argv[1])
+if len(p) == 0:
+    p = io.loadcons(sys.argv[1])
+if len(p) == 0:
+    abort()
     
 try:
     outfile = sys.argv[2]
@@ -33,7 +31,7 @@ for a in p:
     b = atoms.Atoms(0)
     b.box = a.box.copy()
     for i in range(len(a)):
-        if cns[i] < mc:
+        if cns[i] < mc - 1:
             b.append(a.r[i], a.free[i], a.names[i], a.mass[i])
     if len(b) > 0:
         io.savecon(outfile, b, 'a')
