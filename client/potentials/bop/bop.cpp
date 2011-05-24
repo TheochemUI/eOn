@@ -49,7 +49,7 @@ void bop::force(long N, const double *R, const int *atomicNrs, double *F, double
     fflush(stdout);
     fgetpos(stdout, &pos);
     fd = dup(fileno(stdout));
-    freopen("/dev/null", "a+", stdout);
+    freopen("/dev/null", "w", stdout);
 
     assert(N > 1);
     if(!initialized)
