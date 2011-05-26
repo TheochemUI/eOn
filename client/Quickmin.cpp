@@ -68,13 +68,11 @@ void Quickmin::fullRelax()
     bool converged = false;
     long forceCallsTemp;
     forceCallsTemp = matter->getForceCalls();
-    static int run=0;
     ostringstream min;
-    min << "min_" << run;
+    min << "min";
     if(parameters->writeMovies)
     {
         matter->matter2con(min.str(), false);
-        ++run;
     }
     int i = 0;
     while(!converged)

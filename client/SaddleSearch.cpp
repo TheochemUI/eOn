@@ -358,12 +358,11 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     ConjugateGradients cgSaddle(saddle, parameters, forces);
     static int run = 0;
     ostringstream climb;
-    climb << "climb_" << run;
+    climb << "climb";
     if(parameters->writeMovies)
     {
         initial->matter2con(climb.str(), false);
         saddle->matter2con(climb.str(), true);
-        ++run;
     }
     if (parameters->quiet == false) {
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
