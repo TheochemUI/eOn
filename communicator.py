@@ -8,6 +8,7 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
+import config
 import os
 import struct
 import shutil
@@ -23,6 +24,7 @@ from cStringIO import StringIO
 import cPickle as pickle
 import glob
 import re
+import numpy
 
 def get_communicator():
     if config.comm_type=='boinc':
@@ -41,8 +43,7 @@ def get_communicator():
         comm = Local(config.path_scratch, config.comm_local_client, 
                                   config.comm_local_ncpus, config.comm_job_bundle_size)
     elif config.comm_type=='mpi':
-        comm = MPI(config.path_scratch, config.comm_mpi_client, 
-                                  config.comm_job_bundle_size, config.comm_mpi_mpicommand)
+        comm = MPI(config.path_scratch, config.comm_job_bundle_size)
     elif config.comm_type=='arc':
         comm = ARC(config.path_scratch, config.comm_job_bundle_size, 
                                 config.comm_client_path, config.comm_blacklist)
@@ -117,6 +118,7 @@ class Communicator:
             # Need to figure out how many jobs were bundled together
             # and then create the new job directories with the split files.
             bundle_size = self.get_bundle_size(jobpath)
+
             # Get the number at the end of the jobpath. Looks like path/to/job/#_#
             # and we want the second #.
             basename, dirname = os.path.split(jobpath)
@@ -472,35 +474,67 @@ class BOINC(Communicator):
 
             for result in results:
                 yield result
-                
+
 class MPI(Communicator):
-    def __init__(self, scratchpath, client, bundle_size, mpicommand):
+    def __init__(self, scratchpath, bundle_size):
         Communicator.__init__(self, scratchpath, bundle_size)
 
-        self.mpicommand = mpicommand
+        from mpi4py import MPI as PyMPI
+        self.comm = PyMPI.COMM_WORLD
+        rank = self.comm.Get_rank()
 
-        #path to the client
-        if '/' in client:
-            self.client = os.path.abspath(client)
-            if not os.path.isfile(self.client):
-                logger.error("can't find client: %s", client)
-                raise CommunicatorError("Can't find client binary: %s"%client)
-        else:
-            #is the client in the local directory?
-            if os.path.isfile(client):
-                self.client = os.path.abspath(client)
-            #is the client in the path?
-            elif sum([ os.path.isfile(os.path.join(d, client)) for d in 
-                       os.environ['PATH'].split(':') ]) != 0:
-                self.client = client
-            else:
-                logger.error("can't find client: %s", client)
-                raise CommunicatorError("Can't find client binary: %s"%client)
+        #XXX: gpaw-python has a barrier...
+        #self.comm.Barrier()
+
+        # process_type can be one of three values:
+        # 0: server
+        # 1: client
+        # 2: potential
+        # Each independent program identifies itself with one of these three.
+
+        process_type = numpy.array((0,), dtype='i')
+        process_types = numpy.empty(self.comm.Get_size(), dtype='i')
+        
+        self.comm.Allgather(process_type, process_types)
+        self.client_ranks = []
+
+        servers = 0
+        clients = 0
+        potentials = 0
+        for i,t in enumerate(process_types):
+            if t == 0:
+                servers += 1
+            elif t == 1:
+                self.client_ranks.append(i)
+                clients += 1
+            elif t == 2:
+                potentials += 1
+
+        #XXX: Ugly? You decide...
+        config.comm_job_buffer_size = clients
+
+        potential_group_size = potentials/clients
+        potential_ranks = numpy.empty(potentials, dtype='i')
+        j = 0
+        for i in xrange(self.comm.Get_size()):
+            if process_types[i] == 2:
+                potential_ranks[j] = i
+                j += 1
+
+        for i in xrange(clients):
+            orig_group = self.comm.Get_group() 
+            s = potential_group_size
+            new_group = orig_group.Incl(potential_ranks[i*s:i*s+s])
+            self.comm.Create(new_group)
+
+        self.ready_ranks = []
+        self.running_jobs = {}
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
-        jobdirs = [ d for d in os.listdir(self.scratchpath) 
-                    if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+
+        self.poll_clients()
+        jobdirs = self.get_finished_job_dirs()
 
         for jobdir in jobdirs:
             dest_dir = os.path.join(resultspath, jobdir)
@@ -509,35 +543,41 @@ class MPI(Communicator):
             for result in bundle:
                 yield result
 
+    def get_finished_job_dirs(self):
+        self.poll_clients()
+        finished_job_dirs = []
+        for dir, rank in self.running_jobs.iteritems():
+            if rank in self.ready_ranks:
+                finished_job_dirs.append(dir)
+
+        for dir in finished_job_dirs:
+                del self.running_jobs[dir]
+        return finished_job_dirs
+
+    def poll_clients(self):
+        for rank in self.client_ranks:
+            ready = self.comm.Iprobe(rank, 0)
+            if ready:
+                self.ready_ranks.append(rank)
+                tmp = numpy.empty(1, dtype='i')
+                self.comm.Recv(tmp, source=rank, tag=0)
 
     def submit_jobs(self, data, invariants):
-        '''Run up to ncpu number of clients to process the work in jobpaths.
-           The job directories are moved to the scratch path before the calculcation
-           is run. This method doesn't return anything.'''
-        
-        #Clean out scratch directory
-        for name in os.listdir(self.scratchpath):
-            shutil.rmtree(os.path.join(self.scratchpath, name))
-
-        mpi_wrapper_args = [self.mpicommand, self.client]
-        #XXX: THIS CODE DOES NOT WORK ANY MORE
-        for jobpath in self.make_bundles(searches, reactant_path, parameters_path):
-            mpi_wrapper_args.append(jobpath) 
-
-        cmd = ' '.join(mpi_wrapper_args)
-
-        p = subprocess.Popen(cmd.split(' '),
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
-        stdout, stderr = p.communicate()
-        for line in stdout.split('\n'):
-            logger.debug(line)
+        for jobpath in self.make_bundles(data, invariants):
+            str = numpy.fromstring(jobpath+'\x00', 'c')
+            client_rank = self.ready_ranks.pop()
+            self.comm.Send(str,  client_rank)
+            self.running_jobs[os.path.split(jobpath)[-1]] = client_rank
 
     def cancel_state(self, state):
+        #XXX: how to support this...
         return 0
 
     def get_queue_size(self):
-        return 0
+        self.poll_clients()
+        num_ready = len(self.ready_ranks)
+        qs = len(self.client_ranks) - num_ready
+        return qs
 
 
 class Local(Communicator):
@@ -1069,7 +1109,3 @@ class ARC(Communicator):
                 logger.debug("Canceling job %s / %s" % (j["name"], j["id"]))
                 n += 1
         return n
-
-
-
-
