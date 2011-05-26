@@ -100,13 +100,11 @@ void ConjugateGradients::fullRelax()
     bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
-    static int run = 0;
     ostringstream min;
-    min << "min_" << run;
+    min << "min";
     if(parameters->writeMovies)
     {
         matter->matter2con(min.str(), false);
-        ++run;
     }
     int i = 0;
     while(!converged and i < parameters->optMaxIterations) 
@@ -115,8 +113,8 @@ void ConjugateGradients::fullRelax()
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
         if (outputLevel > 0) {
-            printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", i, matter->maxForce(),
-                   matter->getPotentialEnergy());
+            printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
+                   i, matter->maxForce(), matter->getPotentialEnergy());
         }
         if(parameters->writeMovies)
         {
