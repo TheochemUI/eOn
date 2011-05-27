@@ -18,6 +18,11 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef EONMPI
+    #include <mpi.h>
+    #include <unistd.h>
+#endif
+
 //Includes for FPE trapping
 #ifdef OSX
     #include <xmmintrin.h>
@@ -37,8 +42,6 @@
     #include <sys/resource.h>
     #include <sys/utsname.h>
 #endif
-
-Parameters parameters;
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -100,9 +103,73 @@ void printSystemInfo()
     #endif
 }
 
-
+#ifndef EONMPIBGP
 int main(int argc, char **argv) 
+#else
+int client_main(int argc, char **argv)
+#endif
 {
+    Parameters parameters;
+    #ifdef EONMPI
+        if (MPI::Is_initialized() == false) {
+            MPI::Init();
+        }
+
+        //XXX: Barrier for gpaw-python
+        //MPI::COMM_WORLD.Barrier();
+
+        int irank = MPI::COMM_WORLD.Get_rank();
+        int isize = MPI::COMM_WORLD.Get_size();
+        printf("client rank: %i size: %i\n", irank, isize);
+        
+        int *process_types = new int[isize];
+        int process_type = 1;
+
+        MPI::COMM_WORLD.Allgather(&process_type,     1, MPI::INT, 
+                                  &process_types[0], 1, MPI::INT);
+
+        int i, servers=0, clients=0, potentials=0;
+        int server_rank=-1;
+        int my_client_number=-1;
+        for (i=0;i<isize;i++) {
+            switch (process_types[i]) {
+                case 0:
+                    servers++;
+                    server_rank = i;
+                    break;
+                case 1:
+                    if (i==irank) {
+                        my_client_number = clients;
+                    }
+                    clients++;
+                    break;
+                case 2:
+                    potentials++;
+                    break;
+            }
+        }
+
+        int potential_group_size = potentials/clients;
+        parameters.MPIPotentialRank = potential_group_size*my_client_number;
+        int *potential_ranks = new int[potential_group_size];
+        int j;
+        for (i=0,j=0;i<isize;i++) {
+            if (process_types[i] == 2) {
+                potential_ranks[j] = i;
+                j++;
+            }
+        }
+
+        for (i=0;i<clients;i++) {
+            MPI::Group orig_group, new_group;
+            orig_group = MPI::COMM_WORLD.Get_group();
+            int offset = i*potential_group_size;
+            printf("rank: %i offset: %i potential_group_size: %i\n", irank, offset,potential_group_size);
+            new_group = orig_group.Incl(potential_group_size, 
+                                        &potential_ranks[offset]);
+            (void)MPI::COMM_WORLD.Create(new_group);
+        }
+    #endif
 
     if (argc > 1) {
         commandLine(argc, argv);
@@ -121,7 +188,6 @@ int main(int argc, char **argv)
     char resolved[STRING_SIZE];
     rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
     if (rc) {
-        // 
         fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
         boinc_finish(rc);
     };
@@ -132,6 +198,7 @@ int main(int argc, char **argv)
     #endif
 
     enableFPE();
+
     printSystemInfo();
 
     #ifdef WIN32
@@ -139,6 +206,28 @@ int main(int argc, char **argv)
     #else
     struct timeval beginTime;
     gettimeofday(&beginTime, NULL);
+    #endif
+
+    #ifdef EONMPI
+    //XXX: When do we stop? The server should probably tell everyone 
+    //     when to stop.
+    //char logfilename[1024];
+    //snprintf(logfilename, 1024, "eonclient_%i.log", irank);
+    //freopen(logfilename, "w", stdout);
+    char *orig_path = new char[1024];
+    getcwd(orig_path, 1024);
+    while (true) {
+        chdir(orig_path);
+        char *path = new char[1024];
+        int ready=1;
+        printf("client: is ready, posting Send!\n");
+        MPI::COMM_WORLD.Send(&ready,      1, MPI::INT,  server_rank, 0);
+        MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
+        printf("client rank: %i chdir to %s\n", irank, path);
+        
+        if (chdir(path) == -1) {
+            fprintf(stderr, "error: %s\n", strerror(errno));
+        }
     #endif
 
     bool bundlingEnabled = true;
@@ -168,7 +257,7 @@ int main(int argc, char **argv)
 
         // Determine what type of job we are running according 
         // to the parameters file. 
-        Job *job=Job::getJob(&parameters);
+        Job *job = Job::getJob(&parameters);
         if (job == NULL) {
             printf("error: Unknown job: %s\n", parameters.potential.c_str());
             return 1;
@@ -185,6 +274,11 @@ int main(int argc, char **argv)
         boinc_fraction_done((double)(i+1)/(bundleSize));
         delete job;
     }
+
+    #ifdef EONMPI
+    //End of MPI while loop
+    }
+    #endif
 
     // Timing Information
     double utime=0, stime=0, rtime=0;
@@ -229,6 +323,10 @@ int main(int argc, char **argv)
     rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
     char dirToCompress[] = ".";
     create_archive(resolved, dirToCompress, bundledFilenames); 
+    #endif
+
+    #ifdef MPI
+        MPI::Finalize();
     #endif
 
     boinc_finish(0);

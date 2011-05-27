@@ -159,6 +159,11 @@ public:
     bool   basinHoppingStayMinimized;
     bool   basinHoppingSingleAtomDisplace;
 
+    // MPI stuff, not actually specified in config file
+    // this is used to pass information to the GPAW MPI 
+    // potential.
+    int MPIPotentialRank;
+
     // [Debug]
     bool   writeMovies;
 
