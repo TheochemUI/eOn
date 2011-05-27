@@ -106,8 +106,7 @@ def init(config_file = ""):
         config.comm_script_cancel_job_cmd = parser.get('Communicator', 'cancel_job')
         config.comm_script_submit_job_cmd = parser.get('Communicator', 'submit_job')
     if config.comm_type == 'mpi':
-        config.comm_mpi_client = parser.get('Communicator', 'client_path')
-        config.comm_mpi_mpicommand = parser.get('Communicator', 'mpi_command')
+        pass
     if config.comm_type == 'boinc':
         config.comm_boinc_project_dir = parser.get('Communicator', 'boinc_project_dir')
         config.comm_boinc_wu_template_path = parser.get('Communicator', 'boinc_wu_template_path')
