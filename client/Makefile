@@ -26,7 +26,10 @@ ifndef CROSS
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
    LINUX=1
-   LDFLAGS += -static
+   #MPI often doesn't mix well with static linking...
+   ifndef EONMPI
+	   LDFLAGS += -static
+   endif
 endif
 ifeq ($(UNAME), Darwin)
    OSX=1
