@@ -5,7 +5,7 @@ LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
 
-CXXFLAGS += -O2 #-Wall -Wfatal-errors
+CXXFLAGS += -O2 -Wall -Wfatal-errors
 
 ifndef DEBUG
 	NDEBUG=1

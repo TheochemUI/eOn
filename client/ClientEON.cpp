@@ -325,7 +325,7 @@ int client_main(int argc, char **argv)
     create_archive(resolved, dirToCompress, bundledFilenames); 
     #endif
 
-    #ifdef MPI
+    #ifdef EONMPI
         MPI::Finalize();
     #endif
 
