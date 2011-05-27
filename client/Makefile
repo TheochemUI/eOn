@@ -5,10 +5,19 @@ LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
 
-CXXFLAGS += -O2 -Wall -Wfatal-errors
+CXXFLAGS += -O2 #-Wall -Wfatal-errors
 
 ifndef DEBUG
 	NDEBUG=1
+endif
+
+ifdef EONMPIBGP
+	EONMPI=1
+endif
+
+ifdef EONMPI
+	CXX=mpicxx
+	CXXFLAGS += -DEONMPI
 endif
 
 #If we aren't doing a cross compile, guess our platform.
@@ -74,10 +83,6 @@ ifdef LAMMPS_POT
    POTENTIALS += "+LAMMPS"
 endif
 
-ifdef MPIGPAW
-	CXXFLAGS  += -DMPIGPAW
-endif
-
 # define BOINC to link against boinc libs
 ifdef BOINC
     BOINC=Yes
@@ -104,12 +109,7 @@ else
 		DEBUG=Yes
 	endif
 endif
-ifdef WITH_LANCZOS
-    CXXFLAGS += -DWITH_LANCZOS
-    FPOTDIRS += Lanczos
-    LIBS += Lanczos/libLanczos.a
-    LDFLAGS += -lgsl -lgslcblas
-endif
+
 #Potentials
 POTDIRS += ./potentials/EMT/
 LIBS += ./potentials/EMT/libEMT.a
@@ -132,22 +132,25 @@ POTENTIALS += "+Pt-H2O"
 POTDIRS += ./potentials/IMD/
 LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
+
 ifndef WIN32
-POTDIRS += ./potentials/VASP
-LIBS += ./potentials/VASP/libVASP.a
-POTENTIALS += "+VASP"
+	POTDIRS += ./potentials/VASP
+	LIBS += ./potentials/VASP/libVASP.a
+	POTENTIALS += "+VASP"
 else
-POTENTIALS += "-VASP"
+	POTENTIALS += "-VASP"
 endif
+
 POTDIRS += ./potentials/bopfox
 LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
-ifdef MPIGPAW
-POTENTIALS += "+GPAW"
-POTDIRS += ./potentials/GPAW
-LIBS += ./potentials/GPAW/libGPAW.a
+
+ifdef EONMPI
+	POTENTIALS += "+MPIPot"
+	POTDIRS += ./potentials/MPIPot
+	LIBS += ./potentials/MPIPot/libMPIPot.a
 else
-POTENTIALS += "-GPAW"
+	POTENTIALS += "-MPIPot"
 endif
 
 
@@ -168,6 +171,13 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
 	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o \
 	NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o
+
+ifdef EONMPIBGP
+	CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
+	CXXFLAGS += -DEONMPIBGP
+	OBJECTS  += EonBGP.o
+	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
+endif
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

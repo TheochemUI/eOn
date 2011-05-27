@@ -1,7 +1,6 @@
-CXX=mpic++
-OBJECTS = GPAW.o
-CXXFLAGS += -I../.. -Wall
-LIB := libGPAW.a
+OBJECTS = MPIPot.o
+CXXFLAGS += -I../.. -Wall -O2
+LIB := libMPIPot.a
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
 	$(RANLIB) $@
