@@ -116,7 +116,7 @@ int client_main(int argc, char **argv)
         }
 
         //XXX: Barrier for gpaw-python
-        //MPI::COMM_WORLD.Barrier();
+        MPI::COMM_WORLD.Barrier();
 
         int irank = MPI::COMM_WORLD.Get_rank();
         int isize = MPI::COMM_WORLD.Get_size();

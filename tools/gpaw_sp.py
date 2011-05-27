@@ -22,7 +22,9 @@ def create_gpaw(comm):
                     'eigenstates':1e-5
                   }
     calc = GPAW(xc='PBE', 
-                txt=None, 
+                h=.30,
+                nbands=-8,
+                txt='gpaw_%i.txt'%world.rank, 
                 convergence=convergence,
                 occupations=FermiDirac(width=0.05),
                 mixer = Mixer(beta=0.10, nmaxold=5, weight=100.0),
@@ -80,6 +82,7 @@ for i in xrange(clients):
     if new_comm != None:
         my_comm = new_comm
 
+first_time = True
 while True:
     natoms = numpy.array((0,), 'l')
     if my_comm.rank == 0:
@@ -105,19 +108,23 @@ while True:
     else:
         pbc = False
 
-    cell.shape = (3,3)
-    positions.shape = (natoms,3)
+    if first_time:
+        cell.shape = (3,3)
+        positions.shape = (natoms,3)
 
-    atomic_symbols = ''.join([ ase.chemical_symbols[i] for i in atomic_numbers])
-    atoms = ase.Atoms(atomic_symbols, positions=positions, cell=cell, pbc=pbc)
+        atomic_symbols = ''.join([ ase.chemical_symbols[i] for i in atomic_numbers])
+        atoms = ase.Atoms(atomic_symbols, positions=positions, cell=cell, pbc=pbc)
 
-    calc = create_gpaw(my_comm)
-    atoms.set_calculator(calc)
+        calc = create_gpaw(my_comm)
+        atoms.set_calculator(calc)
+    else:
+        atoms.set_positions(positions)
 
     calculation_failed  = numpy.array((0,),'i')
     try:
         f1 = atoms.get_forces()
         e1 = atoms.get_potential_energy()
+        e1 = numpy.array([e1,])
     except gpaw.KohnShamConvergenceError:
         calculation_failed  = numpy.array(1,'i')
 
