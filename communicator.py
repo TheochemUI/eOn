@@ -8,11 +8,10 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
+from array import array
 import config
 import os
-import struct
 import shutil
-import config
 import logging
 logger = logging.getLogger('communicator')
 
@@ -484,7 +483,7 @@ class MPI(Communicator):
         rank = self.comm.Get_rank()
 
         #XXX: gpaw-python has a barrier...
-        #self.comm.Barrier()
+        self.comm.Barrier()
 
         # process_type can be one of three values:
         # 0: server
@@ -564,9 +563,9 @@ class MPI(Communicator):
 
     def submit_jobs(self, data, invariants):
         for jobpath in self.make_bundles(data, invariants):
-            str = numpy.fromstring(jobpath+'\x00', 'c')
+            buf = array('c', jobpath+'\0')
             client_rank = self.ready_ranks.pop()
-            self.comm.Send(str,  client_rank)
+            self.comm.Send(buf,  client_rank)
             self.running_jobs[os.path.split(jobpath)[-1]] = client_rank
 
     def cancel_state(self, state):
