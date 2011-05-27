@@ -143,6 +143,9 @@ Parameters::Parameters(){
     basinHoppingSteps = 10000;
     basinHoppingSingleAtomDisplace = false;
     basinHoppingStayMinimized = false;
+
+    // MPI
+    MPIPotentialRank = -1;
 }
 
 Parameters::~Parameters(){
@@ -163,6 +166,7 @@ int Parameters::load(string filename)
 
     fh = fopen(filename.c_str(), "rb");
     if (fh == NULL) {
+        fprintf(stderr, "error: %s\n", strerror(errno));
         return 1;
     }
     int error = load(fh);

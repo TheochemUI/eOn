@@ -35,30 +35,12 @@
 #ifdef LAMMPS_POT
     #include "potentials/LAMMPS/LAMMPS_EON.h"
 #endif
-#ifdef MPIGPAW
-    #include "potentials/GPAW/GPAW.h"
+#ifdef EONMPI
+    #include "potentials/MPIPot/MPIPot.h"
 #endif
 
 #include <cstdlib>
 
-/*
-const string Potential::POT_LJ =            "lj";
-const string Potential::POT_EAM_AL =        "eam_al";
-const string Potential::POT_MORSE_PT =      "morse_pt";
-const string Potential::POT_EMT =           "emt";
-const string Potential::POT_QSC =           "qsc";
-const string Potential::POT_ZPICE =         "zpice";
-const string Potential::POT_TIP4P =         "tip4p";
-const string Potential::POT_LENOSKY_SI =    "lenosky_si";
-const string Potential::POT_SW_SI =         "sw_si";
-const string Potential::POT_TERSOFF_SI =    "tersoff_si";
-const string Potential::POT_EDIP =          "edip";
-const string Potential::POT_VASP =          "vasp";
-const string Potential::POT_BOPFOX =        "bopfox";
-const string Potential::POT_BOP =           "bop";
-const string Potential::POT_LAMMPS =        "lammps";
-const string Potential::POT_GPAW =          "gpaw";
-*/
 const char Potential::POT_LJ[] =            "lj";
 const char Potential::POT_IMD[] =           "imd";
 const char Potential::POT_EAM_AL[] =        "eam_al";
@@ -75,7 +57,7 @@ const char Potential::POT_VASP[] =          "vasp";
 const char Potential::POT_BOPFOX[] =        "bopfox";
 const char Potential::POT_BOP[] =           "bop";
 const char Potential::POT_LAMMPS[] =        "lammps";
-const char Potential::POT_GPAW[] =          "gpaw";
+const char Potential::POT_MPI[] =           "mpi";
 
 Potential *Potential::getPotential(Parameters *parameters)
 {
@@ -120,9 +102,9 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_LAMMPS)
         pot = new lammps_eon();
     #endif
-    #ifdef MPIGPAW
-    else if(parameters->potential == POT_GPAW)
-        pot = new GPAW();
+    #ifdef EONMPI
+    else if(parameters->potential == POT_MPI)
+        pot = new MPIPot(parameters);
     #endif
     else
     {
