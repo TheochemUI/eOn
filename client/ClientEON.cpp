@@ -21,6 +21,7 @@
 #ifdef EONMPI
     #include <mpi.h>
     #include <unistd.h>
+    #include <fcntl.h>
 #endif
 
 //Includes for FPE trapping
@@ -60,8 +61,6 @@
 const char BOINC_INPUT_ARCHIVE[] = "input.tgz";
 const char BOINC_RESULT_ARCHIVE[] = "result.tgz";
 #endif
-
-void enableFPE(void);
 
 void enableFPE(void)
 {
@@ -164,7 +163,8 @@ int client_main(int argc, char **argv)
             MPI::Group orig_group, new_group;
             orig_group = MPI::COMM_WORLD.Get_group();
             int offset = i*potential_group_size;
-            printf("rank: %i offset: %i potential_group_size: %i\n", irank, offset,potential_group_size);
+            //printf("client: rank: %i offset: %i pot_group_size: %i\n", irank, 
+            //       offset,potential_group_size);
             new_group = orig_group.Incl(potential_group_size, 
                                         &potential_ranks[offset]);
             (void)MPI::COMM_WORLD.Create(new_group);
@@ -199,8 +199,6 @@ int client_main(int argc, char **argv)
 
     enableFPE();
 
-    printSystemInfo();
-
     #ifdef WIN32
     time_t beginTime = time(NULL);
     #else
@@ -211,9 +209,11 @@ int client_main(int argc, char **argv)
     #ifdef EONMPI
     //XXX: When do we stop? The server should probably tell everyone 
     //     when to stop.
-    //char logfilename[1024];
-    //snprintf(logfilename, 1024, "eonclient_%i.log", irank);
-    //freopen(logfilename, "w", stdout);
+    char logfilename[1024];
+    snprintf(logfilename, 1024, "eonclient_%i.log", irank);
+    int outFd = open(logfilename, O_CREAT|O_WRONLY|O_TRUNC, 0644);
+    dup2(outFd, 1);
+    dup2(outFd, 2);
     char *orig_path = new char[1024];
     getcwd(orig_path, 1024);
     while (true) {
@@ -229,6 +229,8 @@ int client_main(int argc, char **argv)
             fprintf(stderr, "error: %s\n", strerror(errno));
         }
     #endif
+
+    printSystemInfo();
 
     bool bundlingEnabled = true;
     int bundleSize = getBundleSize();
