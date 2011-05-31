@@ -108,7 +108,7 @@ Parameters::Parameters(){
     mdTimeStep = 1;
     mdSteps = 1000;
     mdMaxMovedDist = 2.0;
-    mdRefine = false;
+    mdRefine = true;
     mdAutoStop = false;
     mdRecordAccuracy = 1;
     mdRefineAccuracy = 1;
