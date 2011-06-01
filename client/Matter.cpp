@@ -623,6 +623,7 @@ bool Matter::matter2con(FILE *file) const
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
+cerr<<mass[j];
     }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
@@ -729,7 +730,8 @@ bool Matter::con2matter(FILE *file)
 
     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
     fgets(line, sizeof(line), file);
-    char * split = strtok(line, " ");
+    // split at either space or tab
+    char * split = strtok(line, " \t");
     for(j=0; j<Ncomponent; j++) {
         if(split == NULL)
         {
@@ -742,13 +744,16 @@ bool Matter::con2matter(FILE *file)
             return false;
         }
         first[j+1] = Natoms+first[j];
-        split = strtok(NULL, " ");
+        // split at either space or tab
+        split = strtok(NULL, " \t");
     }
 
     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
+
     double mass[MAXC];
     fgets(line, sizeof(line), file);
-    split = strtok(line, " ");
+    // split at either space or tab
+    split = strtok(line, " \t");
 
     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
         if(split == NULL)
@@ -756,13 +761,16 @@ bool Matter::con2matter(FILE *file)
             cerr << "input con file does not list enough masses" <<endl;
             return false;
         }
-        if(sscanf(split, "%ld", &Natoms)!=1)
+// *1* seems like a bug as a result of copying and pasting from above
+// *1*       if(sscanf(split, "%ld", &Natoms)!=1)
+        if(sscanf(split, "%lf", &mass[j])!=1)
         {
             cerr << "input con file does not list enough masses" <<endl;
             return false;
         }
-        sscanf(line, "%lf", &mass[j]);
-        split = strtok(NULL, " ");
+// *1*       sscanf(line, "%lf", &mass[j]);
+        // split at either space or tab
+        split = strtok(NULL, " \t");
         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     }
 
@@ -777,6 +785,7 @@ bool Matter::con2matter(FILE *file)
         fgets(line,sizeof(line),file); // skip one line
         for (i=first[j]; i<first[j+1]; i++){
             setMass(i, mass[j]);
+
             setAtomicNr(i, atomicNr);
             fgets(line, sizeof(line), file);
             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
