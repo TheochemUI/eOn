@@ -223,6 +223,10 @@ int client_main(int argc, char **argv)
         printf("client: is ready, posting Send!\n");
         MPI::COMM_WORLD.Send(&ready,      1, MPI::INT,  server_rank, 0);
         MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
+        if (strncmp("STOPCAR", path, 1024) == 0) {
+            MPI::Finalize();
+            return 0;
+        }
         printf("client: rank: %i chdir to %s\n", irank, path);
         
         if (chdir(path) == -1) {
