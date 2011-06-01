@@ -102,7 +102,7 @@ Parameters::Parameters(){
     nebSpring = 5.0;
     nebClimbingImageMethod = true;
     nebOldTangent = false;
-    nebOptMethod = NEB::OPT_CG;
+    nebOptMethod = NudgedElasticBand::OPT_CG;
 
     // [Parallel Replica] //
     mdTimeStep = 1;
