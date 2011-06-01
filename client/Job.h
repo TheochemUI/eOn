@@ -19,20 +19,7 @@ class Job {
 
         virtual ~Job() {}
         virtual std::vector<std::string> run()=0;
-/*
-        static const string PROCESS_SEARCH;
-        static const string SADDLE_SEARCH;
-        static const string MINIMIZATION;
-        static const string POINT;
-        static const string PARALLEL_REPLICA;
-        static const string DISTRIBUTED_REPLICA;
-        static const string BASIN_HOPPING;
-        static const string HESSIAN;
-        static const string FINITE_DIFFERENCE;
-        static const string DIMER_ROTATION;
-        static const string DISPLACEMENT_SAMPLING;
-        static const string TEST;
-*/
+
         static const char PROCESS_SEARCH[];
         static const char SADDLE_SEARCH[];
         static const char MINIMIZATION[];
@@ -44,7 +31,9 @@ class Job {
         static const char FINITE_DIFFERENCE[];
         static const char DIMER_ROTATION[];
         static const char DISPLACEMENT_SAMPLING[];
+        static const char NUDGED_ELASTIC_BAND[];
         static const char TEST[];
+
         static Job *getJob(Parameters *parameters);
 };
 #endif

@@ -11,22 +11,9 @@
 #include "FiniteDifferenceJob.h"
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
+#include "NudgedElasticBandJob.h"
 #include "TestJob.h"
 
-/*
-const string Job::PROCESS_SEARCH =           "process_search";
-const string Job::SADDLE_SEARCH =            "saddle_search";
-const string Job::MINIMIZATION =             "minimization";
-const string Job::POINT =                    "point";
-const string Job::PARALLEL_REPLICA =         "parallel_replica";
-const string Job::DISTRIBUTED_REPLICA =      "distributed_replica";
-const string Job::BASIN_HOPPING =            "basin_hopping";
-const string Job::HESSIAN =                  "hessian";
-const string Job::FINITE_DIFFERENCE =        "finite_difference";
-const string Job::DIMER_ROTATION =           "dimer_rotation";
-const string Job::DISPLACEMENT_SAMPLING =    "displacement_sampling";
-const string Job::TEST =                     "test";
-*/
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
 const char Job::MINIMIZATION[] =             "minimization";
@@ -38,6 +25,7 @@ const char Job::HESSIAN[] =                  "hessian";
 const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::DIMER_ROTATION[] =           "dimer_rotation";
 const char Job::DISPLACEMENT_SAMPLING[] =    "displacement_sampling";
+const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -64,6 +52,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new DimerRotationJob(parameters);
     }else if (parameters->job == Job::DISPLACEMENT_SAMPLING) {
         job =  new DisplacementSamplingJob(parameters);
+    }else if (parameters->job == Job::NUDGED_ELASTIC_BAND) {
+        job =  new NudgedElasticBandJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }
