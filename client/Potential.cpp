@@ -49,6 +49,7 @@ const char Potential::POT_EMT[] =           "emt";
 const char Potential::POT_QSC[] =           "qsc";
 const char Potential::POT_ZPICE[] =         "zpice";
 const char Potential::POT_TIP4P[] =         "tip4p";
+const char Potential::POT_SPCE[] =          "spce";
 const char Potential::POT_LENOSKY_SI[] =    "lenosky_si";
 const char Potential::POT_SW_SI[] =         "sw_si";
 const char Potential::POT_TERSOFF_SI[] =    "tersoff_si";
@@ -76,6 +77,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new ZpIce();
     else if(parameters->potential == POT_TIP4P)
         pot = new Tip4p();
+    else if(parameters->potential == POT_SPCE)
+        pot = new SpceCcl();
     #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
