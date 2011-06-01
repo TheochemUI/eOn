@@ -494,7 +494,14 @@ def main():
             sys.exit(1)
 
     if lock.aquirelock():
-        akmc(config)
+        if config.main_job.lower() == 'mpi':
+            from time import sleep
+            while True:
+                akmc(config)
+                sleep(0.1)
+        else:
+            akmc(config)
+                
     else:
         logger.info("the server is locked by pid %i" % lock.pid)
         sys.exit(1)
