@@ -38,13 +38,12 @@ class MinModeExplorer(Explorer):
         self.previous_state = previous_state
         self.comm = communicator.get_communicator()
 
-
         job_table_path = os.path.join(config.path_root, "jobs.tbl")
         job_table_columns = [ 'state', 'wuid', 'type' ]
         self.job_table = io.Table(job_table_path, job_table_columns)
 
         #clean jobs from old states
-        self.job_table.delete_row_func('state', lambda s: s != self.state.number)
+        #self.job_table.delete_row_func('state', lambda s: s != self.state.number)
 
         if config.recycling_on: 
             self.nrecycled = 0
