@@ -15,27 +15,54 @@
 
 using namespace helper_functions;
 
-//const string NEB::OPT_QM = "qm";
-//const string NEB::OPT_CG = "cg";
-//const string NEB::OPT_LBFGS = "lbfgs";
-const char NEB::OPT_QM[] = "qm";
-const char NEB::OPT_CG[] = "cg";
-const char NEB::OPT_LBFGS[] = "lbfgs";
+const char NudgedElasticBand::OPT_QM[] = "qm";
+const char NudgedElasticBand::OPT_CG[] = "cg";
+const char NudgedElasticBand::OPT_LBFGS[] = "lbfgs";
 
-NEB::NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *params)
+NudgedElasticBand::NudgedElasticBand()
 {
-    parameters = params;
+    return;
+}
+
+NudgedElasticBand::~NudgedElasticBand()
+{
+    clean();
+    return;
+}
+
+NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
+{
+    initial = initialPassed;
+    final = finalPassed;
+    initialize(initialPassed, finalPassed, parametersPassed);
+    return;
+}
+
+void NudgedElasticBand::clean(void)
+{
+    for(long i=0; i<images+2; i++) {
+        delete neb[i];
+    }
+    return;
+}
+
+void NudgedElasticBand::initialize(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
+{
+    clean();
+    initial = initialPassed;
+    final = finalPassed;
+    parameters = parametersPassed;
     images = parameters -> nebImages;
     Matter *neb[images+2];
     AtomMatrix tangent[images+2];
 
     for(long i=0; i<images+2; i++){
         neb[i] = new Matter(parameters);
-        *neb[i] = *matterInitial;
+        *neb[i] = *initial;
         tangent[i].resize(nAtoms,3);
     }
-    *neb[images+1] = *matterFinal;  // final image
-    nAtoms = matterInitial->numberOfAtoms();
+    *neb[images+1] = *final;  // final image
+    nAtoms = initial->numberOfAtoms();
     assert(nAtoms == matterFinal->numberOfAtoms());
 
     AtomMatrix posInitial = neb[0]->getPositions();
@@ -50,15 +77,9 @@ NEB::NEB(Matter const *matterInitial, Matter const *matterFinal, Parameters *par
     climbingImage = 0;
 }
 
-NEB::~NEB()
+int NudgedElasticBand::compute(void)
 {
-    for(long i=0; i<images+2; i++) {
-        delete neb[i];
-    }
-}
-
-void NEB::compute(void)
-{
+    int status = 0;
     long iterations = 0;
     // optimizers
     Quickmin *qm[images+2];
@@ -130,11 +151,11 @@ void NEB::compute(void)
             delete cg[i]; }
     }
 
-    return;
+    return status;
 }
 
 // generate the force value which is compared to the convergence criterion
-double NEB::convergenceForce(void)
+double NudgedElasticBand::convergenceForce(void)
 {
     if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
         return neb[climbingImage]->getForces().norm();
@@ -150,7 +171,7 @@ double NEB::convergenceForce(void)
 
 
 // Update the forces, do the projections, and add spring forces
-void NEB::updateForces(void)
+void NudgedElasticBand::updateForces(void)
 {
     // variables for tangent
     double maxDiffEnergy, minDiffEnergy;
