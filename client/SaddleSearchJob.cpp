@@ -96,7 +96,7 @@ void SaddleSearchJob::saveData(int status){
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_tyep\n", parameters->potential.c_str());
+    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());

@@ -17,25 +17,28 @@
 #include "Job.h"
 
 class NudgedElasticBandJob : public Job {
+
     public:
-        NudgedElasticBandJob(Parameters *params);
+
+        NudgedElasticBandJob(Parameters *parametersPassed);
         ~NudgedElasticBandJob(void);
         std::vector<std::string> run(void);
 
     private:
-        int  doNudgedElasticBand();
+
+        // functions
+        int  findMinimumEnergyPath();
         void printEndState(int status);
         void saveData(int status);
 
+        // variables
         std::vector<std::string> returnFiles;
-
         Parameters *parameters;
-        NudgedElasticBand *NudgedElasticBand; 
-        Matter *initial;      // initial configuration.
-        Matter *saddle;       // configuration used during the saddle point search.
-        Matter *displacement; // configuration used during the saddle point search.
+        NudgedElasticBand *neb; 
+        Matter *initial;      // initial configuration
+        Matter *final;        // final configuration
 
-        int fCallsSaddle;
+        int fCallsNEB;
 };
 
 #endif
