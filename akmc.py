@@ -496,8 +496,18 @@ def main():
 
     if lock.aquirelock():
         if config.comm_type == 'mpi':
+            from mpi4py import MPI
             from time import sleep
+            from array import array
+            stopcar_path = os.path.join(config.path_root, "STOPCAR")
+            if os.path.isfile(stopcar_path):
+                os.unlink(stopcar_path)
             while True:
+                if os.path.isfile(stopcar_path):
+                    for i in range(MPI.COMM_WORLD.Get_size()):
+                        buf = array('c', 'STOPCAR\0')
+                        MPI.COMM_WORLD.Isend(buf, i)
+                    break
                 akmc(config)
                 sleep(0.1)
         else:
