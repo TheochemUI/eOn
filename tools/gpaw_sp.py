@@ -112,7 +112,7 @@ while True:
         cell.shape = (3,3)
         positions.shape = (natoms,3)
 
-        atomic_symbols = ''.join([ ase.chemical_symbols[i] for i in atomic_numbers])
+        atomic_symbols = ''.join([ ase.chemical_symbols[int(i)] for i in atomic_numbers])
         atoms = ase.Atoms(atomic_symbols, positions=positions, cell=cell, pbc=pbc)
 
         calc = create_gpaw(my_comm)
