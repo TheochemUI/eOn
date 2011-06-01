@@ -26,6 +26,12 @@ import re
 import numpy
 
 def get_communicator():
+    # This is an ugly hack to "remember" a communicator as it
+    # it isn't possible to construct the MPI communicator multiple
+    # times and it needs to remember its object level variables.
+    if hasattr(get_communicator, 'comm'):
+        return get_communicator.comm
+
     if config.comm_type=='boinc':
         comm = BOINC(config.path_scratch, config.comm_boinc_project_dir, 
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
@@ -49,6 +55,7 @@ def get_communicator():
     else:
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()
+    get_communicator.comm = comm
     return comm
 
 class NotImplementedError(Exception):
