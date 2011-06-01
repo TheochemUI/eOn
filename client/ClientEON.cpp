@@ -150,7 +150,7 @@ int client_main(int argc, char **argv)
 
         int potential_group_size = potentials/clients;
         parameters.MPIPotentialRank = potential_group_size*my_client_number;
-        int *potential_ranks = new int[potential_group_size];
+        int *potential_ranks = new int[potentials];
         int j;
         for (i=0,j=0;i<isize;i++) {
             if (process_types[i] == 2) {
