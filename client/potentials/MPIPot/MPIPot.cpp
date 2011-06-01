@@ -12,6 +12,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 
 MPIPot::MPIPot(Parameters *p)
 {
@@ -48,7 +49,14 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
         throw 123;
     }
 
-    MPI::COMM_WORLD.Recv(U,   1, MPI::DOUBLE, potentialRank, 0);
+    MPI::Request req = MPI::COMM_WORLD.Irecv(U,   1, MPI::DOUBLE, potentialRank, 0);
+    while (req.Test() == false) {
+        struct timespec req, rem; 
+        req.tv_sec=0;
+        req.tv_nsec=5000000;
+        nanosleep(&req, &rem);
+    }
+
     //printf("CLIENT GOT ENERGY: %f\n", U[0]);
     MPI::COMM_WORLD.Recv(F, 3*N, MPI::DOUBLE, potentialRank, 0);
     //printf("CLIENT GOT Force 0: %f %f %f\n", F[0], F[1], F[2]);

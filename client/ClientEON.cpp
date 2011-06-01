@@ -119,7 +119,7 @@ int client_main(int argc, char **argv)
 
         int irank = MPI::COMM_WORLD.Get_rank();
         int isize = MPI::COMM_WORLD.Get_size();
-        printf("client rank: %i size: %i\n", irank, isize);
+        //printf("client rank: %i size: %i\n", irank, isize);
         
         int *process_types = new int[isize];
         int process_type = 1;
@@ -223,7 +223,7 @@ int client_main(int argc, char **argv)
         printf("client: is ready, posting Send!\n");
         MPI::COMM_WORLD.Send(&ready,      1, MPI::INT,  server_rank, 0);
         MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
-        printf("client rank: %i chdir to %s\n", irank, path);
+        printf("client: rank: %i chdir to %s\n", irank, path);
         
         if (chdir(path) == -1) {
             fprintf(stderr, "error: %s\n", strerror(errno));

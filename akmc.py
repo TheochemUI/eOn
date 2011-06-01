@@ -64,6 +64,7 @@ def akmc(config):
     else:
         previous_state = states.get_state(previous_state_num)
 
+
     state_explorer = explorer.MinModeExplorer(states, previous_state, current_state)
     state_explorer.explore()
 
@@ -494,7 +495,7 @@ def main():
             sys.exit(1)
 
     if lock.aquirelock():
-        if config.main_job.lower() == 'mpi':
+        if config.comm_type == 'mpi':
             from time import sleep
             while True:
                 akmc(config)
