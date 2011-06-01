@@ -30,6 +30,7 @@ class Potential
         static const char POT_QSC[];
         static const char POT_ZPICE[];
         static const char POT_TIP4P[];
+        static const char POT_SPCE[];
         static const char POT_LENOSKY_SI[];
         static const char POT_SW_SI[];
         static const char POT_TERSOFF_SI[];
