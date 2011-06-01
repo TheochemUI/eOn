@@ -368,13 +368,13 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");
-            printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Force", "Torque", 
-                   "Energy", "Curvature", "Angle", "Rotations", "Step Size");
+            printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Step Size", "Energy", "Force", "Curvature", 
+                   "Torque", "Angle", "Rotations");
             printf("DIMER ---------------------------------------------------------------------------------------------\n");
         }
         else {
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
-            printf("LANCZOS  %9s  %9s  %9s  %9s\n", "Step", "Force", "Energy", "Step Size");
+            printf("LANCZOS  %9s  %9s  %9s  %9s  %9s\n", "Step", "Step Size", "Energy", "Force", "Curvature");
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
         }
     }
@@ -417,16 +417,14 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         if (parameters->quiet == false) {
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
-                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 10.3f  % 9.3e  % 9.3e  %9d  % 9.3e \n",
-                       iterations, saddle->getForces().norm(),
-                       lowestEigenmode->statsTorque, saddle->getPotentialEnergy(),
-                       lowestEigenmode->statsCurvature, lowestEigenmode->statsAngle,
-                       (int)lowestEigenmode->statsRotations, stepSize);
+                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  %9d\n",
+                       iterations, stepSize, saddle->getPotentialEnergy(), saddle->getForces().norm(), lowestEigenmode->getEigenvalue(), 
+                       lowestEigenmode->statsTorque, lowestEigenmode->statsAngle, (int)lowestEigenmode->statsRotations);
             }
             else 
             {
-                printf("LANCZOS  %9ld  % 9.5f  % 9.5f  % 9.5f\n", iterations,
-                       saddle->getForces().norm(), saddle->getPotentialEnergy(), stepSize);
+                printf("LANCZOS  %9ld  % 9.3f  % 9.3f  % 9.3f  % 9.3f\n", 
+                       iterations, stepSize, saddle->getPotentialEnergy(), saddle->getForces().norm(), lowestEigenmode->getEigenvalue());
             }
         }
         if(parameters->writeMovies){
