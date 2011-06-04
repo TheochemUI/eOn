@@ -3,6 +3,7 @@
 import os
 import gtk
 import gtk.gdk as gdk
+import gtk.glade as glade
 import numpy as np
 import math
 import time
@@ -26,14 +27,19 @@ class atomview(gtk.Window):
         self.connect("key_release_event", self.event_key_released)
         self.connect("key_press_event", self.event_key_pressed)
         self.set_resizable(True)
-        apphbox = gtk.HBox()
-        # Viewing tools
-        vbox = gtk.VBox()
-        button = gtk.CheckButton("show box")
-        vbox.pack_start(button, False, False, 0)
-        apphbox.pack_start(vbox, False, False, 0)        
+        # Glade
+        gladetree = gtk.glade.XML("atomview.glade")
+        gladewindow = gladetree.get_widget("window")
+        self.moviescale = gladetree.get_widget("moviescale")
+        self.moviebutton = gladetree.get_widget("moviebutton")
+        image = gtk.Image()
+        image.set_from_stock(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
+        self.moviebutton.set_image(image)
+        # Events
+        self.moviebutton.connect("toggled", lambda w: self.queue_draw())
+        
         # Drawing area.
-        self.area = gtk.DrawingArea()
+        self.area = gladetree.get_widget("atomview")
         events = 0
         events = events | gdk.EXPOSURE_MASK | gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK
         events = events | gdk.POINTER_MOTION_HINT_MASK | gdk.SCROLL
@@ -45,8 +51,7 @@ class atomview(gtk.Window):
         self.area.connect("motion_notify_event", self.event_mouse_move)
         self.area.connect("scroll_event", self.event_scroll)
         self.area.set_size_request(512, 512)
-        apphbox.pack_start(self.area, True, True, 0)
-        self.add(apphbox)
+        self.add(gladewindow)
         self.show_all()
         self.gui_members()
         self.event_configure()
@@ -55,7 +60,6 @@ class atomview(gtk.Window):
     def gui_members(self):
         self.queue = []
         self.data = None
-        self.lastr = None
         self.radius = 1.5
         self.scale = 8.0
         self.rotation = np.identity(3)
@@ -75,22 +79,8 @@ class atomview(gtk.Window):
         self.screenatoms = []
         self.colors = []
         
-    def gui_update(self):
-        r = self.data.r
-        if self.lastr == None:
-            self.lastr = r
-            self.event_exposed()
-        elif r.shape == self.lastr.shape:
-            if not (self.lastr == self.data.r).all():
-                self.event_exposed()
-        self.lastr = r
-        return True
-
-    
     def gui_key_on(self, key):
         return self.keys.has_key(key)
-
-
 
 #
 # EVENT -----------------------------------------------------------------------------------------
@@ -167,14 +157,6 @@ class atomview(gtk.Window):
             elif event.direction == gdk.SCROLL_DOWN:
                 self.radius *= 0.9
                 self.event_exposed()
-        elif self.gui_key_on("f"):
-            self.fadecheck.set_active(True)
-            if event.direction == gdk.SCROLL_UP:
-                self.depthScale *= 1.1
-                self.event_exposed()
-            elif event.direction == gdk.SCROLL_DOWN:
-                self.depthScale *= 0.9
-                self.event_exposed()
         else:
             if event.direction == gdk.SCROLL_UP:
                 self.scale *= 1.1
@@ -183,18 +165,24 @@ class atomview(gtk.Window):
             self.event_exposed()
         return True
                                                                                     
-
     def event_exposed(self, *args):
         self.gfx_clear()
         self.queue = []
-        self.drawpoint = self.data
+        self.drawpoint = self.data[0]
+        if len(self.data) > 1:
+            self.drawpoint = self.data[int(self.moviescale.get_value())]
         self.gfx_queue_atoms()
         self.gfx_transform_queue()
         self.gfx_sort_queue()
         self.gfx_draw_queue()
         self.area.window.draw_drawable(self.white_gc, self.pixmap, 0, 0, 0, 0, self.width, self.height)
+        if self.moviebutton.get_active() and len(self.data) > 1:
+            nextframe = self.moviescale.get_value() + 1
+            if nextframe > len(self.data) - 1:
+                nextframe = 0
+            self.moviescale.set_value(nextframe)
+            self.queue_draw()
         return True
-                            
 
     def event_close(self, *args):
         gtk.main_quit()
@@ -345,6 +333,12 @@ class atomview(gtk.Window):
 
     def data_set(self, data):
         self.data = data
+        self.moviescale.set_sensitive(False)
+        self.moviescale.set_range(0, 1)
+        if len(self.data) > 1:
+            self.moviescale.set_sensitive(True)
+            self.moviescale.set_range(0, len(self.data) - 1)
+            self.moviescale.connect("value-changed", lambda w: self.queue_draw())
         self.event_exposed()
 
 #
@@ -359,7 +353,7 @@ if __name__ == "__main__":
     import sys
     q = atomview()
     if len(sys.argv) > 1:
-        q.data_set(io.loadcon(sys.argv[1]))
+        q.data_set(io.loadcons(sys.argv[1]))
     gtk.main()
 
 
