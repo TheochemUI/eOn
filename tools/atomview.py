@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 import os
+import math
+import time
+
 import gtk
 import gtk.gdk as gdk
 import gtk.glade as glade
+import gobject
+
 import numpy as np
-import math
-import time
+
 import pathfix
 import atoms
 
@@ -31,19 +35,18 @@ class atomview(gtk.Window):
         gladetree = gtk.glade.XML("atomview.glade")
         gladewindow = gladetree.get_widget("window")
         self.moviescale = gladetree.get_widget("moviescale")
-        self.moviebutton = gladetree.get_widget("moviebutton")
-        image = gtk.Image()
-        image.set_from_stock(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
-        self.moviebutton.set_image(image)
+        self.playbutton = gladetree.get_widget("playbutton")
+        self.pausebutton = gladetree.get_widget("pausebutton")
+        self.boxbutton = gladetree.get_widget("boxbutton")
+        self.resetbutton = gladetree.get_widget("resetbutton")
+        self.fps = gladetree.get_widget("fps")
         # Events
-        self.moviebutton.connect("toggled", lambda w: self.queue_draw())
-        
+        self.playbutton.connect("clicked", self.event_toggle_play, True)
+        self.pausebutton.connect("clicked", self.event_toggle_play, False)
+        self.resetbutton.connect("clicked", lambda w: self.gfx_reset_transform())
+        self.boxbutton.connect("clicked", lambda w: self.queue_draw())
         # Drawing area.
         self.area = gladetree.get_widget("atomview")
-        events = 0
-        events = events | gdk.EXPOSURE_MASK | gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK
-        events = events | gdk.POINTER_MOTION_HINT_MASK | gdk.SCROLL
-        self.area.set_events(events)                             
         self.area.connect("expose_event", self.event_exposed)
         self.area.connect("configure_event", self.event_configure)
         self.area.connect("button_press_event", self.event_button_press)
@@ -56,20 +59,18 @@ class atomview(gtk.Window):
         self.gui_members()
         self.event_configure()
         self.gfx_setup_colors()
+        self.gfx_reset_transform()
 
     def gui_members(self):
+        self.playing = False
         self.queue = []
         self.data = None
-        self.radius = 1.5
-        self.scale = 8.0
-        self.rotation = np.identity(3)
         self.button1 = False
         self.button2 = False
         self.button3 = False
         self.mouselast = (None, None)
         self.background = [0.949, 0.945, 0.941]
         self.keys = {}
-        self.translate = np.array([0.0, 0.0, 16.0])
         self.black_gc = self.area.get_style().black_gc
         self.white_gc = self.area.get_style().white_gc
         self.background_gc = self.gfx_get_color_gc(self.background[0], self.background[1], self.background[2])
@@ -118,13 +119,13 @@ class atomview(gtk.Window):
             if self.button1:
                 self.gfx_rot_x(dy * 0.009)
                 self.gfx_rot_y(dx * 0.009)
-                self.event_exposed()
+                self.queue_draw()
             elif self.button2:
                 self.gfx_rot_z(-dx * 0.0078125)
-                self.event_exposed()
+                self.queue_draw()
             elif self.button3:
                 self.translate += np.array([dx, -dy, 0]) / self.scale / 2
-                self.event_exposed()
+                self.queue_draw()
         return True
 
 
@@ -172,18 +173,23 @@ class atomview(gtk.Window):
         if len(self.data) > 1:
             self.drawpoint = self.data[int(self.moviescale.get_value())]
         self.gfx_queue_atoms()
+        if self.boxbutton.get_active():
+            self.gfx_queue_box()
         self.gfx_transform_queue()
         self.gfx_sort_queue()
         self.gfx_draw_queue()
         self.area.window.draw_drawable(self.white_gc, self.pixmap, 0, 0, 0, 0, self.width, self.height)
-        if self.moviebutton.get_active() and len(self.data) > 1:
+        if self.playing and len(self.data) > 1:
             nextframe = self.moviescale.get_value() + 1
             if nextframe > len(self.data) - 1:
                 nextframe = 0
-            self.moviescale.set_value(nextframe)
-            self.queue_draw()
-        return True
+            gobject.timeout_add(int(1000.0/self.fps.get_value()), self.moviescale.set_value, nextframe)
 
+    def event_toggle_play(self, widget, play):
+        self.playing = play
+        if self.playing:
+            gobject.timeout_add(int(1000.0/self.fps.get_value()), self.queue_draw)
+    
     def event_close(self, *args):
         gtk.main_quit()
         
@@ -202,10 +208,14 @@ class atomview(gtk.Window):
         for i in range(atoms.numElements):
             c = atoms.elements[i]['color']
             self.colors.append(self.gfx_get_color_gc(c[0], c[1], c[2]))
-            
-    def gfx_set_line_width(self, width):
-        self.gc.set_line_attributes(width, gdk.LINE_SOLID, gdk.CAP_ROUND, gdk.JOIN_ROUND)
 
+    def gfx_reset_transform(self):
+        self.radius = 1.5
+        self.scale = 8.0
+        self.rotation = np.identity(3)
+        self.translate = np.array([0.0, 0.0, 16.0])
+        self.queue_draw()
+    
     def gfx_queue_line(self, r1, r2, color, width = 1):
         line = queueitem("line")
         line.r1 = np.copy(r1)
@@ -226,9 +236,34 @@ class atomview(gtk.Window):
             atom.id = i % len(self.drawpoint)
             atom.depth = 0
             self.queue.append(atom)
+
+    def gfx_queue_box(self):
+        try:
+            self.drawpoint.box
+        except:
+            return
+        bx = self.drawpoint.box
+        b = np.array([[0, 0, 0], [bx[1][0], bx[1][1], bx[1][2]], [bx[1][0] +
+                     bx[0][0], bx[1][1] + bx[0][1], bx[1][2] + bx[0][2]],
+                     [bx[0][0], bx[0][1], bx[0][2]], [bx[2][0], bx[2][1],
+                     bx[2][2]], [bx[2][0] + bx[1][0], bx[2][1] + bx[1][1],
+                     bx[2][2] + bx[1][2]], [bx[2][0] + bx[1][0] + bx[0][0],
+                     bx[2][1] + bx[1][1] + bx[0][1], bx[2][2] + bx[1][2] +
+                     bx[0][2]], [bx[2][0] + bx[0][0], bx[2][1] + bx[0][1],
+                     bx[2][2] + bx[0][2]]])
+        index = [[0, 1], [0, 3], [0, 4], [7, 3], [7, 4], [7, 6], [5, 1], [5, 4],
+                 [5, 6], [2, 6], [2, 3], [2, 1]]
+        for i in index:
+            r1 = b[i[0]]
+            r2 = b[i[1]]
+            boxsteps = 4
+            for l in range(boxsteps):
+                self.gfx_queue_line(r1 + (r2 - r1) * float(l) / boxsteps,
+                                    r1 + (r2 - r1) * float(l + 1) /
+                                    boxsteps, [0, 0, 0])
             
-    def gfx_transform_queue(self):
-        r = self.drawpoint.r
+    def gfx_center_atoms(self):
+        r = self.data[0].r
         minx = min(r[:, 0])                         
         miny = min(r[:, 1])                         
         minz = min(r[:, 2])
@@ -238,19 +273,22 @@ class atomview(gtk.Window):
         midx = minx + (maxx - minx) / 2
         midy = miny + (maxy - miny) / 2
         midz = minz + (maxz - minz) / 2            
-        mid = np.array([midx, midy, midz])
+        self.center = np.array([midx, midy, midz])
+        
+            
+    def gfx_transform_queue(self):
         r = self.drawpoint.r
         for i in range(len(self.queue)):
             q = self.queue[i]
             if q.kind == "atom":
-                q.r -= mid
+                q.r -= self.center
                 q.r = np.dot(self.rotation, q.r)
                 q.r += self.translate
                 q.depth = q.r[2]
             else:                                   
-                q.r1 -= mid
-                q.r2 -= mid
-                q.depth -= mid
+                q.r1 -= self.center
+                q.r2 -= self.center
+                q.depth -= self.center
                 q.r1 = np.dot(self.rotation, q.r1)
                 q.r2 = np.dot(self.rotation, q.r2)
                 q.depth = np.dot(self.rotation, q.depth)
@@ -285,7 +323,7 @@ class atomview(gtk.Window):
                 q.r1[1] = -q.r1[1] * self.scale * 2 + self.height * 0.5
                 q.r2[0] = q.r2[0] * self.scale * 2 + self.width * 0.5
                 q.r2[1] = -q.r2[1] * self.scale * 2 + self.height * 0.5
-                self.gfx_draw_line(q.r1[0], q.r1[1], q.r2[0], q.r2[1], q.color, q.width)
+                self.gfx_draw_line(q.r1[0], q.r1[1], q.r2[0], q.r2[1])
 
 
     def gfx_rot_x(self, theta):
@@ -317,10 +355,8 @@ class atomview(gtk.Window):
         self.pixmap.draw_arc(self.colors[element], True, x - r, y - r, r * 2, r * 2, 0, 64 * 360)
         self.pixmap.draw_arc(self.black_gc, False, x - r, y - r, r * 2, r * 2, 0, 64 * 360)
 
-    def gfx_draw_line(self, x1, y1, x2, y2, color, width = 1):
-        self.gfx_set_color(color[0], color[1], color[2])
-        self.gfx_set_line_width(width)
-        self.pixmap.draw_line(self.gc, int(x1), int(y1), int(x2), int(y2))        
+    def gfx_draw_line(self, x1, y1, x2, y2):
+        self.pixmap.draw_line(self.black_gc, int(x1), int(y1), int(x2), int(y2))        
 
 
         
@@ -339,6 +375,7 @@ class atomview(gtk.Window):
             self.moviescale.set_sensitive(True)
             self.moviescale.set_range(0, len(self.data) - 1)
             self.moviescale.connect("value-changed", lambda w: self.queue_draw())
+        self.gfx_center_atoms()
         self.event_exposed()
 
 #
@@ -353,7 +390,10 @@ if __name__ == "__main__":
     import sys
     q = atomview()
     if len(sys.argv) > 1:
-        q.data_set(io.loadcons(sys.argv[1]))
+        data = io.loadposcars(sys.argv[1])
+        if len(data) < 1:
+            data = io.loadcons(sys.argv[1])
+        q.data_set(data)
     gtk.main()
 
 
