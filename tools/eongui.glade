@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glade-interface>
+  <!-- interface-requires gtk+ 2.24 -->
+  <!-- interface-naming-policy project-wide -->
+  <widget class="GtkTable" id="eongui">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="n_rows">7</property>
+    <property name="n_columns">7</property>
+    <property name="column_spacing">4</property>
+    <property name="row_spacing">4</property>
+    <child>
+      <widget class="GtkButton" id="button1">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+        <child>
+          <widget class="GtkImage" id="image1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="stock">gtk-open</property>
+          </widget>
+        </child>
+      </widget>
+      <packing>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkButton" id="button2">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+        <child>
+          <widget class="GtkImage" id="image2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="stock">gtk-save-as</property>
+          </widget>
+        </child>
+      </widget>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="right_attach">2</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkComboBox" id="combobox1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="button_sensitivity">on</property>
+        <property name="items" translatable="yes">lj
+imd
+eam_al
+morse_pt
+emt
+qsc
+zpice
+tip4p
+spce
+lenosky_si
+sw_si
+tersoff_si
+edip
+vasp
+bopfox
+bop
+lammps
+mpi</property>
+      </widget>
+      <packing>
+        <property name="left_attach">4</property>
+        <property name="right_attach">5</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkVSeparator" id="vseparator1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">2</property>
+        <property name="right_attach">3</property>
+        <property name="x_options"></property>
+        <property name="y_options">GTK_FILL</property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkLabel" id="label1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">potential:</property>
+      </widget>
+      <packing>
+        <property name="left_attach">3</property>
+        <property name="right_attach">4</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkVSeparator" id="vseparator2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">5</property>
+        <property name="right_attach">6</property>
+        <property name="x_options"></property>
+        <property name="y_options">GTK_FILL</property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkButton" id="minimize">
+        <property name="label" translatable="yes">minimize</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">6</property>
+        <property name="right_attach">7</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkButton" id="button4">
+        <property name="label" translatable="yes">operation</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">6</property>
+        <property name="right_attach">7</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkButton" id="button3">
+        <property name="label" translatable="yes">operation</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_action_appearance">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">6</property>
+        <property name="right_attach">7</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
+        <property name="x_options"></property>
+        <property name="y_options"></property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <widget class="GtkVSeparator" id="vseparator3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">5</property>
+        <property name="right_attach">6</property>
+        <property name="top_attach">1</property>
+        <property name="bottom_attach">2</property>
+        <property name="x_options"></property>
+      </packing>
+    </child>
+    <child>
+      <widget class="GtkVSeparator" id="vseparator4">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </widget>
+      <packing>
+        <property name="left_attach">5</property>
+        <property name="right_attach">6</property>
+        <property name="top_attach">2</property>
+        <property name="bottom_attach">3</property>
+        <property name="x_options"></property>
+      </packing>
+    </child>
+  </widget>
+</glade-interface>

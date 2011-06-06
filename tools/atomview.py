@@ -24,7 +24,7 @@ class atomview(gtk.Window):
 # GUI -------------------------------------------------------------------------------------------
 #
 
-    def __init__(self):
+    def __init__(self, gui = None):
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
         # Main window
         self.connect("destroy", self.event_close)
@@ -40,6 +40,9 @@ class atomview(gtk.Window):
         self.boxbutton = gladetree.get_widget("boxbutton")
         self.resetbutton = gladetree.get_widget("resetbutton")
         self.fps = gladetree.get_widget("fps")
+        self.holder = gladetree.get_widget("holder")
+        if gui is not None:
+            self.holder.pack_start(gui, False, False, 0)
         # Events
         self.playbutton.connect("clicked", self.event_toggle_play, True)
         self.pausebutton.connect("clicked", self.event_toggle_play, False)
@@ -82,7 +85,7 @@ class atomview(gtk.Window):
         
     def gui_key_on(self, key):
         return self.keys.has_key(key)
-
+        
 #
 # EVENT -----------------------------------------------------------------------------------------
 #
