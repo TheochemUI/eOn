@@ -42,10 +42,8 @@ Now allow ``boincadm`` to use the database by starting ``MySQL``::
 where the ``-p`` only should be used if the *MySQL root* user got a password. In the prompt type::
 
     GRANT ALL ON *.* TO boincadm@localhost; 
-    SET PASSWORD FOR boincadm@localhost=XXX; 
+    SET PASSWORD FOR boincadm@localhost=''; 
     exit
-
-where ``XXX`` represents the password for the *boincadm* user.
 
 Installation
 ------------
