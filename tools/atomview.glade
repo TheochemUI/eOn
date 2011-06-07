@@ -37,27 +37,6 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
               <widget class="GtkButton" id="resetbutton">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -78,6 +57,27 @@
                 <property name="x_options"></property>
                 <property name="y_options"></property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
           </widget>
           <packing>
@@ -283,15 +283,7 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHSeparator" id="hseparator2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
+          <placeholder/>
         </child>
         <child>
           <placeholder/>
