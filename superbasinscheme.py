@@ -161,32 +161,45 @@ class EnergyLevel(SuperbasinScheme):
         self.levels = {}
         SuperbasinScheme.__init__(self,superbasin_path, states, kT)
 
-    def get_energy_increment(self):
-        # implement variable increment according to JC paper
-        return self.energy_increment
+    def get_energy_increment(self, e_min, e_global_min, e_saddle):
+        return self.energy_increment * (e_saddle - e_min) / (e_saddle - e_global_min)
 
+    def get_statelist(self, state):
+        sb = self.get_containing_superbasin(state)
+        if sb:
+            return sb.states
+        else:
+            return [ state ]           
+
+    #start_state and end_state are the non-sb ids. 
     def register_transition(self, start_state, end_state):
         '''Increments the energy level of the end state or sets it equal to the energy 
            of the end_state if it hasn't been visited before.'''
+
+        #error
+        if start_state == end_state:
+            return
+
+        #if the start state does not have an energy level yet, we set it to the energy of the state. 
         if start_state not in self.levels:
             self.levels[start_state] = start_state.get_energy()
         
-        if start_state == end_state:
-            return
-        sb = self.get_containing_superbasin(end_state)
-        if not sb:
-            up_states = [end_state]
-        else:
-            up_states = sb.states
-        for i in up_states:
-            if i not in self.levels:
-                self.levels[i] = i.get_energy() + self.get_energy_increment()
-            else:
-                self.levels[i] += self.get_energy_increment()
+        #if the end state does not have an energy level yet, set it to the energy of the state. 
+        if end_state not in self.levels:
+            self.levels[end_state] = end_state.get_energy()
 
-        #saddle energy is the total energy of the saddle
-        largest_level = max(self.levels[start_state], self.levels[end_state])
-       
+        #determine wheter or not the start and end states belong to a superbasin.
+        #if they belong to a superbasin, we need to know the ids of the states inside
+        #that superbasin to determine the minimum energy state inside the superbasin.
+
+        start_statelist = self.get_statelist(start_state)
+        end_statelist   = self.get_statelist(end_state)
+
+        e_min        = min ( state.get_energy() for state in end_statelist )
+        e_global_min = min ( e_min , ( state.get_energy() for state in start_statelist ) )
+
+        #determine the barrier
+        #(LJ: What happens if there is more then one path between start_state and end_state???)
         barrier = 1e200
         proc_tab = start_state.get_process_table()
         for key in proc_tab:
@@ -196,14 +209,20 @@ class EnergyLevel(SuperbasinScheme):
         if barrier > 1e199:
             logger.warning("Start and end state have no direct connection")
             return
-        
         saddle_energy = barrier + start_state.get_energy()
+
+        #increment the level of the end_state. 
+        for i in end_statelist:
+            self.levels[i] += self.get_energy_increment(e_min, e_global_min, saddle_energy)
+
+        #merge states if one of the two levels is higher than the saddle energy
+        largest_level = max(self.levels[start_state], self.levels[end_state])
+
         if largest_level > saddle_energy:
             self.levels[start_state] = largest_level 
             self.levels[end_state] = largest_level 
-            if sb:
-                for i in sb.states:
-                    self.levels[i] = largest_level
+            for i in end_statelist: #this may also be just [ end_state ]
+                self.levels[i] = largest_level
             self.make_basin([start_state, end_state])
 
 
@@ -224,8 +243,4 @@ class EnergyLevel(SuperbasinScheme):
             f = open(data_path, 'w')
             print >> f, "%f\n" % self.levels[i]
             f.close()
-
-    
-        
-        
 
