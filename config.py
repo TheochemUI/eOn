@@ -17,6 +17,56 @@ import config
 
 config.init_done = False
 
+config.format = []
+
+## New config section; does not affect current code, ignore for now. ===========
+
+class ConfigSection:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self.keys = []
+        
+class ConfigKey:
+    def __init__(self, name, description, kind):
+        self.name = name
+        self.description = description
+        self.kind = kind
+        self.values = []
+
+class ConfigValue:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        
+# Main
+
+tempSection = ConfigSection("Main", "These are the options that go in the 'Main' section of config.ini")
+
+tempKey = ConfigKey("job", "string", "The type of job to execute.")
+tempKey.values.append(ConfigValue("akmc", "Run an adaptive kinetic monte carlo simulation."))
+tempKey.values.append(ConfigValue("parallel_replica", "Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel."))
+
+tempSection.keys.append(tempKey)
+
+tempKey = ConfigKey("temperature", "float", "The temperature that the job will run at.")
+
+tempSection.keys.append(tempKey)
+
+config.format.append(tempSection)
+
+# AKMC
+
+tempSection = ConfigSection("AKMC", "Parameters for the AKMC section of config.ini.")
+
+tempKey = ConfigKey("confidence", "float", "The confidence (out of 1.0) criterion for moving to the next state.")
+
+tempSection.keys.append(tempKey)
+
+config.format.append(tempSection)
+
+## End new config section. =====================================================
+
 def init(config_file = ""):
     if config.init_done:
         return None
