@@ -32,7 +32,7 @@ class atomview(gtk.Window):
         self.connect("key_press_event", self.event_key_pressed)
         self.set_resizable(True)
         # Glade
-        gladetree = gtk.glade.XML("atomview.glade")
+        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/atomview.glade"))
         gladewindow = gladetree.get_widget("window")
         self.moviescale = gladetree.get_widget("moviescale")
         self.playbutton = gladetree.get_widget("playbutton")
@@ -157,10 +157,11 @@ class atomview(gtk.Window):
             
 
     def event_scroll(self, widget, event):
-        if self.gui_key_on("r"):
+        if self.gui_key_on("r"): 
             if event.direction == gdk.SCROLL_UP:
                 self.radius *= 1.1
                 self.event_exposed()
+                
             elif event.direction == gdk.SCROLL_DOWN:
                 self.radius *= 0.9
                 self.event_exposed()
