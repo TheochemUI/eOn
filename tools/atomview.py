@@ -63,8 +63,11 @@ class atomview(gtk.Window):
         self.event_configure()
         self.gfx_setup_colors()
         self.gfx_reset_transform()
+        # Timeout
+        gobject.timeout_add(8, self.event_timeout)
 
     def gui_members(self):
+        self.last_draw = 0.0
         self.playing = False
         self.queue = []
         self.data = None
@@ -182,16 +185,20 @@ class atomview(gtk.Window):
         self.gfx_sort_queue()
         self.gfx_draw_queue()
         self.area.window.draw_drawable(self.white_gc, self.pixmap, 0, 0, 0, 0, self.width, self.height)
-        if self.playing and len(self.data) > 1:
-            nextframe = self.moviescale.get_value() + 1
-            if nextframe > len(self.data) - 1:
-                nextframe = 0
-            gobject.timeout_add(int(1000.0/self.fps.get_value()), self.moviescale.set_value, nextframe)
+        self.last_draw = time.time()
 
     def event_toggle_play(self, widget, play):
         self.playing = play
-        if self.playing:
-            gobject.timeout_add(int(1000.0/self.fps.get_value()), self.queue_draw)
+            
+    def event_timeout(self):
+        if self.playing and len(self.data) > 1:
+            if time.time() - self.last_draw > 1.0/self.fps.get_value():
+                nextframe = self.moviescale.get_value() + 1
+                if nextframe > len(self.data) - 1:
+                    nextframe = 0
+                self.moviescale.set_value(nextframe)
+                self.queue_draw()        
+        return True
     
     def event_close(self, *args):
         gtk.main_quit()
