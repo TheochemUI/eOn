@@ -194,28 +194,27 @@ class MinModeExplorer(Explorer):
             # id - CurrentState_WUID
             # displacement - an atoms object containing the point the saddle search will start at
             # mode - an Nx3 numpy array containing the initial mode 
+            search['id'] = "%d_%d" % (self.state.number, self.wuid)
             if config.displace_auto:
-                search['id'] = "%d_%d" % (self.state.number, self.wuid)
                 stddev = config.disp_magnitude
                 if self.stdcount > 0:
-                    avgstddev = self.stdsum / self.stdcount
-                    uniform = max(0.0, abs(1.0 - (self.stdcount/100.0))) * avgstddev
-                    if uniform == 0.0:
-                        stddev = avgstddev
-                    else:
-                        stddev = numpy.random.uniform(avgstddev - uniform*0.5, avgstddev + uniform*0.5)
+                    stddev = self.stdsum / self.stdcount
                 self.displace.stddev = stddev
             displacement, mode, disp_type = self.generate_displacement()
+            displacement_vector = (self.reactant.r - displacement.r).ravel()
+            displacement_values = []
+            for j in range(len(displacement_vector)):
+                if displacement_vector[j] != 0.0:
+                    displacement_values.append(displacement_vector[j])
             self.job_table.add_row( {'state':self.state.number,
                                      'wuid':self.wuid,
                                      'type':disp_type,
-                                     'stddev':stddev} )
+                                     'stddev':numpy.std(displacement_values)} )
 
             if displacement:
                 dispIO = StringIO.StringIO()
                 io.savecon(dispIO, displacement)
                 search['displacement_passed.con'] = dispIO
-                
                 modeIO = StringIO.StringIO()
                 io.save_mode(modeIO, mode, self.reactant)
                 search['mode_passed.dat'] = modeIO
