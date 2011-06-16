@@ -148,14 +148,7 @@ class MinModeExplorer(Explorer):
                 return displacement, mode, 'recycling'
 
         if config.kdb_on:
-            # Set up the path for keeping the suggestion if config.kdb_keep is set.
-            #XXX: Should this code be in kdbing.py/kdb.py?
-            keep_path = None
-            if config.kdb_keep:
-                if not os.path.isdir(os.path.join(self.state.path, "kdbsuggestions")):
-                    os.mkdir(os.path.join(self.state.path, "kdbsuggestions"))
-                keep_path = os.path.join(self.state.path, "kdbsuggestions", str(self.wuid))
-            displacement, mode = self.kdber.make_suggestion(keep_path)
+            displacement, mode = self.kdber.make_suggestion()
             if displacement:
                 return displacement, mode, 'kdb'
                 logger.info('Made a KDB suggestion')
