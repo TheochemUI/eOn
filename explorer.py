@@ -209,7 +209,7 @@ class MinModeExplorer(Explorer):
             self.job_table.add_row( {'state':self.state.number,
                                      'wuid':self.wuid,
                                      'type':disp_type,
-                                     'stddev':numpy.std(displacement_values)} )
+                                     'stddev':float(numpy.std(displacement_values))} )
 
             if displacement:
                 dispIO = StringIO.StringIO()
