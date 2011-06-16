@@ -134,8 +134,10 @@ double BondBoost::boost()
         AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
         //   printf("AVE_BOOST_FACT=%E;nReg = %ld\n",AVE_Boost_Fact,nReg);
         //  printf("nReg=%ld, boost_dt = %lf,SPtime = %lf\n",nReg-1,boost_dt,SPtime);
+        //STC: I'm not sure if this is safe, but this should plug the memory
+        //     leak.
+        delete Epsr_Q;
     }
-
     return boost_dt;
 }
 
