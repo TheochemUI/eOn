@@ -234,7 +234,8 @@ int Parameters::load(FILE *file){
         if(saddleDisplaceType != SaddlePoint::DISP_NOT_FCC_OR_HCP &&
            saddleDisplaceType != SaddlePoint::DISP_MIN_COORDINATED && 
            saddleDisplaceType != SaddlePoint::DISP_LAST_ATOM && 
-           saddleDisplaceType != SaddlePoint::DISP_RANDOM){saddleDisplaceType = SaddlePoint::DISP_LOAD;
+           saddleDisplaceType != SaddlePoint::DISP_RANDOM){
+                saddleDisplaceType = SaddlePoint::DISP_LOAD;
         }
 
         // [Optimizers] //
@@ -255,7 +256,7 @@ int Parameters::load(FILE *file){
         dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
         dimerOptMethod = toLowerCase(ini.GetValue("Dimer", "opt_method", "sd"));
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin); // old
-        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax); // old
+        dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax); // old & new
         dimerTorqueMin = ini.GetValueF("Dimer", "torque_min", dimerTorqueMin); // old
         dimerTorqueMax = ini.GetValueF("Dimer", "torque_max", dimerTorqueMax); // old
 
