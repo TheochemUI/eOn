@@ -202,7 +202,6 @@ def init(config_file = ""):
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
     config.kdb_path = parser.get('Paths', 'kdb')
     config.kdb_wait = parser.get('KDB', 'wait')
-    config.kdb_keep = parser.get('KDB', 'keep')
     config.kdb_addpath = parser.get('KDB', 'addpath')
     if config.kdb_addpath == "False":
         config.kdb_addpath = os.path.join(os.path.dirname(__file__), "kdb", "kdbinsert.py")
