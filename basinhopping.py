@@ -94,8 +94,8 @@ def make_searches(comm, wuid, min_energy_con_path):
     #invariants['reactant_passed.con']=reactIO
     
     ini_changes = [ ('Main', 'job', 'basin_hopping') ]
-    invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
-    invariants['reactant_passed.con']  = reactIO
+    #invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+    #invariants['reactant_passed.con']  = reactIO
 
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
@@ -104,9 +104,9 @@ def make_searches(comm, wuid, min_energy_con_path):
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d" % wuid
-        param_ini_str = "[Main]\nrandom_seed=%i\n" % int(numpy.random.random()*10**9)
-        paramIO = StringIO(param_ini_str)
-        search['config_passed.ini'] = paramIO
+        ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
+        search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+        search['reactant_passed.con'] = reactIO
         searches.append(search)
         wuid += 1
 
