@@ -776,7 +776,6 @@ def init(config_file = ""):
 
     #Saddle Search options
     config.disp_type = parser.get('Saddle Search', 'displace_type')
-    config.displace_auto = parser.getboolean('Saddle Search', 'displace_auto')
     if config.disp_type == 'water':
         config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
         config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented

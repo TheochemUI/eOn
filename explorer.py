@@ -17,8 +17,6 @@ class Explorer:
     def __init__(self):
         self.wuid_path = os.path.join(config.path_scratch, "wuid")
         self.load_wuid()
-        self.autostd_path = os.path.join(config.path_scratch, "autostd")
-        self.load_autostd()
 
     def load_wuid(self):
         try:
@@ -28,25 +26,9 @@ class Explorer:
         except IOError:
             self.wuid = 0
 
-    def load_autostd(self):
-        try:
-            f = open(self.autostd_path)
-            line = f.read()
-            self.stdsum = float(line.split()[0])
-            self.stdcount = int(line.split()[1])
-            f.close()
-        except IOError:
-            self.stdsum = 0.0
-            self.stdcount = 0
-
     def save_wuid(self):
         f = open(self.wuid_path, 'w')
         f.write("%i\n" % self.wuid)
-        f.close()
-
-    def save_autostd(self):
-        f = open(self.autostd_path, 'w')
-        f.write("%f %d\n" % (self.stdsum, self.stdcount))
         f.close()
 
 class MinModeExplorer(Explorer):
@@ -58,7 +40,7 @@ class MinModeExplorer(Explorer):
         self.comm = communicator.get_communicator()
 
         job_table_path = os.path.join(config.path_root, "jobs.tbl")
-        job_table_columns = [ 'state', 'wuid', 'type', 'stddev' ]
+        job_table_columns = [ 'state', 'wuid', 'type']
         self.job_table = io.Table(job_table_path, job_table_columns)
 
         #clean jobs from old states
@@ -188,21 +170,10 @@ class MinModeExplorer(Explorer):
             # displacement - an atoms object containing the point the saddle search will start at
             # mode - an Nx3 numpy array containing the initial mode 
             search['id'] = "%d_%d" % (self.state.number, self.wuid)
-            if config.displace_auto:
-                stddev = config.disp_magnitude
-                if self.stdcount > 0:
-                    stddev = self.stdsum / self.stdcount
-                self.displace.stddev = stddev
             displacement, mode, disp_type = self.generate_displacement()
-            displacement_vector = (self.reactant.r - displacement.r).ravel()
-            displacement_values = []
-            for j in range(len(displacement_vector)):
-                if displacement_vector[j] != 0.0:
-                    displacement_values.append(displacement_vector[j])
             self.job_table.add_row( {'state':self.state.number,
                                      'wuid':self.wuid,
-                                     'type':disp_type,
-                                     'stddev':float(numpy.std(displacement_values))} )
+                                     'type':disp_type } )
 
             if displacement:
                 dispIO = StringIO.StringIO()
@@ -274,7 +245,6 @@ class MinModeExplorer(Explorer):
             # Store information about the search into result_data for the 
             # search_results.txt file in the state directory.
             job_type = self.job_table.get_row('wuid', id)['type']
-            stddev = self.job_table.get_row('wuid', id)['stddev']
             result['type'] = job_type
             if job_type == None:
                 logger.warning("Could not find search data for search %s" 
@@ -287,10 +257,6 @@ class MinModeExplorer(Explorer):
             result['results'] = io.parse_results(result['results.dat'])
             if result['results']['termination_reason'] == 0:
                 self.state.add_process(result)
-                if job_type == 'random':
-                    self.stdsum += stddev
-                    self.stdcount += 1
-                    self.save_autostd()
             else:
                 self.state.register_bad_saddle(result, config.debug_keep_bad_saddles)
             num_registered += 1
