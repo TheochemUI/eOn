@@ -37,6 +37,7 @@ SaddlePoint::SaddlePoint()
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
     eigenValue = 0;
+    foundNegativeMode = false;
     return;
 }
 
@@ -70,6 +71,8 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     clean();
     initial = initialPassed;
     saddle = saddlePassed;
+    initialDisplacement = saddlePassed->getPositions() - initialPassed->getPositions();
+    initialDisplacement /= initialDisplacement.norm();
     parameters = parametersPassed;
     eigenMode.resize(saddlePassed->numberOfAtoms(), 3);
     eigenMode.setZero();
@@ -274,34 +277,6 @@ AtomMatrix SaddlePoint::projectedForce(AtomMatrix force){
     return force;
 }
 
-/*
-void SaddlePoint::relaxFromSaddle(Matter *min1, Matter *min2){
-
-    AtomMatrix posSaddle = saddle->getPositions();
-
-    AtomMatrix displacedPos;
-    //----- Initialize end -----
-    //std::cout<<"relaxFromSaddle\n";
-
-    // Displace saddle point configuration along the lowest eigenmode and minimize
-    *min1 = *saddle;
-    //XXX: the distance displaced from the saddle should be a parameter
-    displacedPos = posSaddle - eigenMode * 0.2;
-    min1->setPositions(displacedPos);
-    ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.fullRelax();
-    forceCallsMinimization += cgMin1.totalForceCalls;
-
-    *min2 = *saddle;
-    displacedPos = posSaddle + eigenMode * 0.2;
-    min2->setPositions(displacedPos);
-    ConjugateGradients cgMin2(min2, parameters);  
-    cgMin2.fullRelax();
-    forceCallsMinimization += cgMin2.totalForceCalls;
-
-    return;
-}
-*/
 
 void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
     if(0 < eigenvalue)
@@ -355,7 +330,8 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         initial->matter2con(climb.str(), false);
         saddle->matter2con(climb.str(), true);
     }
-    if (parameters->quiet == false) {
+    if (parameters->quiet == false)
+    {
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
             printf("DIMER ---------------------------------------------------------------------------------------------\n");
@@ -363,7 +339,8 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                    "Torque", "Angle", "Rotations");
             printf("DIMER ---------------------------------------------------------------------------------------------\n");
         }
-        else {
+        else 
+        {
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
             printf("LANCZOS  %9s  %9s  %9s  %9s  %9s\n", "Step", "Step Size", "Energy", "Force", "Curvature");
             printf("LANCZOS ---------------------------------------------------------------------------------------\n");
@@ -372,16 +349,23 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
-        posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
-        // Determining the optimal step
-        saddle->setPositions(posStep);
-        forcesStep = saddle->getForces();
-        forcesStep = projectedForce(forcesStep);
-
-        maxStep = parameters->saddleMaxStepSize;
-        pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-        double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
+        if(eigenValue < -parameters->saddleNonzeroMode or foundNegativeMode)
+        {
+            // Determine a CG step.
+            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
+            saddle->setPositions(posStep);
+            forcesStep = saddle->getForces();
+            forcesStep = projectedForce(forcesStep);
+            maxStep = parameters->saddleMaxStepSize;
+            pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+            foundNegativeMode = true;
+        }
+        else
+        {
+            pos = saddle->getPositions() + initialDisplacement * parameters->saddleConcaveStepSize;
+        }
         // The system (saddle) is moved to a new configuration
+        double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
         saddle->setPositions(pos);
         forces = saddle->getForces();
         // The new lowest eigenvalue
@@ -403,22 +387,29 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         }
         forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
         addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
-
         iterations++;
-        if (parameters->quiet == false) {
+        if (parameters->quiet == false) 
+        {
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
                 printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  %9d\n",
-                       iterations, stepSize, saddle->getPotentialEnergy(), saddle->getForces().norm(), lowestEigenmode->getEigenvalue(), 
-                       lowestEigenmode->statsTorque, lowestEigenmode->statsAngle, (int)lowestEigenmode->statsRotations);
+                       iterations, stepSize, saddle->getPotentialEnergy(),
+                       saddle->getForces().norm(),
+                       lowestEigenmode->getEigenvalue(),
+                       lowestEigenmode->statsTorque,
+                       lowestEigenmode->statsAngle,
+                       (int)lowestEigenmode->statsRotations);
             }
             else 
             {
                 printf("LANCZOS  %9ld  % 9.3f  % 9.3f  % 9.3f  % 9.3f\n", 
-                       iterations, stepSize, saddle->getPotentialEnergy(), saddle->getForces().norm(), lowestEigenmode->getEigenvalue());
+                       iterations, stepSize, saddle->getPotentialEnergy(),
+                       saddle->getForces().norm(),
+                       lowestEigenmode->getEigenvalue());
             }
         }
-        if(parameters->writeMovies){
+        if(parameters->writeMovies)
+        {
             saddle->matter2con(climb.str(), true);
         }
         energySaddle = saddle->getPotentialEnergy();
