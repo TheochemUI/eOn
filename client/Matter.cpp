@@ -623,7 +623,6 @@ bool Matter::matter2con(FILE *file) const
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
-cerr<<mass[j];
     }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
