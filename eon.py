@@ -8,10 +8,7 @@ import parallelreplica
 import sys
 
 def main():
-    if len(sys.argv) > 1:
-        config.init(sys.argv[1])
-    else:
-        config.init()
+    config.init()
     job = config.main_job.lower()
     if job == 'akmc':
         akmc.main()
