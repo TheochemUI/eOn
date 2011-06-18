@@ -12,6 +12,8 @@ import pathfix
 if __name__ == "__main__":
 
     op = optparse.OptionParser(usage = "%prog [options] <input con file> <potential> <output con file>")
+    op.add_option("--box", action="store_true", dest="box", default=False,
+                  help="relax the box along with the atomic coordinates")
     (options, args) = op.parse_args()
     if len(args) < 3:
         op.print_help()
@@ -27,6 +29,9 @@ if __name__ == "__main__":
     
     config.set("Main", "potential", args[1])
     config.set("Main", "job", "minimization")
+    if options.box:
+        config.add_section('Optimizers')
+        config.set("Optimizers", "opt_method", "box")
     
     cf = open(os.path.join(td, "config_passed.ini"), 'w')
     config.write(cf)
