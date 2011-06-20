@@ -232,7 +232,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
         j++;
     }
 
-    //XXX: There is probably a more idomatic way to do this with Eigen
+    //XXX: There is probably a more idiomatic way to do this with Eigen
     for(int i = 0; i < 3 * nAtoms; i++)
     {
         if(parameters->saddleMaxSingleDisplace < initialDisplace[i])
@@ -349,7 +349,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
-        if(eigenValue < -parameters->saddleNonzeroMode or foundNegativeMode)
+        if(eigenValue < -parameters->saddleNonzeroMode || foundNegativeMode && parameters->saddlePushDisplacement)
         {
             // Determine a CG step.
             posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);

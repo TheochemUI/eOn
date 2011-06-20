@@ -73,7 +73,7 @@ public:
     int    saddleMaxLocalizedAtoms; // maximum number of atoms to consider part of the mode
     double saddleNonzeroMode; // The cutoff for a the magnitude of a mode to be considered nonzero.
     double saddleConcaveStepSize; // The size of the step to take in a concave region.
-
+    bool   saddlePushDisplacement; // Step along displacement vector until a negative mode is found.
     // [Optimizers]
     string optMethod;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
