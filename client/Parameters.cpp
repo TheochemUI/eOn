@@ -142,7 +142,7 @@ Parameters::Parameters(){
     thermoLangvinFriction = 0.005;
 
     // [Basin Hopping] //
-    basinHoppingStepSize = 0.1;
+    basinHoppingMaxDisplacement = 0.5;
     basinHoppingSteps = 10000;
     basinHoppingSingleAtomDisplace = false;
     basinHoppingStayMinimized = false;
@@ -337,7 +337,7 @@ int Parameters::load(FILE *file){
 
         // [Basin Hopping] //
 
-        basinHoppingStepSize = ini.GetValueF("Basin Hopping", "step_size", basinHoppingStepSize);
+        basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized", basinHoppingStayMinimized);
