@@ -156,7 +156,7 @@ public:
     double bondBoostQcut;
 
     // [Basin Hopping]
-    double basinHoppingStepSize;
+    double basinHoppingMaxDisplacement;
     long   basinHoppingSteps;
     bool   basinHoppingStayMinimized;
     bool   basinHoppingSingleAtomDisplace;
