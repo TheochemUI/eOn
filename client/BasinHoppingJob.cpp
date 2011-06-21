@@ -154,7 +154,9 @@ AtomMatrix BasinHoppingJob::displaceRandom()
         {
             if(!trial->getFixed(i))
             {
-                displacement(i, j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
+		double md = parameters->basinHoppingMaxDisplacement;
+                displacement(i, j) = randomDouble(2*md) - md;
+		
             }
         }
     }
@@ -176,7 +178,8 @@ AtomMatrix BasinHoppingJob::displaceSingle()
 
     for(int j = 0; j < 3; j++)
     {
-        displacement(ra,j) = gaussRandom(0.0, parameters->basinHoppingStepSize);
+	double md = parameters->basinHoppingMaxDisplacement;
+        displacement(ra,j) = randomDouble(2*md) - md;
     }
 
     return displacement;

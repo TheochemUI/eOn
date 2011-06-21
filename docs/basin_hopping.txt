@@ -6,11 +6,12 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
 These are options that go in the **[Basin Hopping]** section of "config.ini".
 
-**step_size**
+**max_displacement**
 
-    Default: *0.1*
+    Default: *0.5*
 
-    Mean displacement in each degree of freedom
+    The displacement along each degree of freedom is in the interval [-max_displacement, 
+max_displacement].
 
 **steps**
 
