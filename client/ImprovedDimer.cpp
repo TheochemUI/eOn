@@ -177,10 +177,8 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
             statsRotations += 1;
 
-            #ifndef NDEBUG
-                printf("IDIMERRT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
-                F_R.norm(), C_tau, phi_min * (180.0 / M_PI), statsRotations);
-            #endif
+            printf("IDIMERRT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
+                   F_R.norm(), C_tau, phi_min * (180.0 / M_PI), statsRotations);
 
         }
 
