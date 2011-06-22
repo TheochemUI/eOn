@@ -349,7 +349,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
-        if(eigenValue < -parameters->saddleNonzeroMode || foundNegativeMode && parameters->saddlePushDisplacement)
+        if((eigenValue < -parameters->saddleNonzeroMode || foundNegativeMode) || !parameters->saddlePushDisplacement)
         {
             // Determine a CG step.
             posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
