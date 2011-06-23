@@ -223,7 +223,7 @@ def main():
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch]
+                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_bh_minima]
                 for i in rmdirs:
                     if os.path.isdir(i):
                         shutil.rmtree(i)
