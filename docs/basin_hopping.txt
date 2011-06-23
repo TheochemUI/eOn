@@ -10,12 +10,43 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
 
     Default: *0.5*
 
-    The displacement along each degree of freedom is in the interval [-max_displacement, 
-max_displacement].
+    The displacement along each degree of freedom is in the interval **[-max_displacement, 
+    max_displacement]**.
+
+**max_displacement_algorithm**
+
+    Default: *standard*
+
+    The algorithm used to assign max displacement of each atom.  In
+    the standard algorithm, the max displacement of all the atoms will
+    be the value assigned in **max_displacement**.  The linear and
+    quadratic algorithms assign the max displacement of each atom as a
+    function of its distance from the geometric center, with the
+    overal maximum displacement being the value assigned in
+    **max_displacement**.
 
 **steps**
 
     Default: *10000*
 
-    Total number of steps.
+    Number of steps taken at the temperature assigned.
 
+**quenching_steps**
+
+    Default: *0*
+
+    Number of steps taken at 0 Kelvin to quench the lowest energy
+    configuration.
+
+**single_atom_displace**
+
+    Default: *false*
+
+    When **True**, only one random atom is displaced in each step.
+
+**stay_minimized**
+
+    Default: *false*
+
+    When *true*, displacement is applied to the minimized structure
+    after each step.

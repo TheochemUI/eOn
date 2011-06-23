@@ -46,8 +46,52 @@ BasinHoppingJob::~BasinHoppingJob()
     delete trial;
 }
 
+VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
+{
+  AtomMatrix pos = matter->getPositions();
+  double cenx = 0;
+  double ceny = 0;
+  double cenz = 0;
+  for(int k=0; k<matter->numberOfAtoms(); k++)
+    {
+      cenx = cenx + pos(k,0);
+      ceny = ceny + pos(k,1);
+      cenz = cenz + pos(k,2);
+    }
+  int num = matter->numberOfAtoms();
+  cenx = cenx / num;
+  ceny = ceny / num;
+  cenz = cenz / num;
+
+  // printf ("%.3f\n", cenx);
+  //printf ("%.3f\n", ceny);
+  //printf ("%.3f\n", cenz);
+  double cen[] = {cenx, ceny, cenz};
+
+  VectorXd dist(num);
+  for(int i = 0; i < num; i++)
+    {
+       
+	 
+	  for(int l = 0; l < num; l++)
+	    {
+	      double xd = pos(l,0)-cen[0];
+	      double yd = pos(l,1)-cen[1];
+	      double zd = pos(l,2)-cen[2];
+	      xd = xd*xd;
+	      yd = yd*yd;
+	      zd = zd*zd;
+	      dist(l) = sqrt(xd + yd + zd);
+	    }
+
+    }
+  return dist;
+}
+
 std::vector<std::string> BasinHoppingJob::run(void)
 {
+    printf("Hello\n");
+
     Matter *tmpMatter = new Matter(parameters);
 
     current->con2matter("reactant_passed.con");
@@ -63,20 +107,18 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     Matter *minimumEnergyStructure = new Matter(parameters);
     *minimumEnergyStructure = *current;
+    int nsteps = parameters->basinHoppingSteps + parameters->basinHoppingQuenchingSteps;
 
-    for (int step=0; step<parameters->basinHoppingSteps; step++)
+    for (int step=0; step<nsteps; step++)
     {
-
+      if (step==parameters->basinHoppingSteps+1)
+	{
+	  parameters->temperature = 0;
+	}
         AtomMatrix displacement;
-        if(parameters->basinHoppingSingleAtomDisplace)
-        {
-            displacement = displaceSingle();
-        }
-        else
-        {
-            displacement = displaceRandom();
-        }
-
+       
+        displacement = displaceRandom();
+ 
         trial->setPositions(current->getPositions() + displacement);
 
         *tmpMatter = *trial;
@@ -147,40 +189,53 @@ AtomMatrix BasinHoppingJob::displaceRandom()
     AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
-
-    for(int i = 0; i < trial->numberOfAtoms(); i++)
-    {
-        for(int j = 0; j < 3; j++)
+    double md = parameters->basinHoppingMaxDisplacement;
+    VectorXd distvec = calculateDistanceFromCenter(current);
+    int num = trial->numberOfAtoms();
+    int m = 0;
+    if(parameters->basinHoppingSingleAtomDisplace)
         {
+	  m = (long)random(trial->numberOfAtoms());
+	  num = m + 1;
+	}
+
+
+
+    for(int i = m; i < num; i++)
+    {
+	    double dist = distvec(i);
+	    double mdp = 0.0;
+
             if(!trial->getFixed(i))
             {
-		double md = parameters->basinHoppingMaxDisplacement;
-                displacement(i, j) = randomDouble(2*md) - md;
-		
-            }
-        }
+              if(parameters->basinHoppingMaxDisplacementAlgorithm=="standard")
+                {
+		  mdp = md;
+		  //  printf("%i %.3f\n", i, mdp);
+                }
+              else if(parameters->basinHoppingMaxDisplacementAlgorithm=="linear")
+	        {
+                double Cs = md/distvec.maxCoeff();
+		mdp = Cs*dist;
+	        //printf("%i %.3f %.3f %.3f\n", i, dist, dist*Cs, Cs);
+                }
+              else if(parameters->basinHoppingMaxDisplacementAlgorithm=="quadratic")
+		{
+	        double Cq = md/(distvec.maxCoeff()*distvec.maxCoeff());
+		mdp = Cq*dist*dist;
+	        //printf("%i %.3f %.3f %.3f\n", i, dist, dist*dist*Cq, Cq);
+		}
+	      else
+		{
+		printf("Unknown max_displacement_algorithm\n");
+		exit(1);
+		}
+	      for(int j=0; j<3; j++)
+		{
+                  displacement(i, j) = randomDouble(2*mdp) - mdp;
+		}
+	      
+	    }
     }
-    return displacement;
-}
-
-AtomMatrix BasinHoppingJob::displaceSingle()
-{
-    // Create a random displacement.
-    AtomMatrix displacement;        
-    displacement.resize(trial->numberOfAtoms(), 3);
-    displacement.setZero();
-    
-    long ra = (long)randomDouble(trial->numberOfAtoms());
-    while(trial->getFixed(ra))
-    {
-        ra = (long)random(trial->numberOfAtoms());
-    }
-
-    for(int j = 0; j < 3; j++)
-    {
-	double md = parameters->basinHoppingMaxDisplacement;
-        displacement(ra,j) = randomDouble(2*md) - md;
-    }
-
     return displacement;
 }

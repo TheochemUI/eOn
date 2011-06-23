@@ -144,8 +144,10 @@ Parameters::Parameters(){
     // [Basin Hopping] //
     basinHoppingMaxDisplacement = 0.5;
     basinHoppingSteps = 10000;
+    basinHoppingQuenchingSteps = 0;
     basinHoppingSingleAtomDisplace = false;
     basinHoppingStayMinimized = false;
+    basinHoppingMaxDisplacementAlgorithm = "standard";
 
     // MPI
     MPIPotentialRank = -1;
@@ -339,8 +341,10 @@ int Parameters::load(FILE *file){
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
+	basinHoppingQuenchingSteps = ini.GetValueF("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingStayMinimized = ini.GetValueB("Basin Hopping", "stay_minimized", basinHoppingStayMinimized);
+	basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
 
     }
     else
