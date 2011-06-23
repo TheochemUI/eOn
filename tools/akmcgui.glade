@@ -38,7 +38,7 @@
           <widget class="GtkHScale" id="stateScale">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="adjustment">0 0 100 1 5 0</property>
+            <property name="adjustment">0 0 100 1 3 0</property>
             <property name="round_digits">0</property>
             <property name="digits">0</property>
           </widget>
@@ -126,12 +126,13 @@
                   <widget class="GtkSpinButton" id="state_fpsSB">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="editable">False</property>
                     <property name="invisible_char">•</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
-                    <property name="adjustment">1 0 100 1 10 0</property>
+                    <property name="adjustment">1 1 100 1 10 0</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -147,7 +148,22 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkButton" id="energy_plotButton">
+                    <property name="label" translatable="yes">Energy Plot</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
               </widget>
@@ -181,6 +197,7 @@
                   <widget class="GtkSpinButton" id="processesSB">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="editable">False</property>
                     <property name="invisible_char">•</property>
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">True</property>
@@ -215,6 +232,7 @@
                   <widget class="GtkSpinButton" id="interpolationSB">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="editable">False</property>
                     <property name="invisible_char">•</property>
                     <property name="invisible_char_set">True</property>
                     <property name="primary_icon_activatable">True</property>
@@ -249,6 +267,12 @@
         <property name="fill">True</property>
         <property name="position">2</property>
       </packing>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="plotWindow">
+    <property name="can_focus">False</property>
+    <child>
+      <placeholder/>
     </child>
   </widget>
 </glade-interface>
