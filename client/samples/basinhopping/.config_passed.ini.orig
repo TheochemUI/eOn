@@ -6,13 +6,9 @@ JOB=basin_hopping
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
-
 potential=eam_al
-
-temperature=100
+temperature=500
 
 [Basin Hopping]
-step_size=0.1
+max_displacement=0.5
 steps=100
-single_atom_displace=false
-stay_minimized=false
