@@ -16,13 +16,18 @@ import atomview
 import atoms
 import glob
 
+import pylab as p
+from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as drawArea
+from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
+
+
 class akmcgui(atomview.atomview):
 
 
 
     
     def __init__(self):
-        # Glade
+        # imports from glade
         gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/akmcgui.glade"))
         gui = gladetree.get_widget("akmcgui")
         atomview.atomview.__init__(self, gui)
@@ -35,14 +40,21 @@ class akmcgui(atomview.atomview):
         self.stateEnergy = gladetree.get_widget("stateEnergy")
         self.statePlayTB = gladetree.get_widget("statePlayTB")
         self.state_fpsSB = gladetree.get_widget("state_fpsSB")
-        #defaulting options
+        self.plotWindow = gladetree.get_widget("plotWindow")
+        self.energy_plotButton = gladetree.get_widget("energy_plotButton")
+        # defaults
         self.processesSB.set_sensitive(False)
         self.interpolationCB.set_sensitive(False)
         self.interpolationSB.set_sensitive(False)
         self.changeImage()
         self.energy_changed()
         self.state_fpsSB.set_value(1)
-        #event handeling
+        self.playImage = gtk.Image()
+        self.playImage.set_from_stock(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
+        self.pauseImage = gtk.Image()
+        self.pauseImage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
+        self.statePlayTB.set_image(self.playImage)
+        # event handeling
         self.stateRB.connect("clicked", self.changeImage)
         self.processesRB.connect("clicked", self.changeImage)
         self.interpolationCB.connect("toggled", self.changeImage)
@@ -55,12 +67,9 @@ class akmcgui(atomview.atomview):
         self.stateScale.connect("value-changed", self.energy_changed)
         self.statePlayTB.connect("toggled", self.state_play)
         self.state_fpsSB.connect("value-changed", self.state_play)
+        self.energy_plotButton.connect("clicked", self.energy_plot)
         
-        self.playImage = gtk.Image()
-        self.playImage.set_from_stock(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_BUTTON)
-        self.pauseImage = gtk.Image()
-        self.pauseImage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
-        self.statePlayTB.set_image(self.playImage)
+        
         
 
 #
@@ -75,7 +84,6 @@ class akmcgui(atomview.atomview):
                 i+=1    
             numStates = i-1
             self.stateScale.set_range(0, numStates)
-        
             datapass = io.loadcons("states/%d/reactant.con" % self.stateScale.get_value())
         else: 
             if self.interpolationCB.get_active() == False:
@@ -90,8 +98,6 @@ class akmcgui(atomview.atomview):
                 else:
                     self.processesSB.set_sensitive(True)            
                     self.processesSB.set_range(0, numProcesses)
-                
-                
                 saddle = io.loadcon("states/%d/procdata/saddle_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
                 reactant = io.loadcon("states/%d/procdata/reactant_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
                 product = io.loadcon("states/%d/procdata/product_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
@@ -108,15 +114,14 @@ class akmcgui(atomview.atomview):
                 else:
                     self.processesSB.set_sensitive(True)            
                     self.processesSB.set_range(0, numProcesses)
-            
                 saddle = io.loadcon("states/%d/procdata/saddle_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
                 reactant = io.loadcon("states/%d/procdata/reactant_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
                 product = io.loadcon("states/%d/procdata/product_%d.con" %(self.stateScale.get_value(), self.processesSB.get_value()))
                 datapass = [reactant, saddle, product]
-                N = int (self.interpolationSB.get_text())
+                N = int (self.interpolationSB.get_text())+1
                 p = [reactant, saddle, product]
                 q = []
-                for k in range(len(p) -1):
+                for k in range(len(p)-1):
                     v = atoms.pbc(p[k+1].r - p[k].r, p[k].box)
                     d = np.linalg.norm(v)
                     v /=d
@@ -128,6 +133,7 @@ class akmcgui(atomview.atomview):
                 q.append(p[2].copy())
                 datapass = q
         self.data_set(datapass)
+        
         
     def RB_changed(self, widget, data=None):
         if self.stateRB.get_active() == True:
@@ -147,6 +153,7 @@ class akmcgui(atomview.atomview):
             if self.interpolationCB.get_active() == True:
                 self.interpolationSB.set_sensitive(True)
             return True
+           
             
     def interpolationCB_changed(self, widget, data=None):
         if self.interpolationCB.get_active() == True:
@@ -154,18 +161,19 @@ class akmcgui(atomview.atomview):
         else:  
             self.interpolationSB.set_sensitive(False)
         
+        
     def energy_changed(self, *args):
         energy = open("states/state_table", "r")
         energyNumber = energy.readlines()
         a = energyNumber[int (self.stateScale.get_value())].split()[1]
         self.stateEnergy.set_markup("%f<b>eV</b>" % float (a))
+      
         
     def state_play(self, *args): 
         try:
             gobject.source_remove(self.timer_id)
         except:
-            pass
-            
+            pass 
         if self.statePlayTB.get_active() == False:
             self.statePlayTB.set_image(self.playImage)
         else:
@@ -181,7 +189,29 @@ class akmcgui(atomview.atomview):
                     self.stateScale.set_value(0)
                 return True 
             self.timer_id = gobject.timeout_add(1000/(int (self.state_fpsSB.get_value())), loop)
+           
             
+    def energy_plot(self, *args):
+        a = open("states/state_table", "r")
+        b = a.readlines()
+        x = []
+        y = []
+        for i in range(len(b)):
+            y.append(float (b[i].split()[1]))     
+        for i in range(len(b)):
+            x.append(i)
+        self.plotWindow.set_default_size(600,600)    
+        fig = p.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax.plot(x, y)
+        container = gtk.VBox()
+        self.plotWindow.add(container)
+        graph = drawArea(fig)
+        toolbar = NavigationToolbar(graph, self.plotWindow)
+        container.pack_start(graph)
+        container.pack_start(toolbar, False, False)
+        self.plotWindow.show_all()
+                     
 
 #       
 # Main-------------------------------------------------------       
