@@ -136,9 +136,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
         double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
         double p;
-        if (step==parameters->basinHoppingSteps+1)
+        if (step==parameters->basinHoppingSteps)
         {
-            p = 0.0;
+            p = 1.0;
         }else{
             p = exp(-deltaE / (parameters->temperature*8.617343e-5));
         }
