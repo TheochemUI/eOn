@@ -6,9 +6,16 @@ JOB=basin_hopping
 # describtion RANDOM_SEED
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
-potential=eam_al
-temperature=500
+potential=qsc
+temperature=1200
 
 [Basin Hopping]
-max_displacement=0.5
-steps=100
+max_displacement=1.2
+max_displacement_algorithm=quadratic
+quenching_steps=100
+steps=400
+
+[Optimizers]
+opt_method=qm
+max_iterations=500
+converged_force=0.05

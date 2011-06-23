@@ -14,6 +14,7 @@
 #include "BasinHoppingJob.h"
 #include "Constants.h"
 #include "ConjugateGradients.h"
+#include "Quickmin.h"
 #include "false_boinc.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
@@ -72,17 +73,17 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
   for(int i = 0; i < num; i++)
     {
        
-	 
-	  for(int l = 0; l < num; l++)
-	    {
-	      double xd = pos(l,0)-cen[0];
-	      double yd = pos(l,1)-cen[1];
-	      double zd = pos(l,2)-cen[2];
-	      xd = xd*xd;
-	      yd = yd*yd;
-	      zd = zd*zd;
-	      dist(l) = sqrt(xd + yd + zd);
-	    }
+     
+      for(int l = 0; l < num; l++)
+        {
+          double xd = pos(l,0)-cen[0];
+          double yd = pos(l,1)-cen[1];
+          double zd = pos(l,2)-cen[2];
+          xd = xd*xd;
+          yd = yd*yd;
+          zd = zd*zd;
+          dist(l) = sqrt(xd + yd + zd);
+        }
 
     }
   return dist;
@@ -98,9 +99,15 @@ std::vector<std::string> BasinHoppingJob::run(void)
     *trial = *current;
     *tmpMatter = *current;
 
-    ConjugateGradients cgMin(tmpMatter, parameters);
-    cgMin.setOutput(0);
-    cgMin.fullRelax();
+    Minimizer *minimizer; 
+    if (parameters->optMethod == "cg") {
+        minimizer = new ConjugateGradients(tmpMatter, parameters);
+    }else if (parameters->optMethod == "qm"){
+        minimizer = new Quickmin(tmpMatter, parameters);
+    }
+    minimizer->setOutput(0);
+    minimizer->fullRelax();
+    delete minimizer;
 
     double currentEnergy = tmpMatter->getPotentialEnergy();
     double minimumEnergy = currentEnergy;
@@ -111,10 +118,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     for (int step=0; step<nsteps; step++)
     {
-      if (step==parameters->basinHoppingSteps+1)
-	{
-	  parameters->temperature = 0;
-	}
         AtomMatrix displacement;
        
         displacement = displaceRandom();
@@ -122,16 +125,23 @@ std::vector<std::string> BasinHoppingJob::run(void)
         trial->setPositions(current->getPositions() + displacement);
 
         *tmpMatter = *trial;
-        ConjugateGradients cgMin(tmpMatter, parameters);
-        cgMin.setOutput(0);
-        cgMin.fullRelax();
+
+        if (parameters->optMethod == "cg") {
+            minimizer = new ConjugateGradients(tmpMatter, parameters);
+        }else if (parameters->optMethod == "qm"){
+            minimizer = new Quickmin(tmpMatter, parameters);
+        }
+        minimizer->setOutput(0);
+        minimizer->fullRelax();
 
         double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
-        if (abs(deltaE)>50.0) {
-            printf("ERROR: huge deltaE: %f\n", deltaE);
-            return returnFiles;
+        double p;
+        if (step==parameters->basinHoppingSteps+1)
+        {
+            p = 0.0;
+        }else{
+            p = exp(-deltaE / (parameters->temperature*8.617343e-5));
         }
-        double p = exp(-deltaE / (parameters->temperature*8.617343e-5));
 
         if (randomDouble(1.0)<min(1.0, p)) 
         {
@@ -152,10 +162,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
             tmpMatter->matter2xyz("movie", true);
         }
-        printf("step: %6i energy: %10.4f c_energy: %10.4f de: %10.2e min_fc: %ld\n",
-               step, currentEnergy, current->getPotentialEnergy(),
-               deltaE, cgMin.totalForceCalls);
+        printf("step: %6i energy: %10.4f c_energy: %12.3e de: %10.2e min_fc: %ld\n",
+               step+1, currentEnergy, current->getPotentialEnergy(),
+               deltaE, minimizer->totalForceCalls);
         boinc_fraction_done((double)(step+1)/(double)parameters->basinHoppingSteps);
+        delete minimizer;
     }
 
     /* Save Results */
@@ -194,48 +205,42 @@ AtomMatrix BasinHoppingJob::displaceRandom()
     int num = trial->numberOfAtoms();
     int m = 0;
     if(parameters->basinHoppingSingleAtomDisplace)
-        {
-	  m = (long)random(trial->numberOfAtoms());
-	  num = m + 1;
-	}
-
-
+    {
+      m = (long)random(trial->numberOfAtoms());
+      num = m + 1;
+    }
 
     for(int i = m; i < num; i++)
     {
-	    double dist = distvec(i);
-	    double mdp = 0.0;
+        double dist = distvec(i);
+        double mdp = 0.0;
 
-            if(!trial->getFixed(i))
+        if(!trial->getFixed(i))
+        {
+            if(parameters->basinHoppingMaxDisplacementAlgorithm=="standard")
             {
-              if(parameters->basinHoppingMaxDisplacementAlgorithm=="standard")
-                {
-		  mdp = md;
-		  //  printf("%i %.3f\n", i, mdp);
-                }
-              else if(parameters->basinHoppingMaxDisplacementAlgorithm=="linear")
-	        {
+                mdp = md;
+            }
+            else if(parameters->basinHoppingMaxDisplacementAlgorithm=="linear")
+            {
                 double Cs = md/distvec.maxCoeff();
-		mdp = Cs*dist;
-	        //printf("%i %.3f %.3f %.3f\n", i, dist, dist*Cs, Cs);
-                }
-              else if(parameters->basinHoppingMaxDisplacementAlgorithm=="quadratic")
-		{
-	        double Cq = md/(distvec.maxCoeff()*distvec.maxCoeff());
-		mdp = Cq*dist*dist;
-	        //printf("%i %.3f %.3f %.3f\n", i, dist, dist*dist*Cq, Cq);
-		}
-	      else
-		{
-		printf("Unknown max_displacement_algorithm\n");
-		exit(1);
-		}
-	      for(int j=0; j<3; j++)
-		{
-                  displacement(i, j) = randomDouble(2*mdp) - mdp;
-		}
-	      
-	    }
+                mdp = Cs*dist;
+            }
+            else if(parameters->basinHoppingMaxDisplacementAlgorithm=="quadratic")
+            {
+                double Cq = md/(distvec.maxCoeff()*distvec.maxCoeff());
+                mdp = Cq*dist*dist;
+            }
+            else
+            {
+                printf("Unknown max_displacement_algorithm\n");
+                exit(1);
+            }
+            for(int j=0; j<3; j++)
+            {
+                displacement(i, j) = randomDouble(2*mdp) - mdp;
+            }
+        }
     }
     return displacement;
 }
