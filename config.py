@@ -53,6 +53,7 @@ tempKey.values.append(ConfigValue("hessian", "Calculate the Hessian matrix for t
 tempKey.values.append(ConfigValue("dimer_dr", "Rye is changing this."))
 tempKey.values.append(ConfigValue("dimer_rotation", "Rye is changing this."))
 tempKey.values.append(ConfigValue("displacement_sampling", "Job to sample different displacement methods and parameters to see which are the most efficient."))
+tempKey.values.append(ConfigValue("basin_hopping", "Search for global minimum using basin hopping method."))
 
 tempSection.keys.append(tempKey)
 
@@ -517,19 +518,39 @@ config.format.append(tempSection)
 
 tempSection = ConfigSection("Basin Hopping", "Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.")
 
-tempKey = ConfigKey("step_size", "float", "Mean displacement in each degree of freedom")
+tempKey = ConfigKey("max_displacement", "float", "Max displacement in each degree of freedom")
 
 tempSection.keys.append(tempKey)
 
-tempKey = ConfigKey("steps", "int", "Total number of steps.")
+tempKey = ConfigKey("max_displacement_algorithm", "string", "The algorithm used to assign max displacement of each atom.")
+
+tempKey.values.append(ConfigValue("standard", "The max displacement of all the atoms will be the value assigned in max_displacement."))
+tempKey.values.append(ConfigValue("linear", "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement."))
+tempKey.values.append(ConfigValue("quadratic", "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement."))
 
 tempSection.keys.append(tempKey)
 
-#config.format.append(tempSection)
+tempKey = ConfigKey("steps", "int", "Number of steps at assigned temperature.")
+
+tempSection.keys.append(tempKey)
+
+tempKey = ConfigKey("quenching_steps", "int", "Number at steps at 0 temperature.")
+
+tempSection.keys.append(tempKey)
+
+tempKey = ConfigKey("single_atom_displace", "boolean", "Displace only one atom per step.")
+
+tempSection.keys.append(tempKey)
+
+tempKey = ConfigKey("stay_minimized", "boolean", "Displace minimized structures.")
+
+tempSection.keys.append(tempKey)
+
+config.format.append(tempSection)
 
 # Optimizers
 
-tempsection = ConfigSection("Optimizers", "The eon client provides two optimizers quick-min and conjugate gradients. These options are in the [Optimizers] section.")
+tempSection = ConfigSection("Optimizers", "The eon client provides two optimizers quick-min and conjugate gradients. These options are in the [Optimizers] section.")
 
 tempKey = ConfigKey("opt_method", "string", "The optimization method to use.")
 tempKey.values.append(ConfigValue("cg", "Conjugate gradient"))
@@ -555,6 +576,8 @@ tempKey = ConfigKey("time_step", "float", "The dynamical timestep for the quickm
 tempSection.keys.append(tempKey)
 
 tempKey = ConfigKey("finite_dist", "float", "The finite difference step size.")
+
+tempSection.keys.append(tempKey)
 
 config.format.append(tempSection)
 
