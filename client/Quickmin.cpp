@@ -19,6 +19,7 @@ Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
     velocity.resize(matter->numberOfAtoms(), 3);
     velocity.setZero();
     outputLevel = 0;
+    totalForceCalls = 0;
 }
 
 
@@ -30,6 +31,7 @@ Quickmin::~Quickmin()
 void Quickmin::oneStep()
 {
     AtomMatrix forces = matter->getForces();
+    totalForceCalls++;
     if((velocity.cwise() * forces).sum() < 0)
     {
         dt *= 0.5;
@@ -66,8 +68,6 @@ void Quickmin::setOutput(int level)
 void Quickmin::fullRelax()
 {
     bool converged = false;
-    long forceCallsTemp;
-    forceCallsTemp = matter->getForceCalls();
     ostringstream min;
     min << "min";
     if(parameters->writeMovies)
@@ -89,7 +89,6 @@ void Quickmin::fullRelax()
             matter->matter2con(min.str(), true);
         }
     }
-    forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
     return;
 }
 

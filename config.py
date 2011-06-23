@@ -737,6 +737,9 @@ def init(config_file = ""):
     config.akmc_max_kmc_steps           = parser.getint('AKMC', 'max_kmc_steps')
     config.akmc_confidence_scheme       = parser.get('AKMC', 'confidence_scheme')
     config.akmc_confidence_correction   = parser.getboolean('AKMC', "confidence_correction")
+
+    #Basin Hopping options
+    config.bh_number_of_minima = parser.getint('Basin Hopping', 'number_of_minima')
     
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')
@@ -746,7 +749,7 @@ def init(config_file = ""):
     config.path_states       = parser.get('Paths', 'states')
     config.path_results      = parser.get('Paths', 'results')
     config.path_pot          = parser.get('Paths', 'potential_files')
-    
+    config.path_bh_minima    = parser.get('Paths', 'bh_minima')
 
     #Rye-requested check
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
