@@ -158,8 +158,10 @@ public:
     // [Basin Hopping]
     double basinHoppingMaxDisplacement;
     long   basinHoppingSteps;
+    long   basinHoppingQuenchingSteps;
     bool   basinHoppingStayMinimized;
     bool   basinHoppingSingleAtomDisplace;
+    string basinHoppingMaxDisplacementAlgorithm;
 
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI 
