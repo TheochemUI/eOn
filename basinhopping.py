@@ -27,6 +27,69 @@ import config
 import io
 import locking
 
+class BHMinima:
+    def __init__(self):
+        if not os.path.isdir(config.path_bh_minima):
+            os.mkdir(config.path_bh_minima)
+
+        self.minima = []
+
+        for fn in os.listdir(config.path_bh_minima):
+            if 'dat' in fn:
+                energy = float(open(os.path.join(config.path_bh_minima,fn)).readline())
+                number = int(fn.split('_')[-1].split('.')[0])
+                structure_file = fn[:-3]+'con'
+                structure_data = open(os.path.join(config.path_bh_minima,structure_file)).read()
+                self.minima.append({'number':number, 'energy':energy, 'structure':structure_data})
+
+    def get_energies(self):
+        energies = [ m['energy'] for m in self.minima ]
+        return numpy.array(energies)
+
+    def add_minimum(self, energy, structure_data):
+        if len(self.minima) == 0:
+            max_energy = 0
+        else:
+            max_energy = self.minima[-1]['energy']
+        added = False
+        candidate = {
+            'number':len(self.minima), 
+            'energy':energy, 
+            'structure':structure_data
+        }
+
+        if len(self.minima) < config.bh_number_of_minima:
+            added = True
+        elif energy < max_energy:
+            ediff = self.get_energies()-energy
+
+            if ediff.min() > config.comp_eps_e:
+                self.minima[ediff.argmin()] = candidate
+                added = True
+
+        if added:
+            self.minima.append(candidate)
+            self.minima.sort(cmp=lambda a,b: cmp(a['energy'],b['energy']))
+            self.minima = self.minima[:config.bh_number_of_minima]
+            for i,m in enumerate(self.minima):
+                m['number'] = i
+            self.write_all()
+        return added
+
+    def write_all(self):
+        prefix = "minimum"
+        for m in self.minima:
+            dat_path = os.path.join(config.path_bh_minima, "%s_%i.dat" % (prefix, m['number']))
+            con_path = os.path.join(config.path_bh_minima, "%s_%i.con" % (prefix, m['number']))
+
+            f = open(dat_path, 'w')
+            f.write("%.5f\n"%m['energy'])
+            f.close()
+
+            f = open(con_path, 'w')
+            f.write(m['structure'])
+            f.close()
+
 def basinhopping():
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
@@ -34,14 +97,7 @@ def basinhopping():
         sys.exit(1)
 
     # load metadata
-    min_energy_dat_path = "min_energy.dat"
-    min_energy_con_path = "min_energy.con"
-    if os.path.isfile(min_energy_dat_path):
-        min_energy_file = open(min_energy_dat_path, "r")
-        min_energy = float(min_energy_file.readline().strip())
-        min_energy_file.close()
-    else:
-        min_energy = 1e100
+    bhminima = BHMinima()
 
     if os.path.isfile("wuid.dat"):
         wuid_file = open("wuid.dat")
@@ -52,30 +108,18 @@ def basinhopping():
 
     # get communicator
     comm = communicator.get_communicator()
-
     
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
-    num_registered, new_min_energy_structure = register_results(comm, min_energy)
+    register_results(comm, bhminima)
 
-    if new_min_energy_structure:
-        min_energy_file = open(min_energy_dat_path, "w")
-        min_energy_file.write("%.3e\n"%new_min_energy_structure[0])
-        min_energy_file.close()
-        min_energy_file = open(min_energy_con_path, "w")
-        min_energy_file.write("".join(new_min_energy_structure[1]))
-        min_energy_file.close()
-    elif not os.path.isfile(min_energy_con_path):
-        #this should only happen on the first run
-        shutil.copy("reactant.con", min_energy_con_path)
-
-    wuid = make_searches(comm, wuid, min_energy_con_path)
+    wuid = make_searches(comm, wuid, bhminima)
 
     wuid_file = open("wuid.dat","w")
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
     
-def make_searches(comm, wuid, min_energy_con_path):
+def make_searches(comm, wuid, bhminima):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
@@ -88,9 +132,12 @@ def make_searches(comm, wuid, min_energy_con_path):
     
     invariants = {}
 
-    f = open(min_energy_con_path)
-    reactIO = StringIO(''.join(f.readlines()))
-    f.close()
+    if len(bhminima.minima) == 0:
+        f = open(os.path.join(config.path_root, "reactant.con"))
+        reactIO = StringIO(''.join(f.readlines()))
+        f.close()
+    else:
+        reactIO = StringIO(bhminima.minima[0]['structure'])
     #invariants['reactant_passed.con']=reactIO
     
     ini_changes = [ ('Main', 'job', 'basin_hopping') ]
@@ -114,7 +161,7 @@ def make_searches(comm, wuid, min_energy_con_path):
     logger.info( str(num_to_make) + " searches created") 
     return wuid
 
-def register_results(comm, min_energy):
+def register_results(comm, bhminima):
     logger.info("registering results")
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)    
@@ -124,7 +171,6 @@ def register_results(comm, min_energy):
     def keep_result(name):
         return True
 
-    new_min_energy_structure = None
     num_registered = 0
 
     for result in comm.get_results(config.path_jobs_in, keep_result): 
@@ -133,22 +179,18 @@ def register_results(comm, min_energy):
         # results.dat - an array of strings containing the results
         # id - wuid
 
-        id = result['name']
+        #id = result['name']
 
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
         if result['results']['termination_reason'] == 0:
             fe = result['results']['minimum_energy']
-            logger.info("found new structure with energy %.3e", fe)
-            if fe < min_energy:
-                new_min_energy_structure = ( fe, result['product.con'] )
-                min_energy = fe
+            #logger.info("found new structure with energy %.3e", fe)
+            if bhminima.add_minimum(fe, result['product.con'].getvalue()):
+                logger.info("found new low energy structure with energy %.3e", fe)
         num_registered += 1
         
     logger.info("%i (result) searches processed", num_registered)
-
-
-    return num_registered, new_min_energy_structure
 
 def main():
     optpar = optparse.OptionParser(usage="usage: %prog [options] config.ini")
