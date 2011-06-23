@@ -28,7 +28,7 @@ class ConfigSection:
         self.keys = []
         
 class ConfigKey:
-    def __init__(self, name, description, kind):
+    def __init__(self, name, kind, description):
         self.name = name
         self.description = description
         self.kind = kind
@@ -78,6 +78,8 @@ tempKey.values.append(ConfigValue("qsc", "Quantum Sutton-Chen potential, for FCC
 tempKey.values.append(ConfigValue("zpice", "Water on platinum."))
 tempKey.values.append(ConfigValue("tip4p", "Point charge model for water."))
 tempKey.values.append(ConfigValue("bopfox", "Bond order potential, for metals."))
+
+tempSection.keys.append(tempKey)
 
 config.format.append(tempSection)
 
@@ -135,7 +137,7 @@ tempKey = ConfigKey("covalent_scale", "float", "Multiply covalent radii by this 
 
 tempSection.keys.append(tempKey)
 
-tempKey = ConfigKey("brute_neighbors", "booelan", "Determine neighbors by brute force (use this with nonorthogonal boxes).")
+tempKey = ConfigKey("brute_neighbors", "boolean", "Determine neighbors by brute force (use this with nonorthogonal boxes).")
 
 tempSection.keys.append(tempKey)
 
@@ -197,7 +199,7 @@ config.format.append(tempSection)
 
 tempSection = ConfigSection("Saddle Search", "A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.")
 
-tempKey = ConfigKey("diplace_type", "string", "Type of displace to use")
+tempKey = ConfigKey("displace_type", "string", "Type of displace to use")
 tempKey.values.append(ConfigValue("random", "Select an atom at random from the free atoms in the configuration."))
 tempKey.values.append(ConfigValue("least_coordinated", "Determine the lowest coordination number of all atoms in the configuration and select one atom at random with that coordination number."))
 tempKey.values.append(ConfigValue("under_coordinated", "Select a random atom with coordination less than displace_max_coordination."))
@@ -273,7 +275,7 @@ tempKey = ConfigKey("torque_min", "float", "Minimum torque above which the dimer
 
 tempSection.keys.append(tempKey)
 
-tempKey = ConfigKey("torque_max", "foat", "Maximum torque above which the dimer rotates up to rotations_max times.")
+tempKey = ConfigKey("torque_max", "float", "Maximum torque above which the dimer rotates up to rotations_max times.")
 
 tempSection.keys.append(tempKey)
 
@@ -361,8 +363,6 @@ tempKey.values.append(ConfigValue("boinc", "Jobs can be submitted to a BOINC pro
 tempKey.values.append(ConfigValue("arc", "Jobs can be submitted to the grid computing software ARC."))
 
 tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 tempKey = ConfigKey("num_jobs", "int", "Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.")
 
@@ -525,7 +525,7 @@ tempKey = ConfigKey("steps", "int", "Total number of steps.")
 
 tempSection.keys.append(tempKey)
 
-config.format.append(tempSection)
+#config.format.append(tempSection)
 
 # Optimizers
 
