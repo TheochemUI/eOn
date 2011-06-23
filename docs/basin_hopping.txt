@@ -50,3 +50,10 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
 
     When *true*, displacement is applied to the minimized structure
     after each step.
+
+**number_of_minima**
+
+    Default: *50*
+
+    The number of lowest energy structures that are saved in the minima
+    directory.
