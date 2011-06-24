@@ -530,7 +530,7 @@ tempKey.values.append(ConfigValue("quadratic", "The max displacement of each ato
 
 tempSection.keys.append(tempKey)
 
-tempKey = ConfigKey("steps", "int", "Number of steps at assigned temperature.")
+config.format.append(tempSection)
 
 tempSection.keys.append(tempKey)
 
