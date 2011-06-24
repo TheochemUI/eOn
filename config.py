@@ -19,7 +19,24 @@ config.init_done = False
 
 config.format = []
 
+config.format2 = {}
+
 ## New config section; does not affect current code, ignore for now. ===========
+
+def fadd(section, key = None, value = None, description = "", kind = None):
+    if section not in config.format2:
+        config.format2[section] = {}
+        config.format2[section]['description'] = description
+        config.format2[section]['keys'] = {}
+        return
+    if key not in config.format2[section]['keys']:
+        config.format2[section]['keys'][key] = {}
+        config.format2[section]['keys'][key]['description'] = description
+        config.format2[section]['keys'][key]['kind'] = kind
+        config.format2[section]['keys'][key]['values'] = {}
+        return 
+    if value not in config.format2[section]['keys'][key]['values']:
+        config.format2[section]['keys'][key]['values'][value] = description
 
 class ConfigSection:
     def __init__(self, name, description):
@@ -40,6 +57,19 @@ class ConfigValue:
         self.description = description
         
 # Main
+
+fadd("Main", description = "These are the options that go in the 'Main' section of config.ini")
+fadd("Main", "job", kind = "string", description = "The type of job to execute.")
+fadd("Main", "job", "akmc", description = "Run an adaptive kinetic monte carlo simulation.")
+fadd("Main", "job", "parallel_replica", description = "Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.")
+fadd("Main", "job", "process_search", description = "Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.")
+fadd("Main", "job", "saddle_search", description = "Do a saddle point search using a minimum mode method.")
+fadd("Main", "job", "minimization", description = "Find the minimum from an initial configuration.")
+fadd("Main", "job", "hessian", description = "Calculate the Hessian matrix for the specified configuration in a process.")
+fadd("Main", "job", "dimer_dr", description = "Rye is changing this.")
+fadd("Main", "job", "dimer_rotation", description = "Rye is changing this.")
+fadd("Main", "job", "displacement_sampling", description = "Job to sample different displacement methods and parameters to see which are the most efficient.")
+fadd("Main", "job", "basin_hopping", description = "Search for global minimum using basin hopping method.")
 
 tempSection = ConfigSection("Main", "These are the options that go in the 'Main' section of config.ini")
 
