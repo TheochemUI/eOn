@@ -19,7 +19,10 @@ class cfggui():
         infoWindow = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "%s" %d)
         infoWindow.show_all()
         result = infoWindow.run()
-        infoWindow.hide()  
+        infoWindow.hide()
+        
+    def saveCheck(self, widget, data=None):
+        self.saveLabel.set_text("Please save changes")  
             
     
             
@@ -67,6 +70,7 @@ class cfggui():
               
         #window, table, and notebook      
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_default_size(700, 1000)
         self.window.set_title("Eon Config")           
         self.table = gtk.Table(3,6,False)
         self.window.add(self.table)
@@ -76,12 +80,12 @@ class cfggui():
         self.show_tabs = True
         self.show_boader = True
         
-        #save button and text
+        #save button and save text
         menu = gtk.HBox()
-        self.table.attach(menu, 0,1,0,1)
+        self.table.attach(menu, 0,1,0,1, False, False)
         saveImage = gtk.Image()
         saveImage.set_from_stock(gtk.STOCK_FLOPPY, gtk.ICON_SIZE_LARGE_TOOLBAR)
-        self.saveLabel = gtk.Label("Please save Changes   ")
+        self.saveLabel = gtk.Label("Please save changes   ")
         saveButton = gtk.EventBox()
         saveButton.add(saveImage)
         menu.pack_start(self.saveLabel, False, False)
@@ -89,17 +93,25 @@ class cfggui():
         saveButton.connect("button_press_event", self.save)
         
         
-        
-        self.buttons = {}
         #sections
+        self.buttons = {}
         for i in range(len(config.format)):
+            scrollWindow = gtk.ScrolledWindow()
             label = gtk.Label("%s" %config.format[i].name)
-            vbox = gtk.VBox()
-            self.notebook.append_page(vbox, label)
+            Htable = gtk.Table((len(config.format[i].keys)),2, True)
+            tabBox = gtk.VBox()
+            descSeparator = gtk.HSeparator()
+            scrollWindow.add_with_viewport(tabBox)
+            self.notebook.append_page(scrollWindow, label)
+            sectionLabel = gtk.Label()
+            sectionLabel.set_markup("<b> %s </b> " %config.format[i].name)
             descLabel = gtk.Label("%s" %config.format[i].description)
             descLabel.set_line_wrap(True)
-            descLabel.set_alignment(0,0)
-            vbox.pack_start(descLabel, False, True) 
+            descLabel.set_alignment(0,0) 
+            tabBox.pack_start(sectionLabel, False, False)
+            tabBox.pack_start(descLabel, False, False)
+            tabBox.pack_start(descSeparator, False, False, 6)
+            tabBox.pack_start(Htable, False, False)
             #keys
             for j in range(len(config.format[i].keys)):
                 infoButton = gtk.EventBox()
@@ -112,6 +124,7 @@ class cfggui():
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].keys[j].name
                     self.buttons[name] = gtk.combo_box_new_text()
+                    self.buttons[name].connect("changed", self.saveCheck)
                     for k in range(len(config.format[i].keys[j].values)):
                         self.buttons[name].append_text(config.format[i].keys[j].values[k].name)
                         try:
@@ -119,82 +132,74 @@ class cfggui():
                                 self.buttons[name].set_active(k)
                         except:
                             pass                            
-                        
-                        
-                    frame = gtk.Frame()    
-                    alignment = gtk.Alignment(yalign = .5)
-                    alignment.add(self.buttons[name])
-                    nameLabel = gtk.Label("%s:   " %config.format[i].keys[j].name)    
+                            
+                    nameLabel = gtk.Label(" %s:   " %config.format[i].keys[j].name)
                     hbox = gtk.HBox()
-                    vbox.pack_start(frame)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(nameLabel, False, False)
-                    frame.add(hbox)
-                    hbox.pack_start(alignment, False, False)
+                    Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
+                    Htable.attach(self.buttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding = 5)    
                            
                 #strings without values
                 if config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0 :
                     name = config.format[i].keys[j].name
                     self.buttons[name] = gtk.Entry()
+                    self.buttons[name].connect("changed", self.saveCheck)
                     try:
                         self.buttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
                     except:
                         pass
-                    frame = gtk.Frame()
-                    nameLabel = gtk.Label("%s:   " %config.format[i].keys[j].name)    
-                    hbox = gtk.HBox()
-                    vbox.pack_start(frame)
-                    frame.add(hbox)
+                    nameLabel = gtk.Label(" %s:   " %config.format[i].keys[j].name)
+                    hbox = gtk.HBox() 
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(nameLabel, False, False)
-                    hbox.pack_start(self.buttons[name], False, False)
+                    Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
+                    Htable.attach(self.buttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5)    
                     
                 #ints & floats
                 if config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float':
                     name = config.format[i].keys[j].name
                     self.buttons[name] = gtk.Entry()
+                    self.buttons[name].connect("changed", self.saveCheck)
                     try:
                         self.buttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
                     except:
                         pass
-                    
-                    frame = gtk.Frame()
-                    nameLabel = gtk.Label("%s:   " %config.format[i].keys[j].name)    
+                    nameLabel = gtk.Label(" %s:   " %config.format[i].keys[j].name)
                     hbox = gtk.HBox()
-                    frame.add(hbox)
-                    vbox.pack_start(frame)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(nameLabel, False, False)
-                    hbox.pack_start(self.buttons[name], False, False)
+                    Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
+                    Htable.attach(self.buttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5)   
                     
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
                     name = config.format[i].keys[j].name
                     self.buttons[name] = gtk.RadioButton(label="True")
+                    self.buttons[name].connect("clicked", self.saveCheck)
                     RB2 = gtk.RadioButton(label ="False", group=self.buttons[name])
                     try:
-                        if self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name) == 'True':
+                        if self.config.get(' %s' %config.format[i].name, '%s' %config.format[i].keys[j].name) == 'True':
                             self.buttons[name].set_active(True)
                         else:
                             RB2.set_active(True)
                     except:
                         pass   
-                    
-                    frame = gtk.Frame()
                     alignment = gtk.Alignment(yalign = .5)
                     nameLabel = gtk.Label("%s:   " %config.format[i].keys[j].name)
+                    RBhbox = gtk.HBox()
+                    separator = gtk.SeparatorToolItem()
+                    RBhbox.pack_start(self.buttons[name], False, False)
+                    RBhbox.pack_start(separator)
+                    RBhbox.pack_start(RB2, False, False)
+                    alignment.add(RBhbox)
                     hbox = gtk.HBox()
-                    frame.add(hbox)
-                    vbox.pack_start(frame)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(nameLabel, False, False)
-                    RBvbox = gtk.VBox()
-                    RBvbox.pack_start(self.buttons[name], False, False)
-                    RBvbox.pack_start(RB2, False, False)
-                    alignment.add(RBvbox)
-                    hbox.pack_start(alignment, False, False)
+                    Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
+                    Htable.attach(alignment,1,2,j,j+1, False | gtk.FILL, False,ypadding=5)
                     
-              
+             
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
         
