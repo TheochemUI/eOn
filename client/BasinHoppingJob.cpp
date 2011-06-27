@@ -91,8 +91,7 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 
 std::vector<std::string> BasinHoppingJob::run(void)
 {
-    printf("Hello\n");
-
+    
     Matter *tmpMatter = new Matter(parameters);
 
     current->con2matter("reactant_passed.con");
@@ -115,7 +114,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     Matter *minimumEnergyStructure = new Matter(parameters);
     *minimumEnergyStructure = *current;
     int nsteps = parameters->basinHoppingSteps + parameters->basinHoppingQuenchingSteps;
-
+    long totalfc = 0;
+    FILE * pFile;
+    pFile = fopen("bh.dat","w");
     for (int step=0; step<nsteps; step++)
     {
         AtomMatrix displacement;
@@ -133,7 +134,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
         minimizer->setOutput(0);
         minimizer->fullRelax();
-
         double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
         double p;
         if (step==parameters->basinHoppingSteps)
@@ -162,12 +162,16 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
             tmpMatter->matter2xyz("movie", true);
         }
+	totalfc = totalfc + minimizer->totalForceCalls;
         printf("step: %6i energy: %10.4f c_energy: %12.3e de: %10.2e min_fc: %ld\n",
                step+1, currentEnergy, current->getPotentialEnergy(),
                deltaE, minimizer->totalForceCalls);
+
+	fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,currentEnergy);
         boinc_fraction_done((double)(step+1)/(double)parameters->basinHoppingSteps);
         delete minimizer;
     }
+    fclose(pFile);
 
     /* Save Results */
 
