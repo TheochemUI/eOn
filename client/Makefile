@@ -5,7 +5,7 @@ LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
 
-CXXFLAGS += -O2 -Wall -Wfatal-errors
+CXXFLAGS += -O2 -Wall -Wfatal-errors -march=i686
 
 ifndef DEBUG
 	NDEBUG=1
@@ -103,7 +103,9 @@ ifdef BOINC
     OBJECTS += Compression.o
 
     ifdef WIN32
-        LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc -larchive -lz 
+        LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc 
+	LDFLAGS += -Larchive/lib_win -larchive -lz 
+	CXXFLAGS += -Iarchive/include -DLIBARCHIVE_STATIC
     endif
 
     ifdef OSX
