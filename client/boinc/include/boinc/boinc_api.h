@@ -18,9 +18,9 @@
 #ifndef _BOINC_API_
 #define _BOINC_API_
 
-#ifdef __APPLE__
-#include <Carbon/Carbon.h>
-#endif
+//#ifdef __APPLE__
+//#include <Carbon/Carbon.h>
+//#endif
 
 #ifdef _WIN32
 #include "boinc_win.h"

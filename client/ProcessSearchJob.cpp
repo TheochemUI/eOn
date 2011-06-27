@@ -18,8 +18,6 @@
 #include <string>
 //#include <cassert>
 
-using namespace std;
-
 ProcessSearchJob::ProcessSearchJob (Parameters *params)
 {
     parameters = params;
