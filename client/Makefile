@@ -57,7 +57,13 @@ else
     FC = $(CROSS)gfortran
     FFLAGS += -O2 -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
-    LDFLAGS += -lgfortran
+    ifdef BOINC
+	ifdef OSX
+	    LDFLAGS += /opt/local/lib/gcc45/libgfortran.a
+	endif
+    else
+        LDFLAGS += -lgfortran
+    endif
     # ifort
     #FC = ifort
     #FFLAGS += -O2 -fpe0
@@ -91,15 +97,21 @@ ifdef BOINC
     BOINC=Yes
     DEBUG=No
     OBJECTS += Compression.o
-    CXXFLAGS += -DNDEBUG -DBOINC
+    CXXFLAGS += -DNDEBUG -DBOINC -Iboinc/include
     OBJECTS += Compression.o
+
     ifdef WIN32
-        LDFLAGS += -lboinc_api -lboinc -larchive -lz
-    else
-        LDFLAGS += -lboinc_api -lboinc -lpthread -larchive -lz
+        LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc -larchive -lz 
     endif
+
+    ifdef OSX
+	CC="/usr/bin/gcc"
+	CXX="/usr/bin/g++"
+        LDFLAGS += -Lboinc/lib_osx -lboinc_api -lboinc -lpthread -larchive -lz
+    endif
+
     ifdef LINUX
-        LDFLAGS += -static
+        LDFLAGS += -static -Lboinc/lib_linux -lboinc_api -lboinc -lpthread -larchive -lz
     endif
 else
     BOINC=No
