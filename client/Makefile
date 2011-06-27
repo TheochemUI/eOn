@@ -60,6 +60,8 @@ else
     ifdef BOINC
 	ifdef OSX
 	    LDFLAGS += /opt/local/lib/gcc45/libgfortran.a
+	else
+		LDFLAGS += -lgfortran
 	endif
     else
         LDFLAGS += -lgfortran
