@@ -76,12 +76,12 @@ void enableFPE(void)
                                & ~_MM_MASK_DIV_ZERO
                                & ~_MM_MASK_OVERFLOW);
     #endif 
-    #ifdef WIN32
-        unsigned int cw;
-        cw  = _controlfp(0,0) & _MCW_EM;
-        cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
-        _controlfp(cw,_MCW_EM);
-    #endif
+//    #ifdef WIN32
+//        unsigned int cw;
+//        cw  = _controlfp(0,0) & _MCW_EM;
+//        cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
+//        _controlfp(cw,_MCW_EM);
+//    #endif
 }
 
 void printSystemInfo()
