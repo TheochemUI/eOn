@@ -15,7 +15,6 @@
 #include "Constants.h"
 #include "ConjugateGradients.h"
 #include "Quickmin.h"
-#include "false_boinc.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
 
@@ -162,13 +161,13 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
             tmpMatter->matter2xyz("movie", true);
         }
-	totalfc = totalfc + minimizer->totalForceCalls;
+        totalfc = totalfc + minimizer->totalForceCalls;
         printf("step: %6i energy: %10.4f c_energy: %12.3e de: %10.2e min_fc: %ld\n",
                step+1, currentEnergy, current->getPotentialEnergy(),
                deltaE, minimizer->totalForceCalls);
 
-	fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,currentEnergy);
-        boinc_fraction_done((double)(step+1)/(double)parameters->basinHoppingSteps);
+        fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,currentEnergy);
+        boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
     }
     fclose(pFile);
