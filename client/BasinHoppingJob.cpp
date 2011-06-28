@@ -97,7 +97,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     *trial = *current;
     *tmpMatter = *current;
 
-    Minimizer *minimizer; 
+    Minimizer *minimizer = NULL; 
     if (parameters->optMethod == "cg") {
         minimizer = new ConjugateGradients(tmpMatter, parameters);
     }else if (parameters->optMethod == "qm"){
@@ -134,10 +134,12 @@ std::vector<std::string> BasinHoppingJob::run(void)
         minimizer->setOutput(0);
         minimizer->fullRelax();
         double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
-        double p;
-        if (step==parameters->basinHoppingSteps)
+        double p=0.0;
+        if (step>=parameters->basinHoppingSteps)
         {
-            p = 1.0;
+            if (deltaE < 0.0) {
+                p = 1.0;
+            }
         }else{
             p = exp(-deltaE / (parameters->temperature*8.617343e-5));
         }
@@ -162,11 +164,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
             tmpMatter->matter2xyz("movie", true);
         }
         totalfc = totalfc + minimizer->totalForceCalls;
-        printf("step: %6i energy: %10.4f c_energy: %12.3e de: %10.2e min_fc: %ld\n",
+        printf("step: %5i min: %.3f trial: %8.1e de: %9.2e min_fc: %4ld\n",
                step+1, currentEnergy, current->getPotentialEnergy(),
                deltaE, minimizer->totalForceCalls);
-
         fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,currentEnergy);
+
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
     }
