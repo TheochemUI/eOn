@@ -115,7 +115,12 @@ ifdef BOINC
     endif
 
     ifdef LINUX
-        LDFLAGS += -static -Lboinc/lib_linux -lboinc_api -lboinc -lpthread -larchive -lz
+	UNAME := $(shell uname -m)
+	ifeq ($(UNAME), x86_64)
+        LDFLAGS += -static -Lboinc/lib_linux64 -lboinc_api -lboinc -lpthread -larchive -lz
+	else
+	LDFLAGS += -static -Lboinc/lib_linux32 -lboinc_api -lboinc -lpthread -larchive -lz
+	endif
     endif
 else
     BOINC=No
