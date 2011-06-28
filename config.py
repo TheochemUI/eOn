@@ -17,47 +17,29 @@ import config
 
 config.init_done = False
 
-config.format = []
+config.format = {}
 
-config.format2 = {}
 
 ## New config section; does not affect current code, ignore for now. ===========
 
 def fadd(section, key = None, value = None, description = "", kind = None):
-    if section not in config.format2:
-        config.format2[section] = {}
-        config.format2[section]['description'] = description
-        config.format2[section]['keys'] = {}
+    if section not in config.format:
+        config.format[section] = {}
+        config.format[section]['description'] = description
+        config.format[section]['keys'] = {}
         return
-    if key not in config.format2[section]['keys']:
-        config.format2[section]['keys'][key] = {}
-        config.format2[section]['keys'][key]['description'] = description
-        config.format2[section]['keys'][key]['kind'] = kind
-        config.format2[section]['keys'][key]['values'] = {}
+    if key not in config.format[section]['keys']:
+        config.format[section]['keys'][key] = {}
+        config.format[section]['keys'][key]['description'] = description
+        config.format[section]['keys'][key]['kind'] = kind
+        config.format[section]['keys'][key]['values'] = {}
         return 
-    if value not in config.format2[section]['keys'][key]['values']:
-        config.format2[section]['keys'][key]['values'][value] = description
+    if value not in config.format[section]['keys'][key]['values']:
+        config.format[section]['keys'][key]['values'][value] = description
 
-class ConfigSection:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-        self.keys = []
         
-class ConfigKey:
-    def __init__(self, name, kind, description):
-        self.name = name
-        self.description = description
-        self.kind = kind
-        self.values = []
 
-class ConfigValue:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-        
 # Main
-
 fadd("Main", description = "These are the options that go in the 'Main' section of config.ini")
 fadd("Main", "job", kind = "string", description = "The type of job to execute.")
 fadd("Main", "job", "akmc", description = "Run an adaptive kinetic monte carlo simulation.")
@@ -70,647 +52,232 @@ fadd("Main", "job", "dimer_dr", description = "Rye is changing this.")
 fadd("Main", "job", "dimer_rotation", description = "Rye is changing this.")
 fadd("Main", "job", "displacement_sampling", description = "Job to sample different displacement methods and parameters to see which are the most efficient.")
 fadd("Main", "job", "basin_hopping", description = "Search for global minimum using basin hopping method.")
+fadd("Main", "temperature", kind = "float", description = "The temperature that the job will run at.")
+fadd("Main", "random_seed", kind = "int", description = "Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.")
+fadd("Main", "potential", kind = "string", description = "the type of potential to execute")
+fadd("Main", "potential", "lj", description = "Lennard-Jones potential in reduced units.")
+fadd("Main", "potential", "morse_pt", description = "Morse potential for platinum.")
+fadd("Main", "potential", "emt", description = "Effective medium theory, for metals.")
+fadd("Main", "potential", "edip", description = "Environment-Dependent Interatomic Potential, for carbon.")
+fadd("Main", "potential", "vasp", description = "Vienna Ab-Initio Simulation Program (VASP) interface.")
+fadd("Main", "potential", "tersoff_si", description = "Tersoff pair potential with angular terms, for silicon.")
+fadd("Main", "potential", "sw_si", description = "Stillinger-Weber potential, for silicon.")
+fadd("Main", "potential", "lenosky_Si", description = "Lenosky potential, for silicon.")
+fadd("Main", "potential", "eam_al", description = "Embedded atom method parameterized for aluminum.")
+fadd("Main", "potential", "qsc", description = "Quantum Sutton-Chen potential, for FCC metals.")
+fadd("Main", "potential", "zpice", description = "Water on platinum.")
+fadd("Main", "potential", "tip4p", description = "Point charge model for water.")
+fadd("Main", "potential", "bopfox", description = "Bond order potential, for metals.")
 
-tempSection = ConfigSection("Main", "These are the options that go in the 'Main' section of config.ini")
-
-tempKey = ConfigKey("job", "string", "The type of job to execute.")
-tempKey.values.append(ConfigValue("akmc", "Run an adaptive kinetic monte carlo simulation."))
-tempKey.values.append(ConfigValue("parallel_replica", "Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel."))
-tempKey.values.append(ConfigValue("process_search", "Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method."))
-tempKey.values.append(ConfigValue("saddle_search", "Do a saddle point search using a minimum mode method."))
-tempKey.values.append(ConfigValue("minimization", "Find the minimum from an initial configuration."))
-tempKey.values.append(ConfigValue("hessian", "Calculate the Hessian matrix for the specified configuration in a process."))
-tempKey.values.append(ConfigValue("dimer_dr", "Rye is changing this."))
-tempKey.values.append(ConfigValue("dimer_rotation", "Rye is changing this."))
-tempKey.values.append(ConfigValue("displacement_sampling", "Job to sample different displacement methods and parameters to see which are the most efficient."))
-tempKey.values.append(ConfigValue("basin_hopping", "Search for global minimum using basin hopping method."))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("temperature", "float", "The temperature that the job will run at.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("random_seed", "int", "Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("potential", "string", "the type of potential to execute")
-tempKey.values.append(ConfigValue("lj", "Lennard-Jones potential in reduced units."))
-tempKey.values.append(ConfigValue("morse_pt", "Morse potential for platinum."))
-tempKey.values.append(ConfigValue("emt", "Effective medium theory, for metals."))
-tempKey.values.append(ConfigValue("edip", "Environment-Dependent Interatomic Potential, for carbon."))
-tempKey.values.append(ConfigValue("vasp", "Vienna Ab-Initio Simulation Program (VASP) interface."))
-tempKey.values.append(ConfigValue("tersoff_si", "Tersoff pair potential with angular terms, for silicon."))
-tempKey.values.append(ConfigValue("sw_si", "Stillinger-Weber potential, for silicon."))
-tempKey.values.append(ConfigValue("lenosky_Si", "Lenosky potential, for silicon."))
-tempKey.values.append(ConfigValue("eam_al", "Embedded atom method parameterized for aluminum."))
-tempKey.values.append(ConfigValue("qsc", "Quantum Sutton-Chen potential, for FCC metals."))
-tempKey.values.append(ConfigValue("zpice", "Water on platinum."))
-tempKey.values.append(ConfigValue("tip4p", "Point charge model for water."))
-tempKey.values.append(ConfigValue("bopfox", "Bond order potential, for metals."))
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # AKMC
+fadd("AKMC", description = "Parameters for the AKMC section of config.ini.")
+fadd("AKMC", "confidence", kind = "float", description = "The confidence (out of 1.0) criterion for moving to the next state.")
+fadd("AKMC", "max_kmc_steps", kind = "int", description = "The maximum number of transitions per execution of the server.")
+fadd("AKMC", "thermally_acessible_window", kind = "float", description = "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.")
+fadd("AKMC", "thermally_accessible_buffer", kind = "float", description = "Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processes with barriers higher than the sum of these two values will be discarded.")
 
-tempSection = ConfigSection("AKMC", "Parameters for the AKMC section of config.ini.")
-
-tempKey = ConfigKey("confidence", "float", "The confidence (out of 1.0) criterion for moving to the next state.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("max_kmc_steps", "int", "The maximum number of transitions per execution of the server.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("thermally_acessible_window", "float", "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("thermally_accessible_buffer", "float", "Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processes with barriers higher than the sum of these two values will be discarded.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Structure Comparison
+fadd("Structure Comparison", description = "")
+fadd("Structure Comparison", "energy_difference", kind = "float", description = "How close in energy two configurations must be to be considered energetically equivalent.")
+fadd("Structure Comparison", "distance_difference", kind = "float", description = "The maximum distance two mapped atoms may be for two configurations to be considered equivalent.")
+fadd("Structure Comparison", "indistinguishable_atoms", kind = "boolean", description = "Use an algorithm to compare structures that does not distinguish between atoms of the same element. That is to say the numbering of the atoms does not affect the structural comparison.")
+fadd("Structure Comparison", "check_rotation", kind = "boolean", description = "Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.")
+fadd("Structure Comparison", "neighbor_cutoff", kind = "float", description = "Atoms within this distance of each other are considered neighbors.")
+fadd("Structure Comparison", "use_covalent", kind = "boolean", description = "Use the covalent radii of atoms to determine neighbors.")
+fadd("Structure Comparison", "covalent_scale", kind = "float", description = "Multiply covalent radii by this amount before determining neighbors.")
+fadd("Structure Comparison", "brute_neighbors", kind = "boolean", description = "Determine neighbors by brute force (use this with nonorthogonal boxes).")
+
+
+# Paths
+fadd("Paths", description = "Location of files related to the sending and receiving data on the server.")
+fadd("Paths", "main_directory", kind = "string", description = "This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.")
+fadd("Paths", "searches_in", kind = "string", description = "")
+fadd("Paths", "states", kind = "string", description = "Where all of the information about individual states is located.")
+fadd("Paths", "scratch", kind = "string", description = "")
+fadd("Paths", "potential_files", kind = "string", description = "For extra files needed by the client for the potential.")
+
+
+# Process Search
+fadd("Process Search", description = "The AKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.")
+fadd("Process Search", "minimize_first", kind = "boolean", description = "Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.")
+fadd("Process Search", "prefactor_min", kind = "float", description = "Minimum value for a resonable prefactor.")
+fadd("Process Search", "prefactor_max", kind = "float", description = "Maximum value for a resonable prefactor.")
+fadd("Process Search", "default_prefactor", kind = "int", description = "Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.")
+fadd("Process Search", "minimization_offset", kind = "float", description = "After a saddle is found, images are placed on either side of the saddle along the mode and minimized to ensure that the saddle is connected to the original minimum and to locate the product state. This is the distance those images are displaced from the saddle.")
+fadd("Saddle Search", description = "A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.")
+
+
+# Saddle Search
+fadd("Saddle Search", "displace_type", kind = "string", description = "Type of displace to use")
+fadd("Saddle Search", "displace_type", "random", description = "Select an atom at random from the free atoms in the configuration.")
+fadd("Saddle Search", "displace_type", "least_coordinated", description = "Determine the lowest coordination number of all atoms in the configuration and select one atom at random with that coordination number.")
+fadd("Saddle Search", "displace_type", "under_coordinated", description = "Select a random atom with coordination less than displace_max_coordination.")
+fadd("Saddle Search", "displace_type", "listed_atoms", description = "Select an atom from the list passed as displace_atomlist")
+fadd("Saddle Search", "displace_type", "not_FCC_HCP", description = "Select an atom that is not in a local HCP or FCC coordination.")
+fadd("Saddle Search", "displace_type", "client_least_coordinated", description = "Displacement is made on the client centered on an atom with the minimal coordination.")
+fadd("Saddle Search", "displace_type", "cleint_not_FCC_HCP_coordinated", description = "Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination.")
+fadd("Saddle Search", "displace_type", "client_last_atom", description = "Displacement is made on the client centered on the last atom in the configuration.")
+fadd("Saddle Search", "max_iterations", kind = "int", description = "The maximum number of translation steps to be taken.")
+fadd("Saddle Search", "displace_radius", kind = "float", description = "Atoms within this distance of the epicenter will be displaced.")
+fadd("Saddle Search", "displace_magnitude", kind = "float", description = "The standard deviation of the magnitude of the displacement.")
+fadd("Saddle Search", "displace_min_norm", kind = "float", description = "The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.")
+fadd("Saddle Search", "displace_max_coordination", kind = "int", description = "When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.")
+fadd("Saddle Search", "min_mode_method", kind = "string", description = "")
+fadd("Saddle Search", "min_mode_method", "dimer", description = "Use the dimer min-mode method.")
+fadd("Saddle Search", "min_mode_method", "lanczos", description = "Use the Lanczos min-mode method.")
+fadd("Saddle Search", "max_energy", kind = "float", description = "The energy at which a saddle search is considered bad and terminated.")
+fadd("Saddle Search", "displace_atomlist", kind = "string", description = "The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.")
+fadd("Saddle Search", "client_max_single_displace", kind = "int", description = "Only functional when displacement is done on the client. Defines the maximal allowed absolute value for a single component in the displacement vector.")
 
-tempSection = ConfigSection("Structure Comparison", "") #####edit descrition#####
-
-tempKey = ConfigKey("energy_difference", "float", "How close in energy two configurations must be to be considered energetically equivalent.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("distance_difference", "float", "The maximum distance two mapped atoms may be for two configurations to be considered equivalent.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("indistinguishable_atoms", "boolean", "Use an algorithm to compare structures that does not distinguish between atoms of the same element. That is to say the numbering of the atoms does not affect the structural comparison.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("check_rotation", "boolean", "Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("neighbor_cutoff", "float", "Atoms within this distance of each other are considered neighbors.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("use_covalent", "boolean", "Use the covalent radii of atoms to determine neighbors.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("covalent_scale", "float", "Multiply covalent radii by this amount before determining neighbors.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("brute_neighbors", "boolean", "Determine neighbors by brute force (use this with nonorthogonal boxes).")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-# PathsMaximum number of rotations allowed for the dimer in each step.Improvements to the dimer method from Kastner.Dimer is considered converged if it rotates fewer degrees than this.
-
-tempSection = ConfigSection("Paths", "Location of files related to the sending and receiving data on the server.")
-
-tempKey = ConfigKey("main_directory", "string" , "This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("searches_in", "string", "") ####edit description later####
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("states", "string", "Where all of the information about individual states is located.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("scratch", "string", "") ####edit description later####
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("potential_files", "string", "For extra files needed by the client for the potential.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-#Process Search
-
-tempSection=ConfigSection("Process Search", "The AKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.")
-
-tempKey = ConfigKey("minimize_first", "boolean", "Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("prefactor_min", "float", "Minimum value for a resonable prefactor.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("prefactor_max", "float", "Maximum value for a resonable prefactor.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("default_prefactor", "int", "Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("minimization_offset", "float", "After a saddle is found, images are placed on either side of the saddle along the mode and minimized to ensure that the saddle is connected to the original minimum and to locate the product state. This is the distance those images are displaced from the saddle.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-#Saddle Search
-
-tempSection = ConfigSection("Saddle Search", "A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.")
-
-tempKey = ConfigKey("displace_type", "string", "Type of displace to use")
-tempKey.values.append(ConfigValue("random", "Select an atom at random from the free atoms in the configuration."))
-tempKey.values.append(ConfigValue("least_coordinated", "Determine the lowest coordination number of all atoms in the configuration and select one atom at random with that coordination number."))
-tempKey.values.append(ConfigValue("under_coordinated", "Select a random atom with coordination less than displace_max_coordination."))
-tempKey.values.append(ConfigValue("listed_atoms", "Select an atom from the list passed as displace_atomlist"))
-tempKey.values.append(ConfigValue("not_FCC_HCP", "Select an atom that is not in a local HCP or FCC coordination."))
-tempKey.values.append(ConfigValue("client_least_coordinated", "Displacement is made on the client centered on an atom with the minimal coordination."))
-tempKey.values.append(ConfigValue("cleint_not_FCC_HCP_coordinated", "Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination."))
-tempKey.values.append(ConfigValue("client_last_atom", "Displacement is made on the client centered on the last atom in the configuration."))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("max_iterations", "int", "The maximum number of translation steps to be taken.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("displace_radius", "float", "Atoms within this distance of the epicenter will be displaced.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("displace_magnitude", "float", "The standard deviation of the magnitude of the displacement.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("displace_min_norm", "float" , "The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("displace_max_coordination", "int", "When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("min_mode_method", "string", "") ####edit description later####
-tempKey.values.append(ConfigValue("dimer", "Use the dimer min-mode method."))
-tempKey.values.append(ConfigValue("lanczos", "Use the Lanczos min-mode method."))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("max_energy", "float", "The energy at which a saddle search is considered bad and terminated.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("displace_atomlist","string", "The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.") ####possibily not a string####
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("client_max_single_displace","int", "Only functional when displacement is done on the client. Defines the maximal allowed absolute value for a single component in the displacement vector.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Dimer
+fadd("Dimer", description = "Options for controlling the dimer minimum mode finding method on the client side.")
+fadd("Dimer", "seperation", kind = "float", description = "Seperation between dimer images.")
+fadd("Dimer", "finite_angles", kind = "float", description = "Finite difference angle over which the dimer is rotated to find the lowest curvature.")
+fadd("Dimer", "rotations_min", kind = "int", description = "Minimum number of rotations allowed for the dimer in each step.")
+fadd("Dimer", "rotations_max", kind = "int", description = "Maximum number of rotations allowed for the dimer in each step.")
+fadd("Dimer", "torque_min", kind = "float", description = "Minimum torque above which the dimer rotates only once and below which is does not rotate.")
+fadd("Dimer", "torque_max", kind = "float", description = "Maximum torque above which the dimer rotates up to rotations_max times.")
+fadd("Dimer", "improved", kind = "boolean", description = "Improvements to the dimer method from Kastner.")
+fadd("Dimer", "coverged_rotatoin", kind = "float", description = "Dimer is considered converged if it rotates fewer degrees than this.")
+fadd("Dimer", "opt_method", kind = "string", description = "Optimization algorithm to choose the dimer rotation direction")
+fadd("Dimer", "opt_method", "sd", description = "steepest descent, rotate along the rotational force.")
+fadd("Dimer", "opt_method", "cg", description = "conjudate gradient, rotate along conjugate directions.")
+fadd("Dimer", "opt_method", "lbfgs", description = "quasi-Newton method [not implemeted yet].")
 
-tempSection = ConfigSection("Dimer", "Options for controlling the dimer minimum mode finding method on the client side.")
-
-tempKey = ConfigKey("seperation", "float", "Seperation between dimer images.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("finite_angles", "float", "Finite difference angle over which the dimer is rotated to find the lowest curvature.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("rotations_min", "int", "Minimum number of rotations allowed for the dimer in each step.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("rotations_max", "int", "Maximum number of rotations allowed for the dimer in each step.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("torque_min", "float", "Minimum torque above which the dimer rotates only once and below which is does not rotate.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("torque_max", "float", "Maximum torque above which the dimer rotates up to rotations_max times.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("improved", "boolean", "Improvements to the dimer method from Kastner.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("coverged_rotatoin", "float", "Dimer is considered converged if it rotates fewer degrees than this.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("opt_method", "string", "Optimization algorithm to choose the dimer rotation direction")
-tempKey.values.append(ConfigValue("sd", "steepest descent, rotate along the rotational force."))
-tempKey.values.append(ConfigValue("cg", "conjudate gradient, rotate along conjugate directions."))
-tempKey.values.append(ConfigValue("lbfgs", "quasi-Newton method [not implemeted yet].")) ####not implemented yet####
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Lanczos
+fadd("Lanczos", description = "Options for controlling the Lanczos minimum mode finding method on the client side.")
+fadd("Lanczos", "max_iterations", kind = "int", description = "The maximum number of refinement iterations when calculating the minimum eigenvalue.")
+fadd("Lanczos", "tolerance", kind = "float", description = "This is the convergence critera for relative error of the lowest eigenvalue.")
+fadd("Lanczos", "finite_dist", kind = "float", description = "Finite difference step size when computing the second derivative of the potential along the Lanczos vectors.")
 
-tempSection = ConfigSection("Lanczos", "Options for controlling the Lanczos minimum mode finding method on the client side.")
-
-tempKey = ConfigKey("max_iterations", "int", "The maximum number of refinement iterations when calculating the minimum eigenvalue.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("tolerance", "float", "This is the convergence critera for relative error of the lowest eigenvalue.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("finite_dist", "float", "Finite difference step size when computing the second derivative of the potential along the Lanczos vectors.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Hessian
+fadd("Hessian", description = "Options for controlling how Hessian matricies are calculated.")
+fadd("Hessian", "type", kind = "string", description = "The Hessian to be calculated has to be one of reactant, saddle, or product.")
+fadd("Hessian", "finite_dist", kind = "float", description = "Finite difference distance between forces used to construct the Hessian.")
+fadd("Hessian", "min_displacement", kind = "float", description = "Minimum amount that an atom has to move to be included in the Hessian calculation.")
+fadd("Hessian", "within_radius", kind = "float", description = "Atoms within this radius of moving atoms are included in the Hessian.")
 
-tempSection = ConfigSection("Hessian", "Options for controlling how Hessian matricies are calculated.")
-
-tempKey = ConfigKey("type", "string", "The Hessian to be calculated has to be one of reactant, saddle, or product.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("finite_dist", "float", "Finite difference distance between forces used to construct the Hessian.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("min_displacement", "float", "Minimum amount that an atom has to move to be included in the Hessian calculation.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("within_radius", "float", "Atoms within this radius of moving atoms are included in the Hessian.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-# Nudged Elastic Band
-
-tempSection = ConfigSection("Nudged Elastic Band", "Options for controlling the dimer minimum mode finding method on the client side.")
-
-tempKey = ConfigKey("images", "int", "Number of NEB images between the fixed endpoints.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("spring", "float", "Spring constant between images, in eV/Ang.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("climbing_image_method", "boolean", "Use the climbing image method to move the highest energy image to the saddle.")
-
-tempSection.keys.append(tempKey)
 
 # Communicator
+fadd("Communicator", description = "Options that apply to all of the different communicator types.")
+fadd("Communicator", "type", kind = "string", description = "")
+fadd("Communicator", "type", "local", description = "The local communicator runs the calculations on the same computer that the server is run on.")
+fadd("Communicator", "type", "cluster", description = "A job scheduler can be used to run jobs through user supplied shell scripts. Examples are given for SGE.")
+fadd("Communicator", "type", "boinc", description = "Jobs can be submitted to a BOINC project.")
+fadd("Communicator", "type", "arc", description = "Jobs can be submitted to the grid computing software ARC.")
+fadd("Communicator", "num_jobs", kind = "int", description = "Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.")
+fadd("Communicator", "jobs_per_bundle", kind = "int", description = "In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.")
+fadd("Communicator", "client_path", kind = "string", description = "Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.")
+fadd("Communicator", "number_of_cpus", kind = "int", description = "The number of jobs that will run simultaneously.")
+fadd("Communicator", "script_path", kind = "string", description = "The path to the user defined scripts for submitting jobs to the communicator.")
+fadd("Communicator", "name_prefix", kind = "string", description = "When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.")
+fadd("Communicator", "queued_jobs", kind = "string", description = "This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.")
+fadd("Communicator", "submit_job", kind = "string", description = "This is the name of the script that submits a single job to the queuing system. It takes two command line arguments. The first is the name of the job. This is not required for eon use, but is highly recommended so that users can identify which job is which. The second argument is the working directory. This is the path where the eon client should be executed. All of the needed client files will be placed in this directory. The script must return the job id of the submitted job. This is how eon internally keeps track of jobs.")
+fadd("Communicator", "cancel_job", kind = "string", description = "This is the name of the script that cancels a job. It takes a single argument the job id.")
+fadd("Communicator", "boinc_project_dir", kind = "string", description = "This is the full path to the root of the BOINC project directory.")
+fadd("Communicator", "boinc_wu_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc workunit template.")
+fadd("Communicator", "boinc_re_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc result template.")
+fadd("Communicator", "boinc_appname", kind = "string", description = "This is the name of the application in BOINC.")
+fadd("Communicator", "boinc_results_path", kind = "string", description = "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.")
+
+
+# Parallel Replica
+fadd("Parallel Replica", description = "Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do accelerated-MD simulation. The only assumption made in this method is that the reactions satisfy first order kinetics.")
+fadd("Parallel Replica", "time_step", kind = "float", description = "The length of each MD step in femtoseconds.")
+fadd("Parallel Replica", "auto_stop", kind = "boolean", description = "Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.")
+fadd("Parallel Replica", "steps", kind = "int", description = "The number of MD steps to run.")
+fadd("Parallel Replica", "dephase_steps", kind = "int", description = "Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.")
+fadd("Parallel Replica", "check_period", kind = "int", description = "How frequently the state of system is checked. Every check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of check_period/record_resolution+1 atomic configurations, which may increase the usage of memory.")
+fadd("Parallel Replica", "refine_transition_time", kind = "boolean", description = "Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by check_period/record_resolution+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller check_period. And the accuracy of transition time is record_resolution*timestep.")
+fadd("Parallel Replica", "record_resolution", kind = "int", description = "How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.")
+fadd("Parallel Replica", "post_transition_steps", kind = "int", description = "Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.")
+fadd("Parallel Replica", "thermo_type", kind = "string", description = "")
+fadd("Parallel Replica", "thermo_type", "andersen", description = "Andersen thermostat with Verlet algorithm")
+fadd("Parallel Replica", "thermo_type", "nose_hoober", description = "Nose-Hover thermostat with Verlet algorithm")
+fadd("Parallel Replica", "thermo_type", "langevin", description = "Langevin thermostat with Verlet algorithm")
+fadd("Parallel Replica", "andersen_alpha", kind = "float", description = "The collision strength in the Andersen thermostat")
+fadd("Parallel Replica", "andersen_collision_steps", kind = "float", description = "The collision period (in MD steps) for the Andersen thermostat.")
+fadd("Parallel Replica", "nose_mass", kind = "float", description = "The effective mass of the additional degree of freedom in the Nose-Hover thermostat, which determines the rate of heat transfer.")
+fadd("Parallel Replica", "langevin_friction", kind = "float", description = "The damping coefficient for langevin dynamics.")
+fadd("Parallel Replica", "bias_potential", kind = "string", description = "")
+fadd("Parallel Replica", "bias_potential", "none", description = "with no bias potential, run regular MD")
+fadd("Parallel Replica", "bias_potential", "bond_boost", description = "bond boost method from Miron and Fichthorn")
+fadd("Parallel Replica", "bb_dvmax", kind = "float", description = "The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.")
+fadd("Parallel Replica", "bb_rmd_steps", kind = "int", description = "Number of MD steps used to determine the equilibrium bond length before the bias potential is added.")
+fadd("Parallel Replica", "bb_stretch_threshold", kind = "float", description = "Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.")
+fadd("Parallel Replica", "bb_ds_curvature", kind = "float", description = "The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.")
+fadd("Parallel Replica", "bb_rcut", kind = "float", description = "All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.")
 
-tempSection = ConfigSection("Communicator", "Options that apply to all of the different communicator types.")
-
-tempKey = ConfigKey("type", "string", "") #no description
-tempKey.values.append(ConfigValue("local", "The local communicator runs the calculations on the same computer that the server is run on."))
-tempKey.values.append(ConfigValue("cluster", "A job scheduler can be used to run jobs through user supplied shell scripts. Examples are given for SGE."))
-tempKey.values.append(ConfigValue("boinc", "Jobs can be submitted to a BOINC project."))
-tempKey.values.append(ConfigValue("arc", "Jobs can be submitted to the grid computing software ARC."))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("num_jobs", "int", "Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("jobs_per_bundle", "int", "In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.")
-
-tempSection.keys.append(tempKey)
-    # Local options
-tempKey = ConfigKey("client_path", "string", "Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("number_of_cpus", "int", "The number of jobs that will run simultaneously.")
-
-tempSection.keys.append(tempKey)
-    #Cluster options
-tempKey = ConfigKey("script_path", "string", "The path to the user defined scripts for submitting jobs to the communicator.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("name_prefix", "string", "When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("queued_jobs", "string", "This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("submit_job", "string", "This is the name of the script that submits a single job to the queuing system. It takes two command line arguments. The first is the name of the job. This is not required for eon use, but is highly recommended so that users can identify which job is which. The second argument is the working directory. This is the path where the eon client should be executed. All of the needed client files will be placed in this directory. The script must return the job id of the submitted job. This is how eon internally keeps track of jobs.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("cancel_job", "string", "This is the name of the script that cancels a job. It takes a single argument the job id.")
-
-tempSection.keys.append(tempKey)
-    #Boinc options
-tempKey = ConfigKey("boinc_project_dir", "string", "This is the full path to the root of the BOINC project directory.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("boinc_wu_template_path", "string", "This is the path, relative from the boinc_project_dir, to the boinc workunit template.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("boinc_re_template_path", "string", "This is the path, relative from the boinc_project_dir, to the boinc result template.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("boinc_appname", "string", "This is the name of the application in BOINC.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("boinc_results_path", "string", "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-#Parallel Replica
-
-tempSection = ConfigSection("Parallel Replica", "Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do accelerated-MD simulation. The only assumption made in this method is that the reactions satisfy first order kinetics.")
-    #Dynamics options
-tempKey = ConfigKey("time_step", "float", "The length of each MD step in femtoseconds.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("auto_stop", "boolean", "Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("steps", "int", "The number of MD steps to run.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("dephase_steps", "int", "Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("check_period", "int" , "How frequently the state of system is checked. Every check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of check_period/record_resolution+1 atomic configurations, which may increase the usage of memory.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("refine_transition_time", "boolean", "Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by check_period/record_resolution+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller check_period. And the accuracy of transition time is record_resolution*timestep.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("record_resolution", "int", "How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("post_transition_steps", "int", "Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("thermo_type", "string", "") #no description
-tempKey.values.append(ConfigValue("andersen", "Andersen thermostat with Verlet algorithm"))
-tempKey.values.append(ConfigValue("nose_hoober", "Nose-Hover thermostat with Verlet algorithm"))
-tempKey.values.append(ConfigValue("langevin", "Langevin thermostat with Verlet algorithm"))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("andersen_alpha", "float", "The collision strength in the Andersen thermostat")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("andersen_collision_steps", "float", "The collision period (in MD steps) for the Andersen thermostat.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("nose_mass", "float", "The effective mass of the additional degree of freedom in the Nose-Hover thermostat, which determines the rate of heat transfer.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("nose_mass", "float", "The effective mass of the additional degree of freedom in the Nose-Hoover thermostat, which determines the rate of heat transfer.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("langevin_friction", "float", "The damping coefficient for langevin dynamics.")
-
-tempSection.keys.append(tempKey)
-    #Hyperdynamics options
-tempKey = ConfigKey("bias_potential", "string", "") #no description
-tempKey.values.append(ConfigValue("none", "with no bias potential, run regular MD"))
-tempKey.values.append(ConfigValue("bond_boost","bond boost method from Miron and Fichthorn"))
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("bb_dvmax", "float", "The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("bb_rmd_steps", "int", "Number of MD steps used to determine the equilibrium bond length before the bias potential is added.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("bb_stretch_threshold", "float", "Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("bb_ds_curvature", "float", "The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("bb_rcut", "float", "All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Basin Hopping
+fadd("Basin Hopping", description = "Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.")
+fadd("Basin Hopping", "max_displacement", kind = "float", description = "Max displacement in each degree of freedom")
+fadd("Basin Hopping", "max_displacement_algorithm", kind = "string", description = "The algorithm used to assign max displacement of each atom.")
+fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "quenching_steps", kind = "int", description = "Number at steps at 0 temperature.")
+fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.")
+fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.")
 
-tempSection = ConfigSection("Basin Hopping", "Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.")
-
-tempKey = ConfigKey("max_displacement", "float", "Max displacement in each degree of freedom")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("max_displacement_algorithm", "string", "The algorithm used to assign max displacement of each atom.")
-
-tempKey.values.append(ConfigValue("standard", "The max displacement of all the atoms will be the value assigned in max_displacement."))
-tempKey.values.append(ConfigValue("linear", "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement."))
-tempKey.values.append(ConfigValue("quadratic", "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement."))
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("quenching_steps", "int", "Number at steps at 0 temperature.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("single_atom_displace", "boolean", "Displace only one atom per step.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("stay_minimized", "boolean", "Displace minimized structures.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Optimizers
+fadd("Optimizers", description = "The eon client provides two optimizers quick-min and conjugate gradients. These options are in the [Optimizers] section.")
+fadd("Optimizers", "opt_method", kind = "string", description = "The optimization method to use.")
+fadd("Optimizers", "opt_method", "cg", description = "Conjugate gradient")
+fadd("Optimizers", "opt_method", "qm", description = "Quickmin")
+fadd("Optimizers", "opt_method", "box", description = "Optimizes the atom positions and box using quickmin")
+fadd("Optimizers", "max_iterations", kind = "int", description = "The maximum number of optimization iterations that the will be performed.")
+fadd("Optimizers", "converged_force", kind = "float", description = "When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.")
+fadd("Optimizers", "max_move", kind = "float", description = "Maximum distance that an atom may be moved in a single optimization step.")
+fadd("Optimizers", "time_step", kind = "float", description = "The dynamical timestep for the quickmin algorithm.")
+fadd("Optimizers", "finite_dist", kind = "float", description = "The finite difference step size.")
 
-tempSection = ConfigSection("Optimizers", "The eon client provides two optimizers quick-min and conjugate gradients. These options are in the [Optimizers] section.")
 
-tempKey = ConfigKey("opt_method", "string", "The optimization method to use.")
-tempKey.values.append(ConfigValue("cg", "Conjugate gradient"))
-tempKey.values.append(ConfigValue("qm", "Quickmin"))
-tempKey.values.append(ConfigValue("box", "Optimizes the atom positions and box using quickmin"))
+#Corase Graining
+fadd("Coarse Graining", description = "In AKMC simulations where there are vastly different rates, the simulation can get stuck in a group of states connected by relatively fast rates. In order to explore slower transitions, a prohibitively large number of KMC steps may be needed. In order to circumvent this problem, eOn implements two methods. The first method, projective dynamics [1], groups states that are joined by fast rates into superbasins. Information about transitions between states in a superbasin is lost, but the rates for transitions across a superbasin are correct. The second method, accelerated superbasining kinetic Monte Carlo (AS-KMC) [2], artificially raises low barriers. The dynamics between states connected by fast rates are simulated, but an error is introduced in the dynamics direction and time. Both methods cannot be used simultaneously.")
+fadd("Coarse Graining", "state_file", kind = "string", description = "File name for the state specific data stored within each of the state directories.")
+fadd("Coarse Graining", "use_projective_dynamics", kind = "boolean", description = "This option determines whether the projective dynamics coarse graining method will be used. This mutually excludes the use_askmc option.")
+fadd("Coarse Graining", "superbasin_scheme", kind = "string", description = "Projective dynamics provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin. eOn provides two methods. The first method, called transition counting, counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occured, the pair of states are merged to form a superbasin. (If one is already in a superbasin, the other is added to that superbasin. If both are already in superbasins, the two superbasins are merged). This method can be selected by setting scheme equal to transition_counting. Jean-Claude: document your scheme here This method can be elected by setting scheme equal to energy_level.")
+fadd("Coarse Graining", "number_of_transitions", kind = "int", description = "If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.")
+fadd("Coarse Graining", "energy_increment", kind = "float", description = "If the energy level scheme is being used (scheme=energy_level). Each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount")
+fadd("Coarse Graining", "use_askmc", kind = "boolean", description = "This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.")
+fadd("Coarse Graining", "askmc_condifence", kind = "float", description = "The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.")
+fadd("Coarse Graining", "askmc_barrier_raise_param", kind = "float", description = "This parameter sets how much the barriers are raised during AS-KMC. ( in the reference.)")
+fadd("Coarse Graining", "askmc_high_barrier_def", kind = "int", description = "This parameter sets how high a barrier must be to be considered high in AS-KMC.")
+fadd("Coarse Graining", "askmc_barrier_test_on", kind = "boolean", description = "")
+fadd("Coarse Graining", "askmc_connections_test_on", kind = "boolean", description = "This parameter determines whether to ensure that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier. This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when finding product states of unvisited processes.")
 
-tempSection.keys.append(tempKey)
 
-tempKey = ConfigKey("max_iterations", "int", "The maximum number of optimization iterations that the will be performed.")
+# KDB
+fadd("Kdb", description = "One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.")
+fadd("Kdb", "use_kdb", kind = "boolean", description = "Turn Kdb on/off.")
+fadd("Kdb", "wait", kind = "boolean", description = "Wait for the query to finish before submitting jobs (for debugging purposes).")
+fadd("Kdb", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).")
 
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("converged_force", "float", "When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("max_move", "float", "Maximum distance that an atom may be moved in a single optimization step.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("time_step", "float", "The dynamical timestep for the quickmin algorithm.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("finite_dist", "float", "The finite difference step size.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-# Coarse Graining
-
-tempSection = ConfigSection("Coarse Graining", "In AKMC simulations where there are vastly different rates, the simulation can get stuck in a group of states connected by relatively fast rates. In order to explore slower transitions, a prohibitively large number of KMC steps may be needed. In order to circumvent this problem, eOn implements two methods. The first method, projective dynamics [1], groups states that are joined by fast rates into superbasins. Information about transitions between states in a superbasin is lost, but the rates for transitions across a superbasin are correct. The second method, accelerated superbasining kinetic Monte Carlo (AS-KMC) [2], artificially raises low barriers. The dynamics between states connected by fast rates are simulated, but an error is introduced in the dynamics direction and time. Both methods cannot be used simultaneously.")
-
-tempKey = ConfigKey("state_file", "string", "File name for the state specific data stored within each of the state directories.")
-
-tempSection.keys.append(tempKey)
-    #projective dynamics
-tempKey = ConfigKey("use_projective_dynamics", "boolean", "This option determines whether the projective dynamics coarse graining method will be used. This mutually excludes the use_askmc option.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("superbasin_scheme", "string", "Projective dynamics provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin. eOn provides two methods. The first method, called transition counting, counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occured, the pair of states are merged to form a superbasin. (If one is already in a superbasin, the other is added to that superbasin. If both are already in superbasins, the two superbasins are merged). This method can be selected by setting scheme equal to transition_counting. Jean-Claude: document your scheme here This method can be elected by setting scheme equal to energy_level.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("number_of_transitions", "int", "If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("energy_increment", "float", "If the energy level scheme is being used (scheme=energy_level). Each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount")
-
-tempSection.keys.append(tempKey)
-    # accelerated superbasin kinetic monte carlo
-tempKey = ConfigKey("use_askmc", "boolean", "This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("askmc_condifence", "float", "The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("askmc_barrier_raise_param", "float", "This parameter sets how much the barriers are raised during AS-KMC. ( in the reference.)")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("askmc_high_barrier_def", "int", "This parameter sets how high a barrier must be to be considered high in AS-KMC.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("askmc_barrier_test_on", "boolean", "") # no description
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("askmc_connections_test_on", "boolean", "This parameter determines whether to ensure that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier. This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when finding product states of unvisited processes.")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
-# Kdb
-
-tempSection = ConfigSection("Kdb", "One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.")
-
-tempKey = ConfigKey("use_kdb", "boolean", "Turn Kdb on/off.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("wait", "boolean", "Wait for the query to finish before submitting jobs (for debugging purposes).")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("keep", "boolean", "Keep the saddle suggestions (for debugging purposes).")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
 
 # Debug
-
-tempSection = ConfigSection ("Debug", "Parameters that are generally used to help debug calculations")
-
-tempKey = ConfigKey("keep_bad_saddles", "boolean", "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("keep_all_results_files", "boolean", "Stores all result files in main_directory/results")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("register_extra_results", "boolean", "Register processes found for a state after leaving that state.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("use_mean_time", "boolean", "Select transition times from the mean of the exponential distribution of escape times.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("target_trajectory", "boolean", "Follow the state-to-state trajectory of another akmc simulation.")
-
-tempSection.keys.append(tempKey)
-
-tempKey = ConfigKey("write_movies", "boolean", "Causes the client to output movies of minimizations and saddle searches.")
-
-tempKey = ConfigKey("save_stdout", "boolean", "Save the standard output from the client to a file named stdout_0.dat")
-
-tempSection.keys.append(tempKey)
-
-config.format.append(tempSection)
-
+fadd("Debug", description = "Parameters that are generally used to help debug calculations")
+fadd("Debug", "keep_bad_saddles", kind = "boolean", description = "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.")
+fadd("Debug", "keep_all_results_files", kind = "boolean", description = "Stores all result files in main_directory/results")
+fadd("Debug", "register_extra_results", kind = "boolean", description = "Register processes found for a state after leaving that state.")
+fadd("Debug", "use_mean_time", kind = "boolean", description = "Select transition times from the mean of the exponential distribution of escape times.")
+fadd("Debug", "target_trajectory", kind = "boolean", description = "Follow the state-to-state trajectory of another akmc simulation.")
+fadd("Debug", "save_stdout", kind = "boolean", description = "Save the standard output from the client to a file named stdout_0.dat")
 
 
 ## End new config section. =====================================================
