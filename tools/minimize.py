@@ -39,6 +39,5 @@ if __name__ == "__main__":
     
     os.chdir(td)
     os.system(os.path.join(pathfix.path, "client", "client"))
-
     shutil.copyfile(os.path.join(td, "reactant.con"), os.path.join(cwd, args[2]))
 
