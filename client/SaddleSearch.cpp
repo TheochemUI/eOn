@@ -98,7 +98,19 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     }
     status = STATUS_INIT;
     eigenValue = 0;
-
+    FILE *fp = fopen("saddlesearch.dat", "w");
+    if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
+    {
+        fprintf(fp, "DIMER  %9s   %9s   %9s   %9s   %9s   %9s   %9s   %9s\n", 
+                    "Step", "Step Size", "Energy", "Force", "Curvature", 
+                    "Torque", "Angle", "Rotations");
+    }
+    else 
+    {
+        fprintf(fp, "LANCZOS  %9s  %9s  %9s  %9s  %9s\n", 
+                    "Step", "Step Size", "Energy", "Force", "Curvature");
+    }
+    fclose(fp);
     return;
 }
 
@@ -322,29 +334,12 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     forces = projectedForce(forces);
     // GH: this should be generalized to other optimizers
     ConjugateGradients cgSaddle(saddle, parameters, forces);
-    static int run = 0;
     ostringstream climb;
     climb << "climb";
     if(parameters->writeMovies)
     {
         initial->matter2con(climb.str(), false);
         saddle->matter2con(climb.str(), true);
-    }
-    if (parameters->quiet == false)
-    {
-        if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
-        {
-            printf("DIMER ---------------------------------------------------------------------------------------------\n");
-            printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s  %9s   %9s\n", "Step", "Step Size", "Energy", "Force", "Curvature", 
-                   "Torque", "Angle", "Rotations");
-            printf("DIMER ---------------------------------------------------------------------------------------------\n");
-        }
-        else 
-        {
-            printf("LANCZOS ---------------------------------------------------------------------------------------\n");
-            printf("LANCZOS  %9s  %9s  %9s  %9s  %9s\n", "Step", "Step Size", "Energy", "Force", "Curvature");
-            printf("LANCZOS ---------------------------------------------------------------------------------------\n");
-        }
     }
     do
     {
@@ -388,26 +383,25 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
         addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
         iterations++;
-        if (parameters->quiet == false) 
+        FILE *fp = fopen("saddlesearch.dat", "a");
+        if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
-            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
-            {
-                printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  %9d\n",
-                       iterations, stepSize, saddle->getPotentialEnergy(),
-                       saddle->getForces().norm(),
-                       lowestEigenmode->getEigenvalue(),
-                       lowestEigenmode->statsTorque,
-                       lowestEigenmode->statsAngle,
-                       (int)lowestEigenmode->statsRotations);
-            }
-            else 
-            {
-                printf("LANCZOS  %9ld  % 9.3f  % 9.3f  % 9.3f  % 9.3f\n", 
-                       iterations, stepSize, saddle->getPotentialEnergy(),
-                       saddle->getForces().norm(),
-                       lowestEigenmode->getEigenvalue());
-            }
+            fprintf(fp, "DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
+                        iterations, stepSize, saddle->getPotentialEnergy(),
+                        saddle->getForces().norm(),
+                        lowestEigenmode->getEigenvalue(),
+                        lowestEigenmode->statsTorque,
+                        lowestEigenmode->statsAngle,
+                        (int)lowestEigenmode->statsRotations);
         }
+        else 
+        {
+            fprintf(fp, "LANCZOS  %9ld  % 9.3f  % 9.3f  % 9.3f  % 9.3f\n", 
+                        iterations, stepSize, saddle->getPotentialEnergy(),
+                        saddle->getForces().norm(),
+                        lowestEigenmode->getEigenvalue());
+        }
+        fclose(fp);
         if(parameters->writeMovies)
         {
             saddle->matter2con(climb.str(), true);

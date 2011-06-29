@@ -54,7 +54,7 @@ std::vector<std::string> MinimizationJob::run(void)
 
     mizer->setOutput(1);
     mizer->fullRelax();
-
+    
     if (mizer->isItConverged(parameters->optConvergedForce)) {
         printf("Minimization converged within tolerence\n");
     }else{

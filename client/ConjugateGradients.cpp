@@ -76,7 +76,6 @@ void ConjugateGradients::oneStep()
     force = matter->getForces();
     pos = matter->getPositions();
     determineSearchDirection();
-
     // move system an infinitesimal step to determine the optimal step size along the search line
     posStep = pos + directionNorm * parameters->optFiniteDist;
     matter->setPositions(posStep);
