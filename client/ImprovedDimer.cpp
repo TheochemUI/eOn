@@ -121,7 +121,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
         // Calculate the curvature along tau, C_tau.
         C_tau = ((g1 - g0).cwise() * tau).sum() / delta;
-        statsCurvature = C_tau;
 
         // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
         double d_C_tau_d_phi = 2.0 * ((g1 - g0).cwise() * theta).sum() / delta;
@@ -180,8 +179,16 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             fprintf(fp, "IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
                         C_tau, F_R.norm(), phi_min * (180.0 / M_PI));
             fclose(fp);
-
         }
+        else
+        {
+            FILE *fp = fopen("saddlesearch.dat", "a");
+            fprintf(fp, "IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
+                        C_tau, F_R.norm());
+            fclose(fp);
+        }
+
+
 
     } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);
 
