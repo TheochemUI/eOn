@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+##-----------------------------------------------------------------------------------
+## eOn is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## A copy of the GNU General Public License is available at
+## http://www.gnu.org/licenses/
+##-----------------------------------------------------------------------------------
+
+# Instructions:
+#   To add options to the window edit the eon/config.py file.
+#
+# adding sections: fadd("your_section_name", description = "your_description")
+# adding keys:     fadd("your_section_name", "your_key_name", kind ="key_type(string, int, ect)", description = "your_key_description")
+# adding values:   fadd("your_section_name", "your_key_name", "your_value", description = "your_value_description")
+
 
 import pathfix
 import config
@@ -9,32 +26,30 @@ import pygtk
 import os
 
 
-
-class cfggui():
-
-    
+class cfggui():  
 
     def delete_event(self, widget, data=None):
         gtk.main_quit()
         return False
             
+    #creates info windows        
     def info(self, widget, event, d=None): 
         self.infoWindow = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "%s" %d)
         self.infoWindow.show_all()
         result = self.infoWindow.run()
         self.infoWindow.hide()
         
+    #activates save button    
     def saveCheck(self, widget, data=None):
         self.saveButton.set_sensitive(True)
         
+    #not implemented ignore for now    
     def expose_event(self, descLabel, allocation, data=None):
         for i in range(len(self.descLabels)):
             self.descLabels[config.format[i].name].set_size_request(allocation.width, -1)
             
     
-            
-    
-    #saves changes to config.ini
+#saves changes to config.ini
     def save(self, widget, data=None):
         for i in range(len(config.format)):
             for j in range(len(config.format[i].keys)):
@@ -71,17 +86,14 @@ class cfggui():
             
 
     def __init__(self):
-    
+#display
         button_width = 100
-        
         self.config = ConfigParser.SafeConfigParser()
         self.config.read(os.path.join(pathfix.path, "default_config.ini"))
         try:
             self.config.read("./config.ini")
         except:
-            print "No config.ini found in local directory, using default values." 
-           
-              
+            print "No config.ini found in local directory, using default values."      
         #window, table, and notebook      
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_border_width(10)
@@ -98,7 +110,6 @@ class cfggui():
         self.buttonBox.set_col_spacings(10)
         self.HbuttonBox.pack_end(self.buttonBox, False, False)
         self.table.attach(self.HbuttonBox, 0,6,1,2)
-        
         #save button and close button
         closeButton = gtk.Button()
         closeButton.set_label("Cancel")
@@ -111,18 +122,14 @@ class cfggui():
         closeButton.set_size_request(button_width, -1)
         self.buttonBox.attach(self.saveButton,0,1,0,1, False | gtk.FILL, False)
         self.buttonBox.attach(closeButton,1,2,0,1, False | gtk.FILL, False)
-        
-        
-        #sections
+        #dictionaries
         self.CBbuttons = {}
         self.TEbuttons = {}
         self.RBbuttons = {}
         self.descLabels = {}
-        # Force the general sections to the top.
-#        sections = ["Main", "Paths", "Communicator", "Optimizers", "Debug", "Structure Comparison"]
-#        for s in config.format.keys():
-#            if s not in sections:
-#                sections.append(s)
+        
+        
+#Sections
         for i in range(len(config.format)):
             scrollWindow = gtk.ScrolledWindow()
             label = gtk.Label("%s" %config.format[i].name)
@@ -152,7 +159,7 @@ class cfggui():
             tabBox.pack_start(self.descLabels[descname], False, False)
             tabBox.pack_start(descSeparator, False, False, 6)
             tabBox.pack_start(Htable, False, False)
-            #keys
+#keys
             for j in range(len(config.format[i].keys)):
                 infoButton = gtk.EventBox()
                 infoImage = gtk.Image()
@@ -167,7 +174,7 @@ class cfggui():
                     for k in range(len(config.format[i].keys[j].values)):
                         self.CBbuttons[name].append_text(str (config.format[i].keys[j].values[k].name))
                         try:
-                            if config.format[i].keys[j].values[k] == self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name):
+                            if config.format[i].keys[j].values[k].name == self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name):
                                 self.CBbuttons[name].set_active(k)
                         except:
                             pass                                   
@@ -243,12 +250,7 @@ class cfggui():
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
         
-    
-        
-        
-        
-        
-              
+                  
 if __name__ == "__main__":
     gui = cfggui()
     gtk.main()
