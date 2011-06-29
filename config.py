@@ -17,27 +17,49 @@ import config
 
 config.init_done = False
 
-config.format = {}
+config.format = []
 
 
 ## New config section; does not affect current code, ignore for now. ===========
 
-def fadd(section, key = None, value = None, description = "", kind = None):
-    if section not in config.format:
-        config.format[section] = {}
-        config.format[section]['description'] = description
-        config.format[section]['keys'] = {}
-        return
-    if key not in config.format[section]['keys']:
-        config.format[section]['keys'][key] = {}
-        config.format[section]['keys'][key]['description'] = description
-        config.format[section]['keys'][key]['kind'] = kind
-        config.format[section]['keys'][key]['values'] = {}
-        return 
-    if value not in config.format[section]['keys'][key]['values']:
-        config.format[section]['keys'][key]['values'][value] = description
-
+class ConfigSection:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self.keys = []
+class ConfigKey:
+    def __init__(self, name, kind, description):
+        self.name = name
+        self.kind = kind
+        self.description = description
+        self.values = []
+class ConfigValue:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
         
+def fget(section, key = None):
+    for f in format:
+        if f.name == section:
+            if key == None:
+                return f
+            for k in f.keys:
+                if k.name == key:
+                    return k
+            return None
+    return None
+
+def fadd(section, key = None, value = None, description = "", kind = None):
+    if fget(section) is None:
+        config.format.append(ConfigSection(section, description))
+        return
+    if fget(section, key) is None:
+        s = fget(section)
+        s.keys.append(ConfigKey(key, kind, description))
+        return
+    k = fget(section, key)
+    k.values.append(ConfigValue(value, description))
+
 
 # Main
 fadd("Main", description = "These are the options that go in the 'Main' section of config.ini")
@@ -74,7 +96,7 @@ fadd("Main", "potential", "bopfox", description = "Bond order potential, for met
 fadd("AKMC", description = "Parameters for the AKMC section of config.ini.")
 fadd("AKMC", "confidence", kind = "float", description = "The confidence (out of 1.0) criterion for moving to the next state.")
 fadd("AKMC", "max_kmc_steps", kind = "int", description = "The maximum number of transitions per execution of the server.")
-fadd("AKMC", "thermally_acessible_window", kind = "float", description = "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.")
+fadd("AKMC", "thermally_accessible_window", kind = "float", description = "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.")
 fadd("AKMC", "thermally_accessible_buffer", kind = "float", description = "Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processes with barriers higher than the sum of these two values will be discarded.")
 
 
