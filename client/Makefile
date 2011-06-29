@@ -104,14 +104,17 @@ ifdef BOINC
 
     ifdef WIN32
         LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc 
-	LDFLAGS += -Larchive/lib_win -larchive -lz 
-	CXXFLAGS += -Iarchive/include -DLIBARCHIVE_STATIC
+        LDFLAGS += -Larchive/lib_win -larchive -lz 
+        CXXFLAGS += -Iarchive/include -DLIBARCHIVE_STATIC
     endif
 
     ifdef OSX
-	CC="/usr/bin/gcc"
-	CXX="/usr/bin/g++"
-        LDFLAGS += -Lboinc/lib_osx -lboinc_api -lboinc -lpthread -larchive -lz
+        OSX_FLAGS=-mmacosx-version-min=10.4 -DMAC_OS_X_VERSION_MIN_REQUIRED=1040  -Wfatal-errors 
+        CC=/usr/bin/gcc
+        CXX=/usr/bin/g++
+        CC += $(OSX_FLAGS)
+        CXX += $(OSX_FLAGS)
+        LDFLAGS += -Lboinc/lib_osx -lboinc_api -lboinc -lpthread -Iarchive/include archive/lib_osx/libarchive.a -lz $(OSX_FLAGS)
     endif
 
     ifdef LINUX
