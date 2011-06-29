@@ -116,10 +116,10 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
             rotations++;
         }
 
-        #ifndef NDEBUG
-            printf("DIMERROT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  %9ld   ---------\n",
-            torque, curvature, rotationAngle*(180.0/M_PI), rotations);
-        #endif
+        FILE *fp = fopen("saddlesearch.dat", "a");        
+        fprintf(fp, "DIMERROT   -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+                    curvature, torque, rotationAngle*(180.0/M_PI));
+        fclose(fp);
     }
 
     statsTorque = torque;

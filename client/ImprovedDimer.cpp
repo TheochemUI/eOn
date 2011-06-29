@@ -176,9 +176,10 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
                  g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
             statsRotations += 1;
-
-            printf("IDIMERRT   -----   ---------  % 9.3e   ---------  % 9.3e  % 9.3e  ---------   %9ld\n",
-                   F_R.norm(), C_tau, phi_min * (180.0 / M_PI), statsRotations);
+            FILE *fp = fopen("saddlesearch.dat", "a");
+            fprintf(fp, "IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+                        C_tau, F_R.norm(), phi_min * (180.0 / M_PI));
+            fclose(fp);
 
         }
 
