@@ -240,7 +240,6 @@ class AKMCState(state.State):
             if Nf < 1:
                 Nf = 1.0
             conf = 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
-            print "CONF", conf
             return conf
         else:
             Nr = self.get_repeats()
