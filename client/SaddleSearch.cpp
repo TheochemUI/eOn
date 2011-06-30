@@ -323,6 +323,18 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     AtomMatrix forces;
     AtomMatrix pos;
 
+    if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
+    {
+        printf("DIMER  %9s   %9s   %9s   %9s   %9s   %9s   %9s   %9s\n", 
+               "Step", "Step Size", "Energy", "Force", "Curvature", 
+               "Torque", "Angle", "Rotations");
+    }
+    else 
+    {
+        printf("LANCZOS  %9s  %9s  %9s  %9s  %9s\n", 
+               "Step", "Step Size", "Energy", "Force", "Curvature");
+    }
+
     pos = saddle->getPositions();
     //----- Initialize end -----
     //std::cout<<"searchForSaddlePoint\n";
@@ -393,6 +405,13 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                         lowestEigenmode->statsTorque,
                         lowestEigenmode->statsAngle,
                         (int)lowestEigenmode->statsRotations);
+            printf("DIMER  %9ld  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
+                   iterations, stepSize, saddle->getPotentialEnergy(),
+                   saddle->getForces().norm(),
+                   lowestEigenmode->getEigenvalue(),
+                   lowestEigenmode->statsTorque,
+                   lowestEigenmode->statsAngle,
+                   (int)lowestEigenmode->statsRotations);
         }
         else 
         {
@@ -400,6 +419,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
                         iterations, stepSize, saddle->getPotentialEnergy(),
                         saddle->getForces().norm(),
                         lowestEigenmode->getEigenvalue());
+            printf("LANCZOS  %9ld  % 9.3f  % 9.3f  % 9.3f  % 9.3f\n", 
+                   iterations, stepSize, saddle->getPotentialEnergy(),
+                   saddle->getForces().norm(),
+                   lowestEigenmode->getEigenvalue());
         }
         fclose(fp);
         if(parameters->writeMovies)
