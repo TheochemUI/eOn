@@ -202,11 +202,6 @@ class MinModeExplorer(Explorer):
         logger.info("registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
-            if config.debug_keep_all_results:
-                if not os.path.isdir(os.path.join(config.path_root, "debug_results")):
-                    os.makedirs(os.path.join(config.path_root, "debug_results"))
-                for d in os.listdir(config.path_jobs_in):
-                    shutil.move(os.path.join(config.path_jobs_in, d), os.path.join(config.path_root, "debug_results", d))
             shutil.rmtree(config.path_jobs_in)  
         os.makedirs(config.path_jobs_in)
         
