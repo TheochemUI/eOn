@@ -438,8 +438,8 @@ class BOINC(Communicator):
                                 'no_output_files' not in f]
 
         for resultfile in my_results:
-            #jobname is everything but the first underscore records
             #jobname looks like state#_job#
+            #jobname is everything but the first underscore records
             jobname = '_'.join(resultfile.split('_')[1:])
             resultpath = os.path.join(self.boinc_results_path, resultfile)
             if not keep_result(jobname):
@@ -450,6 +450,8 @@ class BOINC(Communicator):
                 tar = tarfile.open(resultpath)
                 bundle_size = self.get_bundle_size(tar.getnames())
                 results = [ {'name':jobname} for i in range(bundle_size) ]
+                if config.debug_keep_all_results:
+                    os.mkdir(os.path.join(config.path_root, "debug_results",jobname))
                 for tarinfo in tar:
                     try:
                         index = int(tarinfo.name.split('_')[-1].split('.')[0])
@@ -458,12 +460,15 @@ class BOINC(Communicator):
                         continue
                     splitname = tarinfo.name.rsplit(".",1) 
                     newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
-
-
                     #Read the file in the tar archive into a stringio
                     #you cannot return the the filehandle that extractfile returns
                     #as it will be closed when tar.close() is called.
                     fh = StringIO(tar.extractfile(tarinfo).read())
+                    if config.debug_keep_all_results:
+                        f = open(os.path.join(config.path_root, "debug_results", jobname, tarinfo.name),'w')
+                        f.write(fh.getvalue())
+                        f.close()
+                        fh.seek(0)
                     results[index][newfilename] = fh
                     results[index]["number"] = index
                 tar.close()
@@ -543,6 +548,8 @@ class MPI(Communicator):
         jobdirs = self.get_finished_job_dirs()
 
         for jobdir in jobdirs:
+            if config.debug_keep_all_results:
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, "debug_results",jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
@@ -633,6 +640,8 @@ class Local(Communicator):
                     if os.path.isdir(os.path.join(self.scratchpath,d)) ]
 
         for jobdir in jobdirs:
+            if config.debug_keep_all_results:
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, "debug_results",jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
@@ -738,6 +747,8 @@ class Script(Communicator):
                     if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
 
         for jobdir in jobdirs:
+            if config.debug_keep_all_results:
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, "debug_results",jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
 
