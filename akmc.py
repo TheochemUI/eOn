@@ -420,6 +420,7 @@ def main():
                             config.kdb_scratch_path,
                             config.sb_path, 
                             config.sb_recycling_path,
+                            config.debug_results_path,
                             os.path.join(config.path_root, "searchdata"),
                             os.path.join(config.path_results, "askmc_data.txt"),
                             os.path.join(config.path_results, "dynamics.txt"),
