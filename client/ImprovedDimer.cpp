@@ -80,7 +80,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
         // Calculate the rotational force, F_R.
         F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).cwise() * tau).sum() * tau;
-        statsTorque = F_R.norm() / delta;
 
         // Determine the step direction, theta. (steepest descent)
         if(parameters->dimerOptMethod == OPT_SD) // steepest descent
@@ -177,14 +176,18 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             statsRotations += 1;
             FILE *fp = fopen("saddlesearch.dat", "a");
             fprintf(fp, "IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
-                        C_tau, F_R.norm(), phi_min * (180.0 / M_PI));
+                        C_tau, F_R.norm()/delta, phi_min * (180.0 / M_PI));
+            printf("IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+                   C_tau, F_R.norm()/delta, phi_min * (180.0 / M_PI));
             fclose(fp);
         }
         else
         {
             FILE *fp = fopen("saddlesearch.dat", "a");
             fprintf(fp, "IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
-                        C_tau, F_R.norm());
+                        C_tau, F_R.norm()/delta);
+            printf("IDIMERROT  -----   ---------   ---------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
+                   C_tau, F_R.norm()/delta);
             fclose(fp);
         }
 
