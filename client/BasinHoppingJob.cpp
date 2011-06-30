@@ -90,7 +90,8 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 
 std::vector<std::string> BasinHoppingJob::run(void)
 {
-    
+    double totalDisp=0.0;
+    double totalAccept=0.0;
     Matter *tmpMatter = new Matter(parameters);
 
     current->con2matter("reactant_passed.con");
@@ -118,9 +119,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
     pFile = fopen("bh.dat","w");
     for (int step=0; step<nsteps; step++)
     {
+ 
         AtomMatrix displacement;
        
         displacement = displaceRandom();
+        totalDisp=totalDisp + 1.0;
  
         trial->setPositions(current->getPositions() + displacement);
 
@@ -143,10 +146,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else{
             p = exp(-deltaE / (parameters->temperature*8.617343e-5));
         }
-
         if (randomDouble(1.0)<min(1.0, p)) 
         {
             *current = *trial;
+            totalAccept=totalAccept+1.0;
             if(parameters->basinHoppingStayMinimized)
             {
                 *current = *tmpMatter;
@@ -185,6 +188,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%d termination_reason\n", 0);
     fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/totalDisp);
     fclose(fileResults);
 
     std::string productFilename("product.con");
@@ -192,6 +196,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fileProduct = fopen(productFilename.c_str(), "wb");
     minimumEnergyStructure->matter2con(fileProduct);
     fclose(fileProduct);
+
+    std::string bhFilename("bh.dat");
+    returnFiles.push_back(bhFilename);
 
     delete tmpMatter;
     delete minimumEnergyStructure;
