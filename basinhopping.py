@@ -10,7 +10,6 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-import ConfigParser
 from cStringIO import StringIO
 import logging
 import logging.handlers
@@ -22,10 +21,54 @@ import os
 import shutil
 import sys
 
+import atoms
 import communicator
 import config
 import io
 import locking
+
+class RandomStructure:
+    def __init__(self, structure):
+        self.structure = structure
+        self.radii = numpy.array([ atoms.elements[name]['radius'] 
+                                   for name in structure.names ])
+        self.box_center = numpy.diagonal(structure.box)/2.0
+        self.p = 0.1
+
+    def generate(self):
+        rs = atoms.Atoms(0)
+        rs.append(numpy.zeros(3), True, self.structure.names[0], 
+                  self.structure.mass[0])
+
+        failures = 0
+        for i in range(1,len(self.structure)):
+            rs.append(numpy.zeros(3), True, 
+                      self.structure.names[i], self.structure.mass[0])
+            rs.box = self.box_p(rs)
+            valid = False
+            while not valid:
+                rs.r[i] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
+                distances = numpy.zeros(len(rs)-1)
+                for j in range(len(rs)-1):
+                    distances[j] = numpy.linalg.norm(rs.r[i]-rs.r[j])
+                    bond_length = self.radii[i]+self.radii[j]
+
+                if min(distances) < 0.8*bond_length:
+                    failures += 1
+                    valid = False
+                elif min(distances) > 1.3*bond_length:
+                    failures += 1
+                    valid = False
+                else:
+                    #print '%i/%i' % (i+1,len(self.structure))
+                    valid = True
+        rs.box = self.structure.box
+        return rs
+
+    def box_p(self, rs):
+        V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])
+        a = (V_atoms/self.p)**(1/3.)
+        return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )
 
 class BHMinima:
     def __init__(self):
@@ -138,6 +181,7 @@ def make_searches(comm, wuid, bhminima):
         f.close()
     else:
         reactIO = StringIO(bhminima.minima[0]['structure'])
+
     #invariants['reactant_passed.con']=reactIO
     
     ini_changes = [ ('Main', 'job', 'basin_hopping') ]
@@ -147,12 +191,15 @@ def make_searches(comm, wuid, bhminima):
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
+    rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "reactant.con")))
     searches = []
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d" % wuid
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
         search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+        reactIO = StringIO()
+        io.savecon(reactIO, rs.generate())
         search['reactant_passed.con'] = reactIO
         searches.append(search)
         wuid += 1
