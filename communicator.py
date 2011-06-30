@@ -451,7 +451,10 @@ class BOINC(Communicator):
                 bundle_size = self.get_bundle_size(tar.getnames())
                 results = [ {'name':jobname} for i in range(bundle_size) ]
                 if config.debug_keep_all_results:
-                    os.mkdir(os.path.join(config.path_root, config.debug_results_path,jobname))
+                    rp = os.path.join(config.path_root,config.debug_results_path)
+                    if not os.path.isdir(rp):
+                        os.mkdir(rp)
+                    os.mkdir(os.path.join(rp,jobname))
                 for tarinfo in tar:
                     try:
                         index = int(tarinfo.name.split('_')[-1].split('.')[0])
