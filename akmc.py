@@ -403,38 +403,32 @@ def main():
         else:
             res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_states,
-                        config.path_scratch]
-                if config.kdb_on:
-                    rmdirs.append(config.kdb_path) 
-                    rmdirs.append(config.kdb_scratch_path) 
-                if config.sb_on:
-                    rmdirs.append(config.sb_path)
-                if config.sb_recycling_on:
-                    rmdirs.append(config.sb_recycling_path)
-                if config.debug_keep_all_results:
-                    rmdirs.append(os.path.join(config.path_root, "old_searches"))
-                for i in rmdirs:
-                    if os.path.isdir(i):
-                        shutil.rmtree(i)
-                        #XXX: ugly way to remove all empty directories containing this one
-                        os.mkdir(i)
-                        os.removedirs(i)
-                if os.path.isfile(os.path.join(config.path_root, "searchdata")):
-                    os.remove(os.path.join(config.path_root, "searchdata"))
-                askmc_data_path = os.path.join(config.path_results, "askmc_data.txt")
-                if os.path.isfile(askmc_data_path):
-                    os.remove(askmc_data_path)
-                dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
-                info_path = os.path.join(config.path_results, "info.txt") 
-                log_path = os.path.join(config.path_results, "akmc.log")
-                jobs_path = os.path.join(config.path_results, "jobs.tbl") 
-                for i in [info_path, dynamics_path, log_path, jobs_path]:
-                    if os.path.isfile(i):
-                        os.remove(i)
-                if os.path.isdir(os.path.join(config.path_root, "results")):
-                    shutil.rmtree(os.path.join(config.path_root, "results"))
-                
+                def attempt_removal(thing):
+                    if thing is None:
+                        return
+                    if os.path.isdir(thing):
+                        shutil.rmtree(thing)
+                        os.mkdir(thing)
+                        os.removedirs(thing)                        
+                    elif os.path.isfile(thing):
+                        os.remove(thing)
+                rmthings = [config.path_jobs_out, 
+                            config.path_jobs_in, 
+                            config.path_states,
+                            config.path_scratch, 
+                            config.kdb_path, 
+                            config.kdb_scratch_path,
+                            config.sb_path, 
+                            config.sb_recycling_path,
+                            os.path.join(config.path_root, "searchdata"),
+                            os.path.join(config.path_results, "askmc_data.txt"),
+                            os.path.join(config.path_results, "dynamics.txt"),
+                            os.path.join(config.path_results, "info.txt"),
+                            os.path.join(config.path_results, "akmc.log"),
+                            os.path.join(config.path_results, "jobs.tbl"),
+                            os.path.join(config.path_root, "results")]
+                for thing in rmthings:
+                    attempt_removal(thing)
                 if not options.quiet:
                     print "Reset."
                 sys.exit(0)
