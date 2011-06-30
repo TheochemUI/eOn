@@ -33,7 +33,6 @@ class RandomStructure:
         self.radii = numpy.array([ atoms.elements[name]['radius'] 
                                    for name in structure.names ])
         self.box_center = numpy.diagonal(structure.box)/2.0
-        self.p = 0.1
 
     def generate(self):
         rs = atoms.Atoms(0)
@@ -67,7 +66,7 @@ class RandomStructure:
 
     def box_p(self, rs):
         V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])
-        a = (V_atoms/self.p)**(1/3.)
+        a = (V_atoms/config.bh_random_packing_density)**(1/3.)
         return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )
 
 class BHMinima:
@@ -175,12 +174,6 @@ def make_searches(comm, wuid, bhminima):
     
     invariants = {}
 
-    if len(bhminima.minima) == 0:
-        f = open(os.path.join(config.path_root, "reactant.con"))
-        reactIO = StringIO(''.join(f.readlines()))
-        f.close()
-    else:
-        reactIO = StringIO(bhminima.minima[0]['structure'])
 
     #invariants['reactant_passed.con']=reactIO
     
@@ -193,17 +186,27 @@ def make_searches(comm, wuid, bhminima):
 
     rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "reactant.con")))
     searches = []
+    number_random = 0
+    number_minima = 0
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d" % wuid
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
         search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
         reactIO = StringIO()
-        io.savecon(reactIO, rs.generate())
+        if len(bhminima.minima) == 0 or \
+           numpy.random.random() < config.bh_random_probability:
+            number_random += 1
+            io.savecon(reactIO, rs.generate())
+        else:
+            number_minima += 1
+            i = numpy.random.randint(0,len(bhminima.minima)-1)
+            reactIO = StringIO(bhminima.minima[i]['structure'])
         search['reactant_passed.con'] = reactIO
         searches.append(search)
         wuid += 1
 
+    logger.info("%i from random structures %i from previous minima", number_random, number_minima)
     comm.submit_jobs(searches, invariants)
     logger.info( str(num_to_make) + " searches created") 
     return wuid
