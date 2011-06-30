@@ -298,11 +298,11 @@ fadd("Kdb", "keep", kind = "boolean", description = "Keep the saddle suggestions
 fadd("Debug", description = "Parameters that are generally used to help debug calculations")
 fadd("Debug", "keep_bad_saddles", kind = "boolean", description = "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.")
 fadd("Debug", "keep_all_results_files", kind = "boolean", description = "Stores all result files in main_directory/results")
+fadd("Debug", "result_files_path", kind="string", description="Where to store all result files. Defaults to 'debug_results'.")
 fadd("Debug", "register_extra_results", kind = "boolean", description = "Register processes found for a state after leaving that state.")
 fadd("Debug", "use_mean_time", kind = "boolean", description = "Select transition times from the mean of the exponential distribution of escape times.")
 fadd("Debug", "target_trajectory", kind = "boolean", description = "Follow the state-to-state trajectory of another akmc simulation.")
 fadd("Debug", "save_stdout", kind = "boolean", description = "Save the standard output from the client to a file named stdout_0.dat")
-
 
 ## End new config section. =====================================================
 
@@ -492,6 +492,7 @@ def init(config_file = ""):
         signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
     config.debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
     config.debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
+    config.debug_results_path = parser.get('Debug', 'result_files_path')
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
     config.debug_target_trajectory = parser.get('Debug', 'target_trajectory')
