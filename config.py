@@ -461,12 +461,14 @@ def init(config_file = ""):
         config.disp_moved_only = parser.getboolean('Recycling', 'displace_moved_only')
     config.recycling_move_distance = parser.getfloat('Recycling', 'move_distance')
     config.sb_recycling_on = parser.getboolean('Recycling','use_sb_recycling')
+    config.sb_recycling_path = None
     if config.sb_recycling_on:
         config.sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
     #Coarse Graining
     config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
     config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
+    config.sb_path = None
     if config.sb_on:
         config.sb_path = parser.get('Paths', 'superbasins')
         config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
