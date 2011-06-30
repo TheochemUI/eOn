@@ -253,6 +253,8 @@ fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "T
 fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
 fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
 fadd("Basin Hopping", "quenching_steps", kind = "int", description = "Number at steps at 0 temperature.")
+fadd("Basin Hopping", "random_packing_density", kind = "float", description = "Target Packing Desnsity for random structures.")
+fadd("Basin Hopping", "random_probablity", kind = "float", description = "The probability of choosing a random starting structure instead of a previously discovered minimum.")
 fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.")
 fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.")
 
@@ -359,6 +361,8 @@ def init(config_file = ""):
 
     #Basin Hopping options
     config.bh_number_of_minima = parser.getint('Basin Hopping', 'number_of_minima')
+    config.bh_random_packing_density = parser.getfloat('Basin Hopping', 'random_packing_density')
+    config.bh_random_probability = parser.getfloat('Basin Hopping', 'random_probability')
     
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')

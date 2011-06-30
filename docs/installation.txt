@@ -21,6 +21,8 @@ Dependencies
     * make
     * gcc (>=4.0)
     * (optional) gfortran or Intel Fortran Compiler
+    * (for BOINC) libboinc
+    * (for BOINC) libarchive
 
 Server Installation
 -------------------
@@ -49,3 +51,13 @@ change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 For most setups the binary ``client`` should be copied to a directory in your
 ``$PATH`` and named ``eonclient``. Otherwise you will need to give the path to
 the client binary in your ``config.ini``. 
+
+BOINC Client Setup
+------------------
+
+On OSX to build libboinc and libboinc_api, first checkout svn copy of boinc
+(svn co http://boinc.berkeley.edu/svn/tags/boinc_core_release_6_12_26) and open
+the xcode project file in mac_build named boinc.xcodeproj. In Xcode, select
+deployment under "Active Confuguration" and then right click on libboinc under
+target and select build do the same api_libboinc. In boinc_api.h we had to comment
+out the include of Carbon.h. 
