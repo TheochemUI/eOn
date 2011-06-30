@@ -164,7 +164,7 @@ long SaddlePoint::locate(void)
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
 
-    fprintf(stdout, "  Saddle point search started.\n");
+    fprintf(stdout, "  Saddle point search started from reactant with energy %f eV.\n", initialEnergy);
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region
