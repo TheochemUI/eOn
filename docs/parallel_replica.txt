@@ -45,7 +45,7 @@ papers by:
 ::
 
    "Parallel replica method for dynamics of infrequent events”
-                                        A. F. Voter, Phys Rev B 57 13985 (1998)
+                                        A. F. Voter, Phys. Rev. B 57, 13985 (1998)
 
    "Accelerated molecular-dynamics of rare events with the bond-boost method"
                R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
