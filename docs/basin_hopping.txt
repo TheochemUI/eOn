@@ -2,7 +2,8 @@
 Basin Hopping
 =============
 
-Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
+Basin hopping is a Monte Carlo method in which the energy of each configuration
+is taken to be the energy of a local minimization.
 
 These are options that go in the **[Basin Hopping]** section of "config.ini".
 
@@ -23,7 +24,7 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
     quadratic algorithms assign the max displacement of each atom as a
     function of its distance from the geometric center, with the
     overal maximum displacement being the value assigned in
-    **max_displacement**.
+    **max_displacement**. For more information see the paper by Kim et al [#kim]_.
 
 **steps**
 
@@ -49,7 +50,7 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
     Default: *false*
 
     When *true*, displacement is applied to the minimized structure
-    after each step.
+    after each step. See paper by White and Mayne [#white]_.
 
 **number_of_minima**
 
@@ -57,3 +58,14 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
 
     The number of lowest energy structures that are saved in the minima
     directory.
+
+**random_probability**
+
+    Default: 0.5
+
+    The probability of starting each basin hopping job with a random structure 
+    versus one of the previously discovered minima.
+    
+
+.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
+.. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
