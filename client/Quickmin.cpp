@@ -75,7 +75,7 @@ void Quickmin::fullRelax()
         matter->matter2con(min.str(), false);
     }
     int i = 0;
-    while(!converged)
+    while(!converged and i < parameters->optMaxIterations) 
     {
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
