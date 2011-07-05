@@ -98,6 +98,8 @@ fadd("AKMC", "confidence", kind = "float", description = "The confidence (out of
 fadd("AKMC", "max_kmc_steps", kind = "int", description = "The maximum number of transitions per execution of the server.")
 fadd("AKMC", "thermally_accessible_window", kind = "float", description = "Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.")
 fadd("AKMC", "thermally_accessible_buffer", kind = "float", description = "Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processes with barriers higher than the sum of these two values will be discarded.")
+fadd("AKMC", "confidence_scheme", kind = "string", description = "")# add description
+fadd("AKMC", "confidence_correction", kind = "boolean", description = "")# add description
 
 
 # Structure Comparison
@@ -119,6 +121,15 @@ fadd("Paths", "searches_in", kind = "string", description = "")
 fadd("Paths", "states", kind = "string", description = "Where all of the information about individual states is located.")
 fadd("Paths", "scratch", kind = "string", description = "")
 fadd("Paths", "potential_files", kind = "string", description = "For extra files needed by the client for the potential.")
+fadd("Paths", "jobs_out", kind = "string", description = "")#add description
+fadd("Paths", "jobs_in", kind = "string", description = "")# add description
+fadd("Paths", "incomplete", kind = "string", description = "")# add description
+fadd("Paths", "results", kind = "string", description = "")#add description
+fadd("Paths", "bh_minima", kind = "string", description = "")#add descripiton
+fadd("Paths", "kdb_scratch", kind = "string", description = "")#add description
+fadd("Paths", "kdb", kind = "string", description = "")#add description
+fadd("Paths", "superbasin_recycling", kind = "string", description = "")#add description
+
 
 
 # Process Search
@@ -152,6 +163,10 @@ fadd("Saddle Search", "min_mode_method", "lanczos", description = "Use the Lancz
 fadd("Saddle Search", "max_energy", kind = "float", description = "The energy at which a saddle search is considered bad and terminated.")
 fadd("Saddle Search", "displace_atomlist", kind = "string", description = "The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.")
 fadd("Saddle Search", "client_max_single_displace", kind = "int", description = "Only functional when displacement is done on the client. Defines the maximal allowed absolute value for a single component in the displacement vector.")
+fadd("Saddle Search", "stdev_translation", kind = "float", description = "")#add description
+fadd("Saddle Search", "stdev_rotation", kind = "float", description = "")#add description
+fadd("Saddle Search", "molecule_list", kind = "string", description = "")#add description
+fadd("Saddle Search", "disp_at_random", kind = "int", description = "")#add description
 
 
 # Dimer
@@ -195,7 +210,7 @@ fadd("Communicator", "type", "arc", description = "Jobs can be submitted to the 
 fadd("Communicator", "num_jobs", kind = "int", description = "Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.")
 fadd("Communicator", "jobs_per_bundle", kind = "int", description = "In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.")
 fadd("Communicator", "client_path", kind = "string", description = "Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.")
-fadd("Communicator", "number_of_cpus", kind = "int", description = "The number of jobs that will run simultaneously.")
+fadd("Communicator", "number_of_CPUs", kind = "int", description = "The number of jobs that will run simultaneously.")
 fadd("Communicator", "script_path", kind = "string", description = "The path to the user defined scripts for submitting jobs to the communicator.")
 fadd("Communicator", "name_prefix", kind = "string", description = "When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.")
 fadd("Communicator", "queued_jobs", kind = "string", description = "This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.")
@@ -206,6 +221,7 @@ fadd("Communicator", "boinc_wu_template_path", kind = "string", description = "T
 fadd("Communicator", "boinc_re_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc result template.")
 fadd("Communicator", "boinc_appname", kind = "string", description = "This is the name of the application in BOINC.")
 fadd("Communicator", "boinc_results_path", kind = "string", description = "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.")
+fadd("Communicator", "blacklist", kind = "string", description = "")#add description
 
 
 # Parallel Replica
@@ -257,6 +273,7 @@ fadd("Basin Hopping", "random_packing_density", kind = "float", description = "T
 fadd("Basin Hopping", "random_probablity", kind = "float", description = "The probability of choosing a random starting structure instead of a previously discovered minimum.")
 fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.")
 fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.")
+fadd("Basin Hopping", "number_of_minima", kind = "int", description = "")#add description
 
 
 # Optimizers
@@ -292,7 +309,17 @@ fadd("Kdb", description = "One of the bottlenecks in an aKMC simulation is perfo
 fadd("Kdb", "use_kdb", kind = "boolean", description = "Turn Kdb on/off.")
 fadd("Kdb", "wait", kind = "boolean", description = "Wait for the query to finish before submitting jobs (for debugging purposes).")
 fadd("Kdb", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).")
+fadd("Kdb", "Kdb_only", kind = "boolean", description = "")#add description
+fadd("Kdb", "addpath", kind = "string", description = "")#add description
+fadd("Kdb", "querypath", kind = "string", description = "")#add description
 
+# Recycling         add descriptions
+fadd("Recycling", description = "")
+fadd("Recycling", "use_recycling", kind = "boolean", description = "")
+fadd("Recycling", "save_suggestions", kind = "boolean" , description = "")
+fadd("Recycling", "displace_moved_only", kind = "boolean",  description = "")
+fadd("Recycling", "move_distance", kind = "float",  description = "")
+fadd("Recycling", "use_sb_recycling", kind = "boolean", description = "")
 
 # Debug
 fadd("Debug", description = "Parameters that are generally used to help debug calculations")
@@ -303,6 +330,7 @@ fadd("Debug", "register_extra_results", kind = "boolean", description = "Registe
 fadd("Debug", "use_mean_time", kind = "boolean", description = "Select transition times from the mean of the exponential distribution of escape times.")
 fadd("Debug", "target_trajectory", kind = "boolean", description = "Follow the state-to-state trajectory of another akmc simulation.")
 fadd("Debug", "save_stdout", kind = "boolean", description = "Save the standard output from the client to a file named stdout_0.dat")
+fadd("Debug", "interactive_shell", kind = "boolean", description = "")#add description
 
 ## End new config section. =====================================================
 
@@ -351,7 +379,7 @@ def init(config_file = ""):
     config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
     config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
 
-    #aKMC options
+    #AKMC options
     config.akmc_confidence              = parser.getfloat('AKMC', 'confidence')
     config.akmc_thermal_window          = parser.getfloat('AKMC', 'thermally_accessible_window')
     config.akmc_max_thermal_window      = parser.getfloat('AKMC', 'thermally_accessible_buffer')

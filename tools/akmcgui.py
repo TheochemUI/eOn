@@ -12,6 +12,8 @@ import gobject
 import numpy as np
 
 import pathfix
+import config
+import ConfigParser
 import atomview
 import atoms
 import glob
@@ -42,7 +44,17 @@ class akmcgui(atomview.atomview):
         self.state_fpsSB = gladetree.get_widget("state_fpsSB")
         self.plotWindow = gladetree.get_widget("plotWindow")
         self.energy_plotButton = gladetree.get_widget("energy_plotButton")
+        self.tempLabel = gladetree.get_widget("tempLabel")
+        self.rateLabel = gladetree.get_widget("rateLabel")
+        self.barrierLabel = gladetree.get_widget("barrierLabel")
+        self.prefactorLabel = gladetree.get_widget("prefactorLabel")
         # defaults
+        self.config = ConfigParser.SafeConfigParser()
+        self.config.read(os.path.join(pathfix.path, "default_config.ini"))
+        try:
+            self.config.read("./config.ini")
+        except:
+            print "No config.ini found in local directory, using default values."
         self.processesSB.set_sensitive(False)
         self.interpolationCB.set_sensitive(False)
         self.interpolationSB.set_sensitive(False)
@@ -54,6 +66,11 @@ class akmcgui(atomview.atomview):
         self.pauseImage = gtk.Image()
         self.pauseImage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.statePlayTB.set_image(self.playImage)
+        self.tempLabel.set_text(self.config.get("Main", "temperature"))
+        self.processtable()
+        self.plotImage = gtk.Image()
+        self.plotImage.set_from_file("plot_icon.png")
+        self.energy_plotButton.set_image(self.plotImage)
         # event handeling
         self.stateRB.connect("clicked", self.changeImage)
         self.processesRB.connect("clicked", self.changeImage)
@@ -66,8 +83,10 @@ class akmcgui(atomview.atomview):
         self.interpolationCB.connect("clicked", self.interpolationCB_changed)
         self.stateScale.connect("value-changed", self.energy_changed)
         self.statePlayTB.connect("toggled", self.state_play)
+        self.stateScale.connect("value-changed", self.processtable)
         self.state_fpsSB.connect("value-changed", self.state_play)
         self.energy_plotButton.connect("clicked", self.energy_plot)
+        self.processesSB.connect("value-changed", self.processtable)
         
         
         
@@ -167,6 +186,14 @@ class akmcgui(atomview.atomview):
         energyNumber = energy.readlines()
         a = energyNumber[int (self.stateScale.get_value())].split()[1]
         self.stateEnergy.set_markup("%f<b>eV</b>" % float (a))
+        
+    def processtable(self, *args):
+        a = open("states/%s/processtable" % int(self.stateScale.get_value()) , "r" )
+        a = a.readlines()
+        b = a[int (self.processesSB.get_value()) +1].split()
+        self.rateLabel.set_text(b[7])
+        self.barrierLabel.set_text(b[6])
+        self.prefactorLabel.set_text(b[2])
       
         
     def state_play(self, *args): 
@@ -204,6 +231,8 @@ class akmcgui(atomview.atomview):
         fig = p.figure()
         ax = fig.add_subplot(1,1,1)
         ax.plot(x, y)
+        p.xlabel("State")
+        p.ylabel("eV")
         container = gtk.VBox()
         self.plotWindow.add(container)
         graph = drawArea(fig)

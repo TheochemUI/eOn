@@ -9,7 +9,7 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-# Instructions:
+#-------------------------------------- Instructions ------------------------------------------------------
 #   To add options to the window edit the eon/config.py file.
 #
 # adding sections: fadd("your_section_name", description = "your_description")
@@ -55,28 +55,27 @@ class cfggui():
             for j in range(len(config.format[i].keys)):
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     try:
-                        self.config.set('%s' %config.format[i].name, '%s' %name, '%s' %self.CBbuttons[name].get_active_text())
+                        self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.CBbuttons[name].get_active_text())
                     except:
                         pass
                 #string without values, ints, and floats
                 if (config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0) or config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float':
-                    name = config.format[i].keys[j].name
-                    
-                    if self.TEbuttons[name].get_text() != '' :
+                    name = config.format[i].name + "," + config.format[i].keys[j].name 
+                    if self.TEbuttons[name].get_text() != '':
                         try:
-                            self.config.set('%s' %config.format[i].name, '%s' %name, '%s' %self.TEbuttons[name].get_text())
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.TEbuttons[name].get_text())     
                         except:
                             pass
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     try:
                         if self.RBbuttons[name].get_active() == True:
-                            self.config.set('%s' %config.format[i].name, '%s' %name, 'True')
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
                         else:
-                            self.config.set('%s' %config.format[i].name, '%s' %name, 'False')
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
                     except:
                         pass
         f = open("config.ini", 'w')
@@ -169,7 +168,7 @@ class cfggui():
                 
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     self.CBbuttons[name] = gtk.combo_box_new_text()
                     for k in range(len(config.format[i].keys[j].values)):
                         self.CBbuttons[name].append_text(str (config.format[i].keys[j].values[k].name))
@@ -188,7 +187,7 @@ class cfggui():
                            
                 #strings without values
                 if config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0:
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     self.TEbuttons[name] = gtk.Entry()
                     self.TEbuttons[name].connect("changed", self.saveCheck)
                     try:
@@ -204,7 +203,7 @@ class cfggui():
                     
                 #ints & floats
                 if config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float' :
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     self.TEbuttons[name] = gtk.Entry()
                     self.TEbuttons[name].connect("changed", self.saveCheck)
                     try:
@@ -220,7 +219,7 @@ class cfggui():
                     
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
-                    name = config.format[i].keys[j].name
+                    name = config.format[i].name + "," + config.format[i].keys[j].name
                     self.RBbuttons[name] = gtk.RadioButton(label="True")
                     self.RBbuttons[name].connect("clicked", self.saveCheck)
                     RB2 = gtk.RadioButton(label ="False", group=self.RBbuttons[name])
@@ -244,8 +243,6 @@ class cfggui():
                     hbox.pack_start(nameLabel, False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(alignment,1,2,j,j+1, False | gtk.FILL, False,ypadding=5)
-                    
-        
         self.saveButton.set_sensitive(False)                  
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
