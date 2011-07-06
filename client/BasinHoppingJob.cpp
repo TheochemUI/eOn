@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string>
 
+#include "Dynamics.h"
 #include "BasinHoppingJob.h"
 #include "Constants.h"
 #include "ConjugateGradients.h"
@@ -46,57 +47,80 @@ BasinHoppingJob::~BasinHoppingJob()
     delete trial;
 }
 
+vector<long> BasinHoppingJob::getElements(Matter *matter)
+{
+    int allElements[118]={0};
+    vector<long> Elements;
+
+    for(long y=0; y<matter->numberOfAtoms(); y++)
+    {
+        if(!matter->getFixed(y))
+        {
+	    int index= matter->getAtomicNr(y);
+	    allElements[index]++;
+        }
+    }
+    for(int i=0; i<118; i++)
+    {
+        if(allElements[i] > 0)
+        {
+            Elements.push_back(i);
+        }
+    }
+    return Elements;
+}
 VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 {
-  AtomMatrix pos = matter->getPositions();
-  double cenx = 0;
-  double ceny = 0;
-  double cenz = 0;
-  for(int k=0; k<matter->numberOfAtoms(); k++)
+    AtomMatrix pos = matter->getPositions();
+    double cenx = 0;
+    double ceny = 0;
+    double cenz = 0;
+    for(int k=0; k<matter->numberOfAtoms(); k++)
     {
-      cenx = cenx + pos(k,0);
-      ceny = ceny + pos(k,1);
-      cenz = cenz + pos(k,2);
+        cenx = cenx + pos(k,0);
+        ceny = ceny + pos(k,1);
+        cenz = cenz + pos(k,2);
     }
-  int num = matter->numberOfAtoms();
-  cenx = cenx / num;
-  ceny = ceny / num;
-  cenz = cenz / num;
+    int num = matter->numberOfAtoms();
+    cenx = cenx / num;
+    ceny = ceny / num;
+    cenz = cenz / num;
 
-  // printf ("%.3f\n", cenx);
-  //printf ("%.3f\n", ceny);
-  //printf ("%.3f\n", cenz);
-  double cen[] = {cenx, ceny, cenz};
+    double cen[] = {cenx, ceny, cenz};
 
-  VectorXd dist(num);
-  for(int i = 0; i < num; i++)
-    {
-       
+    VectorXd dist(num);
+
      
-      for(int l = 0; l < num; l++)
-        {
-          double xd = pos(l,0)-cen[0];
-          double yd = pos(l,1)-cen[1];
-          double zd = pos(l,2)-cen[2];
-          xd = xd*xd;
-          yd = yd*yd;
-          zd = zd*zd;
-          dist(l) = sqrt(xd + yd + zd);
-        }
-
+    for(int l = 0; l < num; l++)
+    {
+        double xd = pos(l,0)-cen[0];
+        double yd = pos(l,1)-cen[1];
+        double zd = pos(l,2)-cen[2];
+        xd = xd*xd;
+        yd = yd*yd;
+        zd = zd*zd;
+        dist(l) = sqrt(xd + yd + zd);
     }
-  return dist;
+
+    return dist;
 }
 
 std::vector<std::string> BasinHoppingJob::run(void)
 {
-    double totalDisp=0.0;
+    int jump_max_count=0;
+    int jump_steps_count=0;
     double totalAccept=0.0;
     Matter *tmpMatter = new Matter(parameters);
-
+    srand(time(NULL));
     current->con2matter("reactant_passed.con");
+    if(parameters->basinHoppingMDFirst=true)
+    {
+        Dynamics dyn(current,parameters);
+        dyn.fullSteps(parameters->basinHoppingMDTemp);
+    }
     *trial = *current;
     *tmpMatter = *current;
+    
 
     Minimizer *minimizer = NULL; 
     if (parameters->optMethod == "cg") {
@@ -117,16 +141,20 @@ std::vector<std::string> BasinHoppingJob::run(void)
     long totalfc = 0;
     FILE * pFile;
     pFile = fopen("bh.dat","w");
+
+
     for (int step=0; step<nsteps; step++)
     {
- 
-        AtomMatrix displacement;
-       
-        displacement = displaceRandom();
-        totalDisp=totalDisp + 1.0;
- 
-        trial->setPositions(current->getPositions() + displacement);
-
+        if(randomDouble(1.0)<parameters->basinHoppingSwapProbability)
+      	{
+	  randomSwap(trial);
+      	}
+        else
+      	{
+            AtomMatrix displacement;
+            displacement = displaceRandom();
+            trial->setPositions(current->getPositions() + displacement);
+        }
         *tmpMatter = *trial;
 
         if (parameters->optMethod == "cg") {
@@ -140,16 +168,39 @@ std::vector<std::string> BasinHoppingJob::run(void)
         double p=0.0;
         if (step>=parameters->basinHoppingSteps)
         {
-            if (deltaE < 0.0) {
+	    if (deltaE < 0.0)
+            {
                 p = 1.0;
             }
-        }else{
-            p = exp(-deltaE / (parameters->temperature*8.617343e-5));
         }
+	else if (jump_max_count>=parameters->basinHoppingJumpMax)
+	{
+	    jump_steps_count++;
+	    printf("Jump.\n");
+	    if (deltaE > 0.0)
+	    {
+	        p = 1.0;
+	    }
+	}
+        else
+        {
+	    if (deltaE < 0.0)
+            {
+                p = 1.0;
+            }
+	    else
+	    {
+            p = exp(-deltaE / (parameters->temperature*8.617343e-5));
+	    }
+	}
         if (randomDouble(1.0)<min(1.0, p)) 
         {
             *current = *trial;
-            totalAccept=totalAccept+1.0;
+
+            if(step<parameters->basinHoppingSteps)
+	    {
+                totalAccept=totalAccept+1.0;
+	    }
             if(parameters->basinHoppingStayMinimized)
             {
                 *current = *tmpMatter;
@@ -166,6 +217,15 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
             tmpMatter->matter2xyz("movie", true);
         }
+	else
+	{
+	  jump_max_count++;
+	}
+	if (jump_steps_count==parameters->basinHoppingJumpSteps)
+	{
+	    jump_max_count=0;
+	    jump_steps_count=0;
+	}
         totalfc = totalfc + minimizer->totalForceCalls;
         printf("step: %5i min: %.3f trial: %8.1e de: %9.2e min_fc: %4ld\n",
                step+1, currentEnergy, current->getPotentialEnergy(),
@@ -188,7 +248,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%d termination_reason\n", 0);
     fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/totalDisp);
+    fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     fclose(fileResults);
 
     std::string productFilename("product.con");
@@ -208,6 +268,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
 AtomMatrix BasinHoppingJob::displaceRandom()
 {
+    printf("Displacement move.\n");
     // Create a random displacement.
     AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
@@ -250,9 +311,55 @@ AtomMatrix BasinHoppingJob::displaceRandom()
             }
             for(int j=0; j<3; j++)
             {
-                displacement(i, j) = randomDouble(2*mdp) - mdp;
+	        if(parameters->basinHoppingDisplacementDistribution=="uniform")
+	  	{
+		    displacement(i, j) = randomDouble(2*mdp) - mdp;
+		}
+	        else if(parameters->basinHoppingDisplacementDistribution=="gaussian")
+		{
+                    displacement(i,j) = gaussRandom(0.0, mdp);
+                }
+                else
+		{
+		    printf("Unknown displacement_distribution\n");
+		    exit(1);
+		}
+                  
             }
         }
     }
     return displacement;
+}
+
+
+void BasinHoppingJob::randomSwap(Matter *matter)
+{
+    printf("Swap move.\n");
+    vector<long> Elements;
+    Elements=getElements(matter);
+    long ela;
+    long elb;
+    int ia = rand()%Elements.size();
+    ela = Elements.at(ia);
+    Elements.erase(Elements.begin()+ia);
+    long ib = rand()%Elements.size();
+    elb = Elements.at(ib);
+    for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++)
+    {          
+        if(matter->getAtomicNr(x)==ela)
+        {
+            matter->setAtomicNr(x, elb);
+            break;
+        }
+        else if(matter->getAtomicNr(x)==elb)
+        {
+            matter->setAtomicNr(x, ela);
+            break;
+        }
+        else
+        {
+	    continue;
+	}
+    }
+    
 }

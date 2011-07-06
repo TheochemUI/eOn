@@ -24,12 +24,11 @@ class BasinHoppingJob : public Job {
 
     private:
         AtomMatrix displaceRandom();
-        AtomMatrix displaceSingle();
-
+        void randomSwap(Matter *matter);
         Parameters *parameters;
         Matter *current;
         Matter *trial;  // initial configuration.
-
+	vector<long> getElements(Matter *matter);
         std::vector<std::string> returnFiles;
 };
 
