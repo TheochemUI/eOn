@@ -87,7 +87,7 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
     consecutive rejections have taken place.
     
 
-**MD_first**
+**md_first**
 
     Default: *False*
 
@@ -97,7 +97,7 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
     **[Main]** will be used, or another temperature can be specificed
     in **MD_temp**.
 
-**MD_Temp**
+**md_temp**
 
     Default: *temperature in **[Main]***
 
