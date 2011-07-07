@@ -116,8 +116,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     Matter *tmpMatter = new Matter(parameters);
     srand(time(NULL));
     current->con2matter("reactant_passed.con");
-    if(parameters->basinHoppingMDFirst=true)
-    {
+    if(parameters->basinHoppingMDFirst==true){
         Dynamics dyn(current,parameters);
         dyn.fullSteps(parameters->basinHoppingMDTemp);
     }
