@@ -49,10 +49,8 @@ BasinHoppingJob::~BasinHoppingJob()
 
 vector<long> BasinHoppingJob::getElements(Matter *matter)
 {
-    int allElements[118];
+    int allElements[118] = {0};
     vector<long> Elements;
-
-    for (int i=0;i<118;i++) allElements[i]=0;
 
     for(long y=0; y<matter->numberOfAtoms(); y++)
     {
