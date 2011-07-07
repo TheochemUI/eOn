@@ -87,11 +87,11 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
     consecutive rejections have taken place.
     
 
-**md_first**
+**md_probability**
 
     Default: *False*
 
-    When *true*, molecular dynamics is run before the first step is
+    The probability that molecular dynamics is run before the first step is
     taken.  The parameters for molecular dynamics can be set in the
     **[Dynamics]** section.  As default, the temperature specified in
     **[Main]** will be used, or another temperature can be specificed
