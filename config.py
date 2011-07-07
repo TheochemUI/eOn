@@ -272,6 +272,7 @@ fadd("Basin Hopping", "jump_max", kind = "int", description = "The number of con
 fadd("Basin Hopping", "jump_steps", kind = "int", description = "The number of jump steps to take after the jump_max number of consecutive rejections have taken place.")
 fadd("Basin Hopping", "md_first", kind = "boolean", description = "When true, molecular dynamics is run before the first step is taken. The parameters for molecular dynamics can be set in the [Dynamics] section. As default, the temperature specified in [Main] will be used, or another temperature can be specificed in MD_temp.")
 fadd("Basin Hopping", "md_temp", kind = "float", description = "The temperature to use for the molecular dynamics steps that occur before basin hopping steps.")
+fadd("Basin Hopping", "md_probability", kind = "boolean", description = "The probability that a basin hopping job will run Molecular Dynamics before starting BH.")
 
 
 # Optimizers
@@ -388,7 +389,7 @@ def init(config_file = ""):
     #Basin Hopping options
     config.bh_number_of_minima = parser.getint('Basin Hopping', 'number_of_minima')
     config.bh_random_packing_density = parser.getfloat('Basin Hopping', 'random_packing_density')
-    config.bh_random_probability = parser.getfloat('Basin Hopping', 'random_probability')
+    config.bh_md_probability = parser.getfloat('Basin Hopping', 'md_probability')
     
     #path options
     config.path_root         = parser.get('Paths', 'main_directory')

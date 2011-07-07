@@ -154,9 +154,10 @@ def make_searches(comm, wuid, bhminima):
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
         reactIO = StringIO()
         if len(bhminima.minima) == 0 or \
-           numpy.random.random() < config.bh_random_probability:
+           numpy.random.random() < config.bh_md_probability:
             number_random += 1
             reactIO = initial_react
+            ini_changes.append( ('Basin Hopping', 'md_first', 'true') )
         else:
             number_minima += 1
             i = numpy.random.randint(0,len(bhminima.minima)-1)
