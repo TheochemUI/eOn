@@ -30,6 +30,9 @@ class BasinHoppingJob : public Job {
         Matter *trial;  // initial configuration.
 	vector<long> getElements(Matter *matter);
         std::vector<std::string> returnFiles;
+        int jcount;
+        int dcount;
+        int scount;
 };
 
 #endif

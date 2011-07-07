@@ -107,6 +107,9 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 
 std::vector<std::string> BasinHoppingJob::run(void)
 {
+    jcount=0;
+    scount=0;
+    dcount=0;
     int jump_max_count=0;
     int jump_steps_count=0;
     double totalAccept=0.0;
@@ -145,7 +148,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     for (int step=0; step<nsteps; step++)
     {
-        if(randomDouble(1.0)<parameters->basinHoppingSwapProbability)
+        if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && step<parameters->basinHoppingSteps)
       	{
 	  randomSwap(trial);
       	}
@@ -176,7 +179,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 	else if (jump_max_count>=parameters->basinHoppingJumpMax)
 	{
 	    jump_steps_count++;
-	    printf("Jump.\n");
+	    jcount++;
 	    if (deltaE > 0.0)
 	    {
 	        p = 1.0;
@@ -249,6 +252,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
+    fprintf(fileResults, "%ld total normal displacement steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
+    fprintf(fileResults, "%d total jump steps\n", jcount);
+    fprintf(fileResults, "%d total swap steps\n", scount);
     fclose(fileResults);
 
     std::string productFilename("product.con");
@@ -268,7 +274,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
 AtomMatrix BasinHoppingJob::displaceRandom()
 {
-    printf("Displacement move.\n");
+    dcount++;
     // Create a random displacement.
     AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
@@ -334,7 +340,7 @@ AtomMatrix BasinHoppingJob::displaceRandom()
 
 void BasinHoppingJob::randomSwap(Matter *matter)
 {
-    printf("Swap move.\n");
+    scount++;
     vector<long> Elements;
     Elements=getElements(matter);
     long ela;
