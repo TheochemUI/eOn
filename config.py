@@ -254,26 +254,24 @@ fadd("Parallel Replica", "bb_rcut", kind = "float", description = "All bonds whi
 
 # Basin Hopping
 fadd("Basin Hopping", description = "Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.")
-fadd("Basin Hopping", "max_displacement", kind = "float", description = "Max displacement in each degree of freedom")
+fadd("Basin Hopping", "steps", kind = "int", description = "Number at steps to take at the temeprature assigned.")
+fadd("Basin Hopping", "max_displacement", kind = "float", description = "Max displacement in each degree of freedom.")
 fadd("Basin Hopping", "max_displacement_algorithm", kind = "string", description = "The algorithm used to assign max displacement of each atom.")
 fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
 fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
 fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "standard", description = "The max displacement of all the atoms will be the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "linear", description = "The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
-fadd("Basin Hopping", "max_displacement_algorithm", "quadratic", description = "The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.")
+fadd("Basin Hopping", "displacement_distribution", kind ="string", description = "The distribution used for the displacement of each atom.")
+fadd("Basin Hopping", "displacement_distribution", "uniform", description = "A random number is selected between 0 and max_displacement")
+fadd("Basin Hopping", "displacement_distribution", "gaussian", description = "max_displacement serves as the width of a gaussian distribution used to select displacements")
 fadd("Basin Hopping", "quenching_steps", kind = "int", description = "Number at steps at 0 temperature.")
-fadd("Basin Hopping", "random_packing_density", kind = "float", description = "Target Packing Desnsity for random structures.")
-fadd("Basin Hopping", "random_probablity", kind = "float", description = "The probability of choosing a random starting structure instead of a previously discovered minimum.")
 fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.")
 fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.")
-fadd("Basin Hopping", "number_of_minima", kind = "int", description = "")#add description
+fadd("Basin Hopping", "number_of_minima", kind = "int", description = "The number of lowest energy structures to save in /minima directory.")
+fadd("Basin Hopping", "swap_probability", kind = "float", description = "The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.")
+fadd("Basin Hopping", "jump_max", kind = "int", description = "The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.")
+fadd("Basin Hopping", "jump_steps", kind = "int", description = "The number of jump steps to take after the jump_max number of consecutive rejections have taken place.")
+fadd("Basin Hopping", "md_first", kind = "boolean", description = "When true, molecular dynamics is run before the first step is taken. The parameters for molecular dynamics can be set in the [Dynamics] section. As default, the temperature specified in [Main] will be used, or another temperature can be specificed in MD_temp.")
+fadd("Basin Hopping", "md_temp", kind = "float", description = "The temperature to use for the molecular dynamics steps that occur before basin hopping steps.")
 
 
 # Optimizers
