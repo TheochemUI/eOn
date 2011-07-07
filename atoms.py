@@ -464,7 +464,8 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
     return not_cna
 
     
-
+import sys
+sys.setrecursionlimit(10000)
 def get_mappings(a, b, mappings = None):
     """ A recursive depth-first search for a complete set of mappings from atoms
         in configuration a to atoms in configuration b. Do not use the mappings
