@@ -148,7 +148,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     for (int step=0; step<nsteps; step++)
     {
-        if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && step<parameters->basinHoppingSteps)
+        if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && step<parameters->basinHoppingSteps && jump_max_count<parameters->basinHoppingJumpMax)
       	{
 	  randomSwap(trial);
       	}
