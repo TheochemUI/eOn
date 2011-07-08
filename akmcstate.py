@@ -78,7 +78,7 @@ class AKMCState(state.State):
             p0 = result["saddle"]
             for id in energetically_close:
                 p1 = io.loadcon(self.proc_saddle_path(id))
-                if atoms.match(p1, p0, False):
+                if atoms.match(p1, p0, config.comp_eps_r, config.comp_neighbor_cutoff, False):
                     self.append_search_result(result, "repeat-%d" % id)
                     self.procs[id]['repeats'] += 1
                     self.save_process_table()
