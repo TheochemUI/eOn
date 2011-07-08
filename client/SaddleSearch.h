@@ -84,6 +84,7 @@ public:
 
     AtomMatrix getSaddlePositions();
     AtomMatrix getEigenMode();
+    double getEigenValue();
 
     AtomMatrix mode;
     void loadMode(string filename);
