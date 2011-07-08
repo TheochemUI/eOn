@@ -100,6 +100,7 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
+    fprintf(fileResults, "%f final_eigenvalue\n", saddlePoint->getEigenValue());
     fclose(fileResults);
 
     std::string modeFilename("mode.dat");

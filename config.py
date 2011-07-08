@@ -28,15 +28,17 @@ class ConfigSection:
         self.description = description
         self.keys = []
 class ConfigKey:
-    def __init__(self, name, kind, description):
+    def __init__(self, name, kind, description, default):
         self.name = name
         self.kind = kind
         self.description = description
+        self.default = default
         self.values = []
 class ConfigValue:
     def __init__(self, name, description):
         self.name = name
         self.description = description
+
         
 def fget(section, key = None):
     for f in format:
@@ -49,13 +51,13 @@ def fget(section, key = None):
             return None
     return None
 
-def fadd(section, key = None, value = None, description = "", kind = None):
+def fadd(section, key = None, value = None, description = "", kind = None, default = ""):
     if fget(section) is None:
         config.format.append(ConfigSection(section, description))
         return
     if fget(section, key) is None:
         s = fget(section)
-        s.keys.append(ConfigKey(key, kind, description))
+        s.keys.append(ConfigKey(key, kind, description, default))
         return
     k = fget(section, key)
     k.values.append(ConfigValue(value, description))
@@ -63,7 +65,7 @@ def fadd(section, key = None, value = None, description = "", kind = None):
 
 # Main
 fadd("Main", description = "These are the options that go in the 'Main' section of config.ini")
-fadd("Main", "job", kind = "string", description = "The type of job to execute.")
+fadd("Main", "job", kind = "string", description = "The type of job to execute.", default = None)
 fadd("Main", "job", "akmc", description = "Run an adaptive kinetic monte carlo simulation.")
 fadd("Main", "job", "parallel_replica", description = "Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.")
 fadd("Main", "job", "process_search", description = "Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.")
