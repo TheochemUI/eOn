@@ -10,6 +10,7 @@
 ##-----------------------------------------------------------------------------------
 """ The statelist module. """
 
+import config
 import logging
 logger = logging.getLogger('statelist')
 import math
@@ -125,6 +126,6 @@ class AKMCStateList(statelist.StateList):
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        if atoms.match(p, pnew, True):
+                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
                             self.register_process(i.number, state.number, j)                            

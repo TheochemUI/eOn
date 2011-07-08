@@ -513,8 +513,6 @@ class Table:
     #XXX: This is the number of digits that a floating point number gets
     #     serialized with. Should it be some sort of config option? Or
     #     is there just a good default?
-    floatprecision = 4
-    eagerwrite = True
 
     def __init__(self, filename, columns=None, overwrite=False):
         self.filename = filename
@@ -524,6 +522,9 @@ class Table:
         self.columnwidths = {}
         self.initialized = False
         self.overwrite = overwrite
+
+        self.floatprecision = 6
+        self.eagerwrite = True
 
     def init(self):
         """Checks to see if self.filename exists. If it does self.rows
@@ -583,6 +584,10 @@ class Table:
         if not self.initialized:
             self.init()
         return len(self.rows)
+
+    def __iter__(self):
+        for row in self.rows:
+            yield row
 
     def write(self):
         if not self.initialized:

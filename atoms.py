@@ -11,7 +11,7 @@
 """ The atoms module. """
 import config
 
-from math import sqrt, cos, sin, acos
+from math import cos, sin, acos
 import numpy
 import logging
 logger = logging.getLogger('atoms')
@@ -264,20 +264,22 @@ def least_coordinated(p, cutoff, brute=False):
 
 
 
-def match(a,b,indistinguishable):
+def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
     if len(a)!=len(b):
         return False
+
+    nfrozen = len(a)-a.free.sum()
     
-    if config.comp_check_rotation:
-        if indistinguishable and config.comp_use_identical:
-            return get_mappings(a,b)
+    if nfrozen < 3:
+        if indistinguishable:
+            return get_mappings(a,b,eps_r,neighbor_cutoff)
         else:
             return rot_match(a,b)
     else:
-        if indistinguishable and config.comp_use_identical:
+        if indistinguishable:
             return identical(a,b)
         else:
-            return max(per_atom_norm(a.r-b.r, a.box))<config.comp_eps_r
+            return max(per_atom_norm(a.r-b.r, a.box))<eps_r
 
 
 def rot_match(a, b):
@@ -466,7 +468,7 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
     
 import sys
 sys.setrecursionlimit(10000)
-def get_mappings(a, b, mappings = None):
+def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
     """ A recursive depth-first search for a complete set of mappings from atoms
         in configuration a to atoms in configuration b. Do not use the mappings
         argument, this is only used internally for recursion. 
@@ -481,7 +483,7 @@ def get_mappings(a, b, mappings = None):
     # mappings.
     if mappings == None:
         # Find the least common coordination number in b.
-        bCoordinations = coordination_numbers(b, 3.3)
+        bCoordinations = coordination_numbers(b, neighbor_cutoff)
         bCoordinationsCounts = {}
         for coordination in bCoordinations:
             if coordination in bCoordinationsCounts:
@@ -494,7 +496,7 @@ def get_mappings(a, b, mappings = None):
                 bLeastCommonCoordination = coordination
         # Find one atom in a with the least common coordination number in b. 
         # If it does not exist, return None.
-        aCoordinations = coordination_numbers(a, 3.3)
+        aCoordinations = coordination_numbers(a, neighbor_cutoff)
         try:
             aAtom = aCoordinations.index(bLeastCommonCoordination)
         except ValueError:
@@ -506,7 +508,7 @@ def get_mappings(a, b, mappings = None):
                 # Make sure the element types are the same.
                 if a.names[aAtom] != b.names[i]:
                     continue
-                mappings = get_mappings(a, b, {aAtom:i})
+                mappings = get_mappings(a, b, eps_r, neighbor_cutoff, {aAtom:i})
                 # If the result is not none, then we found a successful mapping.
                 if mappings is not None:
                     return mappings
@@ -537,7 +539,7 @@ def get_mappings(a, b, mappings = None):
                         break
                     # Break if distance check fails  
                     bDist = numpy.linalg.norm(pbc(b.r[bAtom] - b.r[mappings[aAtom]], b.box))  
-                    if abs(distances[aAtom] - bDist) > 0.05:
+                    if abs(distances[aAtom] - bDist) > eps_r:
                         break
                 else:
                     # All distances were good, so create a new mapping.
@@ -547,7 +549,7 @@ def get_mappings(a, b, mappings = None):
                     if len(newMappings) == len(a):
                         return newMappings
                     # Otherwise, recurse.
-                    newMappings = get_mappings(a, b, newMappings)
+                    newMappings = get_mappings(a, b, eps_r, neighbor_cutoff, newMappings)
                     # Pass any successful mapping up the recursion chain. 
                     if newMappings is not None:
                         return newMappings     

@@ -93,7 +93,7 @@ class StateList:
                 pnew = st.get_process_product(process_id)
                 for id in energetically_close:
                     p = self.get_state(id).get_reactant()
-                    if atoms.match(p, pnew, True):
+                    if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                         self.register_process(st.number, id, process_id)                            
                         return self.get_state(id)
 

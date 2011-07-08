@@ -27,68 +27,65 @@ import config
 import io
 import locking
 
-class BHMinima:
+class BHStates:
     def __init__(self):
-        if not os.path.isdir(config.path_bh_minima):
-            os.mkdir(config.path_bh_minima)
+        if not os.path.isdir(config.path_states):
+            os.mkdir(config.path_states)
 
-        self.minima = []
+        state_table_path = os.path.join(config.path_states, 'state_table')
+        self.energy_table = io.Table(state_table_path, ['state', 'energy', 'repeats'])
 
-        for fn in os.listdir(config.path_bh_minima):
-            if 'dat' in fn:
-                energy = float(open(os.path.join(config.path_bh_minima,fn)).readline())
-                number = int(fn.split('_')[-1].split('.')[0])
-                structure_file = fn[:-3]+'con'
-                structure_data = open(os.path.join(config.path_bh_minima,structure_file)).read()
-                self.minima.append({'number':number, 'energy':energy, 'structure':structure_data})
+    def get_random_minimum(self):
+        i = numpy.random.randint(0,len(self.energy_table))
+        f = open(os.path.join(config.path_states, str(i), 'minimum.con'))
+        return StringIO(f.read())
 
-    def get_energies(self):
-        energies = [ m['energy'] for m in self.minima ]
-        return numpy.array(energies)
+    def add_state(self, result_files, result_info):
+        energy = result_info['minimum_energy']
 
-    def add_minimum(self, energy, structure_data):
-        if len(self.minima) == 0:
-            max_energy = 0
-        else:
-            max_energy = self.minima[-1]['energy']
-        added = False
-        candidate = {
-            'number':len(self.minima), 
-            'energy':energy, 
-            'structure':structure_data
-        }
+        energetically_close = []
+        added = True
 
-        if len(self.minima) < config.bh_number_of_minima:
-            added = True
-        elif energy < max_energy:
-            ediff = self.get_energies()-energy
-
-            if ediff.min() > config.comp_eps_e:
-                self.minima[ediff.argmin()] = candidate
-                added = True
+        if len(self.energy_table) != 0:
+            for row in self.energy_table:
+                if abs(energy-row['energy']) < config.comp_eps_e:
+                    energetically_close.append(row['state'])
+            if len(energetically_close) != 0:
+                a1 = io.loadcon(result_files['product.con'])
+                for state_number in energetically_close:
+                    state_con_path = os.path.join(config.path_states, 
+                                                  str(state_number),
+                                                  'minimum.con')
+                    a2 = io.loadcon(state_con_path)
+                    if atoms.match(a1, a2, config.comp_eps_r, config.comp_neighbor_cutoff):
+                        logger.info("found a repeat of state %i", state_number)
+                        added = False
+                        for row in self.energy_table.rows:
+                            if row['state'] == state_number:
+                                row['repeats'] += 1
+                                break
 
         if added:
-            self.minima.append(candidate)
-            self.minima.sort(cmp=lambda a,b: cmp(a['energy'],b['energy']))
-            self.minima = self.minima[:config.bh_number_of_minima]
-            for i,m in enumerate(self.minima):
-                m['number'] = i
-            self.write_all()
-        return added
+            state_number = len(self.energy_table)
 
-    def write_all(self):
-        prefix = "minimum"
-        for m in self.minima:
-            dat_path = os.path.join(config.path_bh_minima, "%s_%i.dat" % (prefix, m['number']))
-            con_path = os.path.join(config.path_bh_minima, "%s_%i.con" % (prefix, m['number']))
+            row = { 'state':state_number, 'energy':energy, 'repeats':0 }
+            self.energy_table.add_row(row)
 
-            f = open(dat_path, 'w')
-            f.write("%.5f\n"%m['energy'])
-            f.close()
+            state_path = os.path.join(config.path_states, str(state_number))
+            os.mkdir(state_path)
 
-            f = open(con_path, 'w')
-            f.write(m['structure'])
-            f.close()
+            result_files['minimum.con'] = result_files['product.con']
+            del result_files['product.con']
+
+            for fn, fh in result_files.iteritems():
+                if hasattr(fh, 'getvalue') == False:
+                    continue
+                p = os.path.join(state_path, fn)
+                f = open(p, 'w')
+                f.write(fh.getvalue())
+                f.close()
+
+        return added 
 
 def basinhopping():
     # First of all, does the root directory even exist?
@@ -97,7 +94,7 @@ def basinhopping():
         sys.exit(1)
 
     # load metadata
-    bhminima = BHMinima()
+    bhstates = BHStates()
 
     if os.path.isfile("wuid.dat"):
         wuid_file = open("wuid.dat")
@@ -111,15 +108,15 @@ def basinhopping():
     
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
-    register_results(comm, bhminima)
+    register_results(comm, bhstates)
 
-    wuid = make_searches(comm, wuid, bhminima)
+    wuid = make_searches(comm, wuid, bhstates)
 
     wuid_file = open("wuid.dat","w")
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
     
-def make_searches(comm, wuid, bhminima):
+def make_searches(comm, wuid, bhstates):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
@@ -153,15 +150,14 @@ def make_searches(comm, wuid, bhminima):
         search['id'] = "%d" % wuid
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
         reactIO = StringIO()
-        if len(bhminima.minima) == 0 or \
+        if len(bhstates.energy_table) == 0 or \
            numpy.random.random() < config.bh_md_probability:
             number_random += 1
             reactIO = initial_react
             ini_changes.append( ('Basin Hopping', 'md_first', 'true') )
         else:
             number_minima += 1
-            i = numpy.random.randint(0,len(bhminima.minima)-1)
-            reactIO = StringIO(bhminima.minima[i]['structure'])
+            reactIO = bhstates.get_random_minimum()
             ini_changes.append( ('Basin Hopping', 'md_first', 'false') )
         search['reactant_passed.con'] = reactIO
         search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
@@ -173,7 +169,7 @@ def make_searches(comm, wuid, bhminima):
     logger.info( str(num_to_make) + " searches created") 
     return wuid
 
-def register_results(comm, bhminima):
+def register_results(comm, bhstates):
     logger.info("registering results")
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)    
@@ -191,15 +187,18 @@ def register_results(comm, bhminima):
         # results.dat - an array of strings containing the results
         # id - wuid
 
-        #id = result['name']
+        #result_id = result['id']
+        #del result['id']
+        result_info = io.parse_results(result['results.dat'])
+        if result_info['termination_reason'] == 0:
+            if bhstates.add_state(result, result_info):
+                logger.info("new structure with energy %.3e", 
+                            result_info['minimum_energy'])
 
-        #read in the results
-        result['results'] = io.parse_results(result['results.dat'])
-        if result['results']['termination_reason'] == 0:
-            fe = result['results']['minimum_energy']
             #logger.info("found new structure with energy %.3e", fe)
-            if bhminima.add_minimum(fe, result['product.con'].getvalue()):
-                logger.info("found new low energy structure with energy %.3e", fe)
+            #if bhminima.add_minimum(fe, result['product.con'].getvalue()):
+            #    logger.info("found new low energy structure with energy %.3e", fe)
+
         num_registered += 1
         
     logger.info("%i (result) searches processed", num_registered)
@@ -235,7 +234,7 @@ def main():
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
-                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_bh_minima]
+                rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_states]
                 for i in rmdirs:
                     if os.path.isdir(i):
                         shutil.rmtree(i)
@@ -244,9 +243,7 @@ def main():
                         os.removedirs(i)
                 log_path = os.path.join(config.path_results, "bh.log") 
                 wuid_path = os.path.join(config.path_results, "wuid.dat") 
-                min_path = os.path.join(config.path_results, "min_energy.con") 
-                mine_path = os.path.join(config.path_results, "min_energy.dat") 
-                for i in [log_path, wuid_path, min_path, mine_path]:
+                for i in [log_path, wuid_path ]:
                     if os.path.isfile(i):
                         os.remove(i)
                 print "Reset."

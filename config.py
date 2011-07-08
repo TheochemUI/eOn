@@ -268,7 +268,6 @@ fadd("Basin Hopping", "displacement_distribution", "gaussian", description = "ma
 fadd("Basin Hopping", "quenching_steps", kind = "int", description = "Number at steps at 0 temperature.")
 fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.")
 fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.")
-fadd("Basin Hopping", "number_of_minima", kind = "int", description = "The number of lowest energy structures to save in /minima directory.")
 fadd("Basin Hopping", "swap_probability", kind = "float", description = "The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.")
 fadd("Basin Hopping", "jump_max", kind = "int", description = "The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.")
 fadd("Basin Hopping", "jump_steps", kind = "int", description = "The number of jump steps to take after the jump_max number of consecutive rejections have taken place.")
@@ -374,7 +373,6 @@ def init(config_file = ""):
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
     config.comp_eps_r = parser.getfloat('Structure Comparison', 'distance_difference')
     config.comp_use_identical = parser.getboolean('Structure Comparison', 'indistinguishable_atoms')
-    config.comp_check_rotation = parser.getboolean('Structure Comparison', 'check_rotation')
     config.comp_brute_neighbors = parser.getboolean('Structure Comparison', 'brute_neighbors')
     config.comp_neighbor_cutoff = parser.getfloat('Structure Comparison', 'neighbor_cutoff')
     config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
@@ -389,8 +387,6 @@ def init(config_file = ""):
     config.akmc_confidence_correction   = parser.getboolean('AKMC', "confidence_correction")
 
     #Basin Hopping options
-    config.bh_number_of_minima = parser.getint('Basin Hopping', 'number_of_minima')
-    config.bh_random_packing_density = parser.getfloat('Basin Hopping', 'random_packing_density')
     config.bh_md_probability = parser.getfloat('Basin Hopping', 'md_probability')
     
     #path options
