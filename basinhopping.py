@@ -57,7 +57,7 @@ class BHStates:
                                                   str(state_number),
                                                   'minimum.con')
                     a2 = io.loadcon(state_con_path)
-                    if atoms.match(a1, a2, config.comp_eps_r, config.comp_neighbor_cutoff):
+                    if atoms.match(a1, a2, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                         logger.info("found a repeat of state %i", state_number)
                         added = False
                         for row in self.energy_table.rows:
