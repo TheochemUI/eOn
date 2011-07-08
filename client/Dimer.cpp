@@ -117,7 +117,7 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
         }
 
         FILE *fp = fopen("saddlesearch.dat", "a");        
-        fprintf(fp, "DIMERROT   -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+        fprintf(fp, "DIMERROT   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
                     curvature, torque, rotationAngle*(180.0/M_PI));
         printf("DIMERROT   -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
                curvature, torque, rotationAngle*(180.0/M_PI));

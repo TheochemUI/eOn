@@ -195,6 +195,11 @@ AtomMatrix SaddlePoint::getEigenMode()
     return eigenMode;
 }
 
+double SaddlePoint::getEigenValue()
+{
+    return eigenValue;
+}
+
 void SaddlePoint::displaceAndSetMode(Matter *matter)
 {
     long nAtoms = saddle->numberOfAtoms();
