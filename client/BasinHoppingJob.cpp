@@ -334,7 +334,7 @@ void BasinHoppingJob::randomSwap(Matter *matter)
 	    }
         }
         for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){          
-            if(matter->getAtomicNr(x)==ela) {
+            if(matter->getAtomicNr(x)==elb) {
 	        changerb=x;
 	        j=1;
                 break;
