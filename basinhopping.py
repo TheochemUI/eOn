@@ -63,6 +63,7 @@ class BHStates:
                         for row in self.energy_table.rows:
                             if row['state'] == state_number:
                                 row['repeats'] += 1
+                                self.energy_table.write()
                                 break
 
         if added:
@@ -70,6 +71,8 @@ class BHStates:
 
             row = { 'state':state_number, 'energy':energy, 'repeats':0 }
             self.energy_table.add_row(row)
+            self.energy_table.rows.sort(key=lambda r:-r['energy'])
+            self.energy_table.write()
 
             state_path = os.path.join(config.path_states, str(state_number))
             os.mkdir(state_path)
