@@ -1,0 +1,47 @@
+Displacement Sampling
+---------------------
+
+
+
+**samples**
+
+   default: 32
+
+   
+
+**iter_max**
+
+   default: 32
+
+   
+
+**torque_convergence**
+
+   default: 0.01
+
+   
+
+**max_curvature**
+
+   default: -0.01
+
+   
+
+**max_de**
+
+   default: 10
+
+   
+
+**cutoffs**
+
+   default: 0.0 3.0
+
+   
+
+**magnitudes**
+
+   default: 0.625 0.125 0.25
+
+   
+

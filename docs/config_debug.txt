@@ -1,59 +1,59 @@
 Debug
 -----
 
-Parameters that are generally used to help debug calculations added under
-**[Debug]** section.
+Parameters that are generally used to help debug calculations
 
-**keep_bad_saddles** 
+**keep_bad_saddles**
 
-    Default: false
+   default: False
 
-    Keep data about bad saddles. If true, the result files for failed saddle
-    searches are kept in the *badprocdata* directory within the state
-    directory for that search. 
-    
-    Each bad search will have 5 files: the starting structure (reactant.con), the saddle (saddle.con), the reaction product (product.con), the lowest eigenmode at the saddle (mode.dat), and a file detailing the results of the saddle search (results.dat). The reason for failure can be found in the results.dat under the field termination_reason. The termination reasons are:
+   Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
 
-    =====  ===== 
-    0      Success
-    1      Unknown Error
-    2      A convex region of the potential could not be found
-    3      The energy of the saddle search exceeded :ref:`max_energy <saddle_max_energy>`
-    4      Unused
-    5      The number of iterations in the saddle search exceeded :ref:`max_iterations <saddle_max_iterations>`
-    6      The saddle is not connected to the initial minimum
-    7      The prefactor is either not defined or is outside of reasonable bounds
-    8      The barrier found exceeded :ref:`max_energy <saddle_max_energy>`
-    9      The saddle is not connected to the initial minimum, and one or both of the minimizations from the saddle did not converge 
-    10     Calculation of the hessian at the reactant, product, or saddle failed
-    =====  =====
+**keep_all_results_files**
 
-**keep_all_result_files** 
+   default: False
 
-    Default: false
+   Stores all result files in main_directory/results
 
-    Stores all result files in main_directory/results
+**result_files_path**
+
+   default: %(main_directory)s/debug_results/
+
+   Where to store all result files. Defaults to 'debug_results'.
 
 **register_extra_results**
 
-    Default: false
+   default: False
 
-    Register processes found for a state after leaving that state.
+   Register processes found for a state after leaving that state.
 
-**use_mean_time** 
+**use_mean_time**
 
-    Default: false
+   default: False
 
-    Select transition times from the mean of the exponential distribution of escape times.
+   Select transition times from the mean of the exponential distribution of escape times.
 
-**target_trajectory** 
+**target_trajectory**
 
-    Default: None
+   default: False
 
-    Follow the state-to-state trajectory of another akmc simulation.
+   Follow the state-to-state trajectory of another akmc simulation.
 
-**write_movies**
+**save_stdout**
 
-    Default: False
+   default: False
 
-    Causes the client to output movies of minimizations and saddle searches.
+   Save the standard output from the client to a file named stdout_0.dat
+
+**interactive_shell**
+
+   default: True
+
+   
+
+**writeMovies**
+
+   default: False
+
+   
+
