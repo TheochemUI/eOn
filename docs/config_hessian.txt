@@ -3,30 +3,27 @@ Hessian
 
 Options for controlling how Hessian matricies are calculated.
 
-**type** 
+**type**
 
-    Default: reactant
+   default: reactant
 
-    The Hessian to be calculated has to be one of *reactant*, *saddle*, or
-    *product*.
+   The Hessian to be calculated has to be one of reactant, saddle, or product.
 
-**finite_dist** 
+**finite_dist**
 
-    Default: 1e-4
+   default: 0.001
 
-    Finite difference distance between forces used to construct the Hessian.
+   Finite difference distance between forces used to construct the Hessian.
 
-**min_displacement** 
+**min_displacement**
 
-    Default: 0.25
+   default: 0.25
 
-    Minimum amount that an atom has to move to be included in the Hessian
-    calculation.
+   Minimum amount that an atom has to move to be included in the Hessian calculation.
 
-**within_radius** 
+**within_radius**
 
-    Default: 5.0
+   default: 5
 
-    Atoms within this radius of moving atoms are included in the Hessian.
-
+   Atoms within this radius of moving atoms are included in the Hessian.
 

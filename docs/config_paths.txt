@@ -1,0 +1,89 @@
+Paths
+-----
+
+Location of files related to the sending and receiving data on the server.
+
+**main_directory**
+
+   default: ./
+
+   This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
+
+**searches_in**
+
+   default: main_directory/searches/in/
+
+   
+
+**states**
+
+   default: main_directory/states/
+
+   Where all of the information about individual states is located.
+
+**scratch**
+
+   default: %(main_directory)s/jobs/scratch/
+
+   
+
+**potential_files**
+
+   default: %(main_directory)s/potfiles
+
+   For extra files needed by the client for the potential.
+
+**jobs_out**
+
+   default: %(main_directory)s/jobs/out/
+
+   
+
+**jobs_in**
+
+   default: %(main_directory)s/jobs/in/
+
+   
+
+**incomplete**
+
+   default: %(main_directory)s/jobs/incomplete/
+
+   
+
+**results**
+
+   default: %(main_directory)s
+
+   
+
+**bh_minima**
+
+   default: %(main_directory)s/minima
+
+   
+
+**kdb_scratch**
+
+   default: %(main_directory)s/kdbscratch/
+
+   
+
+**kdb**
+
+   default: %(main_directory)s/kdb/
+
+   
+
+**suberbasins**
+
+   default: %(main_directory)s/superbasins/
+
+   
+
+**superbasin_recycling**
+
+   default: %(main_directory)s/SB_recycling
+
+   
+

@@ -1,22 +1,35 @@
-Nudged Elastic Band
--------------------
+NEB
+---
 
-Options for controlling the dimer minimum mode finding method on the client side.
 
-**images** 
 
-    Default: none
+**images**
 
-    Number of NEB images between the fixed endpoints.
+   default: None
+
+   Number of NEB images between the fixed endpoints
 
 **spring**
 
-    Default: 5.0
+   default: True
 
-    Spring constant between images, in eV/Ang.
+   
 
-**climbing_image_method** 
+**climbing_image_method**
 
-    Default: true
+   default: False
 
-    Use the climbing image method to move the highest energy image to the saddle.
+   
+
+**old_tangent**
+
+   default: False
+
+   
+
+**opt_method**
+
+   default: OPT_CG
+
+   
+

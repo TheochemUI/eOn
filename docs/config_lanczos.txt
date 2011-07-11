@@ -1,26 +1,23 @@
 Lanczos
 -------
 
-Options for controlling the Lanczos minimum mode finding method on the client
-side.
+Options for controlling the Lanczos minimum mode finding method on the client side.
 
-**max_iterations** 
+**max_iterations**
 
-    Default: 20
+   default: 20
 
-    The maximum number of refinement iterations when calculating the minimum
-    eigenvalue.
+   The maximum number of refinement iterations when calculating the minimum eigenvalue.
 
 **tolerance**
 
-    Default: 0.001
+   default: 0.001
 
-    This is the convergence critera for relative error of the lowest
-    eigenvalue.
+   This is the convergence critera for relative error of the lowest eigenvalue.
 
-**finite_dist** 
+**finite_dist**
 
-    Default: 0.001
+   default: 0.001
 
-    Finite difference step size when computing the second derivative of the
-    potential along the Lanczos vectors.
+   Finite difference step size when computing the second derivative of the potential along the Lanczos vectors.
+
