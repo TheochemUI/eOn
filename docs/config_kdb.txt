@@ -1,0 +1,41 @@
+Kdb
+---
+
+One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.
+
+**use_kdb**
+
+   default: False
+
+   Turn Kdb on/off.
+
+**wait**
+
+   default: False
+
+   Wait for the query to finish before submitting jobs (for debugging purposes).
+
+**keep**
+
+   default: 
+
+   Keep the saddle suggestions (for debugging purposes).
+
+**Kdb_only**
+
+   default: False
+
+   
+
+**addpath**
+
+   default: False
+
+   
+
+**querypath**
+
+   default: False
+
+   
+

@@ -1,107 +1,157 @@
 Saddle Search
 -------------
 
-A saddle search is initiated by making a local displacement of atoms from their
-position at the minimum of the current state.  This displacement can be done
-using the different strategies indicated by the **displace_type** option, and the
-following parameters.  If the user knows something about the local environment
-where reactions are likely to take place in the system, this information can be
-used to make saddle searches more efficient by getting them started in the
-right part of configuration space.
+A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.
 
 **displace_type**
 
-    Default: Random
+   default: disp_load
 
-    Options:
+   Type of displace to use
 
-        *random*: Select an atom at random from the free atoms in the
-        configuration.
+   options:
 
-        *least_coordinated*: Determine the lowest coordination number of all
-        atoms in the configuration and select one atom at random with that
-        coordination number.
+       **disp_load**: 
 
-        *under_coordinated*: Select a random atom with coordination less than
-        *displace_max_coordination*.
-        
-        *listed_atoms*: Select an atom from the list passed as *displace_atomlist*
-        
-        *not_FCC_HCP_coordinated*: Select an atom that is not in a local HCP or
-        FCC coordination.
+       **random**: Select an atom at random from the free atoms in the configuration.
 
-	*client_least_coordinated*: Displacement is made on the client centered on
-	an atom with the minimal coordination.
+       **least_coordinated**: Determine the lowest coordination number of all atoms in the configuration and select one atom at random with that coordination number.
 
-        *client_not_FCC_HCP_coordinated*: Displacement is made on the client 
-	centered on an atom that is not in a local HCP or FCC coordination.
+       **under_coordinated**: Select a random atom with coordination less than displace_max_coordination.
 
-	*client_last_atom*: Displacement is made on the client centered on the 
-	last atom in the configuration.
+       **listed_atoms**: Select an atom from the list passed as displace_atomlist
 
-.. _saddle_max_iterations:
+       **not_FCC_HCP**: Select an atom that is not in a local HCP or FCC coordination.
+
+       **client_least_coordinated**: Displacement is made on the client centered on an atom with the minimal coordination.
+
+       **cleint_not_FCC_HCP_coordinated**: Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination.
+
+       **client_last_atom**: Displacement is made on the client centered on the last atom in the configuration.
 
 **max_iterations**
 
-    Default: 1000
+   default: 1000
 
-    The maximum number of translation steps to be taken.
+   The maximum number of translation steps to be taken.
 
-**displace_radius** 
+**displace_radius**
 
-    Default: 5.0
+   default: 5
 
-    Atoms within this distance of the epicenter will be displaced.
+   Atoms within this distance of the epicenter will be displaced.
 
 **displace_magnitude**
 
-    Default: 0.01
+   default: 0.1
 
-    The standard deviation of the magnitude of the displacement.
+   The standard deviation of the magnitude of the displacement.
 
 **displace_min_norm**
 
-    Default: 0.0
+   default: 0
 
-    The total length of the displacement vector is ensured to exceeds this value.
-    Is useful when only a few degrees of freedoms are displaced to guarantee 
-    that the starting point for the saddle point search is significantly different
-    from the initial minimum.  
+   The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.
 
 **displace_max_coordination**
 
-    Default: 11
+   default: 11
 
-    When using *under_coordinated* as the displacement type, choose only atoms with
-    a coordination equal to or less than this.
+   When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
 
 **min_mode_method**
 
-    Default: dimer
+   default: dimer
 
-    Options:
+   
 
-        *dimer*: Use the dimer min-mode method.
+   options:
 
-        *lanczos*: Use the Lanczos min-mode method.
+       **dimer**: Use the dimer min-mode method.
 
-.. _saddle_max_energy:
+       **lanczos**: Use the Lanczos min-mode method.
 
-**max_energy** 
+**max_energy**
 
-    Default: 20.0
-    The energy at which a saddle search is considered bad and terminated.
-    
+   default: 20
+
+   The energy at which a saddle search is considered bad and terminated.
+
 **displace_atomlist**
 
-    Default: None
+   default: None
 
-    The individual index should be seperated by a ','
-    10, 20,-1 would be the 10, 20 and the last atom.
+   The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
 
 **client_max_single_displace**
-    Default: 10.
 
-    Only functional when displacement is done on the client.  Defines the
-    maximal allowed absolute value for a single component in the
-    displacement vector.
+   default: 10
+
+   Only functional when displacement is done on the client. Defines the maximal allowed absolute value for a single component in the displacement vector.
+
+**stdev_translation**
+
+   default: 0.2
+
+   
+
+**stdev_rotation**
+
+   default: 1
+
+   
+
+**molecule_list**
+
+   default: []
+
+   
+
+**disp_at_random**
+
+   default: 1
+
+   
+
+**max_step_size**
+
+   default: 0.2
+
+   
+
+**max_single_displace**
+
+   default: 10
+
+   
+
+**perp_force_ratio**
+
+   default: 0
+
+   
+
+**max_localized_atoms**
+
+   default: 0
+
+   
+
+**nonzero_mode**
+
+   default: 0.01
+
+   
+
+**concave_step**
+
+   default: 0.1
+
+   
+
+**push_displacement**
+
+   default: False
+
+   
+

@@ -1,0 +1,97 @@
+Basin Hopping
+-------------
+
+Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
+
+**steps**
+
+   default: 10000
+
+   Number at steps to take at the temeprature assigned.
+
+**max_displacement**
+
+   default: 0.5
+
+   Max displacement in each degree of freedom.
+
+**max_displacement_algorithm**
+
+   default: standard
+
+   The algorithm used to assign max displacement of each atom.
+
+   options:
+
+       **standard**: The max displacement of all the atoms will be the value assigned in max_displacement.
+
+       **linear**: The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+
+       **quadratic**: The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+
+**displacement_distribution**
+
+   default: uniform
+
+   The distribution used for the displacement of each atom.
+
+   options:
+
+       **uniform**: A random number is selected between 0 and max_displacement
+
+       **gaussian**: max_displacement serves as the width of a gaussian distribution used to select displacements
+
+**quenching_steps**
+
+   default: 0
+
+   Number at steps at 0 temperature.
+
+**single_atom_displace**
+
+   default: False
+
+   Displace only one atom per step.
+
+**stay_minimized**
+
+   default: False
+
+   Displace minimized structures.
+
+**swap_probability**
+
+   default: 0
+
+   The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.
+
+**jump_max**
+
+   default: 0
+
+   The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.
+
+**jump_steps**
+
+   default: 0
+
+   The number of jump steps to take after the jump_max number of consecutive rejections have taken place.
+
+**md_first**
+
+   default: False
+
+   
+
+**md_probability**
+
+   default: 0.9
+
+   The probability that molecular dynamics is run before the first step is taken. The parameters for molecular dynamics can be set in the [Dynamics] section. As default, the temperature specified in [Main] will be used, or another temperature can be specificed in MD_temp.
+
+**md_temp**
+
+   default: 300
+
+   The temperature to use for the molecular dynamics steps that occur before basin hopping steps.
+

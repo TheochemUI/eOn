@@ -1,0 +1,49 @@
+Optimizers
+----------
+
+The eon client provides two optimizers quick-min and conjugate gradients. These options are in the [Optimizers] section.
+
+**opt_method**
+
+   default: cg
+
+   The optimization method to use.
+
+   options:
+
+       **cg**: Conjugate gradient
+
+       **qm**: Quickmin
+
+       **box**: Optimizes the atom positions and box using quickmin
+
+**max_iterations**
+
+   default: 1000
+
+   The maximum number of optimization iterations that the will be performed.
+
+**converged_force**
+
+   default: 0.005
+
+   When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.
+
+**max_move**
+
+   default: 0.2
+
+   Maximum distance that an atom may be moved in a single optimization step.
+
+**time_step**
+
+   default: 0.1
+
+   The dynamical timestep for the quickmin algorithm.
+
+**finite_dist**
+
+   default: 0.001
+
+   The finite difference step size.
+
