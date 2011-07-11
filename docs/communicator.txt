@@ -194,6 +194,13 @@ The BOINC communicator allows eon to submit workunits to a BOINC project.
     the sample_assimilator the results are stored in the project directory
     in a folder named "sample_results".
 
+**boinc_priority**:
+    
+    Default: 1
+
+    The priority for the workunits that are submitted. The higher priority
+    workunits go to clients first.
+
 .. _communicator-arc:
 
 Arc
