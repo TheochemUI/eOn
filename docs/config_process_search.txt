@@ -1,40 +1,35 @@
 Process Search
 --------------
 
-The AKMC method can ask clients to do a saddle search, find connecting minima,
-and calculate prefactors all within the Process Search job type.
+The AKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.
 
-**minimize_first** 
+**minimize_first**
 
-    Default: false
+   default: False
 
-    Every time a process search is run by a client the reactant will be
-    minimized first before doing any saddle searches.
+   Every time a process search is run by a client the reactant will be minimized first before doing any saddle searches.
 
-**prefactor_min** 
+**prefactor_min**
 
-    Default: 10e8
+   default: 1e+09
 
-    Minimum value for a resonable prefactor.
+   Minimum value for a resonable prefactor.
 
-**prefactor_max** 
-    
-    Default: 10e20
+**prefactor_max**
 
-    Maximum value for a resonable prefactor.
+   default: 1e+21
+
+   Maximum value for a resonable prefactor.
 
 **default_prefactor**
 
-    Default: 0
+   default: 0
 
-    Calculate prefactor if zero, otherwise use given value instead of doing a
-    full prefactor calculation.
+   Calculate prefactor if zero, otherwise use given value instead of doing a full prefactor calculation.
 
 **minimization_offset**
 
-    Default: 0.2
-    
-    After a saddle is found, images are placed on either side of the saddle along
-    the mode and minimized to ensure that the saddle is connected to the original
-    minimum and to locate the product state. This is the distance those images 
-    are displaced from the saddle.
+   default: 0.2
+
+   After a saddle is found, images are placed on either side of the saddle along the mode and minimized to ensure that the saddle is connected to the original minimum and to locate the product state. This is the distance those images are displaced from the saddle.
+

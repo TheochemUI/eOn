@@ -1,0 +1,53 @@
+Structure Comparison
+--------------------
+
+
+
+**energy_difference**
+
+   default: 0.01
+
+   How close in energy two configurations must be to be considered energetically equivalent.
+
+**distance_difference**
+
+   default: 0.05
+
+   The maximum distance two mapped atoms may be for two configurations to be considered equivalent.
+
+**indistinguishable_atoms**
+
+   default: True
+
+   Use an algorithm to compare structures that does not distinguish between atoms of the same element. That is to say the numbering of the atoms does not affect the structural comparison.
+
+**check_rotation**
+
+   default: False
+
+   Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.
+
+**neighbor_cutoff**
+
+   default: 3.3
+
+   Atoms within this distance of each other are considered neighbors.
+
+**use_covalent**
+
+   default: False
+
+   Use the covalent radii of atoms to determine neighbors.
+
+**covalent_scale**
+
+   default: 1.3
+
+   Multiply covalent radii by this amount before determining neighbors.
+
+**brute_neighbors**
+
+   default: False
+
+   Determine neighbors by brute force (use this with nonorthogonal boxes).
+

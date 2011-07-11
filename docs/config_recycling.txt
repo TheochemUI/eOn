@@ -1,0 +1,35 @@
+Recycling
+---------
+
+
+
+**use_recycling**
+
+   default: False
+
+   
+
+**save_suggestions**
+
+   default: False
+
+   
+
+**displace_moved_only**
+
+   default: False
+
+   
+
+**move_distance**
+
+   default: 0.2
+
+   
+
+**use_sb_recycling**
+
+   default: False
+
+   
+

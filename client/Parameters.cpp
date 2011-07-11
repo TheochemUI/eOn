@@ -343,7 +343,7 @@ int Parameters::load(FILE *file){
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
         biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential","none"));
 
-        // [Basin Hopping] //
+        // [Basin Hopping] //        
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);

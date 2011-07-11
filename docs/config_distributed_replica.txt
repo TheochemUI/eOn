@@ -1,0 +1,23 @@
+Distributed Replica
+-------------------
+
+
+
+**balance_steps**
+
+   default: 500
+
+   
+
+**sampling steps**
+
+   default: 500
+
+   
+
+**target_temperature**
+
+   default: 300
+
+   
+

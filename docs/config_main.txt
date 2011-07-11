@@ -1,0 +1,85 @@
+Main
+----
+
+These are the options that go in the 'Main' section of config.ini
+
+**job**
+
+   default: process_search
+
+   The type of job to execute.
+
+   options:
+
+       **akmc**: Run an adaptive kinetic monte carlo simulation.
+
+       **parallel_replica**: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+
+       **process_search**: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
+
+       **saddle_search**: Do a saddle point search using a minimum mode method.
+
+       **minimization**: Find the minimum from an initial configuration.
+
+       **hessian**: Calculate the Hessian matrix for the specified configuration in a process.
+
+       **dimer_dr**: Rye is changing this.
+
+       **dimer_rotation**: Rye is changing this.
+
+       **displacement_sampling**: Job to sample different displacement methods and parameters to see which are the most efficient.
+
+       **basin_hopping**: Search for global minimum using basin hopping method.
+
+**temperature**
+
+   default: 300
+
+   The temperature that the job will run at.
+
+**random_seed**
+
+   default: -1
+
+   Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.
+
+**potential**
+
+   default: pot LJ
+
+   the type of potential to execute
+
+   options:
+
+       **lj**: Lennard-Jones potential in reduced units.
+
+       **morse_pt**: Morse potential for platinum.
+
+       **emt**: Effective medium theory, for metals.
+
+       **edip**: Environment-Dependent Interatomic Potential, for carbon.
+
+       **vasp**: Vienna Ab-Initio Simulation Program (VASP) interface.
+
+       **tersoff_si**: Tersoff pair potential with angular terms, for silicon.
+
+       **sw_si**: Stillinger-Weber potential, for silicon.
+
+       **lenosky_Si**: Lenosky potential, for silicon.
+
+       **eam_al**: Embedded atom method parameterized for aluminum.
+
+       **qsc**: Quantum Sutton-Chen potential, for FCC metals.
+
+       **zpice**: Water on platinum.
+
+       **tip4p**: Point charge model for water.
+
+       **bopfox**: Bond order potential, for metals.
+
+**quiet**
+
+   default: False
+
+   
+
