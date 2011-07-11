@@ -224,7 +224,7 @@ fadd("Communicator", "boinc_re_template_path", kind = "string", description = "T
 fadd("Communicator", "boinc_appname", kind = "string", description = "This is the name of the application in BOINC.")
 fadd("Communicator", "boinc_results_path", kind = "string", description = "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.")
 fadd("Communicator", "blacklist", kind = "string", description = "")#add description
-
+fadd("Communicator", "boinc_priority", kind = "int", description = "The priority of the BOINC workunits that will be submitted.")
 
 # Parallel Replica
 fadd("Parallel Replica", description = "Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do accelerated-MD simulation. The only assumption made in this method is that the reactions satisfy first order kinetics.")
@@ -432,6 +432,7 @@ def init(config_file = ""):
         config.comm_boinc_re_template_path = parser.get('Communicator', 'boinc_re_template_path')
         config.comm_boinc_appname = parser.get('Communicator', 'boinc_appname')
         config.comm_boinc_results_path = parser.get('Communicator', 'boinc_results_path')
+        config.comm_boinc_priority = parser.getint('Communicator', 'boinc_priority')
         #print comm_boinc_project_dir
         #print comm_boinc_wu_template_path
         #print comm_boinc_re_template_path

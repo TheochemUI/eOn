@@ -36,7 +36,7 @@ def get_communicator():
         comm = BOINC(config.path_scratch, config.comm_boinc_project_dir, 
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
                 config.comm_boinc_appname, config.comm_boinc_results_path,
-                config.comm_job_bundle_size)
+                config.comm_job_bundle_size, config.comm_boinc_priority)
     elif config.comm_type=='cluster':
         comm = Script(config.path_scratch, config.comm_job_bundle_size,
                                    config.comm_script_name_prefix,
@@ -202,12 +202,15 @@ class Communicator:
 
 class BOINC(Communicator):
     def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-            result_template, appname, boinc_results_path, bundle_size):
-        '''This constructor modifies sys.path to include the BOINC python modules. 
-        It then tries to connect to the BOINC mysql database raising exceptions if there are problems 
-        connecting. It also creates a file named uniqueid in the scratchpath to identify BOINC jobs as
-        belonging to this akmc run if it doesn't exist. It then reads in the uniqueid file and 
-        stores that as an integer in self.uniqueid.'''
+                 result_template, appname, boinc_results_path, bundle_size, 
+                 priority):
+
+        '''This constructor modifies sys.path to include the BOINC python
+        modules.  It then tries to connect to the BOINC mysql database raising
+        exceptions if there are problems connecting. It also creates a file
+        named uniqueid in the scratchpath to identify BOINC jobs as belonging
+        to this akmc run if it doesn't exist. It then reads in the uniqueid
+        file and stores that as an integer in self.uniqueid.'''
         
         Communicator.__init__(self, scratchpath, bundle_size)
         self.wu_template = wu_template
@@ -215,6 +218,7 @@ class BOINC(Communicator):
         self.appname = appname
         self.boinc_project_dir = boinc_project_dir
         self.boinc_results_path = boinc_results_path
+        self.priority = priority
         os.environ['BOINC_PROJECT_DIR'] = self.boinc_project_dir
         import sys
         sys.path.insert(0, os.path.join(self.boinc_project_dir, 'py'))
@@ -414,6 +418,8 @@ class BOINC(Communicator):
         arglist.append(self.result_template)
         arglist.append("-batch")
         arglist.append(str(self.uniqueid))
+        arglist.append("-priority")
+        arglist.append(str(self.priority))
         arglist.append("-rsc_fpops_est")
         arglist.append(str(self.average_flops))
         #last arguments are the filenames
