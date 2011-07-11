@@ -125,10 +125,12 @@ std::vector<std::string> BasinHoppingJob::run(void)
     
 
     Minimizer *minimizer = NULL; 
+    Parameters minParameters = *parameters;
+    minParameters.writeMovies = false;
     if (parameters->optMethod == "cg") {
-        minimizer = new ConjugateGradients(tmpMatter, parameters);
+        minimizer = new ConjugateGradients(tmpMatter, &minParameters);
     }else if (parameters->optMethod == "qm"){
-        minimizer = new Quickmin(tmpMatter, parameters);
+        minimizer = new Quickmin(tmpMatter, &minParameters);
     }
     minimizer->setOutput(0);
     minimizer->fullRelax();
@@ -158,9 +160,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
         *tmpMatter = *trial;
 
         if (parameters->optMethod == "cg") {
-            minimizer = new ConjugateGradients(tmpMatter, parameters);
+            minimizer = new ConjugateGradients(tmpMatter, &minParameters);
         }else if (parameters->optMethod == "qm"){
-            minimizer = new Quickmin(tmpMatter, parameters);
+            minimizer = new Quickmin(tmpMatter, &minParameters);
         }
         minimizer->setOutput(0);
         minimizer->fullRelax();
@@ -203,7 +205,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
                     *minimumEnergyStructure = *current;
                 }
             }
-            tmpMatter->matter2xyz("movie", true);
+            if (parameters->writeMovies == true) {
+                tmpMatter->matter2xyz("movie", true);
+            }
         }else{
             jump_max_count++;
         }
@@ -232,13 +236,18 @@ std::vector<std::string> BasinHoppingJob::run(void)
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
 
+    if (parameters->writeMovies == true) {
+        std::string movieFilename("movie.xyz");
+        returnFiles.push_back(movieFilename);
+    }
+
     fprintf(fileResults, "%d termination_reason\n", 0);
     fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
-    fprintf(fileResults, "%ld total normal displacement steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
-    fprintf(fileResults, "%d total jump steps\n", jcount);
-    fprintf(fileResults, "%d total swap steps\n", scount);
+    fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
+    fprintf(fileResults, "%d total_jump_steps\n", jcount);
+    fprintf(fileResults, "%d total_swap_steps\n", scount);
     fclose(fileResults);
 
     std::string productFilename("product.con");
@@ -325,20 +334,20 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     int changerb;
     int i=0;
     int j=0;
-    while(j+i!=2){
-        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){          
+    while(j+i!=2) {
+        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==ela) {
-	        changera=x;
-	        i=1;
+                changera=x;
+                i=1;
                 break;
-	    }
+            }
         }
-        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){          
+        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==elb) {
-	        changerb=x;
-	        j=1;
+                changerb=x;
+                j=1;
                 break;
-	    }
+            }
         }
     }
 
