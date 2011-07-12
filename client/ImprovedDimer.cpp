@@ -178,7 +178,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             FILE *fp = fopen("saddlesearch.dat", "a");
             statsTorque = F_R.norm()/delta;
             fprintf(fp, "IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
-                        C_tau, statsTorque, phi_min * (180.0 / M_PI));
+                        C_tau, statsTorque, phi_min * (180.0 / M_PI), statsRotations);
             printf("IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
                    C_tau, statsTorque, phi_min * (180.0 / M_PI), statsRotations);
             fclose(fp);
