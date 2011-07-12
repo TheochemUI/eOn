@@ -41,7 +41,7 @@ class ConfigValue:
 
         
 def fget(section, key = None):
-    for f in format:
+    for f in config.format:
         if f.name == section:
             if key == None:
                 return f
@@ -131,7 +131,7 @@ fadd("Paths", "results", kind = "string", description = "", default = "%(main_di
 fadd("Paths", "bh_minima", kind = "string", description = "", default = "%(main_directory)s/minima")#add descripiton
 fadd("Paths", "kdb_scratch", kind = "string", description = "", default = "%(main_directory)s/kdbscratch/")#add description
 fadd("Paths", "kdb", kind = "string", description = "", default = "%(main_directory)s/kdb/")#add description
-fadd("Paths", "suberbasins", kind = "string", description = "", default = "%(main_directory)s/superbasins/")# add description
+fadd("Paths", "superbasins", kind = "string", description = "", default = "%(main_directory)s/superbasins/")# add description
 fadd("Paths", "superbasin_recycling", kind = "string", description = "", default = "%(main_directory)s/SB_recycling")#add description
 
 
@@ -189,7 +189,7 @@ fadd("Dimer", "rotations_max", kind = "int", description = "Maximum number of ro
 fadd("Dimer", "torque_min", kind = "float", description = "Minimum torque above which the dimer rotates only once and below which is does not rotate.", default = 0.1)
 fadd("Dimer", "torque_max", kind = "float", description = "Maximum torque above which the dimer rotates up to rotations_max times.", default = 1.0)
 fadd("Dimer", "improved", kind = "boolean", description = "Improvements to the dimer method from Kastner.", default = False)
-fadd("Dimer", "coverged_rotatoin", kind = "float", description = "Dimer is considered converged if it rotates fewer degrees than this.", default = 5.0)
+fadd("Dimer", "converged_rotation", kind = "float", description = "Dimer is considered converged if it rotates fewer degrees than this.", default = 5.0)
 fadd("Dimer", "opt_method", kind = "string", description = "Optimization algorithm to choose the dimer rotation direction", default = "sd")
 fadd("Dimer", "opt_method", "sd", description = "steepest descent, rotate along the rotational force.")
 fadd("Dimer", "opt_method", "cg", description = "conjudate gradient, rotate along conjugate directions.")
@@ -366,7 +366,7 @@ fadd("Coarse Graining", "superbasin_scheme", kind = "string", description = "Pro
 fadd("Coarse Graining", "number_of_transitions", kind = "int", description = "If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.", default = 5)
 fadd("Coarse Graining", "energy_increment", kind = "float", description = "If the energy level scheme is being used (scheme=energy_level). Each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount", default = 0.01)
 fadd("Coarse Graining", "use_askmc", kind = "boolean", description = "This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.", default = False)
-fadd("Coarse Graining", "askmc_condifence", kind = "float", description = "The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.", default = 0.9)
+fadd("Coarse Graining", "askmc_confidence", kind = "float", description = "The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.", default = 0.9)
 fadd("Coarse Graining", "askmc_barrier_raise_param", kind = "float", description = "This parameter sets how much the barriers are raised during AS-KMC. ( in the reference.)", default = 1.5)
 fadd("Coarse Graining", "askmc_high_barrier_def", kind = "int", description = "This parameter sets how high a barrier must be to be considered high in AS-KMC.", default = 2)
 fadd("Coarse Graining", "askmc_barrier_test_on", kind = "boolean", description = "", default = True)
@@ -374,13 +374,13 @@ fadd("Coarse Graining", "askmc_connections_test_on", kind = "boolean", descripti
 
 
 # KDB
-fadd("Kdb", description = "One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.")
-fadd("Kdb", "use_kdb", kind = "boolean", description = "Turn Kdb on/off.", default = False)
-fadd("Kdb", "wait", kind = "boolean", description = "Wait for the query to finish before submitting jobs (for debugging purposes).", default = False)
-fadd("Kdb", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).")
-fadd("Kdb", "Kdb_only", kind = "boolean", description = "", default = False)#add description
-fadd("Kdb", "addpath", kind = "string", description = "", default = False)#add description
-fadd("Kdb", "querypath", kind = "string", description = "", default = False)#add description
+fadd("KDB", description = "One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.")
+fadd("KDB", "use_kdb", kind = "boolean", description = "Turn Kdb on/off.", default = False)
+fadd("KDB", "wait", kind = "boolean", description = "Wait for the query to finish before submitting jobs (for debugging purposes).", default = False)
+fadd("KDB", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).")
+fadd("KDB", "Kdb_only", kind = "boolean", description = "", default = False)#add description
+fadd("KDB", "addpath", kind = "string", description = "", default = False)#add description
+fadd("KDB", "querypath", kind = "string", description = "", default = False)#add description
 
 # Recycling
 fadd("Recycling", description = "")#add description
@@ -393,14 +393,14 @@ fadd("Recycling", "use_sb_recycling", kind = "boolean", description = "", defaul
 # Debug
 fadd("Debug", description = "Parameters that are generally used to help debug calculations")
 fadd("Debug", "keep_bad_saddles", kind = "boolean", description = "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.", default = False)
-fadd("Debug", "keep_all_results_files", kind = "boolean", description = "Stores all result files in main_directory/results", default = False)
+fadd("Debug", "keep_all_result_files", kind = "boolean", description = "Stores all result files in main_directory/results", default = False)
 fadd("Debug", "result_files_path", kind="string", description="Where to store all result files. Defaults to 'debug_results'.", default = "%(main_directory)s/debug_results/")
 fadd("Debug", "register_extra_results", kind = "boolean", description = "Register processes found for a state after leaving that state.", default = False)
 fadd("Debug", "use_mean_time", kind = "boolean", description = "Select transition times from the mean of the exponential distribution of escape times.", default = False)
 fadd("Debug", "target_trajectory", kind = "boolean", description = "Follow the state-to-state trajectory of another akmc simulation.", default = False)
 fadd("Debug", "save_stdout", kind = "boolean", description = "Save the standard output from the client to a file named stdout_0.dat", default = False)
 fadd("Debug", "interactive_shell", kind = "boolean", description = "", default = True)#add description
-fadd("Debug", "writeMovies", kind="boolean", description = "", default = False)#add description
+fadd("Debug", "write_movies", kind="boolean", description = "", default = False)#add description
 
 ## End new config section. =====================================================
 
@@ -428,6 +428,74 @@ def init(config_file = ""):
     else:
         print >> sys.stderr, "You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory."
         sys.exit(2)        
+    sections = False
+    options = False
+
+    #print parser.items("Main")
+
+    psections = parser.sections()
+    fsections = [j.name for j in config.format]
+    for a in range(len(psections)):
+        psections[a] = psections[a].lower()
+
+    for a in range(len(fsections)):
+        fsections[a] = fsections[a].lower()
+    
+    for s in psections:
+        if s not in fsections:
+            print "Section", s, "is not a recognized configuration section. Aborting."
+            sys.exit()
+
+    for i in parser.sections():
+        b = parser.options(i)
+        for a in range(len(b)):
+            b[a] = b[a].lower()
+        for k in config.format:
+            if k.name == i:
+                foptions = [j.name for j in k.keys]
+                for a in range(len(foptions)):
+                    foptions[a] = foptions[a].lower()
+                for o in b:
+                    if o not in foptions:
+                        print "Option %s is not a recognized configuration option for section %s. Aborting." % (o, k.name)
+                        sys.exit()
+                        
+    
+      
+      
+    for psection in parser.sections():
+        poptions = parser.options(psection)
+        for fsection in config.format:
+            if psection == fsection.name:
+                for k in fsection.keys:
+                    for o in poptions:
+                        if o == k.name:
+                            if k.kind == "int":
+                                try:
+                                    x = int(parser.get(psection,k.name))
+                                except:
+                                    print "Option %s of section %s should be an int. Aborting." %(o,psection)
+                                    sys.exit()
+                            elif k.kind == "float":
+                                try:
+                                    x = float(parser.get(psection, k.name))
+                                except:
+                                    print "Option %s of section %s should be a float. Aborting." %(o,psection)
+                                    sys.exit()
+                            elif k.kind == "boolean":
+                                booleans = ['True', 'true', 'T', 't', '0', 'False', 'false', 'F', 'f', '1']
+                                if parser.get(psection,k.name) not in booleans:
+                                    print "Option %s of section %s should be boolean. Aborting." %(o,psection)
+                                    sys.exit()
+                            elif k.kind == "string" and len(k.values) !=0:   
+                                values = [m.name for m in k.values]
+                                if parser.get(psection,k.name) not in values:
+                                    Vnames = ", ".join([v.name for v in k.values])
+                                    print "option %s should be one of: %s" %(parser.get(psection,k.name),Vnames)
+                                    sys.exit()
+            
+            
+        
 
     #Main options
     config.main_job = parser.get('Main', 'job')
