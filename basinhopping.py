@@ -193,6 +193,8 @@ def register_results(comm, bhstates):
         #result_id = result['id']
         #del result['id']
         result_info = io.parse_results(result['results.dat'])
+        if 'minimum_energy' not in result_info:
+            continue
         if result_info['termination_reason'] == 0:
             if bhstates.add_state(result, result_info):
                 logger.info("new structure with energy %.3e", 
