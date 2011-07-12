@@ -346,6 +346,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     forces = saddle->getForces();
 
     lowestEigenmode->compute(saddle, mode);
+    if(parameters->saddleMaxIterations == 0)
+    {
+        return;
+    }
     eigenValue = lowestEigenmode->getEigenvalue();
     eigenMode = lowestEigenmode->getEigenvector();
     forces = projectedForce(forces);
