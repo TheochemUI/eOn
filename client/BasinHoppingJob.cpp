@@ -335,24 +335,24 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     Elements=getElements(matter);
     long ela;
     long elb;
-    long ia = randomInt(0, Elements.size());
+    long ia = randomInt(0, Elements.size()-1);
     ela = Elements.at(ia);
     Elements.erase(Elements.begin()+ia);
-    long ib = randomInt(0, Elements.size());
+    long ib = randomInt(0, Elements.size()-1);
     elb = Elements.at(ib);
     int changera;
     int changerb;
     int i=0;
     int j=0;
     while(j+i!=2) {
-        for(long x=randomInt(0,matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
+        for(long x=randomInt(0,matter->numberOfAtoms()-1); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==ela) {
                 changera=x;
                 i=1;
                 break;
             }
         }
-        for(long x=randomInt(0, matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
+        for(long x=randomInt(0, matter->numberOfAtoms()-1); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==elb) {
                 changerb=x;
                 j=1;
