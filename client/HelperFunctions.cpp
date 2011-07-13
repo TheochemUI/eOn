@@ -99,6 +99,10 @@ double helper_functions::randomDouble(double dmax){
     return(dmax*randomDouble());
 }
 
+long helper_functions::randomInt(int lower, int upper) {
+    return lround( (upper-lower)*randomDouble()+lower );
+}
+
 double helper_functions::gaussRandom(double avg,double std){
     double r=2,v1,v2,l,result;
     while (r >= 1){
