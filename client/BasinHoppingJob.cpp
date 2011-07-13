@@ -141,7 +141,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     minimizer->fullRelax();
     delete minimizer;
 
-    double currentEnergy = minTrial->getPotentialEnergy();
+    double currentEnergy = current->getPotentialEnergy();
     double minimumEnergy = currentEnergy;
 
     Matter *minimumEnergyStructure = new Matter(parameters);
