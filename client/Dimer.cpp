@@ -75,7 +75,8 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
         determineRotationalPlane(rotationalForce, rotationalForceOld, rotationalPlaneOld, &lengthRotationalForceOld);
 
         // calculate the torque on the dimer
-        torque = rotationalForce.squaredNorm();
+//GH        torque = rotationalForce.squaredNorm();
+        torque = rotationalForce.norm();
         assert(std::isnormal(torque));
 
         // convergence scheme
@@ -84,6 +85,12 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
             && rotations >= parameters->dimerRotationsMin) ||
            (torque < parameters->dimerTorqueMin))
         {
+/*            cout << "torque: "<<torque<<endl;
+            cout << "parameters->dimerTorqueMax: "<<parameters->dimerTorqueMax<<endl;
+            cout << "parameters->dimerTorqueMin: "<<parameters->dimerTorqueMin<<endl;
+            cout << "rotations: "<<rotations<<endl;
+            cout << "parameters->dimerRotationsMax: "<<parameters->dimerRotationsMax<<endl;
+            cout << "parameters->dimerRotationsMin: "<<parameters->dimerRotationsMin<<endl; */
             doneRotating = true;
         }
 
