@@ -46,6 +46,7 @@ BasinHoppingJob::~BasinHoppingJob()
 {
     delete current;
     delete trial;
+
 }
 
 vector<long> BasinHoppingJob::getElements(Matter *matter)
@@ -116,7 +117,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
     int jump_max_count=0;
     int jump_steps_count=0;
     double totalAccept=0.0;
-    Matter *tmpMatter = new Matter(parameters);
+    Matter *minTrial = new Matter(parameters);
+    Matter *swapTrial = new Matter(parameters);
     srand(time(NULL));
     current->con2matter("reactant_passed.con");
     if(parameters->basinHoppingMDFirst==true){
@@ -124,22 +126,22 @@ std::vector<std::string> BasinHoppingJob::run(void)
         dyn.fullSteps(parameters->basinHoppingMDTemp);
     }
     *trial = *current;
-    *tmpMatter = *current;
-    
+    *minTrial = *current;
+
 
     Minimizer *minimizer = NULL; 
     Parameters minParameters = *parameters;
     minParameters.writeMovies = false;
     if (parameters->optMethod == "cg") {
-        minimizer = new ConjugateGradients(tmpMatter, &minParameters);
+        minimizer = new ConjugateGradients(minTrial, &minParameters);
     }else if (parameters->optMethod == "qm"){
-        minimizer = new Quickmin(tmpMatter, &minParameters);
+        minimizer = new Quickmin(minTrial, &minParameters);
     }
     minimizer->setOutput(0);
     minimizer->fullRelax();
     delete minimizer;
 
-    double currentEnergy = tmpMatter->getPotentialEnergy();
+    double currentEnergy = minTrial->getPotentialEnergy();
     double minimumEnergy = currentEnergy;
 
     Matter *minimumEnergyStructure = new Matter(parameters);
@@ -151,27 +153,40 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
 
     for (int step=0; step<nsteps; step++) {
+	*swapTrial = *current;
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
            step<parameters->basinHoppingSteps && 
            jump_max_count<parameters->basinHoppingJumpMax){
-            randomSwap(trial);
+            randomSwap(swapTrial);
+            if (parameters->writeMovies == true) {
+	      swapTrial->matter2xyz("movie", true);}
             swapMove=true;
+            *minTrial = *swapTrial;
+
       	}else{
             AtomMatrix displacement;
             displacement = displaceRandom();
-            trial->setPositions(current->getPositions() + displacement);
+            if(parameters->basinHoppingStayMinimized){
+                trial->setPositions(current->getPositions() + displacement);
+            }
+	    else{
+                trial->setPositions(trial->getPositions() + displacement);
+	    }
+            if (parameters->writeMovies == true) {
+	      trial->matter2xyz("movie", true);}
             swapMove=false;
+            *minTrial = *trial;
+
         }
-        *tmpMatter = *trial;
 
         if (parameters->optMethod == "cg") {
-            minimizer = new ConjugateGradients(tmpMatter, &minParameters);
+            minimizer = new ConjugateGradients(minTrial, &minParameters);
         }else if (parameters->optMethod == "qm"){
-            minimizer = new Quickmin(tmpMatter, &minParameters);
+            minimizer = new Quickmin(minTrial, &minParameters);
         }
         minimizer->setOutput(0);
         minimizer->fullRelax();
-        double deltaE = tmpMatter->getPotentialEnergy()-currentEnergy;
+        double deltaE = minTrial->getPotentialEnergy()-currentEnergy;
         double p=0.0;
         if (step>=parameters->basinHoppingSteps) {
             if (deltaE < 0.0) {
@@ -193,19 +208,17 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         if (randomDouble(1.0)<min(1.0, p)) {
-            *current = *trial;
+	    *current = *minTrial;
             if(swapMove){
                 swap_accept=swap_accept+1.0;
-            }
+	    }
             if(step<parameters->basinHoppingSteps) {
                 totalAccept=totalAccept+1.0;
             }
-            if(parameters->basinHoppingStayMinimized) {
-                *current = *tmpMatter;
-            }
-            currentEnergy = tmpMatter->getPotentialEnergy();
+       
+            currentEnergy = minTrial->getPotentialEnergy();
             if (abs(deltaE)>parameters->structureComparisonEnergyDifference) {
-                *current = *tmpMatter;
+                *current = *minTrial;
                 if (currentEnergy < minimumEnergy) 
                 {
                     minimumEnergy = currentEnergy;
@@ -213,7 +226,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 }
             }
             if (parameters->writeMovies == true) {
-                tmpMatter->matter2xyz("movie", true);
+                minTrial->matter2xyz("movie", true);
             }
         }else{
             jump_max_count++;
@@ -269,9 +282,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     std::string bhFilename("bh.dat");
     returnFiles.push_back(bhFilename);
 
-    delete tmpMatter;
+    delete minTrial;
     delete minimumEnergyStructure;
-  
+    delete swapTrial;
     return returnFiles;
 }
 
