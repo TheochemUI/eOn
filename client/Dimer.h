@@ -52,7 +52,7 @@ private:
                                   double *lengthRotationalForceOld);
 
     void rotate(double rotationAngle); // rotate the dimer by rotationAngle (radians)
-    double calcRotationalForce(AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force on the dimer
+    double calcRotationalForceReturnCurvature(AtomMatrix &forceDiffOrthogonalToDimer); // determine the rotational force on the dimer
 
 };
 
