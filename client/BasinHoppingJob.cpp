@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <math.h>
 
 #include "Dynamics.h"
 #include "BasinHoppingJob.h"
@@ -107,7 +108,7 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 
 std::vector<std::string> BasinHoppingJob::run(void)
 {
-    bool SwapMove;
+    bool swapMove;
     double swap_accept=0.0;
     jcount=0;
     scount=0;
@@ -154,12 +155,12 @@ std::vector<std::string> BasinHoppingJob::run(void)
            step<parameters->basinHoppingSteps && 
            jump_max_count<parameters->basinHoppingJumpMax){
             randomSwap(trial);
-	    SwapMove=true;
+            swapMove=true;
       	}else{
             AtomMatrix displacement;
             displacement = displaceRandom();
             trial->setPositions(current->getPositions() + displacement);
-	    SwapMove=false;
+            swapMove=false;
         }
         *tmpMatter = *trial;
 
@@ -193,9 +194,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
         if (randomDouble(1.0)<min(1.0, p)) {
             *current = *trial;
-	    if(SwapMove){
-	    swap_accept=swap_accept+1.0;
-	    }
+            if(swapMove){
+                swap_accept=swap_accept+1.0;
+            }
             if(step<parameters->basinHoppingSteps) {
                 totalAccept=totalAccept+1.0;
             }
@@ -334,24 +335,24 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     Elements=getElements(matter);
     long ela;
     long elb;
-    int ia = rand()%Elements.size();
+    long ia = randomInt(0, Elements.size());
     ela = Elements.at(ia);
     Elements.erase(Elements.begin()+ia);
-    long ib = rand()%Elements.size();
+    long ib = randomInt(0, Elements.size());
     elb = Elements.at(ib);
     int changera;
     int changerb;
     int i=0;
     int j=0;
     while(j+i!=2) {
-        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
+        for(long x=randomInt(0,matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==ela) {
                 changera=x;
                 i=1;
                 break;
             }
         }
-        for(long x=rand()%(matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
+        for(long x=randomInt(0, matter->numberOfAtoms()); x<matter->numberOfAtoms(); x++){
             if(matter->getAtomicNr(x)==elb) {
                 changerb=x;
                 j=1;
@@ -362,6 +363,4 @@ void BasinHoppingJob::randomSwap(Matter *matter)
 
     matter->setAtomicNr(changera,elb);
     matter->setAtomicNr(changerb,ela);
-
-    
 }
