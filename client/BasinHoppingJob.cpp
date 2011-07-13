@@ -296,7 +296,7 @@ AtomMatrix BasinHoppingJob::displaceRandom()
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
     double md = parameters->basinHoppingMaxDisplacement;
-    VectorXd distvec = calculateDistanceFromCenter(current);
+    VectorXd distvec = calculateDistanceFromCenter(trial);
     int num = trial->numberOfAtoms();
     int m = 0;
     if(parameters->basinHoppingSingleAtomDisplace) {
