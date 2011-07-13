@@ -133,9 +133,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     Parameters minParameters = *parameters;
     minParameters.writeMovies = false;
     if (parameters->optMethod == "cg") {
-        minimizer = new ConjugateGradients(minTrial, &minParameters);
+        minimizer = new ConjugateGradients(current, &minParameters);
     }else if (parameters->optMethod == "qm"){
-        minimizer = new Quickmin(minTrial, &minParameters);
+        minimizer = new Quickmin(current, &minParameters);
     }
     minimizer->setOutput(0);
     minimizer->fullRelax();
@@ -153,10 +153,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
 
     for (int step=0; step<nsteps; step++) {
-	*swapTrial = *current;
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
            step<parameters->basinHoppingSteps && 
            jump_max_count<parameters->basinHoppingJumpMax){
+      	    *swapTrial = *current;
             randomSwap(swapTrial);
             if (parameters->writeMovies == true) {
 	      swapTrial->matter2xyz("movie", true);}
