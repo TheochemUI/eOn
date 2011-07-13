@@ -86,7 +86,7 @@ public:
     double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     bool   dimerImproved; // turn on the improved dimer method
-    double dimerConvergedRotation; // stop rotating when angle drops below this value
+    double dimerConvergedAngle; // stop rotating when angle drops below this value
     long   dimerMaxIterations; // maximum number of rotation iterations
     string dimerOptMethod; // method to determine the next rotation direction
     long   dimerRotationsMax; // old

@@ -9,7 +9,7 @@ Options for controlling the dimer minimum mode finding method on the client side
 
    Seperation between dimer images.
 
-**finite_angles**
+**finite_angle**
 
    default: 0.005
 
@@ -45,7 +45,7 @@ Options for controlling the dimer minimum mode finding method on the client side
 
    Improvements to the dimer method from Kastner.
 
-**coverged_rotatoin**
+**coverged_angle**
 
    default: 5
 
