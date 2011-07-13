@@ -54,7 +54,8 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
     *x0 = *matter;
     *x1 = *matter;
     AtomMatrix x0_r = x0->getPositions();
-    x1->setPositions(x0_r + tau * parameters->dimerSeparation);
+//GH    x1->setPositions(x0_r + tau * parameters->dimerSeparation);
+    x1->setPositions(x0_r + tau * parameters->dimerSeparation * 0.5);
 
     // other vectors
     AtomMatrix x1_rp;
@@ -63,7 +64,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
     AtomMatrix g1_prime;
 
     double delta = parameters->dimerSeparation * 0.5;
-    double phi_tol = 2.0 * M_PI * (parameters->dimerConvergedRotation/360.0);
+    double phi_tol = M_PI * (parameters->dimerConvergedAngle/180.0);
     double phi_prime = 0.0;
     double phi_min = 0.0;
 
@@ -80,7 +81,8 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
         // Calculate the rotational force, F_R.
         F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).cwise() * tau).sum() * tau;
-        statsTorque = F_R.norm()/delta;
+//GH        statsTorque = F_R.norm()/delta;
+        statsTorque = F_R.norm()/parameters->dimerSeparation;
 
         // Determine the step direction, theta. (steepest descent)
         if(parameters->dimerOptMethod == OPT_SD) // steepest descent
@@ -126,10 +128,18 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
         double d_C_tau_d_phi = 2.0 * ((g1 - g0).cwise() * theta).sum() / delta;
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
         statsAngle = phi_prime * (180.0 / M_PI);
+//        cout <<"initial angle: "<<statsAngle<<endl;
 
+/*        if(phi_prime > phi_tol){
+            cout <<"full rotation\n";
+        }else{
+            cout <<"no full rotation\n";
+        }
+*/
         if(phi_prime > phi_tol)
         {
             double b1 = 0.5 * d_C_tau_d_phi;
+//            cout <<"b1:  "<<b1<<endl;
 
             // Calculate g1_prime. 
             x0_r = x0->getPositions();
@@ -144,8 +154,11 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
             // Calculate phi_min.
             double a1 = C_tau - C_tau_prime + b1 * sin(2.0 * phi_prime) / (1.0 - cos(2.0 * phi_prime));
+//            cout <<"a1:  "<<a1<<endl;
             double a0 = 2.0 * (C_tau - a1);
+//            cout <<"a0:  "<<a0<<endl;
             phi_min = 0.5 * atan(b1 / a1);
+//            cout <<"phi: "<<phi_min<<endl;
 
             // Determine the curvature for phi_min.
             double C_tau_min = 0.5 * a0 + a1 * cos(2.0 * phi_min) + b1 * sin(2.0 * phi_min);
@@ -153,11 +166,13 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             // If the curvature is being maximized, push it over pi/2.
             if(C_tau_min > C_tau)
             {
+//                cout<<"flip\n";
                 phi_min += M_PI * 0.5;
                 C_tau_min = 0.5 * a0 + a1 * cos(2.0*phi_min) + b1 * sin(2.0*phi_min);
             }
 
             statsAngle = phi_min * (180.0 / M_PI);
+//            cout <<"final angle: "<<statsAngle<<endl;
 
             // Update x1, tau, and C_tau.
             x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
@@ -165,6 +180,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
             if(parameters->saddleMaxLocalizedAtoms > 0)
             {
+//                cout <<"localize\n";
                 tau = localize(tau, parameters->saddleMaxLocalizedAtoms);
                 tau.normalize();
             }
@@ -176,7 +192,8 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
             statsRotations += 1;
             FILE *fp = fopen("saddlesearch.dat", "a");
-            statsTorque = F_R.norm()/delta;
+//GH            statsTorque = F_R.norm()/delta;
+            statsTorque = F_R.norm()/parameters->dimerSeparation;
             fprintf(fp, "IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
                         C_tau, statsTorque, phi_min * (180.0 / M_PI), statsRotations);
             printf("IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
@@ -192,8 +209,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
                    C_tau, F_R.norm()/delta);
             fclose(fp);
         }
-
-
 
     } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);
 

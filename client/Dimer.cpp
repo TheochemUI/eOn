@@ -69,7 +69,7 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
     while(!doneRotating)
     {
         // calculate the rotational force and curvature
-        curvature = calcRotationalForce(rotationalForce);  
+        curvature = calcRotationalForceReturnCurvature(rotationalForce);
 
         // determine the new rotational plane
         determineRotationalPlane(rotationalForce, rotationalForceOld, rotationalPlaneOld, &lengthRotationalForceOld);
@@ -95,7 +95,7 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
         if(!doneRotating)
         {
             // rotated dimer
-            curvature = calcRotationalForce(rotationalForce); // <-- bad notation
+            curvature = calcRotationalForceReturnCurvature(rotationalForce);
 
             rotationalForce2 = (rotationalForce.cwise()*rotationalPlane).sum();
 
@@ -116,10 +116,10 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
             rotations++;
         }
 
-        FILE *fp = fopen("saddlesearch.dat", "a");        
+        FILE *fp = fopen("saddlesearch.dat", "a");
         fprintf(fp, "DIMERROT   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
                     curvature, torque, rotationAngle*(180.0/M_PI));
-        printf("DIMERROT   -----   ---------   ---------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+        printf("DIMERROT   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
                curvature, torque, rotationAngle*(180.0/M_PI));
         fclose(fp);
     }
@@ -151,7 +151,7 @@ AtomMatrix Dimer::getEigenvector()
       return direction;
 }
 
-double Dimer::calcRotationalForce(AtomMatrix &rotationalForce)
+double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce)
 {
     double projectedForceA, projectedForceB;
     AtomMatrix posCenter(nAtoms,3);
@@ -163,7 +163,8 @@ double Dimer::calcRotationalForce(AtomMatrix &rotationalForce)
     posCenter = matterCenter->getPositions();
 
     // displace to get the dimer configuration A
-    posDimer = posCenter + direction*parameters->dimerSeparation;
+//GH    posDimer = posCenter + direction*parameters->dimerSeparation;
+    posDimer = posCenter + direction*parameters->dimerSeparation*0.5;
 
     // obtain the force for the dimer configuration
     matterDimer->setPositions(posDimer);
@@ -184,7 +185,8 @@ double Dimer::calcRotationalForce(AtomMatrix &rotationalForce)
     rotationalForce = (forceA - forceB)/parameters->dimerSeparation;
 
     // curvature along the dimer
-    return (projectedForceB-projectedForceA)/(2*parameters->dimerSeparation);
+//GH    return (projectedForceB-projectedForceA)/(2.0*parameters->dimerSeparation);
+    return (projectedForceB-projectedForceA)/parameters->dimerSeparation;
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
