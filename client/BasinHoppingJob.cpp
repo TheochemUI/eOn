@@ -236,6 +236,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
             jump_steps_count=0;
         }
 
+        if (parameters->writeMovies == true) {
+            minTrial->matter2xyz("movie", true);
+        }
+
         totalfc = totalfc + minimizer->totalForceCalls;
         printf("step: %5i min: %.3f trial: %8.1e de: %9.2e min_fc: %4ld\n",
                 step+1, currentEnergy, current->getPotentialEnergy(),
