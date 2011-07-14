@@ -374,8 +374,6 @@ void BasinHoppingJob::randomSwap(Matter *matter)
         }
     }
 
-    //matter->setAtomicNr(changera,elb);
-    //matter->setAtomicNr(changerb,ela);
     double posax=matter->getPosition(changera, 0);
     double posay=matter->getPosition(changera, 1);
     double posaz=matter->getPosition(changera, 2);
