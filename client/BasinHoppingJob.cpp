@@ -46,7 +46,6 @@ BasinHoppingJob::~BasinHoppingJob()
 {
     delete current;
     delete trial;
-
 }
 
 vector<long> BasinHoppingJob::getElements(Matter *matter)
@@ -119,7 +118,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     double totalAccept=0.0;
     Matter *minTrial = new Matter(parameters);
     Matter *swapTrial = new Matter(parameters);
-    srand(time(NULL));
+
     current->con2matter("reactant_passed.con");
     if(parameters->basinHoppingMDFirst==true){
         Dynamics dyn(current,parameters);
@@ -266,7 +265,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     if(parameters->basinHoppingSwapProbability>0){
-      fprintf(fileResults, "%.3f swap acceptance_ratio\n", swap_accept/double(scount));
+      fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(scount));
     }
     fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
     fprintf(fileResults, "%d total_jump_steps\n", jcount);
