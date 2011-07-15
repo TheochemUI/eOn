@@ -1,26 +1,19 @@
 [Main]
-# The type of job to run. Current options are
-# ProcessSearch and Minimization
 JOB=basin_hopping
-
-# describtion RANDOM_SEED
-# -1 = time is used to seed the random generator
 RANDOM_SEED=-1
-potential=qsc
+potential=lj
 temperature=1200
 
 [Basin Hopping]
-max_displacement=1.2
-max_displacement_algorithm=quadratic
-quenching_steps=0
-steps=50
-md_first=true
-md_temperature=1500
-
-[Dynamics]
-steps=1000
+stay_minimized=true
+max_displacement=1.0
+max_displacement_algorithm=standard
+steps=100
 
 [Optimizers]
-opt_method=qm
-max_iterations=500
-converged_force=0.05
+opt_method=cg
+max_iterations=10000
+converged_force=0.1
+
+[Debug]
+write_movies=true
