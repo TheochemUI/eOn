@@ -155,17 +155,18 @@ std::vector<std::string> BasinHoppingJob::run(void)
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
            step<parameters->basinHoppingSteps && 
            jump_max_count<parameters->basinHoppingJumpMax){
-      	    *swapTrial = *current;
+            *swapTrial = *current;
             randomSwap(swapTrial);
             swapMove=true;
             *minTrial = *swapTrial;
       	}else{
             AtomMatrix displacement;
             displacement = displaceRandom();
-            if(parameters->basinHoppingStayMinimized){
-                trial->setPositions(current->getPositions() + displacement);
+
+            if(parameters->basinHoppingSignificantStructure){
+                trial->setPositions(minTrial->getPositions() + displacement);
             }else{
-                trial->setPositions(trial->getPositions() + displacement);
+                trial->setPositions(current->getPositions() + displacement);
             }
             swapMove=false;
             *minTrial = *trial;
@@ -188,8 +189,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if (deltaE < 0.0) {
                     p = 1.0;
             }
-        }
-        else if (jump_max_count>=parameters->basinHoppingJumpMax) {
+        }else if (jump_max_count>=parameters->basinHoppingJumpMax) {
             jump_steps_count++;
             jcount++;
             if (deltaE > 0.0) {

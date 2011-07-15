@@ -39,23 +39,19 @@ void LJ::setParameters(double u0Recieved, double cuttOffRRecieved, double psiRec
 // adress to supercell size
 void LJ::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
     double diffR=0, diffRX, diffRY, diffRZ, dU, a, b;
-    double *pos;    
-    pos = new double[3*N];
     *U = 0;    
     for(int i=0;i<N;i++){
         F[ 3*i ] = 0;
         F[3*i+1] = 0;
         F[3*i+2] = 0;
     }
-    for(int i=0; i<3*N; i++)
-        pos[i] = R[i];
     // Initializing end
     
     for(int i=0; i<N-1; i++){
         for(int j=i+1; j<N ;j++){
-            diffRX = pos[ 3*i ]-pos[ 3*j ];
-            diffRY = pos[3*i+1]-pos[3*j+1];
-            diffRZ = pos[3*i+2]-pos[3*j+2];
+            diffRX = R[ 3*i ]-R[ 3*j ];
+            diffRY = R[3*i+1]-R[3*j+1];
+            diffRZ = R[3*i+2]-R[3*j+2];
 
             diffRX = diffRX-box[0]*floor(diffRX/box[0]+0.5); // floor = largest integer value less than argument 
             diffRY = diffRY-box[4]*floor(diffRY/box[4]+0.5);
@@ -82,7 +78,6 @@ void LJ::force(long N, const double *R, const int *atomicNrs, double *F, double 
             }
         }
     }
-    delete [] pos;
     return;
 }
 
