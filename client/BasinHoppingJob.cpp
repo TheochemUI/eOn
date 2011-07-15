@@ -241,7 +241,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
         printf("%4i %12.3f %12.3f %12.3f %4ld\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
                minimizer->totalForceCalls);
-        fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,minTrial->getPotentialEnergy());
+        fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
+                minTrial->getPotentialEnergy());
 
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
