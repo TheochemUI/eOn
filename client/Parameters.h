@@ -159,7 +159,7 @@ public:
     double basinHoppingMaxDisplacement;
     long   basinHoppingSteps;
     long   basinHoppingQuenchingSteps;
-    bool   basinHoppingStayMinimized;
+    bool   basinHoppingSignificantStructure;
     bool   basinHoppingSingleAtomDisplace;
     string basinHoppingMaxDisplacementAlgorithm;
     string basinHoppingDisplacementDistribution;
