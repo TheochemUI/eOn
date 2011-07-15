@@ -336,7 +336,7 @@ fadd("Basin Hopping", "displacement_distribution", "uniform", description = "A r
 fadd("Basin Hopping", "displacement_distribution", "gaussian", description = "max_displacement serves as the width of a gaussian distribution used to select displacements")
 fadd("Basin Hopping", "quenching_steps", kind = "int", description = "Number at steps at 0 temperature.", default = 0)
 fadd("Basin Hopping", "single_atom_displace", kind = "boolean", description = "Displace only one atom per step.", default = False)
-fadd("Basin Hopping", "stay_minimized", kind = "boolean", description = "Displace minimized structures.", default = False)
+fadd("Basin Hopping", "significant_structure", kind = "boolean", description = "Displace minimized structures.", default = False)
 fadd("Basin Hopping", "swap_probability", kind = "float", description = "The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.", default = 0.0)
 fadd("Basin Hopping", "jump_max", kind = "int", description = "The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.", default = 0)
 fadd("Basin Hopping", "jump_steps", kind = "int", description = "The number of jump steps to take after the jump_max number of consecutive rejections have taken place.", default = 0)
