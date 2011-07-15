@@ -150,6 +150,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
     FILE * pFile;
     pFile = fopen("bh.dat","w");
 
+    printf("%4s %12s %12s %12s %4s\n", "mcs", "current", "trial", "global min", "fc");
+    printf("%4s %12s %12s %12s %4s\n", "---", "-------", "-----", "----------", "--");
 
     for (int step=0; step<nsteps; step++) {
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
@@ -235,8 +237,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         totalfc = totalfc + minimizer->totalForceCalls;
-        printf("mcs: %4i e: %.3f emin: %.3f fc: %4ld\n",
-               step+1, minTrial->getPotentialEnergy(), minimumEnergy,
+        //printf("mcs: %4i e_cur: %.3f e_trial: %.3f g_min: %.3f fc: %4ld\n",
+        printf("%4i %12.3f %12.3f %12.3f %4ld\n",
+               step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
                minimizer->totalForceCalls);
         fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,minTrial->getPotentialEnergy());
 
