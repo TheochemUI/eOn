@@ -157,25 +157,22 @@ std::vector<std::string> BasinHoppingJob::run(void)
            jump_max_count<parameters->basinHoppingJumpMax){
       	    *swapTrial = *current;
             randomSwap(swapTrial);
-            if (parameters->writeMovies == true) {
-	      swapTrial->matter2xyz("movie", true);}
             swapMove=true;
             *minTrial = *swapTrial;
-
       	}else{
             AtomMatrix displacement;
             displacement = displaceRandom();
             if(parameters->basinHoppingStayMinimized){
                 trial->setPositions(current->getPositions() + displacement);
-            }
-	    else{
+            }else{
                 trial->setPositions(trial->getPositions() + displacement);
-	    }
-            if (parameters->writeMovies == true) {
-	      trial->matter2xyz("movie", true);}
+            }
             swapMove=false;
             *minTrial = *trial;
+        }
 
+        if (parameters->writeMovies == true) {
+            trial->matter2xyz("trials", true);
         }
 
         if (parameters->optMethod == "cg") {
@@ -207,10 +204,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         if (randomDouble(1.0)<min(1.0, p)) {
-	    *current = *minTrial;
+            *current = *minTrial;
             if(swapMove){
                 swap_accept=swap_accept+1.0;
-	    }
+            }
             if(step<parameters->basinHoppingSteps) {
                 totalAccept=totalAccept+1.0;
             }
@@ -223,9 +220,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
                     minimumEnergy = currentEnergy;
                     *minimumEnergyStructure = *current;
                 }
-            }
-            if (parameters->writeMovies == true) {
-                minTrial->matter2xyz("movie", true);
             }
         }else{
             jump_max_count++;
@@ -241,10 +235,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         totalfc = totalfc + minimizer->totalForceCalls;
-        printf("step: %5i min: %.3f trial: %8.1e de: %9.2e min_fc: %4ld\n",
-                step+1, currentEnergy, current->getPotentialEnergy(),
-                deltaE, minimizer->totalForceCalls);
-        fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,currentEnergy);
+        printf("mcs: %4i e: %.3f emin: %.3f fc: %4ld\n",
+               step+1, minTrial->getPotentialEnergy(), minimumEnergy,
+               minimizer->totalForceCalls);
+        fprintf(pFile, "%6i %9ld %12.4e\n",step+1,totalfc,minTrial->getPotentialEnergy());
 
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
@@ -356,8 +350,8 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     Elements.erase(Elements.begin()+ia);
     long ib = randomInt(0, Elements.size()-1);
     elb = Elements.at(ib);
-    int changera;
-    int changerb;
+    int changera=0;
+    int changerb=0;
     int i=0;
     int j=0;
     while(j+i!=2) {
