@@ -54,11 +54,11 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
 
     When **True**, only one random atom is displaced in each step.
 
-**stay_minimized**
+**significant_structure**
 
     Default: *false*
 
-    When *true*, displacement is applied to the minimized structure after each
+    When *true*, displacement is applied to the minimized trial structure after each
     step. See paper by White and Mayne [#white]_.
 
 **swap_probability**
