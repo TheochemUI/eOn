@@ -163,11 +163,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             AtomMatrix displacement;
             displacement = displaceRandom();
 
-            if(parameters->basinHoppingSignificantStructure){
-                trial->setPositions(minTrial->getPositions() + displacement);
-            }else{
-                trial->setPositions(current->getPositions() + displacement);
-            }
+            trial->setPositions(current->getPositions() + displacement);
             swapMove=false;
             *minTrial = *trial;
         }
@@ -204,7 +200,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         if (randomDouble(1.0)<min(1.0, p)) {
-            *current = *minTrial;
+            if(parameters->basinHoppingSignificantStructure){
+                *current = *minTrial;
+            }else{
+                *current = *trial;
+            }
             if(swapMove){
                 swap_accept=swap_accept+1.0;
             }

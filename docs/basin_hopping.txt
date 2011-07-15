@@ -58,8 +58,10 @@ These are options that go in the **[Basin Hopping]** section of "config.ini".
 
     Default: *false*
 
-    When *true*, displacement is applied to the minimized trial structure after each
-    step. See paper by White and Mayne [#white]_.
+    When *true* use significant structure basin hopping (SSBH). In SSBH the
+    geometery is updated to the minimized trial configuration for accepted
+    steps, while in raw structure basin hoppin (RSBH) the geometery of the
+    trial is maintained.  See paper by White and Mayne [#white]_.
 
 **swap_probability**
 
