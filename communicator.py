@@ -18,7 +18,8 @@ logger = logging.getLogger('communicator')
 from time import sleep, time
 import subprocess
 import commands
-import tarfile
+if config.comm_type=='boinc':
+    import tarfile
 from cStringIO import StringIO
 import cPickle as pickle
 import glob
