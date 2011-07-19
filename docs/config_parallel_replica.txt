@@ -41,7 +41,7 @@ Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do 
 
 **record_resolution**
 
-   default: True
+   default: 1
 
    How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
 
@@ -91,33 +91,43 @@ Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do 
 
 **bias_potential**
 
-   default: None
+   default: none
 
    
 
+   options:
+
+       **none**: with no bias potential, run regular MD
+
+       **bond_boost**: bond boost method from Miron and Fichthorn
+
 **bb_dvmax**
 
+   default: 0
 
    The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.
 
 **bb_rmd_steps**
 
-   default: None
+   default: 0
 
    Number of MD steps used to determine the equilibrium bond length before the bias potential is added.
 
 **bb_stretch_threshold**
 
+   default: 0.0001
 
    Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.
 
 **bb_ds_curvature**
 
+   default: 0.95
 
    The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.
 
 **bb_rcut**
 
+   default: 3
 
    All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
 
