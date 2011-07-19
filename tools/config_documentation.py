@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Author: Ian Johnson
+
 import pathfix
 import config
 

@@ -9,15 +9,9 @@ Location of files related to the sending and receiving data on the server.
 
    This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
 
-**searches_in**
-
-   default: main_directory/searches/in/
-
-   
-
 **states**
 
-   default: main_directory/states/
+   default: %(main_directory)s/states/
 
    Where all of the information about individual states is located.
 
@@ -75,7 +69,7 @@ Location of files related to the sending and receiving data on the server.
 
    
 
-**suberbasins**
+**superbasins**
 
    default: %(main_directory)s/superbasins/
 

@@ -5,7 +5,7 @@ NEB
 
 **images**
 
-   default: None
+   default: 5
 
    Number of NEB images between the fixed endpoints
 

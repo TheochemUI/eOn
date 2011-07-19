@@ -1,30 +1,34 @@
 #!/usr/bin/env python
+##-----------------------------------------------------------------------------------
+## eOn is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## A copy of the GNU General Public License is available at
+## http://www.gnu.org/licenses/
+##-----------------------------------------------------------------------------------
 
 import os
 import math
 import time
-
 import gtk
 import gtk.gdk as gdk
 import gtk.glade as glade
 import gobject
-
 import numpy as np
-
 import pathfix
 import config
 import ConfigParser
 import atomview
 import atoms
 import glob
-
 import pylab as p
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as drawArea
 from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
 
 
 class akmcgui(atomview.atomview):
-
 
 
     
@@ -80,14 +84,14 @@ class akmcgui(atomview.atomview):
         self.stateScale.connect("value-changed", self.state_changed)
         self.fileButton.connect("clicked", self.filechanged)
         
-        
-        
+         
 
 #
 # Events-----------------------------------------------------
 #
 
-    
+
+#used to reload table and states if config.ini is changed
     def startup(self, *args):
         reload(config)
         config.init(self.directory)
@@ -100,8 +104,10 @@ class akmcgui(atomview.atomview):
         self.processtable()
         
         
-
+        
+#display area
     def changeImage(self, *args):
+        # without interpolation
         if self.interpolationCB.get_active() == False:
             states = glob.glob("%s*" %config.path_states)
             i = 0
@@ -124,6 +130,7 @@ class akmcgui(atomview.atomview):
             reactant = io.loadcon("%s%d/procdata/reactant_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
             product = io.loadcon("%s%d/procdata/product_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
             datapass = [reactant, saddle, product]
+        # with interpolation
         else:
             processes = glob.glob("%s%d/procdata/*" %(config.path_states, self.stateScale.get_value()))
             j = 0
@@ -155,45 +162,12 @@ class akmcgui(atomview.atomview):
             q.append(p[2].copy())
             datapass = q
         self.data_set(datapass)
-        
-    def filechanged(self, *args):
-        dialog = gtk.FileChooserDialog(action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            self.fileEntry.set_text(dialog.get_filename())
-            self.directory = dialog.get_filename()
-            dialog.destroy()
-        elif response == gtk.RESPONSE_CANCEL:
-            dialog.destroy()
-        self.startup()
-           
-    
-    def state_changed(self, *args):
-        self.playing = False
-        self.moviescale.set_value(0)
       
-            
-    def interpolationCB_changed(self, widget, data=None):
-        if self.interpolationCB.get_active() == True:
-            self.interpolationSB.set_sensitive(True)
-        else:  
-            self.interpolationSB.set_sensitive(False)
         
         
-    def energy_changed(self, *args):
-        energy = open("%sstate_table" %config.path_states, "r")
-        energyNumber = energy.readlines()
-        a = energyNumber[int (self.stateScale.get_value())].split()[1]
-        self.stateEnergy.set_markup("%.3f<b>eV</b>" % float (a))
-        
-        
-    def rowactivated(self, *args):
-        selection = self.view.get_selection().get_selected()
-        proc = self.store.get(selection[1], 0)
-        self.processesSB.set_value(proc[0])
-        
+    # creates process table    
     def processtable(self, *args):
-    
+        #allows user to re-order table
         def sortable(a, b, c, d):
             x = store.get_value(b, d)
             y = store.get_value(c, d)
@@ -204,7 +178,7 @@ class akmcgui(atomview.atomview):
             if x<y:
                 return -1
               
-        
+        # re creates table if a table is already there
         try:
             self.scrollview.destroy()
             self.view.destroy()
@@ -274,7 +248,7 @@ class akmcgui(atomview.atomview):
         self.barrier_column.add_attribute(barrier_cell, 'text', 6)
         self.rate_column.add_attribute(rate_cell, 'text', 7)
         self.repeat_column.add_attribute(repeat_cell, 'text', 8)
-        
+        # populates table with values from processtable
         a = open("%s%s/processtable" %(config.path_states, int(self.stateScale.get_value())) , "r")
         lines = a.readlines()
         rows = {}
@@ -283,7 +257,7 @@ class akmcgui(atomview.atomview):
             rows[i] = lines[i].split()
             rows[i] = [float(j) for j in rows[i]]
             self.store.append(rows[i])
-            
+        # connects, packs, and shows table    
         self.view.connect("row-activated", self.rowactivated)
         self.scrollview = gtk.ScrolledWindow()
         self.scrollview.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -293,8 +267,46 @@ class akmcgui(atomview.atomview):
         self.hbox.pack_start(self.scrollview)
         self.scrollview.show_all()
         self.view.show_all()
-      
         
+        
+        
+    # lets user click on a table row to set process number    
+    def rowactivated(self, *args):
+        selection = self.view.get_selection().get_selected()
+        proc = self.store.get(selection[1], 0)
+        self.processesSB.set_value(proc[0])
+        
+       
+        
+    # Dialog window to change directory or config file
+    def filechanged(self, *args):
+        dialog = gtk.FileChooserDialog(action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            self.fileEntry.set_text(dialog.get_filename())
+            self.directory = dialog.get_filename()
+            dialog.destroy()
+        elif response == gtk.RESPONSE_CANCEL:
+            dialog.destroy()
+        self.startup()
+           
+    
+    # allows use of interpolation Spin Button   
+    def interpolationCB_changed(self, widget, data=None):
+        if self.interpolationCB.get_active() == True:
+            self.interpolationSB.set_sensitive(True)
+        else:  
+            self.interpolationSB.set_sensitive(False)
+
+
+
+    def state_changed(self, *args):
+        self.playing = False
+        self.moviescale.set_value(0)
+        
+        
+        
+    # allows clicking play button near statesScale to play through states    
     def state_play(self, *args): 
     # IF statement asking if moviescale playbutton is active
     #SET MOVIESCALE PLAY BUTTON TRUE
@@ -312,6 +324,7 @@ class akmcgui(atomview.atomview):
             self.statePlayTB.set_image(self.pauseImage)
             self.interpolationCB.set_active(False)
             self.interpolationCB.set_sensitive(False)
+            self.processesSB.set_value (0)
             states = glob.glob("%s*" %config.path_states)
             i = 0
             while ("%s%d" %(config.path_states,i)) in states:
@@ -323,8 +336,19 @@ class akmcgui(atomview.atomview):
                     self.stateScale.set_value(0)
                 return True 
             self.timer_id = gobject.timeout_add(1000/(int (self.fps.get_value())), loop)
+      
+        
+      
+    # Displays current state's energy  
+    def energy_changed(self, *args):
+        energy = open("%sstate_table" %config.path_states, "r")
+        energyNumber = energy.readlines()
+        a = energyNumber[int (self.stateScale.get_value())].split()[1]
+        self.stateEnergy.set_markup("%.3f<b>eV</b>" % float (a))
+        
+
            
-            
+    # creates plot graph when plot button is pressed        
     def energy_plot(self, *args):
         a = open("%sstate_table" %config.path_states, "r")
         b = a.readlines()
@@ -348,6 +372,7 @@ class akmcgui(atomview.atomview):
         container.pack_start(toolbar, False, False)
         self.plotWindow.show_all()
                      
+
 
 #       
 # Main-------------------------------------------------------       

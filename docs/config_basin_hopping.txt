@@ -53,7 +53,7 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
    Displace only one atom per step.
 
-**stay_minimized**
+**significant_structure**
 
    default: False
 
