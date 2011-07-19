@@ -102,6 +102,7 @@ Parameters::Parameters(){
     displaceMagnitudes = "0.0625 0.125 0.25";
 
     // [Nudged Elastic Band] //
+    nebImages = 5;
     nebSpring = 5.0;
     nebClimbingImageMethod = true;
     nebOldTangent = false;

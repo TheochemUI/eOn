@@ -15,8 +15,6 @@ Hyperdynamics
 
        **bond_boost**: bond boost method from Miron and Fichthorn
 
-       **None**: 
-
 **bb_rmd_steps**
 
    default: 0

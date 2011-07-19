@@ -9,7 +9,7 @@ Parameters that are generally used to help debug calculations
 
    Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
 
-**keep_all_results_files**
+**keep_all_result_files**
 
    default: False
 
@@ -17,7 +17,7 @@ Parameters that are generally used to help debug calculations
 
 **result_files_path**
 
-   default: %(main_directory)s/debug_results/
+   default: ./debug_results/
 
    Where to store all result files. Defaults to 'debug_results'.
 
@@ -51,7 +51,7 @@ Parameters that are generally used to help debug calculations
 
    
 
-**writeMovies**
+**write_movies**
 
    default: False
 
