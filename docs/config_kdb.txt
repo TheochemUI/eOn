@@ -1,4 +1,4 @@
-Kdb
+KDB
 ---
 
 One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.
@@ -17,7 +17,7 @@ One of the bottlenecks in an aKMC simulation is performing the saddle point sear
 
 **keep**
 
-   default: 
+   default: False
 
    Keep the saddle suggestions (for debugging purposes).
 

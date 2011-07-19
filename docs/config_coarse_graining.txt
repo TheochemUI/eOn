@@ -39,7 +39,7 @@ In AKMC simulations where there are vastly different rates, the simulation can g
 
    This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.
 
-**askmc_condifence**
+**askmc_confidence**
 
    default: 0.9
 

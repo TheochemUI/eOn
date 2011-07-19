@@ -57,7 +57,7 @@ Options that apply to all of the different communicator types.
 
 **queued_jobs**
 
-   default: queued_job.sh
+   default: queued_jobs.sh
 
    This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.
 
@@ -75,19 +75,19 @@ Options that apply to all of the different communicator types.
 
 **boinc_project_dir**
 
-   default: None
+   default: ./
 
    This is the full path to the root of the BOINC project directory.
 
 **boinc_wu_template_path**
 
-   default: None
+   default: 
 
    This is the path, relative from the boinc_project_dir, to the boinc workunit template.
 
 **boinc_re_template_path**
 
-   default: None
+   default: 
 
    This is the path, relative from the boinc_project_dir, to the boinc result template.
 
@@ -111,7 +111,7 @@ Options that apply to all of the different communicator types.
 
 **boinc_priority**
 
-   default: 
+   default: 1
 
    The priority of the BOINC workunits that will be submitted.
 

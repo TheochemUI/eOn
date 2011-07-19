@@ -8,6 +8,8 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
+# Authors: Ian Johnson, Rye Terrell
+
 import ConfigParser
 import numpy
 import os.path
@@ -120,8 +122,7 @@ fadd("Structure Comparison", "brute_neighbors", kind = "boolean", description = 
 # Paths
 fadd("Paths", description = "Location of files related to the sending and receiving data on the server.")
 fadd("Paths", "main_directory", kind = "string", description = "This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.", default = "./")
-fadd("Paths", "searches_in", kind = "string", description = "", default = "main_directory/searches/in/")#add description
-fadd("Paths", "states", kind = "string", description = "Where all of the information about individual states is located.", default = "main_directory/states/")
+fadd("Paths", "states", kind = "string", description = "Where all of the information about individual states is located.", default = "%(main_directory)s/states/")
 fadd("Paths", "scratch", kind = "string", description = "", default = "%(main_directory)s/jobs/scratch/")
 fadd("Paths", "potential_files", kind = "string", description = "For extra files needed by the client for the potential.", default = "%(main_directory)s/potfiles")
 fadd("Paths", "jobs_out", kind = "string", description = "", default = "%(main_directory)s/jobs/out/")#add description
@@ -147,7 +148,7 @@ fadd("Process Search", "minimization_offset", kind = "float", description = "Aft
 
 # Saddle Search
 fadd("Saddle Search", description = "A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.")
-fadd("Saddle Search", "displace_type", kind = "string", description = "Type of displace to use", default = "disp_load")
+fadd("Saddle Search", "displace_type", kind = "string", description = "Type of displace to use", default = "random")
 fadd("Saddle Search", "displace_type", "disp_load", description = "")#add description
 fadd("Saddle Search", "displace_type", "random", description = "Select an atom at random from the free atoms in the configuration.")
 fadd("Saddle Search", "displace_type", "least_coordinated", description = "Determine the lowest coordination number of all atoms in the configuration and select one atom at random with that coordination number.")
@@ -159,14 +160,14 @@ fadd("Saddle Search", "displace_type", "cleint_not_FCC_HCP_coordinated", descrip
 fadd("Saddle Search", "displace_type", "client_last_atom", description = "Displacement is made on the client centered on the last atom in the configuration.")
 fadd("Saddle Search", "max_iterations", kind = "int", description = "The maximum number of translation steps to be taken.", default = 1000)
 fadd("Saddle Search", "displace_radius", kind = "float", description = "Atoms within this distance of the epicenter will be displaced.", default = 5.0)
-fadd("Saddle Search", "displace_magnitude", kind = "float", description = "The standard deviation of the magnitude of the displacement.", default = 0.1)
+fadd("Saddle Search", "displace_magnitude", kind = "float", description = "The standard deviation of the magnitude of the displacement.", default = 0.01)
 fadd("Saddle Search", "displace_min_norm", kind = "float", description = "The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.", default = 0.0)
 fadd("Saddle Search", "displace_max_coordination", kind = "int", description = "When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.", default = 11)
 fadd("Saddle Search", "min_mode_method", kind = "string", description = "", default = "dimer")#add description
 fadd("Saddle Search", "min_mode_method", "dimer", description = "Use the dimer min-mode method.")
 fadd("Saddle Search", "min_mode_method", "lanczos", description = "Use the Lanczos min-mode method.")
 fadd("Saddle Search", "max_energy", kind = "float", description = "The energy at which a saddle search is considered bad and terminated.", default = 20.0)
-fadd("Saddle Search", "displace_atomlist", kind = "string", description = "The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.", default = None)
+fadd("Saddle Search", "displace_atomlist", kind = "string", description = "The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.", default = "")
 fadd("Saddle Search", "client_max_single_displace", kind = "int", description = "Only functional when displacement is done on the client. Defines the maximal allowed absolute value for a single component in the displacement vector.", default = 10)
 fadd("Saddle Search", "stdev_translation", kind = "float", description = "", default = 0.2)#add description
 fadd("Saddle Search", "stdev_rotation", kind = "float", description = "", default = 1.0)#add description
@@ -224,7 +225,7 @@ fadd("Displacement Sampling", "magnitudes", kind = "string", description = "", d
 
 # Nudged Elastic Band NEB
 fadd("NEB", description = "")#add description
-fadd("NEB", "images", kind = "int", description = "Number of NEB images between the fixed endpoints", default = None)
+fadd("NEB", "images", kind = "int", description = "Number of NEB images between the fixed endpoints", default = 5)
 fadd("NEB", "spring", kind = "boolean", description = "", default = True)#add description
 fadd("NEB", "climbing_image_method", kind = "boolean", description = "", default = False)#add description
 fadd("NEB", "old_tangent", kind = "boolean", description = "", default = False)#add description
@@ -232,23 +233,23 @@ fadd("NEB", "opt_method", kind = "string", description = "", default = "OPT_CG")
 
 # Molecular Dynamics
 fadd("Dynamics", description = "")#add description
-fadd("Dynamics", "time_step", kind = "float", description = "", default = None)#add description
-fadd("Dynamics", "steps", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "dephase_steps", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "refine_transition_steps", kind = "boolean", description = "", default = None)#add description
-fadd("Dynamics", "auto_stop", kind = "boolean", description = "", default = None)#add description
-fadd("Dynamics", "record_resolution", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "bisection_accuracy", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "check_period", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "post_transition_steps", kind = "int", description = "", default = None)#add description
-fadd("Dynamics", "dephase_loop_stop", kind = "boolean", description = "", default = None)#add description
-fadd("Dynamics", "dephase_loop_max", kind = "int", description = "", default = None)#add description
+fadd("Dynamics", "time_step", kind = "float", description = "", default = 1.0)#add description
+fadd("Dynamics", "steps", kind = "int", description = "", default = 1000)#add description
+fadd("Dynamics", "dephase_steps", kind = "int", description = "", default = 200)#add description
+fadd("Dynamics", "refine_transition_steps", kind = "boolean", description = "", default = True)#add description
+fadd("Dynamics", "auto_stop", kind = "boolean", description = "", default = True)#add description
+fadd("Dynamics", "record_resolution", kind = "int", description = "", default = 1)#add description
+fadd("Dynamics", "bisection_accuracy", kind = "int", description = "", default = 1)#add description
+fadd("Dynamics", "check_period", kind = "int", description = "", default = 500)#add description
+fadd("Dynamics", "post_transition_steps", kind = "int", description = "", default = 500)#add description
+fadd("Dynamics", "dephase_loop_stop", kind = "boolean", description = "", default = False)#add description
+fadd("Dynamics", "dephase_loop_max", kind = "int", description = "", default = 5)#add description
 #thermostat
-fadd("Dynamics", "thermostat", kind = "string", description = "", default = None)#add description
-fadd("Dynamics", "andersen_alpha", kind = "float", description = "", default = None)#add description
-fadd("Dynamics", "andersen_collision_steps", kind = "float", description = "", default = None)#add description
-fadd("Dynamics", "nose_mass", kind = "float", description = "", default = None)#add description
-fadd("Dynamics", "langevin_friction", kind = "float", description = "", default = None)#add description 
+fadd("Dynamics", "thermostat", kind = "string", description = "", default = "andersen")#add description
+fadd("Dynamics", "andersen_alpha", kind = "float", description = "", default = 0.2)#add description
+fadd("Dynamics", "andersen_collision_steps", kind = "float", description = "", default = 10)#add description
+fadd("Dynamics", "nose_mass", kind = "float", description = "", default = 1.0)#add description
+fadd("Dynamics", "langevin_friction", kind = "float", description = "", default = 0.005)#add description 
 
 
 # Distributed Replica
@@ -268,7 +269,6 @@ fadd("Hyperdynamics", "bb_dvmax", kind = "float", description = "", default = 0.
 fadd("Hyperdynamics", "bb_strech_threshold", kind = "float", description = "", default = 0.0001)#add description
 fadd("Hyperdynamics", "bb_ds_curvature", kind = "float", description = "", default = 3.95)#add description
 fadd("Hyperdynamics", "bb_rcut", kind = "float", description = "", default = 3.0)#add description
-fadd("Hyperdynamics", "bias_potential", kind = "string", description = "", default = "none")#add description
 
 
 # Communicator
@@ -284,44 +284,16 @@ fadd("Communicator", "client_path", kind = "string", description = "Either the n
 fadd("Communicator", "number_of_CPUs", kind = "int", description = "The number of jobs that will run simultaneously.", default = 1)
 fadd("Communicator", "script_path", kind = "string", description = "The path to the user defined scripts for submitting jobs to the communicator.", default = "./")
 fadd("Communicator", "name_prefix", kind = "string", description = "When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.", default = "eon")
-fadd("Communicator", "queued_jobs", kind = "string", description = "This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.", default = "queued_job.sh")
+fadd("Communicator", "queued_jobs", kind = "string", description = "This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.", default = "queued_jobs.sh")
 fadd("Communicator", "submit_job", kind = "string", description = "This is the name of the script that submits a single job to the queuing system. It takes two command line arguments. The first is the name of the job. This is not required for eon use, but is highly recommended so that users can identify which job is which. The second argument is the working directory. This is the path where the eon client should be executed. All of the needed client files will be placed in this directory. The script must return the job id of the submitted job. This is how eon internally keeps track of jobs.", default = "submit_job.sh")
 fadd("Communicator", "cancel_job", kind = "string", description = "This is the name of the script that cancels a job. It takes a single argument the job id.", default = "cancel_job.sh")
-fadd("Communicator", "boinc_project_dir", kind = "string", description = "This is the full path to the root of the BOINC project directory.", default = None)
-fadd("Communicator", "boinc_wu_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc workunit template.", default = None)
-fadd("Communicator", "boinc_re_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc result template.", default = None)
+fadd("Communicator", "boinc_project_dir", kind = "string", description = "This is the full path to the root of the BOINC project directory.", default = "./")
+fadd("Communicator", "boinc_wu_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc workunit template.", default = "")
+fadd("Communicator", "boinc_re_template_path", kind = "string", description = "This is the path, relative from the boinc_project_dir, to the boinc result template.", default = "")
 fadd("Communicator", "boinc_appname", kind = "string", description = "This is the name of the application in BOINC.", default = "eonclient")
 fadd("Communicator", "boinc_results_path", kind = "string", description = "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.", default = "%(boinc_project_dir)s/sample_results")
 fadd("Communicator", "blacklist", kind = "string", description = "")#add description
-fadd("Communicator", "boinc_priority", kind = "int", description = "The priority of the BOINC workunits that will be submitted.")
-
-# Parallel Replica
-fadd("Parallel Replica", description = "Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do accelerated-MD simulation. The only assumption made in this method is that the reactions satisfy first order kinetics.")
-fadd("Parallel Replica", "time_step", kind = "float", description = "The length of each MD step in femtoseconds.", default = 1.0)
-fadd("Parallel Replica", "auto_stop", kind = "boolean", description = "Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.", default = False)
-fadd("Parallel Replica", "steps", kind = "int", description = "The number of MD steps to run.", default = 1000)
-fadd("Parallel Replica", "dephase_steps", kind = "int", description = "Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.", default = 200)
-fadd("Parallel Replica", "check_period", kind = "int", description = "How frequently the state of system is checked. Every check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of check_period/record_resolution+1 atomic configurations, which may increase the usage of memory.", default = 500)
-fadd("Parallel Replica", "refine_transition_time", kind = "boolean", description = "Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by check_period/record_resolution+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller check_period. And the accuracy of transition time is record_resolution*timestep.", default = True)
-fadd("Parallel Replica", "record_resolution", kind = "int", description = "How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.", default = True)
-fadd("Parallel Replica", "post_transition_steps", kind = "int", description = "Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.", default = 500)
-fadd("Parallel Replica", "thermo_type", kind = "string", description = "", default = "andersen")#add description
-fadd("Parallel Replica", "thermo_type", "andersen", description = "Andersen thermostat with Verlet algorithm")
-fadd("Parallel Replica", "thermo_type", "nose_hoober", description = "Nose-Hover thermostat with Verlet algorithm")
-fadd("Parallel Replica", "thermo_type", "langevin", description = "Langevin thermostat with Verlet algorithm")
-fadd("Parallel Replica", "andersen_alpha", kind = "float", description = "The collision strength in the Andersen thermostat", default = 0.2)
-fadd("Parallel Replica", "andersen_collision_steps", kind = "float", description = "The collision period (in MD steps) for the Andersen thermostat.", default = 10.0)
-fadd("Parallel Replica", "nose_mass", kind = "float", description = "The effective mass of the additional degree of freedom in the Nose-Hover thermostat, which determines the rate of heat transfer.", default = 1.0)
-fadd("Parallel Replica", "langevin_friction", kind = "float", description = "The damping coefficient for langevin dynamics.", default = 0.01)
-fadd("Parallel Replica", "bias_potential", kind = "string", description = "", default = None)
-fadd("Parallel Replica", "bias_potential", "none", description = "with no bias potential, run regular MD")
-fadd("Parallel Replica", "bias_potential", "bond_boost", description = "bond boost method from Miron and Fichthorn")
-fadd("Parallel Replica", "bb_dvmax", kind = "float", description = "The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.", default = None)
-fadd("Parallel Replica", "bb_rmd_steps", kind = "int", description = "Number of MD steps used to determine the equilibrium bond length before the bias potential is added.", default = None)
-fadd("Parallel Replica", "bb_stretch_threshold", kind = "float", description = "Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.", default = None)
-fadd("Parallel Replica", "bb_ds_curvature", kind = "float", description = "The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.", default = None)
-fadd("Parallel Replica", "bb_rcut", kind = "float", description = "All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.", default = None)
-
+fadd("Communicator", "boinc_priority", kind = "int", description = "The priority of the BOINC workunits that will be submitted.", default = 1)
 
 # Basin Hopping
 fadd("Basin Hopping", description = "Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.")
@@ -377,7 +349,7 @@ fadd("Coarse Graining", "askmc_connections_test_on", kind = "boolean", descripti
 fadd("KDB", description = "One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.")
 fadd("KDB", "use_kdb", kind = "boolean", description = "Turn Kdb on/off.", default = False)
 fadd("KDB", "wait", kind = "boolean", description = "Wait for the query to finish before submitting jobs (for debugging purposes).", default = False)
-fadd("KDB", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).")
+fadd("KDB", "keep", kind = "boolean", description = "Keep the saddle suggestions (for debugging purposes).", default = False)
 fadd("KDB", "Kdb_only", kind = "boolean", description = "", default = False)#add description
 fadd("KDB", "addpath", kind = "string", description = "", default = False)#add description
 fadd("KDB", "querypath", kind = "string", description = "", default = False)#add description
@@ -394,13 +366,13 @@ fadd("Recycling", "use_sb_recycling", kind = "boolean", description = "", defaul
 fadd("Debug", description = "Parameters that are generally used to help debug calculations")
 fadd("Debug", "keep_bad_saddles", kind = "boolean", description = "Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.", default = False)
 fadd("Debug", "keep_all_result_files", kind = "boolean", description = "Stores all result files in main_directory/results", default = False)
-fadd("Debug", "result_files_path", kind="string", description="Where to store all result files. Defaults to 'debug_results'.", default = "%(main_directory)s/debug_results/")
+fadd("Debug", "result_files_path", kind="string", description="Where to store all result files. Defaults to 'debug_results'.", default = "./debug_results/")
 fadd("Debug", "register_extra_results", kind = "boolean", description = "Register processes found for a state after leaving that state.", default = False)
 fadd("Debug", "use_mean_time", kind = "boolean", description = "Select transition times from the mean of the exponential distribution of escape times.", default = False)
 fadd("Debug", "target_trajectory", kind = "boolean", description = "Follow the state-to-state trajectory of another akmc simulation.", default = False)
 fadd("Debug", "save_stdout", kind = "boolean", description = "Save the standard output from the client to a file named stdout_0.dat", default = False)
 fadd("Debug", "interactive_shell", kind = "boolean", description = "", default = True)#add description
-fadd("Debug", "write_movies", kind="boolean", description = "", default = False)#add description
+fadd("Debug", "write_movies", kind= "boolean", description = "", default = False)#add description
 
 ## End new config section. =====================================================
 
@@ -410,8 +382,11 @@ def init(config_file = ""):
     config.init_done = True
 
     parser = ConfigParser.SafeConfigParser()
-
-    parser.read(os.path.join(sys.path[0], 'default_config.ini'))
+    
+    for i in range(len(config.format)):
+        parser.add_section(config.format[i].name)
+        for j in config.format[i].keys:
+            parser.set(config.format[i].name, j.name,str (j.default))
 
     gave_config = True
     if config_file != "":

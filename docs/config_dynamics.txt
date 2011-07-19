@@ -5,92 +5,97 @@ Dynamics
 
 **time_step**
 
+   default: 1
 
    
 
 **steps**
 
-   default: None
+   default: 1000
 
    
 
 **dephase_steps**
 
-   default: None
+   default: 200
 
    
 
 **refine_transition_steps**
 
-   default: None
+   default: True
 
    
 
 **auto_stop**
 
-   default: None
+   default: True
 
    
 
 **record_resolution**
 
-   default: None
+   default: 1
 
    
 
 **bisection_accuracy**
 
-   default: None
+   default: 1
 
    
 
 **check_period**
 
-   default: None
+   default: 500
 
    
 
 **post_transition_steps**
 
-   default: None
+   default: 500
 
    
 
 **dephase_loop_stop**
 
-   default: None
+   default: False
 
    
 
 **dephase_loop_max**
 
-   default: None
+   default: 5
 
    
 
 **thermostat**
 
-   default: None
+   default: andersen
 
    
 
 **andersen_alpha**
 
+   default: 0.2
 
    
 
 **andersen_collision_steps**
 
+   default: 10
 
    
 
 **nose_mass**
 
+   default: 1
 
    
 
 **langevin_friction**
 
+   default: 0.005
 
    
 
