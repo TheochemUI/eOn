@@ -22,6 +22,7 @@ import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
+from numpy import array, uint32 #required for random seed.
 numpy.seterr(all='raise')
 
 import communicator
