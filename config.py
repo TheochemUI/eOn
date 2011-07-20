@@ -184,7 +184,7 @@ fadd("Saddle Search", "push_displacement", kind ="boolean", description = "", de
 # Dimer
 fadd("Dimer", description = "Options for controlling the dimer minimum mode finding method on the client side.")
 fadd("Dimer", "seperation", kind = "float", description = "Seperation between dimer images.", default = 0.001)
-fadd("Dimer", "finite_angles", kind = "float", description = "Finite difference angle over which the dimer is rotated to find the lowest curvature.", default = 0.005)
+fadd("Dimer", "finite_angle", kind = "float", description = "Finite difference angle over which the dimer is rotated to find the lowest curvature.", default = 0.005)
 fadd("Dimer", "rotations_min", kind = "int", description = "Minimum number of rotations allowed for the dimer in each step.", default = 1)
 fadd("Dimer", "rotations_max", kind = "int", description = "Maximum number of rotations allowed for the dimer in each step.", default = 8)
 fadd("Dimer", "torque_min", kind = "float", description = "Minimum torque above which the dimer rotates only once and below which is does not rotate.", default = 0.1)
