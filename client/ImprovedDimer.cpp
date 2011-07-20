@@ -148,7 +148,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             double C_tau_prime = ((g1_prime - g0).cwise() * tau_prime).sum() / delta;
 
             // Calculate phi_min.
-            double a1 = C_tau - C_tau_prime + b1 * sin(2.0 * phi_prime) / (1.0 - cos(2.0 * phi_prime));
+            double a1 = (C_tau - C_tau_prime + b1 * sin(2.0 * phi_prime)) / (1.0 - cos(2.0 * phi_prime));
             double a0 = 2.0 * (C_tau - a1);
             phi_min = 0.5 * atan(b1 / a1);
 
