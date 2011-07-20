@@ -21,7 +21,7 @@ Dynamics
 
    
 
-**refine_transition_steps**
+**refine_transition_time**
 
    default: True
 

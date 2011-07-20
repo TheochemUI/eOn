@@ -236,7 +236,7 @@ fadd("Dynamics", description = "")#add description
 fadd("Dynamics", "time_step", kind = "float", description = "", default = 1.0)#add description
 fadd("Dynamics", "steps", kind = "int", description = "", default = 1000)#add description
 fadd("Dynamics", "dephase_steps", kind = "int", description = "", default = 200)#add description
-fadd("Dynamics", "refine_transition_steps", kind = "boolean", description = "", default = True)#add description
+fadd("Dynamics", "refine_transition_time", kind = "boolean", description = "", default = True)#add description
 fadd("Dynamics", "auto_stop", kind = "boolean", description = "", default = True)#add description
 fadd("Dynamics", "record_resolution", kind = "int", description = "", default = 1)#add description
 fadd("Dynamics", "bisection_accuracy", kind = "int", description = "", default = 1)#add description
