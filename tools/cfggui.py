@@ -55,8 +55,8 @@ class cfggui():
             self.descLabels[config.format[i].name].set_size_request(allocation.width, -1)
             
     # allows only changed RB options to save        
-    def radiobuttonChanged(self, widget, name=None):
-        self.changedRB.append(name)
+    def buttonChanged(self, widget, name=None):
+        self.changedbuttons.append(name)
         
             
     
@@ -67,14 +67,15 @@ class cfggui():
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    try:
-                        self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.CBbuttons[name].get_active_text())
-                    except:
-                        pass
+                    if name in self.changedbuttons:
+                        try:
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.CBbuttons[name].get_active_text())
+                        except:
+                            pass
                 #string without values, ints, and floats
                 if (config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0) or config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float':
                     name = config.format[i].name + ", " + config.format[i].keys[j].name 
-                    if self.TEbuttons[name].get_text() != '':
+                    if name in self.changedbuttons:
                         try:
                             self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.TEbuttons[name].get_text())     
                         except:
@@ -82,7 +83,7 @@ class cfggui():
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    if name in self.changedRB:
+                    if name in self.changedbuttons:
                         try:
                             if self.RBbuttons[name].get_active() == True:
                                 self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
@@ -93,14 +94,13 @@ class cfggui():
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
-        self.saveButton.set_sensitive(False)
-            
+        self.saveButton.set_sensitive(False)   
 
 #display
     def __init__(self):
         button_width = 100
         self.config = ConfigParser.SafeConfigParser()
-        self.config.read(os.path.join(pathfix.path, "default_config.ini"))
+        #self.config.read(os.path.join(pathfix.path, "default_config.ini"))
         try:
             self.config.read("./config.ini")
         except:
@@ -137,7 +137,7 @@ class cfggui():
         self.TEbuttons = {}
         self.RBbuttons = {}
         self.descLabels = {}
-        self.changedRB = []
+        self.changedbuttons = []
         self.nameLabels = {}
         
         
@@ -196,6 +196,7 @@ class cfggui():
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(self.CBbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding = 5) 
+                    self.CBbuttons[name].connect("changed", self.buttonChanged, name)
                     self.CBbuttons[name].connect("changed", self.saveCheck)
                     self.CBbuttons[name].connect("changed", self.readytosave, name)   
                            
@@ -204,7 +205,6 @@ class cfggui():
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
                     self.TEbuttons[name] = gtk.Entry()
-                    self.TEbuttons[name].connect("changed", self.saveCheck)
                     try:
                         self.TEbuttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
                     except:
@@ -214,15 +214,15 @@ class cfggui():
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(self.TEbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
+                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)
+                    self.TEbuttons[name].connect("changed", self.saveCheck)
                     self.TEbuttons[name].connect("changed", self.readytosave, name)    
                     
                 #ints & floats
                 if config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float' :
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
                     self.TEbuttons[name] = gtk.Entry()
-                    self.TEbuttons[name].connect("changed", self.saveCheck)
                     try:
                         self.TEbuttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
                     except:
@@ -232,7 +232,10 @@ class cfggui():
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(self.TEbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
-                    self.TEbuttons[name].connect("changed", self.readytosave, name)  
+                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)
+                    self.TEbuttons[name].connect("changed", self.saveCheck)
+                    self.TEbuttons[name].connect("changed", self.readytosave, name)
+                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)  
                     
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
@@ -260,12 +263,12 @@ class cfggui():
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(alignment,1,2,j,j+1, False | gtk.FILL, False,ypadding=5)
-                    self.RBbuttons[name].connect("toggled", self.radiobuttonChanged, name)
-                    RB2.connect("toggled", self.radiobuttonChanged, name)
+                    self.RBbuttons[name].connect("toggled", self.buttonChanged, name)
+                    RB2.connect("toggled", self.buttonChanged, name)
                     self.RBbuttons[name].connect("toggled", self.readytosave, name)
                     RB2.connect("toggled", self.readytosave, name)
                     
-                      
+                
         self.saveButton.set_sensitive(False)                  
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
