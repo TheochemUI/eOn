@@ -62,7 +62,7 @@ class akmcgui(atomview.atomview):
         self.pauseImage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.statePlayTB.set_image(self.playImage)
         self.plotImage = gtk.Image()
-        image = gdk.pixbuf_new_from_file_at_size("../../tools/plot_icon.png", 15, 15)
+        image = gdk.pixbuf_new_from_file_at_size(os.path.join(pathfix.path, "tools/plot_icon.png"), 15, 15)
         self.plotImage.set_from_pixbuf(image)
         self.energy_plotButton.set_image(self.plotImage)
         self.directory = "./config.ini"
