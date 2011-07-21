@@ -190,7 +190,7 @@ fadd("Dimer", "rotations_max", kind = "int", description = "Maximum number of ro
 fadd("Dimer", "torque_min", kind = "float", description = "Minimum torque above which the dimer rotates only once and below which is does not rotate.", default = 0.1)
 fadd("Dimer", "torque_max", kind = "float", description = "Maximum torque above which the dimer rotates up to rotations_max times.", default = 1.0)
 fadd("Dimer", "improved", kind = "boolean", description = "Improvements to the dimer method from Kastner.", default = False)
-fadd("Dimer", "converged_rotation", kind = "float", description = "Dimer is considered converged if it rotates fewer degrees than this.", default = 5.0)
+fadd("Dimer", "converged_angle", kind = "float", description = "Dimer is considered converged if it rotates fewer degrees than this.", default = 5.0)
 fadd("Dimer", "opt_method", kind = "string", description = "Optimization algorithm to choose the dimer rotation direction", default = "sd")
 fadd("Dimer", "opt_method", "sd", description = "steepest descent, rotate along the rotational force.")
 fadd("Dimer", "opt_method", "cg", description = "conjudate gradient, rotate along conjugate directions.")
