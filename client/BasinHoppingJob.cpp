@@ -48,64 +48,6 @@ BasinHoppingJob::~BasinHoppingJob()
     delete trial;
 }
 
-vector<long> BasinHoppingJob::getElements(Matter *matter)
-{
-    int allElements[118] = {0};
-    vector<long> Elements;
-
-    for(long y=0; y<matter->numberOfAtoms(); y++)
-    {
-        if(!matter->getFixed(y))
-        {
-            int index= matter->getAtomicNr(y);
-            allElements[index]++;
-        }
-    }
-    for(int i=0; i<118; i++)
-    {
-        if(allElements[i] > 0)
-        {
-            Elements.push_back(i);
-        }
-    }
-    return Elements;
-}
-VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
-{
-    AtomMatrix pos = matter->getPositions();
-    double cenx = 0;
-    double ceny = 0;
-    double cenz = 0;
-    for(int k=0; k<matter->numberOfAtoms(); k++)
-    {
-        cenx = cenx + pos(k,0);
-        ceny = ceny + pos(k,1);
-        cenz = cenz + pos(k,2);
-    }
-    int num = matter->numberOfAtoms();
-    cenx = cenx / num;
-    ceny = ceny / num;
-    cenz = cenz / num;
-
-    double cen[] = {cenx, ceny, cenz};
-
-    VectorXd dist(num);
-
-     
-    for(int l = 0; l < num; l++)
-    {
-        double xd = pos(l,0)-cen[0];
-        double yd = pos(l,1)-cen[1];
-        double zd = pos(l,2)-cen[2];
-        xd = xd*xd;
-        yd = yd*yd;
-        zd = zd*zd;
-        dist(l) = sqrt(xd + yd + zd);
-    }
-
-    return dist;
-}
-
 std::vector<std::string> BasinHoppingJob::run(void)
 {
     bool swapMove;
@@ -113,7 +55,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     jcount=0;
     scount=0;
     dcount=0;
-    int jump_max_count=0;
+    int consecutive_rejected_trials=0;
     int jump_steps_count=0;
     double totalAccept=0.0;
     Matter *minTrial = new Matter(parameters);
@@ -156,7 +98,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     for (int step=0; step<nsteps; step++) {
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
            step<parameters->basinHoppingSteps && 
-           jump_max_count<parameters->basinHoppingJumpMax){
+           consecutive_rejected_trials<parameters->basinHoppingJumpMax){
             *swapTrial = *current;
             randomSwap(swapTrial);
             swapMove=true;
@@ -184,13 +126,14 @@ std::vector<std::string> BasinHoppingJob::run(void)
         double deltaE = minTrial->getPotentialEnergy()-currentEnergy;
         double p=0.0;
         if (step>=parameters->basinHoppingSteps) {
-            if (deltaE < 0.0) {
+            if (deltaE <= 0.0) {
                     p = 1.0;
             }
-        }else if (jump_max_count>=parameters->basinHoppingJumpMax) {
+        }else if (consecutive_rejected_trials>=parameters->basinHoppingJumpMax) {
             jump_steps_count++;
             jcount++;
-            if (deltaE > 0.0) {
+            //XXX: O'RLY?
+            if (deltaE >= 0.0) {
                 p = 1.0;
             }
         }else{
@@ -201,7 +144,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
         }
 
-        if (randomDouble(1.0)<min(1.0, p)) {
+        if (randomDouble(1.0) < p) {
             if(parameters->basinHoppingSignificantStructure){
                 *current = *minTrial;
             }else{
@@ -215,20 +158,16 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
        
             currentEnergy = minTrial->getPotentialEnergy();
-            if (abs(deltaE)>parameters->structureComparisonEnergyDifference) {
-                *current = *minTrial;
-                if (currentEnergy < minimumEnergy) 
-                {
-                    minimumEnergy = currentEnergy;
-                    *minimumEnergyStructure = *current;
-                }
+            if (currentEnergy < minimumEnergy) {
+                minimumEnergy = currentEnergy;
+                *minimumEnergyStructure = *minTrial;
             }
         }else{
-            jump_max_count++;
+            consecutive_rejected_trials++;
         }
 
         if (jump_steps_count==parameters->basinHoppingJumpSteps) {
-            jump_max_count=0;
+            consecutive_rejected_trials=0;
             jump_steps_count=0;
         }
 
@@ -236,7 +175,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             minTrial->matter2xyz("movie", true);
         }
 
-        totalfc = totalfc + minimizer->totalForceCalls;
+        totalfc = totalfc + minimizer->totalForceCalls + 1;
         //printf("mcs: %4i e_cur: %.3f e_trial: %.3f g_min: %.3f fc: %4ld\n",
         printf("%4i %12.3f %12.3f %12.3f %4ld\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
@@ -301,7 +240,7 @@ AtomMatrix BasinHoppingJob::displaceRandom()
     int num = trial->numberOfAtoms();
     int m = 0;
     if(parameters->basinHoppingSingleAtomDisplace) {
-      m = (long)random(trial->numberOfAtoms());
+      m = randomInt(0, trial->numberOfAtoms()-1);
       num = m + 1;
     }
 
@@ -347,32 +286,27 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     scount++;
     vector<long> Elements;
     Elements=getElements(matter);
+
     long ela;
     long elb;
     long ia = randomInt(0, Elements.size()-1);
     ela = Elements.at(ia);
     Elements.erase(Elements.begin()+ia);
+
     long ib = randomInt(0, Elements.size()-1);
     elb = Elements.at(ib);
+
     int changera=0;
     int changerb=0;
-    int i=0;
-    int j=0;
-    while(j+i!=2) {
-        for(long x=randomInt(0,matter->numberOfAtoms()-1); x<matter->numberOfAtoms(); x++){
-            if(matter->getAtomicNr(x)==ela) {
-                changera=x;
-                i=1;
-                break;
-            }
-        }
-        for(long x=randomInt(0, matter->numberOfAtoms()-1); x<matter->numberOfAtoms(); x++){
-            if(matter->getAtomicNr(x)==elb) {
-                changerb=x;
-                j=1;
-                break;
-            }
-        }
+    
+    changera = randomInt(0, matter->numberOfAtoms()-1);
+    while (matter->getAtomicNr(changera) != ela) {
+        changera = randomInt(0, matter->numberOfAtoms()-1);
+    }
+
+    changerb = randomInt(0, matter->numberOfAtoms()-1);
+    while (matter->getAtomicNr(changerb) != elb) {
+        changerb = randomInt(0, matter->numberOfAtoms()-1);
     }
 
     double posax=matter->getPosition(changera, 0);
@@ -386,5 +320,60 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     matter->setPosition(changerb, 0, posax);
     matter->setPosition(changerb, 1, posay);
     matter->setPosition(changerb, 2, posaz);
+}
 
+vector<long> BasinHoppingJob::getElements(Matter *matter)
+{
+    int allElements[118] = {0};
+    vector<long> Elements;
+
+    for(long y=0; y<matter->numberOfAtoms(); y++) {
+        if(!matter->getFixed(y)) {
+            int index= matter->getAtomicNr(y);
+            allElements[index] = 1;
+        }
+    }
+
+    for(int i=0; i<118; i++) {
+        if(allElements[i] != 0) {
+            Elements.push_back(i);
+        }
+    }
+    
+    return Elements;
+}
+
+VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
+{
+    AtomMatrix pos = matter->getPositions();
+    double cenx = 0;
+    double ceny = 0;
+    double cenz = 0;
+    int num = matter->numberOfAtoms();
+
+    for(int k=0; k<num; k++) {
+        cenx = cenx + pos(k,0);
+        ceny = ceny + pos(k,1);
+        cenz = cenz + pos(k,2);
+    }
+    cenx = cenx / (double)num;
+    ceny = ceny / (double)num;
+    cenz = cenz / (double)num;
+
+    double cen[] = {cenx, ceny, cenz};
+
+    VectorXd dist(num);
+     
+    for(int l = 0; l < num; l++)
+    {
+        double xd = pos(l,0)-cen[0];
+        double yd = pos(l,1)-cen[1];
+        double zd = pos(l,2)-cen[2];
+        xd = xd*xd;
+        yd = yd*yd;
+        zd = zd*zd;
+        dist(l) = sqrt(xd + yd + zd);
+    }
+
+    return dist;
 }
