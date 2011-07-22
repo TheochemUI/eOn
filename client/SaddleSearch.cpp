@@ -71,9 +71,12 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     clean();
     initial = initialPassed;
     saddle = saddlePassed;
-    initialDisplacement = saddlePassed->getPositions() - initialPassed->getPositions();
-    initialDisplacement /= initialDisplacement.norm();
     parameters = parametersPassed;
+    if (parameters->saddleDisplaceType == DISP_LOAD)
+    {
+        initialDisplacement = saddlePassed->getPositions() - initialPassed->getPositions();
+        initialDisplacement /= initialDisplacement.norm();
+    }
     eigenMode.resize(saddlePassed->numberOfAtoms(), 3);
     eigenMode.setZero();
     if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
