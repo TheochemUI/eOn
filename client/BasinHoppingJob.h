@@ -20,15 +20,15 @@ class BasinHoppingJob : public Job {
         BasinHoppingJob(Parameters *params);
         ~BasinHoppingJob(void);
         std::vector<std::string> run(void);
-	VectorXd calculateDistanceFromCenter(Matter *matter);
 
     private:
+        VectorXd calculateDistanceFromCenter(Matter *matter);
         AtomMatrix displaceRandom();
         void randomSwap(Matter *matter);
         Parameters *parameters;
         Matter *current;
         Matter *trial;  // initial configuration.
-	vector<long> getElements(Matter *matter);
+        vector<long> getElements(Matter *matter);
         std::vector<std::string> returnFiles;
         int jcount;
         int dcount;
