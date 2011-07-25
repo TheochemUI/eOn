@@ -83,6 +83,8 @@ class akmcgui(atomview.atomview):
         self.energy_plotButton.connect("clicked", self.energy_plot)
         self.stateScale.connect("value-changed", self.state_changed)
         self.fileButton.connect("clicked", self.filechanged)
+        self.playbutton.connect("clicked", self.movieplaying)
+        self.pausebutton.connect("clicked", self.movieplaying)
         
          
 
@@ -302,29 +304,36 @@ class akmcgui(atomview.atomview):
 
     def state_changed(self, *args):
         self.playing = False
-        self.moviescale.set_value(0)
+    
+    def movieplaying(self, *args):
+        if self.playing == True:
+            self.statePlayTB.set_sensitive(False)
+        else:
+            self.statePlayTB.set_sensitive(True)
         
         
         
     # allows clicking play button near statesScale to play through states    
     def state_play(self, *args): 
-    # IF statement asking if moviescale playbutton is active
-    #SET MOVIESCALE PLAY BUTTON TRUE
-    # THEN SET IT FALSE
-    #
-    
         try:
             gobject.source_remove(self.timer_id)
         except:
-            pass 
+            pass
+        #pause
         if self.statePlayTB.get_active() == False:
             self.statePlayTB.set_image(self.playImage)
             self.interpolationCB.set_sensitive(True)
+            self.processesSB.set_sensitive(True)
+            self.playbutton.set_sensitive(True)
+            self.pausebutton.set_sensitive(True)
+            self.changeImage()
+        #play
         else:
             self.statePlayTB.set_image(self.pauseImage)
-            self.interpolationCB.set_active(False)
             self.interpolationCB.set_sensitive(False)
-            self.processesSB.set_value (0)
+            self.processesSB.set_sensitive(False)
+            self.playbutton.set_sensitive(False)
+            self.pausebutton.set_sensitive(False)
             states = glob.glob("%s*" %config.path_states)
             i = 0
             while ("%s%d" %(config.path_states,i)) in states:

@@ -80,7 +80,7 @@ fadd("Main", "job", "displacement_sampling", description = "Job to sample differ
 fadd("Main", "job", "basin_hopping", description = "Search for global minimum using basin hopping method.")
 fadd("Main", "temperature", kind = "float", description = "The temperature that the job will run at.", default=300.0)
 fadd("Main", "random_seed", kind = "int", description = "Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.", default = -1)
-fadd("Main", "potential", kind = "string", description = "the type of potential to execute", default = "pot LJ")
+fadd("Main", "potential", kind = "string", description = "the type of potential to execute", default = "lj")
 fadd("Main", "potential", "lj", description = "Lennard-Jones potential in reduced units.")
 fadd("Main", "potential", "morse_pt", description = "Morse potential for platinum.")
 fadd("Main", "potential", "emt", description = "Effective medium theory, for metals.")
@@ -250,7 +250,6 @@ fadd("Dynamics", "andersen_alpha", kind = "float", description = "", default = 0
 fadd("Dynamics", "andersen_collision_steps", kind = "float", description = "", default = 10)#add description
 fadd("Dynamics", "nose_mass", kind = "float", description = "", default = 1.0)#add description
 fadd("Dynamics", "langevin_friction", kind = "float", description = "", default = 0.005)#add description 
-
 
 # Distributed Replica
 fadd("Distributed Replica", description = "")#add description
