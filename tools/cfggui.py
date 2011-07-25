@@ -56,10 +56,29 @@ class cfggui():
             
     # allows only changed RB options to save        
     def buttonChanged(self, widget, name=None):
-        self.changedbuttons.append(name)
-        
-            
+        if name not in self.changedbuttons:
+            self.changedbuttons.append(name)
     
+    
+    def refreshoption(self, widget, event, refreshlist=None):
+        name = refreshlist[0]
+        key = refreshlist[1]
+         
+        if key.kind == "int" or key.kind == "float" or key.kind == "string" and len(key.values) == 0:
+            self.buttons[name].set_text(str (key.default))
+        if key.kind == "string" and len(key.values) != 0:
+            counter = 0
+            for i in key.values:
+                if i.name == key.default:
+                    self.buttons[name].set_active(counter)
+                counter +=1
+        if key.kind == "boolean":
+            if key.default == True:
+                self.buttons[name].set_active(True)
+            else:
+                self.RB2[name].set_active(True)
+        
+              
 #saves changes to config.ini
     def save(self, widget, data=None):
         for i in range(len(config.format)):
@@ -69,7 +88,7 @@ class cfggui():
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     if name in self.changedbuttons:
                         try:
-                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.CBbuttons[name].get_active_text())
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_active_text())
                         except:
                             pass
                 #string without values, ints, and floats
@@ -77,7 +96,7 @@ class cfggui():
                     name = config.format[i].name + ", " + config.format[i].keys[j].name 
                     if name in self.changedbuttons:
                         try:
-                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.TEbuttons[name].get_text())     
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_text())     
                         except:
                             pass
                 #booleans
@@ -85,7 +104,7 @@ class cfggui():
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     if name in self.changedbuttons:
                         try:
-                            if self.RBbuttons[name].get_active() == True:
+                            if self.buttons[name].get_active() == True:
                                 self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
                             else:
                                 self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
@@ -94,13 +113,13 @@ class cfggui():
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
-        self.saveButton.set_sensitive(False)   
+        self.saveButton.set_sensitive(False) 
+          
 
 #display
     def __init__(self):
         button_width = 100
         self.config = ConfigParser.SafeConfigParser()
-        #self.config.read(os.path.join(pathfix.path, "default_config.ini"))
         try:
             self.config.read("./config.ini")
         except:
@@ -133,13 +152,11 @@ class cfggui():
         self.buttonBox.attach(self.saveButton,0,1,0,1, False | gtk.FILL, False)
         self.buttonBox.attach(closeButton,1,2,0,1, False | gtk.FILL, False)
         #dictionaries & lists
-        self.CBbuttons = {}
-        self.TEbuttons = {}
-        self.RBbuttons = {}
+        self.buttons = {}
         self.descLabels = {}
         self.changedbuttons = []
         self.nameLabels = {}
-        
+        self.RB2 = {}
         
 #Sections
         for i in range(len(config.format)):
@@ -175,100 +192,154 @@ class cfggui():
             for j in range(len(config.format[i].keys)):
                 infoButton = gtk.EventBox()
                 infoImage = gtk.Image()
+                tooltip1 = gtk.Tooltips()
+                tooltip1.set_tip(infoImage, "description of options")
                 infoImage.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_BUTTON)
                 infoButton.add(infoImage)
                 infoButton.connect("button_press_event", self.info, config.format[i].keys[j].description)
+                refreshButton = gtk.EventBox()
+                refreshImage = gtk.Image()
+                tooltip2 = gtk.Tooltips()
+                tooltip2.set_tip(refreshImage, "resets value to default from config.py")
+                refreshImage.set_from_stock(gtk.STOCK_REFRESH, gtk.ICON_SIZE_BUTTON)
+                refreshButton.add(refreshImage)
+                
                 
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    self.CBbuttons[name] = gtk.combo_box_new_text()
-                    self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
+                    self.buttons[name] = gtk.combo_box_new_text()
+                    self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name) 
                     for k in range(len(config.format[i].keys[j].values)):
-                        self.CBbuttons[name].append_text(str (config.format[i].keys[j].values[k].name))
-                        try:
-                            if config.format[i].keys[j].values[k].name == self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name):
-                                self.CBbuttons[name].set_active(k)
-                        except:
-                            pass                                   
-                    hbox = gtk.HBox()
+                        self.buttons[name].append_text(str (config.format[i].keys[j].values[k].name))
+                        if config.format[i].keys[j].values[k].name == config.format[i].keys[j].default:
+                            default = k         
+                    try:
+                        for k in range(len(config.format[i].keys[j].values)):    
+                            if config.format[i].keys[j].values[k].name == self.config.get(config.format[i].name,config.format[i].keys[j].name):
+                                default = k
+                        self.changedbuttons.append(name)
+                    except:
+                        pass   
+                    try:
+                        self.buttons[name].set_active(default)
+                    except:
+                        pass                                  
+                    hbox = gtk.HBox(spacing = 5)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
+                    buttonbox = gtk.HBox(spacing =5)
+                    buttonbox.pack_start(self.buttons[name],True,True)
+                    buttonbox.pack_start(refreshButton,False,False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
-                    Htable.attach(self.CBbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding = 5) 
-                    self.CBbuttons[name].connect("changed", self.buttonChanged, name)
-                    self.CBbuttons[name].connect("changed", self.saveCheck)
-                    self.CBbuttons[name].connect("changed", self.readytosave, name)   
+                    Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding = 5) 
+                    self.buttons[name].connect("changed", self.buttonChanged, name)
+                    self.buttons[name].connect("changed", self.saveCheck)
+                    self.buttons[name].connect("changed", self.readytosave, name)   
                            
                 #strings without values
                 if config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
-                    self.TEbuttons[name] = gtk.Entry()
+                    self.buttons[name] = gtk.Entry()
                     try:
-                        self.TEbuttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
+                        self.buttons[name].set_text(config.format[i].keys[j].default)
                     except:
                         pass
-                    hbox = gtk.HBox() 
+                    try:
+                        self.buttons[name].set_text(self.config.get(config.format[i].name,config.format[i].keys[j].name))
+                        self.changedbuttons.append(name)
+                    except:
+                        pass
+                    hbox = gtk.HBox(spacing = 5) 
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
+                    buttonbox = gtk.HBox(spacing =5)
+                    buttonbox.pack_start(self.buttons[name],True,True)
+                    buttonbox.pack_start(refreshButton,False,False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
-                    Htable.attach(self.TEbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
-                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)
-                    self.TEbuttons[name].connect("changed", self.saveCheck)
-                    self.TEbuttons[name].connect("changed", self.readytosave, name)    
+                    Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
+                    self.buttons[name].connect("changed", self.buttonChanged, name)
+                    self.buttons[name].connect("changed", self.saveCheck)
+                    self.buttons[name].connect("changed", self.readytosave, name)    
                     
                 #ints & floats
                 if config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float' :
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
-                    self.TEbuttons[name] = gtk.Entry()
+                    self.buttons[name] = gtk.Entry()
                     try:
-                        self.TEbuttons[name].set_text(self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name))
+                        self.buttons[name].set_text(str (config.format[i].keys[j].default))
                     except:
                         pass
-                    hbox = gtk.HBox()
+                    try:
+                        self.buttons[name].set_text(str (self.config.get(config.format[i].name,config.format[i].keys[j].name)))
+                        self.changedbuttons.append(name)
+                    except:
+                        pass
+                    hbox = gtk.HBox(spacing =5)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
+                    buttonbox = gtk.HBox(spacing =5)
+                    buttonbox.pack_start(self.buttons[name],True,True)
+                    buttonbox.pack_start(refreshButton,False,False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
-                    Htable.attach(self.TEbuttons[name],1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
-                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)
-                    self.TEbuttons[name].connect("changed", self.saveCheck)
-                    self.TEbuttons[name].connect("changed", self.readytosave, name)
-                    self.TEbuttons[name].connect("changed", self.buttonChanged, name)  
+                    Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
+                    self.buttons[name].connect("changed", self.buttonChanged, name)
+                    self.buttons[name].connect("changed", self.saveCheck)
+                    self.buttons[name].connect("changed", self.readytosave, name)
+                    self.buttons[name].connect("changed", self.buttonChanged, name)  
                     
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
-                    self.RBbuttons[name] = gtk.RadioButton(label="True")
-                    RB2 = gtk.RadioButton(label="False", group = self.RBbuttons[name])
-                    self.RBbuttons[name].connect("clicked", self.saveCheck)
+                    self.buttons[name] = gtk.RadioButton(label="True")
+                    self.RB2[name] = gtk.RadioButton(label="False", group = self.buttons[name])
+                    self.buttons[name].connect("clicked", self.saveCheck)
                     try:
-                        if self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name) == 'True':
-                            self.RBbuttons[name].set_active(True)
-                        if self.config.get('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name) == 'False':
-                            RB2.set_active(True)      
+                        if config.format[i].keys[j].default == True:
+                            self.buttons[name].set_active(True)
+                        if config.format[i].keys[j].default == False:
+                            self.RB2[name].set_active(True)      
                     except:
-                        pass   
+                        pass 
+                    try:
+                        if self.config.get(config.format[i].name,config.format[i].keys[j].name) == 'True':
+                            self.buttons[name].set_active(True)
+                        if self.config.get(config.format[i].name,config.format[i].keys[j].name) == 'False':
+                            self.RB2[name].set_active(True)
+                        self.changedbuttons.append(name)  
+                    except:
+                        pass
                     alignment = gtk.Alignment(yalign = .5)
                     RBhbox = gtk.HBox()
                     separator = gtk.SeparatorToolItem()
-                    RBhbox.pack_start(self.RBbuttons[name], False, False)
+                    RBhbox.pack_start(self.buttons[name], False, False)
                     RBhbox.pack_start(separator)
-                    RBhbox.pack_start(RB2, False, False)
+                    RBhbox.pack_start(self.RB2[name], False, False)
                     alignment.add(RBhbox)
-                    hbox = gtk.HBox()
+                    boolhbox = gtk.HBox()
+                    boolhbox.pack_start(alignment, False, False)
+                    boolhbox.pack_end(refreshButton, False, True)
+                    
+
+                    
+                    
+                    hbox = gtk.HBox(spacing = 5)
                     hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
-                    Htable.attach(alignment,1,2,j,j+1, False | gtk.FILL, False,ypadding=5)
-                    self.RBbuttons[name].connect("toggled", self.buttonChanged, name)
-                    RB2.connect("toggled", self.buttonChanged, name)
-                    self.RBbuttons[name].connect("toggled", self.readytosave, name)
-                    RB2.connect("toggled", self.readytosave, name)
+                    Htable.attach(boolhbox,1,2,j,j+1, False| gtk.FILL, False,ypadding=5)
+                    self.buttons[name].connect("toggled", self.buttonChanged, name)
+                    self.RB2[name].connect("toggled", self.buttonChanged, name)
+                    self.buttons[name].connect("toggled", self.readytosave, name)
+                    self.RB2[name].connect("toggled", self.readytosave, name)
                     
-                
+                    
+                refreshlist = [name, config.format[i].keys[j]]    
+                refreshButton.connect("button_press_event", self.refreshoption, refreshlist)      
+           
         self.saveButton.set_sensitive(False)                  
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
