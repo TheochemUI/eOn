@@ -24,8 +24,8 @@ To build the *BOINC server* the following is required:
 * ``phpmyadmin``
 * ``libssl-dev``
 
-OS and MySQL
------------- 
+OS, MySQL and APAHCE
+--------------------
 
 Additionally must the ``OS`` and ``MySQL`` be prepared to the *BOINC server*. On the OS make a new user (``boincadm``)::
 
@@ -44,6 +44,10 @@ where the ``-p`` only should be used if the *MySQL root* user got a password. In
     GRANT ALL ON *.* TO boincadm@localhost; 
     SET PASSWORD FOR boincadm@localhost=''; 
     exit
+
+Finally change the ``httpd.conf`` for apache to set default MIME type::
+   
+    DefaultType application/octet-stream 
 
 Installation
 ------------
