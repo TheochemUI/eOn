@@ -68,12 +68,12 @@ Go to the root of the ``eon`` project and replace ``project.xml`` with the one p
 
     cd projects/eon 
     mv project.xml project.xml.org 
-    cp /PATH_EON_SOURCE_CODE/boinc/project.xml .
+    cp /PATH_EON_SOURCE_CODE/tools/boinc/project.xml .
 
 Furthermore copy the ``template`` files::
 
-    cp /PATH_EON_SOURCE_CODE/boinc/client_re.xml ./template/client_re.xml
-    cp /PATH_EON_SOURCE_CODE/boinc/client_wu.xml ./template/client_wu.xml
+    cp /PATH_EON_SOURCE_CODE/tools/boinc/client_re.xml ./template/client_re.xml
+    cp /PATH_EON_SOURCE_CODE/tools/boinc/client_wu.xml ./template/client_wu.xml
 
 Compile the EON client with BOINC support::
 
