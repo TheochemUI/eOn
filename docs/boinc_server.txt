@@ -15,8 +15,8 @@ To build the *BOINC server* the following is required:
 * ``apache2-mpm-prefork``
 * ``libapache2-mod-php5``
 * ``libmysql++-dev``
-* ``mysql-client-5.0``
-* ``mysql-server-5.0``
+* ``mysql-client``
+* ``mysql-server``
 * ``python-mysqldb``
 * ``php5-mysql``
 * ``php5-cli``

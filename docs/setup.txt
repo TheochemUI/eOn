@@ -43,9 +43,10 @@ Before starting to create a new project take a look at the page `BOINC new proje
 
 Make sure the ``hostname`` is the same as the address used when connecting to the computer. These settings are specified in ``/etc/hosts`` and ``/etc/hostname``. Enter the Boinc tools directiory and create a new project::
 
-    cd boinc/tools ./make_project eon
+    cd boinc/tools 
+    ./make_project eon
 
-where ``eon`` can be replaced with another project name if preferred. Follow the instructions in the created readme file until the command ``bin/xadd``. Also make sure that the ``homedir`` where the project is located can be executed (has permission ``711`` rather than the default ``700``). 
+where ``eon`` can be replaced with another project name if preferred. To see all options type ``./make_project --h``. Follow the instructions in the created readme file until the command ``bin/xadd``. Also make sure that the ``homedir`` where the project is located can be executed (has permission ``711`` rather than the default ``700``). 
 
 Secure ops Web Pages
 ^^^^^^^^^^^^^^^^^^^^
@@ -55,7 +56,7 @@ To restrict access to the administrative web pages for the project execute go to
     cd projects/eon/html/ops 
     htpasswd -c .htpasswd USERNAME
 
-where ``USERNAME`` is the name of the user that should have access to the ops page. In ``eon/html/project/project.inc`` edit function ``auth_ops()`` by changing the default deny access ``auth_ops_deny()`` to ``//auth_ops_deny()``::
+where ``USERNAME`` is the name of the user that should have access to the ops page. In older versions of BOINC it is necessary to edit ``eon/html/project/project.inc``, find the function ``auth_ops()`` and change the default deny access ``auth_ops_deny()`` to ``//auth_ops_deny()``::
 
     cd ../project/ 
     nano project.inc

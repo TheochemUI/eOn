@@ -1,0 +1,19 @@
+<file_info>
+    <number>0</number>
+</file_info>
+
+<workunit>
+  <file_ref>
+    <file_number>0</file_number>
+    <open_name>input.tgz</open_name>
+  </file_ref>
+  <delay_bound>86400</delay_bound>
+  <rsc_fpops_bound>5e13</rsc_fpops_bound>
+  <rsc_memory_bound>209715200</rsc_memory_bound>
+  <min_quorum>1</min_quorum>
+  <target_nresults>1</target_nresults>
+  <max_error_results>1</max_error_results>
+  <max_total_results>1</max_total_results>
+  <max_success_results>1</max_success_results>
+</workunit>
+
