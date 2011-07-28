@@ -30,7 +30,7 @@ import config
 import locking
 import akmcstatelist
 import explorer
-import io
+import ioeon
 import atoms
 import superbasinscheme
 import askmc
