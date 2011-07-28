@@ -13,7 +13,7 @@ from math import cos, sin
 import numpy
 
 import atoms
-import io
+import ioeon
 import config
 
 class NotImplementedError(Exception):

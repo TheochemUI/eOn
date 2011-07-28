@@ -24,7 +24,7 @@ import sys
 
 import communicator
 import config
-import io
+import ioeon
 import locking
 import prstatelist
 
