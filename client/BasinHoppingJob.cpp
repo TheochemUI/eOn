@@ -132,10 +132,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else if (consecutive_rejected_trials>=parameters->basinHoppingJumpMax) {
             jump_steps_count++;
             jcount++;
-            //XXX: O'RLY?
-            if (deltaE >= 0.0) {
-                p = 1.0;
-            }
+            p = 1.0;
+          
         }else{
             if (deltaE < 0.0) {
                 p = 1.0;
