@@ -23,12 +23,10 @@ class Dynamics {
 
 public:
 
-//    static const string ANDERSEN;
-//    static const string NOSE_HOOVER;
-//    static const string LANGEVIN;
     static const char ANDERSEN[];
     static const char NOSE_HOOVER[];
     static const char LANGEVIN[];
+    static const char NVE[];
 
     Dynamics(Matter *matter, Parameters *parameters);
 
@@ -36,6 +34,7 @@ public:
 
     void oneStep(double temperature);
     void andersenVerlet();
+    void velocityVerlet();
     void fullSteps(double temperature); 
     void andersen(double temperature);
     void initialVel(double temperature);
