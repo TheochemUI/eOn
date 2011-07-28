@@ -12,6 +12,7 @@
 #include "DimerRotationJob.h"
 #include "DisplacementSamplingJob.h"
 #include "NudgedElasticBandJob.h"
+#include "DynamicsJob.h"
 #include "TestJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
@@ -26,6 +27,7 @@ const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::DIMER_ROTATION[] =           "dimer_rotation";
 const char Job::DISPLACEMENT_SAMPLING[] =    "displacement_sampling";
 const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
+const char Job::DYNAMICS[] =                 "md";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -54,6 +56,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new DisplacementSamplingJob(parameters);
     }else if (parameters->job == Job::NUDGED_ELASTIC_BAND) {
         job =  new NudgedElasticBandJob(parameters);
+    }else if (parameters->job == Job::DYNAMICS) {
+        job =  new DynamicsJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }
