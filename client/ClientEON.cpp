@@ -265,7 +265,7 @@ int client_main(int argc, char **argv)
         // to the parameters file. 
         Job *job = Job::getJob(&parameters);
         if (job == NULL) {
-            printf("error: Unknown job: %s\n", parameters.potential.c_str());
+            printf("error: Unknown job: %s\n", parameters.job.c_str());
             return 1;
         }
         std::vector<std::string> filenames = job->run();

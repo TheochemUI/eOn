@@ -14,12 +14,10 @@
 
 using namespace helper_functions;
 
-//const string Dynamics::ANDERSEN = "andersen";
-//const string Dynamics::NOSE_HOOVER = "nose_hoover";
-//const string Dynamics::LANGEVIN = "langevin";
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
+const char Dynamics::NVE[] = "nve";
 
 Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
 {
@@ -51,6 +49,9 @@ void Dynamics::oneStep(double temperature)
     else if(parameters->thermostat == LANGEVIN){
        langevinVerlet(temperature);
     }
+    else if(parameters->thermostat == NVE){
+       velocityVerlet();
+    }
 
     return;
 }
@@ -80,9 +81,31 @@ void Dynamics::andersenVerlet()
      matter->setVelocities(velocities); // second update velocities
 }
 
+void Dynamics::velocityVerlet()
+{
+    AtomMatrix positions;
+    AtomMatrix velocities;
+    AtomMatrix accelerations0;
+    AtomMatrix accelerations1;
+
+    positions = matter->getPositions();
+    velocities = matter->getVelocities();
+    accelerations0 = matter->getAccelerations();
+    md_fcalls++;
+
+    positions += (velocities * dt) + (0.5 * dt * dt * accelerations0);
+    matter->setPositions(positions);
+
+    accelerations1 = matter->getAccelerations();
+    md_fcalls++;
+
+    velocities += dt * 0.5 * (accelerations0 + accelerations1);
+    matter->setVelocities(velocities);
+}
+
 void Dynamics::fullSteps(double temperature)
 {
-    bool stoped = false;
+    bool stopped = false;
     long forceCallsTemp;
     long nsteps = 0;
     AtomMatrix velocity;
@@ -91,26 +114,39 @@ void Dynamics::fullSteps(double temperature)
     long nFreeCoord = matter->numberOfFreeAtoms()*3;
     forceCallsTemp = matter->getForceCalls();
 
-    initialVel(temperature);
+    if(parameters->thermostat != NVE)
+    {
+        initialVel(temperature);
+    }
 
-    while(!stoped)
+
+    if (parameters->writeMovies == true) {
+        matter->matter2xyz("dynamics", false);
+    }
+
+    printf("%8s %10s %10s %10s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+
+    while(!stopped)
     {
         oneStep(temperature);
         nsteps++;
 
         velocity = matter->getVelocities();
         kinE = matter->getKineticEnergy();
+        double PE = matter->getPotentialEnergy();
         kinT = (2*kinE/nFreeCoord/kb);
         sumT += kinT;
         sumT2 += kinT*kinT;
-        //printf("MDsteps %ld kinE = %lf Tkin = %lf \n",nsteps,kinE,kinT); 
-/*
-        if (nsteps % 100 == 0){
-            matter->matter2xyz("movie", true);
+
+//        printf("MDsteps %ld kinE = %lf Tkin = %lf \n",nsteps,kinE,kinT); 
+        printf("%8ld %10e %10e %10e %f \n",nsteps,kinE, PE, kinE+PE, kinT); 
+
+        if (parameters->writeMovies == true) {
+            matter->matter2xyz("dynamics", true);
         }
-*/
+
         if (nsteps >= parameters->mdSteps){
-            stoped = true;
+            stopped = true;
         }
     }
 
