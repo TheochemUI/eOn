@@ -24,7 +24,7 @@ import sys
 import atoms
 import communicator
 import config
-import io
+import ioeon
 import locking
 
 class BHStates:

@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger('state')
 
 
-import io
+import ioeon
 import state
 
 class PRState(state.State):
