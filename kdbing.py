@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger('kdb')    
 
 import config
-import ioeon
+import fileio as io
 
 
 
