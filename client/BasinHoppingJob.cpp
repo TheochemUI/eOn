@@ -56,7 +56,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
     scount=0;
     dcount=0;
     int consecutive_rejected_trials=0;
-    int jump_steps_count=0;
     double totalAccept=0.0;
     Matter *minTrial = new Matter(parameters);
     Matter *swapTrial = new Matter(parameters);
@@ -97,8 +96,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     for (int step=0; step<nsteps; step++) {
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
-           step<parameters->basinHoppingSteps && 
-           consecutive_rejected_trials<parameters->basinHoppingJumpMax){
+           step<parameters->basinHoppingSteps){
             *swapTrial = *current;
             randomSwap(swapTrial);
             swapMove=true;
@@ -129,13 +127,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if (deltaE <= 0.0) {
                     p = 1.0;
             }
-        }else if (consecutive_rejected_trials>=parameters->basinHoppingJumpMax) {
-            jump_steps_count++;
-            jcount++;
-            p = 1.0;
-          
         }else{
-            if (deltaE < 0.0) {
+            if (deltaE <= 0.0) {
                 p = 1.0;
             }else{
                 p = exp(-deltaE / (parameters->temperature*8.617343e-5));
@@ -163,12 +156,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else{
             consecutive_rejected_trials++;
         }
-
-        if (jump_steps_count==parameters->basinHoppingJumpSteps) {
-            consecutive_rejected_trials=0;
-            jump_steps_count=0;
-        }
-
+            
         if (parameters->writeMovies == true) {
             minTrial->matter2xyz("movie", true);
         }
@@ -181,6 +169,29 @@ std::vector<std::string> BasinHoppingJob::run(void)
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
+        if(consecutive_rejected_trials==parameters->basinHoppingJumpMax){
+	    consecutive_rejected_trials=0;
+            AtomMatrix jump;
+            for(int j=0;j<parameters->basinHoppingJumpMax;j++){
+	        jcount++;
+                jump = displaceRandom();
+                current->setPositions(current->getPositions() + jump);
+                if(parameters->basinHoppingSignificantStructure){
+                    if (parameters->optMethod == "cg") {
+                        minimizer = new ConjugateGradients(current, &minParameters);
+                    }else if (parameters->optMethod == "qm"){
+                        minimizer = new Quickmin(current, &minParameters);
+                    }
+                    minimizer->setOutput(0);
+                    minimizer->fullRelax();
+	      	}
+                currentEnergy = current->getPotentialEnergy();
+                if (currentEnergy < minimumEnergy) {
+                    minimumEnergy = currentEnergy;
+                    *minimumEnergyStructure = *current;
+                }
+            }
+	}
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
     }
