@@ -11,7 +11,7 @@
 import os
 import sys
 
-import ioeon
+import fileio as io
 
 def make_movie(movie_type, path_root, states):
     movie_path = "movie.poscar"

@@ -19,7 +19,7 @@ import numpy
 
 import atoms
 import config
-import ioeon
+import fileio as io
 import state
 
 class AKMCState(state.State):

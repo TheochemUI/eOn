@@ -11,7 +11,7 @@
 import os
 import numpy
 import atoms
-import ioeon
+import fileio as io
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
