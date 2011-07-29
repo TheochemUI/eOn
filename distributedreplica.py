@@ -24,7 +24,7 @@ import sys
 
 import communicator
 import config
-import ioeon
+import fileio as io
 import locking
 
 def distributedreplica():

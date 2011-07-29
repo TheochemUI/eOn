@@ -17,7 +17,7 @@ logger = logging.getLogger('state')
 from ConfigParser import SafeConfigParser 
 import tarfile
 
-import ioeon
+import fileio as io
 
 
 
