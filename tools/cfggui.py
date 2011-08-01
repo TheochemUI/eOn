@@ -36,7 +36,18 @@ class cfggui():
             
     #creates info windows        
     def info(self, widget, event, d=None): 
-        self.infoWindow = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "%s" %d)
+        if config.format[d[0]].keys[d[1]].kind == "string" and len(config.format[d[0]].keys[d[1]].values) > 0:
+            description = config.format[d[0]].keys[d[1]].description
+            description = "%s\ndefault: <b>%s</b>" %(description,config.format[d[0]].keys[d[1]].default)
+            for i in config.format[d[0]].keys[d[1]].values:
+                description = "%s\n" %description
+                description = "%s\n<b>%s</b>: %s" %(description,i.name,i.description) 
+        else:
+            description = config.format[d[0]].keys[d[1]].description
+            description = "%s\ndefault: <b>%s</b>" %(description,config.format[d[0]].keys[d[1]].default)
+    
+        self.infoWindow = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "%s" %description)
+        self.infoWindow.set_markup(description)
         self.infoWindow.show_all()
         result = self.infoWindow.run()
         self.infoWindow.hide()
@@ -48,6 +59,7 @@ class cfggui():
     #activates save button    
     def saveCheck(self, widget, data=None):
         self.saveButton.set_sensitive(True)
+        self.closeButton.set_label("Cancel")
         
     #not implemented ignore for now    
     def expose_event(self, descLabel, allocation, data=None):
@@ -113,7 +125,8 @@ class cfggui():
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
-        self.saveButton.set_sensitive(False) 
+        self.saveButton.set_sensitive(False)
+        self.closeButton.set_label("Close") 
           
 
 #display
@@ -141,16 +154,18 @@ class cfggui():
         self.table.attach(self.HbuttonBox, 0,6,1,2)
         self.table.attach(self.notebook, 0,6,0,1)
         #save button and close button
-        closeButton = gtk.Button()
-        closeButton.set_label("Cancel")
-        closeButton.connect("clicked", self.delete_event)
+        self.closeButton = gtk.Button()
+        self.closeButton.set_label("Close")
+        self.closeButton.connect("clicked", self.delete_event)
         self.saveButton = gtk.Button()
         self.saveButton.set_label("Save")
         self.saveButton.connect("clicked", self.save)
+        saveButtonTT = gtk.Tooltips()
+        saveButtonTT.set_tip(self.saveButton, "saves changed options to current directory's config.ini")
         self.saveButton.set_size_request(button_width, -1)
-        closeButton.set_size_request(button_width, -1)
+        self.closeButton.set_size_request(button_width, -1)
         self.buttonBox.attach(self.saveButton,0,1,0,1, False | gtk.FILL, False)
-        self.buttonBox.attach(closeButton,1,2,0,1, False | gtk.FILL, False)
+        self.buttonBox.attach(self.closeButton,1,2,0,1, False | gtk.FILL, False)
         #dictionaries & lists
         self.buttons = {}
         self.descLabels = {}
@@ -196,7 +211,7 @@ class cfggui():
                 tooltip1.set_tip(infoImage, "description of options")
                 infoImage.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_BUTTON)
                 infoButton.add(infoImage)
-                infoButton.connect("button_press_event", self.info, config.format[i].keys[j].description)
+                infoButton.connect("button_press_event", self.info, (i,j))
                 refreshButton = gtk.EventBox()
                 refreshImage = gtk.Image()
                 tooltip2 = gtk.Tooltips()
@@ -340,7 +355,8 @@ class cfggui():
                 refreshlist = [name, config.format[i].keys[j]]    
                 refreshButton.connect("button_press_event", self.refreshoption, refreshlist)      
            
-        self.saveButton.set_sensitive(False)                  
+        self.saveButton.set_sensitive(False) 
+        self.closeButton.set_label("Close")                 
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()
         

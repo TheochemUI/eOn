@@ -4,11 +4,19 @@
 
 import pathfix
 import config
+import sys
+import os
+
+try:
+    os.makedirs('../docs/_autogen')
+except:
+    pass
+
 
 class documentation():
     for i in range(len(config.format)):
         section = config.format[i].name.lower().replace(" ", "_")
-        filename = '../docs/config_%s.txt' % section
+        filename = '../docs/_autogen/config_%s.txt' % section
         file(filename, 'w')
         f =open(filename, 'w')
         f.write("%s\n" %config.format[i].name)
