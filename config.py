@@ -277,6 +277,7 @@ fadd("Communicator", "type", "local", description = "The local communicator runs
 fadd("Communicator", "type", "cluster", description = "A job scheduler can be used to run jobs through user supplied shell scripts. Examples are given for SGE.")
 fadd("Communicator", "type", "boinc", description = "Jobs can be submitted to a BOINC project.")
 fadd("Communicator", "type", "arc", description = "Jobs can be submitted to the grid computing software ARC.")
+fadd("Communicator", "type", "mpi", description = "The server and client can be run together as a single large MPMD MPI job.")
 fadd("Communicator", "num_jobs", kind = "int", description = "Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.", default = 1)
 fadd("Communicator", "jobs_per_bundle", kind = "int", description = "In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.", default = 1)
 fadd("Communicator", "client_path", kind = "string", description = "Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.", default = "eonclient")
