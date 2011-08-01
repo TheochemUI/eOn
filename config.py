@@ -67,7 +67,7 @@ def fadd(section, key = None, value = None, description = "", kind = None, defau
 
 # Main
 fadd("Main", description = "These are the options that go in the 'Main' section of config.ini")
-fadd("Main", "job", kind = "string", description = "The type of job to execute.", default = "process_search")
+fadd("Main", "job", kind = "string", description = "The type of job to execute.", default = "akmc")
 fadd("Main", "job", "akmc", description = "Run an adaptive kinetic monte carlo simulation.")
 fadd("Main", "job", "parallel_replica", description = "Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.")
 fadd("Main", "job", "process_search", description = "Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.")
@@ -156,7 +156,7 @@ fadd("Saddle Search", "displace_type", "under_coordinated", description = "Selec
 fadd("Saddle Search", "displace_type", "listed_atoms", description = "Select an atom from the list passed as displace_atomlist")
 fadd("Saddle Search", "displace_type", "not_FCC_HCP", description = "Select an atom that is not in a local HCP or FCC coordination.")
 fadd("Saddle Search", "displace_type", "client_least_coordinated", description = "Displacement is made on the client centered on an atom with the minimal coordination.")
-fadd("Saddle Search", "displace_type", "cleint_not_FCC_HCP_coordinated", description = "Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination.")
+fadd("Saddle Search", "displace_type", "client_not_FCC_HCP_coordinated", description = "Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination.")
 fadd("Saddle Search", "displace_type", "client_last_atom", description = "Displacement is made on the client centered on the last atom in the configuration.")
 fadd("Saddle Search", "max_iterations", kind = "int", description = "The maximum number of translation steps to be taken.", default = 1000)
 fadd("Saddle Search", "displace_radius", kind = "float", description = "Atoms within this distance of the epicenter will be displaced.", default = 5.0)
