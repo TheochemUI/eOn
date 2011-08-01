@@ -49,6 +49,7 @@ class akmcgui(atomview.atomview):
         self.tempLabel = gladetree.get_widget("simtemp")
         self.fileButton = gladetree.get_widget("fileButton")
         self.fileEntry = gladetree.get_widget("locationEntry")
+        self.stateSB = gladetree.get_widget("stateSB")
         # defaults
         button_size = (20, 20)
         self.open = gtk.Image()
@@ -75,6 +76,7 @@ class akmcgui(atomview.atomview):
         self.interpolationSB.connect("value-changed", self.changeImage)
         self.stateScale.connect("value-changed", self.changeImage)
         self.processesSB.connect("value-changed", self.changeImage)
+        self.stateSB.connect("value-changed", self.stateSB_changed)
         self.interpolationCB.connect("clicked", self.interpolationCB_changed)
         self.stateScale.connect("value-changed", self.energy_changed)
         self.stateScale.connect("value-changed", self.state_play)
@@ -85,6 +87,7 @@ class akmcgui(atomview.atomview):
         self.fileButton.connect("clicked", self.filechanged)
         self.playbutton.connect("clicked", self.movieplaying)
         self.pausebutton.connect("clicked", self.movieplaying)
+        
         
          
 
@@ -117,6 +120,7 @@ class akmcgui(atomview.atomview):
                 i+=1    
             numStates = i-1
             self.stateScale.set_range(0, numStates)
+            self.stateSB.set_range(0, numStates)
             processes = glob.glob("%s%d/procdata/*" %(config.path_states, self.stateScale.get_value()))
             j = 0
             while ("%s%d/procdata/saddle_%d.con" %(config.path_states,self.stateScale.get_value(), j)) in processes:
@@ -171,8 +175,8 @@ class akmcgui(atomview.atomview):
     def processtable(self, *args):
         #allows user to re-order table
         def sortable(a, b, c, d):
-            x = store.get_value(b, d)
-            y = store.get_value(c, d)
+            x = self.store.get_value(b, d)
+            y = self.store.get_value(c, d)
             if x>y:
                 return 1
             if x==y:
@@ -299,18 +303,27 @@ class akmcgui(atomview.atomview):
             self.interpolationSB.set_sensitive(True)
         else:  
             self.interpolationSB.set_sensitive(False)
+    
+    
+    
+    # allows stateSlider to change with stateSB
+    def stateSB_changed(self, *args):
+        self.stateScale.set_value(self.stateSB.get_value())
 
 
-
+    
+    # allows stateSB to change with stateSlider
     def state_changed(self, *args):
-        self.playing = False
+        self.stateSB.set_value(self.stateScale.get_value())
+    
+    
     
     def movieplaying(self, *args):
         if self.playing == True:
             self.statePlayTB.set_sensitive(False)
         else:
-            self.statePlayTB.set_sensitive(True)
-        
+            self.statePlayTB.set_sensitive(True)   
+       
         
         
     # allows clicking play button near statesScale to play through states    
@@ -343,8 +356,9 @@ class akmcgui(atomview.atomview):
                 self.stateScale.set_value(int (self.stateScale.get_value())+1)
                 if self.stateScale.get_value() >= numStates:
                     self.stateScale.set_value(0)
-                return True 
-            self.timer_id = gobject.timeout_add(1000/(int (self.fps.get_value())), loop)
+                return True
+            self.timer_id = gobject.timeout_add(1000/int(self.fps.get_value()), loop) 
+            #self.timer_id = gobject.timeout_add(1000/(int (self.fps.get_value())), loop)
       
         
       
@@ -380,6 +394,8 @@ class akmcgui(atomview.atomview):
         container.pack_start(graph)
         container.pack_start(toolbar, False, False)
         self.plotWindow.show_all()
+    
+    
                      
 
 

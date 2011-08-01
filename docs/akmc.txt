@@ -55,18 +55,18 @@ options on the client-side.  Each option is specified in the config.ini file
 under the section name given.  Default values for each option is given along
 with a brief description.
 
-.. include:: config_akmc.txt
+.. include:: _autogen/config_akmc.txt
 
-.. include:: config_process_search.txt
+.. include:: _autogen/config_process_search.txt
 
-.. include:: config_saddle_search.txt
+.. include:: _autogen/config_saddle_search.txt
 
-.. include:: config_dimer.txt
+.. include:: _autogen/config_dimer.txt
 
-.. include:: config_lanczos.txt
+.. include:: _autogen/config_lanczos.txt
 
-.. include:: config_hessian.txt
+.. include:: _autogen/config_hessian.txt
 
-.. include:: config_neb.txt
+.. include:: _autogen/config_neb.txt
 
-.. include:: config_debug.txt
+.. include:: _autogen/config_debug.txt
