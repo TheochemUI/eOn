@@ -7,6 +7,11 @@ from nodes import *
 
 import datetime
 
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 import binascii, re, sys, types
 
 class ConstructorError(MarkedYAMLError):
@@ -53,11 +58,11 @@ class BaseConstructor(object):
         return data
 
     def construct_object(self, node, deep=False):
-        if node in self.constructed_objects:
-            return self.constructed_objects[node]
         if deep:
             old_deep = self.deep_construct
             self.deep_construct = True
+        if node in self.constructed_objects:
+            return self.constructed_objects[node]
         if node in self.recursive_objects:
             raise ConstructorError(None, None,
                     "found unconstructable recursive node", node.start_mark)
@@ -497,7 +502,11 @@ class Constructor(SafeConstructor):
             raise ConstructorError("while constructing a Python object", mark,
                     "expected non-empty name appended to the tag", mark)
         if u'.' in name:
-            module_name, object_name = name.rsplit('.', 1)
+            # Python 2.4 only
+            #module_name, object_name = name.rsplit('.', 1)
+            items = name.split('.')
+            object_name = items.pop()
+            module_name = '.'.join(items)
         else:
             module_name = '__builtin__'
             object_name = name
