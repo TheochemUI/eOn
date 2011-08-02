@@ -7,6 +7,11 @@ from nodes import *
 
 import datetime
 
+try:
+    set
+except NameError:
+    from sets import Set as set
+
 import sys, copy_reg, types
 
 class RepresenterError(YAMLError):
