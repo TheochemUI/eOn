@@ -41,13 +41,15 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
         cleanMemory();
     }
 
-    // determine the number of different atom types
-    int type_last = atomicNrs[0];
-    int diff_types = 1;
-    for(int i=1; i<N; i++){
-        if(type_last != atomicNrs[i]){
-             diff_types += 1;
-             type_last = atomicNrs[i];
+    // Create a mapping of atomic numbers to atom type ID.
+    int type_mapping[1000] = {};
+    int num_types = 0;
+    for(int i = 0; i < N; i++)
+    {
+        if(type_mapping[atomicNrs[i]] == 0)
+        {
+            num_types += 1;
+            type_mapping[atomicNrs[i]] = num_types;
         }
     }
     
@@ -56,21 +58,21 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
     fp = fopen("lammps.conf","w");
     fprintf(fp, "Created by EON\n");
     fprintf(fp, "\n%d atoms\n", N);
-    fprintf(fp, "%d atom types\n", diff_types);
+    fprintf(fp, "%d atom types\n", num_types);
     fprintf(fp, "0.0   %f  xlo xhi\n", box[0]);
     fprintf(fp, "0.0   %f  ylo yhi\n", box[4]);
     fprintf(fp, "0.0   %f  zlo zhi\n", box[8]);
 
     // sets fake masses for the different atom types
     fprintf(fp, "\n\nMasses\n\n");
-    for(int i=0; i<diff_types; i++){
-        fprintf(fp, "%i 1\n", i+1);
+    for(int i=0; i<num_types; i++){
+        fprintf(fp, "%i 1\n", i + 1);
     }
 
     // sets fake coordinates for all atoms
     fprintf(fp, "\n\nAtoms\n\n");
     for(int i=0; i<N; i++){
-        fprintf(fp, "  %i %i  0. 0. 0.\n", i+1, atomicNrs[i]);
+        fprintf(fp, "  %i %i  0. 0. 0.\n", i+1, type_mapping[atomicNrs[i]]);
     }
     fclose(fp);
 
