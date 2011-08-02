@@ -83,8 +83,7 @@ def init(config_file = ""):
     sections = False
     options = False
 
-    #print parser.items("Main")
-
+    testsfailed = 0
     psections = parser.sections()
     fsections = [j.name for j in config.format]
     for a in range(len(psections)):
@@ -96,8 +95,8 @@ def init(config_file = ""):
     config_error = False
     for s in psections:
         if s not in fsections:
-            config_error = True
-            sys.stderr.write('unknown section "%s"\n')
+            print "Unknown section '%s'." % s
+            testsfailed += 1
 
     for i in parser.sections():
         b = parser.options(i)
@@ -110,8 +109,8 @@ def init(config_file = ""):
                     foptions[a] = foptions[a].lower()
                 for o in b:
                     if o not in foptions:
-                        config_error = True
-                        sys.stderr.write('unknown option "%s" in section "%s"\n' % (o, k.name))
+                        print "Unknown option '%s' in section '%s'." % (o, k.name)
+                        testsfailed += 1
       
     for psection in parser.sections():
         poptions = parser.options(psection)
@@ -124,26 +123,29 @@ def init(config_file = ""):
                                 try:
                                     x = int(parser.get(psection,k.name))
                                 except:
-                                    config_error = True
-                                    sys.stderr.write('option "%s" in section "%s" should be an integer\n' % (o,psection))
+                                    print "Option '%s' in section '%s' should be an int." %(o,psection)
+                                    testsfailed += 1
                             elif k.kind == "float":
                                 try:
                                     x = float(parser.get(psection, k.name))
                                 except:
-                                    config_error = True
-                                    sys.stderr.write('option "%s" of section "%s" should be a float\n' %(o,psection))
+                                    print "Option '%s' in section '%s' should be a float." %(o,psection)
+                                    testsfailed += 1
                             elif k.kind == "boolean":
                                 booleans = ['True', 'true', 'T', 't', '0', 'False', 'false', 'F', 'f', '1']
                                 if parser.get(psection,k.name) not in booleans:
-                                    config_error = True
-                                    sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
+                                    print "Option '%s' in section '%s' should be boolean." %(o,psection)
+                                    testsfailed += 1
                             elif k.kind == "string" and len(k.values) !=0:   
                                 values = [m.name for m in k.values]
                                 if parser.get(psection,k.name) not in values:
                                     Vnames = ", ".join([v.name for v in k.values])
-                                    config_error = True
-                                    sys.stderr.write('option "%s" should be one of: %s\n' %(parser.get(psection,k.name),Vnames))
-
+                                    print "Unknown value '%s' for option '%s' in section '%s'." % (parser.get(psection,k.name), o, psection)
+                                    testsfailed += 1
+    if testsfailed > 0:
+        print "aborting."
+        sys.exit()
+            
     if config_error:
         sys.stderr.write("aborting: could not parse config.ini\n")
         sys.exit(1)
