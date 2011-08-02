@@ -286,6 +286,8 @@ Main:
                 hessian: >
                     Calculate the Hessian matrix for the specified
                     configuration in a process.
+                md: >
+                    Molecular dynamics.
 
         potential:
             description: >
@@ -319,6 +321,9 @@ Main:
                     Tersoff pair potential with angular terms, for silicon.
                 tip4p: >
                     Point charge model for water.
+                lammps: >
+                    The LAMMPS potentials.
+                    
 
         random_seed:
             description: >
