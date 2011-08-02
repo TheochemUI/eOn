@@ -8,7 +8,7 @@ from nodes import *
 from loader import *
 from dumper import *
 
-__version__ = '3.10'
+__version__ = '3.09'
 
 try:
     from cyaml import *
@@ -21,22 +21,16 @@ def scan(stream, Loader=Loader):
     Scan a YAML stream and produce scanning tokens.
     """
     loader = Loader(stream)
-    try:
-        while loader.check_token():
-            yield loader.get_token()
-    finally:
-        loader.dispose()
+    while loader.check_token():
+        yield loader.get_token()
 
 def parse(stream, Loader=Loader):
     """
     Parse a YAML stream and produce parsing events.
     """
     loader = Loader(stream)
-    try:
-        while loader.check_event():
-            yield loader.get_event()
-    finally:
-        loader.dispose()
+    while loader.check_event():
+        yield loader.get_event()
 
 def compose(stream, Loader=Loader):
     """
@@ -44,10 +38,7 @@ def compose(stream, Loader=Loader):
     and produce the corresponding representation tree.
     """
     loader = Loader(stream)
-    try:
-        return loader.get_single_node()
-    finally:
-        loader.dispose()
+    return loader.get_single_node()
 
 def compose_all(stream, Loader=Loader):
     """
@@ -55,11 +46,8 @@ def compose_all(stream, Loader=Loader):
     and produce corresponding representation trees.
     """
     loader = Loader(stream)
-    try:
-        while loader.check_node():
-            yield loader.get_node()
-    finally:
-        loader.dispose()
+    while loader.check_node():
+        yield loader.get_node()
 
 def load(stream, Loader=Loader):
     """
@@ -67,10 +55,7 @@ def load(stream, Loader=Loader):
     and produce the corresponding Python object.
     """
     loader = Loader(stream)
-    try:
-        return loader.get_single_data()
-    finally:
-        loader.dispose()
+    return loader.get_single_data()
 
 def load_all(stream, Loader=Loader):
     """
@@ -78,11 +63,8 @@ def load_all(stream, Loader=Loader):
     and produce corresponding Python objects.
     """
     loader = Loader(stream)
-    try:
-        while loader.check_data():
-            yield loader.get_data()
-    finally:
-        loader.dispose()
+    while loader.check_data():
+        yield loader.get_data()
 
 def safe_load(stream):
     """
@@ -114,11 +96,8 @@ def emit(events, stream=None, Dumper=Dumper,
         getvalue = stream.getvalue
     dumper = Dumper(stream, canonical=canonical, indent=indent, width=width,
             allow_unicode=allow_unicode, line_break=line_break)
-    try:
-        for event in events:
-            dumper.emit(event)
-    finally:
-        dumper.dispose()
+    for event in events:
+        dumper.emit(event)
     if getvalue:
         return getvalue()
 
@@ -143,13 +122,10 @@ def serialize_all(nodes, stream=None, Dumper=Dumper,
             allow_unicode=allow_unicode, line_break=line_break,
             encoding=encoding, version=version, tags=tags,
             explicit_start=explicit_start, explicit_end=explicit_end)
-    try:
-        dumper.open()
-        for node in nodes:
-            dumper.serialize(node)
-        dumper.close()
-    finally:
-        dumper.dispose()
+    dumper.open()
+    for node in nodes:
+        dumper.serialize(node)
+    dumper.close()
     if getvalue:
         return getvalue()
 
@@ -184,13 +160,10 @@ def dump_all(documents, stream=None, Dumper=Dumper,
             allow_unicode=allow_unicode, line_break=line_break,
             encoding=encoding, version=version, tags=tags,
             explicit_start=explicit_start, explicit_end=explicit_end)
-    try:
-        dumper.open()
-        for data in documents:
-            dumper.represent(data)
-        dumper.close()
-    finally:
-        dumper.dispose()
+    dumper.open()
+    for data in documents:
+        dumper.represent(data)
+    dumper.close()
     if getvalue:
         return getvalue()
 
