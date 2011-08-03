@@ -503,49 +503,9 @@ class MPI(Communicator):
         self.comm = PyMPI.COMM_WORLD
         rank = self.comm.Get_rank()
 
-        #XXX: gpaw-python has a barrier...
-        self.comm.Barrier()
-
-        # process_type can be one of three values:
-        # 0: server
-        # 1: client
-        # 2: potential
-        # Each independent program identifies itself with one of these three.
-
-        process_type = numpy.array((0,), dtype='i')
-        process_types = numpy.empty(self.comm.Get_size(), dtype='i')
-        
-        self.comm.Allgather(process_type, process_types)
-        self.client_ranks = []
-
-        servers = 0
-        clients = 0
-        potentials = 0
-        for i,t in enumerate(process_types):
-            if t == 0:
-                servers += 1
-            elif t == 1:
-                self.client_ranks.append(i)
-                clients += 1
-            elif t == 2:
-                potentials += 1
-
-        #XXX: Ugly? You decide...
-        config.comm_job_buffer_size = clients
-
-        potential_group_size = potentials/clients
-        potential_ranks = numpy.empty(potentials, dtype='i')
-        j = 0
-        for i in xrange(self.comm.Get_size()):
-            if process_types[i] == 2:
-                potential_ranks[j] = i
-                j += 1
-
-        for i in xrange(clients):
-            orig_group = self.comm.Get_group() 
-            s = potential_group_size
-            new_group = orig_group.Incl(potential_ranks[i*s:i*s+s])
-            self.comm.Create(new_group)
+        # GET VIA ENVIRONMENT VARS
+        self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
+        logger.debug("server knows about client ranks %s" % repr(self.client_ranks) )
 
         self.ready_ranks = []
         self.running_jobs = {}
@@ -580,6 +540,7 @@ class MPI(Communicator):
         for rank in self.client_ranks:
             ready = self.comm.Iprobe(rank, 0)
             if ready:
+                logger.debug("rank %i is ready" % rank)
                 self.ready_ranks.append(rank)
                 tmp = numpy.empty(1, dtype='i')
                 self.comm.Recv(tmp, source=rank, tag=0)

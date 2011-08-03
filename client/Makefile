@@ -203,7 +203,6 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
 ifdef EONMPIBGP
 	CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
 	CXXFLAGS += -DEONMPIBGP
-	OBJECTS  += EonBGP.o
 	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
 endif
 

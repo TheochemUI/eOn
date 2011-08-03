@@ -19,7 +19,7 @@ def create_gpaw(comm):
     convergence = {
                     'energy':0.001,
                     'density':1e-2,
-                    'eigenstates':1e-5
+                    'eigenstates':.001
                   }
     calc = GPAW(xc='PBE', 
                 h=.30,
@@ -47,38 +47,29 @@ world.all_gather(process_type, process_types)
 servers = 0
 clients = 0
 potentials = 0
-for t in process_types:
+client_ranks = []
+potential_ranks = []
+for i,t in enumerate(process_types):
     if t == 0:
         servers += 1
     elif t == 1:
         clients += 1
+        client_ranks.append(i)
     elif t == 2:
         potentials += 1
+        potential_ranks.append(i)
+
+if len(sys.argv) == 2:
+    clients = int(sys.argv[1])
 
 potential_group_size = potentials/clients
-potential_ranks = numpy.empty(potentials, dtype='i')
-client_ranks = numpy.empty(clients, dtype='i')
-j = 0
-k = 0
-first_potential_rank = None
-for i in xrange(world.size):
-    if process_types[i] == 1:
-        client_ranks[k] = i
-        k += 1
-    elif process_types[i] == 2:
-        if first_potential_rank == None:
-            first_potential_rank = i
-        potential_ranks[j] = i
-        j += 1
 
-my_potential_rank = world.rank-first_potential_rank
-
-my_client_rank = client_ranks[my_potential_rank/potential_group_size]
+my_client_rank = client_ranks[potential_ranks.index(rank)/potential_group_size]
 print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
 
 for i in xrange(clients):
     s = potential_group_size
-    new_comm = world.new_communicator(potential_ranks[i*s:i*s+s])
+    new_comm = world.new_communicator(numpy.array(potential_ranks[i*s:i*s+s], dtype='i'))
     if new_comm != None:
         my_comm = new_comm
 

@@ -323,6 +323,8 @@ Main:
                     Point charge model for water.
                 lammps: >
                     The LAMMPS potentials.
+                mpi: >
+                    Communicate with a mpi process to calculate energy and forces.
                     
 
         random_seed:

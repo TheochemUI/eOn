@@ -33,6 +33,7 @@ MPIPot::~MPIPot()
 void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F, 
                  double *U, const double *box)
 {
+    printf("I AM IN MPIPot::force\n");
     //Send data to potential
     int pbc=1;
     int failed;
@@ -42,6 +43,7 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     MPI::COMM_WORLD.Send(box,       9, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Send(&pbc,      1, MPI::INT,    potentialRank, 0);
 
+    printf("Finished sending stuff to potential\n");
 
     //Recv data from potential
     MPI::COMM_WORLD.Recv(&failed,   1, MPI::INT,    potentialRank, 0);
