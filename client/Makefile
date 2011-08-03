@@ -18,6 +18,7 @@ endif
 ifdef EONMPI
 	CXX=mpicxx
 	CXXFLAGS += -DEONMPI
+	NO_FORTRAN=1
 endif
 
 #If we aren't doing a cross compile, guess our platform.
@@ -180,6 +181,17 @@ else
 	POTENTIALS += "-MPIPot"
 endif
 
+ifdef EONMPI
+ifdef EONMPIBGP
+	CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
+	CXXFLAGS += -DEONMPIBGP
+	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
+else
+	LDFLAGS += -lpython2.4 -lm
+	CXXFLAGS += -I/usr/include/python2.4 
+endif
+endif
+
 
 ifdef NO_FORTRAN
     POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
@@ -199,12 +211,6 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o \
 	NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
 	DynamicsJob.o
-
-ifdef EONMPIBGP
-	CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
-	CXXFLAGS += -DEONMPIBGP
-	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
-endif
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

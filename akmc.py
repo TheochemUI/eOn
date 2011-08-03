@@ -505,7 +505,12 @@ def main():
                         MPI.COMM_WORLD.Isend(buf, i)
                     break
                 akmc(config)
-                sleep(0.1)
+
+                client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(':') ]
+                while True:
+                    for client_rank in client_ranks:
+                        if MPI.COMM_WORLD.Iprobe(client_rank, 0):
+                            break
                 #maybe do some MPI IProbe here?
         else:
             akmc(config)
