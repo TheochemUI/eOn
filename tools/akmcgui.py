@@ -384,7 +384,7 @@ class akmcgui(atomview.atomview):
         self.plotWindow.set_default_size(600,600)    
         fig = p.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.plot(x, y)
+        ax.plot(x, y, '-' 'o')
         p.xlabel("State")
         p.ylabel("eV")
         container = gtk.VBox()
