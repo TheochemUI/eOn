@@ -68,8 +68,12 @@ class cfggui():
             
     # allows only changed RB options to save        
     def buttonChanged(self, widget, name=None):
+        split = name.split(', ')
         if name not in self.changedbuttons:
             self.changedbuttons.append(name)
+        if split[0] not in self.config.sections():
+            self.config.add_section(split[0])
+            
     
     
     def refreshoption(self, widget, event, refreshlist=None):
@@ -98,30 +102,23 @@ class cfggui():
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    if name in self.changedbuttons:
-                        try:
-                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_active_text())
-                        except:
-                            pass
+                    if name in self.changedbuttons: 
+                        self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_active_text())
+                        
                 #string without values, ints, and floats
                 if (config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0) or config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float':
                     name = config.format[i].name + ", " + config.format[i].keys[j].name 
                     if name in self.changedbuttons:
-                        try:
-                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_text())     
-                        except:
-                            pass
+                        self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_text())     
                 #booleans
                 if config.format[i].keys[j].kind == 'boolean':
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     if name in self.changedbuttons:
-                        try:
-                            if self.buttons[name].get_active() == True:
-                                self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
-                            else:
-                                self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
-                        except:
-                            pass
+                        if self.buttons[name].get_active() == True:
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
+                        else:
+                            self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
+                        
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
@@ -133,6 +130,7 @@ class cfggui():
     def __init__(self):
         button_width = 100
         self.config = ConfigParser.SafeConfigParser()
+        
         try:
             self.config.read("./config.ini")
         except:

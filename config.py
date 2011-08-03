@@ -83,22 +83,22 @@ def init(config_file = ""):
     sections = False
     options = False
 
-    #print parser.items("Main")
-
+    # makes sections all lowercase
     psections = parser.sections()
     fsections = [j.name for j in config.format]
     for a in range(len(psections)):
         psections[a] = psections[a].lower()
-
     for a in range(len(fsections)):
         fsections[a] = fsections[a].lower()
     
+    # checks all sections in config.ini are in configparser 
     config_error = False
     for s in psections:
         if s not in fsections:
             config_error = True
             sys.stderr.write('unknown section "%s"\n')
 
+    # checks all options in config.ini are in configparser
     for i in parser.sections():
         b = parser.options(i)
         for a in range(len(b)):
@@ -112,7 +112,8 @@ def init(config_file = ""):
                     if o not in foptions:
                         config_error = True
                         sys.stderr.write('unknown option "%s" in section "%s"\n' % (o, k.name))
-      
+    
+    # checks all options are the right type and if parser option has values config.ini is using one of those values  
     for psection in parser.sections():
         poptions = parser.options(psection)
         for fsection in config.format:
