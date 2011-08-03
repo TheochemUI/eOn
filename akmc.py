@@ -506,6 +506,7 @@ def main():
                     break
                 akmc(config)
                 sleep(0.1)
+                #maybe do some MPI IProbe here?
         else:
             akmc(config)
                 
