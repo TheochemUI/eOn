@@ -22,6 +22,13 @@
     #include <mpi.h>
     #include <unistd.h>
     #include <fcntl.h>
+    #include <Python.h>
+    #include <stdlib.h>
+    #include <sstream>
+#endif
+
+#ifdef EONMPIBGP
+    #include <libgen.h>
 #endif
 
 //Includes for FPE trapping
@@ -102,14 +109,17 @@ void printSystemInfo()
     #endif
 }
 
-#ifndef EONMPIBGP
 int main(int argc, char **argv) 
-#else
-int client_main(int argc, char **argv)
-#endif
 {
     Parameters parameters;
+
     #ifdef EONMPI
+        if (argc != 3) {
+            fprintf(stderr,"incorrect number of arguments: %i\n", argc);
+            fprintf(stderr, "wrapper <eon.py> <# eonclients>\n");
+            return 1;
+        }
+        int number_of_clients= atoi(argv[2]);
         if (MPI::Is_initialized() == false) {
             MPI::Init();
         }
@@ -119,10 +129,11 @@ int client_main(int argc, char **argv)
 
         int irank = MPI::COMM_WORLD.Get_rank();
         int isize = MPI::COMM_WORLD.Get_size();
-        //printf("client rank: %i size: %i\n", irank, isize);
         
         int *process_types = new int[isize];
-        int process_type = 1;
+        int process_type;
+
+        process_type = 1;
 
         MPI::COMM_WORLD.Allgather(&process_type,     1, MPI::INT, 
                                   &process_types[0], 1, MPI::INT);
@@ -130,17 +141,18 @@ int client_main(int argc, char **argv)
         int i, servers=0, clients=0, potentials=0;
         int server_rank=-1;
         int my_client_number=-1;
+        std::vector<int> client_ranks;
         for (i=0;i<isize;i++) {
             switch (process_types[i]) {
                 case 0:
                     servers++;
-                    server_rank = i;
                     break;
                 case 1:
                     if (i==irank) {
                         my_client_number = clients;
                     }
                     clients++;
+                    client_ranks.push_back(i);
                     break;
                 case 2:
                     potentials++;
@@ -148,8 +160,13 @@ int client_main(int argc, char **argv)
             }
         }
 
-        int potential_group_size = potentials/clients;
-        parameters.MPIPotentialRank = potential_group_size*my_client_number;
+        if (clients < number_of_clients) {
+            fprintf(stderr, "didn't launch as many mpi client ranks as"
+                    "given on the command line\n");
+            return 1;
+        }
+        clients = number_of_clients;
+
         int *potential_ranks = new int[potentials];
         int j;
         for (i=0,j=0;i<isize;i++) {
@@ -158,23 +175,46 @@ int client_main(int argc, char **argv)
                 j++;
             }
         }
+        int potential_group_size = potentials/clients;
 
         for (i=0;i<clients;i++) {
             MPI::Group orig_group, new_group;
             orig_group = MPI::COMM_WORLD.Get_group();
             int offset = i*potential_group_size;
-            //printf("client: rank: %i offset: %i pot_group_size: %i\n", irank, 
-            //       offset,potential_group_size);
             new_group = orig_group.Incl(potential_group_size, 
                                         &potential_ranks[offset]);
-            (void)MPI::COMM_WORLD.Create(new_group);
+            MPI::COMM_WORLD.Create(new_group);
+        }
+
+        server_rank = client_ranks[number_of_clients];
+        if (my_client_number < number_of_clients) {
+            parameters.MPIPotentialRank = potential_ranks[my_client_number*potential_group_size];
+            printf("MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
+        }else if (my_client_number == number_of_clients) {
+            printf("rank: %i becoming server\n", irank);
+            std::ostringstream oss;
+            oss << client_ranks.at(0);
+            for (i=1;i<number_of_clients;i++) {
+                oss << ":" << client_ranks.at(i);
+            }
+            setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
+            Py_Initialize();
+            Py_Main(2, argv);
+            Py_Finalize();
+            MPI::Finalize();
+            return 0;
+        }else{
+            MPI::Finalize();
+            return 0;
         }
     #endif
 
-    if (argc > 1) {
-        commandLine(argc, argv);
-        return 0;
-    }
+    #ifndef EONMPI
+        if (argc > 1) {
+            commandLine(argc, argv);
+            return 0;
+        }
+    #endif
 
     #ifdef BOINC
     // BOINC is started
@@ -220,8 +260,8 @@ int client_main(int argc, char **argv)
         chdir(orig_path);
         char *path = new char[1024];
         int ready=1;
-        printf("client: is ready, posting Send!\n");
-        MPI::COMM_WORLD.Send(&ready,      1, MPI::INT,  server_rank, 0);
+        printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
+        MPI::COMM_WORLD.Ssend(&ready,      1, MPI::INT,  server_rank, 0);
         MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
         if (strncmp("STOPCAR", path, 1024) == 0) {
             MPI::Finalize();

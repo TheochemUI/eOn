@@ -1,5 +1,5 @@
 OBJECTS = MPIPot.o
-CXXFLAGS += -I../.. -Wall -O2
+CXXFLAGS += -I../.. -Wall -O0 -g
 LIB := libMPIPot.a
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
