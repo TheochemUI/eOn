@@ -31,6 +31,8 @@ class Explorer:
         f.write("%i\n" % self.wuid)
         f.close()
 
+
+
 class MinModeExplorer(Explorer):
     def __init__(self, states, previous_state, state):
         Explorer.__init__(self)
@@ -38,13 +40,6 @@ class MinModeExplorer(Explorer):
         self.state = state
         self.previous_state = previous_state
         self.comm = communicator.get_communicator()
-
-        job_table_path = os.path.join(config.path_root, "jobs.tbl")
-        job_table_columns = [ 'state', 'wuid', 'type']
-        self.job_table = io.Table(job_table_path, job_table_columns)
-
-        #clean jobs from old states
-        #self.job_table.delete_row_func('state', lambda s: s != self.state.number)
 
         if config.recycling_on: 
             self.nrecycled = 0
@@ -137,6 +132,14 @@ class MinModeExplorer(Explorer):
 
         displacement, mode = self.displace.make_displacement() 
         return displacement, mode, 'random'
+
+
+class ClientMinModeExplorer(MinModeExplorer):
+    def __init__(self, states, previous_state, state):
+        MinModeExplorer.__init__(self, states, previous_state, state)
+        job_table_path = os.path.join(config.path_root, "jobs.tbl")
+        job_table_columns = [ 'state', 'wuid', 'type']
+        self.job_table = io.Table(job_table_path, job_table_columns)
 
     def make_searches(self):
         #XXX:what if the user changes the bundle size?
