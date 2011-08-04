@@ -66,7 +66,7 @@ def akmc(config):
         previous_state = states.get_state(previous_state_num)
 
 
-    state_explorer = explorer.MinModeExplorer(states, previous_state, current_state)
+    state_explorer = explorer.ClientMinModeExplorer(states, previous_state, current_state)
     state_explorer.explore()
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
