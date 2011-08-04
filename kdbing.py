@@ -78,6 +78,10 @@ class KDB:
     def query(self, state, wait = False):
         # If the path already exists, remove it and create a new one.
         if os.path.isdir(config.kdb_scratch_path):
+            # Make sure we are not trying to query the same state.
+            nr = int(open(os.path.join(config.kdb_scratch_path, "STATENUMBER"), 'r').readline())
+            if state.number == nr:
+                return            
             # See if there is a PID file for a possibly already running query process.
             if os.path.exists(os.path.join(config.kdb_scratch_path, "PID")):
                 # If so, try to kill it.
@@ -105,6 +109,9 @@ class KDB:
         f = open(os.path.join(config.kdb_scratch_path, "PID"), 'w')
         f.write("%d" % sp.pid)
         f.close()
+        f = open(os.path.join(config.kdb_scratch_path, "STATENUMBER"), 'w')
+        f.write("%d" % state.number)
+        f.close()
         if wait:
             sp.wait()
 
@@ -115,7 +122,9 @@ class KDB:
             if len(dones) > 0:
                 number = dones[0].split("_")[1]
                 displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-                mode = [[float(i) for i in l.strip().split()] for l in open(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number), 'r').readlines()[:]]
+                mode = [[float(i) for i in l.strip().split()] for l in
+                        open(os.path.join(config.kdb_scratch_path, "kdbmatches",
+                        "MODE_%s" % number), 'r').readlines()[:]]
                 os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number))
                 os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
                 os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
