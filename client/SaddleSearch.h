@@ -35,17 +35,18 @@ public:
     // Return codes passed from server to client to indicate calculation status
     // XXX: Shouldn't this be in ProcessSearchJob.cpp?
     enum{
-        STATUS_GOOD,
-        STATUS_INIT,
-        STATUS_BAD_NO_CONVEX,
-        STATUS_BAD_HIGH_ENERGY,
-        STATUS_BAD_MAX_CONCAVE_ITERATIONS,
-        STATUS_BAD_MAX_ITERATIONS,
-        STATUS_BAD_NOT_CONNECTED,
-        STATUS_BAD_PREFACTOR,
-        STATUS_BAD_HIGH_BARRIER,
-        STATUS_BAD_MINIMA,
-        STATUS_FAILED_PREFACTOR
+        // DONT CHANGE THE ORDER OF THIS LIST
+        STATUS_GOOD, //0
+        STATUS_INIT, //1
+        STATUS_BAD_NO_CONVEX, //2
+        STATUS_BAD_HIGH_ENERGY, //3
+        STATUS_BAD_MAX_CONCAVE_ITERATIONS, //4
+        STATUS_BAD_MAX_ITERATIONS, //4
+        STATUS_BAD_NOT_CONNECTED, //5
+        STATUS_BAD_PREFACTOR, //6
+        STATUS_BAD_HIGH_BARRIER, //7
+        STATUS_BAD_MINIMA, //8
+        STATUS_FAILED_PREFACTOR //8
     };
 
     // Constants used to displace atoms before a saddle search
