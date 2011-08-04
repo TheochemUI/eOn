@@ -59,8 +59,9 @@ for i,t in enumerate(process_types):
         potentials += 1
         potential_ranks.append(i)
 
-if len(sys.argv) == 2:
-    clients = int(sys.argv[1])
+if "EON_NUMBER_OF_CLIENTS" not in os.environ:
+    sys.stderr.write("you must set the env var EON_NUMBER_OF_CLIENTS\n");
+clients = int(os.environ["EON_NUMBER_OF_CLIENTS"])
 
 potential_group_size = potentials/clients
 
