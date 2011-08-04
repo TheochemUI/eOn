@@ -31,9 +31,31 @@ class cfggui():
     
     
     # bolds options that will be saved    
-    def readytosave(self, widget, name=None):
-        a = name.split(', ')
-        self.nameLabels[name].set_markup("<b>%s:</b>" %a[1])
+    def defaultchanged(self, widget, list=None):
+        name = list[0]
+        option = name.split(', ')[1]
+        i = list[1]
+        j = list[2]
+        
+        if config.format[i].keys[j].kind == "string" and len(config.format[i].keys[j].values) > 0:
+            if self.buttons[name].get_active_text() != config.format[i].keys[j].default:
+                self.nameLabels[name].set_markup("<b>%s:</b>" %option)
+            else:
+                self.nameLabels[name].set_markup("%s:" %option)
+        if (config.format[i].keys[j].kind == 'string' and len(config.format[i].keys[j].values) == 0) or config.format[i].keys[j].kind == 'int' or config.format[i].keys[j].kind == 'float':
+            if self.buttons[name].get_text() != str (config.format[i].keys[j].default):
+                self.nameLabels[name].set_markup("<b>%s:</b>" %option)
+            else:
+                self.nameLabels[name].set_markup("%s:" %option)
+        if config.format[i].keys[j].kind == 'boolean':
+            if config.format[i].keys[j].default == True and self.buttons[name].get_active() == False:
+                self.nameLabels[name].set_markup("<b>%s:</b>" %option)     
+            elif config.format[i].keys[j].default == False and self.buttons[name].get_active() == True:
+                self.nameLabels[name].set_markup("<b>%s:</b>" %option)
+            else:
+                self.nameLabels[name].set_markup("%s:" %option)
+                            
+        
         
         
         
@@ -98,8 +120,7 @@ class cfggui():
                             self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
                         else:
                             self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
-                        
-                self.nameLabels[name].set_markup("%s" % config.format[i].keys[j].name)               
+                              
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
@@ -199,7 +220,8 @@ class cfggui():
                                 default = k
                         self.changedbuttons.append(name)
                     except:
-                        pass   
+                        pass
+                    self.buttons[name].connect("changed", self.defaultchanged, [name,i,j])   
                     try:
                         self.buttons[name].set_active(default)
                     except:
@@ -212,8 +234,7 @@ class cfggui():
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding = 5) 
                     self.buttons[name].connect("changed", self.buttonChanged, name)
-                    self.buttons[name].connect("changed", self.saveCheck)
-                    self.buttons[name].connect("changed", self.readytosave, name)   
+                    self.buttons[name].connect("changed", self.saveCheck)  
                      
                            
                 #strings without values
@@ -225,6 +246,7 @@ class cfggui():
                         self.buttons[name].set_text(config.format[i].keys[j].default)
                     except:
                         pass
+                    self.buttons[name].connect("changed", self.defaultchanged, [name,i,j])
                     try:
                         self.buttons[name].set_text(self.config.get(config.format[i].name,config.format[i].keys[j].name))
                         self.changedbuttons.append(name)
@@ -238,8 +260,7 @@ class cfggui():
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
                     self.buttons[name].connect("changed", self.buttonChanged, name)
-                    self.buttons[name].connect("changed", self.saveCheck)
-                    self.buttons[name].connect("changed", self.readytosave, name)    
+                    self.buttons[name].connect("changed", self.saveCheck)    
                     
                     
                 #ints & floats
@@ -251,6 +272,7 @@ class cfggui():
                         self.buttons[name].set_text(str (config.format[i].keys[j].default))
                     except:
                         pass
+                    self.buttons[name].connect("changed", self.defaultchanged, [name,i,j])
                     try:
                         self.buttons[name].set_text(str (self.config.get(config.format[i].name,config.format[i].keys[j].name)))
                         self.changedbuttons.append(name)
@@ -265,7 +287,6 @@ class cfggui():
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
                     self.buttons[name].connect("changed", self.buttonChanged, name)
                     self.buttons[name].connect("changed", self.saveCheck)
-                    self.buttons[name].connect("changed", self.readytosave, name)
                     self.buttons[name].connect("changed", self.buttonChanged, name)  
                     
                     
@@ -282,7 +303,9 @@ class cfggui():
                         if config.format[i].keys[j].default == False:
                             self.RB2[name].set_active(True)      
                     except:
-                        pass 
+                        pass
+                    self.buttons[name].connect("toggled", self.defaultchanged, [name,i,j])
+                    self.RB2[name].connect("toggled", self.defaultchanged, [name,i,j]) 
                     try:
                         if self.config.get(config.format[i].name,config.format[i].keys[j].name) == 'True':
                             self.buttons[name].set_active(True)
@@ -307,9 +330,6 @@ class cfggui():
                     Htable.attach(boolhbox,1,2,j,j+1, False| gtk.FILL, False,ypadding=5)
                     self.buttons[name].connect("toggled", self.buttonChanged, name)
                     self.RB2[name].connect("toggled", self.buttonChanged, name)
-                    self.buttons[name].connect("toggled", self.readytosave, name)
-                    self.RB2[name].connect("toggled", self.readytosave, name)
-                    
                     
                 refreshlist = [name, config.format[i].keys[j]]    
                 refreshButton.connect("button_press_event", self.refreshoption, refreshlist)      
