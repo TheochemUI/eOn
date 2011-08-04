@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+##-----------------------------------------------------------------------------------
+## eOn is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## A copy of the GNU General Public License is available at
+## http://www.gnu.org/licenses/
+##-----------------------------------------------------------------------------------
+# Author: Ian Johnson
 
 import os
 import math
@@ -56,14 +66,14 @@ class BHgui(atomview.atomview):
         
         self.startup()
     
-    
+    # startup
     def startup(self, *args):
         self.changeImage()
         self.statetable()
         self.acceptanceratio_average()
     
     
-    
+    # minimum.con display
     def changeImage(self, *args):
         states = glob.glob("%s*" %config.path_states)
         i = 0 
@@ -76,14 +86,14 @@ class BHgui(atomview.atomview):
         self.data_set([datapass])
         
         
-        
+    # changes state by clicking table rows  
     def rowactivated(self, *args):
         selection = self.view.get_selection().get_selected()
         proc = self.store.get(selection[1], 0)
         self.stateScale.set_value(proc[0])
         
         
-        
+    # table    
     def statetable(self, *args):
         self.store = gtk.ListStore(int, float, int)
         self.view = gtk.TreeView(model=self.store)
@@ -129,24 +139,23 @@ class BHgui(atomview.atomview):
         self.view.show_all()
         
         
-        
+    # keeps spinbutton and scale the same
     def stateSB_changed(self, *args):
         self.stateScale.set_value(self.stateSB.get_value())
         
     
-    
+    # keeps scale and spinbutton the same
     def state_changed(self, *args):
         self.stateSB.set_value(self.stateScale.get_value())
         
         
-    
+    # energy vs state plot
     def energyplot(self, *args):
         table = open("%sstate_table" %config.path_states, "r")
         lines = table.readlines()
         x = []
         y = []
         grouplabels = []
-        
         for i in range(2,len(lines)):
             x.append(i-1)
             y.append(float (lines[i].split()[1]))
@@ -170,7 +179,7 @@ class BHgui(atomview.atomview):
         self.eplotWindow.show_all()
         
         
-        
+    # repeat vs state plot    
     def repeatplot(self, *args):
         table = open("%sstate_table" %config.path_states, "r")
         lines = table.readlines()
@@ -179,16 +188,13 @@ class BHgui(atomview.atomview):
         unsortedlines = []
         sortedlines = []
         grouplabels = []
-
         for i in range(2,len(lines)):
             x.append(i-2)
             unsortedlines.append((lines[i].split()[0],lines[i].split()[2]))
-        sortedlines = sorted(unsortedlines, key  = lambda tuble: int (tuble[1]))
-            
+        sortedlines = sorted(unsortedlines, key  = lambda tuble: int (tuble[1])) 
         for i in sortedlines:
             y.append(i[1])
-            grouplabels.append(i[0])    
-
+            grouplabels.append(i[0])
         fig = p.figure()
         ax = fig.add_subplot(111)
         p.plot(x,y, 'bo' '-')
@@ -200,9 +206,6 @@ class BHgui(atomview.atomview):
         p.xlim([0-fp,max(x)+fp])
         ax.set_xticks(x)
         ax.set_xticklabels(grouplabels)
-        
-        
-        
         self.rplotWindow.set_default_size(425,425) 
         container = gtk.VBox()
         self.rplotWindow.add(container)
@@ -213,7 +216,7 @@ class BHgui(atomview.atomview):
         self.rplotWindow.show_all()
         
         
-        
+    # average acceptanceratio 
     def acceptanceratio_average(self, *args):
         ratios = []
         for i in range(self.numstates+1):
