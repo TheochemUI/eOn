@@ -507,11 +507,9 @@ def main():
                     break
                 akmc(config)
 
-                client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(':') ]
                 while True:
-                    for client_rank in client_ranks:
-                        if MPI.COMM_WORLD.Iprobe(client_rank, 0):
-                            break
+                    if MPI.COMM_WORLD.Iprobe(MPI.ANY_SOURCE, MPI.ANY_TAG):
+                        break
                 #maybe do some MPI IProbe here?
         else:
             akmc(config)
