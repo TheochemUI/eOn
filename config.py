@@ -170,6 +170,7 @@ def init(config_file = ""):
 
     #AKMC options
     config.akmc_confidence              = parser.getfloat('AKMC', 'confidence')
+    config.akmc_server_side             = parser.getboolean('AKMC', 'server_side')
     config.akmc_thermal_window          = parser.getfloat('AKMC', 'thermally_accessible_window')
     config.akmc_max_thermal_window      = parser.getfloat('AKMC', 'thermally_accessible_buffer')
     config.akmc_max_kmc_steps           = parser.getint('AKMC', 'max_kmc_steps')

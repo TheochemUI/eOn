@@ -709,6 +709,17 @@ class Table:
 
         return None
 
+    def get_rows(self, column, value):
+        if not self.initialized:
+            self.init()
+
+        result = []
+        for row in self.rows:
+            if row[column] == value:
+                result.append(row)
+
+        return result
+
     def get_column(self, column):
         if not self.initialized:
             self.init()

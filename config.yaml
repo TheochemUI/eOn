@@ -884,7 +884,8 @@ Hessian:
         type:
             description: >
                 The Hessian to be calculated has to be one of reactant, saddle,
-                or product.
+                or product. This option only matters for the "hessian" job.
+                Hessian are also calculated in the "process_search" job.
             kind: string
             default: reactant
 
@@ -949,9 +950,20 @@ AKMC:
             kind: float
             default: 0.99
 
+        server_side:
+            description: >
+
+                If true the server does not send out "process_search" jobs
+                instead it manages individual dimer, minimization, and hessian
+                calculations. This option is usually used when a a single
+                "process_search" job will take a long time (hours or longer).
+
+            kind: boolean
+            default: false
+
         max_kmc_steps:
             description: >
-                The maximum number of transitions per execution of the server.
+                The maximum number of KMC transitions in a row.
             kind: int
             default: 100000
 
