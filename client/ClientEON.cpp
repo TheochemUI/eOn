@@ -114,12 +114,16 @@ int main(int argc, char **argv)
     Parameters parameters;
 
     #ifdef EONMPI
-        if (argc != 3) {
+        if (argc != 2) {
             fprintf(stderr,"incorrect number of arguments: %i\n", argc);
-            fprintf(stderr, "wrapper <eon.py> <# eonclients>\n");
+            fprintf(stderr, "wrapper <eon.py>\n");
             return 1;
         }
-        int number_of_clients= atoi(argv[2]);
+
+        if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
+            fprintf(stderr, "you must set the env var EON_NUMBER_OF_CLIENTS\n");
+        }
+        int number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
         if (MPI::Is_initialized() == false) {
             MPI::Init();
         }
