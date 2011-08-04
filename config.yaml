@@ -971,6 +971,9 @@ AKMC:
             description: >
             kind: string
             default: new
+            values:
+                new: >
+                old: >
 
         thermally_accessible_window:
             description: >
