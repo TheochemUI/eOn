@@ -401,6 +401,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
         except:
             logger.exception("Failed to submit searches.")
+        self.job_table.write()
 
     def register_results(self):
         logger.info("registering results")
@@ -475,4 +476,5 @@ class ClientMinModeExplorer(MinModeExplorer):
         else:
             logger.debug("%.1f results per second", (num_registered/(t2-t1)))
             
+        self.job_table.write()
         return num_registered
