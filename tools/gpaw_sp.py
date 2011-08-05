@@ -8,6 +8,7 @@ import gpaw
 import time
 import numpy
 import sys
+import os
 from gpaw.mpi import world
 from ase.utils import devnull
 
