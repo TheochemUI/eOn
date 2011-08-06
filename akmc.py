@@ -494,23 +494,24 @@ def main():
     if lock.aquirelock():
         if config.comm_type == 'mpi':
             from mpi4py import MPI
-            from time import sleep
             from array import array
             stopcar_path = os.path.join(config.path_root, "STOPCAR")
             if os.path.isfile(stopcar_path):
                 os.unlink(stopcar_path)
+            client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
             while True:
                 if os.path.isfile(stopcar_path):
                     for i in range(MPI.COMM_WORLD.Get_size()):
                         buf = array('c', 'STOPCAR\0')
                         MPI.COMM_WORLD.Isend(buf, i)
                     break
+                MPI.COMM_WORLD.Probe(MPI.ANY_SOURCE, MPI.ANY_TAG)
+                #we now need to clear out any other mpi_send to us
+                for r in client_ranks:
+                    if MPI.COMM_WORLD.Iprobe(source=r, tag=1):
+                        tmp = numpy.empty(1, dtype='i')
+                        MPI.COMM_WORLD.Recv(tmp, source=r, tag=1)
                 akmc(config)
-
-                while True:
-                    if MPI.COMM_WORLD.Iprobe(MPI.ANY_SOURCE, MPI.ANY_TAG):
-                        break
-                #maybe do some MPI IProbe here?
         else:
             akmc(config)
                 

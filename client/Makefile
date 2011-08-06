@@ -18,7 +18,6 @@ endif
 ifdef EONMPI
 	CXX=mpicxx
 	CXXFLAGS += -DEONMPI
-	NO_FORTRAN=1
 endif
 
 #If we aren't doing a cross compile, guess our platform.
