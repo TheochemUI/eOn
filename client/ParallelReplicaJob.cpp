@@ -125,8 +125,11 @@ void ParallelReplicaJob::dynamics()
     PRdynamics.initialVel(parameters->temperature);
     dephase();
 
-    printf("\nStarting MD run\nTemperature: %.2f Kelvin\nTotal Time: %.2f fs\nTime Step: %.2f fs\n\n",
-    parameters->temperature, 10.18*parameters->mdSteps*parameters->mdTimeStep, 10.18*parameters->mdTimeStep);
+    printf("\nStarting MD run\nTemperature: %.2f Kelvin\n"
+           "Total Time: %.2f fs\nTime Step: %.2f fs\n\n",
+           parameters->temperature, 
+           10.18*parameters->mdSteps*parameters->mdTimeStep,
+           10.18*parameters->mdTimeStep);
 
     long tenthSteps = parameters->mdSteps/10;
     //This prevents and edge case division by zero if mdSteps is < 10
@@ -188,7 +191,7 @@ void ParallelReplicaJob::dynamics()
                     remember = true;
                 }else{
                     printf("Found New State !\n");
-                    *final = * reactant;
+                    *final = *reactant;
                     steps_tmp = nsteps;
                     if(parameters->mdAutoStop){
                         stoped = true;

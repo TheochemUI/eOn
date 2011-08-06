@@ -501,12 +501,12 @@ class MPI(Communicator):
 
         from mpi4py import MPI as PyMPI
         self.comm = PyMPI.COMM_WORLD
-        rank = self.comm.Get_rank()
+        rank = self.comm.rank
 
         # GET VIA ENVIRONMENT VARS
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
         config.comm_job_buffer_size = len(self.client_ranks)
-        logger.debug("server knows about client ranks %s" % repr(self.client_ranks) )
+        logger.info("server knows about client ranks %s" % repr(self.client_ranks) )
 
         self.ready_ranks = []
         self.running_jobs = {}
