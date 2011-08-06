@@ -114,18 +114,26 @@ int main(int argc, char **argv)
     Parameters parameters;
 
     #ifdef EONMPI
-        if (argc != 2) {
-            fprintf(stderr,"incorrect number of arguments: %i\n", argc);
-            fprintf(stderr, "wrapper <eon.py>\n");
+        char *eon_server = NULL;
+        if (getenv("EON_SERVER") == NULL) {
+            fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
             return 1;
+        }else{
+            eon_server = getenv("EON_SERVER");
         }
 
         if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
-            fprintf(stderr, "you must set the env var EON_NUMBER_OF_CLIENTS\n");
+            fprintf(stderr, "error: must set the env var EON_NUMBER_OF_CLIENTS\n");
+            return 1;
         }
         int number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
         if (MPI::Is_initialized() == false) {
             MPI::Init();
+        }
+
+        int error = parameters.load("config.ini");
+        if (error) {
+            fprintf(stderr, "\nproblem loading config.ini file\n");
         }
 
         //XXX: Barrier for gpaw-python
@@ -166,48 +174,55 @@ int main(int argc, char **argv)
 
         if (clients < number_of_clients) {
             fprintf(stderr, "didn't launch as many mpi client ranks as"
-                    "given on the command line\n");
+                            "specified in EON_NUMBER_OF_CLIENTS\n");
             return 1;
         }
         clients = number_of_clients;
 
-        int *potential_ranks = new int[potentials];
-        int j;
-        for (i=0,j=0;i<isize;i++) {
-            if (process_types[i] == 2) {
-                potential_ranks[j] = i;
-                j++;
+        if (parameters.potential == "mpi") {
+            int *potential_ranks = new int[potentials];
+            int j;
+            for (i=0,j=0;i<isize;i++) {
+                if (process_types[i] == 2) {
+                    potential_ranks[j] = i;
+                    j++;
+                }
             }
-        }
-        int potential_group_size = potentials/clients;
+            int potential_group_size = potentials/clients;
 
-        for (i=0;i<clients;i++) {
-            MPI::Group orig_group, new_group;
-            orig_group = MPI::COMM_WORLD.Get_group();
-            int offset = i*potential_group_size;
-            new_group = orig_group.Incl(potential_group_size, 
-                                        &potential_ranks[offset]);
-            MPI::COMM_WORLD.Create(new_group);
+            for (i=0;i<clients;i++) {
+                MPI::Group orig_group, new_group;
+                orig_group = MPI::COMM_WORLD.Get_group();
+                int offset = i*potential_group_size;
+                new_group = orig_group.Incl(potential_group_size, 
+                                            &potential_ranks[offset]);
+                MPI::COMM_WORLD.Create(new_group);
+            }
+
+            if (my_client_number < number_of_clients) {
+                parameters.MPIPotentialRank = potential_ranks[my_client_number*potential_group_size];
+                printf("MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
+            }
         }
 
         server_rank = client_ranks[number_of_clients];
-        if (my_client_number < number_of_clients) {
-            parameters.MPIPotentialRank = potential_ranks[my_client_number*potential_group_size];
-            printf("MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
-        }else if (my_client_number == number_of_clients) {
-            printf("rank: %i becoming server\n", irank);
+        if (my_client_number == number_of_clients) {
             std::ostringstream oss;
             oss << client_ranks.at(0);
             for (i=1;i<number_of_clients;i++) {
                 oss << ":" << client_ranks.at(i);
             }
             setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
+            char **py_argv = (char **)malloc(sizeof(char **)*2);
+            py_argv[0] = argv[0];
+            py_argv[1] = getenv("EON_SERVER");
+            printf("rank: %i becoming %s\n", irank, py_argv[1]);
             Py_Initialize();
-            Py_Main(2, argv);
+            Py_Main(2, py_argv);
             Py_Finalize();
             MPI::Finalize();
             return 0;
-        }else{
+        }else if (my_client_number > number_of_clients) {
             MPI::Finalize();
             return 0;
         }
@@ -265,7 +280,10 @@ int main(int argc, char **argv)
         char *path = new char[1024];
         int ready=1;
         printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
-        MPI::COMM_WORLD.Ssend(&ready,      1, MPI::INT,  server_rank, 0);
+        //Tag "0" is tell communicator we are ready
+        MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
+        //Tag "1" is to tell the main akmc loop that a client is ready
+        MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
         MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
         if (strncmp("STOPCAR", path, 1024) == 0) {
             MPI::Finalize();
