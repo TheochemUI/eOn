@@ -270,9 +270,9 @@ int main(int argc, char **argv)
     //     when to stop.
     char logfilename[1024];
     snprintf(logfilename, 1024, "eonclient_%i.log", irank);
-    int outFd = open(logfilename, O_CREAT|O_WRONLY|O_TRUNC, 0644);
+    int outFd = open("/dev/null", O_WRONLY);
     dup2(outFd, 1);
-    dup2(outFd, 2);
+    //dup2(outFd, 2);
     char *orig_path = new char[1024];
     getcwd(orig_path, 1024);
     while (true) {
