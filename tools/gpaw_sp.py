@@ -23,11 +23,10 @@ def create_gpaw(comm):
                     'eigenstates':.001
                   }
     calc = GPAW(xc='PBE', 
-                h=.30,
+                h=.20,
                 nbands=-8,
-                txt='gpaw_%i.txt'%world.rank, 
                 convergence=convergence,
-                occupations=FermiDirac(width=0.05),
+                occupations=FermiDirac(width=0.02),
                 mixer = Mixer(beta=0.10, nmaxold=5, weight=100.0),
                 communicator=comm)
     return calc
@@ -76,7 +75,9 @@ for i in xrange(clients):
         my_comm = new_comm
 
 first_time = True
+nforce_calls = 0
 while True:
+    nforce_calls += 1
     natoms = numpy.array((0,), 'l')
     if my_comm.rank == 0:
         world.receive(natoms, my_client_rank, tag=0)
@@ -86,15 +87,24 @@ while True:
     positions = numpy.zeros(3*natoms, 'd')
     cell = numpy.zeros(9, 'd')
     pbc = numpy.array((0,), 'i')
+    logdir = numpy.zeros(1024, 'l')
     if my_comm.rank == 0:
         world.receive(atomic_numbers, my_client_rank, tag=0)
         world.receive(positions,      my_client_rank, tag=0)
         world.receive(cell,           my_client_rank, tag=0)
         world.receive(pbc,            my_client_rank, tag=0)
+        world.receive(logdir,        my_client_rank, tag=0)
     my_comm.broadcast(atomic_numbers, 0)
     my_comm.broadcast(positions,      0)
     my_comm.broadcast(cell,           0)
     my_comm.broadcast(pbc,            0)
+    my_comm.broadcast(logdir,         0)
+
+    tmp = []
+    for x in logdir:
+        if x == 0: break
+        tmp.append(chr(x))
+    logdir = ''.join(tmp)
 
     if pbc == 1:
         pbc = True
@@ -112,6 +122,8 @@ while True:
         atoms.set_calculator(calc)
     else:
         atoms.set_positions(positions)
+    logfile = os.path.join(logdir, "gpaw_%i.txt"%nforce_calls)
+    calc.set(txt=logfile)
 
     calculation_failed  = numpy.array((0,),'i')
     try:
