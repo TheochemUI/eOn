@@ -111,15 +111,15 @@ while True:
     else:
         pbc = False
 
+    cell.shape = (3,3)
+    positions.shape = (natoms,3)
     if first_time:
-        cell.shape = (3,3)
-        positions.shape = (natoms,3)
-
         atomic_symbols = ''.join([ ase.chemical_symbols[int(i)] for i in atomic_numbers])
         atoms = ase.Atoms(atomic_symbols, positions=positions, cell=cell, pbc=pbc)
 
         calc = create_gpaw(my_comm)
         atoms.set_calculator(calc)
+        first_time = False
     else:
         atoms.set_positions(positions)
     logfile = os.path.join(logdir, "gpaw_%i.txt"%nforce_calls)
