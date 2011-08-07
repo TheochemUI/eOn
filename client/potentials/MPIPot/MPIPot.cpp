@@ -36,11 +36,18 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     //Send data to potential
     int pbc=1;
     int failed;
-    MPI::COMM_WORLD.Send(&N,        1, MPI::LONG,   potentialRank, 0);
-    MPI::COMM_WORLD.Send(atomicNrs, N, MPI::INT,    potentialRank, 0);
-    MPI::COMM_WORLD.Send(R,       3*N, MPI::DOUBLE, potentialRank, 0);
-    MPI::COMM_WORLD.Send(box,       9, MPI::DOUBLE, potentialRank, 0);
-    MPI::COMM_WORLD.Send(&pbc,      1, MPI::INT,    potentialRank, 0);
+    char  cwd[1024];
+    long icwd[1024];
+    getcwd(cwd, 1024); 
+    for (int i=0;i<1024;i++) {
+        icwd[i] = (long) cwd[i];
+    }
+    MPI::COMM_WORLD.Send(&N,         1, MPI::LONG,   potentialRank, 0);
+    MPI::COMM_WORLD.Send(atomicNrs,  N, MPI::INT,    potentialRank, 0);
+    MPI::COMM_WORLD.Send(R,        3*N, MPI::DOUBLE, potentialRank, 0);
+    MPI::COMM_WORLD.Send(box,        9, MPI::DOUBLE, potentialRank, 0);
+    MPI::COMM_WORLD.Send(&pbc,       1, MPI::INT,    potentialRank, 0);
+    MPI::COMM_WORLD.Send(&icwd[0],1024, MPI::INT,   potentialRank, 0);
 
     //Recv data from potential
     MPI::COMM_WORLD.Recv(&failed,   1, MPI::INT,    potentialRank, 0);
@@ -48,13 +55,6 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
         throw 123;
     }
 
-    MPI::Request req = MPI::COMM_WORLD.Irecv(U,   1, MPI::DOUBLE, potentialRank, 0);
-    while (req.Test() == false) {
-        struct timespec req, rem; 
-        req.tv_sec=0;
-        req.tv_nsec=5000000;
-        nanosleep(&req, &rem);
-    }
-
+    MPI::COMM_WORLD.Recv(U,   1, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Recv(F, 3*N, MPI::DOUBLE, potentialRank, 0);
 }
