@@ -215,7 +215,7 @@ int main(int argc, char **argv)
 
             if (my_client_number < number_of_clients) {
                 parameters.MPIPotentialRank = potential_ranks[my_client_number*potential_group_size];
-                printf("MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
+                //fprintf(stderr,"MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
             }
         }
 
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
                 char **py_argv = (char **)malloc(sizeof(char **)*2);
                 py_argv[0] = argv[0];
                 py_argv[1] = getenv("EON_SERVER");
-                printf("rank: %i becoming %s\n", irank, py_argv[1]);
+                //fprintf(stderr, "rank: %i becoming %s\n", irank, py_argv[1]);
                 Py_Initialize();
                 Py_Main(2, py_argv);
                 Py_Finalize();
@@ -417,7 +417,11 @@ int main(int argc, char **argv)
     #endif
 
     #ifdef EONMPI
+    if (client_standalone) {
+        MPI::COMM_WORLD.Abort(0);
+    }else{
         MPI::Finalize();
+    }
     #endif
 
     boinc_finish(0);
