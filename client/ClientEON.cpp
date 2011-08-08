@@ -114,24 +114,38 @@ int main(int argc, char **argv)
     Parameters parameters;
 
     #ifdef EONMPI
+        bool client_standalone=false;
+        if (getenv("EON_CLIENT_STANDALONE") != NULL) {
+            client_standalone = true;
+        }
         char *eon_server = NULL;
-        if (getenv("EON_SERVER") == NULL) {
-            fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
-            return 1;
+        int number_of_clients;
+        if (!client_standalone) {
+            if (getenv("EON_SERVER") == NULL) {
+                fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
+                return 1;
+            }else{
+                eon_server = getenv("EON_SERVER");
+            }
+            if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
+                fprintf(stderr, "error: must set the env var EON_NUMBER_OF_CLIENTS\n");
+                return 1;
+            }
+            number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
         }else{
-            eon_server = getenv("EON_SERVER");
+            number_of_clients = 1;
         }
 
-        if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
-            fprintf(stderr, "error: must set the env var EON_NUMBER_OF_CLIENTS\n");
-            return 1;
-        }
-        int number_of_clients = atoi(getenv("EON_NUMBER_OF_CLIENTS"));
         if (MPI::Is_initialized() == false) {
             MPI::Init();
         }
 
-        int error = parameters.load("config.ini");
+        int error;
+        if (client_standalone) {
+            error = parameters.load("config_passed.ini");
+        }else{
+            error = parameters.load("config.ini");
+        }
         if (error) {
             fprintf(stderr, "\nproblem loading config.ini file\n");
         }
@@ -205,26 +219,28 @@ int main(int argc, char **argv)
             }
         }
 
-        server_rank = client_ranks[number_of_clients];
-        if (my_client_number == number_of_clients) {
-            std::ostringstream oss;
-            oss << client_ranks.at(0);
-            for (i=1;i<number_of_clients;i++) {
-                oss << ":" << client_ranks.at(i);
+        if (!client_standalone) {
+            server_rank = client_ranks[number_of_clients];
+            if (my_client_number == number_of_clients) {
+                std::ostringstream oss;
+                oss << client_ranks.at(0);
+                for (i=1;i<number_of_clients;i++) {
+                    oss << ":" << client_ranks.at(i);
+                }
+                setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
+                char **py_argv = (char **)malloc(sizeof(char **)*2);
+                py_argv[0] = argv[0];
+                py_argv[1] = getenv("EON_SERVER");
+                printf("rank: %i becoming %s\n", irank, py_argv[1]);
+                Py_Initialize();
+                Py_Main(2, py_argv);
+                Py_Finalize();
+                MPI::Finalize();
+                return 0;
+            }else if (my_client_number > number_of_clients) {
+                MPI::Finalize();
+                return 0;
             }
-            setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
-            char **py_argv = (char **)malloc(sizeof(char **)*2);
-            py_argv[0] = argv[0];
-            py_argv[1] = getenv("EON_SERVER");
-            printf("rank: %i becoming %s\n", irank, py_argv[1]);
-            Py_Initialize();
-            Py_Main(2, py_argv);
-            Py_Finalize();
-            MPI::Finalize();
-            return 0;
-        }else if (my_client_number > number_of_clients) {
-            MPI::Finalize();
-            return 0;
         }
     #endif
 
@@ -271,7 +287,9 @@ int main(int argc, char **argv)
     char logfilename[1024];
     snprintf(logfilename, 1024, "eonclient_%i.log", irank);
     int outFd = open("/dev/null", O_WRONLY);
-    dup2(outFd, 1);
+    if (!client_standalone) {
+        dup2(outFd, 1);
+    }
     //dup2(outFd, 2);
     char *orig_path = new char[1024];
     getcwd(orig_path, 1024);
@@ -279,20 +297,22 @@ int main(int argc, char **argv)
         chdir(orig_path);
         char *path = new char[1024];
         int ready=1;
-        printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
-        //Tag "0" is tell communicator we are ready
-        MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
-        //Tag "1" is to tell the main akmc loop that a client is ready
-        MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
-        MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
-        if (strncmp("STOPCAR", path, 1024) == 0) {
-            MPI::Finalize();
-            return 0;
-        }
-        printf("client: rank: %i chdir to %s\n", irank, path);
+        if (!client_standalone) {
+            printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
+            //Tag "0" is tell communicator we are ready
+            MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
+            //Tag "1" is to tell the main akmc loop that a client is ready
+            MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
+            MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
+            if (strncmp("STOPCAR", path, 1024) == 0) {
+                MPI::Finalize();
+                return 0;
+            }
+            printf("client: rank: %i chdir to %s\n", irank, path);
         
-        if (chdir(path) == -1) {
-            fprintf(stderr, "error: %s\n", strerror(errno));
+            if (chdir(path) == -1) {
+                fprintf(stderr, "error: %s\n", strerror(errno));
+            }
         }
     #endif
 
@@ -344,6 +364,9 @@ int main(int argc, char **argv)
     }
 
     #ifdef EONMPI
+    if (client_standalone) {
+        break;
+    }
     //End of MPI while loop
     }
     #endif
