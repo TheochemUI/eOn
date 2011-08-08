@@ -329,10 +329,10 @@ int Parameters::load(FILE *file){
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
-	basinHoppingQuenchingSteps = ini.GetValueF("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
+	    basinHoppingQuenchingSteps = ini.GetValueF("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingSignificantStructure = ini.GetValueB("Basin Hopping", "significant_structure", basinHoppingSignificantStructure);
-	basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
+	    basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
         basinHoppingDisplacementDistribution = toLowerCase(ini.GetValue("Basin Hopping", "displacement_distribution", basinHoppingDisplacementDistribution));
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
         basinHoppingJumpMax = ini.GetValueF("Basin Hopping", "jump_max", basinHoppingJumpMax);
