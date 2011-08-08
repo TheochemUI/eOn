@@ -139,49 +139,6 @@ Distributed Replica:
 
 ################################################################################
 
-Displacement Sampling:
-
-    description: >
-
-    options:
-
-        cutoffs:
-            description: >
-            kind: string
-            default: 0.0 3.0
-
-        max_de:
-            description: >
-            kind: float
-            default: 10.0
-
-        samples:
-            description: >
-            kind: int
-            default: 32
-
-        iter_max:
-            description: >
-            kind: int
-            default: 32
-
-        max_curvature:
-            description: >
-            kind: float
-            default: -0.01
-
-        torque_convergence:
-            description: >
-            kind: float
-            default: 0.01
-
-        magnitudes:
-            description: >
-            kind: string
-            default: 0.625 0.125 0.25
-
-################################################################################
-
 Debug:
 
     description: >
