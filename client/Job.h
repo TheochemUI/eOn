@@ -30,7 +30,6 @@ class Job {
         static const char HESSIAN[];
         static const char FINITE_DIFFERENCE[];
         static const char DIMER_ROTATION[];
-        static const char DISPLACEMENT_SAMPLING[];
         static const char NUDGED_ELASTIC_BAND[];
         static const char DYNAMICS[];
         static const char TEST[];

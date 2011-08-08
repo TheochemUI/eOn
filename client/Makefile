@@ -206,7 +206,7 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o \
     Potential.o Quickmin.o QuickminBox.o\
     ProcessSearchJob.o PointJob.o MinimizationJob.o HessianJob.o \
     ParallelReplicaJob.o Dynamics.o  BondBoost.o  DistributedReplicaJob.o \
-	FiniteDifferenceJob.o DimerRotationJob.o DisplacementSamplingJob.o NudgedElasticBandJob.o \
+	FiniteDifferenceJob.o DimerRotationJob.o NudgedElasticBandJob.o \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o \
 	NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
 	DynamicsJob.o
