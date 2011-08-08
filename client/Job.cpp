@@ -10,7 +10,6 @@
 #include "BasinHoppingJob.h"
 #include "FiniteDifferenceJob.h"
 #include "DimerRotationJob.h"
-#include "DisplacementSamplingJob.h"
 #include "NudgedElasticBandJob.h"
 #include "DynamicsJob.h"
 #include "TestJob.h"
@@ -25,7 +24,6 @@ const char Job::BASIN_HOPPING[] =            "basin_hopping";
 const char Job::HESSIAN[] =                  "hessian";
 const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::DIMER_ROTATION[] =           "dimer_rotation";
-const char Job::DISPLACEMENT_SAMPLING[] =    "displacement_sampling";
 const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
 const char Job::DYNAMICS[] =                 "md";
 const char Job::TEST[] =                     "test";
@@ -52,8 +50,6 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new FiniteDifferenceJob(parameters);
     }else if (parameters->job == Job::DIMER_ROTATION) {
         job =  new DimerRotationJob(parameters);
-    }else if (parameters->job == Job::DISPLACEMENT_SAMPLING) {
-        job =  new DisplacementSamplingJob(parameters);
     }else if (parameters->job == Job::NUDGED_ELASTIC_BAND) {
         job =  new NudgedElasticBandJob(parameters);
     }else if (parameters->job == Job::DYNAMICS) {
