@@ -92,15 +92,6 @@ Parameters::Parameters(){
     hessianMinDisplacement = 0.25;
     hessianWithinRadius = 5.0;
 
-    // [Displacement Sampling] //
-    displaceNSamples = 32; // number of samples to take
-    displaceIterMax = 32; // maximum number of rotations to perform on the dimer
-    displaceTorqueConvergence = 0.01; // convergence criteria of the dimer rotation
-    displaceMaxCurvature = -0.1; // maximum curvature which is considered good; avoids shallow but negative curvatures
-    displaceMaxDE = 10.0; // maximum dE which is considered good; should use saddleMaxEnergy?
-    displaceCutoffs = "0.0 3.3";
-    displaceMagnitudes = "0.0625 0.125 0.25";
-
     // [Nudged Elastic Band] //
     nebImages = 5;
     nebSpring = 5.0;
@@ -287,16 +278,6 @@ int Parameters::load(FILE *file){
         hessianFiniteDist = ini.GetValueF("Hessian", "finite_dist", hessianFiniteDist);
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
-
-        // [Displacement Sampling] //
-
-        displaceNSamples = ini.GetValueL("Displacement Sampling", "samples", displaceNSamples);
-        displaceIterMax = ini.GetValueL("Displacement Sampling", "iter_max", displaceIterMax);
-        displaceTorqueConvergence = ini.GetValueF("Displacement Sampling", "torque_convergence", displaceTorqueConvergence);
-        displaceMaxCurvature = ini.GetValueF("Displacement Sampling", "max_curvature", displaceMaxCurvature);
-        displaceMaxDE = ini.GetValueF("Displacement Sampling", "max_de", displaceMaxDE);
-        displaceCutoffs = ini.GetValue("Displacement Sampling", "cutoffs", displaceCutoffs);
-        displaceMagnitudes = ini.GetValue("Displacement Sampling", "magnitudes", displaceMagnitudes);
 
         // [Nudged Elastic Band]
 

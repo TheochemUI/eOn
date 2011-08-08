@@ -105,15 +105,6 @@ public:
     double hessianMinDisplacement; // atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
     double hessianWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
 
-    // [Displacement Sampling] 
-    long   displaceNSamples;
-    long   displaceIterMax; // maximum number of rotations to perform on the dimer
-    double displaceTorqueConvergence; // convergence criteria of the dimer rotation
-    double displaceMaxCurvature; // maximum curvature which is considered good; used to avoid soft negative curvatures
-    double displaceMaxDE; // maximum dE for which a sample is considered good
-    string displaceCutoffs;
-    string displaceMagnitudes;
-
     // [Nudged Elastic Band]
     long   nebImages;
     double nebSpring;
