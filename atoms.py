@@ -268,15 +268,13 @@ def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
     if len(a)!=len(b):
         return False
 
-    nfrozen = len(a)-a.free.sum()
-    
-    if nfrozen < 3:
-        if indistinguishable:
+    if config.comp_check_rotation:
+        if indistinguishable and config.comp_use_identical:
             return get_mappings(a,b,eps_r,neighbor_cutoff)
         else:
             return rot_match(a,b)
     else:
-        if indistinguishable:
+        if indistinguishable and config.comp_use_identical:
             return identical(a,b)
         else:
             return max(per_atom_norm(a.r-b.r, a.box))<eps_r
