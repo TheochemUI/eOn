@@ -16,16 +16,7 @@ def create_gpaw(comm):
     from gpaw import GPAW, FermiDirac, PoissonSolver, setup_paths
     from gpaw import Mixer
     setup_paths.insert(0,'.')
-    # gpaw calculator:
-    convergence = {
-                    'energy':0.001,
-                    'density':1e-2,
-                    'eigenstates':.001
-                  }
     calc = GPAW(xc='PBE', 
-                h=.20,
-                nbands=-8,
-                convergence=convergence,
                 occupations=FermiDirac(width=0.02),
                 mixer = Mixer(beta=0.10, nmaxold=5, weight=100.0),
                 communicator=comm)
@@ -58,15 +49,17 @@ for i,t in enumerate(process_types):
     elif t == 2:
         potentials += 1
         potential_ranks.append(i)
-
+if "EON_CLIENT_STANDALONE" in os.environ:
+    os.environ["EON_NUMBER_OF_CLIENTS"] = "1"
 if "EON_NUMBER_OF_CLIENTS" not in os.environ:
     sys.stderr.write("you must set the env var EON_NUMBER_OF_CLIENTS\n");
+    sys.exit(1)
 clients = int(os.environ["EON_NUMBER_OF_CLIENTS"])
 
 potential_group_size = potentials/clients
 
 my_client_rank = client_ranks[potential_ranks.index(rank)/potential_group_size]
-print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
+#print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
 
 for i in xrange(clients):
     s = potential_group_size
@@ -76,6 +69,7 @@ for i in xrange(clients):
 
 first_time = True
 nforce_calls = 0
+performance_log = ""
 while True:
     nforce_calls += 1
     natoms = numpy.array((0,), 'l')
@@ -99,12 +93,18 @@ while True:
     my_comm.broadcast(cell,           0)
     my_comm.broadcast(pbc,            0)
     my_comm.broadcast(logdir,         0)
-
+    
+    t0 = time.time()
     tmp = []
     for x in logdir:
         if x == 0: break
         tmp.append(chr(x))
     logdir = ''.join(tmp)
+
+    #XXX: is this really needed? Why did it happen...?
+    while not os.path.isdir(logdir):
+        sys.stderr("error: logdir: %s didn't exist somehow\n" % logdir)
+        time.sleep(0.1)
 
     if pbc == 1:
         pbc = True
@@ -132,8 +132,14 @@ while True:
         e1 = numpy.array([e1,])
     except gpaw.KohnShamConvergenceError:
         calculation_failed  = numpy.array(1,'i')
+    t1 = time.time()
+
 
     if my_comm.rank == 0:
+        performance_log = os.path.join(logdir, "performance.txt")
+        fperformance = open(performance_log, "a+")
+        fperformance.write("%i %.3f\n" % (nforce_calls, (t1-t0)))
+        fperformance.close()
         world.send(calculation_failed, my_client_rank, tag=0)
         if not calculation_failed:
             world.send(e1, my_client_rank, tag=0) 
