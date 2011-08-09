@@ -181,13 +181,15 @@ def load_mode(modefilein):
         f = modefilein
     else:
         f = open(modefilein, 'r')
-    natoms = int(f.readline().split()[0])/3
-    ret = numpy.zeros((natoms, 3))
-    for i in range(natoms):
-        line = f.readline().strip().split()
+    if len(f.readline().split()) == 3:
+        f.seek(0);
+    lines = f.readlines()
+    mode = []
+    for line in lines:
+        l = line.strip().split()
         for j in range(3):
-            ret[i][j] = float(line[j])
-    return ret
+            mode.append(float(l[j]))
+    return numpy.array(mode).reshape(len(mode)/3, 3)
 
 def save_mode(modefileout, displace_vector, reactant):
     '''
@@ -200,7 +202,6 @@ def save_mode(modefileout, displace_vector, reactant):
         f = modefileout
     else:
         f = open(modefileout, 'w')
-    f.write("%d %d\n" % (len(reactant) * 3, 3 * int(reactant.free.sum())))
     for i in range(len(displace_vector)):
         f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0], 
             displace_vector[i][1], displace_vector[i][2]))

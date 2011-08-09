@@ -81,7 +81,6 @@ public:
     The value returned is true if the calculation converges. */
     long locate();//(Matter *min1, Matter *min2);
     LowestEigenmodeInterface const * getLowestEigenmode() const;
-    long getnFreeCoord() const;
 
     AtomMatrix getSaddlePositions();
     AtomMatrix getEigenMode();
@@ -104,7 +103,6 @@ private:
     double eigenValue; // estimate for the lowest eigenvalue
     AtomMatrix eigenMode; // lowest eigenmode
     AtomMatrix initialDisplacement;
-    long nFreeCoord; // number of free coordinates
     long status;
 
     void clean(); // clean up dynamically allocated memory
