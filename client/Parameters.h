@@ -71,7 +71,7 @@ public:
     double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
     int    saddleMaxLocalizedAtoms; // maximum number of atoms to consider part of the mode
-    double saddleConcaveStepSize; // The size of the step to take in a concave region.
+
     // [Optimizers]
     string optMethod;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
