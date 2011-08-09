@@ -20,7 +20,5 @@
 namespace constants
 {
     const std::string READ("rb"); // set the file to read
-    const std::string APPEND("ab"); // set the file to append
-    const std::string WRITE("wb"); // set the file to write
 }
 #endif
