@@ -37,7 +37,6 @@ SaddlePoint::SaddlePoint()
     forceCallsSaddlePointConcave = 0;
     forceCallsSaddlePointConvex = 0;
     eigenValue = 0;
-    foundNegativeMode = false;
     return;
 }
 
@@ -368,21 +367,14 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
-        if((eigenValue < -parameters->saddleNonzeroMode || foundNegativeMode) || !parameters->saddlePushDisplacement)
-        {
-            // Determine a CG step.
-            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
-            saddle->setPositions(posStep);
-            forcesStep = saddle->getForces();
-            forcesStep = projectedForce(forcesStep);
-            maxStep = parameters->saddleMaxStepSize;
-            pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-            foundNegativeMode = true;
-        }
-        else
-        {
-            pos = saddle->getPositions() + initialDisplacement * parameters->saddleConcaveStepSize;
-        }
+        // Determine a CG step.
+        posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
+        saddle->setPositions(posStep);
+        forcesStep = saddle->getForces();
+        forcesStep = projectedForce(forcesStep);
+        maxStep = parameters->saddleMaxStepSize;
+        pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+
         // The system (saddle) is moved to a new configuration
         double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
         saddle->setPositions(pos);
