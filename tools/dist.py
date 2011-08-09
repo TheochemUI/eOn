@@ -4,7 +4,8 @@ import sys
 import numpy
 
 import pathfix
-import io, atoms
+import fileio as io
+import atoms
 
 p1 = io.loadcon(sys.argv[1])
 p2 = io.loadcon(sys.argv[2])
