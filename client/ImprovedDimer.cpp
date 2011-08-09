@@ -176,12 +176,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
 //            cout <<tau<<endl;
 
-            if(parameters->saddleMaxLocalizedAtoms > 0)
-            {
-//                cout <<"localize\n";
-                tau = localize(tau, parameters->saddleMaxLocalizedAtoms);
-                tau.normalize();
-            }
             C_tau = C_tau_min;
 
             // Calculate the new g1.
