@@ -14,35 +14,6 @@
 #include <cassert>
 #include <iostream>
 
-// Atom Matrix localizor
-AtomMatrix helper_functions::localize(AtomMatrix original, int maxAtoms)
-{
-    AtomMatrix temp = original;
-    if(temp.rows() <= maxAtoms)
-    {
-        return temp;
-    }
-    AtomMatrix local = original;
-    local.setZero();
-    for(int i = 0; i < maxAtoms; i++)
-    {
-        double maxmoved = 0.0;
-        int maxi = 0;
-        for(int i = 0; i < temp.rows(); i++)
-        {
-            if(temp.row(i).norm() > maxmoved)
-            {
-                maxmoved = temp.row(i).norm();
-                maxi = i;
-            }
-        }
-        local.row(maxi) = temp.row(maxi);
-        temp.row(maxi).setZero();
-    }        
-    return local;
-}
-
-
 // Random number generator
 
 double helper_functions::random(long newSeed)
