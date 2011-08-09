@@ -58,9 +58,7 @@ Parameters::Parameters(){
     saddleMaxSingleDisplace = 10.;
     saddlePerpForceRatio = 0.0; // undocumented
     saddleMaxLocalizedAtoms = 0; // undocumented
-    saddleNonzeroMode = 0.01; // undocumented
     saddleConcaveStepSize = 0.1; // undocumented
-    saddlePushDisplacement = false; //undocumented
 
     // [Optimizers] //
     optMethod = "cg";
@@ -233,9 +231,7 @@ int Parameters::load(FILE *file){
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
         saddleMaxLocalizedAtoms = ini.GetValueF("Saddle Search", "max_localized_atoms", saddleMaxLocalizedAtoms); //undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "displace_type", SaddlePoint::DISP_LOAD));
-        saddleNonzeroMode = ini.GetValueF("Saddle Search", "nonzero_mode", saddleNonzeroMode); //undocumented
         saddleConcaveStepSize = ini.GetValueF("Saddle Search", "concave_step", saddleConcaveStepSize); //undocumented
-        saddlePushDisplacement = ini.GetValueB("Saddle Search", "push_displacement", saddlePushDisplacement); //undocumented
         // XXX: This is a result of mixing our server/client config files.
         if(saddleDisplaceType != SaddlePoint::DISP_NOT_FCC_OR_HCP &&
            saddleDisplaceType != SaddlePoint::DISP_MIN_COORDINATED && 

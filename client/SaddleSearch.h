@@ -106,7 +106,6 @@ private:
     AtomMatrix initialDisplacement;
     long nFreeCoord; // number of free coordinates
     long status;
-    bool foundNegativeMode;
 
     void clean(); // clean up dynamically allocated memory
 
