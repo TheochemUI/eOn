@@ -258,22 +258,6 @@ void Matter::setBoundary(int axis1, int axis2, double val)
     recomputePotential = true;
 }
 
-
-void Matter::activatePeriodicBoundaries()
-{
-    usePeriodicBoundaries = true;
-    applyPeriodicBoundary();
-    recomputePotential = true;
-}
-
-
-void Matter::deactivatePeriodicBoundaries()
-{
-    usePeriodicBoundaries = false;
-    recomputePotential = true;
-}
-
-
 double Matter::getPosition(long int indexAtom, int axis) const
 {
     return positions(indexAtom,axis);

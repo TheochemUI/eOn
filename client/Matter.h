@@ -51,8 +51,6 @@ public:
     double getBoundary(int axis1, int axis2) const; // return the length of the periodic cell for the axis specified
     void setBoundary(int axis, Vector3d); // set the length of the periodic cell for the axis specified
     void setBoundary(int axis1, int axis2, double val); // set the length of the periodic cell for the axis specified
-    void activatePeriodicBoundaries(); // activate the periodic boundary conditions
-    void deactivatePeriodicBoundaries(); // deactivate periodic boundary conditions
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
     void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
