@@ -153,11 +153,17 @@ def init(config_file = ""):
     config.main_job = parser.get('Main', 'job')
     config.main_temperature = parser.getfloat('Main', 'temperature')
 
-    try:
-        config.main_random_seed = parser.getint('Main', 'random_seed')
+    config.main_random_seed = parser.getint('Main', 'random_seed')
+    if int(config.main_random_seed) >= 0:
         numpy.random.seed(config.main_random_seed)
-    except:
+    else:
         config.main_random_seed = None
+            
+#    try:
+#        config.main_random_seed = parser.getint('Main', 'random_seed')
+#        numpy.random.seed(config.main_random_seed)
+#    except:
+#        config.main_random_seed = None
 
     #Structure Comparison options
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
