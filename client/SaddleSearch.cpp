@@ -131,24 +131,20 @@ void SaddlePoint::loadMode(string filename)
 
 void SaddlePoint::loadMode(FILE *modeFile)
 {
-    long nall=0, nfree=0;
-    fscanf(modeFile, "%ld %ld", &nall, &nfree);
-    nFreeCoord = nfree;
-    mode.resize(nall/3, 3);
+    long const nAtoms = saddle->numberOfAtoms();
+    mode.resize(nAtoms, 3);
     mode.setZero();
-    for (int i=0; i < nall/3; i++)
+    int temp;
+    fscanf(modeFile, "%d %d", &temp, &temp);
+    for (int i=0; i < nAtoms; i++)
     {
-        for(int j=0; j<3; j++)
-        {
-            fscanf(modeFile, "%lf", &mode(i,j));
-        }
+        fscanf(modeFile, "%lf %lf %lf", &mode(i,0), &mode(i,1), &mode(i,2));
     }
 }
 
 void SaddlePoint::saveMode(FILE *modeFile)
 {
     long const nAtoms = saddle->numberOfAtoms();
-    fprintf(modeFile, "%ld %ld\n", nAtoms*3, nFreeCoord);
     for (long i=0; i < nAtoms; ++i) {
         if (saddle->getFixed(i)) {
             fprintf(modeFile, "0 0 0\n");
@@ -185,11 +181,6 @@ long SaddlePoint::locate(void)
     }
 
     return(status);
-}
-
-long SaddlePoint::getnFreeCoord() const
-{
-    return nFreeCoord;
 }
 
 AtomMatrix SaddlePoint::getEigenMode() 
