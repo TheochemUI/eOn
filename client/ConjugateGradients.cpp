@@ -111,7 +111,7 @@ void ConjugateGradients::fullRelax()
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
-        if (outputLevel > 0) {
+        if (!parameters->quiet) {
             printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
                    i, matter->maxForce(), matter->getPotentialEnergy());
         }
