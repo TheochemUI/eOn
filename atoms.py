@@ -153,10 +153,11 @@ def identical(atoms1, atoms2):
         for j in range(len(pan)):
             if i == j:
                 continue
-            minpan = min(minpan, pan[j])
-        if not (minpan < epsilon_r and atoms1.names[j] == atoms2.names[i]):
+            if pan[j] < minpan:
+                minpan = pan[j]
+                minj = j
+        if not (minpan < epsilon_r and atoms1.names[minj] == atoms2.names[i]):
             return False
-
     return True
             
 
