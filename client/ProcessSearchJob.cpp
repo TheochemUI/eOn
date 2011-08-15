@@ -175,25 +175,28 @@ int ProcessSearchJob::doProcessSearch(void)
         reactModes = hessian.getModes(Hessian::REACTANT);
         if(reactModes.size() == 0)
         {
-            #ifndef NDEBUG
+            if(!parameters->quiet)
+            {
                 printf("Reactant bad hessian.\n");
-            #endif
+            }
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         saddleModes = hessian.getModes(Hessian::SADDLE);
         if(saddleModes.size() == 0)
         {
-            #ifndef NDEBUG
+            if(!parameters->quiet)
+            {
                 printf("Saddle bad hessian.\n");
-            #endif
+            }
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         prodModes = hessian.getModes(Hessian::PRODUCT);
         if(prodModes.size() == 0)
         {
-            #ifndef NDEBUG
+            if(!parameters->quiet)
+            {
                 printf("Product bad hessian.\n");
-            #endif
+            }
             return SaddlePoint::STATUS_FAILED_PREFACTOR;
         }
         fCallsPrefactors += Potential::fcalls - f1;
