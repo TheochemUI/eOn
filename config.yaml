@@ -1265,7 +1265,7 @@ Saddle Search:
             description: >
                 The standard deviation of the magnitude of the displacement.
             kind: float
-            default: 0.01
+            default: 0.1
 
         stdev_translation:
             description: >
