@@ -63,6 +63,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     // Loop over values of dimer dR and print the output to results.dat.
     FILE *results = fopen("results.dat", "w");
     fprintf(results, "%14s    %14s\n", "dR", "curvature");
+    printf("%14s    %14s\n", "dR", "curvature");
     AtomMatrix posB;
     AtomMatrix forceB;
     double curvature = 0.0;
@@ -73,6 +74,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
         forceB = reactant->getForces();
         curvature = ((forceB - forceA).cwise() * displacement).sum() / dRs[dRi];
         fprintf(results, "%14.8f    %14.8f\n", dRs[dRi], curvature);
+        printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
         fflush(results);
     }
     fclose(results);
