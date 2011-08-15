@@ -165,11 +165,11 @@ void ParallelReplicaJob::dynamics()
         
        // printf("MDsteps %ld Ekin= %lf Tkin= %lf \n",nsteps,kinE,kinT); 
 
-#ifndef NDEBUG
-        if (ncheck == check_steps && !newstate){
-           reactant->matter2xyz("movie", true);
-        }
-#endif
+//#ifndef NDEBUG
+//        if (ncheck == check_steps && !newstate){
+//           reactant->matter2xyz("movie", true);
+//        }
+//#endif
         if (ncheck == check_steps && !newstate){
             ncheck = 0; // reinitialize the ncheck
             nrecord = 0;

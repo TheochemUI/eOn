@@ -200,9 +200,6 @@ double ConjugateGradients::stepSize(AtomMatrix forceBeforeStep, AtomMatrix force
         step = projectedForce1/curvature;
         if(maxStep < fabs(step)){
             // Calculated is too large
-            #ifndef NDEBUG            
-                cout<<"CG exceeded max step"<<endl;
-            #endif
             step = sign(step)*maxStep;
         }
     }
