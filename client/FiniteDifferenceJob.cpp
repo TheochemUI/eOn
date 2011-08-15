@@ -34,7 +34,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     AtomMatrix posA;    
     posA = reactant->getPositions();        
 
-    double dRs[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0, 1.5, 2.0};
+    double dRs[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0};
     int ndRs = 16;
 
     AtomMatrix forceA;    
