@@ -56,7 +56,9 @@ Parameters::Parameters(){
     saddleDisplaceRadius = 4.0;
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 10.;
+    saddleConvergedForce = 0.005;
     saddlePerpForceRatio = 0.0; // undocumented
+
 
     // [Optimizers] //
     optMethod = "cg";
@@ -226,6 +228,8 @@ int Parameters::load(FILE *file){
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
+        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
+
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "displace_type", SaddlePoint::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
