@@ -69,6 +69,7 @@ public:
     double saddleDisplaceMagnitude; // norm of the displacement vector
     double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z direction for atoms being displaced
     double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
+    double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
     // [Optimizers]
