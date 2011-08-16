@@ -1240,6 +1240,8 @@ Saddle Search:
                 client_not_FCC_HCP_coordinated: >
                     Displacement is made on the client centered on an atom that
                     is not in a local HCP or FCC coordination.
+                water: >
+                    Displacement conserve the molecular structure of water
 
         perp_force_ratio:
             description: >
@@ -1278,6 +1280,14 @@ Saddle Search:
                 terminated.
             kind: float
             default: 20.0
+
+        converged_force:
+            description: >
+                When the maximum force (in eV/A) on any one atom is smaller
+                than this value, the structure is considered converged onto
+                a saddle point.
+            kind: float
+            default: 0.005
 
 ################################################################################
 
