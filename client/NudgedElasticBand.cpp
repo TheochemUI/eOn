@@ -63,7 +63,7 @@ void NudgedElasticBand::initialize(Matter *initialPassed, Matter *finalPassed, P
     }
     *neb[images+1] = *final;  // final image
     nAtoms = initial->numberOfAtoms();
-    assert(nAtoms == matterFinal->numberOfAtoms());
+//    assert(nAtoms == matterFinal->numberOfAtoms());
 
     AtomMatrix posInitial = neb[0]->getPositions();
     AtomMatrix posFinal = neb[images+1]->getPositions();
