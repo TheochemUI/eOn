@@ -55,8 +55,8 @@ std::vector<std::string> SaddleSearchJob::run(void)
         saddlePoint->loadMode(mode_passed);
     }
 
-    int status = doSaddleSearch();
-
+    int status;
+        status = doSaddleSearch();
     printEndState(status);
     saveData(status);
 
@@ -74,7 +74,17 @@ int SaddleSearchJob::doSaddleSearch()
     long status;
     int f1;
     f1 = Potential::fcalls;
-    status = saddlePoint->locate();
+    try {
+        status = saddlePoint->locate();
+    }catch (int e) {
+        if (e == 100) {
+            status = SaddlePoint::STATUS_POTENTIAL_FAILED; 
+        }else{
+            printf("unknown exception: %i\n", e);
+            throw e;
+        }
+    }
+
     fCallsSaddle += Potential::fcalls - f1;
 
     if (status == SaddlePoint::STATUS_INIT) {
@@ -95,12 +105,15 @@ void SaddleSearchJob::saveData(int status){
     //      the SaddlePoint object. They will be taken out eventually.
 
     fprintf(fileResults, "%d termination_reason\n", status);
+    fprintf(fileResults, "saddle_search job_type\n");
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-    fprintf(fileResults, "%f final_eigenvalue\n", saddlePoint->getEigenValue());
+    if (status != SaddlePoint::STATUS_POTENTIAL_FAILED) {
+        fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
+        fprintf(fileResults, "%f final_eigenvalue\n", saddlePoint->getEigenValue());
+    }
     fclose(fileResults);
 
     std::string modeFilename("mode.dat");
@@ -137,4 +150,3 @@ void SaddleSearchJob::printEndState(int status) {
 
     return;
 }
-
