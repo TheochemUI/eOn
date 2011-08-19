@@ -41,12 +41,13 @@ public:
         STATUS_BAD_NO_CONVEX, //2
         STATUS_BAD_HIGH_ENERGY, //3
         STATUS_BAD_MAX_CONCAVE_ITERATIONS, //4
-        STATUS_BAD_MAX_ITERATIONS, //4
-        STATUS_BAD_NOT_CONNECTED, //5
-        STATUS_BAD_PREFACTOR, //6
-        STATUS_BAD_HIGH_BARRIER, //7
-        STATUS_BAD_MINIMA, //8
-        STATUS_FAILED_PREFACTOR //8
+        STATUS_BAD_MAX_ITERATIONS, //5
+        STATUS_BAD_NOT_CONNECTED, //6
+        STATUS_BAD_PREFACTOR, //7
+        STATUS_BAD_HIGH_BARRIER, //8
+        STATUS_BAD_MINIMA, //9
+        STATUS_FAILED_PREFACTOR, //10
+        STATUS_POTENTIAL_FAILED, // 11
     };
 
     // Constants used to displace atoms before a saddle search
