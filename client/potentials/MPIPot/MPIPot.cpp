@@ -52,7 +52,7 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     //Recv data from potential
     MPI::COMM_WORLD.Recv(&failed,   1, MPI::INT,    potentialRank, 0);
     if (failed == 1) {
-        throw 123;
+        throw 100;
     }
 
     MPI::COMM_WORLD.Recv(U,   1, MPI::DOUBLE, potentialRank, 0);
