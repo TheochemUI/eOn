@@ -294,7 +294,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                 dispIO = StringIO.StringIO()
                 io.savecon(dispIO, displacement)
                 modeIO = StringIO.StringIO()
-                io.save_mode(modeIO, mode, self.reactant)
+                io.save_mode(modeIO, mode)
                 self.job_table.add_row( {'state':self.state.number,
                                          'search_id':self.search_id,
                                          'wuid':self.wuid,
@@ -384,7 +384,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 io.savecon(dispIO, displacement)
                 search['displacement_passed.con'] = dispIO
                 modeIO = StringIO.StringIO()
-                io.save_mode(modeIO, mode, self.reactant)
+                io.save_mode(modeIO, mode)
                 search['mode_passed.dat'] = modeIO
                 searches.append(search) 
                 self.wuid += 1
