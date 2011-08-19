@@ -19,6 +19,11 @@ class MinimizationJob: public Job {
         MinimizationJob(Parameters *params);
         ~MinimizationJob(void);
         std::vector<std::string> run(void);
+        enum {
+            STATUS_GOOD,
+            STATUS_MAX_ITERATIONS,
+            STATUS_POTENTIAL_FAILED,
+        };
     private:
         Parameters *parameters;
 };
