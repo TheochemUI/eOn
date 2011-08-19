@@ -86,7 +86,7 @@ class Displace:
         self.reactant.r = self.temp_array
         mode = displacement/numpy.linalg.norm(displacement)
         mode = displacement
-        io.save_mode(os.path.join(path, "mode_passed.dat"), displacement, self.reactant)
+        io.save_mode(os.path.join(path, "mode_passed.dat"), displacement)
 
 #class KDB()
 #class Recycle()

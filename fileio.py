@@ -191,7 +191,7 @@ def load_mode(modefilein):
             mode.append(float(l[j]))
     return numpy.array(mode).reshape(len(mode)/3, 3)
 
-def save_mode(modefileout, displace_vector, reactant):
+def save_mode(modefileout, displace_vector):
     '''
     Saves an Nx3 numpy array into a mode.dat file. 
         modefileout:     may be either a filename or file-like object
