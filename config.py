@@ -223,7 +223,12 @@ def init(config_file = ""):
         config.comm_script_cancel_job_cmd = parser.get('Communicator', 'cancel_job')
         config.comm_script_submit_job_cmd = parser.get('Communicator', 'submit_job')
     if config.comm_type == 'mpi':
-        pass
+        def mpiexcepthook(type, value, traceback):
+            sys.__excepthook__(type, value, traceback)
+            from mpi4py import MPI
+            sys.stderr.write("exception occured on rank %i\n" % MPI.COMM_WORLD.rank);
+            MPI.COMM_WORLD.Abort()
+        sys.excepthook = mpiexcepthook
     if config.comm_type == 'boinc':
         config.comm_boinc_project_dir = parser.get('Communicator', 'boinc_project_dir')
         config.comm_boinc_wu_template_path = parser.get('Communicator', 'boinc_wu_template_path')
@@ -246,6 +251,9 @@ def init(config_file = ""):
             config.comm_blacklist = [ string.strip(c) for c in parser.get('Communicator', 'blacklist').split(',') ]
         else:
             config.comm_blacklist = []
+
+    #Process Search options
+    config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
 
     #Saddle Search options
     config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented

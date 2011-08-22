@@ -196,7 +196,6 @@ def save_mode(modefileout, displace_vector):
     Saves an Nx3 numpy array into a mode.dat file. 
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
-        reactant:        an atoms object that this mode is from. This is used to determine which atoms are free
     '''
     if hasattr(modefileout, 'write'):
         f = modefileout

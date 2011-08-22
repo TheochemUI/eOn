@@ -1301,7 +1301,7 @@ Saddle Search:
                 than this value, the structure is considered converged onto
                 a saddle point.
             kind: float
-            default: 0.005
+            default: 0.01
 
 ################################################################################
 
@@ -1437,7 +1437,7 @@ Optimizers:
                 When the maximum force (in eV/A) on any one atom is smaller
                 than this value, the structure is considered minimized.
             kind: float
-            default: 0.005
+            default: 0.01
 
         finite_dist:
             description: >
