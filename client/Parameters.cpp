@@ -231,7 +231,7 @@ int Parameters::load(FILE *file){
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
 
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
-        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "displace_type", SaddlePoint::DISP_LOAD));
+        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddlePoint::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
         if(saddleDisplaceType != SaddlePoint::DISP_NOT_FCC_OR_HCP &&
            saddleDisplaceType != SaddlePoint::DISP_MIN_COORDINATED && 
