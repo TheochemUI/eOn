@@ -69,44 +69,7 @@ class MinModeExplorer(Explorer):
 
 
         self.reactant = self.state.get_reactant()
-        if config.disp_type == 'random':
-            self.displace = displace.Random(self.reactant, config.disp_magnitude, 
-                                   config.disp_radius, hole_epicenters=moved_atoms)
-        elif config.disp_type == 'under_coordinated':
-            self.displace = displace.Undercoordinated(self.reactant, config.disp_max_coord, 
-                                             config.disp_magnitude, 
-                                             config.disp_radius, 
-                                             hole_epicenters=moved_atoms, 
-                                             cutoff=config.comp_neighbor_cutoff,
-                                             use_covalent=config.comp_use_covalent,
-                                             covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'least_coordinated':
-            self.displace = displace.Leastcoordinated(self.reactant, config.disp_magnitude,
-                                             config.disp_radius, 
-                                             hole_epicenters=moved_atoms,
-                                             cutoff=config.comp_neighbor_cutoff,
-                                             use_covalent=config.comp_use_covalent, 
-                                             covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'not_FCC_HCP_coordinated':
-            self.displace = displace.NotFCCorHCP(self.reactant, config.disp_magnitude,
-                                        config.disp_radius, hole_epicenters=moved_atoms,
-                                        cutoff=config.comp_neighbor_cutoff,
-                                        use_covalent=config.comp_use_covalent,
-                                        covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'listed_atoms':
-            self.displace = displace.ListedAtoms(self.reactant, config.disp_magnitude, 
-                                        config.disp_radius, hole_epicenters=moved_atoms,
-                                        cutoff=config.comp_neighbor_cutoff,
-                                        use_covalent=config.comp_use_covalent,
-                                        covalent_scale=config.comp_covalent_scale)
-        elif config.disp_type == 'water':
-            self.displace = displace.Water(self.reactant, config.stdev_translation,
-                                  config.stdev_rotation, config.molecule_list, 
-                                  config.disp_at_random)
-        else:
-            logger.error("Unknown displacement type: %s", config.disp_type)
-            raise ValueError()
-
+        self.displace = displace.DisplacementManager(self.reactant, moved_atoms)
 
     def explore(self):
         self.register_results()

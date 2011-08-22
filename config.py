@@ -248,20 +248,22 @@ def init(config_file = ""):
             config.comm_blacklist = []
 
     #Saddle Search options
-    config.disp_type = parser.get('Saddle Search', 'displace_type')
-    if config.disp_type == 'water':
-        config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
-        config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
-        config.molecule_list = eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
-        config.disp_at_random = parser.getint('Saddle Search', 'disp_at_random') # undocumented
-    else:
-        config.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
-        config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
-        config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
-    if config.disp_type == 'under_coordinated':
-        config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
-    if config.disp_type == 'listed_atoms':
-        config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
+    config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented
+    config.displace_frac_listed = parser.getfloat('Saddle Search', 'displace_frac_listed') # undocumented
+    config.displace_frac_not_FCC_HCP = parser.getfloat('Saddle Search', 'displace_frac_not_FCC_HCP') # undocumented
+    config.displace_frac_under_coordinated = parser.getfloat('Saddle Search', 'displace_frac_under_coordinated') # undocumented
+    config.displace_frac_least_coordinated = parser.getfloat('Saddle Search', 'displace_frac_least_coordinated') # undocumented
+    config.displace_frac_water = parser.getfloat('Saddle Search', 'displace_frac_water') # undocumented
+    config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
+    config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
+    config.molecule_list = eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
+    config.disp_at_random = parser.getint('Saddle Search', 'disp_at_random') # undocumented
+    config.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
+    config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
+    config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
+    config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
+    config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
+        
 
     #KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
