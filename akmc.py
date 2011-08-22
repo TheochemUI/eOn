@@ -429,7 +429,8 @@ def main():
                             os.path.join(config.path_results, "info.txt"),
                             os.path.join(config.path_results, "akmc.log"),
                             os.path.join(config.path_results, "jobs.tbl"),
-                            os.path.join(config.path_root, "results")]
+                            os.path.join(config.path_root, "results"),
+                            os.path.join(config.path_root, "explorer.pickle"),]
                 for thing in rmthings:
                     attempt_removal(thing)
                 if not options.quiet:
