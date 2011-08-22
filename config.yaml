@@ -1135,7 +1135,7 @@ Saddle Search:
                 The individual index should be seperated by a comma 10, 20,-1
                 would be the 10, 20 and the last atom.
             kind: string
-            default: None
+            default: 0
 
         max_step_size:
             description: >
@@ -1208,40 +1208,54 @@ Saddle Search:
             description: >
             kind: float
             default: 0.1
-
-        displace_type:
+            
+        displace_frac_random:
             description: >
-                Type of displace to use
+            kind: float
+            default: 1.0
+        
+        displace_frac_listed:
+            description: >
+            kind: float
+            default: 0.0
+        
+        displace_frac_not_FCC_HCP:
+            description: >
+            kind: float
+            default: 0.0
+
+        displace_frac_under_coordinated:
+            description: >
+            kind: float
+            default: 0.0
+        
+        displace_frac_least_coordinated:
+            description: >
+            kind: float
+            default: 0.0
+        
+        displace_frac_water:
+            description: >
+            kind: float
+            default: 0.0
+
+        client_displace_type:
+            description: >
+                Type of displace to use client-side.
             kind: string
-            default: random
+            default: load
             values:
-                listed_atoms: >
-                    Select an atom from the list passed as displace_atomlist
-                not_FCC_HCP: >
-                    Select an atom that is not in a local HCP or FCC
-                    coordination.
-                under_coordinated: >
-                    Select a random atom with coordination less than
-                    displace_max_coordination.
                 least_coordinated: >
-                    Determine the lowest coordination number of all atoms in
-                    the configuration and select one atom at random with that
-                    coordination number.
-                random: >
-                    Select an atom at random from the free atoms in the
-                    configuration.
-                client_least_coordinated: >
                     Displacement is made on the client centered on an atom with
                     the minimal coordination.
-                client_last_atom: >
-                    Displacement is made on the client centered on the last
-                    atom in the configuration.
-                disp_load: >
-                client_not_FCC_HCP_coordinated: >
+                last_atom: >
+                    Displacement is made on the client centered on the last atom
+                    in the configuration.
+                load: >
+                    Load the server-side displacement.
+                not_FCC_HCP_coordinated: >
                     Displacement is made on the client centered on an atom that
                     is not in a local HCP or FCC coordination.
-                water: >
-                    Displacement conserve the molecular structure of water
 
         perp_force_ratio:
             description: >

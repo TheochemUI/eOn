@@ -7,6 +7,8 @@
 ## A copy of the GNU General Public License is available at
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
+import logging
+logger = logging.getLogger('displace')
 
 import os, re
 from math import cos, sin
@@ -15,6 +17,90 @@ import numpy
 import atoms
 import fileio as io
 import config
+
+class DisplacementManager:
+    def __init__(self, reactant, moved_atoms):
+        self.reactant = reactant
+        # TODO: Remove all the pointless config.* crap
+        if config.displace_frac_random > 0:
+            self.random = Random(self.reactant, 
+                                 config.disp_magnitude, config.disp_radius,
+                                 hole_epicenters=moved_atoms)
+        if config.displace_frac_under_coordinated > 0:
+            self.under = Undercoordinated(self.reactant, 
+                                          config.disp_max_coord,
+                                          config.disp_magnitude, config.disp_radius,
+                                          hole_epicenters=moved_atoms,
+                                          cutoff=config.comp_neighbor_cutoff,
+                                          use_covalent=config.comp_use_covalent,
+                                          covalent_scale=config.comp_covalent_scale)
+        if config.displace_frac_least_coordinated > 0:
+            self.least = Leastcoordinated(self.reactant, 
+                                          config.disp_magnitude, config.disp_radius,
+                                          hole_epicenters=moved_atoms,
+                                          cutoff=config.comp_neighbor_cutoff,
+                                          use_covalent=config.comp_use_covalent,
+                                          covalent_scale=config.comp_covalent_scale)
+        if config.displace_frac_not_FCC_HCP > 0:
+            self.not_FCC_HCP = NotFCCorHCP(self.reactant, 
+                                           config.disp_magnitude,
+                                           config.disp_radius,
+                                           hole_epicenters=moved_atoms,
+                                           cutoff=config.comp_neighbor_cutoff,
+                                           use_covalent=config.comp_use_covalent,
+                                           covalent_scale=config.comp_covalent_scale)
+        if config.displace_frac_listed > 0:
+            self.listed = ListedAtoms(self.reactant, 
+                                      config.disp_magnitude, config.disp_radius,
+                                      hole_epicenters=moved_atoms,
+                                      cutoff=config.comp_neighbor_cutoff,
+                                      use_covalent=config.comp_use_covalent,
+                                      covalent_scale=config.comp_covalent_scale)
+        if config.displace_frac_water > 0:
+            self.water = Water(self.reactant, 
+                               config.stdev_translation, config.stdev_rotation,
+                               config.molecule_list, config.disp_at_random)
+        total = 0.0
+        total += config.displace_frac_random
+        total += config.displace_frac_listed
+        total += config.displace_frac_not_FCC_HCP
+        total += config.displace_frac_under_coordinated
+        total += config.displace_frac_least_coordinated
+        total += config.displace_frac_water
+        self.plist = [config.displace_frac_random/total]
+        self.plist.append(self.plist[-1] + config.displace_frac_listed/total)        
+        self.plist.append(self.plist[-1] + config.displace_frac_not_FCC_HCP/total)        
+        self.plist.append(self.plist[-1] + config.displace_frac_under_coordinated/total)        
+        self.plist.append(self.plist[-1] + config.displace_frac_least_coordinated/total)        
+        self.plist.append(self.plist[-1] + config.displace_frac_water/total)        
+
+    def make_displacement(self):
+        disp_types = ["random", "listed", "not_FCC_HCP", "under", "least", "water"]
+        r = numpy.random.random_sample()
+        i = 0
+        while self.plist[i] < r:
+            i += 1
+        disp_type = disp_types[i]
+        if disp_type == "random":
+            logger.debug("Made random displacement")
+            return self.random.make_displacement()
+        elif disp_type == "listed":
+            logger.debug("Made listed atom displacement")
+            return self.listed.make_displacement()
+        elif disp_type == "under":
+            logger.debug("Made under-coordinated displacement")
+            return self.under.make_displacement()
+        elif disp_type == "least":
+            logger.debug("Made least-coordinated displacement")
+            return self.least.make_displacement()
+        elif disp_type == "not_FCC_HCP":
+            logger.debug("Made not-FCC-or-HCP displacement")
+            return self.not_FCC_HCP.make_displacement()
+        elif disp_type == "water":
+            logger.debug("Made water displacement")
+            return self.water.make_displacement()
+        raise DisplaceError()
+            
 
 class NotImplementedError(Exception):
     pass
