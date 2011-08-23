@@ -52,6 +52,8 @@ class Potential
         void virtual force(long nAtoms, const double *positions, 
                            const int *atomicNrs, double *forces, double *energy, 
                            const double *box) = 0;
+        
+        static Potential* pot;
 
 };
 
