@@ -3,57 +3,57 @@ Debug
 
 Parameters that are generally used to help debug calculations
 
-**keep_bad_saddles**
+    **save_stdout**: Save the standard output from the client to a file named stdout_0.dat
 
-   default: False
+        type: boolean
 
-   Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
+        default: ``False``
 
-**keep_all_result_files**
+    **interactive_shell**: 
 
-   default: False
+        type: boolean
 
-   Stores all result files in main_directory/results
+        default: ``True``
 
-**result_files_path**
+    **result_files_path**: Where to store all result files. Defaults to 'debug_results'.
 
-   default: ./debug_results/
+        type: string
 
-   Where to store all result files. Defaults to 'debug_results'.
+        default: ``./debug_results/``
 
-**register_extra_results**
+    **use_mean_time**: Select transition times from the mean of the exponential distribution of escape times.
 
-   default: False
+        type: boolean
 
-   Register processes found for a state after leaving that state.
+        default: ``False``
 
-**use_mean_time**
+    **register_extra_results**: Register processes found for a state after leaving that state.
 
-   default: False
+        type: boolean
 
-   Select transition times from the mean of the exponential distribution of escape times.
+        default: ``False``
 
-**target_trajectory**
+    **target_trajectory**: Follow the state-to-state trajectory of another akmc simulation.
 
-   default: False
+        type: boolean
 
-   Follow the state-to-state trajectory of another akmc simulation.
+        default: ``False``
 
-**save_stdout**
+    **keep_bad_saddles**: Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
 
-   default: False
+        type: boolean
 
-   Save the standard output from the client to a file named stdout_0.dat
+        default: ``False``
 
-**interactive_shell**
+    **keep_all_result_files**: Stores all result files in main_directory/results
 
-   default: True
+        type: boolean
 
-   
+        default: ``False``
 
-**write_movies**
+    **write_movies**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 

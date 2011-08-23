@@ -3,80 +3,57 @@
 
 Paths:
 
-    description: >
-        Location of files related to the sending and receiving data on the
-        server.
-
     options:
 
         superbasin_recycling:
-            description: >
             kind: string
             default: "%(main_directory)s/SB_recycling"
 
         superbasins:
-            description: >
             kind: string
             default: "%(main_directory)s/superbasins/"
 
         main_directory:
-            description: >
-                This is the root directory of the simulation. Configuration
-                files and the initial reactant are here and by default all of
-                the simulation data will be stored under this directory.
             kind: string
             default: ./
 
         scratch:
-            description: >
             kind: string
             default: "%(main_directory)s/jobs/scratch/"
 
         results:
-            description: >
             kind: string
             default: "%(main_directory)s"
 
         kdb:
-            description: >
             kind: string
             default: "%(main_directory)s/kdb/"
 
         kdb_scratch:
-            description: >
             kind: string
             default: "%(main_directory)s/kdbscratch/"
 
         states:
-            description: >
-                Where all of the information about individual states is
-                located.
             kind: string
             default: "%(main_directory)s/states/"
 
         potential_files:
-            description: >
-                For extra files needed by the client for the potential.
             kind: string
             default: "%(main_directory)s/potfiles"
 
         jobs_in:
-            description: >
             kind: string
             default: "%(main_directory)s/jobs/in/"
 
         jobs_out:
-            description: >
             kind: string
             default: "%(main_directory)s/jobs/out/"
 
         incomplete:
-            description: >
             kind: string
             default: "%(main_directory)s/jobs/incomplete/"
 
         bh_minima:
-            description: >
             kind: string
             default: "%(main_directory)s/minima"
 
@@ -84,33 +61,25 @@ Paths:
 
 NEB:
 
-    description: >
-
     options:
 
         images:
-            description: >
-                Number of NEB images between the fixed endpoints
             kind: int
             default: 5
 
         spring:
-            description: >
             kind: boolean
             default: True
 
         climbing_image_method:
-            description: >
             kind: boolean
             default: False
 
         old_tangent:
-            description: >
             kind: boolean
             default: False
 
         opt_method:
-            description: >
             kind: string
             default: OPT_CG
 
@@ -118,22 +87,17 @@ NEB:
 
 Distributed Replica:
 
-    description: >
-
     options:
 
         sampling steps:
-            description: >
             kind: int
             default: 500
 
         target_temperature:
-            description: >
             kind: float
             default: 300.0
 
         balance_steps:
-            description: >
             kind: int
             default: 500
 
@@ -141,65 +105,41 @@ Distributed Replica:
 
 Debug:
 
-    description: >
-        Parameters that are generally used to help debug calculations
-
     options:
 
         save_stdout:
-            description: >
-                Save the standard output from the client to a file named
-                stdout_0.dat
             kind: boolean
             default: False
 
         result_files_path:
-            description: >
-                Where to store all result files. Defaults to 'debug_results'.
             kind: string
             default: ./debug_results/
 
         interactive_shell:
-            description: >
             kind: boolean
             default: True
 
         use_mean_time:
-            description: >
-                Select transition times from the mean of the exponential
-                distribution of escape times.
             kind: boolean
             default: False
 
         register_extra_results:
-            description: >
-                Register processes found for a state after leaving that state.
             kind: boolean
             default: False
 
         target_trajectory:
-            description: >
-                Follow the state-to-state trajectory of another akmc
-                simulation.
             kind: boolean
             default: False
 
         keep_bad_saddles:
-            description: >
-                Keep data about bad saddles. If true, the result files for
-                failed saddle searches are kept in the badprocdata directory
-                within the state directory for that search.
             kind: boolean
             default: False
 
         keep_all_result_files:
-            description: >
-                Stores all result files in main_directory/results
             kind: boolean
             default: False
 
         write_movies:
-            description: >
             kind: boolean
             default: False
 
@@ -207,98 +147,51 @@ Debug:
 
 Main:
 
-    description: >
-        These are the options that go in the 'Main' section of config.ini
-
     options:
 
         job:
-            description: >
-                The type of job to execute.
             kind: string
             default: akmc
             values:
-                parallel_replica: >
-                    Calculate the rare-event dynamics of the system by
-                    combining transitions observed from multiple trajectories
-                    run in parallel.
-                saddle_search: >
-                    Do a saddle point search using a minimum mode method.
-                minimization: >
-                    Find the minimum from an initial configuration.
-                displacement_sampling: >
-                    Job to sample different displacement methods and parameters
-                    to see which are the most efficient.
-                process_search: >
-                    Combined saddle search, minimizations, and prefactor
-                    calculations. Used by the aKMC method.
-                basin_hopping: >
-                    Search for global minimum using basin hopping method.
-                dimer_dr: >
-                    Rye is changing this.
-                dimer_rotation: >
-                    Rye is changing this.
-                akmc: >
-                    Run an adaptive kinetic monte carlo simulation.
-                hessian: >
-                    Calculate the Hessian matrix for the specified
-                    configuration in a process.
-                md: >
-                    Molecular dynamics.
+                - parallel_replica
+                - saddle_search
+                - minimization
+                - displacement_sampling
+                - process_search
+                - basin_hopping
+                - akmc
+                - hessian
+                - md
 
         potential:
-            description: >
-                the type of potential to execute
             kind: string
             default: lj
             values:
-                qsc: >
-                    Quantum Sutton-Chen potential, for FCC metals.
-                lenosky_Si: >
-                    Lenosky potential, for silicon.
-                sw_si: >
-                    Stillinger-Weber potential, for silicon.
-                lj: >
-                    Lennard-Jones potential in reduced units.
-                edip: >
-                    Environment-Dependent Interatomic Potential, for carbon.
-                morse_pt: >
-                    Morse potential for platinum.
-                zpice: >
-                    Water on platinum.
-                bopfox: >
-                    Bond order potential, for metals.
-                emt: >
-                    Effective medium theory, for metals.
-                eam_al: >
-                    Embedded atom method parameterized for aluminum.
-                vasp: >
-                    Vienna Ab-Initio Simulation Program (VASP) interface.
-                tersoff_si: >
-                    Tersoff pair potential with angular terms, for silicon.
-                tip4p: >
-                    Point charge model for water.
-                lammps: >
-                    The LAMMPS potentials.
-                mpi: >
-                    Communicate with a mpi process to calculate energy and forces.
-                    
+                - qsc
+                - lenosky_Si
+                - sw_si
+                - lj
+                - edip
+                - morse_pt
+                - zpice
+                - bopfox
+                - emt
+                - eam_al
+                - vasp
+                - tersoff_si
+                - tip4p
+                - lammps
+                - mpi
 
         random_seed:
-            description: >
-                Takes an integer number for the random seed. If this number is
-                less than zero the current time is used as the random seed.
             kind: int
             default: -1
 
         temperature:
-            description: >
-                The temperature that the job will run at.
             kind: float
             default: 300.0
 
         quiet:
-            description: >
             kind: boolean
             default: False
 
@@ -306,65 +199,37 @@ Main:
 
 Structure Comparison:
 
-    description: >
-
     options:
 
         use_covalent:
-            description: >
-                Use the covalent radii of atoms to determine neighbors.
             kind: boolean
             default: False
 
         energy_difference:
-            description: >
-                How close in energy two configurations must be to be considered
-                energetically equivalent.
             kind: float
             default: 0.01
 
         brute_neighbors:
-            description: >
-                Determine neighbors by brute force (use this with nonorthogonal
-                boxes).
             kind: boolean
             default: False
 
         check_rotation:
-            description: >
-                Finds optimal overlap of structures via rotation before
-                comparing them. Use this option in systems where structures can
-                become rotated, such as nanoparticles.
             kind: boolean
             default: False
 
         neighbor_cutoff:
-            description: >
-                Atoms within this distance of each other are considered
-                neighbors.
             kind: float
             default: 3.3
 
         indistinguishable_atoms:
-            description: >
-                Use an algorithm to compare structures that does not
-                distinguish between atoms of the same element. That is to say
-                the numbering of the atoms does not affect the structural
-                comparison.
             kind: boolean
             default: True
 
         distance_difference:
-            description: >
-                The maximum distance two mapped atoms may be for two
-                configurations to be considered equivalent.
             kind: float
             default: 0.05
 
         covalent_scale:
-            description: >
-                Multiply covalent radii by this amount before determining
-                neighbors.
             kind: float
             default: 1.3
 
@@ -372,87 +237,69 @@ Structure Comparison:
 
 Dynamics:
 
-    description: >
-
     options:
 
         post_transition_steps:
-            description: >
             kind: int
             default: 500
 
         andersen_alpha:
-            description: >
             kind: float
             default: 0.2
 
         langevin_friction:
-            description: >
             kind: float
             default: 0.005
 
         thermostat:
-            description: >
             kind: string
             default: andersen
 
         dephase_steps:
-            description: >
             kind: int
             default: 200
 
         time_step:
-            description: >
             kind: float
             default: 1.0
 
         check_period:
-            description: >
             kind: int
             default: 500
 
         bisection_accuracy:
-            description: >
             kind: int
             default: 1
 
         dephase_loop_max:
-            description: >
             kind: int
             default: 5
 
         nose_mass:
-            description: >
             kind: float
             default: 1.0
 
         dephase_loop_stop:
-            description: >
             kind: boolean
             default: False
 
         steps:
-            description: >
             kind: int
             default: 1000
 
         andersen_collision_steps:
-            description: >
             kind: float
             default: 10
 
         auto_stop:
-            description: >
             kind: boolean
             default: True
 
         refine_transition_time:
-            description: >
             kind: boolean
             default: True
 
         record_resolution:
-            description: >
             kind: int
             default: 1
 
@@ -460,76 +307,45 @@ Dynamics:
 
 Dimer:
 
-    description: >
-        Options for controlling the dimer minimum mode finding method on the
-        client side.
-
     options:
 
         improved:
-            description: >
-                Improvements to the dimer method from Kastner.
             kind: boolean
             default: False
 
         seperation:
-            description: >
-                Seperation between dimer images.
             kind: float
             default: 0.001
 
         torque_min:
-            description: >
-                Minimum torque above which the dimer rotates only once and
-                below which is does not rotate.
             kind: float
             default: 0.1
 
         opt_method:
-            description: >
-                Optimization algorithm to choose the dimer rotation direction
             kind: string
             default: sd
             values:
-                sd: >
-                    steepest descent, rotate along the rotational force.
-                cg: >
-                    conjudate gradient, rotate along conjugate directions.
-                lbfgs: >
-                    quasi-Newton method [not implemeted yet].
+                - sd
+                - cg
+                - lbfgs
 
         torque_max:
-            description: >
-                Maximum torque above which the dimer rotates up to
-                rotations_max times.
             kind: float
             default: 1.0
 
         finite_angle:
-            description: >
-                Finite difference angle over which the dimer is rotated to find
-                the lowest curvature.
             kind: float
             default: 0.005
 
         rotations_max:
-            description: >
-                Maximum number of rotations allowed for the dimer in each
-                step.
             kind: int
             default: 8
 
         rotations_min:
-            description: >
-                Minimum number of rotations allowed for the dimer in each
-                step.
             kind: int
             default: 1
 
         converged_angle:
-            description: >
-                Dimer is considered converged if it rotates fewer degrees than
-                this.
             kind: float
             default: 5.0
 
@@ -537,119 +353,64 @@ Dimer:
 
 Basin Hopping:
 
-    description: >
-        Basin hopping is a Monte Carlo method in which the energy of each
-        configuration is taken to be the energy of a local minimization.
-
     options:
 
         max_displacement:
-            description: >
-                Max displacement in each degree of freedom.
             kind: float
             default: 0.5
 
         quenching_steps:
-            description: >
-                Number at steps at 0 temperature.
             kind: int
             default: 0
 
         swap_probability:
-            description: >
-                The probability in range [0,1.0] that a swapping step takes
-                place instead of a displacement step. The swap step selects two
-                atoms of different elements and switches them.
             kind: float
             default: 0.0
 
         single_atom_displace:
-            description: >
-                Displace only one atom per step.
             kind: boolean
             default: False
 
         md_first:
-            description: >
             kind: boolean
             default: False
 
         steps:
-            description: >
-                Number at steps to take at the temeprature assigned.
             kind: int
             default: 10000
 
         jump_max:
-            description: >
-                The number of consecutive rejected steps after which jump steps
-                should be taken. This serves to provide a more global search
-                when the structure is stuck in a certain basin. The number of
-                jump steps is assigned in jump_steps. See paper on the Basin
-                Hopping with Occasional Jumping algorithm by Iwamatsu and
-                Okabe.
             kind: int
             default: 0
 
         significant_structure:
-            description: >
-                Displace minimized structures.
             kind: boolean
             default: False
 
         displacement_distribution:
-            description: >
-                The distribution used for the displacement of each atom.
             kind: string
             default: uniform
             values:
-                gaussian: >
-                    max_displacement serves as the width of a gaussian
-                    distribution used to select displacements
-                uniform: >
-                    A random number is selected between 0 and max_displacement
+                - gaussian
+                - uniform
 
         max_displacement_algorithm:
-            description: >
-                The algorithm used to assign max displacement of each atom.
             kind: string
             default: standard
             values:
-                quadratic: >
-                    The max displacement of each atom will be quadratically
-                    correlated to its distance from the geometric center, with
-                    the overal maximum displacement being the value assigned in
-                    max_displacement.
-                linear: >
-                    The max displacement of each atom will be linearly
-                    correlated to its distance from the geometric center, with
-                    the overal maximum displacement being the value assigned in
-                    max_displacement.
-                standard: >
-                    The max displacement of all the atoms will be the value
-                    assigned in max_displacement.
+                - quadratic
+                - linear
+                - standard
 
         jump_steps:
-            description: >
-                The number of jump steps to take after the jump_max number of
-                consecutive rejections have taken place.
             kind: int
             default: 0
 
         md_probability:
-            description: >
-                The probability that molecular dynamics is run before the first
-                step is taken. The parameters for molecular dynamics can be set
-                in the [Dynamics] section. As default, the temperature
-                specified in [Main] will be used, or another temperature can be
-                specificed in MD_temp.
             kind: float
             default: 0.9
 
         md_temp:
-            description: >
-                The temperature to use for the molecular dynamics steps that
-                occur before basin hopping steps.
             kind: float
             default: 300.0
 
@@ -657,32 +418,25 @@ Basin Hopping:
 
 Recycling:
 
-    description: >
-
     options:
 
         save_suggestions:
-            description: >
             kind: boolean
             default: False
 
         move_distance:
-            description: >
             kind: float
             default: 0.2
 
         use_recycling:
-            description: >
             kind: boolean
             default: False
 
         use_sb_recycling:
-            description: >
             kind: boolean
             default: False
 
         displace_moved_only:
-            description: >
             kind: boolean
             default: False
 
@@ -690,45 +444,29 @@ Recycling:
 
 KDB:
 
-    description: >
-        One of the bottlenecks in an aKMC simulation is performing the saddle
-        point searches. The kinetic database is used to ameliorate this cost by
-        storing information about processes as they are found and using it to
-        predict future saddle points.
-
     options:
 
         Kdb_only:
-            description: >
             kind: boolean
             default: False
 
         querypath:
-            description: >
             kind: string
             default: False
 
         wait:
-            description: >
-                Wait for the query to finish before submitting jobs (for
-                debugging purposes).
             kind: boolean
             default: False
 
         addpath:
-            description: >
             kind: string
             default: False
 
         use_kdb:
-            description: >
-                Turn Kdb on/off.
             kind: boolean
             default: False
 
         keep:
-            description: >
-                Keep the saddle suggestions (for debugging purposes).
             kind: boolean
             default: False
 
@@ -736,42 +474,32 @@ KDB:
 
 Hyperdynamics:
 
-    description: >
-
     options:
 
         bb_dvmax:
-            description: >
             kind: float
             default: 0.0
 
         bias_potential:
-            description: >
             kind: string
             default: none
             values:
-                bond_boost: >
-                    bond boost method from Miron and Fichthorn
-                none: >
-                    with no bias potential, run regular MD
+                - bond_boost
+                - none
 
         bb_rmd_steps:
-            description: >
             kind: int
             default: 0
 
         bb_rcut:
-            description: >
             kind: float
             default: 3.0
 
         bb_strech_threshold:
-            description: >
             kind: float
             default: 0.0001
 
         bb_ds_curvature:
-            description: >
             kind: float
             default: 3.95
 
@@ -779,46 +507,25 @@ Hyperdynamics:
 
 Process Search:
 
-    description: >
-        The AKMC method can ask clients to do a saddle search, find connecting
-        minima, and calculate prefactors all within the Process Search job
-        type.
-
     options:
 
         prefactor_max:
-            description: >
-                Maximum value for a resonable prefactor.
             kind: float
             default: 1e+21
 
         default_prefactor:
-            description: >
-                Calculate prefactor if zero, otherwise use given value instead
-                of doing a full prefactor calculation.
             kind: int
             default: 0
 
         minimization_offset:
-            description: >
-                After a saddle is found, images are placed on either side of
-                the saddle along the mode and minimized to ensure that the
-                saddle is connected to the original minimum and to locate the
-                product state. This is the distance those images are displaced
-                from the saddle.
             kind: float
             default: 0.2
 
         minimize_first:
-            description: >
-                Every time a process search is run by a client the reactant
-                will be minimized first before doing any saddle searches.
             kind: boolean
             default: False
 
         prefactor_min:
-            description: >
-                Minimum value for a resonable prefactor.
             kind: float
             default: 1000000000.0
 
@@ -826,37 +533,21 @@ Process Search:
 
 Hessian:
 
-    description: >
-        Options for controlling how Hessian matricies are calculated.
-
     options:
 
         finite_dist:
-            description: >
-                Finite difference distance between forces used to construct the
-                Hessian.
             kind: float
             default: 0.001
 
         type:
-            description: >
-                The Hessian to be calculated has to be one of reactant, saddle,
-                or product. This option only matters for the "hessian" job.
-                Hessian are also calculated in the "process_search" job.
             kind: string
             default: reactant
 
         min_displacement:
-            description: >
-                Minimum amount that an atom has to move to be included in the
-                Hessian calculation.
             kind: float
             default: 0.25
 
         within_radius:
-            description: >
-                Atoms within this radius of moving atoms are included in the
-                Hessian.
             kind: float
             default: 5.0
 
@@ -864,30 +555,17 @@ Hessian:
 
 Lanczos:
 
-    description: >
-        Options for controlling the Lanczos minimum mode finding method on the
-        client side.
-
     options:
 
         finite_dist:
-            description: >
-                Finite difference step size when computing the second
-                derivative of the potential along the Lanczos vectors.
             kind: float
             default: 0.001
 
         tolerance:
-            description: >
-                This is the convergence critera for relative error of the
-                lowest eigenvalue.
             kind: float
             default: 0.001
 
         max_iterations:
-            description: >
-                The maximum number of refinement iterations when calculating
-                the minimum eigenvalue.
             kind: int
             default: 20
 
@@ -895,64 +573,36 @@ Lanczos:
 
 AKMC:
 
-    description: >
-        Parameters for the AKMC section of config.ini.
-
     options:
 
         confidence:
-            description: >
-                The confidence (out of 1.0) criterion for moving to the next
-                state.
             kind: float
             default: 0.99
 
         server_side:
-            description: >
-
-                If true the server does not send out "process_search" jobs
-                instead it manages individual dimer, minimization, and hessian
-                calculations. This option is usually used when a a single
-                "process_search" job will take a long time (hours or longer).
-
             kind: boolean
             default: false
 
         max_kmc_steps:
-            description: >
-                The maximum number of KMC transitions in a row.
             kind: int
             default: 100000
 
         confidence_scheme:
-            description: >
             kind: string
             default: new
             values:
-                new: >
-                old: >
+                - new
+                - old
 
         thermally_accessible_window:
-            description: >
-                Processes with barriers within this number of kT above the
-                lowest barrier will be used in the rate table and for
-                confidence calculations.
             kind: float
             default: 20
 
         thermally_accessible_buffer:
-            description: >
-                Processes with barriers of thermally_accessible_window +
-                thermally_accessible_buffer will be stored, in the event that
-                they are thermally accessible later, but are not used in the
-                rate table or for the confidence calculations. Processes with
-                barriers higher than the sum of these two values will be
-                discarded.
             kind: float
             default: 0
 
         confidence_correction:
-            description: >
             kind: boolean
             default: False
 
@@ -960,152 +610,79 @@ AKMC:
 
 Communicator:
 
-    description: >
-        Options that apply to all of the different communicator types.
-
     options:
 
         boinc_project_dir:
-            description: >
-                This is the full path to the root of the BOINC project
-                directory.
             kind: string
             default: ./
 
         boinc_priority:
-            description: >
-                The priority of the BOINC workunits that will be submitted.
             kind: int
             default: 1
 
         client_path:
-            description: >
-                Either the name or path to the eon client binary. If only a
-                name and not a path is given then eon looks for the binary in
-                same directory as config.ini failing to find it there it will
-                search though the directories in the $PATH environment
-                variable.
             kind: string
             default: eonclient
 
         number_of_CPUs:
-            description: >
-                The number of jobs that will run simultaneously.
             kind: int
             default: 1
 
         blacklist:
-            description: >
             kind: string
             default: None
 
         queued_jobs:
-            description: >
-                This is the name of the script that returns the job ids of all
-                the running and queued jobs. It does not have to return the job
-                ids of only eon related jobs.
             kind: string
             default: queued_jobs.sh
 
         boinc_re_template_path:
-            description: >
-                This is the path, relative from the boinc_project_dir, to the
-                boinc result template.
             kind: string
             default: None
 
         boinc_results_path:
-            description: >
-                This is the path where BOINC puts the final results. If you are
-                using the sample_assimilator the results are stored in the
-                project directory in a folder named sample_results.
             kind: string
             default: "%(boinc_project_dir)s/sample_results"
 
         boinc_wu_template_path:
-            description: >
-                This is the path, relative from the boinc_project_dir, to the
-                boinc workunit template.
             kind: string
             default: None
 
         jobs_per_bundle:
-            description: >
-                In eon a job is defined as task that the eon client executes,
-                such as a process search or a parallel replica run. Sometimes
-                it makes sense to run more than one of the same type of job at
-                a time.
             kind: int
             default: 1
 
         cancel_job:
-            description: >
-                This is the name of the script that cancels a job. It takes a
-                single argument the job id.
             kind: string
             default: cancel_job.sh
 
         boinc_appname:
-            description: >
-                This is the name of the application in BOINC.
             kind: string
             default: eonclient
 
         script_path:
-            description: >
-                The path to the user defined scripts for submitting jobs to the
-                communicator.
             kind: string
             default: ./
 
         name_prefix:
-            description: >
-                When jobs are submitted to the scheduler they are given a
-                unique internally used named. In order to make the jobs
-                identifiable by the user the name_prefix can be set to a
-                meaningful string that will always be prepended to the job
-                names.
             kind: string
             default: eon
 
         type:
-            description: >
             kind: string
             default: local
             values:
-                cluster: >
-                    A job scheduler can be used to run jobs through user
-                    supplied shell scripts. Examples are given for SGE.
-                arc: >
-                    Jobs can be submitted to the grid computing software ARC.
-                local: >
-                    The local communicator runs the calculations on the same
-                    computer that the server is run on.
-                boinc: >
-                    Jobs can be submitted to a BOINC project.
-                mpi: >
-                    The server and client can be run together as a single large
-                    MPMD MPI job.
+                - cluster
+                - arc
+                - local
+                - boinc
+                - mpi
 
         submit_job:
-            description: >
-                This is the name of the script that submits a single job to the
-                queuing system. It takes two command line arguments. The first
-                is the name of the job. This is not required for eon use, but
-                is highly recommended so that users can identify which job is
-                which. The second argument is the working directory. This is
-                the path where the eon client should be executed. All of the
-                needed client files will be placed in this directory. The
-                script must return the job id of the submitted job. This is how
-                eon internally keeps track of jobs.
             kind: string
             default: submit_job.sh
 
         num_jobs:
-            description: >
-                Local( The number of jobs that will be run every time the
-                program is invoked) Cluster( The desired sum of the queued and
-                running jobs.) Boinc( The number of jobs to keep in the queue.
             kind: int
             default: 1
 
@@ -1113,193 +690,125 @@ Communicator:
 
 Saddle Search:
 
-    description: >
-        A saddle search is initiated by making a local displacement of atoms
-        from their position at the minimum of the current state. This
-        displacement can be done using the different strategies indicated by
-        the displace_type option, and the following parameters. If the user
-        knows something about the local environment where reactions are likely
-        to take place in the system, this information can be used to make
-        saddle searches more efficient by getting them started in the right
-        part of configuration space.
-
     options:
 
         disp_at_random:
-            description: >
             kind: int
             default: 1
 
         displace_atomlist:
-            description: >
-                The individual index should be seperated by a comma 10, 20,-1
-                would be the 10, 20 and the last atom.
             kind: string
             default: 0
 
         max_step_size:
-            description: >
             kind: float
             default: 0.2
 
         displace_radius:
-            description: >
-                Atoms within this distance of the epicenter will be displaced.
             kind: float
             default: 5.0
 
         max_single_displace:
-            description: >
             kind: float
             default: 10.0
 
         max_localized_atoms:
-            description: >
             kind: int
             default: 0
 
         stdev_rotation:
-            description: >
             kind: float
             default: 1.0
 
         client_max_single_displace:
-            description: >
-                Only functional when displacement is done on the client.
-                Defines the maximal allowed absolute value for a single
-                component in the displacement vector.
             kind: int
             default: 10
 
         displace_max_coordination:
-            description: >
-                When using under_coordinated as the displacement type, choose
-                only atoms with a coordination equal to or less than this.
             kind: int
             default: 11
 
         push_displacement:
-            description: >
             kind: boolean
             default: False
 
         max_iterations:
-            description: >
-                The maximum number of translation steps to be taken.
             kind: int
             default: 1000
 
         min_mode_method:
-            description: >
             kind: string
             default: dimer
             values:
-                dimer: >
-                    Use the dimer min-mode method.
-                lanczos: >
-                    Use the Lanczos min-mode method.
+                - dimer
+                - lanczos
 
         nonzero_mode:
-            description: >
             kind: float
             default: 0.01
 
         concave_step:
-            description: >
             kind: float
             default: 0.1
             
         displace_frac_random:
-            description: >
             kind: float
             default: 1.0
         
         displace_frac_listed:
-            description: >
             kind: float
             default: 0.0
         
         displace_frac_not_FCC_HCP:
-            description: >
             kind: float
             default: 0.0
 
         displace_frac_under_coordinated:
-            description: >
             kind: float
             default: 0.0
         
         displace_frac_least_coordinated:
-            description: >
             kind: float
             default: 0.0
         
         displace_frac_water:
-            description: >
             kind: float
             default: 0.0
 
         client_displace_type:
-            description: >
-                Type of displace to use client-side.
             kind: string
             default: load
             values:
-                least_coordinated: >
-                    Displacement is made on the client centered on an atom with
-                    the minimal coordination.
-                last_atom: >
-                    Displacement is made on the client centered on the last atom
-                    in the configuration.
-                load: >
-                    Load the server-side displacement.
-                not_FCC_HCP_coordinated: >
-                    Displacement is made on the client centered on an atom that
-                    is not in a local HCP or FCC coordination.
+                - least_coordinated
+                - last_atom
+                - load
+                - not_FCC_HCP_coordinated
 
         perp_force_ratio:
-            description: >
             kind: float
             default: 0.0
 
         displace_min_norm:
-            description: >
-                The total length of the displacement vector is ensured to
-                exceeds this value. Is useful when only a few degrees of
-                freedoms are displaced to guarantee that the starting point for
-                the saddle point search is significantly different from the
-                initial minimum.
             kind: float
             default: 0.0
 
         molecule_list:
-            description: >
             kind: string
             default: []
 
         displace_magnitude:
-            description: >
-                The standard deviation of the magnitude of the displacement.
             kind: float
             default: 0.1
 
         stdev_translation:
-            description: >
             kind: float
             default: 0.2
 
         max_energy:
-            description: >
-                The energy at which a saddle search is considered bad and
-                terminated.
             kind: float
             default: 20.0
 
         converged_force:
-            description: >
-                When the maximum force (in eV/A) on any one atom is smaller
-                than this value, the structure is considered converged onto
-                a saddle point.
             kind: float
             default: 0.01
 
@@ -1307,118 +816,49 @@ Saddle Search:
 
 Coarse Graining:
 
-    description: >
-        In AKMC simulations where there are vastly different rates, the
-        simulation can get stuck in a group of states connected by relatively
-        fast rates. In order to explore slower transitions, a prohibitively
-        large number of KMC steps may be needed. In order to circumvent this
-        problem, eOn implements two methods. The first method, projective
-        dynamics [1], groups states that are joined by fast rates into
-        superbasins. Information about transitions between states in a
-        superbasin is lost, but the rates for transitions across a superbasin
-        are correct. The second method, accelerated superbasining kinetic Monte
-        Carlo (AS-KMC) [2], artificially raises low barriers. The dynamics
-        between states connected by fast rates are simulated, but an error is
-        introduced in the dynamics direction and time. Both methods cannot be
-        used simultaneously.
-
     options:
 
         number_of_transitions:
-            description: >
-                If the transition counting scheme is being used
-                (scheme=transition_counting), this is the number of transitions
-                that must occur between two states before they are merged into
-                a superbasin.
             kind: int
             default: 5
 
         askmc_high_barrier_def:
-            description: >
-                This parameter sets how high a barrier must be to be considered
-                high in AS-KMC.
             kind: int
             default: 2
 
         use_askmc:
-            description: >
-                This option determines whether the AS-KMC coarse graining
-                method will be used. This mutually excludes the
-                use_projective_dynamics option.
             kind: boolean
             default: False
 
         superbasin_scheme:
-            description: >
-                Projective dynamics provides a method for calculating
-                transition rates across superbasins. An additional method is
-                needed in order to decide when to combine states into a
-                superbasin. eOn provides two methods. The first method, called
-                transition counting, counts the number of times that the
-                simulation has transitioned between a given pair of states.
-                After a critical number of transitions have occured, the pair
-                of states are merged to form a superbasin. (If one is already
-                in a superbasin, the other is added to that superbasin. If both
-                are already in superbasins, the two superbasins are merged).
-                This method can be selected by setting scheme equal to
-                transition_counting. Jean-Claude: document your scheme here
-                This method can be elected by setting scheme equal to
-                energy_level.
             kind: string
             default: transition_counting
 
         use_projective_dynamics:
-            description: >
-                This option determines whether the projective dynamics coarse
-                graining method will be used. This mutually excludes the
-                use_askmc option.
             kind: boolean
             default: False
 
         state_file:
-            description: >
-                File name for the state specific data stored within each of the
-                state directories.
             kind: string
             default: superbasin
 
         askmc_barrier_raise_param:
-            description: >
-                This parameter sets how much the barriers are raised during
-                AS-KMC. ( in the reference.)
             kind: float
             default: 1.5
 
         energy_increment:
-            description: >
-                If the energy level scheme is being used (scheme=energy_level).
-                Each state, the first time it is visited, is assigned an energy
-                level first equal to the energy of the minimum. Every time the
-                state is visited again by the Monte Carlo simulation, the
-                energy level is increased by this amount
             kind: float
             default: 0.01
 
         askmc_barrier_test_on:
-            description: >
             kind: boolean
             default: True
 
         askmc_connections_test_on:
-            description: >
-                This parameter determines whether to ensure that there are no
-                processes which connect states in the defined superbasin which
-                have not been visited yet and which have a low-barrier. This
-                check is somewhat more computationally expensive than the
-                previous because structure comparisons have to be made when
-                finding product states of unvisited processes.
             kind: boolean
             default: False
 
         askmc_confidence:
-            description: >
-                The confidence for AS-KMC. This value determines the accuracy
-                of the direction of the dynamics trajectory.
             kind: float
             default: 0.9
 
@@ -1426,54 +866,32 @@ Coarse Graining:
 
 Optimizers:
 
-    description: >
-        The eon client provides two optimizers quick-min and conjugate
-        gradients. These options are in the [Optimizers] section.
-
     options:
 
         converged_force:
-            description: >
-                When the maximum force (in eV/A) on any one atom is smaller
-                than this value, the structure is considered minimized.
             kind: float
             default: 0.01
 
         finite_dist:
-            description: >
-                The finite difference step size.
             kind: float
             default: 0.001
 
         max_move:
-            description: >
-                Maximum distance that an atom may be moved in a single
-                optimization step.
             kind: float
             default: 0.2
 
         time_step:
-            description: >
-                The dynamical timestep for the quickmin algorithm.
             kind: float
             default: 0.1
 
         max_iterations:
-            description: >
-                The maximum number of optimization iterations that the will be
-                performed.
             kind: int
             default: 1000
 
         opt_method:
-            description: >
-                The optimization method to use.
             kind: string
             default: cg
             values:
-                box: >
-                    Optimizes the atom positions and box using quickmin
-                cg: >
-                    Conjugate gradient
-                qm: >
-                    Quickmin
+                - box
+                - cg
+                - qm

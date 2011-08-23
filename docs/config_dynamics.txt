@@ -3,99 +3,99 @@ Dynamics
 
 
 
-**time_step**
+    **post_transition_steps**: 
 
-   default: 1
+        type: int
 
-   
+        default: ``500``
 
-**steps**
+    **andersen_alpha**: 
 
-   default: 1000
+        type: float
 
-   
+        default: ``0.2``
 
-**dephase_steps**
+    **langevin_friction**: 
 
-   default: 200
+        type: float
 
-   
+        default: ``0.005``
 
-**refine_transition_time**
+    **thermostat**: 
 
-   default: True
+        type: string
 
-   
+        default: ``andersen``
 
-**auto_stop**
+    **dephase_steps**: 
 
-   default: True
+        type: int
 
-   
+        default: ``200``
 
-**record_resolution**
+    **time_step**: 
 
-   default: 1
+        type: float
 
-   
+        default: ``1.0``
 
-**bisection_accuracy**
+    **check_period**: 
 
-   default: 1
+        type: int
 
-   
+        default: ``500``
 
-**check_period**
+    **bisection_accuracy**: 
 
-   default: 500
+        type: int
 
-   
+        default: ``1``
 
-**post_transition_steps**
+    **dephase_loop_max**: 
 
-   default: 500
+        type: int
 
-   
+        default: ``5``
 
-**dephase_loop_stop**
+    **nose_mass**: 
 
-   default: False
+        type: float
 
-   
+        default: ``1.0``
 
-**dephase_loop_max**
+    **dephase_loop_stop**: 
 
-   default: 5
+        type: boolean
 
-   
+        default: ``False``
 
-**thermostat**
+    **steps**: 
 
-   default: andersen
+        type: int
 
-   
+        default: ``1000``
 
-**andersen_alpha**
+    **andersen_collision_steps**: 
 
-   default: 0.2
+        type: float
 
-   
+        default: ``10``
 
-**andersen_collision_steps**
+    **auto_stop**: 
 
-   default: 10
+        type: boolean
 
-   
+        default: ``True``
 
-**nose_mass**
+    **refine_transition_time**: 
 
-   default: 1
+        type: boolean
 
-   
+        default: ``True``
 
-**langevin_friction**
+    **record_resolution**: 
 
-   default: 0.005
+        type: int
 
-   
+        default: ``1``
 

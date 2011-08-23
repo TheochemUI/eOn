@@ -3,69 +3,69 @@ Coarse Graining
 
 In AKMC simulations where there are vastly different rates, the simulation can get stuck in a group of states connected by relatively fast rates. In order to explore slower transitions, a prohibitively large number of KMC steps may be needed. In order to circumvent this problem, eOn implements two methods. The first method, projective dynamics [1], groups states that are joined by fast rates into superbasins. Information about transitions between states in a superbasin is lost, but the rates for transitions across a superbasin are correct. The second method, accelerated superbasining kinetic Monte Carlo (AS-KMC) [2], artificially raises low barriers. The dynamics between states connected by fast rates are simulated, but an error is introduced in the dynamics direction and time. Both methods cannot be used simultaneously.
 
-**state_file**
+    **number_of_transitions**: If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.
 
-   default: superbasin
+        type: int
 
-   File name for the state specific data stored within each of the state directories.
+        default: ``5``
 
-**use_projective_dynamics**
+    **askmc_high_barrier_def**: This parameter sets how high a barrier must be to be considered high in AS-KMC.
 
-   default: False
+        type: int
 
-   This option determines whether the projective dynamics coarse graining method will be used. This mutually excludes the use_askmc option.
+        default: ``2``
 
-**superbasin_scheme**
+    **use_askmc**: This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.
 
-   default: transition_counting
+        type: boolean
 
-   Projective dynamics provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin. eOn provides two methods. The first method, called transition counting, counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occured, the pair of states are merged to form a superbasin. (If one is already in a superbasin, the other is added to that superbasin. If both are already in superbasins, the two superbasins are merged). This method can be selected by setting scheme equal to transition_counting. Jean-Claude: document your scheme here This method can be elected by setting scheme equal to energy_level.
+        default: ``False``
 
-**number_of_transitions**
+    **superbasin_scheme**: Projective dynamics provides a method for calculating transition rates across superbasins. An additional method is needed in order to decide when to combine states into a superbasin. eOn provides two methods. The first method, called transition counting, counts the number of times that the simulation has transitioned between a given pair of states. After a critical number of transitions have occured, the pair of states are merged to form a superbasin. (If one is already in a superbasin, the other is added to that superbasin. If both are already in superbasins, the two superbasins are merged). This method can be selected by setting scheme equal to transition_counting. Jean-Claude: document your scheme here This method can be elected by setting scheme equal to energy_level.
 
-   default: 5
+        type: string
 
-   If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.
+        default: ``transition_counting``
 
-**energy_increment**
+    **use_projective_dynamics**: This option determines whether the projective dynamics coarse graining method will be used. This mutually excludes the use_askmc option.
 
-   default: 0.01
+        type: boolean
 
-   If the energy level scheme is being used (scheme=energy_level). Each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount
+        default: ``False``
 
-**use_askmc**
+    **state_file**: File name for the state specific data stored within each of the state directories.
 
-   default: False
+        type: string
 
-   This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the use_projective_dynamics option.
+        default: ``superbasin``
 
-**askmc_confidence**
+    **askmc_barrier_raise_param**: This parameter sets how much the barriers are raised during AS-KMC. ( in the reference.)
 
-   default: 0.9
+        type: float
 
-   The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.
+        default: ``1.5``
 
-**askmc_barrier_raise_param**
+    **energy_increment**: If the energy level scheme is being used (scheme=energy_level). Each state, the first time it is visited, is assigned an energy level first equal to the energy of the minimum. Every time the state is visited again by the Monte Carlo simulation, the energy level is increased by this amount
 
-   default: 1.5
+        type: float
 
-   This parameter sets how much the barriers are raised during AS-KMC. ( in the reference.)
+        default: ``0.01``
 
-**askmc_high_barrier_def**
+    **askmc_barrier_test_on**: 
 
-   default: 2
+        type: boolean
 
-   This parameter sets how high a barrier must be to be considered high in AS-KMC.
+        default: ``True``
 
-**askmc_barrier_test_on**
+    **askmc_connections_test_on**: This parameter determines whether to ensure that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier. This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when finding product states of unvisited processes.
 
-   default: True
+        type: boolean
 
-   
+        default: ``False``
 
-**askmc_connections_test_on**
+    **askmc_confidence**: The confidence for AS-KMC. This value determines the accuracy of the direction of the dynamics trajectory.
 
-   default: False
+        type: float
 
-   This parameter determines whether to ensure that there are no processes which connect states in the defined superbasin which have not been visited yet and which have a low-barrier. This check is somewhat more computationally expensive than the previous because structure comparisons have to be made when finding product states of unvisited processes.
+        default: ``0.9``
 

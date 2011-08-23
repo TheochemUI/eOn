@@ -27,30 +27,10 @@ class cfggui():
     def delete_event(self, widget, data=None):
         gtk.main_quit()
         return False
-            
-            
-            
-    #creates info windows        
-    def info(self, widget, event, d=None): 
-        if config.format[d[0]].keys[d[1]].kind == "string" and len(config.format[d[0]].keys[d[1]].values) > 0:
-            description = config.format[d[0]].keys[d[1]].description
-            description = "%s\ndefault: <b>%s</b>" %(description,config.format[d[0]].keys[d[1]].default)
-            for i in config.format[d[0]].keys[d[1]].values:
-                description = "%s\n" %description
-                description = "%s\n<b>%s</b>: %s" %(description,i.name,i.description) 
-        else:
-            description = config.format[d[0]].keys[d[1]].description
-            description = "%s\ndefault: <b>%s</b>" %(description,config.format[d[0]].keys[d[1]].default)
-    
-        self.infoWindow = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "%s" %description)
-        self.infoWindow.set_markup(description)
-        self.infoWindow.show_all()
-        result = self.infoWindow.run()
-        self.infoWindow.hide()
+
     
     
-    
-    # bolds options that are not default    
+    # bolds options that will be saved    
     def defaultchanged(self, widget, list=None):
         name = list[0]
         option = name.split(', ')[1]
@@ -74,6 +54,8 @@ class cfggui():
                 self.nameLabels[name].set_markup("<b>%s:</b>" %option)
             else:
                 self.nameLabels[name].set_markup("%s:" %option)
+                            
+        
         
         
         
@@ -81,13 +63,6 @@ class cfggui():
     def saveCheck(self, widget, data=None):
         self.saveButton.set_sensitive(True)
         self.closeButton.set_label("Cancel")
-        
-        
-        
-    # lets section description span across page   
-    def expose_event(self, descLabel, allocation, data=None):
-        for i in range(len(self.descLabels)):
-            self.descLabels[config.format[i].name].set_size_request(allocation.width, -1)
            
            
             
@@ -145,8 +120,7 @@ class cfggui():
                             self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'True')
                         else:
                             self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, 'False')
-                        
-                       
+                              
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
@@ -209,7 +183,6 @@ class cfggui():
             tabBox = gtk.VBox()
             tabBox.set_border_width(10)
             frame = gtk.Frame()
-            descSeparator = gtk.HSeparator()
             viewport = gtk.Viewport()
             viewport.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#F7F6F6"))
             viewport.set_shadow_type(gtk.SHADOW_NONE)
@@ -218,31 +191,12 @@ class cfggui():
             scrollWindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
             scrollWindow.set_shadow_type(gtk.SHADOW_NONE)
             self.notebook.append_page(scrollWindow, label)
-            sectionLabel = gtk.Label()
-            sectionLabel.set_markup("<b>%s: </b> " %config.format[i].name)
-            sectionLabel.set_alignment(0,0)
-            descname = config.format[i].name
-            self.descLabels[descname] = gtk.Label("%s" %config.format[i].description)
-            self.descLabels[descname].set_line_wrap(True)
-            self.descLabels[descname].set_alignment(0,0)
-            self.descLabels[descname].set_justify(gtk.JUSTIFY_FILL) 
-            self.descLabels[descname].connect("size-allocate", self.expose_event)
-            tabBox.pack_start(sectionLabel, False, False)
-            tabBox.pack_start(self.descLabels[descname], False, False)
-            tabBox.pack_start(descSeparator, False, False, 6)
             tabBox.pack_start(Htable, False, False)
             
             
             
 #keys
             for j in range(len(config.format[i].keys)):
-                infoButton = gtk.EventBox()
-                infoImage = gtk.Image()
-                tooltip1 = gtk.Tooltips()
-                tooltip1.set_tip(infoImage, "description of options")
-                infoImage.set_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_BUTTON)
-                infoButton.add(infoImage)
-                infoButton.connect("button_press_event", self.info, (i,j))
                 refreshButton = gtk.EventBox()
                 refreshImage = gtk.Image()
                 tooltip2 = gtk.Tooltips()
@@ -257,8 +211,8 @@ class cfggui():
                     self.buttons[name] = gtk.combo_box_new_text()
                     self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name) 
                     for k in range(len(config.format[i].keys[j].values)):
-                        self.buttons[name].append_text(str (config.format[i].keys[j].values[k].name))
-                        if config.format[i].keys[j].values[k].name == config.format[i].keys[j].default:
+                        self.buttons[name].append_text(str (config.format[i].keys[j].values[k]))
+                        if config.format[i].keys[j].values[k] == config.format[i].keys[j].default:
                             default = k         
                     try:
                         for k in range(len(config.format[i].keys[j].values)):    
@@ -266,22 +220,21 @@ class cfggui():
                                 default = k
                         self.changedbuttons.append(name)
                     except:
-                        pass 
-                    self.buttons[name].connect("changed", self.defaultchanged, [name,i,j])  
+                        pass
+                    self.buttons[name].connect("changed", self.defaultchanged, [name,i,j])   
                     try:
                         self.buttons[name].set_active(default)
                     except:
                         pass                                  
                     hbox = gtk.HBox(spacing = 5)
-                    hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
                     buttonbox = gtk.HBox(spacing =5)
                     buttonbox.pack_start(self.buttons[name],True,True)
-                    buttonbox.pack_start(refreshButton,False,False)
+                    buttonbox.pack_start(refreshButton, False, True)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding = 5) 
                     self.buttons[name].connect("changed", self.buttonChanged, name)
-                    self.buttons[name].connect("changed", self.saveCheck)   
+                    self.buttons[name].connect("changed", self.saveCheck)  
                      
                            
                 #strings without values
@@ -300,11 +253,10 @@ class cfggui():
                     except:
                         pass
                     hbox = gtk.HBox(spacing = 5) 
-                    hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
                     buttonbox = gtk.HBox(spacing =5)
                     buttonbox.pack_start(self.buttons[name],True,True)
-                    buttonbox.pack_start(refreshButton,False,False)
+                    buttonbox.pack_start(refreshButton, False, True)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
                     self.buttons[name].connect("changed", self.buttonChanged, name)
@@ -327,11 +279,10 @@ class cfggui():
                     except:
                         pass
                     hbox = gtk.HBox(spacing =5)
-                    hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
                     buttonbox = gtk.HBox(spacing =5)
                     buttonbox.pack_start(self.buttons[name],True,True)
-                    buttonbox.pack_start(refreshButton,False,False)
+                    buttonbox.pack_start(refreshButton, False, True)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
                     self.buttons[name].connect("changed", self.buttonChanged, name)
@@ -374,13 +325,11 @@ class cfggui():
                     boolhbox.pack_start(alignment, False, False)
                     boolhbox.pack_end(refreshButton, False, True)
                     hbox = gtk.HBox(spacing = 5)
-                    hbox.pack_start(infoButton, False, False)
                     hbox.pack_start(self.nameLabels[name], False, False)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(boolhbox,1,2,j,j+1, False| gtk.FILL, False,ypadding=5)
                     self.buttons[name].connect("toggled", self.buttonChanged, name)
                     self.RB2[name].connect("toggled", self.buttonChanged, name)
-                    
                     
                 refreshlist = [name, config.format[i].keys[j]]    
                 refreshButton.connect("button_press_event", self.refreshoption, refreshlist)      
