@@ -59,10 +59,13 @@ const char Potential::POT_BOPFOX[] =        "bopfox";
 const char Potential::POT_BOP[] =           "bop";
 const char Potential::POT_LAMMPS[] =        "lammps";
 const char Potential::POT_MPI[] =           "mpi";
+Potential* Potential::pot = NULL;
 
 Potential *Potential::getPotential(Parameters *parameters)
 {
-    Potential* pot;
+    if(pot) {
+        return pot;
+    }
     if(parameters->potential == POT_LJ)
         pot = new LJ();
     else if(parameters->potential == POT_IMD)
@@ -109,8 +112,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_MPI)
         pot = new MPIPot(parameters);
     #endif
-    else
-    {
+    else {
         printf("Unknown Potential: %s\n", parameters->potential.c_str());
         std::exit(1);
     }

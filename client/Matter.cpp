@@ -93,9 +93,9 @@ Matter::Matter(const Matter& matter)
 
 Matter::~Matter()
 {
-    if (potential!=NULL){
-        delete potential;
-    }
+//    if (potential!=NULL){
+//        delete potential;
+//    }
 }
 
 
@@ -190,11 +190,12 @@ void Matter::resize(const long int length)
 {
     if(length>0)
     {
-        if (potential)
-        {
-            delete potential;
-            potential = NULL;
-        }
+
+//        if (potential)
+//        {
+//            delete potential;
+//            potential = NULL;
+//        }
         
         nAtoms = length;
         positions.resize(length, 3);
