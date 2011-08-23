@@ -11,9 +11,6 @@
 #include <math.h>
 #include "Hessian.h"
 
-//const string Hessian::REACTANT =    "reactant";
-//const string Hessian::SADDLE =      "saddle";
-//const string Hessian::PRODUCT =     "product";
 const char Hessian::REACTANT[] =    "reactant";
 const char Hessian::SADDLE[] =      "saddle";
 const char Hessian::PRODUCT[] =     "product";
@@ -173,10 +170,10 @@ bool Hessian::calculate(string which)
     VectorXd freqs = es.eigenvalues();
 
     // GH debug
-    if(!parameters->quiet)
-    {
-        cout << "freqs\n" << freqs << endl;
-    }
+//    if(!parameters->quiet)
+//    {
+//        cout << "freqs\n" << freqs << endl;
+//    }
     
     //If we are checking for rotation, then the system has no frozen atoms and
     //can rotate and translate. This gives effectively zero eigenvalues. We
