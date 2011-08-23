@@ -3,65 +3,65 @@ Dimer
 
 Options for controlling the dimer minimum mode finding method on the client side.
 
-**seperation**
+    **improved**: Improvements to the dimer method from Kastner.
 
-   default: 0.001
+        type: boolean
 
-   Seperation between dimer images.
+        default: ``False``
 
-**finite_angle**
+    **seperation**: Seperation between dimer images.
 
-   default: 0.005
+        type: float
 
-   Finite difference angle over which the dimer is rotated to find the lowest curvature.
+        default: ``0.001``
 
-**rotations_min**
+    **torque_min**: Minimum torque above which the dimer rotates only once and below which is does not rotate.
 
-   default: 1
+        type: float
 
-   Minimum number of rotations allowed for the dimer in each step.
+        default: ``0.1``
 
-**rotations_max**
+    **opt_method**: Optimization algorithm to choose the dimer rotation direction
 
-   default: 8
+        type: string
 
-   Maximum number of rotations allowed for the dimer in each step.
+        default: ``sd``
 
-**torque_min**
+        options:
 
-   default: 0.1
+            ``sd``: steepest descent, rotate along the rotational force.
 
-   Minimum torque above which the dimer rotates only once and below which is does not rotate.
+            ``cg``: conjudate gradient, rotate along conjugate directions.
 
-**torque_max**
+            ``lbfgs``: quasi-Newton method [not implemeted yet].
 
-   default: 1
+    **torque_max**: Maximum torque above which the dimer rotates up to rotations_max times.
 
-   Maximum torque above which the dimer rotates up to rotations_max times.
+        type: float
 
-**improved**
+        default: ``1.0``
 
-   default: False
+    **finite_angle**: Finite difference angle over which the dimer is rotated to find the lowest curvature.
 
-   Improvements to the dimer method from Kastner.
+        type: float
 
-**converged_rotation**
+        default: ``0.005``
 
-   default: 5
+    **rotations_max**: Maximum number of rotations allowed for the dimer in each step.
 
-   Dimer is considered converged if it rotates fewer degrees than this.
+        type: int
 
-**opt_method**
+        default: ``8``
 
-   default: sd
+    **rotations_min**: Minimum number of rotations allowed for the dimer in each step.
 
-   Optimization algorithm to choose the dimer rotation direction
+        type: int
 
-   options:
+        default: ``1``
 
-       **sd**: steepest descent, rotate along the rotational force.
+    **converged_angle**: Dimer is considered converged if it rotates fewer degrees than this.
 
-       **cg**: conjudate gradient, rotate along conjugate directions.
+        type: float
 
-       **lbfgs**: quasi-Newton method [not implemeted yet].
+        default: ``5.0``
 

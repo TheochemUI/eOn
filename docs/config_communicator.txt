@@ -3,115 +3,117 @@ Communicator
 
 Options that apply to all of the different communicator types.
 
-**type**
+    **boinc_project_dir**: This is the full path to the root of the BOINC project directory.
 
-   default: local
+        type: string
 
-   
+        default: ``./``
 
-   options:
+    **boinc_priority**: The priority of the BOINC workunits that will be submitted.
 
-       **local**: The local communicator runs the calculations on the same computer that the server is run on.
+        type: int
 
-       **cluster**: A job scheduler can be used to run jobs through user supplied shell scripts. Examples are given for SGE.
+        default: ``1``
 
-       **boinc**: Jobs can be submitted to a BOINC project.
+    **client_path**: Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.
 
-       **arc**: Jobs can be submitted to the grid computing software ARC.
+        type: string
 
-**num_jobs**
+        default: ``eonclient``
 
-   default: 1
+    **number_of_CPUs**: The number of jobs that will run simultaneously.
 
-   Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.
+        type: int
 
-**jobs_per_bundle**
+        default: ``1``
 
-   default: 1
+    **blacklist**: 
 
-   In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.
+        type: string
 
-**client_path**
+        default: ``None``
 
-   default: eonclient
+    **queued_jobs**: This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.
 
-   Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.
+        type: string
 
-**number_of_CPUs**
+        default: ``queued_jobs.sh``
 
-   default: 1
+    **boinc_re_template_path**: This is the path, relative from the boinc_project_dir, to the boinc result template.
 
-   The number of jobs that will run simultaneously.
+        type: string
 
-**script_path**
+        default: ``None``
 
-   default: ./
+    **boinc_results_path**: This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.
 
-   The path to the user defined scripts for submitting jobs to the communicator.
+        type: string
 
-**name_prefix**
+        default: ``%(boinc_project_dir)s/sample_results``
 
-   default: eon
+    **boinc_wu_template_path**: This is the path, relative from the boinc_project_dir, to the boinc workunit template.
 
-   When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.
+        type: string
 
-**queued_jobs**
+        default: ``None``
 
-   default: queued_jobs.sh
+    **jobs_per_bundle**: In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.
 
-   This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.
+        type: int
 
-**submit_job**
+        default: ``1``
 
-   default: submit_job.sh
+    **cancel_job**: This is the name of the script that cancels a job. It takes a single argument the job id.
 
-   This is the name of the script that submits a single job to the queuing system. It takes two command line arguments. The first is the name of the job. This is not required for eon use, but is highly recommended so that users can identify which job is which. The second argument is the working directory. This is the path where the eon client should be executed. All of the needed client files will be placed in this directory. The script must return the job id of the submitted job. This is how eon internally keeps track of jobs.
+        type: string
 
-**cancel_job**
+        default: ``cancel_job.sh``
 
-   default: cancel_job.sh
+    **boinc_appname**: This is the name of the application in BOINC.
 
-   This is the name of the script that cancels a job. It takes a single argument the job id.
+        type: string
 
-**boinc_project_dir**
+        default: ``eonclient``
 
-   default: ./
+    **script_path**: The path to the user defined scripts for submitting jobs to the communicator.
 
-   This is the full path to the root of the BOINC project directory.
+        type: string
 
-**boinc_wu_template_path**
+        default: ``./``
 
-   default: 
+    **name_prefix**: When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.
 
-   This is the path, relative from the boinc_project_dir, to the boinc workunit template.
+        type: string
 
-**boinc_re_template_path**
+        default: ``eon``
 
-   default: 
+    **type**: 
 
-   This is the path, relative from the boinc_project_dir, to the boinc result template.
+        type: string
 
-**boinc_appname**
+        default: ``local``
 
-   default: eonclient
+        options:
 
-   This is the name of the application in BOINC.
+            ``cluster``: A job scheduler can be used to run jobs through user supplied shell scripts. Examples are given for SGE.
 
-**boinc_results_path**
+            ``arc``: Jobs can be submitted to the grid computing software ARC.
 
-   default: %(boinc_project_dir)s/sample_results
+            ``local``: The local communicator runs the calculations on the same computer that the server is run on.
 
-   This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.
+            ``boinc``: Jobs can be submitted to a BOINC project.
 
-**blacklist**
+            ``mpi``: The server and client can be run together as a single large MPMD MPI job.
 
-   default: 
+    **submit_job**: This is the name of the script that submits a single job to the queuing system. It takes two command line arguments. The first is the name of the job. This is not required for eon use, but is highly recommended so that users can identify which job is which. The second argument is the working directory. This is the path where the eon client should be executed. All of the needed client files will be placed in this directory. The script must return the job id of the submitted job. This is how eon internally keeps track of jobs.
 
-   
+        type: string
 
-**boinc_priority**
+        default: ``submit_job.sh``
 
-   default: 1
+    **num_jobs**: Local( The number of jobs that will be run every time the program is invoked) Cluster( The desired sum of the queued and running jobs.) Boinc( The number of jobs to keep in the queue.
 
-   The priority of the BOINC workunits that will be submitted.
+        type: int
+
+        default: ``1``
 

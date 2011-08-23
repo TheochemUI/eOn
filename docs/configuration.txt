@@ -10,16 +10,24 @@ each section is a list of configuration options and their corresponding values.
 The following is a list of all sections, keys, possible and default values, and
 descriptions of each.
 
-.. include:: _autogen/config_akmc.txt
-
-.. include:: _autogen/config_process_search.txt
-
-.. include:: _autogen/config_dimer.txt
-
-.. include:: _autogen/config_saddle_search.txt
-
-.. include:: _autogen/config_hessian.txt
-
-.. include:: _autogen/config_debug.txt
-
+.. include:: config_main.txt
+.. include:: config_structure_comparison.txt
+.. include:: config_communicator.txt
+.. include:: config_akmc.txt
+.. include:: config_dimer.txt
+.. include:: config_hessian.txt
+.. include:: config_basin_hopping.txt
+.. include:: config_dynamics.txt
+.. include:: config_distributed_replica.txt
+.. include:: config_coarse_graining.txt
+.. include:: config_hyperdynamics.txt
+.. include:: config_kdb.txt
+.. include:: config_lanczos.txt
+.. include:: config_neb.txt
+.. include:: config_optimizers.txt
+.. include:: config_paths.txt
+.. include:: config_process_search.txt
+.. include:: config_recycling.txt
+.. include:: config_saddle_search.txt
+.. include:: config_debug.txt
 

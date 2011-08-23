@@ -3,33 +3,33 @@ NEB
 
 
 
-**images**
+    **images**: Number of NEB images between the fixed endpoints
 
-   default: 5
+        type: int
 
-   Number of NEB images between the fixed endpoints
+        default: ``5``
 
-**spring**
+    **spring**: 
 
-   default: True
+        type: boolean
 
-   
+        default: ``True``
 
-**climbing_image_method**
+    **climbing_image_method**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 
-**old_tangent**
+    **old_tangent**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 
-**opt_method**
+    **opt_method**: 
 
-   default: OPT_CG
+        type: string
 
-   
+        default: ``OPT_CG``
 
