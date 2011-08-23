@@ -18,8 +18,10 @@ void lammps_eon::cleanMemory(void){
 // adress to supercell size
 void lammps_eon::force(long N, const double *R, const int *atomicNrs,
                        double *F, double *U, const double *box){
+
     double *pos = new double[3*N];
     int i;
+
 
     if (numberOfAtoms != N){
         makeNewLAMMPS(N, atomicNrs, box);
@@ -37,6 +39,9 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
 }
 
 void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
+
+    numberOfAtoms = N;
+    
     if(LAMMPSObj != NULL){
         cleanMemory();
     }
@@ -52,7 +57,7 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
             type_mapping[atomicNrs[i]] = num_types;
         }
     }
-    
+
     // creates configuration file that is read in when LAMMPS initialize
     FILE *fp;
     fp = fopen("lammps.conf","w");
@@ -85,6 +90,7 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
     if (fp == NULL) {
         printf("ERROR: Could not open lammps.in (LAMMPS input script)\n");
     }
+
     while (1) {
         if (fgets(line,1024,fp) == NULL){
             n = 0;
@@ -98,7 +104,7 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
         }
         LAMMPSObj->input->one(line);
     }  
-//printf("lammps initialized\n");
+
     return;
 }
 
