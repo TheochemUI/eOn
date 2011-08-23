@@ -3,83 +3,85 @@ Main
 
 These are the options that go in the 'Main' section of config.ini
 
-**job**
+    **job**: The type of job to execute.
 
-   default: process_search
+        type: string
 
-   The type of job to execute.
+        default: ``akmc``
 
-   options:
+        options:
 
-       **akmc**: Run an adaptive kinetic monte carlo simulation.
+            ``md``: Molecular dynamics.
 
-       **parallel_replica**: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+            ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
 
-       **process_search**: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
+            ``saddle_search``: Do a saddle point search using a minimum mode method.
 
-       **saddle_search**: Do a saddle point search using a minimum mode method.
+            ``displacement_sampling``: Job to sample different displacement methods and parameters to see which are the most efficient.
 
-       **minimization**: Find the minimum from an initial configuration.
+            ``process_search``: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
 
-       **hessian**: Calculate the Hessian matrix for the specified configuration in a process.
+            ``basin_hopping``: Search for global minimum using basin hopping method.
 
-       **dimer_dr**: Rye is changing this.
+            ``minimization``: Find the minimum from an initial configuration.
 
-       **dimer_rotation**: Rye is changing this.
+            ``akmc``: Run an adaptive kinetic monte carlo simulation.
 
-       **displacement_sampling**: Job to sample different displacement methods and parameters to see which are the most efficient.
+            ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.
 
-       **basin_hopping**: Search for global minimum using basin hopping method.
+    **potential**: the type of potential to execute
 
-**temperature**
+        type: string
 
-   default: 300
+        default: ``lj``
 
-   The temperature that the job will run at.
+        options:
 
-**random_seed**
+            ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
 
-   default: -1
+            ``lenosky_Si``: Lenosky potential, for silicon.
 
-   Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.
+            ``lammps``: The LAMMPS potentials.
 
-**potential**
+            ``sw_si``: Stillinger-Weber potential, for silicon.
 
-   default: pot LJ
+            ``edip``: Environment-Dependent Interatomic Potential, for carbon.
 
-   the type of potential to execute
+            ``lj``: Lennard-Jones potential in reduced units.
 
-   options:
+            ``morse_pt``: Morse potential for platinum.
 
-       **lj**: Lennard-Jones potential in reduced units.
+            ``zpice``: Water on platinum.
 
-       **morse_pt**: Morse potential for platinum.
+            ``mpi``: Communicate with a mpi process to calculate energy and forces.
 
-       **emt**: Effective medium theory, for metals.
+            ``bopfox``: Bond order potential, for metals.
 
-       **edip**: Environment-Dependent Interatomic Potential, for carbon.
+            ``emt``: Effective medium theory, for metals.
 
-       **vasp**: Vienna Ab-Initio Simulation Program (VASP) interface.
+            ``eam_al``: Embedded atom method parameterized for aluminum.
 
-       **tersoff_si**: Tersoff pair potential with angular terms, for silicon.
+            ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
 
-       **sw_si**: Stillinger-Weber potential, for silicon.
+            ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
 
-       **lenosky_Si**: Lenosky potential, for silicon.
+            ``tip4p``: Point charge model for water.
 
-       **eam_al**: Embedded atom method parameterized for aluminum.
+    **random_seed**: Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.
 
-       **qsc**: Quantum Sutton-Chen potential, for FCC metals.
+        type: int
 
-       **zpice**: Water on platinum.
+        default: ``-1``
 
-       **tip4p**: Point charge model for water.
+    **temperature**: The temperature that the job will run at.
 
-       **bopfox**: Bond order potential, for metals.
+        type: float
 
-**quiet**
+        default: ``300.0``
 
-   default: False
+    **quiet**: 
 
-   
+        type: boolean
+
+        default: ``False``
 

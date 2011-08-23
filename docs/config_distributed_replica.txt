@@ -3,21 +3,21 @@ Distributed Replica
 
 
 
-**balance_steps**
+    **sampling steps**: 
 
-   default: 500
+        type: int
 
-   
+        default: ``500``
 
-**sampling steps**
+    **target_temperature**: 
 
-   default: 500
+        type: float
 
-   
+        default: ``300.0``
 
-**target_temperature**
+    **balance_steps**: 
 
-   default: 300
+        type: int
 
-   
+        default: ``500``
 

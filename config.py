@@ -23,36 +23,29 @@ config.init_done = False
 config.format = []
 
 class ConfigSection:
-    def __init__(self, name, description):
+    def __init__(self, name):
         self.name = name
-        self.description = description
         self.keys = []
 class ConfigKey:
-    def __init__(self, name, kind, description, default):
+    def __init__(self, name, kind, default):
         self.name = name
         self.kind = kind
-        self.description = description
         self.default = default
         self.values = []
-class ConfigValue:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
 
 y = yaml.load(open(os.path.join(sys.path[0], "config.yaml"), 'r'))
 
 for sectionName in y:
-    section = ConfigSection(sectionName, y[sectionName]['description'])
+    section = ConfigSection(sectionName)
     for key in y[sectionName]['options']:
         kattr = y[sectionName]['options'][key]
-        ck = ConfigKey(key, kattr['kind'], kattr['description'], kattr['default'])
+        ck = ConfigKey(key, kattr['kind'], kattr['default'])
         section.keys.append(ck)
         if 'values' in kattr:
             for value in kattr['values']:
-                ck.values.append(ConfigValue(value, kattr['values'][value]))
+                ck.values.append(value)
     config.format.append(section)
-
-
+    
 def init(config_file = ""):
     if config.init_done:
         return None
@@ -139,9 +132,9 @@ def init(config_file = ""):
                                     config_error = True
                                     sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
                             elif k.kind == "string" and len(k.values) !=0:   
-                                values = [m.name for m in k.values]
+                                values = k.values
                                 if parser.get(psection,k.name) not in values:
-                                    Vnames = ", ".join([v.name for v in k.values])
+                                    Vnames = ", ".join(k.values)
                                     config_error = True
                                     sys.stderr.write('option "%s" should be one of: %s\n' %(parser.get(psection,k.name),Vnames))
 

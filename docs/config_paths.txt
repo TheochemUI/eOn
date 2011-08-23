@@ -3,81 +3,81 @@ Paths
 
 Location of files related to the sending and receiving data on the server.
 
-**main_directory**
+    **superbasin_recycling**: 
 
-   default: ./
+        type: string
 
-   This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
+        default: ``%(main_directory)s/SB_recycling``
 
-**states**
+    **superbasins**: 
 
-   default: %(main_directory)s/states/
+        type: string
 
-   Where all of the information about individual states is located.
+        default: ``%(main_directory)s/superbasins/``
 
-**scratch**
+    **main_directory**: This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
 
-   default: %(main_directory)s/jobs/scratch/
+        type: string
 
-   
+        default: ``./``
 
-**potential_files**
+    **scratch**: 
 
-   default: %(main_directory)s/potfiles
+        type: string
 
-   For extra files needed by the client for the potential.
+        default: ``%(main_directory)s/jobs/scratch/``
 
-**jobs_out**
+    **results**: 
 
-   default: %(main_directory)s/jobs/out/
+        type: string
 
-   
+        default: ``%(main_directory)s``
 
-**jobs_in**
+    **kdb**: 
 
-   default: %(main_directory)s/jobs/in/
+        type: string
 
-   
+        default: ``%(main_directory)s/kdb/``
 
-**incomplete**
+    **kdb_scratch**: 
 
-   default: %(main_directory)s/jobs/incomplete/
+        type: string
 
-   
+        default: ``%(main_directory)s/kdbscratch/``
 
-**results**
+    **states**: Where all of the information about individual states is located.
 
-   default: %(main_directory)s
+        type: string
 
-   
+        default: ``%(main_directory)s/states/``
 
-**bh_minima**
+    **potential_files**: For extra files needed by the client for the potential.
 
-   default: %(main_directory)s/minima
+        type: string
 
-   
+        default: ``%(main_directory)s/potfiles``
 
-**kdb_scratch**
+    **jobs_in**: 
 
-   default: %(main_directory)s/kdbscratch/
+        type: string
 
-   
+        default: ``%(main_directory)s/jobs/in/``
 
-**kdb**
+    **jobs_out**: 
 
-   default: %(main_directory)s/kdb/
+        type: string
 
-   
+        default: ``%(main_directory)s/jobs/out/``
 
-**superbasins**
+    **incomplete**: 
 
-   default: %(main_directory)s/superbasins/
+        type: string
 
-   
+        default: ``%(main_directory)s/jobs/incomplete/``
 
-**superbasin_recycling**
+    **bh_minima**: 
 
-   default: %(main_directory)s/SB_recycling
+        type: string
 
-   
+        default: ``%(main_directory)s/minima``
 
