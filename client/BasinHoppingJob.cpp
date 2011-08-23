@@ -169,10 +169,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
-        if(consecutive_rejected_trials==parameters->basinHoppingJumpMax){
+        if(consecutive_rejected_trials==parameters->basinHoppingJumpMax && step<parameters->basinHoppingSteps){
 	    consecutive_rejected_trials=0;
             AtomMatrix jump;
-            for(int j=0;j<parameters->basinHoppingJumpMax;j++){
+            for(int j=0;j<parameters->basinHoppingJumpSteps;j++){
 	        jcount++;
                 jump = displaceRandom();
                 current->setPositions(current->getPositions() + jump);
