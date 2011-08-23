@@ -3,33 +3,33 @@ Recycling
 
 
 
-**use_recycling**
+    **save_suggestions**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 
-**save_suggestions**
+    **move_distance**: 
 
-   default: False
+        type: float
 
-   
+        default: ``0.2``
 
-**displace_moved_only**
+    **use_recycling**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 
-**move_distance**
+    **use_sb_recycling**: 
 
-   default: 0.2
+        type: boolean
 
-   
+        default: ``False``
 
-**use_sb_recycling**
+    **displace_moved_only**: 
 
-   default: False
+        type: boolean
 
-   
+        default: ``False``
 
