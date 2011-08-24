@@ -27,6 +27,7 @@ class lammps_eon : public Potential {
 private:
 //	Variables
 	long numberOfAtoms;
+	double box0, box4, box8;
 // Functions
 	void makeNewLAMMPS(long N, const int *atomicNrs, const double *box);
 
