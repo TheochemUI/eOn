@@ -3,6 +3,7 @@
 // General Functions
 lammps_eon::lammps_eon(void){
     numberOfAtoms = 0;
+    box0 = box4 = box8 = 0;
 }
 
 void lammps_eon::cleanMemory(void){
@@ -23,7 +24,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
     int i;
 
 
-    if (numberOfAtoms != N){
+    if (numberOfAtoms != N || box0 != box[0] || box4 != box[4] || box8 != box[8]){
         makeNewLAMMPS(N, atomicNrs, box);
     }    
     for(i=0; i<3*N; i++){
@@ -41,6 +42,9 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
 void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
 
     numberOfAtoms = N;
+    box0 = box[0];
+    box4 = box[4];
+    box8 = box[8];
     
     if(LAMMPSObj != NULL){
         cleanMemory();
