@@ -67,7 +67,15 @@ class DisplacementManager:
         total += config.displace_frac_under_coordinated
         total += config.displace_frac_least_coordinated
         total += config.displace_frac_water
-        self.plist = [config.displace_frac_random/total]
+        # If no fractions are defined, do 100% random displacements.
+        if total == 0.0:
+            total = 1.0
+            self.plist = [1.0/total]
+            self.random = Random(self.reactant, 
+                                 config.disp_magnitude, config.disp_radius,
+                                 hole_epicenters=moved_atoms)
+        else:
+            self.plist = [config.displace_frac_random/total]
         self.plist.append(self.plist[-1] + config.displace_frac_listed/total)        
         self.plist.append(self.plist[-1] + config.displace_frac_not_FCC_HCP/total)        
         self.plist.append(self.plist[-1] + config.displace_frac_under_coordinated/total)        
