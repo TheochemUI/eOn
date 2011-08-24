@@ -1,6 +1,58 @@
 
 ################################################################################
 
+Main:
+
+    options:
+
+        job:
+            kind: string
+            default: akmc
+            values:
+                - parallel_replica
+                - saddle_search
+                - minimization
+                - displacement_sampling
+                - process_search
+                - basin_hopping
+                - akmc
+                - hessian
+                - md
+
+        potential:
+            kind: string
+            default: lj
+            values:
+                - qsc
+                - lenosky_Si
+                - sw_si
+                - lj
+                - edip
+                - morse_pt
+                - zpice
+                - bopfox
+                - emt
+                - eam_al
+                - vasp
+                - tersoff_si
+                - tip4p
+                - lammps
+                - mpi
+
+        random_seed:
+            kind: int
+            default: -1
+
+        temperature:
+            kind: float
+            default: 300.0
+
+        quiet:
+            kind: boolean
+            default: False
+
+################################################################################
+
 Paths:
 
     options:
@@ -140,58 +192,6 @@ Debug:
             default: False
 
         write_movies:
-            kind: boolean
-            default: False
-
-################################################################################
-
-Main:
-
-    options:
-
-        job:
-            kind: string
-            default: akmc
-            values:
-                - parallel_replica
-                - saddle_search
-                - minimization
-                - displacement_sampling
-                - process_search
-                - basin_hopping
-                - akmc
-                - hessian
-                - md
-
-        potential:
-            kind: string
-            default: lj
-            values:
-                - qsc
-                - lenosky_Si
-                - sw_si
-                - lj
-                - edip
-                - morse_pt
-                - zpice
-                - bopfox
-                - emt
-                - eam_al
-                - vasp
-                - tersoff_si
-                - tip4p
-                - lammps
-                - mpi
-
-        random_seed:
-            kind: int
-            default: -1
-
-        temperature:
-            kind: float
-            default: 300.0
-
-        quiet:
             kind: boolean
             default: False
 
@@ -753,7 +753,7 @@ Saddle Search:
             
         displace_frac_random:
             kind: float
-            default: 1.0
+            default: 0.0
         
         displace_frac_listed:
             kind: float
