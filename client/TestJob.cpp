@@ -48,7 +48,7 @@ void TestJob::checkFullSearch(void){
     Matter *min1;
     Matter *min2; 
     Matter *matterTemp; 
-    SaddlePoint *saddlePoint;
+    SaddleSearch *saddleSearch;
 
     string reactant_passed("reactant_test.con");
     string displacement_passed("displacement_test.con");
@@ -68,28 +68,28 @@ void TestJob::checkFullSearch(void){
     *min1 = *min2 = *initial;
 
     printf("\n---Output for saddle point search start---\n");    
-    saddlePoint = new SaddlePoint();
-    saddlePoint->initialize(initial, saddle, parameters);
-    saddlePoint->loadMode(mode_passed);
-    status = saddlePoint->locate();
+    saddleSearch = new SaddleSearch();
+    saddleSearch->initialize(initial, saddle, parameters);
+    saddleSearch->loadMode(mode_passed);
+    status = saddleSearch->locate();
     printf("---Output for saddle point search end---\n\n");
 
     printf("---Output relax from saddle point search start---\n");    
     // relax from the saddle point located
 
-    AtomMatrix posSaddle = saddlePoint->getSaddlePositions();
+    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
     AtomMatrix displacedPos;
 
     *min1 = *saddle;
     //XXX: the distance displaced from the saddle should be a parameter
-    displacedPos = posSaddle - saddlePoint->getEigenMode() * 0.2;
+    displacedPos = posSaddle - saddleSearch->getEigenMode() * 0.2;
     min1->setPositions(displacedPos);
     ConjugateGradients cgMin1(min1, parameters);
     cgMin1.fullRelax();
 //  fCallsMin += cgMin1.totalForceCalls;
 
     *min2 = *saddle;
-    displacedPos = posSaddle + saddlePoint->getEigenMode() * 0.2;
+    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
     min2->setPositions(displacedPos);
     ConjugateGradients cgMin2(min2, parameters);  
     cgMin2.fullRelax();
