@@ -189,8 +189,8 @@ ifdef EONMPIBGP
 	CXXFLAGS += -DEONMPIBGP
 	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
 else
-	LDFLAGS += -lpython2.4 -lm
-	CXXFLAGS += -I/usr/include/python2.4 
+	LDFLAGS += -L/usr/local/lib -lpython2.7 -lm
+	CXXFLAGS += -I/usr/local/include/python2.7 
 endif
 endif
 

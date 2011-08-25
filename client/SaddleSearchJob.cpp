@@ -56,7 +56,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
     }
 
     int status;
-        status = doSaddleSearch();
+    status = doSaddleSearch();
     printEndState(status);
     saveData(status);
 
@@ -110,6 +110,7 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
+    fprintf(fileResults, "%ld iterations\n", saddlePoint->iterations);
     if (status != SaddlePoint::STATUS_POTENTIAL_FAILED) {
         fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
         fprintf(fileResults, "%f final_eigenvalue\n", saddlePoint->getEigenValue());
@@ -145,6 +146,8 @@ void SaddleSearchJob::printEndState(int status) {
 
     else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
+    else if (status == SaddlePoint::STATUS_CHECKPOINT)
+        fprintf(stdout, "Saddle search, checkpointing.\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
 
