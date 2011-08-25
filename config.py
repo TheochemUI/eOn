@@ -247,6 +247,7 @@ def init(config_file = ""):
 
     #Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
+    config.process_search_default_prefactor = parser.getfloat('Process Search', 'default_prefactor')
 
     #Saddle Search options
     config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented
@@ -311,6 +312,12 @@ def init(config_file = ""):
         config.askmc_gamma = parser.getfloat('Coarse Graining','askmc_high_barrier_def')
         config.askmc_barrier_test_on = parser.getboolean('Coarse Graining','askmc_barrier_test_on')
         config.askmc_connections_test_on = parser.getboolean('Coarse Graining','askmc_connections_test_on')
+
+    #Optimizers
+    config.optimizers_max_iterations = parser.getint('Optimizers', 'max_iterations')
+
+    #Saddle Search
+    config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')
 
     #Debug options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')

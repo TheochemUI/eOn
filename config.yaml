@@ -47,6 +47,12 @@ Main:
             kind: float
             default: 300.0
 
+        checkpoint_force_calls:
+            description: >
+                empty
+            kind: int
+            default: -1
+
         quiet:
             kind: boolean
             default: False
@@ -514,7 +520,7 @@ Process Search:
             default: 1e+21
 
         default_prefactor:
-            kind: int
+            kind: float
             default: 0
 
         minimization_offset:

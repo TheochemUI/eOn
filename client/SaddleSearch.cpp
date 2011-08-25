@@ -311,10 +311,10 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
 {
     bool converged = false;
     long forceCallsSaddle;
-    long iterations = 0;
     long concaveSeries = 0;
     double maxStep;
     double energySaddle;
+    iterations = 0;
 
     AtomMatrix forcesStep;
     AtomMatrix posStep;
@@ -426,16 +426,17 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
         }
         energySaddle = saddle->getPotentialEnergy();
     }while(!converged && 
+           (parameters->checkpointForceCalls > Potential::fcalls) &&
            (iterations < parameters->saddleMaxIterations) && 
            (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
-    if(!converged)
-    {
-        if(parameters->saddleMaxIterations <= iterations)
-        {
+    if(!converged) {
+        if (parameters->checkpointForceCalls <= Potential::fcalls) {
+            status = STATUS_CHECKPOINT;
+        }
+        if (parameters->saddleMaxIterations <= iterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
         }
-        if(parameters->saddleMaxEnergy <= energySaddle-initialEnergy)
-        {
+        if (parameters->saddleMaxEnergy <= energySaddle-initialEnergy) {
             status = STATUS_BAD_HIGH_BARRIER;
         }
     }
