@@ -290,9 +290,6 @@ void ParallelReplicaJob::saveData(int status)
     returnFiles.push_back(resultsFilename);
 
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    ///XXX: min_fcalls isn't quite right it should get them from
-    //      the minimizer. But right now the minimizers are in
-    //      the SaddlePoint object. They will be taken out eventually.
     long total_fcalls = min_fcalls + md_fcalls + dh_fcalls + rf_fcalls;
 
     fprintf(fileResults, "%d termination_reason\n", status);

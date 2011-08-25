@@ -22,31 +22,31 @@
 
 using namespace helper_functions;
 
-const char SaddlePoint::MINMODE_DIMER[] =           "dimer";
-const char SaddlePoint::MINMODE_LANCZOS[] =         "lanczos";
-const char SaddlePoint::MINMODE_EXACT[] =           "exact";
-const char SaddlePoint::DISP_LOAD[] =               "load";
-const char SaddlePoint::DISP_NOT_FCC_OR_HCP[] =     "not_fcc_hcp_coordinated";
-const char SaddlePoint::DISP_MIN_COORDINATED[] =    "least_coordinated";
-const char SaddlePoint::DISP_LAST_ATOM[] =          "last_atom";
-const char SaddlePoint::DISP_RANDOM[] =             "random";
+const char SaddleSearch::MINMODE_DIMER[] =           "dimer";
+const char SaddleSearch::MINMODE_LANCZOS[] =         "lanczos";
+const char SaddleSearch::MINMODE_EXACT[] =           "exact";
+const char SaddleSearch::DISP_LOAD[] =               "load";
+const char SaddleSearch::DISP_NOT_FCC_OR_HCP[] =     "not_fcc_hcp_coordinated";
+const char SaddleSearch::DISP_MIN_COORDINATED[] =    "least_coordinated";
+const char SaddleSearch::DISP_LAST_ATOM[] =          "last_atom";
+const char SaddleSearch::DISP_RANDOM[] =             "random";
 
-SaddlePoint::SaddlePoint()
+SaddleSearch::SaddleSearch()
 {
     lowestEigenmode = 0;
-    forceCallsSaddlePointConcave = 0;
-    forceCallsSaddlePointConvex = 0;
+    forceCallsSaddleSearchConcave = 0;
+    forceCallsSaddleSearchConvex = 0;
     eigenValue = 0;
     return;
 }
 
-SaddlePoint::~SaddlePoint()
+SaddleSearch::~SaddleSearch()
 {
     clean();
     return;
 }
 
-SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
+SaddleSearch::SaddleSearch(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
 {
     lowestEigenmode = 0;
     eigenValue = 0;
@@ -54,7 +54,7 @@ SaddlePoint::SaddlePoint(Matter *initialPassed, Matter *saddlePassed, Parameters
     return;
 }
 
-void SaddlePoint::clean()
+void SaddleSearch::clean()
 {
     if(lowestEigenmode != 0)
     {
@@ -65,7 +65,7 @@ void SaddlePoint::clean()
     return;
 }
 
-void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
+void SaddleSearch::initialize(Matter *initialPassed, Matter *saddlePassed, Parameters *parametersPassed)
 {
     clean();
     initial = initialPassed;
@@ -116,7 +116,7 @@ void SaddlePoint::initialize(Matter *initialPassed, Matter *saddlePassed, Parame
     return;
 }
 
-void SaddlePoint::loadMode(string filename)
+void SaddleSearch::loadMode(string filename)
 {
     FILE *modeFile;
     modeFile = fopen(filename.c_str(), constants::READ.c_str());
@@ -129,7 +129,7 @@ void SaddlePoint::loadMode(string filename)
     fclose(modeFile);
 }
 
-void SaddlePoint::loadMode(FILE *modeFile)
+void SaddleSearch::loadMode(FILE *modeFile)
 {
     long const nAtoms = saddle->numberOfAtoms();
     mode.resize(nAtoms, 3);
@@ -142,7 +142,7 @@ void SaddlePoint::loadMode(FILE *modeFile)
     }
 }
 
-void SaddlePoint::saveMode(FILE *modeFile)
+void SaddleSearch::saveMode(FILE *modeFile)
 {
     long const nAtoms = saddle->numberOfAtoms();
     for (long i=0; i < nAtoms; ++i) {
@@ -156,7 +156,7 @@ void SaddlePoint::saveMode(FILE *modeFile)
     return;
 }
 
-long SaddlePoint::locate(void)
+long SaddleSearch::locate(void)
 {
     double initialEnergy;
     eigenValue = 0;
@@ -183,17 +183,17 @@ long SaddlePoint::locate(void)
     return(status);
 }
 
-AtomMatrix SaddlePoint::getEigenMode() 
+AtomMatrix SaddleSearch::getEigenMode() 
 {
     return eigenMode;
 }
 
-double SaddlePoint::getEigenValue()
+double SaddleSearch::getEigenValue()
 {
     return eigenValue;
 }
 
-void SaddlePoint::displaceAndSetMode(Matter *matter)
+void SaddleSearch::displaceAndSetMode(Matter *matter)
 {
     long nAtoms = saddle->numberOfAtoms();
     long j, indexEpiCenter = 0;
@@ -264,7 +264,7 @@ void SaddlePoint::displaceAndSetMode(Matter *matter)
     return;
 }
 
-AtomMatrix SaddlePoint::projectedForce(AtomMatrix force){
+AtomMatrix SaddleSearch::projectedForce(AtomMatrix force){
 
     AtomMatrix proj;
     proj = (force.cwise() * eigenMode).sum() * eigenMode.normalized();
@@ -288,15 +288,15 @@ AtomMatrix SaddlePoint::projectedForce(AtomMatrix force){
 }
 
 
-void SaddlePoint::addForceCallsSaddlePoint(long fcalls, double eigenvalue){
+void SaddleSearch::addForceCallsSaddleSearch(long fcalls, double eigenvalue){
     if(0 < eigenvalue)
-        forceCallsSaddlePointConcave += fcalls;
+        forceCallsSaddleSearchConcave += fcalls;
     else
-        forceCallsSaddlePointConvex += fcalls;
+        forceCallsSaddleSearchConvex += fcalls;
     return;
 }
 
-void SaddlePoint::displaceInConcaveRegion()
+void SaddleSearch::displaceInConcaveRegion()
 {
     displaceAndSetMode(saddle);
     
@@ -307,7 +307,7 @@ void SaddlePoint::displaceInConcaveRegion()
     return;
 }
 
-void SaddlePoint::searchForSaddlePoint(double initialEnergy)
+void SaddleSearch::searchForSaddlePoint(double initialEnergy)
 {
     bool converged = false;
     long forceCallsSaddle;
@@ -388,7 +388,7 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             concaveSeries = concaveSeries + 1;
         }
         forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
-        addForceCallsSaddlePoint(forceCallsSaddle, eigenValue);
+        addForceCallsSaddleSearch(forceCallsSaddle, eigenValue);
         iterations++;
         FILE *fp = fopen("saddlesearch.dat", "a");
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
@@ -425,13 +425,19 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
             saddle->matter2con(climb.str(), true);
         }
         energySaddle = saddle->getPotentialEnergy();
+        if (parameters->checkpointForceCalls != -1) {
+            if (parameters->checkpointForceCalls > Potential::fcalls) {
+                break;
+            }
+        }
     }while(!converged && 
-           (parameters->checkpointForceCalls > Potential::fcalls) &&
            (iterations < parameters->saddleMaxIterations) && 
            (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
     if(!converged) {
-        if (parameters->checkpointForceCalls <= Potential::fcalls) {
-            status = STATUS_CHECKPOINT;
+        if (parameters->checkpointForceCalls != -1) {
+            if (parameters->checkpointForceCalls <= Potential::fcalls) {
+                status = STATUS_CHECKPOINT;
+            }
         }
         if (parameters->saddleMaxIterations <= iterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
@@ -443,12 +449,12 @@ void SaddlePoint::searchForSaddlePoint(double initialEnergy)
     return;
 }
 
-LowestEigenmodeInterface const * SaddlePoint::getLowestEigenmode() const
+LowestEigenmodeInterface const * SaddleSearch::getLowestEigenmode() const
 {
       return lowestEigenmode;
 }
 
-AtomMatrix SaddlePoint::getSaddlePositions()
+AtomMatrix SaddleSearch::getSaddlePositions()
 {
       return saddle->getPositions();
 }

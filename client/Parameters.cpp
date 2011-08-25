@@ -29,7 +29,7 @@ Parameters::Parameters(){
     randomSeed = -1;
     potential = Potential::POT_LJ;
     temperature = 300.0;
-    checkpointForceCalls = 2147483648;
+    checkpointForceCalls = -1;
     quiet = false;
 
     // [Structure Comparison] //
@@ -49,8 +49,8 @@ Parameters::Parameters(){
     processSearchPrefactorMin = 10e8;
 
     // [Saddle Search] //
-    saddleDisplaceType = SaddlePoint::DISP_LOAD;
-    saddleMinmodeMethod = SaddlePoint::MINMODE_DIMER;
+    saddleDisplaceType = SaddleSearch::DISP_LOAD;
+    saddleMinmodeMethod = SaddleSearch::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
@@ -233,13 +233,13 @@ int Parameters::load(FILE *file){
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
 
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
-        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddlePoint::DISP_LOAD));
+        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddleSearch::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
-        if(saddleDisplaceType != SaddlePoint::DISP_NOT_FCC_OR_HCP &&
-           saddleDisplaceType != SaddlePoint::DISP_MIN_COORDINATED && 
-           saddleDisplaceType != SaddlePoint::DISP_LAST_ATOM && 
-           saddleDisplaceType != SaddlePoint::DISP_RANDOM){
-                saddleDisplaceType = SaddlePoint::DISP_LOAD;
+        if(saddleDisplaceType != SaddleSearch::DISP_NOT_FCC_OR_HCP &&
+           saddleDisplaceType != SaddleSearch::DISP_MIN_COORDINATED && 
+           saddleDisplaceType != SaddleSearch::DISP_LAST_ATOM && 
+           saddleDisplaceType != SaddleSearch::DISP_RANDOM){
+                saddleDisplaceType = SaddleSearch::DISP_LOAD;
         }
 
         // [Optimizers] //
