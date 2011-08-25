@@ -29,6 +29,7 @@ Parameters::Parameters(){
     randomSeed = -1;
     potential = Potential::POT_LJ;
     temperature = 300.0;
+    checkpointForceCalls = 2147483648;
     quiet = false;
 
     // [Structure Comparison] //
@@ -189,6 +190,7 @@ int Parameters::load(FILE *file){
         temperature = ini.GetValueF("Main", "temperature", temperature);
         potential = toLowerCase(ini.GetValue("Main", "potential"));
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
+        checkpointForceCalls = ini.GetValueL("Main", "checkpoint_force_calls", checkpointForceCalls);
         quiet = ini.GetValueB("Main", "quiet", quiet);
 
         // Initialize random generator
@@ -324,15 +326,15 @@ int Parameters::load(FILE *file){
         // [Basin Hopping] //        
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
-        basinHoppingSteps = ini.GetValueF("Basin Hopping", "steps", basinHoppingSteps);
-	    basinHoppingQuenchingSteps = ini.GetValueF("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
+        basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
+	    basinHoppingQuenchingSteps = ini.GetValueL("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingSignificantStructure = ini.GetValueB("Basin Hopping", "significant_structure", basinHoppingSignificantStructure);
 	    basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
         basinHoppingDisplacementDistribution = toLowerCase(ini.GetValue("Basin Hopping", "displacement_distribution", basinHoppingDisplacementDistribution));
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
-        basinHoppingJumpMax = ini.GetValueF("Basin Hopping", "jump_max", basinHoppingJumpMax);
-        basinHoppingJumpSteps = ini.GetValueF("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
+        basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
+        basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
         basinHoppingMDFirst = ini.GetValueB("Basin Hopping", "md_first", basinHoppingMDFirst);
         basinHoppingMDTemp = ini.GetValueF("Basin Hopping", "md_temp", ini.GetValueF("Main", "temperature", temperature));
 	

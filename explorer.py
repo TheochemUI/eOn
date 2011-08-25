@@ -7,6 +7,7 @@ import os
 import numpy
 import cPickle as pickle
 
+import atoms
 import communicator
 import config
 import displace
@@ -303,10 +304,6 @@ class ServerMinModeExplorer(MinModeExplorer):
             logger.info("got result for search_id %i" % search_id)
             self.process_searches[search_id].process_result(result)
 
-            if self.process_searches[search_id].status == "success":
-                pass
-
-
             num_registered += 1
             if self.state.get_confidence() >= config.akmc_confidence:
                 if not config.debug_register_extra_results:
@@ -387,38 +384,49 @@ class ProcessSearch:
     def __init__(self, state, displacement, mode, displacement_type, search_id):
         self.state = state
         self.displacement = displacement
+        self.displacement_type = displacement_type
         self.mode = mode
         self.search_id = search_id
 
-        #valid statuses are 'in_progress', 'success', 'error'
-        self.status = 'in_progress'
-
         #valid statuses are 'not_started', 'incomplete', 'running', 'complete', and 'error'
-        self.job_statuses = {'saddle_search':'not_started',
+        self.job_statuses = {
+                             'saddle_search':'not_started',
                              'min1':'not_started',
-                             'min2':'not_started'}
+                             'min2':'not_started'
+                            }
+        self.job_iterations = { 
+                               'saddle_search':0,
+                               'min1':0,
+                               'min2':0,
+                              }
 
         unknown = "unknown_exit_code"
         self.job_termination_reasons = {
                 'saddle_search':[ "good", unknown, "no_convex", "high_energy",
                                   "max_concave_iterations", 
                                   "max_iterations", unknown, unknown, unknown, 
-                                  unknown, unknown, "potential_failed", ],
-                'minimization':[ "good", "max_iterations", "potential_failed" ]}
+                                  unknown, unknown, "potential_failed", 
+                                  "checkpoint" ],
+                'minimization':[ "good", "max_iterations", "potential_failed", 
+                                 "checkpoint" ]}
 
         self.finished_jobs = []
 
         self.finished_saddle_name = None
         self.finished_min1_name = None
         self.finished_min2_name = None
+        self.finished_reactant_name = None
+        self.finished_product_name = None
 
-        self.data = { 'type':displacement_type,
+        self.data = { 
                       'termination_reason':0,
                       'potential_energy_saddle':None,
                       'potential_energy_reactant':None,
                       'potential_energy_product':None,
                       'barrier_reactant_to_product':None,
                       'barrier_product_to_reactant':None,
+                      'prefactor_reactant_to_product':config.process_search_default_prefactor,
+                      'prefactor_product_to_reactant':config.process_search_default_prefactor,
                       'displacement_saddle_distance':0.0,
                       'force_calls_saddle':0,
                       'force_calls_minimization':0,
@@ -454,9 +462,13 @@ class ProcessSearch:
 
     def process_result(self, result):
         results_dat = io.parse_results(result['results.dat'])
+        result['results.dat'].seek(0)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
         termination_reason = self.job_termination_reasons[job_type][termination_code]
+
+        self.save_result(result)
+        self.finished_jobs.append(result['name'])
 
         if termination_reason == 'good':
             if job_type == 'saddle_search':
@@ -474,30 +486,57 @@ class ProcessSearch:
                     logger.info("search_id: %i minimization 2 complete" % self.search_id)
                     self.job_statuses['min2'] = 'complete'
                     self.finished_min2_name = result['name']
+                    self.finish_minimization(result)
 
-        elif termination_reason == 'max_iterations':
+        elif termination_reason == 'checkpoint':
             if job_type == 'saddle_search':
                 self.job_statuses[job_type] = 'incomplete'
+                self.job_iterations[job_type] += results_dat['iterations']
+                if self.job_iterations[job_type] >= config.saddle_search_max_iterations:
+                    self.data['termination_reason'] = self.job_termination_reasons[job_type].\
+                                                      index('max_iterations')
+                    self.finished_saddle_name = result['name']
+                    self.job_statuses[job_type] = 'error'
+                    self.register()
             elif job_type == 'minimization':
                 if self.job_statuses['min1'] == 'running':
                     self.job_statuses['min1'] = 'incomplete'
                 else:
                     self.job_statuses['min2'] = 'incomplete'
         else:
-            #report error
-            self.status = 'error'
+            if job_type == 'saddle_search':
+                self.data['termination_reason'] = termination_code
+            elif job_type == 'minimization':
+                self.data['termination_reason'] = 11
+            self.register()
 
         if all( [ s == 'complete' for s in self.job_statuses.values() ] ):
             logger.info("search_id: %i process search complete" % self.search_id)
-            self.status = 'success'
-            self.add_process()
+            self.register()
 
-        self.save_result(result)
-        self.finished_jobs.append(result['name'])
+    def register(self):
+        result = {}
+        saddle_result = self.load_result(self.finished_saddle_name)
 
-    def add_process(self):
-        pass
-        #self.state.add_process(result)
+        if self.finished_reactant_name:
+            reactant_result = self.load_result(self.finished_reactant_name) 
+            result['reactant.con'] = reactant_result['reactant.con']
+            product_result = self.load_result(self.finished_product_name)
+            result['product.con'] = product_result['reactant.con']
+
+
+        result['saddle.con'] = saddle_result['saddle.con']
+        result['mode.dat'] = saddle_result['mode.dat']
+        result['results'] = self.data
+
+        result['results.dat'] = StringIO.StringIO(
+                '\n'.join([ "%s %s" % (k,v) for k,v in self.data.items() ]) )
+        result['type'] = self.displacement_type
+
+        if self.data['termination_reason'] == 0:
+            self.state.add_process(result)
+        else:
+            self.state.register_bad_saddle(result, config.debug_keep_bad_saddles)
 
     def save_result(self, result):
         dir_path = os.path.join(config.path_incomplete, result['name'])
@@ -510,11 +549,11 @@ class ProcessSearch:
                 f.close()
 
     def load_result(self, result_name):
-        dir_path = os.path.join(config.path_incomplete, result['name'])
+        dir_path = os.path.join(config.path_incomplete, result_name)
         result = {}
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)
-            result['file'] = StringIO.StringIO(open(file_path).read())
+            result[file] = StringIO.StringIO(open(file_path).read())
         return result
 
     def start_minimization(self, which_min):
@@ -555,42 +594,51 @@ class ProcessSearch:
         return job
 
     def finish_minimization(self, result):
-        results_dat = io.parse_results(result['results.dat'])
-        self.data['force_calls_minimization'] += results_dat['total_force_calls']
+        result1 = result
+        result2 = self.load_result(self.finished_min1_name)
+        atoms1 = io.loadcon(result1['reactant.con'])
+        atoms2 = io.loadcon(result2['reactant.con'])
 
-        
-        if self.job_statuses['min2'] == 'complete':
-            result1 = result
-            result2 = self.load_result(self.finished_min1_name)
-            atoms1 = io.loadcon(result1['reactant.con'])
-            atoms2 = io.loadcon(result2['reactant.con'])
+        results_dat1 = io.parse_results(result1['results.dat'])
+        results_dat2 = io.parse_results(result2['results.dat'])
+        self.data['force_calls_minimization'] += results_dat1['total_force_calls']
+        self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
-            is_reactant = lambda a: atoms.match(a, self.state.get_reactant(), 
-                                                config.comp_eps_r, 
-                                                config.comp_neighbor_cutoff, True)
+        is_reactant = lambda a: atoms.match(a, self.state.get_reactant(), 
+                                            config.comp_eps_r, 
+                                            config.comp_neighbor_cutoff, True)
 
-            if is_reactant(atoms1):
-                reactant = atoms1
-                product = atoms2
-                reactant_result = result1
-                product_result = result2
-            elif is_reactant(atoms2):
-                reactant = atoms2
-                product = atoms1
-                reactant_result = result2
-                product_result = result1
-            else:
-                #not connected
-                #set some sort of status code
-                return
+        if is_reactant(atoms1):
+            reactant = atoms1
+            product = atoms2
+            reactant_result = result1
+            product_result = result2
+            reactant_results_dat = results_dat1
+            product_results_dat = results_dat2
+            self.finished_reactant_name = self.finished_min1_name
+            self.finished_product_name = self.finished_min2_name
+        elif is_reactant(atoms2):
+            reactant = atoms2
+            product = atoms1
+            reactant_result = result2
+            product_result = result1
+            reactant_results_dat = results_dat2
+            product_results_dat = results_dat1
+            self.finished_reactant_name = self.finished_min2_name
+            self.finished_product_name = self.finished_min1_name
+        else:
+            #Not connected
+            self.data['termination_reason'] = 6
+            self.register()
+            return
 
-            self.data['potential_energy_reactant'] = reactant_result['potential_energy']
-            self.data['potential_energy_product'] = product_result['potential_energy']
+        self.data['potential_energy_reactant'] = reactant_results_dat['potential_energy']
+        self.data['potential_energy_product'] = product_results_dat['potential_energy']
 
-            self.data['barrier_reactant_to_product'] = self.data['potential_energy_saddle'] - \
-                                                       self.data['potential_energy_reactant'] 
-            self.data['barrier_product_to_reactant'] = self.data['potential_energy_saddle'] - \
-                                                       self.data['potential_energy_product'] 
+        self.data['barrier_reactant_to_product'] = self.data['potential_energy_saddle'] - \
+                self.data['potential_energy_reactant'] 
+        self.data['barrier_product_to_reactant'] = self.data['potential_energy_saddle'] - \
+                self.data['potential_energy_product'] 
 
 
     def start_search(self):

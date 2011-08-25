@@ -29,7 +29,7 @@ class QuickminBox : public Minimizer
         ~QuickminBox();
 
         void oneStep();
-        void fullRelax();
+        long fullRelax();
         bool isItConverged(double convergeCriterion);
         void setOutput(int level);
         
