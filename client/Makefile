@@ -5,14 +5,14 @@ LD=$(CROSS)ld
 AR=$(CROSS)ar cru
 RANLIB=$(CROSS)ranlib
 
-OPT=O0
+OPT=-O0
 
 ifndef DEBUG
 	NDEBUG=1
-	OPT=O2
+	OPT=-O2
 endif
 
-CXXFLAGS += -Wall -Wfatal-errors -$(OPT)
+CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
 ifdef EONMPIBGP
 	EONMPI=1
@@ -58,7 +58,7 @@ ifdef NO_FORTRAN
 else
     # gfortran
     FC = $(CROSS)gfortran
-    FFLAGS += -$(OPT) -ffpe-trap=invalid,zero,overflow
+    FFLAGS += $(OPT) -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
     ifdef BOINC
 	ifdef OSX
@@ -71,7 +71,7 @@ else
     endif
     # ifort
     #FC = ifort
-    #FFLAGS += -$(OPT) -fpe0
+    #FFLAGS += $(OPT) -fpe0
     # Linux linking
     #FAR = ar cru
     #LDFLAGS += -limf -lsvml -lifcore -ldl
