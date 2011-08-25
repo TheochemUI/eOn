@@ -27,7 +27,7 @@ class LowestEigenmodeInterface;
 /** Find a saddle point using a minimum mode following method.
     Requires a function to determine the epicenter of atomic displacements from a minimum.
     Requires a method to find the minimum mode */
-class SaddlePoint
+class SaddleSearch
 {
 
 public:
@@ -63,15 +63,15 @@ public:
     static const char MINMODE_LANCZOS[];
     static const char MINMODE_EXACT[];
  
-    SaddlePoint(); // The object shall be initialized later with SaddlePoint::initialize
+    SaddleSearch(); // The object shall be initialized later with SaddleSearch::initialize
  
     /** Constructor
     @param[in]  initial      initial state minimum
     @param[in]  saddle       conformation where to start the saddle point search; also used to return the final saddle point
     @param[in]  *parameters  runtime parameters */
-    SaddlePoint(Matter *initial, Matter *saddle, Parameters *parameters);
+    SaddleSearch(Matter *initial, Matter *saddle, Parameters *parameters);
 
-    ~SaddlePoint(); // destructor
+    ~SaddleSearch(); // destructor
 
     void initialize(Matter *initial, Matter *saddle, Parameters *parameters);
 
@@ -93,8 +93,8 @@ public:
     void loadMode(FILE * modeFile);
     void saveMode(FILE * modeFile);
 
-    long forceCallsSaddlePointConcave;
-    long forceCallsSaddlePointConvex;
+    long forceCallsSaddleSearchConcave;
+    long forceCallsSaddleSearchConvex;
     long iterations;
 
 private:
@@ -119,7 +119,7 @@ private:
     void displaceInConcaveRegion();
 
     void searchForSaddlePoint(double initialEnergy);
-    void addForceCallsSaddlePoint(long fcalls, double eigenvalue);
+    void addForceCallsSaddleSearch(long fcalls, double eigenvalue);
 
 };
 

@@ -39,20 +39,20 @@ std::vector<std::string> SaddleSearchJob::run(void)
 
     initial->con2matter(reactant_passed);
 
-    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
         // displacement was passed from the server
         saddle->con2matter(displacement_passed);
     }
     else {
         // displacement and mode will be made on the client
-        // in saddlePoint->initialize(...)
+        // in saddleSearch->initialize(...)
         *saddle = *initial;
     }
-    saddlePoint = new SaddlePoint();
-    saddlePoint->initialize(initial, saddle, parameters);
-    if (parameters->saddleDisplaceType == SaddlePoint::DISP_LOAD) {
+    saddleSearch = new SaddleSearch();
+    saddleSearch->initialize(initial, saddle, parameters);
+    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
         // mode was passed from the server
-        saddlePoint->loadMode(mode_passed);
+        saddleSearch->loadMode(mode_passed);
     }
 
     int status;
@@ -60,7 +60,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
     printEndState(status);
     saveData(status);
 
-    delete saddlePoint;
+    delete saddleSearch;
     delete initial;
     delete displacement;
     delete saddle; 
@@ -75,10 +75,10 @@ int SaddleSearchJob::doSaddleSearch()
     int f1;
     f1 = Potential::fcalls;
     try {
-        status = saddlePoint->locate();
+        status = saddleSearch->locate();
     }catch (int e) {
         if (e == 100) {
-            status = SaddlePoint::STATUS_POTENTIAL_FAILED; 
+            status = SaddleSearch::STATUS_POTENTIAL_FAILED; 
         }else{
             printf("unknown exception: %i\n", e);
             throw e;
@@ -87,8 +87,8 @@ int SaddleSearchJob::doSaddleSearch()
 
     fCallsSaddle += Potential::fcalls - f1;
 
-    if (status == SaddlePoint::STATUS_INIT) {
-        status = SaddlePoint::STATUS_GOOD;
+    if (status == SaddleSearch::STATUS_INIT) {
+        status = SaddleSearch::STATUS_GOOD;
     }
 
     return status;
@@ -102,7 +102,7 @@ void SaddleSearchJob::saveData(int status){
     fileResults = fopen(resultsFilename.c_str(), "wb");
     ///XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
-    //      the SaddlePoint object. They will be taken out eventually.
+    //      the SaddleSearch object. They will be taken out eventually.
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "saddle_search job_type\n");
@@ -110,17 +110,17 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%ld iterations\n", saddlePoint->iterations);
-    if (status != SaddlePoint::STATUS_POTENTIAL_FAILED) {
+    fprintf(fileResults, "%ld iterations\n", saddleSearch->iterations);
+    if (status != SaddleSearch::STATUS_POTENTIAL_FAILED) {
         fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-        fprintf(fileResults, "%f final_eigenvalue\n", saddlePoint->getEigenValue());
+        fprintf(fileResults, "%f final_eigenvalue\n", saddleSearch->getEigenValue());
     }
     fclose(fileResults);
 
     std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
-    saddlePoint->saveMode(fileMode);
+    saddleSearch->saveMode(fileMode);
     fclose(fileMode);
 
     std::string saddleFilename("saddle.con");
@@ -132,21 +132,21 @@ void SaddleSearchJob::saveData(int status){
 
 void SaddleSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
-    if(status == SaddlePoint::STATUS_GOOD)
+    if(status == SaddleSearch::STATUS_GOOD)
         fprintf(stdout, "Successful.\n");
 
-    else if(status == SaddlePoint::STATUS_BAD_NO_CONVEX)
+    else if(status == SaddleSearch::STATUS_BAD_NO_CONVEX)
         fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
 
-    else if(status == SaddlePoint::STATUS_BAD_HIGH_ENERGY)
+    else if(status == SaddleSearch::STATUS_BAD_HIGH_ENERGY)
         fprintf(stdout, "Saddle search, barrier too high.\n");
 
-    else if(status == SaddlePoint::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
+    else if(status == SaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
 
-    else if(status == SaddlePoint::STATUS_BAD_MAX_ITERATIONS)
+    else if(status == SaddleSearch::STATUS_BAD_MAX_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
-    else if (status == SaddlePoint::STATUS_CHECKPOINT)
+    else if (status == SaddleSearch::STATUS_CHECKPOINT)
         fprintf(stdout, "Saddle search, checkpointing.\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
