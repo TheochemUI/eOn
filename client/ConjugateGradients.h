@@ -35,7 +35,7 @@ public:
     ~ConjugateGradients();///< Destructor.
 
     void oneStep(); // do one iteration
-    void fullRelax(); // relax the Matter object at the pointer that was passed with the constructor
+    long fullRelax(); // relax the Matter object at the pointer that was passed with the constructor
     bool isItConverged(double convergeCriterion);
     void setOutput(int level);
     //----Functions used when forces are modified (saddle point search)----

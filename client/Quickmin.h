@@ -27,7 +27,7 @@ class Quickmin : public Minimizer
         ~Quickmin();
 
         void oneStep();
-        void fullRelax();
+        long fullRelax();
         bool isItConverged(double convergeCriterion);
         void setOutput(int level);
         

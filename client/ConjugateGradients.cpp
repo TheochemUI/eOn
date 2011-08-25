@@ -94,7 +94,7 @@ void ConjugateGradients::oneStep()
 }
 
 
-void ConjugateGradients::fullRelax()
+long ConjugateGradients::fullRelax()
 {
     bool converged = false;
     //----- Initialize end -----
@@ -106,8 +106,17 @@ void ConjugateGradients::fullRelax()
         matter->matter2con(min.str(), false);
     }
     int i = 0;
-    while(!converged and i < parameters->optMaxIterations) 
+    while(!converged)
     {
+        if (i >= parameters->optMaxIterations) {
+            return Minimizer::STATUS_MAX_ITERATIONS;
+        }
+
+        if (parameters->checkpointForceCalls != -1 &&
+            Potential::fcalls >= parameters->checkpointForceCalls) {
+            return Minimizer::STATUS_CHECKPOINT;
+        }
+
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
@@ -119,8 +128,9 @@ void ConjugateGradients::fullRelax()
         {
             matter->matter2con(min.str(), true);
         }
+
     }
-    return;
+    return Minimizer::STATUS_GOOD;
 }
 
 

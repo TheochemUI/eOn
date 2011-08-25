@@ -47,7 +47,7 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     MPI::COMM_WORLD.Send(R,        3*N, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Send(box,        9, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Send(&pbc,       1, MPI::INT,    potentialRank, 0);
-    MPI::COMM_WORLD.Send(&icwd[0],1024, MPI::INT,   potentialRank, 0);
+    MPI::COMM_WORLD.Send(&icwd[0],1024, MPI::INT,    potentialRank, 0);
 
     //Recv data from potential
     MPI::COMM_WORLD.Recv(&failed,   1, MPI::INT,    potentialRank, 0);

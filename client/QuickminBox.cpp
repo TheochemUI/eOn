@@ -98,7 +98,7 @@ void QuickminBox::setOutput(int level)
 }
 
 
-void QuickminBox::fullRelax()
+long QuickminBox::fullRelax()
 {
     bool converged = false;
     long forceCallsTemp;
@@ -106,6 +106,14 @@ void QuickminBox::fullRelax()
     int i = 0;
     while(!converged)
     {
+        if (i >= parameters->optMaxIterations) {
+            return Minimizer::STATUS_MAX_ITERATIONS;
+        }
+
+        if (parameters->checkpointForceCalls != -1 &&
+            Potential::fcalls >= parameters->checkpointForceCalls) {
+            return Minimizer::STATUS_CHECKPOINT;
+        }
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         i++;
@@ -116,7 +124,7 @@ void QuickminBox::fullRelax()
         }
     }
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
-    return;
+    return Minimizer::STATUS_GOOD;
 }
 
 
