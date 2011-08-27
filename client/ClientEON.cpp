@@ -121,7 +121,7 @@ int main(int argc, char **argv)
         char *eon_server = NULL;
         int number_of_clients;
         if (!client_standalone) {
-            if (getenv("EON_SERVER") == NULL) {
+            if (getenv("EON_SERVER_PATH") == NULL) {
                 fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
                 return 1;
             }else{
