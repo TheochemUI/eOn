@@ -230,7 +230,7 @@ int main(int argc, char **argv)
                 setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
                 char **py_argv = (char **)malloc(sizeof(char **)*2);
                 py_argv[0] = argv[0];
-                py_argv[1] = getenv("EON_SERVER");
+                py_argv[1] = getenv("EON_SERVER_PATH");
                 //fprintf(stderr, "rank: %i becoming %s\n", irank, py_argv[1]);
                 Py_Initialize();
                 Py_Main(2, py_argv);
@@ -285,13 +285,14 @@ int main(int argc, char **argv)
     //XXX: When do we stop? The server should probably tell everyone 
     //     when to stop.
     char logfilename[1024];
-    snprintf(logfilename, 1024, "eonclient_%i.log", irank);
+    snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number+1);
     //int outFd = open("/dev/null", O_WRONLY);
-    int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+
     if (!client_standalone) {
+        int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
         dup2(outFd, 1);
+        dup2(outFd, 2);
     }
-    dup2(outFd, 2);
     char *orig_path = new char[1024];
     getcwd(orig_path, 1024);
     while (true) {

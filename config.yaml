@@ -764,7 +764,7 @@ Saddle Search:
         displace_frac_listed:
             kind: float
             default: 0.0
-        
+
         displace_frac_not_FCC_HCP:
             kind: float
             default: 0.0
