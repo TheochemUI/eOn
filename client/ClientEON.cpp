@@ -125,7 +125,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
                 return 1;
             }else{
-                eon_server = getenv("EON_SERVER");
+                eon_server = getenv("EON_SERVER_PATH");
             }
             if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
                 fprintf(stderr, "error: must set the env var EON_NUMBER_OF_CLIENTS\n");
