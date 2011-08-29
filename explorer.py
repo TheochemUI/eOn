@@ -182,10 +182,14 @@ class ClientMinModeExplorer(MinModeExplorer):
         
         #Function used by communicator to determine whether to discard a result
         def keep_result(name):
+            # note that all processes are assigned to the current state 
             state_num = int(name.split("_")[0])
-            return (config.debug_register_extra_results or \
-                    state_num == self.state.number or \
+            return (state_num == self.state.number and \
                     self.state.get_confidence() < config.akmc_confidence)
+
+            #return (config.debug_register_extra_results or \
+            #        state_num == self.state.number or \
+            #        self.state.get_confidence() < config.akmc_confidence)
 
         num_registered = 0
         for result in self.comm.get_results(config.path_jobs_in, keep_result): 
@@ -283,10 +287,14 @@ class ServerMinModeExplorer(MinModeExplorer):
         
         #Function used by communicator to determine whether to keep a result
         def keep_result(name):
+            # note that all processes are assigned to the current state 
             state_num = int(name.split("_")[0])
-            return (config.debug_register_extra_results or \
-                    state_num == self.state.number or \
+            return (state_num == self.state.number and \
                     self.state.get_confidence() < config.akmc_confidence)
+     
+            #return (config.debug_register_extra_results or \
+            #        state_num == self.state.number or \
+            #        self.state.get_confidence() < config.akmc_confidence)
 
         num_registered = 0
         for result in self.comm.get_results(config.path_jobs_in, keep_result): 
