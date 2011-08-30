@@ -44,7 +44,6 @@
     #include <float.h>
 #endif
 
-
 #ifndef WIN32
     #include <sys/time.h>
     #include <sys/resource.h>
@@ -215,7 +214,6 @@ int main(int argc, char **argv)
 
             if (my_client_number < number_of_clients) {
                 parameters.MPIPotentialRank = potential_ranks[my_client_number*potential_group_size];
-                //fprintf(stderr,"MPIPotentialRank: %i\n", parameters.MPIPotentialRank);
             }
         }
 
