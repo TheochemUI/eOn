@@ -72,13 +72,13 @@ Parameters::Parameters(){
     // [Dimer] //
     dimerSeparation = 0.001;
     dimerRotationAngle = 0.005;
-    dimerImproved = false;
-    dimerConvergedAngle = 5.0; // degrees
+    dimerImproved = true;
+    dimerConvergedAngle = 1.0; // degrees
     dimerOptMethod = ImprovedDimer::OPT_CG;
     dimerTorqueMin = 0.1; // old dimer
     dimerTorqueMax = 1.0; // old dimer
     dimerRotationsMin = 1; // old dimer
-    dimerRotationsMax = 8; // old dimer
+    dimerRotationsMax = 2; // old dimer and new dimer
 
     // [Lanczos] //
     lanczosFiniteDist = 0.001;
