@@ -283,7 +283,7 @@ int main(int argc, char **argv)
     //XXX: When do we stop? The server should probably tell everyone 
     //     when to stop.
     char logfilename[1024];
-    snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number+1);
+    snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
     //int outFd = open("/dev/null", O_WRONLY);
 
     if (!client_standalone) {
