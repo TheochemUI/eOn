@@ -317,7 +317,7 @@ Dimer:
 
         improved:
             kind: boolean
-            default: False
+            default: True
 
         seperation:
             kind: float
@@ -345,7 +345,7 @@ Dimer:
 
         rotations_max:
             kind: int
-            default: 8
+            default: 2
 
         rotations_min:
             kind: int
@@ -353,7 +353,7 @@ Dimer:
 
         converged_angle:
             kind: float
-            default: 5.0
+            default: 1.0
 
 ################################################################################
 
