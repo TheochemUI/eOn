@@ -65,7 +65,6 @@ ConjugateGradients::~ConjugateGradients()
 void ConjugateGradients::oneStep()
 {
     long forceCallsTemp;
-    double step;
     AtomMatrix pos;
     AtomMatrix posStep;
     AtomMatrix forceAfterStep;
@@ -81,10 +80,8 @@ void ConjugateGradients::oneStep()
     matter->setPositions(posStep);
     forceAfterStep = matter->getForces();
  
-    // move system optimal step
-    step = stepSize(force, forceAfterStep, parameters->optMaxMove);
     //cout<<"Step: "<<step<<endl;
-    pos += step*directionNorm;
+    pos += getStep(force, forceAfterStep, parameters->optMaxMove);
     matter->setPositions(pos);
 
     forceCallsTemp = matter->getForceCalls()-forceCallsTemp;
@@ -191,11 +188,11 @@ void ConjugateGradients::determineSearchDirection(){
 }
 
 
-double ConjugateGradients::stepSize(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep)
+AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep)
 {
     double projectedForce1;
     double projectedForce2;
-    double step, curvature;
+    double stepSize, curvature;
     //----- Initialize end -----
     //std::cout<<"stepSize\n";
     
@@ -205,15 +202,14 @@ double ConjugateGradients::stepSize(AtomMatrix forceBeforeStep, AtomMatrix force
     curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDist;
     
     if(curvature < 0)
-        step = maxStep;
-    else{
-        step = projectedForce1/curvature;
-        if(maxStep < fabs(step)){
-            // Calculated is too large
-            step = sign(step)*maxStep;
-        }
+    {
+        stepSize = 100.0;
     }
-    return step;
+    else
+    {
+        stepSize = projectedForce1/curvature;
+    }
+    return helper_functions::maxAtomMotionApplied(stepSize * directionNorm, maxStep);
 }
 
 // Specific functions when forces are modified 
@@ -233,12 +229,8 @@ AtomMatrix ConjugateGradients::getNewPosModifiedForces(
         AtomMatrix forceAfterStep,
         double maxStep)
 {
-    double step;
-
-    step = stepSize(forceBeforeStep, forceAfterStep, maxStep);
-
     // Move system
-    return pos + directionNorm * step;
+    return pos + getStep(forceBeforeStep, forceAfterStep, maxStep);
 }
 
 
