@@ -15,6 +15,7 @@
 #include "Matter.h"
 #include "Minimizer.h"
 #include "Parameters.h"
+#include "HelperFunctions.h"
 
 /* Functionality relying on the conjugate gradients algorithm.
  * The object is capable of minimizing a Matter object or modified forces being passed in.*/
@@ -78,7 +79,7 @@ private:
     @param[in]   *forceBeforeStep  Double array, the forces before ConjugateGradients::makeInfinitesimalStepModifiedForces was called.
     @param[in]   *forceAfterStep   Double array, the forces returned by ConjugateGradients::makeInfinitesimalStepModifiedForces.
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
-    double stepSize(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep);
+    AtomMatrix getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep);
 
     double sign(double value){ return(-(value<0)*2+1);}; // determine the sign of value, \return {double being either 1 or -1}.
 };

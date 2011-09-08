@@ -260,3 +260,45 @@ bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const doubl
     return true;
 }
 
+double helper_functions::maxAtomMotion(const AtomMatrix v1)
+{
+    double max = 0.0;
+    for(int i = 0; i < v1.rows(); i++)
+    {
+        double norm = v1.row(i).norm();
+        if(max < norm)
+        {
+            max = norm;
+        }
+    }    
+    return max;
+}
+
+AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double maxMotion)
+{
+    AtomMatrix v2(v1);
+    double max = maxAtomMotion(v1);
+    if(max > maxMotion)
+    {
+        v2 /= max;
+    }
+    return v2 * maxMotion;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
