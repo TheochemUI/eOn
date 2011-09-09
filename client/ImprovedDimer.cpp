@@ -82,7 +82,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
 
 //GH        statsTorque = F_R.norm()/delta;
         statsTorque = F_R.norm()/parameters->dimerSeparation;
-
+        
         // Determine the step direction, theta
         if(parameters->dimerOptMethod == OPT_SD) // steepest descent
         {
