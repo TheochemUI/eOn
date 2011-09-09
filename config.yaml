@@ -319,7 +319,7 @@ Dimer:
             kind: boolean
             default: True
 
-        seperation:
+        separation:
             kind: float
             default: 0.001
 
