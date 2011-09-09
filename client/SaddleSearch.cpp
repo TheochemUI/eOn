@@ -134,8 +134,6 @@ void SaddleSearch::loadMode(FILE *modeFile)
     long const nAtoms = saddle->numberOfAtoms();
     mode.resize(nAtoms, 3);
     mode.setZero();
-    int temp;
-    fscanf(modeFile, "%d %d", &temp, &temp);
     for (int i=0; i < nAtoms; i++)
     {
         fscanf(modeFile, "%lf %lf %lf", &mode(i,0), &mode(i,1), &mode(i,2));
