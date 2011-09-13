@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "Parameters.h"
 #include "Job.h"
+#include "Log.h"
 
 #include <errno.h>
 #include <string.h>
@@ -184,7 +185,7 @@ int main(int argc, char **argv)
                     break;
             }
         }
-
+        
         if (clients < number_of_clients) {
             fprintf(stderr, "didn't launch as many mpi client ranks as"
                             "specified in EON_NUMBER_OF_CLIENTS\n");
@@ -343,6 +344,8 @@ int main(int argc, char **argv)
             boinc_finish(1);
         }
 
+        log_init(&parameters, "client.log");
+
         // Determine what type of job we are running according 
         // to the parameters file. 
         Job *job = Job::getJob(&parameters);
@@ -351,6 +354,8 @@ int main(int argc, char **argv)
             return 1;
         }
         std::vector<std::string> filenames = job->run();
+
+        filenames.push_back(std::string("client.log"));
 
         if (bundlingEnabled) {
             bundle(i, filenames, &bundledFilenames);
@@ -361,6 +366,8 @@ int main(int argc, char **argv)
 
         boinc_fraction_done((double)(i+1)/(bundleSize));
         delete job;
+
+        log_close();
     }
 
     #ifdef EONMPI
