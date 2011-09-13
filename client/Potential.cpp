@@ -8,9 +8,12 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#include <time.h>
+
 #include "Constants.h"
 #include "Potential.h"
 #include "Parameters.h"
+#include "Log.h"
 #include "potentials/NewPotential/NewPotential.h"
 
 #include "potentials/IMD/IMD.h"
@@ -25,6 +28,7 @@
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
 #include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
+
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
 #endif
@@ -126,7 +130,11 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNr
 {
     AtomMatrix forces(nAtoms,3);
 
+    clock_t start = clock();
+
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
+
+    log_file("[Potential] fcall #: %d  time: %f seconds\n", fcalls, (double)(clock() - start) * (double)(1 / CLOCKS_PER_SEC));
 
     fcalls+=1;
 
