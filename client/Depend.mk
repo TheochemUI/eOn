@@ -224,7 +224,7 @@ BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Eigen.h Eigen/Dense \
  Parameters.h Constants.h Potential.h HelperFunctions.h
 Bundling.o: Bundling.cpp Bundling.h
 ClientEON.o: ClientEON.cpp Bundling.h CommandLine.h Constants.h \
- Parameters.h Job.h false_boinc.h
+ Parameters.h Job.h Log.h false_boinc.h
 CommandLine.o: CommandLine.cpp CommandLine.h ConjugateGradients.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -335,7 +335,8 @@ CommandLine.o: CommandLine.cpp CommandLine.h ConjugateGradients.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Constants.h Potential.h Minimizer.h
+ Matter.h Parameters.h Constants.h Potential.h Minimizer.h \
+ HelperFunctions.h
 Compression.o: Compression.cpp Compression.h
 ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -447,7 +448,8 @@ ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Constants.h Potential.h Minimizer.h
+ Matter.h Parameters.h Constants.h Potential.h Minimizer.h \
+ HelperFunctions.h
 Dimer.o: Dimer.cpp Dimer.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
@@ -1906,6 +1908,7 @@ Lanczos.o: Lanczos.cpp Lanczos.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Matter.h Parameters.h Constants.h Potential.h LowestEigenmodeInterface.h
+Log.o: Log.cpp Log.h Parameters.h Constants.h
 Matter.o: Matter.cpp Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
@@ -2128,7 +2131,7 @@ MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Potential.h Quickmin.h QuickminBox.h
+ Matter.h Potential.h HelperFunctions.h Quickmin.h QuickminBox.h
 NudgedElasticBand.o: NudgedElasticBand.cpp NudgedElasticBand.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -2803,7 +2806,7 @@ Potential.o: Potential.cpp Constants.h Potential.h Parameters.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- potentials/NewPotential/NewPotential.h \
+ Log.h potentials/NewPotential/NewPotential.h \
  potentials/NewPotential/../../Potential.h potentials/IMD/IMD.h \
  potentials/IMD/../../Potential.h potentials/EDIP/EDIP.h \
  potentials/EDIP/../../Potential.h potentials/EMT/EffectiveMediumTheory.h \
@@ -2943,7 +2946,7 @@ ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Parameters.h Constants.h Potential.h SaddleSearch.h \
  LowestEigenmodeInterface.h Hessian.h Job.h ConjugateGradients.h \
- Minimizer.h false_boinc.h
+ Minimizer.h HelperFunctions.h false_boinc.h
 Quickmin.o: Quickmin.cpp Quickmin.h Minimizer.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -3502,5 +3505,5 @@ TestJob.o: TestJob.cpp TestJob.h Job.h Parameters.h Constants.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Potential.h Minimizer.h SaddleSearch.h \
+ Matter.h Potential.h Minimizer.h HelperFunctions.h SaddleSearch.h \
  LowestEigenmodeInterface.h
