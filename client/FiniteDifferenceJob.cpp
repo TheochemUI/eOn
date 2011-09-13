@@ -34,7 +34,6 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     AtomMatrix posA;    
     posA = reactant->getPositions();        
 
-    //double dRs[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0};
     double dRs[] = { 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1 };
 
     AtomMatrix forceA;    
@@ -70,8 +69,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     AtomMatrix posB;
     AtomMatrix forceB;
     double curvature = 0.0;
-    for (int dRi = 0; dRi < ndRs; dRi++)
-    {
+    for (int dRi = 0; dRs[dRi] != -1; dRi++) {
         posB = posA + displacement * dRs[dRi];
         reactant->setPositions(posB);
         forceB = reactant->getForces();
