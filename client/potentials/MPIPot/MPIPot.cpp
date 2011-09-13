@@ -57,4 +57,7 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
 
     MPI::COMM_WORLD.Recv(U,   1, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Recv(F, 3*N, MPI::DOUBLE, potentialRank, 0);
+    //printf("energy: %12.4e\n", *U);
+    //printf("forces:\n");
+    //for (int i=0;i<N;i++) printf("%12.4e %12.4e %12.4e\n", F[3*i], F[3*i+1], F[3*i+2]);
 }

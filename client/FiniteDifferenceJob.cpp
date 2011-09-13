@@ -34,8 +34,8 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     AtomMatrix posA;    
     posA = reactant->getPositions();        
 
-    double dRs[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0};
-    int ndRs = 14;
+    //double dRs[] = {0.0000001, 0.000001, 0.00001, 0.0001, 0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.25, 0.4, 0.5, 1.0};
+    double dRs[] = { 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1 };
 
     AtomMatrix forceA;    
     forceA = reactant->getForces();
@@ -45,10 +45,12 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     AtomMatrix displacement;    
     displacement.resize(reactant->numberOfAtoms(), 3);
     displacement.setZero();
+    printf("displacing atoms:");
     for(int i = 0; i < reactant->numberOfAtoms(); i++)
     {
         if(reactant->distance(epicenter, i) <= 3.3)
         {
+            printf(" %i", i);
             for(int j = 0; j < 3; j++)
             {
                 if(!reactant->getFixed(i))
@@ -58,6 +60,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
             }
         }
     }
+    printf("\n");
     displacement.normalize();
 
     // Loop over values of dimer dR and print the output to results.dat.
