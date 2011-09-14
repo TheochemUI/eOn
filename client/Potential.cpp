@@ -134,7 +134,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNr
 
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
 
-    log_file("[Potential] fcall #: %d  time: %f seconds\n", fcalls, (double)(clock() - start) * (double)(1 / CLOCKS_PER_SEC));
+    log_file("[Potential] fcall #: %d  time: %f seconds\n", fcalls, (double)(clock() - start) * (double)(1.0 / CLOCKS_PER_SEC));
 
     fcalls+=1;
 
