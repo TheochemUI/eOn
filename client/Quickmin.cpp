@@ -72,7 +72,11 @@ long Quickmin::fullRelax()
     min << "min";
     if(parameters->writeMovies)
     {
-        matter->matter2con(min.str(), false);
+        if (parameters->checkpoint) {
+            matter->matter2con(min.str(), true);
+        }else{
+            matter->matter2con(min.str(), false);
+        }
     }
     int i = 0;
     while(!converged)
@@ -81,10 +85,6 @@ long Quickmin::fullRelax()
             return Minimizer::STATUS_MAX_ITERATIONS;
         }
 
-        if (parameters->checkpointForceCalls != -1 &&
-            Potential::fcalls >= parameters->checkpointForceCalls) {
-            return Minimizer::STATUS_CHECKPOINT;
-        }
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         i++;

@@ -8,7 +8,11 @@ static Parameters *params = NULL;
 void log_init(Parameters *p, char *filename) {
     params = p;
     if (logfile == NULL) {
-        logfile = fopen(filename, "w");
+        if (params->checkpoint) {
+            logfile = fopen(filename, "a");
+        }else{
+            logfile = fopen(filename, "w");
+        }
         setvbuf(logfile, NULL, _IOLBF, 0);
     }
 }

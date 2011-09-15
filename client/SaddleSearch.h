@@ -48,7 +48,6 @@ public:
         STATUS_BAD_MINIMA, //9
         STATUS_FAILED_PREFACTOR, //10
         STATUS_POTENTIAL_FAILED, //11
-        STATUS_CHECKPOINT, //12
     };
 
     // Constants used to displace atoms before a saddle search

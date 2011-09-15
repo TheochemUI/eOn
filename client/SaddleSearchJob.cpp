@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "SaddleSearchJob.h"
+#include "Log.h"
 #include "Constants.h"
 #include "false_boinc.h"
 #include "Potential.h"
@@ -32,6 +33,19 @@ std::vector<std::string> SaddleSearchJob::run(void)
     string reactant_passed("reactant_passed.con");
     string displacement_passed("displacement_passed.con");
     string mode_passed("mode_passed.dat");
+
+    if (parameters->checkpoint) {
+        FILE *disp, *mode;
+        disp = fopen("displacement_checkpoint.con", "r");
+        mode = fopen("mode_checkpoint.dat", "r");
+        if (disp != NULL && mode != NULL) {
+            displacement_passed = "displacement_checkpoint.con";
+            mode_passed = "mode_checkpoint.dat";
+            log("Resuming from checkpoint\n");
+        }else{
+            log("No checkpoint files found\n");
+        }
+    }
 
     initial = new Matter(parameters);
     displacement = new Matter(parameters);
@@ -146,8 +160,6 @@ void SaddleSearchJob::printEndState(int status) {
 
     else if(status == SaddleSearch::STATUS_BAD_MAX_ITERATIONS)
         fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
-    else if (status == SaddleSearch::STATUS_CHECKPOINT)
-        fprintf(stdout, "Saddle search, checkpointing.\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
 
