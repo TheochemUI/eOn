@@ -2,6 +2,7 @@
 #include "ConjugateGradients.h"
 #include "Matter.h"
 #include "Parameters.h"
+#include "Log.h"
 
 #include <cstdlib>
 #include <string>
@@ -101,6 +102,8 @@ void commandLine(int argc, char **argv)
 
     Parameters *parameters = new Parameters;
     parameters->potential = potential;
+
+    log_init(parameters, "client.log");
 
     Matter *matter = new Matter(parameters);
     matter->con2matter(confile);
