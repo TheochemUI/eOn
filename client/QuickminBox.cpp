@@ -110,10 +110,6 @@ long QuickminBox::fullRelax()
             return Minimizer::STATUS_MAX_ITERATIONS;
         }
 
-        if (parameters->checkpointForceCalls != -1 &&
-            Potential::fcalls >= parameters->checkpointForceCalls) {
-            return Minimizer::STATUS_CHECKPOINT;
-        }
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         i++;
