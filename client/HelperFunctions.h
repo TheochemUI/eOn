@@ -77,5 +77,7 @@ namespace helper_functions {
     
     AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
 
+    void getTime(double *real, double *user, double *sys);
+
 }
 #endif
