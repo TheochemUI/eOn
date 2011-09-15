@@ -44,7 +44,7 @@ public:
     string potential;
     double temperature;
     bool   quiet;
-    long   checkpointForceCalls;
+    bool   checkpoint;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries

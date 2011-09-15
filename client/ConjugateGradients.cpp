@@ -100,18 +100,17 @@ long ConjugateGradients::fullRelax()
     min << "min";
     if(parameters->writeMovies)
     {
-        matter->matter2con(min.str(), false);
+        if (parameters->checkpoint) {
+            matter->matter2con(min.str(), true);
+        }else{
+            matter->matter2con(min.str(), false);
+        }
     }
     int i = 0;
     while(!converged)
     {
         if (i >= parameters->optMaxIterations) {
             return Minimizer::STATUS_MAX_ITERATIONS;
-        }
-
-        if (parameters->checkpointForceCalls != -1 &&
-            Potential::fcalls >= parameters->checkpointForceCalls) {
-            return Minimizer::STATUS_CHECKPOINT;
         }
 
         oneStep();
@@ -121,9 +120,11 @@ long ConjugateGradients::fullRelax()
             printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
                    i, matter->maxForce(), matter->getPotentialEnergy());
         }
-        if(parameters->writeMovies)
-        {
+        if (parameters->writeMovies) {
             matter->matter2con(min.str(), true);
+        }
+        if (parameters->checkpoint) {
+            matter->matter2con("reactant_checkpoint.con");
         }
 
     }

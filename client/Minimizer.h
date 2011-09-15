@@ -26,7 +26,6 @@ class Minimizer
             STATUS_GOOD, //0
             STATUS_MAX_ITERATIONS, //1
             STATUS_POTENTIAL_FAILED, //2
-            STATUS_CHECKPOINT, //3
         };
 };
 

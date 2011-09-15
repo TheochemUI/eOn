@@ -350,7 +350,11 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
     climb << "climb";
     if(parameters->writeMovies)
     {
-        initial->matter2con(climb.str(), false);
+        if (parameters->checkpoint) {
+            initial->matter2con(climb.str(), true);
+        }else{
+            initial->matter2con(climb.str(), false);
+        }
         saddle->matter2con(climb.str(), true);
     }
     do
@@ -423,20 +427,21 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
             saddle->matter2con(climb.str(), true);
         }
         energySaddle = saddle->getPotentialEnergy();
-        if (parameters->checkpointForceCalls != -1) {
-            if (parameters->checkpointForceCalls > Potential::fcalls) {
-                break;
-            }
+        if (parameters->checkpoint) {
+            FILE *fileMode;
+            fileMode = fopen("mode_checkpoint.dat", "wb");
+            saveMode(fileMode);
+            fclose(fileMode);
+
+            FILE *fileSaddle;
+            fileSaddle = fopen("displacement_checkpoint.con", "wb");
+            saddle->matter2con(fileSaddle);
+            fclose(fileSaddle);
         }
     }while(!converged && 
            (iterations < parameters->saddleMaxIterations) && 
            (energySaddle-initialEnergy < parameters->saddleMaxEnergy));
     if(!converged) {
-        if (parameters->checkpointForceCalls != -1) {
-            if (parameters->checkpointForceCalls <= Potential::fcalls) {
-                status = STATUS_CHECKPOINT;
-            }
-        }
         if (parameters->saddleMaxIterations <= iterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
         }

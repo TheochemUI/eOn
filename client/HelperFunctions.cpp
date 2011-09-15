@@ -17,6 +17,7 @@
 
 #ifndef WIN32
     #include <sys/time.h>
+    #include <sys/resource.h>
 #endif
 
 // Random number generator
