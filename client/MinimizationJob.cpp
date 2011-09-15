@@ -10,6 +10,7 @@
 
 #include "MinimizationJob.h"
 #include "Minimizer.h"
+#include "Log.h"
 #include "ConjugateGradients.h"
 #include "Quickmin.h"
 #include "QuickminBox.h"
@@ -27,6 +28,17 @@ std::vector<std::string> MinimizationJob::run(void)
 {
     string reactant_passed("reactant_passed.con");
     string reactant_output("reactant.con");
+
+    if (parameters->checkpoint) {
+        FILE *react;
+        react = fopen("reactant_checkpoint.con", "r");
+        if (react != NULL) {
+            reactant_passed = "reactant_checkpoint.con";
+            log("Resuming from checkpoint\n");
+        }else{
+            log("No checkpoint files found\n");
+        }
+    }
 
     std::vector<std::string> returnFiles;
     returnFiles.push_back(reactant_output);

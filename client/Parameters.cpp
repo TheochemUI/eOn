@@ -29,7 +29,7 @@ Parameters::Parameters(){
     randomSeed = -1;
     potential = Potential::POT_LJ;
     temperature = 300.0;
-    checkpointForceCalls = -1;
+    checkpoint = false;
     quiet = false;
 
     // [Structure Comparison] //
@@ -190,7 +190,7 @@ int Parameters::load(FILE *file){
         temperature = ini.GetValueF("Main", "temperature", temperature);
         potential = toLowerCase(ini.GetValue("Main", "potential"));
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
-        checkpointForceCalls = ini.GetValueL("Main", "checkpoint_force_calls", checkpointForceCalls);
+        checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
 
         // Initialize random generator
