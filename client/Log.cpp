@@ -21,6 +21,10 @@ void log_close() {
 }
 
 void log(const char* format, ...) {
+    if (logfile == NULL) {
+        fprintf(stderr, "error: log() called before log_init\n");
+        return;
+    }
     va_list args;
     va_start(args, format);
     vfprintf(stdout,  format, args);
@@ -31,6 +35,10 @@ void log(const char* format, ...) {
 }
 
 void log_file(const char* format, ...) {
+    if (logfile == NULL) {
+        fprintf(stderr, "error: log() called before log_init\n");
+        return;
+    }
     va_list args;
     va_start(args, format);
     vfprintf(logfile, format, args);
