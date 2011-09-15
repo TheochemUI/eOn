@@ -13,6 +13,11 @@
 #include <math.h>
 #include <cassert>
 #include <iostream>
+#include <time.h>
+
+#ifndef WIN32
+    #include <sys/time.h>
+#endif
 
 // Random number generator
 
@@ -285,7 +290,37 @@ AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double ma
     return v2 * maxMotion;
 }
 
-
+void helper_functions::getTime(double *real, double *user, double *sys)
+{
+    #ifdef WIN32
+        *real = (double)time(NULL);
+        if(user != NULL)
+        {
+            *user = 0.0;
+        }
+        if(sys != NULL)
+        {
+            *sys = 0.0;
+        }
+    #else
+        struct timeval time;
+        gettimeofday(&time, NULL);
+        *real = (double)time.tv_sec + (double)time.tv_usec/1000000.0;
+        struct rusage r_usage;
+        if (getrusage(RUSAGE_SELF, &r_usage)!=0) 
+        {
+            fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
+        }
+        if(user != NULL)
+        {
+            *user = (double)r_usage.ru_utime.tv_sec + (double)r_usage.ru_utime.tv_usec/1000000.0;
+        }
+        if(sys != NULL)
+        {
+            *sys = (double)r_usage.ru_stime.tv_sec + (double)r_usage.ru_stime.tv_usec/1000000.0;
+        }
+    #endif    
+}
 
 
 

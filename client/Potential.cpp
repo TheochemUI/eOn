@@ -14,6 +14,7 @@
 #include "Potential.h"
 #include "Parameters.h"
 #include "Log.h"
+#include "HelperFunctions.h"
 #include "potentials/NewPotential/NewPotential.h"
 
 #include "potentials/IMD/IMD.h"
@@ -126,15 +127,21 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 int Potential::fcalls = 0;
 
+
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNrs, double *energy, Matrix3d box) 
 {
     AtomMatrix forces(nAtoms,3);
 
-    clock_t start = clock();
+    double start, userStart, sysStart;
+    helper_functions::getTime(&start, &userStart, &sysStart);
 
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
 
-    log_file("[Potential] fcall #: %d  time: %f seconds\n", fcalls, (double)(clock() - start) * (double)(1.0 / CLOCKS_PER_SEC));
+    double finish, userFinish, sysFinish;
+    helper_functions::getTime(&finish, &userFinish, &sysFinish);
+
+    log_file("[Potential] fcall #: %d  real: %.6f  user: %.6f  sys: %.6f seconds\n", 
+             fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
 
     fcalls+=1;
 

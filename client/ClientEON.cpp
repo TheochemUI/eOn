@@ -14,6 +14,7 @@
 #include "Parameters.h"
 #include "Job.h"
 #include "Log.h"
+#include "HelperFunctions.h"
 
 #include <errno.h>
 #include <string.h>
@@ -95,17 +96,17 @@ void printSystemInfo()
 {
     // System Information
     #ifdef WIN32
-    printf("Windows\n");
+        printf("Windows\n");
     #else
-    struct utsname systemInfo;
-    int status = uname(&systemInfo);
-    if (status == 0) {
-        printf("%s %s %s %s %s\n", 
-               systemInfo.sysname, systemInfo.nodename, systemInfo.release,
-               systemInfo.version, systemInfo.machine);
-    }else{
-        printf("unknown\n");
-    }
+        struct utsname systemInfo;
+        int status = uname(&systemInfo);
+        if (status == 0) {
+            printf("%s %s %s %s %s\n", 
+                   systemInfo.sysname, systemInfo.nodename, systemInfo.release,
+                   systemInfo.version, systemInfo.machine);
+        }else{
+            printf("unknown\n");
+        }
     #endif
 }
 
@@ -251,70 +252,66 @@ int main(int argc, char **argv)
     #endif
 
     #ifdef BOINC
-    // BOINC is started
-    int rc;
-    rc = boinc_init();
-    if(rc){
-        boinc_finish(rc);
-    }
+        // BOINC is started
+        int rc;
+        rc = boinc_init();
+        if(rc){
+            boinc_finish(rc);
+        }
 
-    //We want to uncompress our input file
-    char resolved[STRING_SIZE];
-    rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
-    if (rc) {
-        fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
-        boinc_finish(rc);
-    };
-    if (extract_archive(resolved) != 0) {
-        printf("error extracting input archive\n");
-        boinc_finish(1);
-    }
+        //We want to uncompress our input file
+        char resolved[STRING_SIZE];
+        rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
+        if (rc) {
+            fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
+            boinc_finish(rc);
+        };
+        if (extract_archive(resolved) != 0) {
+            printf("error extracting input archive\n");
+            boinc_finish(1);
+        }
     #endif
 
     enableFPE();
 
-    #ifdef WIN32
-    time_t beginTime = time(NULL);
-    #else
-    struct timeval beginTime;
-    gettimeofday(&beginTime, NULL);
-    #endif
+    double beginTime = 0.0;
+    helper_functions::getTime(&beginTime, NULL, NULL);
 
     #ifdef EONMPI
-    //XXX: When do we stop? The server should probably tell everyone 
-    //     when to stop.
-    char logfilename[1024];
-    snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
-    //int outFd = open("/dev/null", O_WRONLY);
+        //XXX: When do we stop? The server should probably tell everyone 
+        //     when to stop.
+        char logfilename[1024];
+        snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
+        //int outFd = open("/dev/null", O_WRONLY);
 
-    if (!client_standalone) {
-        int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-        dup2(outFd, 1);
-        dup2(outFd, 2);
-    }
-    char *orig_path = new char[1024];
-    getcwd(orig_path, 1024);
-    while (true) {
-        chdir(orig_path);
-        char *path = new char[1024];
-        int ready=1;
         if (!client_standalone) {
-            printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
-            //Tag "0" is tell communicator we are ready
-            MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
-            //Tag "1" is to tell the main akmc loop that a client is ready
-            MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
-            MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
-            if (strncmp("STOPCAR", path, 1024) == 0) {
-                MPI::Finalize();
-                return 0;
-            }
-            printf("client: rank: %i chdir to %s\n", irank, path);
-        
-            if (chdir(path) == -1) {
-                fprintf(stderr, "error: %s\n", strerror(errno));
-            }
+            int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+            dup2(outFd, 1);
+            dup2(outFd, 2);
         }
+        char *orig_path = new char[1024];
+        getcwd(orig_path, 1024);
+        while (true) {
+            chdir(orig_path);
+            char *path = new char[1024];
+            int ready=1;
+            if (!client_standalone) {
+                printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
+                //Tag "0" is tell communicator we are ready
+                MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
+                //Tag "1" is to tell the main akmc loop that a client is ready
+                MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
+                MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
+                if (strncmp("STOPCAR", path, 1024) == 0) {
+                    MPI::Finalize();
+                    return 0;
+                }
+                printf("client: rank: %i chdir to %s\n", irank, path);
+            
+                if (chdir(path) == -1) {
+                    fprintf(stderr, "error: %s\n", strerror(errno));
+                }
+            }
     #endif
 
     printSystemInfo();
@@ -371,64 +368,49 @@ int main(int argc, char **argv)
     }
 
     #ifdef EONMPI
-    if (client_standalone) {
-        break;
-    }
-    //End of MPI while loop
-    }
+        if (client_standalone) {
+            break;
+        }
+        //End of MPI while loop
+        }
     #endif
 
     // Timing Information
     double utime=0, stime=0, rtime=0;
-    #ifdef WIN32
-    time_t endTime = time(NULL);
-    time_t realTime = endTime-beginTime;
-    rtime = (double)realTime;
-    #else
-    struct timeval endTime;
-    gettimeofday(&endTime, NULL);
-    rtime = (double)(endTime.tv_sec-beginTime.tv_sec) + 
-            (double)(endTime.tv_usec-beginTime.tv_usec)/1000000.0;
-
-    struct rusage r_usage;
-    if (getrusage(RUSAGE_SELF, &r_usage)!=0) {
-        fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
-    }
-    utime = (double)r_usage.ru_utime.tv_sec + (double)r_usage.ru_utime.tv_usec/1000000.0;
-    stime = (double)r_usage.ru_stime.tv_sec + (double)r_usage.ru_stime.tv_usec/1000000.0;
-    #endif
+    helper_functions::getTime(&rtime, &utime, &stime);
+    rtime = rtime - beginTime;
 
     printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime,stime);
 
     #ifdef OSX
-    struct task_basic_info t_info;
-    mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+        struct task_basic_info t_info;
+        mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 
-    if (KERN_SUCCESS != task_info(mach_task_self(),
-       TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count))
-    {
-        return -1;
-    }
-    unsigned int rss = t_info.resident_size;
-    unsigned int vs  = t_info.virtual_size;
-    printf("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
-           (double)rss/1024/1024, (double)vs/1024/1024);
+        if (KERN_SUCCESS != task_info(mach_task_self(),
+           TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count))
+        {
+            return -1;
+        }
+        unsigned int rss = t_info.resident_size;
+        unsigned int vs  = t_info.virtual_size;
+        printf("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+               (double)rss/1024/1024, (double)vs/1024/1024);
     #endif
 
     #ifdef BOINC
-    //XXX: Error handling!
-    rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
-    char dirToCompress[] = ".";
-    create_archive(resolved, dirToCompress, bundledFilenames); 
+        //XXX: Error handling!
+        rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
+        char dirToCompress[] = ".";
+        create_archive(resolved, dirToCompress, bundledFilenames); 
     #endif
 
     #ifdef EONMPI
-    if (client_standalone) {
-        MPI::COMM_WORLD.Abort(0);
-    }else{
-        MPI::Finalize();
-    }
+        if (client_standalone) {
+            MPI::COMM_WORLD.Abort(0);
+        }else{
+            MPI::Finalize();
+        }
     #endif
 
     boinc_finish(0);
