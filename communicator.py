@@ -501,7 +501,6 @@ class MPI(Communicator):
 
         from mpi4py import MPI as PyMPI
         self.comm = PyMPI.COMM_WORLD
-        rank = self.comm.rank
 
         # GET VIA ENVIRONMENT VARS
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
@@ -511,6 +510,24 @@ class MPI(Communicator):
         self.ready_ranks = []
         self.running_jobs = {}
 
+        self.resume_jobs = []
+        if config.main_checkpoint:
+            self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+            logger.info("found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
+
+    def run_resume_jobs(self):
+        while True:
+            if len(self.resume_jobs) == 0:
+                break
+            if len(self.ready_ranks) == 0:
+                break
+            jobdir = self.resume_jobs.pop()
+            jobpath = os.path.join(self.scratchpath,jobdir)
+            buf = array('c', jobpath+'\0')
+            client_rank = self.ready_ranks.pop()
+            self.comm.Send(buf, client_rank)
+            self.running_jobs[jobdir] = client_rank
+
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
 
@@ -519,7 +536,8 @@ class MPI(Communicator):
 
         for jobdir in jobdirs:
             if config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(config.path_root, config.debug_results_path,jobdir))
+                shutil.copytree(os.path.join(self.scratchpath,jobdir), 
+                                os.path.join(config.path_root, config.debug_results_path, jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
         for bundle in self.unbundle(resultspath, keep_result):
@@ -545,6 +563,8 @@ class MPI(Communicator):
                 self.ready_ranks.append(rank)
                 tmp = numpy.empty(1, dtype='i')
                 self.comm.Recv(tmp, source=rank, tag=0)
+        if len(self.resume_jobs) != 0:
+            self.run_resume_jobs()
 
     def submit_jobs(self, data, invariants):
         for jobpath in self.make_bundles(data, invariants):
@@ -560,7 +580,8 @@ class MPI(Communicator):
     def get_queue_size(self):
         self.poll_clients()
         num_ready = len(self.ready_ranks)
-        qs = len(self.client_ranks) - num_ready
+        num_resume = len(self.resume_jobs)
+        qs = len(self.client_ranks) - num_ready + num_resume
         return qs
 
 

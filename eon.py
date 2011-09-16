@@ -5,8 +5,6 @@ import akmc
 import basinhopping
 import parallelreplica
 
-import sys
-
 def main():
     config.init()
     job = config.main_job.lower()

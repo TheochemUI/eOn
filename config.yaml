@@ -47,11 +47,9 @@ Main:
             kind: float
             default: 300.0
 
-        checkpoint_force_calls:
-            description: >
-                empty
-            kind: int
-            default: -1
+        checkpoint:
+            kind: boolean
+            default: false
 
         quiet:
             kind: boolean

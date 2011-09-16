@@ -21,6 +21,7 @@ class MinimizationJob: public Job {
         std::vector<std::string> run(void);
     private:
         Parameters *parameters;
+        int fcalls;
 };
 
 #endif
