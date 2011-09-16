@@ -249,6 +249,7 @@ def init(config_file = ""):
     #Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
     config.process_search_default_prefactor = parser.getfloat('Process Search', 'default_prefactor')
+    config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
     #Saddle Search options
     config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented
