@@ -4,7 +4,7 @@ from time import time
 import shutil
 import StringIO
 import os
-import numpy
+import sys
 import cPickle as pickle
 
 import atoms
@@ -81,9 +81,9 @@ class MinModeExplorer(Explorer):
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("cancelled %i workunits from state %i", 
                         num_cancelled, self.state.number)
-            #XXX: Do we ever call explore a completed state twice?
+            #XXX: Do we ever call explore on a completed state twice?
             if config.kdb_on:
-                logger.debug("Adding relevant processes to kinetic database.")
+                logger.info("Adding relevant processes to kinetic database.")
                 for process_id in self.state.get_process_ids():
                     output = self.kdber.add_process(self.state, process_id)
                     logger.debug("kdbaddpr.pl: %s" % output)
@@ -98,8 +98,8 @@ class MinModeExplorer(Explorer):
         if config.kdb_on:
             displacement, mode = self.kdber.make_suggestion()
             if displacement:
-                return displacement, mode, 'kdb'
                 logger.info('Made a KDB suggestion')
+                return displacement, mode, 'kdb'
 
         displacement, mode = self.displace.make_displacement() 
         return displacement, mode, 'random'
@@ -280,12 +280,46 @@ class ServerMinModeExplorer(MinModeExplorer):
         pickle.dump(d, f)
         f.close()
 
+    def explore(self):
+        if self.state.get_energy() != None:
+            MinModeExplorer.explore(self)
+        else:
+            if self.comm.get_queue_size() == 0:
+                logger.info("submitting initial state minimization job")
+                job = {}
+                reactant = self.state.get_reactant()
+                reactIO = StringIO.StringIO()
+                io.savecon(reactIO, reactant)
+                job['reactant_passed.con'] = reactIO
+                ini_changes = [ ('Main', 'job', 'minimization') ]
+                job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+                job['id'] = '0'
+                invariants = io.load_potfiles(config.path_pot)
+                self.comm.submit_jobs([job], invariants)
+
+            while self.comm.get_queue_size() != 0:
+                continue
+
+            if not os.path.isdir(config.path_jobs_in):
+                os.makedirs(config.path_jobs_in)
+
+            for result in self.comm.get_results(config.path_jobs_in, lambda x: True):
+                results_dat = io.parse_results(result['results.dat'])
+                energy = results_dat['potential_energy']
+                reason = results_dat['termination_reason']
+                if reason != 0:
+                    logger.fatal("minimization of initial reactant failed")
+                    sys.exit(1)
+                self.state.set_energy(energy)
 
     def register_results(self):
         logger.info("registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
-            shutil.rmtree(config.path_jobs_in)  
+            try:
+                shutil.rmtree(config.path_jobs_in)  
+            except OSError, msg:
+                logger.error("error cleaning up %s: %s", config.path_jobs_in, msg)
         os.makedirs(config.path_jobs_in)
 
         if not os.path.isdir(config.path_incomplete):
@@ -402,7 +436,7 @@ class ProcessSearch:
         self.mode = mode
         self.search_id = search_id
 
-        #valid statuses are 'not_started', 'running', 'complete', and 'error'
+        #valid statuses are 'not_started', 'running', 'complete', 'unneeded', and 'error'
         self.job_statuses = {
                              'saddle_search':'not_started',
                              'min1':'not_started',
@@ -509,11 +543,11 @@ class ProcessSearch:
             logger.info("search_id: %i process search complete" % self.search_id)
             self.register()
 
-    def register(self):
+    def register(self, repeat=False):
         result = {}
         saddle_result = self.load_result(self.finished_saddle_name)
 
-        if self.finished_reactant_name:
+        if self.finished_reactant_name and not repeat:
             reactant_result = self.load_result(self.finished_reactant_name) 
             result['reactant.con'] = reactant_result['reactant.con']
             product_result = self.load_result(self.finished_product_name)
@@ -528,7 +562,6 @@ class ProcessSearch:
                 '\n'.join([ "%s %s" % (k,v) for k,v in self.data.items() ]) )
         result['type'] = self.displacement_type
         result['search_id'] = self.search_id
-
 
         if self.data['termination_reason'] == 0:
             self.state.add_process(result)
@@ -649,3 +682,12 @@ class ProcessSearch:
     def finish_search(self, result):
         results_dat = io.parse_results(result['results.dat'])
         self.data.update(results_dat)
+        saddle = io.loadcon(result['saddle.con'])
+        barrier = results_dat['potential_energy_saddle'] - self.state.get_energy()
+        self.data['potential_energy_reactant'] = self.state.get_energy()
+        self.data['barrier_reactant_to_product'] = barrier
+        repeat_id = self.state.find_repeat(saddle, barrier)
+        if repeat_id != None:
+            self.job_statuses['min1'] = 'unneeded'
+            self.job_statuses['min2'] = 'unneeded'
+            self.register(repeat=True)

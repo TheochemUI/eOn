@@ -94,7 +94,6 @@ void ConjugateGradients::oneStep()
 
 long ConjugateGradients::fullRelax()
 {
-    bool converged = false;
     //----- Initialize end -----
     //std::cout<<"fullRelax\n";
     ostringstream min;
@@ -108,6 +107,8 @@ long ConjugateGradients::fullRelax()
         }
     }
     int i = 0;
+    force = matter->getForces();
+    bool converged = isItConverged(parameters->optConvergedForce);
     while(!converged)
     {
         if (i >= parameters->optMaxIterations) {
