@@ -101,7 +101,10 @@ class KDB:
         rp = os.path.abspath(state.reactant_path)
         if state.number == 0:
             rp = os.path.abspath(os.path.join(config.path_root, "reactant.con"))
-        sp = subprocess.Popen([config.kdb_querypath, rp, "--kdbdir=%s" % kdbpath], 
+        nodupes = ""
+        if config.kdb_nodupes:
+            nodupes = "--nodupes"
+        sp = subprocess.Popen([config.kdb_querypath, rp, "--kdbdir=%s" % kdbpath, nodupes], 
                               cwd = config.kdb_scratch_path,
                               stdout = subprocess.PIPE, 
                               stderr = subprocess.PIPE)
@@ -114,7 +117,6 @@ class KDB:
         f.close()
         if wait:
             sp.wait()
-
 
     def make_suggestion(self):
         if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
