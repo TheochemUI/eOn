@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "Dimer.h"
+#include "Log.h"
 
 using namespace helper_functions;
 
@@ -123,12 +124,8 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
             rotations++;
         }
 
-        FILE *fp = fopen("saddlesearch.dat", "a");
-        fprintf(fp, "DIMERROT   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
-                    curvature, torque, rotationAngle*(180.0/M_PI));
-        printf("DIMERROT   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
-               curvature, torque, rotationAngle*(180.0/M_PI));
-        fclose(fp);
+        log_file("[DimerRot]   -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   ---------\n",
+                 curvature, torque, rotationAngle*(180.0/M_PI));
     }
 
     statsTorque = torque;
