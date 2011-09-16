@@ -502,6 +502,7 @@ def main():
             client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
             while True:
                 if os.path.isfile(stopcar_path):
+                    logging.info("stopping due to STOPCAR")
                     for i in range(MPI.COMM_WORLD.Get_size()):
                         buf = array('c', 'STOPCAR\0')
                         MPI.COMM_WORLD.Isend(buf, i)

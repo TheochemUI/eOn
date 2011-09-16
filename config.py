@@ -145,6 +145,7 @@ def init(config_file = ""):
     #Main options
     config.main_job = parser.get('Main', 'job')
     config.main_temperature = parser.getfloat('Main', 'temperature')
+    config.main_checkpoint = parser.getboolean('Main', 'checkpoint')
 
     config.main_random_seed = parser.getint('Main', 'random_seed')
     if int(config.main_random_seed) >= 0:

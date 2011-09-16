@@ -285,9 +285,9 @@ int main(int argc, char **argv)
         //int outFd = open("/dev/null", O_WRONLY);
 
         if (!client_standalone) {
-            int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-            dup2(outFd, 1);
-            dup2(outFd, 2);
+        //    int outFd = open(logfilename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+        //    dup2(outFd, 1);
+        //    dup2(outFd, 2);
         }
         char *orig_path = new char[1024];
         getcwd(orig_path, 1024);
@@ -303,13 +303,14 @@ int main(int argc, char **argv)
                 MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
                 MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
                 if (strncmp("STOPCAR", path, 1024) == 0) {
+                    fprintf(stderr, "rank %i got STOPCAR\n", irank);
                     MPI::Finalize();
                     return 0;
                 }
                 printf("client: rank: %i chdir to %s\n", irank, path);
             
                 if (chdir(path) == -1) {
-                    fprintf(stderr, "error: %s\n", strerror(errno));
+                    fprintf(stderr, "error: chdir: %s\n", strerror(errno));
                 }
             }
     #endif
