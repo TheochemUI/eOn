@@ -296,7 +296,7 @@ int main(int argc, char **argv)
             char *path = new char[1024];
             int ready=1;
             if (!client_standalone) {
-                printf("client: is ready, posting Send to server rank: %i!\n", server_rank);
+                fprintf(stderr, "client: is ready, posting send to server rank: %i!\n", server_rank);
                 //Tag "0" is tell communicator we are ready
                 MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
                 //Tag "1" is to tell the main akmc loop that a client is ready
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
                     MPI::Finalize();
                     return 0;
                 }
-                printf("client: rank: %i chdir to %s\n", irank, path);
+                fprintf(stderr, "client: rank: %i chdir to %s\n", irank, path);
             
                 if (chdir(path) == -1) {
                     fprintf(stderr, "error: chdir: %s\n", strerror(errno));

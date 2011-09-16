@@ -49,6 +49,25 @@ class AKMCState(state.State):
 
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
+
+    def find_repeat(self, saddle, barrier):
+        # Determine the number of processes in the process table that have a similar energy.
+        self.load_process_table()
+        energetically_close = []
+        for id in self.procs.keys():
+            if abs(self.procs[id]['barrier'] - barrier) < self.statelist.epsilon_e:
+                energetically_close.append(id)
+
+        # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
+        if len(energetically_close) > 0:
+            #load the saddle
+            for id in energetically_close:
+                p1 = io.loadcon(self.proc_saddle_path(id))
+                if atoms.match(p1, saddle, config.comp_eps_r, config.comp_neighbor_cutoff, False):
+                    return id
+        return None
+
+
     def add_process(self, result):
         """ Adds a process to this State. """
         state.State.add_process(self, result)
@@ -72,28 +91,17 @@ class AKMCState(state.State):
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
-        self.load_process_table()
-        energetically_close = []
-        for id in self.procs.keys():
-            if abs(self.procs[id]['barrier'] - barrier) < self.statelist.epsilon_e:
-                energetically_close.append(id)
-
-        # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
-        if len(energetically_close) > 0:
-            #load the saddle
-            result["saddle"] = io.loadcon(result["saddle.con"])
-            p0 = result["saddle"]
-            for id in energetically_close:
-                p1 = io.loadcon(self.proc_saddle_path(id))
-                if atoms.match(p1, p0, config.comp_eps_r, config.comp_neighbor_cutoff, False):
-                    self.append_search_result(result, "repeat-%d" % id)
-                    self.procs[id]['repeats'] += 1
-                    self.save_process_table()
-                    if result['type'] == "random":
-                        self.inc_proc_random_count(id)
-                        if id in self.get_relevant_procids():
-                            self.inc_repeats()
-                    return None
+        result["saddle"] = io.loadcon(result["saddle.con"])
+        id = self.find_repeat(result["saddle"], barrier)
+        if id != None:
+            self.append_search_result(result, "repeat-%d" % id)
+            self.procs[id]['repeats'] += 1
+            self.save_process_table()
+            if result['type'] == "random":
+                self.inc_proc_random_count(id)
+                if id in self.get_relevant_procids():
+                    self.inc_repeats()
+            return None
 
         # This appears to be a unique process.
         # Check if the mode, reactant, saddle, and product are legit
