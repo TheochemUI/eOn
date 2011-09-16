@@ -7,6 +7,8 @@ RANLIB=$(CROSS)ranlib
 
 OPT=-O0
 
+TARGET_NAME=client
+
 ifndef DEBUG
 	NDEBUG=1
 	OPT=-O2
@@ -21,6 +23,7 @@ endif
 ifdef EONMPI
 	CXX=mpicxx
 	CXXFLAGS += -DEONMPI
+	TARGET_NAME=client_mpi
 endif
 
 #If we aren't doing a cross compile, guess our platform.
@@ -104,6 +107,7 @@ ifdef BOINC
     OBJECTS += Compression.o
     CXXFLAGS += -DNDEBUG -DBOINC -Iboinc/include
     OBJECTS += Compression.o
+    TARGET_NAME = client_boinc
 
     ifdef WIN32
         LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc 
@@ -220,7 +224,7 @@ all: $(POTDIRS) $(FPOTDIRS) client
 	@echo "POTENTIALS: $(POTENTIALS)"
 
 client: $(OBJECTS) $(LIBS)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $(TARGET_NAME) $^ $(LDFLAGS)
 
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
