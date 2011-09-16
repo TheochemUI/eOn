@@ -3,13 +3,19 @@ KDB
 
 One of the bottlenecks in an aKMC simulation is performing the saddle point searches. The kinetic database is used to ameliorate this cost by storing information about processes as they are found and using it to predict future saddle points.
 
-    **Kdb_only**: 
+    **use_kdb**: Turn Kdb on/off.
 
         type: boolean
 
         default: ``False``
 
-    **querypath**: 
+    **insertpath**: The path to kdbinsert.py in tsase/kdb.
+
+        type: string
+
+        default: ``kdbinsert.py``
+
+    **querypath**: The path to kdbquery.py in tsase/kdb.
 
         type: string
 
@@ -21,19 +27,13 @@ One of the bottlenecks in an aKMC simulation is performing the saddle point sear
 
         default: ``False``
 
-    **addpath**: 
-
-        type: string
-
-        default: ``False``
-
-    **use_kdb**: Turn Kdb on/off.
+    **keep**: Keep the saddle suggestions (for debugging purposes).
 
         type: boolean
 
         default: ``False``
 
-    **keep**: Keep the saddle suggestions (for debugging purposes).
+    **Kdb_only**: Only use kdb in an akmc simulation, no random searches.
 
         type: boolean
 
