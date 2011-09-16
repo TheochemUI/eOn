@@ -29,14 +29,21 @@ class AKMCState(state.State):
                                                    "product", "product energy", "product prefactor",
                                                    "barrier", "rate", "repeats")
     processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
-    search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier",
-                                                                          "max-dist", "sad-fcs", 
-                                                                          "mins-fcs", "pref-fcs", 
-                                                                          "result")
-    search_result_header += "-" * len(search_result_header) + '\n'
+
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1, 
                  reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
+        if config.akmc_server_side:
+            self.search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("searchid", "type", "barrier",
+                                                                                  "max-dist", "sad-fcs", 
+                                                                                  "mins-fcs", "pref-fcs", 
+                                                                                  "result")
+        else:
+            self.search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("wuid", "type", "barrier",
+                                                                                  "max-dist", "sad-fcs", 
+                                                                                  "mins-fcs", "pref-fcs", 
+                                                                                  "result")
+        self.search_result_header += "-" * len(self.search_result_header) + '\n'
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
                     reactant_path)
 
@@ -144,20 +151,25 @@ class AKMCState(state.State):
 
 
     def append_search_result(self, result, comment):
-        try:
-            f = open(self.search_result_path, 'a')
-            resultdata = result['results']
-            f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result["wuid"], 
-                     result["type"], 
-                     resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"],
-                     resultdata["displacement_saddle_distance"],
-                     resultdata["force_calls_saddle"] ,
-                     resultdata["force_calls_minimization"] ,
-                     resultdata["force_calls_prefactors"],
-                     comment))
-            f.close()
-        except:
-            logger.warning("Failed to append search result.")
+        #try:
+        f = open(self.search_result_path, 'a')
+        resultdata = result['results']
+
+        if config.akmc_server_side:
+            first_column = "search_id"
+        else:
+            first_column = "wuid"
+        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column], 
+                 result["type"], 
+                 resultdata["barrier_reactant_to_product"],
+                 resultdata["displacement_saddle_distance"],
+                 resultdata["force_calls_saddle"] ,
+                 resultdata["force_calls_minimization"] ,
+                 resultdata["force_calls_prefactors"],
+                 comment))
+        f.close()
+        #except:
+        #    logger.warning("Failed to append search result.")
 
 
     def get_ratetable(self):

@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "ConjugateGradients.h"
+#include "Log.h"
 #include <cassert>
 #include <cmath>
 
@@ -117,7 +118,7 @@ long ConjugateGradients::fullRelax()
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
         if (!parameters->quiet) {
-            printf("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
+            log("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
                    i, matter->maxForce(), matter->getPotentialEnergy());
         }
         if (parameters->writeMovies) {
