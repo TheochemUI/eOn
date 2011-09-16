@@ -276,6 +276,7 @@ def init(config_file = ""):
     config.kdb_wait = parser.get('KDB', 'wait')
     config.kdb_insertpath = parser.get('KDB', 'insertpath')
     config.kdb_querypath = parser.get('KDB', 'querypath')
+    config.kdb_nodupes = parser.getboolean('KDB', 'nodupes')
 
     #Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')

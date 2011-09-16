@@ -462,6 +462,10 @@ KDB:
             kind: string
             default: kdbquery.py
 
+        nodupes:
+            kind: boolean
+            default: False
+
         wait:
             kind: boolean
             default: False
@@ -470,7 +474,7 @@ KDB:
             kind: boolean
             default: False
 
-        Kdb_only:
+        kdb_only:
             kind: boolean
             default: False
 

@@ -21,6 +21,12 @@ One of the bottlenecks in an aKMC simulation is performing the saddle point sear
 
         default: ``False``
 
+    **nodupes**: KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).
+        
+        type: boolean
+
+        default: ``False``
+
     **wait**: Wait for the query to finish before submitting jobs (for debugging purposes).
 
         type: boolean
@@ -33,9 +39,10 @@ One of the bottlenecks in an aKMC simulation is performing the saddle point sear
 
         default: ``False``
 
-    **Kdb_only**: Only use kdb in an akmc simulation, no random searches.
+    **kdb_only**: Only use kdb in an akmc simulation, no random searches.
 
         type: boolean
 
         default: ``False``
+
 
