@@ -44,7 +44,7 @@ class KDB:
         barrier2 = process["saddle_energy"] - process["product_energy"]
         prefactor1 = process["prefactor"] 
         prefactor2 = process["product_prefactor"] 
-        sp = subprocess.Popen([config.kdb_addpath, 
+        sp = subprocess.Popen([config.kdb_insertpath, 
                               state.proc_reactant_path(process_id), 
                               state.proc_saddle_path(process_id),
                               state.proc_product_path(process_id),

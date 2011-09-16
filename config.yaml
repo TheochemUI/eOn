@@ -450,27 +450,27 @@ KDB:
 
     options:
 
-        Kdb_only:
+        use_kdb:
             kind: boolean
             default: False
 
+        insertpath:
+            kind: string
+            default: kdbinsert.py
+
         querypath:
             kind: string
-            default: False
+            default: kdbquery.py
 
         wait:
             kind: boolean
             default: False
 
-        addpath:
-            kind: string
-            default: False
-
-        use_kdb:
+        keep:
             kind: boolean
             default: False
 
-        keep:
+        Kdb_only:
             kind: boolean
             default: False
 
