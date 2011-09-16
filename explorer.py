@@ -12,7 +12,7 @@ import communicator
 import config
 import displace
 import fileio as io
-import kdbing
+import kdb
 import recycling
 
 def get_minmodexplorer():
@@ -65,7 +65,7 @@ class MinModeExplorer(Explorer):
 
 
         if config.kdb_on:
-            self.kdber = kdbing.KDB()
+            self.kdber = kdb.KDB()
             if len(self.state.get_ratetable()) <= 1:
                 self.kdber.query(self.state, wait = config.kdb_wait)
 
