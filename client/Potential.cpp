@@ -140,7 +140,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNr
     double finish, userFinish, sysFinish;
     helper_functions::getTime(&finish, &userFinish, &sysFinish);
 
-    log_file("[Potential] fcall #: %3d  real: %8.2f  user: %8.2f  sys: %8.2f seconds\n", 
+    log_file("[Potential] fcall#: %4d  real: %-7.3e  user: %-7.3e  sys: %-7.3e seconds\n", 
              fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
 
     fcalls+=1;
