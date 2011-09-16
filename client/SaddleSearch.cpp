@@ -338,7 +338,9 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
     if(parameters->writeMovies)
     {
         if (parameters->checkpoint) {
-            initial->matter2con(climb.str(), true);
+            if (fopen("climb.con", "r") == NULL) {
+                initial->matter2con(climb.str(), false);
+            }
         }else{
             initial->matter2con(climb.str(), false);
         }
