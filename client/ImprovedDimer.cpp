@@ -13,6 +13,7 @@
 
 #include "HelperFunctions.h"
 #include "ImprovedDimer.h"
+#include "Log.h"
 #include <cmath>
 #include <cassert>
 
@@ -186,21 +187,13 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirection)
             statsTorque = F_R.norm()/parameters->dimerSeparation;
             statsRotations += 1;
 
-            FILE *fp = fopen("saddlesearch.dat", "a");
-            fprintf(fp, "IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
-                        C_tau, statsTorque, statsAngle, statsRotations);
-            printf("IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
-                   C_tau, statsTorque, statsAngle, statsRotations);
-            fclose(fp);
+            log_file("[IDimerRot]  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
+                     C_tau, statsTorque, statsAngle, statsRotations);
         }
         else
         {
-            FILE *fp = fopen("saddlesearch.dat", "a");
-            fprintf(fp, "IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
-                        C_tau, F_R.norm()/delta);
-            printf("IDIMERROT  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
-                   C_tau, F_R.norm()/delta);
-            fclose(fp);
+            log_file("[IDimerRot]  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
+                     C_tau, F_R.norm()/delta);
         }
 
     } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);

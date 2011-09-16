@@ -17,6 +17,7 @@
 #include "ExactMinMode.h"
 #include "EpiCenters.h"
 #include "Constants.h"
+#include "Log.h"
 
 #include <cstdlib>
 
@@ -100,19 +101,17 @@ void SaddleSearch::initialize(Matter *initialPassed, Matter *saddlePassed, Param
     }
     status = STATUS_INIT;
     eigenValue = 0;
-    FILE *fp = fopen("saddlesearch.dat", "w");
     if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
     {
-        fprintf(fp, "DIMER  %9s   %9s   %16s   %9s   %9s   %9s   %9s   %9s\n", 
-                    "Step", "Step Size", "Energy", "Force", "Curvature", 
-                    "Torque", "Angle", "Rotations");
+        log("[Dimer]  %9s   %9s   %16s   %9s   %9s   %9s   %9s   %9s\n", 
+            "Step", "Step Size", "Energy", "Force", "Curvature", 
+            "Torque", "Angle", "Rotations");
     }
     else 
     {
-        fprintf(fp, "LANCZOS  %9s  %9s  %16s  %9s  %9s\n", 
-                    "Step", "Step Size", "Energy", "Force", "Curvature");
+        log("[Lanczos]  %9s  %9s  %16s  %9s  %9s\n", 
+            "Step", "Step Size", "Energy", "Force", "Curvature");
     }
-    fclose(fp);
     return;
 }
 
@@ -122,7 +121,7 @@ void SaddleSearch::loadMode(string filename)
     modeFile = fopen(filename.c_str(), constants::READ.c_str());
     if (!modeFile) {
         cerr << "File " << filename << " was not found.\n";
-        printf("Stop\n");
+        log("Stop\n");
         exit(1);
     }
     loadMode(modeFile);
@@ -160,7 +159,7 @@ long SaddleSearch::locate(void)
     eigenValue = 0;
     initialEnergy = saddle->getPotentialEnergy();
 
-    fprintf(stdout, "  Saddle point search started from reactant with energy %f eV.\n", initialEnergy);
+    log("  Saddle point search started from reactant with energy %f eV.\n", initialEnergy);
 
     // either an initial displacement is performed and the search is started
     // or a series of jumps is performed to reach a convex region
@@ -171,7 +170,7 @@ long SaddleSearch::locate(void)
         displaceAndSetMode(saddle);
     }
 
-    fprintf(stdout, "  Saddle point displaced.\n");
+    log("  Saddle point displaced.\n");
 
     if(status == STATUS_INIT)
     {
@@ -216,7 +215,7 @@ void SaddleSearch::displaceAndSetMode(Matter *matter)
     {
         indexEpiCenter = EpiCenters::randomFreeAtomEpiCenter(matter);
     }
-    printf("Chose atom %li as the epicenter.\n", indexEpiCenter);
+    log("Chose atom %li as the epicenter.\n", indexEpiCenter);
 
     initialDisplace(indexEpiCenter,0) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
     initialDisplace(indexEpiCenter,1) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
@@ -319,18 +318,6 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
     AtomMatrix forces;
     AtomMatrix pos;
 
-    if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
-    {
-        printf("DIMER  %9s   %9s   %16s   %9s   %9s   %9s   %9s   %9s\n", 
-               "Step", "Step Size", "Energy", "Force", "Curvature", 
-               "Torque", "Angle", "Rotations");
-    }
-    else 
-    {
-        printf("LANCZOS  %9s  %9s  %16s  %9s  %9s\n", 
-               "Step", "Step Size", "Energy", "Force", "Curvature");
-    }
-
     pos = saddle->getPositions();
     //----- Initialize end -----
     //std::cout<<"searchForSaddlePoint\n";
@@ -392,36 +379,23 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
         addForceCallsSaddleSearch(forceCallsSaddle, eigenValue);
         iterations++;
-        FILE *fp = fopen("saddlesearch.dat", "a");
         if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
         {
-            fprintf(fp, "DIMER  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
+            log("[Dimer]  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
                         iterations, stepSize, saddle->getPotentialEnergy(),
                         saddle->getForces().norm(),
                         lowestEigenmode->getEigenvalue(),
                         lowestEigenmode->statsTorque,
                         lowestEigenmode->statsAngle,
                         (int)lowestEigenmode->statsRotations);
-            printf("DIMER  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
-                   iterations, stepSize, saddle->getPotentialEnergy(),
-                   saddle->getForces().norm(),
-                   lowestEigenmode->getEigenvalue(),
-                   lowestEigenmode->statsTorque,
-                   lowestEigenmode->statsAngle,
-                   (int)lowestEigenmode->statsRotations);
         }
         else 
         {
-            fprintf(fp, "LANCZOS  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
-                        iterations, stepSize, saddle->getPotentialEnergy(),
-                        saddle->getForces().norm(),
-                        lowestEigenmode->getEigenvalue());
-            printf("LANCZOS  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
-                   iterations, stepSize, saddle->getPotentialEnergy(),
-                   saddle->getForces().norm(),
-                   lowestEigenmode->getEigenvalue());
+            log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
+                iterations, stepSize, saddle->getPotentialEnergy(),
+                saddle->getForces().norm(),
+                lowestEigenmode->getEigenvalue());
         }
-        fclose(fp);
         if(parameters->writeMovies)
         {
             saddle->matter2con(climb.str(), true);
