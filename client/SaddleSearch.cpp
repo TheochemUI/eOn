@@ -306,33 +306,6 @@ void SaddleSearch::displaceInConcaveRegion()
 
 void SaddleSearch::searchForSaddlePoint(double initialEnergy)
 {
-    bool converged = false;
-    long forceCallsSaddle;
-    long concaveSeries = 0;
-    double maxStep;
-    double energySaddle;
-    iterations = 0;
-
-    AtomMatrix forcesStep;
-    AtomMatrix posStep;
-    AtomMatrix forces;
-    AtomMatrix pos;
-
-    pos = saddle->getPositions();
-    //----- Initialize end -----
-    //std::cout<<"searchForSaddlePoint\n";
-    forces = saddle->getForces();
-
-    lowestEigenmode->compute(saddle, mode);
-    if(parameters->saddleMaxIterations == 0)
-    {
-        return;
-    }
-    eigenValue = lowestEigenmode->getEigenvalue();
-    eigenMode = lowestEigenmode->getEigenvector();
-    forces = projectedForce(forces);
-    // GH: this should be generalized to other optimizers
-    ConjugateGradients cgSaddle(saddle, parameters, forces);
     ostringstream climb;
     climb << "climb";
     if(parameters->writeMovies)
@@ -346,9 +319,40 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         }
         saddle->matter2con(climb.str(), true);
     }
+
+    bool converged = false;
+    long forceCallsSaddle;
+    long concaveSeries = 0;
+    double maxStep;
+    double energySaddle;
+    iterations = 0;
+
+    AtomMatrix forcesStep;
+    AtomMatrix posStep;
+    AtomMatrix forces;
+    AtomMatrix pos;
+
+    pos = saddle->getPositions();
+
+    // GH: this should be generalized to other optimizers
+    ConjugateGradients cgSaddle(saddle, parameters);
+
+    eigenMode = mode;
+    forces = saddle->getForces();
+
     do
     {
         forceCallsSaddle = saddle->getForceCalls();
+
+        // The new lowest eigenvalue
+        lowestEigenmode->compute(saddle, eigenMode);
+        eigenValue = lowestEigenmode->getEigenvalue();
+        eigenMode = lowestEigenmode->getEigenvector();
+
+        // Updating the conjugated object to the new configuration
+        forces = projectedForce(forces);
+        cgSaddle.setForces(forces);
+
         // Determine a CG step.
         posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
         saddle->setPositions(posStep);
@@ -361,13 +365,7 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
         saddle->setPositions(pos);
         forces = saddle->getForces();
-        // The new lowest eigenvalue
-        lowestEigenmode->compute(saddle,eigenMode);
-        eigenValue = lowestEigenmode->getEigenvalue();
-        eigenMode = lowestEigenmode->getEigenvector();
-        // Updating the conjugated object to the new configuration
-        forces = projectedForce(forces);
-        cgSaddle.setForces(forces);
+
         if(eigenValue < 0)
         {
             converged = cgSaddle.isItConverged(parameters->saddleConvergedForce);
