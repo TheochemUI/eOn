@@ -147,21 +147,24 @@ void SaddleSearchJob::saveData(int status){
 void SaddleSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
     if(status == SaddleSearch::STATUS_GOOD)
-        fprintf(stdout, "Successful.\n");
+        log("[SaddleSearch] successful\n");
 
     else if(status == SaddleSearch::STATUS_BAD_NO_CONVEX)
-        fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
+        log("[SaddleSearch] initial displacement unable to reach convex region\n");
 
     else if(status == SaddleSearch::STATUS_BAD_HIGH_ENERGY)
-        fprintf(stdout, "Saddle search, barrier too high.\n");
+        log("[SaddleSearch] saddle search, barrier too high\n");
 
     else if(status == SaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-        fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
+        log("[SaddleSearch] saddle search, too many iterations in concave region\n");
 
     else if(status == SaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-        fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
+        log("[SaddleSearch] saddle search, too many iterations in saddle point search\n");
+
+    else if(status == SaddleSearch::STATUS_BAD_HIGH_BARRIER)
+        log("[SaddleSearch] saddle search, barrier not within window\n");
     else
-        fprintf(stdout, "Unknown status: %i!\n", status);
+        log("[SaddleSearch] unknown status: %i!\n", status);
 
     return;
 }
