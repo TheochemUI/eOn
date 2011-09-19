@@ -22,7 +22,6 @@ import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
-from numpy import array, uint32 #required for random seed.
 numpy.seterr(all='raise')
 
 import communicator
@@ -506,6 +505,7 @@ def main():
                     for i in range(MPI.COMM_WORLD.Get_size()):
                         buf = array('c', 'STOPCAR\0')
                         MPI.COMM_WORLD.Isend(buf, i)
+                    MPI.COMM_WORLD.Abort()
                     break
                 MPI.COMM_WORLD.Probe(MPI.ANY_SOURCE, MPI.ANY_TAG)
                 #we now need to clear out any other mpi_send to us
