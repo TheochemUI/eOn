@@ -235,6 +235,7 @@ def parse_results(filein):
     '''
     if hasattr(filein, 'readline'):
         f = filein
+        f.seek(0)
     else:
         f = open(filein)
     results = {}
