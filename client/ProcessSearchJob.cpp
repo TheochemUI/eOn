@@ -111,19 +111,26 @@ int ProcessSearchJob::doProcessSearch(void)
     AtomMatrix displacedPos;
 
     *min1 = *saddle;
-    //XXX: the distance displaced from the saddle should be a parameter
     displacedPos = posSaddle - saddleSearch->getEigenMode() * parameters->processSearchMinimizationOffset;
     min1->setPositions(displacedPos);
     ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.fullRelax();
+    status = cgMin1.fullRelax();
     fCallsMin += cgMin1.totalForceCalls;
+
+    if (status != Minimizer::STATUS_GOOD) {
+        return SaddleSearch::STATUS_BAD_MINIMA;
+    }
 
     *min2 = *saddle;
     displacedPos = posSaddle + saddleSearch->getEigenMode() * parameters->processSearchMinimizationOffset;
     min2->setPositions(displacedPos);
     ConjugateGradients cgMin2(min2, parameters);
-    cgMin2.fullRelax();
+    status = cgMin2.fullRelax();
     fCallsMin += cgMin2.totalForceCalls;
+
+    if (status != Minimizer::STATUS_GOOD) {
+        return SaddleSearch::STATUS_BAD_MINIMA;
+    }
 
     // If min2 corresponds to initial state swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){

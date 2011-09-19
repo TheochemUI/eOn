@@ -505,39 +505,32 @@ class ProcessSearch:
         result['results.dat'].seek(0)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
-        termination_reason = self.job_termination_reasons[job_type][termination_code]
 
         self.save_result(result)
         self.finished_jobs.append(result['name'])
 
-        if termination_reason == 'good':
-            if job_type == 'saddle_search':
-                logger.info("search_id: %i saddle search complete" % self.search_id)
-                self.job_statuses[job_type] = 'complete'
-                self.finished_saddle_name = result['name']
-                self.finish_search(result)
+        if job_type == 'saddle_search':
+            self.data['termination_reason'] = termination_code
+            logger.info("search_id: %i saddle search complete" % self.search_id)
+            self.job_statuses[job_type] = 'complete'
+            self.finished_saddle_name = result['name']
+            self.finish_search(result)
 
-            elif job_type == 'minimization':
-                if self.job_statuses['min1'] not in [ 'complete', 'error' ]:
-                    logger.info("search_id: %i minimization 1 complete" % self.search_id)
-                    self.job_statuses['min1'] = 'complete'
-                    self.finished_min1_name = result['name']
-                else:
-                    logger.info("search_id: %i minimization 2 complete" % self.search_id)
-                    self.job_statuses['min2'] = 'complete'
-                    self.finished_min2_name = result['name']
-                    self.finish_minimization(result)
-            elif job_type == 'minimization':
-                if self.job_statuses['min1'] == 'running':
-                    self.job_statuses['min1'] = 'incomplete'
-                else:
-                    self.job_statuses['min2'] = 'incomplete'
-        else:
-            if job_type == 'saddle_search':
-                self.data['termination_reason'] = termination_code
-            elif job_type == 'minimization':
-                self.data['termination_reason'] = 11
-            self.register()
+        elif job_type == 'minimization':
+            if self.job_statuses['min1'] == 'running':
+                min_name = 'min1'
+                min_number = 1
+                self.finished_min1_name = result['name']
+            else:
+                min_name = 'min2'
+                min_number = 2
+                self.finished_min2_name = result['name']
+
+            self.job_statuses[min_name] = 'complete'
+            logger.info("search_id: %i minimization %i complete" % (self.search_id, min_number))
+
+            if min_number == 2:
+                self.finish_minimization(result)
 
         if all( [ s == 'complete' for s in self.job_statuses.values() ] ):
             logger.info("search_id: %i process search complete" % self.search_id)
@@ -612,8 +605,6 @@ class ProcessSearch:
         return job
 
     def finish_minimization(self, result):
-        #result1 = result
-        #result2 = self.load_result(self.finished_min1_name)
         result1 = self.load_result(self.finished_min1_name)
         result2 = result
 
@@ -629,6 +620,22 @@ class ProcessSearch:
                                             config.comp_eps_r, 
                                             config.comp_neighbor_cutoff, True)
 
+        print io.parse_results(result1['results.dat'])
+        tc1 = io.parse_results(result1['results.dat'])['termination_reason']
+        tc2 = io.parse_results(result2['results.dat'])['termination_reason']
+
+        termination_reason1 = self.job_termination_reasons['minimization'][tc1]
+        termination_reason2 = self.job_termination_reasons['minimization'][tc2]
+        if termination_reason1 == 'max_iterations' or termination_reason2 == 'max_iterations':
+            self.data['termination_reason'] = 9
+            self.data['potential_energy_saddle'] = 0.0
+            self.data['potential_energy_reactant'] = 0.0
+            self.data['potential_energy_product'] = 0.0
+            self.data['barrier_reactant_to_product'] = 0.0
+            self.data['barrier_product_to_reactant'] = 0.0
+            self.register()
+            return
+
         if is_reactant(atoms1):
             reactant_results_dat = results_dat1
             product_results_dat = results_dat2
@@ -641,6 +648,7 @@ class ProcessSearch:
             self.finished_product_name = self.finished_min1_name
         else:
             #Not connected
+
             self.data['termination_reason'] = 6
             self.data['potential_energy_saddle'] = 0.0
             self.data['potential_energy_reactant'] = 0.0
