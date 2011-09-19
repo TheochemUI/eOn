@@ -40,6 +40,7 @@ Parameters::Parameters(){
 
     // [Debug] //
     writeMovies = false;
+    writeMoviesSteps = 1;
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
@@ -204,8 +205,8 @@ int Parameters::load(FILE *file){
 
         // [Debug] //
 
-        writeMovies= ini.GetValueB("Debug", "write_movies", writeMovies);
-
+        writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
+	writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
         // [Structure Comparison] //
 
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
