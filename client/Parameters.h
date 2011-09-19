@@ -166,7 +166,7 @@ public:
 
     // [Debug]
     bool   writeMovies;
-
+    long   writeMoviesSteps;
 private:
     string toLowerCase(string s);
 

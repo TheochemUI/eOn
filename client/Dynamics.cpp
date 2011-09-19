@@ -108,6 +108,7 @@ void Dynamics::fullSteps(double temperature)
     bool stopped = false;
     long forceCallsTemp;
     long nsteps = 0;
+    long movie_steps = parameters->writeMoviesSteps;
     AtomMatrix velocity;
     double kinE, kinT;
     double sumT=0.0, sumT2=0.0, avgT, varT;
@@ -142,7 +143,9 @@ void Dynamics::fullSteps(double temperature)
         printf("%8ld %10e %10e %10e %f \n",nsteps,kinE, PE, kinE+PE, kinT); 
 
         if (parameters->writeMovies == true) {
-            matter->matter2xyz("dynamics", true);
+	    if (nsteps % movie_steps == 0){
+            	matter->matter2xyz("dynamics", true);
+	    }
         }
 
         if (nsteps >= parameters->mdSteps){
