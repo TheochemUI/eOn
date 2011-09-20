@@ -22,6 +22,11 @@ import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
+
+# DO NOT DELETE THE FOLLOWING LINE.
+from numpy import array, uint32 #required for random seed, even though it does not appear to be used in the code.
+# DO NOT DELETE THE PREVIOUS LINE.
+
 numpy.seterr(all='raise')
 
 import communicator
