@@ -353,19 +353,6 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         forces = projectedForce(forces);
         cgSaddle.setForces(forces);
 
-        // Determine a CG step.
-        posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
-        saddle->setPositions(posStep);
-        forcesStep = saddle->getForces();
-        forcesStep = projectedForce(forcesStep);
-        maxStep = parameters->saddleMaxStepSize;
-        pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
-
-        // The system (saddle) is moved to a new configuration
-        double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
-        saddle->setPositions(pos);
-        forces = saddle->getForces();
-
         if(eigenValue < 0)
         {
             converged = cgSaddle.isItConverged(parameters->saddleConvergedForce);
@@ -376,41 +363,58 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
             converged = false;
             concaveSeries = concaveSeries + 1;
         }
-        forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
-        addForceCallsSaddleSearch(forceCallsSaddle, eigenValue);
-        iterations++;
-        if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
-        {
-            log("[Dimer]  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
-                        iterations, stepSize, saddle->getPotentialEnergy(),
-                        saddle->getForces().norm(),
-                        lowestEigenmode->getEigenvalue(),
-                        lowestEigenmode->statsTorque,
-                        lowestEigenmode->statsAngle,
-                        (int)lowestEigenmode->statsRotations);
-        }
-        else 
-        {
-            log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
-                iterations, stepSize, saddle->getPotentialEnergy(),
-                saddle->getForces().norm(),
-                lowestEigenmode->getEigenvalue());
-        }
-        if(parameters->writeMovies)
-        {
-            saddle->matter2con(climb.str(), true);
-        }
-        energySaddle = saddle->getPotentialEnergy();
-        if (parameters->checkpoint) {
-            FILE *fileMode;
-            fileMode = fopen("mode_checkpoint.dat", "wb");
-            saveMode(fileMode);
-            fclose(fileMode);
 
-            FILE *fileSaddle;
-            fileSaddle = fopen("displacement_checkpoint.con", "wb");
-            saddle->matter2con(fileSaddle);
-            fclose(fileSaddle);
+        if(!converged)
+        {
+            // Determine a CG step.
+            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
+            saddle->setPositions(posStep);
+            forcesStep = saddle->getForces();
+            forcesStep = projectedForce(forcesStep);
+            maxStep = parameters->saddleMaxStepSize;
+            pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+
+            // The system (saddle) is moved to a new configuration
+            double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
+            saddle->setPositions(pos);
+            forces = saddle->getForces();
+
+            forceCallsSaddle = saddle->getForceCalls()-forceCallsSaddle;
+            addForceCallsSaddleSearch(forceCallsSaddle, eigenValue);
+            iterations++;
+            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
+            {
+                log("[Dimer]  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9d\n",
+                            iterations, stepSize, saddle->getPotentialEnergy(),
+                            saddle->getForces().norm(),
+                            lowestEigenmode->getEigenvalue(),
+                            lowestEigenmode->statsTorque,
+                            lowestEigenmode->statsAngle,
+                            (int)lowestEigenmode->statsRotations);
+            }
+            else 
+            {
+                log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
+                    iterations, stepSize, saddle->getPotentialEnergy(),
+                    saddle->getForces().norm(),
+                    lowestEigenmode->getEigenvalue());
+            }
+            if(parameters->writeMovies)
+            {
+                saddle->matter2con(climb.str(), true);
+            }
+            energySaddle = saddle->getPotentialEnergy();
+            if (parameters->checkpoint) {
+                FILE *fileMode;
+                fileMode = fopen("mode_checkpoint.dat", "wb");
+                saveMode(fileMode);
+                fclose(fileMode);
+
+                FILE *fileSaddle;
+                fileSaddle = fopen("displacement_checkpoint.con", "wb");
+                saddle->matter2con(fileSaddle);
+                fclose(fileSaddle);
+            }
         }
     }while(!converged && 
            (iterations < parameters->saddleMaxIterations) && 
