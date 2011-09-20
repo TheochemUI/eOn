@@ -10,6 +10,7 @@
 
 #include "Dynamics.h"
 #include "ConjugateGradients.h"
+#include "Log.h"
 #include <math.h>
 
 using namespace helper_functions;
@@ -125,7 +126,7 @@ void Dynamics::fullSteps(double temperature)
         matter->matter2xyz("dynamics", false);
     }
 
-    printf("%8s %10s %10s %10s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+    log("[Dynamics] %8s %8s %8s %8s %10s\n", "Step", "KE", "PE", "TE", "kinT");
 
     while(!stopped)
     {
@@ -139,8 +140,7 @@ void Dynamics::fullSteps(double temperature)
         sumT += kinT;
         sumT2 += kinT*kinT;
 
-//        printf("MDsteps %ld kinE = %lf Tkin = %lf \n",nsteps,kinE,kinT); 
-        printf("%8ld %10e %10e %10e %f \n",nsteps,kinE, PE, kinE+PE, kinT); 
+        log("[Dynamics] %8ld %.2e %.2e %.2e %f \n",nsteps,kinE, PE, kinE+PE, kinT); 
 
         if (parameters->writeMovies == true) {
 	    if (nsteps % movie_steps == 0){
@@ -155,7 +155,7 @@ void Dynamics::fullSteps(double temperature)
 
     avgT=sumT/nsteps;
     varT=sumT2/nsteps-avgT*avgT;
-    printf("Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", avgT,varT,varT/avgT/avgT*nFreeCoord/2);
+    log("[Dynamics] Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", avgT,varT,varT/avgT/avgT*nFreeCoord/2);
 }
 
 void Dynamics::andersen(double temperature)
@@ -409,7 +409,7 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
     bool ytest;
 
     RefineAccuracy = parameters->mdRefineAccuracy; 
-    printf("Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
+    log("[Dynamics] Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
     ytest = false;
 
     initial = 0;
