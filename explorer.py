@@ -320,7 +320,8 @@ class ServerMinModeExplorer(MinModeExplorer):
                 shutil.rmtree(config.path_jobs_in)  
             except OSError, msg:
                 logger.error("error cleaning up %s: %s", config.path_jobs_in, msg)
-        os.makedirs(config.path_jobs_in)
+            else:
+                os.makedirs(config.path_jobs_in)
 
         if not os.path.isdir(config.path_incomplete):
             os.makedirs(config.path_incomplete)
