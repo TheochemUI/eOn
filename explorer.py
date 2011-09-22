@@ -611,11 +611,13 @@ class ProcessSearch:
 
         saddle_path = os.path.join(config.path_incomplete, self.finished_saddle_name)
 
-        mode = open(os.path.join(saddle_path, "mode.dat"))
-        mode = io.load_mode(mode)
+        mode_file = open(os.path.join(saddle_path, "mode.dat"))
+        mode = io.load_mode(mode_file)
+        mode_file.close()
 
-        reactant = open(os.path.join(saddle_path, "saddle.con"))
-        reactant = io.loadcon(reactant)
+        reactant_file = open(os.path.join(saddle_path, "saddle.con"))
+        reactant = io.loadcon(reactant_file)
+        reactant_file.close()
 
         if which_min == "min2":
             mode = -mode
@@ -732,5 +734,7 @@ class ProcessSearch:
         result = {}
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)
-            result[file] = StringIO.StringIO(open(file_path).read())
+            f = open(file_path)
+            result[file] = StringIO.StringIO(f.read())
+            f.close()
         return result
