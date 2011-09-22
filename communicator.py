@@ -505,7 +505,7 @@ class MPI(Communicator):
         # GET VIA ENVIRONMENT VARS
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
         config.comm_job_buffer_size = len(self.client_ranks)
-        logger.info("server knows about client ranks %s" % repr(self.client_ranks) )
+        logger.info("server knows about client ranks %r" % self.client_ranks)
 
         self.ready_ranks = []
         self.running_jobs = {}

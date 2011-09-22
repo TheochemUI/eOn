@@ -6,6 +6,7 @@ import StringIO
 import os
 import sys
 import cPickle as pickle
+from copy import copy
 
 import atoms
 import communicator
@@ -117,7 +118,7 @@ class ClientMinModeExplorer(MinModeExplorer):
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
         logger.info("%i searches in the queue" % num_in_buffer)
         num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-        logger.info("making %i searches" % num_to_make)
+        logger.info("making %i process searches" % num_to_make)
         
         if num_to_make == 0:
             return
@@ -259,9 +260,9 @@ class ServerMinModeExplorer(MinModeExplorer):
         #XXX: need to init somehow
         self.search_id = 0
 
-        self.job_queue = []
         self.wuid_to_search_id = {}
         self.process_searches = {}
+        self.job_info = {}
 
         if os.path.isfile("explorer.pickle"):
             f = open("explorer.pickle")
@@ -278,6 +279,26 @@ class ServerMinModeExplorer(MinModeExplorer):
         del d['state']
         del d['comm']
         pickle.dump(d, f)
+        f.close()
+
+        f = open("searches.log", 'w')
+        f.write("%9s %13s %11s %10s\n" % ("search_id", "job_type", "status", "job_name"))
+        for search_id in self.job_info:
+            fmt = "%9i %13s %11s %10s\n"
+            lines = {'saddle_search':None, 'min1':None, 'min2':None}
+            for name, job in self.job_info[search_id].iteritems():
+                lines[job['type']] = fmt % (search_id, job['type'], job['status'], name)
+
+            if lines['saddle_search']:
+                f.write(lines['saddle_search'])
+            if lines['min1']:
+                f.write(lines['min1'])
+            else:
+                f.write(fmt % (search_id, 'min1', 'not_running', ''))
+            if lines['min2']:
+                f.write(lines['min2'])
+            else:
+                f.write(fmt % (search_id, 'min2', 'not_running', ''))
         f.close()
 
     def explore(self):
@@ -344,14 +365,25 @@ class ServerMinModeExplorer(MinModeExplorer):
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
 
-            #results = io.parse_results(result['results.dat'])
-            #job_type = results['job_type']
-            #termination_reason = results['termination_reason']
-            #reason = self.job_termination_reasons[job_type][termination_reason]
 
             search_id = self.wuid_to_search_id[id]
+            self.job_info[search_id][searchdata_id]['status'] = 'complete'
             #logger.info("got result for search_id %i" % search_id)
-            self.process_searches[search_id].process_result(result)
+            final_result = self.process_searches[search_id].process_result(result)
+            if final_result:
+                results_dict = io.parse_results(final_result['results.dat'])
+                reason = results_dict['termination_reason']
+                if reason == 0:
+                    self.state.add_process(final_result)
+                else:
+                    self.state.register_bad_saddle(final_result, config.debug_keep_bad_saddles)
+            else:
+                ps = self.process_searches[search_id]
+                saddle = ps.get_saddle()
+                if saddle:
+                    barrier = ps.data['barrier_reactant_to_product']
+                    if self.state.find_repeat(ps.get_saddle(), barrier):
+                        self.state.add_process(ps.build_result())
 
             num_registered += 1
             if self.state.get_confidence() >= config.akmc_confidence:
@@ -373,10 +405,10 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
-        logger.info("%i searches in the queue" % num_in_buffer)
-        num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-        logger.info("making %i searches" % num_to_make)
+        num_running = self.comm.get_queue_size()*config.comm_job_bundle_size 
+        logger.info("%i jobs running" % num_running)
+        num_to_make = max(config.comm_job_buffer_size - num_running, 0)
+        logger.info("making %i jobs" % num_to_make)
         
         if num_to_make == 0:
             return
@@ -394,23 +426,30 @@ class ServerMinModeExplorer(MinModeExplorer):
         for i in range(num_to_make):
             job = None
             for ps in self.process_searches.values():
-                job = ps.get_job()
+                job, job_type = ps.get_job()
                 if job:
                     self.wuid_to_search_id[self.wuid] = ps.search_id
-                    #logger.info("got job for process search %i" % ps.search_id)
+                    sid = ps.search_id
                     break
 
             if not job:
                 displacement, mode, disp_type = self.generate_displacement()
-                process_search = ProcessSearch(self.state, displacement, mode, disp_type, self.search_id)
-                self.process_searches[self.search_id] = (process_search)
+                reactant = self.state.get_reactant()
+                process_search = ProcessSearch(reactant, self.state.get_energy(), 
+                                               displacement, mode, disp_type, self.search_id)
+                self.process_searches[self.search_id] = process_search
                 self.wuid_to_search_id[self.wuid] = self.search_id
-                job = process_search.get_job()
-
+                job, job_type = process_search.get_job()
+                sid = self.search_id
                 self.search_id += 1
 
-
             job['id'] = "%i_%i" % (self.state.number, self.wuid)
+            job_entry = {'type':job_type, 'status':'running'}
+
+            if sid not in self.job_info:
+                self.job_info[sid] = {}
+            self.job_info[sid][job['id']] = job_entry
+
             self.wuid += 1
             self.save_wuid()
             jobs.append(job)
@@ -430,12 +469,13 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__(self, state, displacement, mode, displacement_type, search_id):
-        self.state = state
+    def __init__ (self, reactant, reactant_energy, displacement, mode, disp_type, search_id):
+        self.reactant = reactant
+        self.reactant_energy = reactant_energy
         self.displacement = displacement
-        self.displacement_type = displacement_type
         self.mode = mode
         self.search_id = search_id
+        self.displacement_type = disp_type
 
         #valid statuses are 'not_started', 'running', 'complete', 'unneeded', and 'error'
         self.job_statuses = {
@@ -443,11 +483,6 @@ class ProcessSearch:
                              'min1':'not_started',
                              'min2':'not_started'
                             }
-        self.job_iterations = { 
-                               'saddle_search':0,
-                               'min1':0,
-                               'min2':0,
-                              }
 
         unknown = "unknown_exit_code"
         self.job_termination_reasons = {
@@ -481,28 +516,28 @@ class ProcessSearch:
                     }
 
     def get_job(self):
-        #not yet sure how to handle error reporting
         if any( [ s == 'error' for s in self.job_statuses.values() ] ):
-            return None
+            return None, None
 
         if self.job_statuses['saddle_search'] == 'not_started':
             self.job_statuses['saddle_search'] = 'running'
-            return self.start_search()
+            return self.start_search(), 'saddle_search'
 
         if self.job_statuses['min1'] == 'not_started' and \
            self.job_statuses['saddle_search'] == 'complete':
             self.job_statuses['min1'] = 'running'
-            return self.start_minimization('min1')
+            return self.start_minimization('min1'), 'min1'
 
         if self.job_statuses['min2'] == 'not_started' and \
            self.job_statuses['saddle_search'] == 'complete':
             self.job_statuses['min2'] = 'running'
-            return self.start_minimization('min2')
+            return self.start_minimization('min2'), 'min2'
 
-        return None
+        return None, None
 
     def process_result(self, result):
         results_dat = io.parse_results(result['results.dat'])
+        #XXX: can remove this line now
         result['results.dat'].seek(0)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
@@ -533,15 +568,18 @@ class ProcessSearch:
             if min_number == 2:
                 self.finish_minimization(result)
 
-        if all( [ s == 'complete' for s in self.job_statuses.values() ] ):
-            logger.info("search_id: %i process search complete" % self.search_id)
-            self.register()
+        done = all( [ s == 'complete' for s in self.job_statuses.values() ] )
+        if not done:
+            done = any( [ s == 'error' for s in self.job_statuses.values() ] )
 
-    def register(self, repeat=False):
+        if done:
+            return self.build_result()
+
+    def build_result(self):
         result = {}
         saddle_result = self.load_result(self.finished_saddle_name)
 
-        if self.finished_reactant_name and not repeat:
+        if self.finished_reactant_name and self.finished_product_name:
             reactant_result = self.load_result(self.finished_reactant_name) 
             result['reactant.con'] = reactant_result['reactant.con']
             product_result = self.load_result(self.finished_product_name)
@@ -552,33 +590,21 @@ class ProcessSearch:
         result['mode.dat'] = saddle_result['mode.dat']
         result['results'] = self.data
 
-        result['results.dat'] = StringIO.StringIO(
-                '\n'.join([ "%s %s" % (k,v) for k,v in self.data.items() ]) )
+        results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ]) 
+        result['results'] = self.data
+        result['results.dat'] = StringIO.StringIO(results_string)
         result['type'] = self.displacement_type
         result['search_id'] = self.search_id
 
-        if self.data['termination_reason'] == 0:
-            self.state.add_process(result)
-        else:
-            self.state.register_bad_saddle(result, config.debug_keep_bad_saddles)
-
-    def save_result(self, result):
-        dir_path = os.path.join(config.path_incomplete, result['name'])
-        os.makedirs(dir_path)
-        for k in result:
-            if hasattr(result[k], 'getvalue'):
-                fn = os.path.join(dir_path, k)
-                f = open(fn, "w")
-                f.write(result[k].getvalue())
-                f.close()
-
-    def load_result(self, result_name):
-        dir_path = os.path.join(config.path_incomplete, result_name)
-        result = {}
-        for file in os.listdir(dir_path):
-            file_path = os.path.join(dir_path, file)
-            result[file] = StringIO.StringIO(open(file_path).read())
         return result
+
+    def get_saddle(self):
+        if self.finished_saddle_name:
+            saddle_result = self.load_result(self.finished_saddle_name)
+            saddle = io.loadcon(saddle_result['saddle.con'])
+        else:
+            saddle = None
+        return saddle
 
     def start_minimization(self, which_min):
         job = {}
@@ -617,11 +643,10 @@ class ProcessSearch:
         self.data['force_calls_minimization'] += results_dat1['total_force_calls']
         self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
-        is_reactant = lambda a: atoms.match(a, self.state.get_reactant(), 
+        is_reactant = lambda a: atoms.match(a, self.reactant,
                                             config.comp_eps_r, 
                                             config.comp_neighbor_cutoff, True)
 
-        print io.parse_results(result1['results.dat'])
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']
         tc2 = io.parse_results(result2['results.dat'])['termination_reason']
 
@@ -634,7 +659,6 @@ class ProcessSearch:
             self.data['potential_energy_product'] = 0.0
             self.data['barrier_reactant_to_product'] = 0.0
             self.data['barrier_product_to_reactant'] = 0.0
-            self.register()
             return
 
         if is_reactant(atoms1):
@@ -656,7 +680,6 @@ class ProcessSearch:
             self.data['potential_energy_product'] = 0.0
             self.data['barrier_reactant_to_product'] = 0.0
             self.data['barrier_product_to_reactant'] = 0.0
-            self.register()
             return
 
         self.data['potential_energy_reactant'] = reactant_results_dat['potential_energy']
@@ -666,7 +689,6 @@ class ProcessSearch:
                 self.data['potential_energy_reactant'] 
         self.data['barrier_product_to_reactant'] = self.data['potential_energy_saddle'] - \
                 self.data['potential_energy_product'] 
-
 
     def start_search(self):
         job = {}
@@ -680,7 +702,7 @@ class ProcessSearch:
         job['mode_passed.dat'] = modeIO
              
         reactIO = StringIO.StringIO()
-        io.savecon(reactIO, self.state.get_reactant())
+        io.savecon(reactIO, self.reactant)
         job['reactant_passed.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'saddle_search') ]
@@ -691,12 +713,24 @@ class ProcessSearch:
     def finish_search(self, result):
         results_dat = io.parse_results(result['results.dat'])
         self.data.update(results_dat)
-        saddle = io.loadcon(result['saddle.con'])
-        barrier = results_dat['potential_energy_saddle'] - self.state.get_energy()
-        self.data['potential_energy_reactant'] = self.state.get_energy()
+        barrier = results_dat['potential_energy_saddle'] - self.reactant_energy
+        self.data['potential_energy_reactant'] = self.reactant_energy
         self.data['barrier_reactant_to_product'] = barrier
-        repeat_id = self.state.find_repeat(saddle, barrier)
-        if repeat_id != None:
-            self.job_statuses['min1'] = 'unneeded'
-            self.job_statuses['min2'] = 'unneeded'
-            self.register(repeat=True)
+
+    def save_result(self, result):
+        dir_path = os.path.join(config.path_incomplete, result['name'])
+        os.makedirs(dir_path)
+        for k in result:
+            if hasattr(result[k], 'getvalue'):
+                fn = os.path.join(dir_path, k)
+                f = open(fn, "w")
+                f.write(result[k].getvalue())
+                f.close()
+
+    def load_result(self, result_name):
+        dir_path = os.path.join(config.path_incomplete, result_name)
+        result = {}
+        for file in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, file)
+            result[file] = StringIO.StringIO(open(file_path).read())
+        return result
