@@ -427,10 +427,19 @@ class Dynamics:
             f.write(header)
             f.write("-" * len(header))
             f.write("\n")
-            f.close()      
-        f = open(self.filename, 'r')
-        self.next_step = len(f.readlines()) - 2
-        f.close()
+            f.close()
+            self.next_step = 0
+        
+        #read last lines of the file to determine iteration nr
+        else:
+            with open(self.filename,"r") as f:
+		        f.seek(0,2)	#seek to EOF
+		        fsize = f.tell()
+                #seek 1024 bytes back (or to beginning of file if fsize < 1024 )
+                #last line must be contained in this block                
+		        f.seek( max( fsize - 1024 , 0 ) , 0)	
+		        lines = f.readlines()
+		        self.next_step = int ( lines[-1].split()[0] ) + 1 #determine iteration nr of next step
         
     def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, prefactor):
         f = open(self.filename, 'a')
