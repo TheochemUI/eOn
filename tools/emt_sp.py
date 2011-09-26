@@ -87,7 +87,7 @@ for i in xrange(clients):
 
 first_time = True
 while True:
-    natoms = numpy.array((0,), 'l')
+    natoms = numpy.array((0,), 'i')
     if my_comm.rank == 0:
         world.receive(natoms, my_client_rank, tag=0)
     my_comm.broadcast(natoms, 0)
