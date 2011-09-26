@@ -123,7 +123,7 @@ void Dynamics::fullSteps(double temperature)
 
 
     if (parameters->writeMovies == true) {
-        matter->matter2xyz("dynamics", false);
+        matter->matter2con("dynamics", false);
     }
 
     log("[Dynamics] %8s %8s %8s %8s %10s\n", "Step", "KE", "PE", "TE", "kinT");
@@ -144,7 +144,7 @@ void Dynamics::fullSteps(double temperature)
 
         if (parameters->writeMovies == true) {
 	    if (nsteps % movie_steps == 0){
-            	matter->matter2xyz("dynamics", true);
+            	matter->matter2con("dynamics", true);
 	    }
         }
 
