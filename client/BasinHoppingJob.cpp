@@ -111,7 +111,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         if (parameters->writeMovies == true) {
-            trial->matter2xyz("trials", true);
+            trial->matter2con("trials", true);
         }
 
         if (parameters->optMethod == "cg") {
@@ -158,7 +158,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
             
         if (parameters->writeMovies == true) {
-            minTrial->matter2xyz("movie", true);
+            minTrial->matter2con("movie", true);
         }
 
         totalfc = totalfc + minimizer->totalForceCalls + 1;
