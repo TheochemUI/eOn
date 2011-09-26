@@ -72,7 +72,7 @@ nforce_calls = 0
 performance_log = ""
 while True:
     nforce_calls += 1
-    natoms = numpy.array((0,), 'l')
+    natoms = numpy.array((0,), 'i')
     if my_comm.rank == 0:
         world.receive(natoms, my_client_rank, tag=0)
     my_comm.broadcast(natoms, 0)
