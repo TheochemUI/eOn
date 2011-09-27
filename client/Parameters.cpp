@@ -31,6 +31,7 @@ Parameters::Parameters(){
     temperature = 300.0;
     checkpoint = false;
     quiet = false;
+    MPIPotentialAggressive = true;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -193,6 +194,7 @@ int Parameters::load(FILE *file){
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
+        MPIPotentialAggressive = ini.GetValueB("Main", "aggressive", MPIPotentialAggressive);
 
         // Initialize random generator
         if(randomSeed < 0){
