@@ -27,6 +27,7 @@ class MPIPot : public Potential
 
     private:
         int potentialRank;
+        bool aggressive;
 };
 
 #endif

@@ -159,6 +159,7 @@ public:
     bool   basinHoppingMDFirst;
     double basinHoppingMDTemp;
 
+    bool MPIPotentialAggressive;
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI 
     // potential.

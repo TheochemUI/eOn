@@ -17,6 +17,7 @@
 MPIPot::MPIPot(Parameters *p)
 {
     potentialRank = p->MPIPotentialRank;
+    aggressive = p->MPIPotentialAggressive;
     return;
 }
 
@@ -43,12 +44,18 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
         icwd[i] = (long) cwd[i];
     }
     int intn = (int)N;
-    MPI::COMM_WORLD.Send(&intn,         1, MPI::INT,   potentialRank, 0);
+    MPI::COMM_WORLD.Send(&intn,      1, MPI::INT,   potentialRank, 0);
     MPI::COMM_WORLD.Send(atomicNrs,  N, MPI::INT,    potentialRank, 0);
     MPI::COMM_WORLD.Send(R,        3*N, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Send(box,        9, MPI::DOUBLE, potentialRank, 0);
     MPI::COMM_WORLD.Send(&pbc,       1, MPI::INT,    potentialRank, 0);
     MPI::COMM_WORLD.Send(&icwd[0],1024, MPI::INT,    potentialRank, 0);
+
+    if (!aggressive) {
+        while (MPI::COMM_WORLD.Iprobe(potentialRank, 0) == false) {
+            usleep(500000); // Sleep for 0.5 seconds
+        }
+    }
 
     //Recv data from potential
     MPI::COMM_WORLD.Recv(&failed,   1, MPI::INT,    potentialRank, 0);
