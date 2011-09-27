@@ -193,8 +193,11 @@ ifdef EONMPIBGP
 	CXXFLAGS += -DEONMPIBGP
 	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
 else
-	LDFLAGS += -L/usr/local/lib -lpython2.7 -lm
-	CXXFLAGS += -I/usr/local/include/python2.7 
+	python_include_path=`python -c "import sys,os; print os.path.join(sys.prefix, 'include', 'python'+sys.version[:3])"`
+	python_lib=`python -c "import sys,os; print 'python'+sys.version[:3]"`
+	python_lib_dir=`python -c "import sys,os; print os.path.join(sys.prefix, 'lib')"`
+	LDFLAGS += -L${python_lib_dir} -l${python_lib} -lm
+	CXXFLAGS += -I${python_include_path}
 endif
 endif
 
