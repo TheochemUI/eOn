@@ -90,7 +90,7 @@ class Superbasin:
         ratesum = 0.0
         process_table = exit_state.get_process_table()
 
-        # Determine all process OUT of the superbasin
+        # Determine all process OUT of the superbasin (leaving from exit_state)
         for proc_id in process_table:
             process = process_table[proc_id]
             if process['product'] not in self.state_numbers:
@@ -122,32 +122,42 @@ class Superbasin:
         """Build the transient and recurrent matrices."""\
         """Calculate the fundamental matrix in order to be able to calculate the mean resisdence time"""\
         """and exit probablities any initial distribution."""
+
+        #The i'th component of the recurrent vector contains the sum of all rates leaving state i (which 
+        #is inside the composite) and entering a state which is not in the superbasin
         recurrent_vector = numpy.zeros(len(self.states))
+
+        #The i'th diagonal component of the transient matrix contains minus the sum of _all_ rates 
+        #from processes leaving state i to any other state (whether inside the composite or not).
+        #the offdiagonal [i][j] components of the transient matrix contains the rate from state 
+        #i (inside the superbasin) to state j (also in the superbasin)
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
-        sum=0.0
+        
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
             for process in proc_table.values():
-                sum+=process['rate']
+                
+                #process is leaving the superbasin 
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
                     recurrent_vector[i] += process['rate']
+                    
+                #process remains in superbasin    
                 else:
                     j = self.state_numbers.index(process['product'])
+                    #columns and rows interchanged as compared to theory?
                     transient_matrix[j][i] += process['rate']
+                    
                 transient_matrix[i][i] -= process['rate']
         
-        #What is this stuff?
-        #inverse free method
-        #entry_state_vector = numpy.zeros(len(self.states))
-        #entry_state_vector[self.state_numbers.index(entry_state.number)] = 1.0
-        #fundamental_vector = numpy.linalg.solve(transient_matrix, entry_state_vector)
-        # probabilitity to be the exit state
-        #self.probability_vector = fundamental_vector/recurrent_vector
         #Calculate mean residence time
-        #self.mean_residence_time = numpy.sum(fundamental_vector)
         
+        #Fundamental matrix is the inverse of the transient matrix T (not the inverse of (I-T) )
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
+     
+        #mean_residence_times contains the lifetime of state i in the composite state.
         self.mean_residence_times = numpy.zeros(len(self.states))
+        #the probability matrix contains on the [i][j]'th position the probability of leaving 
+        #the superbasin from state j, given that the system entered the superbasin from state i (or vice versa ;) )
         self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
         
         for i in range(len(self.states)):
