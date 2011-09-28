@@ -25,13 +25,14 @@ QuickminBox::QuickminBox(Matter *matter_passed, Parameters *parameters_passed)
 
 QuickminBox::~QuickminBox()
 {
-    /* matter_, parameters_, and forces_ should not be deleted. They are pointers to objects outside the scope.*/
+    /* matter_, parameters_, and forces_ should not be deleted. 
+    They are pointers to objects outside the scope.*/
     return;
 }
 
 void QuickminBox::oneStep()
 {
-    double dR = 0.1;//parameters->optFiniteDist;
+    double dR = parameters->optFiniteDist;
     Vector3d boxv = matter->getBoundary(0);
     matter->setBoundary(0, boxv.normalized() * (boxv.norm() + dR));
     double eX = matter->getPotentialEnergy();

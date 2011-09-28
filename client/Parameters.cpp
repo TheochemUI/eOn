@@ -208,7 +208,7 @@ int Parameters::load(FILE *file){
         // [Debug] //
 
         writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
-	writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
+	    writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
         // [Structure Comparison] //
 
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
