@@ -61,8 +61,11 @@ Parameters::Parameters(){
     saddleMaxSingleDisplace = 10.;
     saddleConvergedForce = 0.005;
     saddlePerpForceRatio = 0.0; // undocumented
-
-
+    saddleConfinePositive = false; //undocumented
+    saddleConfinePositiveMinMove = 0.5;    //undocumented
+    saddleConfinePositiveScaleRatio = 0.9; //undocumented
+    saddleConfinePositiveMaxActiveAtoms = 30; //undocumented
+    
     // [Optimizers] //
     optMethod = "cg";
     optMaxIterations = 1000;
@@ -235,6 +238,9 @@ int Parameters::load(FILE *file){
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
 
+
+
+
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddleSearch::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
@@ -244,6 +250,14 @@ int Parameters::load(FILE *file){
            saddleDisplaceType != SaddleSearch::DISP_RANDOM){
                 saddleDisplaceType = SaddleSearch::DISP_LOAD;
         }
+
+        saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive); 
+        if(saddleConfinePositive) {
+            saddleConfinePositiveMinMove = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinMove);         
+            saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);         
+            saddleConfinePositiveMaxActiveAtoms = ini.GetValueL("Saddle Search", "confine_positive_max_active_atoms", saddleConfinePositiveMaxActiveAtoms); 
+        }
+
 
         // [Optimizers] //
 
