@@ -68,7 +68,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
     *trial = *current;
     *minTrial = *current;
 
-
     Minimizer *minimizer = NULL; 
     Parameters minParameters = *parameters;
     minParameters.writeMovies = false;
@@ -101,7 +100,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             randomSwap(swapTrial);
             swapMove=true;
             *minTrial = *swapTrial;
-      	}else{
+        }else{
             AtomMatrix displacement;
             displacement = displaceRandom();
 
@@ -147,7 +146,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if(step<parameters->basinHoppingSteps) {
                 totalAccept=totalAccept+1.0;
             }
-       
+
             currentEnergy = minTrial->getPotentialEnergy();
             if (currentEnergy < minimumEnergy) {
                 minimumEnergy = currentEnergy;
@@ -156,7 +155,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else{
             consecutive_rejected_trials++;
         }
-            
+
         if (parameters->writeMovies == true) {
             minTrial->matter2con("movie", true);
         }
@@ -170,10 +169,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 minTrial->getPotentialEnergy());
 
         if(consecutive_rejected_trials==parameters->basinHoppingJumpMax && step<parameters->basinHoppingSteps){
-	    consecutive_rejected_trials=0;
+            consecutive_rejected_trials=0;
             AtomMatrix jump;
             for(int j=0;j<parameters->basinHoppingJumpSteps;j++){
-	        jcount++;
+                jcount++;
                 jump = displaceRandom();
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
@@ -184,14 +183,14 @@ std::vector<std::string> BasinHoppingJob::run(void)
                     }
                     minimizer->setOutput(0);
                     minimizer->fullRelax();
-	      	}
+                }
                 currentEnergy = current->getPotentialEnergy();
                 if (currentEnergy < minimumEnergy) {
                     minimumEnergy = currentEnergy;
                     *minimumEnergyStructure = *current;
                 }
             }
-	}
+        }
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
         delete minimizer;
     }
@@ -307,7 +306,7 @@ void BasinHoppingJob::randomSwap(Matter *matter)
 
     int changera=0;
     int changerb=0;
-    
+
     changera = randomInt(0, matter->numberOfAtoms()-1);
     while (matter->getAtomicNr(changera) != ela) {
         changera = randomInt(0, matter->numberOfAtoms()-1);
@@ -321,7 +320,7 @@ void BasinHoppingJob::randomSwap(Matter *matter)
     double posax=matter->getPosition(changera, 0);
     double posay=matter->getPosition(changera, 1);
     double posaz=matter->getPosition(changera, 2);
-   
+
     matter->setPosition(changera, 0, matter->getPosition(changerb, 0));
     matter->setPosition(changera, 1, matter->getPosition(changerb, 1));
     matter->setPosition(changera, 2, matter->getPosition(changerb, 2));
@@ -348,7 +347,7 @@ vector<long> BasinHoppingJob::getElements(Matter *matter)
             Elements.push_back(i);
         }
     }
-    
+
     return Elements;
 }
 
