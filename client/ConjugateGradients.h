@@ -51,9 +51,9 @@ public:
     @param[in]   *forceAfterStep   Double array, the forces returned by ConjugateGradients::makeInfinitesimalStepSaddleSearch.
     @param[in]   maxStep           Double the maximal accepted step. The maximal value of norm of the displacement.*/
     AtomMatrix getNewPosModifiedForces(AtomMatrix pos, AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep,bool saddleSearch=false);
- 
+
     void setForces(AtomMatrix forces); // enables the use of modified forces
- 
+
 private:
     long nAtoms; // number of free coordinates
     int outputLevel;
