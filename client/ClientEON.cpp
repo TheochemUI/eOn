@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 
         int irank = MPI::COMM_WORLD.Get_rank();
         int isize = MPI::COMM_WORLD.Get_size();
-        
+
         int *process_types = new int[isize];
         int process_type;
 
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
                     break;
             }
         }
-        
+
         if (clients < number_of_clients) {
             fprintf(stderr, "didn't launch as many mpi client ranks as"
                             "specified in EON_NUMBER_OF_CLIENTS\n");
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
                 MPI::Group orig_group, new_group;
                 orig_group = MPI::COMM_WORLD.Get_group();
                 int offset = i*potential_group_size;
-                new_group = orig_group.Incl(potential_group_size, 
+                new_group = orig_group.Incl(potential_group_size,
                                             &potential_ranks[offset]);
                 MPI::COMM_WORLD.Create(new_group);
             }
