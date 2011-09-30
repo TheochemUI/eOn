@@ -82,7 +82,7 @@ void ConjugateGradients::oneStep()
     posStep = pos + directionNorm * parameters->optFiniteDist;
     matter->setPositions(posStep);
     forceAfterStep = matter->getForces();
- 
+
     //cout<<"Step: "<<step<<endl;
     pos += getStep(force, forceAfterStep, parameters->optMaxMove);
     matter->setPositions(pos);
@@ -140,7 +140,7 @@ long ConjugateGradients::fullRelax()
 bool ConjugateGradients::isItConverged(double convergeCriterion)
 {
     double diff = 0;
- 
+
     for(int i=0; i<nAtoms; i++)
     {
         diff = force.row(i).norm();
@@ -215,7 +215,7 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
     if(curvature < 0.0)
     {
         stepSize = 100.0;
-        if(parameters->saddleConfinePositive) {       
+        if(parameters->saddleConfinePositive) {
             //new
             // Zero out the directions with the least displacement
             int moved = 0;
@@ -232,18 +232,18 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
                 }
                 minMoved *= parameters->saddleConfinePositiveScaleRatio;
             }
-            
+
             if (moved > parameters->saddleConfinePositiveMaxActiveAtoms){
                 printf("crash, too many atoms are moving (increase confine_positive_min_move? )\n");
                 exit(1);
             }
-            std::cout<<moved<<" components are moving"<<std::endl; 
-        }   
-   
+            std::cout<<moved<<" components are moving"<<std::endl;
+        }
+
     }
     else
     {
-        stepSize = projectedForce1/curvature;  
+        stepSize = projectedForce1/curvature;
     }
 
 //    directionTemp.normalize();
