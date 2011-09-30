@@ -256,7 +256,6 @@ class ClientMinModeExplorer(MinModeExplorer):
 
 class ServerMinModeExplorer(MinModeExplorer):
     def __init__(self, states, previous_state, state):
-        MinModeExplorer.__init__(self, states, previous_state, state)
         #XXX: need to init somehow
         self.search_id = 0
 
@@ -265,10 +264,12 @@ class ServerMinModeExplorer(MinModeExplorer):
         self.job_info = {}
 
         if os.path.isfile("explorer.pickle"):
-            f = open("explorer.pickle")
+            f = open("explorer.pickle", "rb")
             tmp_dict = pickle.load(f)
             f.close()
             self.__dict__.update(tmp_dict)
+
+        MinModeExplorer.__init__(self, states, previous_state, state)
 
 
     def save(self):
@@ -278,7 +279,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         del d['previous_state']
         del d['state']
         del d['comm']
-        pickle.dump(d, f)
+        pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
         f.close()
 
         f = open("searches.log", 'w')
