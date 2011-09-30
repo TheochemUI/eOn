@@ -130,6 +130,7 @@ void SaddleSearch::loadMode(string filename)
 
 void SaddleSearch::loadMode(FILE *modeFile)
 {
+    std::cout<<"reading mode file"<<std::endl;
     long const nAtoms = saddle->numberOfAtoms();
     mode.resize(nAtoms, 3);
     mode.setZero();
@@ -335,6 +336,7 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
     pos = saddle->getPositions();
 
     // GH: this should be generalized to other optimizers
+
     ConjugateGradients cgSaddle(saddle, parameters);
 
     eigenMode = mode;
@@ -345,9 +347,13 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         forceCallsSaddle = saddle->getForceCalls();
 
         // The new lowest eigenvalue
+        // std::cout<<mode<<std::endl;
+        
         lowestEigenmode->compute(saddle, eigenMode);
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
+
+ //       std::cout<<"Lowest eigenvalue = "<<eigenValue<<std::endl;
 
         // Updating the conjugated object to the new configuration
         forces = projectedForce(forces);
@@ -367,12 +373,12 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         if(!converged)
         {
             // Determine a CG step.
-            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos);
-            saddle->setPositions(posStep);
-            forcesStep = saddle->getForces();
-            forcesStep = projectedForce(forcesStep);
+            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos); //displaces the system by OptFiniteDist
+            saddle->setPositions(posStep); 
+            forcesStep = saddle->getForces(); //Forces after displacing the system an infinitesimal step
+            forcesStep = projectedForce(forcesStep); //Projects the force
             maxStep = parameters->saddleMaxStepSize;
-            pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep);
+            pos = cgSaddle.getNewPosModifiedForces(pos, forces, forcesStep, maxStep,true);
 
             // The system (saddle) is moved to a new configuration
             double stepSize = (saddle->pbc(saddle->getPositions() - pos )).norm();
