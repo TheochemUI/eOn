@@ -73,6 +73,11 @@ public:
     double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
+    bool saddleConfinePositive; //undocumented
+    double saddleConfinePositiveMinMove;    //undocumented
+    double saddleConfinePositiveScaleRatio; //undocumented
+    long saddleConfinePositiveMaxActiveAtoms; //undocumented
+
     // [Optimizers]
     string optMethod;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization

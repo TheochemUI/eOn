@@ -24,6 +24,8 @@ ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters)
 ConjugateGradients::ConjugateGradients(Matter *matter, Parameters *parameters, AtomMatrix forces)
 {
     initialize(matter, parameters);
+    totalForceCalls = 0;
+    outputLevel = 0;
     force = forces; 
 }
 
@@ -118,8 +120,9 @@ long ConjugateGradients::fullRelax()
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
+        
         if (!parameters->quiet) {
-            log("step = %3d, max force = %8.5lf, energy: %10.4f\n", 
+            log("step = %3d, max force = %10.7lf, energy: %10.7f\n", 
                    i, matter->maxForce(), matter->getPotentialEnergy());
         }
         if (parameters->writeMovies) {
@@ -191,7 +194,7 @@ void ConjugateGradients::determineSearchDirection(){
 }
 
 
-AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep)
+AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep, bool saddleSearch)
 {
     double projectedForce1;
     double projectedForce2;
@@ -203,18 +206,69 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
     projectedForce1 = (forceBeforeStep.cwise() * directionNorm).sum();
     projectedForce2 = (forceAfterStep.cwise() * directionNorm).sum();
     curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDist;
-    
-    if(curvature < 0)
+
+    //new
+    Matrix<double, Eigen::Dynamic, 3> directionTemp;
+    directionTemp = directionNorm;
+    //new
+    assert(fabs(saddleConfinePositive) < 1.0);
+    if(curvature < 0.0)
     {
         stepSize = 100.0;
+        if(parameters->saddleConfinePositive) {       
+            //new
+            // Zero out the directions with the least displacement
+            int moved = 0;
+            double minMoved = parameters->saddleConfinePositiveMinMove;
+            while(moved == 0){
+                moved = 0;
+                directionTemp = directionNorm;
+                for (int i=0; i<3*nAtoms; i++) {
+                    if (fabs(directionTemp[i]) < minMoved)
+                        directionTemp[i]=0;
+                    else{
+                        moved = moved + 1;
+                    }
+                }
+                minMoved *= parameters->saddleConfinePositiveScaleRatio;
+            }
+            
+            if (moved > parameters->saddleConfinePositiveMaxActiveAtoms){
+                printf("crash, too many atoms are moving (increase confine_positive_min_move? )\n");
+                exit(1);
+            }
+            std::cout<<moved<<" components are moving"<<std::endl; 
+        }   
+   
     }
     else
     {
-        stepSize = projectedForce1/curvature;
+        stepSize = projectedForce1/curvature;  
     }
-    return helper_functions::maxAtomMotionApplied(stepSize * directionNorm, maxStep);
+
+//    directionTemp.normalize();
+//    return stepSize * directionTemp;
+//    return helper_functions::maxAtomMotionApplied(stepSize * directionTemp, maxStep);
+      return helper_functions::maxAtomMotionApplied(stepSize * directionTemp, maxStep);
 }
 
+/*
+    if(curvature < 0.0)
+        stepSize = maxStep;
+    else{
+        stepSize = projectedForce1/curvature;
+        if(maxStep < fabs(stepSize)){
+            // Calculated is too large
+            #ifndef NDEBUG            
+                cout<<"CG exceeded max step"<<endl;
+            #endif
+            double sign = (stepSize > 0.0 ) ? 1.0 : -1.0 ; 
+            stepSize = sign*maxStep;
+        }
+    }
+    return stepSize * directionNorm;
+}
+*/
 // Specific functions when forces are modified 
 
 AtomMatrix ConjugateGradients::makeInfinitesimalStepModifiedForces(AtomMatrix pos){
@@ -230,10 +284,11 @@ AtomMatrix ConjugateGradients::getNewPosModifiedForces(
         AtomMatrix pos,
         AtomMatrix forceBeforeStep,
         AtomMatrix forceAfterStep,
-        double maxStep)
+        double maxStep,
+        bool saddleSearch)
 {
     // Move system
-    return pos + getStep(forceBeforeStep, forceAfterStep, maxStep);
+    return pos + getStep(forceBeforeStep, forceAfterStep, maxStep, saddleSearch);
 }
 
 
