@@ -282,13 +282,21 @@ double helper_functions::maxAtomMotion(const AtomMatrix v1)
 
 AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double maxMotion)
 {
+    /*
+    Function ensures (by scaling) that there is no single element of the AtomMatrix which is larger than maxMotion. 
+    */
     AtomMatrix v2(v1);
+    
     double max = maxAtomMotion(v1);
+    //double max = v1.norm();
     if(max > maxMotion)
     {
-        v2 /= max;
+        v2 *= maxMotion/max;
     }
-    return v2 * maxMotion;
+    return v2;
+    
+    
+    
 }
 
 void helper_functions::getTime(double *real, double *user, double *sys)
