@@ -49,7 +49,7 @@ std::vector<std::string> DynamicsJob::run(void)
     Matter *F = new Matter(parameters);
     R->con2matter("reactant_passed.con");
     *F = *R;
-    
+
     printf("Now running Regular Dynamics at %8.2lf K with %10ld steps\n", parameters->temperature, parameters->mdSteps);
     Dynamics *d = new Dynamics(R, parameters);
     d->fullSteps(parameters->temperature);
@@ -58,7 +58,7 @@ std::vector<std::string> DynamicsJob::run(void)
     FILE *fileProduct;
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
-    
+
     fileProduct = fopen(productFilename.c_str(), "wb");
     F->matter2con(fileProduct);
     fclose(fileProduct);
@@ -67,7 +67,7 @@ std::vector<std::string> DynamicsJob::run(void)
     delete F;
     delete d;
 
-    std::vector<std::string> returnFiles;  
+    std::vector<std::string> returnFiles;
     return returnFiles;
 }
 

@@ -259,27 +259,27 @@ double BondBoost::Booststeps()
     OldForce = matter->getForces();
     NewForce = OldForce + TADF;
     Free = matter->getFree();
-    NewForce = NewForce.cwise() *  Free;
+    NewForce = NewForce.cwise() * Free;
     matter->setForces(NewForce);
-/*       
+/*
         printf("TADF::\n");
-    for(i=0;i<nAtoms;i++){
-        printf("%lf   %lf   %lf\n",TADF(i,0),TADF(i,1),TADF(i,2));
+        for(i=0;i<nAtoms;i++){
+            printf("%lf   %lf   %lf\n",TADF(i,0),TADF(i,1),TADF(i,2));
         }
  
         printf("OldForces::\n");
         for(i=0;i<nAtoms;i++){
-                printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
+            printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
         }
   
         printf("NewForces::\n");
         for(i=0;i<nAtoms;i++){
-                printf("%lf   %lf   %lf\n",NewForce(i,0),NewForce(i,1),NewForce(i,2));
+            printf("%lf   %lf   %lf\n",NewForce(i,0),NewForce(i,1),NewForce(i,2));
         }
         OldForce = matter->getForces();
         printf("NewSettedForces::\n");
         for(i=0;i<nAtoms;i++){
-                printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
+            printf("%lf   %lf   %lf\n",OldForce(i,0),OldForce(i,1),OldForce(i,2));
         }
 */
 

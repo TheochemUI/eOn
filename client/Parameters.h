@@ -73,10 +73,10 @@ public:
     double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
 
-    bool saddleConfinePositive; //undocumented
-    double saddleConfinePositiveMinMove;    //undocumented
-    double saddleConfinePositiveScaleRatio; //undocumented
-    long saddleConfinePositiveMaxActiveAtoms; //undocumented
+    bool saddleConfinePositive; // undocumented
+    double saddleConfinePositiveMinMove; // undocumented
+    double saddleConfinePositiveScaleRatio; // undocumented
+    long saddleConfinePositiveMaxActiveAtoms; // undocumented
 
     // [Optimizers]
     string optMethod;
@@ -143,11 +143,11 @@ public:
     double drTargetTemperature;
 
     // [Bond Boost]
-    string biasPotential; 
+    string biasPotential;
     long   bondBoostRMDS;
     double bondBoostDVMAX;
-    double bondBoostQRR; 
-    double bondBoostPRR; 
+    double bondBoostQRR;
+    double bondBoostPRR;
     double bondBoostQcut;
 
     // [Basin Hopping]
@@ -166,7 +166,7 @@ public:
 
     bool MPIPotentialAggressive;
     // MPI stuff, not actually specified in config file
-    // this is used to pass information to the GPAW MPI 
+    // this is used to pass information to the GPAW MPI
     // potential.
     int MPIPotentialRank;
 
