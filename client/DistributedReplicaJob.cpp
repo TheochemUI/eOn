@@ -116,7 +116,7 @@ void DistributedReplicaJob::balanceStep(){
             printf(" Succeed!\n");
             stop = true;
         }
-        if(nloop >= 5){ 
+        if(nloop >= 5){
             *reactant = *initial;
             printf("Warning - The system is in a meta-stable state!\n");
             stop = true;
@@ -166,7 +166,7 @@ void DistributedReplicaJob::samplingStep(){
                     new_n = (new_n > 0)?new_n:0;
                     srefined = new_n + n - ncheck;
                     printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
-                    *reactant = *mdbuff[new_n];  
+                    *reactant = *mdbuff[new_n];
 
                     char sbuff[STRING_SIZE];
                     string sample_saved("sample_saved");
@@ -184,7 +184,6 @@ void DistributedReplicaJob::samplingStep(){
                 n = srefined;
             }
         }
-
     }
 
     status = samplingDynamics.checkState(reactant,min1);
@@ -241,5 +240,4 @@ void DistributedReplicaJob::saveData(void)
     return;
 
 }
-
 

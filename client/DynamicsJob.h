@@ -23,7 +23,7 @@ class DynamicsJob : public Job
         DynamicsJob(Parameters *params);
         ~DynamicsJob(void);
         std::vector<std::string> run(void);
-        Parameters *parameters;        
+        Parameters *parameters;
         std::vector<std::string> returnFiles;
 };
 

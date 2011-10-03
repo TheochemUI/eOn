@@ -1,3 +1,13 @@
+//-----------------------------------------------------------------------------------
+// eOn is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// A copy of the GNU General Public License is available at
+// http://www.gnu.org/licenses/
+//-----------------------------------------------------------------------------------
+
 #include "Bundling.h"
 
 #include <cstdio>
@@ -31,7 +41,7 @@ int getBundleSize(void)
         }
 
         //Find the last underscore
-        char *ch = strrchr(dp->d_name, '_')+1;
+        char *ch = strrchr(dp->d_name, '_') + 1;
         //Find the last period
         char *cch = strrchr(dp->d_name, '.');
         *cch = '\0';
@@ -69,7 +79,7 @@ std::vector<std::string> unbundle(int number) {
     while ((dp=readdir(dir))) {
         int bundleNumber;
         std::string originalFilename(dp->d_name);
-        int stringSize = strlen(dp->d_name)+10;
+        int stringSize = strlen(dp->d_name) + 10;
         char *newFilename = new char[stringSize];
 
         if (dp->d_name[0] == '.') {
@@ -88,7 +98,7 @@ std::vector<std::string> unbundle(int number) {
         }
 
         //Find the last underscore
-        char *ch = strrchr(dp->d_name, '_')+1;
+        char *ch = strrchr(dp->d_name, '_') + 1;
         //Find the last period
         char *cch = strrchr(dp->d_name, '.');
         *cch = '\0';
@@ -105,7 +115,7 @@ std::vector<std::string> unbundle(int number) {
         int err;
         err = copyfile((char *)originalFilename.c_str(), newFilename);
         if (err) {
-            fprintf(stderr, "error: unbundle: problem copying %s to %s\n", 
+            fprintf(stderr, "error: unbundle: problem copying %s to %s\n",
                     originalFilename.c_str(), newFilename);
         }
         filenames.push_back(std::string(newFilename));
