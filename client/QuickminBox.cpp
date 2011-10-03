@@ -22,7 +22,6 @@ QuickminBox::QuickminBox(Matter *matter_passed, Parameters *parameters_passed)
     outputLevel = 0;
 }
 
-
 QuickminBox::~QuickminBox()
 {
     /* matter_, parameters_, and forces_ should not be deleted. 

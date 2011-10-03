@@ -120,7 +120,7 @@ long ConjugateGradients::fullRelax()
         oneStep();
         converged = isItConverged(parameters->optConvergedForce);
         ++i;
-        
+
         if (!parameters->quiet) {
             log("step = %3d, max force = %10.7lf, energy: %10.7f\n", 
                    i, matter->maxForce(), matter->getPotentialEnergy());
@@ -150,7 +150,7 @@ bool ConjugateGradients::isItConverged(double convergeCriterion)
         }
     }
 //    diff = length(force_,nFreeCoord_);
-//    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);    
+//    fprintf(stderr, "ConjugateGradients.isItConverged force magnitude: %f\n", diff);
 //std::cout<<diff<<"\n";
     return(diff < convergeCriterion);
 }
@@ -201,22 +201,22 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
     double stepSize, curvature;
     //----- Initialize end -----
     //std::cout<<"stepSize\n";
-    
+
     // Determine curvature
     projectedForce1 = (forceBeforeStep.cwise() * directionNorm).sum();
     projectedForce2 = (forceAfterStep.cwise() * directionNorm).sum();
     curvature = (projectedForce1-projectedForce2)/parameters->optFiniteDist;
 
-    //new
+    // new
     Matrix<double, Eigen::Dynamic, 3> directionTemp;
     directionTemp = directionNorm;
-    //new
+    // new
     assert(fabs(saddleConfinePositive) < 1.0);
     if(curvature < 0.0)
     {
         stepSize = 100.0;
         if(parameters->saddleConfinePositive) {
-            //new
+            // new
             // Zero out the directions with the least displacement
             int moved = 0;
             double minMoved = parameters->saddleConfinePositiveMinMove;
@@ -259,10 +259,10 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
         stepSize = projectedForce1/curvature;
         if(maxStep < fabs(stepSize)){
             // Calculated is too large
-            #ifndef NDEBUG            
+            #ifndef NDEBUG
                 cout<<"CG exceeded max step"<<endl;
             #endif
-            double sign = (stepSize > 0.0 ) ? 1.0 : -1.0 ; 
+            double sign = (stepSize > 0.0 ) ? 1.0 : -1.0;
             stepSize = sign*maxStep;
         }
     }

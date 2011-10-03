@@ -74,7 +74,7 @@ long EpiCenters::minCoordinatedEpiCenter(const Matter *matter, double neighborCu
     // count all atoms that are minimally coordinated and free to move
     j = 0; 
     for(int i=0; i<nAtoms; i++){
-        if((minCoordinatedList[i]) && !(matter->getFixed(i))) 
+        if((minCoordinatedList[i]) && !(matter->getFixed(i)))
             j++;
     }
     // pick a random atom that is free and minimally coordinated
@@ -115,7 +115,7 @@ long EpiCenters::randomFreeAtomEpiCenter(const Matter *matter)
     double tempDouble;
     nAtoms = matter->numberOfAtoms();
     indexEpiCenter = -2; // initialize to a value that will fail the assert if no EpiCenter is found
-    j = 0; 
+    j = 0;
 
     j = matter->numberOfFreeAtoms() - 1;
     tempDouble = randomDouble(j);

@@ -48,7 +48,7 @@ void commandLine(int argc, char **argv)
     #ifndef WIN32
     int c;
     bool sflag=false,mflag=false, pflag=false;
-    
+
     string potential;
     string confile;
 

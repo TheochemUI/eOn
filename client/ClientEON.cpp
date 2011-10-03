@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 
         process_type = 1;
 
-        MPI::COMM_WORLD.Allgather(&process_type,     1, MPI::INT, 
+        MPI::COMM_WORLD.Allgather(&process_type,     1, MPI::INT,
                                   &process_types[0], 1, MPI::INT);
 
         int i, servers=0, clients=0, potentials=0;
@@ -298,9 +298,9 @@ int main(int argc, char **argv)
             if (!client_standalone) {
                 fprintf(stderr, "client: is ready, posting send to server rank: %i!\n", server_rank);
                 //Tag "0" is tell communicator we are ready
-                MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 0);
+                MPI::COMM_WORLD.Isend(&ready,     1, MPI::INT,  server_rank, 0);
                 //Tag "1" is to tell the main akmc loop that a client is ready
-                MPI::COMM_WORLD.Isend(&ready,      1, MPI::INT,  server_rank, 1);
+                MPI::COMM_WORLD.Isend(&ready,     1, MPI::INT,  server_rank, 1);
                 MPI::COMM_WORLD.Recv(&path[0], 1024, MPI::CHAR, server_rank, 0);
                 if (strncmp("STOPCAR", path, 1024) == 0) {
                     fprintf(stderr, "rank %i got STOPCAR\n", irank);
@@ -308,7 +308,7 @@ int main(int argc, char **argv)
                     return 0;
                 }
                 fprintf(stderr, "client: rank: %i chdir to %s\n", irank, path);
-            
+
                 if (chdir(path) == -1) {
                     fprintf(stderr, "error: chdir: %s\n", strerror(errno));
                 }
@@ -403,7 +403,7 @@ int main(int argc, char **argv)
         //XXX: Error handling!
         rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
         char dirToCompress[] = ".";
-        create_archive(resolved, dirToCompress, bundledFilenames); 
+        create_archive(resolved, dirToCompress, bundledFilenames);
     #endif
 
     #ifdef EONMPI

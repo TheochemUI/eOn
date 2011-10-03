@@ -79,7 +79,7 @@ bool Hessian::calculate(string which)
     {
         cerr<<"Hessian can't deterimine which structure to use"<<endl;
         return false;
-    }    
+    }
 
     int nAtoms = curr->numberOfAtoms();
 
@@ -90,14 +90,14 @@ bool Hessian::calculate(string which)
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
     assert(size > 0);
-    
+
     //Build the hessian 
     Matter matterTemp(parameters);
     matterTemp = *curr;
-    
+
 //    double dr = 1e-6; // value used by graeme 1e-4;
     double dr = parameters->hessianFiniteDist;
-    
+
     AtomMatrix pos = curr->getPositions();
     AtomMatrix posDisplace(nAtoms, 3);
     AtomMatrix posTemp(nAtoms, 3);
@@ -155,8 +155,6 @@ bool Hessian::calculate(string which)
         }
     }
 
-
-
     // GH: debug
     if(!parameters->quiet)
     {
@@ -204,7 +202,7 @@ bool Hessian::calculate(string which)
         }
         freqs = newfreqs;
     }
-    
+
     int nNeg = 0;
     for(i=0; i<size; i++)
     {
@@ -230,14 +228,14 @@ bool Hessian::calculate(string which)
         }
     }
     modes[whichNum(which)] = freqs;
-    hessians[whichNum(which)] = hessian;    
+    hessians[whichNum(which)] = hessian;
     return true;
 }
 
 VectorXi Hessian::movedAtoms(double const distance)
 {
     long nAtoms = saddle->numberOfAtoms();
-    
+
     VectorXi moved(nAtoms);
     moved.setConstant(-1);
 
@@ -246,7 +244,7 @@ VectorXi Hessian::movedAtoms(double const distance)
 
     diffProd.cwise() *= saddle->getFree();
     diffReact.cwise() *= saddle->getFree();
-    
+
     int nMoved = 0;
     for(int i=0; i<nAtoms; i++)
     {

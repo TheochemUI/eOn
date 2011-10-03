@@ -21,7 +21,7 @@ Dimer::Dimer(Matter const *matter, Parameters *params)
     *matterCenter = *matter;
     *matterDimer  = *matter;
     nAtoms = matter->numberOfAtoms();
-    
+
     direction.resize(nAtoms, 3);
     rotationalPlane.resize(nAtoms, 3);
     direction.setZero();

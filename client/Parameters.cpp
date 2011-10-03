@@ -61,10 +61,10 @@ Parameters::Parameters(){
     saddleMaxSingleDisplace = 10.;
     saddleConvergedForce = 0.005;
     saddlePerpForceRatio = 0.0; // undocumented
-    saddleConfinePositive = false; //undocumented
-    saddleConfinePositiveMinMove = 0.5;    //undocumented
-    saddleConfinePositiveScaleRatio = 0.9; //undocumented
-    saddleConfinePositiveMaxActiveAtoms = 30; //undocumented
+    saddleConfinePositive = false; // undocumented
+    saddleConfinePositiveMinMove = 0.5; // undocumented
+    saddleConfinePositiveScaleRatio = 0.9; // undocumented
+    saddleConfinePositiveMaxActiveAtoms = 30; // undocumented
     
     // [Optimizers] //
     optMethod = "cg";
@@ -182,7 +182,7 @@ int Parameters::load(string filename)
 }
 
 int Parameters::load(FILE *file){
-    
+
     CIniFile ini;
     ini.CaseInsensitive();
     int error=0;
@@ -211,7 +211,8 @@ int Parameters::load(FILE *file){
         // [Debug] //
 
         writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
-	    writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
+        writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
+
         // [Structure Comparison] //
 
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
@@ -237,27 +238,22 @@ int Parameters::load(FILE *file){
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
-
-
-
-
-        saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); //undocumented
+        saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddleSearch::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
         if(saddleDisplaceType != SaddleSearch::DISP_NOT_FCC_OR_HCP &&
            saddleDisplaceType != SaddleSearch::DISP_MIN_COORDINATED && 
            saddleDisplaceType != SaddleSearch::DISP_LAST_ATOM && 
            saddleDisplaceType != SaddleSearch::DISP_RANDOM){
-                saddleDisplaceType = SaddleSearch::DISP_LOAD;
-        }
+              saddleDisplaceType = SaddleSearch::DISP_LOAD;
+           }
 
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive); 
         if(saddleConfinePositive) {
-            saddleConfinePositiveMinMove = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinMove);         
-            saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);         
-            saddleConfinePositiveMaxActiveAtoms = ini.GetValueL("Saddle Search", "confine_positive_max_active_atoms", saddleConfinePositiveMaxActiveAtoms); 
+            saddleConfinePositiveMinMove = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinMove);
+            saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
+            saddleConfinePositiveMaxActiveAtoms = ini.GetValueL("Saddle Search", "confine_positive_max_active_atoms", saddleConfinePositiveMaxActiveAtoms);
         }
-
 
         // [Optimizers] //
 
@@ -344,17 +340,16 @@ int Parameters::load(FILE *file){
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
-	    basinHoppingQuenchingSteps = ini.GetValueL("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
+        basinHoppingQuenchingSteps = ini.GetValueL("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingSignificantStructure = ini.GetValueB("Basin Hopping", "significant_structure", basinHoppingSignificantStructure);
-	    basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
+        basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
         basinHoppingDisplacementDistribution = toLowerCase(ini.GetValue("Basin Hopping", "displacement_distribution", basinHoppingDisplacementDistribution));
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
         basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
         basinHoppingMDFirst = ini.GetValueB("Basin Hopping", "md_first", basinHoppingMDFirst);
         basinHoppingMDTemp = ini.GetValueF("Basin Hopping", "md_temp", ini.GetValueF("Main", "temperature", temperature));
-	
 
     }
     else

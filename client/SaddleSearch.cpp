@@ -232,9 +232,9 @@ void SaddleSearch::displaceAndSetMode(Matter *matter)
             diffR = matter->distance(i, indexEpiCenter);
             if(diffR < parameters->saddleDisplaceRadius)
             {
-                initialDisplace(i,0) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
-                initialDisplace(i,1) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
-                initialDisplace(i,2) = gaussRandom(0, parameters->saddleDisplaceMagnitude);
+                initialDisplace(i,0) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
+                initialDisplace(i,1) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
+                initialDisplace(i,2) = gaussRandom(0., parameters->saddleDisplaceMagnitude);
             }
         }
         j++;
@@ -270,8 +270,8 @@ AtomMatrix SaddleSearch::projectedForce(AtomMatrix force){
     if (0 < eigenValue){
         if (parameters->saddlePerpForceRatio > 0.0) {
             // reverse force parallel to eigenvector, and reduce perpendicular force
-            double const d=parameters->saddlePerpForceRatio;
-            force = d*force - (1+d)*proj;
+            double const d = parameters->saddlePerpForceRatio;
+            force = d*force - (1.+d)*proj;
         }
         else {
             // follow eigenmode
@@ -280,7 +280,7 @@ AtomMatrix SaddleSearch::projectedForce(AtomMatrix force){
     }
     else{
         // reversing force parallel to eigenmode
-        force += -2*proj;
+        force += -2.*proj;
     }
     return force;
 }
@@ -353,7 +353,7 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         eigenValue = lowestEigenmode->getEigenvalue();
         eigenMode = lowestEigenmode->getEigenvector();
 
- //       std::cout<<"Lowest eigenvalue = "<<eigenValue<<std::endl;
+//       std::cout<<"Lowest eigenvalue = "<<eigenValue<<std::endl;
 
         // Updating the conjugated object to the new configuration
         forces = projectedForce(forces);
