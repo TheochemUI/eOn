@@ -120,7 +120,7 @@ void helper_functions::subtract(double *result, const double *v1, const double *
     return;
 }
 
-void helper_functions::multiplyScalar(double *result, const double *v1, double scalar, long size) {
+void helper_functions::multiplyScalar(double *result, const double *v1, double scalar, long size){
     for(int i=0;i<size;i++) {
         result[i] = v1[i]*scalar;
     };
@@ -283,7 +283,7 @@ double helper_functions::maxAtomMotion(const AtomMatrix v1)
 AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double maxMotion)
 {
     /*
-    Function ensures (by scaling) that there is no single element of the AtomMatrix which is larger than maxMotion. 
+    Function ensures (by scaling) that there is no single element of the AtomMatrix which is larger than maxMotion.
     */
     AtomMatrix v2(v1);
     
@@ -328,21 +328,7 @@ void helper_functions::getTime(double *real, double *user, double *sys)
         {
             *sys = (double)r_usage.ru_stime.tv_sec + (double)r_usage.ru_stime.tv_usec/1000000.0;
         }
-    #endif    
+    #endif
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

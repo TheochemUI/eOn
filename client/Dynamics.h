@@ -47,8 +47,8 @@ public:
     bool checkState(Matter *matter,Matter *min1);
     long refine(Matter *buff[],long length,Matter *min1);
 
-  //  AtomMatrix langevinAcc(double temperature);
-   
+//  AtomMatrix langevinAcc(double temperature);
+
 private:
     long nAtoms;
 

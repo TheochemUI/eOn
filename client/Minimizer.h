@@ -19,7 +19,7 @@ class Minimizer
         void virtual setOutput(int level) = 0;
         void virtual oneStep() = 0;
         long virtual fullRelax() = 0;
-        bool virtual isItConverged(double convergeCriterion) = 0; 
+        bool virtual isItConverged(double convergeCriterion) = 0;
         long totalForceCalls;
 
         enum {

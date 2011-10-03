@@ -23,8 +23,8 @@ class Lanczos : public LowestEigenmodeInterface
     public:
         Lanczos(Matter const *matter, Parameters *parameters);
         ~Lanczos();
-        
-        void compute(Matter const *matter, AtomMatrix direction); 
+
+        void compute(Matter const *matter, AtomMatrix direction);
         double getEigenvalue();
         AtomMatrix getEigenvector();
 
@@ -35,6 +35,5 @@ class Lanczos : public LowestEigenmodeInterface
 };
 
 #endif
-
 
 

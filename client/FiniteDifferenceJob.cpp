@@ -31,12 +31,12 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     // Load the displacement con file and get the position.
     Matter *reactant = new Matter(parameters);
     reactant->con2matter("reactant_passed.con");
-    AtomMatrix posA;    
-    posA = reactant->getPositions();        
+    AtomMatrix posA;
+    posA = reactant->getPositions();
 
     double dRs[] = { 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1 };
 
-    AtomMatrix forceA;    
+    AtomMatrix forceA;
     forceA = reactant->getForces();
 
     // Create a random displacement.

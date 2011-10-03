@@ -98,7 +98,7 @@ int ProcessSearchJob::doProcessSearch(void)
     long status;
     int f1;
     f1 = Potential::fcalls;
-    status = saddleSearch->locate();//(min1, min2);
+    status = saddleSearch->locate(); //(min1, min2);
     fCallsSaddle += Potential::fcalls - f1;
 
     if (status != SaddleSearch::STATUS_INIT) {
@@ -269,7 +269,7 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%f barrier_reactant_to_product\n", barriersValues[0]);
     fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
     fprintf(fileResults, "%f displacement_saddle_distance\n",
-            displacement->perAtomNorm(*saddle));
+        displacement->perAtomNorm(*saddle));
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);

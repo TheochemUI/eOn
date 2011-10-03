@@ -46,24 +46,24 @@
 
 #include <cstdlib>
 
-const char Potential::POT_LJ[] =            "lj";
-const char Potential::POT_IMD[] =           "imd";
-const char Potential::POT_EAM_AL[] =        "eam_al";
-const char Potential::POT_MORSE_PT[] =      "morse_pt";
-const char Potential::POT_EMT[] =           "emt";
-const char Potential::POT_QSC[] =           "qsc";
-const char Potential::POT_ZPICE[] =         "zpice";
-const char Potential::POT_TIP4P[] =         "tip4p";
-const char Potential::POT_SPCE[] =          "spce";
-const char Potential::POT_LENOSKY_SI[] =    "lenosky_si";
-const char Potential::POT_SW_SI[] =         "sw_si";
-const char Potential::POT_TERSOFF_SI[] =    "tersoff_si";
-const char Potential::POT_EDIP[] =          "edip";
-const char Potential::POT_VASP[] =          "vasp";
-const char Potential::POT_BOPFOX[] =        "bopfox";
-const char Potential::POT_BOP[] =           "bop";
-const char Potential::POT_LAMMPS[] =        "lammps";
-const char Potential::POT_MPI[] =           "mpi";
+const char Potential::POT_LJ[] =          "lj";
+const char Potential::POT_IMD[] =         "imd";
+const char Potential::POT_EAM_AL[] =      "eam_al";
+const char Potential::POT_MORSE_PT[] =    "morse_pt";
+const char Potential::POT_EMT[] =         "emt";
+const char Potential::POT_QSC[] =         "qsc";
+const char Potential::POT_ZPICE[] =       "zpice";
+const char Potential::POT_TIP4P[] =       "tip4p";
+const char Potential::POT_SPCE[] =        "spce";
+const char Potential::POT_LENOSKY_SI[] =  "lenosky_si";
+const char Potential::POT_SW_SI[] =       "sw_si";
+const char Potential::POT_TERSOFF_SI[] =  "tersoff_si";
+const char Potential::POT_EDIP[] =        "edip";
+const char Potential::POT_VASP[] =        "vasp";
+const char Potential::POT_BOPFOX[] =      "bopfox";
+const char Potential::POT_BOP[] =         "bop";
+const char Potential::POT_LAMMPS[] =      "lammps";
+const char Potential::POT_MPI[] =         "mpi";
 Potential* Potential::pot = NULL;
 
 Potential *Potential::getPotential(Parameters *parameters)

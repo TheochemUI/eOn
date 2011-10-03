@@ -51,7 +51,7 @@ namespace {
         // invalid symbol
         return -1;
     }
- 
+
     char const * atomicNumber2symbol(int n)
     {
         return elementArray[n];
@@ -196,25 +196,25 @@ void Matter::resize(const long int length)
 //            delete potential;
 //            potential = NULL;
 //        }
-        
+
         nAtoms = length;
         positions.resize(length, 3);
         positions.setZero();
-        
+
         velocities.resize(length ,3);
         velocities.setZero();
 
         forces.resize(length ,3);
         forces.setZero();
-        
+
         masses.resize(length);
         masses.setZero();
 
         atomicNrs.resize(length);
         atomicNrs.setZero();
-        
+
         isFixed.resize(length);
-        isFixed.setZero();      
+        isFixed.setZero();
     }
     recomputePotential = true;
 }
@@ -545,10 +545,10 @@ bool Matter::matter2con(std::string filename, bool append) const
     if (append) {
         file = fopen(filename.c_str(), "ab");
     }else{
-        file = fopen(filename.c_str(),"wb");     
+        file = fopen(filename.c_str(),"wb");
     }
     state = matter2con(file);
-    fclose(file); 
+    fclose(file);
     return(state);
 }
 
@@ -584,7 +584,7 @@ bool Matter::matter2con(FILE *file) const
     }
     first[j+1] = numberOfAtoms();
     Ncomponent = j+1;
- 
+
     fputs(headerCon1, file);
     fputs(headerCon2, file);
     double lengths[3];
@@ -599,12 +599,12 @@ bool Matter::matter2con(FILE *file) const
     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
     fputs(headerCon5, file);
     fputs(headerCon6, file);
- 
+
     fprintf(file, "%d\n", Ncomponent);
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%d ", first[j+1]-first[j]);
     }
-    fprintf(file, "\n");  
+    fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
@@ -666,7 +666,7 @@ bool Matter::con2matter(FILE *file)
     double angles[3];
     fgets(headerCon4,sizeof(line),file);
     // The fourth line contains the angles of the cell vectors
-    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]); 
+    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
 
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
         cellBoundaries(0,0) = lengths[0];
@@ -691,7 +691,7 @@ bool Matter::con2matter(FILE *file)
         cellBoundaries(2,1) *= lengths[2];
         cellBoundaries(2,2) *= lengths[2];
     }
- 
+
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
 
@@ -810,17 +810,16 @@ void Matter::computePotential()
                 forces.row(i) -= tempForce.transpose();
             }
         }
-
     }
 }
 
 
 // Transform the coordinate to use the minimum image convention.
 void Matter::applyPeriodicBoundary()
-{ 
+{
     Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
     AtomMatrix ddiff = positions*ibox;
-   
+
     int i,j;
     for(i=0; i<ddiff.rows(); i++)
     {
@@ -837,7 +836,7 @@ double Matter::maxForce(void)
 {
     // Ensures that the forces are up to date
     computePotential();
-    
+
     // I think this can be done in one line with the rowwise method
     double maxForce = 0.0;
     for(int i = 0; i < nAtoms; i++)
@@ -865,7 +864,7 @@ bool Matter::isItConverged(double convergeCriterion)
         diff = forces.row(i).norm();
 
         if(convergeCriterion < diff)
-        { 
+        {
             break;
         }
     }
@@ -988,7 +987,7 @@ bool Matter::matter2convel(FILE *file) const
     for(j=0; j<Ncomponent; j++) {
         fprintf(file, "%d ", first[j+1]-first[j]);
     }
-    fprintf(file, "\n");  
+    fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
@@ -1053,7 +1052,7 @@ bool Matter::convel2matter(FILE *file)
     // The third line contains the length of the periodic cell
     fgets(line,sizeof(line),file);
     sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
- 
+
     double angles[3];
     fgets(headerCon4,sizeof(line),file);
     // The fourth line contains the angles of the cell vectors
@@ -1082,7 +1081,7 @@ bool Matter::convel2matter(FILE *file)
         cellBoundaries(2,1) *= lengths[2];
         cellBoundaries(2,2) *= lengths[2];
     }
- 
+
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
 
