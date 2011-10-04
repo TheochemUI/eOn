@@ -39,7 +39,9 @@ void LBFGS::initialize(Matter *matter_passed, Parameters *parameters_passed)
 
     iteration = 0;
     degreesOfFreedom = 3*matter->numberOfFreeAtoms();
-    memory = parameters->optLBFGSMemory;
+
+    //Shouldn't have a memory longer than the number of degrees of freedom.
+    memory = min(degreesOfFreedom, (int)parameters->optLBFGSMemory);
 
     return;
 }
@@ -50,19 +52,16 @@ LBFGS::~LBFGS()
     return;
 }
 
-
-void LBFGS::oneStep()
+void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
-    VectorXd r = matter->getPositionsFreeV();
-    VectorXd f = matter->getForcesFreeV();
-
-    double H0 = 1./10.;
-
     if (iteration > 0) {
-        VectorXd s0 = r - r0;
+        VectorXd s0 = r1 - r0;
         s.push_back(s0);
-        VectorXd y0 = f0 - f;
+
+        //y0 is the change in the gradient, not the force
+        VectorXd y0 = f0 - f1;
         y.push_back(y0);
+
         rho.push_back(1.0/(s0.dot(y0)));
     }
 
@@ -71,11 +70,16 @@ void LBFGS::oneStep()
         y.pop_back();
         rho.pop_back();
     }
+}
 
-    int loopmax = min(iteration, memory);
+VectorXd LBFGS::getDescentDirection()
+{
+    double H0 = 1./10.;
+
+    int loopmax = min((int)s.size(), memory);
     double a[loopmax];
 
-    VectorXd q = -f;
+    VectorXd q = -matter->getForcesFreeV();
 
     for (int i=loopmax-1;i>=0;i--) {
         a[i] = rho[i] * s[i].dot(q);
@@ -89,15 +93,52 @@ void LBFGS::oneStep()
         z += s[i] * (a[i] - b);
     }
 
-    VectorXd dr = -z;
+    VectorXd d = -z;
+
+    return d;
+}
+
+void LBFGS::lineSearch(VectorXd d)
+{
+    double alphak = 1.0;
+    double sigma = 1e-2;
+    double scale = 0.90;
+
+    
+
+    double e0 = matter->getPotentialEnergy();
+    VectorXd g0 = -matter->getForcesFreeV();
+    VectorXd r0 = matter->getPositionsFreeV();
+
+    matter->setPositionsFreeV(r0 + alphak * d);
+    double e = matter->getPotentialEnergy();
+
+    int i=0;
+    while (e > e0+sigma*alphak*g0.dot(d) && i < 4) {
+        alphak = alphak*scale;
+        matter->setPositionsFreeV(r0 + alphak*d);
+        e = matter->getPotentialEnergy();
+        i++;
+    }
+    if (i>0) printf("alphak: %12.4f e: %12.4f e0: %12.4f\n", alphak, e, e0);
+    return;
+}
 
 
-    dr = helper_functions::maxAtomMotionAppliedV(dr, parameters->optMaxMove);
+void LBFGS::oneStep()
+{
+    VectorXd r = matter->getPositionsFreeV();
+    VectorXd f = matter->getForcesFreeV();
 
+    update(r, rPrev, f, fPrev);
+
+    VectorXd d = getDescentDirection();
+    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
     matter->setPositionsFreeV(r+dr);
+    //lineSearch(d);
 
-    r0 = r;
-    f0 = f;
+    rPrev = r;
+    fPrev = f;
 
     force = matter->getForces();
 
@@ -135,8 +176,15 @@ long LBFGS::fullRelax()
         i++;
 
         if (!parameters->quiet) {
-            log("step = %3d, max force = %10.7lf, energy: %10.7f\n", 
-                   i, matter->maxForce(), matter->getPotentialEnergy());
+            double e = matter->getPotentialEnergy();
+            if (iteration > 0) {
+                log("step = %3d, max force = %10.7lf, energy: %10.7f de: %10.2e\n", 
+                    i, matter->maxForce(), e, e-ePrev);
+            }else{
+                log("step = %3d, max force = %10.7lf, energy: %10.7f\n", 
+                    i, matter->maxForce(), e);
+            }
+            ePrev = matter->getPotentialEnergy();
         }
         if (parameters->writeMovies) {
             matter->matter2con(min.c_str(), true);
