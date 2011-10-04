@@ -147,7 +147,7 @@ int main(int argc, char **argv)
             printf("Loading parameter file %s\n",config_file.c_str());
             error = parameters.load(config_file);
         }else{
-            printf("Loading parameter file %s\n",parameters.iniFilename.cstr());
+            printf("Loading parameter file %s\n",parameters.iniFilename.c_str());
             error = parameters.load(parameters.iniFilename);
         }
         if (error) {
