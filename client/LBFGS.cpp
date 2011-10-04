@@ -39,8 +39,7 @@ void LBFGS::initialize(Matter *matter_passed, Parameters *parameters_passed)
 
     iteration = 0;
     degreesOfFreedom = 3*matter->numberOfFreeAtoms();
-    memory = 100;
-    H0 = 1./70.;
+    memory = parameters->optLBFGSMemory;
 
     return;
 }
@@ -56,6 +55,8 @@ void LBFGS::oneStep()
 {
     VectorXd r = matter->getPositionsFreeV();
     VectorXd f = matter->getForcesFreeV();
+
+    double H0 = 1./10.;
 
     if (iteration > 0) {
         VectorXd s0 = r - r0;

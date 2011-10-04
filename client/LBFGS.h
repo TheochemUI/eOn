@@ -47,7 +47,6 @@ private:
     int degreesOfFreedom;
     int iteration;
     int memory;
-    double H0;
     std::vector<VectorXd> s;
     std::vector<VectorXd> y;
     std::vector<double> rho;
