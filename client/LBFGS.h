@@ -29,6 +29,7 @@ public:
 
     void oneStep();
     long fullRelax();
+    void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
     bool isItConverged(double convergeCriterion);
     void setOutput(int level);
     AtomMatrix makeInfinitesimalStepModifiedForces(AtomMatrix pos);
@@ -44,19 +45,21 @@ private:
 
     AtomMatrix force;
 
+    double ePrev;
+
     int degreesOfFreedom;
     int iteration;
     int memory;
     std::vector<VectorXd> s;
     std::vector<VectorXd> y;
     std::vector<double> rho;
-    VectorXd r0;
-    VectorXd f0;
+    VectorXd rPrev;
+    VectorXd fPrev;
     
 
     void initialize(Matter *matter, Parameters *parameters);
-
-    void determineSearchDirection();
+    VectorXd getDescentDirection();
+    void lineSearch(VectorXd d);
 
     AtomMatrix getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep, bool saddleSearch=false);
 };
