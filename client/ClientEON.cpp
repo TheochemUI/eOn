@@ -101,7 +101,7 @@ void printSystemInfo()
         struct utsname systemInfo;
         int status = uname(&systemInfo);
         if (status == 0) {
-            printf("%s %s %s %s %s\n", 
+            printf("%s %s %s %s %s\n",
                    systemInfo.sysname, systemInfo.nodename, systemInfo.release,
                    systemInfo.version, systemInfo.machine);
         }else{
@@ -110,12 +110,12 @@ void printSystemInfo()
     #endif
 }
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
     Parameters parameters;
 
     #ifdef EONMPI
-        bool client_standalone=false;
+        bool client_standalone = false;
         if (getenv("EON_CLIENT_STANDALONE") != NULL) {
             client_standalone = true;
         }
@@ -143,12 +143,23 @@ int main(int argc, char **argv)
 
         int error;
         if (client_standalone) {
-            error = parameters.load("config_passed.ini");
+            if(parameters.exists("config_passed.ini")) {
+                printf("Loading parameter file config_passed.ini\n");
+                error = parameters.load("config_passed.ini");
+            }else if(parameters.exists("config.ini")) {
+                printf("Loading parameter file config.ini\n");
+                error = parameters.load("config.ini");
+            }else{
+                fprintf(stderr, "\nno config file found");
+                abort(); // or perhaps an mpi abort call?
+            }
         }else{
+            printf("Loading parameter file config.ini\n");
             error = parameters.load("config.ini");
         }
         if (error) {
             fprintf(stderr, "\nproblem loading config.ini file\n");
+            abort(); // or perhaps an mpi abort call?
         }
 
         //XXX: Barrier for gpaw-python
@@ -336,10 +347,23 @@ int main(int argc, char **argv)
             unbundledFilenames = unbundle(i);
         }
 
-        int error = parameters.load("config_passed.ini");
-        if (error) {
-            fprintf(stderr, "\nproblem loading parameters file\n");
+        // check to see if paramters file exists before loading
+        int error = 0;
+        if(parameters.exists("config_passed.ini")) {
+            printf("Loading parameter file config_passed.ini\n");
+            error = parameters.load("config_passed.ini");
+        }else if(parameters.exists("config.ini")){
+            printf("Loading parameter file config.ini\n");
+            error = parameters.load("config.ini");
+        }else{
+            fprintf(stderr, "\nno config file found, stopping");
             boinc_finish(1);
+            abort();
+        }
+        if (error) {
+            fprintf(stderr, "\nproblem loading parameters file, stopping\n");
+            boinc_finish(1);
+            abort();
         }
 
         log_init(&parameters, "client.log");
