@@ -143,22 +143,15 @@ int main(int argc, char **argv)
 
         int error;
         if (client_standalone) {
-            if(parameters.exists("config_passed.ini")) {
-                printf("Loading parameter file config_passed.ini\n");
-                error = parameters.load("config_passed.ini");
-            }else if(parameters.exists("config.ini")) {
-                printf("Loading parameter file config.ini\n");
-                error = parameters.load("config.ini");
-            }else{
-                fprintf(stderr, "\nno config file found");
-                abort(); // or perhaps an mpi abort call?
-            }
+            string config_file = helper_functions::getPassedFile(parameters.iniFilename);
+            printf("Loading parameter file %s\n",config_file.c_str());
+            error = parameters.load(config_file);
         }else{
-            printf("Loading parameter file config.ini\n");
-            error = parameters.load("config.ini");
+            printf("Loading parameter file %s\n",parameters.iniFilename.cstr());
+            error = parameters.load(parameters.iniFilename);
         }
         if (error) {
-            fprintf(stderr, "\nproblem loading config.ini file\n");
+            fprintf(stderr, "\nproblem loading parameter file\n");
             abort(); // or perhaps an mpi abort call?
         }
 
@@ -341,27 +334,20 @@ int main(int argc, char **argv)
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
 
-        printf("Beginning Job %d of %d\n", i, bundleSize);
+        if(bundleSize>1) printf("Beginning Job %d of %d\n", i+1, bundleSize);
         std::vector<std::string> unbundledFilenames;
         if (bundlingEnabled) {
             unbundledFilenames = unbundle(i);
         }
 
-        // check to see if paramters file exists before loading
+        // check to see if parameters file exists before loading
         int error = 0;
-        if(parameters.exists("config_passed.ini")) {
-            printf("Loading parameter file config_passed.ini\n");
-            error = parameters.load("config_passed.ini");
-        }else if(parameters.exists("config.ini")){
-            printf("Loading parameter file config.ini\n");
-            error = parameters.load("config.ini");
-        }else{
-            fprintf(stderr, "\nno config file found, stopping");
-            boinc_finish(1);
-            abort();
-        }
+        string config_file = helper_functions::getPassedFile(parameters.iniFilename);
+        printf("Loading parameter file %s\n",config_file.c_str());
+        error = parameters.load(config_file);
+
         if (error) {
-            fprintf(stderr, "\nproblem loading parameters file, stopping\n");
+            fprintf(stderr, "\nproblem loading parameter file, stopping\n");
             boinc_finish(1);
             abort();
         }

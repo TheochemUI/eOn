@@ -28,7 +28,6 @@ class Parameters {
 public:
     Parameters();
     ~Parameters();
-    bool exists(string filename);
     int load(string filename);
     int load(FILE *file);
 
@@ -46,6 +45,8 @@ public:
     double temperature;
     bool   quiet;
     bool   checkpoint;
+    string iniFilename;
+    string conFilename;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
