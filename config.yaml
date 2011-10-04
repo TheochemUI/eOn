@@ -721,25 +721,13 @@ Saddle Search:
             kind: float
             default: 10.0
 
-        max_localized_atoms:
-            kind: int
-            default: 0
-
         stdev_rotation:
             kind: float
             default: 1.0
 
-        client_max_single_displace:
-            kind: int
-            default: 10
-
         displace_max_coordination:
             kind: int
             default: 11
-
-        push_displacement:
-            kind: boolean
-            default: False
 
         max_iterations:
             kind: int
@@ -752,14 +740,6 @@ Saddle Search:
                 - dimer
                 - lanczos
 
-        nonzero_mode:
-            kind: float
-            default: 0.01
-
-        concave_step:
-            kind: float
-            default: 0.1
-            
         displace_frac_random:
             kind: float
             default: 0.0
@@ -797,10 +777,6 @@ Saddle Search:
             kind: float
             default: 0.0
 
-        displace_min_norm:
-            kind: float
-            default: 0.0
-
         molecule_list:
             kind: string
             default: []
@@ -820,6 +796,11 @@ Saddle Search:
         converged_force:
             kind: float
             default: 0.01
+
+        displace_min_norm:
+            kind: float
+            default: 0.0
+
 
 ################################################################################
 
