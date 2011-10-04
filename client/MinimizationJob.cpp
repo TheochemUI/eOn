@@ -12,6 +12,7 @@
 #include "Minimizer.h"
 #include "Log.h"
 #include "ConjugateGradients.h"
+#include "LBFGS.h"
 #include "Quickmin.h"
 #include "QuickminBox.h"
 #include "Matter.h"
@@ -59,6 +60,10 @@ std::vector<std::string> MinimizationJob::run(void)
     else if(parameters->optMethod == "qm")
     {
         mizer = new Quickmin(reactant, parameters);
+    }
+    else if(parameters->optMethod == "lbfgs")
+    {
+        mizer = new LBFGS(reactant, parameters);
     }
     else if(parameters->optMethod == "box")
     {

@@ -280,6 +280,20 @@ double helper_functions::maxAtomMotion(const AtomMatrix v1)
     return max;
 }
 
+double helper_functions::maxAtomMotionV(const VectorXd v1)
+{
+    double max = 0.0;
+    for(int i=0;i<v1.rows();i+=3)
+    {
+        double norm = v1.segment<3>(i).norm();
+        if(max < norm)
+        {
+            max = norm;
+        }
+    }    
+    return max;
+}
+
 AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double maxMotion)
 {
     /*
@@ -294,9 +308,18 @@ AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double ma
         v2 *= maxMotion/max;
     }
     return v2;
-    
-    
-    
+}
+
+VectorXd helper_functions::maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)
+{
+    VectorXd v2(v1);
+
+    double max = maxAtomMotionV(v1);
+    if (max > maxMotion)
+    {
+        v2 *= maxMotion/max;
+    }
+    return v2;
 }
 
 void helper_functions::getTime(double *real, double *user, double *sys)
