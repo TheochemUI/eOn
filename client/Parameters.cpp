@@ -32,6 +32,8 @@ Parameters::Parameters(){
     checkpoint = false;
     quiet = false;
     MPIPotentialAggressive = true;
+    iniFilename = "config.ini";
+    conFilename = "reactant.con";
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -166,16 +168,6 @@ string Parameters::toLowerCase(string s)
       s[i] = tolower(s[i]);
     }
     return s;
-}
-
-bool Parameters::exists(string filename)
-{
-    FILE *fh;
-    fh = fopen(filename.c_str(), "rb");
-    if (fh == NULL) {
-        return 0;
-    }else fclose(fh);
-    return 1;
 }
 
 int Parameters::load(string filename)

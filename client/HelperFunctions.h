@@ -41,45 +41,23 @@ namespace helper_functions {
     double randomDouble(double max); // random value between 0 and max
     long   randomInt(int lower, int upper);
     double gaussRandom(double avg, double std); // Gaussion random number with avg and std;
-    /* the dot product of the two (v1 v2) double arrays being passed in of length size */
-    double dot(const double *v1, const double *v2, long size);
-
-    /* the length of (v1) array being passed in of length size */
-    double length(const double *v1, long size);
-
-    /* the sum of the two (v1 v2) double arrays being passed in of length size in result */
-    void add(double *result, const double *v1, const double *v2, long size);
-
-    /* the difference of the two (v1 v2) double arrays being passed in of length size in result */
-    void subtract(double *result, const double *v1, const double *v2, long size);
-
-    /* the product of the (v1) double array being passed in of length size and scalar in result */
-    void multiplyScalar(double *result, const double *v1, double scalar, long size);
-
-    /* Calculate the ratio of the (v1) double array being passed in of length size and scalar in result */
-    void divideScalar(double *result, const double *v1, double scalar, long size);
-
-    /* copy v2 into v1, double arrays of length size */
-    void copyRightIntoLeft(double *result, const double *v1, long size);
-
-    /* normalize the double array v1 of length size. */
-    void normalize(double *v1, long size);
-
-    /* the orthogonal part of v1 to v2, of length size and store in result */
-    AtomMatrix makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2);
-
-    /* the projection of v1 on v2, of length size and store in result */
-    void makeProjection(double *result, const double *v1, const double *v2, long size);
-
+    double dot(const double *v1, const double *v2, long size); // dot product
+    double length(const double *v1, long size); // length of vector v1
+    void add(double *result, const double *v1, const double *v2, long size); // v1 + v2
+    void subtract(double *result, const double *v1, const double *v2, long size); // v1 - v2
+    void multiplyScalar(double *result, const double *v1, double scalar, long size); // scalar * v1
+    void divideScalar(double *result, const double *v1, double scalar, long size); // (1/scalar) * v1
+    void copyRightIntoLeft(double *result, const double *v1, long size); // copy v2 into v1
+    void normalize(double *v1, long size); // v1 / |v1|
+    AtomMatrix makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2); // return orthogonal component of v1 from v2
+    void makeProjection(double *result, const double *v1, const double *v2, long size); // result = projection of v1 on v2
     bool rot_match(const Matter *m1, const Matter *m2, const double max_diff);
-
     double maxAtomMotion(const AtomMatrix v1);
     double maxAtomMotionV(const VectorXd v1);
-    
     AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
     VectorXd   maxAtomMotionAppliedV(const VectorXd  v1, double maxMotion);
-
     void getTime(double *real, double *user, double *sys);
-
+    bool existsFile(string filename); // does filename exist
+    string getPassedFile(string filename); // return filename with _passed if only such a file exists
 }
 #endif
