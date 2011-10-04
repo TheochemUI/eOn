@@ -74,8 +74,10 @@ namespace helper_functions {
     bool rot_match(const Matter *m1, const Matter *m2, const double max_diff);
 
     double maxAtomMotion(const AtomMatrix v1);
+    double maxAtomMotionV(const VectorXd v1);
     
     AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
+    VectorXd   maxAtomMotionAppliedV(const VectorXd  v1, double maxMotion);
 
     void getTime(double *real, double *user, double *sys);
 
