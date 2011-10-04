@@ -167,6 +167,16 @@ string Parameters::toLowerCase(string s)
     return s;
 }
 
+bool Parameters::exists(string filename)
+{
+    FILE *fh;
+    fh = fopen(filename.c_str(), "rb");
+    if (fh == NULL) {
+        return 0;
+    }else fclose(fh);
+    return 1;
+}
+
 int Parameters::load(string filename)
 {
     FILE *fh;
