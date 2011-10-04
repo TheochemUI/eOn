@@ -28,6 +28,7 @@ class Parameters {
 public:
     Parameters();
     ~Parameters();
+    bool exists(string filename);
     int load(string filename);
     int load(FILE *file);
 
