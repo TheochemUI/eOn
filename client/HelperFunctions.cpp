@@ -14,6 +14,7 @@
 #include <cassert>
 #include <iostream>
 #include <time.h>
+#include <string.h>
 
 #ifndef WIN32
     #include <sys/time.h>
@@ -354,4 +355,32 @@ void helper_functions::getTime(double *real, double *user, double *sys)
     #endif
 }
 
+bool helper_functions::existsFile(string filename)
+{
+    FILE *fh;
+    fh = fopen(filename.c_str(), "rb");
+    if (fh == NULL) {
+        return 0;
+    }else fclose(fh);
+    return 1;
+}
+
+string helper_functions::getPassedFile(string filename)
+{
+    if(existsFile(filename)) {
+        return filename;
+    }
+    // check if the _passed version of the file is present
+    string filename_passed = filename;
+    string filename_prefix,filename_postfix;
+    int i = filename.rfind(".");
+    filename_prefix.assign(filename, 0, i);
+    filename_postfix.assign(filename, i, filename.size());
+    filename_passed = filename_prefix + "_passed" + filename_postfix;
+    if(existsFile(filename_passed)) {
+        return filename_passed;
+    }
+    // return original filename and let the next function notice that it does not exist
+    return filename;
+}
 
