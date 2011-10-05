@@ -22,7 +22,7 @@ const char Dynamics::NVE[] = "nve";
 
 Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
 {
-    matter = matter_passed;    
+    matter = matter_passed;
     parameters = parameters_passed;
     dt = parameters->mdTimeStep;
     kb = 1.0/11604.5; // Kb in unit of eV
@@ -66,19 +66,19 @@ void Dynamics::andersenVerlet()
     positions = matter->getPositions();
     velocities = matter->getVelocities();
     accelerations = matter->getAccelerations();
-    md_fcalls ++;
+    md_fcalls ++; // This is adding 2 force calls per md step; it should be one
 
-    velocities += accelerations * 0.5 * dt;
-    matter->setVelocities(velocities);  // first update velocities
+    velocities += 0.5*dt*accelerations;
+    matter->setVelocities(velocities); // first update velocities
 
-    positions += velocities * dt;
+    positions += dt*velocities;
     matter->setPositions(positions); // update positions
 
     velocities = matter->getVelocities();
     accelerations = matter->getAccelerations();
     md_fcalls ++;
 
-    velocities += accelerations * 0.5 * dt;
+    velocities += 0.5*dt*accelerations;
     matter->setVelocities(velocities); // second update velocities
 }
 
@@ -94,13 +94,13 @@ void Dynamics::velocityVerlet()
     accelerations0 = matter->getAccelerations();
     md_fcalls++;
 
-    positions += (velocities * dt) + (0.5 * dt * dt * accelerations0);
+    positions += (dt*velocities) + (0.5*dt*dt*accelerations0);
     matter->setPositions(positions);
 
     accelerations1 = matter->getAccelerations();
     md_fcalls++;
 
-    velocities += dt * 0.5 * (accelerations0 + accelerations1);
+    velocities += 0.5*dt*(accelerations0 + accelerations1);
     matter->setVelocities(velocities);
 }
 
@@ -112,21 +112,26 @@ void Dynamics::fullSteps(double temperature)
     long movie_steps = parameters->writeMoviesSteps;
     AtomMatrix velocity;
     double kinE, kinT;
-    double sumT=0.0, sumT2=0.0, avgT, varT;
+    double sumT = 0.0, sumT2 = 0.0, avgT, varT, stdT;
     long nFreeCoord = matter->numberOfFreeAtoms()*3;
     forceCallsTemp = matter->getForceCalls();
 
+
     if(parameters->thermostat != NVE)
     {
+        printf("Running NVT molecular dynamics at %8.2lf K for %10ld steps\n", parameters->temperature, parameters->mdSteps);
         initialVel(temperature);
     }
-
+    else
+    {
+        printf("Running NVE molecular dynamics for %10ld steps\n", parameters->mdSteps);
+    }
 
     if (parameters->writeMovies == true) {
         matter->matter2con("dynamics", false);
     }
 
-    log("[Dynamics] %8s %8s %8s %8s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+    log("[Dynamics] %8s %10s %12s %12s %10s\n", "Step", "KE", "PE", "TE", "kinT");
 
     while(!stopped)
     {
@@ -136,11 +141,11 @@ void Dynamics::fullSteps(double temperature)
         velocity = matter->getVelocities();
         kinE = matter->getKineticEnergy();
         double PE = matter->getPotentialEnergy();
-        kinT = (2*kinE/nFreeCoord/kb);
+        kinT = (2.0*kinE/nFreeCoord/kb);
         sumT += kinT;
         sumT2 += kinT*kinT;
 
-        log("[Dynamics] %8ld %.2e %.2e %.2e %f \n",nsteps,kinE, PE, kinE+PE, kinT);
+        log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", nsteps, kinE, PE, kinE+PE, kinT);
 
         if (parameters->writeMovies == true) {
             if (nsteps % movie_steps == 0){
@@ -153,9 +158,10 @@ void Dynamics::fullSteps(double temperature)
         }
     }
 
-    avgT=sumT/nsteps;
-    varT=sumT2/nsteps-avgT*avgT;
-    log("[Dynamics] Temperature : Average = %lf ; Variance = %lf ; Factor = %lf \n", avgT,varT,varT/avgT/avgT*nFreeCoord/2);
+    avgT = sumT/nsteps;
+    varT = sumT2/nsteps - avgT*avgT;
+    stdT = sqrt(varT);
+    log("[Dynamics] Temperature : Average = %.2lf ; StdDev = %.2lf ; Factor = %.2lf\n", avgT,stdT,varT/avgT/avgT*nFreeCoord/2.0);
 }
 
 void Dynamics::andersen(double temperature)
@@ -166,13 +172,13 @@ void Dynamics::andersen(double temperature)
     AtomMatrix velocity;
 
     alpha = parameters->thermoAndersenAlpha; // collision strength
-    tCol = parameters->thermoAndersenTcol; // average time between collision, in unit of dt
-    pCol = 1.0-exp(-1.0/tCol);
+    tCol = parameters->thermoAndersenTcol; // average time between collisions, in unit of dt
+    pCol = 1.0 - exp(-1.0/tCol);
 
     velocity = matter->getVelocities();
     mass = matter->getMasses();
 
-    for (long int i = 0;i<nAtoms;i++)
+    for (long int i = 0; i < nAtoms; i++)
     {
         if(!matter->getFixed(i))
         {
@@ -183,7 +189,7 @@ void Dynamics::andersen(double temperature)
                 if( irand < pCol)
                 {
                     v1 = sqrt(kb*temperature/mass[i])*gaussRandom(0.0,1.0);
-                    vNew = sqrt(1-alpha*alpha)*vOld+alpha*v1;
+                    vNew = sqrt(1.0 - alpha*alpha)*vOld + alpha*v1;
                     velocity(i,j) = vNew;
                 }
             }
@@ -203,7 +209,7 @@ void Dynamics::initialVel(double temperature)
     velocity = matter->getVelocities();
     mass = matter->getMasses();
 
-    for (long int i = 0;i<nAtoms;i++)
+    for (long int i = 0; i < nAtoms; i++)
     {
         if(!matter->getFixed(i))
         for (int j = 0; j < 3; j++)
@@ -215,7 +221,7 @@ void Dynamics::initialVel(double temperature)
 
     matter->setVelocities(velocity);  
     kinE = matter->getKineticEnergy();
-    kinT = (2*kinE/nFreeCoord/kb);
+    kinT = (2.0*kinE/nFreeCoord/kb);
     velocity = velocity*sqrt(temperature/kinT);
     matter->setVelocities(velocity);
 
@@ -234,7 +240,7 @@ void Dynamics::velRescaling(double temperature)
 
     matter->setVelocities(velocity);
     kinE = matter->getKineticEnergy();
-    kinT = (2*kinE/nFreeCoord/kb);
+    kinT = (2.0*kinE/nFreeCoord/kb);
 //    printf("Tkin_1 = %lf\n",kinT);
     velocity = velocity*sqrt(temperature/kinT);
     matter->setVelocities(velocity);
@@ -247,19 +253,19 @@ void Dynamics::noseHooverVerlet(double temperature){
     AtomMatrix vel;
     AtomMatrix pos;
     AtomMatrix acc;
-    double q1,q2,g1,g2,s,dt2,dt4,dt8;
+    double q1, q2, g1, g2, s, dt2, dt4, dt8;
     double bolkev = 8.6173857E-5;
-    double kinE,Temp;
+    double kinE, Temp;
     long nFree;
 
-    dt2 = 0.5 * dt;
-    dt4 = 0.25 * dt;
-    dt8 = 0.125 * dt;
+    dt2 = 0.5*dt;
+    dt4 = 0.25*dt;
+    dt8 = 0.125*dt;
     nFree = matter->numberOfFreeAtoms()*3;
     q1 = q2 = smass;
     g1 = 0.0;
     g2 = 0.0;
-    Temp = bolkev*temperature; //imposed termperature
+    Temp = bolkev*temperature; //imposed temperature
 
     vel = matter->getVelocities();
     pos = matter->getPositions();
@@ -275,11 +281,11 @@ void Dynamics::noseHooverVerlet(double temperature){
     }
     kinE =  matter->getKineticEnergy();
 
-    g2 = (q1*vxi1*vxi1 - Temp);
-    vxi2 += g2 * dt4;
+    g2 = (q1*vxi1*vxi1-Temp);
+    vxi2 += g2*dt4;
     vxi1 *= exp(-vxi2*dt8);
-    g1 = (2*kinE-nFree*Temp)/q1;
-    vxi1 += g1 * dt4;
+    g1 = (2.0*kinE-nFree*Temp)/q1;
+    vxi1 += g1*dt4;
     vxi1 *= exp(-vxi2*dt8);
     xi1 += vxi1*dt2;
     xi2 += vxi2*dt2;
@@ -287,26 +293,26 @@ void Dynamics::noseHooverVerlet(double temperature){
     vel *= s;
     kinE *= s*s;
     vxi1 *= exp(-vxi2*dt8);
-    g1 = (2*kinE-nFree*Temp)/q1;
+    g1 = (2.0*kinE-nFree*Temp)/q1;
     vxi1 += g1*dt4;
     vxi1 *=  exp(-vxi2*dt8);
     g2 = (q1*vxi1*vxi1-Temp)/q2;
     vxi2 += g2*dt4;
 
-    pos += vel * dt2;
+    pos += vel*dt2;
     matter->setPositions(pos);
 
     acc = matter->getAccelerations();
     md_fcalls ++;
-    vel += acc * dt;
-    pos += vel * dt2;
+    vel += acc*dt;
+    pos += vel*dt2;
     kinE =  matter->getKineticEnergy();
 
-    g2 = (q1*vxi1*vxi1 - Temp);
-    vxi2 += g2 * dt4;
+    g2 = (q1*vxi1*vxi1-Temp);
+    vxi2 += g2*dt4;
     vxi1 *= exp(-vxi2*dt8);
-    g1 = (2*kinE-nFree*Temp)/q1;
-    vxi1 += g1 * dt4;
+    g1 = (2.0*kinE-nFree*Temp)/q1;
+    vxi1 += g1*dt4;
     vxi1 *= exp(-vxi2*dt8);
     xi1 += vxi1*dt2;
     xi2 += vxi2*dt2;
@@ -314,7 +320,7 @@ void Dynamics::noseHooverVerlet(double temperature){
     vel *= s;
     kinE *= s*s;
     vxi1 *= exp(-vxi2*dt8);
-    g1 = (2*kinE-nFree*Temp)/q1;
+    g1 = (2.0*kinE-nFree*Temp)/q1;
     vxi1 += g1*dt4;
     vxi1 *=  exp(-vxi2*dt8);
     g2 = (q1*vxi1*vxi1-Temp)/q2;
@@ -346,32 +352,32 @@ void Dynamics::langevinVerlet(double temperature)
     mass = matter->getMasses();
 
     friction = - gamma * vel;
-    for (long int i = 0;i<nAtoms;i++){
+    for (long int i = 0; i < nAtoms; i++){
         if(!matter->getFixed(i)){
             for (int j = 0; j < 3; j++){
-                noise(i,j) =  sqrt(4*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
+                noise(i,j) =  sqrt(4.0*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
             }
         }
     }
     acc = acc + friction + noise;
 
-    vel += acc * 0.5 * dt;//first calculated velocites v(n+1/2)
+    vel += acc * 0.5 * dt; //first calculated velocites v(n+1/2)
     pos += vel * dt;
     matter->setPositions(pos); // update positions x(n+1)
 
     acc =  matter->getAccelerations();
     md_fcalls ++;
     friction = - gamma * vel;
-    for (long int i = 0;i<nAtoms;i++){
+    for (long int i = 0; i < nAtoms; i++){
         if(!matter->getFixed(i)){
             for (int j = 0; j < 3; j++){
-                noise(i,j) =  sqrt(4*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
+                noise(i,j) = sqrt(4.0*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
             }
         }
     }
 
     acc = acc + friction + noise;
-    vel += acc * 0.5 * dt;
+    vel += 0.5*dt*acc;
     matter->setVelocities(vel); // second update velocities v(n+1)
 }
 
@@ -418,20 +424,20 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
     diff = final - initial;
     test = int((b1-a1)/2);
 
-    tmp_fcalls = min_fcalls ;
+    tmp_fcalls = min_fcalls;
     min_fcalls = 0;
     while(diff > RefineAccuracy)
     {
 
      //   printf("a1 = %ld; b1= %ld; test= %ld; ytest= %d\n",a1,b1,test,ytest);
-        test = a1+int((b1-a1)/2);
+        test = a1 + int((b1-a1)/2);
         ytest = checkState(buff[test],min1);
 
-        if ( ytest == 0 ){
+        if (ytest == 0){
             a1 = test;
             b1 = b1;
         }
-        else if ( ytest == 1 ){
+        else if (ytest == 1){
             a1 = a1;
             b1 = test;
         }
@@ -439,7 +445,7 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
             printf("Refine Step Failed ! \n");
             exit(1);
         }
-        diff = abs( b1 - a1 );
+        diff = abs(b1 - a1);
     }
 
     rf_fcalls = min_fcalls;

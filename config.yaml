@@ -874,6 +874,10 @@ Optimizers:
             kind: float
             default: 0.1
 
+        variable_time_step:
+            kind: boolean
+            default: False
+
         max_iterations:
             kind: int
             default: 1000

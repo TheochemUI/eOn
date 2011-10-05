@@ -87,7 +87,8 @@ public:
     double optConvergedForce; // force convergence criterion required for an optimization
     double optFiniteDist; // finite difference step size used in conjugate gradients
     double optTimeStep; // time step size used in quickmin
-    long optLBFGSMemory;
+    bool optVariableTimeStep; // if quickmin time step should be adjusted
+    long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
 
     // [Dimer]
     double dimerSeparation; // distance between the two dimer images

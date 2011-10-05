@@ -41,7 +41,6 @@ class Explorer:
         f.close()
 
 
-
 class MinModeExplorer(Explorer):
     def __init__(self, states, previous_state, state):
         Explorer.__init__(self)
@@ -64,12 +63,10 @@ class MinModeExplorer(Explorer):
         else:
             moved_atoms = None
 
-
         if config.kdb_on:
             self.kdber = kdb.KDB()
             if len(self.state.get_ratetable()) <= 1:
                 self.kdber.query(self.state, wait = config.kdb_wait)
-
 
         self.reactant = self.state.get_reactant()
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms)
@@ -119,18 +116,18 @@ class ClientMinModeExplorer(MinModeExplorer):
         logger.info("%i searches in the queue" % num_in_buffer)
         num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
         logger.info("making %i process searches" % num_to_make)
-        
+
         if num_to_make == 0:
             return
-        
+
         searches = []
-        
+
         invariants = {}
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
         invariants['reactant_passed.con']=reactIO
-        
+
         ini_changes = [ ('Main', 'job', 'process_search') ]
         invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
 
@@ -227,7 +224,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             else:
                 self.job_table.delete_row('wuid', id)
             result['wuid'] = id
-            
+
             #read in the results
             result['results'] = io.parse_results(result['results.dat'])
             if result['results']['termination_reason'] == 0:
@@ -235,14 +232,14 @@ class ClientMinModeExplorer(MinModeExplorer):
             else:
                 self.state.register_bad_saddle(result, config.debug_keep_bad_saddles)
             num_registered += 1
-            
+
             if self.state.get_confidence() >= config.akmc_confidence:
                 if not config.debug_register_extra_results:
                     break
-        
+
         #Approximate number of searches recieved
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
-        
+
         t2 = time()
         logger.info("%i (result) searches processed", num_registered)
         logger.info("Approximately %i (result) searches discarded." % (tot_searches - num_registered))
@@ -250,7 +247,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             logger.debug("0 results per second", num_registered)
         else:
             logger.debug("%.1f results per second", (num_registered/(t2-t1)))
-            
+
         self.job_table.write()
         return num_registered
 
@@ -339,7 +336,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
             try:
-                shutil.rmtree(config.path_jobs_in)  
+                shutil.rmtree(config.path_jobs_in)
             except OSError, msg:
                 logger.error("error cleaning up %s: %s", config.path_jobs_in, msg)
             else:
@@ -347,14 +344,14 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         if not os.path.isdir(config.path_incomplete):
             os.makedirs(config.path_incomplete)
-        
+
         #Function used by communicator to determine whether to keep a result
         def keep_result(name):
             # note that all processes are assigned to the current state 
             state_num = int(name.split("_")[0])
             return (state_num == self.state.number and \
                     self.state.get_confidence() < config.akmc_confidence)
-     
+
             #return (config.debug_register_extra_results or \
             #        state_num == self.state.number or \
             #        self.state.get_confidence() < config.akmc_confidence)
@@ -365,7 +362,6 @@ class ServerMinModeExplorer(MinModeExplorer):
             # XXX: doesn't this doesn't give the correct id wrt bundling
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
-
 
             search_id = self.wuid_to_search_id[id]
             self.job_info[search_id][searchdata_id]['status'] = 'complete'
@@ -393,7 +389,7 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         #Approximate number of searches recieved
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
-        
+
         t2 = time()
         logger.info("%i (result) searches processed", num_registered)
         logger.info("Approximately %i (result) searches discarded." % (tot_searches - num_registered))
@@ -401,7 +397,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             logger.debug("0 results per second", num_registered)
         else:
             logger.debug("%.1f results per second", (num_registered/(t2-t1)))
-            
+
         self.save()
         return num_registered
 
@@ -410,12 +406,12 @@ class ServerMinModeExplorer(MinModeExplorer):
         logger.info("%i jobs running" % num_running)
         num_to_make = max(config.comm_job_buffer_size - num_running, 0)
         logger.info("making %i jobs" % num_to_make)
-        
+
         if num_to_make == 0:
             return
-        
+
         jobs = []
-        
+
         invariants = {}
 
         #Merge potential files into invariants
@@ -468,7 +464,6 @@ class ServerMinModeExplorer(MinModeExplorer):
             logger.exception("Failed to submit searches.")
 
 
-
 class ProcessSearch:
     def __init__ (self, reactant, reactant_energy, displacement, mode, disp_type, search_id):
         self.reactant = reactant
@@ -501,7 +496,7 @@ class ProcessSearch:
         self.finished_reactant_name = None
         self.finished_product_name = None
 
-        self.data = { 
+        self.data = {
                       'termination_reason':0,
                       'potential_energy_saddle':None,
                       'potential_energy_reactant':None,
@@ -586,12 +581,11 @@ class ProcessSearch:
             product_result = self.load_result(self.finished_product_name)
             result['product.con'] = product_result['reactant.con']
 
-
         result['saddle.con'] = saddle_result['saddle.con']
         result['mode.dat'] = saddle_result['mode.dat']
         result['results'] = self.data
 
-        results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ]) 
+        results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ])
         result['results'] = self.data
         result['results.dat'] = StringIO.StringIO(results_string)
         result['type'] = self.displacement_type
@@ -628,7 +622,7 @@ class ProcessSearch:
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, reactant)
         job['reactant_passed.con'] = reactIO
-        
+
         ini_changes = [ ('Main', 'job', 'minimization') ]
         job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
 
@@ -647,7 +641,7 @@ class ProcessSearch:
         self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
         is_reactant = lambda a: atoms.match(a, self.reactant,
-                                            config.comp_eps_r, 
+                                            config.comp_eps_r,
                                             config.comp_neighbor_cutoff, True)
 
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']

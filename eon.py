@@ -17,7 +17,7 @@ def main():
     else:
         #TODO: Work on running the client directly for unknown job types
         import communicator
-        comm = communicator.Local(".", eonclient, 1, 1)
+        comm = communicator.Local(".", config.comm_local_client, 1, 1)
 
 if __name__ == '__main__':
     main()
