@@ -108,7 +108,7 @@ def basinhopping():
 
     # get communicator
     comm = communicator.get_communicator()
-    
+
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
     register_results(comm, bhstates)
@@ -118,18 +118,18 @@ def basinhopping():
     wuid_file = open("wuid.dat","w")
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
-    
+
 def make_searches(comm, wuid, bhstates):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
-    
+
     if num_to_make == 0:
         return wuid
-    
+
     searches = []
-    
+
     invariants = {}
 
     f = open(os.path.join(config.path_root, 'reactant.con'))
@@ -137,7 +137,7 @@ def make_searches(comm, wuid, bhstates):
     f.close()
 
     #invariants['reactant_passed.con']=reactIO
-    
+
     ini_changes = [ ('Main', 'job', 'basin_hopping') ]
     #invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
     #invariants['reactant_passed.con']  = reactIO
@@ -169,22 +169,22 @@ def make_searches(comm, wuid, bhstates):
 
     logger.info("%i from random structures %i from previous minima", number_random, number_minima)
     comm.submit_jobs(searches, invariants)
-    logger.info( str(num_to_make) + " searches created") 
+    logger.info( str(num_to_make) + " searches created")
     return wuid
 
 def register_results(comm, bhstates):
     logger.info("registering results")
     if os.path.isdir(config.path_jobs_in):
-        shutil.rmtree(config.path_jobs_in)    
+        shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
-    
+
     #Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
 
     num_registered = 0
 
-    for result in comm.get_results(config.path_jobs_in, keep_result): 
+    for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # product.con - an array of strings containing the reactant
         # results.dat - an array of strings containing the results
@@ -197,7 +197,7 @@ def register_results(comm, bhstates):
             continue
         if result_info['termination_reason'] == 0:
             if bhstates.add_state(result, result_info):
-                logger.info("new structure with energy %.3e", 
+                logger.info("new structure with energy %.3e",
                             result_info['minimum_energy'])
 
             #logger.info("found new structure with energy %.3e", fe)
@@ -205,7 +205,7 @@ def register_results(comm, bhstates):
             #    logger.info("found new low energy structure with energy %.3e", fe)
 
         num_registered += 1
-        
+
     logger.info("%i (result) searches processed", num_registered)
 
 def main():
@@ -234,7 +234,7 @@ def main():
         sys.exit(1)
 
     if options.no_submit:
-        config.comm_job_buffer_size= 0
+        config.comm_job_buffer_size = 0
 
     if options.reset:
         res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
@@ -247,7 +247,7 @@ def main():
                         os.mkdir(i)
                         os.removedirs(i)
                 log_path = os.path.join(config.path_results, "bh.log") 
-                wuid_path = os.path.join(config.path_results, "wuid.dat") 
+                wuid_path = os.path.join(config.path_results, "wuid.dat")
                 for i in [log_path, wuid_path ]:
                     if os.path.isfile(i):
                         os.remove(i)
@@ -256,7 +256,6 @@ def main():
         else:
             print "Not resetting."
             sys.exit(1)
-
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,

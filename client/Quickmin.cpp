@@ -34,12 +34,12 @@ void Quickmin::oneStep()
     totalForceCalls++;
     if((velocity.cwise() * forces).sum() < 0)
     {
-        dt *= 0.5;
+        if(parameters -> optVariableTimeStep) dt *= 0.5;
         velocity.setZero();
     }
     else
     {
-        dt *= 1.1;
+        if(parameters -> optVariableTimeStep) dt *= 1.1;
     }
     velocity += forces * dt;
     AtomMatrix positions;

@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 
         int error;
         if (client_standalone) {
-            string config_file = helper_functions::getPassedFile(parameters.iniFilename);
+            string config_file = helper_functions::getRelevantFile(parameters.iniFilename);
             printf("Loading parameter file %s\n",config_file.c_str());
             error = parameters.load(config_file);
         }else{
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 
         // check to see if parameters file exists before loading
         int error = 0;
-        string config_file = helper_functions::getPassedFile(parameters.iniFilename);
+        string config_file = helper_functions::getRelevantFile(parameters.iniFilename);
         printf("Loading parameter file %s\n",config_file.c_str());
         error = parameters.load(config_file);
 
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
         if (client_standalone) {
             break;
         }
-        //End of MPI while loop
+        // End of MPI while loop
         }
     #endif
 

@@ -74,25 +74,25 @@ def distributedreplica():
     wuid_file = open("wuid.dat","w")
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
-    
+
 def make_searches(comm, wuid, min_energy_con_path):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
-    
+
     if num_to_make == 0:
         return wuid
-    
+
     searches = []
-    
+
     invariants = {}
 
     f = open(min_energy_con_path)
     reactIO = StringIO(''.join(f.readlines()))
     f.close()
     #invariants['reactant_passed.con']=reactIO
-    
+
     ini_changes = [ ('Main', 'job', 'distributed_replica') ]
     invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
     invariants['reactant_passed.con']  = reactIO
@@ -117,9 +117,9 @@ def make_searches(comm, wuid, min_energy_con_path):
 def register_results(comm, min_energy):
     logger.info("registering results")
     if os.path.isdir(config.path_jobs_in):
-        shutil.rmtree(config.path_jobs_in)    
+        shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
-    
+
     #Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
@@ -144,9 +144,8 @@ def register_results(comm, min_energy):
               new_min_energy_structure = ( fe, result['product.con'] )
               min_energy = fe
         num_registered += 1
-        
-    logger.info("%i (result) searches processed", num_registered)
 
+    logger.info("%i (result) searches processed", num_registered)
 
     return num_registered, new_min_energy_structure
 
@@ -188,10 +187,10 @@ def main():
                         #XXX: ugly way to remove all empty directories containing this one
                         os.mkdir(i)
                         os.removedirs(i)
-                log_path = os.path.join(config.path_results, "bh.log") 
-                wuid_path = os.path.join(config.path_results, "wuid.dat") 
-                min_path = os.path.join(config.path_results, "min_energy.con") 
-                mine_path = os.path.join(config.path_results, "min_energy.dat") 
+                log_path = os.path.join(config.path_results, "bh.log")
+                wuid_path = os.path.join(config.path_results, "wuid.dat")
+                min_path = os.path.join(config.path_results, "min_energy.con")
+                mine_path = os.path.join(config.path_results, "min_energy.dat")
                 for i in [log_path, wuid_path, min_path, mine_path]:
                     if os.path.isfile(i):
                         os.remove(i)
@@ -200,7 +199,6 @@ def main():
         else:
             print "Not resetting."
             sys.exit(1)
-
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,

@@ -75,6 +75,7 @@ Parameters::Parameters(){
     optMaxMove = 0.2;
     optFiniteDist = 0.001;
     optTimeStep = 0.1;
+    optVariableTimeStep = false;
     optLBFGSMemory = 100;
 
     // [Dimer] //
@@ -266,6 +267,7 @@ int Parameters::load(FILE *file){
         optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
         optFiniteDist = ini.GetValueF("Optimizers","finite_dist", optFiniteDist);
         optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
+        optVariableTimeStep = ini.GetValueB("Optimizers","variable_time_step", optVariableTimeStep);
         optLBFGSMemory = ini.GetValueL("Optimizers", "lbfgs_memory", optLBFGSMemory);
 
         // [Dimer] //

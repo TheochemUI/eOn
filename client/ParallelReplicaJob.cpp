@@ -53,7 +53,8 @@ ParallelReplicaJob::~ParallelReplicaJob()
 
 std::vector<std::string> ParallelReplicaJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
+//    string reactant_passed("reactant_passed.con");
+    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
 
     reactant = new Matter(parameters);
     min1 = new Matter(parameters);
