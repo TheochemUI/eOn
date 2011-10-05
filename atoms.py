@@ -291,7 +291,7 @@ def point_energy_match(file_a, energy_a, file_b, energy_b):
     if match(a, b, config.comp_eps_r, config.comp_neighbor_cutoff, False):
         return True
 
-def points_energies__match(file_a, energy_a, files_b, energies_b):
+def points_energies_match(file_a, energy_a, files_b, energies_b):
     for i in range(len(files_b)):
         if point_energy_match(file_a, energy_a, files_b[i], energies_b[i]):
             return i
