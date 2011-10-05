@@ -38,10 +38,7 @@ DynamicsJob::DynamicsJob(Parameters *params)
     parameters = params;
 }
 
-DynamicsJob::~DynamicsJob()
-{
-}
-
+DynamicsJob::~DynamicsJob() {}
 
 std::vector<std::string> DynamicsJob::run(void)
 {
@@ -50,11 +47,10 @@ std::vector<std::string> DynamicsJob::run(void)
     R->con2matter("reactant_passed.con");
     *F = *R;
 
-    printf("Now running Regular Dynamics at %8.2lf K with %10ld steps\n", parameters->temperature, parameters->mdSteps);
     Dynamics *d = new Dynamics(R, parameters);
     d->fullSteps(parameters->temperature);
 
-    *F = * R;
+    *F = *R;
     FILE *fileProduct;
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);

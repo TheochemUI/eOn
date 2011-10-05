@@ -53,12 +53,12 @@ def parallelreplica():
         time += transition['time']
 
     wuid = make_searches(comm, current_state, wuid)
-    
+
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
     write_pr_metadata(parser, current_state.number, time, wuid)
-    parser.write(open(metafile, 'w')) 
+    parser.write(open(metafile, 'w'))
 
 def step(current_time, current_state, states, transition):
     next_state = states.get_product_state(current_state.number, transition['process_id'])
@@ -76,14 +76,14 @@ def step(current_time, current_state, states, transition):
     return current_state, previous_state
 
 def get_statelist():
-    initial_state_path = os.path.join(config.path_root, 'reactant.con') 
+    initial_state_path = os.path.join(config.path_root, 'reactant.con')
     return prstatelist.PRStateList(initial_state_path)
 
 def get_pr_metadata():
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.SafeConfigParser() 
+    parser = ConfigParser.SafeConfigParser()
     if os.path.isfile(metafile):
         parser.read(metafile)
         try:
@@ -119,18 +119,17 @@ def make_searches(comm, current_state, wuid):
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
-    
+
     if num_to_make == 0:
         return wuid
-    
+
     searches = []
-    
+
     invariants = {}
 
     reactIO = StringIO()
     io.savecon(reactIO, reactant)
     #invariants['reactant_passed.con']=reactIO
-    
 
     #Merge potential files into invariants
     #XXX: Should this be in our "science" maybe the communicator should
@@ -142,7 +141,7 @@ def make_searches(comm, current_state, wuid):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
         search['reactant_passed.con']  = reactIO
-        ini_changes = [ 
+        ini_changes = [
                         ('Main', 'job', 'parallel_replica'),
                         ('Main', 'random_seed',
                             str(int(numpy.random.random()*10**9))),
@@ -160,7 +159,7 @@ def register_results(comm, current_state, states):
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)    
     os.makedirs(config.path_jobs_in)
-    
+
     #Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
@@ -196,7 +195,6 @@ def register_results(comm, current_state, states):
         num_registered += 1
 
     logger.info("%i (result) searches processed", num_registered)
-
 
     return num_registered, transition
 
@@ -241,14 +239,14 @@ def main():
                     #XXX: ugly way to remove all empty directories containing this one
                     os.mkdir(i)
                     os.removedirs(i)
-            
-            dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
-            info_path = os.path.join(config.path_results, "info.txt") 
-            log_path = os.path.join(config.path_results, "pr.log") 
+
+            dynamics_path = os.path.join(config.path_results, "dynamics.txt")
+            info_path = os.path.join(config.path_results, "info.txt")
+            log_path = os.path.join(config.path_results, "pr.log")
             for i in [info_path, dynamics_path, log_path]:
                 if os.path.isfile(i):
                     os.remove(i)
-            
+
             print "Reset."
         sys.exit(0)
 

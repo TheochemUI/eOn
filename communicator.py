@@ -115,7 +115,7 @@ class Communicator:
 
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
-        
+
         regex = re.compile("([\w]+)_([\d]+)(\.[\w]+)")
         for jobpath in jobpaths:
             basename, dirname = os.path.split(jobpath)
@@ -128,7 +128,7 @@ class Communicator:
             # Get the number at the end of the jobpath. Looks like path/to/job/#_#
             # and we want the second #.
             basename, dirname = os.path.split(jobpath)
-            
+
             results = [{'name':dirname} for i in range(bundle_size)]
             for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
                 if filename[-3:] != 'con' and filename[-3:] != 'dat':
@@ -143,7 +143,7 @@ class Communicator:
                     if not match:
                         continue
                     parts = match.groups()
-                  
+
                     index = int(parts[1])
                     key = parts[0]+parts[2]
 
@@ -174,7 +174,7 @@ class Communicator:
         chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
         for chunk in chunks:
             #create the bundle's directory
-            
+
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
 
@@ -195,14 +195,13 @@ class Communicator:
                     f.write(job[basename].getvalue())
                     f.close()
                 n += 1
-                    
-                
+
             # Returns the jobpath to the new bigger workunit.
             yield job_path
 
 class BOINC(Communicator):
-    def __init__(self, scratchpath, boinc_project_dir, wu_template, 
-                 result_template, appname, boinc_results_path, bundle_size, 
+    def __init__(self, scratchpath, boinc_project_dir, wu_template,
+                 result_template, appname, boinc_results_path, bundle_size,
                  priority):
 
         '''This constructor modifies sys.path to include the BOINC python
@@ -211,7 +210,7 @@ class BOINC(Communicator):
         named uniqueid in the scratchpath to identify BOINC jobs as belonging
         to this akmc run if it doesn't exist. It then reads in the uniqueid
         file and stores that as an integer in self.uniqueid.'''
-        
+
         Communicator.__init__(self, scratchpath, bundle_size)
         self.wu_template = wu_template
         self.result_template = result_template
@@ -324,7 +323,7 @@ class BOINC(Communicator):
         q1 = q1 % (self.uniqueid, state_unsent)
 
         self.cursor.execute(q1)
-        
+
         if self.cursor.rowcount == 0:
             return 0
 
@@ -334,7 +333,7 @@ class BOINC(Communicator):
             row = self.cursor.fetchone()
             if row == None:
                 break
-            
+
             result_id = row['id']
             workunit_id = row['workunitid']
             name = row['name']
@@ -348,7 +347,7 @@ class BOINC(Communicator):
         state_over = self.boinc_db_constants.RESULT_SERVER_STATE_OVER
         outcome_not_needed = self.boinc_db_constants.RESULT_OUTCOME_DIDNT_NEED
         error_mask_cancelled = self.boinc_db_constants.WU_ERROR_CANCELLED
-        q1 = "update result set server_state=%i, outcome=%i where id in %s" 
+        q1 = "update result set server_state=%i, outcome=%i where id in %s"
         q1 = q1 % (state_over, outcome_not_needed, resultid_string)
         self.cursor.execute(q1)
 
@@ -369,7 +368,7 @@ class BOINC(Communicator):
 
     def submit_jobs(self, jobdata, invariants):
         now = time()
-        chunks = [ jobdata[i:i+self.bundle_size] for i in 
+        chunks = [ jobdata[i:i+self.bundle_size] for i in
                    range(0, len(jobdata), self.bundle_size) ]
         for jobs in chunks:
             wu_name = "%i_%s" % (self.uniqueid, jobs[0]['id'])
@@ -491,7 +490,6 @@ class BOINC(Communicator):
                     logger.exception("Failed to remove %s" % resultpath)
                 continue
 
-
             for result in results:
                 yield result
 
@@ -536,7 +534,7 @@ class MPI(Communicator):
 
         for jobdir in jobdirs:
             if config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), 
+                shutil.copytree(os.path.join(self.scratchpath,jobdir),
                                 os.path.join(config.path_root, config.debug_results_path, jobdir))
             dest_dir = os.path.join(resultspath, jobdir)
             shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
@@ -615,7 +613,7 @@ class Local(Communicator):
         import atexit
         #don't let clients hang around if the script dies
         atexit.register(self.cleanup)
-        
+
     def cleanup(self):
         '''Kills the running eonclients.'''
         import signal
@@ -661,7 +659,7 @@ class Local(Communicator):
         '''Run up to ncpu number of clients to process the work in jobpaths.
            The job directories are moved to the scratch path before the calculcation
            is run. This method doesn't return anything.'''
-        
+
         for jobpath in self.make_bundles(data, invariants):
             #move the job directory to the scratch directory
             #update jobpath to be in the scratch directory
@@ -724,7 +722,7 @@ class Script(Communicator):
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
         # queued_jobs.sh jobid1 jobid2 jobid 3
-        # the inverse of the jobids returned is 
+        # the inverse of the jobids returned is
         # job dirs needs to map 
         queued_jobs = self.get_queued_jobs()
 
@@ -735,7 +733,7 @@ class Script(Communicator):
             finished_eonids.append(int(self.jobids.pop(jobid)))
 
         jobdirs = [ d for d in os.listdir(self.scratchpath) 
-                    if os.path.isdir(os.path.join(self.scratchpath,d)) 
+                    if os.path.isdir(os.path.join(self.scratchpath,d))
                     if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
 
         for jobdir in jobdirs:
@@ -781,7 +779,7 @@ class Script(Communicator):
         return 0
 
     def get_queued_jobs(self):
-        # get_queued_jobs.sh 
+        # get_queued_jobs.sh
         # should return the jobids of the jobs in the queue
         status, output = commands.getstatusoutput(self.queued_jobs_cmd)
         self.check_command(status, output, self.queued_jobs_cmd)
@@ -1077,14 +1075,13 @@ class ARC(Communicator):
 
             if job["success"]:
                 self.open_tarball(tarball, resultspath)
-                logger.info("Fetched %s / %s" % (jname, jid)) 
+                logger.info("Fetched %s / %s" % (jname, jid))
             else:
-                logger.warning("Job %s / %s FAILED.\nOutput files can be found in %s" % (jname, jid, p)) 
+                logger.warning("Job %s / %s FAILED.\nOutput files can be found in %s" % (jname, jid, p))
 
             job["stage"] = "Retrieved"
             self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
             self.arclib.CleanJob(jid) # Remove from ARC sever
-
 
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
