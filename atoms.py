@@ -16,6 +16,8 @@ import numpy
 import logging
 logger = logging.getLogger('atoms')
 
+import fileio as io
+
 class Atoms:
     """ The Atoms class. """
 
@@ -279,6 +281,21 @@ def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
             return identical(a,b)
         else:
             return max(per_atom_norm(a.r-b.r, a.box))<eps_r
+
+
+def point_energy_match(file_a, energy_a, file_b, energy_b):
+    if abs(energy_a - energy_b) > config.comp_eps_e:
+        return False
+    a = io.loadcon(file_a)
+    b = io.loadcon(file_b)
+    if match(a, b, config.comp_eps_r, config.comp_neighbor_cutoff, False):
+        return True
+
+def points_energies__match(file_a, energy_a, files_b, energies_b):
+    for i in range(len(files_b)):
+        if point_energy_match(file_a, energy_a, files_b[i], energies_b[i]):
+            return i
+    return None
 
 
 def rot_match(a, b):

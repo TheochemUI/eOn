@@ -49,24 +49,12 @@ class AKMCState(state.State):
 
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
-
-    def find_repeat(self, saddle, barrier):
-        # Determine the number of processes in the process table that have a similar energy.
+    def find_repeat(self, saddle_file, barrier):
         self.load_process_table()
-        energetically_close = []
         for id in self.procs.keys():
-            if abs(self.procs[id]['barrier'] - barrier) < self.statelist.epsilon_e:
-                energetically_close.append(id)
-
-        # If the number of energetically similar saddles is > 0, we need to do distance checks on them.
-        if len(energetically_close) > 0:
-            #load the saddle
-            for id in energetically_close:
-                p1 = io.loadcon(self.proc_saddle_path(id))
-                if atoms.match(p1, saddle, config.comp_eps_r, config.comp_neighbor_cutoff, False):
-                    return id
+            if atoms.point_energy_match(saddle_file, barrier, self.proc_saddle_path(id), self.procs[id]['barrier']):
+                return id
         return None
-
 
     def add_process(self, result):
         """ Adds a process to this State. """
@@ -91,8 +79,7 @@ class AKMCState(state.State):
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
-        result["saddle"] = io.loadcon(result["saddle.con"])
-        id = self.find_repeat(result["saddle"], barrier)
+        id = self.find_repeat(result["saddle.con"], barrier)
         if id != None:
             self.append_search_result(result, "repeat-%d" % id)
             self.procs[id]['repeats'] += 1

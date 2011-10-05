@@ -124,6 +124,7 @@ def loadcon(filein):
             if not int(vals[dim])==0:
                 a.free[index]=0       
             index += 1
+    con.seek(0)
     return a
 
 def savecon(fileout, p, w = 'w'):
