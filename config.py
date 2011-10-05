@@ -8,8 +8,6 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-# Authors: Ian Johnson, Rye Terrell
-
 import ConfigParser
 import numpy
 import os.path
@@ -26,6 +24,7 @@ class ConfigSection:
     def __init__(self, name):
         self.name = name
         self.keys = []
+
 class ConfigKey:
     def __init__(self, name, kind, default):
         self.name = name
@@ -45,14 +44,14 @@ for sectionName in y:
             for value in kattr['values']:
                 ck.values.append(value)
     config.format.append(section)
-    
+
 def init(config_file = ""):
     if config.init_done:
         return None
     config.init_done = True
 
     parser = ConfigParser.SafeConfigParser()
-    
+
     for i in range(len(config.format)):
         parser.add_section(config.format[i].name)
         for j in config.format[i].keys:
@@ -71,8 +70,8 @@ def init(config_file = ""):
         config.config_path = os.path.abspath('config.ini')
         gave_config = False
     else:
-        print >> sys.stderr, "You must provide a configuration file either by providing it as a command line argument or by placing a config.ini in the current directory."
-        sys.exit(2)        
+        print >> sys.stderr, "You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory."
+        sys.exit(2)
     sections = False
     options = False
 
@@ -83,8 +82,8 @@ def init(config_file = ""):
         psections[a] = psections[a].lower()
     for a in range(len(fsections)):
         fsections[a] = fsections[a].lower()
-    
-    # checks all sections in config.ini are in configparser 
+
+    # checks all sections in config.ini are in configparser
     config_error = False
     for s in psections:
         if s not in fsections:
@@ -105,8 +104,8 @@ def init(config_file = ""):
                     if o not in foptions:
                         config_error = True
                         sys.stderr.write('unknown option "%s" in section "%s"\n' % (o, k.name))
-    
-    # checks all options are the right type and if parser option has values config.ini is using one of those values  
+
+    # checks all options are the right type and if parser option has values config.ini is using one of those values
     for psection in parser.sections():
         poptions = parser.options(psection)
         for fsection in config.format:
@@ -131,7 +130,7 @@ def init(config_file = ""):
                                 if parser.get(psection,k.name) not in booleans:
                                     config_error = True
                                     sys.stderr.write('option "%s" of section "%s" should be boolean\n' %(o,psection))
-                            elif k.kind == "string" and len(k.values) !=0:   
+                            elif k.kind == "string" and len(k.values) !=0:
                                 values = k.values
                                 if parser.get(psection,k.name) not in values:
                                     Vnames = ", ".join(k.values)
@@ -142,7 +141,7 @@ def init(config_file = ""):
         sys.stderr.write("aborting: could not parse config.ini\n")
         sys.exit(1)
 
-    #Main options
+    # Main options
     config.main_job = parser.get('Main', 'job')
     config.main_temperature = parser.getfloat('Main', 'temperature')
     config.main_checkpoint = parser.getboolean('Main', 'checkpoint')
@@ -152,14 +151,14 @@ def init(config_file = ""):
         numpy.random.seed(config.main_random_seed)
     else:
         config.main_random_seed = None
-            
+
 #    try:
 #        config.main_random_seed = parser.getint('Main', 'random_seed')
 #        numpy.random.seed(config.main_random_seed)
 #    except:
 #        config.main_random_seed = None
 
-    #Structure Comparison options
+    # Structure Comparison options
     config.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
     config.comp_eps_r = parser.getfloat('Structure Comparison', 'distance_difference')
     config.comp_use_identical = parser.getboolean('Structure Comparison', 'indistinguishable_atoms')
@@ -169,7 +168,7 @@ def init(config_file = ""):
     config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
     config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
 
-    #AKMC options
+    # AKMC options
     config.akmc_confidence              = parser.getfloat('AKMC', 'confidence')
     config.akmc_server_side             = parser.getboolean('AKMC', 'server_side')
     config.akmc_thermal_window          = parser.getfloat('AKMC', 'thermally_accessible_window')
@@ -178,10 +177,10 @@ def init(config_file = ""):
     config.akmc_confidence_scheme       = parser.get('AKMC', 'confidence_scheme')
     config.akmc_confidence_correction   = parser.getboolean('AKMC', "confidence_correction")
 
-    #Basin Hopping options
+    # Basin Hopping options
     config.bh_md_probability = parser.getfloat('Basin Hopping', 'md_probability')
-    
-    #path options
+
+    # Path options
     config.path_root         = parser.get('Paths', 'main_directory')
     config.path_jobs_out     = parser.get('Paths', 'jobs_out')
     config.path_jobs_in      = parser.get('Paths', 'jobs_in')
@@ -191,23 +190,20 @@ def init(config_file = ""):
     config.path_pot          = parser.get('Paths', 'potential_files')
     config.path_bh_minima    = parser.get('Paths', 'bh_minima')
 
-    #Rye-requested check
+    # Rye-requested check
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
         res = raw_input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
             pass
         else:
             sys.exit(3)
-        
-    #communicator options
+
+    # Communicator options
     config.comm_type = parser.get('Communicator', 'type')
-    #print comm_type
     config.comm_job_bundle_size = parser.getint('Communicator', 'jobs_per_bundle')
     config.comm_job_buffer_size = parser.getint('Communicator', 'num_jobs')
     config.path_scratch = parser.get('Paths', 'scratch')
-    #print path_scratch
     if config.comm_type == 'local':
-        config.comm_local_client = parser.get('Communicator', 'client_path')
         config.comm_local_client = parser.get('Communicator', 'client_path')
         config.comm_local_ncpus = parser.getint('Communicator', 'number_of_CPUs')
     if config.comm_type == 'cluster':
@@ -230,11 +226,6 @@ def init(config_file = ""):
         config.comm_boinc_appname = parser.get('Communicator', 'boinc_appname')
         config.comm_boinc_results_path = parser.get('Communicator', 'boinc_results_path')
         config.comm_boinc_priority = parser.getint('Communicator', 'boinc_priority')
-        #print comm_boinc_project_dir
-        #print comm_boinc_wu_template_path
-        #print comm_boinc_re_template_path
-        #print comm_boinc_appname
-        #print comm_boinc_results_path
     if config.comm_type == 'arc':
         if parser.has_option('Communicator', 'client_path'):
             config.comm_client_path = parser.get('Communicator', 'client_path')
@@ -246,12 +237,12 @@ def init(config_file = ""):
         else:
             config.comm_blacklist = []
 
-    #Process Search options
+    # Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
     config.process_search_default_prefactor = parser.getfloat('Process Search', 'default_prefactor')
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
-    #Saddle Search options
+    # Saddle Search options
     config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented
     config.displace_frac_listed = parser.getfloat('Saddle Search', 'displace_frac_listed') # undocumented
     config.displace_frac_not_FCC_HCP = parser.getfloat('Saddle Search', 'displace_frac_not_FCC_HCP') # undocumented
@@ -267,9 +258,8 @@ def init(config_file = ""):
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
     config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
-        
 
-    #KDB
+    # KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
     config.kdb_only = parser.getboolean('KDB', 'kdb_only')
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
@@ -279,7 +269,7 @@ def init(config_file = ""):
     config.kdb_querypath = parser.get('KDB', 'querypath')
     config.kdb_nodupes = parser.getboolean('KDB', 'nodupes')
 
-    #Recycling
+    # Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
     config.recycling_save_sugg = parser.getboolean('Recycling', 'save_suggestions')
     if not config.recycling_on:
@@ -292,7 +282,7 @@ def init(config_file = ""):
     if config.sb_recycling_on:
         config.sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
-    #Coarse Graining
+    # Coarse Graining
     config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
     config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
     config.sb_path = None
@@ -312,13 +302,13 @@ def init(config_file = ""):
         config.askmc_barrier_test_on = parser.getboolean('Coarse Graining','askmc_barrier_test_on')
         config.askmc_connections_test_on = parser.getboolean('Coarse Graining','askmc_connections_test_on')
 
-    #Optimizers
+    # Optimizers
     config.optimizers_max_iterations = parser.getint('Optimizers', 'max_iterations')
 
-    #Saddle Search
+    # Saddle Search
     config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')
 
-    #Debug options
+    # Debug options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
     if config.debug_interactive_shell:
         import signal, code

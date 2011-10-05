@@ -365,22 +365,26 @@ bool helper_functions::existsFile(string filename)
     return 1;
 }
 
-string helper_functions::getPassedFile(string filename)
+string helper_functions::getRelevantFile(string filename)
 {
-    if(existsFile(filename)) {
-        return filename;
+    string filenameRelevant;
+    string filenamePrefix;
+    string filenamePostfix;
+
+    // check if the _checkpoint version of the file is present
+    int i = filename.rfind(".");
+    filenamePrefix.assign(filename, 0, i);
+    filenamePostfix.assign(filename, i, filename.size());
+    filenameRelevant = filenamePrefix + "_checkpoint" + filenamePostfix;
+    if(existsFile(filenameRelevant)) {
+        return filenameRelevant;
     }
     // check if the _passed version of the file is present
-    string filename_passed = filename;
-    string filename_prefix,filename_postfix;
-    int i = filename.rfind(".");
-    filename_prefix.assign(filename, 0, i);
-    filename_postfix.assign(filename, i, filename.size());
-    filename_passed = filename_prefix + "_passed" + filename_postfix;
-    if(existsFile(filename_passed)) {
-        return filename_passed;
+    filenameRelevant = filenamePrefix + "_passed" + filenamePostfix;
+    if(existsFile(filenameRelevant)) {
+        return filenameRelevant;
     }
-    // return original filename and let the next function notice that it does not exist
+    // otherwise return original filename
     return filename;
 }
 

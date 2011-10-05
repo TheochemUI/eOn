@@ -58,6 +58,6 @@ namespace helper_functions {
     VectorXd   maxAtomMotionAppliedV(const VectorXd  v1, double maxMotion);
     void getTime(double *real, double *user, double *sys);
     bool existsFile(string filename); // does filename exist
-    string getPassedFile(string filename); // return filename with _passed if only such a file exists
+    string getRelevantFile(string filename); // return filename containing _checkpoint or  _passed if such a file exists
 }
 #endif

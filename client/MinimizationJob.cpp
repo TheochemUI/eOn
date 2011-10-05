@@ -17,6 +17,7 @@
 #include "QuickminBox.h"
 #include "Matter.h"
 #include "Constants.h"
+#include "HelperFunctions.h"
 
 MinimizationJob::MinimizationJob(Parameters *params)
 {
@@ -28,7 +29,8 @@ MinimizationJob::~MinimizationJob(){ }
 
 std::vector<std::string> MinimizationJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
+//    string reactant_passed("reactant_passed.con");
+    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
     string reactant_output("reactant.con");
 
     if (parameters->checkpoint) {
