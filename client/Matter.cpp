@@ -329,7 +329,7 @@ void Matter::setPositions(const AtomMatrix pos)
 // Same but takes vector instead of n x 3 matrix
 void Matter::setPositionsV(const VectorXd pos)
 {
-    setPositions(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
+    setPositions(AtomMatrix::Map(pos.data(),numberOfAtoms(),3));
 }
 
 
@@ -884,6 +884,11 @@ AtomMatrix Matter::getFree() const
         }
     }
     return ret;
+}
+
+VectorXd Matter::getFreeV() const
+{
+    return VectorXd::Map(getFree().data(),3*numberOfAtoms());
 }
 
 
