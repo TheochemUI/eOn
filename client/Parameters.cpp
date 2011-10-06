@@ -34,6 +34,7 @@ Parameters::Parameters(){
     MPIPotentialAggressive = true;
     iniFilename = "config.ini";
     conFilename = "reactant.con";
+    finiteDifference = 0.01;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -73,13 +74,11 @@ Parameters::Parameters(){
     optMaxIterations = 1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
-    optFiniteDist = 0.001;
     optTimeStep = 0.1;
     optVariableTimeStep = false;
     optLBFGSMemory = 100;
 
     // [Dimer] //
-    dimerSeparation = 0.001;
     dimerRotationAngle = 0.005;
     dimerImproved = true;
     dimerConvergedAngle = 1.0; // degrees
@@ -90,13 +89,11 @@ Parameters::Parameters(){
     dimerRotationsMax = 2; // old dimer and new dimer
 
     // [Lanczos] //
-    lanczosFiniteDist = 0.001;
     lanczosTolerance = 0.001;
     lanczosMaxIterations = 20;
 
     // [Hessian] //
     hessianType = Hessian::REACTANT;
-    hessianFiniteDist = 0.001;
     hessianMinDisplacement = 0.25;
     hessianWithinRadius = 5.0;
 
@@ -202,6 +199,7 @@ int Parameters::load(FILE *file){
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
         MPIPotentialAggressive = ini.GetValueB("Main", "aggressive", MPIPotentialAggressive);
+        finiteDifference = ini.GetValueF("Main", "finiteDifference", finiteDifference);
 
         // Initialize random generator
         if(randomSeed < 0){
@@ -265,14 +263,12 @@ int Parameters::load(FILE *file){
         optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
-        optFiniteDist = ini.GetValueF("Optimizers","finite_dist", optFiniteDist);
         optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
         optVariableTimeStep = ini.GetValueB("Optimizers","variable_time_step", optVariableTimeStep);
         optLBFGSMemory = ini.GetValueL("Optimizers", "lbfgs_memory", optLBFGSMemory);
 
         // [Dimer] //
 
-        dimerSeparation = ini.GetValueF("Dimer", "separation", dimerSeparation);
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_angle", dimerRotationAngle);
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedAngle = ini.GetValueF("Dimer", "converged_angle", dimerConvergedAngle);
@@ -285,14 +281,12 @@ int Parameters::load(FILE *file){
 
         // [Lanczos] //
 
-        lanczosFiniteDist = ini.GetValueF("Lanczos", "finite_dist", lanczosFiniteDist);
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
         // [Hessian] //
 
         hessianType = toLowerCase(ini.GetValue("Hessian", "type", "reactant"));
-        hessianFiniteDist = ini.GetValueF("Hessian", "finite_dist", hessianFiniteDist);
         hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
         hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
 

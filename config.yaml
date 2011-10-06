@@ -18,7 +18,7 @@ Main:
                 - akmc
                 - hessian
                 - md
-
+        
         potential:
             kind: string
             default: lj
@@ -47,6 +47,10 @@ Main:
         temperature:
             kind: float
             default: 300.0
+
+        finite_difference:
+            kind: float
+            default: 0.01
 
         checkpoint:
             kind: boolean
@@ -318,10 +322,6 @@ Dimer:
             kind: boolean
             default: True
 
-        separation:
-            kind: float
-            default: 0.001
-
         torque_min:
             kind: float
             default: 0.1
@@ -544,10 +544,6 @@ Hessian:
 
     options:
 
-        finite_dist:
-            kind: float
-            default: 0.001
-
         type:
             kind: string
             default: reactant
@@ -565,10 +561,6 @@ Hessian:
 Lanczos:
 
     options:
-
-        finite_dist:
-            kind: float
-            default: 0.001
 
         tolerance:
             kind: float
@@ -861,10 +853,6 @@ Optimizers:
         converged_force:
             kind: float
             default: 0.01
-
-        finite_dist:
-            kind: float
-            default: 0.001
 
         max_move:
             kind: float

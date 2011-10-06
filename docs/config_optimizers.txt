@@ -9,12 +9,6 @@ The eon client provides two optimizers quick-min and conjugate gradients. These 
 
         default: ``0.01``
 
-    **finite_dist**: The finite difference step size.
-
-        type: float
-
-        default: ``0.001``
-
     **max_move**: Maximum distance that an atom may be moved in a single optimization step.
 
         type: float

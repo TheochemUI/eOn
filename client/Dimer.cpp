@@ -167,8 +167,7 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce)
     posCenter = matterCenter->getPositions();
 
     // displace to get the dimer configuration A
-//GH    posDimer = posCenter + direction*parameters->dimerSeparation;
-    posDimer = posCenter + direction*parameters->dimerSeparation*0.5;
+    posDimer = posCenter + direction*parameters->finiteDifference;
 
     // obtain the force for the dimer configuration
     matterDimer->setPositions(posDimer);
@@ -186,11 +185,10 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce)
     forceB = makeOrthogonal(forceB, direction);
 
     // determine difference in force orthogonal to dimer
-    rotationalForce = (forceA - forceB)/parameters->dimerSeparation;
+    rotationalForce = (forceA - forceB)/(2.0 * parameters->finiteDifference);
 
     // curvature along the dimer
-//GH    return (projectedForceB-projectedForceA)/(2.0*parameters->dimerSeparation);
-    return (projectedForceB-projectedForceA)/parameters->dimerSeparation;
+    return (projectedForceB-projectedForceA)/(2.0 * parameters->finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
