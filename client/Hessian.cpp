@@ -96,7 +96,7 @@ bool Hessian::calculate(string which)
     matterTemp = *curr;
 
 //    double dr = 1e-6; // value used by graeme 1e-4;
-    double dr = parameters->hessianFiniteDist;
+    double dr = parameters->finiteDifference;
 
     AtomMatrix pos = curr->getPositions();
     AtomMatrix posDisplace(nAtoms, 3);
