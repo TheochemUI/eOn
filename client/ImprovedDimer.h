@@ -41,14 +41,14 @@ class ImprovedDimer : public LowestEigenmodeInterface
 
     Matter *x0;          // Center image
     Matter *x1;          // Forward image
-    AtomMatrix tau;      // Dimer direction
-    AtomMatrix theta;    // Dimer rotation direction
-    AtomMatrix F_R;      // Dimer rotational force
+    VectorXd tau;      // Dimer direction
+    VectorXd theta;    // Dimer rotation direction
+    VectorXd F_R;      // Dimer rotational force
     double C_tau;        // Curvature along tau
 
     // parameters used for conjugate gradients
-    AtomMatrix F_R_Old;
-    AtomMatrix thetaOld;
+    VectorXd F_R_Old;
+    VectorXd thetaOld;
     double a, b, gamma;
     bool init_cg;
 };
