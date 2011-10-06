@@ -9,12 +9,6 @@ Options for controlling the dimer minimum mode finding method on the client side
 
         default: ``False``
 
-    **seperation**: Seperation between dimer images.
-
-        type: float
-
-        default: ``0.001``
-
     **torque_min**: Minimum torque above which the dimer rotates only once and below which is does not rotate.
 
         type: float

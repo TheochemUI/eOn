@@ -79,6 +79,12 @@ These are the options that go in the 'Main' section of config.ini
 
         default: ``300.0``
 
+    **finite_difference**: The finite difference distance to use for dimer, hessian, lanczos, and optimization methods.
+        
+        type: float
+
+        default: ``0.01``
+
     **quiet**: 
 
         type: boolean

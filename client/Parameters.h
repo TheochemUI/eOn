@@ -47,6 +47,7 @@ public:
     bool   checkpoint;
     string iniFilename;
     string conFilename;
+    double finiteDifference;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
@@ -85,13 +86,11 @@ public:
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
-    double optFiniteDist; // finite difference step size used in conjugate gradients
     double optTimeStep; // time step size used in quickmin
     bool optVariableTimeStep; // if quickmin time step should be adjusted
     long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
 
     // [Dimer]
-    double dimerSeparation; // distance between the two dimer images
     double dimerRotationAngle; // finite difference rotation angle
     bool   dimerImproved; // turn on the improved dimer method
     double dimerConvergedAngle; // stop rotating when angle drops below this value
@@ -103,13 +102,11 @@ public:
     double dimerTorqueMin; // old
 
     // [Lanczos]
-    double lanczosFiniteDist ; // finite difference distance
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
 
     // [Hessian]
     string hessianType;
-    double hessianFiniteDist; // finite difference distance
     double hessianMinDisplacement; // atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
     double hessianWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
 
