@@ -55,8 +55,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
     *x1 = *matter;
     VectorXd x0_r = x0->getPositionsV();
 
-//GH    x1->setPositions(x0_r + tau * parameters->dimerSeparation);
-    x1->setPositionsV(x0_r + parameters->dimerSeparation * 0.5 * tau);
+    x1->setPositionsV(x0_r + parameters->finiteDifference * tau);
 
 
     // other vectors
@@ -65,7 +64,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
     VectorXd tau_prime;
     VectorXd g1_prime;
 
-    double delta = parameters->dimerSeparation * 0.5;
+    double delta = parameters->finiteDifference;
     double phi_tol = M_PI * (parameters->dimerConvergedAngle/180.0);
     double phi_prime = 0.0;
     double phi_min = 0.0;
@@ -85,8 +84,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
         //F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).cwise() * tau).sum() * tau;
         F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).dot(tau))*tau;
 
-//GH        statsTorque = F_R.norm()/delta;
-        statsTorque = F_R.norm()/parameters->dimerSeparation;
+        statsTorque = F_R.norm() / (parameters->finiteDifference * 2.0);
         
         // Determine the step direction, theta
         if(parameters->dimerOptMethod == OPT_SD) // steepest descent
@@ -193,7 +191,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
                  g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
 //GH            statsTorque = F_R.norm()/delta;
-            statsTorque = F_R.norm()/parameters->dimerSeparation;
+            statsTorque = F_R.norm()/(2.0 * parameters->finiteDifference);
             statsRotations += 1;
 
             log_file("[IDimerRot]  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",

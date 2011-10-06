@@ -28,7 +28,7 @@ void ExactMinMode::compute(Matter const *matter, AtomMatrix direction)
     int size = 3*matter->numberOfFreeAtoms();
     Matter *tmpMatter = new Matter(parameters);
     *tmpMatter = *matter;
-    double dr = parameters->lanczosFiniteDist;
+    double dr = parameters->finiteDifference;
     VectorXd force1, force2;
 
 

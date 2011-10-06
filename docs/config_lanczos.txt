@@ -3,12 +3,6 @@ Lanczos
 
 Options for controlling the Lanczos minimum mode finding method on the client side.
 
-    **finite_dist**: Finite difference step size when computing the second derivative of the potential along the Lanczos vectors.
-
-        type: float
-
-        default: ``0.001``
-
     **tolerance**: This is the convergence critera for relative error of the lowest eigenvalue.
 
         type: float

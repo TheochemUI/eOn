@@ -50,7 +50,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
 
     double alpha, beta=r.norm();
     double ew=0, ewOld=0, ewAbsRelErr;
-    double dr = parameters->lanczosFiniteDist;
+    double dr = parameters->finiteDifference;
     VectorXd evEst, evT;
 
     VectorXd force1, force2;

@@ -373,7 +373,7 @@ void SaddleSearch::searchForSaddlePoint(double initialEnergy)
         if(!converged)
         {
             // Determine a CG step.
-            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos); //displaces the system by OptFiniteDist
+            posStep = cgSaddle.makeInfinitesimalStepModifiedForces(pos); //displaces the system by finiteDifference
             saddle->setPositions(posStep); 
             forcesStep = saddle->getForces(); //Forces after displacing the system an infinitesimal step
             forcesStep = projectedForce(forcesStep); //Projects the force

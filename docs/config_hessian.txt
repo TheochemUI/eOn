@@ -3,12 +3,6 @@ Hessian
 
 Options for controlling how Hessian matricies are calculated.
 
-    **finite_dist**: Finite difference distance between forces used to construct the Hessian.
-
-        type: float
-
-        default: ``0.001``
-
     **type**: The Hessian to be calculated has to be one of reactant, saddle, or product. This option only matters for the "hessian" job. Hessian are also calculated in the "process_search" job.
 
         type: string
