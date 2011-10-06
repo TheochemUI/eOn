@@ -109,6 +109,7 @@ public:
     bool matter2convel(FILE *file) const; // print con file with both coordinates and velocities from data in Class Matter
     void matter2xyz(std::string filename, bool append=false) const; // print xyz file from data in Matter
     AtomMatrix getFree() const;
+    VectorXd getFreeV() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
