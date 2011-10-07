@@ -35,6 +35,8 @@ the different communicator types.
         run jobs through user supplied shell scripts. Examples are given for
         SGE.
 
+        :ref:`mpi <communicator-mpi>`: todo
+
         :ref:`boinc <communicator-boinc>`: Jobs can be submitted to a BOINC
         project.
 
@@ -87,20 +89,22 @@ When eon is run with the local communicator, **number_of_cpus** bundles are run
 in parallel until **num_jobs** jobs have been run. The program will not exit
 until all of the jobs have finished running.
 
-**client_path**:
+    **client_path**: Either the name or path to the eon client binary. If only
+    a name and not a path is given then eon looks for the binary in same
+    directory as config.ini failing to find it there it will search though the
+    directories in the $PATH environment variable.
 
-    Default: eonclient
+    type: string
 
-    Either the name or path to the eon client binary. If only a name and not a path
-    is given then eon looks for the binary in same directory as config.ini failing to
-    find it there it will search though the directories in the $PATH environment
-    variable.
+    default: ``eonclient``
 
-**number_of_cpus**:
+    **number_of_CPUs**: The number of jobs that will run simultaneously.
 
-    Default: 1
+    type: int
 
-    The number of jobs that will run simultaneously.
+    default: ``1``
+
+
 
 .. _communicator-cluster:
 
@@ -112,11 +116,12 @@ talk to the job scheduler. An example of these scripts for SGE 6.2 is provided
 in **tools/clusters/sge6.2**. They will most likely need to be modified to run
 on your system.
 
-**script_path**:
+**script_path**: The path to the user defined scripts for submitting jobs to
+the communicator.
 
-    Default: ./
+    type: string
 
-    The path to the user defined scripts for submitting jobs to the communicator.
+    default: ``./``
     
 **name_prefix**:
 
@@ -142,9 +147,9 @@ on your system.
     It takes two command line arguments. The first is the name of the job. This is
     not required for eon use, but is highly recommended so that users can identify
     which job is which. The second argument is the working directory. This is the
-    path where the eon client should be executed. All of the needed client files
+    path where the Eon client should be executed. All of the needed client files
     will be placed in this directory. The script must return the job id of the
-    submitted job. This is how eon internally keeps track of jobs.
+    submitted job. This is how Eon internally keeps track of jobs.
     
 **cancel_job**: 
 
@@ -155,16 +160,21 @@ on your system.
 
 .. _communicator-boinc:
 
-Boinc
+MPI
+===
+
+The MPI communicator 
+
+
+BOINC
 =====
 
-The BOINC communicator allows eon to submit workunits to a BOINC project. 
+The BOINC communicator allows Eon to submit workunits to a BOINC project. 
 
-**boinc_project_dir**: 
+    **boinc_project_dir**: This is the full path to the root of the BOINC project directory.
 
-    Default: None
+    Default: ``./``
 
-    This is the full path to the root of the BOINC project directory.
 
 **boinc_wu_template_path**:
 
@@ -194,17 +204,22 @@ The BOINC communicator allows eon to submit workunits to a BOINC project.
     the sample_assimilator the results are stored in the project directory
     in a folder named "sample_results".
 
-**boinc_priority**:
-    
-    Default: 1
+**boinc_priority**: The priority of the BOINC workunits that will be submitted.
 
-    The priority for the workunits that are submitted. The higher priority
-    workunits go to clients first.
+    type: int
+
+    default: ``1``
 
 .. _communicator-arc:
 
 Arc
 ===
+
+**blacklist**: 
+
+type: string
+
+default: ``None``
 
 Todo
 
@@ -216,7 +231,7 @@ These examples only submit a single search as the **search_buffer_size** default
 Local
 -----
 
-An example communicator section using the local communicator with an eon client
+An example communicator section using the local communicator with an Eon client
 binary named "eonclient-custom" that either exists in the **$PATH** or in the
 same directory as config.ini and uses makes use of 8 CPUs.
 
@@ -239,10 +254,3 @@ sge6.2 scripts and a name prefix of "al_diffusion\_":
     type=cluster
     name_prefix=al_diffusion_
     script_path=/home/user/eon/tools/clusters/sge6.2
-
-
-.. include:: config_communicator.txt
-
-
-
-
