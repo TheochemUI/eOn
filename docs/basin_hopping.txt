@@ -5,110 +5,12 @@ Basin Hopping
 Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimization.
 
-These are options that go in the **[Basin Hopping]** section of "config.ini".
-
-**max_displacement**
-
-    Default: *0.5*
-
-    The displacement along each degree of freedom is in the interval
-    **[-max_displacement, max_displacement]**.
-
-**max_displacement_algorithm**
-
-    Default: *standard*
-
-    The algorithm used to assign max displacement of each atom.  In the
-    standard algorithm, the max displacement of all the atoms will be the value
-    assigned in **max_displacement**.  The linear and quadratic algorithms
-    assign the max displacement of each atom as a function of its distance from
-    the geometric center, with the overal maximum displacement being the value
-    assigned in **max_displacement**. For more information see the paper by Kim
-    et al [#kim]_.
-
-**displacement_distribution**
-
-    Default: *uniform*
-
-    The distribution used for the displacement of atoms. When *uniform*, a
-    random number is selected between 0 and the **max_displacement**. When
-    *gaussian*, the **max_displacement** serves as the width of a gaussian
-    distribution which is used to select the displacements.
-
-**steps**
-
-    Default: *10000*
-
-    Number of steps taken at the temperature assigned.
-
-**quenching_steps**
-
-    Default: *0*
-
-    Number of steps taken at 0 Kelvin to quench the lowest energy
-    configuration.
-
-**single_atom_displace**
-
-    Default: *false*
-
-    When **True**, only one random atom is displaced in each step.
-
-**significant_structure**
-
-    Default: *false*
-
-    When *true* use significant structure basin hopping (SSBH). In SSBH the
-    geometery is updated to the minimized trial configuration for accepted
-    steps, while in raw structure basin hoppin (RSBH) the geometery of the
-    trial is maintained.  See paper by White and Mayne [#white]_.
-
-**swap_probability**
-
-    Default: *0.0*
-
-    The probability in range [0,1.0] that a swapping step takes place instead
-    of a displacement step.  The swap step selects two atoms of different
-    elements and switches them.
-
-**jump_max**
-
-    Default: *10*
-
-    The number of consecutive rejected steps after which jump steps should be
-    taken.  This serves to provide a more global search when the structure is
-    "stuck" in a certain basin.  The number of jump steps is assigned in
-    **jump_steps**.  See paper on the Basin Hopping with Occasional Jumping
-    algorithm by Iwamatsu and Okabe [#iwamatsu]_.
-
-**jump_steps**
-
-    Default: *0*
-
-    The number of jump steps to take after the **jump_max** number of
-    consecutive rejections have taken place.
-    
-
-**md_probability**
-
-    Default: *False*
-
-    The probability that molecular dynamics is run before the first step is
-    taken.  The parameters for molecular dynamics can be set in the
-    **[Dynamics]** section.  As default, the temperature specified in
-    **[Main]** will be used, or another temperature can be specificed
-    in **MD_temp**.
-
-**md_temp**
-
-    Default: *temperature in **[Main]***
-
-    The temperature to use for the molecular dynamics that occurs
-    before basin hopping steps.
-    
-
 .. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
 
 .. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
 
 .. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
+
+These are options that go in the **[Basin Hopping]** section of "config.ini".
+
+.. include:: config_basin_hopping.txt
