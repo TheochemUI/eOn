@@ -1,9 +1,9 @@
 
-.. _setup:
+.. _communicator_setup:
 
-=====
-Setup
-=====
+==================
+Communicator Setup
+==================
 
 EON is capable of running in both local and distributed mode. 
 
