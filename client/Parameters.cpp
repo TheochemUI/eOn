@@ -39,7 +39,6 @@ Parameters::Parameters(){
     // [Structure Comparison] //
     distanceDifference = 0.1;
     neighborCutoff = 3.3;
-    structureComparisonEnergyDifference = 0.01;
     checkRotation = false;
 
     // [Debug] //
@@ -221,7 +220,6 @@ int Parameters::load(FILE *file){
 
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
         neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
-        structureComparisonEnergyDifference = ini.GetValueF("Structure Comparison", "energy_difference", structureComparisonEnergyDifference);
         checkRotation = ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
 
         // [Process Search] //
