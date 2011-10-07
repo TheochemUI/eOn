@@ -10,7 +10,7 @@
           {%- block sidebarsearch %}
           {%- if pagename != "search" %}
             <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
-        <div class="toprightsearch">
+        <div class="toprightsearch" style="float:right">
             <form class="search" action="{{ pathto('search') }}" method="get">
               <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
               <input type="hidden" name="check_keywords" value="yes" />
