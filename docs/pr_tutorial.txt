@@ -1,4 +1,4 @@
-.. _tutorial_parallel_replica:
+.. _pr_tutorial:
 
 ===================================
 Running Parallel Replica Job
@@ -14,5 +14,4 @@ If we run this script, we get the folowing result::
 
   $ eon.py 
 
-.. [1] *S. Kurth, J. P. Perdew, and P. Blaha*, Int. J. Quantum
-                     Chem. **75**, 889 (1999)
+
