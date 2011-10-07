@@ -52,5 +52,6 @@ papers by:
 
 The temperature for the dynamics run is set in the **[Main]** section.
 
+.. include:: config_parallel_replica.txt
 .. include:: config_dynamics.txt
 .. include:: config_hyperdynamics.txt
