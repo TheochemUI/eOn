@@ -9,7 +9,6 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   overview
    download
    installation
    parallelization
@@ -23,5 +22,5 @@ Contents
    kdb
    configuration
    tutorials
-   process_search
    dynamics
+   hyperdynamics
