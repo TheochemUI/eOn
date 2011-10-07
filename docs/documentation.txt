@@ -1,16 +1,36 @@
 Documentation
 =============
 
-.. toctree::
-   :maxdepth: 1
+Methods
+-------
 
-   akmc
-   parallel_replica
-   basin_hopping
-   comunicator_setup
-   communicator
-   potentials
-   eon
-   optimizers
-   coarse_graining
-   kdb
+:ref:`Adaptive kinetic Monte Carlo <akmc>`
+
+:ref:`Parallel Replica <parallel_replica>`
+
+:ref:`Basin Hopping <basin_hopping>`
+
+Tasks
+-----
+
+:ref:`Process Search <process_search>`
+
+:ref:`Saddle Search <saddle_search>`
+
+:ref:`Minimization <minimization>`
+
+:ref:`Hessian <hessian>`
+
+:ref:`Dynamics <dynamics>`
+
+
+Other Options
+-------------
+
+:ref:`Parallelization <parallization>`
+
+:ref:`Potentials <potentials>`
+
+:ref:`Optimizers <optimizers>`
+
+:ref:`Structure Comparison <structure_comparison>`
