@@ -1,0 +1,14 @@
+.. _hm_tutorial:
+
+===================================
+Running Hyperdynamics Job
+===================================
+
+The following script will run 1 Hyperdynamics job of the system 
+that one Al adatom on Al(100) using 1 local cpu:
+
+.. literalinclude:: tut_con_hm.ini
+
+If we run this script, we get the folowing result::
+
+  $ eon.py 
