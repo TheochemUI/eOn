@@ -27,7 +27,7 @@ Tasks
 Other Options
 -------------
 
-:ref:`Parallelization <parallization>`
+:ref:`Parallelization <parallelization>`
 
 :ref:`Potentials <potentials>`
 
