@@ -57,6 +57,8 @@ with a brief description.
 
 .. include:: config_akmc.txt
 
+:ref:`Process Search <config_process_search>`
+
 .. include:: config_process_search.txt
 
 .. include:: config_saddle_search.txt
