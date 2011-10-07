@@ -24,3 +24,4 @@ Contents
    configuration
    tutorials
    process_search
+   dynamics
