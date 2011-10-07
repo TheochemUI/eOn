@@ -1,3 +1,5 @@
 =========
 Tutorials
 =========
+
+:ref:`AKMC Tutorial <akmc_tutorial>`
