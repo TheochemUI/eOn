@@ -5,9 +5,6 @@
 Download
 ================================
 
-Subversion
-==========
-
 The code can be anonymously checked out of the subversion repository with the
 following command:
 
