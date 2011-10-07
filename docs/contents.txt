@@ -12,8 +12,7 @@ Contents
    overview
    download
    installation
-   communicator_setup
-   communicator
+   parallelization
    potentials
    eon
    akmc
