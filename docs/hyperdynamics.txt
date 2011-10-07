@@ -1,0 +1,48 @@
+.. hyperdynamics: 
+
+=============
+Hyperdynamics
+=============
+
+**bias_potential**: 
+
+    type: string
+
+    default: ``none``
+
+    options:
+
+        ``bond_boost``: bond boost method from Miron and Fichthorn
+
+        ``none``: with no bias potential, run regular MD
+
+**bb_dvmax**: 
+
+    type: float
+
+    default: ``0.0``
+
+**bb_rmd_steps**: 
+
+    type: int
+
+    default: ``0``
+
+**bb_rcut**: 
+
+    type: float
+
+    default: ``3.0``
+
+**bb_strech_threshold**: 
+
+    type: float
+
+    default: ``0.0001``
+
+**bb_ds_curvature**: 
+
+    type: float
+
+    default: ``3.95``
+
