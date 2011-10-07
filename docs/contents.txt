@@ -24,3 +24,4 @@ Contents
    kdb
    configuration
    tutorials
+   process_search
