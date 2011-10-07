@@ -1,0 +1,18 @@
+.. _tutorial_parallel_replica:
+
+===================================
+Running Parallel Replica Job
+===================================
+
+The following script will run 1 Parallel Replica job of the system 
+that one Al adatom on Al(100) using 1 local cpu:
+
+.. literalinclude:: tut_con_pr.ini
+
+
+If we run this script, we get the folowing result::
+
+  $ eon.py 
+
+.. [1] *S. Kurth, J. P. Perdew, and P. Blaha*, Int. J. Quantum
+                     Chem. **75**, 889 (1999)
