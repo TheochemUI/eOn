@@ -16,61 +16,7 @@ correct. The second method, accelerated superbasining kinetic Monte Carlo
 states connected by fast rates are simulated, but an error is introduced in the
 dynamics direction and time. Both methods cannot be used simultaneously.
 
-Options for these methods go in the **[Coarse Graining]** section.
-
-**state_file**
-    Default: superbasin
-
-    File name for the state specific data stored within each of the state 
-    directories.
-
-Projective Dynamics
---------------------
-
-**use_projective_dynamics**:
-
-    Default: false
-
-    This option determines whether the projective dynamics coarse graining
-    method will be used. This mutually excludes the **use_askmc** option.
-
-**superbasin_scheme**:
-
-    Default: transition_counting
-
-    Projective dynamics provides a method for calculating transition rates
-    across superbasins. An additional method is needed in order to decide when
-    to combine states into a superbasin. eOn provides two methods. The first
-    method, called "transition counting", counts the number of times that the
-    simulation has transitioned between a given pair of states. After a
-    critical number of transitions have occured, the pair of states are merged
-    to form a superbasin. (If one is already in a superbasin, the other is
-    added to that superbasin. If both are already in superbasins, the two
-    superbasins are merged). This method can be selected by setting scheme
-    equal to 'transition_counting'. **Jean-Claude: document your scheme here**
-    This method can be elected by setting scheme equal to 'energy_level'.
-
-**number_of_transitions**:
-
-    Default: 50
-
-    If the transition counting scheme is being used
-    (scheme=transition_counting), this is the number of transitions that must
-    occur between two states before they are merged into a superbasin.
-
-**energy_increment**:
-
-    Default: 0.1
-
-    If the energy level scheme is being used (scheme=energy_level).
-    Each state, the first time it is visited, is assigned an energy level first
-    equal to the energy of the minimum. Every time the state is visited again
-    by the Monte Carlo simulation, the energy level is increased by:
-    :math:`\epsilon=\epsilon_0\frac{E_{sp}-E_{min}}{E_{sp}-E_{global\ min}}`
-    where :math:`E_{sp}` is the energy of the saddle point, :math:`E_{min}` the energy of the 
-    minimum, and :math:`E_{global\ min}` the energy of the global minimum.
-    :math:`\epsilon_0` is the parameter controlled by the user through 'energy_increment'.
-
+.. include:: config_coarse_graining.txt
 
 Accelerated Superbasin Kinetic Monte Carlo
 ------------------------------------------
