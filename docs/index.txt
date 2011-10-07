@@ -1,25 +1,22 @@
-.. eOn documentation master file, created by
-   sphinx-quickstart on Tue Nov 30 14:44:45 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+================================
+eOn: Long timescale dynamics
+================================
 
-Contents
-===============================
+The EON program contains a set of algorithms used primarily to model the
+evolution of atomic scale systems over long time scales.  Standard molecular
+dynamics algorithms, based upon solving Newton's equations, are limited by the
+femtosecond time scale of atomic vibrations.  EON simulations are designed for
+rare event systems where the interesting dynamics can be described by fast
+transition between stable states.  In each algorithm, the residence time in the
+stable states is modeled with statistical mechanics, and the important
+state-to-state dynamics are modeled stochastically.
 
-.. toctree::
-   :maxdepth: 2
-
-   overview
-   download
-   installation
-   setup
-   communicator
-   potentials
-   eon
-   akmc
-   parallel_replica
-   basin_hopping
-   optimizers
-   coarse_graining
-   kdb
-   configuration
+* :ref:`Obtaining the Code <download>`
+* :ref:`installation`
+* :ref:`The eon application and general options <eon>`
+* :ref:`akmc`
+* :ref:`optimizers`
+* :ref:`coarse_graining`
+* :ref:`kdb`
+* :ref:`parallel_replica`
+* :ref:`communicator`
