@@ -1,5 +1,5 @@
 ================================
-eOn: Long timescale dynamics
+EON: Long timescale dynamics
 ================================
 
 The EON program contains a set of algorithms used primarily to model the
@@ -10,13 +10,3 @@ rare event systems where the interesting dynamics can be described by fast
 transition between stable states.  In each algorithm, the residence time in the
 stable states is modeled with statistical mechanics, and the important
 state-to-state dynamics are modeled stochastically.
-
-* :ref:`Obtaining the Code <download>`
-* :ref:`installation`
-* :ref:`The eon application and general options <eon>`
-* :ref:`akmc`
-* :ref:`optimizers`
-* :ref:`coarse_graining`
-* :ref:`kdb`
-* :ref:`parallel_replica`
-* :ref:`communicator`
