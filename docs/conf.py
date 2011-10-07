@@ -39,7 +39,7 @@ source_suffix = '.txt'
 master_doc = 'contents'
 
 # General information about the project.
-project = u'eOn'
+project = u'Eon'
 copyright = u'2010,  '
 
 # The version info for the project you're documenting, acts as replacement for
@@ -112,7 +112,7 @@ html_theme_path = ["."]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = "_static/logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
