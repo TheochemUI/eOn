@@ -27,6 +27,8 @@ Tasks
 
 :ref:`Dynamics <dynamics>`
 
+:ref:`Hyperdynamics <hyperdynamics>`
+
 
 General Options
 ---------------
