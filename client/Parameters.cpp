@@ -104,9 +104,18 @@ Parameters::Parameters(){
     nebOldTangent = false;
     nebOptMethod = NudgedElasticBand::OPT_CG;
 
-    // [Parallel Replica] //
+    // [Dynamics] //
     mdTimeStep = 1;
     mdSteps = 1000;
+
+    // [Thermostat] //
+    thermostat = Dynamics::ANDERSEN;
+    thermoAndersenAlpha = 0.2; // collision strength
+    thermoAndersenTcol = 10; // collision frequency in unit of dt
+    thermoNoseMass = 1.0;
+    thermoLangvinFriction = 0.005;                     
+  
+    // [Parallel Replica] //
     mdMaxMovedDist = 2.0;
     mdRefine = true;
     mdAutoStop = false;
@@ -130,13 +139,6 @@ Parameters::Parameters(){
     bondBoostPRR = 0.95;
     bondBoostQcut = 3.0;
     bondBoostRMDS = 0;
-
-    // [Thermostat] //
-    thermostat = Dynamics::ANDERSEN;
-    thermoAndersenAlpha = 0.2; // collision strength
-    thermoAndersenTcol = 10; // collision frequency in unit of dt
-    thermoNoseMass = 1.0;
-    thermoLangvinFriction = 0.005;
 
     // [Basin Hopping] //
     basinHoppingMaxDisplacement = 0.5;
@@ -298,20 +300,26 @@ int Parameters::load(FILE *file){
         nebOldTangent = ini.GetValueB("NEB", "old_tangent", nebOldTangent);
         nebOptMethod = toLowerCase(ini.GetValue("NEB", "opt_method", nebOptMethod));
 
-        // [Molecular Dynamics] //
-
+        // [Dynamics] //
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
         mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
-        mdDephaseSteps = ini.GetValueL("Dynamics", "dephase_steps", mdDephaseSteps);
-        mdRefine = ini.GetValueB("Dynamics", "refine_transition_time", mdRefine);
-        mdAutoStop = ini.GetValueB("Dynamics", "auto_stop", mdAutoStop);
-        mdRecordAccuracy = ini.GetValueL("Dynamics", "record_resolution", mdRecordAccuracy);
-        mdRefineAccuracy = ini.GetValueL("Dynamics", "bisection_accuracy", mdRefineAccuracy);
-        mdCheckFreq = ini.GetValueL("Dynamics", "check_period", mdCheckFreq);
-        mdRelaxSteps = ini.GetValueL("Dynamics", "post_transition_steps", mdRelaxSteps);
-        mdDephaseLoopStop = ini.GetValueB("Dynamics", "dephase_loop_stop", mdDephaseLoopStop);
-        mdDephaseLoopMax = ini.GetValueL("Dynamics", "dephase_loop_max", mdDephaseLoopMax);
+        thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
+        thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
+        thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
+        thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
+
+        // [Parallel Replica]
+        mdDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", mdDephaseSteps);
+        mdRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", mdRefine);
+        mdAutoStop = ini.GetValueB("Parallel Replica", "auto_stop", mdAutoStop);
+        mdRecordAccuracy = ini.GetValueL("Parallel Replica", "record_resolution", mdRecordAccuracy);
+        mdRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", mdRefineAccuracy);
+        mdCheckFreq = ini.GetValueL("Parallel Replica", "check_period", mdCheckFreq);
+        mdRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", mdRelaxSteps);
+        mdDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", mdDephaseLoopStop);
+        mdDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", mdDephaseLoopMax);
 
         // [Distributed Replica] //
 
@@ -319,13 +327,6 @@ int Parameters::load(FILE *file){
         drSamplingSteps = ini.GetValueL("Distributed Replica", "sampling_steps", drSamplingSteps);
         drTargetTemperature = ini.GetValueF("Distributed Replica", "target_temperature", drTargetTemperature);
 
-        // [Thermostat] //
-
-        thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
-        thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
-        thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
-        thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
 
         // [Hyperdynamics] //
 
