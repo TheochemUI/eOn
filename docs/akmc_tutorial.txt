@@ -1,0 +1,6 @@
+.. _akmc_tutorial:
+
+=============
+AKMC Tutorial
+=============
+
