@@ -4,3 +4,7 @@
 AKMC Tutorial
 =============
 
+You can find a sample setup for the AKMC method in the eon/samples/AlAdatom directory of your copy of eon. The system we are looking at in this sample is an aluminum adatom on an aluminum surface. Let's take a look at the configuration file, config.ini:
+
+.. raw:: ini
+	:file: ../samples/AlAdatom/.config.ini
