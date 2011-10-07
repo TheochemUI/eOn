@@ -3,36 +3,6 @@ Communicator
 
 Options that apply to all of the different communicator types.
 
-    **boinc_project_dir**: This is the full path to the root of the BOINC project directory.
-
-        type: string
-
-        default: ``./``
-
-    **boinc_priority**: The priority of the BOINC workunits that will be submitted.
-
-        type: int
-
-        default: ``1``
-
-    **client_path**: Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.
-
-        type: string
-
-        default: ``eonclient``
-
-    **number_of_CPUs**: The number of jobs that will run simultaneously.
-
-        type: int
-
-        default: ``1``
-
-    **blacklist**: 
-
-        type: string
-
-        default: ``None``
-
     **queued_jobs**: This is the name of the script that returns the job ids of all the running and queued jobs. It does not have to return the job ids of only eon related jobs.
 
         type: string
@@ -74,12 +44,6 @@ Options that apply to all of the different communicator types.
         type: string
 
         default: ``eonclient``
-
-    **script_path**: The path to the user defined scripts for submitting jobs to the communicator.
-
-        type: string
-
-        default: ``./``
 
     **name_prefix**: When jobs are submitted to the scheduler they are given a unique internally used named. In order to make the jobs identifiable by the user the name_prefix can be set to a meaningful string that will always be prepended to the job names.
 
