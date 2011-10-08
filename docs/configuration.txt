@@ -17,10 +17,10 @@ descriptions of each.
 .. include:: config_dimer.txt
 .. include:: config_hessian.txt
 .. include:: config_basin_hopping.txt
-.. include:: config_dynamics.txt
+#.. include:: config_dynamics.txt
 .. include:: config_distributed_replica.txt
 .. include:: config_coarse_graining.txt
-.. include:: config_hyperdynamics.txt
+#.. include:: config_hyperdynamics.txt
 .. include:: config_kdb.txt
 .. include:: config_lanczos.txt
 .. include:: config_neb.txt
