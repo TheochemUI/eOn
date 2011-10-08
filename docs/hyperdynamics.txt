@@ -22,11 +22,15 @@ Hyperdynamics
 
     default: ``0.0``
 
+    The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.
+
 **bb_rmd_steps**: 
 
     type: int
 
     default: ``0``
+
+    Number of MD steps used to determine the equilibrium bond length before the bias potential is added.
 
 **bb_rcut**: 
 
@@ -34,15 +38,21 @@ Hyperdynamics
 
     default: ``3.0``
 
+    All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
+
 **bb_strech_threshold**: 
 
     type: float
 
     default: ``0.0001``
 
+    Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.
+
 **bb_ds_curvature**: 
 
     type: float
 
     default: ``3.95``
+
+    The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.
 

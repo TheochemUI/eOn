@@ -39,19 +39,42 @@ In order to run Parallel Replica, set **job** to *parallel_replica* in the
 Hyperdynamics by using Bond-Boost method. You can use this feature by setting
 **bias_potential** to *bond_boost* in the **[Hyperdynamics]** section.
 
+The temperature for the dynamics run is set in the **[Main]** section.
+
 For detailed information about Parallel Replica and Bond-Boost, please refer to
 papers by:
 
 ::
 
    "Parallel replica method for dynamics of infrequent events”
-                                        A. F. Voter, Phys. Rev. B 57, 13985 (1998)
+                                       A. F. Voter, Phys. Rev. B 57, 13985 (1998)
 
    "Accelerated molecular-dynamics of rare events with the bond-boost method"
                R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
 
-The temperature for the dynamics run is set in the **[Main]** section.
+These are options that go in the **[Parallel Replica]** section of the config.ini file.
 
-.. include:: config_parallel_replica.txt
-#.. include:: config_dynamics.txt
-.. include:: config_hyperdynamics.txt
+**auto_stop**: Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.
+
+    default: ``False``
+
+**dephase_steps**: Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.
+
+    default: ``200``
+
+**check_period**: How frequently the state of system is checked. Every check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of check_period/record_resolution+1 atomic configurations, which may increase the usage of memory.
+
+    default: ``500``
+
+**refine_transition_time**: Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by check_period/record_resolution+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller check_period. And the accuracy of transition time is record_resolution*timestep.
+
+    default: ``True``
+
+**record_resolution**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
+
+    default: ``1``
+
+**post_transition_steps**: Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.
+
+    default: ``500``
+

@@ -1,0 +1,27 @@
+
+.. _hessian:
+
+=======
+Hessian
+=======
+
+Options for controlling how Hessian matricies are calculated.
+
+**type**: The Hessian to be calculated has to be one of reactant, saddle, or product. This option only matters for the "hessian" job. Hessian are also calculated in the "process_search" job.
+
+    type: string
+
+    default: ``reactant``
+
+**min_displacement**: Minimum amount that an atom has to move to be included in the Hessian calculation.
+
+    type: float
+
+    default: ``0.25``
+
+**within_radius**: Atoms within this radius of moving atoms are included in the Hessian.
+
+    type: float
+
+    default: ``5.0``
+
