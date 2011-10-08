@@ -168,13 +168,18 @@ The MPI communicator allows for the server and client to be run as a MPI job.
 The number of clients that are run and thus the number of jobs is set at
 runtime by the MPI environment.
 
-The client must be compiled to run in this way:
+A MPI aware client must be compiled. It can only be used to run MPI jobs. It
+can be compiled like so:
 
 ::
 
     make EONMPI=1
 
-Additionally two environment variables must be set. The variable ``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks should become clients and ``EON_SERVER_PATH`` is the path to the server Python script. Currently only AKMC is supported. Below is an example of running using the MPI communicator:
+Additionally two environment variables must be set. The variable
+``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks should become
+clients and ``EON_SERVER_PATH`` is the path to the server Python script.
+Currently only AKMC is supported. Below is an example of running using the MPI
+communicator:
 
 ::
 

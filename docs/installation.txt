@@ -16,6 +16,7 @@ Dependencies
 * Server
     * python (>=2.4)
     * numpy (>=1.2.1)
+    * (for MPI communicator) mpi4py
 
 * Client
     * make
