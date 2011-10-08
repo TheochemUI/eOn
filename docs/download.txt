@@ -17,5 +17,8 @@ following command:
 This will fetch a copy of the latest code to a local directory named eon. 
 For more information on subversion read its `online documentation`_.
 
+The latest revision can also be downloaded as a gzipped tar file: eon-trunk.tgz_
+
 .. _online documentation: http://svnbook.red-bean.com/en/1.5/index.html
 .. _GNU General Public License version 3: http://www.gnu.org/copyleft/gpl.html
+.. _eon-trunk.tgz: http://theory.cm.utexas.edu/eon-files/eon-trunk.tgz
