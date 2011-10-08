@@ -5,13 +5,14 @@
 Dynamics
 ========
 
+Parameters
+----------
+
 **time_step**: The length of each MD step in femtoseconds.
 
    default: ``1``
 
-
-**auto_stop**: Whether or not stop the job when a new state is found. For boinc
-communicator this value should be set to false.
+**auto_stop**: Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.
 
    default: ``False``
 
@@ -40,12 +41,10 @@ Andersen thermostat.
 
    default: ``10``
 
-
 **nose_mass**: The effective mass of the additional degree of freedom in the
 Nose-Hover thermostat, which determines the rate of heat transfer.
 
    default: ``1``
-
 
 **langevin_friction**: The damping coefficient for langevin dynamics.
 

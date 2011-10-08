@@ -1,11 +1,49 @@
 
 .. _optimizers:
 
-==============
 Optimizers
 ==============
 
-The eon client provides two optimizers quick-min and conjugate gradients. These
-options are in the **[Optimizers]** section. 
+The eon client provides two optimizers quick-min and conjugate gradients.
 
-.. include:: config_optimizers.txt
+**[Optimizers]** parameters
+--------------------------- 
+
+**converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.
+
+    type: float
+
+    default: ``0.01``
+
+**max_move**: Maximum distance that an atom may be moved in a single optimization step.
+
+    type: float
+
+    default: ``0.2``
+
+**time_step**: The dynamical timestep for the quickmin algorithm.
+
+    type: float
+
+    default: ``0.1``
+
+**max_iterations**: The maximum number of optimization iterations that the will be performed.
+
+    type: int
+
+    default: ``1000``
+
+**opt_method**: The optimization method to use.
+
+    type: string
+
+    default: ``cg``
+
+    options:
+
+        ``box``: Optimizes the atom positions and box using quickmin
+
+        ``cg``: Conjugate gradient
+
+        ``qm``: Quickmin
+

@@ -1,16 +1,109 @@
+
+.. _basin_hopping:
+
 =============
 Basin Hopping
 =============
 
-Basin hopping is a Monte Carlo method in which the energy of each configuration
-is taken to be the energy of a local minimization.
-
-.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
+Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
 
 .. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
 
 .. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
 
-These are options that go in the **[Basin Hopping]** section of "config.ini".
+.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
 
-.. include:: config_basin_hopping.txt
+**[Basin Hopping]** Parameters
+------------------------------
+
+**max_displacement**: Max displacement in each degree of freedom.
+
+    type: float
+
+    default: ``0.5``
+
+**quenching_steps**: Number at steps at 0 temperature.
+
+    type: int
+
+    default: ``0``
+
+**swap_probability**: The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.
+
+    type: float
+
+    default: ``0.0``
+
+**single_atom_displace**: Displace only one atom per step.
+
+    type: boolean
+
+    default: ``False``
+
+**md_first**:
+
+    type: boolean
+
+    default: ``False``
+
+**steps**: Number at steps to take at the temeprature assigned.
+
+    type: int
+
+    default: ``10000``
+
+**jump_max**: The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.
+
+    type: int
+
+    default: ``0``
+
+**significant_structure**: Displace minimized structures.
+
+    type: boolean
+
+    default: ``False``
+
+**displacement_distribution**: The distribution used for the displacement of each atom.
+
+    type: string
+
+    default: ``uniform``
+
+    options:
+
+        ``gaussian``: max_displacement serves as the width of a gaussian distribution used to select displacements
+
+        ``uniform``: A random number is selected between 0 and max_displacement
+
+**max_displacement_algorithm**: The algorithm used to assign max displacement of each atom.
+
+    type: string
+
+    default: ``standard``
+
+    options:
+
+        ``quadratic``: The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+
+        ``linear``: The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+
+        ``standard``: The max displacement of all the atoms will be the value assigned in max_displacement.
+
+**jump_steps**: The number of jump steps to take after the jump_max number of consecutive rejections have taken place.
+
+    type: int
+
+    default: ``0``
+
+**md_probability**: The probability that molecular dynamics is run before the first step is taken. The parameters for molecular dynamics can be set in the [Dynamics] section. As default, the temperature specified in [Main] will be used, or another temperature can be specificed in MD_temp.
+
+    type: float
+
+    default: ``0.9``
+
+**md_temp**: The temperature to use for the molecular dynamics steps that occur before basin hopping steps.
+
+    type: float
+
+    default: ``300.0``
