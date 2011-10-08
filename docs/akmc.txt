@@ -55,18 +55,67 @@ options on the client-side.  Each option is specified in the config.ini file
 under the section name given.  Default values for each option is given along
 with a brief description.
 
-.. include:: config_akmc.txt
 
-:ref:`Process Search <config_process_search>`
+:ref:`Process Search <process_search>`
 
-.. include:: config_process_search.txt
+:ref:`Saddle Search <saddle_search>`
 
-.. include:: config_saddle_search.txt
+:ref:`Dimer <dimer>`
 
-.. include:: config_dimer.txt
+:ref:`Lanczos <lanczos>`
 
-.. include:: config_lanczos.txt
+:ref:`Hessian <hessian>`
 
-.. include:: config_hessian.txt
 
-.. include:: config_debug.txt
+Parameters for the **[AKMC]** section of config.ini.
+
+**confidence**: The confidence (out of 1.0) criterion for moving to the next state.
+
+    type: float
+
+    default: ``0.99``
+
+**max_kmc_steps**: The maximum number of KMC transitions in a row.
+
+    type: int
+
+    default: ``100000``
+
+**server_side**: If true the server does not send out "process_search" jobs instead it manages individual dimer, minimization, and hessian calculations. This option is usually used when a a single "process_search" job will take a long time (hours or longer).
+
+    type: boolean
+
+    default: ``False``
+
+**confidence_scheme**:
+
+    type: string
+
+    default: ``new``
+
+    options:
+
+        ``new``:
+
+        ``old``:
+
+**thermally_accessible_window**: Processes with barriers within this number of kT above the lowest barrier will be used in the rate table and for confidence calculations.
+
+    type: float
+
+    default: ``20``
+
+**thermally_accessible_buffer**: Processes with barriers of thermally_accessible_window + thermally_accessible_buffer will be stored
+, in the event that they are thermally accessible later, but are not used in the rate table or for the confidence calculations. Processe
+s with barriers higher than the sum of these two values will be discarded.
+
+    type: float
+
+    default: ``0``
+
+**confidence_correction**:
+
+    type: boolean
+
+    default: ``False``
+
