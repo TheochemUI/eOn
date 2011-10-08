@@ -14,7 +14,7 @@ run them locally on the server, using a job queuing system such as SGE_, using
 a distributed computing system such as BOINC_, or grid computing middleware
 such as ARC_.
 
-.. _SGE:   http://wikis.sun.com/display/sungridengine/Home
+.. _SGE:   http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html
 .. _BOINC: http://boinc.berkeley.edu/
 .. _ARC:   http://www.nordugrid.org/arc/
 
@@ -34,7 +34,8 @@ the different communicator types.
         run jobs through user supplied shell scripts. Examples are given for
         SGE.
 
-        :ref:`mpi <communicator-mpi>`: todo
+        :ref:`mpi <communicator-mpi>`: Allows for the server and clients to run
+        as a MPI job.
 
         :ref:`boinc <communicator-boinc>`: Jobs can be submitted to a BOINC
         project.
@@ -157,13 +158,35 @@ the communicator.
     This is the name of the script that cancels a job. It takes a single argument
     the job id.
 
-.. _communicator-boinc:
+
+.. _communicator-mpi:
 
 MPI
 ===
 
-The MPI communicator 
+The MPI communicator allows for the server and client to be run as a MPI job.
+The number of clients that are run and thus the number of jobs is set at
+runtime by the MPI environment.
 
+The client must be compiled to run in this way:
+
+::
+
+    make EONMPI=1
+
+Additionally two environment variables must be set. The variable ``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks should become clients and ``EON_SERVER_PATH`` is the path to the server Python script. Currently only AKMC is supported. Below is an example of running using the MPI communicator:
+
+::
+
+    #!/bin/bash
+    export EON_NUMBER_OF_CLIENTS=7
+    export EON_SERVER_PATH=~/eon/akmc.py
+    mpirun -n 8 ~/eon/client/client_mpi
+
+There must be at least ``EON_NUMBER_OF_CLIENTS`` + 1 ranks running. This is
+because the one additional rank is needed to become the server.
+
+.. _communicator-boinc:
 
 BOINC
 =====
@@ -211,16 +234,10 @@ The BOINC communicator allows Eon to submit workunits to a BOINC project.
 
 .. _communicator-arc:
 
-Arc
+ARC
 ===
 
-**blacklist**: 
-
-type: string
-
-default: ``None``
-
-Todo
+Undocumented
 
 Examples
 ========
