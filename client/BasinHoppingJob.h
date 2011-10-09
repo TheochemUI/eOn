@@ -33,6 +33,7 @@ class BasinHoppingJob : public Job {
         int jcount;
         int dcount;
         int scount;
+        int fcalls;
 };
 
 #endif
