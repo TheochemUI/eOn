@@ -15,6 +15,7 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include "LowestEigenmodeInterface.h"
+#include <vector>
 
 // dimer method to find the lowest curvature mode
 class ImprovedDimer : public LowestEigenmodeInterface
@@ -51,6 +52,9 @@ class ImprovedDimer : public LowestEigenmodeInterface
     VectorXd thetaOld;
     double a, b, gamma;
     bool init_cg;
+
+    std::vector<VectorXd> gradients;
+    std::vector<VectorXd> positions;
 };
 
 #endif
