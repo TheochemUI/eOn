@@ -62,13 +62,13 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
         VectorXd y0 = f0 - f1;
         y.push_back(y0);
 
-        rho.push_back(1.0/(s0.dot(y0)));
+        rho.push_back(1.0/(y0.dot(s0)));
     }
 
     if (iteration > memory) {
-        s.pop_back();
-        y.pop_back();
-        rho.pop_back();
+        s.erase(s.begin());
+        y.erase(y.begin());
+        rho.erase(rho.begin());
     }
 }
 
@@ -76,7 +76,7 @@ VectorXd LBFGS::getDescentDirection()
 {
     double H0 = 1./10.;
 
-    int loopmax = min((int)s.size(), memory);
+    int loopmax = s.size();
     double a[loopmax];
 
     VectorXd q = -matter->getForcesFreeV();
@@ -103,8 +103,6 @@ void LBFGS::lineSearch(VectorXd d)
     double alphak = 1.0;
     double sigma = 1e-2;
     double scale = 0.90;
-
-    
 
     double e0 = matter->getPotentialEnergy();
     VectorXd g0 = -matter->getForcesFreeV();
@@ -135,14 +133,13 @@ void LBFGS::oneStep()
     VectorXd d = getDescentDirection();
     VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
     matter->setPositionsFreeV(r+dr);
-    //lineSearch(d);
 
     rPrev = r;
     fPrev = f;
 
-    force = matter->getForces();
-
     iteration++;
+
+    force = matter->getForces();
 
     return;
 }

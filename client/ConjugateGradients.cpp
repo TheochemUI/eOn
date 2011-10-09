@@ -211,7 +211,7 @@ AtomMatrix ConjugateGradients::getStep(AtomMatrix forceBeforeStep, AtomMatrix fo
     Matrix<double, Eigen::Dynamic, 3> directionTemp;
     directionTemp = directionNorm;
     // new
-    assert(fabs(saddleConfinePositive) < 1.0);
+//    assert(fabs(saddleConfinePositive) < 1.0);
     if(curvature < 0.0)
     {
         stepSize = 100.0;

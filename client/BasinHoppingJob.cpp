@@ -17,6 +17,7 @@
 #include "Constants.h"
 #include "ConjugateGradients.h"
 #include "Quickmin.h"
+#include "LBFGS.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
 
@@ -40,6 +41,7 @@ BasinHoppingJob::BasinHoppingJob(Parameters *params)
     parameters = params;
     current = new Matter(parameters);
     trial = new Matter(parameters);
+    fcalls = Potential::fcalls;
 }
 
 BasinHoppingJob::~BasinHoppingJob()
@@ -77,6 +79,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
         minimizer = new ConjugateGradients(current, &minParameters);
     }else if (parameters->optMethod == "qm"){
         minimizer = new Quickmin(current, &minParameters);
+    }else if (parameters->optMethod == "lbfgs"){
+        minimizer = new LBFGS(current, &minParameters);
     }
     minimizer->setOutput(0);
     minimizer->fullRelax();
@@ -117,6 +121,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
         if (parameters->optMethod == "cg") {
             minimizer = new ConjugateGradients(minTrial, &minParameters);
+        }else if (parameters->optMethod == "lbfgs"){
+            minimizer = new LBFGS(minTrial, &minParameters);
         }else if (parameters->optMethod == "qm"){
             minimizer = new Quickmin(minTrial, &minParameters);
         }
@@ -221,6 +227,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
     fprintf(fileResults, "%d total_jump_steps\n", jcount);
     fprintf(fileResults, "%d total_swap_steps\n", scount);
+    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls-fcalls);
     fclose(fileResults);
 
     std::string productFilename("product.con");
