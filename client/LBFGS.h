@@ -55,7 +55,6 @@ private:
     std::vector<double> rho;
     VectorXd rPrev;
     VectorXd fPrev;
-    
 
     void initialize(Matter *matter, Parameters *parameters);
     VectorXd getDescentDirection();

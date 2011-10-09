@@ -52,24 +52,30 @@ LBFGS::~LBFGS()
     return;
 }
 
-void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
+void LBFGS::lineSearch(VectorXd d)
 {
-    if (iteration > 0) {
-        VectorXd s0 = r1 - r0;
-        s.push_back(s0);
+    double alphak = 1.0;
+    double sigma = 1e-2;
+    double scale = 0.90;
 
-        //y0 is the change in the gradient, not the force
-        VectorXd y0 = f0 - f1;
-        y.push_back(y0);
+    
 
-        rho.push_back(1.0/(y0.dot(s0)));
+    double e0 = matter->getPotentialEnergy();
+    VectorXd g0 = -matter->getForcesFreeV();
+    VectorXd r0 = matter->getPositionsFreeV();
+
+    matter->setPositionsFreeV(r0 + alphak * d);
+    double e = matter->getPotentialEnergy();
+
+    int i=0;
+    while (e > e0+sigma*alphak*g0.dot(d) && i < 4) {
+        alphak = alphak*scale;
+        matter->setPositionsFreeV(r0 + alphak*d);
+        e = matter->getPotentialEnergy();
+        i++;
     }
-
-    if (iteration > memory) {
-        s.erase(s.begin());
-        y.erase(y.begin());
-        rho.erase(rho.begin());
-    }
+    if (i>0) printf("alphak: %12.4f e: %12.4f e0: %12.4f\n", alphak, e, e0);
+    return;
 }
 
 VectorXd LBFGS::getDescentDirection()
@@ -98,40 +104,51 @@ VectorXd LBFGS::getDescentDirection()
     return d;
 }
 
-void LBFGS::lineSearch(VectorXd d)
+
+void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
-    double alphak = 1.0;
-    double sigma = 1e-2;
-    double scale = 0.90;
+    VectorXd s0 = r1 - r0;
+    s.push_back(s0);
 
-    double e0 = matter->getPotentialEnergy();
-    VectorXd g0 = -matter->getForcesFreeV();
-    VectorXd r0 = matter->getPositionsFreeV();
+    //y0 is the change in the gradient, not the force
+    VectorXd y0 = f0 - f1;
+    y.push_back(y0);
 
-    matter->setPositionsFreeV(r0 + alphak * d);
-    double e = matter->getPotentialEnergy();
+    rho.push_back(1.0/(s0.dot(y0)));
 
-    int i=0;
-    while (e > e0+sigma*alphak*g0.dot(d) && i < 4) {
-        alphak = alphak*scale;
-        matter->setPositionsFreeV(r0 + alphak*d);
-        e = matter->getPotentialEnergy();
-        i++;
+    if ((int)s.size() > memory) {
+        s.erase(s.begin());                                                                          
+        y.erase(y.begin());
+        rho.erase(rho.begin());
     }
-    if (i>0) printf("alphak: %12.4f e: %12.4f e0: %12.4f\n", alphak, e, e0);
-    return;
 }
-
 
 void LBFGS::oneStep()
 {
     VectorXd r = matter->getPositionsFreeV();
     VectorXd f = matter->getForcesFreeV();
 
-    update(r, rPrev, f, fPrev);
+    if (iteration > 0) {
+        update(r, rPrev, f, fPrev);
+    }
 
     VectorXd d = getDescentDirection();
-    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
+    double vd = d.normalized().dot(f.normalized());
+    if (vd>1.0) vd=1.0;
+    double angle = acos(vd) * (180.0 / M_PI);
+    //printf("\nangle: %.3f\n", angle);
+
+    if (angle > 70.0) {
+        int keep = min((int)s.size(), 1);
+        s.erase(s.begin(), s.end()-keep);
+        y.erase(y.begin(), y.end()-keep);
+        rho.erase(rho.begin(), rho.end()-keep);
+        d = getDescentDirection();
+    }
+
+    VectorXd dr;
+    dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
+
     matter->setPositionsFreeV(r+dr);
 
     rPrev = r;
@@ -175,10 +192,10 @@ long LBFGS::fullRelax()
         if (!parameters->quiet) {
             double e = matter->getPotentialEnergy();
             if (iteration > 0) {
-                log("step = %3d, max force = %10.7lf, energy: %10.7f de: %10.2e\n", 
-                    i, matter->maxForce(), e, e-ePrev);
+                log("step = %3d, max force = %10.4f, energy: %10.4f de: %10.2e memory: %i\n", 
+                    i, matter->maxForce(), e, e-ePrev, s.size());
             }else{
-                log("step = %3d, max force = %10.7lf, energy: %10.7f\n", 
+                log("step = %3d, max force = %10.4f, energy: %10.4f\n", 
                     i, matter->maxForce(), e);
             }
             ePrev = matter->getPotentialEnergy();
