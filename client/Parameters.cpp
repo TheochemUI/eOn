@@ -75,7 +75,7 @@ Parameters::Parameters(){
     optMaxMove = 0.2;
     optTimeStep = 0.1;
     optVariableTimeStep = false;
-    optLBFGSMemory = 100;
+    optLBFGSMemory = 50;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
