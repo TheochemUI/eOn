@@ -73,9 +73,18 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
 
     Matter *x1p = new Matter(parameters);
 
+
     // Calculate the gradients on x0 and x1, g0 and g1, respectively.
     VectorXd g0 = -x0->getForcesV();
     VectorXd g1 = -x1->getForcesV();
+
+    positions.clear();
+    gradients.clear();
+
+    positions.push_back(x0->getPositionsV());
+    positions.push_back(x1->getPositionsV());
+    gradients.push_back(g0);
+    gradients.push_back(g1);
 
     do // while we have not reached phi_tol or maximum rotations.
     {
@@ -149,6 +158,10 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
             *x1p = *x1;
             x1p->setPositionsV(x1_rp);
             g1_prime = -x1p->getForcesV();
+
+            //Update position and curvature histories
+            positions.push_back(x1_rp);
+            gradients.push_back(g1_prime);
 
             // Calculate C_tau_prime.
             tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
