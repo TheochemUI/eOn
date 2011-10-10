@@ -14,6 +14,7 @@
 #include "Eigen.h"
 #include "Matter.h"
 #include "Minimizer.h"
+#include "ObjectiveFunction.h"
 #include "Parameters.h"
 #include "HelperFunctions.h"
 #include <vector>
@@ -32,22 +33,16 @@ public:
     void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
     bool isItConverged(double convergeCriterion);
     void setOutput(int level);
-    AtomMatrix makeInfinitesimalStepModifiedForces(AtomMatrix pos);
-    AtomMatrix getNewPosModifiedForces(AtomMatrix pos, AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep,bool saddleSearch=false);
-
-    void setForces(AtomMatrix forces); // enables the use of modified forces
 
 private:
     int outputLevel;
 
-    Matter *matter;
     Parameters *parameters;
 
-    AtomMatrix force;
+    ObjectiveFunction *objf;
 
     double ePrev;
 
-    int degreesOfFreedom;
     int iteration;
     int memory;
     std::vector<VectorXd> s;
@@ -56,11 +51,8 @@ private:
     VectorXd rPrev;
     VectorXd fPrev;
 
-    void initialize(Matter *matter, Parameters *parameters);
     VectorXd getDescentDirection();
-    void lineSearch(VectorXd d);
 
-    AtomMatrix getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep, bool saddleSearch=false);
 };
 
 #endif
