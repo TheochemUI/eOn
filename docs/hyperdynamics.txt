@@ -4,19 +4,17 @@
 Hyperdynamics
 =============
 
-Our parallel replica can also be combined with
-Hyperdynamics by using Bond-Boost method. You can use this feature by setting
-**bias_potential** to *bond_boost* in the **[Hyperdynamics]** section.
+The Hyper-MD method is one of the accelerated dynamics method developed by Arthur F. Voter.
+Bias potential which goes to zero near transition state is added to the potential surface to accelerate
+the dynamical evolution of the system. The real time increment :math:`\delta t` can be obtain from the corresponding 
+simulation time step :math:`\delta t^b` multiplied by boost factor :math:`e^{\beta \Delta V}`. 
 
-The temperature for the dynamics run is set in the **[Main]** section.
+There are several types of Hyper-MD method regarding the form of bias potential. In EON, we adapt the
+bond-boost-method developed by Kristen A. Fichthorn, where the bias potential is derived from the bond-breaking
+picture.
 
-For detailed information about Hyperdynamics, please refer to
-papers by:
-
-::
-
-     "Accelerated molecular-dynamics of rare events with the bond-boost method"
-                      R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
+The Hyperdynamics method is integraded with Parallel Replica method in EON. You can run 
+Hyperdynamics by Parallel Replica job with **[Hyperdynamics]** options turned on. 
 
 These are options that go in the **[Hyperdynamics]** section of the config.ini file.
 
@@ -71,4 +69,14 @@ These are options that go in the **[Hyperdynamics]** section of the config.ini f
     default: ``3.95``
 
     The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.
+
+For detailed information about Hyperdynamics, please refer to papers by:
+
+    ::
+
+         "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events"
+                                              Arthur F. Voter Phys. Rev. Lett. 78, 3908 (1997)
+
+         "Accelerated molecular-dynamics of rare events with the bond-boost method"
+                               R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
 
