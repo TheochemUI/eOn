@@ -4,6 +4,22 @@
 Hyperdynamics
 =============
 
+Our parallel replica can also be combined with
+Hyperdynamics by using Bond-Boost method. You can use this feature by setting
+**bias_potential** to *bond_boost* in the **[Hyperdynamics]** section.
+
+The temperature for the dynamics run is set in the **[Main]** section.
+
+For detailed information about Hyperdynamics, please refer to
+papers by:
+
+::
+
+     "Accelerated molecular-dynamics of rare events with the bond-boost method"
+                      R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
+
+These are options that go in the **[Hyperdynamics]** section of the config.ini file.
+
 **bias_potential**: 
 
     type: string
