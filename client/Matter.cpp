@@ -851,27 +851,6 @@ double Matter::maxForce(void)
 }
 
 
-bool Matter::isItConverged(double convergeCriterion)
-{
-    double diff=0;
-
-    for(int i=0; i<nAtoms; i++)
-    {
-        if(getFixed(i))
-        {
-            continue;
-        }
-        diff = forces.row(i).norm();
-
-        if(convergeCriterion < diff)
-        {
-            break;
-        }
-    }
-    return(diff < convergeCriterion);
-}
-
-
 AtomMatrix Matter::getFree() const
 {
     AtomMatrix ret(nAtoms,3);

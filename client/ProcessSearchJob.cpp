@@ -141,8 +141,8 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if ((*initial==*min1) == false) {
         printf("initial != min1\n");
-        if((!min1->isItConverged(parameters->optConvergedForce))  &&
-           (!min2->isItConverged(parameters->optConvergedForce))) {
+        if((!min1->maxForce() <= parameters->optConvergedForce)  &&
+           (!min2->maxForce() <= parameters->optConvergedForce)) {
             // the isItConverged in Matter doesn't work so this needs to be fixed.
             // return statusBadMinima;
         }
