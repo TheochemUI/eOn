@@ -96,7 +96,6 @@ public:
     long getForceCalls() const; // return how many force calls that have been performed
     void resetForceCalls(); // zeroing the value of force calls
 
-    bool isItConverged(double convergeCriterion);
     double maxForce(void);
 
     bool con2matter(std::string filename); // read con file into Matter, return true if successful
