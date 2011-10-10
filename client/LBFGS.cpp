@@ -15,66 +15,28 @@
 #include <cassert>
 #include <cmath>
 
-LBFGS::LBFGS(Matter *matter, Parameters *parameters)
+LBFGS::LBFGS(Matter *matter, Parameters *parametersPassed)
 {
-    initialize(matter, parameters);
     totalForceCalls = 0;
     outputLevel = 0;
+    parameters = parametersPassed;
+    objf = new MatterObjectiveFunction(matter, parameters);
+    ePrev = 0;
+    iteration = 0;
+
+    //Shouldn't have a memory longer than the number of degrees of freedom.
+    memory = min(objf->degreesOfFreedom(), (int)parameters->optLBFGSMemory);
 }
 
 
 LBFGS::LBFGS(Matter *matter, Parameters *parameters, AtomMatrix forces)
 {
-    initialize(matter, parameters);
-    totalForceCalls = 0;
-    outputLevel = 0;
-}
-
-
-void LBFGS::initialize(Matter *matter_passed, Parameters *parameters_passed)
-{
-    // note that it is the pointer that is copied
-    matter = matter_passed;
-    parameters = parameters_passed;
-
-    iteration = 0;
-    degreesOfFreedom = 3*matter->numberOfFreeAtoms();
-
-    //Shouldn't have a memory longer than the number of degrees of freedom.
-    memory = min(degreesOfFreedom, (int)parameters->optLBFGSMemory);
-
-    return;
 }
 
 
 LBFGS::~LBFGS()
 {
-    return;
-}
-
-void LBFGS::lineSearch(VectorXd d)
-{
-    double alphak = 1.0;
-    double sigma = 1e-2;
-    double scale = 0.90;
-
-    
-
-    double e0 = matter->getPotentialEnergy();
-    VectorXd g0 = -matter->getForcesFreeV();
-    VectorXd r0 = matter->getPositionsFreeV();
-
-    matter->setPositionsFreeV(r0 + alphak * d);
-    double e = matter->getPotentialEnergy();
-
-    int i=0;
-    while (e > e0+sigma*alphak*g0.dot(d) && i < 4) {
-        alphak = alphak*scale;
-        matter->setPositionsFreeV(r0 + alphak*d);
-        e = matter->getPotentialEnergy();
-        i++;
-    }
-    if (i>0) printf("alphak: %12.4f e: %12.4f e0: %12.4f\n", alphak, e, e0);
+    delete objf;
     return;
 }
 
@@ -85,7 +47,7 @@ VectorXd LBFGS::getDescentDirection()
     int loopmax = s.size();
     double a[loopmax];
 
-    VectorXd q = -matter->getForcesFreeV();
+    VectorXd q = objf->getGradient();
 
     for (int i=loopmax-1;i>=0;i--) {
         a[i] = rho[i] * s[i].dot(q);
@@ -125,8 +87,8 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 
 void LBFGS::oneStep()
 {
-    VectorXd r = matter->getPositionsFreeV();
-    VectorXd f = matter->getForcesFreeV();
+    VectorXd r = objf->getPositions();
+    VectorXd f = -objf->getGradient();
 
     if (iteration > 0) {
         update(r, rPrev, f, fPrev);
@@ -149,14 +111,12 @@ void LBFGS::oneStep()
     VectorXd dr;
     dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
 
-    matter->setPositionsFreeV(r+dr);
+    objf->setPositions(r+dr);
 
     rPrev = r;
     fPrev = f;
 
     iteration++;
-
-    force = matter->getForces();
 
     return;
 }
@@ -164,47 +124,19 @@ void LBFGS::oneStep()
 
 long LBFGS::fullRelax()
 {
-    string min = "min";
-    if(parameters->writeMovies)
+    while(!objf->converged())
     {
-        if (parameters->checkpoint) {
-            matter->matter2con(min.c_str(), true);
-        }else{
-            matter->matter2con(min.c_str(), false);
-        }
-    }
-
-    force = matter->getForces();
-    bool converged = isItConverged(parameters->optConvergedForce);
-
-    int i=0;
-    while(!converged)
-    {
-        if (i >= parameters->optMaxIterations) {
+        if (iteration >= parameters->optMaxIterations) {
             return Minimizer::STATUS_MAX_ITERATIONS;
         }
 
         oneStep();
 
-        converged = isItConverged(parameters->optConvergedForce);
-        i++;
-
         if (!parameters->quiet) {
-            double e = matter->getPotentialEnergy();
-            if (iteration > 0) {
-                log("step = %3d, max force = %10.4f, energy: %10.4f de: %10.2e memory: %i\n", 
-                    i, matter->maxForce(), e, e-ePrev, s.size());
-            }else{
-                log("step = %3d, max force = %10.4f, energy: %10.4f\n", 
-                    i, matter->maxForce(), e);
-            }
-            ePrev = matter->getPotentialEnergy();
-        }
-        if (parameters->writeMovies) {
-            matter->matter2con(min.c_str(), true);
-        }
-        if (parameters->checkpoint) {
-            matter->matter2con("reactant_checkpoint.con");
+            double e = objf->getEnergy();
+            log("step = %3d, max_force: %10.4f energy: %10.4f de: %10.2e memory: %i\n", 
+                iteration, objf->convergence(), e, e-ePrev, s.size());
+            ePrev = objf->getEnergy();
         }
 
     }
@@ -214,51 +146,17 @@ long LBFGS::fullRelax()
 
 bool LBFGS::isItConverged(double convergeCriterion)
 {
-    double diff = 0;
-
-    for(int i=0; i<matter->numberOfAtoms(); i++)
-    {
-        diff = force.row(i).norm();
-        if(convergeCriterion < diff)
-        {
-            break;
+    VectorXd gradient = objf->getGradient();
+    for (int i=0; i<objf->degreesOfFreedom();i++) {
+        if (convergeCriterion < gradient(i)) {
+            return false;
         }
     }
-
-    return(diff < convergeCriterion);
+    return true;
 }
 
 
 void LBFGS::setOutput(int level)
 {
     outputLevel = level;
-}
-
-
-AtomMatrix LBFGS::getStep(AtomMatrix forceBeforeStep, AtomMatrix forceAfterStep, double maxStep, bool saddleSearch)
-{
-    AtomMatrix tmp;
-    return tmp;
-}
-
-AtomMatrix LBFGS::makeInfinitesimalStepModifiedForces(AtomMatrix pos){
-    AtomMatrix tmp;
-    return tmp;
-}
-
-
-AtomMatrix LBFGS::getNewPosModifiedForces(
-        AtomMatrix pos,
-        AtomMatrix forceBeforeStep,
-        AtomMatrix forceAfterStep,
-        double maxStep,
-        bool saddleSearch)
-{
-    return pos + getStep(forceBeforeStep, forceAfterStep, maxStep, saddleSearch);
-}
-
-
-void LBFGS::setForces(AtomMatrix forces){
-    force = forces;
-    return;
 }
