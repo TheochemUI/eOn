@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "Dynamics.h"
-#include "ConjugateGradients.h"
+#include "Optimizer.h"
 #include "Log.h"
 #include <math.h>
 
@@ -397,8 +397,7 @@ bool Dynamics::checkState(Matter *matter, Matter *min1)
 {
     Matter tmp(parameters);
     tmp = *matter;
-    ConjugateGradients cgMin(&tmp, parameters);
-    cgMin.fullRelax();
+    tmp.relax(true);
     min_fcalls += tmp.getForceCalls();
 
     if (tmp == *min1) {

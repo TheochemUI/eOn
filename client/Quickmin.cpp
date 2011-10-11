@@ -9,110 +9,54 @@
 //-----------------------------------------------------------------------------------
 
 #include "Quickmin.h"
+#include "HelperFunctions.h"
 #include <cmath>
 
-Quickmin::Quickmin(Matter *matter_passed, Parameters *parameters_passed)
+Quickmin::Quickmin(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
-    matter = matter_passed;
-    parameters = parameters_passed;
-    dt = parameters_passed->optTimeStep;
-    velocity.resize(matter->numberOfAtoms(), 3);
+    objf = objfPassed;
+    parameters = parametersPassed;
+    dt = parametersPassed->optTimeStep;
+    velocity.resize(objf->degreesOfFreedom());
     velocity.setZero();
-    outputLevel = 0;
-    totalForceCalls = 0;
+    iteration = 0;
 }
-
 
 Quickmin::~Quickmin()
 {
     return;
 }
 
-void Quickmin::oneStep()
+VectorXd Quickmin::getStep()
 {
-    AtomMatrix forces = matter->getForces();
-    totalForceCalls++;
-    if((velocity.cwise() * forces).sum() < 0)
-    {
-        if(parameters -> optVariableTimeStep) dt *= 0.5;
+    VectorXd forces = -objf->getGradient();
+
+    if (velocity.dot(forces) < 0) {
+        if (parameters->optVariableTimeStep) dt *= 0.5;
         velocity.setZero();
-    }
-    else
-    {
-        if(parameters -> optVariableTimeStep) dt *= 1.1;
+    } else {
+        if (parameters->optVariableTimeStep) dt *= 1.1;
     }
     velocity += forces * dt;
-    AtomMatrix positions;
-    positions = matter->getPositions();
-    AtomMatrix step = velocity * dt;
-    double maxmoved = 0.0;
-    for(int i=0; i < matter->numberOfAtoms(); i++)
-    {
-        maxmoved = max(maxmoved, step.row(i).norm());
-    }
-    double scale = 1.0;
-    if(maxmoved > parameters->optMaxMove)
-    {
-        scale = parameters->optMaxMove/maxmoved;
-    }
-    positions += step*scale;
-    matter->setPositions(positions);  
+    return velocity * dt;
 }
 
-void Quickmin::setOutput(int level)
+bool Quickmin::step(double maxMove)
 {
-    outputLevel = level;
+    VectorXd d = getStep();
+    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
+
+    VectorXd positions = objf->getPositions();
+    positions += dr;
+    objf->setPositions(positions);  
+    iteration++;
+    return objf->isConverged();
 }
 
-
-long Quickmin::fullRelax()
+bool Quickmin::run(int maxSteps, double maxMove)
 {
-    bool converged = false;
-    ostringstream min;
-    min << "min";
-    if(parameters->writeMovies)
-    {
-        if (parameters->checkpoint) {
-            matter->matter2con(min.str(), true);
-        }else{
-            matter->matter2con(min.str(), false);
-        }
+    while(!objf->isConverged() && iteration < maxSteps) {
+        step(maxMove);
     }
-    int i = 0;
-    while(!converged)
-    {
-        if (i >= parameters->optMaxIterations) {
-            return Minimizer::STATUS_MAX_ITERATIONS;
-        }
-
-        oneStep();
-        converged = isItConverged(parameters->optConvergedForce);
-        i++;
-        if (outputLevel > 0) {
-            printf("step = %3d, max force = %8.5lf, energy: %10.4f, dt: %8.5f\n", i,
-                   matter->maxForce(), matter->getPotentialEnergy(), dt);
-        }
-        if(parameters->writeMovies)
-        {
-            matter->matter2con(min.str(), true);
-        }
-    }
-    return Minimizer::STATUS_GOOD;
+    return objf->isConverged();
 }
-
-
-bool Quickmin::isItConverged(double convergeCriterion)
-{
-    AtomMatrix forces = matter->getForces();
-    double diff = 0;
-    for(int i=0;i<matter->numberOfAtoms();i++)
-    {
-        diff = forces.row(i).norm();
-        if(convergeCriterion < diff)
-        {
-            break;
-        }
-    }
-    return(diff < convergeCriterion);
-}
-

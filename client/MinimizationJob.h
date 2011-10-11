@@ -22,6 +22,11 @@ class MinimizationJob: public Job {
     private:
         Parameters *parameters;
         int fcalls;
+        enum {
+            STATUS_GOOD,
+            STATUS_MAX_ITERATIONS,
+            STATUS_POTENTIAL_FAILED
+        };
 };
 
 #endif
