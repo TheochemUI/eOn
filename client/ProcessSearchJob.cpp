@@ -10,9 +10,11 @@
 
 #include "ProcessSearchJob.h"
 #include "Constants.h"
-#include "ConjugateGradients.h"
+#include "EpiCenters.h"
+#include "Optimizer.h"
 #include "false_boinc.h"
 #include "Potential.h"
+#include "Log.h"
 
 #include <stdio.h>
 #include <string>
@@ -47,15 +49,14 @@ std::vector<std::string> ProcessSearchJob::run(void)
     if (parameters->processSearchMinimizeFirst) {
         printf("Minimizing initial structure\n");
         int fi = Potential::fcalls;
-        ConjugateGradients cgMin(initial, parameters);
-        cgMin.fullRelax();
+        initial->relax();
         fCallsMin += Potential::fcalls - fi;
     }
 
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
+    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // displacement was passed from the server
         if(!saddle->con2matter(displacement_passed)) {
             printf("Stop\n");
@@ -68,14 +69,12 @@ std::vector<std::string> ProcessSearchJob::run(void)
         *saddle = *min1 = *min2 = *initial;
     }
 
-    saddleSearch = new SaddleSearch();
-    saddleSearch->initialize(initial, saddle, parameters);
-    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
+    AtomMatrix mode;
+    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // mode was passed from the server
-        saddleSearch->loadMode(mode_passed);
+        mode = helper_functions::loadMode(mode_passed, initial->numberOfAtoms()); 
     }
-    // displacement and mode where made on the client
-    // in SaddleSearch->initialize(...)
+    saddleSearch = new SaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
 
     int status = doProcessSearch();
 
@@ -98,37 +97,41 @@ int ProcessSearchJob::doProcessSearch(void)
     long status;
     int f1;
     f1 = Potential::fcalls;
-    status = saddleSearch->locate(); //(min1, min2);
+    status = saddleSearch->run();
     fCallsSaddle += Potential::fcalls - f1;
 
-    if (status != SaddleSearch::STATUS_INIT) {
+    if (status != SaddleSearch::STATUS_GOOD) {
         return status;
     }
 
     // relax from the saddle point located
 
-    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
+    AtomMatrix posSaddle = saddle->getPositions();
     AtomMatrix displacedPos;
 
     *min1 = *saddle;
-    displacedPos = posSaddle - saddleSearch->getEigenMode() * parameters->processSearchMinimizationOffset;
+    displacedPos = posSaddle - saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
     min1->setPositions(displacedPos);
-    ConjugateGradients cgMin1(min1, parameters);
-    status = cgMin1.fullRelax();
-    fCallsMin += cgMin1.totalForceCalls;
 
-    if (status != Minimizer::STATUS_GOOD) {
+    Potential::fcalls = 0;
+    log("\nStarting Minimization 1\n");
+    bool converged = min1->relax(false, parameters->writeMovies, false, "min1");
+    fCallsMin += Potential::fcalls;
+
+    if (!converged) {
         return SaddleSearch::STATUS_BAD_MINIMA;
     }
 
     *min2 = *saddle;
-    displacedPos = posSaddle + saddleSearch->getEigenMode() * parameters->processSearchMinimizationOffset;
+    displacedPos = posSaddle + saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
     min2->setPositions(displacedPos);
-    ConjugateGradients cgMin2(min2, parameters);
-    status = cgMin2.fullRelax();
-    fCallsMin += cgMin2.totalForceCalls;
 
-    if (status != Minimizer::STATUS_GOOD) {
+    Potential::fcalls = 0;
+    log("\nStarting Minimization 2\n");
+    converged = min2->relax(false, parameters->writeMovies, false, "min2");
+    fCallsMin += Potential::fcalls;
+
+    if (!converged) {
         return SaddleSearch::STATUS_BAD_MINIMA;
     }
 
@@ -259,7 +262,7 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
 //    fprintf(fileResults, "%ld force_calls_minimization\n", SaddleSearch->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
@@ -283,7 +286,7 @@ void ProcessSearchJob::saveData(int status)
     std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
-    saddleSearch->saveMode(fileMode);
+    helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
     fclose(fileReactant);
 

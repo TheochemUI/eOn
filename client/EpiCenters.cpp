@@ -18,6 +18,8 @@
 using namespace helper_functions;
 using std::vector;
 
+
+
 long EpiCenters::cnaEpiCenter(const Matter *matter, double neighborCutoff)
 {
     long *cnaList;

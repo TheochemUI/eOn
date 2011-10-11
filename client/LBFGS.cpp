@@ -15,32 +15,23 @@
 #include <cassert>
 #include <cmath>
 
-LBFGS::LBFGS(Matter *matter, Parameters *parametersPassed)
+LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
-    totalForceCalls = 0;
-    outputLevel = 0;
+    objf = objfPassed;
     parameters = parametersPassed;
-    objf = new MatterObjectiveFunction(matter, parameters);
-    ePrev = 0;
+
     iteration = 0;
 
     //Shouldn't have a memory longer than the number of degrees of freedom.
     memory = min(objf->degreesOfFreedom(), (int)parameters->optLBFGSMemory);
 }
 
-
-LBFGS::LBFGS(Matter *matter, Parameters *parameters, AtomMatrix forces)
-{
-}
-
-
 LBFGS::~LBFGS()
 {
-    delete objf;
     return;
 }
 
-VectorXd LBFGS::getDescentDirection()
+VectorXd LBFGS::getStep()
 {
     double H0 = 1./10.;
 
@@ -85,7 +76,7 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
     }
 }
 
-void LBFGS::oneStep()
+bool LBFGS::step(double maxMove)
 {
     VectorXd r = objf->getPositions();
     VectorXd f = -objf->getGradient();
@@ -94,7 +85,7 @@ void LBFGS::oneStep()
         update(r, rPrev, f, fPrev);
     }
 
-    VectorXd d = getDescentDirection();
+    VectorXd d = getStep();
     double vd = d.normalized().dot(f.normalized());
     if (vd>1.0) vd=1.0;
     double angle = acos(vd) * (180.0 / M_PI);
@@ -105,7 +96,7 @@ void LBFGS::oneStep()
         s.erase(s.begin(), s.end()-keep);
         y.erase(y.begin(), y.end()-keep);
         rho.erase(rho.begin(), rho.end()-keep);
-        d = getDescentDirection();
+        d = getStep();
     }
 
     VectorXd dr;
@@ -118,45 +109,14 @@ void LBFGS::oneStep()
 
     iteration++;
 
-    return;
+    return objf->isConverged();
 }
 
 
-long LBFGS::fullRelax()
+bool LBFGS::run(int maxSteps, double maxMove)
 {
-    while(!objf->converged())
-    {
-        if (iteration >= parameters->optMaxIterations) {
-            return Minimizer::STATUS_MAX_ITERATIONS;
-        }
-
-        oneStep();
-
-        if (!parameters->quiet) {
-            double e = objf->getEnergy();
-            log("step = %3d, max_force: %10.4f energy: %10.4f de: %10.2e memory: %i\n", 
-                iteration, objf->convergence(), e, e-ePrev, s.size());
-            ePrev = objf->getEnergy();
-        }
-
+    while(!objf->isConverged() && iteration < maxSteps) {
+        step(maxMove);
     }
-    return Minimizer::STATUS_GOOD;
-}
-
-
-bool LBFGS::isItConverged(double convergeCriterion)
-{
-    VectorXd gradient = objf->getGradient();
-    for (int i=0; i<objf->degreesOfFreedom();i++) {
-        if (convergeCriterion < gradient(i)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-
-void LBFGS::setOutput(int level)
-{
-    outputLevel = level;
+    return objf->isConverged();
 }

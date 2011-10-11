@@ -11,29 +11,28 @@
 #ifndef QUICKMIN_H
 #define QUICKMIN_H
 
-#include "Minimizer.h"
+#include "Optimizer.h"
 #include "Matter.h"
 #include "Parameters.h"
 
-class Quickmin : public Minimizer
+class Quickmin : public Optimizer
 {
 
     public:
-        Matter *matter;
-        Parameters *parameters;
         double dt;
 
-        Quickmin(Matter *matter, Parameters *parameters);
+        Quickmin(ObjectiveFunction *objf, Parameters *parameters);
         ~Quickmin();
 
-        void oneStep();
-        long fullRelax();
-        bool isItConverged(double convergeCriterion);
-        void setOutput(int level);
+        bool step(double maxMove);
+        bool run(int maxIterations, double maxMove);
+        VectorXd getStep();
         
     private:
-        int outputLevel;
-        AtomMatrix velocity;
+        ObjectiveFunction *objf;
+        Parameters *parameters;
+        VectorXd velocity;
+        int iteration;
 };
 
 #endif

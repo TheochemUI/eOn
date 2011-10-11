@@ -12,6 +12,7 @@
 #include <time.h>
 #include "Parameters.h"
 #include "INIFile.h"
+#include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Hessian.h"
 #include "Job.h"
@@ -53,8 +54,8 @@ Parameters::Parameters(){
     processSearchPrefactorMin = 10e8;
 
     // [Saddle Search] //
-    saddleDisplaceType = SaddleSearch::DISP_LOAD;
-    saddleMinmodeMethod = SaddleSearch::MINMODE_DIMER;
+    saddleDisplaceType = EpiCenters::DISP_LOAD;
+    saddleMinmodeMethod = LowestEigenmodeInterface::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
@@ -241,13 +242,13 @@ int Parameters::load(FILE *file){
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
-        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", SaddleSearch::DISP_LOAD));
+        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
-        if(saddleDisplaceType != SaddleSearch::DISP_NOT_FCC_OR_HCP &&
-           saddleDisplaceType != SaddleSearch::DISP_MIN_COORDINATED && 
-           saddleDisplaceType != SaddleSearch::DISP_LAST_ATOM && 
-           saddleDisplaceType != SaddleSearch::DISP_RANDOM){
-              saddleDisplaceType = SaddleSearch::DISP_LOAD;
+        if(saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
+           saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED && 
+           saddleDisplaceType != EpiCenters::DISP_LAST_ATOM && 
+           saddleDisplaceType != EpiCenters::DISP_RANDOM){
+              saddleDisplaceType = EpiCenters::DISP_LOAD;
            }
 
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive); 

@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "SaddleSearchJob.h"
+#include "EpiCenters.h"
 #include "Log.h"
 #include "Constants.h"
 #include "false_boinc.h"
@@ -53,7 +54,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
 
     initial->con2matter(reactant_passed);
 
-    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
+    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // displacement was passed from the server
         saddle->con2matter(displacement_passed);
     }
@@ -62,12 +63,13 @@ std::vector<std::string> SaddleSearchJob::run(void)
         // in saddleSearch->initialize(...)
         *saddle = *initial;
     }
-    saddleSearch = new SaddleSearch();
-    saddleSearch->initialize(initial, saddle, parameters);
-    if (parameters->saddleDisplaceType == SaddleSearch::DISP_LOAD) {
+    AtomMatrix mode;
+    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // mode was passed from the server
-        saddleSearch->loadMode(mode_passed);
+        mode = helper_functions::loadMode(mode_passed, initial->numberOfAtoms());
     }
+
+    saddleSearch = new SaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
 
     int status;
     status = doSaddleSearch();
@@ -89,7 +91,7 @@ int SaddleSearchJob::doSaddleSearch()
     int f1;
     f1 = Potential::fcalls;
     try {
-        status = saddleSearch->locate();
+        status = saddleSearch->run();
     }catch (int e) {
         if (e == 100) {
             status = SaddleSearch::STATUS_POTENTIAL_FAILED; 
@@ -124,17 +126,17 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%ld iterations\n", saddleSearch->iterations);
+    fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
     if (status != SaddleSearch::STATUS_POTENTIAL_FAILED) {
         fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-        fprintf(fileResults, "%f final_eigenvalue\n", saddleSearch->getEigenValue());
+        fprintf(fileResults, "%f final_eigenvalue\n", saddleSearch->getEigenvalue());
     }
     fclose(fileResults);
 
     std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
-    saddleSearch->saveMode(fileMode);
+    helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
 
     std::string saddleFilename("saddle.con");

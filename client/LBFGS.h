@@ -13,46 +13,37 @@
 
 #include "Eigen.h"
 #include "Matter.h"
-#include "Minimizer.h"
+#include "Optimizer.h"
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 #include "HelperFunctions.h"
 #include <vector>
 
-class LBFGS : public Minimizer 
+class LBFGS : public Optimizer
 {
 
 public:
-    LBFGS(Matter *matter, Parameters *parameters);
-    LBFGS(Matter *matter, Parameters *parameters, AtomMatrix forces);
-
+    LBFGS(ObjectiveFunction *objf, Parameters *parameters);
     ~LBFGS();
 
-    void oneStep();
-    long fullRelax();
+    bool step(double maxMove);
+    bool run(int maxIterations, double maxMove);
     void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
-    bool isItConverged(double convergeCriterion);
-    void setOutput(int level);
+    VectorXd getStep();
 
 private:
-    int outputLevel;
-
     Parameters *parameters;
-
     ObjectiveFunction *objf;
-
-    double ePrev;
 
     int iteration;
     int memory;
+
     std::vector<VectorXd> s;
     std::vector<VectorXd> y;
     std::vector<double> rho;
+
     VectorXd rPrev;
     VectorXd fPrev;
-
-    VectorXd getDescentDirection();
-
 };
 
 #endif

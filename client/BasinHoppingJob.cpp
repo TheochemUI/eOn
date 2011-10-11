@@ -15,11 +15,10 @@
 #include "Dynamics.h"
 #include "BasinHoppingJob.h"
 #include "Constants.h"
-#include "ConjugateGradients.h"
-#include "Quickmin.h"
-#include "LBFGS.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
+#include "Optimizer.h"
+#include "ObjectiveFunction.h"
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -72,19 +71,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     *trial = *current;
     *minTrial = *current;
 
-    Minimizer *minimizer = NULL; 
-    Parameters minParameters = *parameters;
-    minParameters.writeMovies = false;
-    if (parameters->optMethod == "cg") {
-        minimizer = new ConjugateGradients(current, &minParameters);
-    }else if (parameters->optMethod == "qm"){
-        minimizer = new Quickmin(current, &minParameters);
-    }else if (parameters->optMethod == "lbfgs"){
-        minimizer = new LBFGS(current, &minParameters);
-    }
-    minimizer->setOutput(0);
-    minimizer->fullRelax();
-    delete minimizer;
+    current->relax(false, true);
 
     double currentEnergy = current->getPotentialEnergy();
     double minimumEnergy = currentEnergy;
@@ -92,7 +79,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     Matter *minimumEnergyStructure = new Matter(parameters);
     *minimumEnergyStructure = *current;
     int nsteps = parameters->basinHoppingSteps + parameters->basinHoppingQuenchingSteps;
-    long totalfc = 0;
+    long totalfc;
     FILE * pFile;
     pFile = fopen("bh.dat","w");
 
@@ -119,15 +106,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
             trial->matter2con("trials", true);
         }
 
-        if (parameters->optMethod == "cg") {
-            minimizer = new ConjugateGradients(minTrial, &minParameters);
-        }else if (parameters->optMethod == "lbfgs"){
-            minimizer = new LBFGS(minTrial, &minParameters);
-        }else if (parameters->optMethod == "qm"){
-            minimizer = new Quickmin(minTrial, &minParameters);
-        }
-        minimizer->setOutput(0);
-        minimizer->fullRelax();
+        Potential::fcalls = 0;
+        minTrial->relax(false, true);
+        int minfcalls = Potential::fcalls;
+
         double deltaE = minTrial->getPotentialEnergy()-currentEnergy;
         double p=0.0;
         if (step>=parameters->basinHoppingSteps) {
@@ -168,11 +150,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
             minTrial->matter2con("movie", true);
         }
 
-        totalfc = totalfc + minimizer->totalForceCalls + 1;
-        //printf("mcs: %4i e_cur: %.3f e_trial: %.3f g_min: %.3f fc: %4ld\n",
-        printf("%4i %12.3f %12.3f %12.3f %4ld\n",
+        totalfc = Potential::fcallsTotal;
+        printf("%4i %12.3f %12.3f %12.3f %4i\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
-               minimizer->totalForceCalls);
+               minfcalls);
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
@@ -184,13 +165,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 jump = displaceRandom();
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
-                    if (parameters->optMethod == "cg") {
-                        minimizer = new ConjugateGradients(current, &minParameters);
-                    }else if (parameters->optMethod == "qm"){
-                        minimizer = new Quickmin(current, &minParameters);
-                    }
-                    minimizer->setOutput(0);
-                    minimizer->fullRelax();
+                    current->relax(false, true);
                 }
                 currentEnergy = current->getPotentialEnergy();
                 if (currentEnergy < minimumEnergy) {
@@ -200,7 +175,6 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
         }
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
-        delete minimizer;
     }
     fclose(pFile);
 
@@ -227,7 +201,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
     fprintf(fileResults, "%d total_jump_steps\n", jcount);
     fprintf(fileResults, "%d total_swap_steps\n", scount);
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls-fcalls);
+    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fclose(fileResults);
 
     std::string productFilename("product.con");
