@@ -82,8 +82,8 @@ int NudgedElasticBand::compute(void)
     int status = 0;
     long iterations = 0;
     // optimizers
-    Quickmin *qm[images+2];
-    ConjugateGradients *cg[images+2];
+    //Quickmin *qm[images+2];
+    //ConjugateGradients *cg[images+2];
     // temporary variables for cg
     AtomMatrix forcesStep;
     AtomMatrix posStep;
@@ -96,7 +96,7 @@ int NudgedElasticBand::compute(void)
     if( parameters->nebOptMethod == OPT_QM )
     {
         for(long i=1; i<images+1; i++) {
-            qm[i] = new Quickmin(neb[i], parameters); 
+    //        qm[i] = new Quickmin(neb[i], parameters); 
         }
     }
     else if ( parameters->nebOptMethod == OPT_CG ) 
@@ -104,7 +104,7 @@ int NudgedElasticBand::compute(void)
         for(long i=1; i<images+1; i++) {
             pos[i] = neb[i]->getPositions();
             forces[i] = neb[i]->getForces();
-            cg[i] = new ConjugateGradients(neb[i], parameters, forces[i]);
+     //       cg[i] = new ConjugateGradients(neb[i], parameters, forces[i]);
         }
     }
 
@@ -114,7 +114,7 @@ int NudgedElasticBand::compute(void)
         if( parameters->nebOptMethod == OPT_QM ) // Quickmin
         {
             for(long i=1; i<images+1; i++) {
-                qm[i]->oneStep();
+      //          qm[i]->oneStep();
             }
             updateForces();
         }
@@ -122,15 +122,15 @@ int NudgedElasticBand::compute(void)
         {
             for(long i=1; i<images+1; i++)
             {
-                posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
+       //         posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
                 neb[i]->setPositions(posStep);
             }
             updateForces();
             for(long i=1; i<images+1; i++)
             {
                 forcesStep = neb[i]->getForces();
-                pos[i] = cg[i]->getNewPosModifiedForces(pos[i], forces[i], forcesStep, parameters->optMaxMove);
-                posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
+       //         pos[i] = cg[i]->getNewPosModifiedForces(pos[i], forces[i], forcesStep, parameters->optMaxMove);
+       //         posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
                 neb[i]->setPositions(posStep);
             }
             updateForces();
@@ -143,13 +143,13 @@ int NudgedElasticBand::compute(void)
     }
 
     // Cleanup
-    if( parameters->nebOptMethod == OPT_QM ) {
-        for(long i=1; i<images+1; i++) {
-            delete qm[i]; }
-     }else if( parameters->nebOptMethod == OPT_CG ) {
-        for(long i=1; i<images+1; i++) {
-            delete cg[i]; }
-    }
+//    if( parameters->nebOptMethod == OPT_QM ) {
+//        for(long i=1; i<images+1; i++) {
+//            delete qm[i]; }
+//     }else if( parameters->nebOptMethod == OPT_CG ) {
+//        for(long i=1; i<images+1; i++) {
+//            delete cg[i]; }
+//    }
 
     return status;
 }

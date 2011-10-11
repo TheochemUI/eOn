@@ -44,6 +44,7 @@ class Potential
         static Potential* getPotential(Parameters *parameters);
 
         static int fcalls;
+        static int fcallsTotal;
 
         AtomMatrix force(long nAtoms, AtomMatrix positions,
                          VectorXi atomicNrs, double *energy, Matrix3d box);

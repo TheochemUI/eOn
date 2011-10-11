@@ -68,31 +68,31 @@ void TestJob::checkFullSearch(void){
     *min1 = *min2 = *initial;
 
     printf("\n---Output for saddle point search start---\n");    
-    saddleSearch = new SaddleSearch();
-    saddleSearch->initialize(initial, saddle, parameters);
-    saddleSearch->loadMode(mode_passed);
-    status = saddleSearch->locate();
+//    saddleSearch = new SaddleSearch();
+//    saddleSearch->initialize(initial, saddle, parameters);
+//    saddleSearch->loadMode(mode_passed);
+//    status = saddleSearch->locate();
     printf("---Output for saddle point search end---\n\n");
 
     printf("---Output relax from saddle point search start---\n");    
     // relax from the saddle point located
 
-    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
+//    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
     AtomMatrix displacedPos;
 
     *min1 = *saddle;
     //XXX: the distance displaced from the saddle should be a parameter
-    displacedPos = posSaddle - saddleSearch->getEigenMode() * 0.2;
+//    displacedPos = posSaddle - saddleSearch->getEigenMode() * 0.2;
     min1->setPositions(displacedPos);
-    ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.fullRelax();
+ //   ConjugateGradients cgMin1(min1, parameters);
+  //  cgMin1.fullRelax();
 //  fCallsMin += cgMin1.totalForceCalls;
 
     *min2 = *saddle;
-    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
-    min2->setPositions(displacedPos);
-    ConjugateGradients cgMin2(min2, parameters);  
-    cgMin2.fullRelax();
+//    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
+//    min2->setPositions(displacedPos);
+//    ConjugateGradients cgMin2(min2, parameters);  
+//    cgMin2.fullRelax();
 //  fCallsMin += cgMin2.totalForceCalls;
 
     // If min2 corresponds to initial state swap min1 && min2

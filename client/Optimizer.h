@@ -8,33 +8,22 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef QUICKMINBOX_H
-#define QUICKMINBOX_H
+#ifndef OPTIMIZER_H
+#define OPTIMIZER_H
 
-#include "Minimizer.h"
-#include "Matter.h"
 #include "Parameters.h"
+#include "ObjectiveFunction.h"
+#include "Eigen.h"
 
-class QuickminBox : public Minimizer
+class Optimizer
 {
-
+    
     public:
-        Matter *matter;
-        Parameters *parameters;
-        double dt;
-        AtomMatrix velocity; 
-        double boxXv, boxYv, boxZv, boxXf, boxYf, boxZf;
-
-        QuickminBox(Matter *matter, Parameters *parameters);
-        ~QuickminBox();
-
-        void oneStep();
-        long fullRelax();
-        bool isItConverged(double convergeCriterion);
-        void setOutput(int level);
-        
-    private:
-        int outputLevel;
+        virtual ~Optimizer(){};
+        virtual bool step(double maxMove) = 0;
+        virtual bool run(int maxIterations, double maxMove) = 0;
+        virtual VectorXd getStep() = 0;
+        static Optimizer *getOptimizer(ObjectiveFunction *objf, Parameters *parameters);
 };
 
 #endif

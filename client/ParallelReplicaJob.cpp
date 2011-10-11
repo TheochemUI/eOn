@@ -14,7 +14,8 @@
 #include "Dynamics.h"
 #include "BondBoost.h"
 #include "ParallelReplicaJob.h"
-#include "ConjugateGradients.h"
+#include "Optimizer.h"
+#include "Log.h"
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -53,7 +54,6 @@ ParallelReplicaJob::~ParallelReplicaJob()
 
 std::vector<std::string> ParallelReplicaJob::run(void)
 {
-//    string reactant_passed("reactant_passed.con");
     string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
 
     reactant = new Matter(parameters);
@@ -69,11 +69,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     *fin1 = *reactant;
     *fin2 = *reactant;
 
-    ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.setOutput(0);
-    printf("\nMinimizing initial reactant\n");
-    cgMin1.fullRelax();
-    min_fcalls += min1->getForceCalls();
+    log("\nMinimizing initial reactant\n");
+    Potential::fcalls = 0;
+    min1->relax();
+    min_fcalls += Potential::fcalls;
     *final = *min1;    
 
     printf("Now running Parallel Replica Dynamics\n\n");
@@ -252,14 +251,12 @@ void ParallelReplicaJob::dynamics()
         }
 
         *fin1 = *saddle;
-        ConjugateGradients SaddleMin(fin1, parameters);
-        SaddleMin.fullRelax();
-        min_fcalls += fin1->getForceCalls();
+        Potential::fcalls = 0;
+        fin1->relax(true);
 
         *fin2 = *final;
-        ConjugateGradients RelaxMin(fin2, parameters);
-        RelaxMin.fullRelax();
-        min_fcalls += fin2->getForceCalls();
+        fin2->relax(true);
+        min_fcalls += Potential::fcalls;
 
         if(*fin2 == *fin1){
            *final = *fin1;

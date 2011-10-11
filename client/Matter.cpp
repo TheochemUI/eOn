@@ -8,9 +8,11 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#include "Log.h"
 #include "Matter.h"
 #include "Constants.h"
 #include "HelperFunctions.h"
+#include "Optimizer.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -307,6 +309,48 @@ AtomMatrix Matter::getPositionsFree() const
     return ret;
 }
 
+bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMovie, string prefixCheckpoint)
+{
+    MatterObjectiveFunction objf(this, parameters);
+    Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+
+    ostringstream min;
+    min << prefixMovie;
+    if (writeMovie) {
+        matter2con(min.str(), false);
+    }
+
+    int iteration=0;
+    while (!objf.isConverged() && 
+           iteration < parameters->optMaxIterations) {
+
+        AtomMatrix pos = getPositions();
+
+        optimizer->step(parameters->optMaxMove); 
+        iteration++;
+
+        double stepSize = (pbc(getPositions() - pos)).norm();
+
+        if (!quiet) {
+            log("iter: %3i step size: %.2e max force: %10.5f energy: %10.5f\n",
+                iteration, stepSize, maxForce(), getPotentialEnergy());
+        }
+
+        if (writeMovie) {
+            matter2con(min.str(), true);
+        }
+
+        if (checkpoint) {
+            ostringstream chk;
+            chk << prefixCheckpoint << "_checkpoint";
+            matter2con(chk.str(), false);
+        }
+    }
+
+    bool converged = optimizer->run(parameters->optMaxIterations, parameters->optMaxMove);
+    delete optimizer;
+    return converged;
+}
 
 VectorXd Matter::getPositionsFreeV() const
 {

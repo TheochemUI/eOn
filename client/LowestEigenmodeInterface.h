@@ -16,16 +16,19 @@
 #include "Parameters.h"
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
-class LowestEigenmodeInterface{
+class LowestEigenmodeInterface
+{
 
 public:
-
     // stats information
     long totalForceCalls;
     double statsTorque;
     double statsCurvature;
     double statsAngle;
     long statsRotations;
+    static const char MINMODE_DIMER[];
+    static const char MINMODE_LANCZOS[];
+    static const char MINMODE_EXACT[];
 
     virtual ~LowestEigenmodeInterface() {}
 
