@@ -46,7 +46,7 @@ SaddleSearch::~SaddleSearch()
 }
 
 
-bool SaddleSearch::run()
+int SaddleSearch::run()
 {
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
