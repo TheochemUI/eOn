@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------------
 
 #include "HelperFunctions.h"
+#include "Log.h"
 
 #include <math.h>
 #include <cassert>
@@ -387,4 +388,45 @@ string helper_functions::getRelevantFile(string filename)
     // otherwise return original filename
     return filename;
 }
+
+AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms)
+{
+    AtomMatrix mode;
+    mode.resize(nAtoms, 3);
+    mode.setZero();
+    for (int i=0; i < nAtoms; i++)
+    {
+        fscanf(modeFile, "%lf %lf %lf", &mode(i,0), &mode(i,1), &mode(i,2));
+    }
+    return mode;
+}
+
+AtomMatrix helper_functions::loadMode(string filename, int nAtoms)
+{
+    FILE *modeFile;
+    modeFile = fopen(filename.c_str(), constants::READ.c_str());
+    if (!modeFile) {
+        cerr << "File " << filename << " was not found.\n";
+        log("Stop\n");
+        exit(1);
+    }
+    AtomMatrix mode = loadMode(modeFile, nAtoms);
+    fclose(modeFile);
+    return mode;
+}
+
+void helper_functions::saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode)
+{
+    long const nAtoms = matter->numberOfAtoms();
+    for (long i=0; i < nAtoms; ++i) {
+        if (matter->getFixed(i)) {
+            fprintf(modeFile, "0 0 0\n");
+        }
+        else {
+            fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i,0), mode(i,1), mode(i,2));
+        }
+    }
+    return;
+}
+
 

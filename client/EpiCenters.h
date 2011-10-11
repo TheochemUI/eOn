@@ -15,6 +15,13 @@
 
 namespace EpiCenters
 {
+
+    const char DISP_LOAD[] =               "load";
+    const char DISP_NOT_FCC_OR_HCP[] =     "not_fcc_hcp_coordinated";
+    const char DISP_MIN_COORDINATED[] =    "least_coordinated";
+    const char DISP_LAST_ATOM[] =          "last_atom";
+    const char DISP_RANDOM[] =             "random";
+
     // index of random atom that is free and neither FCC nor HCP coordinated
     long cnaEpiCenter(const Matter *matter, double neighborCutoff);
 

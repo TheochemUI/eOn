@@ -11,7 +11,7 @@
 #ifndef DYNAMICS_H
 #define DYNAMICS_H
 
-#include "Minimizer.h"
+#include "Optimizer.h"
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Constants.h"

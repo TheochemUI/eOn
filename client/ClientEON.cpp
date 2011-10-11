@@ -15,6 +15,7 @@
 #include "Job.h"
 #include "Log.h"
 #include "HelperFunctions.h"
+#include "EpiCenters.h"
 
 #include <errno.h>
 #include <string.h>
@@ -333,7 +334,8 @@ int main(int argc, char **argv)
 
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
-
+        Potential::fcalls = 0;
+        Potential::fcallsTotal = 0;
         if(bundleSize>1) printf("Beginning Job %d of %d\n", i+1, bundleSize);
         std::vector<std::string> unbundledFilenames;
         if (bundlingEnabled) {

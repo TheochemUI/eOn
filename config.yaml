@@ -881,4 +881,4 @@ Optimizers:
 
         lbfgs_memory:
             kind: int
-            default: 100
+            default: 50

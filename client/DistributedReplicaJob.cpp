@@ -64,11 +64,10 @@ std::vector<std::string> DistributedReplicaJob::run(void)
     *min2 = *reactant;
     *final = *reactant;
 
-    ConjugateGradients cgMin1(min1, parameters);
-    cgMin1.setOutput(0);
     printf("\nMinimizing initial reactant\n");
-    cgMin1.fullRelax();
-    min_fcalls += min1->getForceCalls();
+    Potential::fcalls = 0;
+    min1->relax();
+    min_fcalls += Potential::fcalls;
 
     printf("Now running Distributed Replica Simulation\n\n");
 
@@ -190,11 +189,8 @@ void DistributedReplicaJob::samplingStep(){
     printf("final_status = %d\n",status);
     *final = *reactant;
     *min2 = *final;
-    ConjugateGradients cgMin2(min2, parameters);
-    cgMin2.setOutput(0);
-    printf("\nMinimizing final product\n");
-    cgMin2.fullRelax();
-    min_fcalls += min2->getForceCalls();
+    min2->relax(true);
+    min_fcalls += min2->getForceCalls();//XXX: i dont think this is right
 
     min_fcalls += samplingDynamics.getMinfcalls();
     sp_fcalls += samplingDynamics.getMDfcalls();

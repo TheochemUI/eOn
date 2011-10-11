@@ -54,6 +54,8 @@ public:
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
     void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
+    bool relax(bool quiet=false, bool writeMovie=false, bool checkpoint=false, 
+               string prefixMovie=string(), string prefixCheckpoint=string());
 
     AtomMatrix pbc(AtomMatrix diff) const;
 

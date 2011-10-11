@@ -17,10 +17,7 @@ void singlePoint(Parameters *parameters, Matter *matter)
 
 void minimize(Parameters *parameters, Matter *matter, string confileout)
 {
-    ConjugateGradients cg(matter, parameters);
-    cg.setOutput(1);
-    cg.fullRelax();
-
+    matter->relax(false, false);
     if (confileout.length() > 0) {
         printf("saving relaxed structure to %s\n", confileout.c_str());
     }else{
@@ -37,6 +34,7 @@ void usage(void)
     fprintf(stderr, "Job Type:\n");
     fprintf(stderr, fmtStr, "m", "Minimization of inputConfile saves to outputConfile");
     fprintf(stderr, fmtStr, "s", "Single point energy of inputConfile");
+    fprintf(stderr, fmtStr, "o", "Optimization method [default: qm]");
 
     fprintf(stderr, "Required Options:\n");
     fprintf(stderr, fmtStr, "p", "The potential (e.g. qsc, lj, eam_al)");
@@ -51,8 +49,9 @@ void commandLine(int argc, char **argv)
 
     string potential;
     string confile;
+    string optimizer;
 
-    while ((c=getopt(argc,argv,"hsmp:")) != -1) {
+    while ((c=getopt(argc,argv,"hsmp:o:")) != -1) {
         switch (c) {
             case 's':
                 sflag = true;
@@ -63,6 +62,9 @@ void commandLine(int argc, char **argv)
             case 'p':
                 pflag = true;
                 potential = optarg;
+                break;
+            case 'o':
+                optimizer = optarg;
                 break;
             case 'h':
                 usage();
@@ -102,6 +104,7 @@ void commandLine(int argc, char **argv)
 
     Parameters *parameters = new Parameters;
     parameters->potential = potential;
+    parameters->optMethod = optimizer;
 
     log_init(parameters, "client.log");
 

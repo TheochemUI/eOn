@@ -4,10 +4,27 @@
 Optimizers
 ==============
 
-The eon client provides two optimizers quick-min and conjugate gradients.
+The eon client provides three optimizers quick-min, conjugate gradients, and L-BFGS.
 
 **[Optimizers]** parameters
 --------------------------- 
+
+**opt_method**: The optimization method to use.
+
+    type: string
+
+    default: ``cg``
+
+    options:
+
+        ``box``: Optimizes the atom positions and box using quickmin
+
+        ``cg``: Conjugate gradient
+
+        ``qm``: Quickmin
+
+        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
+
 
 **converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.
 
@@ -33,17 +50,9 @@ The eon client provides two optimizers quick-min and conjugate gradients.
 
     default: ``1000``
 
-**opt_method**: The optimization method to use.
+**lbfgs_memory**: The maximum number of previous gradients and positions that
+are kept in memory for the L-BFGS algorithm.
 
-    type: string
+    type: int
 
-    default: ``cg``
-
-    options:
-
-        ``box``: Optimizes the atom positions and box using quickmin
-
-        ``cg``: Conjugate gradient
-
-        ``qm``: Quickmin
-
+    default: ``50``

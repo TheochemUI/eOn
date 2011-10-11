@@ -126,7 +126,7 @@ Potential *Potential::getPotential(Parameters *parameters)
 };
 
 int Potential::fcalls = 0;
-
+int Potential::fcallsTotal = 0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNrs, double *energy, Matrix3d box) 
 {
@@ -144,6 +144,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNr
              fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
 
     fcalls+=1;
+    fcallsTotal += 1;
 
     return forces;
 };
