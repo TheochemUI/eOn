@@ -103,9 +103,7 @@ int SaddleSearchJob::doSaddleSearch()
 
     fCallsSaddle += Potential::fcalls - f1;
 
-    if (status == SaddleSearch::STATUS_INIT) {
-        status = SaddleSearch::STATUS_GOOD;
-    }
+    status = SaddleSearch::STATUS_GOOD;
 
     return status;
 }
