@@ -49,7 +49,7 @@ public:
     AtomMatrix getEigenvector();
     double getEigenvalue();
 
-    bool run();
+    int run();
 
     int iteration;
 //    double eigenValue; // estimate for the lowest eigenvalue
