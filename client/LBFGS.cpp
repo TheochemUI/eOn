@@ -89,13 +89,11 @@ bool LBFGS::step(double maxMove)
     double vd = d.normalized().dot(f.normalized());
     if (vd>1.0) vd=1.0;
     double angle = acos(vd) * (180.0 / M_PI);
-    //printf("\nangle: %.3f\n", angle);
 
     if (angle > 70.0) {
-        int keep = min((int)s.size(), 1);
-        s.erase(s.begin(), s.end()-keep);
-        y.erase(y.begin(), y.end()-keep);
-        rho.erase(rho.begin(), rho.end()-keep);
+        s.erase(s.begin(), s.end());
+        y.erase(y.begin(), y.end());
+        rho.erase(rho.begin(), rho.end());
         d = getStep();
     }
 
