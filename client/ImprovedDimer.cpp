@@ -37,6 +37,7 @@ ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
     if(parameters->dimerOptMethod == OPT_CG){
         init_cg = true;
     }
+
 }
 
 ImprovedDimer::~ImprovedDimer()
@@ -56,6 +57,13 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
     VectorXd x0_r = x0->getPositionsV();
 
     x1->setPositionsV(x0_r + parameters->finiteDifference * tau);
+
+    if(parameters->dimerOptMethod == OPT_LBFGS) {
+        s.clear();
+        y.clear();
+        rho.clear();
+        init_lbfgs = true;
+    }
 
 
     // other vectors
@@ -90,7 +98,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
     {
 
         // Calculate the rotational force, F_R.
-        //F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).cwise() * tau).sum() * tau;
         F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).dot(tau))*tau;
 
         statsTorque = F_R.norm() / (parameters->finiteDifference * 2.0);
@@ -131,7 +138,51 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
         }
         else if(parameters->dimerOptMethod == OPT_LBFGS) // quasi-newton
         {
-            // LBFGS not implemented yet
+            if (init_lbfgs == false) {
+                VectorXd s0 = x1->getPositionsV() - rPrev;
+                s.push_back(s0);
+                VectorXd y0 = F_R_Old - F_R;
+                y.push_back(y0);
+                rho.push_back(1.0/(s0.dot(y0)));
+            }else{
+                init_lbfgs=false;
+            }
+
+            double H0 = 1./10.;
+
+            int loopmax = s.size();
+            double a[loopmax];
+
+            VectorXd q = -F_R;
+
+            for (int i=loopmax-1;i>=0;i--) {
+                a[i] = rho[i] * s[i].dot(q);
+                q -= a[i] * y[i];
+            }
+
+            VectorXd z = H0 * q;
+
+            for (int i=0;i<loopmax;i++) {
+                double b = rho[i] * y[i].dot(z);
+                z += s[i] * (a[i] - b);
+            }
+
+            double vd = -z.normalized().dot(F_R.normalized());
+            if (vd>1.0) vd=1.0;
+            if (vd<-1.0) vd=-1.0;
+            double angle = acos(vd) * (180.0 / M_PI);
+
+            if (angle>70.0) {
+                s.clear();
+                y.clear();
+                rho.clear();
+                z = -F_R;
+            }
+
+            theta = -z.normalized();
+            thetaOld = theta;
+            F_R_Old = F_R;
+            rPrev = x1->getPositionsV();
         }
 
         // Calculate the curvature along tau, C_tau.
@@ -148,7 +199,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
         if(phi_prime > phi_tol){ cout <<" full rotation\n"; }
         else{ cout <<" no full rotation\n"; }
 */
-        if(phi_prime > phi_tol)
+        if(abs(phi_prime) > phi_tol)
         {
             double b1 = 0.5 * d_C_tau_d_phi;
 
@@ -216,7 +267,7 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
                      C_tau, F_R.norm()/delta);
         }
 
-    } while(phi_prime > phi_tol and phi_min > phi_tol and statsRotations < parameters->dimerRotationsMax);
+    } while(abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and statsRotations < parameters->dimerRotationsMax);
 
     delete x1p;
 

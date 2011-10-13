@@ -88,6 +88,7 @@ bool LBFGS::step(double maxMove)
     VectorXd d = getStep();
     double vd = d.normalized().dot(f.normalized());
     if (vd>1.0) vd=1.0;
+    if (vd<-1.0) vd=-1.0;
     double angle = acos(vd) * (180.0 / M_PI);
 
     if (angle > 70.0) {

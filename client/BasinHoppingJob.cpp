@@ -71,7 +71,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     *trial = *current;
     *minTrial = *current;
 
-    current->relax(false, true);
+    current->relax(true, true);
 
     double currentEnergy = current->getPotentialEnergy();
     double minimumEnergy = currentEnergy;
@@ -107,7 +107,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         Potential::fcalls = 0;
-        minTrial->relax(false, true);
+        minTrial->relax(true, true);
         int minfcalls = Potential::fcalls;
 
         double deltaE = minTrial->getPotentialEnergy()-currentEnergy;
@@ -165,7 +165,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 jump = displaceRandom();
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
-                    current->relax(false, true);
+                    current->relax(true, true);
                 }
                 currentEnergy = current->getPotentialEnergy();
                 if (currentEnergy < minimumEnergy) {

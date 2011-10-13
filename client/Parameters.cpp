@@ -82,7 +82,7 @@ Parameters::Parameters(){
     dimerRotationAngle = 0.005;
     dimerImproved = true;
     dimerConvergedAngle = 5.0; // degrees
-    dimerOptMethod = ImprovedDimer::OPT_CG;
+    dimerOptMethod = ImprovedDimer::OPT_SD;
     dimerTorqueMin = 0.1; // old dimer
     dimerTorqueMax = 1.0; // old dimer
     dimerRotationsMin = 1; // old dimer
@@ -274,7 +274,7 @@ int Parameters::load(FILE *file){
         dimerImproved = ini.GetValueB("Dimer", "improved", dimerImproved);
         dimerConvergedAngle = ini.GetValueF("Dimer", "converged_angle", dimerConvergedAngle);
         dimerMaxIterations = ini.GetValueL("Dimer", "max_iterations", dimerMaxIterations);
-        dimerOptMethod = toLowerCase(ini.GetValue("Dimer", "opt_method", "sd"));
+        dimerOptMethod = toLowerCase(ini.GetValue("Dimer", "opt_method", dimerOptMethod));
         dimerRotationsMin = ini.GetValueL("Dimer", "rotations_min", dimerRotationsMin); // old
         dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax); // old & new
         dimerTorqueMin = ini.GetValueF("Dimer", "torque_min", dimerTorqueMin); // old
