@@ -4,8 +4,8 @@ Tutorials
 
 :ref:`AKMC Tutorial <akmc_tutorial>`
 
-:ref:`Parallel Replica Tutorial <pr_tutorial>`
+:ref:`Parallel Replica Tutorial <tutorial_parrep>`
 
-:ref:`Hyperdynamics Tutorial <hm_tutorial>`
+:ref:`Hyperdynamics Tutorial <tutorial_hyper>`
 
 
