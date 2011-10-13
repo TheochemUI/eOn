@@ -26,9 +26,57 @@ suggestion, converges very rapidly to the saddle.
 
 Dependencies
 ------------
+
 The kinetic database is a separate application from eOn. It can be found in 
 *vtstscripts* located `here <http://theory.cm.utexas.edu/vtsttools/scripts/>`_.
 This is a Perl script and so requires that Perl be installed, and the 
 vtstscripts directory must be in your path.
 
-.. include:: config_kdb.txt
+
+Options
+------------
+
+Parameters to be specified in the **[KDB]** section of the config.ini file.
+
+**use_kdb**: Turn Kdb on/off.
+
+    type: boolean
+
+    default: ``False``
+
+**insertpath**: The path to kdbinsert.py in tsase/kdb.
+
+    type: string
+
+    default: ``kdbinsert.py``
+
+**querypath**: The path to kdbquery.py in tsase/kdb.
+
+    type: string
+
+    default: ``False``
+
+**nodupes**: KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).
+
+    type: boolean
+
+    default: ``False``
+
+**wait**: Wait for the query to finish before submitting jobs (for debugging purposes).
+
+    type: boolean
+
+    default: ``False``
+
+**keep**: Keep the saddle suggestions (for debugging purposes).
+
+    type: boolean
+
+    default: ``False``
+
+**kdb_only**: Only use kdb in an akmc simulation, no random searches.
+
+    type: boolean
+
+    default: ``False``
+

@@ -1,0 +1,63 @@
+.. _paths:
+
+=====
+Paths
+=====
+
+Location of files related to the sending and receiving data on the server.
+
+Parameters in the **[Paths]** section of the config.ini file.
+
+**superbasin_recycling**:
+
+    default: ``%(main_directory)s/SB_recycling``
+
+**superbasins**:
+
+    default: ``%(main_directory)s/superbasins/``
+
+**main_directory**: This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
+
+    default: ``./``
+
+**scratch**:
+
+    default: ``%(main_directory)s/jobs/scratch/``
+
+**results**:
+
+    default: ``%(main_directory)s``
+
+**kdb**:
+
+    default: ``%(main_directory)s/kdb/``
+
+**kdb_scratch**:
+
+    default: ``%(main_directory)s/kdbscratch/``
+
+**states**: Where all of the information about individual states is located.
+
+    default: ``%(main_directory)s/states/``
+
+**potential_files**: For extra files needed by the client for the potential.
+
+    default: ``%(main_directory)s/potfiles``
+
+**jobs_in**:
+
+    default: ``%(main_directory)s/jobs/in/``
+
+**jobs_out**:
+
+    default: ``%(main_directory)s/jobs/out/``
+
+**incomplete**:
+
+    default: ``%(main_directory)s/jobs/incomplete/``
+
+**bh_minima**:
+
+    default: ``%(main_directory)s/minima``
+
+

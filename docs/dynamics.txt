@@ -5,8 +5,8 @@
 Dynamics
 ========
 
-Parameters
-----------
+Parameters for the **[Dynamics]** section of config.ini.
+
 
 **time_step**: The length of each MD step in femtoseconds.
 

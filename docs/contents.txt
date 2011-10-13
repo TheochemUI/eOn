@@ -11,17 +11,45 @@ Contents
 
    download
    installation
-   parallelization
-   potentials
+   documentation
+   config
    eon
+
    akmc
    parallel_replica
    basin_hopping
-   optimizers
-   coarse_graining
-   kdb
-   configuration
-   tutorials
+
+   process_search
+   saddle_search
+   hessian
    dynamics
    hyperdynamics
+
+   main
+   parallelization
+   potentials
+   optimizers
+   structure_comparison
+   paths
+   debug
+
+   tutorials
+   tutorial_akmc
+   tutorial_hyper
+   tutorial_parrep
+
    minimization
+   neb
+
+   dimer
+   lanczos
+   coarse_graining
+   displacement_sampling
+   kdb
+   distributed_replica
+   recycling
+   server_config
+   boinc_library
+   boinc_server
+   index
+      
