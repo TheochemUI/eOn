@@ -31,7 +31,7 @@ Options for controlling the dimer minimum mode finding method on the client side
 
         ``cg``: conjudate gradient, rotate along conjugate directions.
 
-        ``lbfgs``: quasi-Newton method [not implemeted yet].
+        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
 
 **torque_max**: Maximum torque above which the dimer rotates up to rotations_max times.
 

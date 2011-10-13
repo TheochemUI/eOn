@@ -53,6 +53,12 @@ class ImprovedDimer : public LowestEigenmodeInterface
     double a, b, gamma;
     bool init_cg;
 
+    // variables for LBFGS
+    std::vector<VectorXd> s,y;
+    std::vector<double> rho;
+    bool init_lbfgs;
+    VectorXd rPrev;
+
     std::vector<VectorXd> gradients;
     std::vector<VectorXd> positions;
 };
