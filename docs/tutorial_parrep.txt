@@ -1,14 +1,17 @@
-.. _hm_tutorial:
+.. _tutorial_parrep:
 
 ===================================
-Running Hyperdynamics Job
+Running Parallel Replica Job
 ===================================
 
-The following script will run 1 Hyperdynamics job of the system 
+The following script will run 1 Parallel Replica job of the system 
 that one Al adatom on Al(100) using 1 local cpu:
 
-.. literalinclude:: tut_con_hm.ini
+.. literalinclude:: tutorial_parrep_con.ini
+
 
 If we run this script, we get the folowing result::
 
   $ eon.py 
+
+

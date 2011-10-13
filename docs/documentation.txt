@@ -1,3 +1,6 @@
+.. _documentation:
+
+=============
 Documentation
 =============
 
@@ -33,6 +36,8 @@ Tasks
 General Options
 ---------------
 
+:ref:`Main <main>`
+
 :ref:`Parallelization <parallelization>`
 
 :ref:`Potentials <potentials>`
@@ -40,3 +45,7 @@ General Options
 :ref:`Optimizers <optimizers>`
 
 :ref:`Structure Comparison <structure_comparison>`
+
+:ref:`Paths <paths>`
+
+:ref:`Debug <debug>`
