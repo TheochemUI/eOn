@@ -12,7 +12,7 @@ Projective dynamics
 
 The following are projective dynamics  parameters which can be set in the **[Coarse Graining]** sections of the config.ini file.
 
-**use_projective_dynamics**: This option determines whether the projective dynamics coarse graining method will be used. This mutually excludes the use_askmc option.
+**use_mcamc**: This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used. This mutually excludes the use_askmc option.
 
     default: ``False``
 
