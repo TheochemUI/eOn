@@ -20,8 +20,6 @@
 
 using namespace std;
 
-#include "Constants.h"
-
 /** Contains all runtime parameters and results. No functionality just bookkeeping.*/
 class Parameters {
 

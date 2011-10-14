@@ -120,11 +120,11 @@ private:
     mutable long forceCalls; // keep track of how many force calls have been performed
 
     // CON file header information, which is not used in the eon code
-    char headerCon1[STRING_SIZE];
-    char headerCon2[STRING_SIZE];
-    char headerCon4[STRING_SIZE];
-    char headerCon5[STRING_SIZE];
-    char headerCon6[STRING_SIZE];
+    char headerCon1[512];
+    char headerCon2[512];
+    char headerCon4[512];
+    char headerCon5[512];
+    char headerCon6[512];
 
     void computePotential();
     void initializeDataMembers(Parameters *parameters);

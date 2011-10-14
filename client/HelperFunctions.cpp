@@ -404,7 +404,7 @@ AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms)
 AtomMatrix helper_functions::loadMode(string filename, int nAtoms)
 {
     FILE *modeFile;
-    modeFile = fopen(filename.c_str(), constants::READ.c_str());
+    modeFile = fopen(filename.c_str(), "rb");
     if (!modeFile) {
         cerr << "File " << filename << " was not found.\n";
         log("Stop\n");

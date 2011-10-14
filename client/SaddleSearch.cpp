@@ -16,7 +16,6 @@
 #include "ImprovedDimer.h"
 #include "ExactMinMode.h"
 #include "EpiCenters.h"
-#include "Constants.h"
 #include "Log.h"
 
 #include <cstdlib>

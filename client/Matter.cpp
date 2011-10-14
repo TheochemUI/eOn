@@ -10,7 +10,6 @@
 
 #include "Log.h"
 #include "Matter.h"
-#include "Constants.h"
 #include "HelperFunctions.h"
 #include "Optimizer.h"
 
