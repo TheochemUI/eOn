@@ -143,8 +143,16 @@ int main(int argc, char **argv)
         }
 
         int error;
+        string config_file = "config.ini";
         if (client_standalone) {
-            string config_file = helper_functions::getRelevantFile(parameters.iniFilename);
+            if(helper_functions::existsFile("config_passed.ini"))
+            {
+                config_file = "config_passed.ini";
+            }
+            else if(helper_functions::existsFile("config_passed_0.ini"))
+            {
+                config_file = "config_passed_0.ini";
+            }
             printf("Loading parameter file %s\n",config_file.c_str());
             error = parameters.load(config_file);
         }else{
