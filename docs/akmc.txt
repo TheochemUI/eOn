@@ -67,8 +67,8 @@ with a brief description.
 - :ref:`Hessian <hessian>`
 
 
-**[AKMC]** Options
-==================
+[AKMC] Options
+==============
 
 **confidence_scheme**:
 
