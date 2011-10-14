@@ -826,7 +826,7 @@ Coarse Graining:
             kind: string
             default: transition_counting
 
-        use_projective_dynamics:
+        use_mcamc:
             kind: boolean
             default: False
 

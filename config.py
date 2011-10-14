@@ -283,7 +283,7 @@ def init(config_file = ""):
         config.sb_recycling_path = parser.get('Paths', 'superbasin_recycling')
 
     # Coarse Graining
-    config.sb_on = parser.getboolean('Coarse Graining', 'use_projective_dynamics')
+    config.sb_on = parser.getboolean('Coarse Graining', 'use_mcamc')
     config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
     config.sb_path = None
     if config.sb_on:
