@@ -4,23 +4,15 @@
 Hyperdynamics
 =============
 
-The Hyper-MD method is one of the accelerated dynamics method developed by Arthur F. Voter.
-Bias potential which goes to zero near transition state is added to the potential surface to accelerate
-the dynamical evolution of the system. The real time increment :math:`\delta t` can be obtain from the corresponding 
-simulation time step :math:`\delta t^b` multiplied by boost factor :math:`e^{\beta \Delta V}`. 
+The hyperdynamics method uses a bias potential which should be zero at transition state and positive in minima in order to increase the rate of transitions. [#hyperdynamics_ref]_ The hyperdynamics time step :math:`\delta t` can be obtained from the molecular dynamics simulation time step :math:`\delta t^b` multiplied by a boost factor :math:`e^{\beta \Delta V}`, where :math:`{\Delta V}` is the bias potential.
 
-There are several types of Hyper-MD method regarding the form of bias potential. In EON, we adapt the
-bond-boost-method developed by Kristen A. Fichthorn, where the bias potential is derived from the bond-breaking
-picture.
+There are several possible forms of bias potential. In EON, we adapt the bond-boost method, [#bondboost_ref]_ where the bias potential is controlled by the maximal (fractional) change in any bond length in the system.  This is a fairly good bias potential for systems in which the dynamics is governed by bond breaking and forming events.
 
-The Hyperdynamics method is integraded with Parallel Replica method in EON. You can run 
-Hyperdynamics by Parallel Replica job with **[Hyperdynamics]** options turned on. 
+The hyperdynamics method is integraded with the parallel Replica method in EON. You can run hyperdynamics by parallel replica job with **[Hyper dynamics]** options turned on. 
 
 These are options that go in the **[Hyperdynamics]** section of the config.ini file.
 
 **bias_potential**: 
-
-    type: string
 
     default: ``none``
 
@@ -32,15 +24,11 @@ These are options that go in the **[Hyperdynamics]** section of the config.ini f
 
 **bb_dvmax**: 
 
-    type: float
-
     default: ``0.0``
 
     The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.
 
 **bb_rmd_steps**: 
-
-    type: int
 
     default: ``0``
 
@@ -48,15 +36,11 @@ These are options that go in the **[Hyperdynamics]** section of the config.ini f
 
 **bb_rcut**: 
 
-    type: float
-
     default: ``3.0``
 
     All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
 
 **bb_strech_threshold**: 
-
-    type: float
 
     default: ``0.0001``
 
@@ -64,19 +48,16 @@ These are options that go in the **[Hyperdynamics]** section of the config.ini f
 
 **bb_ds_curvature**: 
 
-    type: float
-
     default: ``3.95``
 
     The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.
 
-For detailed information about Hyperdynamics, please refer to papers by:
+References
+----------
 
-    ::
+.. rubric:: References
 
-         "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events"
-                                              Arthur F. Voter Phys. Rev. Lett. 78, 3908 (1997)
+.. [#hyperdynamics_ref] A.F. Voter "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events" Phys. Rev. Lett. 78, 3908 (1997)
 
-         "Accelerated molecular-dynamics of rare events with the bond-boost method"
-                               R. A. Miron and K. A. Fichthorn, J. Chem. Phys. 119, 6210 (2003)
+.. [#bondboost_ref]  R.A. Miron and K.A. Fichthorn "Accelerated molecular-dynamics of rare events with the bond-boost method" J. Chem. Phys. 119, 6210 (2003)
 
