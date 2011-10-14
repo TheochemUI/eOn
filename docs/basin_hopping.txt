@@ -7,12 +7,6 @@ Basin Hopping
 
 Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
 
-.. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
-
-.. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
-
-.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
-
 **[Basin Hopping]** Parameters
 ------------------------------
 
@@ -40,11 +34,11 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
     default: ``10000``
 
-**jump_max**: The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe.
+**jump_max**: The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe. [#iwamatsu]_
 
     default: ``0``
 
-**significant_structure**: Displace minimized structures.
+**significant_structure**: Displace minimized structures. [#white]_
 
     default: ``False``
 
@@ -58,7 +52,7 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
         ``uniform``: A random number is selected between 0 and max_displacement
 
-**max_displacement_algorithm**: The algorithm used to assign max displacement of each atom.
+**max_displacement_algorithm**: The algorithm used to assign max displacement of each atom. [#kim]_
 
     default: ``standard``
 
@@ -81,3 +75,13 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 **md_temp**: The temperature to use for the molecular dynamics steps that occur before basin hopping steps.
 
     default: ``300.0``
+
+References
+----------
+
+.. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
+
+.. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
+
+.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
+
