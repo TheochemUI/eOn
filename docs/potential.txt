@@ -14,6 +14,15 @@ Potential
         ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
 
         ``lenosky_Si``: Lenosky potential, for silicon.
+            
+          \T.J. Lenosky, B. Sadigh, E. Alonso, V.V. Bulatov, T. Diaz de la Rubia, J. Kim, A.F. Voter, and J.D. Kress
+
+          `Highly optimized empirical potential model of silicon`__
+
+          \Modelling Simul. Mater. Sci. Eng. **8** 825(2000)
+
+          __ http://dx.doi.org/10.1088/0965-0393/8/6/305
+
 
         ``lammps``: The LAMMPS potentials.
 
@@ -40,6 +49,3 @@ Potential
         ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
 
         ``tip4p``: Point charge model for water.
-
-
-
