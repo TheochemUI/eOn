@@ -11,109 +11,75 @@ Parameters in the **[Saddle Search]** section of config.ini.
 
 **min_mode_method**: 
 
-    type: string
-
     default: ``dimer``
 
     options:
 
-        ``dimer``: Use the dimer min-mode method.
+        ``dimer``: Use the :ref:`dimer <dimer>` min-mode method.
 
-        ``lanczos``: Use the Lanczos min-mode method.
+        ``lanczos``: Use the :ref:`Lanczos <lanczos>` min-mode method.
 
 **converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.
-
-    type: float
 
     default: ``0.01``
 
 **max_energy**: The energy at which a saddle search is considered bad and terminated.
 
-    type: float
-
     default: ``20.0``
 
 **max_step_size**: 
-
-    type: float
 
     default: ``0.2``
 
 **max_iterations**: The maximum number of translation steps to be taken.
 
-    type: int
-
     default: ``1000``
 
 **displace_radius**: Atoms within this distance of the epicenter will be displaced.
-
-    type: float
 
     default: ``5.0``
 
 **displace_magnitude**: The standard deviation of the magnitude of the displacement.
 
-    type: float
-
     default: ``0.1``
     
 **displace_min_norm**: The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.
-
-    type: float
 
     default: ``0.0``
     
 **displace_frac_random**: The number of displacements per [sum of displace_frac_*] to displace with a random epicenter.
 
-    type: float
-
     default: ``1.0``
 
 **displace_frac_not_FCC_HCP**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter that is not FCC or HCP coordinated.
-
-    type: float
 
     default: ``0.0``
 
 **displace_frac_water**:  The number of displacements per [sum of displace_frac_*] to displace with the water displacement algorithm.
 
-    type: float
-
     default: ``0.0``
 
 **displace_frac_least_coordinated**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration. 
-
-    type: float
 
     default: ``0.0``
 
 **displace_frac_listed**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter listed in displace_atomlist. 
 
-    type: float
-
     default: ``0.0``
 
 **displace_frac_under_coordinated**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter with a coordination equal to or less than displace_max_coordination.
-
-    type: float
 
     default: ``0.0``
 
 **displace_atomlist**: The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
 
-    type: string
-
     default: ``0``
 
 **displace_max_coordination**: When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
 
-    type: int
-
     default: ``11``
 
 **client_displace_type**: Type of displace to use client-side.
-
-    type: string
 
     default: ``load``
 
@@ -129,37 +95,25 @@ Parameters in the **[Saddle Search]** section of config.ini.
 
 **perp_force_ratio**: 
 
-    type: float
-
     default: ``0.0``
 
 **molecule_list**: 
-
-    type: string
 
     default: ``[]``
 
 **disp_at_random**: 
 
-    type: int
-
     default: ``1``
 
 **max_single_displace**: 
-
-    type: float
 
     default: ``10.0``
 
 **stdev_translation**: 
 
-    type: float
-
     default: ``0.2``
 
 **stdev_rotation**: 
-
-    type: float
 
     default: ``1.0``
 
