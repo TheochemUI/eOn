@@ -17,7 +17,7 @@ import kdb
 import recycling
 
 def get_minmodexplorer():
-    if config.akmc_server_side:
+    if config.akmc_server_side_process_search:
         return ServerMinModeExplorer
     else:
         return ClientMinModeExplorer
