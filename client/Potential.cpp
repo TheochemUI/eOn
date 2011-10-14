@@ -10,7 +10,6 @@
 
 #include <time.h>
 
-#include "Constants.h"
 #include "Potential.h"
 #include "Parameters.h"
 #include "Log.h"

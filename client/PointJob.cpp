@@ -10,7 +10,6 @@
 
 #include "PointJob.h"
 #include "Matter.h"
-#include "Constants.h"
 
 PointJob::PointJob(Parameters *params)
 {

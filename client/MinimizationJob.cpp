@@ -12,7 +12,6 @@
 #include "Optimizer.h"
 #include "Log.h"
 #include "Matter.h"
-#include "Constants.h"
 #include "HelperFunctions.h"
 
 MinimizationJob::MinimizationJob(Parameters *params)
