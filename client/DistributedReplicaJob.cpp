@@ -167,9 +167,9 @@ void DistributedReplicaJob::samplingStep(){
                     printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
                     *reactant = *mdbuff[new_n];
 
-                    char sbuff[STRING_SIZE];
+                    char sbuff[512];
                     string sample_saved("sample_saved");
-                    snprintf(sbuff, STRING_SIZE, "_%ld.convel", nsample);
+                    snprintf(sbuff, 512, "_%ld.convel", nsample);
                     sample_saved += sbuff;
                     reactant->matter2convel(sample_saved);
                 }

@@ -14,7 +14,6 @@
 
 #include "Dynamics.h"
 #include "BasinHoppingJob.h"
-#include "Constants.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
 #include "Optimizer.h"

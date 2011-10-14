@@ -10,7 +10,6 @@
 
 #include "FiniteDifferenceJob.h"
 #include "Matter.h"
-#include "Constants.h"
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 

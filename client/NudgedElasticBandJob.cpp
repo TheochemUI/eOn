@@ -9,7 +9,6 @@
 //-----------------------------------------------------------------------------------
 
 #include "NudgedElasticBandJob.h"
-#include "Constants.h"
 #include "ConjugateGradients.h"
 #include "false_boinc.h"
 #include "Potential.h"
