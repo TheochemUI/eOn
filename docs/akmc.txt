@@ -68,7 +68,7 @@ with a brief description.
 
 
 **[AKMC]** Options
-------------------
+==================
 
 **confidence_scheme**:
 
@@ -88,6 +88,8 @@ state.
 **confidence_correction**:
 
     default: ``False``
+
+
 
 **thermally_accessible_window**: Processes with barriers within this number of
 kT above the lowest barrier will be used in the rate table and for confidence
