@@ -4,7 +4,14 @@
 Documentation
 =============
 
-The EON program can run the following methods or tasks to explore the configuration space of molecular systems and to accelerate the simulation of their dynamics over long times.  To run EON, a :ref:`config.ini <config>` file must be generated using the options specified in the documentation.  There are specific options for each method, and a set of general options which are shared between methods.  Examples of these general options include specificion of the interatomic potential and the parameters for doing structural optimizations and comparisons.
+The EON program can run the following methods or tasks to explore the configuration space of molecular systems and to accelerate the simulation of their dynamics over long times.  To run EON, a :ref:`config.ini <config>` file must be generated using the options specified in the documentation. Each section header is denoted by square brackets, and is followed by the key/value pairs. For example, to set the *job_type* key of the *[Main]* section to the value *process_search*, your config.ini file would include the lines:
+
+.. code-block:: none
+
+    [Main]
+    job_type = process_search
+
+There are specific options for each method, and a set of general options which are shared between methods.  Examples of these general options include specificion of the interatomic potential and the parameters for doing structural optimizations and comparisons.
 
 EON is designed to run in serial on one computer or in parallel using a communicator to send jobs from a server to clients and receive the results back.  Several parallelization schemes have been implemented, including local communication through files, cluster communication via a queuing system, mpi, and the boinc/arc distributed computing environments.  Methods run in parallel are broken up by the eon server into tasks which are run by client program.  The server then compiles the information sent back by the clients in a way that can be used by the sampling or dynamics methods.
 
