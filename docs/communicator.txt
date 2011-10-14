@@ -18,8 +18,8 @@ such as ARC_.
 .. _BOINC: http://boinc.berkeley.edu/
 .. _ARC:   http://www.nordugrid.org/arc/
 
-These are options that go in the **[Communicator]** section and apply to all of
-the different communicator types.
+[Communicator] Options
+======================
 
 **type**:
 

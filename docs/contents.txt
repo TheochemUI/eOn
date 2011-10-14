@@ -43,9 +43,7 @@ Contents
    dimer
    lanczos
    coarse_graining
-   displacement_sampling
    kdb
-   distributed_replica
    recycling
    server_config
    boinc_library
