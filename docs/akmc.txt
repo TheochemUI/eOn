@@ -56,15 +56,15 @@ under the section name given.  Default values for each option is given along
 with a brief description.
 
 
-#:ref:`Process Search <process_search>`
+- :ref:`Process Search <process_search>`
 
-#:ref:`Saddle Search <saddle_search>`
+- :ref:`Saddle Search <saddle_search>`
 
-#:ref:`Dimer <dimer>`
+- :ref:`Dimer <dimer>`
 
-#:ref:`Lanczos <lanczos>`
+- :ref:`Lanczos <lanczos>`
 
-#:ref:`Hessian <hessian>`
+- :ref:`Hessian <hessian>`
 
 
 Parameters for the **[AKMC]** section of config.ini.
