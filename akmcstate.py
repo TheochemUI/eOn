@@ -33,7 +33,7 @@ class AKMCState(state.State):
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1, 
                  reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
-        if config.akmc_server_side:
+        if config.akmc_server_side_process_search:
             self.search_result_header = "%8s %10s %10s %10s %10s %10s %10s    %s\n" % ("searchid", "type", "barrier",
                                                                                   "max-dist", "sad-fcs", 
                                                                                   "mins-fcs", "pref-fcs", 
@@ -150,7 +150,7 @@ class AKMCState(state.State):
         f = open(self.search_result_path, 'a')
         resultdata = result['results']
 
-        if config.akmc_server_side:
+        if config.akmc_server_side_process_search:
             first_column = "search_id"
         else:
             first_column = "wuid"
