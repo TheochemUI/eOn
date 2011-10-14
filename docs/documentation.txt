@@ -24,6 +24,9 @@ Tasks
 
 :ref:`Saddle Search <saddle_search>`
 
+- :ref:`Dimer <dimer>`
+- :ref:`Lanczos <lanczos>`
+
 :ref:`Minimization <minimization>`
 
 :ref:`Hessian <hessian>`
