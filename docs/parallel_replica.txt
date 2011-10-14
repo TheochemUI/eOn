@@ -45,17 +45,17 @@ These are options that go in the **[Parallel Replica]** section of the config.in
 
     default: ``200``
 
-**check_period**: How frequently the state of system is checked. Every check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of check_period/record_resolution+1 atomic configurations, which may increase the usage of memory.
+**state_check_period**: How frequently the state of system is checked. Every state_check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of state_check_period/state_save_period+1 atomic configurations, which may increase the usage of memory.
 
     default: ``500``
 
-**refine_transition_time**: Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by check_period/record_resolution+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller check_period. And the accuracy of transition time is record_resolution*timestep.
+**refine_transition_time**: Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by state_check_period/state_save_period+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller state_check_period. And the accuracy of transition time is state_save_period*timestep.
 
     default: ``True``
 
-**record_resolution**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of record_resolution lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
+**state_save_period**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of state_save_period lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
 
-    default: ``0.1* **check_period**``
+    default: ``0.1 * state_check_period``
 
 **post_transition_steps**: Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.
 
@@ -67,5 +67,5 @@ These are options that go in the **[Parallel Replica]** section of the config.in
 
 For detailed information about Parallel Replica, please refer to the paper by:
 
-..[#voter] A. F. Voter, Phys. Rev. B **57**, 13985 (1998) "Parallel replica method for dynamics of infrequent events” doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
+.. [#voter] A. F. Voter, Phys. Rev. B **57**, 13985 (1998) "Parallel replica method for dynamics of infrequent events” doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
 
