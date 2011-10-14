@@ -1,12 +1,12 @@
 
-.. _optimizers:
+.. _optimizer:
 
-Optimizers
+Optimizer
 ==============
 
 The eon client provides three optimizers quick-min, conjugate gradients, and L-BFGS.
 
-**[Optimizers]** parameters
+**[Optimizer]** parameters
 --------------------------- 
 
 **opt_method**: The optimization method to use.
