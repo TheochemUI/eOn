@@ -9,11 +9,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   eon
    download
    installation
    documentation
-   config
-   eon
 
    akmc
    parallel_replica
