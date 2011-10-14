@@ -7,6 +7,9 @@ Basin Hopping
 
 Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
 
+**[Basin Hopping**
+------------------
+
 **max_displacement**: Max displacement in each degree of freedom.
 
     default: ``0.5``
