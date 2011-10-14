@@ -69,22 +69,6 @@ with a brief description.
 
 Parameters for the **[AKMC]** section of config.ini.
 
-**confidence**: The confidence (out of 1.0) criterion for moving to the next
-state.
-
-    default: ``0.99``
-
-**max_kmc_steps**: The maximum number of KMC transitions in a row.
-
-    default: ``100000``
-
-**server_side_process_search**: If true the server does not send out
-"process_search" jobs instead it manages individual dimer, minimization, and
-hessian calculations. This option is usually used when a a single
-"process_search" job will take a long time (hours or longer).
-
-    default: ``False``
-
 **confidence_scheme**:
 
     default: ``new``
@@ -95,6 +79,15 @@ hessian calculations. This option is usually used when a a single
 
         ``old``:
 
+**confidence**: The confidence (out of 1.0) criterion for moving to the next
+state.
+
+    default: ``0.99``
+
+**confidence_correction**:
+
+    default: ``False``
+
 **thermally_accessible_window**: Processes with barriers within this number of
 kT above the lowest barrier will be used in the rate table and for confidence
 calculations.
@@ -104,12 +97,20 @@ calculations.
 **thermally_accessible_buffer**: Processes with barriers of
 thermally_accessible_window + thermally_accessible_buffer will be stored , in
 the event that they are thermally accessible later, but are not used in the
-rate table or for the confidence calculations. Processe s with barriers higher
+rate table or for the confidence calculations. Processes with barriers higher
 than the sum of these two values will be discarded.
 
     default: ``0.0``
 
-**confidence_correction**:
+**server_side_process_search**: If true the server does not send out
+"process_search" jobs instead it manages individual dimer, minimization, and
+hessian calculations. This option is usually used when a single
+"process_search" job will take a long time (hours or longer).
 
     default: ``False``
+
+
+**max_kmc_steps**: The maximum number of KMC transitions in a row.
+
+    default: ``100000``
 
