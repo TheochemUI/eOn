@@ -40,9 +40,9 @@ General Options
 
 :ref:`Parallelization <parallelization>`
 
-:ref:`Potentials <potentials>`
+:ref:`Potential <potential>`
 
-:ref:`Optimizers <optimizers>`
+:ref:`Optimizer <optimizer>`
 
 :ref:`Structure Comparison <structure_comparison>`
 

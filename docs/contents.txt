@@ -27,8 +27,8 @@ Contents
 
    main
    parallelization
-   potentials
-   optimizers
+   potential
+   optimizer
    structure_comparison
    paths
    debug
@@ -52,4 +52,4 @@ Contents
    boinc_library
    boinc_server
    index
-      
+
