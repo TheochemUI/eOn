@@ -590,7 +590,7 @@ AKMC:
             kind: float
             default: 0.99
 
-        server_side:
+        server_side_process_search:
             kind: boolean
             default: false
 
