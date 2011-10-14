@@ -258,67 +258,73 @@ Dynamics:
 
     options:
 
-        post_transition_steps:
-            kind: int
-            default: 500
-
-        andersen_alpha:
-            kind: float
-            default: 0.2
-
-        langevin_friction:
-            kind: float
-            default: 0.005
-
-        thermostat:
-            kind: string
-            default: andersen
-
-        dephase_steps:
-            kind: int
-            default: 200
-
         time_step:
             kind: float
             default: 1.0
-
-        check_period:
-            kind: int
-            default: 500
-
-        bisection_accuracy:
-            kind: int
-            default: 1
-
-        dephase_loop_max:
-            kind: int
-            default: 5
-
-        nose_mass:
-            kind: float
-            default: 1.0
-
-        dephase_loop_stop:
-            kind: boolean
-            default: False
 
         steps:
             kind: int
             default: 1000
 
+        thermostat:
+            kind: string
+            default: andersen
+
+        andersen_alpha:
+            kind: float
+            default: 0.2
+
         andersen_collision_steps:
             kind: float
             default: 10
 
-        auto_stop:
-            kind: boolean
-            default: True
+        langevin_friction:
+            kind: float
+            default: 0.005
+
+        nose_mass:
+            kind: float
+            default: 1.0
+
+################################################################################
+
+Parallel Replica:
+
+    options:
+
+        dephase_steps:
+            kind: int
+            default: 200
 
         refine_transition_time:
             kind: boolean
             default: True
 
+        post_transition_steps:
+            kind: int
+            default: 500
+
+        check_period:
+            kind: int
+            default: 500
+
+        dephase_loop_max:
+            kind: int
+            default: 5
+
+        dephase_loop_stop:
+            kind: boolean
+            default: False
+
         record_resolution:
+            kind: int
+            default: 1
+
+        stop_after_transition:
+            kind: boolean
+            default: True
+
+        bisection_accuracy:
             kind: int
             default: 1
 
