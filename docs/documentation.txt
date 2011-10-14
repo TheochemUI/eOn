@@ -13,6 +13,10 @@ Methods
 
 :ref:`Adaptive kinetic Monte Carlo <akmc>`
 
+- :ref:`Recycling <recycling>`
+- :ref:`Kinetic Database <kdb>`
+- :ref:`Coarse Graining <coarse_graining>`
+
 :ref:`Parallel Replica <parallel_replica>`
 
 :ref:`Basin Hopping <basin_hopping>`
@@ -41,7 +45,7 @@ General Options
 
 :ref:`Main <main>`
 
-:ref:`Parallelization <parallelization>`
+:ref:`Communicator <communicator>` - Parallelization options
 
 :ref:`Potential <potential>`
 
