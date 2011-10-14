@@ -11,41 +11,45 @@ Potential
     default: ``lj``
 
     options:
-        ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
 
-        ``lenosky_Si``: Lenosky potential, for silicon.
-            
-          \T.J. Lenosky, B. Sadigh, E. Alonso, V.V. Bulatov, T. Diaz de la Rubia, J. Kim, A.F. Voter, and J.D. Kress
-
-          `Highly optimized empirical potential model of silicon`__
-
-          \Modelling Simul. Mater. Sci. Eng. **8** 825(2000)
-
-          __ http://dx.doi.org/10.1088/0965-0393/8/6/305
-
+        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
 
         ``lammps``: The LAMMPS potentials.
 
-        ``sw_si``: Stillinger-Weber potential, for silicon.
+        ``eam_al``: Embedded atom method parameterized for aluminum.
 
-        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
-
-        ``lj``: Lennard-Jones potential in reduced units.
-
-        ``morse_pt``: Morse potential for platinum.
-
-        ``zpice``: Water on platinum.
-
-        ``mpi``: Communicate with a mpi process to calculate energy and forces.
+        ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
 
         ``bopfox``: Bond order potential, for metals.
 
         ``emt``: Effective medium theory, for metals.
 
-        ``eam_al``: Embedded atom method parameterized for aluminum.
+        ``lj``: Lennard-Jones potential in reduced unit
 
-        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
+        ``morse_pt``: Morse potential for platinum.
+
+        ``lenosky_Si``: Lenosky potential, for silicon.  [#lenosky]_
+
+        ``sw_si``: Stillinger-Weber potential, for silicon.
 
         ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
 
+        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+
+        ``zpice``: Water on platinum.
+
         ``tip4p``: Point charge model for water.
+
+        ``mpi``: Communicate with a mpi process to calculate energy and forces.
+
+.. [#lenosky] T.J. Lenosky et.al., Modelling Simul. Mater. Sci. Eng., **8**,  825 (2000) doi:`10.1088/0965-0393/8/6/305 <http://dx.doi.org/10.1088/0965-0393/8/6/305>`_
+
+        
+
+
+
+
+
+        
+
+       
