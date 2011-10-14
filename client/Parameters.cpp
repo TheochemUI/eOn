@@ -28,14 +28,16 @@ Parameters::Parameters(){
     // [Main] //
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
-    potential = Potential::POT_LJ;
     temperature = 300.0;
     checkpoint = false;
     quiet = false;
-    MPIPotentialAggressive = true;
     iniFilename = "config.ini";
     conFilename = "reactant.con";
     finiteDifference = 0.01;
+
+    // [Potential]
+    potential = Potential::POT_LJ;
+    MPIPotentialAggressive = true;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -196,12 +198,14 @@ int Parameters::load(FILE *file){
 
         job = toLowerCase(ini.GetValue("Main", "job"));
         temperature = ini.GetValueF("Main", "temperature", temperature);
-        potential = toLowerCase(ini.GetValue("Main", "potential"));
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
-        MPIPotentialAggressive = ini.GetValueB("Main", "aggressive", MPIPotentialAggressive);
         finiteDifference = ini.GetValueF("Main", "finiteDifference", finiteDifference);
+
+        // [Potential] //
+        potential = toLowerCase(ini.GetValue("Potential", "potential"));
+        MPIPotentialAggressive = ini.GetValueB("Potential", "aggressive", MPIPotentialAggressive);
 
         // Initialize random generator
         if(randomSeed < 0){

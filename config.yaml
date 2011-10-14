@@ -19,6 +19,32 @@ Main:
                 - hessian
                 - md
         
+        random_seed:
+            kind: int
+            default: -1
+
+        temperature:
+            kind: float
+            default: 300.0
+
+        finite_difference:
+            kind: float
+            default: 0.01
+
+        checkpoint:
+            kind: boolean
+            default: false
+
+        quiet:
+            kind: boolean
+            default: False
+
+################################################################################
+
+Potential:
+
+    options:
+
         potential:
             kind: string
             default: lj
@@ -40,25 +66,9 @@ Main:
                 - lammps
                 - mpi
 
-        random_seed:
-            kind: int
-            default: -1
-
-        temperature:
-            kind: float
-            default: 300.0
-
-        finite_difference:
-            kind: float
-            default: 0.01
-
-        checkpoint:
+        mpi_aggressive:
             kind: boolean
-            default: false
-
-        quiet:
-            kind: boolean
-            default: False
+            default: True
 
 ################################################################################
 
