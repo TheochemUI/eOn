@@ -25,26 +25,26 @@ in the region around the atoms that moved significantly from state :math:`R_0` t
 state :math:`P_0`, resulting in a significant reduction in computational costs.  If this region
 is local, the overall cost does not increase with the total system size.
 
-Parameters for the [Recycling] section of config.ini:
+**[Recycling]** Options
+=======================
 
-    **use_recycling**: Turn recycling on and off.
+**use_recycling**: Turn recycling on and off.
 
-        default: ``False``
+    default: ``False``
 
-    **move_distance**: The distance an atom must move to be considered in the "hole".
+**move_distance**: The distance an atom must move to be considered in the "hole".
 
-        default: ``0.2``
+    default: ``0.2``
 
-    **displace_moved_only**: When performing saddle search displacements, only use atoms in the vicinty of the hole as displacement epicenters.
+**displace_moved_only**: When performing saddle search displacements, only use atoms in the vicinty of the hole as displacement epicenters.
 
-        default: ``False``
+    default: ``False``
 
-    **use_sb_recycling**: Turn superbasin recycling on and off. 
+**use_sb_recycling**: Turn superbasin recycling on and off. 
 
-        default: ``False``
+    default: ``False``
 
-    **save_suggestions**: If true, the suggestions made by saddle recycling are saved to the "saddle_suggestions" directory of the state directory for which the saddles are being suggested.
+**save_suggestions**: If true, the suggestions made by saddle recycling are saved to the "saddle_suggestions" directory of the state directory for which the saddles are being suggested.
 
-        default: ``False``
-
+    default: ``False``
 
