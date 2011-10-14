@@ -26,6 +26,7 @@ for test in tests:
     conf = open('config_passed.ini','w')
     print >> conf, '[Main]'
     print >> conf, 'job = point'
+    print >> conf, '[Potential]'
     print >> conf, 'potential =', test['potential']
     conf.close()
     

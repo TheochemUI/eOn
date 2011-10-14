@@ -41,13 +41,16 @@ public:
     // [Main] //
     string job;
     long   randomSeed;
-    string potential;
     double temperature;
     bool   quiet;
     bool   checkpoint;
     string iniFilename;
     string conFilename;
     double finiteDifference;
+
+    // [Potential] //
+    string potential;
+    bool MPIPotentialAggressive;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
@@ -164,7 +167,6 @@ public:
     bool   basinHoppingMDFirst;
     double basinHoppingMDTemp;
 
-    bool MPIPotentialAggressive;
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI
     // potential.
