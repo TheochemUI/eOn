@@ -9,7 +9,6 @@
 //-----------------------------------------------------------------------------------
 
 #include "ProcessSearchJob.h"
-#include "Constants.h"
 #include "EpiCenters.h"
 #include "Optimizer.h"
 #include "false_boinc.h"

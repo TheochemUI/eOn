@@ -14,7 +14,6 @@
 #include "Dynamics.h"
 #include "DynamicsJob.h"
 #include "Parameters.h"
-#include "Constants.h"
 #include "Potential.h"
 #include "HelperFunctions.h"
 

@@ -14,7 +14,6 @@
 #include "Optimizer.h"
 #include "Matter.h"
 #include "HelperFunctions.h"
-#include "Constants.h"
 #include "Parameters.h"
 
 #include "Eigen.h"

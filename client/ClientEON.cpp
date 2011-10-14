@@ -10,7 +10,6 @@
 
 #include "Bundling.h"
 #include "CommandLine.h"
-#include "Constants.h"
 #include "Parameters.h"
 #include "Job.h"
 #include "Log.h"
@@ -273,7 +272,7 @@ int main(int argc, char **argv)
         }
 
         //We want to uncompress our input file
-        char resolved[STRING_SIZE];
+        char resolved[512];
         rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
         if (rc) {
             fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
