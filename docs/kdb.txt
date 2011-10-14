@@ -33,12 +33,10 @@ This is a Perl script and so requires that Perl be installed, and the
 vtstscripts directory must be in your path.
 
 
-Options
-------------
+[KDB] Options
+-------------
 
-Parameters to be specified in the **[KDB]** section of the config.ini file.
-
-**use_kdb**: Turn Kdb on/off.
+**use_kdb**: Turn KDB on/off.
 
     type: boolean
 
