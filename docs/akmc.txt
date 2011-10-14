@@ -67,7 +67,8 @@ with a brief description.
 - :ref:`Hessian <hessian>`
 
 
-Parameters for the **[AKMC]** section of config.ini.
+**[AKMC]** Options
+------------------
 
 **confidence_scheme**:
 
