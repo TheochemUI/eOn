@@ -17,10 +17,10 @@ Dependencies
 Installation
 ------------
 
-Following should the client BOINC library by build with the commands::
+The BOINC library can be built with the following commands::
 
     ./configure --disable-server --disable-client LDFLAGS=-static-libgcc
     make
     sudo make install
 
-Where the install option makes the created libraries and header files accessible system wide.
+Where the install option makes the libraries and header files accessible system-wide.
