@@ -42,19 +42,19 @@ vtstscripts directory must be in your path.
 
     default: ``False``
 
-**insertpath**: The path to kdbinsert.py in tsase/kdb.
+**insert_path**: The path to kdbinsert.py in tsase/kdb.
 
     type: string
 
     default: ``kdbinsert.py``
 
-**querypath**: The path to kdbquery.py in tsase/kdb.
+**query_path**: The path to kdbquery.py in tsase/kdb.
 
     type: string
 
     default: ``False``
 
-**nodupes**: KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).
+**remove_duplicates**: KDB will not make duplicate suggestions. This can slow KDB querying, so it may be best to use this only for slow potentials (DFT, etc.).
 
     type: boolean
 
