@@ -88,7 +88,7 @@ def init(config_file = ""):
     for s in psections:
         if s not in fsections:
             config_error = True
-            sys.stderr.write('unknown section "%s"\n')
+            sys.stderr.write('unknown section "%s"\n' % s)
 
     # checks all options in config.ini are in configparser
     for i in parser.sections():
@@ -169,13 +169,13 @@ def init(config_file = ""):
     config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
 
     # AKMC options
-    config.akmc_confidence              = parser.getfloat('AKMC', 'confidence')
-    config.akmc_server_side             = parser.getboolean('AKMC', 'server_side')
-    config.akmc_thermal_window          = parser.getfloat('AKMC', 'thermally_accessible_window')
-    config.akmc_max_thermal_window      = parser.getfloat('AKMC', 'thermally_accessible_buffer')
-    config.akmc_max_kmc_steps           = parser.getint('AKMC', 'max_kmc_steps')
-    config.akmc_confidence_scheme       = parser.get('AKMC', 'confidence_scheme')
-    config.akmc_confidence_correction   = parser.getboolean('AKMC', "confidence_correction")
+    config.akmc_confidence                 = parser.getfloat('AKMC', 'confidence')
+    config.akmc_server_side_process_search = parser.getboolean('AKMC', 'server_side_process_search')
+    config.akmc_thermal_window             = parser.getfloat('AKMC', 'thermally_accessible_window')
+    config.akmc_max_thermal_window         = parser.getfloat('AKMC', 'thermally_accessible_buffer')
+    config.akmc_max_kmc_steps              = parser.getint('AKMC', 'max_kmc_steps')
+    config.akmc_confidence_scheme          = parser.get('AKMC', 'confidence_scheme')
+    config.akmc_confidence_correction      = parser.getboolean('AKMC', "confidence_correction")
 
     # Basin Hopping options
     config.bh_md_probability = parser.getfloat('Basin Hopping', 'md_probability')
@@ -265,9 +265,9 @@ def init(config_file = ""):
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
     config.kdb_path = parser.get('Paths', 'kdb')
     config.kdb_wait = parser.get('KDB', 'wait')
-    config.kdb_insertpath = parser.get('KDB', 'insertpath')
-    config.kdb_querypath = parser.get('KDB', 'querypath')
-    config.kdb_nodupes = parser.getboolean('KDB', 'nodupes')
+    config.kdb_insertpath = parser.get('KDB', 'insert_path')
+    config.kdb_querypath = parser.get('KDB', 'query_path')
+    config.kdb_nodupes = parser.getboolean('KDB', 'remove_duplicates')
 
     # Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
@@ -303,7 +303,7 @@ def init(config_file = ""):
         config.askmc_connections_test_on = parser.getboolean('Coarse Graining','askmc_connections_test_on')
 
     # Optimizers
-    config.optimizers_max_iterations = parser.getint('Optimizers', 'max_iterations')
+    config.optimizers_max_iterations = parser.getint('Optimizer', 'max_iterations')
 
     # Saddle Search
     config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')

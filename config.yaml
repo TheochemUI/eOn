@@ -471,15 +471,15 @@ KDB:
             kind: boolean
             default: False
 
-        insertpath:
+        insert_path: 
             kind: string
             default: kdbinsert.py
 
-        querypath:
+        query_path:
             kind: string
             default: kdbquery.py
 
-        nodupes:
+        remove_duplicates:
             kind: boolean
             default: False
 
