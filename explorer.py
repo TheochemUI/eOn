@@ -64,9 +64,19 @@ class MinModeExplorer(Explorer):
             moved_atoms = None
 
         if config.kdb_on:
-            self.kdber = kdb.KDB()
-            if len(self.state.get_ratetable()) <= 1:
-                self.kdber.query(self.state, wait = config.kdb_wait)
+            if not os.path.isdir(config.kdb_scratch_path):
+                os.makedirs(config.kdb_scratch_path)
+            try:
+                queried = [int(q) for q in open(os.path.join(config.kdb_scratch_path, "queried"), 'r').readlines()]
+            except:
+                queried = []
+            if self.state.number not in queried:
+                queried.append(self.state.number)
+                f = open(os.path.join(config.kdb_scratch_path, "queried"), 'w')
+                for q in queried:
+                    f.write("%d\n" % q)
+                f.close()
+                kdb.query(self.state)
 
         self.reactant = self.state.get_reactant()
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms)
@@ -83,8 +93,8 @@ class MinModeExplorer(Explorer):
             if config.kdb_on:
                 logger.info("Adding relevant processes to kinetic database.")
                 for process_id in self.state.get_process_ids():
-                    output = self.kdber.add_process(self.state, process_id)
-                    logger.debug("kdbaddpr.pl: %s" % output)
+                    output = kdb.insert(self.state, process_id)
+                    logger.debug("kdb insert: %s" % output)
 
     def generate_displacement(self):
         if config.recycling_on and self.state.number is not 0:
@@ -94,7 +104,7 @@ class MinModeExplorer(Explorer):
                 return displacement, mode, 'recycling'
 
         if config.kdb_on:
-            displacement, mode = self.kdber.make_suggestion()
+            displacement, mode = kdb.make_suggestion()
             if displacement:
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
