@@ -264,9 +264,6 @@ def init(config_file = ""):
     config.kdb_only = parser.getboolean('KDB', 'kdb_only')
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
     config.kdb_path = parser.get('Paths', 'kdb')
-    config.kdb_wait = parser.get('KDB', 'wait')
-    config.kdb_insertpath = parser.get('KDB', 'insert_path')
-    config.kdb_querypath = parser.get('KDB', 'query_path')
     config.kdb_nodupes = parser.getboolean('KDB', 'remove_duplicates')
 
     # Recycling
