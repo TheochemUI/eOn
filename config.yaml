@@ -471,23 +471,7 @@ KDB:
             kind: boolean
             default: False
 
-        insert_path: 
-            kind: string
-            default: kdbinsert.py
-
-        query_path:
-            kind: string
-            default: kdbquery.py
-
         remove_duplicates:
-            kind: boolean
-            default: False
-
-        wait:
-            kind: boolean
-            default: False
-
-        keep:
             kind: boolean
             default: False
 
