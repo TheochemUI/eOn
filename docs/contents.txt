@@ -27,6 +27,7 @@ Contents
    main
    communicator
    potential
+   mpi_potential
    optimizer
    structure_comparison
    paths

@@ -12,7 +12,8 @@ Potential
 
     options:
 
-        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface. [#vasp]_
+        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
+        [#vasp]_
 
         ``lammps``: The LAMMPS potentials. [#lammps]_
 
@@ -32,15 +33,19 @@ Potential
 
         ``sw_si``: Stillinger-Weber potential, for silicon.[#swsi]_
 
-        ``tersoff_si``: Tersoff pair potential with angular terms, for silicon. [#tersoff]_
+        ``tersoff_si``: Tersoff pair potential with angular terms, for
+        silicon. [#tersoff]_
 
-        ``edip``: Environment-Dependent Interatomic Potential, for carbon. [#edip]_
+        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+        [#edip]_
 
         ``zpice``: Water on platinum. [#zpice]_
 
         ``tip4p``: Point charge model for water. [#tip4p]_
 
-        ``mpi``: Communicate with a mpi process to calculate energy and forces. [#mpi]_
+        ``mpi``: Communicate with a MPI process to calculate energy and
+                 forces. More information can be found on the 
+                 :ref:`MPI Potential<mpi_potential>` page.
 
 
 .. [#vasp] Georg, Kresse, `"VASP Group, Theoretical Physics Departments, Vienna" <http://cms.mpi.univie.ac.at/vasp/>`_
