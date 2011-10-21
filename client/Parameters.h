@@ -119,12 +119,13 @@ public:
 
     // [Molecular Dynamics]
     double mdTimeStep;
-    double mdMaxMovedDist;
+    long   mdSteps;  
+
+    // [Parallel Replica]
     bool   mdRefine;
     bool   mdAutoStop;
     long   mdRecordAccuracy;
     long   mdRefineAccuracy;
-    long   mdSteps;
     long   mdDephaseSteps;
     long   mdCheckFreq;
     long   mdRelaxSteps;
