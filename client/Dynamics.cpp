@@ -412,7 +412,7 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
     long tmp_fcalls;
     bool ytest;
 
-    RefineAccuracy = parameters->mdRefineAccuracy; 
+    RefineAccuracy = parameters->paraRepRefineAccuracy; 
     log("[Dynamics] Starting search for transition step with accuracy of %ld steps\n", RefineAccuracy);
     ytest = false;
 

@@ -122,15 +122,15 @@ public:
     long   mdSteps;  
 
     // [Parallel Replica]
-    bool   mdRefine;
-    bool   mdAutoStop;
-    long   mdRecordAccuracy;
-    long   mdRefineAccuracy;
-    long   mdDephaseSteps;
-    long   mdCheckFreq;
-    long   mdRelaxSteps;
-    bool   mdDephaseLoopStop;
-    long   mdDephaseLoopMax;
+    bool   paraRepRefine;
+    bool   paraRepAutoStop;
+    long   paraRepRecordPeriod;
+    long   paraRepRefineAccuracy;
+    long   paraRepDephaseSteps;
+    long   paraRepCheckPeriod;
+    long   paraRepRelaxSteps;
+    bool   paraRepDephaseLoopStop;
+    long   paraRepDephaseLoopMax;
 
     // [Thermostat]
     string thermostat;

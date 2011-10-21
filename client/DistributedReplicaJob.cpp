@@ -138,7 +138,7 @@ void DistributedReplicaJob::samplingStep(){
     nsample = 0;
     status = false;
     sSteps = parameters->drSamplingSteps;
-    check_steps = parameters->mdCheckFreq;
+    check_steps = parameters->paraRepCheckPeriod;
     mdbufflength = check_steps;
     Matter *mdbuff[mdbufflength];
     for(long i =0; i < mdbufflength;i++){
@@ -161,7 +161,7 @@ void DistributedReplicaJob::samplingStep(){
                 if(save_refine){
                     buff_refined = samplingDynamics.refine(mdbuff,mdbufflength,min1);
          //         buff_refined = Refine(mdbuff,mdbufflength);
-                    new_n = buff_refined - parameters->mdRefineAccuracy;
+                    new_n = buff_refined - parameters->paraRepRefineAccuracy;
                     new_n = (new_n > 0)?new_n:0;
                     srefined = new_n + n - ncheck;
                     printf("buff_refined =%ld, srefined =%ld\n",buff_refined,srefined);
