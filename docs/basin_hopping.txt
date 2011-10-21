@@ -5,7 +5,7 @@
 Basin Hopping
 =============
 
-Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimization.
+Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimum. [#wales]_
 
 [Basin Hopping] Options
 =======================
@@ -77,6 +77,8 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
     default: ``300.0``
 
 .. rubric:: References
+
+.. [#wales] D.J. Wales and J.P.K. Doye, J. Phys. Chem. A, 101, 5111 (1997) doi:`10.1021/jp970984n <http://dx.doi.org/10.1021/jp970984n>`_
 
 .. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
 
