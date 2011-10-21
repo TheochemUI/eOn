@@ -34,10 +34,10 @@ Jobs
 
 :ref:`Process Search <process_search>`: finds possible escape mechanisms from a state.
 
-:ref:`Saddle Search <saddle_search>`: finds a nearby saddle point, using one of the following methods to find the lowest curvature mode.
+:ref:`Saddle Search <saddle_search>`: finds a nearby saddle point.
 
-- :ref:`Dimer <dimer>`
-- :ref:`Lanczos <lanczos>`
+- :ref:`Dimer <dimer>`: method to find the lowest curvature mode.
+- :ref:`Lanczos <lanczos>`: method to find the lowest curvature mode.
 
 :ref:`Minimization <minimization>`: optimize the geometry of an initial structure.
 
