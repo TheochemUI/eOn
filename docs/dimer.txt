@@ -5,18 +5,20 @@
 Dimer
 =====
 
+The dimer method for determining the lowest eigenmode.
+
 [Dimer] Options
 ===============
 
 **opt_method**: Optimization algorithm to choose the dimer rotation direction
 
-    default: ``sd``
+    default: ``cg``
 
     options:
 
         ``sd``: steepest descent, rotate along the rotational force.
 
-        ``cg``: conjudate gradient, rotate along conjugate directions.
+        ``cg``: conjugate gradient, rotate along conjugate directions.
 
         ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer
 
