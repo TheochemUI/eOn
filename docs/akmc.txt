@@ -62,9 +62,9 @@ with a brief description.
 
 - :ref:`Dimer <dimer>`
 
-- :ref:`Lanczos <lanczos>`
+    - :ref:`Lanczos <lanczos>`
 
-- :ref:`Hessian <hessian>`
+    - :ref:`Hessian <hessian>`
 
 
 [AKMC] Options
