@@ -10,7 +10,8 @@ In AKMC simulations where there are vastly different rates, the simulation can g
 Monte Carlo with Absorbing Markov Chains
 ----------------------------------------
 
-The following are projective dynamics  parameters which can be set in the **[Coarse Graining]** sections of the config.ini file.
+[Coarse Graining] MCAMC Options
+===============================
 
 **use_mcamc**: This option determines whether the Monte Carlo with Absorbing Markov Chains (MCAMC) coarse graining method will be used. This mutually excludes the use_askmc option.
 
@@ -40,7 +41,8 @@ The basic process of AS-KMC involves gradually raising process barriers found to
 
 Several parameters dictate the functioning of the AS-KMC method. These parameters dictate how much the barriers are raised each time the Superbasin Criterion passes(**askmc_barrier_raise_param**), what defines a “low-barrier” for use in the Superbasin Criterion(**askmc_high_barrier_def**), and the approximate amount of error the user might expect in eventual superbasin exit direction and time compared to normal kmc simulation (**askmc_confidence**). 
 
-The following are AS-KMC parameters which can be set in the **[Coarse Graining]** sections of the config.ini file.
+[Coarse Graining] AS-KMC Options
+================================
 
 **use_askmc**: This option determines whether the AS-KMC coarse graining method will be used. This mutually excludes the **use_projective_dynamics** option.
 
