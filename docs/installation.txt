@@ -22,8 +22,6 @@ Dependencies
     * make
     * gcc (>=4.0)
     * (optional) gfortran or Intel Fortran Compiler
-    * (for BOINC) libboinc
-    * (for BOINC) libarchive
 
 Server Installation
 -------------------
@@ -52,9 +50,3 @@ change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 For most setups the binary ``client`` should be copied to a directory in your
 ``$PATH`` and named ``eonclient``. Otherwise you will need to give the path to
 the client binary in your ``config.ini``. 
-
-BOINC
------
-
-- :ref:`Boinc Server<boinc_server>`
-- :ref:`Boinc Client<boinc_library>`
