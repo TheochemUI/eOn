@@ -235,16 +235,26 @@ int Parameters::load(FILE *file){
         processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
         processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
 
+        // [Optimizers] //
+
+        optMethod = toLowerCase(ini.GetValue("Optimizers", "opt_method", optMethod));
+        optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
+        optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
+        optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
+        optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
+        optVariableTimeStep = ini.GetValueB("Optimizers","variable_time_step", optVariableTimeStep);
+        optLBFGSMemory = ini.GetValueL("Optimizers", "lbfgs_memory", optLBFGSMemory);
+
         // [Saddle Search] //
 
         saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", "dimer"));
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
-        saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", saddleMaxStepSize);
-        saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", saddleMaxIterations);
+        saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", optMaxMove);
+        saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
-        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", saddleConvergedForce);
+        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
@@ -261,16 +271,6 @@ int Parameters::load(FILE *file){
             saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
             saddleConfinePositiveMaxActiveAtoms = ini.GetValueL("Saddle Search", "confine_positive_max_active_atoms", saddleConfinePositiveMaxActiveAtoms);
         }
-
-        // [Optimizers] //
-
-        optMethod = toLowerCase(ini.GetValue("Optimizers", "opt_method", optMethod));
-        optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
-        optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
-        optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
-        optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
-        optVariableTimeStep = ini.GetValueB("Optimizers","variable_time_step", optVariableTimeStep);
-        optLBFGSMemory = ini.GetValueL("Optimizers", "lbfgs_memory", optLBFGSMemory);
 
         // [Dimer] //
 
