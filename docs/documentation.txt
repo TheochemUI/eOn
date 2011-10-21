@@ -15,8 +15,8 @@ There are specific options for each method, and a set of general options which a
 
 EON is designed to run in serial on one computer or in parallel using a communicator to send jobs from a server to clients and receive the results back.  Several parallelization schemes have been implemented, including local communication through files, cluster communication via a queuing system, mpi, and the boinc/arc distributed computing environments.  Methods run in parallel are broken up by the eon server into tasks which are run by client program.  The server then compiles the information sent back by the clients in a way that can be used by the sampling or dynamics methods.
 
-Methods
--------
+Jobs
+----
 
 :ref:`Adaptive kinetic Monte Carlo <akmc>`
 
@@ -24,12 +24,13 @@ Methods
 - :ref:`Kinetic Database <kdb>`
 - :ref:`Coarse Graining <coarse_graining>`
 
-:ref:`Parallel Replica <parallel_replica>`
+:ref:`Parallel Replica Dynamics <parallel_replica>`
+
+:ref:`Molecular Dynamics <dynamics>`
+
+- :ref:`Hyperdynamics <hyperdynamics>`
 
 :ref:`Basin Hopping <basin_hopping>`
-
-Tasks
------
 
 :ref:`Process Search <process_search>`
 
@@ -39,12 +40,6 @@ Tasks
 - :ref:`Lanczos <lanczos>`
 
 :ref:`Minimization <minimization>`
-
-:ref:`Hessian <hessian>`
-
-:ref:`Dynamics <dynamics>`
-
-:ref:`Hyperdynamics <hyperdynamics>`
 
 
 General Options
@@ -57,6 +52,10 @@ General Options
 :ref:`Potential <potential>`
 
 :ref:`Optimizer <optimizer>`
+
+:ref:`Hessian <hessian>`
+
+:ref:`Prefactor <prefactor>`
 
 :ref:`Structure Comparison <structure_comparison>`
 
