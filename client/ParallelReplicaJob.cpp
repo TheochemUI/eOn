@@ -36,8 +36,8 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
     nsteps_refined = 0;
     SPtime = 0.0;
     RLtime = 0.0;
-    check_steps = parameters->mdCheckFreq;
-    relax_steps = parameters->mdRelaxSteps;
+    check_steps = parameters->paraRepCheckPeriod;
+    relax_steps = parameters->paraRepRelaxSteps;
     SPtimebuff = new double[check_steps];
     newstate = false;
     meta = false;
@@ -102,7 +102,7 @@ void ParallelReplicaJob::dynamics()
 {
     bool   status = false, remember = true, stoped = false;
     long   nFreeCoord = reactant->numberOfFreeAtoms()*3;
-    long   RecordAccuracy = parameters->mdRecordAccuracy, mdbufflength;
+    long   RecordAccuracy = parameters->paraRepRecordPeriod, mdbufflength;
     long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0, final_refined;
     AtomMatrix velocities;
     double kinE = 0.0, kb = 1.0/11604.5;
@@ -155,7 +155,7 @@ void ParallelReplicaJob::dynamics()
         ncheck++;
         nsteps++;
 
-        if(parameters->mdRefine && remember && !newstate ){
+        if(parameters->paraRepRefine && remember && !newstate ){
             if(ncheck % RecordAccuracy == 0){
                 nrecord ++;
                 *mdbuff[nrecord-1] = *reactant;
@@ -193,7 +193,7 @@ void ParallelReplicaJob::dynamics()
                     printf("Found New State !\n");
                     *final = *reactant;
                     steps_tmp = nsteps;
-                    if(parameters->mdAutoStop){
+                    if(parameters->paraRepAutoStop){
                         stoped = true;
                     }
                     remember = false;
@@ -233,7 +233,7 @@ void ParallelReplicaJob::dynamics()
     final_refined = steps_tmp;
 
     //printf("mdbufflength = %ld; nrecord = %ld\n",mdbufflength, nrecord);
-    if(parameters->mdRefine && newstate){
+    if(parameters->paraRepRefine && newstate){
         nsteps_refined = PRdynamics.refine(mdbuff,mdbufflength,min1);
         //printf("nsteps_refined=%ld\n",nsteps_refined); 
         final_refined = steps_tmp-check_steps-relax_steps+nsteps_refined*RecordAccuracy;
@@ -337,7 +337,7 @@ void ParallelReplicaJob::saveData(int status)
 
 void ParallelReplicaJob::dephase()
 {
-    long  dephaseSteps = parameters->mdDephaseSteps,i = 0;
+    long  dephaseSteps = parameters->paraRepDephaseSteps,i = 0;
     long  n,nloop, new_n, nbuff, dh_refined;
     bool  state = false;
     AtomMatrix velocity;
@@ -366,7 +366,7 @@ void ParallelReplicaJob::dephase()
         if(state == true){
             dh_refined = dephaseDynamics.refine(DHbuff,nbuff,min1);
             printf("nloop = %ld; refined step = %ld\n",nloop,dh_refined);
-            new_n = dh_refined-parameters->mdRefineAccuracy;
+            new_n = dh_refined-parameters->paraRepRefineAccuracy;
             new_n = (new_n > 0)?new_n:0;
             printf("Dephasing Warning: in a new state,now inverse the momentum and restart from step %ld\n",n+new_n);
             *reactant = *DHbuff[new_n];
@@ -383,8 +383,8 @@ void ParallelReplicaJob::dephase()
            delete DHbuff[i];
        }
 
-       if(parameters->mdDephaseLoopStop){
-           if(nloop > parameters->mdDephaseLoopMax){
+       if(parameters->paraRepDephaseLoopStop){
+           if(nloop > parameters->paraRepDephaseLoopMax){
               printf("Reach Dephase Loop Maximum, Stop Dephasing! Dephsed for %ld steps\n ",n);
               break;
            }

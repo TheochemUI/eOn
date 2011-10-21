@@ -118,15 +118,15 @@ Parameters::Parameters(){
     thermoLangvinFriction = 0.005;                     
   
     // [Parallel Replica] //
-    mdRefine = true;
-    mdAutoStop = false;
-    mdRecordAccuracy = 1;
-    mdRefineAccuracy = 1;
-    mdCheckFreq = 500;
-    mdRelaxSteps = 500;
-    mdDephaseSteps = 200;
-    mdDephaseLoopStop = false;
-    mdDephaseLoopMax = 5;
+    paraRepRefine = true;
+    paraRepAutoStop = false;
+    paraRepRefineAccuracy = 1;
+    paraRepCheckPeriod = 500;
+    paraRepRecordPeriod = int(0.1 * paraRepCheckPeriod);
+    paraRepRelaxSteps = 500;
+    paraRepDephaseSteps = 200;
+    paraRepDephaseLoopStop = false;
+    paraRepDephaseLoopMax = 5;
 
     // [Distributed Replica] //
     drBalanceSteps = 500;
@@ -313,15 +313,15 @@ int Parameters::load(FILE *file){
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
 
         // [Parallel Replica]
-        mdDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", mdDephaseSteps);
-        mdRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", mdRefine);
-        mdAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", mdAutoStop);
-        mdRecordAccuracy = ini.GetValueL("Parallel Replica", "state_save_period", mdRecordAccuracy);
-        mdRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", mdRefineAccuracy);
-        mdCheckFreq = ini.GetValueL("Parallel Replica", "state_check_period", mdCheckFreq);
-        mdRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", mdRelaxSteps);
-        mdDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", mdDephaseLoopStop);
-        mdDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", mdDephaseLoopMax);
+        paraRepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", paraRepDephaseSteps);
+        paraRepRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", paraRepRefine);
+        paraRepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", paraRepAutoStop);
+        paraRepRecordPeriod = ini.GetValueL("Parallel Replica", "state_save_period", paraRepRecordPeriod);
+        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy);
+        paraRepCheckPeriod = ini.GetValueL("Parallel Replica", "state_check_period", paraRepCheckPeriod);
+        paraRepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", paraRepRelaxSteps);
+        paraRepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", paraRepDephaseLoopStop);
+        paraRepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", paraRepDephaseLoopMax);
 
         // [Distributed Replica] //
 
