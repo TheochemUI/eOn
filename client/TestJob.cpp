@@ -173,7 +173,7 @@ void TestJob::checkMode(void){
     Matter *saddle = new Matter(parameters);
     saddle->con2matter(reactant_passed);
     
-    LowestEigenmodeInterface *lowestEigenmode = new Dimer(saddle, parameters);
+    LowestEigenmode* lowestEigenmode = new Dimer(saddle, parameters);
     
 }
 */
