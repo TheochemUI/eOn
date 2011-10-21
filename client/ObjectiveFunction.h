@@ -98,8 +98,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                     // follow eigenmode
                     force = -proj;
                 }
-            }
-            else{
+            }else{
                 // reversing force parallel to eigenmode
                 force += -2.*proj;
             }
