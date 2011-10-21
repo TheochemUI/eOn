@@ -18,7 +18,7 @@ EON is designed to run in serial on one computer or in parallel using a communic
 Jobs
 ----
 
-:ref:`Adaptive kinetic Monte Carlo <akmc>`: uses saddle searches to find possible reactive events and KMC to determine the kinetics.
+:ref:`Adaptive kinetic Monte Carlo <akmc>`: uses saddle searches to find possible reactive events and KMC to determine the state-to-state kinetics.
 
 - :ref:`Recycling <recycling>`: reactive events (processes) between states to speed up AKMC.
 - :ref:`Kinetic Database <kdb>`: of reactive events so they can be reused between AKMC runs.
