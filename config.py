@@ -178,7 +178,7 @@ def init(config_file = ""):
     config.akmc_confidence_correction      = parser.getboolean('AKMC', "confidence_correction")
 
     # Basin Hopping options
-    config.bh_md_probability = parser.getfloat('Basin Hopping', 'md_probability')
+    config.bh_md_probability = parser.getfloat('Basin Hopping', 'initial_md_probability')
 
     # Path options
     config.path_root         = parser.get('Paths', 'main_directory')
@@ -239,7 +239,7 @@ def init(config_file = ""):
 
     # Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
-    config.process_search_default_prefactor = parser.getfloat('Process Search', 'default_prefactor')
+    config.process_search_default_prefactor = parser.getfloat('Prefactor', 'default_prefactor')
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
     # Saddle Search options
