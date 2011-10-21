@@ -51,7 +51,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
     All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
 
-**bb_strech_threshold**: 
+**bb_stretch_threshold**: 
 
     default: ``0.0001``
 
