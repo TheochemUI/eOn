@@ -46,6 +46,6 @@ Here is an example of a script that will run 8 VASP ranks and 1 client rank::
     export EON_NUMBER_OF_CLIENTS=1
     mpirun -n 48 vasp_mpmd : -n 1 client_mpi
 
-If there are 8 cores on the system it would be beneficial to set [Main]
-aggressive=false in the config file so that the client rank doesn't busy wait
-on MPI_Recv calls.
+If there are 8 cores on the system it would be beneficial to set [Potential]
+mpi_aggressive=false in the config file so that the client rank doesn't busy
+wait on MPI_Recv calls.
