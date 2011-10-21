@@ -5,10 +5,12 @@
 Dynamics
 ========
 
+Molecular dynamics based upon Newton's classical equations of motion.
+
 [Dynamics] Options
 ==================
 
-**time_step**: The length of each MD step in femtoseconds.
+**time_step**: The duration of each MD step in femtoseconds.
 
    default: ``1``
 

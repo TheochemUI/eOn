@@ -5,7 +5,10 @@
 Hessian
 =======
 
-Options for controlling how Hessian matricies are calculated.
+Module for determining the Hessian matrix to evaluate prefactors in hamonic transition state theory rate calculations.
+
+[Hessian] Options
+=================
 
 **type**: The Hessian to be calculated has to be one of reactant, saddle, or product. This option only matters for the "hessian" job. Hessian are also calculated in the "process_search" job.
 
