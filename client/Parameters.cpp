@@ -57,7 +57,7 @@ Parameters::Parameters(){
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
-    saddleMinmodeMethod = LowestEigenmodeInterface::MINMODE_DIMER;
+    saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;

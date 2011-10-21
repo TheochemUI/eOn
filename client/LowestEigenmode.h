@@ -8,15 +8,15 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef LOWESTEIGENMODEINTERFACE_H
-#define LOWESTEIGENMODEINTERFACE_H
+#ifndef LOWESTEIGENMODE_H
+#define LOWESTEIGENMODE_H
 
 #include "Eigen.h"
 #include "Matter.h"
 #include "Parameters.h"
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
-class LowestEigenmodeInterface
+class LowestEigenmode
 {
 
 public:
@@ -30,7 +30,7 @@ public:
     static const char MINMODE_LANCZOS[];
     static const char MINMODE_EXACT[];
 
-    virtual ~LowestEigenmodeInterface() {}
+    virtual ~LowestEigenmode() {}
 
     //void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
     void virtual compute(Matter const *matter, AtomMatrix direction) = 0;

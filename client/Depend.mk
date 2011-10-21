@@ -109,9 +109,8 @@ BasinHoppingJob.o: BasinHoppingJob.cpp Dynamics.h Optimizer.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h BasinHoppingJob.h Job.h \
- false_boinc.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h BasinHoppingJob.h Job.h false_boinc.h
 BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Eigen.h Eigen/Dense \
  Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -447,8 +446,8 @@ CommandLine.o: CommandLine.cpp CommandLine.h ConjugateGradients.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Matter.h Parameters.h Potential.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h Log.h
+ LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h Log.h
 Compression.o: Compression.cpp Compression.h
 ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -561,8 +560,8 @@ ConjugateGradients.o: ConjugateGradients.cpp ConjugateGradients.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Matter.h Parameters.h Potential.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h Log.h
+ LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h Log.h
 Dimer.o: Dimer.cpp Dimer.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
@@ -673,8 +672,8 @@ Dimer.o: Dimer.cpp Dimer.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Potential.h HelperFunctions.h \
- LowestEigenmodeInterface.h Log.h
+ Matter.h Parameters.h Potential.h HelperFunctions.h LowestEigenmode.h \
+ Log.h
 DistributedReplicaJob.o: DistributedReplicaJob.cpp Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -786,9 +785,9 @@ DistributedReplicaJob.o: DistributedReplicaJob.cpp Matter.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Parameters.h Potential.h Dynamics.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h DistributedReplicaJob.h Job.h \
- ConjugateGradients.h false_boinc.h
+ LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h DistributedReplicaJob.h Job.h ConjugateGradients.h \
+ false_boinc.h
 Dynamics.o: Dynamics.cpp Dynamics.h Optimizer.h Parameters.h \
  ObjectiveFunction.h Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -900,8 +899,8 @@ Dynamics.o: Dynamics.cpp Dynamics.h Optimizer.h Parameters.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h Log.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h Log.h
 DynamicsJob.o: DynamicsJob.cpp Dynamics.h Optimizer.h Parameters.h \
  ObjectiveFunction.h Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -1013,9 +1012,8 @@ DynamicsJob.o: DynamicsJob.cpp Dynamics.h Optimizer.h Parameters.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h DynamicsJob.h Job.h \
- false_boinc.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h DynamicsJob.h Job.h false_boinc.h
 EpiCenters.o: EpiCenters.cpp EpiCenters.h Matter.h Eigen.h Eigen/Dense \
  Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -1237,7 +1235,7 @@ ExactMinMode.o: ExactMinMode.cpp ExactMinMode.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Potential.h LowestEigenmodeInterface.h
+ Matter.h Parameters.h Potential.h LowestEigenmode.h
 FiniteDifferenceJob.o: FiniteDifferenceJob.cpp FiniteDifferenceJob.h \
  Job.h Parameters.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -1795,8 +1793,8 @@ ImprovedDimer.o: ImprovedDimer.cpp HelperFunctions.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Potential.h ImprovedDimer.h \
- LowestEigenmodeInterface.h Log.h
+ Matter.h Parameters.h Potential.h ImprovedDimer.h LowestEigenmode.h \
+ Log.h
 Job.o: Job.cpp Parameters.h Job.h ProcessSearchJob.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -1907,7 +1905,7 @@ Job.o: Job.cpp Parameters.h Job.h ProcessSearchJob.h Matter.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h SaddleSearch.h LowestEigenmodeInterface.h Optimizer.h \
+ Potential.h SaddleSearch.h LowestEigenmode.h Optimizer.h \
  ObjectiveFunction.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
  ExactMinMode.h Hessian.h SaddleSearchJob.h MinimizationJob.h PointJob.h \
  HessianJob.h ParallelReplicaJob.h DistributedReplicaJob.h \
@@ -2024,8 +2022,8 @@ LBFGS.o: LBFGS.cpp LBFGS.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Matter.h Parameters.h Potential.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h Log.h
+ LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h Log.h
 Lanczos.o: Lanczos.cpp Lanczos.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
@@ -2136,12 +2134,11 @@ Lanczos.o: Lanczos.cpp Lanczos.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Parameters.h Potential.h LowestEigenmodeInterface.h
+ Matter.h Parameters.h Potential.h LowestEigenmode.h
 Log.o: Log.cpp Log.h Parameters.h
-LowestEigenmodeInterface.o: LowestEigenmodeInterface.cpp \
- LowestEigenmodeInterface.h Eigen.h Eigen/Dense Eigen/Core \
- Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
- Eigen/src/Core/util/Constants.h \
+LowestEigenmode.o: LowestEigenmode.cpp LowestEigenmode.h Eigen.h \
+ Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
+ Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
  Eigen/src/Core/util/ForwardDeclarations.h Eigen/src/Core/util/Meta.h \
  Eigen/src/Core/util/XprHelper.h Eigen/src/Core/util/StaticAssert.h \
  Eigen/src/Core/util/Memory.h Eigen/src/Core/NumTraits.h \
@@ -2361,8 +2358,7 @@ Matter.o: Matter.cpp Log.h Parameters.h Matter.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Potential.h HelperFunctions.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h ImprovedDimer.h Lanczos.h \
- ExactMinMode.h
+ LowestEigenmode.h Dimer.h ImprovedDimer.h Lanczos.h ExactMinMode.h
 MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
  Parameters.h Optimizer.h ObjectiveFunction.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -2474,8 +2470,8 @@ MinimizationJob.o: MinimizationJob.cpp MinimizationJob.h Job.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h Log.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h Log.h
 NudgedElasticBand.o: NudgedElasticBand.cpp NudgedElasticBand.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -2587,7 +2583,7 @@ NudgedElasticBand.o: NudgedElasticBand.cpp NudgedElasticBand.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Matter.h Parameters.h Potential.h HelperFunctions.h ConjugateGradients.h \
- Optimizer.h ObjectiveFunction.h LowestEigenmodeInterface.h Dimer.h \
+ Optimizer.h ObjectiveFunction.h LowestEigenmode.h Dimer.h \
  ImprovedDimer.h Lanczos.h ExactMinMode.h Quickmin.h
 NudgedElasticBandJob.o: NudgedElasticBandJob.cpp NudgedElasticBandJob.h \
  Matter.h Eigen.h Eigen/Dense Eigen/Core \
@@ -2701,9 +2697,8 @@ NudgedElasticBandJob.o: NudgedElasticBandJob.cpp NudgedElasticBandJob.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Parameters.h Potential.h NudgedElasticBand.h HelperFunctions.h Job.h \
- ConjugateGradients.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h ImprovedDimer.h Lanczos.h \
- ExactMinMode.h false_boinc.h
+ ConjugateGradients.h Optimizer.h ObjectiveFunction.h LowestEigenmode.h \
+ Dimer.h ImprovedDimer.h Lanczos.h ExactMinMode.h false_boinc.h
 Optimizer.o: Optimizer.cpp Optimizer.h Parameters.h ObjectiveFunction.h \
  Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -2815,9 +2810,8 @@ Optimizer.o: Optimizer.cpp Optimizer.h Parameters.h ObjectiveFunction.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h ConjugateGradients.h Quickmin.h \
- LBFGS.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h ConjugateGradients.h Quickmin.h LBFGS.h
 ParallelReplicaJob.o: ParallelReplicaJob.cpp Matter.h Eigen.h Eigen/Dense \
  Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -2929,8 +2923,8 @@ ParallelReplicaJob.o: ParallelReplicaJob.cpp Matter.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Parameters.h Potential.h Dynamics.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h BondBoost.h ParallelReplicaJob.h Job.h Log.h \
+ LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h BondBoost.h ParallelReplicaJob.h Job.h Log.h \
  false_boinc.h
 Parameters.o: Parameters.cpp Parameters.h INIFile.h EpiCenters.h Matter.h \
  Eigen.h Eigen/Dense Eigen/Core \
@@ -3044,8 +3038,8 @@ Parameters.o: Parameters.cpp Parameters.h INIFile.h EpiCenters.h Matter.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Potential.h HelperFunctions.h Hessian.h Job.h Dynamics.h Optimizer.h \
- ObjectiveFunction.h LowestEigenmodeInterface.h Dimer.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h BondBoost.h SaddleSearch.h NudgedElasticBand.h
+ ObjectiveFunction.h LowestEigenmode.h Dimer.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h BondBoost.h SaddleSearch.h NudgedElasticBand.h
 PointJob.o: PointJob.cpp PointJob.h Job.h Parameters.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -3405,10 +3399,9 @@ ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h SaddleSearch.h LowestEigenmodeInterface.h \
- Optimizer.h ObjectiveFunction.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h Hessian.h Job.h EpiCenters.h \
- false_boinc.h Log.h
+ Parameters.h Potential.h SaddleSearch.h LowestEigenmode.h Optimizer.h \
+ ObjectiveFunction.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h Hessian.h Job.h EpiCenters.h false_boinc.h Log.h
 Quickmin.o: Quickmin.cpp Quickmin.h Optimizer.h Parameters.h \
  ObjectiveFunction.h Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -3520,8 +3513,8 @@ Quickmin.o: Quickmin.cpp Quickmin.h Optimizer.h Parameters.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Potential.h LowestEigenmodeInterface.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h
+ Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
+ Lanczos.h ExactMinMode.h
 SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -3632,7 +3625,7 @@ SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h LowestEigenmodeInterface.h Optimizer.h \
+ Parameters.h Potential.h LowestEigenmode.h Optimizer.h \
  ObjectiveFunction.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
  ExactMinMode.h ConjugateGradients.h EpiCenters.h Log.h
 SaddleSearchJob.o: SaddleSearchJob.cpp SaddleSearchJob.h Matter.h Eigen.h \
@@ -3745,10 +3738,9 @@ SaddleSearchJob.o: SaddleSearchJob.cpp SaddleSearchJob.h Matter.h Eigen.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h SaddleSearch.h LowestEigenmodeInterface.h \
- Optimizer.h ObjectiveFunction.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h ExactMinMode.h Job.h EpiCenters.h Log.h \
- false_boinc.h
+ Parameters.h Potential.h SaddleSearch.h LowestEigenmode.h Optimizer.h \
+ ObjectiveFunction.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
+ ExactMinMode.h Job.h EpiCenters.h Log.h false_boinc.h
 TestJob.o: TestJob.cpp TestJob.h Job.h Parameters.h ConjugateGradients.h \
  Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -3860,6 +3852,6 @@ TestJob.o: TestJob.cpp TestJob.h Job.h Parameters.h ConjugateGradients.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Matter.h Potential.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmodeInterface.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h SaddleSearch.h
+ Matter.h Potential.h Optimizer.h ObjectiveFunction.h LowestEigenmode.h \
+ Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h ExactMinMode.h \
+ SaddleSearch.h
