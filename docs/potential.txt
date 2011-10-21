@@ -31,7 +31,7 @@ Potential
 
         ``lenosky_Si``: Lenosky potential, for silicon. [#lenosky]_
 
-        ``sw_si``: Stillinger-Weber potential, for silicon.[#swsi]_
+        ``sw_si``: Stillinger-Weber potential, for silicon. [#swsi]_
 
         ``tersoff_si``: Tersoff pair potential with angular terms, for
         silicon. [#tersoff]_
@@ -61,7 +61,7 @@ Potential
 .. [#tersoff] J. Tersoff, Phys. Rev. B **38**, 9902–9905 (1988) doi:`10.1103/PhysRevB.38.9902 <http://link.aps.org/doi/10.1103/PhysRevB.38.9902>`_
 .. [#edip] João F. Justo et.al., Phys. Rev. B **58**, 2539–2550 (1998) doi:`10.1103/PhysRevB.58.2539 <http://link.aps.org/doi/10.1103/PhysRevB.58.2539>`_
 .. [#zpice]
-.. [#tip4p]Jorgensen, W. L. et.al, J. Chem. Phys 1983, **79**, 926-935. doi:`10.1063/1.445869 <http://dx.doi.org/10.1063%2F1.445869>`_
+.. [#tip4p] Jorgensen, W. L. et.al, J. Chem. Phys 1983, **79**, 926-935. doi:`10.1063/1.445869 <http://dx.doi.org/10.1063%2F1.445869>`_
 .. [#mpi]
 
 
