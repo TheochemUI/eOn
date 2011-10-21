@@ -18,47 +18,47 @@ EON is designed to run in serial on one computer or in parallel using a communic
 Jobs
 ----
 
-:ref:`Adaptive kinetic Monte Carlo <akmc>`
+:ref:`Adaptive kinetic Monte Carlo <akmc>`: uses saddle searches to find possible reactive events and KMC to determine the kinetics.
 
-- :ref:`Recycling <recycling>`
-- :ref:`Kinetic Database <kdb>`
-- :ref:`Coarse Graining <coarse_graining>`
+- :ref:`Recycling <recycling>`: reactive events (processes) between states to speed up AKMC.
+- :ref:`Kinetic Database <kdb>`: of reactive events so they can be reused between AKMC runs.
+- :ref:`Coarse Graining <coarse_graining>`: to identify and escape groups of states connected by low barriers.
 
-:ref:`Parallel Replica Dynamics <parallel_replica>`
+:ref:`Parallel Replica Dynamics <parallel_replica>`: uses a set of trajectories to accerate the rate of escape from states.
 
-:ref:`Molecular Dynamics <dynamics>`
+:ref:`Molecular Dynamics <dynamics>`: standard classical dynamics.
 
-- :ref:`Hyperdynamics <hyperdynamics>`
+- :ref:`Hyperdynamics <hyperdynamics>`: uses a bias potential which destabilizes minima to accelerate transitions between states.
 
-:ref:`Basin Hopping <basin_hopping>`
+:ref:`Basin Hopping <basin_hopping>`: lowers the barrier between states to accelerate Monte Carlo sampling.
 
-:ref:`Process Search <process_search>`
+:ref:`Process Search <process_search>`: finds possible escape mechanisms from a state.
 
-:ref:`Saddle Search <saddle_search>`
+:ref:`Saddle Search <saddle_search>`: finds a nearby saddle point, using one of the following methods to find the lowest curvature mode.
 
 - :ref:`Dimer <dimer>`
 - :ref:`Lanczos <lanczos>`
 
-:ref:`Minimization <minimization>`
+:ref:`Minimization <minimization>`: optimize the geometry of an initial structure.
 
 
 General Options
 ---------------
 
-:ref:`Main <main>`
+:ref:`Main <main>`: options which not specific to a single job type.
 
-:ref:`Communicator <communicator>` - Parallelization options
+:ref:`Communicator <communicator>`: methods by which the code can be run in parallel.
 
-:ref:`Potential <potential>`
+:ref:`Potential <potential>`: the interatomic potentials available, as well as interfaces to LAMMPS and DFT codes.
 
-:ref:`Optimizer <optimizer>`
+:ref:`Optimizer <optimizer>`: methods for optimizing atomic structures.
 
-:ref:`Hessian <hessian>`
+:ref:`Hessian <hessian>`: options for controlling the calculation of Hessian matricies.
 
-:ref:`Prefactor <prefactor>`
+:ref:`Prefactor <prefactor>`: options for controlling the calculation of harmonic transition state theory prefactors.
 
-:ref:`Structure Comparison <structure_comparison>`
+:ref:`Structure Comparison <structure_comparison>`: options for determining if two structures are the same.
 
-:ref:`Paths <paths>`
+:ref:`Paths <paths>`: directories in which the calculations will be run.
 
-:ref:`Debug <debug>`
+:ref:`Debug <debug>`: options for printing more information to help debug calculations.
