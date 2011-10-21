@@ -38,8 +38,8 @@ In order to run Parallel Replica, set **job** to *parallel_replica* in the
 parameters of thermostat can be set in the **[Dynamics]** section. The temperature 
 for the dynamics run is set in the **[Main]** section.
 
-These are options that go in the **[Parallel Replica]** section of the config.ini file.
-
+[Parallel Replica] Options
+==========================
 
 **dephase_steps**: Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.
 
