@@ -18,6 +18,7 @@ Contents
    parallel_replica
    basin_hopping
 
+   prefactor
    process_search
    saddle_search
    hessian
