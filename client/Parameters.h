@@ -57,9 +57,6 @@ public:
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
-    double processSearchDefaultPrefactor; // default prefactor; calculate explicitly if zero
-    double processSearchPrefactorMax; // max prefactor allowed
-    double processSearchPrefactorMin; // min prefactor allowed
     double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
 
     // [Saddle Search]
@@ -105,10 +102,15 @@ public:
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
 
+    // [Prefactor] //
+    double prefactorDefaultValue; // default prefactor; calculate explicitly if zero
+    double prefactorMaxValue; // max prefactor allowed
+    double prefactorMinValue; // min prefactor allowed
+    double prefactorWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
+    double prefactorMinDisplacement;// atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
+
     // [Hessian]
-    string hessianType;
-    double hessianMinDisplacement; // atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
-    double hessianWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian
+    string hessianAtomList;
 
     // [Nudged Elastic Band]
     long   nebImages;
