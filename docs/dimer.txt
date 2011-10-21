@@ -8,15 +8,6 @@ Dimer
 [Dimer] Options
 ===============
 
-
-**improved**: Improvements to the dimer method from Kastner.
-
-    default: ``False``
-
-**torque_min**: Minimum torque above which the dimer rotates only once and below which is does not rotate.
-
-    default: ``0.1``
-
 **opt_method**: Optimization algorithm to choose the dimer rotation direction
 
     default: ``sd``
@@ -27,25 +18,13 @@ Dimer
 
         ``cg``: conjudate gradient, rotate along conjugate directions.
 
-        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
-
-**torque_max**: Maximum torque above which the dimer rotates up to rotations_max times.
-
-    default: ``1.0``
-
-**finite_angle**: Finite difference angle over which the dimer is rotated to find the lowest curvature.
-
-    default: ``0.005``
-
-**rotations_max**: Maximum number of rotations allowed for the dimer in each step.
-
-    default: ``8``
-
-**rotations_min**: Minimum number of rotations allowed for the dimer in each step.
-
-    default: ``1``
+        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer
 
 **converged_angle**: Dimer is considered converged if it rotates fewer degrees than this.
 
     default: ``5.0``
+
+**rotations_max**: Maximum number of rotations allowed for the dimer in each step.
+
+    default: ``10``
 
