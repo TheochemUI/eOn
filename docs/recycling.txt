@@ -26,7 +26,7 @@ state :math:`P_0`, resulting in a significant reduction in computational costs. 
 is local, the overall cost does not increase with the total system size.
 
 [Recycling] Options
-=======================
+===================
 
 **use_recycling**: Turn recycling on and off.
 
@@ -37,10 +37,6 @@ is local, the overall cost does not increase with the total system size.
     default: ``0.2``
 
 **displace_moved_only**: When performing saddle search displacements, only use atoms in the vicinty of the hole as displacement epicenters.
-
-    default: ``False``
-
-**use_sb_recycling**: Turn superbasin recycling on and off. 
 
     default: ``False``
 
