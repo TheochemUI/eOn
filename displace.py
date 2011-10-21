@@ -22,11 +22,11 @@ class DisplacementManager:
     def __init__(self, reactant, moved_atoms):
         self.reactant = reactant
         # TODO: Remove all the pointless config.* crap
-        if config.displace_frac_random > 0:
+        if config.displace_random_weight > 0:
             self.random = Random(self.reactant, 
                                  config.disp_magnitude, config.disp_radius,
                                  hole_epicenters=moved_atoms)
-        if config.displace_frac_under_coordinated > 0:
+        if config.displace_under_coordinated_weight > 0:
             self.under = Undercoordinated(self.reactant, 
                                           config.disp_max_coord,
                                           config.disp_magnitude, config.disp_radius,
@@ -34,14 +34,14 @@ class DisplacementManager:
                                           cutoff=config.comp_neighbor_cutoff,
                                           use_covalent=config.comp_use_covalent,
                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_frac_least_coordinated > 0:
+        if config.displace_least_coordinated_weight > 0:
             self.least = Leastcoordinated(self.reactant, 
                                           config.disp_magnitude, config.disp_radius,
                                           hole_epicenters=moved_atoms,
                                           cutoff=config.comp_neighbor_cutoff,
                                           use_covalent=config.comp_use_covalent,
                                           covalent_scale=config.comp_covalent_scale)
-        if config.displace_frac_not_FCC_HCP > 0:
+        if config.displace_not_FCC_HCP_weight > 0:
             self.not_FCC_HCP = NotFCCorHCP(self.reactant, 
                                            config.disp_magnitude,
                                            config.disp_radius,
@@ -49,24 +49,24 @@ class DisplacementManager:
                                            cutoff=config.comp_neighbor_cutoff,
                                            use_covalent=config.comp_use_covalent,
                                            covalent_scale=config.comp_covalent_scale)
-        if config.displace_frac_listed > 0:
+        if config.displace_listed_weight > 0:
             self.listed = ListedAtoms(self.reactant, 
                                       config.disp_magnitude, config.disp_radius,
                                       hole_epicenters=moved_atoms,
                                       cutoff=config.comp_neighbor_cutoff,
                                       use_covalent=config.comp_use_covalent,
                                       covalent_scale=config.comp_covalent_scale)
-        if config.displace_frac_water > 0:
+        if config.displace_water_weight > 0:
             self.water = Water(self.reactant, 
                                config.stdev_translation, config.stdev_rotation,
                                config.molecule_list, config.disp_at_random)
         total = 0.0
-        total += config.displace_frac_random
-        total += config.displace_frac_listed
-        total += config.displace_frac_not_FCC_HCP
-        total += config.displace_frac_under_coordinated
-        total += config.displace_frac_least_coordinated
-        total += config.displace_frac_water
+        total += config.displace_random_weight
+        total += config.displace_listed_weight
+        total += config.displace_not_FCC_HCP_weight
+        total += config.displace_under_coordinated_weight
+        total += config.displace_least_coordinated_weight
+        total += config.displace_water_weight
         # If no fractions are defined, do 100% random displacements.
         if total == 0.0:
             total = 1.0
@@ -75,12 +75,12 @@ class DisplacementManager:
                                  config.disp_magnitude, config.disp_radius,
                                  hole_epicenters=moved_atoms)
         else:
-            self.plist = [config.displace_frac_random/total]
-        self.plist.append(self.plist[-1] + config.displace_frac_listed/total)        
-        self.plist.append(self.plist[-1] + config.displace_frac_not_FCC_HCP/total)        
-        self.plist.append(self.plist[-1] + config.displace_frac_under_coordinated/total)        
-        self.plist.append(self.plist[-1] + config.displace_frac_least_coordinated/total)        
-        self.plist.append(self.plist[-1] + config.displace_frac_water/total)        
+            self.plist = [config.displace_random_weight/total]
+        self.plist.append(self.plist[-1] + config.displace_listed_weight/total)        
+        self.plist.append(self.plist[-1] + config.displace_not_FCC_HCP_weight/total)        
+        self.plist.append(self.plist[-1] + config.displace_under_coordinated_weight/total)        
+        self.plist.append(self.plist[-1] + config.displace_least_coordinated_weight/total)        
+        self.plist.append(self.plist[-1] + config.displace_water_weight/total)        
 
     def make_displacement(self):
         disp_types = ["random", "listed", "not_FCC_HCP", "under", "least", "water"]

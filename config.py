@@ -243,12 +243,12 @@ def init(config_file = ""):
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
     # Saddle Search options
-    config.displace_frac_random = parser.getfloat('Saddle Search', 'displace_frac_random') # undocumented
-    config.displace_frac_listed = parser.getfloat('Saddle Search', 'displace_frac_listed') # undocumented
-    config.displace_frac_not_FCC_HCP = parser.getfloat('Saddle Search', 'displace_frac_not_FCC_HCP') # undocumented
-    config.displace_frac_under_coordinated = parser.getfloat('Saddle Search', 'displace_frac_under_coordinated') # undocumented
-    config.displace_frac_least_coordinated = parser.getfloat('Saddle Search', 'displace_frac_least_coordinated') # undocumented
-    config.displace_frac_water = parser.getfloat('Saddle Search', 'displace_frac_water') # undocumented
+    config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight') # undocumented
+    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight') # undocumented
+    config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight') # undocumented
+    config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight') # undocumented
+    config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight') # undocumented
+    config.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
     config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
     config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
     config.molecule_list = eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
