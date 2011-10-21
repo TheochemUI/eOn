@@ -20,10 +20,10 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Parameters.h"
-#include "LowestEigenmodeInterface.h"
+#include "LowestEigenmode.h"
 
 // dimer method to find the lowest curvature mode
-class Dimer : public LowestEigenmodeInterface{
+class Dimer : public LowestEigenmode {
 
 public:
 

@@ -12,7 +12,7 @@
 #define SADDLESEARCH_H
 
 #include "Matter.h"
-#include "LowestEigenmodeInterface.h"
+#include "LowestEigenmode.h"
 #include "Eigen.h"
 #include "Optimizer.h"
 

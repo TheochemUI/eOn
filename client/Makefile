@@ -220,7 +220,7 @@ OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o 
 	DistributedReplicaJob.o FiniteDifferenceJob.o NudgedElasticBandJob.o	    \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o               \
 	NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
-	DynamicsJob.o Log.o LBFGS.o LowestEigenmodeInterface.o Optimizer.o
+	DynamicsJob.o Log.o LBFGS.o LowestEigenmode.o Optimizer.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo

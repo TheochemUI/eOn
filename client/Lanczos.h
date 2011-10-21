@@ -14,10 +14,10 @@
 #include "Eigen.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "LowestEigenmodeInterface.h"
+#include "LowestEigenmode.h"
 
 // Lanczos method to find the lowest curvature mode
-class Lanczos : public LowestEigenmodeInterface
+class Lanczos : public LowestEigenmode
 {
 
     public:
