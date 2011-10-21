@@ -82,7 +82,8 @@ consecutive rejections have taken place.
 **initial_md_probability**: The probability that molecular dynamics is run
 before the first step is taken. The parameters for molecular dynamics can be
 set in the [Dynamics] section. As default, the temperature specified in [Main]
-will be used, or another temperature can be specificed in MD_temp.
+will be used, or another temperature can be specificed with
+initial_md_temperature.
 
     default: ``0.9``
 
