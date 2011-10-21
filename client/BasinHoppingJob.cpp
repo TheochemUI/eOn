@@ -63,9 +63,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
 //    current->con2matter("reactant_passed.con");
     string conFilename = getRelevantFile(parameters->conFilename);
     current->con2matter(conFilename);
-    if(parameters->basinHoppingMDFirst==true){
+    if(parameters->basinHoppingInitialMD==true){
         Dynamics dyn(current,parameters);
-        dyn.fullSteps(parameters->basinHoppingMDTemp);
+        dyn.fullSteps(parameters->basinHoppingInitialMDTemperature);
     }
     *trial = *current;
     *minTrial = *current;
