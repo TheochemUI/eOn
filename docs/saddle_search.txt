@@ -40,7 +40,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``5.0``
 
-**displace_magnitude**: The standard deviation of the magnitude of the displacement.
+**displace_magnitude**: The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.
 
     default: ``0.1``
     
@@ -48,27 +48,23 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
     
-**displace_frac_random**: The number of displacements per [sum of displace_frac_*] to displace with a random epicenter.
+**displace_random_weight**: Relative probability to displace with a random epicenter.
 
     default: ``1.0``
 
-**displace_frac_not_FCC_HCP**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter that is not FCC or HCP coordinated.
+**displace_not_FCC_HCP_weight**:  Relative probabiilty to displace with an epicenter that is not FCC or HCP coordinated.
 
     default: ``0.0``
 
-**displace_frac_water**:  The number of displacements per [sum of displace_frac_*] to displace with the water displacement algorithm.
+**displace_least_coordinated_weight**:  Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration. 
 
     default: ``0.0``
 
-**displace_frac_least_coordinated**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration. 
+**displace_listed_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
 
     default: ``0.0``
 
-**displace_frac_listed**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter listed in displace_atomlist. 
-
-    default: ``0.0``
-
-**displace_frac_under_coordinated**:  The number of displacements per [sum of displace_frac_*] to displace with an epicenter with a coordination equal to or less than displace_max_coordination.
+**displace_under_coordinated_weight**:  Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.
 
     default: ``0.0``
 
@@ -79,42 +75,4 @@ A saddle search is initiated by making a local displacement of atoms from their 
 **displace_max_coordination**: When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
 
     default: ``11``
-
-**client_displace_type**: Type of displace to use client-side.
-
-    default: ``load``
-
-    options:
-
-        ``load``: Load the server-side displacement.
-
-        ``least_coordinated``: Displacement is made on the client centered on an atom with the minimal coordination.
-
-        ``not_FCC_HCP_coordinated``: Displacement is made on the client centered on an atom that is not in a local HCP or FCC coordination.
-
-        ``last_atom``: Displacement is made on the client centered on the last atom in the configuration.
-
-**perp_force_ratio**: 
-
-    default: ``0.0``
-
-**molecule_list**: 
-
-    default: ``[]``
-
-**disp_at_random**: 
-
-    default: ``1``
-
-**max_single_displace**: 
-
-    default: ``10.0``
-
-**stdev_translation**: 
-
-    default: ``0.2``
-
-**stdev_rotation**: 
-
-    default: ``1.0``
 
