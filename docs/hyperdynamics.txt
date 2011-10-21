@@ -4,13 +4,14 @@
 Hyperdynamics
 =============
 
-The hyperdynamics method uses a bias potential which should be zero at transition state and positive in minima in order to increase the rate of transitions. [#hyperdynamics_ref]_ The hyperdynamics time step :math:`\delta t` can be obtained from the molecular dynamics simulation time step :math:`\delta t^b` multiplied by a boost factor :math:`e^{\beta \Delta V}`, where :math:`{\Delta V}` is the bias potential.
+The hyperdynamics method uses a bias potential which should be zero at transition states and positive in minima in order to accelerate the rate of transitions. [#hyperdynamics_ref]_ The hyperdynamics time step :math:`\delta t` can be obtained from the molecular dynamics simulation time step :math:`\delta t^b` multiplied by a boost factor :math:`e^{\beta \Delta V}`, where :math:`{\Delta V}` is the bias potential.
 
-There are several possible forms of bias potential. In EON, we adapt the bond-boost method, [#bondboost_ref]_ where the bias potential is controlled by the maximal (fractional) change in any bond length in the system.  This is a fairly good bias potential for systems in which the dynamics is governed by bond breaking and forming events.
+There are several possible forms of bias potential. In EON, we have implemented the bond-boost method, [#bondboost_ref]_ where the bias potential is controlled by the maximal (fractional) change in any bond length in the system.  This is a good bias potential for systems in which the dynamics is governed by bond breaking and forming events.
 
-The hyperdynamics method is integraded with the parallel Replica method in EON. You can run hyperdynamics by parallel replica job with **[Hyper dynamics]** options turned on. 
+The hyperdynamics method is integrated with the parallel Replica method in EON. You can run hyperdynamics with a parallel replica job by setting the **[bias_potential]** option. 
 
-These are options that go in the **[Hyperdynamics]** section of the config.ini file.
+[Hyperdynamics] Options
+=======================
 
 **bias_potential**: 
 
