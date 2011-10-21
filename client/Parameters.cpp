@@ -118,7 +118,6 @@ Parameters::Parameters(){
     thermoLangvinFriction = 0.005;                     
   
     // [Parallel Replica] //
-    mdMaxMovedDist = 2.0;
     mdRefine = true;
     mdAutoStop = false;
     mdRecordAccuracy = 1;
@@ -316,10 +315,10 @@ int Parameters::load(FILE *file){
         // [Parallel Replica]
         mdDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", mdDephaseSteps);
         mdRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", mdRefine);
-        mdAutoStop = ini.GetValueB("Parallel Replica", "auto_stop", mdAutoStop);
-        mdRecordAccuracy = ini.GetValueL("Parallel Replica", "record_resolution", mdRecordAccuracy);
+        mdAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", mdAutoStop);
+        mdRecordAccuracy = ini.GetValueL("Parallel Replica", "state_save_period", mdRecordAccuracy);
         mdRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", mdRefineAccuracy);
-        mdCheckFreq = ini.GetValueL("Parallel Replica", "check_period", mdCheckFreq);
+        mdCheckFreq = ini.GetValueL("Parallel Replica", "state_check_period", mdCheckFreq);
         mdRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", mdRelaxSteps);
         mdDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", mdDephaseLoopStop);
         mdDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", mdDephaseLoopMax);
