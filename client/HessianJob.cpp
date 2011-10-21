@@ -39,7 +39,9 @@ std::vector<std::string> HessianJob::run(void)
     product->con2matter(product_passed);
 
     Hessian hessian(reactant, saddle, product, parameters);
-    VectorXd modes = hessian.getModes(parameters->hessianType);
+//    VectorXd modes = hessian.getModes(parameters->hessianType);
+    //XXX: to fix build for now...
+    VectorXd modes;
 
     bool failed = modes.size()==0;
 
@@ -57,8 +59,9 @@ std::vector<std::string> HessianJob::run(void)
 
     fprintf(fileResults, "%s good\n", failed ? "false" : "true");
     fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
-    fprintf(fileResults, "%d hessian_size\n", 
-            (int)hessian.getHessian(parameters->hessianType).rows());
+//XXX: to fix build
+//    fprintf(fileResults, "%d hessian_size\n", 
+//            (int)hessian.getHessian(parameters->hessianType).rows());
     if(!failed)
     {
         for(int i=0; i<modes.size(); i++)
