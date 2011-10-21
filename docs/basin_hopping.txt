@@ -14,11 +14,13 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
     default: ``0.5``
 
-**quenching_steps**: Number at steps at 0 temperature.
+**quenching_steps**: Number at steps at 0 temperature at the end of the run.
 
     default: ``0``
 
-**swap_probability**: The probability in range [0,1.0] that a swapping step takes place instead of a displacement step. The swap step selects two atoms of different elements and switches them.
+**swap_probability**: The probability in range [0,1.0] that a swapping step
+takes place instead of a displacement step. The swap step selects two atoms of
+different elements and swaps their position.
 
     default: ``0.0``
 
@@ -26,15 +28,15 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
     default: ``False``
 
-**md_first**:
-
-    default: ``False``
-
 **steps**: Number at steps to take at the temeprature assigned.
 
     default: ``10000``
 
-**jump_max**: The number of consecutive rejected steps after which jump steps should be taken. This serves to provide a more global search when the structure is stuck in a certain basin. The number of jump steps is assigned in jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by Iwamatsu and Okabe. [#iwamatsu]_
+**jump_max**: The number of consecutive rejected steps after which jump steps
+should be taken. This serves to provide a more global search when the structure
+is stuck in a certain basin. The number of jump steps is assigned in
+jump_steps. See paper on the Basin Hopping with Occasional Jumping algorithm by
+Iwamatsu and Okabe. [#iwamatsu]_
 
     default: ``0``
 
@@ -42,37 +44,50 @@ Basin hopping is a Monte Carlo method in which the energy of each configuration 
 
     default: ``False``
 
-**displacement_distribution**: The distribution used for the displacement of each atom.
+**displacement_distribution**: The distribution used for the displacement of
+each atom.
 
     default: ``uniform``
 
     options:
 
-        ``gaussian``: max_displacement serves as the width of a gaussian distribution used to select displacements
+        ``gaussian``: max_displacement serves as the standard deviation of a
+        gaussian distribution used to select displacements
 
         ``uniform``: A random number is selected between 0 and max_displacement
 
-**max_displacement_algorithm**: The algorithm used to assign max displacement of each atom. [#kim]_
+**max_displacement_algorithm**: The algorithm used to assign max displacement
+of each atom. [#kim]_
 
     default: ``standard``
 
     options:
 
-        ``quadratic``: The max displacement of each atom will be quadratically correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+        ``quadratic``: The max displacement of each atom will be quadratically
+        correlated to its distance from the geometric center, with the overal
+        maximum displacement being the value assigned in max_displacement.
 
-        ``linear``: The max displacement of each atom will be linearly correlated to its distance from the geometric center, with the overal maximum displacement being the value assigned in max_displacement.
+        ``linear``: The max displacement of each atom will be linearly
+        correlated to its distance from the geometric center, with the overal
+        maximum displacement being the value assigned in max_displacement.
 
-        ``standard``: The max displacement of all the atoms will be the value assigned in max_displacement.
+        ``standard``: The max displacement of all the atoms will be the value
+        assigned in max_displacement.
 
-**jump_steps**: The number of jump steps to take after the jump_max number of consecutive rejections have taken place.
+**jump_steps**: The number of jump steps to take after the jump_max number of
+consecutive rejections have taken place.
 
     default: ``0``
 
-**md_probability**: The probability that molecular dynamics is run before the first step is taken. The parameters for molecular dynamics can be set in the [Dynamics] section. As default, the temperature specified in [Main] will be used, or another temperature can be specificed in MD_temp.
+**initial_md_probability**: The probability that molecular dynamics is run
+before the first step is taken. The parameters for molecular dynamics can be
+set in the [Dynamics] section. As default, the temperature specified in [Main]
+will be used, or another temperature can be specificed in MD_temp.
 
     default: ``0.9``
 
-**md_temp**: The temperature to use for the molecular dynamics steps that occur before basin hopping steps.
+**initial_md_temperature**: The temperature to use for the molecular dynamics
+steps that occur before basin hopping steps.
 
     default: ``300.0``
 
