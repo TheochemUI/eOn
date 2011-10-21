@@ -7,8 +7,8 @@ Process Search
 
 The AKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.
 
-**[Process Search]** parameters
--------------------------------
+[Process Search] parameters
+---------------------------
 
 **prefactor_max**: Maximum value for a resonable prefactor.
 
