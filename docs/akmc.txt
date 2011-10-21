@@ -60,11 +60,12 @@ with a brief description.
 
 - :ref:`Saddle Search <saddle_search>`
 
-- :ref:`Dimer <dimer>`
+- Min-Mode Methods
+    - :ref:`Dimer <dimer>`
 
     - :ref:`Lanczos <lanczos>`
 
-    - :ref:`Hessian <hessian>`
+- :ref:`Hessian <hessian>`
 
 
 [AKMC] Options
