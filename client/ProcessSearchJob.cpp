@@ -175,7 +175,7 @@ int ProcessSearchJob::doProcessSearch(void)
         return SaddleSearch::STATUS_BAD_HIGH_BARRIER;
     }
 
-    if(!parameters->processSearchDefaultPrefactor)
+    if(!parameters->prefactorDefaultValue)
     {
         Hessian hessian(min1, saddle, min2, parameters);
         /* Perform the dynamical matrix caluclation */
@@ -230,19 +230,19 @@ int ProcessSearchJob::doProcessSearch(void)
         prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
 
         /* Check that the prefactors are in the correct range */
-        if((prefactorsValues[0]>parameters->processSearchPrefactorMax) ||
-           (prefactorsValues[0]<parameters->processSearchPrefactorMin)){
+        if((prefactorsValues[0]>parameters->prefactorMaxValue) ||
+           (prefactorsValues[0]<parameters->prefactorMinValue)){
             cout<<"Bad reactant-to-saddle prefactor:"<<prefactorsValues[0]<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
-        if((prefactorsValues[1]>parameters->processSearchPrefactorMax) ||
-           (prefactorsValues[1]<parameters->processSearchPrefactorMin)){
+        if((prefactorsValues[1]>parameters->prefactorMaxValue) ||
+           (prefactorsValues[1]<parameters->prefactorMinValue)){
             cout<<"Bad product-to-saddle prefactor:"<<prefactorsValues[1]<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
     }else{ // use the default prefactor value specified
-        prefactorsValues[0]=parameters->processSearchDefaultPrefactor;
-        prefactorsValues[1]=parameters->processSearchDefaultPrefactor;
+        prefactorsValues[0]=parameters->prefactorDefaultValue;
+        prefactorsValues[1]=parameters->prefactorDefaultValue;
     }
     return SaddleSearch::STATUS_GOOD;
 }

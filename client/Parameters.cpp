@@ -50,10 +50,7 @@ Parameters::Parameters(){
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
-    processSearchDefaultPrefactor = 0;
     processSearchMinimizationOffset = 0.2;
-    processSearchPrefactorMax = 10e20;
-    processSearchPrefactorMin = 10e8;
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
@@ -95,9 +92,7 @@ Parameters::Parameters(){
     lanczosMaxIterations = 20;
 
     // [Hessian] //
-    hessianType = Hessian::REACTANT;
-    hessianMinDisplacement = 0.25;
-    hessianWithinRadius = 5.0;
+    hessianAtomList = string("All");
 
     // [Nudged Elastic Band] //
     nebImages = 5;
@@ -229,9 +224,6 @@ int Parameters::load(FILE *file){
         // [Process Search] //
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
-        processSearchDefaultPrefactor = ini.GetValueF("Process Search", "default_prefactor", processSearchDefaultPrefactor);
-        processSearchPrefactorMax = ini.GetValueF("Process Search", "prefactor_max", processSearchPrefactorMax);
-        processSearchPrefactorMin = ini.GetValueF("Process Search", "prefactor_min", processSearchPrefactorMin);
         processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
 
         // [Optimizers] //
@@ -288,11 +280,16 @@ int Parameters::load(FILE *file){
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
+        // [Prefactor] //
+        prefactorDefaultValue = ini.GetValueF("Prefactor", "default_value", prefactorDefaultValue);
+        prefactorMaxValue = ini.GetValueF("Prefactor", "max_value", prefactorMaxValue);
+        prefactorMinValue = ini.GetValueF("Prefactor", "min_value", prefactorMinValue);
+        prefactorWithinRadius = ini.GetValueF("Prefactor", "within_radius", prefactorWithinRadius);
+        prefactorMinDisplacement = ini.GetValueF("Prefactor", "min_displacement", prefactorMinDisplacement);
+
         // [Hessian] //
 
-        hessianType = toLowerCase(ini.GetValue("Hessian", "type", "reactant"));
-        hessianWithinRadius = ini.GetValueF("Hessian", "within_radius", hessianWithinRadius);
-        hessianMinDisplacement = ini.GetValueF("Hessian", "min_displacement", hessianMinDisplacement);
+        hessianAtomList = toLowerCase(ini.GetValue("Hessian", "atom_list", hessianAtomList));
 
         // [Nudged Elastic Band]
 
