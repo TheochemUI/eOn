@@ -91,7 +91,7 @@ Parameters::Parameters(){
     dimerRotationsMax = 10; // old dimer and new dimer
 
     // [Lanczos] //
-    lanczosTolerance = 0.001;
+    lanczosTolerance = 0.01;
     lanczosMaxIterations = 20;
 
     // [Hessian] //
