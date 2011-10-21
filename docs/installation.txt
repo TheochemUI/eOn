@@ -14,9 +14,9 @@ Dependencies
 ------------
 
 * Server
-    * python (>=2.4)
-    * `numpy (>=1.2.1) <http://new.scipy.org/download.html>`_
-    * (for MPI communicator) `mpi4py <http://mpi4py.scipy.org/>`_
+    * `python <http://www.python.org/download>`_ (>=2.4)
+    * `numpy <http://new.scipy.org/download.html>`_ (>=1.2.1)
+    * (optional, for MPI communicator) `mpi4py <http://mpi4py.scipy.org/>`_
 
 * Client
     * make
