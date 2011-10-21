@@ -2,7 +2,7 @@
 #define OBJECTIVE_FUNCTION_H
 
 #include "Matter.h"
-#include "LowestEigenmodeInterface.h"
+#include "LowestEigenmode.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
@@ -52,7 +52,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
             matter = matterPassed;
             eigenvector = modePassed;
             parameters = parametersPassed;
-            if(parameters->saddleMinmodeMethod == LowestEigenmodeInterface::MINMODE_DIMER)
+            if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
             {
                 if(parameters->dimerImproved)
                 {
@@ -64,11 +64,11 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                 }
                 
             }
-            else if(parameters->saddleMinmodeMethod == LowestEigenmodeInterface::MINMODE_LANCZOS)
+            else if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS)
             {
                 minModeMethod = new Lanczos(matter, parameters);
             }
-            else if(parameters->saddleMinmodeMethod == LowestEigenmodeInterface::MINMODE_EXACT)
+            else if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_EXACT)
             {
                 minModeMethod = new ExactMinMode(matter, parameters);
             }
@@ -113,7 +113,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         double getConvergence() { return matter->maxForce(); }
         AtomMatrix eigenvector;
         double eigenvalue;
-        LowestEigenmodeInterface *minModeMethod;
+        LowestEigenmode *minModeMethod;
 
     private:
         Matter *matter;

@@ -14,10 +14,10 @@
 #include "Eigen.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "LowestEigenmodeInterface.h"
+#include "LowestEigenmode.h"
 
 // dimer method to find the lowest curvature mode
-class ExactMinMode: public LowestEigenmodeInterface
+class ExactMinMode: public LowestEigenmode
 {
 
     public:
