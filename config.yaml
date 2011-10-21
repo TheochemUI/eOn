@@ -360,7 +360,7 @@ Dimer:
 
         rotations_max:
             kind: int
-            default: 2
+            default: 10
 
         rotations_min:
             kind: int
@@ -368,7 +368,7 @@ Dimer:
 
         converged_angle:
             kind: float
-            default: 1.0
+            default: 5.0
 
 ################################################################################
 
@@ -389,10 +389,6 @@ Basin Hopping:
             default: 0.0
 
         single_atom_displace:
-            kind: boolean
-            default: False
-
-        md_first:
             kind: boolean
             default: False
 
@@ -427,11 +423,11 @@ Basin Hopping:
             kind: int
             default: 0
 
-        md_probability:
+        initial_md_probability:
             kind: float
             default: 0.9
 
-        md_temp:
+        initial_md_temperature:
             kind: float
             default: 300.0
 
@@ -518,14 +514,6 @@ Process Search:
 
     options:
 
-        prefactor_max:
-            kind: float
-            default: 1e+21
-
-        default_prefactor:
-            kind: float
-            default: 0
-
         minimization_offset:
             kind: float
             default: 0.2
@@ -534,20 +522,11 @@ Process Search:
             kind: boolean
             default: False
 
-        prefactor_min:
-            kind: float
-            default: 1000000000.0
-
 ################################################################################
-
-Hessian:
+Prefactor:
 
     options:
-
-        type:
-            kind: string
-            default: reactant
-
+        
         min_displacement:
             kind: float
             default: 0.25
@@ -555,6 +534,28 @@ Hessian:
         within_radius:
             kind: float
             default: 5.0
+
+        prefactor_max:
+            kind: float
+            default: 1e+21
+
+        default_prefactor:
+            kind: float
+            default: 0
+
+        prefactor_min:
+            kind: float
+            default: 1e+9
+
+################################################################################
+
+Hessian:
+
+    options:
+
+        atom_list:
+            kind: string
+            default: All
 
 ################################################################################
 
