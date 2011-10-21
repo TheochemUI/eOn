@@ -1,0 +1,35 @@
+
+.. _prefactor:
+
+=========
+Prefactor
+=========
+
+
+[Prefactor] Options
+-------------------
+
+**min_displacement**: Minimum amount that an atom has to move to be included in
+the Hessian calculation.
+
+    default: ``0.25``
+
+**within_radius**: Atoms within this radius of moving atoms are included in the
+Hessian.
+
+    default: ``5.0``
+
+**default_value**: Calculate prefactor if zero, otherwise use given value
+instead of doing a full prefactor calculation.
+
+    default: ``0``
+
+**min_value**: Minimum value for a reasonable prefactor.
+
+    default: ``1e+9``
+
+
+**max_value**: Maximum value for a reasonable prefactor.
+
+    default: ``1e+21``
+
