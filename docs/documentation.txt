@@ -28,7 +28,7 @@ Jobs
 
 :ref:`Molecular Dynamics <dynamics>`: standard classical dynamics.
 
-- :ref:`Hyperdynamics <hyperdynamics>`: uses a bias potential which destabilizes minima to accelerate transitions between states.
+- :ref:`Hyperdynamics <hyperdynamics>`: uses a bias potential to accelerate transitions between states.
 
 :ref:`Basin Hopping <basin_hopping>`: lowers the barrier between states to accelerate Monte Carlo sampling.
 
