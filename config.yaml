@@ -732,27 +732,27 @@ Saddle Search:
                 - dimer
                 - lanczos
 
-        displace_frac_random:
+        displace_random_weight:
             kind: float
             default: 0.0
         
-        displace_frac_listed:
+        displace_listed_weight:
             kind: float
             default: 0.0
 
-        displace_frac_not_FCC_HCP:
+        displace_not_FCC_HCP_weight:
             kind: float
             default: 0.0
 
-        displace_frac_under_coordinated:
+        displace_under_coordinated_weight:
             kind: float
             default: 0.0
         
-        displace_frac_least_coordinated:
+        displace_least_coordinated_weight:
             kind: float
             default: 0.0
         
-        displace_frac_water:
+        displace_water_weight:
             kind: float
             default: 0.0
 
