@@ -153,8 +153,8 @@ Parameters::Parameters(){
     basinHoppingSwapProbability = 0.0;
     basinHoppingJumpMax = 10;
     basinHoppingJumpSteps = 0;
-    basinHoppingMDFirst = false;
-    basinHoppingMDTemp = 300.0;
+    basinHoppingInitialMD = false;
+    basinHoppingInitialMDTemperature = 300.0;
 
     // MPI
     MPIPotentialRank = -1;
@@ -352,8 +352,8 @@ int Parameters::load(FILE *file){
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
         basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
-        basinHoppingMDFirst = ini.GetValueB("Basin Hopping", "md_first", basinHoppingMDFirst);
-        basinHoppingMDTemp = ini.GetValueF("Basin Hopping", "md_temp", ini.GetValueF("Main", "temperature", temperature));
+        basinHoppingInitialMD = ini.GetValueB("Basin Hopping", "initial_md", basinHoppingInitialMD);
+        basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", ini.GetValueF("Main", "temperature", temperature));
 
     }
     else
