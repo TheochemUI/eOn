@@ -316,9 +316,10 @@ int Parameters::load(FILE *file){
         paraRepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", paraRepDephaseSteps);
         paraRepRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", paraRepRefine);
         paraRepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", paraRepAutoStop);
-        paraRepRecordPeriod = ini.GetValueL("Parallel Replica", "state_save_period", paraRepRecordPeriod);
-        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy);
         paraRepCheckPeriod = ini.GetValueL("Parallel Replica", "state_check_period", paraRepCheckPeriod);
+        paraRepRecordPeriod = int(0.1*paraRepCheckPeriod);
+        paraRepRecordPeriod = ini.GetValueL("Parallel Replica", "state_save_period", paraRepRecordPeriod);
+        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy); 
         paraRepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", paraRepRelaxSteps);
         paraRepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", paraRepDephaseLoopStop);
         paraRepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", paraRepDephaseLoopMax);
