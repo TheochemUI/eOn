@@ -122,7 +122,7 @@ Parameters::Parameters(){
     paraRepAutoStop = false;
     paraRepRefineAccuracy = 1;
     paraRepCheckPeriod = 500;
-    paraRepRecordPeriod = int(0.1 * paraRepCheckPeriod);
+    paraRepRecordPeriod = 50;
     paraRepRelaxSteps = 500;
     paraRepDephaseSteps = 200;
     paraRepDephaseLoopStop = false;
