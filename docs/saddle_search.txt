@@ -20,21 +20,9 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
         ``lanczos``: Use the :ref:`Lanczos <lanczos>` min-mode method.
 
-**converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.
-
-    default: ``0.01``
-
 **max_energy**: The energy at which a saddle search is considered bad and terminated.
 
     default: ``20.0``
-
-**max_step_size**: 
-
-    default: ``0.2``
-
-**max_iterations**: The maximum number of translation steps to be taken.
-
-    default: ``1000``
 
 **displace_radius**: Atoms within this distance of the epicenter will be displaced.
 
@@ -43,10 +31,6 @@ A saddle search is initiated by making a local displacement of atoms from their 
 **displace_magnitude**: The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.
 
     default: ``0.1``
-    
-**displace_min_norm**: The total length of the displacement vector is ensured to exceeds this value. Is useful when only a few degrees of freedoms are displaced to guarantee that the starting point for the saddle point search is significantly different from the initial minimum.
-
-    default: ``0.0``
     
 **displace_random_weight**: Relative probability to displace with a random epicenter.
 
@@ -75,4 +59,16 @@ A saddle search is initiated by making a local displacement of atoms from their 
 **displace_max_coordination**: When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
 
     default: ``11``
+
+**converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.
+
+    default: ``[Optimizer] converged_force``
+
+**max_step_size**: 
+
+    default: ``[Optimizer] max_move``
+
+**max_iterations**: The maximum number of translation steps to be taken.
+
+    default: ``[Optimizer] max_iterations``
 
