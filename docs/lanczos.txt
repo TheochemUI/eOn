@@ -12,13 +12,9 @@ The Lanczos method for determining the lowest eigenmode.
 
 **tolerance**: This is the convergence critera for relative error of the lowest eigenvalue.
 
-    type: float
-
-    default: ``0.001``
+    default: ``0.01``
 
 **max_iterations**: The maximum number of refinement iterations when calculating the minimum eigenvalue.
-
-    type: int
 
     default: ``20``
 
