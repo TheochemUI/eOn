@@ -535,17 +535,17 @@ Prefactor:
             kind: float
             default: 5.0
 
-        prefactor_max:
+        min_value:
+            kind: float
+            default: 1e+9
+
+        max_value:
             kind: float
             default: 1e+21
 
-        default_prefactor:
+        default_value:
             kind: float
             default: 0
-
-        prefactor_min:
-            kind: float
-            default: 1e+9
 
 ################################################################################
 

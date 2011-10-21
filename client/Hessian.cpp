@@ -86,7 +86,7 @@ bool Hessian::calculate(string which)
     //Determine which atoms moved in the process
     int size = 0;
     VectorXi atoms;
-    atoms = movedAtoms(parameters->hessianMinDisplacement);
+    atoms = movedAtoms(parameters->prefactorMinDisplacement);
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
     assert(size > 0);
@@ -259,7 +259,7 @@ VectorXi Hessian::movedAtoms(double const distance)
             {
                 double diffRSaddle = saddle->distance(i,j);
                 
-                if(diffRSaddle<parameters->hessianWithinRadius
+                if(diffRSaddle<parameters->prefactorWithinRadius 
                    && (!saddle->getFixed(j)))
                 {
                     if(!(moved.cwise() == j).any())
