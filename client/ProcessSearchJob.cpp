@@ -14,6 +14,7 @@
 #include "false_boinc.h"
 #include "Potential.h"
 #include "Log.h"
+#include "Prefactor.h"
 
 #include <stdio.h>
 #include <string>
@@ -103,7 +104,7 @@ int ProcessSearchJob::doProcessSearch(void)
         return status;
     }
 
-    // relax from the saddle point located
+    // relax from the saddle point
 
     AtomMatrix posSaddle = saddle->getPositions();
     AtomMatrix displacedPos;
@@ -134,7 +135,7 @@ int ProcessSearchJob::doProcessSearch(void)
         return SaddleSearch::STATUS_BAD_MINIMA;
     }
 
-    // If min2 corresponds to initial state swap min1 && min2
+    // if min2 corresponds to initial state, swap min1 && min2
     if(!(*initial==*min1) && ((*initial==*min2))){
         matterTemp = *min1;
         *min1 = *min2;
@@ -145,28 +146,17 @@ int ProcessSearchJob::doProcessSearch(void)
         printf("initial != min1\n");
         if((!min1->maxForce() <= parameters->optConvergedForce)  &&
            (!min2->maxForce() <= parameters->optConvergedForce)) {
-            // the isItConverged in Matter doesn't work so this needs to be fixed.
-            // return statusBadMinima;
         }
         return SaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
-    //if((!min1->isItConverged(parameters->convergedRelax)))
-    //{
-    //    printf("min1 is not converged!!!!!! %lf\n", parameters->convergedRelax);
-    //}
-    //if((!min2->isItConverged(parameters->convergedRelax)))
-    //{
-    //    printf("min2 is not converged!!!!!! %lf\n", parameters->convergedRelax);
-    //}
-
     if (*initial==*min2) {
-        /* both minima are the initial state */
+        // both minima are the initial state
         printf("both minima are the initial state");
         return SaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
-    /* Calculate the barriers */
+    // Calculate the barriers
     barriersValues[0] = saddle->getPotentialEnergy()-min1->getPotentialEnergy();
     barriersValues[1] = saddle->getPotentialEnergy()-min2->getPotentialEnergy();
 
@@ -175,77 +165,43 @@ int ProcessSearchJob::doProcessSearch(void)
         return SaddleSearch::STATUS_BAD_HIGH_BARRIER;
     }
 
+    // calculate the prefactor
     if(!parameters->prefactorDefaultValue)
     {
-        Hessian hessian(min1, saddle, min2, parameters);
-        /* Perform the dynamical matrix caluclation */
-        VectorXd reactModes, saddleModes, prodModes;
         f1 = Potential::fcalls;
-        reactModes = hessian.getModes(Hessian::REACTANT);
-        if(reactModes.size() == 0)
-        {
-            if(!parameters->quiet)
-            {
-                printf("Reactant bad hessian.\n");
-            }
-            return SaddleSearch::STATUS_FAILED_PREFACTOR;
-        }
-        saddleModes = hessian.getModes(Hessian::SADDLE);
-        if(saddleModes.size() == 0)
-        {
-            if(!parameters->quiet)
-            {
-                printf("Saddle bad hessian.\n");
-            }
-            return SaddleSearch::STATUS_FAILED_PREFACTOR;
-        }
-        prodModes = hessian.getModes(Hessian::PRODUCT);
-        if(prodModes.size() == 0)
-        {
-            if(!parameters->quiet)
-            {
-                printf("Product bad hessian.\n");
-            }
+
+        int prefStatus;
+        double pref1, pref2;
+        prefStatus = getPrefactors(parameters, min1, saddle, min2, pref1, pref2);
+        if(!prefStatus) {
+            printf("Prefactor: bad calculation\n");
             return SaddleSearch::STATUS_FAILED_PREFACTOR;
         }
         fCallsPrefactors += Potential::fcalls - f1;
 
-        prefactorsValues[0] = 1;
-        prefactorsValues[1] = 1;
-
-        // This may have large numerical error
-        // products are calculated this way in order to avoid overflow
-        for(int i=0; i<saddleModes.size(); i++)
-        {
-            prefactorsValues[0] *= reactModes[i];
-            prefactorsValues[1] *= prodModes[i];
-            if(saddleModes[i]>0)
-            {
-                prefactorsValues[0] /= saddleModes[i];
-                prefactorsValues[1] /= saddleModes[i];
-            }
-
-        }
-        prefactorsValues[0] = sqrt(prefactorsValues[0])/(2*M_PI*10.18e-15);
-        prefactorsValues[1] = sqrt(prefactorsValues[1])/(2*M_PI*10.18e-15);
-
         /* Check that the prefactors are in the correct range */
-        if((prefactorsValues[0]>parameters->prefactorMaxValue) ||
-           (prefactorsValues[0]<parameters->prefactorMinValue)){
-            cout<<"Bad reactant-to-saddle prefactor:"<<prefactorsValues[0]<<endl;
+        if((pref1 > parameters->prefactorMaxValue) ||
+           (pref1 < parameters->prefactorMinValue)){
+            cout<<"Bad reactant-to-saddle prefactor: "<<pref1<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
-        if((prefactorsValues[1]>parameters->prefactorMaxValue) ||
-           (prefactorsValues[1]<parameters->prefactorMinValue)){
-            cout<<"Bad product-to-saddle prefactor:"<<prefactorsValues[1]<<endl;
+        prefactorsValues[0] = pref1;
+
+        if((pref2 > parameters->prefactorMaxValue) ||
+           (pref2 < parameters->prefactorMinValue)){
+            cout<<"Bad product-to-saddle prefactor: "<<pref2<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
-    }else{ // use the default prefactor value specified
-        prefactorsValues[0]=parameters->prefactorDefaultValue;
-        prefactorsValues[1]=parameters->prefactorDefaultValue;
+    }
+    else
+    {
+        // use the default prefactor value specified
+        prefactorsValues[0] = parameters->prefactorDefaultValue;
+        prefactorsValues[1] = parameters->prefactorDefaultValue;
     }
     return SaddleSearch::STATUS_GOOD;
 }
+
 
 void ProcessSearchJob::saveData(int status)
 {

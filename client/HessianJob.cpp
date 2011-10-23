@@ -38,7 +38,9 @@ std::vector<std::string> HessianJob::run(void)
     saddle->con2matter(saddle_passed);
     product->con2matter(product_passed);
 
-    Hessian hessian(reactant, saddle, product, parameters);
+// GH: need to fix this
+
+//    Hessian hessian(reactant, saddle, product, parameters);
 //    VectorXd modes = hessian.getModes(parameters->hessianType);
     //XXX: to fix build for now...
     VectorXd modes;
@@ -77,4 +79,3 @@ std::vector<std::string> HessianJob::run(void)
     return returnFiles;
 }
  
-
