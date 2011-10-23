@@ -111,6 +111,7 @@ public:
 
     // [Hessian]
     string hessianAtomList;
+    double hessianZeroFreqValue;
 
     // [Nudged Elastic Band]
     long   nebImages;
@@ -141,7 +142,7 @@ public:
     double thermoNoseMass;
     double thermoLangvinFriction;
 
-    // [Thermostat]
+    // [Distributed Replica] //
     long drBalanceSteps;
     long drSamplingSteps;
     double drTargetTemperature;
