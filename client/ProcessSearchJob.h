@@ -14,7 +14,6 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include "SaddleSearch.h"
-#include "Hessian.h"
 #include "Job.h"
 
 class ProcessSearchJob : public Job {
@@ -25,6 +24,7 @@ class ProcessSearchJob : public Job {
 
     private:
         int  doProcessSearch(void);
+        VectorXi movedAtoms(void);
         void printEndState(int status);
         void saveData(int status);
 
