@@ -4,7 +4,8 @@
 Debug
 =====
 
-Parameters in the **[Debug]** section of the config.ini file.
+[Debug] Options
+===============
 
 **save_stdout**: Save the standard output from the client to a file named stdout_0.dat
 

@@ -19,31 +19,24 @@
 class Hessian
 {
 public:
-//    static const string REACTANT;
-//    static const string SADDLE;
-//    static const string PRODUCT;
-    static const char REACTANT[];
-    static const char SADDLE[];
-    static const char PRODUCT[];
-
-    Hessian(Matter *reactant, Matter *saddle, Matter *product, Parameters *params);
+    Hessian(Parameters *params, Matter *matter);
     ~Hessian();
 
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(string which);
-    VectorXd getModes(string which);
+    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(Matter *matterIn, VectorXi atomsIn);
+    VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
+//    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
+    bool removeZeroFreqs(VectorXd freqs);
 
 private:
-    Matter *reactant;
-    Matter *product;
-    Matter *saddle;
+    Matter *matter;
     Parameters *parameters;
 
-    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessians[3];
-    VectorXd modes[3];
+    Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+//    VectorXd modes;
+    VectorXd freqs;
 
-    VectorXi movedAtoms(const double distance);
-    bool calculate(string which);
-    int whichNum(string which);
+    VectorXi atoms;
+    bool calculate(void);
 };
 
 #endif

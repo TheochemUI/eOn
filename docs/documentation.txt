@@ -39,7 +39,7 @@ Jobs
 - :ref:`Dimer <dimer>`: method to find the lowest curvature mode.
 - :ref:`Lanczos <lanczos>`: method to find the lowest curvature mode.
 
-:ref:`Minimization <minimization>`: optimize the geometry of an initial structure.
+:ref:`Minimization <minimization>`: optimize the geometry of a structure.
 
 
 General Options

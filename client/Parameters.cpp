@@ -93,6 +93,7 @@ Parameters::Parameters(){
 
     // [Hessian] //
     hessianAtomList = string("All");
+    hessianZeroFreqValue = 1e-6;
 
     // [Nudged Elastic Band] //
     nebImages = 5;
@@ -290,8 +291,9 @@ int Parameters::load(FILE *file){
         // [Hessian] //
 
         hessianAtomList = toLowerCase(ini.GetValue("Hessian", "atom_list", hessianAtomList));
+        hessianZeroFreqValue = ini.GetValueF("Hessian", "zero_freq_value", hessianZeroFreqValue);
 
-        // [Nudged Elastic Band]
+        // [Nudged Elastic Band] //
 
         nebImages = ini.GetValueL("NEB", "images", nebImages);
         nebSpring = ini.GetValueF("NEB", "spring", nebSpring);
