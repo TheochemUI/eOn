@@ -171,6 +171,13 @@ def init(config_file = ""):
     # AKMC options
     config.akmc_confidence                 = parser.getfloat('AKMC', 'confidence')
     config.akmc_server_side_process_search = parser.getboolean('AKMC', 'server_side_process_search')
+    if config.akmc_server_side_process_search:
+        if parser.getfloat('Prefactor', 'default_value') == 0:
+            print "Error: you must provide a default prefactor when using server-side process search mode."
+            sys.exit()
+        if parser.getint('Communicator', 'jobs_per_bundle') != 1:
+            print "Error: you cannot use a bundle size other than 1 when using server-side process search mode."
+            sys.exit()
     config.akmc_thermal_window             = parser.getfloat('AKMC', 'thermally_accessible_window')
     config.akmc_max_thermal_window         = parser.getfloat('AKMC', 'thermally_accessible_buffer')
     config.akmc_max_kmc_steps              = parser.getint('AKMC', 'max_kmc_steps')
