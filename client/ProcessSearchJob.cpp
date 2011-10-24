@@ -185,13 +185,14 @@ int ProcessSearchJob::doProcessSearch(void)
             cout<<"Bad reactant-to-saddle prefactor: "<<pref1<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
-        prefactorsValues[0] = pref1;
-
         if((pref2 > parameters->prefactorMaxValue) ||
            (pref2 < parameters->prefactorMinValue)){
             cout<<"Bad product-to-saddle prefactor: "<<pref2<<endl;
             return SaddleSearch::STATUS_BAD_PREFACTOR;
         }
+        prefactorsValues[0] = pref1;
+        prefactorsValues[1] = pref2;
+
     }
     else
     {
