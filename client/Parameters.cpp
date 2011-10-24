@@ -196,7 +196,7 @@ int Parameters::load(FILE *file){
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
-        finiteDifference = ini.GetValueF("Main", "finiteDifference", finiteDifference);
+        finiteDifference = ini.GetValueF("Main", "finite_difference", finiteDifference);
 
         // [Potential] //
         potential = toLowerCase(ini.GetValue("Potential", "potential"));
