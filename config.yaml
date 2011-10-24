@@ -9,10 +9,10 @@ Main:
             kind: string
             default: akmc
             values:
+                - finite_difference
                 - parallel_replica
                 - saddle_search
                 - minimization
-                - displacement_sampling
                 - process_search
                 - basin_hopping
                 - akmc
