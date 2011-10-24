@@ -389,7 +389,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                 saddle = ps.get_saddle()
                 if saddle:
                     barrier = ps.data['barrier_reactant_to_product']
-                    if self.state.find_repeat(ps.get_saddle(), barrier):
+                    if self.state.find_repeat(ps.get_saddle_file(), barrier):
                         self.state.add_process(ps.build_result())
 
             num_registered += 1
@@ -607,6 +607,14 @@ class ProcessSearch:
         if self.finished_saddle_name:
             saddle_result = self.load_result(self.finished_saddle_name)
             saddle = io.loadcon(saddle_result['saddle.con'])
+        else:
+            saddle = None
+        return saddle
+
+    def get_saddle_file(self):
+        if self.finished_saddle_name:
+            saddle_result = self.load_result(self.finished_saddle_name)
+            saddle = saddle_result['saddle.con']
         else:
             saddle = None
         return saddle
