@@ -31,7 +31,6 @@ void ExactMinMode::compute(Matter const *matter, AtomMatrix direction)
     double dr = parameters->finiteDifference;
     VectorXd force1, force2;
 
-
     VectorXd posDisplace(size);
     MatrixXd hessian(size,size);
     hessian.setZero();
