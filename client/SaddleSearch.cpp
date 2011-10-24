@@ -48,14 +48,11 @@ int SaddleSearch::run()
 {
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
-    if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
-    {
+    if(parameters->saddleMinmodeMethod == MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %16s   %9s   %9s   %9s   %9s   %9s\n", 
             "Step", "Step Size", "Energy", "Force", "Curvature", 
             "Torque", "Angle", "Rotations");
-    }
-    else 
-    {
+    }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
         log("[Lanczos]  %9s  %9s  %16s  %9s  %9s\n", 
             "Step", "Step Size", "Energy", "Force", "Curvature");
     }
@@ -97,9 +94,7 @@ int SaddleSearch::run()
                             objf->minModeMethod->statsTorque,
                             objf->minModeMethod->statsAngle,
                             objf->minModeMethod->statsRotations);
-            }
-            else 
-            {
+            }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
                 log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
                     iteration, stepSize, matter->getPotentialEnergy(),
                     matter->getForces().norm(),

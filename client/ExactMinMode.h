@@ -17,7 +17,7 @@
 #include "LowestEigenmode.h"
 
 // dimer method to find the lowest curvature mode
-class ExactMinMode: public LowestEigenmode
+class ExactMinMode : public LowestEigenmode
 {
 
     public:
@@ -28,7 +28,6 @@ class ExactMinMode: public LowestEigenmode
         void compute(Matter const *matter, AtomMatrix direction); 
         double getEigenvalue();
         AtomMatrix getEigenvector();
-
 
     private:
         Parameters *parameters;
