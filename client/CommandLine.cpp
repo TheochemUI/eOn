@@ -49,7 +49,7 @@ void commandLine(int argc, char **argv)
 
     string potential;
     string confile;
-    string optimizer;
+    string optimizer("cg");
 
     while ((c=getopt(argc,argv,"hsmp:o:")) != -1) {
         switch (c) {
