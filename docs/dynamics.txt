@@ -14,10 +14,6 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
    default: ``1``
 
-**auto_stop**: Whether or not stop the job when a new state is found. For boinc communicator this value should be set to false.
-
-   default: ``False``
-
 **steps**: The number of MD steps to run.
 
    default: ``1000``
