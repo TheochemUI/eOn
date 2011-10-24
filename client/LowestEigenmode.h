@@ -33,9 +33,9 @@ public:
     virtual ~LowestEigenmode() {}
 
     //void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
-    void virtual compute(Matter const *matter, AtomMatrix direction) = 0;
+    virtual void compute(Matter const *matter, AtomMatrix direction) = 0;
 
-    double virtual getEigenvalue() = 0;
+    virtual double getEigenvalue() = 0;
     virtual AtomMatrix getEigenvector() = 0;
 };
 

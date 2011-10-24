@@ -16,6 +16,7 @@
 #include "ImprovedDimer.h"
 #include "ExactMinMode.h"
 #include "EpiCenters.h"
+#include "ObjectiveFunction.h"
 #include "Log.h"
 
 #include <cstdlib>
@@ -26,6 +27,62 @@ const char SaddleSearch::MINMODE_DIMER[] =           "dimer";
 const char SaddleSearch::MINMODE_LANCZOS[] =         "lanczos";
 const char SaddleSearch::MINMODE_EXACT[] =           "exact";
 
+class MinModeObjectiveFunction : public ObjectiveFunction
+{
+    public:
+        MinModeObjectiveFunction(Matter *matterPassed, LowestEigenmode *minModeMethodPassed,
+                                 AtomMatrix modePassed, Parameters *parametersPassed)
+        {
+            matter = matterPassed;
+            minModeMethod = minModeMethodPassed;
+            eigenvector = modePassed;
+            parameters = parametersPassed;
+        }
+        ~MinModeObjectiveFunction(void){};
+
+        VectorXd getGradient() 
+        { 
+            AtomMatrix proj;
+            AtomMatrix force = matter->getForces();
+
+            minModeMethod->compute(matter, eigenvector);
+            eigenvector = minModeMethod->getEigenvector();
+            double eigenvalue = minModeMethod->getEigenvalue();
+
+            proj = (force.cwise() * eigenvector).sum() * eigenvector.normalized();
+
+            if (0 < eigenvalue) {
+                if (parameters->saddlePerpForceRatio > 0.0) {
+                    // reverse force parallel to eigenvector, and reduce perpendicular force
+                    double const d = parameters->saddlePerpForceRatio;
+                    force = d*force - (1.+d)*proj;
+                }else{
+                    // follow eigenmode
+                    force = -proj;
+                }
+            }else{
+                // reversing force parallel to eigenmode
+                force += -2.*proj;
+            }
+
+            VectorXd forceV = VectorXd::Map(force.data(), 3*matter->numberOfAtoms());
+            return -forceV;
+        }
+        double getEnergy() { return matter->getPotentialEnergy(); }
+        void setPositions(VectorXd x) { matter->setPositionsV(x); }
+        VectorXd getPositions() { return matter->getPositionsV(); }
+        int degreesOfFreedom() { return 3*matter->numberOfAtoms(); }
+        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
+        double getConvergence() { return matter->maxForce(); }
+
+    private:
+        AtomMatrix eigenvector;
+        LowestEigenmode *minModeMethod;
+        Matter *matter;
+        Parameters *parameters;
+
+};
+
 SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, double reactantEnergyPassed, Parameters *parametersPassed)
 {
     reactantEnergy = reactantEnergyPassed;
@@ -34,14 +91,24 @@ SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, double r
     parameters = parametersPassed;
     status = STATUS_GOOD;
     iteration = 0;
-    objf = NULL;
+
+    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+        if (parameters->dimerImproved) {
+            minModeMethod = new ImprovedDimer(matter, parameters);
+        }else{
+            minModeMethod = new Dimer(matter, parameters);
+        }
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+        minModeMethod = new Lanczos(matter, parameters);
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_EXACT) {
+        minModeMethod = new ExactMinMode(matter, parameters);
+    }
+     
 }
 
 SaddleSearch::~SaddleSearch()
 {
-    if (objf != NULL) {
-        delete objf;
-    }
+    delete minModeMethod;
 }
 
 int SaddleSearch::run()
@@ -63,11 +130,11 @@ int SaddleSearch::run()
     {
         matter->matter2con(climb.str(), false);
     }
-     
-    objf = new MinModeObjectiveFunction(matter, mode, parameters);
-    Optimizer *optimizer = Optimizer::getOptimizer(objf, parameters);
+
+    MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
+    Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
     
-    while (!objf->isConverged()) {
+    while (!objf.isConverged()) {
         if (iteration >= parameters->saddleMaxIterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
             break;
@@ -78,7 +145,7 @@ int SaddleSearch::run()
         optimizer->step(parameters->optMaxMove);
         iteration++;
 
-        double de = objf->getEnergy()-reactantEnergy;
+        double de = objf.getEnergy()-reactantEnergy;
         double stepSize = (matter->pbc(matter->getPositions() - pos )).norm();
 
         if (de > parameters->saddleMaxEnergy) {
@@ -90,15 +157,15 @@ int SaddleSearch::run()
                 log("[Dimer]  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
                             iteration, stepSize, matter->getPotentialEnergy(),
                             matter->getForces().norm(),
-                            objf->minModeMethod->getEigenvalue(),
-                            objf->minModeMethod->statsTorque,
-                            objf->minModeMethod->statsAngle,
-                            objf->minModeMethod->statsRotations);
+                            minModeMethod->getEigenvalue(),
+                            minModeMethod->statsTorque,
+                            minModeMethod->statsAngle,
+                            minModeMethod->statsRotations);
             }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
                 log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
                     iteration, stepSize, matter->getPotentialEnergy(),
                     matter->getForces().norm(),
-                    objf->minModeMethod->getEigenvalue());
+                    minModeMethod->getEigenvalue());
             }
 
         if (parameters->writeMovies) {
@@ -109,7 +176,7 @@ int SaddleSearch::run()
             matter->matter2con("displacement_checkpoint.con", false);
             FILE *fileMode = fopen("mode_checkpoint.dat", "wb");
             helper_functions::saveMode(fileMode, matter, 
-                                       objf->minModeMethod->getEigenvector());
+                                       minModeMethod->getEigenvector());
             fclose(fileMode);
         }
     }
@@ -121,10 +188,10 @@ int SaddleSearch::run()
 
 double SaddleSearch::getEigenvalue()
 {
-    return objf->eigenvalue;
+    return minModeMethod->getEigenvalue();
 }
 
 AtomMatrix SaddleSearch::getEigenvector()
 {
-    return objf->eigenvector;
+    return minModeMethod->getEigenvector();
 }
