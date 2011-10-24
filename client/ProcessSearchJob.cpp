@@ -173,7 +173,7 @@ int ProcessSearchJob::doProcessSearch(void)
         int prefStatus;
         double pref1, pref2;
         prefStatus = getPrefactors(parameters, min1, saddle, min2, pref1, pref2);
-        if(!prefStatus) {
+        if(prefStatus == -1) {
             printf("Prefactor: bad calculation\n");
             return SaddleSearch::STATUS_FAILED_PREFACTOR;
         }
