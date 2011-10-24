@@ -35,6 +35,13 @@ Parameters::Parameters(){
     conFilename = "reactant.con";
     finiteDifference = 0.01;
 
+    // [Prefactor]
+    prefactorDefaultValue = 0.0;
+    prefactorMaxValue = 1e+21;
+    prefactorMinValue = 1e+9;
+    prefactorWithinRadius = 5.0;
+    prefactorMinDisplacement = 0.25;
+
     // [Potential]
     potential = Potential::POT_LJ;
     MPIPotentialAggressive = true;
