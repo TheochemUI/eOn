@@ -58,9 +58,9 @@ public:
 
 private:
     AtomMatrix mode;
-    MinModeObjectiveFunction *objf;
     Matter *matter;
     Parameters *parameters;
+    LowestEigenmode *minModeMethod;
     double reactantEnergy;
 };
 

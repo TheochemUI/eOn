@@ -12,6 +12,7 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Optimizer.h"
+#include "ObjectiveFunction.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -58,6 +59,29 @@ namespace {
         return elementArray[n];
     }
 }
+
+class MatterObjectiveFunction : public ObjectiveFunction
+{
+    public:
+        MatterObjectiveFunction(Matter *matterPassed,
+                                Parameters *parametersPassed)
+        {
+            matter = matterPassed;
+            parameters = parametersPassed;
+        }
+        ~MatterObjectiveFunction(void){};
+        double getEnergy() { return matter->getPotentialEnergy(); }
+        VectorXd getGradient() { return -matter->getForcesFreeV(); }
+        void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
+        VectorXd getPositions() { return matter->getPositionsFreeV(); }
+        int degreesOfFreedom() { return 3*matter->numberOfFreeAtoms(); }
+        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
+        double getConvergence() { return matter->maxForce(); }
+    private:
+        Matter *matter;
+        Parameters *parameters;
+};
+
 
 
 Matter::Matter(Parameters *parameters)
