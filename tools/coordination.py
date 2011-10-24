@@ -3,7 +3,8 @@
 import sys
 
 import pathfix
-import io, atoms
+import atoms
+import fileio as io
 
 p = io.loadcon(sys.argv[1])
 
