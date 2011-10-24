@@ -1,19 +1,21 @@
 [Main]
-JOB=basin_hopping
-RANDOM_SEED=-1
-potential=lj
+job=basin_hopping
+random_seed=0
 temperature=1200
+
+[Potential]
+potential=qsc
 
 [Basin Hopping]
 stay_minimized=true
 max_displacement=1.0
 max_displacement_algorithm=standard
-steps=100
+steps=10
 
 [Optimizers]
-opt_method=cg
+#opt_method=cg
+opt_method=lbfgs
 max_iterations=10000
 converged_force=0.1
-
-[Debug]
-write_movies=true
+max_move=0.2
+lbfgs_memory=20
