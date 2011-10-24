@@ -34,7 +34,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
     
 **displace_random_weight**: Relative probability to displace with a random epicenter.
 
-    default: ``1.0``
+    default: ``1.0, if no other weights set``
 
 **displace_not_FCC_HCP_weight**:  Relative probabiilty to displace with an epicenter that is not FCC or HCP coordinated.
 
