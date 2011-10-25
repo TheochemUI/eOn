@@ -8,7 +8,7 @@ import os
 import numpy
 
 import pathfix
-import io, atoms
+import fileio as io, atoms
 
 def usage():
     print "usage: %s poscarfile" % (os.path.basename(sys.argv[0]))
