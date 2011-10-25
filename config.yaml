@@ -304,7 +304,7 @@ Parallel Replica:
             kind: int
             default: 500
 
-        check_period:
+        state_check_period:
             kind: int
             default: 500
 
@@ -316,17 +316,13 @@ Parallel Replica:
             kind: boolean
             default: False
 
-        record_resolution:
+        state_save_period: 
             kind: int
-            default: 1
+            default: 50
 
         stop_after_transition:
             kind: boolean
             default: True
-
-        bisection_accuracy:
-            kind: int
-            default: 1
 
 ################################################################################
 
@@ -888,6 +884,6 @@ Optimizer:
             kind: int
             default: 50
 
-        lbfgs_inverse_curvature;
+        lbfgs_inverse_curvature:
             kind: float
             default: 0.1
