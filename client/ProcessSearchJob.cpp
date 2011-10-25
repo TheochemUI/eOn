@@ -293,6 +293,10 @@ void ProcessSearchJob::printEndState(int status)
 
     else if (status == SaddleSearch::STATUS_BAD_MINIMA)
         fprintf(stdout, "Minima, from saddle did not converge\n");
+
+    else if(status == SaddleSearch::STATUS_NONNEGATIVE_ABORT)
+        log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
+
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
 

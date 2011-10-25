@@ -151,16 +151,20 @@ void SaddleSearchJob::printEndState(int status) {
         log("[SaddleSearch] initial displacement unable to reach convex region\n");
 
     else if(status == SaddleSearch::STATUS_BAD_HIGH_ENERGY)
-        log("[SaddleSearch] saddle search, barrier too high\n");
+        log("[SaddleSearch] Barrier too high\n");
 
     else if(status == SaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-        log("[SaddleSearch] saddle search, too many iterations in concave region\n");
+        log("[SaddleSearch] Too many iterations in concave region\n");
 
     else if(status == SaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-        log("[SaddleSearch] saddle search, too many iterations in saddle point search\n");
+        log("[SaddleSearch] Too many iterations in saddle point search\n");
 
     else if(status == SaddleSearch::STATUS_BAD_HIGH_BARRIER)
-        log("[SaddleSearch] saddle search, barrier not within window\n");
+        log("[SaddleSearch] Barrier not within window\n");
+
+    else if(status == SaddleSearch::STATUS_NONNEGATIVE_ABORT)
+        log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
+
     else
         log("[SaddleSearch] unknown status: %i!\n", status);
 
