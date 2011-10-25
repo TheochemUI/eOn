@@ -241,12 +241,12 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
             statsTorque = F_R.norm()/(2.0 * parameters->finiteDifference);
             statsRotations += 1;
 
-            log_file("[IDimerRot]  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
+            log_file("[IDimerRot]  -----   ---------   ----------   ---------   %9.5f   %7.5f   %6.3f   %4ld\n",
                      C_tau, statsTorque, statsAngle, statsRotations);
         }
         else
         {
-            log_file("[IDimerRot]  -----   ---------   ----------------   ---------  % 9.3e  % 9.3e   ---------   ---------\n",
+            log_file("[IDimerRot]  -----   ---------   ----------   ---------   %9.5f   %7.5f   ------   ----\n",
                      C_tau, F_R.norm()/delta);
         }
 
