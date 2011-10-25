@@ -23,16 +23,19 @@ The eon client provides three optimizers quick-min, conjugate gradients, and L-B
 
         ``qm``: Quickmin
 
-        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
+        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton
+        optimizer
 
 
-**converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered minimized.
+**converged_force**: When the maximum force (in eV/A) on any one atom is
+smaller than this value, the structure is considered minimized.
 
     type: float
 
     default: ``0.01``
 
-**max_move**: Maximum distance that an atom may be moved in a single optimization step.
+**max_move**: Maximum distance that an atom may be moved in a single
+optimization step.
 
     type: float
 
@@ -44,7 +47,8 @@ The eon client provides three optimizers quick-min, conjugate gradients, and L-B
 
     default: ``0.1``
 
-**max_iterations**: The maximum number of optimization iterations that the will be performed.
+**max_iterations**: The maximum number of optimization iterations that the will
+be performed.
 
     type: int
 
@@ -56,3 +60,6 @@ are kept in memory for the L-BFGS algorithm.
     type: int
 
     default: ``50``
+
+**lbfgs_inverse_curvature**: The initial inverse curvature, which is used to
+construct the inverse Hessian matrix.

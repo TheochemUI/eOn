@@ -33,7 +33,7 @@ LBFGS::~LBFGS()
 
 VectorXd LBFGS::getStep(VectorXd f)
 {
-    double H0 = 1./10.;
+    double H0 = parameters->optLBFGSInverseCurvature;
 
     int loopmax = s.size();
     double a[loopmax];
