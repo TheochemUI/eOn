@@ -37,6 +37,7 @@ public:
         STATUS_BAD_MINIMA, //9
         STATUS_FAILED_PREFACTOR, //10
         STATUS_POTENTIAL_FAILED, //11
+        STATUS_NONNEGATIVE_ABORT, //12
     };
 
     // Methods for finding the minimum mode

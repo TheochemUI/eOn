@@ -380,7 +380,9 @@ class AKMCState(state.State):
                              "Bad Prefactor",
                              "Bad Barrier",
                              "Minimum Not Converged",
-                             "Failed Prefactor Calculation"]
+                             "Failed Prefactor Calculation",
+                             "Potential Failed",
+                             "Nonnegative Displacement Abort"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])
         if store:
