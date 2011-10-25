@@ -84,6 +84,7 @@ Parameters::Parameters(){
     optTimeStep = 0.1;
     optVariableTimeStep = false;
     optLBFGSMemory = 50;
+    optLBFGSInverseCurvature = 0.1;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
@@ -244,6 +245,7 @@ int Parameters::load(FILE *file){
         optTimeStep = ini.GetValueF("Optimizer","time_step", optTimeStep);
         optVariableTimeStep = ini.GetValueB("Optimizer","variable_time_step", optVariableTimeStep);
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
+        optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
 
         // [Saddle Search] //
 
