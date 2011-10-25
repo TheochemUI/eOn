@@ -249,7 +249,7 @@ int Parameters::load(FILE *file){
 
         // [Saddle Search] //
 
-        saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", "dimer"));
+        saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", saddleMinmodeMethod));
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
