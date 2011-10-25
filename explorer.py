@@ -391,7 +391,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                     barrier = ps.data['barrier_reactant_to_product']
                     if self.state.find_repeat(ps.get_saddle_file(), barrier):
                         self.state.add_process(ps.build_result())
-
+                        del self.process_searches[search_id]
             num_registered += 1
             if self.state.get_confidence() >= config.akmc_confidence:
                 if not config.debug_register_extra_results:
@@ -495,7 +495,7 @@ class ProcessSearch:
                 'saddle_search':[ "good", unknown, "no_convex", "high_energy",
                                   "max_concave_iterations", 
                                   "max_iterations", unknown, unknown, unknown, 
-                                  unknown, unknown, "potential_failed", ],
+                                  unknown, unknown, "potential_failed", "nonnegative_abort"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
         self.finished_jobs = []
@@ -554,7 +554,10 @@ class ProcessSearch:
         if job_type == 'saddle_search':
             self.data['termination_reason'] = termination_code
             logger.info("search_id: %i saddle search complete" % self.search_id)
-            self.job_statuses[job_type] = 'complete'
+            if termination_code == 0:
+                self.job_statuses[job_type] = 'complete'
+            else:
+                self.job_statuses[job_type] = 'error'
             self.finished_saddle_name = result['name']
             self.finish_search(result)
 
