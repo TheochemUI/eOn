@@ -69,6 +69,7 @@ Parameters::Parameters(){
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 10.;
     saddleConvergedForce = 0.005;
+    saddleNonnegativeDisplacementAbort = false;    
     saddlePerpForceRatio = 0.0; // undocumented
     saddleConfinePositive = false; // undocumented
     saddleConfinePositiveMinMove = 0.5; // undocumented
@@ -252,6 +253,7 @@ int Parameters::load(FILE *file){
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
         saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", optMaxMove);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
+        saddleNonnegativeDisplacementAbort = ini.GetValueB("Saddle Search", "nonnegative_displacement_abort", saddleNonnegativeDisplacementAbort); 
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented

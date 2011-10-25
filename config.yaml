@@ -694,6 +694,10 @@ Saddle Search:
 
     options:
 
+        nonnegative_displacement_abort:
+            kind: boolean
+            default: false
+
         disp_at_random:
             kind: int
             default: 1
