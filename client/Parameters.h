@@ -72,6 +72,7 @@ public:
     double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
     double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
+    bool saddleNonnegativeDisplacementAbort; // Abort the saddle search if the displacement does not have a negative mode.
 
     bool saddleConfinePositive; // undocumented
     double saddleConfinePositiveMinMove; // undocumented
