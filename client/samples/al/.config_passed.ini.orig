@@ -7,9 +7,12 @@ JOB=Process_Search
 # -1 = time is used to seed the random generator
 RANDOM_SEED=-1
 
-potential=eam_al
 
-maximum_iterations=512
+[Optimizer]
+max_iterations=512
+
+[Potential]
+potential=eam_al
 
 [Process Search]
 minimize_first=True

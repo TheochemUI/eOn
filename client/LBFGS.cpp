@@ -31,14 +31,14 @@ LBFGS::~LBFGS()
     return;
 }
 
-VectorXd LBFGS::getStep()
+VectorXd LBFGS::getStep(VectorXd f)
 {
     double H0 = 1./10.;
 
     int loopmax = s.size();
     double a[loopmax];
 
-    VectorXd q = objf->getGradient();
+    VectorXd q = -f;
 
     for (int i=loopmax-1;i>=0;i--) {
         a[i] = rho[i] * s[i].dot(q);
@@ -85,7 +85,7 @@ bool LBFGS::step(double maxMove)
         update(r, rPrev, f, fPrev);
     }
 
-    VectorXd d = getStep();
+    VectorXd d = getStep(f);
     double vd = d.normalized().dot(f.normalized());
     if (vd>1.0) vd=1.0;
     if (vd<-1.0) vd=-1.0;
@@ -95,7 +95,7 @@ bool LBFGS::step(double maxMove)
         s.erase(s.begin(), s.end());
         y.erase(y.begin(), y.end());
         rho.erase(rho.begin(), rho.end());
-        d = getStep();
+        d = getStep(f);
     }
 
     VectorXd dr;
