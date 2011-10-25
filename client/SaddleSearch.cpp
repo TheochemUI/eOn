@@ -83,7 +83,8 @@ class MinModeObjectiveFunction : public ObjectiveFunction
 
 };
 
-SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, double reactantEnergyPassed, Parameters *parametersPassed)
+SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, 
+                          double reactantEnergyPassed, Parameters *parametersPassed)
 {
     reactantEnergy = reactantEnergyPassed;
     matter = matterPassed;
@@ -116,12 +117,12 @@ int SaddleSearch::run()
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
     if(parameters->saddleMinmodeMethod == MINMODE_DIMER) {
-        log("[Dimer]  %9s   %9s   %16s   %9s   %9s   %9s   %9s   %9s\n", 
-            "Step", "Step Size", "Energy", "Force", "Curvature", 
-            "Torque", "Angle", "Rotations");
+        log("[Dimer]  %9s   %9s   %10s   %9s   %9s   %7s   %6s   %4s\n", 
+            "Step", "Step Size", "Delta E", "Force", "Curvature", 
+            "Torque", "Angle", "Rots");
     }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
-        log("[Lanczos]  %9s  %9s  %16s  %9s  %9s\n", 
-            "Step", "Step Size", "Energy", "Force", "Curvature");
+        log("[Lanczos]  %9s  %9s  %10s  %9s  %9s\n", 
+            "Step", "Step Size", "Delta E", "Force", "Curvature");
     }
 
     ostringstream climb;
@@ -160,17 +161,17 @@ int SaddleSearch::run()
         }
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
-                log("[Dimer]  %9ld  % 9.3e   %16.4f  % 9.3e  % 9.3e  % 9.3e  % 9.3e   % 9ld\n",
-                            iteration, stepSize, matter->getPotentialEnergy(),
-                            matter->getForces().norm(),
+                log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.5f   %7.5f   %6.3f   %4ld\n",
+                            iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
+                            matter->maxForce(),
                             minModeMethod->getEigenvalue(),
                             minModeMethod->statsTorque,
                             minModeMethod->statsAngle,
                             minModeMethod->statsRotations);
             }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
-                log("[Lanczos]  %9ld  % 9.3f   %16.4f  % 9.3f  % 9.3f\n", 
-                    iteration, stepSize, matter->getPotentialEnergy(),
-                    matter->getForces().norm(),
+                log("[Lanczos]  %9ld  % 9.6f   %10.4f  %9.5f  %9.5f\n", 
+                    iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
+                    matter->maxForce(),
                     minModeMethod->getEigenvalue());
             }
 
