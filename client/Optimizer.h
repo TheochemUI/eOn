@@ -22,7 +22,6 @@ class Optimizer
         virtual ~Optimizer(){};
         virtual bool step(double maxMove) = 0;
         virtual bool run(int maxIterations, double maxMove) = 0;
-        virtual VectorXd getStep() = 0;
         static Optimizer *getOptimizer(ObjectiveFunction *objf, Parameters *parameters);
 };
 

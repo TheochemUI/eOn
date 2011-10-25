@@ -344,6 +344,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     }
 
     int iteration=0;
+    log("%4s    %9s    %9s    %11s\n", "iter", "step size", "max force", "energy");
     while (!objf.isConverged() && 
            iteration < parameters->optMaxIterations) {
 
@@ -355,7 +356,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         double stepSize = (pbc(getPositions() - pos)).norm();
 
         if (!quiet) {
-            log("iter: %3i step size: %.2e max force: %10.5f energy: %10.5f\n",
+            log("%4i    %9.5f    %9.5f    %11.5f\n",
                 iteration, stepSize, maxForce(), getPotentialEnergy());
         }
 
