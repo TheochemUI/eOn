@@ -116,7 +116,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
                 a = fabs(F_R.dot(F_R_Old));
                 b = F_R_Old.squaredNorm();
                 if(a < 0.5*b) {
-                    //gamma = (F_R.cwise() * (F_R - F_R_Old)).sum()/b;
                     gamma = F_R.dot(F_R - F_R_Old)/b;
                 }else{ 
                     gamma = 0.0;
@@ -129,7 +128,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
                 theta = F_R + thetaOld * F_R_Old.norm() * gamma;
             }
 
-            //theta = theta - (theta.cwise() * tau).sum() * tau;
             theta = theta - theta.dot(tau)*tau;
             theta.normalize();
 
@@ -186,19 +184,13 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
         }
 
         // Calculate the curvature along tau, C_tau.
-        //C_tau = ((g1 - g0).cwise() * tau).sum() / delta;
         C_tau = (g1-g0).dot(tau)/delta;
 
         // Calculate a rough estimate (phi_prime) of the optimum rotation angle.
-        //double d_C_tau_d_phi = 2.0 * ((g1 - g0).cwise() * theta).sum() / delta;
         double d_C_tau_d_phi = 2.0 * (g1-g0).dot(theta)/delta;
         phi_prime = -0.5 * atan(d_C_tau_d_phi / (2.0 * abs(C_tau)));
         statsAngle = phi_prime * (180.0 / M_PI);
-/*
-        cout <<"initial angle: "<<statsAngle;
-        if(phi_prime > phi_tol){ cout <<" full rotation\n"; }
-        else{ cout <<" no full rotation\n"; }
-*/
+
         if(abs(phi_prime) > phi_tol)
         {
             double b1 = 0.5 * d_C_tau_d_phi;
@@ -216,7 +208,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
 
             // Calculate C_tau_prime.
             tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
-            //double C_tau_prime = ((g1_prime - g0).cwise() * tau_prime).sum() / delta;
             double C_tau_prime = (g1_prime - g0).dot(tau_prime)/delta;
 
             // Calculate phi_min.
@@ -224,29 +215,22 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
             double a0 = 2.0 * (C_tau - a1);
             phi_min = 0.5 * atan(b1 / a1);
 
-//GH: test showing that a smaller angle avoids oscillations
-//            phi_min = phi_min/2.0;
-
             // Determine the curvature for phi_min.
             double C_tau_min = 0.5 * a0 + a1 * cos(2.0 * phi_min) + b1 * sin(2.0 * phi_min);
 
             // If the curvature is being maximized, push it over pi/2.
             if(C_tau_min > C_tau)
             {
-//                cout<<"flip\n";
                 phi_min += M_PI * 0.5;
                 C_tau_min = 0.5 * a0 + a1 * cos(2.0*phi_min) + b1 * sin(2.0*phi_min);
             }
 
             statsAngle = phi_min * (180.0 / M_PI);
 
-//            cout    <<"b1: "<<b1 <<" a1: "<<a1 <<" a0: "<<a0 <<" phi: "<<phi_min*180.0/M_PI<<endl;
-
             // Update x1, tau, and C_tau.
             x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositionsV(x1_r);
             tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
-//            cout <<tau<<endl;
 
             C_tau = C_tau_min;
 
@@ -254,7 +238,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
             g1 = g1 * (sin(phi_prime - phi_min)/sin(phi_prime)) + g1_prime*(sin(phi_min)/sin(phi_prime)) + 
                  g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
-//GH            statsTorque = F_R.norm()/delta;
             statsTorque = F_R.norm()/(2.0 * parameters->finiteDifference);
             statsRotations += 1;
 
