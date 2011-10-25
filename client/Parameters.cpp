@@ -237,13 +237,13 @@ int Parameters::load(FILE *file){
 
         // [Optimizers] //
 
-        optMethod = toLowerCase(ini.GetValue("Optimizers", "opt_method", optMethod));
-        optConvergedForce = ini.GetValueF("Optimizers", "converged_force", optConvergedForce);
-        optMaxIterations = ini.GetValueL("Optimizers", "max_iterations", optMaxIterations);
-        optMaxMove = ini.GetValueF("Optimizers","max_move", optMaxMove);
-        optTimeStep = ini.GetValueF("Optimizers","time_step", optTimeStep);
-        optVariableTimeStep = ini.GetValueB("Optimizers","variable_time_step", optVariableTimeStep);
-        optLBFGSMemory = ini.GetValueL("Optimizers", "lbfgs_memory", optLBFGSMemory);
+        optMethod = toLowerCase(ini.GetValue("Optimizer", "opt_method", optMethod));
+        optConvergedForce = ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
+        optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
+        optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
+        optTimeStep = ini.GetValueF("Optimizer","time_step", optTimeStep);
+        optVariableTimeStep = ini.GetValueB("Optimizer","variable_time_step", optVariableTimeStep);
+        optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
 
         // [Saddle Search] //
 
