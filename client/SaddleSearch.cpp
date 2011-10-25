@@ -133,14 +133,16 @@ int SaddleSearch::run()
     }
 
     MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
+    objf.getGradient();
+
+    if (parameters->saddleNonnegativeDisplacementAbort && minModeMethod->getEigenvalue() > 0) {
+        printf("%f\n", minModeMethod->getEigenvalue());
+        return STATUS_NONNEGATIVE_ABORT;
+    }
+
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
     
     while (!objf.isConverged()) {
-
-        if (parameters->saddleNonnegativeDisplacementAbort && minModeMethod->getEigenvalue() > 0) {
-            status = STATUS_NONNEGATIVE_ABORT;
-            break;
-        }
 
         if (iteration >= parameters->saddleMaxIterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
