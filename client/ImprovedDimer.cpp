@@ -48,6 +48,7 @@ ImprovedDimer::~ImprovedDimer()
 
 void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAtomMatrix)
 {
+
     VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(), 3*matter->numberOfAtoms());
     tau = initialDirection.array() * matter->getFreeV().array();
     tau = initialDirection;
