@@ -79,7 +79,7 @@ public:
     double saddleConfinePositiveScaleRatio; // undocumented
     long saddleConfinePositiveMaxActiveAtoms; // undocumented
 
-    // [Optimizers]
+    // [Optimizer]
     string optMethod;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
@@ -87,6 +87,7 @@ public:
     double optTimeStep; // time step size used in quickmin
     bool optVariableTimeStep; // if quickmin time step should be adjusted
     long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
+    double optLBFGSInverseCurvature;
 
     // [Dimer]
     double dimerRotationAngle; // finite difference rotation angle
