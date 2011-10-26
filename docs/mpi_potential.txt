@@ -8,9 +8,9 @@ MPI Potential
 VASP
 ====
 
-If you have access to the MPMD VASP source code written by Sam Chill, you can
-compile a version of VASP that will work with EON. This can be accomplished by
-compiling with ``make MPMD=1``. 
+If you have access to the modified VASP source code that is compatible with
+EON, you can compile a version of VASP that will work with EON. This can be
+accomplished by compiling with ``make MPMD=1``. 
 
 It is necessary to set the environment variable ``EON_NUMBER_OF_CLIENTS`` to
 be the number of clients in the MPI job. If the client is being run directly,
