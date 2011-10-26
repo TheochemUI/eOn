@@ -22,7 +22,6 @@
 
 #ifdef EONMPI
     #include <mpi.h>
-    #include <unistd.h>
     #include <fcntl.h>
     #include <Python.h>
     #include <stdlib.h>
@@ -50,6 +49,7 @@
     #include <sys/time.h>
     #include <sys/resource.h>
     #include <sys/utsname.h>
+    #include <unistd.h>
 #endif
 
 #ifdef BOINC
@@ -94,16 +94,17 @@ void enableFPE(void)
 
 void printSystemInfo()
 {
+    printf("EON Client\n");
     // System Information
     #ifdef WIN32
-        printf("Windows\n");
+        printf("OS: Microsoft Windows\n");
     #else
         struct utsname systemInfo;
         int status = uname(&systemInfo);
         if (status == 0) {
-            printf("%s %s %s %s %s\n",
-                   systemInfo.sysname, systemInfo.nodename, systemInfo.release,
-                   systemInfo.version, systemInfo.machine);
+            printf("OS: %s\nHostname: %s\nArch: %s\nPID: %i\n",
+                   systemInfo.sysname, systemInfo.nodename,
+                   systemInfo.machine, (int)getpid());
         }else{
             printf("unknown\n");
         }
