@@ -44,7 +44,7 @@ Parameters::Parameters(){
 
     // [Potential]
     potential = Potential::POT_LJ;
-    MPIPotentialAggressive = true;
+    MPIPollPeriod = 0.25;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -209,7 +209,7 @@ int Parameters::load(FILE *file){
 
         // [Potential] //
         potential = toLowerCase(ini.GetValue("Potential", "potential"));
-        MPIPotentialAggressive = ini.GetValueB("Potential", "aggressive", MPIPotentialAggressive);
+        MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
 
         // Initialize random generator
         if(randomSeed < 0){
