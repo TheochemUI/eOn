@@ -48,7 +48,7 @@ public:
 
     // [Potential] //
     string potential;
-    bool MPIPotentialAggressive;
+    double MPIPollPeriod;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries

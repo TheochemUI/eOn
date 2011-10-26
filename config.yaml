@@ -66,9 +66,9 @@ Potential:
                 - lammps
                 - mpi
 
-        mpi_aggressive:
-            kind: boolean
-            default: True
+        mpi_poll_period:
+            kind: float
+            default: 0.25
 
 ################################################################################
 
