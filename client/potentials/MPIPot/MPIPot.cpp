@@ -17,7 +17,7 @@
 MPIPot::MPIPot(Parameters *p)
 {
     potentialRank = p->MPIPotentialRank;
-    aggressive = p->MPIPotentialAggressive;
+    poll_period = p->MPIPollPeriod;
     return;
 }
 
@@ -51,9 +51,9 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     MPI::COMM_WORLD.Send(&pbc,       1, MPI::INT,    potentialRank, 0);
     MPI::COMM_WORLD.Send(&icwd[0],1024, MPI::INT,    potentialRank, 0);
 
-    if (!aggressive) {
+    if (poll_period > 0.0) {
         while (MPI::COMM_WORLD.Iprobe(potentialRank, 0) == false) {
-            usleep(500000); // Sleep for 0.5 seconds
+            usleep((useconds_t)(poll_period/1000000.0)); 
         }
     }
 
