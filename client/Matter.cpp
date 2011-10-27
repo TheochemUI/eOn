@@ -344,7 +344,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     }
 
     int iteration=0;
-    log("%4s    %9s    %9s    %11s\n", "iter", "step size", "max force", "energy");
+    if (!quiet) {
+        log("%4s    %9s    %9s    %11s\n", "iter", "step size", "max force", "energy");
+    }
     while (!objf.isConverged() && 
            iteration < parameters->optMaxIterations) {
 
@@ -371,9 +373,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         }
     }
 
-    bool converged = optimizer->run(parameters->optMaxIterations, parameters->optMaxMove);
+//    bool converged = optimizer->run(parameters->optMaxIterations, parameters->optMaxMove);
     delete optimizer;
-    return converged;
+    return objf.isConverged();
 }
 
 VectorXd Matter::getPositionsFreeV() const
