@@ -7,9 +7,9 @@ failstr = "\n\nXXXXX XXXXX FAILED TEST 1 XXXXX XXXXX\n\n"
 passstr = "\n\n+++++ +++++ PASSED TEST 1 +++++ +++++\n\n"
 print "\nRunning prd_qsc_al_adatom test\n";
 
-os.system("echo 'y' | ../../eon.py --reset")
+os.system("echo 'y' | ../../eon --reset")
 for i in range(10):
-    retval = os.system("../../eon.py")
+    retval = os.system("../../eon")
     if retval:
         print failstr
         sys.exit(1)
