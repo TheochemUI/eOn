@@ -94,7 +94,7 @@ void enableFPE(void)
 
 void printSystemInfo()
 {
-    printf("EON Client\n");
+    printf("EON Client\n\n");
     // System Information
     #ifdef WIN32
         printf("OS: Microsoft Windows\n");
@@ -102,12 +102,13 @@ void printSystemInfo()
         struct utsname systemInfo;
         int status = uname(&systemInfo);
         if (status == 0) {
-            printf("OS: %s\nHostname: %s\nArch: %s\nPID: %i\n",
-                   systemInfo.sysname, systemInfo.nodename,
+            printf("Hostname: %s\nOS: %s\nArch: %s\nPID: %i\n",
+                   systemInfo.nodename, systemInfo.sysname,
                    systemInfo.machine, (int)getpid());
-        }else{
-            printf("unknown\n");
         }
+        char dir[1024];
+        getcwd(dir, 1024);
+        printf("DIR: %s\n\n", dir);
     #endif
 }
 
