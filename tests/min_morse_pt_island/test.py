@@ -23,7 +23,7 @@ for line in open("minimization.test"):
 #print "Test energy: ",u
 #print "Ref energy : ",r
 
-rel_err = abs(u-r)/u
+rel_err = abs(u-r)/abs(u)
 
 if rel_err > 0.01:
     print "%s: failed relative error of %.3f exeeds tolerence" % (test_name,rel_err)
