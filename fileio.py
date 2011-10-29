@@ -142,8 +142,8 @@ def savecon(fileout, p, w = 'w'):
     print >> con
     dim = len(p.r[0])
     lengths, angles = box_to_length_angle(p.box)
-    print >> con, " ".join(['%.4f' % s for s in lengths])
-    print >> con, " ".join(['%.4f' % s for s in angles])
+    print >> con, " ".join(['%.6f' % s for s in lengths])
+    print >> con, " ".join(['%.6f' % s for s in angles])
     print >> con
     print >> con
     atom_count = {}
@@ -163,13 +163,13 @@ def savecon(fileout, p, w = 'w'):
     for i in range(len(name_order)):
         printmasses.append(p.mass[index])
         index += atom_count[name_order[i]]
-    print >> con, " ".join(["%.4f"% i for i in printmasses])
+    print >> con, " ".join(["%.6f"% i for i in printmasses])
     index = 0
     for i in range(len(name_order)):
         print >> con, name_order[i]
         print >> con, "Coordinates of Component", i+1
         for j in range(atom_count[name_order[i]]):
-            con.write("%.3f %.3f %.3f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1))
+            con.write("%.6f %.6f %.6f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1))
             index += 1
 
 
