@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tests="akmc_eam_al_trimer min_morse_pt_island potentials"
+tests="akmc_eam_al_trimer min_morse_pt_island bh_lj13"
 
 if [ $BOINC ]; then
     echo "NO BOINC TESTS YET"
