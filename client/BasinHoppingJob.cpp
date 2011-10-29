@@ -18,6 +18,7 @@
 #include "HelperFunctions.h"
 #include "Optimizer.h"
 #include "ObjectiveFunction.h"
+#include "Log.h"
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -82,8 +83,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
     FILE * pFile;
     pFile = fopen("bh.dat","w");
 
-    printf("%4s %12s %12s %12s %4s\n", "mcs", "current", "trial", "global min", "fc");
-    printf("%4s %12s %12s %12s %4s\n", "---", "-------", "-----", "----------", "--");
+    log("%4s %12s %12s %12s %4s\n", "mcs", "current", "trial", "global min", "fc");
+    log("%4s %12s %12s %12s %4s\n", "---", "-------", "-----", "----------", "--");
 
     for (int step=0; step<nsteps; step++) {
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
@@ -150,7 +151,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         totalfc = Potential::fcallsTotal;
-        printf("%4i %12.3f %12.3f %12.3f %4i\n",
+        log("%4i %12.3f %12.3f %12.3f %4i\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
                minfcalls);
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
@@ -191,7 +192,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     }
 
     fprintf(fileResults, "%d termination_reason\n", 0);
-    fprintf(fileResults, "%e minimum_energy\n", minimumEnergy);
+    fprintf(fileResults, "%.6f minimum_energy\n", minimumEnergy);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     if(parameters->basinHoppingSwapProbability>0){
