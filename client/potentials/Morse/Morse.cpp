@@ -27,7 +27,7 @@
 
 Morse::Morse(){
       // Parameters De in eV, a in /Angstrom, re in Angstrom, cutoff in Agnstrom.
-      setParameters(0.7102, 1.6047, 2.8970, 8.0);
+      setParameters(0.7102, 1.6047, 2.8970, 9.5);
 }
 
 Morse::Morse(double De, double a, double re, double cutoff)
@@ -83,10 +83,8 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U, co
                         F[ 3*j ]-=force*diffRX/diffR;
                         F[3*j+1]-=force*diffRY/diffR;
                         F[3*j+2]-=force*diffRZ/diffR;
+                        *U -= energyCutoff_;
                   }
-                  else {
-                        *U+=energyCutoff_;
-                  };
             }
       }
       return;
@@ -101,6 +99,6 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U, co
 void Morse::morse(double r, double & energy, double & force)
 {
       double const d=1-exp(-a_*(r-re_));
-      energy=De_*d*d;
+      energy=De_*d*d-De_;
       force= 2*De_*d*(d-1)*a_;
 }
