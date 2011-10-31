@@ -71,7 +71,7 @@ class MatterObjectiveFunction : public ObjectiveFunction
         }
         ~MatterObjectiveFunction(void){};
         double getEnergy() { return matter->getPotentialEnergy(); }
-        VectorXd getGradient() { return -matter->getForcesFreeV(); }
+        VectorXd getGradient(bool fdstep=false) { return -matter->getForcesFreeV(); }
         void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
         VectorXd getPositions() { return matter->getPositionsFreeV(); }
         int degreesOfFreedom() { return 3*matter->numberOfFreeAtoms(); }
