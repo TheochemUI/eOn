@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import numpy
+from sys import argv
+from os.path import join
 
-f = open('processtable')
+path = argv[1]
+
+f = open(join(path, 'processtable'))
 processes = {}
 for line in f:
     fields = line.split()
@@ -13,7 +17,7 @@ for line in f:
 
 f.close()
 
-f = open('search_results.txt')
+f = open(join(path, 'search_results.txt'))
 f.readline()
 f.readline()
 for line in f:
@@ -42,11 +46,35 @@ bins = numpy.arange(min(energies)-0.05, max(energies)+.05, .05)
 hist, bins = numpy.histogram(energies, bins=bins)
 center = (bins[:-1]+bins[1:])/2.0
 
+bin_map = {}
+for id,p in processes.iteritems():
+    for i in xrange(len(bins)-1):
+        if p['barrier'] >= bins[i] and p['barrier'] < bins[i+1]:
+            if i not in bin_map:
+                bin_map[i] = []
+            bin_map[i].append(id)
+
 print 'set xlabel "Energy (eV)"'
 print 'set ylabel "Frequncy"'
 print 'set y2label "Force Calls"'
 print 'set ytics nomirror'
 print 'set y2tics'
-print 'plot "-" with boxes title "Frequency'
+print 'set autoscale y'
+print 'set autoscale y2'
+print 'set boxwidth 0.05'
+print 'plot "-" with boxes fs solid 0.5 lt 3 title "Frequency" axes x1y1, "-" with yerrorbars title "Force Calls" axes x1y2 lt -1'
 for i in xrange(len(hist)):
+    if i not in bin_map:
+        continue
+
     print "%.4f %i" % (center[i], hist[i])
+
+print "e"
+
+for i in xrange(len(hist)):
+    if i not in bin_map:
+        continue
+    fcs = []
+    for id in bin_map[i]:
+       fcs.extend(processes[id]['fcs'])
+    print "%.4f %.4f %.4f" % (center[i], numpy.average(fcs), numpy.std(fcs))
