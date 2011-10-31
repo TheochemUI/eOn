@@ -13,7 +13,7 @@ class ObjectiveFunction
     public:
         virtual ~ObjectiveFunction() {}
         virtual double getEnergy()=0;
-        virtual VectorXd getGradient()=0;
+        virtual VectorXd getGradient(bool fdstep=false)=0;
         virtual void setPositions(VectorXd x)=0;
         virtual VectorXd getPositions()=0;
         virtual int degreesOfFreedom()=0;
