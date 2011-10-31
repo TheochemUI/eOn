@@ -32,5 +32,4 @@ Parameters in the **[Structure Comparison]** section of the config.ini file.
 
 **distance_difference**: The maximum distance two mapped atoms may be for two configurations to be considered equivalent.
 
-    default: ``0.05``
-
+    default: ``0.1``
