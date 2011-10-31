@@ -246,7 +246,7 @@ Structure Comparison:
 
         distance_difference:
             kind: float
-            default: 0.05
+            default: 0.1
 
         covalent_scale:
             kind: float
