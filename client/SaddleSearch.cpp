@@ -40,12 +40,15 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         }
         ~MinModeObjectiveFunction(void){};
 
-        VectorXd getGradient() 
+        VectorXd getGradient(bool fdstep=false) 
         { 
             AtomMatrix proj;
             AtomMatrix force = matter->getForces();
 
-            minModeMethod->compute(matter, eigenvector);
+            if (!fdstep) {
+                minModeMethod->compute(matter, eigenvector);
+            }
+
             eigenvector = minModeMethod->getEigenvector();
             double eigenvalue = minModeMethod->getEigenvalue();
 

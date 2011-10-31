@@ -53,7 +53,7 @@ bool ConjugateGradients::step(double maxMove)
     // move system an infinitesimal step to determine the optimal step size along the search line
     posStep = pos + directionNorm * parameters->finiteDifference;
     objf->setPositions(posStep);
-    forceAfterStep = -objf->getGradient();
+    forceAfterStep = -objf->getGradient(true);
 
     // Determine curvature
     double projectedForce1 = force.dot(directionNorm);
