@@ -141,10 +141,10 @@ Parameters::Parameters(){
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
     bondBoostDVMAX = 0.0;
-    bondBoostQRR = 0.0001; // can not be set to 0
+    bondBoostQRR = 0.2; // can not be set to 0
     bondBoostPRR = 0.95;
     bondBoostQcut = 3.0;
-    bondBoostRMDS = 0;
+    bondBoostRMDS = 100;
 
     // [Basin Hopping] //
     basinHoppingMaxDisplacement = 0.5;
