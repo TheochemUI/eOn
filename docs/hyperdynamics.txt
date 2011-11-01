@@ -41,7 +41,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
 **bb_rmd_steps**: 
 
-    default: ``0``
+    default: ``100``
 
     Number of MD steps used to determine the equilibrium bond length before the bias potential is added.
 
@@ -53,7 +53,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
 **bb_stretch_threshold**: 
 
-    default: ``0.0001``
+    default: ``0.2``
 
     Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.
 

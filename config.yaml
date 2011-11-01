@@ -490,7 +490,7 @@ Hyperdynamics:
 
         bb_rmd_steps:
             kind: int
-            default: 0
+            default: 100
 
         bb_rcut:
             kind: float
@@ -498,11 +498,11 @@ Hyperdynamics:
 
         bb_strech_threshold:
             kind: float
-            default: 0.0001
+            default: 0.2
 
         bb_ds_curvature:
             kind: float
-            default: 3.95
+            default: 0.95
 
 ################################################################################
 
