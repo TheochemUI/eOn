@@ -429,4 +429,27 @@ void helper_functions::saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode)
     return;
 }
 
+std::vector<int> helper_functions::split_string_int(std::string s, std::string delim)
+{
+    char *pch;
+    char *str;
+    str = (char*) malloc(sizeof(char)*s.size());
+    strcpy(str, s.c_str());
+    pch = strtok(str, delim.c_str());
 
+    std::vector<int> list;
+
+    while (pch != NULL) {
+        char *end;
+        int value = (int)strtol(pch, &end, 10); 
+        if (*end) {
+            std::vector<int> emptylist;
+            free(str);
+            return emptylist;
+        }
+        list.push_back(value);
+        pch = strtok(NULL, delim.c_str());
+    }
+    free(str);
+    return list;
+}
