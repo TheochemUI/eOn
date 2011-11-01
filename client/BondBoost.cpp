@@ -10,7 +10,7 @@
 
 #include "BondBoost.h"
 #include <math.h>
-
+#include "HelperFunctions.h"
 //const string Hyperdynamics::NONE = "none";
 //const string Hyperdynamics::BOND_BOOST = "bond_boost";
 const char Hyperdynamics::NONE[] = "none";
@@ -35,41 +35,76 @@ void BondBoost::initial()
 {
     long i, j, k = 0, count = 0;
     bool flag  = 1;
-
+    string BALstring;  //Boosted Atom List String
+    vector<int> atoms;
+    int leng_strlist;
     nBBs = 0;
     nReg = 1;
-    nBAs = matter->numberOfFreeAtoms();
-    nRAs = nAtoms - nBAs; // nRestAtoms
-    nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; // number of Bonds involved with Tagged Atoms
-    BAList = new long[nBAs]; // BoostAtomsList
-    RAList = new long[nRAs]; // RestAtomsList
-    TABAList = new long[2*nTABs]; // CorrespondingAtomsList of TABLList
-    TABLList.setZero(nTABs,1);
-
-    printf("BondBoost Used !\n");
-    for(i = 0;i < nAtoms; i++){
-        if(!matter->getFixed(i)){
-            BAList[k]=i;
-            k++;
-        }
-    }
-
-    for(i = 0 ;i < nAtoms; i++){
-        flag = 1;
-        for (j = 0; j < nBAs; j++){
-            if(i == BAList[j]){
-                flag = 0;
+    BALstring = parameters->bondBoostBALS;
+    atoms=helper_functions::split_string_int(BALstring,","); 
+    leng_strlist=atoms.size();
+    if(BALstring.c_str() == string("all") or atoms.size() == 0){
+        printf("boost all atoms that are set free\n");
+        nBAs = matter->numberOfFreeAtoms();
+        nRAs = nAtoms - nBAs; // nRestAtoms
+        BAList = new long[nBAs]; // BoostAtomsList
+        RAList = new long[nRAs]; // RestAtomsList
+        for(i = 0;i < nAtoms; i++){
+            if(!matter->getFixed(i)){
+                BAList[k]=i;
+                k++;
             }
         }
-        if(flag == 1){
-            RAList[count] = i;   
-            count ++;
+        for(i = 0 ;i < nAtoms; i++){
+            flag = 1;
+            for (j = 0; j < nBAs; j++){
+                if(i == BAList[j]){
+                    flag = 0;
+                }
+            }
+            if(flag == 1){
+                RAList[count] = i;   
+                count ++;
+            }
+        }
+        if(count != nRAs){
+            printf("Error: nRestAtoms does not equal to counted number!\n");
+        }
+    }else{
+        printf("boost the following selected atoms:");
+        for(i=0;i<leng_strlist;i++){
+            printf("%3d",atoms[i]);
+        }
+        printf("\n");
+        nBAs = leng_strlist;
+        nRAs = nAtoms - nBAs; // nRestAtoms
+        BAList = new long[nBAs]; // BoostAtomsList
+        RAList = new long[nRAs]; // RestAtomsList
+        for(i = 0;i < nBAs; i++){
+            BAList[k]=atoms[i]-1;
+            k++;
+        }
+        for(i = 0 ;i < nAtoms; i++){
+            flag = 1;
+            for (j = 0; j < nBAs; j++){
+                if(i == BAList[j]){
+                    flag = 0;
+                }
+            }
+            if(flag == 1){
+                RAList[count] = i;   
+                count ++;
+            }
+        }
+        if(count != nRAs){
+            printf("Error: nRestAtoms does not equal to counted number!\n");
         }
     }
 
-    if(count != nRAs){
-        printf("Error: nRestAtoms does not equal to counted number!\n");
-    }
+    nTABs = nBAs*(nBAs-1)/2+nBAs*nRAs; // number of Bonds involved with Tagged Atoms
+    TABAList = new long[2*nTABs]; // CorrespondingAtomsList of TABLList
+    TABLList.setZero(nTABs,1);
+    printf("BondBoost Used !\n");
 
 // TEST PRINT
 /*

@@ -151,6 +151,7 @@ public:
 
     // [Bond Boost]
     string biasPotential;
+    string bondBoostBALS;
     long   bondBoostRMDS;
     double bondBoostDVMAX;
     double bondBoostQRR;
