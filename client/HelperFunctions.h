@@ -13,6 +13,8 @@
 
 #include "Eigen.h"
 #include "Matter.h"
+#include <vector>
+#include <string>
 // Random number generator constants
 
 #define IM 2147483647
@@ -62,6 +64,6 @@ namespace helper_functions {
     AtomMatrix loadMode(FILE *modeFile, int nAtoms);
     AtomMatrix loadMode(string filename, int nAtoms);
     void saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode);
-
+    std::vector<int> split_string_int(std::string s, std::string delim);
 }
 #endif
