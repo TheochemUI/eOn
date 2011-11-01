@@ -1,4 +1,4 @@
-//----------------------------------------------------------------------------------e
+//----------------------------------------------------------------------------------
 // eOn is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -140,6 +140,7 @@ Parameters::Parameters(){
 
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
+    bondBoostBALS = string("ALL"); //Boosted atom list string 
     bondBoostDVMAX = 0.0;
     bondBoostQRR = 0.2; // can not be set to 0
     bondBoostPRR = 0.95;
@@ -344,11 +345,14 @@ int Parameters::load(FILE *file){
         // [Hyperdynamics] //
 
         bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
+        bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics","bb_boost_atomlist",bondBoostBALS));
+       
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
-        biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential","none"));
+        biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential",biasPotential));
+        
 
         // [Basin Hopping] //        
 
