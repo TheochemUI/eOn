@@ -374,6 +374,8 @@ class ServerMinModeExplorer(MinModeExplorer):
             searchdata_id = "%d_%d" % (state_num, id)
 
             search_id = self.wuid_to_search_id[id]
+            if search_id not in self.process_searches:
+                continue
             self.job_info[search_id][searchdata_id]['status'] = 'complete'
             #logger.info("got result for search_id %i" % search_id)
             final_result = self.process_searches[search_id].process_result(result)
