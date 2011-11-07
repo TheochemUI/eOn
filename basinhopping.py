@@ -157,11 +157,11 @@ def make_searches(comm, wuid, bhstates):
            numpy.random.random() < config.bh_md_probability:
             number_random += 1
             reactIO = initial_react
-            ini_changes.append( ('Basin Hopping', 'md_first', 'true') )
+            ini_changes.append( ('Basin Hopping', 'initial_md', 'true') )
         else:
             number_minima += 1
             reactIO = bhstates.get_random_minimum()
-            ini_changes.append( ('Basin Hopping', 'md_first', 'false') )
+            ini_changes.append( ('Basin Hopping', 'initial_md', 'false') )
         search['reactant_passed.con'] = reactIO
         search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)
