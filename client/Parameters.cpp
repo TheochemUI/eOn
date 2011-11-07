@@ -367,7 +367,7 @@ int Parameters::load(FILE *file){
         basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
         basinHoppingInitialMD = ini.GetValueB("Basin Hopping", "initial_md", basinHoppingInitialMD);
-        basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", ini.GetValueF("Main", "temperature", temperature));
+        basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", temperature);
 
     }
     else
