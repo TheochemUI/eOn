@@ -55,13 +55,16 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
     default: ``0.2``
 
-    Defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state.
+    Defines the bond-boost dividing surface. It should be smaller than the
+    maximum fractional nearest-neighbor bond stretch or compression at any
+    transition state.
 
 **bb_ds_curvature**: 
 
     default: ``0.95``
 
-    The curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98.
+    The curvature near the bond-boost dividing surface, it should has a value
+    <= 1. We recommend the value to be 0.9-0.98.
 
 .. rubric:: References
 
