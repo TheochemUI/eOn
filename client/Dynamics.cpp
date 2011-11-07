@@ -117,14 +117,11 @@ void Dynamics::fullSteps(double temperature)
     forceCallsTemp = matter->getForceCalls();
 
 
-    if(parameters->thermostat != NVE)
-    {
-        printf("Running NVT molecular dynamics at %8.2lf K for %10ld steps\n", parameters->temperature, parameters->mdSteps);
+    if(parameters->thermostat != NVE) {
+        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %10ld steps\n", temperature, parameters->mdSteps);
         initialVel(temperature);
-    }
-    else
-    {
-        printf("Running NVE molecular dynamics for %10ld steps\n", parameters->mdSteps);
+    }else{
+        log("[Dynamics] Running NVE molecular dynamics for %10ld steps\n", parameters->mdSteps);
     }
 
     if (parameters->writeMovies == true) {
@@ -133,8 +130,7 @@ void Dynamics::fullSteps(double temperature)
 
     log("[Dynamics] %8s %10s %12s %12s %10s\n", "Step", "KE", "PE", "TE", "kinT");
 
-    while(!stopped)
-    {
+    while(!stopped) {
         oneStep(temperature);
         nsteps++;
 
@@ -441,7 +437,7 @@ long Dynamics::refine(Matter *buff[],long length,Matter *min1)
             b1 = test;
         }
         else {
-            printf("Refine Step Failed ! \n");
+            log("Refine Step Failed ! \n");
             exit(1);
         }
         diff = abs(b1 - a1);
