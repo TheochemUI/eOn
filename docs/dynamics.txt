@@ -18,7 +18,7 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
    default: ``1000``
 
-**thermo_type**
+**thermostat**
 
    default: ``andersen``
 
@@ -26,7 +26,7 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
        ``andersen``: Andersen thermostat with Verlet algorithm
 
-       ``nose_hoober``: Nose-Hover thermostat with Verlet algorithm
+       ``nose_hoover``: Nose-Hover thermostat with Verlet algorithm
 
        ``langevin``: Langevin thermostat with Verlet algorithm
 

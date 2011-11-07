@@ -5,14 +5,31 @@
 Basin Hopping
 =============
 
-Basin hopping is a Monte Carlo method in which the energy of each configuration is taken to be the energy of a local minimum. [#wales]_
+Basin hopping is a Monte Carlo method in which the energy of each configuration
+is taken to be the energy of a local minimum. [#wales]_
 
 [Basin Hopping] Options
 =======================
 
+**steps**: Number at steps to take at the temeprature assigned.
+
+    default: ``10000``
+
 **max_displacement**: Max displacement in each degree of freedom.
 
     default: ``0.5``
+
+**displacement_distribution**: The distribution used for the displacement of
+each atom.
+
+    default: ``uniform``
+
+    options:
+
+        ``gaussian``: max_displacement serves as the standard deviation of a
+        gaussian distribution used to select displacements
+
+        ``uniform``: A random number is selected between 0 and max_displacement
 
 **quenching_steps**: Number at steps at 0 temperature at the end of the run.
 
@@ -28,10 +45,6 @@ different elements and swaps their position.
 
     default: ``False``
 
-**steps**: Number at steps to take at the temeprature assigned.
-
-    default: ``10000``
-
 **jump_max**: The number of consecutive rejected steps after which jump steps
 should be taken. This serves to provide a more global search when the structure
 is stuck in a certain basin. The number of jump steps is assigned in
@@ -40,21 +53,9 @@ Iwamatsu and Okabe. [#iwamatsu]_
 
     default: ``0``
 
-**significant_structure**: Displace minimized structures. [#white]_
+**significant_structure**: Displace from minimized structures. [#white]_
 
     default: ``False``
-
-**displacement_distribution**: The distribution used for the displacement of
-each atom.
-
-    default: ``uniform``
-
-    options:
-
-        ``gaussian``: max_displacement serves as the standard deviation of a
-        gaussian distribution used to select displacements
-
-        ``uniform``: A random number is selected between 0 and max_displacement
 
 **max_displacement_algorithm**: The algorithm used to assign max displacement
 of each atom. [#kim]_
