@@ -55,7 +55,7 @@ for id,p in processes.iteritems():
             bin_map[i].append(id)
 
 print 'set xlabel "Energy (eV)"'
-print 'set ylabel "Frequncy"'
+print 'set ylabel "Frequency"'
 print 'set y2label "Force Calls"'
 print 'set ytics nomirror'
 print 'set y2tics'
