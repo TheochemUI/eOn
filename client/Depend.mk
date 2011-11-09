@@ -110,7 +110,7 @@ BasinHoppingJob.o: BasinHoppingJob.cpp Dynamics.h Optimizer.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Potential.h LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h \
- Lanczos.h ExactMinMode.h BasinHoppingJob.h Job.h false_boinc.h
+ Lanczos.h ExactMinMode.h BasinHoppingJob.h Job.h Log.h false_boinc.h
 BondBoost.o: BondBoost.cpp BondBoost.h Matter.h Eigen.h Eigen/Dense \
  Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
