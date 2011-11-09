@@ -246,7 +246,9 @@ void ParallelReplicaJob::dynamics()
         printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
         
         long relaxbufflength = int(relax_steps/RecordAccuracy)+1;
-        if(nsteps_refined < mdbufflength - relaxbufflength ){
+
+        //printf("nsteps_refined=%ld\nmdbufflength=%ld\nrelaxbufflength=%ld\n",nsteps_refined,mdbufflength, relaxbufflength );
+        if(nsteps_refined < mdbufflength - relaxbufflength -1 ){
             *final = *mdbuff[nsteps_refined+relaxbufflength];
         }
 
