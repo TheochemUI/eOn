@@ -73,7 +73,7 @@ void BondBoost::initial()
     }else{
         printf("boost the following selected atoms:");
         for(i=0;i<leng_strlist;i++){
-            printf("%3d",atoms[i]);
+            printf("%d ",atoms[i]);
         }
         printf("\n");
         nBAs = leng_strlist;
@@ -81,7 +81,7 @@ void BondBoost::initial()
         BAList = new long[nBAs]; // BoostAtomsList
         RAList = new long[nRAs]; // RestAtomsList
         for(i = 0;i < nBAs; i++){
-            BAList[k]=atoms[i]-1;
+            BAList[k]=atoms[i];
             k++;
         }
         for(i = 0 ;i < nAtoms; i++){
