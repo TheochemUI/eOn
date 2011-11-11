@@ -8,7 +8,6 @@
 ## http://www.gnu.org/licenses/
 ##
 ##-----------------------------------------------------------------------------------
-#gh test
 """ The statelist module. """
 
 import config
