@@ -83,8 +83,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         LowestEigenmode *minModeMethod;
         Matter *matter;
         Parameters *parameters;
-
-};
+}
 
 SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, 
                           double reactantEnergyPassed, Parameters *parametersPassed)
@@ -107,7 +106,6 @@ SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_EXACT) {
         minModeMethod = new ExactMinMode(matter, parameters);
     }
-     
 }
 
 SaddleSearch::~SaddleSearch()
