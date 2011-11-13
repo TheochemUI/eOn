@@ -15,8 +15,6 @@ import logging
 logger = logging.getLogger('statelist')
 import math
 import shutil
-
-
 import atoms
 import akmcstate
 import statelist
@@ -34,7 +32,7 @@ class AKMCStateList(statelist.StateList):
         self.filter_hole = filter_hole
 
     def register_process(self, reactant_number, product_number, process_id):
-
+        
         # Get the reactant and product state objects.
         reactant = self.get_state(reactant_number)
         product = self.get_state(product_number)
@@ -45,71 +43,107 @@ class AKMCStateList(statelist.StateList):
         reactant.procs[process_id]['product'] = product_number
         reactant.save_process_table()
 
-        # Reverse process (prod->reac)
-        # Have any processes been determined for the product state
+        # If the process is of type reac->reac no reverse process needs to be added and we can return.
+        # This can be the case if for example a water molecule rotates to mirrored conf.
+        if reactant_number == product_number:
+            return
+
+        # Loads 'reference' energy for the reactant state as defined in meta-data.
+        reactant_energy = reactant.get_energy()
+        saddle_energy = reactant.procs[process_id]['saddle_energy']
+
+        # Reverse process (prod->reac).
+        # Have any processes been determined for the product state.
         if product.get_num_procs() != 0:
             product.load_process_table()
             reverse_procs = product.get_process_table()
-
-            saddle_energy = reactant.procs[process_id]['saddle_energy']
             candidates = []
 
             # An alike reverse process might already exist
             for id in reverse_procs.keys():
                 proc = reverse_procs[id]
-                if abs(proc['saddle_energy'] - saddle_energy) < self.epsilon_e:
-                    # Returns if an alike process is already identified:
-                    if (proc['product'] == reactant_number): 
-                        return
+                if ( abs(proc['saddle_energy'] - saddle_energy) < self.epsilon_e ) and (proc['product']==-1):
+                    candidates.append(id)
 
-                    # It might be unidentified
-                    elif (proc['product'] == -1):
-                        candidates.append(id)
-
-            # Not an exact match, check the candidates
             if len(candidates):
                 reactant_conf = reactant.get_reactant()
                 for id in candidates:
                     conf = product.get_process_product(id)
-                    dist = max(atoms.per_atom_norm(reactant_conf.r - conf.r, reactant_conf.box))
-                    if dist < self.epsilon_r:
+
+                    # The process is known but has not been accepted yet.
+                    if atoms.match(reactant_conf, conf, config.comp_eps_r, config.comp_neighbor_cutoff, False):
+
+                        # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
+                        reactant.load_process_table()
+                        
                         # Remember we are now looking at the reverse processes 
                         reverse_procs[id]['product'] = reactant_number
+                        reverse_procs[id]['saddle_energy'] = saddle_energy
+                        reverse_procs[id]['prefactor'] = reactant.procs[process_id]['product_prefactor']
+                        reverse_procs[id]['product_energy'] = reactant.get_energy()
+                        reverse_procs[id]['product_prefactor'] = reactant.procs[process_id]['prefactor']
+                        reverse_procs[id]['barrier'] = saddle_energy - product.get_energy()
+                        reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
                         product.save_process_table()
+                        
+                        # We are done.
                         return
 
-            # The process is not in the list! 
+            # The process is not in the list and must be added as a new process.
             reverse_process_id = product.get_num_procs()
-            # BUG return SHOULD BE REMOVED, HOWEVER, IF THE PROCESS IS ADDED THE META FILE IT NOT UP TO DATE
-            # HOW COULD THIS BE SOLVED 
-            return
+
         else:
-            # This must be a new state
-            reverse_process_id = 0
+            # This must be a new state.
             product.set_energy(reactant.procs[process_id]['product_energy'])
+            reverse_process_id = 0
+
+        # The product state does not know the reverse process yet.
+        # Reverse id has been determined above. (0 if it is a new state, else the last element in the proc table + 1)
+        shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(reverse_process_id))
+        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(reverse_process_id))
+        shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(reverse_process_id))
+        shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(reverse_process_id))
+        shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(reverse_process_id))
 
         # Add the reverse process in the product state
-        barrier = reactant.procs[process_id]['saddle_energy'] - reactant.procs[process_id]['product_energy']
-        shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(0))
-        shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(0))
-        shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(0))
-        shutil.copy(reactant.proc_results_path(process_id), product.proc_results_path(0))
-        shutil.copy(reactant.proc_mode_path(process_id), product.proc_mode_path(0))
-        product.append_process_table(id = reverse_process_id, 
-                                     saddle_energy = reactant.procs[process_id]['saddle_energy'], 
-                                     prefactor = reactant.procs[process_id]['product_prefactor'], 
-                                     product = reactant_number, 
-                                     product_energy = reactant.get_energy(),
+        barrier = saddle_energy - product.get_energy()
+        product.append_process_table(id = reverse_process_id,
+                                     saddle_energy = saddle_energy,
+                                     prefactor = reactant.procs[process_id]['product_prefactor'],
+                                     product = reactant_number,
+                                     product_energy = reactant_energy,
                                      product_prefactor = reactant.procs[process_id]['prefactor'],
-                                     barrier = barrier, 
-                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT), 
+                                     barrier = barrier,
+                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
                                      repeats = 0)
         product.save_process_table()
-            
+
+        # Update the metadata.    
+        # If this the forward process was a random proc, increase the repeat count.
+        if(process_id in reactant.get_proc_random_count() ):        
+            product.inc_proc_random_count(reverse_process_id)     
+        product.set_unique_saddle_count( product.get_unique_saddle_count() + 1 )
+        product.update_lowest_barrier( barrier ) 
+
+        # Register the process in the search result file. 
+        result_fake = { 'barrier_reactant_to_product' : barrier,
+                       'displacement_saddle_distance' : 0.0,
+                       'force_calls_saddle' : 0,
+                       'force_calls_minimization' : 0 ,
+                       'force_calls_prefactors' : 0}
+        result = { 'wuid' : 0,
+                   'type' : 'reverse',  
+                   'results' : result_fake}
+        product.append_search_result(result, 'reverse from '+str(reactant_number))
         return
 
 
     def connect_states(self, states):
+        '''
+        This function goes through the process tables of all states in the argument and checks if any of the 
+        unregistered processes connect these states. It thus tries to connect update the processtables of the 
+        state as good as possible. 
+        '''
         for i in states:
             proc_tab = i.get_process_table()
             for j in proc_tab:
@@ -128,4 +162,4 @@ class AKMCStateList(statelist.StateList):
                         p = state.get_reactant()
                         if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
-                            self.register_process(i.number, state.number, j)                            
+                            self.register_process(i.number, state.number, j)             
