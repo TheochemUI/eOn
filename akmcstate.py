@@ -66,11 +66,15 @@ class AKMCState(state.State):
         
         # We may not already have the energy for this State.  If not, it should be placed in the result data.
         if self.get_energy() == None:
+            # This energy now defines the reference energy for the state
             self.set_energy(resultdata["potential_energy_reactant"])
+        reactant_energy = self.get_energy()
 
         # Calculate the forward barrier for this process, and abort if the energy is too high.
         oldlowest = self.get_lowest_barrier()
-        barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
+        barrier = resultdata["potential_energy_saddle"] - reactant_energy                
+#        barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
+
         lowest = self.update_lowest_barrier(barrier)
         ediff = (barrier - lowest) - (self.statelist.kT *
                 (self.statelist.thermal_window+self.statelist.max_thermal_window))
