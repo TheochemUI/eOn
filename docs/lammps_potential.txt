@@ -1,0 +1,37 @@
+
+.. _lammps_potential:
+
+================
+LAMMPS Potential
+================
+
+In order to use the LAMMPS potential you must first build the serial library
+version of LAMMPS. This can be done by following the instructions in the
+`lammps documentation <http://lammps.sandia.gov/doc/Section_start.html>`_ . For
+most cases the following should work::
+
+    $ make makelib
+    $ make -f Makefile.lib serial
+
+Once you have compiled the library copy ``liblmp_serial.a`` to the
+client/potentials/lammps directory in the Eon source code.  The client can then
+be built like so::
+
+    $ make LAMMPS_POT=1
+
+After setting the potential to ``lammps`` in ``config.ini`` you need to place a
+LAMMPS input file in the ``potfiles`` directory in your simulation. This file should
+be named ``in.lammps`` and it needs to specify what potential LAMMPS should use.
+Here is an example in.lammps file that uses the morse potential::
+
+    pair_style morse 9.5 #morse potential with 9.5 Angstrom cutoff
+    pair_coeff * * 0.7102 1.6047 2.797 #specify parameters
+    pair_modify shift yes #shift the potential to be zero at the cutoff
+
+Options
+=======
+
+**lammps_log**: This option enables/disables the LAMMPS logfile. If enabled
+LAMMPS will log to the file ``log.lammps``.
+
+    default: ``true``
