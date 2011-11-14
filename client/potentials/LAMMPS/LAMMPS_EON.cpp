@@ -107,7 +107,7 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     //Initialize the atoms and their types
     for (int i=0;i<N;i++) {
         snprintf(cmd, 80, "create_atoms %i single %f %f %f units box", 
-                 type_map[atomicNrs[i]], R[3*i], R[3*i+1], R[3*i+2]);
+                 type_map[atomicNrs[i]], 0.0, 0.0, 0.0);
         lammps_command(ptr, cmd);
     }
 
