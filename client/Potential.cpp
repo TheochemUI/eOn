@@ -110,7 +110,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     #endif
     #ifdef LAMMPS_POT
     else if(parameters->potential == POT_LAMMPS)
-        pot = new lammps_eon();
+        pot = new lammps_eon(parameters);
     #endif
     #ifdef EONMPI
     else if(parameters->potential == POT_MPI)
@@ -127,14 +127,16 @@ Potential *Potential::getPotential(Parameters *parameters)
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
 
-AtomMatrix Potential::force(long nAtoms, AtomMatrix positions, VectorXi atomicNrs, double *energy, Matrix3d box) 
+AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
+                            VectorXi atomicNrs, double *energy, Matrix3d box) 
 {
     AtomMatrix forces(nAtoms,3);
 
     double start, userStart, sysStart;
     helper_functions::getTime(&start, &userStart, &sysStart);
 
-    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, box.data());
+    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, 
+          box.data());
 
     double finish, userFinish, sysFinish;
     helper_functions::getTime(&finish, &userFinish, &sysFinish);

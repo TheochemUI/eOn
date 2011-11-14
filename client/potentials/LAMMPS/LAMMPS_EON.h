@@ -3,42 +3,23 @@
 #ifndef LAMMPS_EON
 #define LAMMPS_EON
 
-#include "string.h"
-
-#include "filesFromLAMMPS/mpi.h"
-#include "filesFromLAMMPS/lammps.h"         // these are LAMMPS include files
-#include "filesFromLAMMPS/input.h"
-#include "filesFromLAMMPS/atom.h"
-#include "filesFromLAMMPS/library.h"
-
-//#include "LAMMPSsrc/mpi.h"
-//#include "LAMMPSsrc/lammps.h"         // these are LAMMPS include files
-//#include "LAMMPSsrc/input.h"
-//#include "LAMMPSsrc/atom.h"
-//#include "LAMMPSsrc/library.h"
-
 #include "../../Potential.h"
+#include "../../Parameters.h"
 
-static LAMMPS_NS::LAMMPS* LAMMPSObj = NULL;
-
-/** LAMMPS potentials.*/
 class lammps_eon : public Potential {
 
 private:
-//	Variables
 	long numberOfAtoms;
 	double box0, box4, box8;
-// Functions
-	void makeNewLAMMPS(long N, const int *atomicNrs, const double *box);
+	void *LAMMPSObj;
+	void makeNewLAMMPS(long N, const double *R,  const int *atomicNrs, const double *box);
+	Parameters *parameters;
 
 public:
-// Functions
-	// constructor and destructor
-    lammps_eon(void);
+    lammps_eon(Parameters *p);
     ~lammps_eon(void) {};
     void cleanMemory(void);
     
-    // To satify interface
     void initialize() {};
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 };

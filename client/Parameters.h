@@ -49,6 +49,7 @@ public:
     // [Potential] //
     string potential;
     double MPIPollPeriod;
+    bool LAMMPSLogging;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
