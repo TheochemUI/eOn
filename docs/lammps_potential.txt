@@ -31,7 +31,7 @@ Here is an example in.lammps file that uses the morse potential::
 Options
 =======
 
-**lammps_log**: This option enables/disables the LAMMPS logfile. If enabled
+**lammps_logging**: This option enables/disables the LAMMPS logfile. If enabled
 LAMMPS will log to the file ``log.lammps``.
 
     default: ``true``
