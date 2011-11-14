@@ -64,11 +64,11 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     }
 
     std::map<int,int> type_map;
-    int ntypes=1;
+    int ntypes=0;
     for (int i=0;i<N;i++) {
         if (type_map.count(atomicNrs[i]) == 0) {
-            type_map.insert(std::pair<int,int>(atomicNrs[i],ntypes));
             ntypes += 1;
+            type_map.insert(std::pair<int,int>(atomicNrs[i],ntypes));
         }
     }
 
@@ -113,9 +113,6 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
 
     //We don't care about mass but have to set it
     lammps_command(ptr, "mass * 1.0");
-
-    lammps_command(ptr, "neighbor 0.3 bin");
-    lammps_command(ptr, "neigh_modify delay 0");
 
     //Read in user commands from in.lammps files
     struct stat buffer;
