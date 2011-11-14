@@ -96,7 +96,7 @@ ifdef LAMMPS_POT
 # CAUSING PROBLEMS IN USING -DLAMMPS MUST BE SOMETHING DIFFERENT!
    CXXFLAGS += -DLAMMPS_POT #-I./potentials/filesFromLAMMPS
    POTDIRS += ./potentials/LAMMPS
-   LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libmpi.a ./potentials/LAMMPS/libmeam.a 
+   LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libfakempi.a
    POTENTIALS += "+LAMMPS"
 endif
 
