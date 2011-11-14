@@ -101,7 +101,7 @@ def processes(states, statenr, limit):
         atoms_list.append(p['reactant'])
         atoms_list.append(p['saddle'])
         atoms_list.append(p['product'])
-        print "%4i %16.5e %16.5e %16.5e" % (p['id'], p['rate'] ,p['barrier'], p['prefactor'])
+        print "%4i %16.5e %16.5f %16.5e" % (p['id'], p['rate'] ,p['barrier'], p['prefactor'])
         limit -= 1
         if limit == 0:
             break

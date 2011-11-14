@@ -1,9 +1,0 @@
-units           metal   
-atom_style      atomic
-atom_modify	map array
-read_data       lammps.conf
-
-#=- Potential parameters -=#
-pair_style      lj/cut 5.43400000
-pair_coeff      1 1 0.50474130265900001 2.47
-

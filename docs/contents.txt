@@ -29,6 +29,7 @@ Contents
    communicator
    potential
    mpi_potential
+   lammps_potential
    optimizer
    structure_comparison
    paths

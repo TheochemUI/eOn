@@ -1,9 +1,17 @@
 #include "LAMMPS_EON.h"
+#include <map>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include "string.h"
+#include "library.h"
 
 // General Functions
-lammps_eon::lammps_eon(void){
+lammps_eon::lammps_eon(Parameters *p){
+    parameters = p;
     numberOfAtoms = 0;
     box0 = box4 = box8 = 0;
+    LAMMPSObj=NULL;
 }
 
 void lammps_eon::cleanMemory(void){
@@ -14,32 +22,37 @@ void lammps_eon::cleanMemory(void){
     return;
 }
 
-// pointer to number of atoms, pointer to array of positions	
-// pointer to array of forces, pointer to internal energy
-// adress to supercell size
 void lammps_eon::force(long N, const double *R, const int *atomicNrs,
                        double *F, double *U, const double *box){
 
-    double *pos = new double[3*N];
     int i;
 
-
-    if (numberOfAtoms != N || box0 != box[0] || box4 != box[4] || box8 != box[8]){
-        makeNewLAMMPS(N, atomicNrs, box);
+    if (numberOfAtoms != N || box0 != box[0] || box4 != box[4] || 
+        box8 != box[8]){
+        makeNewLAMMPS(N, R, atomicNrs, box);
     }    
-    for(i=0; i<3*N; i++){
-        pos[i] = R[i];
-    }
-    lammps_put_coords(LAMMPSObj, pos);
-    lammps_command(LAMMPSObj,"run 0");  
-    lammps_get_energy(LAMMPSObj, U);
-    lammps_get_forces(LAMMPSObj, F);
 
-    delete [] pos;
-    return;
+    lammps_put_coords(LAMMPSObj, (double *)R);
+    lammps_command(LAMMPSObj,"run 0");  
+    double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", NULL);
+    *U = *pe;
+    free(pe);
+    
+    double *fx = (double *)lammps_extract_variable(LAMMPSObj, "fx", "all");
+    double *fy = (double *)lammps_extract_variable(LAMMPSObj, "fy", "all");
+    double *fz = (double *)lammps_extract_variable(LAMMPSObj, "fz", "all");
+    for (i=0;i<N;i++) {
+        F[3*i+0] = fx[i]; 
+        F[3*i+1] = fy[i]; 
+        F[3*i+2] = fz[i]; 
+    }
+
+    free(fx);
+    free(fy);
+    free(fz);
 }
 
-void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
+void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box){
 
     numberOfAtoms = N;
     box0 = box[0];
@@ -50,65 +63,72 @@ void lammps_eon::makeNewLAMMPS(long N, const int *atomicNrs, const double *box){
         cleanMemory();
     }
 
-    // Create a mapping of atomic numbers to atom type ID.
-    int type_mapping[1000] = {};
-    int num_types = 0;
-    for(int i = 0; i < N; i++)
-    {
-        if(type_mapping[atomicNrs[i]] == 0)
-        {
-            num_types += 1;
-            type_mapping[atomicNrs[i]] = num_types;
+    std::map<int,int> type_map;
+    int ntypes=1;
+    for (int i=0;i<N;i++) {
+        if (type_map.count(atomicNrs[i]) == 0) {
+            type_map.insert(std::pair<int,int>(atomicNrs[i],ntypes));
+            ntypes += 1;
         }
     }
 
-    // creates configuration file that is read in when LAMMPS initialize
-    FILE *fp;
-    fp = fopen("lammps.conf","w");
-    fprintf(fp, "Created by EON\n");
-    fprintf(fp, "\n%d atoms\n", N);
-    fprintf(fp, "%d atom types\n", num_types);
-    fprintf(fp, "0.0   %f  xlo xhi\n", box[0]);
-    fprintf(fp, "0.0   %f  ylo yhi\n", box[4]);
-    fprintf(fp, "0.0   %f  zlo zhi\n", box[8]);
+    char *lammps_argv[7];
+    lammps_argv[0] = "";
+    lammps_argv[1] = "-log";
+    if (parameters->LAMMPSLogging) {
+        lammps_argv[2] = "log.lammps";
+    }else{
+        lammps_argv[2] = "none";
+    }
+    lammps_argv[3] = "-echo";
+    lammps_argv[4] = "log";
+    lammps_argv[5] = "-screen";
+    lammps_argv[6] = "none";
+    lammps_open_no_mpi(7, lammps_argv, &LAMMPSObj);
+    void *ptr = LAMMPSObj;
 
-    // sets fake masses for the different atom types
-    fprintf(fp, "\n\nMasses\n\n");
-    for(int i=0; i<num_types; i++){
-        fprintf(fp, "%i 1\n", i + 1);
+    char cmd[80];
+
+    //Gives units in Angstoms and eV
+    lammps_command(ptr, "units metal");
+    lammps_command(ptr, "atom_style	atomic");
+
+    //Preserves atomic index ordering
+    lammps_command(ptr, "atom_modify map array sort 0 0");
+
+
+    //Define periodic cell
+    snprintf(cmd, 80, "region box block 0 %.8f 0 %.8f 0 %.8f units box", 
+             box0, box4, box8);    
+    lammps_command(ptr, cmd);
+    snprintf(cmd, 80, "create_box %i box", ntypes);
+    lammps_command(ptr, cmd);
+
+    //Initialize the atoms and their types
+    for (int i=0;i<N;i++) {
+        snprintf(cmd, 80, "create_atoms %i single %f %f %f units box", 
+                 type_map[atomicNrs[i]], R[3*i], R[3*i+1], R[3*i+2]);
+        lammps_command(ptr, cmd);
     }
 
-    // sets fake coordinates for all atoms
-    fprintf(fp, "\n\nAtoms\n\n");
-    for(int i=0; i<N; i++){
-        fprintf(fp, "  %i %i  0. 0. 0.\n", i+1, type_mapping[atomicNrs[i]]);
-    }
-    fclose(fp);
+    //We don't care about mass but have to set it
+    lammps_command(ptr, "mass * 1.0");
 
- //printf("opening lammps\n");
-    // opens and read LAMMPS input script
-    lammps_open_no_mpi(0, NULL, (void**) &LAMMPSObj);
-    int n;
-    char line[1024];
-    fp = fopen("lammps.in","r");
-    if (fp == NULL) {
-        printf("ERROR: Could not open lammps.in (LAMMPS input script)\n");
+    lammps_command(ptr, "neighbor 0.3 bin");
+    lammps_command(ptr, "neigh_modify delay 0");
+
+    //Read in user commands from in.lammps files
+    struct stat buffer;
+    if (stat("in.lammps", &buffer) == -1) {
+        fprintf(stderr, "couldn't open in.lammps: %s\n",strerror(errno));
+        exit(1);
+    }else{
+        lammps_file(ptr, "in.lammps");
     }
 
-    while (1) {
-        if (fgets(line,1024,fp) == NULL){
-            n = 0;
-        }
-        else{ 
-            n = strlen(line) + 1;
-        }
-        if (n == 0){ 
-            fclose(fp);
-            break;
-        }
-        LAMMPSObj->input->one(line);
-    }  
-
-    return;
+    //Define variables for force and energy so they can be extracted
+    lammps_command(ptr, "variable fx atom fx");
+    lammps_command(ptr, "variable fy atom fy");
+    lammps_command(ptr, "variable fz atom fz");
+    lammps_command(ptr, "variable pe equal pe");
 }
-
