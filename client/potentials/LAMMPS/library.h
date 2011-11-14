@@ -16,15 +16,12 @@
    new LAMMPS-specific functions can be added
 */
 
-#include "mpi.h"
-
 /* ifdefs allow this file to be included in a C program */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void lammps_open(int, char **, MPI_Comm, void **);
 void lammps_open_no_mpi(int, char **, void **);
 void lammps_close(void *);
 void lammps_file(void *, char *);
@@ -40,9 +37,6 @@ void *lammps_extract_variable(void *, char *, char *);
 int lammps_get_natoms(void *);
 void lammps_get_coords(void *, double *);
 void lammps_put_coords(void *, double *);
-
-void lammps_get_forces(void *, double *);
-void lammps_get_energy(void *, double *);
 
 #ifdef __cplusplus
 }

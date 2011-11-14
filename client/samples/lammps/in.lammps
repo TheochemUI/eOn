@@ -1,0 +1,6 @@
+#These parameters are the same as morse_pt
+#and gives the exact same energies as our morse_pt
+#code.
+pair_style morse 9.5
+pair_coeff * * 0.7102 1.6047 2.897
+pair_modify shift yes

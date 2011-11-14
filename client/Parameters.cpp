@@ -45,6 +45,7 @@ Parameters::Parameters(){
     // [Potential]
     potential = Potential::POT_LJ;
     MPIPollPeriod = 0.25;
+    LAMMPSLogging = true;
 
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -211,6 +212,7 @@ int Parameters::load(FILE *file){
         // [Potential] //
         potential = toLowerCase(ini.GetValue("Potential", "potential"));
         MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
+        LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
 
         // Initialize random generator
         if(randomSeed < 0){
