@@ -45,6 +45,7 @@ Parameters::Parameters(){
     // [Potential]
     potential = Potential::POT_LJ;
     MPIPollPeriod = 0.25;
+    MPIPotentialRank = -1;
     LAMMPSLogging = true;
 
     // [Structure Comparison] //
@@ -162,8 +163,6 @@ Parameters::Parameters(){
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
 
-    // MPI
-    MPIPotentialRank = -1;
 }
 
 Parameters::~Parameters(){
