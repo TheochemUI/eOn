@@ -7,7 +7,7 @@ University of Iceland
 #pragma once
 #ifndef FORCEFIELDS_ZHU_PHILPOTT_HPP
 #define FORCEFIELDS_ZHU_PHILPOTT_HPP
-#include "spce_ccl.hpp"
+#include "../Water/spce_ccl.hpp"
 #include "zhu_philpott_parameters.hpp"
 
 namespace forcefields {
