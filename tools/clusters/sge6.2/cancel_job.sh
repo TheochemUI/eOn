@@ -1,2 +1,2 @@
 #!/bin/sh
-qdel $1
+qdel $@
