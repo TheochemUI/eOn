@@ -773,10 +773,18 @@ class Script(Communicator):
 
     def cancel_state(self, state):
         # cancel_job.sh jobid
-
-        #map state->job ids!?!?!?
-        #status, output = commands.getstatusoutput(self.cancel_job_cmd)
-        return 0
+        if len(self.jobids.keys()) == 0:
+            return 0
+        for job_id in self.jobids.keys():
+            cmd = "%s %i" % (self.cancel_job_cmd, job_id)
+            status, output = commands.getstatusoutput(cmd)
+            if status != 0:
+                logger.warn("job cancel failed with error: %s" % output)
+        self.jobids = {}
+        self.save_jobids()
+        shutil.rmtree(config.path_scratch) 
+        os.makedirs(config.path_scratch)
+        return len(self.jobids.keys())
 
     def get_queued_jobs(self):
         # get_queued_jobs.sh
