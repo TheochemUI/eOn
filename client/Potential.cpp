@@ -27,7 +27,10 @@
 #include "potentials/EAM/EAM.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
-#include "potentials/platinum-water/zhu_philpott_for_eon.hpp"
+//#include "potentials/water/water_for_eon.hpp"
+#include "potentials/Water/Water.hpp"
+#include "potentials/Water_Pt/Tip4p_Pt.hpp"
+#include "potentials/Water_H/Tip4P_H.h"
 
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
@@ -51,8 +54,9 @@ const char Potential::POT_EAM_AL[] =      "eam_al";
 const char Potential::POT_MORSE_PT[] =    "morse_pt";
 const char Potential::POT_EMT[] =         "emt";
 const char Potential::POT_QSC[] =         "qsc";
-const char Potential::POT_ZPICE[] =       "zpice";
 const char Potential::POT_TIP4P[] =       "tip4p";
+const char Potential::POT_TIP4P_PT[] =    "tip4p_pt";
+const char Potential::POT_TIP4P_H[] =     "tip4p_h";
 const char Potential::POT_SPCE[] =        "spce";
 const char Potential::POT_LENOSKY_SI[] =  "lenosky_si";
 const char Potential::POT_SW_SI[] =       "sw_si";
@@ -63,6 +67,7 @@ const char Potential::POT_BOPFOX[] =      "bopfox";
 const char Potential::POT_BOP[] =         "bop";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
+
 Potential* Potential::pot = NULL;
 
 Potential *Potential::getPotential(Parameters *parameters)
@@ -80,10 +85,10 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new EffectiveMediumTheory();
     else if(parameters->potential == POT_QSC)
         pot = new QSC();
-    else if(parameters->potential == POT_ZPICE)
-        pot = new ZpIce();
     else if(parameters->potential == POT_TIP4P)
         pot = new Tip4p();
+    else if(parameters->potential == POT_TIP4P_PT)
+        pot = new Tip4p_Pt();
     else if(parameters->potential == POT_SPCE)
         pot = new SpceCcl();
     #ifndef NO_FORTRAN
@@ -97,6 +102,9 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new Tersoff();
     else if(parameters->potential == POT_EDIP)
         pot = new EDIP();
+    else if(parameters->potential == POT_TIP4P_H)
+        pot = new Tip4p_H();
+    
     #ifndef WIN32
     else if(parameters->potential == POT_VASP)
         pot = new VASP();
