@@ -160,9 +160,13 @@ POTENTIALS += "-EAM"
 POTDIRS += ./potentials/QSC/
 LIBS += ./potentials/QSC/libQSC.a
 POTENTIALS += "+QSC"
-POTDIRS += ./potentials/platinum-water/
-LIBS += ./potentials/platinum-water/libplatinum-water.a
-POTENTIALS += "+Pt-H2O"
+POTDIRS += ./potentials/Water/
+LIBS += ./potentials/Water/libwater.a
+POTENTIALS += "+H2O"
+POTDIRS += ./potentials/Water_Pt/
+LIBS += ./potentials/Water_Pt/libtip4p_pt.a
+POTENTIALS += "+H2O_Pt"
+
 POTDIRS += ./potentials/IMD/
 LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
@@ -206,16 +210,16 @@ endif
 
 
 ifdef NO_FORTRAN
-    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP "
+    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H"
 else
-    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP "
-    FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/
-    LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a
+    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H"
+    FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/
+    LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a
 endif
 
-OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o \
+OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o     \
 	ConjugateGradients.o HelperFunctions.o Matter.o Parameters.o Potential.o    \
-	Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o   			    \
+	Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o                  \
 	HessianJob.o ParallelReplicaJob.o Dynamics.o BondBoost.o                    \
 	DistributedReplicaJob.o FiniteDifferenceJob.o NudgedElasticBandJob.o	    \
 	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o               \
