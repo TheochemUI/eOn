@@ -70,6 +70,10 @@ Potential:
             kind: float
             default: 0.25
 
+        lammps_logging:
+            kind: boolean
+            default: true
+
 ################################################################################
 
 Paths:
@@ -496,13 +500,17 @@ Hyperdynamics:
             kind: float
             default: 3.0
 
-        bb_strech_threshold:
+        bb_stretch_threshold:
             kind: float
             default: 0.2
 
         bb_ds_curvature:
             kind: float
             default: 0.95
+
+        bb_boost_atomlist:
+            kind: string
+            default: 
 
 ################################################################################
 
