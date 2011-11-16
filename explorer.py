@@ -524,7 +524,7 @@ class ProcessSearch:
                     }
 
     def get_job(self):
-        if any( [ s == 'error' for s in self.job_statuses.values() ] ):
+        if True in [ s == 'error' for s in self.job_statuses.values() ]:
             return None, None
 
         if self.job_statuses['saddle_search'] == 'not_started':
@@ -579,9 +579,9 @@ class ProcessSearch:
             if min_number == 2:
                 self.finish_minimization(result)
 
-        done = all( [ s == 'complete' for s in self.job_statuses.values() ] )
+        done = False not in  [ s == 'complete' for s in self.job_statuses.values() ] 
         if not done:
-            done = any( [ s == 'error' for s in self.job_statuses.values() ] )
+            done = True in [ s == 'error' for s in self.job_statuses.values() ]
 
         if done:
             return self.build_result()
