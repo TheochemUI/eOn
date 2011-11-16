@@ -7,9 +7,9 @@ University of Iceland
 #include <cmath>
 #include <iostream>
 #include <cassert>
-#include "tip4p.hpp"
+#include "tip4p_ccl.hpp"
 // If unit_system.hpp is removed the system of unit will be  (Energy: eV, distance: Angstrom, time: fs, charge: e).
-#include "unit_system.hpp"
+#include "tip4p_unit_system.hpp"
 
 using namespace std;
 using namespace forcefields;
