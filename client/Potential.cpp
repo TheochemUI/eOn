@@ -30,7 +30,7 @@
 //#include "potentials/water/water_for_eon.hpp"
 #include "potentials/Water/Water.hpp"
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
-#include "potentials/Water_H/Tip4P_H.h"
+#include "potentials/Water_H/Tip4p_H.h"
 
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
