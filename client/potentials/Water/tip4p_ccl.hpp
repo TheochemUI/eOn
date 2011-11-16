@@ -1,6 +1,6 @@
 #pragma once
-#ifndef FORCEFIELDS_TIP4P_HPP
-#define FORCEFIELDS_TIP4P_HPP
+#ifndef FORCEFIELDS_TIP4P_CCL_HPP
+#define FORCEFIELDS_TIP4P_CCL_HPP
 #include "ccl.hpp"
 
 /** @file
