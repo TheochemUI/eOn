@@ -50,6 +50,12 @@ def akmc(config):
     # 5) Make new work units
     # 6) Write out the state of the simulation    
     
+    # If we are saving debug results, create the directory if it does not exist.
+    if config.debug_keep_all_results:
+        rp = os.path.join(config.path_root,config.debug_results_path)
+        if not os.path.isdir(rp):
+            os.mkdir(rp)   
+     
     # Define constants. 
     kT = config.main_temperature/11604.5 #in eV
     
