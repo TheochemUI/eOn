@@ -28,8 +28,9 @@ class Potential
         static const char POT_MORSE_PT[];
         static const char POT_EMT[];
         static const char POT_QSC[];
-        static const char POT_ZPICE[];
         static const char POT_TIP4P[];
+        static const char POT_TIP4P_PT[];
+        static const char POT_TIP4P_H[];
         static const char POT_SPCE[];
         static const char POT_LENOSKY_SI[];
         static const char POT_SW_SI[];
