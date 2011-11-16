@@ -3163,14 +3163,14 @@ Potential.o: Potential.cpp Potential.h Parameters.h Eigen.h Eigen/Dense \
   potentials/EAM/EAM.h potentials/EAM/../../Potential.h \
   potentials/Lenosky/Lenosky.h potentials/Lenosky/../../Potential.h \
   potentials/QSC/QSC.h potentials/QSC/../../Potential.h \
-  potentials/platinum-water/zhu_philpott_for_eon.hpp \
-  potentials/platinum-water/zhu_philpott.hpp \
-  potentials/platinum-water/spce_ccl.hpp \
-  potentials/platinum-water/ccl.hpp \
-  potentials/platinum-water/potential_base.hpp \
-  potentials/platinum-water/zhu_philpott_parameters.hpp \
-  potentials/platinum-water/tip4p.hpp \
-  potentials/platinum-water/../../Potential.h potentials/VASP/VASP.h \
+  potentials/Water/Water.hpp potentials/Water/tip4p_ccl.hpp \
+  potentials/Water/ccl.hpp potentials/Water/potential_base.hpp \
+  potentials/Water/spce_ccl.hpp potentials/Water/../../Potential.h \
+  potentials/Water_Pt/Tip4p_Pt.hpp potentials/Water_Pt/zhu_philpott.hpp \
+  potentials/Water_Pt/zhu_philpott_parameters.hpp \
+  potentials/Water_Pt/../../Potential.h potentials/Water_H/Tip4p_H.h \
+  potentials/Water_H/../../Potential.h \
+  potentials/Water_H/../Water/Water.hpp potentials/VASP/VASP.h \
   potentials/VASP/../../Potential.h potentials/bopfox/bopfox.h \
   potentials/bopfox/../../Potential.h
 Prefactor.o: Prefactor.cpp Prefactor.h Eigen.h Eigen/Dense Eigen/Core \
