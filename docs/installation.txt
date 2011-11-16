@@ -29,7 +29,7 @@ Server Installation
 It is most convenient to install eon to a directory in your ``$HOME`` folder.
 For the purposes of this guide we will assume that you have installed eon to
 ``$HOME/eon``. You will want to either add this directory to your ``$PATH`` or
-make a symlink from the main eon program (``eon.py``) to a directory that is in
+make a symlink from the main eon program (``eon``) to a directory that is in
 your ``$PATH``.
 
 Client Installation
