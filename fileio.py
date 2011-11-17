@@ -424,7 +424,7 @@ class Dynamics:
         self.filename = filename
         if not os.path.exists(filename):
             f = open(self.filename, 'w')
-            header = "%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n" % ('step-number', 'reactant-id', 'process-id', 'product-id', 'step-time', 'total-time', 'barrier', 'prefactor')
+            header = "%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n" % ('step-number', 'reactant-id', 'process-id', 'product-id', 'step-time', 'total-time', 'barrier', 'rate')
             f.write(header)
             f.write("-" * len(header))
             f.write("\n")
@@ -442,9 +442,9 @@ class Dynamics:
             lines = f.readlines()
             self.next_step = int ( lines[-1].split()[0] ) + 1 #determine iteration nr of next step
         
-    def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, prefactor):
+    def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, rate):
         f = open(self.filename, 'a')
-        f.write("%12d  %12d  %12d  %12d  %12e  %12e  %12e  %12e\n" % (self.next_step, reactant_id, process_id, product_id, step_time, total_time, barrier, prefactor))
+        f.write("%12d  %12d  %12d  %12d  %12e  %12e  %12f  %12e\n" % (self.next_step, reactant_id, process_id, product_id, step_time, total_time, barrier, rate))
         f.close()
         self.next_step += 1
 
