@@ -94,6 +94,9 @@ class StateList:
                 for id in energetically_close:
                     p = self.get_state(id).get_reactant()
                     if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                        if id == state_number:
+                            logging.warning("in state %i process %i leads back to initial state",
+                                            state_number, process_id)
                         self.register_process(st.number, id, process_id)                            
                         return self.get_state(id)
 
