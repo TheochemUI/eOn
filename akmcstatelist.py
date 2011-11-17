@@ -131,7 +131,11 @@ class AKMCStateList(statelist.StateList):
                        'force_calls_saddle' : 0,
                        'force_calls_minimization' : 0 ,
                        'force_calls_prefactors' : 0}
-        result = { 'wuid' : 0,
+        if config.akmc_server_side_process_search:
+            first_column = "search_id"
+        else:
+            fist_column = "wuid"
+        result = { first_column : 0,
                    'type' : 'reverse',  
                    'results' : result_fake}
         product.append_search_result(result, 'reverse from '+str(reactant_number))
