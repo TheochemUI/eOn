@@ -310,36 +310,35 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if self.state.get_energy() != None:
-            MinModeExplorer.explore(self)
-        else:
-            if self.comm.get_queue_size() == 0:
-                logger.info("submitting initial state minimization job")
-                job = {}
-                reactant = self.state.get_reactant()
-                reactIO = StringIO.StringIO()
-                io.savecon(reactIO, reactant)
-                job['reactant_passed.con'] = reactIO
-                ini_changes = [ ('Main', 'job', 'minimization') ]
-                job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
-                job['id'] = '0'
-                invariants = io.load_potfiles(config.path_pot)
-                self.comm.submit_jobs([job], invariants)
-
-            while self.comm.get_queue_size() != 0:
-                continue
-
-            if not os.path.isdir(config.path_jobs_in):
-                os.makedirs(config.path_jobs_in)
-
-            for result in self.comm.get_results(config.path_jobs_in, lambda x: True):
-                results_dat = io.parse_results(result['results.dat'])
-                energy = results_dat['potential_energy']
-                reason = results_dat['termination_reason']
-                if reason != 0:
-                    logger.fatal("minimization of initial reactant failed")
-                    sys.exit(1)
-                self.state.set_energy(energy)
+        if not os.path.isdir(config.path_jobs_in):
+            os.makedirs(config.path_jobs_in)
+        MinModeExplorer.explore(self)
+#        else:
+#            if self.comm.get_queue_size() == 0:
+#                logger.info("submitting initial state minimization job")
+#                job = {}
+#                reactant = self.state.get_reactant()
+#                reactIO = StringIO.StringIO()
+#                io.savecon(reactIO, reactant)
+#                job['reactant_passed.con'] = reactIO
+#                ini_changes = [ ('Main', 'job', 'minimization') ]
+#                job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+#                job['id'] = '0'
+#                invariants = io.load_potfiles(config.path_pot)
+#                self.comm.submit_jobs([job], invariants)
+#
+#            while self.comm.get_queue_size() != 0:
+#                continue
+#
+#
+#            for result in self.comm.get_results(config.path_jobs_in, lambda x: True):
+#                results_dat = io.parse_results(result['results.dat'])
+#                energy = results_dat['potential_energy']
+#                reason = results_dat['termination_reason']
+#                if reason != 0:
+#                    logger.fatal("minimization of initial reactant failed")
+#                    sys.exit(1)
+#                self.state.set_energy(energy)
 
     def register_results(self):
         logger.info("registering results")
@@ -444,8 +443,8 @@ class ServerMinModeExplorer(MinModeExplorer):
             if not job:
                 displacement, mode, disp_type = self.generate_displacement()
                 reactant = self.state.get_reactant()
-                process_search = ProcessSearch(reactant, self.state.get_energy(), 
-                                               displacement, mode, disp_type, self.search_id)
+                process_search = ProcessSearch(reactant, displacement, mode,
+                                               disp_type, self.search_id)
                 self.process_searches[self.search_id] = process_search
                 self.wuid_to_search_id[self.wuid] = self.search_id
                 job, job_type = process_search.get_job()
@@ -477,9 +476,8 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__ (self, reactant, reactant_energy, displacement, mode, disp_type, search_id):
+    def __init__ (self, reactant, displacement, mode, disp_type, search_id):
         self.reactant = reactant
-        self.reactant_energy = reactant_energy
         self.displacement = displacement
         self.mode = mode
         self.search_id = search_id
@@ -733,8 +731,9 @@ class ProcessSearch:
     def finish_search(self, result):
         results_dat = io.parse_results(result['results.dat'])
         self.data.update(results_dat)
-        barrier = results_dat['potential_energy_saddle'] - self.reactant_energy
-        self.data['potential_energy_reactant'] = self.reactant_energy
+        reactant_energy = results_dat['potential_energy_reactant']
+        barrier = results_dat['potential_energy_saddle'] - reactant_energy
+        self.data['potential_energy_reactant'] = reactant_energy
         self.data['barrier_reactant_to_product'] = barrier
 
     def save_result(self, result):
