@@ -164,7 +164,7 @@ int SaddleSearch::run()
         }
             if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
             {
-                log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.5f   %7.5f   %6.3f   %4ld\n",
+                log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.4f   %7.3f   %6.3f   %4ld\n",
                             iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                             matter->maxForce(),
                             minModeMethod->getEigenvalue(),
