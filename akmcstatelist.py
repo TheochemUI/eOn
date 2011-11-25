@@ -134,7 +134,7 @@ class AKMCStateList(statelist.StateList):
         if config.akmc_server_side_process_search:
             first_column = "search_id"
         else:
-            fist_column = "wuid"
+            first_column = "wuid"
         result = { first_column : 0,
                    'type' : 'reverse',  
                    'results' : result_fake}
