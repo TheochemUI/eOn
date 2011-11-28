@@ -10,3 +10,4 @@ rare event systems where the interesting dynamics can be described by fast
 transition between stable states.  In each algorithm, the residence time in the
 stable states is modeled with statistical mechanics, and the important
 state-to-state dynamics are modeled stochastically.
+
