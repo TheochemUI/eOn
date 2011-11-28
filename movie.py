@@ -207,11 +207,18 @@ class Graph:
         return str(self.graph)
 
     def dot(self):
-        s = "digraph akmc {\n"
+        unique_edges = set()
         for node,edgedict in self.graph.iteritems():
             edgelist = edgedict.keys()
             for edge in edgelist:
-                s += "%s -> %s;\n" % (node.number, edge.number)
+                if node.number < edge.number:
+                    unique_edges.add( (node.number, edge.number) )
+                else:
+                    unique_edges.add( (edge.number, node.number) )
+
+        s = "graph akmc {\n"
+        for edge in unique_edges:
+            s += "%s -- %s;\n" % edge
         s += "}\n"
         return s
 
