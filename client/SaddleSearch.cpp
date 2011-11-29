@@ -59,6 +59,24 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                     // reverse force parallel to eigenvector, and reduce perpendicular force
                     double const d = parameters->saddlePerpForceRatio;
                     force = d*force - (1.+d)*proj;
+                
+                // zero out the smallest forces to keep displacement confined
+                }else if(parameters->saddleConfinePositive) {
+                    int sufficientForce = 0;
+                    double minForce = parameters->saddleConfinePositiveMinForce;
+                    while(sufficientForce < parameters->saddleConfinePositiveMinActive){
+                        sufficientForce = 0;
+                        force = matter->getForces();
+                        for (int i=0; i<3*matter->numberOfAtoms(); i++) {
+                            if (fabs(force[i]) < minForce)
+                                force[i] = 0;
+                            else{
+                                sufficientForce = sufficientForce + 1;
+                                force[i] = -parameters->saddleConfinePositiveBoost*proj[i];
+                            }
+                        }
+                        minForce *= parameters->saddleConfinePositiveScaleRatio;
+                    }                    
                 }else{
                     // follow eigenmode
                     force = -proj;
