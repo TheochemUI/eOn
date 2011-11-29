@@ -62,9 +62,11 @@ Potential:
                 - eam_al
                 - vasp
                 - tersoff_si
-                - tip4p
                 - lammps
                 - mpi
+                - tip4p
+                - tip4p_h
+                - tip4p_pt
 
         mpi_poll_period:
             kind: float
@@ -801,6 +803,27 @@ Saddle Search:
         displace_min_norm:
             kind: float
             default: 0.0
+
+
+        confine_positive:
+            kind: boolean
+            default: False
+
+        confine_positive_min_force:
+            kind: float
+            default: 0.5
+
+        confine_positive_scale_ratio:
+            kind: float
+            default: 0.9
+
+        confine_positive_boost:
+            kind: float
+            default: 10.
+
+        confine_positive_min_active:
+            kind: int
+            default: 30
 
 
 ################################################################################
