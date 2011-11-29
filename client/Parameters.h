@@ -76,9 +76,10 @@ public:
     bool saddleNonnegativeDisplacementAbort; // Abort the saddle search if the displacement does not have a negative mode.
 
     bool saddleConfinePositive; // undocumented
-    double saddleConfinePositiveMinMove; // undocumented
+    double saddleConfinePositiveMinForce; // undocumented
     double saddleConfinePositiveScaleRatio; // undocumented
-    long saddleConfinePositiveMaxActiveAtoms; // undocumented
+    double saddleConfinePositiveBoost; // undocumented
+    long saddleConfinePositiveMinActive; // undocumented
 
     // [Optimizer]
     string optMethod;
