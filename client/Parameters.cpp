@@ -74,9 +74,10 @@ Parameters::Parameters(){
     saddleNonnegativeDisplacementAbort = false;    
     saddlePerpForceRatio = 0.0; // undocumented
     saddleConfinePositive = false; // undocumented
-    saddleConfinePositiveMinMove = 0.5; // undocumented
+    saddleConfinePositiveMinForce = 0.5; // undocumented
     saddleConfinePositiveScaleRatio = 0.9; // undocumented
-    saddleConfinePositiveMaxActiveAtoms = 30; // undocumented
+    saddleConfinePositiveBoost = 10.; // undocumented
+    saddleConfinePositiveMinActive = 30; // undocumented
     
     // [Optimizers] //
     optMethod = "cg";
@@ -272,9 +273,10 @@ int Parameters::load(FILE *file){
 
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive); 
         if(saddleConfinePositive) {
-            saddleConfinePositiveMinMove = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinMove);
+            saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
             saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
-            saddleConfinePositiveMaxActiveAtoms = ini.GetValueL("Saddle Search", "confine_positive_max_active_atoms", saddleConfinePositiveMaxActiveAtoms);
+            saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_scale_boost", saddleConfinePositiveBoost);
+            saddleConfinePositiveMinActive = ini.GetValueL("Saddle Search", "confine_positive_scale_min_active", saddleConfinePositiveMinActive);            
         }
 
         // [Dimer] //
