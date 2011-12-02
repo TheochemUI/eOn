@@ -10,20 +10,20 @@ OPT=-O0
 TARGET_NAME=client
 
 ifndef DEBUG
-	NDEBUG=1
-	OPT=-O2
+    NDEBUG=1
+    OPT=-O2
 endif
 
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
 ifdef EONMPIBGP
-	EONMPI=1
+    EONMPI=1
 endif
 
 ifdef EONMPI
-	CXX=mpicxx
-	CXXFLAGS += -DEONMPI
-	TARGET_NAME=client_mpi
+    CXX=mpicxx
+    CXXFLAGS += -DEONMPI
+    TARGET_NAME=client_mpi
 endif
 
 #If we aren't doing a cross compile, guess our platform.
@@ -34,7 +34,7 @@ ifeq ($(UNAME), Linux)
    LINUX=1
    #MPI often doesn't mix well with static linking...
    ifndef EONMPI
-	   LDFLAGS += -static
+       LDFLAGS += -static
    endif
 endif
 ifeq ($(UNAME), Darwin)
@@ -46,13 +46,13 @@ endif
 endif
 
 ifdef LINUX
-	CXXFLAGS += -DLINUX
+    CXXFLAGS += -DLINUX
 endif
 ifdef OSX
-	CXXFLAGS += -DOSX
+    CXXFLAGS += -DOSX
 endif
 ifdef WIN32
-	CXXFLAGS += -DWIN32
+    CXXFLAGS += -DWIN32
 endif
 
 #Fortran compiler settings
@@ -64,11 +64,11 @@ else
     FFLAGS += $(OPT) -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
     ifdef BOINC
-	ifdef OSX
-	    LDFLAGS += /opt/local/lib/gcc45/libgfortran.a
-	else
-		LDFLAGS += -lgfortran
-	endif
+    ifdef OSX
+        LDFLAGS += /opt/local/lib/gcc45/libgfortran.a
+    else
+        LDFLAGS += -lgfortran
+    endif
     else
         LDFLAGS += -lgfortran
     endif
@@ -125,23 +125,23 @@ ifdef BOINC
     endif
 
     ifdef LINUX
-	UNAME := $(shell uname -m)
-	ifeq ($(UNAME), x86_64)
+    UNAME := $(shell uname -m)
+    ifeq ($(UNAME), x86_64)
         LDFLAGS += -static -Lboinc/lib_linux64 -lboinc_api -lboinc -lpthread -larchive -lz
-	else
-	LDFLAGS += -static -Lboinc/lib_linux32 -lboinc_api -lboinc -lpthread -larchive -lz
-	endif
+    else
+    LDFLAGS += -static -Lboinc/lib_linux32 -lboinc_api -lboinc -lpthread -larchive -lz
+    endif
     endif
 else
     BOINC=No
-	# define NDEBUG to remove debugging lines
-	ifdef NDEBUG
-		DEBUG=No
-		CXXFLAGS += -DNDEBUG
-	else
-		CXXFLAGS += -g
-		DEBUG=Yes
-	endif
+    # define NDEBUG to remove debugging lines
+    ifdef NDEBUG
+        DEBUG=No
+        CXXFLAGS += -DNDEBUG
+    else
+        CXXFLAGS += -g
+        DEBUG=Yes
+    endif
 endif
 
 #Potentials
@@ -172,11 +172,11 @@ LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
 
 ifndef WIN32
-	POTDIRS += ./potentials/VASP
-	LIBS += ./potentials/VASP/libVASP.a
-	POTENTIALS += "+VASP"
+    POTDIRS += ./potentials/VASP
+    LIBS += ./potentials/VASP/libVASP.a
+    POTENTIALS += "+VASP"
 else
-	POTENTIALS += "-VASP"
+    POTENTIALS += "-VASP"
 endif
 
 POTDIRS += ./potentials/bopfox
@@ -184,27 +184,27 @@ LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
 
 ifdef EONMPI
-	POTENTIALS += "+MPIPot"
-	POTDIRS += ./potentials/MPIPot
-	LIBS += ./potentials/MPIPot/libMPIPot.a
+    POTENTIALS += "+MPIPot"
+    POTDIRS += ./potentials/MPIPot
+    LIBS += ./potentials/MPIPot/libMPIPot.a
 else
-	POTENTIALS += "-MPIPot"
+    POTENTIALS += "-MPIPot"
 endif
 
 ifdef EONMPI
 ifdef EONMPIBGP
-	CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
-	CXXFLAGS += -DEONMPIBGP
-	LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
+    CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.6/
+    CXXFLAGS += -DEONMPIBGP
+    LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.6 -lm
 else
-	python_include_path=$(shell python -c "import sys,os; print os.path.join(sys.prefix, 'include', 'python'+sys.version[:3])")
-	python_lib=$(shell python -c "import sys,os; print 'python'+sys.version[:3]")
-	python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib')")
-	ifneq ($(python_lib_path),/usr/lib)
-		LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
-	endif
-	LDFLAGS += -l${python_lib} -lm
-	CXXFLAGS += -I${python_include_path}
+    python_include_path=$(shell python -c "import sys,os; print os.path.join(sys.prefix, 'include', 'python'+sys.version[:3])")
+    python_lib=$(shell python -c "import sys,os; print 'python'+sys.version[:3]")
+    python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib')")
+    ifneq ($(python_lib_path),/usr/lib)
+        LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
+    endif
+    LDFLAGS += -l${python_lib} -lm
+    CXXFLAGS += -I${python_include_path}
 endif
 endif
 
@@ -213,18 +213,21 @@ ifdef NO_FORTRAN
     POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H"
 else
     POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H"
-    FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/
-    LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a
+    FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/   \
+        ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/
+    LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a     \
+        ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a               \
+        ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a
 endif
 
-OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o     \
-	ConjugateGradients.o HelperFunctions.o Matter.o Parameters.o Potential.o    \
-	Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o                  \
-	HessianJob.o ParallelReplicaJob.o Dynamics.o BondBoost.o                    \
-	DistributedReplicaJob.o FiniteDifferenceJob.o NudgedElasticBandJob.o	    \
-	TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o               \
-	NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
-	DynamicsJob.o Log.o LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o
+OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o \
+    ConjugateGradients.o HelperFunctions.o Matter.o Parameters.o Potential.o    \
+    Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o                  \
+    HessianJob.o ParallelReplicaJob.o Dynamics.o BondBoost.o                    \
+    DistributedReplicaJob.o FiniteDifferenceJob.o NudgedElasticBandJob.o	    \
+    TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o               \
+    NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
+    DynamicsJob.o Log.o LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o
 
 all: $(POTDIRS) $(FPOTDIRS) client
 	@echo
