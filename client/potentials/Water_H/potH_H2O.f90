@@ -63,14 +63,14 @@
         DDHH2 = 2.d0*(RDAMPHH**2/R(3)**3-RDAMPHH/R(3)**2)*DHH2
       ENDIF
 
-         POTD1 = -DHO*C6HO*R(1)**-6
-         DERD1 = -DDHO*C6HO*R(1)**-6 + DHO*C6HO6*R(1)**-7
+         POTD1 = -DHO*C6HO*R(1)**(-6)
+         DERD1 = -DDHO*C6HO*R(1)**(-6) + DHO*C6HO6*R(1)**(-7)
 
-         POTD2 = -DHH1*C6HH*R(2)**-6
-         DERD2 = -DDHH1*C6HH*R(2)**-6 + DHH1*C6HH6*R(2)**-7
+         POTD2 = -DHH1*C6HH*R(2)**(-6)
+         DERD2 = -DDHH1*C6HH*R(2)**(-6) + DHH1*C6HH6*R(2)**(-7)
 
-         POTD3 = -DHH2*C6HH*R(3)**-6
-         DERD3 = -DDHH2*C6HH*R(3)**-6 + DHH2*C6HH6*R(3)**-7
+         POTD3 = -DHH2*C6HH*R(3)**(-6)
+         DERD3 = -DDHH2*C6HH*R(3)**(-6) + DHH2*C6HH6*R(3)**(-7)
 
 !C     REPULSION
 
