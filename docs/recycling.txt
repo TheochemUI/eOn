@@ -6,7 +6,7 @@ Recycling
 =========
 
 We have developed a method of saddle point recycling that can significantly 
-reduce the computational cost of the AKMC algorithm.
+reduce the computational cost of the AKMC algorithm. [#xu08_114104]_
 
 Suppose we are in reactant state :math:`R_0`, and we have discovered a series of
 saddles and their corresponding products, :math:`S_i` and :math:`P_i`, respectively.  Once
@@ -43,4 +43,9 @@ is local, the overall cost does not increase with the total system size.
 **save_suggestions**: If true, the suggestions made by saddle recycling are saved to the "saddle_suggestions" directory of the state directory for which the saddles are being suggested.
 
     default: ``False``
+
+
+.. rubric:: References
+
+.. [#xu08_114104] L. Xu and G. Henkelman, "Adaptive kinetic Monte Carlo for first-principles accelerated dynamics" *J. Chem. Phys.* **129**, 114104 (2008).  doi:`10.1063/1.2976010 <http://dx.doi.org/10.1063/1.2976010>`_
 

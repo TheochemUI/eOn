@@ -6,7 +6,8 @@ Adaptive kinetic Monte Carlo
 ================================
 
 The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
-molecular dynamics for rare event systems.  A rare event system is one in which
+molecular dynamics for rare event systems. [#henkelman11_9657]_ [#xu08_114104]_
+A rare event system is one in which
 the interesting dynamics is governed by short transitions between stable
 states.  The fast vibrational motion within a stable state is considered to be
 in equilibrium and described statisitcally.  A transition between states is
@@ -33,7 +34,8 @@ the same order as the fastest processes found.
 The search for possible processes is the primary task of the aKMC simulations.
 Each client does a minimum mode (minmode) following search from the miminum of
 the current state and tries to find a saddle point which connects from the
-minimum in the current state to an adjacent state.  A saddle point is connected
+minimum in the current state to an adjacent state. [#henkelman99_7010]_
+A saddle point is connected
 to a state if a minimization initiated along the negative mode at the saddle
 converges to the minimum of that state.
 
@@ -90,8 +92,6 @@ state.
 
     default: ``False``
 
-
-
 **thermally_accessible_window**: Processes with barriers within this number of
 kT above the lowest barrier will be used in the rate table and for confidence
 calculations.
@@ -113,8 +113,15 @@ hessian calculations. This option is usually used when a single
 
     default: ``False``
 
-
 **max_kmc_steps**: The maximum number of KMC transitions in a row.
 
     default: ``100000``
 
+
+.. rubric:: References
+
+.. [#henkelman11_9657] G. Henkelman and H. Jónsson, "Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table" *J. Chem. Phys.* **115**, 9657-9666 (2001). doi:`10.1063/1.1415500 <http://dx.doi.org/10.1063/1.1415500>`_
+
+.. [#xu08_114104] L. Xu and G. Henkelman, "Adaptive kinetic Monte Carlo for first-principles accelerated dynamics" *J. Chem. Phys.* **129**, 114104 (2008).  doi:`10.1063/1.2976010 <http://dx.doi.org/10.1063/1.2976010>`_
+
+.. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives" *J. Chem. Phys.* **111**, 7010-7022 (1999).

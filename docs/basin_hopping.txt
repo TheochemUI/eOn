@@ -26,10 +26,10 @@ each atom.
 
     options:
 
-        ``gaussian``: max_displacement serves as the standard deviation of a
-        gaussian distribution used to select displacements
+        ``gaussian``: The max_displacement serves as the standard deviation of a
+        gaussian distribution used to select displacements.
 
-        ``uniform``: A random number is selected between 0 and max_displacement
+        ``uniform``: A random number is selected between 0 and max_displacement.
 
 **quenching_steps**: Number at steps at 0 temperature at the end of the run.
 
@@ -93,13 +93,14 @@ steps that occur before basin hopping steps.
 
     default: ``300.0``
 
+
 .. rubric:: References
 
-.. [#wales] D.J. Wales and J.P.K. Doye, J. Phys. Chem. A, 101, 5111 (1997) doi:`10.1021/jp970984n <http://dx.doi.org/10.1021/jp970984n>`_
+.. [#wales] D.J. Wales and J.P.K. Doye, "Global optimization by basin-hopping and the lowest energy structures of Lennard-Jones clusters containing up to 110 atoms," *J. Phys. Chem. A* **101**, 5111 (1997). doi:`10.1021/jp970984n <http://dx.doi.org/10.1021/jp970984n>`_
 
-.. [#iwamatsu] M. Iwamatsu and Y. Okabe, Chem. Phys. Lett., **399**, 396 (2004) doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
+.. [#iwamatsu] M. Iwamatsu and Y. Okabe, "Basin hopping with occasional jumping," *Chem. Phys. Lett.* **399** 396 (2004). doi:`10.1016/j.cplett.2004.10.032 <http://dx.doi.org/10.1016/j.cplett.2004.10.032>`_
 
-.. [#white] R.P. White and H.R. Mayne, Chem. Phys. Lett., **289**, 463 (1998) doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
+.. [#white] R.P. White and H.R. Mayne, "An investigation of two approaches to basin hopping minimization for atomic and molecular clusters," *Chem. Phys. Lett.* **289**, 463 (1998). doi:`10.1016/S0009-2614(98)00431-X <http://dx.doi.org/10.1016/S0009-2614(98)00431-X>`_
 
-.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, J. Chem. Phys, **128**, 144702 (2008) doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
+.. [#kim] H.G. Kim, S.K. Choi, and H.M. Lee, "New algorithm in the basin hopping Monte Carlo to find the global minimum structure of unary and binary metallic nanoclusters," *J. Chem. Phys* **128**, 144702 (2008). doi:`10.1063/1.2900644 <http://dx.doi.org/10.1063/1.2900644>`_
 

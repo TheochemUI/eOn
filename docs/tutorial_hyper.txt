@@ -1,11 +1,11 @@
 .. _tutorial_hyper:
 
 ===================================
-Running Hyperdynamics Job
+Running a Hyperdynamics Job
 ===================================
 
-The following script will run 1 Hyperdynamics job of the system 
-that one Al adatom on Al(100) using 1 local cpu:
+The following script will run a hyperdynamics job of a system
+with one Al adatom on the Al(100) surface.  The job will use 1 local cpu.
 
 .. literalinclude:: tutorial_hyper_con.ini
 

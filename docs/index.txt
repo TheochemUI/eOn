@@ -48,7 +48,7 @@ multiple process multiple data MPI jobs, and distributed computing environments.
 The EON team
 ============
 
-The EON software is a collaboration between the Henkelman and Jonsson research groups.
+The EON software is a collaboration between the Henkelman and Jónsson research groups.
 The primary developers are:
 
 Henkelman Group (UT Austin)
@@ -58,16 +58,16 @@ Henkelman Group (UT Austin)
 * Matthew Welborn
 * Liang Zhang
 
-Jonsson Group (University of Iceland)
+Jónsson Group (University of Iceland)
 
 * Andreas Pederson
 
 With contributions from a number of other developers:
 
-* Jutta Rogal (Bochum)
 * Ian Johnson (UT)
 * Saif Kazim (UT)
 * Jean Claude Berthet (Iceland)
 * Raymond Smith (UT)
 * Erik Edelmann (Finland)
+* Jutta Rogal (Bochum)
 
