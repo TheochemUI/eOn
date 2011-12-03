@@ -16,9 +16,9 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     options:
 
-        ``dimer``: Use the :ref:`dimer <dimer>` min-mode method.
+        ``dimer``: Use the :ref:`dimer <dimer>` min-mode method. [#henkelman99_7010]_
 
-        ``lanczos``: Use the :ref:`Lanczos <lanczos>` min-mode method.
+        ``lanczos``: Use the :ref:`Lanczos <lanczos>` min-mode method. [#malek00_7723]_
 
 **max_energy**: The energy at which a saddle search is considered bad and terminated.
 
@@ -72,3 +72,9 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``[Optimizer] max_iterations``
 
+
+.. rubric:: References
+
+.. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives," *J. Chem. Phys.* **111**, 7010-7022 (1999). `DOI <http://dx.doi.org/10.1063/1.480097>`_
+
+.. [#malek00_7723] R. Malek and N. Mousseau, "Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique," *Phys. Rev. E* **62**, 7723 (2000). `DOI <http://dx.doi.org/10.1103/PhysRevE.62.7723>`_

@@ -5,9 +5,9 @@
 Dimer
 =====
 
-The dimer method of Henkelman and Jónsson with improvements by Kästner and
-Sherwood for estimating the lowest eigenmode using only first derivatives.
-[#jónsson]_ [#sherwood]_
+The dimer method of Henkelman and Jónsson with improvements by Heyden et al
+and Kästner and Sherwood for estimating the lowest eigenmode using only first derivatives.
+[#henkelman99_7010]_ [#heyden05_224101]_ [#kastner08_014106]_
 
 [Dimer] Options
 ===============
@@ -22,7 +22,7 @@ Sherwood for estimating the lowest eigenmode using only first derivatives.
 
         ``cg``: conjugate gradient, rotate along conjugate directions.
 
-        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer
+        ``lbfgs``: Limited memory Broyden-Fletcher-Goldfarb-Shanno Quasi-Newton optimizer.
 
 **converged_angle**: The dimer is considered converged if it will be rotated
 fewer degrees than this angle.
@@ -34,8 +34,11 @@ dimer for each minimum mode estimation.
 
     default: ``10``
 
+
 .. rubric:: References
 
-.. [#jónsson] G. Henkelman and H. Jónsson, J. Chem. Phys. 111, 7010-7022 (1999) doi:`10.1063/1.480097 <http://dx.doi.org/10.1063/1.480097>`_
+.. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives," *J. Chem. Phys.* **111**, 7010-7022 (1999). `DOI <http://dx.doi.org/10.1063/1.480097>`_
 
-.. [#sherwood] J. Kästner and P. Sherwood, J. Chem. Phys. 128, 014106 (2008) doi:`10.1063/1.2815812 <http://dx.doi.org/10.1063/1.2815812>`_
+.. [#heyden05_224101] A. Heyden, A.T. Bell, and F.J. Keil, "Efficient methods for finding transition states in chemical reactions: Comparison of improved dimer method and partitioned rational function optimization method," *J. Chem. Phys.* **123**, 224101 (2005). `DOI <http://dx.doi.org/10.1063/1.2104507>`_
+
+.. [#kastner08_014106] J. Kästner and P. Sherwood, "Superlinearly converging dimer method for transition state search," *J. Chem. Phys.* **128**, 014106 (2008) `DOI <http://dx.doi.org/10.1063/1.2815812>`_

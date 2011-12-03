@@ -5,9 +5,9 @@
 Parallel Replica
 ================================
 
-Parallel Replica Dynamics (PRD) is the simplest and the most accurate way to do
-accelerated-MD simulation. The only assumption made in this method is that the
-reactions satisfy first order kinetics. 
+Parallel Replica dynamics (PRD) is the simplest and the accurate way to
+accelerate a molecular dynamics simulation. [#voter98_13985]_ The only
+assumption made in this method is that the reactions satisfy first order kinetics. 
 
 .. math::
 
@@ -15,9 +15,9 @@ reactions satisfy first order kinetics.
 
 PRD boosts the simulation linearly with the number of replicas and can be
 easily combined with other methods for extending the MD time scale, e.g.
-Hyperdynamics method, giving a multiplicative effect in the time scale. 
+the hyperdynamics method, giving a multiplicative effect in the time scales that can be achieved.
 
-In Voter's[#voter]_ approach,  N replicas of the system are made at first and then the
+In the PRD approach,  N replicas of the system are made at first and then the
 momentum in each replica is randomized and dephasing stage is employed to
 decorrelate their motions. The simulation clock starts after this dephasing
 stage and stops when the first transition is detected in any of replicas.
@@ -55,7 +55,7 @@ for the dynamics run is set in the **[Main]** section.
 
 **state_save_period**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of state_save_period lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
 
-    default: ``0.1 * state_check_period``
+    default: ``0.1*state_check_period``
 
 **post_transition_steps**: Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.
 
@@ -65,7 +65,8 @@ for the dynamics run is set in the **[Main]** section.
 
         default: ``False``
 
-For detailed information about Parallel Replica, please refer to the paper by:
 
-.. [#voter] A. F. Voter, Phys. Rev. B **57**, 13985 (1998) "Parallel replica method for dynamics of infrequent events” doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
+.. rubric:: References
+
+.. [#voter98_13985] A.F. Voter, "Parallel replica method for dynamics of infrequent events” *Phys. Rev. B* **57**, 13985 (1998). doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
 
