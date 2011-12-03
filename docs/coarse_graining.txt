@@ -74,5 +74,8 @@ Several parameters dictate the functioning of the AS-KMC method. These parameter
 
     Default: ``False``
 
-.. [#novotny] http://arxiv.org/abs/cond-mat/0109182
-.. [#voter] http://jcp.aip.org/jcpsa6/v132/i19/p194101_s1
+.. rubric:: References
+
+.. [#novotny] M.A. Novotny "A tutorial on advanced dynamic Monte Carlo methods for systems with discrete state spaces" http://arxiv.org/abs/cond-mat/0109182
+
+.. [#voter] A. Chatterjee and A.F. Voter "Accurate acceleration of kinetic Monte Carlo simulations through the modification of rate constants" J. Chem. Phys. 132, 194101 (2010) doi:`10.1063/1.3409606 <http://dx.doi.org/10.1063/1.3409606>`_

@@ -6,13 +6,13 @@ Hyperdynamics
 
 The hyperdynamics method uses a bias potential which should be zero at
 transition states and positive in minima in order to accelerate the rate of
-transitions. [#hyperdynamics_ref]_ The hyperdynamics time step :math:`\delta t`
+transitions. [#voter97_3908]_ The hyperdynamics time step :math:`\delta t`
 can be obtained from the molecular dynamics simulation time step :math:`\delta
 t^b` multiplied by a boost factor :math:`e^{\beta \Delta V}`, where
 :math:`{\Delta V}` is the bias potential.
 
 There are several possible forms of bias potential. In EON, we have implemented
-the bond-boost method, [#bondboost_ref]_ where the bias potential is controlled
+the bond-boost method, [#miron03_6210]_ where the bias potential is controlled
 by the maximal (fractional) change in any bond length in the system.  This is a
 good bias potential for systems in which the dynamics is governed by bond
 breaking and forming events.
@@ -29,7 +29,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
     options:
 
-        ``bond_boost``: bond boost method from Miron and Fichthorn
+        ``bond_boost``: bond boost method
 
         ``none``: with no bias potential, run regular MD
 
@@ -37,7 +37,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
     default: ``0.0``
 
-    The magnitude of the bond-boost bias potential. It should be smaller than the barrier of any transition.
+    The magnitude of the bond-boost bias potential.
 
 **bb_rmd_steps**: 
 
@@ -68,7 +68,7 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
 .. rubric:: References
 
-.. [#hyperdynamics_ref] A.F. Voter "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events" Phys. Rev. Lett. 78, 3908 (1997)
+.. [#voter97_3908] A.F. Voter "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events" *Phys. Rev. Lett.* **78**, 3908 (1997)
 
-.. [#bondboost_ref]  R.A. Miron and K.A. Fichthorn "Accelerated molecular-dynamics of rare events with the bond-boost method" J. Chem. Phys. 119, 6210 (2003)
+.. [#miron03_6210]  R.A. Miron and K.A. Fichthorn "Accelerated molecular-dynamics of rare events with the bond-boost method" *J. Chem. Phys.* **119**, 6210 (2003)
 
