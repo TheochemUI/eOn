@@ -641,7 +641,7 @@ class ProcessSearch:
 
         is_reactant = lambda a: atoms.match(a, self.reactant,
                                             config.comp_eps_r,
-                                            config.comp_neighbor_cutoff, True)
+                                            config.comp_neighbor_cutoff, False)
 
         tc1 = io.parse_results(result1['results.dat'])['termination_reason']
         tc2 = io.parse_results(result2['results.dat'])['termination_reason']
