@@ -2,11 +2,11 @@
 import sys
 
 import pathfix
-import io, atoms
+import fileio as io, atoms
 
 p1 = io.loadcon(sys.argv[1])
 p2 = io.loadcon(sys.argv[2])
-if atoms.get_mappings(p1,p2):
+if atoms.get_mappings(p1,p2,sys.argv[3],sys.argv[4]):
     print "Found mappings."
     sys.exit(0)
 else:

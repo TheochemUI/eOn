@@ -312,33 +312,11 @@ class ServerMinModeExplorer(MinModeExplorer):
     def explore(self):
         if not os.path.isdir(config.path_jobs_in):
             os.makedirs(config.path_jobs_in)
+            if self.state.get_confidence() >= config.akmc_confidence:
+                self.process_searches = {}
+                self.save()
+
         MinModeExplorer.explore(self)
-#        else:
-#            if self.comm.get_queue_size() == 0:
-#                logger.info("submitting initial state minimization job")
-#                job = {}
-#                reactant = self.state.get_reactant()
-#                reactIO = StringIO.StringIO()
-#                io.savecon(reactIO, reactant)
-#                job['reactant_passed.con'] = reactIO
-#                ini_changes = [ ('Main', 'job', 'minimization') ]
-#                job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
-#                job['id'] = '0'
-#                invariants = io.load_potfiles(config.path_pot)
-#                self.comm.submit_jobs([job], invariants)
-#
-#            while self.comm.get_queue_size() != 0:
-#                continue
-#
-#
-#            for result in self.comm.get_results(config.path_jobs_in, lambda x: True):
-#                results_dat = io.parse_results(result['results.dat'])
-#                energy = results_dat['potential_energy']
-#                reason = results_dat['termination_reason']
-#                if reason != 0:
-#                    logger.fatal("minimization of initial reactant failed")
-#                    sys.exit(1)
-#                self.state.set_energy(energy)
 
     def register_results(self):
         logger.info("registering results")
