@@ -14,7 +14,6 @@
 #include "Parameters.h"
 #include "Log.h"
 #include "HelperFunctions.h"
-#include "potentials/NewPotential/NewPotential.h"
 
 #include "potentials/IMD/IMD.h"
 #include "potentials/EDIP/EDIP.h"
@@ -32,19 +31,23 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
 
-#ifndef WIN32
-    #include "potentials/VASP/VASP.h"
-#endif
 #include "potentials/bopfox/bopfox.h"
 #ifdef BOPFOX
     #include "potentials/bop/bop.h"
 #endif
-#ifdef LAMMPS_POT
-    #include "potentials/LAMMPS/LAMMPS_EON.h"
-#endif
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
 #endif
+#ifdef LAMMPS_POT
+    #include "potentials/LAMMPS/LAMMPS_EON.h"
+#endif
+#ifdef NEW_POT
+    #include "potentials/NewPotential/NewPotential.h"
+#endif
+#ifndef WIN32
+    #include "potentials/VASP/VASP.h"
+#endif
+
 
 #include <cstdlib>
 
@@ -67,6 +70,7 @@ const char Potential::POT_BOPFOX[] =      "bopfox";
 const char Potential::POT_BOP[] =         "bop";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
+const char Potential::POT_NEW[] =         "new";
 
 Potential* Potential::pot = NULL;
 
@@ -91,7 +95,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new Tip4p_Pt();
     else if(parameters->potential == POT_SPCE)
         pot = new SpceCcl();
-    #ifndef NO_FORTRAN
+
+#ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
     else if(parameters->potential == POT_LENOSKY_SI)
@@ -104,26 +109,36 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new EDIP();
     else if(parameters->potential == POT_TIP4P_H)
         pot = new Tip4p_H();
+#endif
     
-    #ifndef WIN32
-    else if(parameters->potential == POT_VASP)
-        pot = new VASP();
-    #endif
     else if(parameters->potential == POT_BOPFOX)
         pot = new bopfox();
-    #endif
-    #ifdef BOPFOX
+
+#ifdef BOPFOX
     else if(parameters->potential == POT_BOP)
         pot = new bop();
-    #endif
-    #ifdef LAMMPS_POT
-    else if(parameters->potential == POT_LAMMPS)
-        pot = new lammps_eon(parameters);
-    #endif
-    #ifdef EONMPI
+#endif
+    
+#ifdef EONMPI
     else if(parameters->potential == POT_MPI)
         pot = new MPIPot(parameters);
-    #endif
+#endif
+
+#ifdef LAMMPS_POT
+    else if(parameters->potential == POT_LAMMPS)
+        pot = new lammps_eon(parameters);
+#endif
+
+#ifdef NEW_POT
+    else if(parameters->potential == POT_NEW)
+        pot = new NewPotential(parameters);
+#endif
+
+#ifndef WIN32
+    else if(parameters->potential == POT_VASP)
+        pot = new VASP();
+#endif
+    
     else {
         printf("Unknown Potential: %s\n", parameters->potential.c_str());
         std::exit(1);

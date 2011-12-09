@@ -3261,8 +3261,7 @@ Potential.o: Potential.cpp Potential.h Parameters.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Log.h HelperFunctions.h Matter.h potentials/NewPotential/NewPotential.h \
- potentials/NewPotential/../../Potential.h potentials/IMD/IMD.h \
+ Log.h HelperFunctions.h Matter.h potentials/IMD/IMD.h \
  potentials/IMD/../../Potential.h potentials/EDIP/EDIP.h \
  potentials/EDIP/../../Potential.h potentials/EMT/EffectiveMediumTheory.h \
  potentials/EMT/Asap/Atoms.h potentials/EMT/Asap/Vec.h \
@@ -3286,9 +3285,9 @@ Potential.o: Potential.cpp Potential.h Parameters.h Eigen.h Eigen/Dense \
  potentials/Water_Pt/zhu_philpott_parameters.hpp \
  potentials/Water_Pt/../../Potential.h potentials/Water_H/Tip4p_H.h \
  potentials/Water_H/../../Potential.h \
- potentials/Water_H/../Water/Water.hpp potentials/VASP/VASP.h \
- potentials/VASP/../../Potential.h potentials/bopfox/bopfox.h \
- potentials/bopfox/../../Potential.h
+ potentials/Water_H/../Water/Water.hpp potentials/bopfox/bopfox.h \
+ potentials/bopfox/../../Potential.h potentials/VASP/VASP.h \
+ potentials/VASP/../../Potential.h
 Prefactor.o: Prefactor.cpp Prefactor.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
  Eigen/src/Core/util/Constants.h \
