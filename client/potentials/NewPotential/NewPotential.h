@@ -24,7 +24,7 @@ private:
 public:
 // Functions
 	// constructor and destructor
-    NewPotential(void);
+    NewPotential(Parameters *p);
 	
     // To satify interface
     void initialize(void);    

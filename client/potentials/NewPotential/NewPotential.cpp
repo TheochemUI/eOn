@@ -10,7 +10,7 @@
 
 #include"NewPotential.h"
 
-NewPotential::NewPotential(void){
+NewPotential::NewPotential(Parameters *p){
 }
 
 void NewPotential::initialize(void){
