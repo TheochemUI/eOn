@@ -220,6 +220,12 @@ else
         ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a
 endif
 
+ifdef NEW_POT
+   CXXFLAGS += -DNEW_POT
+   POTDIRS += ./potentials/NewPotential
+   LIBS += ./potentials/NewPotential/libnewpotential.a
+   POTENTIALS += "+NewPotential"
+endif
 OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o \
     ConjugateGradients.o HelperFunctions.o Matter.o Parameters.o Potential.o    \
     Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o                  \
