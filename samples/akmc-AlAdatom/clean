@@ -1,3 +1,3 @@
-echo "y"|../../eon.py -R
+echo "y"|../../eon -R
 rm -rf config.ini reactant.con
 
