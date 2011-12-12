@@ -7,8 +7,9 @@ else
    exit 1
 fi
 nrun=3
-for (( i=1; i<$nrun; i++ ))
+for (( i=1; i<=$nrun; i++ ))
 do
 ./init
 ../../eon
 done
+../../eon -n
