@@ -4,14 +4,63 @@
 Running a Parallel Replica Job
 ===================================
 
-The following script will run a parallel replica job of a system
-with one Al adatom on the Al(100) surface.  The job will use 1 local cpu.
+A sample parallel replica simulation can be found in your copy of eon under the directory: ``sample/pr-AlAdatom/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
 
-.. literalinclude:: tutorial_parrep_con.ini
+The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
 
+..  image:: aladatom.png
+    :align: center
 
-If we run this script, we get the following result::
+Here is the ``config.ini`` file which will run a parallel replica job using 1 local cpu for 1 search. 
 
-  $ eon.py 
+.. literalinclude:: ../samples/pr-AlAdatom/.config.ini
 
+Now we can run 3 searches by executing the script "run"::
 
+    $ ./run 
+    All input files are ready, start to run this sample job 
+    simulation time is 0.000000e+00
+    state list path does not exist, creating .//states/
+    registering results
+    0 (result) searches processed
+    time in current state is 0.000000e+00
+    0 searches in the queue
+    making 1 searches   #First Search
+    job finished in .//jobs/scratch/0_0
+    1 searches created
+    simulation time is 0.000000e+00
+    registering results
+    found transition with time 1.600e-12
+    1 (result) searches processed
+    time in current state is 0.000000e+00
+    currently in state 1
+    0 searches in the queue
+    making 1 searches    #Second Search
+    job finished in .//jobs/scratch/1_1
+    1 searches created
+    simulation time is 1.599970e-12
+    registering results
+    found transition with time 1.200e-11
+    1 (result) searches processed
+    time in current state is 0.000000e+00
+    currently in state 2
+    0 searches in the queue
+    making 1 searches     #Third Search
+    job finished in .//jobs/scratch/2_2
+    1 searches created
+    simulation time is 1.359975e-11
+    registering results
+    found transition with time 1.244e-11
+    1 (result) searches processed
+    time in current state is 0.000000e+00
+    currently in state 3
+    0 searches in the queue
+    making 0 searches     #Final regiser 
+
+Here Eon makes 3 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
+
+.. literalinclude:: .dynamics.txt
+
+The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
+    
+Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id.
