@@ -13,5 +13,5 @@ rand=$RANDOM
 ./init
 sed -i "s/1234567/$rand/" config.ini
 #grep  "random_seed" config.ini
-../../eon.py
+../../eon
 done
