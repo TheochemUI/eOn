@@ -7,7 +7,7 @@ Running a Parallel Replica Job
 Regular Parallel Replica Job
 -----------------------------
 
-A sample parallel replica simulation can be found in your copy of eon under the directory: ``sample/pr-AlAdatom/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
+A sample parallel replica simulation can be found in your copy of eon under the directory: ``samples/pr-AlAdatom/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
 
 The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
 
@@ -18,7 +18,7 @@ Here is the ``config.ini`` file which will run a parallel replica job using 1 lo
 
 .. literalinclude:: ../samples/pr-AlAdatom/.config.ini
 
-Now we can run 1 searches by executing the script "run"::
+Now we can run 1 search by executing the script ``run``::
 
     $ ./run 
     All input files are ready, start to run this sample job 
