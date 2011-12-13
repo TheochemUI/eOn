@@ -33,16 +33,16 @@ def get_communicator():
         return get_communicator.comm
 
     if config.comm_type=='boinc':
-        comm = BOINC(config.path_scratch, config.comm_boinc_project_dir, 
+        comm = BOINC(config.path_scratch, config.comm_boinc_project_dir,
                 config.comm_boinc_wu_template_path, config.comm_boinc_re_template_path,
                 config.comm_boinc_appname, config.comm_boinc_results_path,
                 config.comm_job_bundle_size, config.comm_boinc_priority)
     elif config.comm_type=='cluster':
         comm = Script(config.path_scratch, config.comm_job_bundle_size,
                                    config.comm_script_name_prefix,
-                                   config.comm_script_path, 
+                                   config.comm_script_path,
                                    config.comm_script_queued_jobs_cmd,
-                                   config.comm_script_cancel_job_cmd, 
+                                   config.comm_script_cancel_job_cmd,
                                    config.comm_script_submit_job_cmd)
     elif config.comm_type=='local':
         comm = Local(config.path_scratch, config.comm_local_client, 
@@ -694,7 +694,9 @@ class Local(Communicator):
     def get_queue_size(self):
         return 0
 
+
 class Script(Communicator):
+
     def __init__(self, scratch_path, bundle_size, name_prefix, scripts_path, 
                  queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
         Communicator.__init__(self, scratch_path, bundle_size)
@@ -733,7 +735,7 @@ class Script(Communicator):
         for jobid in finished_jobids:
             finished_eonids.append(int(self.jobids.pop(jobid)))
 
-        jobdirs = [ d for d in os.listdir(self.scratchpath) 
+        jobdirs = [ d for d in os.listdir(self.scratchpath)
                     if os.path.isdir(os.path.join(self.scratchpath,d))
                     if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
 
@@ -804,27 +806,28 @@ class Script(Communicator):
     def get_queue_size(self):
         return len(self.get_queued_jobs())
 
+
 class ARC(Communicator):
-    
+
     def __init__(self, scratchpath, bundle_size, client_path, blacklist, num_submit):
         self.init_completed = False
-        
+
         Communicator.__init__(self, scratchpath, bundle_size)
-        
+
         try:
             import arclib
             self.arclib = arclib
         except ImportError:
             raise CommunicatorError("ARCLib can't be imported. Check if PYTHONPATH is set correctly")
-        
+
         self.arclib.SetNotifyLevel(self.arclib.WARNING)
-        
+
         self.client_path = client_path
         self.num_submit = num_submit
         self.blacklist = blacklist
 
         self.queue_info = None
-        
+
         # Check grid certificate proxy
         try:
             c = self.arclib.Certificate(self.arclib.PROXY)
@@ -833,7 +836,7 @@ class ARC(Communicator):
         if c.IsExpired():
             raise CommunicatorError("Grid proxy has expired!")
         logger.info("Grid proxy is valid for " + c.ValidFor())
-        
+
         # Get a list of jobs, and find their statuses.
         self.busy_clusters = []
         self.active_jobs = []
@@ -869,12 +872,12 @@ class ARC(Communicator):
                         self.busy_clusters.append(info.cluster)
                 else:
                     job["stage"] = "Running"
-                
+
                 if job["stage"] != "Aborted":
                     self.active_jobs.append(job)
         #logger.info("Job %s / %s found in state %s (%s)" % (job["name"], job["id"], job["stage"], info.status))
-        
-        # loads the server job-queue 
+
+        # loads the server job-queue
         self.job_queue_filename = os.path.join(self.scratchpath, "job_queue.pickle")
         if os.path.isfile(self.job_queue_filename):
             f = open(self.job_queue_filename, "r")
@@ -883,13 +886,14 @@ class ARC(Communicator):
         else:
             self.job_queue = []
         self.init_completed = True
-    
+
+
     def __del__(self):
         """
             Remember jobs for future invocations.
             """
         logger.debug("ARC.__del__ invoked!")
-        
+
         if self.init_completed:
             # Save the jobs to two files for the future, but only if
             # __init__() was successful - if it wasn't we might not have
@@ -903,19 +907,19 @@ class ARC(Communicator):
                 if j["stage"] not in ["Aborted", "Retrieved"]:
                     f.write(j["id"] + '#' + j["name"] + '\n')
             f.close()
-            
+
             f = open(self.job_queue_filename, "w")
             pickle.dump(self.job_queue, f)
             f.close()
-    
+
     def create_wrapper_script(self):
         '''Create a wrapper script to execute a job.  Return path to script.'''
-        
+
         s = """
             #!/bin/bash
-            
+
             set -e # Immediately exit if any command fail
-            
+
             ls -l
             if [ -f client-bin ]; then
             # It seems we got a EON client binary as an inputfile. It does
@@ -941,27 +945,27 @@ class ARC(Communicator):
             f.close()
         except Exception, msg:
             raise CommunicatorError("Can't create wrapper script: %s" % msg)
-        
+
         return script_path
-    
-    
+
+
     def create_tarball(self, src, dest):
         """Pack directory 'src' into tar.bz2 file 'dest', makeing sure it will unpack into
             a dir called basename(src), rather than path/to/src"""
-        
+
         # Remove trailing '/'; it would cause trouble with
         # os.path.dirname() and os.path.basename()
         if src[-1] == '/':
             src = src[:-1]
-        
+
         # Since we'll change directory for a while, we should make sure we
         # use absolute paths, rather than relative ones:
         src = os.path.abspath(src)
         dest = os.path.abspath(dest)
-        
+
         dirname = os.path.dirname(src)
         basename = os.path.basename(src)
-        
+
         cwd = os.getcwd()
         try:
             os.chdir(dirname)
@@ -970,83 +974,81 @@ class ARC(Communicator):
             tarball.close()
         finally:
             os.chdir(cwd)
-    
-    
+
+
     def open_tarball(self, filename, dest_dir):
         """Pack upp tar.bz2 file beneth the directory dest_dir."""
         try:
             tarball = tarfile.open(filename, 'r:bz2')
-            
+
             # For security reasons, filter out filenames that might end up
             # outside of 'dest_dir':
             files = tarball.getmembers()
             good_files = [ f for f in files if f.name[0:2] != '..' and f.name[0] != '/' ]
-            
+
             for f in good_files:
                 tarball.extract(path=dest_dir, member=f)
             tarball.close()
         except IOError:
-            logger.warning("Could not open tarball %s" % (filename))              
-    
-    
+            logger.warning("Could not open tarball %s" % (filename))
+
+
     def create_job(self, job_path, wrapper_path):
         '''Prepare a job who's inputfiles are found in 'job_path'.
             Return a string to be used as input for xsrl and job name.'''
-        
+
         # Remove trailing '/'; it would cause trouble with os.path.basename()
         if job_path[-1] == '/':
             job_path = job_path[:-1]
-        
+
         basename = os.path.basename(job_path)
         tarball_path = os.path.join(self.scratchpath, basename + ".tar.bz2")
         self.create_tarball(job_path, tarball_path)
         shutil.rmtree(job_path)
-        
-        
+
         s = "&"
         s += "(executable=%s)" % os.path.basename(wrapper_path)
         s += "(arguments=%s)" % basename
-        
+
         s += "(inputFiles="
         if self.client_path:
             s += "(%s %s)" % ("client-bin", self.client_path)
         s += "(%s %s)" % (os.path.basename(wrapper_path), wrapper_path)
         s += "(%s %s)" % (os.path.basename(tarball_path), tarball_path)
         s += ")"
-        
+
         s += "(outputFiles="
         s += "(%s '')" % os.path.basename(tarball_path)
         s += ")"
-        
-        
+
         if config.debug_keep_all_results:
             s += "(stdout=stdout)"
             s += "(stderr=stderr)"
             s += "(gmlog=gmlog)"
-        
+
         if not self.client_path:
             s += "(runTimeEnvironment=APPS/CHEM/EON2)"
-        
+
         jobname = "%s" % basename
         s += "(jobName=%s)" % jobname
-        
+
         # requirements to the host
         # 500 MB memory
         s += '(Memory="500")'
         # 120 minutes
         s += '(wallTime="120")'
-        
+
         logger.debug("job_string: " + s)
-        
+
         return s, jobname, tarball_path
-    
-    
+
+
     def submit_job_to_target(self, hostname):
         if(len(self.job_queue)):
-            
+
             job_string, job_name, job_tarball = self.job_queue.pop(0)
             xrsl = self.arclib.Xrsl(job_string)
-            
+
             # fetch the target which hostname passed was 
             target = None
             all_targets = self.arclib.ConstructTargets(self.queue_info, xrsl)
@@ -1062,14 +1064,14 @@ class ARC(Communicator):
                     raise CommunicatorError(msg)
                 except self.arclib.XrslError, msg:
                     raise CommunicatorError(msg)
-                
+
                 self.arclib.AddJobID(job_id, job_name)
                 self.active_jobs.append({"id": job_id, "name": job_name, "stage":"Queueing"})
                 logger.info("submitted " + job_id)
             else:
                 logger.info("failed to submit to " + hostname)                
-    
-    
+
+
     def get_targets_hostnames(self, xrsl):
         """Get list of hostnames of clusters+queues we can submit to."""
         hostnames = []
@@ -1077,18 +1079,18 @@ class ARC(Communicator):
         for t in targets:
             hostnames.append(t.cluster.hostname)
         return hostnames
-    
-    
+
+
     def get_targets(self, xrsl):
         """Get list of clusters+queues we can submit to."""
-        
+
         if not self.queue_info:
             self.queue_info = self.arclib.GetQueueInfo()
-        
+
         targets_initial = self.arclib.ConstructTargets(self.queue_info, xrsl)
-        
+
         logger.debug("List of targets: " + ', '.join([ t.cluster.hostname for t in targets_initial ]))
-        
+
         if self.blacklist:
             targets_not_bl = []
             for t in targets_initial:
@@ -1097,7 +1099,7 @@ class ARC(Communicator):
             logger.debug("List of targets after blacklisting: " + ', '.join([ t.cluster.hostname for t in targets_not_bl ]))
         else:
             targets_not_bl = targets_initial
-        
+
         if self.busy_clusters:
             targets = []
             for t in targets_not_bl:
@@ -1107,8 +1109,8 @@ class ARC(Communicator):
         else:
             targets = targets_not_bl
         return self.arclib.PerformStandardBrokering(targets)
-    
-    
+
+
     def submit_jobs(self, data, invariants):
         '''Throws CommunicatorError if fails.'''
         # add new jobs to queue
@@ -1116,7 +1118,7 @@ class ARC(Communicator):
         for job_path in self.make_bundles(data, invariants):
             job_string, job_name, job_tarball = self.create_job(job_path, wrapper_path)
             self.job_queue.append([job_string, job_name, job_tarball])
-        
+
         # are there jobs to submit
         if len(self.job_queue): 
             # uses first element in queue to get list of free resources
@@ -1124,66 +1126,67 @@ class ARC(Communicator):
             targets_hostnames = self.get_targets_hostnames(xrsl)
         else:
             targets_hostnames = []
-        
+
         for target_hostname in targets_hostnames:
             submitted_to_target = 0
             while (submitted_to_target < self.num_submit):
                 self.submit_job_to_target(target_hostname)
                 submitted_to_target = submitted_to_target + 1
-    
+
+
     def get_job_output(self, jobid, resultspath):
         """Fetch the output files of a job.
             The files are put in a subdirectory of resultspath,
             and the full path of the subdirectory is returned."""
-        
+
         n = jobid.split('/')[-1]
         outputdir = os.path.join(resultspath, n)
         if not os.path.isdir(outputdir):
             os.makedirs(outputdir)
-        
+
         ftp = self.arclib.FTPControl()
         ftp.DownloadDirectory(jobid, outputdir)
-        
+
         return outputdir
-    
-    
+
+
     def get_results(self, resultspath, keep_result):
         '''Returns a list of directories containing the results.'''
-        
+
         result_dirs = []
         done = [ j for j in self.active_jobs if j["stage"] == "Done" ]
         for job in done:
             jid = job["id"]
             jname = job["name"]
-            
+
             p = self.get_job_output(jid, self.scratchpath)
             tarball = os.path.join(p, "%s.tar.bz2" % jname)
-            
+
             if job["success"]:
                 self.open_tarball(tarball, resultspath)
                 logger.info("Fetched %s / %s" % (jname, jid)) 
             else:
                 logger.warning("Job %s / %s FAILED.\nOutput files can be found in %s" % (jname, jid, p)) 
-            
+
             job["stage"] = "Retrieved"
-            
+
             self.arclib.RemoveJobID(jid) # Remove from ~/.ngjobs
             self.arclib.CleanJob(jid) # Remove from ARC sever
-            
+
             if not config.debug_keep_all_results:
                 os.remove(tarball) # keep server scratch dir clean
                 shutil.rmtree(p)
-        
+
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
-    
-    
+
+
     def get_queue_size(self):
         '''Returns the number of items waiting to run in the server queue.'''
         return len(self.job_queue)
-    
-    
+
+
     def cancel_job(self, job):
         '''Removed job from cluster queue'''
         try:
@@ -1191,19 +1194,19 @@ class ARC(Communicator):
         except:
             logger.warning('Did not clean up the cancelled job!')
             return
-        
+
         # we are sure that the job is removed from the cluster
         # remove id from the local list
         self.arclib.RemoveJobID(job["id"])
         job["stage"] = "Aborted"
         return
-        
-    
+
+
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
-        
+
         logger.debug("cancel_state called with statenumber = %i (%s)" % (int(statenumber), type(statenumber)))
-        
+
         n = 0
         for j in self.active_jobs:
             sn = j["name"].split('_')[0]
@@ -1212,8 +1215,7 @@ class ARC(Communicator):
                 self.cancel_job(j)
                 logger.debug("Canceling job %s / %s" % (j["name"], j["id"]))
                 n += 1
-        
+
         self.job_queue = []
         return n
-
 

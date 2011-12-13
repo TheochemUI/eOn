@@ -154,7 +154,7 @@ AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1, const AtomMatri
     return v1 - (v1.cwise()*v2).sum() * v2.normalized();
 }
 
-// result contains v1 projection on v2 
+// result contains v1 projection on v2
 void helper_functions::makeProjection(double *result, const double *v1, const double *v2, long size){
     double *tempListDouble;
     double tempDouble;

@@ -13,7 +13,7 @@ for line in f:
     number = int(fields[0])
     barrier = float(fields[6])
     frequency = int(fields[8])+1
-    processes[number] = {'barrier':barrier, 'frequency':frequency} 
+    processes[number] = {'barrier':barrier, 'frequency':frequency}
 
 f.close()
 

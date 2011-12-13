@@ -18,7 +18,7 @@ Main:
                 - akmc
                 - hessian
                 - md
-        
+
         random_seed:
             kind: int
             default: -1
@@ -68,7 +68,6 @@ Potential:
                 - tip4p_h
                 - tip4p_pt
                 - new
-
 
         mpi_poll_period:
             kind: float
@@ -752,7 +751,7 @@ Saddle Search:
         displace_random_weight:
             kind: float
             default: 0.0
-        
+
         displace_listed_weight:
             kind: float
             default: 0.0
@@ -764,11 +763,11 @@ Saddle Search:
         displace_under_coordinated_weight:
             kind: float
             default: 0.0
-        
+
         displace_least_coordinated_weight:
             kind: float
             default: 0.0
-        
+
         displace_water_weight:
             kind: float
             default: 0.0
@@ -810,7 +809,6 @@ Saddle Search:
             kind: float
             default: 0.0
 
-
         confine_positive:
             kind: boolean
             default: False
@@ -830,7 +828,6 @@ Saddle Search:
         confine_positive_min_active:
             kind: int
             default: 30
-
 
 ################################################################################
 

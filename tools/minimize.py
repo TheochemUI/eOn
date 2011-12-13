@@ -24,19 +24,19 @@ if __name__ == "__main__":
 
     cwd = os.getcwd()
     td = tempfile.mkdtemp()
-    
+
     shutil.copyfile(args[0], os.path.join(td, "reactant_passed.con"))
-    
+
     config.set("Main", "potential", args[1])
     config.set("Main", "job", "minimization")
     if options.box:
         config.add_section('Optimizers')
         config.set("Optimizers", "opt_method", "box")
-    
+
     cf = open(os.path.join(td, "config_passed.ini"), 'w')
     config.write(cf)
     cf.close()
-    
+
     os.chdir(td)
     os.system(os.path.join(pathfix.path, "client", "client"))
     shutil.copyfile(os.path.join(td, "reactant.con"), os.path.join(cwd, args[2]))

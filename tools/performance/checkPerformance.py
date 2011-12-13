@@ -25,10 +25,10 @@ if generateData == 1:
         os.mkdir("data/"+str(i))
         shutil.move("results.dat","data/"+str(i))
 
-for i in range(sampleSize):     
+for i in range(sampleSize):
     data = getLinesInFile("./data/"+str(i)+"/results.dat")
-    f_positive.append(int(data[5].rsplit()[0]))    
+    f_positive.append(int(data[5].rsplit()[0]))
     f_negative.append(int(data[6].rsplit()[0]))
-    
-print "Average nr of force call per saddle point: " + str((sum(f_negative) + sum(f_positive)) /float(sampleSize))    
-    
+
+print "Average nr of force call per saddle point: " + str((sum(f_negative) + sum(f_positive)) /float(sampleSize))
+

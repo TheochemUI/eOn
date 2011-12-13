@@ -32,7 +32,7 @@ class AKMCStateList(statelist.StateList):
         self.filter_hole = filter_hole
 
     def register_process(self, reactant_number, product_number, process_id):
-        
+
         # Get the reactant and product state objects.
         reactant = self.get_state(reactant_number)
         product = self.get_state(product_number)
@@ -75,7 +75,7 @@ class AKMCStateList(statelist.StateList):
 
                         # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
                         reactant.load_process_table()
-                        
+
                         # Remember we are now looking at the reverse processes 
                         reverse_procs[id]['product'] = reactant_number
                         reverse_procs[id]['saddle_energy'] = saddle_energy
@@ -85,7 +85,7 @@ class AKMCStateList(statelist.StateList):
                         reverse_procs[id]['barrier'] = saddle_energy - product.get_energy()
                         reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
                         product.save_process_table()
-                        
+
                         # We are done.
                         return
 
@@ -118,34 +118,33 @@ class AKMCStateList(statelist.StateList):
                                      repeats = 0)
         product.save_process_table()
 
-        # Update the metadata.    
+        # Update the metadata.
         # If this the forward process was a random proc, increase the repeat count.
-        if(process_id in reactant.get_proc_random_count() ):        
-            product.inc_proc_random_count(reverse_process_id)     
+        if(process_id in reactant.get_proc_random_count() ):
+            product.inc_proc_random_count(reverse_process_id)
         product.set_unique_saddle_count( product.get_unique_saddle_count() + 1 )
-        product.update_lowest_barrier( barrier ) 
+        product.update_lowest_barrier( barrier )
 
-        # Register the process in the search result file. 
+        # Register the process in the search result file.
         result_fake = { 'barrier_reactant_to_product' : barrier,
                        'displacement_saddle_distance' : 0.0,
                        'force_calls_saddle' : 0,
-                       'force_calls_minimization' : 0 ,
+                       'force_calls_minimization' : 0,
                        'force_calls_prefactors' : 0}
         if config.akmc_server_side_process_search:
             first_column = "search_id"
         else:
             first_column = "wuid"
         result = { first_column : 0,
-                   'type' : 'reverse',  
+                   'type' : 'reverse',
                    'results' : result_fake}
         product.append_search_result(result, 'reverse from '+str(reactant_number))
         return
 
-
     def connect_states(self, states):
         '''
         This function goes through the process tables of all states in the argument and checks if any of the 
-        unregistered processes connect these states. It thus tries to connect update the processtables of the 
+        unregistered processes connect these states. It thus tries to connect update the processtables of the
         state as good as possible. 
         '''
         for i in states:
@@ -166,4 +165,4 @@ class AKMCStateList(statelist.StateList):
                         p = state.get_reactant()
                         if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
-                            self.register_process(i.number, state.number, j)             
+                            self.register_process(i.number, state.number, j)

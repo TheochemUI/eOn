@@ -187,7 +187,7 @@ class ClientMinModeExplorer(MinModeExplorer):
         if os.path.isdir(config.path_jobs_in):
             shutil.rmtree(config.path_jobs_in)  
         os.makedirs(config.path_jobs_in)
-        
+
         #Function used by communicator to determine whether to discard a result
         def keep_result(name):
             # note that all processes are assigned to the current state 
@@ -212,7 +212,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             # The reactant, product, and mode are passed as lines of the files because
             # the information contained in them is not needed for registering results
             if config.debug_keep_all_results:
-                #XXX: We should only do these checks once to speed things up, 
+                #XXX: We should only do these checks once to speed things up,
                 #     but at the same time debug options don't have to be fast
                 #save_path = os.path.join(config.path_root, "old_searches")
                 #if not os.path.isdir(save_path):
@@ -224,7 +224,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             state_num = int(result['name'].split("_")[0])
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
-            # Store information about the search into result_data for the 
+            # Store information about the search into result_data for the
             # search_results.txt file in the state directory.
             job_type = self.job_table.get_row('wuid', id)['type']
             result['type'] = job_type
@@ -261,7 +261,9 @@ class ClientMinModeExplorer(MinModeExplorer):
         self.job_table.write()
         return num_registered
 
+
 class ServerMinModeExplorer(MinModeExplorer):
+
     def __init__(self, states, previous_state, state):
         #XXX: need to init somehow
         self.search_id = 0
@@ -277,7 +279,6 @@ class ServerMinModeExplorer(MinModeExplorer):
             self.__dict__.update(tmp_dict)
 
         MinModeExplorer.__init__(self, states, previous_state, state)
-
 
     def save(self):
         f = open("explorer.pickle", "w")
@@ -391,7 +392,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        num_running = self.comm.get_queue_size()*config.comm_job_bundle_size 
+        num_running = self.comm.get_queue_size()*config.comm_job_bundle_size
         logger.info("%i jobs running" % num_running)
         num_to_make = max(config.comm_job_buffer_size - num_running, 0)
         logger.info("making %i jobs" % num_to_make)
@@ -471,8 +472,8 @@ class ProcessSearch:
         unknown = "unknown_exit_code"
         self.job_termination_reasons = {
                 'saddle_search':[ "good", unknown, "no_convex", "high_energy",
-                                  "max_concave_iterations", 
-                                  "max_iterations", unknown, unknown, unknown, 
+                                  "max_concave_iterations",
+                                  "max_iterations", unknown, unknown, unknown,
                                   unknown, unknown, "potential_failed", "nonnegative_abort"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
@@ -696,7 +697,7 @@ class ProcessSearch:
         modeIO = StringIO.StringIO()
         io.save_mode(modeIO, self.mode)
         job['mode_passed.dat'] = modeIO
-             
+
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
         job['reactant_passed.con'] = reactIO

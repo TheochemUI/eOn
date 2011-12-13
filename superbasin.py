@@ -17,15 +17,16 @@ logger = logging.getLogger('superbasin')
 class Superbasin:
     """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
     """based on Novotny's Absorbing Markov Chain algorithm."""
+
     def __init__(self, path, id, state_list = None, get_state = None):
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
-        
+
         self.id = int(id)
         self.path = path+str(self.id)
-        
+
         if not os.path.isfile(self.path):
             self.states = state_list
             self.state_numbers = [i.number for i in self.states]
@@ -49,7 +50,7 @@ class Superbasin:
             logger.warning("the probability vector isn't close to 1.0")
             logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
         probability_vector /= numpy.sum(probability_vector)
-        
+
         u = numpy.random.random_sample()
         p = 0.0
         for i in range(len(self.states)):
@@ -74,7 +75,6 @@ class Superbasin:
         print 'pick up p:', p
         return time, exit_state_index
 
-
     def step(self, entry_state, get_product_state):
         """Perform a Monte Carlo transition: leave the basin."""\
         """The function returns a residence time as well as information to indenfity what saddle point was to leave the basin,"""\
@@ -83,7 +83,7 @@ class Superbasin:
         assert(time >= 0.0)
         exit_state = self.states[exit_state_index]
 
-        # Make a rate table for all the exit state.  All processes are 
+        # Make a rate table for all the exit state.  All processes are
         # needed as the might be a discrepancy in time scale
         # and it might be dangerous to weed out low rate events
         rate_table = []
@@ -96,7 +96,7 @@ class Superbasin:
             if process['product'] not in self.state_numbers:
                 rate_table.append([proc_id, process['rate']])
                 ratesum += process['rate']
-        
+
         # picks the process to leave the superbasin
         p = 0.0
         u = numpy.random.random_sample()
@@ -108,8 +108,8 @@ class Superbasin:
         else:
             logger.warning("Warning: failed to select rate. p = " + str(p))
         
-        # When requesting the product state the process 
-        # gets added to the tables of events for both the forward 
+        # When requesting the product state the process
+        # gets added to the tables of events for both the forward
         # and reverse process
         product_state = get_product_state(exit_state.number, exit_proc_id)
 
@@ -132,34 +132,34 @@ class Superbasin:
         #the offdiagonal [i][j] components of the transient matrix contains the rate from state 
         #i (inside the superbasin) to state j (also in the superbasin)
         transient_matrix= numpy.zeros((len(self.states), len(self.states)))
-        
+
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
             for process in proc_table.values():
-                
-                #process is leaving the superbasin 
+
+                #process is leaving the superbasin
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
                     recurrent_vector[i] += process['rate']
-                    
-                #process remains in superbasin    
+
+                #process remains in superbasin
                 else:
                     j = self.state_numbers.index(process['product'])
                     #columns and rows interchanged as compared to theory?
                     transient_matrix[j][i] += process['rate']
-                    
+
                 transient_matrix[i][i] -= process['rate']
-        
+
         #Calculate mean residence time
-        
+
         #Fundamental matrix is the inverse of the transient matrix T (not the inverse of (I-T) )
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
-     
+
         #mean_residence_times contains the lifetime of state i in the composite state.
         self.mean_residence_times = numpy.zeros(len(self.states))
         #the probability matrix contains on the [i][j]'th position the probability of leaving 
         #the superbasin from state j, given that the system entered the superbasin from state i (or vice versa ;) )
         self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
-        
+
         for i in range(len(self.states)):
             for j in range(len(self.states)):
                 self.mean_residence_times[j] -= fundamental_matrix[i][j]
@@ -172,7 +172,6 @@ class Superbasin:
                 logger.debug('Transient matrix:\n%s' % str(transient_matrix))
                 logger.debug('Recurrent vector:\n%s' % str(recurrent_vector))
                 logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix))
-            
 
 
     def write_data(self):
@@ -180,7 +179,7 @@ class Superbasin:
         f = open(self.path, 'w')
         for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
             for j in i:
-                print >> f, repr(j), 
+                print >> f, repr(j),
             print >> f
         f.close()
 
@@ -188,19 +187,19 @@ class Superbasin:
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
         f = open(self.path, 'r')
-        
+
         self.state_numbers = []
         for i in f.readline().rstrip().split():
             self.state_numbers.append(int(i)) 
         self.states = [get_state(i) for i in self.state_numbers]
         self.mean_residence_times = []
         for i in f.readline().rstrip().split():
-            self.mean_residence_times.append(numpy.float64(i)) 
-        pmat = [] 
+            self.mean_residence_times.append(numpy.float64(i))
+        pmat = []
         for i in f.readline().rstrip().split():
             pmat.append(numpy.float64(i))
         self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
-        f.close()        
+        f.close()
 
     def delete(self, storage=None):
         if storage is None:
@@ -210,8 +209,8 @@ class Superbasin:
             logger.debug('storing %s' % self.path)
             path_storage = storage+str(self.id)
             os.rename(self.path, path_storage)
-        
+
         self.states = None
         self.probability_matrix = None
         self.mean_residence_times = None
-    
+

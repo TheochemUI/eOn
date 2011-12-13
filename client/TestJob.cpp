@@ -66,14 +66,14 @@ void TestJob::checkFullSearch(void){
     initial->con2matter(reactant_passed);
     *min1 = *min2 = *initial;
 
-    printf("\n---Output for saddle point search start---\n");    
+    printf("\n---Output for saddle point search start---\n");
 //    saddleSearch = new SaddleSearch();
 //    saddleSearch->initialize(initial, saddle, parameters);
 //    saddleSearch->loadMode(mode_passed);
 //    status = saddleSearch->locate();
     printf("---Output for saddle point search end---\n\n");
 
-    printf("---Output relax from saddle point search start---\n");    
+    printf("---Output relax from saddle point search start---\n");
     // relax from the saddle point located
 
 //    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
@@ -90,7 +90,7 @@ void TestJob::checkFullSearch(void){
     *min2 = *saddle;
 //    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
 //    min2->setPositions(displacedPos);
-//    ConjugateGradients cgMin2(min2, parameters);  
+//    ConjugateGradients cgMin2(min2, parameters);
 //    cgMin2.fullRelax();
 //  fCallsMin += cgMin2.totalForceCalls;
 
@@ -101,7 +101,7 @@ void TestJob::checkFullSearch(void){
         *min2 = *matterTemp;
     }
     printf("---Output relax from saddle point search end---\n");
-    
+
     // checking the energies of the obtained configurations
     diffM1 = abs(min1->getPotentialEnergy()-45.737426);
     diffM2 = abs(min2->getPotentialEnergy()-45.737433);
@@ -197,7 +197,7 @@ void TestJob::checkPotentials(void)
             printf("OK: LJ\n");
         }
     }
-    
+
     energyDiff = getEnergyDiff(Potential::POT_EMT, 46.086312);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: EMT energy difference: %f\n", energyDiff);
@@ -209,7 +209,7 @@ void TestJob::checkPotentials(void)
             printf("OK: EMT\n");
         }
     }
-    
+
     energyDiff = getEnergyDiff(Potential::POT_EDIP ,-1033.250950);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: EDIP energy difference: %f\n", energyDiff);
@@ -256,7 +256,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: Lenosky\n");
         }
-    } 
+    }
 
     energyDiff = getEnergyDiff(Potential::POT_EAM_AL, -1206.825825);
     if (abs(energyDiff) > tolerance){
@@ -268,8 +268,8 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: Aluminum\n");
         }
-    } 
-    
+    }
+
     energyDiff = getEnergyDiff(Potential::POT_QSC, -1232.806318);
     if (abs(energyDiff) > tolerance){
         printf("WARNING: QSC energy difference: %f\n", energyDiff);
@@ -292,7 +292,7 @@ void TestJob::checkPotentials(void)
         }else{
             printf("OK: TIP4P\n");
         }
-    } 
+    }
 
 }
 
@@ -306,7 +306,6 @@ double TestJob::getEnergyDiff(string pot, double refEnergy)
     return reactant->getPotentialEnergy()-refEnergy;
 }
 
-
 double TestJob::getForceDiff(string pot, double refForce)
 {
     string reactant_passed("reactant_test.con");
@@ -316,5 +315,4 @@ double TestJob::getForceDiff(string pot, double refForce)
 //    printf("Force: %f\n", reactant->maxForce());
     return reactant->maxForce()-refForce;
 }
-
 

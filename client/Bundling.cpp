@@ -187,7 +187,7 @@ void bundle(int number, std::vector<std::string> filenames,
             delete fileEnding;
             delete buff;
         }else{
-            snprintf(newFilename, stringSize, "%s_%i", 
+            snprintf(newFilename, stringSize, "%s_%i",
                      newFilename, number);
         }
 

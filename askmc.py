@@ -28,7 +28,6 @@ class ASKMC:
     """ This is a class to keep track of things associated with
         performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
 
-
     def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, sb_recycling_on, path_root, thermal_window, recycle_path):
         self.kT = kT
         self.states = states
@@ -158,13 +157,13 @@ class ASKMC:
         procs = {}
         for l in lines[1:]:
             l = l.strip().split()
-            procs[int(l[ID])] = {"saddle_energy":     float(l[ENERGY]), 
-                                 "prefactor":         float(l[PREFACTOR]), 
-                                 "product":           int  (l[PRODUCT]), 
-                                 "product_energy":    float(l[PRODUCT_ENERGY]), 
-                                 "product_prefactor": float(l[PRODUCT_PREFACTOR]), 
-                                 "barrier":           float(l[BARRIER]), 
-                                 "rate":              float(l[RATE]), 
+            procs[int(l[ID])] = {"saddle_energy":     float(l[ENERGY]),
+                                 "prefactor":         float(l[PREFACTOR]),
+                                 "product":           int  (l[PRODUCT]),
+                                 "product_energy":    float(l[PRODUCT_ENERGY]),
+                                 "product_prefactor": float(l[PRODUCT_PREFACTOR]),
+                                 "barrier":           float(l[BARRIER]),
+                                 "rate":              float(l[RATE]),
                                  "view_count":        int  (l[REPEATS])}
         return procs
 
@@ -175,12 +174,12 @@ class ASKMC:
         fo.write(mod_processtable_header)
         for process_id in current_state_mod_procs.keys():
             proc = current_state_mod_procs[process_id]
-            fo.write(processtable_line % (process_id, 
-                                         proc['saddle_energy'], 
-                                         proc['prefactor'], 
-                                         proc['product'], 
+            fo.write(processtable_line % (process_id,
+                                         proc['saddle_energy'],
+                                         proc['prefactor'],
+                                         proc['product'],
                                          proc['product_energy'],
-                                         proc['product_prefactor'], 
+                                         proc['product_prefactor'],
                                          proc['barrier'],
                                          proc['rate'],
                                          proc['view_count']))
@@ -331,7 +330,7 @@ class ASKMC:
                     testvar = 1
                     return testvar
         return testvar
-    
+
     def locsearch(self, current_state, origEtrans):
         """ Act recursively to find if the superbasic criterion is met.
             However, ---Note--- that in this implementation, not all neighbors are necessarily checked --
@@ -365,7 +364,7 @@ class ASKMC:
                             else:
                                 self.edgelist = numpy.vstack((self.edgelist,[current_state.number, next_state_num]))
                                 self.locsearch(next_state, origEtrans)
-    
+
     def raiseup(self, current_state, next_state, sb_check_count, num_rate_changes):
         """ Determine (with the aid of locsearch) if a superbasin is present.
             If a superbasin is found to be present, raise the rate constants,

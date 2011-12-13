@@ -178,7 +178,7 @@ def fastestpath(path_root, states, full=False):
         time += 1/ratesum
 
 
-    return atoms_list                                            
+    return atoms_list
 
 def get_fastest_process_id(state1, state2):
     ptable = state1.get_process_table()
@@ -231,7 +231,7 @@ class Graph:
             self.add_node(node1)
         if node2 not in self.graph:
             self.add_node(node2)
-        
+
         self.graph[node1][node2] = weight
 
     def neighbors(self,node):
@@ -249,11 +249,11 @@ class Graph:
         P = {}	# dictionary of predecessors
         Q = priorityDictionary()   # est.dist. of non-final vert.
         Q[start] = 0
-        
+
         for v in Q:
             D[v] = Q[v]
             if v == end: break
-            
+
             for w in G[v]:
                 vwLength = D[v] + G[v][w]
                 if w in D:
@@ -263,7 +263,7 @@ class Graph:
                 elif w not in Q or vwLength < Q[w]:
                     Q[w] = vwLength
                     P[w] = v
-        
+
         return (D,P)
 
     def shortest_path(self, start, end):
@@ -304,7 +304,7 @@ until the heap is rebuilt.'''
                 heap[insertionPoint] = heap[smallChild]
                 insertionPoint = smallChild
         return heap[0][1]
-	
+
     def __iter__(self):
         '''Create destructive sorted iterator of priorityDictionary.'''
         def iterfn():
@@ -313,7 +313,7 @@ until the heap is rebuilt.'''
                 yield x
                 del self[x]
         return iterfn()
-	
+
     def __setitem__(self,key,val):
         '''Change value stored in dictionary and add corresponding
 pair to heap.  Rebuilds the heap if the number of deleted items grows
@@ -332,7 +332,7 @@ too large, to avoid memory leakage.'''
                 heap[insertionPoint] = heap[(insertionPoint-1)//2]
                 insertionPoint = (insertionPoint-1)//2
             heap[insertionPoint] = newPair
-	
+
     def setdefault(self,key,val):
         '''Reimplement setdefault to call our customized __setitem__.'''
         if key not in self:

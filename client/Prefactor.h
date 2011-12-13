@@ -21,5 +21,4 @@ int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle, Matter *
 VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
 VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
 
-
 #endif

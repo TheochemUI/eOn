@@ -24,7 +24,7 @@ def create_gpaw(comm):
     #calc = GPAW(xc='PBE', 
     #            h=.30,
     #            nbands=-8,
-    #            txt='gpaw_%i.txt'%world.rank, 
+    #            txt='gpaw_%i.txt'%world.rank,
     #            convergence=convergence,
     #            occupations=FermiDirac(width=0.05),
     #            mixer = Mixer(beta=0.10, nmaxold=5, weight=100.0),

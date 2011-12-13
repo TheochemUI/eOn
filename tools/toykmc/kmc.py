@@ -10,7 +10,7 @@ if use_sb:
 
 def kmc(s):
     ratesum = 0.0
-    
+
     dosb = use_sb and superbasining.get_containing_superbasin(s)
     if dosb:
         rate_table, dt, exit_state = superbasining.get_containing_superbasin(s).step(s)
@@ -34,5 +34,4 @@ def kmc(s):
     else:
         print "Failed to choose process"
         return None
-
 

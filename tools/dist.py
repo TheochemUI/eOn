@@ -18,7 +18,6 @@ for i in range(len(p1)):
 
 distances.sort(key=lambda d: d[4])
 
-
 print "\n%5s    %10s    %10s    %10s    %10s" % ("atom", "x", "y", "z", "norm")
 print "-------------------------------------------------------------"
 

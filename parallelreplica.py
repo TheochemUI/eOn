@@ -91,11 +91,11 @@ def get_pr_metadata():
         except:
             start_state_num = 0
         try:
-            time = parser.getfloat("Simulation Information", 'time_simulated') 
+            time = parser.getfloat("Simulation Information", 'time_simulated')
         except:
             time = 0.0
         try:
-            wuid = parser.getint("PR Metadata", 'wu_id') 
+            wuid = parser.getint("PR Metadata", 'wu_id')
         except:
             wuid = 0
     else:
@@ -151,13 +151,13 @@ def make_searches(comm, current_state, wuid):
         wuid += 1
 
     comm.submit_jobs(searches, invariants)
-    logger.info( str(num_to_make) + " searches created") 
+    logger.info( str(num_to_make) + " searches created")
     return wuid
 
 def register_results(comm, current_state, states):
     logger.info("registering results")
     if os.path.isdir(config.path_jobs_in):
-        shutil.rmtree(config.path_jobs_in)    
+        shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
 
     #Function used by communicator to determine whether to discard a result
@@ -166,7 +166,7 @@ def register_results(comm, current_state, states):
 
     transition = None
     num_registered = 0
-    for result in comm.get_results(config.path_jobs_in, keep_result): 
+    for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # reactant.con - an array of strings containing the reactant
         # product.con - an array of strings containing the product

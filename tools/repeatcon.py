@@ -38,11 +38,10 @@ for z in range(zscale):
         t2.free = numpy.append(t2.free, t1.free[a])
         t2.names.append(t1.names[a])
         t2.mass = numpy.append(t2.mass, t1.mass[a])
-        
+
 t2.box[0] = p0.box[0] * xscale
 t2.box[1] = p0.box[1] * yscale
 t2.box[2] = p0.box[2] * zscale
-        
-io.savecon(outcon, t2)
 
+io.savecon(outcon, t2)
 
