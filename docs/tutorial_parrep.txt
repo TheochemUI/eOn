@@ -39,11 +39,13 @@ Now we can run 1 searches by executing the script "run"::
 
 Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
 
-.. literalinclude:: .dynamics.txt
+.. literalinclude:: ../samples/pr-aladatom/.dynamics.txt
 
 The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
-Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id.The geometric of the product is shown below:
+Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id. You can find the geometric of the prodcut in ``states/1/reactant.con/``, a snapshot is shown below:
 
-..  image:: fig/aladatom2a.png fig/aladatom2b.png
+..  image:: fig/aladatom2.png 
     :align: center
+
+Compared to the reactant geometric, we can tell that the transition we found follows a long-distance exchange mechanism.
