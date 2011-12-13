@@ -51,7 +51,8 @@ def get_communicator():
         comm = MPI(config.path_scratch, config.comm_job_bundle_size)
     elif config.comm_type=='arc':
         comm = ARC(config.path_scratch, config.comm_job_bundle_size, 
-                                config.comm_client_path, config.comm_blacklist)
+                                config.comm_client_path, config.comm_blacklist,
+                                config.comm_num_submit)
     else:
         logger.error(str(config.comm_type)+" is an unknown communicator.")
         raise ValueError()
@@ -805,7 +806,7 @@ class Script(Communicator):
 
 class ARC(Communicator):
     
-    def __init__(self, scratchpath, bundle_size=1, client_path=None, blacklist=None, max_submit=10):
+    def __init__(self, scratchpath, bundle_size, client_path, blacklist, num_submit):
         self.init_completed = False
         
         Communicator.__init__(self, scratchpath, bundle_size)
@@ -819,9 +820,9 @@ class ARC(Communicator):
         self.arclib.SetNotifyLevel(self.arclib.WARNING)
         
         self.client_path = client_path
-        self.max_submit = max_submit
-        self.blacklist = [] #blacklist
-        
+        self.num_submit = num_submit
+        self.blacklist = blacklist
+
         self.queue_info = None
         
         # Check grid certificate proxy
@@ -1124,12 +1125,9 @@ class ARC(Communicator):
         else:
             targets_hostnames = []
         
-        print 'targets_hostnames'
-        print targets_hostnames
-        
         for target_hostname in targets_hostnames:
             submitted_to_target = 0
-            while (submitted_to_target < self.max_submit):
+            while (submitted_to_target < self.num_submit):
                 self.submit_job_to_target(target_hostname)
                 submitted_to_target = submitted_to_target + 1
     
@@ -1187,14 +1185,9 @@ class ARC(Communicator):
     
     
     def cancel_job(self, job):
+        '''Removed job from cluster queue'''
         try:
             self.arclib.CleanJob(job["id"])
-        #            # kill
-        #            try:
-        #                self.arclib.CancelJob(job["id"])
-        #            # job has finished and waiting to be fetched
-        #            except:
-        #                self.arclib.CleanJob(job["id"])
         except:
             logger.warning('Did not clean up the cancelled job!')
             return
@@ -1204,17 +1197,7 @@ class ARC(Communicator):
         self.arclib.RemoveJobID(job["id"])
         job["stage"] = "Aborted"
         return
-    
-    ## only remove completed jobs
-    ##            self.arclib.CleanJob(job["id"])
-    #            self.arclib.RemoveJobID(job["id"])
-    #        except:
-    #            pass
-    #        # XXX: CancelJob() could fail e.g. if ARC info.sys. is slow/down/not
-    #        # updated yet. Trying again in a few minutes is usually the only
-    #        # cure.
-    #        job["stage"] = "Aborted"
-    
+        
     
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''

@@ -622,6 +622,32 @@ Communicator:
 
     options:
 
+        type:
+            kind: string
+            default: local
+            values:
+                - cluster
+                - arc
+                - local
+                - boinc
+                - mpi
+
+        client_path:
+            kind: string
+            default: eonclient
+
+        jobs_per_bundle:
+            kind: int
+            default: 1
+
+        num_jobs:
+            kind: int
+            default: 1
+
+        number_of_CPUs:
+            kind: int
+            default: 1
+
         boinc_project_dir:
             kind: string
             default: ./
@@ -629,22 +655,6 @@ Communicator:
         boinc_priority:
             kind: int
             default: 1
-
-        client_path:
-            kind: string
-            default: eonclient
-
-        number_of_CPUs:
-            kind: int
-            default: 1
-
-        blacklist:
-            kind: string
-            default: None
-
-        queued_jobs:
-            kind: string
-            default: queued_jobs.sh
 
         boinc_re_template_path:
             kind: string
@@ -658,17 +668,17 @@ Communicator:
             kind: string
             default: None
 
-        jobs_per_bundle:
-            kind: int
-            default: 1
+        boinc_appname:
+            kind: string
+            default: eonclient
 
         cancel_job:
             kind: string
             default: cancel_job.sh
 
-        boinc_appname:
+        queued_jobs:
             kind: string
-            default: eonclient
+            default: queued_jobs.sh
 
         script_path:
             kind: string
@@ -678,23 +688,17 @@ Communicator:
             kind: string
             default: eon
 
-        type:
-            kind: string
-            default: local
-            values:
-                - cluster
-                - arc
-                - local
-                - boinc
-                - mpi
-
         submit_job:
             kind: string
             default: submit_job.sh
 
-        num_jobs:
+        arc_blacklist:
+            kind: string
+            default: None
+
+        arc_num_submit:
             kind: int
-            default: 1
+            default: 10
 
 ################################################################################
 
