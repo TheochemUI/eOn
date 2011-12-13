@@ -119,6 +119,7 @@ public:
 
     // [Nudged Elastic Band]
     long   nebImages;
+    long   nebMaxIterations;
     double nebSpring;
     bool   nebClimbingImageMethod;
     bool   nebOldTangent;

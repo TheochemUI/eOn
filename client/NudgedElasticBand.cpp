@@ -9,15 +9,82 @@
 //-----------------------------------------------------------------------------------
 
 #include "NudgedElasticBand.h"
-#include "ConjugateGradients.h"
-#include "Quickmin.h"
-#include <cassert>
+#include "ObjectiveFunction.h"
+#include "Optimizer.h"
+#include "Log.h"
 
 using namespace helper_functions;
 
-const char NudgedElasticBand::OPT_QM[] = "qm";
-const char NudgedElasticBand::OPT_CG[] = "cg";
-const char NudgedElasticBand::OPT_LBFGS[] = "lbfgs";
+class NEBObjectiveFunction : public ObjectiveFunction
+{
+    public:
+
+        NEBObjectiveFunction(NudgedElasticBand *nebPassed, Parameters *parametersPassed)
+        {
+            neb = nebPassed;
+            parameters = parametersPassed;
+        }
+
+        ~NEBObjectiveFunction(void){};
+
+        VectorXd getGradient(bool fdstep=false)
+        {
+ //           cout <<"getGradient, start\n";
+            VectorXd forceV;
+//            cout <<"size: "<<3*neb->atoms*neb->images<<endl;
+            forceV.resize(3*neb->atoms*neb->images);
+//            cout <<"getGradient, updateForces, start\n";
+            neb->updateForces();
+//            cout <<"getGradient, updateForces, end\n";
+            for(long i=1; i<=neb->images; i++){
+               forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getForces().data(), 3*neb->atoms); 
+            }
+//            cout <<"forceV "<<endl<<-forceV<<endl;
+//            cout <<"getGradient, end\n";
+            return -forceV;
+        }
+
+        double getEnergy()
+        {
+            double Energy=0;
+            for(long i=1; i<=neb->images; i++) {
+                Energy += neb->image[i]->getPotentialEnergy();
+            }
+            return Energy;
+        }
+
+        void setPositions(VectorXd x)
+        {
+//            cout <<"positions returned\n";
+//            cout <<x<<endl;
+            for(long i=1; i<=neb->images; i++) {
+//                cout <<"pos for image "<<i<<endl;
+//                cout <<MatrixXd::Map(x.segment(3*neb->atoms*(i-1),3*neb->atoms).data(),neb->atoms,3);
+                neb->image[i]->setPositions(MatrixXd::Map(x.segment(3*neb->atoms*(i-1),3*neb->atoms).data(),neb->atoms,3));
+            }
+        }
+
+        VectorXd getPositions()
+        {
+            VectorXd posV;
+            posV.resize(3*neb->atoms*neb->images);
+            for(long i=0; i<=neb->images; i++){
+               posV.segment(3*neb->atoms*i,3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);            
+            }
+            return posV;
+        }
+
+        int degreesOfFreedom() { return 3*neb->images*neb->atoms; }
+
+        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
+
+        double getConvergence() { return neb->convergenceForce(); }
+
+    private:
+        NudgedElasticBand *neb;
+        Parameters *parameters;
+};
+
 
 NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
 {
@@ -26,17 +93,16 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     atoms = initialPassed->numberOfAtoms();
     image = new Matter *[images+2];
     tangent = new AtomMatrix *[images+2];
-//    AtomMatrix tangent[images+2];
 
     cout <<"NEB: initialize\n";
-    for(long i=0; i<images+2; i++){
+    for(long i=0; i<=images+1; i++)
+    {
         image[i] = new Matter(parameters);
         *image[i] = *initialPassed;
         tangent[i] = new AtomMatrix;
         tangent[i]->resize(atoms,3);
     }
     *image[images+1] = *finalPassed;  // final image
-//    assert(atoms == matterFinal->numberOfAtoms());
 
     AtomMatrix posInitial = image[0]->getPositions();
     AtomMatrix posFinal = image[images+1]->getPositions();
@@ -50,8 +116,6 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     image[images+1]->getPotentialEnergy();
     climbingImage = 0;
 
-    cout <<"energy 0: "<<image[0]->getPotentialEnergy()<<endl;
-    cout <<"energy I: "<<image[images+1]->getPotentialEnergy()<<endl;
     return;
 }
 
@@ -63,7 +127,7 @@ NudgedElasticBand::~NudgedElasticBand()
 
 void NudgedElasticBand::clean(void)
 {
-    for(long i=0; i<images+2; i++) {
+    for(long i=0; i<=images+1; i++) {
         delete image[i];
         delete tangent[i];
     }
@@ -75,80 +139,39 @@ void NudgedElasticBand::clean(void)
 int NudgedElasticBand::compute(void)
 {
     int status = 0;
-    long iterations = 0;
-    // optimizers
-    //Quickmin *qm[images+2];
-    //ConjugateGradients *cg[images+2];
-    // temporary variables for cg
-    AtomMatrix forcesStep;
-    AtomMatrix posStep;
-    AtomMatrix forces[images+2];
-    AtomMatrix pos[images+2];
+    long iteration = 0;
 
-    cout <<"NEB: compute\n";
-    cout <<"NEB: update forces, begin\n";
+    log("Nudged elastic band calculation started.\n");
+
     updateForces();
-    cout <<"NEB: update forces, end\n";
-
-    // Need to generalize this, but use QM for now
-    if( parameters->nebOptMethod == OPT_QM )
+/*
+    for(long i=1; i<=images; i++)
     {
-        for(long i=1; i<images+1; i++) {
-    //        qm[i] = new Quickmin(image[i], parameters); 
-        }
+        cout <<"force on image "<<i<<endl;
+        cout <<image[i]->getForces() <<endl<<endl;
     }
-    else if ( parameters->nebOptMethod == OPT_CG ) 
+*/
+
+//    cout <<"NEB: objectiveFunction, begin\n";
+    NEBObjectiveFunction objf(this, parameters);
+//    cout <<"NEB: objectiveFunction, end\n";
+
+//    cout <<"NEB: optimizer, begin\n";
+    Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+//    cout <<"NEB: optimizer, end\n";
+
+    cout <<"iteration   force    cimage"<<endl;
+    while (!objf.isConverged())
     {
-        for(long i=1; i<images+1; i++) {
-            pos[i] = image[i]->getPositions();
-            forces[i] = image[i]->getForces();
-     //       cg[i] = new ConjugateGradients(image[i], parameters, forces[i]);
+        cout <<iteration<<"    "<<convergenceForce()<<"   "<<climbingImage<<endl;
+        if (iteration >= parameters->nebMaxIterations) {
+            status = STATUS_BAD_MAX_ITERATIONS;
+            break;
         }
+        optimizer->step(parameters->optMaxMove);
+        iteration++;
     }
-
-    while( convergenceForce() > parameters->optConvergedForce && iterations < parameters->optMaxIterations )
-    {
-
-        if( parameters->nebOptMethod == OPT_QM ) // Quickmin
-        {
-            for(long i=1; i<images+1; i++) {
-      //          qm[i]->oneStep();
-            }
-            updateForces();
-        }
-        else if( parameters->nebOptMethod == OPT_CG ) // Conjugate gradients
-        {
-            for(long i=1; i<images+1; i++)
-            {
-       //         posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
-                image[i]->setPositions(posStep);
-            }
-            updateForces();
-            for(long i=1; i<images+1; i++)
-            {
-                forcesStep = image[i]->getForces();
-       //         pos[i] = cg[i]->getNewPosModifiedForces(pos[i], forces[i], forcesStep, parameters->optMaxMove);
-       //         posStep = cg[i]->makeInfinitesimalStepModifiedForces(pos[i]);
-                image[i]->setPositions(posStep);
-            }
-            updateForces();
-            for(long i=1; i<images+1; i++)
-            {
-                forces[i] = image[i]->getForces();
-            }
-        }
-        iterations++;
-    }
-
-    // Cleanup
-//    if( parameters->nebOptMethod == OPT_QM ) {
-//        for(long i=1; i<images+1; i++) {
-//            delete qm[i]; }
-//     }else if( parameters->nebOptMethod == OPT_CG ) {
-//        for(long i=1; i<images+1; i++) {
-//            delete cg[i]; }
-//    }
-
+    delete optimizer;
     return status;
 }
 
@@ -166,7 +189,6 @@ double NudgedElasticBand::convergenceForce(void)
     }
     return fmax;
 }
-
 
 // Update the forces, do the projections, and add spring forces
 void NudgedElasticBand::updateForces(void)
@@ -188,20 +210,20 @@ void NudgedElasticBand::updateForces(void)
     double distNext, distPrev;
 
     // update the forces on the images and find the highest energy image
-    cout <<"before energy\n";
-//    cout <<image[0]->getPositions();
     maxEnergy = image[0]->getPotentialEnergy();
-//    cout <<"energy 0: "<<maxEnergy<<endl;
     maxEnergyImage = 0;
     for(long i=1; i<=images+1; i++) {
+//        cout <<"image "<<i<<endl;
+//        cout <<"pos: "<<endl<<image[i]->getPositions()<<endl;
+//        cout <<"energy "<<image[i]->getPotentialEnergy()<<endl;
+//        cout <<"forces: "<<endl<<image[i]->getForces()<<endl;
         image[i]->getForces();
-//        cout <<"energy "<<i<<": "<<image[i]->getPotentialEnergy()<<endl;
         if(image[i]->getPotentialEnergy() > maxEnergy) {
             maxEnergy = image[i]->getPotentialEnergy();
             maxEnergyImage = i;
         }
     }
-    cout <<"max energy image "<<maxEnergyImage<<endl;
+//    cout <<"max energy image "<<maxEnergyImage<<endl;
 
     for(long i=1; i<=images; i++)
     {
@@ -248,6 +270,8 @@ void NudgedElasticBand::updateForces(void)
                     *tangent[i] += (pos - posPrev) * minDiffEnergy;
                 }
             }
+//            cout <<"tangent, image "<<i<<endl;
+//            cout <<*tangent[i]<<endl;
         }
         tangent[i]->normalize();
 
@@ -276,27 +300,4 @@ void NudgedElasticBand::updateForces(void)
     }
     return;
 }
-
-class NEBObjectiveFunction : public ObjectiveFunction
-{
-    public:
-        NEBObjectiveFunction(Matter *matterPassed,
-                                Parameters *parametersPassed)
-        {
-            matter = matterPassed;
-            parameters = parametersPassed;
-        }
-        ~NEBObjectiveFunction(void){};
-        double getEnergy() { return matter->getPotentialEnergy(); }
-        VectorXd getGradient(bool fdstep=false) { return -matter->getForcesFreeV(); }
-        void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-        VectorXd getPositions() { return matter->getPositionsFreeV(); }
-        int degreesOfFreedom() { return 3*matter->numberOfFreeAtoms(); }
-        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
-        double getConvergence() { return matter->maxForce(); }
-    private:
-        Matter *matter;
-        Parameters *parameters;
-};
-
 

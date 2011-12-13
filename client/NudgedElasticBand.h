@@ -13,7 +13,6 @@
 
 #include <math.h>
 #include <cmath>
-#include <cassert>
 
 #include "Eigen.h"
 
@@ -30,14 +29,10 @@ class NudgedElasticBand {
 public:
 
     enum{
-        STATUS_GOOD,
-        STATUS_INIT
+        STATUS_GOOD, //0
+        STATUS_INIT, //1
+        STATUS_BAD_MAX_ITERATIONS, //2
     };
-
-    // Optimization for the neb
-    static const char OPT_QM[];
-    static const char OPT_CG[];
-    static const char OPT_LBFGS[];
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
     ~NudgedElasticBand();
