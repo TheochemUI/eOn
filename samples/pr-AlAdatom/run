@@ -6,7 +6,7 @@ else
    echo "Input files are not ready, please run ./init before ./run "
    exit 1
 fi
-nrun=3
+nrun=1
 for (( i=1; i<=$nrun; i++ ))
 do
 ./init
