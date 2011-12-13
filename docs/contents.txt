@@ -37,7 +37,6 @@ Contents
 
    tutorials
    tutorial_akmc
-   tutorial_hyper
    tutorial_parrep
    tutorial_basin_hopping
 
