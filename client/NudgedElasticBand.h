@@ -39,26 +39,23 @@ public:
     static const char OPT_CG[];
     static const char OPT_LBFGS[];
 
-    NudgedElasticBand();
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
     ~NudgedElasticBand();
 
     void clean(void);
-    void initialize(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
     int compute(void);
     void updateForces(void);
     double convergenceForce(void);
 
-private:
-
-    Matter *initial;
-    Matter *final;
-    Parameters *parameters;
-    Matter *neb[]; // NEB images
-    int nAtoms;
+    int atoms;
     long images;
     long climbingImage;
-    AtomMatrix *tangent;
+    Matter **image; // NEB images
+    AtomMatrix **tangent;
+
+private:
+
+    Parameters *parameters;
 
 };
 

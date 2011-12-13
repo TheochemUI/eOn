@@ -24,5 +24,4 @@ private:
     Parameters *parameters;
 };
 
-
 #endif

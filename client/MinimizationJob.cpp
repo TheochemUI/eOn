@@ -47,7 +47,6 @@ std::vector<std::string> MinimizationJob::run(void)
 
     printf("\nBeginning minimization of %s\n", reactant_passed.c_str());
 
-
     int status;
 
     bool converged;

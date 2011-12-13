@@ -48,7 +48,7 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 }
 
 ParallelReplicaJob::~ParallelReplicaJob()
-{ 
+{
     delete[] SPtimebuff;
 }
 
@@ -64,7 +64,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     final = new Matter(parameters);
 
     reactant->con2matter(reactant_passed);
-    *min1 = *reactant;   
+    *min1 = *reactant;
     *saddle = *reactant;
     *fin1 = *reactant;
     *fin2 = *reactant;
@@ -73,13 +73,13 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     Potential::fcalls = 0;
     min1->relax();
     min_fcalls += Potential::fcalls;
-    *final = *min1;    
+    *final = *min1;
 
     printf("Now running Parallel Replica Dynamics\n\n");
 
     dynamics();
     saveData(newstate);
-    
+
     if(newstate){
      //   printf("New state has been found\n");
         printf("Transition Time: %.2e s\n", SPtime*1.018e-14);
@@ -136,7 +136,7 @@ void ParallelReplicaJob::dynamics()
     if (tenthSteps == 0) {
         tenthSteps = parameters->mdSteps;
     }
-   
+
     while(!stoped){
 
         if(parameters->biasPotential == Hyperdynamics::BOND_BOOST && !newstate){
@@ -162,7 +162,7 @@ void ParallelReplicaJob::dynamics()
                 SPtimebuff[nrecord-1] = SPtime;
             }
         }
-        
+
        // printf("MDsteps %ld Ekin= %lf Tkin= %lf \n",nsteps,kinE,kinT); 
 
 //#ifndef NDEBUG
@@ -204,11 +204,11 @@ void ParallelReplicaJob::dynamics()
         if (nsteps >= parameters->mdSteps){
            stoped = true;
         }
- 
+
         //BOINC Progress
         if (nsteps % 500 == 0) {
             // Since we only have a bundle size of 1 we can play with boinc_fraction_done
-            // directly. When we have done parameters->mdSteps number of steps we aren't 
+            // directly. When we have done parameters->mdSteps number of steps we aren't
             // quite done so I increase the max steps by 5%.
             boinc_fraction_done((double)nsteps/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
         }
@@ -244,7 +244,7 @@ void ParallelReplicaJob::dynamics()
         SPtime = SPtimebuff[nsteps_refined];
 
         printf("Found transition at step %ld, now running another %ld steps to allocate the product state\n",final_refined, relax_steps);
-        
+
         long relaxbufflength = int(relax_steps/RecordAccuracy)+1;
 
         //printf("nsteps_refined=%ld\nmdbufflength=%ld\nrelaxbufflength=%ld\n",nsteps_refined,mdbufflength, relaxbufflength );
@@ -319,7 +319,7 @@ void ParallelReplicaJob::saveData(int status)
     fileProduct = fopen(productFilename.c_str(), "wb");
     final->matter2con(fileProduct);
     fclose(fileProduct);
-  
+
     std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
 
@@ -346,7 +346,7 @@ void ParallelReplicaJob::dephase()
 
     Dynamics dephaseDynamics(reactant,parameters);
     printf("Dephasing for %ld steps\n",dephaseSteps);
-    
+
     n  = 0;
     new_n = 0;
     nloop= 0;

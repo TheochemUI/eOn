@@ -29,18 +29,32 @@ NudgedElasticBandJob::~NudgedElasticBandJob()
 
 std::vector<std::string> NudgedElasticBandJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
-    string product_passed("product_passed.con");
+//    string reactant_passed("reactant_passed.con");
+//    string product_passed("product_passed.con");
 
-    initial = new Matter(parameters);
-    final = new Matter(parameters);
+    string reactant_passed = helper_functions::getRelevantFile("reactant.con");
+    string product_passed = helper_functions::getRelevantFile("product.con");
+
+    Matter *initial = new Matter(parameters);
+    Matter *final = new Matter(parameters);
 
     initial->con2matter(reactant_passed);
     final->con2matter(product_passed);
 
-    neb = new NudgedElasticBand(initial, final, parameters);
+    NudgedElasticBand *neb = new NudgedElasticBand(initial, final, parameters);
 
-    int status = findMinimumEnergyPath();
+    cout <<"Finding MEP, start\n";
+    cout <<"NEB images: "<<neb->images<<endl;
+    cout <<"end of assign\n";
+/*
+    cout <<"NEB pos: \n";
+    for(int i=0; i<=neb->images; i++){
+        cout <<neb->image[i]->getPositions();
+    }
+*/
+    cout <<"Finding MEP, start\n";
+    int status = findMinimumEnergyPath(neb);
+    cout <<"Finding MEP, done\n";
 
     printEndState(status);
     saveData(status);
@@ -52,13 +66,15 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     return returnFiles;
 }
 
-int NudgedElasticBandJob::findMinimumEnergyPath()
+int NudgedElasticBandJob::findMinimumEnergyPath(NudgedElasticBand *neb)
 {
     Matter matterTemp(parameters);
     long status;
     int f1;
     f1 = Potential::fcalls;
+    cout <<"neb->compute, start\n";
     status = neb->compute();
+    cout <<"neb->compute, stop\n";
     fCallsNEB += Potential::fcalls - f1;
 
     if (status == NudgedElasticBand::STATUS_INIT) {

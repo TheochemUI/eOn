@@ -31,7 +31,6 @@ from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as Navig
 class akmcgui(atomview.atomview):
 
 
-    
     def __init__(self):
         # imports from glade
         gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/akmcgui.glade"))
@@ -87,14 +86,10 @@ class akmcgui(atomview.atomview):
         self.fileButton.connect("clicked", self.filechanged)
         self.playbutton.connect("clicked", self.movieplaying)
         self.pausebutton.connect("clicked", self.movieplaying)
-        
-        
-         
 
 #
 # Events-----------------------------------------------------
 #
-
 
 #used to reload table and states if config.ini is changed
     def startup(self, *args):
@@ -107,9 +102,8 @@ class akmcgui(atomview.atomview):
         self.changeImage()
         self.energy_changed()
         self.processtable()
-        
-        
-        
+
+
 #display area
     def changeImage(self, *args):
         # without interpolation
@@ -117,7 +111,7 @@ class akmcgui(atomview.atomview):
             states = glob.glob("%s*" %config.path_states)
             i = 0
             while ("%s%d" %(config.path_states,i)) in states:
-                i+=1    
+                i+=1
             numStates = i-1
             self.stateScale.set_range(0, numStates)
             self.stateSB.set_range(0, numStates)
@@ -130,7 +124,7 @@ class akmcgui(atomview.atomview):
                 self.processesSB.set_value(0)
                 self.processesSB.set_sensitive(False)
             else:
-                self.processesSB.set_sensitive(True)            
+                self.processesSB.set_sensitive(True)
                 self.processesSB.set_range(0, numProcesses)
             saddle = io.loadcon("%s%d/procdata/saddle_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
             reactant = io.loadcon("%s%d/procdata/reactant_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
@@ -142,12 +136,12 @@ class akmcgui(atomview.atomview):
             j = 0
             while ("%s%d/procdata/saddle_%d.con" %(config.path_states,self.stateScale.get_value(), j)) in processes:
                 j+=1
-            numProcesses = j-1        
+            numProcesses = j-1
             if numProcesses == 0:
                 self.processesSB.set_value(0)
                 self.processesSB.set_sensitive(False)
             else:
-                self.processesSB.set_sensitive(True)            
+                self.processesSB.set_sensitive(True)
                 self.processesSB.set_range(0, numProcesses)
             saddle = io.loadcon("%s%d/procdata/saddle_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
             reactant = io.loadcon("%s%d/procdata/reactant_%d.con" %(config.path_states,self.stateScale.get_value(), self.processesSB.get_value()))
@@ -168,10 +162,9 @@ class akmcgui(atomview.atomview):
             q.append(p[2].copy())
             datapass = q
         self.data_set(datapass)
-      
-        
-        
-    # creates process table    
+
+
+    # creates process table
     def processtable(self, *args):
         #allows user to re-order table
         def sortable(a, b, c, d):
@@ -183,7 +176,7 @@ class akmcgui(atomview.atomview):
                 return 0
             if x<y:
                 return -1
-              
+
         # re creates table if a table is already there
         try:
             self.scrollview.destroy()
@@ -195,7 +188,7 @@ class akmcgui(atomview.atomview):
         self.store.set_sort_func(2, sortable, 2)
         self.store.set_sort_func(5, sortable, 5)
         self.store.set_sort_func(7, sortable, 7)
-        
+
         self.proc_column = gtk.TreeViewColumn('proc #')
         self.proc_column.set_sort_column_id(0)
         self.saddleenergy_column = gtk.TreeViewColumn('saddle energy')
@@ -214,7 +207,7 @@ class akmcgui(atomview.atomview):
         self.rate_column.set_sort_column_id(7)
         self.repeat_column = gtk.TreeViewColumn('repeats')
         self.repeat_column.set_sort_column_id(8)
-        
+
         self.view.append_column(self.proc_column)
         self.view.append_column(self.saddleenergy_column)
         self.view.append_column(self.prefactor_column)
@@ -224,7 +217,7 @@ class akmcgui(atomview.atomview):
         self.view.append_column(self.barrier_column)
         self.view.append_column(self.rate_column)
         self.view.append_column(self.repeat_column)
-        
+
         proc_cell = gtk.CellRendererText()
         saddleenergy_cell = gtk.CellRendererText()
         prefactor_cell = gtk.CellRendererText()
@@ -234,7 +227,7 @@ class akmcgui(atomview.atomview):
         barrier_cell = gtk.CellRendererText()
         rate_cell = gtk.CellRendererText()
         repeat_cell = gtk.CellRendererText()
-        
+
         self.proc_column.pack_start(proc_cell)
         self.saddleenergy_column.pack_start(saddleenergy_cell)
         self.prefactor_column.pack_start(prefactor_cell)
@@ -244,7 +237,7 @@ class akmcgui(atomview.atomview):
         self.barrier_column.pack_start(barrier_cell)
         self.rate_column.pack_start(rate_cell)
         self.repeat_column.pack_start(repeat_cell)
-        
+
         self.proc_column.add_attribute(proc_cell, 'text', 0)
         self.saddleenergy_column.add_attribute(saddleenergy_cell, 'text', 1)
         self.prefactor_column.add_attribute(prefactor_cell, 'text', 2)
@@ -263,7 +256,7 @@ class akmcgui(atomview.atomview):
             rows[i] = lines[i].split()
             rows[i] = [float(j) for j in rows[i]]
             self.store.append(rows[i])
-        # connects, packs, and shows table    
+        # connects, packs, and shows table
         self.view.connect("row-activated", self.rowactivated)
         self.scrollview = gtk.ScrolledWindow()
         self.scrollview.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -273,17 +266,15 @@ class akmcgui(atomview.atomview):
         self.hbox.pack_start(self.scrollview)
         self.scrollview.show_all()
         self.view.show_all()
-        
-        
-        
-    # lets user click on a table row to set process number    
+
+
+    # lets user click on a table row to set process number
     def rowactivated(self, *args):
         selection = self.view.get_selection().get_selected()
         proc = self.store.get(selection[1], 0)
         self.processesSB.set_value(proc[0])
-        
-       
-        
+
+
     # Dialog window to change directory or config file
     def filechanged(self, *args):
         dialog = gtk.FileChooserDialog(action=gtk.FILE_CHOOSER_ACTION_OPEN, buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
@@ -295,39 +286,35 @@ class akmcgui(atomview.atomview):
         elif response == gtk.RESPONSE_CANCEL:
             dialog.destroy()
         self.startup()
-           
-    
+
+
     # allows use of interpolation Spin Button   
     def interpolationCB_changed(self, widget, data=None):
         if self.interpolationCB.get_active() == True:
             self.interpolationSB.set_sensitive(True)
         else:  
             self.interpolationSB.set_sensitive(False)
-    
-    
-    
+
+
     # allows stateSlider to change with stateSB
     def stateSB_changed(self, *args):
         self.stateScale.set_value(self.stateSB.get_value())
 
 
-    
     # allows stateSB to change with stateSlider
     def state_changed(self, *args):
         self.stateSB.set_value(self.stateScale.get_value())
-    
-    
-    
+
+
     def movieplaying(self, *args):
         if self.playing == True:
             self.statePlayTB.set_sensitive(False)
         else:
-            self.statePlayTB.set_sensitive(True)   
-       
-        
-        
-    # allows clicking play button near statesScale to play through states    
-    def state_play(self, *args): 
+            self.statePlayTB.set_sensitive(True)
+
+
+    # allows clicking play button near statesScale to play through states
+    def state_play(self, *args):
         try:
             gobject.source_remove(self.timer_id)
         except:
@@ -350,38 +337,36 @@ class akmcgui(atomview.atomview):
             states = glob.glob("%s*" %config.path_states)
             i = 0
             while ("%s%d" %(config.path_states,i)) in states:
-                i+=1    
-            numStates = i-1     
-            def loop():    
+                i+=1
+            numStates = i-1
+            def loop():
                 self.stateScale.set_value(int (self.stateScale.get_value())+1)
                 if self.stateScale.get_value() >= numStates:
                     self.stateScale.set_value(0)
                 return True
             self.timer_id = gobject.timeout_add(1000/int(self.fps.get_value()), loop) 
             #self.timer_id = gobject.timeout_add(1000/(int (self.fps.get_value())), loop)
-      
-        
-      
+
+
     # Displays current state's energy  
     def energy_changed(self, *args):
         energy = open("%sstate_table" %config.path_states, "r")
         energyNumber = energy.readlines()
         a = energyNumber[int (self.stateScale.get_value())].split()[1]
         self.stateEnergy.set_markup("%.3f<b>eV</b>" % float (a))
-        
 
-           
-    # creates plot graph when plot button is pressed        
+
+    # creates plot graph when plot button is pressed
     def energy_plot(self, *args):
         a = open("%sstate_table" %config.path_states, "r")
         b = a.readlines()
         x = []
         y = []
         for i in range(len(b)):
-            y.append(float (b[i].split()[1]))     
+            y.append(float (b[i].split()[1]))
         for i in range(len(b)):
             x.append(i)
-        self.plotWindow.set_default_size(600,600)    
+        self.plotWindow.set_default_size(600,600)
         fig = p.figure()
         ax = fig.add_subplot(1,1,1)
         ax.plot(x, y, '-' 'o')
@@ -394,16 +379,13 @@ class akmcgui(atomview.atomview):
         container.pack_start(graph)
         container.pack_start(toolbar, False, False)
         self.plotWindow.show_all()
-    
-    
-                     
 
 
-#       
-# Main-------------------------------------------------------       
-#   
+#
+# Main-------------------------------------------------------
+#
 
-     
+
 if __name__ == "__main__":
     print os.getcwd()
     pid = os.fork()
@@ -418,4 +400,4 @@ if __name__ == "__main__":
             data = io.loadcons(sys.argv[1])
         q.data_set(data)
     gtk.main()
-        
+

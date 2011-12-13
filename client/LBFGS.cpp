@@ -70,7 +70,7 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
     rho.push_back(1.0/(s0.dot(y0)));
 
     if ((int)s.size() > memory) {
-        s.erase(s.begin());                                                                          
+        s.erase(s.begin());
         y.erase(y.begin());
         rho.erase(rho.begin());
     }

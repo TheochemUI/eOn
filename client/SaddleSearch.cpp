@@ -23,9 +23,9 @@
 
 using namespace helper_functions;
 
-const char SaddleSearch::MINMODE_DIMER[] =           "dimer";
-const char SaddleSearch::MINMODE_LANCZOS[] =         "lanczos";
-const char SaddleSearch::MINMODE_EXACT[] =           "exact";
+const char SaddleSearch::MINMODE_DIMER[] =   "dimer";
+const char SaddleSearch::MINMODE_LANCZOS[] = "lanczos";
+const char SaddleSearch::MINMODE_EXACT[] =   "exact";
 
 class MinModeObjectiveFunction : public ObjectiveFunction
 {
@@ -40,8 +40,8 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         }
         ~MinModeObjectiveFunction(void){};
 
-        VectorXd getGradient(bool fdstep=false) 
-        { 
+        VectorXd getGradient(bool fdstep=false)
+        {
             AtomMatrix proj;
             AtomMatrix force = matter->getForces();
 
@@ -59,7 +59,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                     // reverse force parallel to eigenvector, and reduce perpendicular force
                     double const d = parameters->saddlePerpForceRatio;
                     force = d*force - (1.+d)*proj;
-                
+
                 // zero out the smallest forces to keep displacement confined
                 }else if(parameters->saddleConfinePositive) {
                     int sufficientForce = 0;
@@ -76,7 +76,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                             }
                         }
                         minForce *= parameters->saddleConfinePositiveScaleRatio;
-                    }                    
+                    }
                 }else{
                     // follow eigenmode
                     force = -proj;
@@ -103,7 +103,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         Parameters *parameters;
 };
 
-SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, 
+SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
                           double reactantEnergyPassed, Parameters *parametersPassed)
 {
     reactantEnergy = reactantEnergyPassed;
@@ -160,7 +160,7 @@ int SaddleSearch::run()
     }
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
-    
+
     while (!objf.isConverged()) {
 
         if (iteration >= parameters->saddleMaxIterations) {

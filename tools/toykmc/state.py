@@ -7,7 +7,7 @@ from config import *
 
 class State:
     states = odict.OrderedDict()
-    
+
     @staticmethod
     def get_state(grid):
         gs = State.gridhash(grid)
@@ -21,7 +21,7 @@ class State:
     @staticmethod
     def saddle_energy(s1, s2):
         return max(s1.energy, s2.energy) + dEsaddle/(max(abs(s1.energy-s2.energy),1))
-    
+
     #XXX: Ugly
     @staticmethod
     def gridhash(grid):
@@ -31,7 +31,6 @@ class State:
             for j in i:
                 gs += "T" if j else "F"
         return gs
-        
 
     def __init__(self, grid, energy = None):
         self.grid = grid
@@ -43,7 +42,7 @@ class State:
         else:
             self.energy = energy
         self.rate_table = None
-    
+
     def calc_energy(self):
         e = 0
         for i in range(self.h):
@@ -51,7 +50,7 @@ class State:
                 if self.grid[i][j]:
                     e += self.calc_energy_at(i,j)
         return e
-    
+
     def calc_energy_at(self, i, j):
         e = 0
         for z in energy_neighbors:

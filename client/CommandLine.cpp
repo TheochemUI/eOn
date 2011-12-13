@@ -45,7 +45,7 @@ void commandLine(int argc, char **argv)
     // no getopt on windows
     #ifndef WIN32
     int c;
-    bool sflag=false,mflag=false, pflag=false;
+    bool sflag = false, mflag = false, pflag = false;
 
     string potential;
     string confile;
@@ -99,7 +99,7 @@ void commandLine(int argc, char **argv)
         fprintf(stderr, "Only one non-option argument is allowed: the con file\n");
         exit(2);
     }else{
-        confile = argv[optind]; 
+        confile = argv[optind];
     }
 
     Parameters *parameters = new Parameters;

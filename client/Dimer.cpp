@@ -48,7 +48,7 @@ void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
     double torque = 0;
     bool doneRotating = false;
 
-    *matterCenter = *matter; 
+    *matterCenter = *matter;
     rotationalForceChange = forceDimer = rotationAngle = curvature = 0;
     rotationalForce1 = 0;
     rotationalForce2 = 0;

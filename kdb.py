@@ -82,22 +82,5 @@ def make_suggestion():
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
             return displacement, mode
     return None, None
-                
-            
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

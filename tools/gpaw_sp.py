@@ -134,7 +134,6 @@ while True:
         calculation_failed  = numpy.array(1,'i')
     t1 = time.time()
 
-
     if my_comm.rank == 0:
         performance_log = os.path.join(logdir, "performance.txt")
         fperformance = open(performance_log, "a+")
@@ -142,5 +141,5 @@ while True:
         fperformance.close()
         world.send(calculation_failed, my_client_rank, tag=0)
         if not calculation_failed:
-            world.send(e1, my_client_rank, tag=0) 
+            world.send(e1, my_client_rank, tag=0)
             world.send(f1, my_client_rank, tag=0)
