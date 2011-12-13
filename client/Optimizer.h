@@ -17,7 +17,6 @@
 
 class Optimizer
 {
-
     public:
         virtual ~Optimizer(){};
         virtual bool step(double maxMove) = 0;
