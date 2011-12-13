@@ -242,7 +242,21 @@ The BOINC communicator allows Eon to submit workunits to a BOINC project.
 ARC
 ===
 
-Undocumented
+When eon is run with the ARC communicator, jobs are executed on the clusters 
+on which the user is authorized.  To prevent over floating the local queues 
+are jobs only submitted to a cluster when the user do not have any jobs queued 
+on this specific cluster.
+
+**arc_blacklist**
+    default: None
+
+    Jobs will not be sent to the listed clusters, host addresses should be 
+    separated by a ','
+
+**arc_max_submit**
+    default: 10
+
+    Size of the batch when jobs are submitted to a cluster
 
 Examples
 ========

@@ -234,15 +234,11 @@ def init(config_file = ""):
         config.comm_boinc_results_path = parser.get('Communicator', 'boinc_results_path')
         config.comm_boinc_priority = parser.getint('Communicator', 'boinc_priority')
     if config.comm_type == 'arc':
-        if parser.has_option('Communicator', 'client_path'):
-            config.comm_client_path = parser.get('Communicator', 'client_path')
-        else:
-            config.comm_client_path = ""
-
-        if parser.has_option('Communicator', 'blacklist'):
-            config.comm_blacklist = [ string.strip(c) for c in parser.get('Communicator', 'blacklist').split(',') ]
-        else:
+        config.comm_client_path = parser.get('Communicator', 'client_path')
+        config.comm_blacklist = [ string.strip(c) for c in parser.get('Communicator', 'arc_blacklist').split(',') ]
+        if config.comm_blacklist == ['None']:
             config.comm_blacklist = []
+        config.comm_num_submit = parser.getint('Communicator', 'arc_num_submit')        
 
     # Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
@@ -251,7 +247,6 @@ def init(config_file = ""):
 
     # Saddle Search options
     config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight') # undocumented
-    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight') # undocumented
     config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight') # undocumented
     config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight') # undocumented
     config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight') # undocumented
@@ -264,7 +259,11 @@ def init(config_file = ""):
     config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
-    config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
+    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight') # undocumented
+    if config.displace_listed_weight != 0.0:
+        config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
+        if config.disp_listed_atoms == ['None']:
+            config.disp_listed_atoms = []
 
     # KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
