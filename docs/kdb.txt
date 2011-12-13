@@ -20,7 +20,7 @@ kinetic database will suggest a saddle to converge with a dimer search. The
 dimer starts with this suggested configuration and mode, and if it is a good 
 suggestion, converges very rapidly to the saddle.
 
-.. image:: kdb_insert.png
+.. image:: fig/kdb_insert.png
     :align: center
 
 
