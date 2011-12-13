@@ -168,8 +168,8 @@ void Dynamics::andersen(double temperature)
     AtomMatrix velocity;
 
     alpha = parameters->thermoAndersenAlpha; // collision strength
-    tCol = parameters->thermoAndersenTcol; // average time between collisions, in unit of dt
-    pCol = 1.0 - exp(-1.0/tCol);
+    tCol = parameters->thermoAndersenTcol; // average time between collisions, in unit of fs
+    pCol = 1.0 - exp(-dt/tCol);
 
     velocity = matter->getVelocities();
     mass = matter->getMasses();

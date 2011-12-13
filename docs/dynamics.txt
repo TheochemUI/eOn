@@ -34,10 +34,10 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
    default: ``0.2``
 
-**andersen_collision_steps**: The collision period (in MD steps) for the
+**andersen_collision_freq**: The collision period (in fs) for the
 Andersen thermostat.
 
-   default: ``10``
+   default: ``10.0``
 
 **nose_mass**: The effective mass of the additional degree of freedom in the
 Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.
