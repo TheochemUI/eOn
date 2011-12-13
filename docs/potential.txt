@@ -17,17 +17,17 @@ Potential
         ``lammps``: The LAMMPS potentials. Detailed documentation can be found
          on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
 
-        ``eam_al``: Embedded atom method parameterized for aluminum. [#eamal]_
+        ``eam_al``: Embedded atom method parameterized for aluminum.
 
-        ``qsc``: Quantum Sutton-Chen potential, for FCC metals. [#qsc]_
+        ``qsc``: Quantum Sutton-Chen potential, for FCC metals. 
 
-        ``bopfox``: Bond order potential, for metals. [#bopfox]_
+        ``bopfox``: Bond order potential, for metals. 
 
-        ``emt``: Effective medium theory, for metals. [#emt]_
+        ``emt``: Effective medium theory, for metals. 
 
         ``lj``: Lennard-Jones potential in reduced unit [#lj]_
 
-        ``morse_pt``: Morse potential for platinum. [#morsept]_
+        ``morse_pt``: Morse potential for platinum. 
 
         ``lenosky_si``: Lenosky potential, for silicon. [#lenosky]_
 
@@ -39,7 +39,7 @@ Potential
         ``edip``: Environment-Dependent Interatomic Potential, for carbon.
         [#edip]_
 
-        ``zpice``: Water on platinum. [#zpice]_
+        ``zpice``: Water on platinum. 
 
         ``tip4p``: Point charge model for water. [#tip4p]_
 
@@ -50,15 +50,9 @@ Potential
 
 .. [#vasp] Georg, Kresse, `"VASP Group, Theoretical Physics Departments, Vienna" <http://cms.mpi.univie.ac.at/vasp/>`_
 .. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 
-.. [#eamal]
-.. [#qsc] 
-.. [#bopfox] 
-.. [#emt]
 .. [#lj] Lennard-Jones, J. E. Proc. R. Soc. Lond.A **106** (738): 463–477  doi:`10.1098/rspa.1924.0082 <http://dx.doi.org/10.1098%2Frspa.1924.0082>`_
-.. [#morsept]
 .. [#lenosky] T.J. Lenosky et.al., Modelling Simul. Mater. Sci. Eng., **8**,  825 (2000) doi:`10.1088/0965-0393/8/6/305 <http://dx.doi.org/10.1088/0965-0393/8/6/305>`_
 .. [#swsi] Frank H. Stillinger and Thomas A. Weber, Phys. Rev. B **31**, 5262–5271 (1985) doi:`10.1103/PhysRevB.31.5262 <http://link.aps.org/doi/10.1103/PhysRevB.31.5262>`_ 
 .. [#tersoff]J. Tersoff, Phys. Rev. B **38**, 9902–9905 (1988) doi:`10.1103/PhysRevB.38.9902 <http://link.aps.org/doi/10.1103/PhysRevB.38.9902>`_
 .. [#edip] João F. Justo et.al., Phys. Rev. B **58**, 2539–2550 (1998) doi:`10.1103/PhysRevB.58.2539 <http://link.aps.org/doi/10.1103/PhysRevB.58.2539>`_
-.. [#zpice]
 .. [#tip4p] Jorgensen, W. L. et.al, J. Chem. Phys 1983, **79**, 926-935. doi:`10.1063/1.445869 <http://dx.doi.org/10.1063%2F1.445869>`_
