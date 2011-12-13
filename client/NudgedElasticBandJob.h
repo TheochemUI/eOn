@@ -27,17 +27,12 @@ class NudgedElasticBandJob : public Job {
     private:
 
         // functions
-        int  findMinimumEnergyPath(NudgedElasticBand *neb);
         void printEndState(int status);
         void saveData(int status);
 
         // variables
         std::vector<std::string> returnFiles;
         Parameters *parameters;
-//        NudgedElasticBand *neb; 
-//        Matter *initial;      // initial configuration
-//        Matter *final;        // final configuration
-
         int fCallsNEB;
 };
 
