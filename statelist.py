@@ -14,7 +14,6 @@ import logging
 logger = logging.getLogger('statelist')
 import os
 
-
 import atoms
 import config
 
@@ -97,18 +96,18 @@ class StateList:
                         if id == state_number:
                             logging.warning("in state %i process %i leads back to initial state",
                                             state_number, process_id)
-                        self.register_process(st.number, id, process_id)                            
+                        self.register_process(st.number, id, process_id)
                         return self.get_state(id)
 
             # The id for the new state is the number of states.
             newstnr = self.get_num_states()
 
             # Create the new state object.
-            newst = self.StateClass(statepath = self.state_path(newstnr), 
-                                statenumber = newstnr, 
+            newst = self.StateClass(statepath = self.state_path(newstnr),
+                                statenumber = newstnr,
                                 statelist = self,
                                 previous_state_num = state_number,
-                                reactant_path = st.proc_product_path(process_id)) 
+                                reactant_path = st.proc_product_path(process_id))
             self.register_process(st.number, newstnr, process_id)
 
             # Append the new state to the state table.
@@ -125,8 +124,8 @@ class StateList:
         ''' Returns a state object. '''
         if state_number in self.states:
             return self.states[state_number]
-        st = self.StateClass(statepath = os.path.join(self.path, str(state_number)), 
-                         statenumber = state_number, 
+        st = self.StateClass(statepath = os.path.join(self.path, str(state_number)),
+                         statenumber = state_number,
                          statelist = self)
         self.states[state_number] = st
         return st
@@ -152,7 +151,7 @@ class StateList:
         f = open(self.state_table_path, 'a')
         f.write("% 7d %16.5f\n" % (number, energy))
         f.close()
-        if self.state_table != None:    
+        if self.state_table != None:
             self.state_table.append(energy)
 
     def state_path(self, state_number):

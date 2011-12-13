@@ -48,7 +48,6 @@
     #include "potentials/VASP/VASP.h"
 #endif
 
-
 #include <cstdlib>
 
 const char Potential::POT_LJ[] =          "lj";
@@ -110,7 +109,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_TIP4P_H)
         pot = new Tip4p_H();
 #endif
-    
+
     else if(parameters->potential == POT_BOPFOX)
         pot = new bopfox();
 
@@ -138,7 +137,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_VASP)
         pot = new VASP();
 #endif
-    
+
     else {
         printf("Unknown Potential: %s\n", parameters->potential.c_str());
         std::exit(1);
@@ -151,20 +150,20 @@ int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
-                            VectorXi atomicNrs, double *energy, Matrix3d box) 
+                            VectorXi atomicNrs, double *energy, Matrix3d box)
 {
     AtomMatrix forces(nAtoms,3);
 
     double start, userStart, sysStart;
     helper_functions::getTime(&start, &userStart, &sysStart);
 
-    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy, 
+    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy,
           box.data());
 
     double finish, userFinish, sysFinish;
     helper_functions::getTime(&finish, &userFinish, &sysFinish);
 
-    log_file("[Potential] fcall#: %4d  real: %8.2g  user: %8.2g  sys: %8.2g seconds\n", 
+    log_file("[Potential] fcall#: %4d  real: %8.2g  user: %8.2g  sys: %8.2g seconds\n",
              fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
 
     fcalls+=1;

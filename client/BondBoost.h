@@ -28,7 +28,7 @@ public:
     ~BondBoost();///< Destructor.
 
     void initial();
-    double boost();  
+    double boost();
 
 private:
     Matrix<double, Eigen::Dynamic, 1> Rmdsteps();

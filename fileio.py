@@ -47,7 +47,7 @@ def box_to_length_angle(box):
     angles[2] = numpy.arccos(numpy.dot(box[1,:]/lengths[1],box[2,:]/lengths[2]))
     angles *= 180.0/numpy.pi
     return lengths, angles
-    
+
 
 def loadcons(filename):
     filein = open(filename, 'r')
@@ -57,8 +57,8 @@ def loadcons(filename):
             p.append(loadcon(filein))
         except:
             return p
-        
-    
+
+
 def loadposcars(filename):
     filein = open(filename, 'r')
     p = []
@@ -67,8 +67,7 @@ def loadposcars(filename):
             p.append(loadposcar(filein))
         except:
             return p
-        
-    
+
 
 def loadcon(filein):
     '''
@@ -89,7 +88,7 @@ def loadcon(filein):
         except:
             dim=i
             break
-    #handle the box   
+    #handle the box
     boxlengths=numpy.zeros(dim)
     for i in range(dim):
         boxlengths[i]=float(tmp[i])
@@ -122,7 +121,7 @@ def loadcon(filein):
             a.mass[index] = mass_of_type[i]
             a.names[index] = name
             if not int(vals[dim])==0:
-                a.free[index]=0       
+                a.free[index]=0
             index += 1
     con.seek(0)
     return a
@@ -194,7 +193,7 @@ def load_mode(modefilein):
 
 def save_mode(modefileout, displace_vector):
     '''
-    Saves an Nx3 numpy array into a mode.dat file. 
+    Saves an Nx3 numpy array into a mode.dat file.
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
     '''
@@ -215,7 +214,7 @@ def save_results_dat(fileout, results):
         f = fileout
     else:
         f = open(fileout, 'w')
-    
+
     for key in results:
         print >> f, results[key], key
 
@@ -293,7 +292,7 @@ def loadposcar(filein):
     selective_flag = (sel == 's' or sel == 'S')
     if not selective_flag: 
         car = sel
-    else: 
+    else:
         car = f.readline()[0]
     direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
     atom_index = 0
@@ -301,9 +300,9 @@ def loadposcar(filein):
         for j in range(NumAtomsPerType[i]):
             p.names[atom_index] = AtomTypes[i]
             line = f.readline().split()
-            if(selective_flag): 
+            if(selective_flag):
                 assert len(line) >= 6
-            else: 
+            else:
                 assert len(line) >= 3
             pos = line[0:3]
             if selective_flag:
@@ -315,10 +314,10 @@ def loadposcar(filein):
             p.r[atom_index] = numpy.array([float(q) for q in pos])
             if direct_flag:
                 p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
-            else: 
+            else:
                 p.r[atom_index] *= scale
             atom_index += 1
-    return p    
+    return p
 
 
 def saveposcar(fileout, p, w='w', direct = False):
@@ -360,7 +359,7 @@ def saveposcar(fileout, p, w='w', direct = False):
                 else: 
                     posline+='   F'
             print >> poscar, posline
-            
+
 
 from ConfigParser import SafeConfigParser as SCP
 class ini(SCP):
@@ -369,11 +368,11 @@ class ini(SCP):
         self.loaded = False
         self.filenames = filenames
         SCP.__init__(self)
-    
+
     def read(self):
         self.loaded = True
         SCP.read(self, self.filenames)
-        
+
     def get(self, section, option, default="ini_no_default"):
         if not self.loaded:
             self.read()
@@ -395,15 +394,15 @@ class ini(SCP):
             return True
         if value.lower() == 'false':
             return False
-        return value        
-    
+        return value
+
     def getint(self, *args):
         raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
     def getfloat(self, *args):
         raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
     def getboolean(self, *args):
         raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
-        
+
     def set(self, section, option, value):
         if section not in self.sections():
             self.add_section(section)
@@ -419,7 +418,7 @@ class ini(SCP):
 
 class Dynamics:
     """ The Dynamics class handles I/O for the dynamics.txt file of an aKMC simulation. """
-    
+
     def __init__(self, filename):
         self.filename = filename
         if not os.path.exists(filename):
@@ -430,18 +429,18 @@ class Dynamics:
             f.write("\n")
             f.close()
             self.next_step = 0
-        
+
         #read last lines of the file to determine iteration nr
         else:
             f = open(self.filename,'r')
             f.seek(0,2)	#seek to EOF
             fsize = f.tell()
             #seek 1024 bytes back (or to beginning of file if fsize < 1024 )
-            #last line must be contained in this block                
-            f.seek( max( fsize - 1024 , 0 ) , 0)	
+            #last line must be contained in this block
+            f.seek( max( fsize - 1024 , 0 ) , 0)
             lines = f.readlines()
             self.next_step = int ( lines[-1].split()[0] ) + 1 #determine iteration nr of next step
-        
+
     def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, rate):
         f = open(self.filename, 'a')
         f.write("%12d  %12d  %12d  %12d  %12e  %12e  %12f  %12e\n" % (self.next_step, reactant_id, process_id, product_id, step_time, total_time, barrier, rate))
@@ -478,7 +477,7 @@ def load_potfiles(pot_dir):
             b = StringIO("".join(a.readlines()))
             ret[i] = b
     return ret
-    
+
 class TableException(Exception):
     pass
 
@@ -495,10 +494,10 @@ class Table:
     >>> t.add_row({'id':2,'name':"Anna","age":21})
     >>> t #doctest: +NORMALIZE_WHITESPACE
         id name  age
-        -- ----- --- 
-        0  Sam   24  
-        1  David 50  
-        2  Anna  21 
+        -- ----- ---
+        0  Sam   24
+        1  David 50
+        2  Anna  21
 
     Rows can be accessed directly:
     >>> t.rows[1] #doctest: +SKIP
@@ -546,7 +545,7 @@ class Table:
         else:
             if self.columns == None:
                 raise TableException("columns aren't optional for new tables")
-            
+
             for c in self.columns:
                 self.columnwidths[c] = len(c)
 
@@ -578,7 +577,7 @@ class Table:
                         field = float(field)
                     except ValueError:
                         pass
-                row[self.columns[coli]] = field 
+                row[self.columns[coli]] = field
                 coli += 1
             self.add_row(row)
         f.close()
@@ -647,7 +646,7 @@ class Table:
                 self.columnwidths[c] = max(self.columnwidths[c], self.floatprecision+5)
             else:
                 self.columnwidths[c] = max(self.columnwidths[c], len(str(row[c])))
-        
+
         self.rows.append(row)
         if self.eagerwrite:
             self.write()

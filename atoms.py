@@ -32,7 +32,7 @@ class Atoms:
         '''
         Returns the number of atoms in the object'''
         return len(self.r)
-        
+
     def copy(self):
         p = Atoms(len(self))
         p.r = self.r.copy()
@@ -51,13 +51,13 @@ class Atoms:
                 temp[index] = self.r[i]
                 index += 1
         return temp
-    
+
     def append(self, r, free, name, mass):
         self.r = numpy.append(self.r, [r], 0)
         self.free = numpy.append(self.free, free)
         self.names.append(name)
         self.mass = numpy.append(self.mass, mass)
-        
+
 def pbc(r, box, ibox = None):
     """
     Applies periodic boundary conditions.
@@ -71,7 +71,7 @@ def pbc(r, box, ibox = None):
     vdir = numpy.dot(r, ibox)
     vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
     return numpy.dot(vdir, box)
-    
+
 def per_atom_norm(v, box, ibox = None):
     '''
     Returns a length N numpy array containing per atom distance
@@ -119,18 +119,18 @@ def get_process_atoms(r, p):
 
 def identical(atoms1, atoms2):
     '''
-    Determines whether two structures are identical if atoms of the same 
+    Determines whether two structures are identical if atoms of the same
     element are considered indistinguishable.
            atoms1:  first atoms object for comparison
            atoms2:  second atoms object for comparison
-        epsilon_r:  distance (in angstroms) that two atoms must be seperated by 
+        epsilon_r:  distance (in angstroms) that two atoms must be seperated by
                     in order to be considered different
     '''
     #XXX: n^2
     epsilon_r = config.comp_eps_r
     if len(atoms1) != len(atoms2):
         return False
-    
+
     for i in range(3):
         for j in range(3):
             #XXX: Hardcoded comparison criteria
@@ -147,7 +147,7 @@ def identical(atoms1, atoms2):
             mismatch.append(i)
         elif atoms1.names[i] != atoms2.names[i]:
             return False
-    
+
     for i in mismatch:
         pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
         minpan = 1e300
@@ -161,23 +161,23 @@ def identical(atoms1, atoms2):
         if not (minpan < epsilon_r and atoms1.names[minj] == atoms2.names[i]):
             return False
     return True
-            
+
 
 def brute_neighbor_list(p, cutoff):
     nl = []
-    ibox = numpy.linalg.inv(p.box)    
+    ibox = numpy.linalg.inv(p.box)
     for a in range(len(p)):
         nl.append([])
         for b in range(len(p)):
             if b != a:
-                dist = numpy.linalg.norm(pbc(p.r[a] - p.r[b], p.box, ibox))        
+                dist = numpy.linalg.norm(pbc(p.r[a] - p.r[b], p.box, ibox))
                 if dist < cutoff:
                     nl[a].append(b)
     return nl
 
 
 def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
-    """ Returns a list of nearest neighbors within cutoff for each atom. 
+    """ Returns a list of nearest neighbors within cutoff for each atom.
         Parameters:
             p_in:   Atoms object
             cutoff: the radius within which two atoms are considered to intersect.
@@ -189,7 +189,7 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
     #TODO: Make work for nonorthogonal boxes.
     p = p_in.copy()
     p.r = pbc(p.r, p.box)
-    p.r -= numpy.array([min(p.r[:,0]), min(p.r[:,1]), min(p.r[:,2])]) 
+    p.r -= numpy.array([min(p.r[:,0]), min(p.r[:,1]), min(p.r[:,2])])
     numatoms = len(p)
     coord_list = []
     for i in range(numatoms):
@@ -244,7 +244,7 @@ def neighbor_list(p, cutoff, brute=False):
     else:
         nl = sweep_and_prune(p, cutoff)
     return nl
-    
+
 def coordination_numbers(p, cutoff, brute=False):
     """ Returns a list of coordination numbers for each atom in p """
     nl = neighbor_list(p, cutoff, brute)
@@ -264,7 +264,6 @@ def least_coordinated(p, cutoff, brute=False):
         if len(least) > 0:
             return least
         mincoord += 1
-
 
 
 def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
@@ -345,9 +344,9 @@ def rot_match(a, b):
         if w[i] > maxw:
             maxw = w[i]
             maxv = v[:,i]
-   
+
     R = numpy.zeros((3,3))
-    
+
     aa = maxv[0]**2
     bb = maxv[1]**2
     cc = maxv[2]**2
@@ -358,7 +357,7 @@ def rot_match(a, b):
     bc = maxv[1]*maxv[2]
     bd = maxv[1]*maxv[3]
     cd = maxv[2]*maxv[3]
-    
+
     R[0][0] = aa + bb - cc - dd
     R[0][1] = 2*(bc-ad) 
     R[0][2] = 2*(bd+ac) 
@@ -392,8 +391,7 @@ def rot_match(a, b):
     #    l -= (l**4 + c2*l**2 + c1*l + c0)/(4*l**3 + 2*c2*l + c1)
     #rmsd = sqrt((ga + gb - 2*l)/len(a))
     #return rmsd < config.comp_rot_rmsd
-    
-    
+
 
 def rotm(axis, theta):
     '''
@@ -415,8 +413,6 @@ def rotm(axis, theta):
         [u*v*(1-ct)+w*mag*st, v2 +(u2 +w2)*ct, v*w*(1-ct)-u*mag*st],
         [u*w*(1-ct)-v*mag*st, v*w*(1-ct)+u*mag*st, w2 +(v2 +u2)*ct]
         ])/(mag*mag)
-    
-
 
 
 def cna(p, cutoff, brute=False):
@@ -426,7 +422,7 @@ def cna(p, cutoff, brute=False):
     nr_FCC = numpy.zeros(len(p))
     nr_HCP = numpy.zeros(len(p))
     nl = neighbor_list(p, cutoff, brute)
-    
+
     # loops over all the atoms
     for a2 in range(len(p)):
         nl_a2 = nl[a2]
@@ -454,7 +450,7 @@ def cna(p, cutoff, brute=False):
                                 if common[j1] == nl_j2[n]:
                                     bonds_nr += 1
                                     bonds_sum += j1 + j2
-                
+
                     if bonds_nr == 2:
                         if bonds_sum == 6:
                             nr_FCC[a1] += 1
@@ -471,7 +467,7 @@ def cna(p, cutoff, brute=False):
             elif (nr_FCC[i] == 6) and (nr_HCP[i] == 6):
                 can_values[i] = 1
     return can_values
-    
+
 def not_HCP_or_FCC(p, cutoff, brute=False):
     """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
@@ -481,19 +477,19 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
             not_cna.append(i)
     return not_cna
 
-    
+
 import sys
 sys.setrecursionlimit(10000)
 def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
     """ A recursive depth-first search for a complete set of mappings from atoms
         in configuration a to atoms in configuration b. Do not use the mappings
-        argument, this is only used internally for recursion. 
-        
-        Returns None if no mapping was found, or a dictionary mapping atom 
+        argument, this is only used internally for recursion.
+
+        Returns None if no mapping was found, or a dictionary mapping atom
         indices a to atom indices b.
-        
-        Note: If a and b are mirror images, this function will still return a 
-        mapping from a to b, even though it may not be possible to align them 
+
+        Note: If a and b are mirror images, this function will still return a
+        mapping from a to b, even though it may not be possible to align them
         through translation and rotation. """
     # If this is the top-level user call, create and loop through top-level
     # mappings.
@@ -510,7 +506,7 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
         for coordination in bCoordinationsCounts.keys():
             if bCoordinationsCounts[coordination] < bCoordinationsCounts[bLeastCommonCoordination]:
                 bLeastCommonCoordination = coordination
-        # Find one atom in a with the least common coordination number in b. 
+        # Find one atom in a with the least common coordination number in b.
         # If it does not exist, return None.
         aCoordinations = coordination_numbers(a, neighbor_cutoff)
         try:
@@ -528,9 +524,9 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
                 # If the result is not none, then we found a successful mapping.
                 if mappings is not None:
                     return mappings
-        # There were no mappings.        
+        # There were no mappings.
         return None
-    
+
     # This is a recursed invocation of this function.
     else:
         # Find an atom from a that has not yet been mapped.
@@ -543,8 +539,8 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
         distances = {}
         for i in mappings.keys():
             distances[i] = numpy.linalg.norm(pbc(a.r[unmappedA] - a.r[i], a.box))
-        # Loop over each unmapped b atom. Compare the distances between it and 
-        # the mapped b atoms to the corresponding distances between unmappedA 
+        # Loop over each unmapped b atom. Compare the distances between it and
+        # the mapped b atoms to the corresponding distances between unmappedA
         # and the mapped atoms. If everything is similar, create a new mapping
         # and recurse.
         for bAtom in range(len(b)):
@@ -553,8 +549,8 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
                     # Break if type check fails.
                     if b.names[bAtom] != a.names[unmappedA]:
                         break
-                    # Break if distance check fails  
-                    bDist = numpy.linalg.norm(pbc(b.r[bAtom] - b.r[mappings[aAtom]], b.box))  
+                    # Break if distance check fails
+                    bDist = numpy.linalg.norm(pbc(b.r[bAtom] - b.r[mappings[aAtom]], b.box))
                     if abs(distances[aAtom] - bDist) > eps_r:
                         break
                 else:
@@ -566,12 +562,12 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
                         return newMappings
                     # Otherwise, recurse.
                     newMappings = get_mappings(a, b, eps_r, neighbor_cutoff, newMappings)
-                    # Pass any successful mapping up the recursion chain. 
+                    # Pass any successful mapping up the recursion chain.
                     if newMappings is not None:
-                        return newMappings     
-        # There were no mappings.   
+                        return newMappings
+        # There were no mappings.
         return None 
-        
+
 def get_rotation_matrix(axis, theta):
     axis = axis / numpy.linalg.norm(axis)
     t = theta
@@ -599,15 +595,15 @@ def rotate(r, axis, center, angle):
     new_r = numpy.dot(new_r, rotmat)
     new_r += center
     return new_r
-        
-        
+
+
 def internal_motion(a, b):
     """ Takes two atoms objects and returns the motion from a to b that is
     entirely internal - no rotation or translation, in the form of a new atoms
     object. """
     b = b.copy()
     b.r -= a.r[0] - b.r[0]
-    a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0]) 
+    a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0])
     b0b1 = (b.r[1] - b.r[0]) / numpy.linalg.norm(b.r[1] - b.r[0])
     axis1 = numpy.cross(b0b1, a0a1) / numpy.linalg.norm(numpy.cross(b0b1, a0a1))
     theta1 = acos((a0a1*b0b1).sum())
@@ -620,17 +616,6 @@ def internal_motion(a, b):
     theta2 = acos((va * vb).sum())
     b.r = rotate(b.r, axis2, a.r[0], theta2)
     return b
-    
-    
-    
-
-
-
-
-
-
-
-
 
 
 elements = {}

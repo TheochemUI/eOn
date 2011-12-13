@@ -13,19 +13,18 @@
 import logging
 logger = logging.getLogger('state')
 
-
 import fileio as io
 import state
 
 class PRState(state.State):
     ID, PRODUCT, PRODUCT_ENERGY, TIME = range(4)
     processtable_head_fmt = "%7s %9s %16s %12s\n"
-    processtable_header = processtable_head_fmt % ("proc #", "product", "product energy", 
+    processtable_header = processtable_head_fmt % ("proc #", "product", "product energy",
                                                    "time")
     processtable_line = "%7d %9d %16.5f %12.5e\n"
     search_result_header = "%8s %10s\n" % ("wuid", "result")
     search_result_header += "-" * len(search_result_header) + '\n'
-    def __init__(self, statepath, statenumber, statelist, previous_state_num = -1, 
+    def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
                  reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
@@ -36,7 +35,7 @@ class PRState(state.State):
         state.State.add_process(self, result)
 
         resultdata = result["results"] #The information from the result.dat file
-        
+
         # We may not already have the energy for this State.  If not, it should be in the result data.
         if self.get_energy() == None:
             self.set_energy(resultdata["potential_energy_reactant"])
@@ -50,7 +49,7 @@ class PRState(state.State):
         except:
             logger.exception("Reactant or product has incorrect format")
             return None
-        
+
         # Update the search result table.
         #self.append_search_result(result, "good-%d" % self.get_num_procs())
 
@@ -66,8 +65,8 @@ class PRState(state.State):
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Append this barrier to the process table (in memory and on disk).
-        self.append_process_table(id =                id, 
-                                  product =           -1, 
+        self.append_process_table(id =                id,
+                                  product =           -1,
                                   product_energy =    resultdata["potential_energy_product"],
                                   time =              resultdata["transition_time_s"]) 
 
@@ -75,7 +74,7 @@ class PRState(state.State):
         return id
 
     def load_process_table(self):
-        """ Load the process table.  If the process table is not loaded, load it.  If it is 
+        """ Load the process table.  If the process table is not loaded, load it.  If it is
             loaded, do nothing. """
         if self.procs == None:
             f = open(self.proctable_path)
@@ -85,9 +84,9 @@ class PRState(state.State):
             for l in lines[1:]:
                 l = l.strip().split()
                 self.procs[int(l[self.ID])] = {
-                                          "product":           int  (l[self.PRODUCT]), 
-                                          "product_energy":    float(l[self.PRODUCT_ENERGY]), 
-                                          "time":              float(l[self.TIME]), 
+                                          "product":           int  (l[self.PRODUCT]),
+                                          "product_energy":    float(l[self.PRODUCT_ENERGY]),
+                                          "time":              float(l[self.TIME]),
                                          }
 
     def save_process_table(self):
@@ -99,10 +98,10 @@ class PRState(state.State):
                 proc = self.procs[id]
                 f.write(self.processtable_line % (id, proc['product'], proc['product_energy'],
                                                   proc['time']))
-            f.close() 
+            f.close()
 
     def append_process_table(self, id, product, product_energy, time):
-        """ Append to the process table.  Append a single line to the process table file.  If we 
+        """ Append to the process table.  Append a single line to the process table file.  If we
             have loaded the process table, also append it to the process table in memory. """
         f = open(self.proctable_path, 'a')
         f.write(self.processtable_line % (id, product, product_energy, time))
@@ -113,7 +112,7 @@ class PRState(state.State):
                               "product_energy":    product_energy,
                               "time":              time
                              }
-    
+
     def get_time(self):
         return self.info.get("MetaData", "accumulated_time", 0.0)
 

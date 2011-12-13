@@ -16,7 +16,6 @@ e = []
 for i in range(states.get_num_states()):
     e.append(states.get_state(i).get_energy())
 
-
 f = open('evt.plt', 'w')
 print >> f, "set title \"Energy of Minima versus Time\""
 print >> f, "set xlabel \"time(s)\""

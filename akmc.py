@@ -41,30 +41,30 @@ import askmc
 import movie
 
 def akmc(config): 
-     
+
     # Here's what this does:
     # 1) Read in the state of our calculation from last time
     # 2) Initialize necessary data structures (statelist, communicator, displace)
     # 3) Get any results that have come in
     # 4) Possibly take a KMC step
     # 5) Make new work units
-    # 6) Write out the state of the simulation    
-    
+    # 6) Write out the state of the simulation
+
     # If we are saving debug results, create the directory if it does not exist.
     if config.debug_keep_all_results:
         rp = os.path.join(config.path_root,config.debug_results_path)
         if not os.path.isdir(rp):
-            os.mkdir(rp)   
-     
+            os.mkdir(rp)
+
     # Define constants. 
     kT = config.main_temperature/11604.5 #in eV
-    
+
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist, as such the " \
                         "reactant cannot exist. Exiting...")
         sys.exit(1)
-    
+
     # Load metadata, the state list, and the current state.
     start_state_num, time, previous_state_num, first_run = get_akmc_metadata()
 
@@ -75,14 +75,13 @@ def akmc(config):
     else:
         previous_state = states.get_state(previous_state_num)
 
-
     state_explorer = explorer.get_minmodexplorer()(states, previous_state, current_state)
     state_explorer.explore()
 
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
-    
+
     # Take a KMC step, if it's time.
     if config.sb_on:
         pass_superbasining = superbasining
@@ -90,7 +89,7 @@ def akmc(config):
         pass_superbasining = None
 
     current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining)
-            
+
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
@@ -144,12 +143,12 @@ def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
         parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
 def get_statelist(kT):
-    initial_state_path = os.path.join(config.path_root, 'reactant.con') 
-    return akmcstatelist.AKMCStateList(kT, 
-                               config.akmc_thermal_window, 
-                               config.akmc_max_thermal_window, 
-                               initial_state_path, 
-                               filter_hole = config.disp_moved_only)  
+    initial_state_path = os.path.join(config.path_root, 'reactant.con')
+    return akmcstatelist.AKMCStateList(kT,
+                               config.akmc_thermal_window,
+                               config.akmc_max_thermal_window,
+                               initial_state_path,
+                               filter_hole = config.disp_moved_only)
 
 def get_superbasin_scheme(states):
     if config.sb_scheme == 'transition_counting':
@@ -174,13 +173,13 @@ def kmc_step(current_state, states, time, kT, superbasining):
 
     while (current_state.get_confidence() >= config.akmc_confidence) and \
             steps < config.akmc_max_kmc_steps:
-          
+
         steps += 1
 
         # The system might be in a superbasin
         if config.sb_on:
             sb = superbasining.get_containing_superbasin(current_state)
-            
+
         if config.sb_on and sb:
             mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
         else:
@@ -195,11 +194,11 @@ def kmc_step(current_state, states, time, kT, superbasining):
             ratesum = 0.0
             for i in range(len(rate_table)):
                 ratesum += rate_table[i][1]
-            
+
             u = numpy.random.random_sample()
             p = 0.0
             nsid = 1.1 # Next state process id, will throw exception if remains unchanged.
-            
+
             # If we are following another trajectory:
             if config.debug_target_trajectory != "False":
                 # Get the Dynamics objects.
@@ -252,7 +251,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                 else:
                     logger.warning("Warning: failed to select rate. p = " + str(p))
                     break
-                    
+
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
 
@@ -268,8 +267,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
         if config.askmc_on:
             asKMC.register_transition(current_state, next_state)
         if config.sb_on:
-            superbasining.register_transition(current_state, next_state)    
-        
+            superbasining.register_transition(current_state, next_state)
+
         if config.sb_on and sb:
             proc_id_out = -1
         else:
@@ -277,7 +276,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
 
         # Write data to disk
         dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
-        if proc_id_out != -1:            
+        if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
             dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, proc['barrier'], proc['rate'])
             logger.info("kmc step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
@@ -285,7 +284,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, mean_time, time, sb_id)
             logger.info("sb step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
-        
+
         previous_state = current_state
         current_state = next_state
 
@@ -317,7 +316,7 @@ def main():
         #always run from the directory where the config file is
         #os.chdir(os.path.dirname(args[0]))
 
-    #XXX: config is ugly as it finds out where the config file is directly from 
+    #XXX: config is ugly as it finds out where the config file is directly from
     #     sys.argv instead of being passed it.
     #import sys
     if len(sys.argv) > 1:
@@ -405,8 +404,8 @@ def main():
             print "Superbasins"
             print "-----------"
             for i in sb.superbasins:
-                print i.state_numbers 
-            
+                print i.state_numbers
+
         sys.exit(0)
     elif options.reset:
         if options.force:
@@ -420,17 +419,17 @@ def main():
                     if os.path.isdir(thing):
                         shutil.rmtree(thing)
                         os.mkdir(thing)
-                        os.removedirs(thing)                        
+                        os.removedirs(thing)
                     elif os.path.isfile(thing):
                         os.remove(thing)
-                rmthings = [config.path_jobs_out, 
-                            config.path_jobs_in, 
+                rmthings = [config.path_jobs_out,
+                            config.path_jobs_in,
                             config.path_incomplete,
                             config.path_states,
-                            config.path_scratch, 
-                            config.kdb_path, 
+                            config.path_scratch,
+                            config.kdb_path,
                             config.kdb_scratch_path,
-                            config.sb_path, 
+                            config.sb_path,
                             config.sb_recycling_path,
                             config.debug_results_path,
                             os.path.join(config.path_root, "searchdata"),
@@ -453,7 +452,7 @@ def main():
 
     elif options.restart:
         string_sb_clear = ""
-    
+
         if options.force:
             res = 'y'
         else:
@@ -461,21 +460,21 @@ def main():
         if len(res)>0 and res[0] == 'y':
 
             # remove akmc data that are specific for a trajectory
-            dynamics_path = os.path.join(config.path_results, "dynamics.txt")  
-            info_path = os.path.join(config.path_results, "info.txt") 
-            log_path = os.path.join(config.path_results, "akmc.log") 
+            dynamics_path = os.path.join(config.path_results, "dynamics.txt")
+            info_path = os.path.join(config.path_results, "info.txt")
+            log_path = os.path.join(config.path_results, "akmc.log")
             jobs_path = os.path.join(config.path_results, "jobs.tbl")
             for i in [info_path, dynamics_path, log_path, jobs_path]:
                 if os.path.isfile(i):
                     os.remove(i)
-                    
+
             if config.sb_on:
                 if options.force:
                     res = 'y'
                 else:
                     res = raw_input("Should the superbasins be removed? (y/N) ").lower()
 
-                # remove superbasin data (specific for a trajectory)                                        
+                # remove superbasin data (specific for a trajectory)
                 if len(res)>0 and res[0] == 'y':
                     # remove directory superbasins
                     if os.path.isdir(config.sb_path):
@@ -483,7 +482,7 @@ def main():
                         #XXX: ugly way to remove all empty directories containing this one
                         os.mkdir(config.sb_path)
                         os.removedirs(config.sb_path)
-                
+
                     #remove superbasins files from states dirctories
                     state_dirs = os.listdir(config.path_states)
                     for i in state_dirs:
@@ -494,8 +493,8 @@ def main():
                                 os.remove(superbasin_file)
 
                     string_sb_clear = " with directory 'superbasins' and files named '"
-                    string_sb_clear += str(config.sb_state_file) + "' removed" 
-            
+                    string_sb_clear += str(config.sb_state_file) + "' removed"
+
             if not options.quiet:
                 print "Restart"+string_sb_clear+"."
             sys.exit(0)

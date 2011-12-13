@@ -25,7 +25,7 @@ class documentation():
         f.write("\n")
         f.write("%s\n" %config.format[i].description)
         f.write("\n")
-        
+
         for j in range(len(config.format[i].keys)):
             f.write("**%s**\n" %config.format[i].keys[j].name)
             f.write("\n")
@@ -36,7 +36,7 @@ class documentation():
                     pass
             else:
                 f.write("   default: %s\n" %config.format[i].keys[j].default)
-            f.write("\n")  
+            f.write("\n")
             f.write("   %s\n" %config.format[i].keys[j].description)
             f.write("\n") 
             if config.format[i].keys[j].default != None:
@@ -46,5 +46,4 @@ class documentation():
                     for k in range(len(config.format[i].keys[j].values)):
                         f.write("       **%s**: %s\n" %(config.format[i].keys[j].values[k].name, config.format[i].keys[j].values[k].description))
                         f.write("\n")
-                        
-                        
+

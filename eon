@@ -37,6 +37,5 @@ def main():
             shutil.move("output", "output_old")
         comm.submit_jobs([job], invariants)
 
-
 if __name__ == '__main__':
     main()

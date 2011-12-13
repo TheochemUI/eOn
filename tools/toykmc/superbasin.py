@@ -21,7 +21,7 @@ class Superbasin:
            print "the probability vector isn't close to 1.0"
            print 'probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector))
        probability_vector /= numpy.sum(probability_vector)
-       
+
        u = numpy.random.random_sample()
        p = 0.0
        for i in range(len(self.states)):
@@ -35,7 +35,6 @@ class Superbasin:
        exit_state = self.states[exit_state_index]
        return time, exit_state
 
-    
 
     def step(self, entry_state):
         """Perform a Monte Carlo transition: leave the basin."""\
@@ -71,19 +70,18 @@ class Superbasin:
             proc_table = item.get_rate_table()
             for process in proc_table:
                 sum+=process['rate']
-                if process['product'] not in self.states: 
+                if process['product'] not in self.states:
                     recurrent_vector[i] += process['rate']
                 else:
                     #ouch that is complicated
                     j = self.states.index(process['product'])
                     transient_matrix[j][i] += process['rate']
                 transient_matrix[i][i] -= process['rate']
-        
-        
+
         fundamental_matrix = numpy.linalg.inv(transient_matrix)
         self.mean_residence_times = numpy.zeros(len(self.states))
         self.probability_matrix = numpy.zeros((len(self.states), len(self.states)))
-        
+
         for i in range(self.nstates):
             for j in range(self.nstates):
                 self.mean_residence_times[j] -= fundamental_matrix[i][j]
@@ -91,7 +89,5 @@ class Superbasin:
 
         for i in self.probability_matrix.transpose():
             if abs(1-i.sum()) > 1e-3:
-                print "WARNING: Probability vector does not add up to 1" 
+                print "WARNING: Probability vector does not add up to 1"
 
-
-    
