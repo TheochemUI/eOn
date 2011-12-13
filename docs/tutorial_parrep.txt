@@ -8,14 +8,14 @@ A sample parallel replica simulation can be found in your copy of eon under the 
 
 The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
 
-..  image:: aladatom.png
+..  image:: fig/aladatom1.png
     :align: center
 
 Here is the ``config.ini`` file which will run a parallel replica job using 1 local cpu for 1 search. 
 
 .. literalinclude:: ../samples/pr-AlAdatom/.config.ini
 
-Now we can run 3 searches by executing the script "run"::
+Now we can run 1 searches by executing the script "run"::
 
     $ ./run 
     All input files are ready, start to run this sample job 
@@ -25,42 +25,25 @@ Now we can run 3 searches by executing the script "run"::
     0 (result) searches processed
     time in current state is 0.000000e+00
     0 searches in the queue
-    making 1 searches   #First Search
+    making 1 searches
     job finished in .//jobs/scratch/0_0
     1 searches created
     simulation time is 0.000000e+00
     registering results
-    found transition with time 1.600e-12
+    found transition with time 6.036e-12
     1 (result) searches processed
     time in current state is 0.000000e+00
     currently in state 1
     0 searches in the queue
-    making 1 searches    #Second Search
-    job finished in .//jobs/scratch/1_1
-    1 searches created
-    simulation time is 1.599970e-12
-    registering results
-    found transition with time 1.200e-11
-    1 (result) searches processed
-    time in current state is 0.000000e+00
-    currently in state 2
-    0 searches in the queue
-    making 1 searches     #Third Search
-    job finished in .//jobs/scratch/2_2
-    1 searches created
-    simulation time is 1.359975e-11
-    registering results
-    found transition with time 1.244e-11
-    1 (result) searches processed
-    time in current state is 0.000000e+00
-    currently in state 3
-    0 searches in the queue
-    making 0 searches     #Final regiser 
+    making 0 searches
 
-Here Eon makes 3 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
+Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
 
 .. literalinclude:: .dynamics.txt
 
 The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
-Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id.
+Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id.The geometric of the product is shown below:
+
+..  image:: fig/aladatom2a.png fig/aladatom2b.png
+    :align: center
