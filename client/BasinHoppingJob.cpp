@@ -52,19 +52,19 @@ BasinHoppingJob::~BasinHoppingJob()
 std::vector<std::string> BasinHoppingJob::run(void)
 {
     bool swapMove;
-    double swap_accept=0.0;
-    jcount=0;
-    scount=0;
-    dcount=0;
-    int consecutive_rejected_trials=0;
-    double totalAccept=0.0;
+    double swap_accept = 0.0;
+    jcount = 0;
+    scount = 0;
+    dcount = 0;
+    int consecutive_rejected_trials = 0;
+    double totalAccept = 0.0;
     Matter *minTrial = new Matter(parameters);
     Matter *swapTrial = new Matter(parameters);
 
 //    current->con2matter("reactant_passed.con");
     string conFilename = getRelevantFile(parameters->conFilename);
     current->con2matter(conFilename);
-    if(parameters->basinHoppingInitialMD==true){
+    if(parameters->basinHoppingInitialMD == true){
         Dynamics dyn(current,parameters);
         dyn.fullSteps(parameters->basinHoppingInitialMDTemperature);
     }
@@ -91,7 +91,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
            step<parameters->basinHoppingSteps){
             *swapTrial = *current;
             randomSwap(swapTrial);
-            swapMove=true;
+            swapMove = true;
             *minTrial = *swapTrial;
         }else{
             AtomMatrix displacement;
@@ -131,10 +131,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 *current = *trial;
             }
             if(swapMove){
-                swap_accept=swap_accept+1.0;
+                swap_accept = swap_accept + 1.0;
             }
             if(step<parameters->basinHoppingSteps) {
-                totalAccept=totalAccept+1.0;
+                totalAccept = totalAccept + 1.0;
             }
 
             currentEnergy = minTrial->getPotentialEnergy();
@@ -157,10 +157,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
-        if(consecutive_rejected_trials==parameters->basinHoppingJumpMax && step<parameters->basinHoppingSteps){
-            consecutive_rejected_trials=0;
+        if(consecutive_rejected_trials == parameters->basinHoppingJumpMax && step<parameters->basinHoppingSteps){
+            consecutive_rejected_trials = 0;
             AtomMatrix jump;
-            for(int j=0;j<parameters->basinHoppingJumpSteps;j++){
+            for(int j=0; j<parameters->basinHoppingJumpSteps; j++){
                 jcount++;
                 jump = displaceRandom();
                 current->setPositions(current->getPositions() + jump);
@@ -196,7 +196,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     if(parameters->basinHoppingSwapProbability>0){
-      fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(scount));
+        fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(scount));
     }
     fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
     fprintf(fileResults, "%d total_jump_steps\n", jcount);

@@ -353,7 +353,7 @@ class Recycling:
         # for the current process number.
         process_saddle = self.ref_state.get_process_saddle(self.process_number)
         process_mode = self.ref_state.get_process_mode(self.process_number)
-        
+
         # Now, for all the things that did *not* move getting to this state,
         # suggest this particular process's position to them.
         for i in self.unmoved:
@@ -375,7 +375,7 @@ class Recycling:
             fo = open(os.path.join(save_path, "proc_%d" %self.process_number), "w")
             io.savecon(fo, saddle)
             fo.close()
-        
+
         # Make a note of the fact that we've tried to recycle another saddle.
         self.process_number += 1
         self.write_recycling_metadata()
@@ -383,7 +383,7 @@ class Recycling:
         # which are not in the hole and in the hole.  No change should need to be made to the
         # line in akmc.py which calls this function (unless akmc.py wants them as well).
         return saddle.copy(), self.mode.copy()
-    
+
     def read_recycling_metadata(self):
         """ Open the recycling metadata file located in the current state's directory.
             Return the state from which suggestions are being made.

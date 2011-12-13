@@ -62,21 +62,21 @@ class BHgui(atomview.atomview):
         self.stateSB.connect("value-changed", self.stateSB_changed)
         self.stateScale.connect("value-changed", self.state_changed)
         self.energyplotButton.connect("clicked", self.energyplot)
-        self.repeatplotButton.connect("clicked", self.repeatplot)       
-        
+        self.repeatplotButton.connect("clicked", self.repeatplot)
+
         self.startup()
-    
+
     # startup
     def startup(self, *args):
         self.changeImage()
         self.statetable()
         self.acceptanceratio_average()
-    
-    
+
+
     # minimum.con display
     def changeImage(self, *args):
         states = glob.glob("%s*" %config.path_states)
-        i = 0 
+        i = 0
         while ("%s%d" %(config.path_states,i)) in states:
             i+=1
         self.numstates = i-1
@@ -84,71 +84,71 @@ class BHgui(atomview.atomview):
         self.stateSB.set_range(0,self.numstates)
         datapass = io.loadcon("%s%d/minimum.con" %(config.path_states,self.stateScale.get_value()))
         self.data_set([datapass])
-        
-        
-    # changes state by clicking table rows  
+
+
+    # changes state by clicking table rows
     def rowactivated(self, *args):
         selection = self.view.get_selection().get_selected()
         proc = self.store.get(selection[1], 0)
         self.stateScale.set_value(proc[0])
-        
-        
-    # table    
+
+
+    # table
     def statetable(self, *args):
         self.store = gtk.ListStore(int, float, int)
         self.view = gtk.TreeView(model=self.store)
         self.view.connect("row-activated", self.rowactivated)
-        
+
         self.statecolumn = gtk.TreeViewColumn('state')
         self.statecolumn.set_sort_column_id(0)
         self.energycolumn = gtk.TreeViewColumn('energy')
         self.energycolumn.set_sort_column_id(1)
         self.repeatcolumn = gtk.TreeViewColumn('repeats')
         self.repeatcolumn.set_sort_column_id(2)
-        
+
         self.view.append_column(self.statecolumn)
         self.view.append_column(self.energycolumn)
         self.view.append_column(self.repeatcolumn)
-        
+
         statecell = gtk.CellRendererText()
         energycell = gtk.CellRendererText()
         repeatcell = gtk.CellRendererText()
-        
+
         self.statecolumn.pack_start(statecell)
         self.energycolumn.pack_start(energycell)
         self.repeatcolumn.pack_start(repeatcell)
-        
+
         self.statecolumn.add_attribute(statecell,'text',0)
         self.energycolumn.add_attribute(energycell,'text',1)
         self.repeatcolumn.add_attribute(repeatcell,'text',2)
-        
+
         table = open('%s/state_table' %config.path_states,'r')
         lines = table.readlines()
         rows = {}
-        
+
         for i in range(2,len(lines)):
             rows[i] = lines[i].split()
             rows[i] = [float(j) for j in rows[i]]
             self.store.append(rows[i])
-            
+
         self.scrollwindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.scrollwindow.set_size_request(-1, 100)
         self.scrollwindow.add(self.view)
         self.view.set_headers_clickable(True)
         self.scrollwindow.show_all()
         self.view.show_all()
-        
-        
+
+
     # keeps spinbutton and scale the same
     def stateSB_changed(self, *args):
         self.stateScale.set_value(self.stateSB.get_value())
-        
-    
+
+
     # keeps scale and spinbutton the same
     def state_changed(self, *args):
         self.stateSB.set_value(self.stateScale.get_value())
-        
-        
+
+
     # energy vs state plot
     def energyplot(self, *args):
         table = open("%sstate_table" %config.path_states, "r")
@@ -162,7 +162,7 @@ class BHgui(atomview.atomview):
             grouplabels.append(lines[i].split()[0])
         y.reverse()
         grouplabels.reverse()
-        self.eplotWindow.set_default_size(425,425)    
+        self.eplotWindow.set_default_size(425,425)
         fig = p.figure()
         ax = fig.add_subplot(111)
         ax.plot(x,y, 'bo' '-')
@@ -177,9 +177,9 @@ class BHgui(atomview.atomview):
         container.pack_start(graph)
         container.pack_start(toolbar, False, False)
         self.eplotWindow.show_all()
-        
-        
-    # repeat vs state plot    
+
+
+    # repeat vs state plot
     def repeatplot(self, *args):
         table = open("%sstate_table" %config.path_states, "r")
         lines = table.readlines()
@@ -214,8 +214,8 @@ class BHgui(atomview.atomview):
         container.pack_start(graph)
         container.pack_start(toolbar, False, False)
         self.rplotWindow.show_all()
-        
-        
+
+
     # average acceptanceratio 
     def acceptanceratio_average(self, *args):
         ratios = []
@@ -230,8 +230,7 @@ class BHgui(atomview.atomview):
         else:
             average = 0
         self.acceptanceratio.set_text(str (average))
-                    
-        
+
 
 if __name__ == "__main__":
     print os.getcwd()

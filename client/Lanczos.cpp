@@ -10,7 +10,7 @@
 
 // This Lanczos algorithm is implemented as described in this paper:
 // R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson, 
-// Comparison of methods for finding saddle points without knowledge of the final states, 
+// Comparison of methods for finding saddle points without knowledge of the final states,
 // J. Chem. Phys. 121, 9776-9792 (2004).
 
 #include "Lanczos.h"

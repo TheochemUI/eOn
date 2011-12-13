@@ -17,13 +17,13 @@ import config
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
-    to which superbasins, the SuperBasin object of those superbasins, and 
+    to which superbasins, the SuperBasin object of those superbasins, and
     superbasining criteria. It also expands and merges superbasins'''
 
     def __init__(self, superbasin_path, states, kT):
         self.path = superbasin_path
         self.path_storage = superbasin_path+"storage/"
-        
+
         self.states = states
         self.kT = kT
 
@@ -31,7 +31,7 @@ class SuperbasinScheme:
             logger.warning('superbasin path does not exist, creating %s' % self.path)
             os.makedirs(self.path)
             os.makedirs(self.path_storage)
-        
+
         self.superbasins = []
         dirs = os.listdir(self.path)
         self.next_sb_num = 0
@@ -40,7 +40,7 @@ class SuperbasinScheme:
 
                 self.next_sb_num = max(self.next_sb_num, int(i))
                 self.superbasins.append(superbasin.Superbasin(self.path, i, get_state = states.get_state))
-            
+
         self.next_sb_num += 1
         self.read_data()
 
@@ -68,24 +68,23 @@ class SuperbasinScheme:
                     sb.delete()
 
                 self.superbasins.remove(sb)
-        
-        
+
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         #However, it will likely be very slow. We should be able to do without it.
         #Also, if confidence is changed and new processes are found, the superbasin
         #will ignore these new processes.
 
         self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, state_list = new_sb_states)) 
-        
+
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
-    
+
     def register_transition(self, start_state, end_state):
         raise NotImplementedError()
 
     def write_data(self):
         raise NotImplementedError()
-    
+
     def read_data(self):
         raise NotImplementedError()
 
@@ -103,7 +102,7 @@ class SuperbasinScheme:
 
 class TransitionCounting(SuperbasinScheme):
     ''' Implements the transition counting scheme for superbasining '''
-    
+
     def __init__(self, superbasin_path, states, kT, num_transitions):
         self.num_transitions = num_transitions
         SuperbasinScheme.__init__(self,superbasin_path, states, kT)
@@ -113,17 +112,16 @@ class TransitionCounting(SuperbasinScheme):
         
         if start_state == end_state:
             return
-        
+
         start_count = self.get_count(start_state)
         if end_state not in start_count:
             start_count[end_state] = 0
         start_count[end_state] += 1
-        
+
         if start_count[end_state] >= self.num_transitions:
             logger.debug( "Making basin....")
             self.make_basin([start_state, end_state])
 
-    
 
     def write_data(self):
         logger.debug('writing')
@@ -150,9 +148,7 @@ class TransitionCounting(SuperbasinScheme):
                     self.count[state][self.states.get_state(int(i[0]))] = int(i[1]) 
                 f.close()
             return self.count[state]
-            
-        
-   
+
 
 class EnergyLevel(SuperbasinScheme):
 
@@ -169,22 +165,22 @@ class EnergyLevel(SuperbasinScheme):
         if sb:
             return sb.states
         else:
-            return [ state ]           
+            return [ state ]
 
     #start_state and end_state are the non-sb ids. 
     def register_transition(self, start_state, end_state):
-        '''Increments the energy level of the end state or sets it equal to the energy 
+        '''Increments the energy level of the end state or sets it equal to the energy
            of the end_state if it hasn't been visited before.'''
 
         #error
         if start_state == end_state:
             return
 
-        #if the start state does not have an energy level yet, we set it to the energy of the state. 
+        #if the start state does not have an energy level yet, we set it to the energy of the state.
         if start_state not in self.levels:
             self.levels[start_state] = start_state.get_energy()
-        
-        #if the end state does not have an energy level yet, set it to the energy of the state. 
+
+        #if the end state does not have an energy level yet, set it to the energy of the state.
         if end_state not in self.levels:
             self.levels[end_state] = end_state.get_energy()
 
@@ -205,7 +201,7 @@ class EnergyLevel(SuperbasinScheme):
         for key in proc_tab:
             if proc_tab[key]['product'] == end_state.number:
                 barrier = min(proc_tab[key]['barrier'], barrier)
-        
+
         if barrier > 1e199:
             logger.warning("Start and end state have no direct connection")
             return

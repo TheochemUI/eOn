@@ -78,7 +78,7 @@ Parameters::Parameters(){
     saddleConfinePositiveScaleRatio = 0.9; // undocumented
     saddleConfinePositiveBoost = 10.; // undocumented
     saddleConfinePositiveMinActive = 30; // undocumented
-    
+
     // [Optimizers] //
     optMethod = "cg";
     optMaxIterations = 1000;
@@ -123,8 +123,8 @@ Parameters::Parameters(){
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10; // collision frequency in unit of dt
     thermoNoseMass = 1.0;
-    thermoLangvinFriction = 0.005;                     
-  
+    thermoLangvinFriction = 0.005;
+
     // [Parallel Replica] //
     paraRepRefine = true;
     paraRepAutoStop = false;
@@ -143,7 +143,7 @@ Parameters::Parameters(){
 
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
-    bondBoostBALS = string("ALL"); //Boosted atom list string 
+    bondBoostBALS = string("ALL"); // boosted atom list string 
     bondBoostDVMAX = 0.0;
     bondBoostQRR = 0.2; // can not be set to 0
     bondBoostPRR = 0.95;
@@ -200,6 +200,7 @@ int Parameters::load(FILE *file){
 
     if(ini.ReadFile(file))
     {
+
         // [Main] //
 
         job = toLowerCase(ini.GetValue("Main", "job"));
@@ -208,12 +209,6 @@ int Parameters::load(FILE *file){
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
         finiteDifference = ini.GetValueF("Main", "finite_difference", finiteDifference);
-
-        // [Potential] //
-        potential = toLowerCase(ini.GetValue("Potential", "potential"));
-        MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
-        LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
-
         // Initialize random generator
         if(randomSeed < 0){
             unsigned i = time(NULL);
@@ -222,6 +217,12 @@ int Parameters::load(FILE *file){
         }else{
             helper_functions::random(randomSeed);
         }
+
+        // [Potential] //
+
+        potential = toLowerCase(ini.GetValue("Potential", "potential"));
+        MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
+        LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
 
         // [Debug] //
 
@@ -265,13 +266,12 @@ int Parameters::load(FILE *file){
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
         // XXX: This is a result of mixing our server/client config files.
         if(saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
-           saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED && 
-           saddleDisplaceType != EpiCenters::DISP_LAST_ATOM && 
+           saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED &&
+           saddleDisplaceType != EpiCenters::DISP_LAST_ATOM &&
            saddleDisplaceType != EpiCenters::DISP_RANDOM){
               saddleDisplaceType = EpiCenters::DISP_LOAD;
            }
-
-        saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive); 
+        saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
         if(saddleConfinePositive) {
             saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
             saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
@@ -297,6 +297,7 @@ int Parameters::load(FILE *file){
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
 
         // [Prefactor] //
+
         prefactorDefaultValue = ini.GetValueF("Prefactor", "default_value", prefactorDefaultValue);
         prefactorMaxValue = ini.GetValueF("Prefactor", "max_value", prefactorMaxValue);
         prefactorMinValue = ini.GetValueF("Prefactor", "min_value", prefactorMinValue);
@@ -317,8 +318,9 @@ int Parameters::load(FILE *file){
         nebOptMethod = toLowerCase(ini.GetValue("NEB", "opt_method", nebOptMethod));
 
         // [Dynamics] //
+
         mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
-        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs 
+        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
@@ -327,13 +329,14 @@ int Parameters::load(FILE *file){
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
 
         // [Parallel Replica]
+
         paraRepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", paraRepDephaseSteps);
         paraRepRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", paraRepRefine);
         paraRepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", paraRepAutoStop);
         paraRepCheckPeriod = ini.GetValueL("Parallel Replica", "state_check_period", paraRepCheckPeriod);
         paraRepRecordPeriod = int(0.1*paraRepCheckPeriod);
         paraRepRecordPeriod = ini.GetValueL("Parallel Replica", "state_save_period", paraRepRecordPeriod);
-        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy); 
+        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy);
         paraRepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", paraRepRelaxSteps);
         paraRepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", paraRepDephaseLoopStop);
         paraRepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", paraRepDephaseLoopMax);
@@ -344,20 +347,17 @@ int Parameters::load(FILE *file){
         drSamplingSteps = ini.GetValueL("Distributed Replica", "sampling_steps", drSamplingSteps);
         drTargetTemperature = ini.GetValueF("Distributed Replica", "target_temperature", drTargetTemperature);
 
-
         // [Hyperdynamics] //
 
         bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
         bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics","bb_boost_atomlist",bondBoostBALS));
-       
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
         bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
         biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential",biasPotential));
-        
 
-        // [Basin Hopping] //        
+        // [Basin Hopping] //
 
         basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
         basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);

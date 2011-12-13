@@ -27,7 +27,7 @@ class Quickmin : public Optimizer
         bool step(double maxMove);
         bool run(int maxIterations, double maxMove);
         VectorXd getStep();
-        
+
     private:
         ObjectiveFunction *objf;
         Parameters *parameters;

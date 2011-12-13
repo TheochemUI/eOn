@@ -66,7 +66,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
         init_lbfgs = true;
     }
 
-
     // other vectors
     VectorXd x1_rp;
     VectorXd x1_r;
@@ -81,7 +80,6 @@ void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAto
     statsRotations = 0;
 
     Matter *x1p = new Matter(parameters);
-
 
     // Calculate the gradients on x0 and x1, g0 and g1, respectively.
     VectorXd g0 = -x0->getForcesV();

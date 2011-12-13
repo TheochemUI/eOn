@@ -14,16 +14,15 @@ import os
 import shutil
 import logging
 logger = logging.getLogger('state')
-from ConfigParser import SafeConfigParser 
+from ConfigParser import SafeConfigParser
 import tarfile
 
 import fileio as io
 
 
-
 class State:
     """ The State super class. """
-    def __init__(self, statepath, statenumber, statelist, previous_state_num = -1, 
+    def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
                  reactant_path = None):                 
         """ Creates a new State, with lazily loaded data. """
 
@@ -84,7 +83,7 @@ class State:
     def get_process_product(self, id):
         return io.loadcon(self.proc_product_path(id))
 
-    # Utility functions for compiling procdata paths, whether the files exist or not.    
+    # Utility functions for compiling procdata paths, whether the files exist or not.
     def proc_reactant_path(self, id):
         return os.path.join(self.procdata_path, "reactant_%d.con" % id)
     def proc_product_path(self, id):
@@ -93,7 +92,7 @@ class State:
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
     def proc_stdout_path(self, id):
         return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
-    
+
     def tar_procdata(self):
         if not self.procdata_tarred:
             tar = tarfile.TarFile(self.tar_path, 'w')
@@ -107,7 +106,7 @@ class State:
 
     def get_process(self, id):
         self.load_process_table()
-        return self.procs[id]        
+        return self.procs[id]
 
     def get_process_ids(self):
         """ Returns the list of ids in the rate table. """
@@ -124,19 +123,4 @@ class State:
     def get_process_table(self):
         self.load_process_table()
         return self.procs
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+

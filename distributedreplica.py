@@ -53,7 +53,6 @@ def distributedreplica():
     # get communicator
     comm = communicator.get_communicator()
 
-    
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
     num_registered, new_min_energy_structure = register_results(comm, min_energy)

@@ -13,7 +13,6 @@
 import logging
 logger = logging.getLogger('statelist')
 
-
 import prstate
 import statelist
 
