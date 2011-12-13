@@ -6,6 +6,4 @@ Tutorials
 
 :ref:`Parallel Replica Tutorial <tutorial_parrep>`
 
-:ref:`Hyperdynamics Tutorial <tutorial_hyper>`
-
 :ref:`Basin Hopping Tutorial <tutorial_basin_hopping>`
