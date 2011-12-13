@@ -121,7 +121,7 @@ Parameters::Parameters(){
     // [Thermostat] //
     thermostat = Dynamics::ANDERSEN;
     thermoAndersenAlpha = 0.2; // collision strength
-    thermoAndersenTcol = 10; // collision frequency in unit of dt
+    thermoAndersenTcol = 10.0; // collision frequency in unit of fs
     thermoNoseMass = 1.0;
     thermoLangvinFriction = 0.005;
 
@@ -324,7 +324,7 @@ int Parameters::load(FILE *file){
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_steps",thermoAndersenTcol);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_freq",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
 
