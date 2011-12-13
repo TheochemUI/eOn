@@ -29,8 +29,8 @@ NudgedElasticBandJob::~NudgedElasticBandJob()
 
 std::vector<std::string> NudgedElasticBandJob::run(void)
 {
-//    string reactant_passed("reactant_passed.con");
-//    string product_passed("product_passed.con");
+    long status;
+    int f1;
 
     string reactant_passed = helper_functions::getRelevantFile("reactant.con");
     string product_passed = helper_functions::getRelevantFile("product.con");
@@ -43,18 +43,13 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
 
     NudgedElasticBand *neb = new NudgedElasticBand(initial, final, parameters);
 
-    cout <<"Finding MEP, start\n";
-    cout <<"NEB images: "<<neb->images<<endl;
-    cout <<"end of assign\n";
-/*
-    cout <<"NEB pos: \n";
-    for(int i=0; i<=neb->images; i++){
-        cout <<neb->image[i]->getPositions();
+    f1 = Potential::fcalls;
+    status = neb->compute();
+    fCallsNEB += Potential::fcalls - f1;
+
+    if (status == NudgedElasticBand::STATUS_INIT) {
+        status = NudgedElasticBand::STATUS_GOOD;
     }
-*/
-    cout <<"Finding MEP, start\n";
-    int status = findMinimumEnergyPath(neb);
-    cout <<"Finding MEP, done\n";
 
     printEndState(status);
     saveData(status);
@@ -66,33 +61,13 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     return returnFiles;
 }
 
-int NudgedElasticBandJob::findMinimumEnergyPath(NudgedElasticBand *neb)
+void NudgedElasticBandJob::saveData(int status)
 {
-    Matter matterTemp(parameters);
-    long status;
-    int f1;
-    f1 = Potential::fcalls;
-    cout <<"neb->compute, start\n";
-    status = neb->compute();
-    cout <<"neb->compute, stop\n";
-    fCallsNEB += Potential::fcalls - f1;
-
-    if (status == NudgedElasticBand::STATUS_INIT) {
-        status = NudgedElasticBand::STATUS_GOOD;
-    }
-
-    return status;
-}
-
-void NudgedElasticBandJob::saveData(int status){
-    FILE *fileResults, *fileNEB, *fileMode;
+    FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    ///XXX: min_fcalls isn't quite right it should get them from
-    //      the minimizer. But right now the minimizers are in
-    //      the NudgedElasticBand object. They will be taken out eventually.
     
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
@@ -100,7 +75,6 @@ void NudgedElasticBandJob::saveData(int status){
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
 //    fprintf(fileResults, "%f potential_energy_saddle\n", neb->getPotentialEnergy());
     fclose(fileResults);
-
 /*
     std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
@@ -110,7 +84,8 @@ void NudgedElasticBandJob::saveData(int status){
 */
 }
 
-void NudgedElasticBandJob::printEndState(int status) {
+void NudgedElasticBandJob::printEndState(int status)
+{
 /*    fprintf(stdout, "Final state: ");
     if(status == NudgedElasticBand::STATUS_GOOD)
         fprintf(stdout, "Successful.\n");
