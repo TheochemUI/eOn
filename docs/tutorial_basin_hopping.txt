@@ -8,7 +8,7 @@ Basin Hopping Tutorial
 This tutorial explains how to run a basin hopping global optimization
 calculation on a Lennard-Jones 13 particle.
 
-.. image:: lj13.png
+.. image:: fig/lj13.png
     :align: center
 
 Here is the con file of our starting structure:

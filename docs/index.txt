@@ -17,7 +17,7 @@ adaptive kinetic Monte Carlo, and basin hopping.
 Systems which can be modelled
 =============================
 
-.. image:: eon_systems.png
+.. image:: fig/eon_systems.png
     :align: center
 
 Examples of systems which can be modelled using EON are shown.  In each
@@ -25,7 +25,7 @@ case, the important kinetics are governed by rare events.  The atoms are also
 in solids or the gas phase so that there is a clear separation of time scales
 between atomic vibrations at the diffusion or catalytic events of interest.
 
-.. image:: alripe.png
+.. image:: fig/alripe.png
     :align: center
 
 In the example showing ripening dynamics on an Al(100) surface, a compact island
