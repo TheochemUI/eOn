@@ -29,18 +29,12 @@ class NEBObjectiveFunction : public ObjectiveFunction
 
         VectorXd getGradient(bool fdstep=false)
         {
- //           cout <<"getGradient, start\n";
             VectorXd forceV;
-//            cout <<"size: "<<3*neb->atoms*neb->images<<endl;
             forceV.resize(3*neb->atoms*neb->images);
-//            cout <<"getGradient, updateForces, start\n";
-            neb->updateForces();
-//            cout <<"getGradient, updateForces, end\n";
+            if(neb->movedAfterForceCall) neb->updateForces();
             for(long i=1; i<=neb->images; i++){
                forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getForces().data(), 3*neb->atoms); 
             }
-//            cout <<"forceV "<<endl<<-forceV<<endl;
-//            cout <<"getGradient, end\n";
             return -forceV;
         }
 
@@ -55,11 +49,8 @@ class NEBObjectiveFunction : public ObjectiveFunction
 
         void setPositions(VectorXd x)
         {
-//            cout <<"positions returned\n";
-//            cout <<x<<endl;
+            neb->movedAfterForceCall = true;
             for(long i=1; i<=neb->images; i++) {
-//                cout <<"pos for image "<<i<<endl;
-//                cout <<MatrixXd::Map(x.segment(3*neb->atoms*(i-1),3*neb->atoms).data(),neb->atoms,3);
                 neb->image[i]->setPositions(MatrixXd::Map(x.segment(3*neb->atoms*(i-1),3*neb->atoms).data(),neb->atoms,3));
             }
         }
@@ -68,8 +59,8 @@ class NEBObjectiveFunction : public ObjectiveFunction
         {
             VectorXd posV;
             posV.resize(3*neb->atoms*neb->images);
-            for(long i=0; i<=neb->images; i++){
-               posV.segment(3*neb->atoms*i,3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);            
+            for(long i=1; i<=neb->images; i++){
+               posV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);
             }
             return posV;
         }
@@ -111,6 +102,8 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
         image[i]->setPositions(posInitial+imageSep*double(i));
     }
 
+    movedAfterForceCall = true;
+
     // Make sure that the endpoints know their energy
     image[0]->getPotentialEnergy();
     image[images+1]->getPotentialEnergy();
@@ -144,32 +137,30 @@ int NudgedElasticBand::compute(void)
     log("Nudged elastic band calculation started.\n");
 
     updateForces();
-/*
-    for(long i=1; i<=images; i++)
-    {
-        cout <<"force on image "<<i<<endl;
-        cout <<image[i]->getForces() <<endl<<endl;
-    }
-*/
 
-//    cout <<"NEB: objectiveFunction, begin\n";
     NEBObjectiveFunction objf(this, parameters);
-//    cout <<"NEB: objectiveFunction, end\n";
 
-//    cout <<"NEB: optimizer, begin\n";
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
-//    cout <<"NEB: optimizer, end\n";
 
-    cout <<"iteration   force    cimage"<<endl;
+    cout <<endl;
+    cout <<"iteration     force     cimage"<<endl;
+    cout <<"------------------------------"<<endl;
+
     while (!objf.isConverged())
     {
-        cout <<iteration<<"    "<<convergenceForce()<<"   "<<climbingImage<<endl;
-        if (iteration >= parameters->nebMaxIterations) {
-            status = STATUS_BAD_MAX_ITERATIONS;
-            break;
+        if(iteration) { // so that we print forces before taking an optimizer step
+            if (iteration >= parameters->nebMaxIterations) {
+                status = STATUS_BAD_MAX_ITERATIONS;
+                break;
+            }
+            optimizer->step(parameters->optMaxMove);
         }
-        optimizer->step(parameters->optMaxMove);
         iteration++;
+        if( parameters->nebClimbingImageMethod ) {
+            printf(" %7li  %10.4f     %4li\n",iteration,convergenceForce(),climbingImage);
+        } else {
+            printf(" %7li  %10.4f      - \n",iteration,convergenceForce());
+        }
     }
     delete optimizer;
     return status;
@@ -178,11 +169,12 @@ int NudgedElasticBand::compute(void)
 // generate the force value that is compared to the convergence criterion
 double NudgedElasticBand::convergenceForce(void)
 {
+    if(movedAfterForceCall) updateForces();
     if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
         return image[climbingImage]->getForces().norm();
     }
     double fmax = image[1]->getForces().norm();
-    for(long i=2; i<images+1; i++) {
+    for(long i=2; i<=images; i++) {
         if( fmax < image[i]->getForces().norm() ) {
             fmax = image[i]->getForces().norm();
         }
@@ -296,6 +288,10 @@ void NudgedElasticBand::updateForces(void)
 
             // sum the spring and potential forces for the neb force
             image[i]->setForces( forceSpringPar + forcePerp );
+
+            movedAfterForceCall = false;  // so that we don't repeat a force call
+
+//            cout <<"image "<<i<<" distPrev "<<distPrev<<" distNext "<<distNext<<" force "<<image[i]->getForces().norm() <<endl;
         }
     }
     return;
