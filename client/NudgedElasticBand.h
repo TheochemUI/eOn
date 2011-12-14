@@ -47,6 +47,7 @@ public:
     long climbingImage;
     Matter **image; // NEB images
     AtomMatrix **tangent;
+    bool movedAfterForceCall;
 
 private:
 
