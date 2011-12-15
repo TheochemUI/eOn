@@ -246,10 +246,10 @@ def init(config_file = ""):
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
     # Saddle Search options
-    config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight') # undocumented
-    config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight') # undocumented
-    config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight') # undocumented
-    config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight') # undocumented
+    config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
+    config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight')
+    config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight')
+    config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight')
     config.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
     config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
     config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
@@ -259,7 +259,7 @@ def init(config_file = ""):
     config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
-    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight') # undocumented
+    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight')
     if config.displace_listed_weight != 0.0:
         config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
         if config.disp_listed_atoms == ['None']:
@@ -292,6 +292,7 @@ def init(config_file = ""):
     if config.sb_on:
         config.sb_path = parser.get('Paths', 'superbasins')
         config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
+        config.sb_max_size = parser.getint('Coarse Graining', 'max_size')
         if config.sb_scheme == 'transition_counting':
             config.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif config.sb_scheme == 'energy_level':

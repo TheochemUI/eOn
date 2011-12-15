@@ -851,6 +851,10 @@ Coarse Graining:
             kind: string
             default: transition_counting
 
+        max_size:
+            kind: int
+            default: 0
+
         use_mcamc:
             kind: boolean
             default: False
