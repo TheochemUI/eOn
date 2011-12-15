@@ -52,7 +52,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     }
 
     printEndState(status);
-    saveData(status);
+    saveData(status, neb);
 
     delete neb;
     delete initial;
@@ -61,9 +61,9 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     return returnFiles;
 }
 
-void NudgedElasticBandJob::saveData(int status)
+void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
 {
-    FILE *fileResults;
+    FILE *fileResults, *fileNEB;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -73,37 +73,31 @@ void NudgedElasticBandJob::saveData(int status)
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
-//    fprintf(fileResults, "%f potential_energy_saddle\n", neb->getPotentialEnergy());
+    for(long i=0; i<=neb->images+1; i++) {
+        fprintf(fileResults, "%ld image_number\n", i);
+        fprintf(fileResults, "%f image_energy\n", neb->image[i]->getPotentialEnergy());
+        fprintf(fileResults, "%f image_force\n", neb->image[i]->getForces().norm());
+    }
     fclose(fileResults);
-/*
-    std::string saddleFilename("saddle.con");
-    returnFiles.push_back(saddleFilename);
-    fileSaddle = fopen(saddleFilename.c_str(), "wb");
-    saddle->matter2con(fileSaddle);
-    fclose(fileSaddle);
-*/
+
+    std::string nebFilename("neb.con");
+    returnFiles.push_back(nebFilename);
+    fileNEB = fopen(nebFilename.c_str(), "wb");
+    for(long i=0; i<=neb->images+1; i++) {
+        neb->image[i]->matter2con(fileNEB);
+    }
+    fclose(fileNEB);
 }
 
 void NudgedElasticBandJob::printEndState(int status)
 {
-/*    fprintf(stdout, "Final state: ");
+    fprintf(stdout, "Final state: ");
     if(status == NudgedElasticBand::STATUS_GOOD)
-        fprintf(stdout, "Successful.\n");
-
-    else if(status == NudgedElasticBand::STATUS_BAD_NO_CONVEX)
-        fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
-   
-    else if(status == NudgedElasticBand::STATUS_BAD_HIGH_ENERGY)
-        fprintf(stdout, "Saddle search, barrier too high.\n");
-        
-    else if(status == NudgedElasticBand::STATUS_BAD_MAX_CONCAVE_ITERATIONS) 
-        fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
-
+        fprintf(stdout, "Nudged elastic band, successful.\n");
     else if(status == NudgedElasticBand::STATUS_BAD_MAX_ITERATIONS)
-        fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
+        fprintf(stdout, "Nudged elastic band, too many iterations.\n");
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
-*/
     return;
 }
 
