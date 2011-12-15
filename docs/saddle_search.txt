@@ -36,7 +36,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``1.0, if no other weights set``
 
-**displace_not_FCC_HCP_weight**:  Relative probabiilty to displace with an epicenter that is not FCC or HCP coordinated.
+**displace_not_FCC_HCP_weight**:  Relative probabilty to displace with an epicenter that is not FCC or HCP coordinated.
 
     default: ``0.0``
 
@@ -44,15 +44,15 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
-**displace_listed_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
-
-    default: ``0.0``
-
 **displace_under_coordinated_weight**:  Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.
 
     default: ``0.0``
 
-**displace_atomlist**: The individual index should be seperated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
+**displace_listed_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
+
+    default: ``0.0``
+
+**displace_atomlist**: The individual index should be separated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
 
     default: ``0``
 
