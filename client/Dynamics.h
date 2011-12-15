@@ -25,7 +25,7 @@ public:
     static const char ANDERSEN[];
     static const char NOSE_HOOVER[];
     static const char LANGEVIN[];
-    static const char NVE[];
+    static const char NONE[];
 
     Dynamics(Matter *matter, Parameters *parameters);
 
