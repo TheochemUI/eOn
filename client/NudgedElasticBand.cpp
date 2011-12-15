@@ -156,12 +156,22 @@ int NudgedElasticBand::compute(void)
             optimizer->step(parameters->optMaxMove);
         }
         iteration++;
+
+        printf(" %7li  %10.4f",iteration,convergenceForce());
         if( parameters->nebClimbingImageMethod ) {
-            printf(" %7li  %10.4f     %4li\n",iteration,convergenceForce(),climbingImage);
+            printf("     %4li\n",climbingImage);
         } else {
-            printf(" %7li  %10.4f      - \n",iteration,convergenceForce());
+            printf("      - \n");
         }
     }
+
+    if(objf.isConverged()) {
+        status = STATUS_GOOD;
+        cout <<"NEB converged\n";
+    }
+
+//    findExtrema();
+
     delete optimizer;
     return status;
 }
@@ -297,3 +307,55 @@ void NudgedElasticBand::updateForces(void)
     return;
 }
 
+// Estimate the barrier using a cubic spline
+// GH: this is a little tricky because we only remember projected forces, currently.
+/*
+void NudgedElasticBand::findExtrema(void)
+{
+
+for($i=0; $i<($NumI-1); $i++) {
+    @dR[$i] = @R[$i+1] - @R[$i];
+    $F1 = $F[$i]*@dR[$i];
+    $F2 = $F[$i+1]*@dR[$i];
+    $U1 = $E[$i];
+    $U2 = $E[$i+1];
+    $Fs = $F1 + $F2;
+    $Ud = $U2 - $U1;
+    @a[$i] = $U1;
+    @b[$i] = -$F1;
+    @c[$i] = 3*$Ud + $F1 + $Fs;
+    @d[$i] = -2*$Ud - $Fs;
+}
+
+# finding extrema along the MEP
+
+$NumE = 0;
+for($i=0; $i<($NumI-1); $i++){
+    $Desc = @c[$i]**2-3*@b[$i]*@d[$i];
+    if($Desc >= 0) {
+        $f = -1;
+        # Quadratic case  
+        if (@d[$i] == 0 && @c[$i] != 0) {
+            $f = -(@b[$i]/(2*@c[$i]));
+        # Cubic case 1
+        } elsif (@d[$i]!=0) {
+            $f = -(@c[$i] + sqrt($Desc))/(3*@d[$i]);
+        }
+        if ($f >= 0 && $f <= 1) {
+            $Pos = $i + $f;
+            $Ext{$Pos} = @d[$i]*$f**3 + @c[$i]*$f**2 + @b[$i]*$f + @a[$i];
+            $NumE++;
+        }
+        # Cubic case 2
+        if (@d[$i] != 0) {
+            $f = -(@c[$i] - sqrt($Desc))/(3*@d[$i]);
+            if ($f >= 0 && $f <= 1) {
+                $Pos = $i + $f;
+                $Ext{$Pos} = @d[$i]*$f**3 + @c[$i]*$f**2 + @b[$i]*$f + @a[$i];
+                $NumE++;
+            }
+        }
+    }
+}
+
+*/
