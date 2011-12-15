@@ -28,12 +28,13 @@ class NudgedElasticBandJob : public Job {
 
         // functions
         void printEndState(int status);
-        void saveData(int status);
+        void saveData(int status, NudgedElasticBand *neb);
 
         // variables
         std::vector<std::string> returnFiles;
         Parameters *parameters;
         int fCallsNEB;
+
 };
 
 #endif
