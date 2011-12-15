@@ -20,9 +20,11 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
 **thermostat**
 
-   default: ``andersen``
+   default: ``none``
 
    options:
+
+       ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
 
        ``andersen``: Andersen thermostat with the Verlet algorithm.
 

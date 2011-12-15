@@ -119,7 +119,7 @@ Parameters::Parameters(){
     mdSteps = 1000;
 
     // [Thermostat] //
-    thermostat = Dynamics::ANDERSEN;
+    thermostat = Dynamics::NONE;
     thermoAndersenAlpha = 0.2; // collision strength
     thermoAndersenTcol = 10.0; // collision frequency in unit of fs
     thermoNoseMass = 1.0;

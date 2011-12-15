@@ -275,7 +275,7 @@ Dynamics:
 
         thermostat:
             kind: string
-            default: andersen
+            default: none
 
         andersen_alpha:
             kind: float

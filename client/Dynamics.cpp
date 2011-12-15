@@ -18,7 +18,7 @@ using namespace helper_functions;
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
-const char Dynamics::NVE[] = "nve";
+const char Dynamics::NONE[] = "none";
 
 Dynamics::Dynamics(Matter *matter_passed,Parameters *parameters_passed)
 {
@@ -50,7 +50,7 @@ void Dynamics::oneStep(double temperature)
     else if(parameters->thermostat == LANGEVIN){
        langevinVerlet(temperature);
     }
-    else if(parameters->thermostat == NVE){
+    else if(parameters->thermostat == NONE){
        velocityVerlet();
     }
 
@@ -116,10 +116,10 @@ void Dynamics::fullSteps(double temperature)
     long nFreeCoord = matter->numberOfFreeAtoms()*3;
     forceCallsTemp = matter->getForceCalls();
 
+    initialVel(temperature);
 
-    if(parameters->thermostat != NVE) {
+    if(parameters->thermostat != NONE) {
         log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %10ld steps\n", temperature, parameters->mdSteps);
-        initialVel(temperature);
     }else{
         log("[Dynamics] Running NVE molecular dynamics for %10ld steps\n", parameters->mdSteps);
     }
