@@ -51,6 +51,21 @@ class SuperbasinScheme:
         return None
 
     def make_basin(self, merge_states):
+
+        # is there an upper limit for the size of a superbasin
+        if config.sb_max_size:
+            #first determine how many states will be in the new superbasin
+            numstates = 0
+            for i in merge_states:
+                sb = self.get_containing_superbasin(i)
+                if sb is None:
+                    numstates += 1
+                else:
+                    numstates += len(sb.states)
+            #if number of states in the new superbasin wil be larger than 2, do not proceed:
+            if numstates > config.sb_max_size:
+                return
+        
         new_sb_states = []
         for i in merge_states:
             sb = self.get_containing_superbasin(i)

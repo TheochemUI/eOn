@@ -31,6 +31,10 @@ Monte Carlo with Absorbing Markov Chains
 
         ``energy_level``:
 
+**max_size**: The maximal nr states that will be merger together. If 0 there is no limit.
+
+    default: ``0``
+
 **number_of_transitions**: If the transition counting scheme is being used (scheme=transition_counting), this is the number of transitions that must occur between two states before they are merged into a superbasin.
 
     default: ``5``
