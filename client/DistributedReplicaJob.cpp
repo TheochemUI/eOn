@@ -65,6 +65,7 @@ std::vector<std::string> DistributedReplicaJob::run(void)
     *final = *reactant;
 
     printf("\nMinimizing initial reactant\n");
+
     Potential::fcalls = 0;
     min1->relax();
     min_fcalls += Potential::fcalls;
@@ -83,7 +84,8 @@ std::vector<std::string> DistributedReplicaJob::run(void)
     return returnFiles;
 }
 
-void DistributedReplicaJob::balanceStep(){
+void DistributedReplicaJob::balanceStep()
+{
     long n, bSteps,nloop;
     bool bl_new,stop;
     Matter *initial;
@@ -128,7 +130,8 @@ void DistributedReplicaJob::balanceStep(){
     delete initial;
 }
 
-void DistributedReplicaJob::samplingStep(){
+void DistributedReplicaJob::samplingStep()
+{
     long n, sSteps,ncheck,srefined,nsample,buff_refined;
     long check_steps, mdbufflength,new_n;
     bool status;

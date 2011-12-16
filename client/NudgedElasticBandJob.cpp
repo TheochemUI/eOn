@@ -12,6 +12,7 @@
 #include "ConjugateGradients.h"
 #include "false_boinc.h"
 #include "Potential.h"
+#include "Log.h"
 
 #include <stdio.h>
 #include <string>
@@ -73,11 +74,19 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
+    fprintf(fileResults, "%f energy_reference\n", neb->image[0]->getPotentialEnergy());
     for(long i=0; i<=neb->images+1; i++) {
         fprintf(fileResults, "%ld image_number\n", i);
-        fprintf(fileResults, "%f image_energy\n", neb->image[i]->getPotentialEnergy());
+        fprintf(fileResults, "%f image_energy\n", neb->image[i]->getPotentialEnergy()-neb->image[0]->getPotentialEnergy());
         fprintf(fileResults, "%f image_force\n", neb->image[i]->getForces().norm());
+        fprintf(fileResults, "%f image_projected_force\n", neb->projectedForce[i]->norm());
     }
+    fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
+    for(long i=0; i<=neb->numExtrema; i++) {
+        fprintf(fileResults, "%f extremum_position\n", neb->extremumPosition[i]);
+        fprintf(fileResults, "%f extremum_energy\n", neb->extremumEnergy[i]);
+    }
+
     fclose(fileResults);
 
     std::string nebFilename("neb.con");
@@ -91,13 +100,13 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
 
 void NudgedElasticBandJob::printEndState(int status)
 {
-    fprintf(stdout, "Final state: ");
+    log("\nFinal state: ");
     if(status == NudgedElasticBand::STATUS_GOOD)
-        fprintf(stdout, "Nudged elastic band, successful.\n");
+        log("Nudged elastic band, successful.\n");
     else if(status == NudgedElasticBand::STATUS_BAD_MAX_ITERATIONS)
-        fprintf(stdout, "Nudged elastic band, too many iterations.\n");
+        log("Nudged elastic band, too many iterations.\n");
     else
-        fprintf(stdout, "Unknown status: %i!\n", status);
+        log("Unknown status: %i!\n", status);
     return;
 }
 
