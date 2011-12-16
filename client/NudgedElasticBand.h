@@ -41,13 +41,17 @@ public:
     int compute(void);
     void updateForces(void);
     double convergenceForce(void);
+    void findExtrema(void);
+    void printImageData(void);
 
     int atoms;
-    long images;
-    long climbingImage;
+    long images, climbingImage, numExtrema;
     Matter **image; // NEB images
     AtomMatrix **tangent;
+    AtomMatrix **projectedForce;
     bool movedAfterForceCall;
+    double *extremumEnergy;
+    double *extremumPosition;
 
 private:
 
