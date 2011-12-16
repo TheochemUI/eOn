@@ -33,7 +33,7 @@ class NEBObjectiveFunction : public ObjectiveFunction
             forceV.resize(3*neb->atoms*neb->images);
             if(neb->movedAfterForceCall) neb->updateForces();
             for(long i=1; i<=neb->images; i++){
-               forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getForces().data(), 3*neb->atoms); 
+                forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->projectedForce[i]->data(), 3*neb->atoms); 
             }
             return -forceV;
         }
@@ -60,7 +60,7 @@ class NEBObjectiveFunction : public ObjectiveFunction
             VectorXd posV;
             posV.resize(3*neb->atoms*neb->images);
             for(long i=1; i<=neb->images; i++){
-               posV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);
+                posV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);
             }
             return posV;
         }
@@ -84,14 +84,19 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     atoms = initialPassed->numberOfAtoms();
     image = new Matter *[images+2];
     tangent = new AtomMatrix *[images+2];
+    projectedForce = new AtomMatrix *[images+2];
+    extremumPosition = new double[2*(images+1)];
+    extremumEnergy = new double[2*(images+1)];
 
-    cout <<"NEB: initialize\n";
+    log("\nNEB: initialize\n");
     for(long i=0; i<=images+1; i++)
     {
         image[i] = new Matter(parameters);
         *image[i] = *initialPassed;
         tangent[i] = new AtomMatrix;
         tangent[i]->resize(atoms,3);
+        projectedForce[i] = new AtomMatrix;
+        projectedForce[i]->resize(atoms,3);
     }
     *image[images+1] = *finalPassed;  // final image
 
@@ -123,9 +128,13 @@ void NudgedElasticBand::clean(void)
     for(long i=0; i<=images+1; i++) {
         delete image[i];
         delete tangent[i];
+        delete projectedForce[i];
     }
     delete [] image;
     delete [] tangent;
+    delete [] projectedForce;
+    delete [] extremumPosition;
+    delete [] extremumEnergy;
     return;
 }
 
@@ -142,9 +151,8 @@ int NudgedElasticBand::compute(void)
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
-    cout <<endl;
-    cout <<"iteration     force     cimage"<<endl;
-    cout <<"------------------------------"<<endl;
+    log("\niteration     force     cimage\n");
+    log("------------------------------\n");
 
     while (!objf.isConverged())
     {
@@ -157,20 +165,21 @@ int NudgedElasticBand::compute(void)
         }
         iteration++;
 
-        printf(" %7li  %10.4f",iteration,convergenceForce());
+        log(" %7li  %10.4f",iteration,convergenceForce());
         if( parameters->nebClimbingImageMethod ) {
-            printf("     %4li\n",climbingImage);
+            log("     %4li\n",climbingImage);
         } else {
-            printf("      - \n");
+            log("      - \n");
         }
     }
 
     if(objf.isConverged()) {
         status = STATUS_GOOD;
-        cout <<"NEB converged\n";
+        log("NEB converged\n");
     }
 
-//    findExtrema();
+    printImageData();
+    findExtrema();
 
     delete optimizer;
     return status;
@@ -181,12 +190,12 @@ double NudgedElasticBand::convergenceForce(void)
 {
     if(movedAfterForceCall) updateForces();
     if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
-        return image[climbingImage]->getForces().norm();
+        return projectedForce[climbingImage]->norm();
     }
-    double fmax = image[1]->getForces().norm();
+    double fmax = projectedForce[1]->norm();
     for(long i=2; i<=images; i++) {
-        if( fmax < image[i]->getForces().norm() ) {
-            fmax = image[i]->getForces().norm();
+        if( fmax < projectedForce[i]->norm() ) {
+            fmax = projectedForce[i]->norm();
         }
     }
     return fmax;
@@ -215,17 +224,12 @@ void NudgedElasticBand::updateForces(void)
     maxEnergy = image[0]->getPotentialEnergy();
     maxEnergyImage = 0;
     for(long i=1; i<=images+1; i++) {
-//        cout <<"image "<<i<<endl;
-//        cout <<"pos: "<<endl<<image[i]->getPositions()<<endl;
-//        cout <<"energy "<<image[i]->getPotentialEnergy()<<endl;
-//        cout <<"forces: "<<endl<<image[i]->getForces()<<endl;
         image[i]->getForces();
         if(image[i]->getPotentialEnergy() > maxEnergy) {
             maxEnergy = image[i]->getPotentialEnergy();
             maxEnergyImage = i;
         }
     }
-//    cout <<"max energy image "<<maxEnergyImage<<endl;
 
     for(long i=1; i<=images; i++)
     {
@@ -241,7 +245,7 @@ void NudgedElasticBand::updateForces(void)
         // determine the tangent
         if(parameters->nebOldTangent) {
             // old tangent
-            *tangent[i] = posNext - posPrev;
+            *tangent[i] = image[i]->pbc(posNext - posPrev);
         }else{
             // new tangent
             higherEnergyPrev = energyPrev > energyNext;
@@ -250,9 +254,9 @@ void NudgedElasticBand::updateForces(void)
             if(higherEnergyPrev != higherEnergyNext) {
                 // we are not at an extremum
                 if(higherEnergyPrev) {
-                    *tangent[i] = pos - posPrev;
+                    *tangent[i] = image[i]->pbc(pos - posPrev);
                 }else{
-                    *tangent[i] = posNext - pos;
+                    *tangent[i] = image[i]->pbc(posNext - pos);
                 }
             }else{
                 // we are at an extremum
@@ -265,15 +269,13 @@ void NudgedElasticBand::updateForces(void)
 
                 // use these energy differences to weight the tangent
                 if(energyDiffPrev > energyDiffNext) {
-                    *tangent[i] = (posNext - pos) * minDiffEnergy;
-                    *tangent[i] += (pos - posPrev) * maxDiffEnergy;
+                    *tangent[i] = image[i]->pbc(posNext - pos) * minDiffEnergy;
+                    *tangent[i] += image[i]->pbc(pos - posPrev) * maxDiffEnergy;
                 }else{
-                    *tangent[i] = (posNext - pos) * maxDiffEnergy;
-                    *tangent[i] += (pos - posPrev) * minDiffEnergy;
+                    *tangent[i] = image[i]->pbc(posNext - pos) * maxDiffEnergy;
+                    *tangent[i] += image[i]->pbc(pos - posPrev) * minDiffEnergy;
                 }
             }
-//            cout <<"tangent, image "<<i<<endl;
-//            cout <<*tangent[i]<<endl;
         }
         tangent[i]->normalize();
 
@@ -284,7 +286,7 @@ void NudgedElasticBand::updateForces(void)
         {
             // we are at the climbing image
             climbingImage = maxEnergyImage;
-            image[i]->setForces( force - 2.0 * (force.cwise() * *tangent[i]).sum() * *tangent[i]);
+            *projectedForce[i] = force - 2.0 * (force.cwise() * *tangent[i]).sum() * *tangent[i];
         }
         else  // all non-climbing images
         {
@@ -292,70 +294,119 @@ void NudgedElasticBand::updateForces(void)
             forcePerp = force - (force.cwise() * *tangent[i]).sum() * *tangent[i];
 
             // calculate the spring force
-            distPrev = (posPrev - pos).squaredNorm();
-            distNext = (posNext - pos).squaredNorm();
+            distPrev = image[i]->pbc(posPrev - pos).squaredNorm();
+            distNext = image[i]->pbc(posNext - pos).squaredNorm();
             forceSpringPar = parameters->nebSpring * (distNext-distPrev) * *tangent[i];
 
             // sum the spring and potential forces for the neb force
-            image[i]->setForces( forceSpringPar + forcePerp );
+            *projectedForce[i] = (forceSpringPar + forcePerp);
 
             movedAfterForceCall = false;  // so that we don't repeat a force call
-
-//            cout <<"image "<<i<<" distPrev "<<distPrev<<" distNext "<<distNext<<" force "<<image[i]->getForces().norm() <<endl;
         }
     }
     return;
 }
 
-// Estimate the barrier using a cubic spline
-// GH: this is a little tricky because we only remember projected forces, currently.
-/*
-void NudgedElasticBand::findExtrema(void)
+// Print NEB image data
+void NudgedElasticBand::printImageData(void)
 {
+    double dist, distTotal=0;
+    AtomMatrix tangentStart = image[0]->pbc(image[1]->getPositions() - image[0]->getPositions());
+    AtomMatrix tangentEnd = image[images]->pbc(image[images+1]->getPositions() - image[images]->getPositions());
+    AtomMatrix tang;
 
-for($i=0; $i<($NumI-1); $i++) {
-    @dR[$i] = @R[$i+1] - @R[$i];
-    $F1 = $F[$i]*@dR[$i];
-    $F2 = $F[$i+1]*@dR[$i];
-    $U1 = $E[$i];
-    $U2 = $E[$i+1];
-    $Fs = $F1 + $F2;
-    $Ud = $U2 - $U1;
-    @a[$i] = $U1;
-    @b[$i] = -$F1;
-    @c[$i] = 3*$Ud + $F1 + $Fs;
-    @d[$i] = -2*$Ud - $Fs;
-}
+    log("Image data (as in neb.dat)\n");
 
-# finding extrema along the MEP
-
-$NumE = 0;
-for($i=0; $i<($NumI-1); $i++){
-    $Desc = @c[$i]**2-3*@b[$i]*@d[$i];
-    if($Desc >= 0) {
-        $f = -1;
-        # Quadratic case  
-        if (@d[$i] == 0 && @c[$i] != 0) {
-            $f = -(@b[$i]/(2*@c[$i]));
-        # Cubic case 1
-        } elsif (@d[$i]!=0) {
-            $f = -(@c[$i] + sqrt($Desc))/(3*@d[$i]);
+    for(long i=0; i<=images+1; i++)
+    {
+        if(i==0){ tang = tangentStart; }
+        else if (i==images+1) { tang = tangentEnd; }
+        else { tang = *tangent[i]; }
+        if(i>0) {
+            dist = image[i]->distanceTo(*image[i-1]);
+            distTotal += dist;
         }
-        if ($f >= 0 && $f <= 1) {
-            $Pos = $i + $f;
-            $Ext{$Pos} = @d[$i]*$f**3 + @c[$i]*$f**2 + @b[$i]*$f + @a[$i];
-            $NumE++;
-        }
-        # Cubic case 2
-        if (@d[$i] != 0) {
-            $f = -(@c[$i] - sqrt($Desc))/(3*@d[$i]);
-            if ($f >= 0 && $f <= 1) {
-                $Pos = $i + $f;
-                $Ext{$Pos} = @d[$i]*$f**3 + @c[$i]*$f**2 + @b[$i]*$f + @a[$i];
-                $NumE++;
-            }
-        }
+        log("%3i %12.6f %12.6f %12.6f\n",i,distTotal,
+            image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
     }
 }
 
-*/
+// Estimate the barrier using a cubic spline
+void NudgedElasticBand::findExtrema(void)
+{
+    // calculate the cubic parameters for each interval (a,b,c,d)
+
+    AtomMatrix tangentEndpoint;
+    double a[images+1], b[images+1], c[images+1], d[images+1];
+    double F1, F2, U1, U2, dist;
+
+    for(long i=0; i<=images; i++)
+    {
+        dist = image[i]->distanceTo(*image[i+1]);
+        if(i==0) {
+            tangentEndpoint = image[i]->pbc(image[1]->getPositions() - image[0]->getPositions());
+            tangentEndpoint.normalize();
+            F1 = (image[i]->getForces().cwise()*tangentEndpoint).sum()*dist;
+        } else {
+            F1 = (image[i]->getForces().cwise()*(*tangent[i])).sum()*dist;
+        }
+        if(i==images) {
+            tangentEndpoint =  image[i+1]->pbc(image[images+1]->getPositions() - image[images]->getPositions());
+            tangentEndpoint.normalize();
+            F2 = (image[i+1]->getForces().cwise()*tangentEndpoint).sum()*dist;
+        } else {
+            F2 = (image[i+1]->getForces().cwise()*(*tangent[i+1])).sum()*dist;
+        }
+        U1 = image[i]->getPotentialEnergy();
+        U2 = image[i+1]->getPotentialEnergy();
+        a[i] = U1;
+        b[i] = -F1;
+        c[i] = 3.*(U2 - U1) + 2.*F1 + F2;
+        d[i] = -2.*(U2 - U1) - (F1 + F2);
+    }
+
+    // finding extrema along the MEP
+
+    long numExtrema = 0;
+    double extremaEnergy[2*(images+1)]; // the maximum number of extrema
+    double extremaPosition[2*(images+1)];
+    double descriminant, f;
+
+    for(long i=0; i<=images; i++)
+    {
+        descriminant = pow(c[i],2) - 3.*b[i]*d[i];
+        if(descriminant >= 0) {
+            f = -1;
+
+            // quadratic case
+            if( (d[i] == 0) && (c[i] != 0) ) {
+                f = ( -b[i]/(2.*c[i]) );
+            }
+            // cubic case 1
+            else if( d[i] != 0 ) {
+                f = -(c[i] + sqrt(descriminant))/(3.*d[i]);
+            }
+            if( (f >= 0) && (f <= 1) ) {
+                extremaPosition[numExtrema] = i + f;
+                extremaEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                numExtrema ++;
+            }
+            // cubic case 2
+            if( d[i] != 0 ) {
+                f = ( -(c[i] - sqrt(descriminant))/(3.*d[i]) );
+            }
+            if( (f >= 0) && (f <= 1) ) {
+                extremaPosition[numExtrema] = i + f;
+                extremaEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                numExtrema ++;
+            }
+        }
+    }
+
+    log("\nFound %li extrema\n",numExtrema);
+    log("Energy reference: %f\n",image[0]->getPotentialEnergy());
+    for(long i=0; i<numExtrema; i++) {
+        log(" %li at image position %f with energy %f\n",i,extremaPosition[i],extremaEnergy[i]-image[0]->getPotentialEnergy());
+    }
+}
+
