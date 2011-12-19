@@ -105,7 +105,7 @@ void ParallelReplicaJob::dynamics()
     long   RecordAccuracy = parameters->paraRepRecordPeriod, mdbufflength;
     long   ncheck = 0, nexam = 0, nrecord = 0, steps_tmp = 0, final_refined;
     AtomMatrix velocities;
-    double kinE = 0.0, kb = 1.0/11604.5;
+    double kinE = 0.0, potE =0.0, kb = 1.0/11604.5;
     double kinT = 0.0, sumT = 0.0, sumT2 = 0.0, avgT, varT;
 
     mdbufflength = int(check_steps/RecordAccuracy)+1;
@@ -146,9 +146,11 @@ void ParallelReplicaJob::dynamics()
         else{ SPtime += parameters->mdTimeStep;}
 
         kinE = reactant->getKineticEnergy();
+        potE = reactant->getPotentialEnergy();
         kinT = (2*kinE/nFreeCoord/kb); 
         sumT += kinT;
         sumT2 += kinT*kinT;
+       // printf("steps = %10d total_energy = %10.5f \n",nsteps,kinE+potE);
 
         PRdynamics.oneStep(parameters->temperature);
 

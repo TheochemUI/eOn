@@ -265,7 +265,7 @@ double BondBoost::Booststeps()
                 Fact_1 = 2.0*A_EPS_M*DVMAX*Epsr_Q[i]/QRR/EBBLList(i,0)/double(nBBs);
                 double Fact_tmp1 = (1.0-PRR*PRR*Epsr_Q[i]*Epsr_Q[i]);
                 double Fact_tmp2 = (1.0-Epsr_Q[i]*Epsr_Q[i]);
-                Fact_2 = 2.0*Fact_tmp2*Epsr_Q[i]*(2.0*Fact_tmp1-PRR*PRR*Fact_tmp2)/QRR/QRR/EBBLList(i,0)/Fact_tmp1/Fact_tmp1; 
+                Fact_2 = 2.0*Fact_tmp2*Epsr_Q[i]*(2.0*Fact_tmp1-PRR*PRR*Fact_tmp2)/QRR/EBBLList(i,0)/Fact_tmp1/Fact_tmp1; 
                 Dforce = Fact_1+Sum_V*Fact_2;
 
                 AtomI_1 = BBAList[2*i];
@@ -322,7 +322,7 @@ double BondBoost::Booststeps()
         Boost_Fact = 0.0;
         //Ave_Boost_Fact =
     }
-    //printf("boost_fact=%lf\n",Boost_Fact);
+    //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
     //update bdt;
     bdt = dt*exp(Boost_Fact/kb/Temp);
     //printf("bdt = %E\n",bdt);
