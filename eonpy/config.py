@@ -32,7 +32,9 @@ class ConfigKey:
         self.default = default
         self.values = []
 
-y = yaml.load(open(os.path.join(sys.path[0], "config.yaml"), 'r'))
+yaml_file = open(os.path.join(os.path.dirname(__file__), 'config.yaml'))
+y = yaml.load(yaml_file)
+yaml_file.close()
 
 for sectionName in y:
     section = ConfigSection(sectionName)
