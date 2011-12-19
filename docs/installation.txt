@@ -11,33 +11,60 @@ molecular dynamics) while the server creates the input for the client and
 processes its results.
 
 Dependencies
-------------
+============
 
 * Server
-    * `python <http://www.python.org/download>`_ (>=2.4)
-    * `numpy <http://new.scipy.org/download.html>`_ (>=1.2.1)
+    * `Python <http://www.python.org/download>`_ (2.4 - 2.7)
+    * `NumPy <http://new.scipy.org/download.html>`_ (>=1.2.1)
     * (optional, for MPI communicator) `mpi4py <http://mpi4py.scipy.org/>`_
 
 * Client
-    * make
-    * gcc (>=4.0)
+    * GNU Make
+    * G++ (>=4.0, other C++ compilers might work)
     * (optional) gfortran or Intel Fortran Compiler
 
-Server Installation
--------------------
+.. highlight:: bash
 
-It is most convenient to install eon to a directory in your ``$HOME`` folder.
-For the purposes of this guide we will assume that you have installed eon to
-``$HOME/eon``. You will want to either add this directory to your ``$PATH`` or
-make a symlink from the main eon program (``eon``) to a directory that is in
-your ``$PATH``.
+Server Installation
+===================
+
+We recommend installing Eon to your ``$HOME`` folder. To download the
+latest snapshot to your home folder::
+
+    $ cd $HOME
+    $ wget http://theory.cm.utexas.edu/eon-files/eon-trunk.tgz
+    $ tar xfvz eon-trunk.tgz
+    $ mv eon-1637 eon
+
+Or using subversion::
+
+    $ svn co http://theory.cm.utexas.edu/svn/eon
+
+The directory ``$HOME/eon`` needs to be added to your ``$PYTHONPATH``
+environment variable. It is also recommended to add ``$HOME/eon/bin`` to your
+``$PATH``. This can be done permanetly by appending the following to your
+``~/.profile`` file::
+
+    export PYTHONPATH=$HOME/eon:$PYTHONPATH
+    export PATH=$HOME/eon/bin:$PATH
+
+If you have root permissions, you can install Eon system-wide::
+
+    $ cd eon
+    $ sudo python setup.py install
+
+This will install the eon python module to Python's site-package directory
+as well as adding the ``eon`` program to your ``$PATH``.
 
 Client Installation
--------------------
+===================
 
 The client source code is located in a folder named ``client`` under the main
 eon directory.  For most situations you will only need to run the make command
-and a binary named ``client`` will be built in this directory.
+and a binary named ``client`` will be built in this directory::
+
+    $ cd client
+    $ make
 
 If you wish to use the potentials that depend on fortran you will need a
 fortran compiler. However, this is optional and you can compile the client
@@ -48,5 +75,9 @@ change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 ``FAR`` (fortran archiver) variables to work for your system.
 
 For most setups the binary ``client`` should be copied to a directory in your
-``$PATH`` and named ``eonclient``. Otherwise you will need to give the path to
-the client binary in your ``config.ini``. 
+``$PATH`` and named ``eonclient``. If you added ``$HOME/eon/bin`` to your path during the server installation the following command will install the client::
+
+    $ cp client ../bin/eonclient
+
+Otherwise you will need to give the path to the client binary in your
+``config.ini``. 
