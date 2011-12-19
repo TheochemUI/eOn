@@ -324,7 +324,7 @@ int Parameters::load(FILE *file){
         mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_freq",thermoAndersenTcol);
+        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
 
