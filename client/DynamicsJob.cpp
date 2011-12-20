@@ -47,7 +47,7 @@ std::vector<std::string> DynamicsJob::run(void)
     *F = *R;
 
     Dynamics *d = new Dynamics(R, parameters);
-    d->fullSteps(parameters->temperature);
+    d->run();
 
     *F = *R;
     FILE *fileProduct;

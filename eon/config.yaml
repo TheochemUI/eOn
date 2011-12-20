@@ -221,6 +221,10 @@ Debug:
             kind: boolean
             default: False
 
+        write_movie_interval:
+            kind: int
+            default: 1
+
 ################################################################################
 
 Structure Comparison:

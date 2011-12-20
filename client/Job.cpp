@@ -6,7 +6,7 @@
 #include "PointJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
-#include "DistributedReplicaJob.h"
+//#include "ReplicaExchangeJob.h"
 #include "BasinHoppingJob.h"
 #include "FiniteDifferenceJob.h"
 #include "NudgedElasticBandJob.h"
@@ -40,8 +40,8 @@ Job *Job::getJob(Parameters *parameters) {
         job = new HessianJob(parameters);
     }else if (parameters->job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-    }else if (parameters->job == Job::DISTRIBUTED_REPLICA) {
-        job =  new DistributedReplicaJob(parameters);
+//    }else if (parameters->job == Job::DISTRIBUTED_REPLICA) {
+//        job =  new DistributedReplicaJob(parameters);
     }else if (parameters->job == Job::BASIN_HOPPING) {
         job =  new BasinHoppingJob(parameters);
     }else if (parameters->job == Job::FINITE_DIFFERENCE) {

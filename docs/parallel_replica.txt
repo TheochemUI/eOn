@@ -41,21 +41,21 @@ for the dynamics run is set in the **[Main]** section.
 [Parallel Replica] Options
 ==========================
 
-**dephase_steps**: Number of steps used to decorrelate the replica trajectories. The momenta will be inversed when reaching the dividing surface to prevent transitions occurring during this period.
+**dephase_steps**: Number of steps used to decorrelate the replica trajectories. The momenta will be inverted when reaching the dividing surface to prevent transitions occurring during these steps.
 
     default: ``200``
 
-**state_check_period**: How frequently the state of system is checked. Every state_check_period steps, the current structure and the initial one will be compared to tell whether a newstate has been reached. Also note when you set refine as true, the code will keep a buffer array consisting of state_check_period/state_save_period+1 atomic configurations, which may increase the usage of memory.
+**state_check_steps**: How frequently the state of system is checked. Every state_check_steps, the current configuration is minized and compared to the initial state minimum to decide if a transition to a new state has occured. When refine_transition_time is set to true, the code will keep a buffer of configurations is saved so that the transition time can be determined to more precision than state_check_steps.
 
     default: ``500``
 
-**refine_transition_time**: Whether or not the transition time is refined. When this option is turned on, the code will keep an array consisted by state_check_period/state_save_period+1 atomic configurations. A Binary search algorithm is employed to determine the transition step. Otherwise the transition step would be the first in which a new state was found. This function reduces the need for a smaller state_check_period. And the accuracy of transition time is state_save_period*timestep.
+**refine_transition_time**: Whether or not the transition time is refined. When this option is true, an array of (state_check_steps/state_save_steps) configurations along the history of the trajectory is saved. A Binary search is then used to determine the transition time.  Then this option is false, the transition time is taken to be when the new state was found. This function reduces the need for small values of state_check_steps; the precision of the transition time is state_save_steps*timestep.
 
     default: ``True``
 
-**state_save_period**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of state_save_period lowers the accuracy of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
+**state_save_steps**: How often the system is recorded to the buffer array when the refine_transition_time option is activated. Increasing the value of state_save_steps lowers the precision of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
 
-    default: ``0.1*state_check_period``
+    default: ``0.1*state_check_steps``
 
 **post_transition_steps**: Number of MD steps which will be performed after a new state has been found. A state check will be employed after these post_transition_steps to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_steps is recommended.
 

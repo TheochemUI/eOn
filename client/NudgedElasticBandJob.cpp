@@ -75,16 +75,16 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
     fprintf(fileResults, "%f energy_reference\n", neb->image[0]->getPotentialEnergy());
+    fprintf(fileResults, "%li number_of_images\n", neb->images);
     for(long i=0; i<=neb->images+1; i++) {
-        fprintf(fileResults, "%ld image_number\n", i);
-        fprintf(fileResults, "%f image_energy\n", neb->image[i]->getPotentialEnergy()-neb->image[0]->getPotentialEnergy());
-        fprintf(fileResults, "%f image_force\n", neb->image[i]->getForces().norm());
-        fprintf(fileResults, "%f image_projected_force\n", neb->projectedForce[i]->norm());
+        fprintf(fileResults, "%f image%li_energy\n", neb->image[i]->getPotentialEnergy()-neb->image[0]->getPotentialEnergy(), i);
+        fprintf(fileResults, "%f image%li_force\n", neb->image[i]->getForces().norm(), i);
+        fprintf(fileResults, "%f image%li_projected_force\n", neb->projectedForce[i]->norm(), i);
     }
     fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
     for(long i=0; i<=neb->numExtrema; i++) {
-        fprintf(fileResults, "%f extremum_position\n", neb->extremumPosition[i]);
-        fprintf(fileResults, "%f extremum_energy\n", neb->extremumEnergy[i]);
+        fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i], i);
+        fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
     }
 
     fclose(fileResults);
