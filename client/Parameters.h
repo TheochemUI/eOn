@@ -49,12 +49,12 @@ public:
     // [Potential] //
     string potential;
     double MPIPollPeriod;
-    bool LAMMPSLogging;
+    bool   LAMMPSLogging;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
-    bool checkRotation;
+    bool   checkRotation;
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
@@ -62,7 +62,7 @@ public:
 
     // [Saddle Search]
 //    bool   saddleDisplace; // do saddle search displacements client-side
-    long   saddleMaxJumpAttempts; // number of initial displacements of the system to reach a convex region;  if 0, a search is started after the displacement
+    long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
     string saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
     string saddleDisplaceType; // displacement type to use
@@ -73,13 +73,13 @@ public:
     double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
     double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
-    bool saddleNonnegativeDisplacementAbort; // Abort the saddle search if the displacement does not have a negative mode.
+    bool   saddleNonnegativeDisplacementAbort; // abort the saddle search if the displacement does not have a negative mode
 
-    bool saddleConfinePositive; // undocumented
+    bool   saddleConfinePositive; // undocumented
     double saddleConfinePositiveMinForce; // undocumented
     double saddleConfinePositiveScaleRatio; // undocumented
     double saddleConfinePositiveBoost; // undocumented
-    long saddleConfinePositiveMinActive; // undocumented
+    long   saddleConfinePositiveMinActive; // undocumented
 
     // [Optimizer]
     string optMethod;
@@ -87,8 +87,8 @@ public:
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
     double optTimeStep; // time step size used in quickmin
-    bool optVariableTimeStep; // if quickmin time step should be adjusted
-    long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
+    bool   optVariableTimeStep; // if quickmin time step should be adjusted
+    long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
 
     // [Dimer]
@@ -130,15 +130,14 @@ public:
     long   mdSteps;  
 
     // [Parallel Replica]
-    bool   paraRepRefine;
-    bool   paraRepAutoStop;
-    long   paraRepRecordPeriod;
-    long   paraRepRefineAccuracy;
-    long   paraRepDephaseSteps;
-    long   paraRepCheckPeriod;
-    long   paraRepRelaxSteps;
-    bool   paraRepDephaseLoopStop;
-    long   paraRepDephaseLoopMax;
+    bool   parrepRefineTransition;
+    bool   parrepAutoStop;
+    bool   parrepDephaseLoopStop;
+    long   parrepDephaseSteps;
+    long   parrepDephaseLoopMax;
+    long   parrepStateCheckInterval;
+    long   parrepRecordInterval;
+    long   parrepRelaxSteps;
 
     // [Thermostat]
     string thermostat;
@@ -147,10 +146,10 @@ public:
     double thermoNoseMass;
     double thermoLangvinFriction;
 
-    // [Distributed Replica] //
-    long drBalanceSteps;
-    long drSamplingSteps;
-    double drTargetTemperature;
+    // [Replica Exchange] //
+    long   repexcBalanceSteps;
+    long   repexcSamplingSteps;
+    double repexcTargetTemperature;
 
     // [Bond Boost]
     string biasPotential;
@@ -182,7 +181,7 @@ public:
 
     // [Debug]
     bool   writeMovies;
-    long   writeMoviesSteps;
+    long   writeMoviesInterval;
 private:
     string toLowerCase(string s);
 

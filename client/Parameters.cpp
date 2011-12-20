@@ -55,7 +55,7 @@ Parameters::Parameters(){
 
     // [Debug] //
     writeMovies = false;
-    writeMoviesSteps = 1;
+    writeMoviesInterval = 1;
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
@@ -115,7 +115,7 @@ Parameters::Parameters(){
     nebMaxIterations = 1000;
 
     // [Dynamics] //
-    mdTimeStep = 1;
+    mdTimeStep = 1.0;
     mdSteps = 1000;
 
     // [Thermostat] //
@@ -126,20 +126,19 @@ Parameters::Parameters(){
     thermoLangvinFriction = 0.005;
 
     // [Parallel Replica] //
-    paraRepRefine = true;
-    paraRepAutoStop = false;
-    paraRepRefineAccuracy = 1;
-    paraRepCheckPeriod = 500;
-    paraRepRecordPeriod = 50;
-    paraRepRelaxSteps = 500;
-    paraRepDephaseSteps = 200;
-    paraRepDephaseLoopStop = false;
-    paraRepDephaseLoopMax = 5;
+    parrepRefineTransition = true;
+    parrepAutoStop = false;
+    parrepDephaseLoopStop = false;
+    parrepDephaseSteps = 200;
+    parrepDephaseLoopMax = 5;
+    parrepStateCheckInterval = 500;
+    parrepRecordInterval = 50;
+    parrepRelaxSteps = 500;
 
-    // [Distributed Replica] //
-    drBalanceSteps = 500;
-    drSamplingSteps = 500;
-    drTargetTemperature = 300.0;
+    // [Replica Exchange] //
+    repexcBalanceSteps = 500;
+    repexcSamplingSteps = 500;
+    repexcTargetTemperature = 300.0;
 
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
@@ -227,7 +226,7 @@ int Parameters::load(FILE *file){
         // [Debug] //
 
         writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
-        writeMoviesSteps = ini.GetValueL("Debug","write_movies_steps",writeMoviesSteps);
+        writeMoviesInterval = ini.GetValueL("Debug","write_movies_interval",writeMoviesInterval);
 
         // [Structure Comparison] //
 
@@ -330,22 +329,20 @@ int Parameters::load(FILE *file){
 
         // [Parallel Replica]
 
-        paraRepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", paraRepDephaseSteps);
-        paraRepRefine = ini.GetValueB("Parallel Replica", "refine_transition_time", paraRepRefine);
-        paraRepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", paraRepAutoStop);
-        paraRepCheckPeriod = ini.GetValueL("Parallel Replica", "state_check_period", paraRepCheckPeriod);
-        paraRepRecordPeriod = int(0.1*paraRepCheckPeriod);
-        paraRepRecordPeriod = ini.GetValueL("Parallel Replica", "state_save_period", paraRepRecordPeriod);
-        paraRepRefineAccuracy = ini.GetValueL("Parallel Replica", "bisection_accuracy", paraRepRefineAccuracy);
-        paraRepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", paraRepRelaxSteps);
-        paraRepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", paraRepDephaseLoopStop);
-        paraRepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", paraRepDephaseLoopMax);
+        parrepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", parrepAutoStop);
+        parrepRefineTransition = ini.GetValueB("Parallel Replica", "refine_transition", parrepRefineTransition);
+        parrepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", parrepDephaseLoopStop);
+        parrepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", parrepDephaseSteps);
+        parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", parrepDephaseLoopMax);
+        parrepStateCheckInterval = ini.GetValueL("Parallel Replica", "state_check_period", parrepStateCheckInterval);
+        parrepRecordInterval = ini.GetValueL("Parallel Replica", "state_save_period", 0.1*parrepStateCheckInterval);
+        parrepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", parrepRelaxSteps);
 
-        // [Distributed Replica] //
+        // [Replica Exchange] //
 
-        drBalanceSteps = ini.GetValueL("Distributed Replica", "balance_steps", drBalanceSteps);
-        drSamplingSteps = ini.GetValueL("Distributed Replica", "sampling_steps", drSamplingSteps);
-        drTargetTemperature = ini.GetValueF("Distributed Replica", "target_temperature", drTargetTemperature);
+        repexcBalanceSteps = ini.GetValueL("Replica Exchange", "balance_steps", repexcBalanceSteps);
+        repexcSamplingSteps = ini.GetValueL("Replica Exchange", "sampling_steps", repexcSamplingSteps);
+        repexcTargetTemperature = ini.GetValueF("Replica Exchange", "target_temperature", repexcTargetTemperature);
 
         // [Hyperdynamics] //
 
@@ -354,7 +351,7 @@ int Parameters::load(FILE *file){
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
-        bondBoostQcut= ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
+        bondBoostQcut = ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
         biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential",biasPotential));
 
         // [Basin Hopping] //
