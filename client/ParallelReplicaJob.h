@@ -16,39 +16,42 @@
 
 class ParallelReplicaJob: public Job
 {
-
     public:
+
         ParallelReplicaJob(Parameters *params);
         ~ParallelReplicaJob(void);
         std::vector<std::string> run(void);
 
     private:
-        void dynamics();
-        long Refine(Matter *mdbuff[],long length);
-        bool checkState(Matter *matter);
-        bool checkState_nq(Matter *matter);
+
+        int dynamics();
+        long refine(Matter *mdBuffer[], long length, Matter *reactant);
+        bool checkState(Matter *current, Matter *reactant);
         void saveData(int status);
         void dephase();
+
         Parameters *parameters;
+
+        Matter *current;
         Matter *reactant;
-        Matter *min1;
-        Matter *fin1;
-        Matter *fin2;
         Matter *saddle;
+        Matter *meta;
         Matter *final;
-        double SPtime; 
-        double RLtime;
-        double *SPtimebuff;
-        long min_fcalls;
-        long md_fcalls;
-        long dh_fcalls;
-        long rf_fcalls;
-        long nsteps;
-        long nsteps_refined;
-        long check_steps;
-        long relax_steps;
-        bool newstate;
-        bool meta;
+        Matter *product;
+
+        bool metaStateFlag;
+        bool newStateFlag;
+
+        long minimizeFCalls;
+        long mdFCalls;
+        long dephaseFCalls;
+        long refineFCalls;
+
+        long transitionStep;
+
+        double transitionTime;
+        double *timeBuffer;
+
         std::vector<std::string> returnFiles;
 };
 

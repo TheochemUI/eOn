@@ -31,36 +31,27 @@ public:
 
     ~Dynamics();
 
-    void oneStep(double temperature);
-    void andersenVerlet();
+    void setTemperature(double temperature);
+    void oneStep();
     void velocityVerlet();
-    void fullSteps(double temperature); 
-    void andersen(double temperature);
-    void initialVel(double temperature);
-    void velRescaling(double temperature);
-    void noseHooverVerlet(double temperature);
-    void langevinVerlet(double temperature);
-    long getMDfcalls();
-    long getMinfcalls();
-    long getRefinefcalls();
-    bool checkState(Matter *matter,Matter *min1);
-    long refine(Matter *buff[],long length,Matter *min1);
-
-//  AtomMatrix langevinAcc(double temperature);
+    void run(); 
+    void andersenCollision();
+    void setThermalVelocity();
+    void rescaleVelocity();
+    void noseHooverVerlet();
+    void langevinVerlet();
 
 private:
-    long nAtoms;
+
+    long nAtoms, nFreeCoords;
 
     Matter *matter;
     Parameters *parameters;
 
-    long min_fcalls;
-    long md_fcalls;
-    long rf_fcalls;
     double dt;
     double kb;
-    bool init;
-    double vxi1,vxi2,xi1,xi2;
+    double temperature;
+    double vxi1, vxi2, xi1, xi2;
 };
 
 #endif
