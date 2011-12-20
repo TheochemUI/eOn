@@ -166,7 +166,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     log_file("[Potential] fcall#: %4d  real: %8.2g  user: %8.2g  sys: %8.2g seconds\n",
              fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
 
-    fcalls+=1;
+    fcalls += 1;
     fcallsTotal += 1;
 
     return forces;

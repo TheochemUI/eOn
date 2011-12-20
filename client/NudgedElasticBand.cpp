@@ -33,7 +33,7 @@ class NEBObjectiveFunction : public ObjectiveFunction
             forceV.resize(3*neb->atoms*neb->images);
             if(neb->movedAfterForceCall) neb->updateForces();
             for(long i=1; i<=neb->images; i++){
-                forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->projectedForce[i]->data(), 3*neb->atoms); 
+                forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->projectedForce[i]->data(), 3*neb->atoms);
             }
             return -forceV;
         }
@@ -72,6 +72,7 @@ class NEBObjectiveFunction : public ObjectiveFunction
         double getConvergence() { return neb->convergenceForce(); }
 
     private:
+
         NudgedElasticBand *neb;
         Parameters *parameters;
 };

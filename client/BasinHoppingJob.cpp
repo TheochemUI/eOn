@@ -66,7 +66,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
     current->con2matter(conFilename);
     if(parameters->basinHoppingInitialMD == true){
         Dynamics dyn(current,parameters);
-        dyn.fullSteps(parameters->basinHoppingInitialMDTemperature);
+        dyn.setTemperature(parameters->basinHoppingInitialMDTemperature);
+        dyn.run();
     }
     *trial = *current;
     *minTrial = *current;
