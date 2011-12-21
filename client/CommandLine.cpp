@@ -106,7 +106,7 @@ void commandLine(int argc, char **argv)
     parameters->potential = potential;
     parameters->optMethod = optimizer;
 
-    log_init(parameters, "client.log");
+    log_init(parameters, (char*)"client.log");
 
     Matter *matter = new Matter(parameters);
     matter->con2matter(confile);

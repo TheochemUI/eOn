@@ -123,7 +123,7 @@ double BondBoost::boost()
 {
     long RMDS = parameters->bondBoostRMDS;
     double dt = parameters->mdTimeStep;
-    double boost_dt = 0.0, AVE_Boost_Fact;
+    double boost_dt = 0.0; // , AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
 
@@ -166,7 +166,7 @@ double BondBoost::boost()
         SDtime += dt;
         SPtime += boost_dt;
         nReg++;
-        AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
+        // AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
         //   printf("AVE_BOOST_FACT=%E;nReg = %ld\n",AVE_Boost_Fact,nReg);
         //  printf("nReg=%ld, boost_dt = %lf,SPtime = %lf\n",nReg-1,boost_dt,SPtime);
         //STC: I'm not sure if this is safe, but this should plug the memory
@@ -178,10 +178,10 @@ double BondBoost::boost()
 
 double BondBoost::Booststeps()
 {
-    long i,j,Mi;
+    long i,j; //,Mi;
     long AtomI_1,AtomI_2;
     double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
-    double Dforce, Fact_1, Fact_2, Mforce, dt, bdt, Temp, kb;
+    double Dforce, Fact_1, Fact_2, dt, bdt, Temp, kb; //, Mforce
     double Ri[3] = {0.0} , R = 0.0;
 
     AtomMatrix OldForce(nAtoms,3);
@@ -208,7 +208,7 @@ double BondBoost::Booststeps()
     Boost_Fact = 0.0;
     Sum_V = 0.0;
     Dforce = 0.0;
-    Mforce = 0.0;
+    //Mforce = 0.0;
     Fact_1 = 0.0;
     Fact_2 = 0.0;
 
@@ -222,7 +222,7 @@ double BondBoost::Booststeps()
         Epsr_Q[i] = (CBBLList(i,0)-EBBLList(i,0))/EBBLList(i,0)/QRR;
         if (abs(Epsr_Q[i]) >= Epsr_MAX ){
             Epsr_MAX = abs(Epsr_Q[i]);
-            Mi = i;
+            // Mi = i;
         }
     }
 
@@ -271,8 +271,8 @@ double BondBoost::Booststeps()
                 AtomI_1 = BBAList[2*i];
                 AtomI_2 = BBAList[2*i+1];
 
-                Mi = i;
-                Mforce = Dforce;
+                // Mi = i;
+                // Mforce = Dforce;
                 R = matter->distance(AtomI_1,AtomI_2);
 
                 for(j=0;j<3;j++){
