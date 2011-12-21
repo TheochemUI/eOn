@@ -27,7 +27,7 @@ public:
     BondBoost(Matter *matt, Parameters *params);
     ~BondBoost();///< Destructor.
 
-    void initial();
+    void initialize();
     double boost();
 
 private:
