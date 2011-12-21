@@ -86,7 +86,7 @@ int ParallelReplicaJob::dynamics()
     bool transitionFlag = false, recordFlag = true, stopFlag = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
-    long step = 0, refineStep, productStep;
+    long step = 0, refineStep, productStep, newStateStep;
     long nCheck = 0, nRelax = 0, nRecord = 0;
     double time = 0.0;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
@@ -176,6 +176,7 @@ int ParallelReplicaJob::dynamics()
             transitionFlag = checkState(current, reactant);
             minimizeFCalls += Potential::fcalls - refFCalls;
             if(transitionFlag == true){
+                transitionStep = step;
                 recordFlag = false;
             }
         }
@@ -184,7 +185,7 @@ int ParallelReplicaJob::dynamics()
         if ( transitionFlag && !newStateFlag )
         {
             nRelax++; // run relaxSteps before making a state check
-            if (nRelax >= parameters->parrepRelaxSteps){
+            if (nRelax > parameters->parrepRelaxSteps){
                 // state check; reset counters
                 nRelax = 0;
                 nCheck = 0;
@@ -196,12 +197,12 @@ int ParallelReplicaJob::dynamics()
                 if(newStateFlag == false){
                     recordFlag = true;
                 }else{
-                    log("Found New State !\n");
+                    log("Found New State.\n");
                     *product = *current;
                     refFCalls = Potential::fcalls;
                     product->relax(true);
                     minimizeFCalls += Potential::fcalls - refFCalls;
-                    transitionStep = step; // remember the transition step
+                    newStateStep = step; // remember the step when we are in a new state
                     if(parameters->parrepAutoStop){  // stop at transition; primarily for debugging
                         stopFlag = true;
                     }
@@ -245,20 +246,37 @@ int ParallelReplicaJob::dynamics()
         newStateFlag = false;
     }
 
-    productStep = transitionStep;
-
+//    productStep = transitionStep;
+    cout <<"transitionStep: "<<transitionStep<<endl;
+    cout <<"newStateStep: "<<newStateStep<<endl;
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
         refFCalls = Potential::fcalls;
         refineStep = refine(mdBuffer, mdBufferLength, reactant);
+        cout <<"refineStep: "<<refineStep<<endl;
+/*
         productStep = transitionStep - parameters->parrepStateCheckInterval -
                       parameters->parrepRelaxSteps + refineStep*parameters->parrepRecordInterval;
+        cout <<"productStep: "<<productStep<<endl;
+*/
+        long tmp = transitionStep;
+
+        transitionStep = newStateStep - parameters->parrepStateCheckInterval
+                        - parameters->parrepRelaxSteps + refineStep*parameters->parrepRecordInterval;
+
+        cout <<"refined transitionStep: "<<transitionStep<<endl;
+
+        transitionStep = tmp - parameters->parrepStateCheckInterval
+                         + refineStep*parameters->parrepRecordInterval;
+
+        cout <<"refined transitionStep: "<<transitionStep<<endl;
+
         *saddle = *mdBuffer[refineStep];
         transitionTime = timeBuffer[refineStep];
 
         log("Found transition at step %ld, now running another %ld steps to allocate the product state\n",
-            productStep, parameters->parrepRelaxSteps);
+            transitionStep, parameters->parrepRelaxSteps);
 
         long relaxBufferLength = int(parameters->parrepRelaxSteps/parameters->parrepRecordInterval) + 1;
 
@@ -456,6 +474,7 @@ long ParallelReplicaJob::refine(Matter *buff[], long length, Matter *reactant)
     {
 
         mid = min + (max-min)/2;
+        cout <<"min: "<<min<<" mid: "<<mid<<" max: "<<max<<endl;
         midTest = checkState(buff[mid], reactant);
 
         if (midTest == false){
