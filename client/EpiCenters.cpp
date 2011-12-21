@@ -303,11 +303,8 @@ long EpiCenters::minCoordination(const Matter *matter, double neighborCutoff)
     // LONG_MAX is a the maximal value a long can achieve, from library limits
     minCoordinationVal = LONG_MAX;
 
-    bool temp;
-
     for(int i=0; i<nAtoms; i++){
         if((coordinationVal[i]<minCoordinationVal) && !(matter->getFixed(i))){
-            temp=matter->getFixed(i);
             minCoordinationVal = coordinationVal[i];
         }
     }

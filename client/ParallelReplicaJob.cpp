@@ -300,7 +300,7 @@ int ParallelReplicaJob::dynamics()
 
 void ParallelReplicaJob::saveData(int status)
 {
-    FILE *fileResults, *fileReactant, *fileProduct, *fileSaddle, *fileMeta;
+    FILE *fileResults, *fileReactant;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -320,7 +320,7 @@ void ParallelReplicaJob::saveData(int status)
     cout <<"force calls: "<<Potential::fcalls<<endl;
 
 //    fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%ld transition found\n", (newStateFlag)?1:0);
+    fprintf(fileResults, "%d transition found\n", (newStateFlag)?1:0);
 
     if(newStateFlag)
     {
@@ -376,7 +376,6 @@ void ParallelReplicaJob::dephase()
     bool transitionFlag = false;
     long step, stepNew, loop;
     long dephaseBufferLength, dephaseRefineStep;
-    long refFCalls;
     AtomMatrix velocity;
 
     Dynamics dephaseDynamics(current, parameters);
