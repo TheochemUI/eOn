@@ -37,17 +37,17 @@ void TestJob::checkFullSearch(void){
     printf("Checks the potential energies of located configurations.\n");
     printf("Reported as OK if within a tolerance of: %f\n",tolerance);
 
-    long status;
+//    long status;
     bool ok=1;
     double diffM1, diffM2, diffSP;
 
     Matter *initial;
     Matter *saddle;
-    Matter *displacement; 
+//    Matter *displacement; 
     Matter *min1;
     Matter *min2; 
     Matter *matterTemp; 
-    SaddleSearch *saddleSearch;
+//    SaddleSearch *saddleSearch;
 
     string reactant_passed("reactant_test.con");
     string displacement_passed("displacement_test.con");
@@ -56,7 +56,7 @@ void TestJob::checkFullSearch(void){
     parameters->potential = "emt";
 
     initial = new Matter(parameters);
-    displacement = new Matter(parameters);
+//    displacement = new Matter(parameters);
     saddle = new Matter(parameters);
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
@@ -161,7 +161,13 @@ void TestJob::checkFullSearch(void){
         printf("Saddle search tests there were WARNINGS\n");
     }
     printf("SP done\n");
-    
+
+    delete initial;
+    delete saddle;
+    delete min1;
+    delete min2;
+    delete matterTemp;
+
     return;
     
 }
