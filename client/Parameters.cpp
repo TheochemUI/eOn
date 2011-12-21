@@ -334,8 +334,8 @@ int Parameters::load(FILE *file){
         parrepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", parrepDephaseLoopStop);
         parrepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", parrepDephaseSteps);
         parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", parrepDephaseLoopMax);
-        parrepStateCheckInterval = ini.GetValueL("Parallel Replica", "state_check_period", parrepStateCheckInterval);
-        parrepRecordInterval = ini.GetValueL("Parallel Replica", "state_save_period", 0.1*parrepStateCheckInterval);
+        parrepStateCheckInterval = ini.GetValueL("Parallel Replica", "state_check_interval", parrepStateCheckInterval);
+        parrepRecordInterval = ini.GetValueL("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
         parrepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", parrepRelaxSteps);
 
         // [Replica Exchange] //
