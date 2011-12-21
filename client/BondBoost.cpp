@@ -31,7 +31,7 @@ BondBoost::~BondBoost()
 }
 
 
-void BondBoost::initial()
+void BondBoost::initialize()
 {
     long i, j, k = 0, count = 0;
     bool flag  = 1;
