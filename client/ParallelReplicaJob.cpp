@@ -86,7 +86,7 @@ int ParallelReplicaJob::dynamics()
     bool transitionFlag = false, recordFlag = true, stopFlag = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
-    long step = 0, refineStep, productStep, newStateStep;
+    long step = 0, refineStep, newStateStep;
     long nCheck = 0, nRelax = 0, nRecord = 0;
     double time = 0.0;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
@@ -246,43 +246,29 @@ int ParallelReplicaJob::dynamics()
         newStateFlag = false;
     }
 
-//    productStep = transitionStep;
-    cout <<"transitionStep: "<<transitionStep<<endl;
-    cout <<"newStateStep: "<<newStateStep<<endl;
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
         refFCalls = Potential::fcalls;
         refineStep = refine(mdBuffer, mdBufferLength, reactant);
-        cout <<"refineStep: "<<refineStep<<endl;
-/*
-        productStep = transitionStep - parameters->parrepStateCheckInterval -
-                      parameters->parrepRelaxSteps + refineStep*parameters->parrepRecordInterval;
-        cout <<"productStep: "<<productStep<<endl;
-*/
-        long tmp = transitionStep;
 
         transitionStep = newStateStep - parameters->parrepStateCheckInterval
                         - parameters->parrepRelaxSteps + refineStep*parameters->parrepRecordInterval;
-
-        cout <<"refined transitionStep: "<<transitionStep<<endl;
-
-        transitionStep = tmp - parameters->parrepStateCheckInterval
+/* this is equivilant:
+        transitionStep = transitionStep - parameters->parrepStateCheckInterval
                          + refineStep*parameters->parrepRecordInterval;
-
-        cout <<"refined transitionStep: "<<transitionStep<<endl;
-
+*/
         *saddle = *mdBuffer[refineStep];
         transitionTime = timeBuffer[refineStep];
 
         log("Found transition at step %ld, now running another %ld steps to allocate the product state\n",
             transitionStep, parameters->parrepRelaxSteps);
 
-        long relaxBufferLength = int(parameters->parrepRelaxSteps/parameters->parrepRecordInterval) + 1;
+        long relaxBufferLength = long(parameters->parrepRelaxSteps/parameters->parrepRecordInterval) + 1;
 
-        if(refineStep < (mdBufferLength - relaxBufferLength - 1) )
+        if( (refineStep + relaxBufferLength) < (mdBufferLength - 1) )
         {
-            *final = *mdBuffer[productStep + relaxBufferLength];
+            *final = *mdBuffer[refineStep + relaxBufferLength];
         }
         else
         {
@@ -334,8 +320,6 @@ void ParallelReplicaJob::saveData(int status)
     fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
     fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
     fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
-
-    cout <<"force calls: "<<Potential::fcalls<<endl;
 
 //    fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%d transition found\n", (newStateFlag)?1:0);
@@ -474,7 +458,6 @@ long ParallelReplicaJob::refine(Matter *buff[], long length, Matter *reactant)
     {
 
         mid = min + (max-min)/2;
-        cout <<"min: "<<min<<" mid: "<<mid<<" max: "<<max<<endl;
         midTest = checkState(buff[mid], reactant);
 
         if (midTest == false){
