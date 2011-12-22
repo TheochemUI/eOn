@@ -285,7 +285,7 @@ Dynamics:
             kind: float
             default: 0.2
 
-        andersen_collision_freq:
+        andersen_collision_period:
             kind: float
             default: 10.0
 
@@ -315,7 +315,7 @@ Parallel Replica:
             kind: int
             default: 500
 
-        state_check_period:
+        state_check_interval:
             kind: int
             default: 500
 
@@ -327,7 +327,7 @@ Parallel Replica:
             kind: boolean
             default: False
 
-        state_save_period: 
+        state_save_interval:
             kind: int
             default: 50
 

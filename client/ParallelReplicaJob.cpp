@@ -272,6 +272,7 @@ int ParallelReplicaJob::dynamics()
         }
         else
         {
+            *final=*final;
             // here, the final configuration should be obtained from the relax buffer -- fix this!
         }
 
@@ -322,7 +323,7 @@ void ParallelReplicaJob::saveData(int status)
     fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
 
 //    fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%d transition found\n", (newStateFlag)?1:0);
+    fprintf(fileResults, "%d transition_found\n", (newStateFlag)?1:0);
 
     if(newStateFlag)
     {

@@ -182,7 +182,7 @@ def register_results(comm, current_state, states):
 
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
-        if result['results']['termination_reason'] == 1:
+        if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
