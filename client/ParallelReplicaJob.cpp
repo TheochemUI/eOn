@@ -321,6 +321,7 @@ void ParallelReplicaJob::saveData(int status)
     fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
     fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
     fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
+ 
 
 //    fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%d transition_found\n", (newStateFlag)?1:0);
@@ -330,6 +331,10 @@ void ParallelReplicaJob::saveData(int status)
         fprintf(fileResults, "%e transition_time_s\n", transitionStep*1.018e-14);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
+    }
+    else
+    { 
+        fprintf(fileResults, "%e transition_time_s\n", parameters->mdSteps*1.018e-14);
     }
     fclose(fileResults);
 
