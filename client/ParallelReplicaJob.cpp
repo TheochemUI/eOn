@@ -86,7 +86,7 @@ int ParallelReplicaJob::dynamics()
     bool transitionFlag = false, recordFlag = true, stopFlag = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
-    long step = 0, refineStep, newStateStep;
+    long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRelax = 0, nRecord = 0;
     double time = 0.0;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
@@ -261,7 +261,7 @@ int ParallelReplicaJob::dynamics()
         *saddle = *mdBuffer[refineStep];
         transitionTime = timeBuffer[refineStep];
 
-        log("Found transition at step %ld, now running another %ld steps to allocate the product state\n",
+        log("Found transition at step %ld, now running another %ld steps to allocate the product state.\n",
             transitionStep, parameters->parrepRelaxSteps);
 
         long relaxBufferLength = long(parameters->parrepRelaxSteps/parameters->parrepRecordInterval) + 1;

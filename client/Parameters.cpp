@@ -21,6 +21,7 @@
 #include "SaddleSearch.h"
 #include "ImprovedDimer.h"
 #include "NudgedElasticBand.h"
+#include "ReplicaExchangeJob.h"
 #include "Potential.h"
 
 Parameters::Parameters(){
@@ -136,9 +137,13 @@ Parameters::Parameters(){
     parrepRelaxSteps = 500;
 
     // [Replica Exchange] //
-    repexcBalanceSteps = 500;
-    repexcSamplingSteps = 500;
-    repexcTargetTemperature = 300.0;
+    repexcTemperatureDistribution = "exponential";
+    repexcReplicas = 10;
+    repexcExchangeTrials = repexcReplicas;
+    repexcSamplingTime = 1000.0 ;
+    repexcTemperatureLow = 0.0;
+    repexcTemperatureHigh = 0.0;
+    repexcExchangePeriod = 100.0;
 
     // [Hyperdynamics] //
     biasPotential = Hyperdynamics::NONE;
@@ -340,19 +345,23 @@ int Parameters::load(FILE *file){
 
         // [Replica Exchange] //
 
-        repexcBalanceSteps = ini.GetValueL("Replica Exchange", "balance_steps", repexcBalanceSteps);
-        repexcSamplingSteps = ini.GetValueL("Replica Exchange", "sampling_steps", repexcSamplingSteps);
-        repexcTargetTemperature = ini.GetValueF("Replica Exchange", "target_temperature", repexcTargetTemperature);
+        repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
+        repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
+        repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);
+        repexcSamplingTime = ini.GetValueF("Replica Exchange", "sampling_time", repexcSamplingTime);
+        repexcTemperatureHigh = ini.GetValueF("Replica Exchange", "temperature_high", repexcTemperatureHigh);
+        repexcTemperatureLow = ini.GetValueF("Replica Exchange", "temperature_high", temperature);
+        repexcExchangePeriod = ini.GetValueF("Replica Exchange", "exchange_period", repexcExchangePeriod);
 
         // [Hyperdynamics] //
 
-        bondBoostRMDS = ini.GetValueL("Hyperdynamics","bb_rmd_steps",bondBoostRMDS);
-        bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics","bb_boost_atomlist",bondBoostBALS));
-        bondBoostDVMAX = ini.GetValueF("Hyperdynamics","bb_dvmax",bondBoostDVMAX);
-        bondBoostQRR = ini.GetValueF("Hyperdynamics","bb_stretch_threshold",bondBoostQRR );
-        bondBoostPRR = ini.GetValueF("Hyperdynamics","bb_ds_curvature",bondBoostPRR );
-        bondBoostQcut = ini.GetValueF("Hyperdynamics","bb_rcut",bondBoostQcut);
-        biasPotential = toLowerCase(ini.GetValue("Hyperdynamics","bias_potential",biasPotential));
+        bondBoostRMDS = ini.GetValueL("Hyperdynamics", "bb_rmd_steps", bondBoostRMDS);
+        bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics", "bb_boost_atomlist", bondBoostBALS));
+        bondBoostDVMAX = ini.GetValueF("Hyperdynamics", "bb_dvmax", bondBoostDVMAX);
+        bondBoostQRR = ini.GetValueF("Hyperdynamics", "bb_stretch_threshold", bondBoostQRR );
+        bondBoostPRR = ini.GetValueF("Hyperdynamics", "bb_ds_curvature", bondBoostPRR );
+        bondBoostQcut = ini.GetValueF("Hyperdynamics", "bb_rcut", bondBoostQcut);
+        biasPotential = toLowerCase(ini.GetValue("Hyperdynamics", "bias_potential", biasPotential));
 
         // [Basin Hopping] //
 

@@ -167,7 +167,7 @@ void helper_functions::makeProjection(double *result, const double *v1, const do
     return;
 }
 
-bool helper_functions::rot_match(const Matter *m1, const Matter *m2, const double max_diff)
+bool helper_functions::rotationMatch(const Matter *m1, const Matter *m2, const double max_diff)
 {
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();

@@ -146,10 +146,14 @@ public:
     double thermoNoseMass;
     double thermoLangvinFriction;
 
-    // [Replica Exchange] //
-    long   repexcBalanceSteps;
-    long   repexcSamplingSteps;
-    double repexcTargetTemperature;
+    // [Replica Exchange]
+    string repexcTemperatureDistribution;
+    long   repexcReplicas;
+    long   repexcExchangeTrials;
+    double repexcSamplingTime;
+    double repexcTemperatureHigh;
+    double repexcTemperatureLow;
+    double repexcExchangePeriod;
 
     // [Bond Boost]
     string biasPotential;
