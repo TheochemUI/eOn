@@ -158,7 +158,7 @@ bool Matter::operator==(const Matter& matter) {
 
     if(parameters->checkRotation)
     {
-        return helper_functions::rot_match(this, &matter, parameters->distanceDifference);
+        return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
     }
     else
     {

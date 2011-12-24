@@ -252,8 +252,8 @@ endif
 OBJECTS += ClientEON.o INIFile.o SaddleSearch.o Dimer.o  EpiCenters.o Hessian.o \
     ConjugateGradients.o HelperFunctions.o Matter.o Parameters.o Potential.o    \
     Quickmin.o ProcessSearchJob.o PointJob.o MinimizationJob.o                  \
-    HessianJob.o ParallelReplicaJob.o Dynamics.o BondBoost.o                    \
-    FiniteDifferenceJob.o NudgedElasticBandJob.o        \
+    HessianJob.o ParallelReplicaJob.o ReplicaExchangeJob.o Dynamics.o           \
+    BondBoost.o FiniteDifferenceJob.o NudgedElasticBandJob.o                    \
     TestJob.o BasinHoppingJob.o SaddleSearchJob.o ImprovedDimer.o               \
     NudgedElasticBand.o Lanczos.o ExactMinMode.o Bundling.o Job.o CommandLine.o \
     DynamicsJob.o Log.o LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o
