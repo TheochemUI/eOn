@@ -44,8 +44,8 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     reactant = new Matter(parameters);
     saddle = new Matter(parameters);
     meta = new Matter(parameters);
-    final = new Matter(parameters);
     product = new Matter(parameters);
+    final = new Matter(parameters);
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
 
@@ -75,8 +75,8 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     delete reactant;
     delete saddle;
     delete meta;
-    delete final;
     delete product;
+    delete final;
 
     return returnFiles;
 }
@@ -198,10 +198,10 @@ int ParallelReplicaJob::dynamics()
                     recordFlag = true;
                 }else{
                     log("Found New State.\n");
-                    *product = *current;
-                    refFCalls = Potential::fcalls;
-                    product->relax(true);
-                    minimizeFCalls += Potential::fcalls - refFCalls;
+                    *final = *current;
+                    //refFCalls = Potential::fcalls;
+                    //product->relax(true);
+                   // minimizeFCalls += Potential::fcalls - refFCalls;
                     newStateStep = step; // remember the step when we are in a new state
                     if(parameters->parrepAutoStop){  // stop at transition; primarily for debugging
                         stopFlag = true;
@@ -268,17 +268,18 @@ int ParallelReplicaJob::dynamics()
 
         if( (refineStep + relaxBufferLength) < (mdBufferLength - 1) )
         {
-            *final = *mdBuffer[refineStep + relaxBufferLength];
+            log("print here to debug %ld,%ld\n",refineStep+relaxBufferLength,mdBufferLength);
+            *product = *mdBuffer[refineStep + relaxBufferLength];
         }
         else
         {
-            *final=*final;
+            log("nothing to say about this\n");
+            *product = *final;
             // here, the final configuration should be obtained from the relax buffer -- fix this!
         }
 
         *meta = *saddle;
         meta->relax(true);
-        *product = *final;
         product->relax(true);
 
         if(*meta == *product){
@@ -334,7 +335,7 @@ void ParallelReplicaJob::saveData(int status)
     }
     else
     { 
-        fprintf(fileResults, "%e transition_time_s\n", parameters->mdSteps*1.018e-14);
+        fprintf(fileResults, "%e simulation_time_s\n", parameters->mdSteps*1.018e-14);
     }
     fclose(fileResults);
 
