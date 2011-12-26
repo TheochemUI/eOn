@@ -58,12 +58,12 @@ Parallel Replica with Hyperdynamics
 If you want to run Hyperdynamics, you can turn on the Hyperdynamics function by adding the following section to you ``config.ini`` file::
 
     [Hyperdynamics]
-    bias_potential=bond_boost ;using bond_boost scheme for the bias potential
+    bias_potential=bond_boost       ;using bond_boost scheme for the bias potential
     bb_boost_atomlist=0,1,2,3,4,5,6 ;atoms that are tagged, those bonds involving these atoms and shorter than bb_rcut will be boosted
     bb_rcut=3.0 
-    bb_rmd_steps=100 ;number of regular md steps to get equilibrium configuration.
-    bb_dvmax=0.4 ;the magnitude of the bond-boost bias potential.
-    bb_stretch_threshold=0.2  ;defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state
-    bb_ds_curvature=0.95   ;the curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98
+    bb_rmd_time=100.0               ;100.0 fs regular md will be performed to get equilibrium configuration.
+    bb_dvmax=0.4                    ;the magnitude of the bond-boost bias potential.
+    bb_stretch_threshold=0.2        ;defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state
+    bb_ds_curvature=0.95            ;the curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98
    
 All the other setting and print-out infomation are similar to the regular parallel replica simulation.

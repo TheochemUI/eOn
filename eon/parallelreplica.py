@@ -191,7 +191,7 @@ def register_results(comm, current_state, states):
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
         else:
-            state.inc_time(result['results']['transition_time_s'])
+            state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
 
     logger.info("%i (result) searches processed", num_registered)

@@ -65,10 +65,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", transitionStep*1.018e-14);
+        log("Transition time: %.2e s\n", transitionStep/0.09823*1.0e-15);
     }else{
        log("No new state was found in %ld dynamics steps (%.2f fs)\n",
-           parameters->mdSteps, 10.18*parameters->mdSteps*parameters->mdTimeStep);
+           parameters->mdSteps, 10.1802*parameters->mdSteps*parameters->mdTimeStep);
     }
 
     delete current;
@@ -88,20 +88,23 @@ int ParallelReplicaJob::dynamics()
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRelax = 0, nRecord = 0;
+    long StateCheckInterval, RecordInterval, RelaxSteps;
     double time = 0.0;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
     double sumT = 0.0, sumT2 = 0.0;
 
+    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
+    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
+    RelaxSteps = int(parameters->parrepRelaxTime/parameters->mdTimeStepInput);
     newStateFlag = metaStateFlag = false;
 
-    mdBufferLength = long(parameters->parrepStateCheckInterval/parameters->parrepRecordInterval);
+    mdBufferLength = long(StateCheckInterval/RecordInterval);
     Matter *mdBuffer[mdBufferLength];
     for(long i=0; i<mdBufferLength; i++) {
         mdBuffer[i] = new Matter(parameters);
     }
     timeBuffer = new double[mdBufferLength];
-    log("MD buffer length: %ld\n", mdBufferLength);
-    
+  
     Dynamics parrepDynamics(current, parameters);
     BondBoost bondBoost(current, parameters);
 
@@ -117,10 +120,12 @@ int ParallelReplicaJob::dynamics()
     dephaseFCalls = Potential::fcalls - refFCalls;
 
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
-        "Total Time: %.2f fs\nTime Step: %.2f fs\n\n",
+        "Total Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         parameters->temperature, 
-        10.18*parameters->mdSteps*parameters->mdTimeStep,
-        10.18*parameters->mdTimeStep);
+        parameters->mdSteps*parameters->mdTimeStep/0.09823,
+        parameters->mdTimeStep/0.09823,
+        parameters->mdSteps);
+    log("MD buffer length: %ld\n", mdBufferLength);
 
     long tenthSteps = parameters->mdSteps/10;
     //This prevents and edge case division by zero if mdSteps is < 10
@@ -153,7 +158,7 @@ int ParallelReplicaJob::dynamics()
         // standard conditions; record mater object in the transition buffer
         if( parameters->parrepRefineTransition && recordFlag && !newStateFlag )
         {
-            if( nCheck % parameters->parrepRecordInterval == 0 )
+            if( nCheck % RecordInterval == 0 )
             {
                 *mdBuffer[nRecord] = *current;
                 timeBuffer[nRecord] = time;
@@ -162,13 +167,13 @@ int ParallelReplicaJob::dynamics()
         }
 
 //#ifndef NDEBUG
-//        if (ncheck == parameters->parrepStateCheckInterval && !newState){
+//        if (ncheck == StateCheckInterval && !newState){
 //           current->matter2xyz("movie", true);
 //        }
 //#endif
 
         // time to do a state check; if a transiton if found, stop recording
-        if ( (nCheck == parameters->parrepStateCheckInterval) && !newStateFlag )
+        if ( (nCheck == StateCheckInterval) && !newStateFlag )
         {
             nCheck = 0; // reinitialize check state counter
             nRecord = 0; // restart the buffer
@@ -185,7 +190,7 @@ int ParallelReplicaJob::dynamics()
         if ( transitionFlag && !newStateFlag )
         {
             nRelax++; // run relaxSteps before making a state check
-            if (nRelax > parameters->parrepRelaxSteps){
+            if (nRelax > RelaxSteps){
                 // state check; reset counters
                 nRelax = 0;
                 nCheck = 0;
@@ -252,28 +257,28 @@ int ParallelReplicaJob::dynamics()
         refFCalls = Potential::fcalls;
         refineStep = refine(mdBuffer, mdBufferLength, reactant);
 
-        transitionStep = newStateStep - parameters->parrepStateCheckInterval
-                        - parameters->parrepRelaxSteps + refineStep*parameters->parrepRecordInterval;
+        transitionStep = newStateStep - StateCheckInterval
+                        - RelaxSteps + refineStep*RecordInterval;
 /* this is equivilant:
-        transitionStep = transitionStep - parameters->parrepStateCheckInterval
-                         + refineStep*parameters->parrepRecordInterval;
+        transitionStep = transitionStep - StateCheckInterval
+                         + refineStep*RecordInterval;
 */
         *saddle = *mdBuffer[refineStep];
         transitionTime = timeBuffer[refineStep];
 
-        log("Found transition at step %ld, now running another %ld steps to allocate the product state.\n",
-            transitionStep, parameters->parrepRelaxSteps);
+        log("Found transition at step %ld, now running another %.2f fs to allocate the product state.\n",
+            transitionStep, parameters->parrepRelaxTime);
 
-        long relaxBufferLength = long(parameters->parrepRelaxSteps/parameters->parrepRecordInterval) + 1;
+        long relaxBufferLength = long(RelaxSteps/RecordInterval) + 1;
 
         if( (refineStep + relaxBufferLength) < (mdBufferLength - 1) )
         {
-            log("print here to debug %ld,%ld\n",refineStep+relaxBufferLength,mdBufferLength);
+           // log("print here to debug %ld,%ld\n",refineStep+relaxBufferLength,mdBufferLength);
             *product = *mdBuffer[refineStep + relaxBufferLength];
         }
         else
         {
-            log("nothing to say about this\n");
+           // log("nothing to say about this\n");
             *product = *final;
             // here, the final configuration should be obtained from the relax buffer -- fix this!
         }
@@ -286,7 +291,7 @@ int ParallelReplicaJob::dynamics()
            log("Transition followed by a stable state.\n");
         }else{
            log("Transition followed by a metastable state; product state taken after relaxation time.\n");
-           transitionStep = transitionStep + parameters->parrepRelaxSteps;
+           transitionStep = transitionStep + RelaxSteps;
            metaStateFlag = true;
         }
         refineFCalls += Potential::fcalls - refFCalls;
@@ -384,18 +389,20 @@ void ParallelReplicaJob::dephase()
 {
     bool transitionFlag = false;
     long step, stepNew, loop;
+    long DephaseSteps;
     long dephaseBufferLength, dephaseRefineStep;
     AtomMatrix velocity;
 
+    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
     Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %ld steps\n", parameters->parrepDephaseSteps);
+    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime);
 
     step = stepNew = loop = 0;
 
-    while(step < parameters->parrepDephaseSteps)
+    while(step < DephaseSteps)
     {
-        // this should be allocated once, and of length parameters->parrepDephaseSteps
-        dephaseBufferLength = parameters->parrepDephaseSteps - step;
+        // this should be allocated once, and of length DephaseSteps
+        dephaseBufferLength = DephaseSteps - step;
         loop++;
         Matter *dephaseBuffer[dephaseBufferLength];
 
@@ -424,7 +431,7 @@ void ParallelReplicaJob::dephase()
         else
         {
             step = step + dephaseBufferLength;
-            log("Successful dephasing for %ld steps \n", step);
+            //log("Successful dephasing for %.2f steps \n", step);
         }
 
         for(long i=0; i<dephaseBufferLength; i++)
@@ -436,6 +443,8 @@ void ParallelReplicaJob::dephase()
             log("Reach dephase loop maximum, stop dephasing! Dephased for %ld steps\n ", step);
             break;
         }
+        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStep/0.09823);
+
     }
 }
 

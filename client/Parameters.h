@@ -126,18 +126,20 @@ public:
     string nebOptMethod;
 
     // [Molecular Dynamics]
+    double mdTimeStepInput;
     double mdTimeStep;
-    long   mdSteps;  
+    double mdTime;  
+    long   mdSteps;
 
     // [Parallel Replica]
     bool   parrepRefineTransition;
     bool   parrepAutoStop;
     bool   parrepDephaseLoopStop;
-    long   parrepDephaseSteps;
+    double parrepDephaseTime;
     long   parrepDephaseLoopMax;
-    long   parrepStateCheckInterval;
-    long   parrepRecordInterval;
-    long   parrepRelaxSteps;
+    double parrepStateCheckInterval;
+    double parrepRecordInterval;
+    double parrepRelaxTime;
 
     // [Thermostat]
     string thermostat;
@@ -158,7 +160,7 @@ public:
     // [Bond Boost]
     string biasPotential;
     string bondBoostBALS;
-    long   bondBoostRMDS;
+    double bondBoostRMDTime;
     double bondBoostDVMAX;
     double bondBoostQRR;
     double bondBoostPRR;

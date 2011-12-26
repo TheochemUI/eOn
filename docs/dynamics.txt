@@ -14,9 +14,9 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
    default: ``1``
 
-**steps**: The number of MD steps to run.
+**time**: How long the MD simulation will be performed, in femtoseconds.
 
-   default: ``1000``
+   default: ``1000.0``
 
 **thermostat**
 
@@ -36,7 +36,7 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
    default: ``0.2``
 
-**andersen_collision_freq**: The collision period (in fs) for the
+**andersen_collision_period**: The collision period (in fs) for the
 Andersen thermostat.
 
    default: ``10.0``
