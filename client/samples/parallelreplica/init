@@ -1,0 +1,2 @@
+cp .config_passed.ini.orig config_passed.ini
+cp .reactant_passed.con.orig reactant_passed.con

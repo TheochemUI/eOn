@@ -167,7 +167,6 @@ Parameters::Parameters(){
     basinHoppingJumpSteps = 0;
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
-
 }
 
 Parameters::~Parameters(){
@@ -347,12 +346,15 @@ int Parameters::load(FILE *file){
         // [Replica Exchange] //
 
         repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
+        cout <<"repexcTemperatureDistribution: "<<repexcTemperatureDistribution<<"\n";
         repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
         repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);
         repexcSamplingTime = ini.GetValueF("Replica Exchange", "sampling_time", repexcSamplingTime);
+        repexcSamplingTime = repexcSamplingTime * 0.09823; //transfer the time unit from fs to 10.18 fs
+        repexcTemperatureLow = ini.GetValueF("Replica Exchange", "temperature_low", temperature);
         repexcTemperatureHigh = ini.GetValueF("Replica Exchange", "temperature_high", repexcTemperatureHigh);
-        repexcTemperatureLow = ini.GetValueF("Replica Exchange", "temperature_high", temperature);
         repexcExchangePeriod = ini.GetValueF("Replica Exchange", "exchange_period", repexcExchangePeriod);
+        repexcExchangePeriod = repexcExchangePeriod * 0.09823; //transfer the time unit from fs to 10.18 fs
 
         // [Hyperdynamics] //
 

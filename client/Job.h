@@ -25,7 +25,7 @@ class Job {
         static const char MINIMIZATION[];
         static const char POINT[];
         static const char PARALLEL_REPLICA[];
-        static const char DISTRIBUTED_REPLICA[];
+        static const char REPLICA_EXCHANGE[];
         static const char BASIN_HOPPING[];
         static const char HESSIAN[];
         static const char FINITE_DIFFERENCE[];
