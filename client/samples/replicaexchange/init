@@ -1,0 +1,2 @@
+cp .config.ini.orig config.ini
+cp .reactant.con.orig reactant.con
