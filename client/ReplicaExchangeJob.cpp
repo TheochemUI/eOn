@@ -23,7 +23,6 @@ ReplicaExchangeJob::ReplicaExchangeJob(Parameters *parameters_passed)
 
 ReplicaExchangeJob::~ReplicaExchangeJob()
 {
-
 }
 
 std::vector<std::string> ReplicaExchangeJob::run(void)
@@ -39,7 +38,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     reactant = new Matter(parameters);
     reactant->con2matter(reactantPassedFilename);
 
-    log("Running Replica Exchange\n\n");
+    log("\nRunning Replica Exchange\n\n");
 
     long refForceCalls = Potential::fcalls;
 
@@ -54,27 +53,49 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
 
     // assign temperatures
     double replicaTemperature[parameters->repexcReplicas];
-    for(i=0; i<parameters->repexcReplicas; i++) {
-        replicaTemperature[i] = parameters->temperature;
+
+    cout <<"parameters->repexcTemperatureLow: "<<parameters->repexcTemperatureLow<<endl;
+    cout <<"parameters->repexcTemperatureHigh: "<<parameters->repexcTemperatureHigh<<endl;
+    for(i=0; i<parameters->repexcReplicas; i++)
+    {
+        cout <<parameters->repexcTemperatureDistribution<<endl;
+        if(parameters->repexcTemperatureDistribution == "linear")
+        {
+            replicaTemperature[i] = parameters->repexcTemperatureLow 
+              + double(i)/double(parameters->repexcReplicas - 1)
+                *(parameters->repexcTemperatureHigh - parameters->repexcTemperatureLow);
+        }
+        else if(parameters->repexcTemperatureDistribution == "exponential")
+        {
+            double kTemp = log(parameters->repexcTemperatureHigh / parameters->repexcTemperatureLow)/(parameters->repexcReplicas-1);
+            cout <<"kTemp: "<<kTemp<<endl;
+            replicaTemperature[i] = parameters->repexcTemperatureLow*exp(kTemp*i);
+        }
+        cout <<"replica: "<<i+1<<" temperature: "<<replicaTemperature[i]<<endl;
         replicaDynamics[i]->setTemperature(replicaTemperature[i]);
     }
 
     log("Replica Exchange sampling for %f fs; %ld steps; %ld replicas.\n",
          parameters->repexcSamplingTime, samplingSteps, parameters->repexcReplicas);
 
-    for(step=1; step<=parameters->repexcSamplingTime; step++) {
-        for(i=0; i<parameters->repexcReplicas; i++) {
+    for(step=1; step<=parameters->repexcSamplingTime; step++)
+    {
+        for(i=0; i<parameters->repexcReplicas; i++)
+        {
             replicaDynamics[i]->oneStep();
         }
-        if( (step % exchangePeriodSteps) == 0 ) {
-            for(long trial=0; trial<parameters->repexcExchangeTrials; trial++) {
+        if( (step % exchangePeriodSteps) == 0 )
+        {
+            for(long trial=0; trial<parameters->repexcExchangeTrials; trial++)
+            {
                 i = helper_functions::randomInt(0, parameters->repexcReplicas-2);
                 energyLow = replica[i]->getPotentialEnergy();
                 energyHigh = replica[i+1]->getPotentialEnergy();
                 kbTLow = kb*replicaTemperature[i];
                 kbTHigh = kb*replicaTemperature[i+1];
                 pAcc = min(1.0, exp((energyHigh-energyLow)/(kbTHigh-kbTLow)));
-                if(helper_functions::randomDouble()<pAcc) {
+                if(helper_functions::randomDouble()<pAcc)
+                {
                     // swap configurations
                     tmpMatter = replica[i];
                     replica[i] = replica[i+1];
