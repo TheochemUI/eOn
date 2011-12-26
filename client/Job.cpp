@@ -6,7 +6,7 @@
 #include "PointJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
-//#include "ReplicaExchangeJob.h"
+#include "ReplicaExchangeJob.h"
 #include "BasinHoppingJob.h"
 #include "FiniteDifferenceJob.h"
 #include "NudgedElasticBandJob.h"
@@ -18,7 +18,7 @@ const char Job::SADDLE_SEARCH[] =            "saddle_search";
 const char Job::MINIMIZATION[] =             "minimization";
 const char Job::POINT[] =                    "point";
 const char Job::PARALLEL_REPLICA[] =         "parallel_replica";
-const char Job::DISTRIBUTED_REPLICA[] =      "distributed_replica";
+const char Job::REPLICA_EXCHANGE[] =         "replica_exchange";
 const char Job::BASIN_HOPPING[] =            "basin_hopping";
 const char Job::HESSIAN[] =                  "hessian";
 const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
@@ -40,8 +40,8 @@ Job *Job::getJob(Parameters *parameters) {
         job = new HessianJob(parameters);
     }else if (parameters->job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-//    }else if (parameters->job == Job::DISTRIBUTED_REPLICA) {
-//        job =  new DistributedReplicaJob(parameters);
+    }else if (parameters->job == Job::REPLICA_EXCHANGE) {
+        job =  new ReplicaExchangeJob(parameters);
     }else if (parameters->job == Job::BASIN_HOPPING) {
         job =  new BasinHoppingJob(parameters);
     }else if (parameters->job == Job::FINITE_DIFFERENCE) {
