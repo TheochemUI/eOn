@@ -273,9 +273,9 @@ Dynamics:
             kind: float
             default: 1.0
 
-        steps:
-            kind: int
-            default: 1000
+        time:
+            kind: float
+            default: 1000.0
 
         thermostat:
             kind: string
@@ -303,21 +303,21 @@ Parallel Replica:
 
     options:
 
-        dephase_steps:
-            kind: int
-            default: 200
+        dephase_time:
+            kind: float
+            default: 200.0
 
-        refine_transition_time:
+        refine_transition:
             kind: boolean
             default: True
 
-        post_transition_steps:
-            kind: int
-            default: 500
+        post_transition_time:
+            kind: float
+            default: 500.0
 
         state_check_interval:
-            kind: int
-            default: 500
+            kind: float
+            default: 500.0
 
         dephase_loop_max:
             kind: int
@@ -328,8 +328,8 @@ Parallel Replica:
             default: False
 
         state_save_interval:
-            kind: int
-            default: 50
+            kind: float
+            default: 50.0
 
         stop_after_transition:
             kind: boolean
@@ -499,9 +499,9 @@ Hyperdynamics:
                 - bond_boost
                 - none
 
-        bb_rmd_steps:
-            kind: int
-            default: 100
+        bb_rmd_time:
+            kind: float
+            default: 100.0
 
         bb_rcut:
             kind: float
