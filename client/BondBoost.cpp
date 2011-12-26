@@ -121,12 +121,13 @@ void BondBoost::initialize()
 
 double BondBoost::boost()
 {
-    long RMDS = parameters->bondBoostRMDS;
+    long RMDS;
     double dt = parameters->mdTimeStep;
     double boost_dt = 0.0; // , AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
 
+    RMDS = int(parameters->bondBoostRMDTime/parameters->mdTimeStepInput);
     SDtime_B = 0.0;
     SDtime = 0.0;
     SPtime = 0.0;

@@ -116,8 +116,8 @@ Parameters::Parameters(){
     nebMaxIterations = 1000;
 
     // [Dynamics] //
-    mdTimeStep = 1.0;
-    mdSteps = 1000;
+    mdTimeStepInput = 1.0;
+    mdTime = 1000.0;
 
     // [Thermostat] //
     thermostat = Dynamics::NONE;
@@ -130,11 +130,11 @@ Parameters::Parameters(){
     parrepRefineTransition = true;
     parrepAutoStop = false;
     parrepDephaseLoopStop = false;
-    parrepDephaseSteps = 200;
+    parrepDephaseTime = 200.0;
     parrepDephaseLoopMax = 5;
-    parrepStateCheckInterval = 500;
-    parrepRecordInterval = 50;
-    parrepRelaxSteps = 500;
+    parrepStateCheckInterval = 500.0;
+    parrepRecordInterval = 50.0;
+    parrepRelaxTime = 500.0;
 
     // [Replica Exchange] //
     repexcTemperatureDistribution = "exponential";
@@ -152,7 +152,7 @@ Parameters::Parameters(){
     bondBoostQRR = 0.2; // can not be set to 0
     bondBoostPRR = 0.95;
     bondBoostQcut = 3.0;
-    bondBoostRMDS = 100;
+    bondBoostRMDTime = 100.0;
 
     // [Basin Hopping] //
     basinHoppingMaxDisplacement = 0.5;
@@ -323,9 +323,10 @@ int Parameters::load(FILE *file){
 
         // [Dynamics] //
 
-        mdTimeStep = ini.GetValueF("Dynamics", "time_step", mdTimeStep);
-        mdTimeStep = mdTimeStep * 0.09823; //transfer the time unit from fs to 10.18 fs
-        mdSteps = ini.GetValueL("Dynamics", "steps", mdSteps);
+        mdTimeStepInput = ini.GetValueF("Dynamics", "time_step", mdTimeStepInput);
+        mdTimeStep = mdTimeStepInput * 0.09823; //transfer the time unit from fs to 10.18 fs
+        mdTime = ini.GetValueF("Dynamics", "time", mdTime);
+        mdSteps = int(mdTime/mdTimeStepInput);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcol);
@@ -337,11 +338,11 @@ int Parameters::load(FILE *file){
         parrepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", parrepAutoStop);
         parrepRefineTransition = ini.GetValueB("Parallel Replica", "refine_transition", parrepRefineTransition);
         parrepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", parrepDephaseLoopStop);
-        parrepDephaseSteps = ini.GetValueL("Parallel Replica", "dephase_steps", parrepDephaseSteps);
+        parrepDephaseTime = ini.GetValueF("Parallel Replica", "dephase_time", parrepDephaseTime);
         parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", parrepDephaseLoopMax);
-        parrepStateCheckInterval = ini.GetValueL("Parallel Replica", "state_check_interval", parrepStateCheckInterval);
-        parrepRecordInterval = ini.GetValueL("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
-        parrepRelaxSteps = ini.GetValueL("Parallel Replica", "post_transition_steps", parrepRelaxSteps);
+        parrepStateCheckInterval = ini.GetValueF("Parallel Replica", "state_check_interval", parrepStateCheckInterval);
+        parrepRecordInterval = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
+        parrepRelaxTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepRelaxTime);
 
         // [Replica Exchange] //
 
@@ -355,7 +356,7 @@ int Parameters::load(FILE *file){
 
         // [Hyperdynamics] //
 
-        bondBoostRMDS = ini.GetValueL("Hyperdynamics", "bb_rmd_steps", bondBoostRMDS);
+        bondBoostRMDTime = ini.GetValueF("Hyperdynamics", "bb_rmd_time", bondBoostRMDTime);
         bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics", "bb_boost_atomlist", bondBoostBALS));
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics", "bb_dvmax", bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics", "bb_stretch_threshold", bondBoostQRR );

@@ -39,11 +39,11 @@ It may be run with the ``dynamics`` or ``parallel_replica`` job.
 
     The magnitude of the bond-boost bias potential.
 
-**bb_rmd_steps**: 
+**bb_rmd_time**: 
 
-    default: ``100``
+    default: ``100.0``
 
-    Number of MD steps used to determine the equilibrium bond length before the bias potential is added.
+    Regular MD duration used to determine the equilibrium bond length before the bias potential is added.
 
 **bb_rcut**: 
 
