@@ -2925,7 +2925,8 @@ Parameters.o: Parameters.cpp Parameters.h INIFile.h EpiCenters.h Matter.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Potential.h HelperFunctions.h Hessian.h Job.h Dynamics.h Optimizer.h \
  ObjectiveFunction.h LowestEigenmode.h Dimer.h ImprovedDimer.h Lanczos.h \
- ExactMinMode.h BondBoost.h SaddleSearch.h NudgedElasticBand.h
+ ExactMinMode.h BondBoost.h SaddleSearch.h NudgedElasticBand.h \
+ ReplicaExchangeJob.h
 PointJob.o: PointJob.cpp PointJob.h Job.h Parameters.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -3622,9 +3623,9 @@ ReplicaExchangeJob.o: ReplicaExchangeJob.cpp Matter.h Eigen.h Eigen/Dense \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h Dynamics.h Optimizer.h ObjectiveFunction.h \
- LowestEigenmode.h Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h \
- ExactMinMode.h ReplicaExchangeJob.h Job.h
+ Parameters.h Potential.h Log.h Dynamics.h Optimizer.h \
+ ObjectiveFunction.h LowestEigenmode.h Dimer.h HelperFunctions.h \
+ ImprovedDimer.h Lanczos.h ExactMinMode.h ReplicaExchangeJob.h Job.h
 SaddleSearch.o: SaddleSearch.cpp SaddleSearch.h Matter.h Eigen.h \
  Eigen/Dense Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
