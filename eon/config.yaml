@@ -903,7 +903,7 @@ Optimizer:
 
         time_step:
             kind: float
-            default: 0.1
+            default: 1.0
 
         variable_time_step:
             kind: boolean
