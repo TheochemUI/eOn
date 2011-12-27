@@ -35,17 +35,17 @@ smaller than this value, the structure is considered minimized.
     default: ``0.01``
 
 **max_move**: Maximum distance that an atom may be moved in a single
-optimization step.
+optimization step (Angstoms).
 
     type: float
 
     default: ``0.2``
 
-**time_step**: The dynamical timestep for the quickmin algorithm.
+**time_step**: The dynamical timestep for the quickmin algorithm (fs).
 
     type: float
 
-    default: ``0.1``
+    default: ``1.0``
 
 **max_iterations**: The maximum number of optimization iterations that the will
 be performed.
