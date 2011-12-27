@@ -85,7 +85,7 @@ Parameters::Parameters(){
     optMaxIterations = 1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
-    optTimeStep = 0.1;
+    optTimeStep = 1.0;
     optVariableTimeStep = false;
     optLBFGSMemory = 50;
     optLBFGSInverseCurvature = 0.1;
@@ -346,7 +346,6 @@ int Parameters::load(FILE *file){
         // [Replica Exchange] //
 
         repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
-        cout <<"repexcTemperatureDistribution: "<<repexcTemperatureDistribution<<"\n";
         repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
         repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);
         repexcSamplingTime = ini.GetValueF("Replica Exchange", "sampling_time", repexcSamplingTime);

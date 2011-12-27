@@ -27,8 +27,8 @@ ReplicaExchangeJob::~ReplicaExchangeJob()
 
 std::vector<std::string> ReplicaExchangeJob::run(void)
 {
-    long i, step, samplingSteps = long(parameters->repexcSamplingTime/parameters->mdTimeStep);
-    long exchangePeriodSteps = long(parameters->repexcExchangePeriod/parameters->mdTimeStep);
+    long i, step, samplingSteps = long(parameters->repexcSamplingTime/parameters->mdTimeStep+0.5);
+    long exchangePeriodSteps = long(parameters->repexcExchangePeriod/parameters->mdTimeStep+0.5);
     double energyLow, energyHigh;
     double kbTLow, kbTHigh, kb = 1.0/11604.5;
     double pAcc;
@@ -54,35 +54,34 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     // assign temperatures
     double replicaTemperature[parameters->repexcReplicas];
 
-    cout <<"parameters->repexcTemperatureLow: "<<parameters->repexcTemperatureLow<<endl;
-    cout <<"parameters->repexcTemperatureHigh: "<<parameters->repexcTemperatureHigh<<endl;
-    for(i=0; i<parameters->repexcReplicas; i++)
-    {
-        cout <<parameters->repexcTemperatureDistribution<<endl;
-        if(parameters->repexcTemperatureDistribution == "linear")
+    log("Temperature distribution:\n");
+    if(parameters->repexcTemperatureDistribution == "linear") {
+        for(i=0; i<parameters->repexcReplicas; i++)
         {
-            replicaTemperature[i] = parameters->repexcTemperatureLow 
-              + double(i)/double(parameters->repexcReplicas - 1)
+            replicaTemperature[i] = parameters->repexcTemperatureLow + double(i)/double(parameters->repexcReplicas-1.0)
                 *(parameters->repexcTemperatureHigh - parameters->repexcTemperatureLow);
+            replicaDynamics[i]->setTemperature(replicaTemperature[i]);
         }
-        else if(parameters->repexcTemperatureDistribution == "exponential")
+    } else if(parameters->repexcTemperatureDistribution == "exponential") {
+        double kTemp = log(parameters->repexcTemperatureHigh / parameters->repexcTemperatureLow)/(parameters->repexcReplicas-1.0);
+        // cout <<"kTemp: "<<kTemp<<endl;
+        for(i=0; i<parameters->repexcReplicas; i++)
         {
-            double kTemp = log(parameters->repexcTemperatureHigh / parameters->repexcTemperatureLow)/(parameters->repexcReplicas-1);
-            cout <<"kTemp: "<<kTemp<<endl;
             replicaTemperature[i] = parameters->repexcTemperatureLow*exp(kTemp*i);
+            replicaDynamics[i]->setTemperature(replicaTemperature[i]);
+            log("replica: %ld temperature %.0f \n",i+1, replicaTemperature[i]);
         }
-        cout <<"replica: "<<i+1<<" temperature: "<<replicaTemperature[i]<<endl;
-        replicaDynamics[i]->setTemperature(replicaTemperature[i]);
     }
 
-    log("Replica Exchange sampling for %f fs; %ld steps; %ld replicas.\n",
-         parameters->repexcSamplingTime, samplingSteps, parameters->repexcReplicas);
+    log("\nReplica Exchange sampling for %.0f fs; %ld steps; %ld replicas.\n",
+         parameters->repexcSamplingTime*10.18, samplingSteps, parameters->repexcReplicas);
 
-    for(step=1; step<=parameters->repexcSamplingTime; step++)
+    for(step=1; step<=samplingSteps; step++)
     {
         for(i=0; i<parameters->repexcReplicas; i++)
         {
             replicaDynamics[i]->oneStep();
+            cout <<"step: "<<step<<" i "<<i<<" energy: "<<replica[i]->getPotentialEnergy()<<endl;
         }
         if( (step % exchangePeriodSteps) == 0 )
         {
@@ -93,9 +92,13 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
                 energyHigh = replica[i+1]->getPotentialEnergy();
                 kbTLow = kb*replicaTemperature[i];
                 kbTHigh = kb*replicaTemperature[i+1];
-                pAcc = min(1.0, exp((energyHigh-energyLow)/(kbTHigh-kbTLow)));
-                if(helper_functions::randomDouble()<pAcc)
+                pAcc = min(1.0, exp((energyHigh-energyLow)*(1.0/kbTHigh-1.0/kbTLow)));
+                double tmp = helper_functions::randomDouble();
+                cout <<"step: "<<step<<" trial swap, i "<<i<<" elow: "<<energyLow<<" ehigh: "<<energyHigh<<" pAcc: "<<pAcc<<" rand: "<<tmp;
+                //if(helper_functions::randomDouble()<pAcc)
+                if(tmp<pAcc)
                 {
+                    cout <<" swap\n";
                     // swap configurations
                     tmpMatter = replica[i];
                     replica[i] = replica[i+1];
@@ -104,6 +107,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
                     replicaDynamics[i]->setThermalVelocity();
                     replicaDynamics[i+1]->setThermalVelocity();
                 }
+                else { cout <<" no_swap\n"; }
             }            
         }
     }
