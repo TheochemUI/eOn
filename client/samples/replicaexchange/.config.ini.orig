@@ -8,7 +8,7 @@ potential=qsc
 
 [Replica Exchange]
 temperature_distribution=exponential
-replias=10
+replicas=10
 sampling_time=1000
 temperature_low=600
 temperature_high=1200
