@@ -18,7 +18,7 @@ potential=eam_al
 minimize_first=True
 
 [Saddle Search]
-minmode_method = dimer
+min_mode_method = dimer
 
 # tweakable parameters
 converged=0.001
