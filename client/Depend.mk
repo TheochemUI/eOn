@@ -1011,9 +1011,9 @@ DynamicsSaddleSearch.o: DynamicsSaddleSearch.cpp DynamicsSaddleSearch.h \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h Log.h Dynamics.h Optimizer.h \
- ObjectiveFunction.h LowestEigenmode.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h NudgedElasticBand.h MinModeSaddleSearch.h
+ Parameters.h Potential.h MinModeSaddleSearch.h LowestEigenmode.h \
+ Optimizer.h ObjectiveFunction.h Dimer.h HelperFunctions.h \
+ ImprovedDimer.h Lanczos.h Log.h Dynamics.h NudgedElasticBand.h
 DynamicsSaddleSearchJob.o: DynamicsSaddleSearchJob.cpp \
  DynamicsSaddleSearchJob.h Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
@@ -1125,8 +1125,9 @@ DynamicsSaddleSearchJob.o: DynamicsSaddleSearchJob.cpp \
  Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
  Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
- Parameters.h Potential.h Job.h DynamicsSaddleSearch.h Log.h \
- HelperFunctions.h
+ Parameters.h Potential.h Job.h DynamicsSaddleSearch.h \
+ MinModeSaddleSearch.h LowestEigenmode.h Optimizer.h ObjectiveFunction.h \
+ Dimer.h HelperFunctions.h ImprovedDimer.h Lanczos.h Log.h
 EpiCenters.o: EpiCenters.cpp EpiCenters.h Matter.h Eigen.h Eigen/Dense \
  Eigen/Core Eigen/src/Core/util/DisableStupidWarnings.h \
  Eigen/src/Core/util/Macros.h Eigen/src/Core/util/Constants.h \
@@ -3626,7 +3627,8 @@ ProcessSearchJob.o: ProcessSearchJob.cpp ProcessSearchJob.h Matter.h \
  Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h Eigen/Eigenvalues \
  Parameters.h Potential.h Job.h MinModeSaddleSearch.h LowestEigenmode.h \
  Optimizer.h ObjectiveFunction.h Dimer.h HelperFunctions.h \
- ImprovedDimer.h Lanczos.h EpiCenters.h false_boinc.h Log.h Prefactor.h
+ ImprovedDimer.h Lanczos.h EpiCenters.h false_boinc.h Log.h Prefactor.h \
+ DynamicsSaddleSearch.h
 Quickmin.o: Quickmin.cpp Quickmin.h Optimizer.h Parameters.h \
  ObjectiveFunction.h Matter.h Eigen.h Eigen/Dense Eigen/Core \
  Eigen/src/Core/util/DisableStupidWarnings.h Eigen/src/Core/util/Macros.h \
