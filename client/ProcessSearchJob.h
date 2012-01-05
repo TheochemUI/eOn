@@ -13,8 +13,8 @@
 
 #include "Matter.h"
 #include "Parameters.h"
-#include "SaddleSearch.h"
 #include "Job.h"
+#include "MinModeSaddleSearch.h"
 
 class ProcessSearchJob : public Job {
     public:
@@ -31,7 +31,7 @@ class ProcessSearchJob : public Job {
         std::vector<std::string> returnFiles;
 
         Parameters *parameters;
-        SaddleSearch *saddleSearch; 
+        MinModeSaddleSearch *saddleSearch; 
         Matter *initial;      // initial configuration.
         Matter *saddle;       // configuration used during the saddle point search.
         Matter *displacement; // configuration used during the saddle point search.

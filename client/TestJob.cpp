@@ -11,7 +11,7 @@
 #include "TestJob.h"
 #include "Matter.h"
 #include "Potential.h"
-#include "SaddleSearch.h"
+#include "MinModeSaddleSearch.h"
 #include "Parameters.h"
 
 #include <stdlib.h>

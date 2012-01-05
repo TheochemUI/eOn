@@ -68,7 +68,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
         mode = helper_functions::loadMode(mode_passed, initial->numberOfAtoms());
     }
 
-    saddleSearch = new SaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
+    saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
 
     int status;
     status = doSaddleSearch();
@@ -93,7 +93,7 @@ int SaddleSearchJob::doSaddleSearch()
         status = saddleSearch->run();
     }catch (int e) {
         if (e == 100) {
-            status = SaddleSearch::STATUS_POTENTIAL_FAILED; 
+            status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED; 
         }else{
             printf("unknown exception: %i\n", e);
             throw e;
@@ -122,7 +122,7 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
-    if (status != SaddleSearch::STATUS_POTENTIAL_FAILED) {
+    if (status != MinModeSaddleSearch::STATUS_POTENTIAL_FAILED) {
         fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
         fprintf(fileResults, "%f final_eigenvalue\n", saddleSearch->getEigenvalue());
     }
@@ -144,25 +144,25 @@ void SaddleSearchJob::saveData(int status){
 
 void SaddleSearchJob::printEndState(int status) {
     fprintf(stdout, "Final state: ");
-    if(status == SaddleSearch::STATUS_GOOD)
+    if(status == MinModeSaddleSearch::STATUS_GOOD)
         log("[SaddleSearch] successful\n");
 
-    else if(status == SaddleSearch::STATUS_BAD_NO_CONVEX)
+    else if(status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
         log("[SaddleSearch] initial displacement unable to reach convex region\n");
 
-    else if(status == SaddleSearch::STATUS_BAD_HIGH_ENERGY)
+    else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
         log("[SaddleSearch] Barrier too high\n");
 
-    else if(status == SaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
+    else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
         log("[SaddleSearch] Too many iterations in concave region\n");
 
-    else if(status == SaddleSearch::STATUS_BAD_MAX_ITERATIONS)
+    else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
         log("[SaddleSearch] Too many iterations in saddle point search\n");
 
-    else if(status == SaddleSearch::STATUS_BAD_HIGH_BARRIER)
+    else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
         log("[SaddleSearch] Barrier not within window\n");
 
-    else if(status == SaddleSearch::STATUS_NONNEGATIVE_ABORT)
+    else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
         log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
 
     else

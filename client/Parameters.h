@@ -64,6 +64,7 @@ public:
 //    bool   saddleDisplace; // do saddle search displacements client-side
     long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
+    string saddleMethod;
     string saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
     string saddleDisplaceType; // displacement type to use
     double saddleMaxStepSize; // maximum length of the norm of the displacement when positive eigenvalue
