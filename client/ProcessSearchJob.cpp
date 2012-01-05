@@ -74,6 +74,8 @@ std::vector<std::string> ProcessSearchJob::run(void)
             // in SaddleSearch->initialize(...)
             *saddle = *min1 = *min2 = *initial;
         }
+    }else{
+        *saddle = *min1 = *min2 = *initial;
     }
 
     AtomMatrix mode;
@@ -113,10 +115,16 @@ int ProcessSearchJob::doProcessSearch(void)
         status = saddleSearch->run();
     }else{
         DynamicsSaddleSearch dynSearch(initial, parameters);
-        dynSearch.run();
-        saddleSearch = dynSearch.saddleSearch;
-        status = saddleSearch->status;
+        int dynSearchStatus = dynSearch.run();
+
         *saddle = *dynSearch.saddle;
+        saddleSearch = dynSearch.saddleSearch;
+
+        if (dynSearchStatus != 0) {
+            status = MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
+        }else{
+            status = saddleSearch->status;
+        }
     }
     fCallsSaddle += Potential::fcalls - f1;
 
@@ -250,6 +258,8 @@ void ProcessSearchJob::saveData(int status)
     if (parameters->saddleMethod == "min_mode") {
         fprintf(fileResults, "%f displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
+    }else{
+        fprintf(fileResults, "%f displacement_saddle_distance\n", 0.0);
     }
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);

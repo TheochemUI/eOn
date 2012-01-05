@@ -46,7 +46,7 @@ int DynamicsSaddleSearch::run(void)
                 *saddle = *neb.image[neb.climbingImage];
 
                 AtomMatrix mode;
-                mode = saddle->getPositions()-reactant->getPositions();
+                mode = saddle->getPositions()- neb.image[neb.climbingImage-1]->getPositions();
                 mode.normalize();
 
                 if (saddleSearch != NULL) {
@@ -61,6 +61,11 @@ int DynamicsSaddleSearch::run(void)
                 return 0; 
             }else{
                 log("Still in original state\n");
+                AtomMatrix mode;
+                mode = saddle->getPositions() - reactant->getPositions();
+                saddleSearch = new MinModeSaddleSearch(saddle, mode, 
+                                                       reactant->getPotentialEnergy(),
+                                                       parameters);
             }
         }
     }
