@@ -6,7 +6,6 @@
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
-#include "ExactMinMode.h"
 
 class ObjectiveFunction
 {

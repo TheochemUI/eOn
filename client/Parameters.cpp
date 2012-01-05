@@ -18,7 +18,6 @@
 #include "Job.h"
 #include "Dynamics.h"
 #include "BondBoost.h"
-#include "SaddleSearch.h"
 #include "ImprovedDimer.h"
 #include "NudgedElasticBand.h"
 #include "ReplicaExchangeJob.h"
@@ -64,6 +63,7 @@ Parameters::Parameters(){
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
+    saddleMethod = "min_mode";
     saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
     saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
@@ -256,6 +256,7 @@ int Parameters::load(FILE *file){
 
         // [Saddle Search] //
 
+        saddleMethod = toLowerCase(ini.GetValue("Saddle Search", "method", saddleMethod));
         saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", saddleMinmodeMethod));
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
