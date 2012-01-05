@@ -28,7 +28,6 @@ public:
     long statsRotations;
     static const char MINMODE_DIMER[];
     static const char MINMODE_LANCZOS[];
-    static const char MINMODE_EXACT[];
 
     virtual ~LowestEigenmode() {}
 

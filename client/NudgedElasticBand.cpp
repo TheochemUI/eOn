@@ -216,9 +216,9 @@ void NudgedElasticBand::updateForces(void)
     long maxEnergyImage;
 
     // variables for force projections
-    AtomMatrix force(3,atoms), forcePerp(3,atoms), forcePar(3,atoms);
-    AtomMatrix forceSpringPar(3,atoms);
-    AtomMatrix pos(3,atoms), posNext(3,atoms), posPrev(3,atoms);
+    AtomMatrix force(atoms,3), forcePerp(atoms,3), forcePar(atoms,3);
+    AtomMatrix forceSpringPar(atoms,3);
+    AtomMatrix pos(atoms,3), posNext(atoms,3), posPrev(atoms,3);
     double distNext, distPrev;
 
     // update the forces on the images and find the highest energy image
@@ -410,4 +410,3 @@ void NudgedElasticBand::findExtrema(void)
         log(" %li at image position %f with energy %f\n",i,extremaPosition[i],extremaEnergy[i]-image[0]->getPotentialEnergy());
     }
 }
-

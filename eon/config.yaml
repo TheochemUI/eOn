@@ -745,6 +745,13 @@ Saddle Search:
             kind: int
             default: 1000
 
+        method:
+            kind: string
+            default: min_mode
+            values:
+                - min_mode
+                - dynamics
+
         min_mode_method:
             kind: string
             default: dimer

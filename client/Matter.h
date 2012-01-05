@@ -42,6 +42,7 @@ public:
     ~Matter(); // Destructor
     const Matter& operator=(const Matter& matter); // copy the matter object
     bool operator==(const Matter& matter); // true if differences in positions are below differenceDistance
+    bool operator!=(const Matter& matter); // inverse of ==
     double distanceTo(const Matter& matter); // the distance to the given matter object
     double perAtomNorm(const Matter& matter); // the maximum distance between two atoms in the Matter objects
     void setPotential(); // set potential function to use

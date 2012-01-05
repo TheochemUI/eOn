@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef SADDLESEARCH_H
-#define SADDLESEARCH_H
+#ifndef MIN_MODE_SADDLE_SEARCH_H
+#define MIN_MODE_SADDLE_SEARCH_H
 
 #include "Matter.h"
 #include "LowestEigenmode.h"
@@ -18,7 +18,7 @@
 
 #include <string>
 
-class SaddleSearch
+class MinModeSaddleSearch
 {
 
 public:
@@ -40,13 +40,9 @@ public:
         STATUS_NONNEGATIVE_ABORT, //12
     };
 
-    // Methods for finding the minimum mode
-    static const char MINMODE_DIMER[];
-    static const char MINMODE_LANCZOS[];
-    static const char MINMODE_EXACT[];
- 
-    SaddleSearch(Matter *matterPassed, AtomMatrix modePassed, double reactantEnergy, Parameters *parametersPassed);
-    ~SaddleSearch();
+    MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
+                 double reactantEnergy, Parameters *parametersPassed);
+    ~MinModeSaddleSearch();
     AtomMatrix getEigenvector();
     double getEigenvalue();
 

@@ -12,6 +12,7 @@
 #include "NudgedElasticBandJob.h"
 #include "DynamicsJob.h"
 #include "TestJob.h"
+#include "DynamicsSaddleSearchJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
