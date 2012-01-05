@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // eOn is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -6,15 +6,15 @@
 //
 // A copy of the GNU General Public License is available at
 // http://www.gnu.org/licenses/
-//-----------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 #ifndef SADDLESEARCHJOB_H
 #define SADDLESEARCHJOB_H
 
 #include "Matter.h"
 #include "Parameters.h"
-#include "SaddleSearch.h"
 #include "Job.h"
+#include "MinModeSaddleSearch.h"
 
 class SaddleSearchJob : public Job {
     public:
@@ -30,7 +30,7 @@ class SaddleSearchJob : public Job {
         std::vector<std::string> returnFiles;
 
         Parameters *parameters;
-        SaddleSearch *saddleSearch;
+        MinModeSaddleSearch *saddleSearch;
         Matter *initial;      // initial configuration.
         Matter *saddle;       // configuration used during the saddle point search.
         Matter *displacement; // configuration used during the saddle point search.

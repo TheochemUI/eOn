@@ -10,6 +10,19 @@ A saddle search is initiated by making a local displacement of atoms from their 
 [Saddle Search] Options
 -----------------------
 
+**method**:
+
+    default: ``min_mode``
+
+    options:
+
+        ``min_mode``: Use a min-mode following scheme to locate the saddle point.
+
+        ``dynamics``: Experimental method that uses molecular dynamics to find
+        new states and then runs a climbing NEB calculation to find the saddle
+        and a dimer calculation to estimate the eigenmode at the saddle.
+
+
 **min_mode_method**: 
 
     default: ``dimer``

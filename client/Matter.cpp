@@ -156,14 +156,15 @@ const Matter& Matter::operator=(const Matter& matter)
 // Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
 
-    if(parameters->checkRotation)
-    {
+    if(parameters->checkRotation) {
         return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
-    }
-    else
-    {
+    }else{
         return (parameters->distanceDifference) > perAtomNorm(matter);
     }
+}
+
+bool Matter::operator!=(const Matter& matter) {
+    return !operator==(matter);
 }
 
 
@@ -198,11 +199,9 @@ double Matter::perAtomNorm(const Matter& matter)
     long i = 0;
     double max_distance = 0.0;
 
-    if(matter.numberOfAtoms() == nAtoms)
-    {
+    if(matter.numberOfAtoms() == nAtoms) {
         AtomMatrix diff = pbc(positions - matter.positions);
-        for(i = 0; i < nAtoms; i++)
-        {
+        for(i = 0; i < nAtoms; i++) {
             max_distance = max(diff.row(i).norm(), max_distance);
         }
     }

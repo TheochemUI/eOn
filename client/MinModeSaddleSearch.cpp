@@ -8,13 +8,12 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include "SaddleSearch.h"
+#include "MinModeSaddleSearch.h"
 #include "ConjugateGradients.h"
 #include "HelperFunctions.h"
 #include "Lanczos.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
-#include "ExactMinMode.h"
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 #include "Log.h"
@@ -22,10 +21,6 @@
 #include <cstdlib>
 
 using namespace helper_functions;
-
-const char SaddleSearch::MINMODE_DIMER[] =   "dimer";
-const char SaddleSearch::MINMODE_LANCZOS[] = "lanczos";
-const char SaddleSearch::MINMODE_EXACT[] =   "exact";
 
 class MinModeObjectiveFunction : public ObjectiveFunction
 {
@@ -103,7 +98,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         Parameters *parameters;
 };
 
-SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
+MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
                           double reactantEnergyPassed, Parameters *parametersPassed)
 {
     reactantEnergy = reactantEnergyPassed;
@@ -121,25 +116,23 @@ SaddleSearch::SaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
         }
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
         minModeMethod = new Lanczos(matter, parameters);
-    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_EXACT) {
-        minModeMethod = new ExactMinMode(matter, parameters);
     }
 }
 
-SaddleSearch::~SaddleSearch()
+MinModeSaddleSearch::~MinModeSaddleSearch()
 {
     delete minModeMethod;
 }
 
-int SaddleSearch::run()
+int MinModeSaddleSearch::run()
 {
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
-    if(parameters->saddleMinmodeMethod == MINMODE_DIMER) {
+    if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %10s   %9s   %9s   %7s   %6s   %4s\n", 
             "Step", "Step Size", "Delta E", "Force", "Curvature", 
             "Torque", "Angle", "Rots");
-    }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
         log("[Lanczos]  %9s  %9s  %10s  %9s  %9s\n", 
             "Step", "Step Size", "Delta E", "Force", "Curvature");
     }
@@ -180,7 +173,7 @@ int SaddleSearch::run()
             status = STATUS_BAD_HIGH_ENERGY;
             break;
         }
-            if(parameters->saddleMinmodeMethod == MINMODE_DIMER)
+            if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
             {
                 log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.4f   %7.3f   %6.3f   %4ld\n",
                             iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
@@ -189,7 +182,7 @@ int SaddleSearch::run()
                             minModeMethod->statsTorque,
                             minModeMethod->statsAngle,
                             minModeMethod->statsRotations);
-            }else if (parameters->saddleMinmodeMethod == MINMODE_LANCZOS) {
+            }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
                 log("[Lanczos]  %9ld  % 9.6f   %10.4f  %9.5f  %9.5f\n", 
                     iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                     matter->maxForce(),
@@ -214,12 +207,12 @@ int SaddleSearch::run()
     return status;
 }
 
-double SaddleSearch::getEigenvalue()
+double MinModeSaddleSearch::getEigenvalue()
 {
     return minModeMethod->getEigenvalue();
 }
 
-AtomMatrix SaddleSearch::getEigenvector()
+AtomMatrix MinModeSaddleSearch::getEigenvector()
 {
     return minModeMethod->getEigenvector();
 }
