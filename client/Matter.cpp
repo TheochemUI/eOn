@@ -893,7 +893,7 @@ void Matter::applyPeriodicBoundary()
     {
         for(j=0; j<3; j++)
         {
-            ddiff(i,j) = fmod(ddiff(i,j), 1.0);
+            ddiff(i,j) = fmod(ddiff(i,j) + 1.0, 1.0);
         }
     }
     positions = ddiff*cellBoundaries;
