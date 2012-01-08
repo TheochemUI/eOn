@@ -93,8 +93,15 @@ std::vector<std::string> ProcessSearchJob::run(void)
     printEndState(status);
     saveData(status);
 
+    // might have been forced to be equal if the structure passed to the client
+    // when determining barrier and the prefactor
+
+    if (min1 != initial) {
+        delete initial;
+    }
+    
     delete saddleSearch;
-    delete initial;
+//    delete initial;
     delete displacement;
     delete saddle;
     delete min1;
@@ -184,6 +191,12 @@ int ProcessSearchJob::doProcessSearch(void)
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
+    // use the structure passed to the client when determining 
+    // the barrier and prefactor for the forward process    
+    if (!parameters->processSearchMinimizeFirst) {
+        min1 = initial;
+    }
+    
     // Calculate the barriers
     barriersValues[0] = saddle->getPotentialEnergy()-min1->getPotentialEnergy();
     barriersValues[1] = saddle->getPotentialEnergy()-min2->getPotentialEnergy();
