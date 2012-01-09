@@ -47,7 +47,8 @@ Parameters::Parameters(){
     MPIPollPeriod = 0.25;
     MPIPotentialRank = -1;
     LAMMPSLogging = true;
-
+    EMTRasmussen = false;
+    
     // [Structure Comparison] //
     distanceDifference = 0.1;
     neighborCutoff = 3.3;
@@ -226,6 +227,7 @@ int Parameters::load(FILE *file){
         potential = toLowerCase(ini.GetValue("Potential", "potential"));
         MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
         LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
+        EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
 
         // [Debug] //
 

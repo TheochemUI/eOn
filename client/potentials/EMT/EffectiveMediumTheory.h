@@ -17,8 +17,11 @@
 #include "Asap/EMT.h"
 #include "Asap/SuperCell.h"
 #include "Asap/Vec.h"
+#include "Asap/EMTRasmussenParameterProvider.h"
+#include "Asap/EMTDefaultParameterProvider.h"
 
 #include "../../Potential.h"
+#include "../../Parameters.h"
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/
 class EffectiveMediumTheory : public Potential {
@@ -28,13 +31,15 @@ private:
 	long numberOfAtoms;
 	bool periodicity[3];
 	Atoms *AtomsObj;
+	EMTDefaultParameterProvider *EMTParameterObj;
 	EMT *EMTObj;
 	SuperCell *SuperCellObj;
+    Parameters *parameters;
 
 public:
 // Functions
 	// constructor and destructor
-    EffectiveMediumTheory(void);
+    EffectiveMediumTheory(Parameters *p);
     ~EffectiveMediumTheory(void) {};
     void cleanMemory(void);
     
