@@ -77,6 +77,11 @@ Potential:
             kind: boolean
             default: true
 
+        emt_rasmussen:
+            kind: boolean
+            default: false
+
+
 ################################################################################
 
 Paths:

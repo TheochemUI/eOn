@@ -85,7 +85,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_MORSE_PT)
         pot = new Morse();
     else if(parameters->potential == POT_EMT)
-        pot = new EffectiveMediumTheory();
+        pot = new EffectiveMediumTheory(parameters);
     else if(parameters->potential == POT_QSC)
         pot = new QSC();
     else if(parameters->potential == POT_TIP4P)
