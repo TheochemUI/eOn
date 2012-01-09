@@ -124,8 +124,9 @@ class TransitionCounting(SuperbasinScheme):
 
     def register_transition(self, start_state, end_state):
         logger.debug('Registering transitions')
-        
-        if start_state == end_state:
+
+        if start_state == end_state and not config.comp_use_identical:
+#        if start_state == end_state:
             return
 
         start_count = self.get_count(start_state)
@@ -188,7 +189,8 @@ class EnergyLevel(SuperbasinScheme):
            of the end_state if it hasn't been visited before.'''
 
         #error
-        if start_state == end_state:
+        if start_state == end_state and not config.comp_use_identical:
+#        if start_state == end_state:
             return
 
         #if the start state does not have an energy level yet, we set it to the energy of the state.
