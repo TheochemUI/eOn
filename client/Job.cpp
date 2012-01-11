@@ -11,6 +11,7 @@
 #include "FiniteDifferenceJob.h"
 #include "NudgedElasticBandJob.h"
 #include "DynamicsJob.h"
+#include "PrefactorJob.h"
 #include "TestJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
@@ -24,6 +25,7 @@ const char Job::HESSIAN[] =                  "hessian";
 const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
 const char Job::DYNAMICS[] =                 "md";
+const char Job::PREFACTOR[] =                "prefactor";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -50,6 +52,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new NudgedElasticBandJob(parameters);
     }else if (parameters->job == Job::DYNAMICS) {
         job =  new DynamicsJob(parameters);
+    }else if (parameters->job == Job::PREFACTOR) {
+        job =  new PrefactorJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }

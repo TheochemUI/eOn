@@ -41,6 +41,8 @@ Parameters::Parameters(){
     prefactorMinValue = 1e+9;
     prefactorWithinRadius = 5.0;
     prefactorMinDisplacement = 0.25;
+    prefactorConfiguration = "reactant";
+    prefactorAllFreeAtoms = false;
 
     // [Potential]
     potential = Potential::POT_LJ;
@@ -309,7 +311,9 @@ int Parameters::load(FILE *file){
         prefactorMinValue = ini.GetValueF("Prefactor", "min_value", prefactorMinValue);
         prefactorWithinRadius = ini.GetValueF("Prefactor", "within_radius", prefactorWithinRadius);
         prefactorMinDisplacement = ini.GetValueF("Prefactor", "min_displacement", prefactorMinDisplacement);
-
+        prefactorConfiguration = toLowerCase(ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
+        prefactorAllFreeAtoms = ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
+        
         // [Hessian] //
 
         hessianAtomList = toLowerCase(ini.GetValue("Hessian", "atom_list", hessianAtomList));
