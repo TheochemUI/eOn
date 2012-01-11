@@ -2,6 +2,7 @@
 #include "ConjugateGradients.h"
 #include "Quickmin.h"
 #include "LBFGS.h"
+#include "FIRE.h"
 
 Optimizer *Optimizer::getOptimizer(ObjectiveFunction *objf, Parameters *parameters)
 {
@@ -12,6 +13,8 @@ Optimizer *Optimizer::getOptimizer(ObjectiveFunction *objf, Parameters *paramete
         mizer = new Quickmin(objf, parameters);
     }else if (parameters->optMethod == "lbfgs") {
         mizer = new LBFGS(objf, parameters);
+    }else if (parameters->optMethod == "fire") {
+        mizer = new FIRE(objf, parameters);
     }else{
         printf("Unknown optMethod: %s\n", parameters->optMethod.c_str());
         exit(1);
