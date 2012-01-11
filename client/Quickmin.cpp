@@ -29,15 +29,15 @@ Quickmin::~Quickmin()
 
 VectorXd Quickmin::getStep()
 {
-    VectorXd forces = -objf->getGradient();
-
-    if (velocity.dot(forces) < 0) {
-        if (parameters->optVariableTimeStep) dt *= 0.5;
+    VectorXd force = -objf->getGradient();
+    VectorXd f_unit = force/force.norm();
+    if (velocity.dot(force) < 0) {
         velocity.setZero();
-    } else {
-        if (parameters->optVariableTimeStep) dt *= 1.1;
     }
-    velocity += forces * dt;
+    else {
+        velocity = velocity.dot(f_unit) * f_unit;
+    }
+    velocity += force * dt;
     return velocity * dt;
 }
 
@@ -45,7 +45,6 @@ bool Quickmin::step(double maxMove)
 {
     VectorXd d = getStep();
     VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
-
     VectorXd positions = objf->getPositions();
     positions += dr;
     objf->setPositions(positions);  
