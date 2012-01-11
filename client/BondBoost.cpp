@@ -122,8 +122,8 @@ void BondBoost::initialize()
 double BondBoost::boost()
 {
     long RMDS;
-    double dt = parameters->mdTimeStep;
-    double boost_dt = 0.0; // , AVE_Boost_Fact;
+    double dt = parameters->mdTimeStepInput;
+    double boost; // , AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
 
@@ -163,9 +163,9 @@ double BondBoost::boost()
 
         Epsr_Q = new double[nBBs];
         CBBLList.setZero(nBBs,1);
-        boost_dt = Booststeps();
+        boost = Booststeps();
         SDtime += dt;
-        SPtime += boost_dt;
+        SPtime += dt*boost;
         nReg++;
         // AVE_Boost_Fact = (SPtime-SDtime+SDtime_B)/SDtime_B;
         //   printf("AVE_BOOST_FACT=%E;nReg = %ld\n",AVE_Boost_Fact,nReg);
@@ -174,7 +174,7 @@ double BondBoost::boost()
         //     leak.
         delete Epsr_Q;
     }
-    return boost_dt;
+    return boost;
 }
 
 double BondBoost::Booststeps()
@@ -182,7 +182,7 @@ double BondBoost::Booststeps()
     long i,j; //,Mi;
     long AtomI_1,AtomI_2;
     double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
-    double Dforce, Fact_1, Fact_2, dt, bdt, Temp, kb; //, Mforce
+    double Dforce, Fact_1, Fact_2, step_boost, Temp, kb; //, Mforce
     double Ri[3] = {0.0} , R = 0.0;
 
     AtomMatrix OldForce(nAtoms,3);
@@ -197,12 +197,10 @@ double BondBoost::Booststeps()
     AddForce.setZero();
     NewForce.setZero();
 
-    dt = parameters->mdTimeStep;
-    Temp = parameters->temperature;
+    //dt = parameters->parrepTimeStepInput;
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;
-    bdt = dt;
     kb = 1.0/11604.5;
     Epsr_MAX = 0.0;
     A_EPS_M = 0.0;
@@ -241,7 +239,7 @@ double BondBoost::Booststeps()
             Sum_V += DVMAX*(1.0-Epsr_Q[i]*Epsr_Q[i])/double(nBBs);
         }
         Boost_Fact = A_EPS_M*Sum_V;
-        SDtime_B += dt;
+        //SDtime_B += dt;
 
         for(i=0;i<nBBs;i++){
             if( abs(Epsr_Q[i]) < Epsr_MAX ){
@@ -325,10 +323,10 @@ double BondBoost::Booststeps()
     }
     //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
     //update bdt;
-    bdt = dt*exp(Boost_Fact/kb/Temp);
+    step_boost = exp(Boost_Fact/kb/Temp);
     //printf("bdt = %E\n",bdt);
     
-    return bdt;
+    return step_boost;
 }
 
 
