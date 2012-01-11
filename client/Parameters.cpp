@@ -90,7 +90,6 @@ Parameters::Parameters(){
     optMaxMove = 0.2;
     optTimeStep = 0.25;
     optMaxTimeStep = 2.5;
-    optVariableTimeStep = false;
     optLBFGSMemory = 50;
     optLBFGSInverseCurvature = 0.1;
 
@@ -255,7 +254,6 @@ int Parameters::load(FILE *file){
         optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
         optTimeStep = ini.GetValueF("Optimizer","time_step", optTimeStep);
-        optVariableTimeStep = ini.GetValueB("Optimizer","variable_time_step", optVariableTimeStep);
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
 
