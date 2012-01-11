@@ -131,6 +131,8 @@ double BondBoost::boost()
     SDtime_B = 0.0;
     SDtime = 0.0;
     SPtime = 0.0;
+    boost = 1.0;
+
     if(nReg <= RMDS){
         flag = 0;
     }else{ 
@@ -202,6 +204,7 @@ double BondBoost::Booststeps()
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;
+    step_boost = 1.0;
     kb = 1.0/11604.5;
     Epsr_MAX = 0.0;
     A_EPS_M = 0.0;
