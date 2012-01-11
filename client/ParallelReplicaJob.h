@@ -49,6 +49,7 @@ class ParallelReplicaJob: public Job
 
         long transitionStep;
 
+        double time;
         double transitionTime;
         double *timeBuffer;
 
