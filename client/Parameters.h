@@ -90,7 +90,6 @@ public:
     double optConvergedForce; // force convergence criterion required for an optimization
     double optTimeStep; // time step size used in quickmin
     double optMaxTimeStep; // maximum time step for FIRE.
-    bool   optVariableTimeStep; // if quickmin time step should be adjusted
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
 
