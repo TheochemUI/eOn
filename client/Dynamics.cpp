@@ -55,6 +55,10 @@ void Dynamics::oneStep(void)
     }
     else if(parameters->thermostat == NONE){
        velocityVerlet();
+     //   double potE, kinE;
+     //   kinE = matter->getKineticEnergy();
+     //   potE = matter->getPotentialEnergy();
+     //   log("totE = %10.5f\n",kinE+potE);
     }
 }
 
@@ -126,7 +130,7 @@ void Dynamics::andersenCollision()
 
     alpha = parameters->thermoAndersenAlpha; // collision strength
     tCol = parameters->thermoAndersenTcol; // average time between collisions, in unit of fs
-    pCol = 1.0-exp(-dt/tCol);
+    pCol = 1.0-exp(-parameters->mdTimeStepInput/tCol);
 
     velocity = matter->getVelocities();
     mass = matter->getMasses();
@@ -136,7 +140,7 @@ void Dynamics::andersenCollision()
         if( (randomDouble() < pCol) && (!matter->getFixed(i)) )
         {
             for (int j=0; j<3; j++)
-            {
+           {
                 vOld = velocity(i,j);
                 vNew = sqrt(kb*temperature/mass[i])*gaussRandom(0.0,1.0);
                 velocity(i,j) = sqrt(1.0-alpha*alpha)*vOld + alpha*vNew;
