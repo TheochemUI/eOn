@@ -137,16 +137,17 @@ int ParallelReplicaJob::dynamics()
     {
         if( (parameters->biasPotential == Hyperdynamics::BOND_BOOST) && !newStateFlag ) {
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
+            //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
             time += parameters->mdTimeStepInput*bondBoost.boost();
         } else {
             time += parameters->mdTimeStepInput;
         }
 
         kinE = current->getKineticEnergy();
-        kinT = (2.*kinE/nFreeCoord/kb); 
+        kinT = (2.0*kinE/nFreeCoord/kb); 
         sumT += kinT;
         sumT2 += kinT*kinT;
-       // log("steps = %10d total_energy = %10.5f \n",nSteps,kinE+potE);
+        //log("steps = %10d temp = %10.5f \n",step,kinT);
 
         parrepDynamics.oneStep();
         mdFCalls++;
@@ -238,8 +239,8 @@ int ParallelReplicaJob::dynamics()
     }
 
     // calculate avearges
-    avgT = sumT/parameters->mdSteps;
-    varT = sumT2/parameters->mdSteps - avgT*avgT;
+    avgT = sumT/step;
+    varT = sumT2/step - avgT*avgT;
 
     log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
