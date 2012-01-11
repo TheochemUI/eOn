@@ -31,6 +31,7 @@ class Job {
         static const char FINITE_DIFFERENCE[];
         static const char NUDGED_ELASTIC_BAND[];
         static const char DYNAMICS[];
+        static const char PREFACTOR[];
         static const char TEST[];
 
         static Job *getJob(Parameters *parameters);

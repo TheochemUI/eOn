@@ -124,7 +124,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
 void ReplicaExchangeJob::saveData(void)
 {
 
-    FILE *fileResults, *fileReactant, *fileProduct;
+    FILE *fileResults, *fileReactant; //, *fileProduct;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);

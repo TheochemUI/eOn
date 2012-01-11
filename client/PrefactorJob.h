@@ -8,18 +8,23 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef PREFACTOR_H
-#define PREFACTOR_H
+#ifndef PREFACTORJOB_H
+#define PREFACTORJOB_H
 
-#include "Eigen.h"
-#include "Matter.h"
-
-#include "Prefactor.h"
+#include "Job.h"
 #include "Parameters.h"
 
-int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2);
-VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
-VectorXi allFreeAtoms(Matter *matter);
-VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+class PrefactorJob : public Job
+{
+public:
+    PrefactorJob(Parameters *params);
+    ~PrefactorJob();
+    std::vector<std::string> run(void);
+    static const char PREFACTOR_REACTANT[];
+    static const char PREFACTOR_SADDLE[];
+    static const char PREFACTOR_PRODUCT[];
+private:
+    Parameters *parameters;
+};
 
 #endif

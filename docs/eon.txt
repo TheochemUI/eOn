@@ -37,6 +37,9 @@ These are the options that go in the following sections of the config.ini file.
 
         ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.
 
+        ``prefactor``: Calculate the eigenfrequencies for a given configuration.
+
+
 **potential**: the type of potential to execute
 
     default: ``lj``
