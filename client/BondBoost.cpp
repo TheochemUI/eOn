@@ -198,6 +198,7 @@ double BondBoost::Booststeps()
     NewForce.setZero();
 
     //dt = parameters->parrepTimeStepInput;
+    Temp = parameters->temperature;
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;
@@ -323,7 +324,7 @@ double BondBoost::Booststeps()
     }
     //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
     //update bdt;
-    step_boost = exp(Boost_Fact/kb/Temp);
+    step_boost = 1.0*exp(Boost_Fact/kb/Temp);
     //printf("bdt = %E\n",bdt);
     
     return step_boost;
