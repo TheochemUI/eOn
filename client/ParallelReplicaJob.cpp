@@ -48,7 +48,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     final = new Matter(parameters);
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
-
+    time = 0.0;
     string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
     current->con2matter(reactant_passed);
 
@@ -59,16 +59,16 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     minimizeFCalls += (Potential::fcalls - refFCalls);
 
     log("\nParallel Replica Dynamics, running\n\n");
-
+    
     int status = dynamics();
 
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", transitionStep/0.09823*1.0e-15);
+        log("Transition time: %.2e s\n", transitionTime);
     }else{
        log("No new state was found in %ld dynamics steps (%.2f fs)\n",
-           parameters->mdSteps, 10.1802*parameters->mdSteps*parameters->mdTimeStep);
+           parameters->mdSteps, time);
     }
 
     delete current;
@@ -89,7 +89,6 @@ int ParallelReplicaJob::dynamics()
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRelax = 0, nRecord = 0;
     long StateCheckInterval, RecordInterval, RelaxSteps;
-    double time = 0.0;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
     double sumT = 0.0, sumT2 = 0.0;
 
@@ -120,10 +119,10 @@ int ParallelReplicaJob::dynamics()
     dephaseFCalls = Potential::fcalls - refFCalls;
 
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
-        "Total Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
+        "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         parameters->temperature, 
-        parameters->mdSteps*parameters->mdTimeStep/0.09823,
-        parameters->mdTimeStep/0.09823,
+        parameters->mdSteps*parameters->mdTimeStepInput,
+        parameters->mdTimeStepInput,
         parameters->mdSteps);
     log("MD buffer length: %ld\n", mdBufferLength);
 
@@ -138,9 +137,9 @@ int ParallelReplicaJob::dynamics()
     {
         if( (parameters->biasPotential == Hyperdynamics::BOND_BOOST) && !newStateFlag ) {
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
-            time += bondBoost.boost();
+            time += parameters->mdTimeStepInput*bondBoost.boost();
         } else {
-            time += parameters->mdTimeStep;
+            time += parameters->mdTimeStepInput;
         }
 
         kinE = current->getKineticEnergy();
@@ -154,7 +153,7 @@ int ParallelReplicaJob::dynamics()
 
         nCheck++; // count up to parameters->parrepStateCheckInterval before checking for a transition
         step++;
-
+        //log("step = %4d, time= %10.4f\n",step,time);
         // standard conditions; record mater object in the transition buffer
         if( parameters->parrepRefineTransition && recordFlag && !newStateFlag )
         {
@@ -292,6 +291,7 @@ int ParallelReplicaJob::dynamics()
         }else{
            log("Transition followed by a metastable state; product state taken after relaxation time.\n");
            transitionStep = transitionStep + RelaxSteps;
+           transitionTime = transitionTime + parameters->parrepRelaxTime;
            metaStateFlag = true;
         }
         refineFCalls += Potential::fcalls - refFCalls;
@@ -334,13 +334,13 @@ void ParallelReplicaJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", transitionStep*1.018e-14);
+        fprintf(fileResults, "%e transition_time_s\n", transitionTime);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
     else
     { 
-        fprintf(fileResults, "%e simulation_time_s\n", parameters->mdSteps*1.018e-14);
+        fprintf(fileResults, "%e simulation_time_s\n", time);
     }
     fclose(fileResults);
 
@@ -443,7 +443,7 @@ void ParallelReplicaJob::dephase()
             log("Reach dephase loop maximum, stop dephasing! Dephased for %ld steps\n ", step);
             break;
         }
-        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStep/0.09823);
+        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStepInput);
 
     }
 }
