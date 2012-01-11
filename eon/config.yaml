@@ -542,7 +542,7 @@ Process Search:
 Prefactor:
 
     options:
-        all_free_atoms
+        all_free_atoms:
             kind: boolean
             default: False
         
