@@ -88,7 +88,8 @@ Parameters::Parameters(){
     optMaxIterations = 1000;
     optConvergedForce = 0.005;
     optMaxMove = 0.2;
-    optTimeStep = 1.0;
+    optTimeStep = 0.25;
+    optMaxTimeStep = 2.5;
     optVariableTimeStep = false;
     optLBFGSMemory = 50;
     optLBFGSInverseCurvature = 0.1;

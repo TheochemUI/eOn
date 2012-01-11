@@ -545,7 +545,7 @@ Prefactor:
         all_free_atoms:
             kind: boolean
             default: False
-        
+
         min_displacement:
             kind: float
             default: 0.25
@@ -928,6 +928,10 @@ Optimizer:
             default: 0.2
 
         time_step:
+            kind: float
+            default: 0.25
+
+        max_time_step:
             kind: float
             default: 1.0
 
