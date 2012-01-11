@@ -173,6 +173,24 @@ VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
 
+VectorXi allFreeAtoms(Matter *matter)
+{
+    long nAtoms = matter->numberOfAtoms();
+    
+    VectorXi moved(nAtoms);
+    moved.setConstant(-1);
+    
+    int nMoved = 0;
+    for(int i=0; i<nAtoms; i++)
+    {
+        if(!matter->getFixed(i))
+        {
+            moved[nMoved] = i;
+            nMoved++;
+        }
+    }
+    return (VectorXi) moved.block(0,0,nMoved,1);
+}
 
 VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs)
 {

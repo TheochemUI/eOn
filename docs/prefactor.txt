@@ -9,6 +9,10 @@ Prefactor
 [Prefactor] Options
 -------------------
 
+**all_free_atoms**: Account for all free atoms when determining the prefactor.
+
+    default: ``false``
+
 **min_displacement**: Minimum amount that an atom has to move to be included in
 the Hessian calculation.
 
@@ -33,3 +37,12 @@ instead of doing a full prefactor calculation.
 
     default: ``1e+21``
 
+**configuration**: When EON runs as a prefactor job the eigenfrequencies 
+will be determined for the stated configuration.
+
+    default: ``reactant``
+
+    options:
+        ``reactant``
+        ``saddle``
+        ``product``

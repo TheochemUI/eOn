@@ -542,6 +542,9 @@ Process Search:
 Prefactor:
 
     options:
+        all_free_atoms
+            kind: boolean
+            default: False
         
         min_displacement:
             kind: float
@@ -562,6 +565,17 @@ Prefactor:
         default_value:
             kind: float
             default: 0
+
+        configuration:
+            kind: string
+            default: reactant
+            values:
+                - reactant
+                - saddle
+                - product
+
+
+
 
 ################################################################################
 
