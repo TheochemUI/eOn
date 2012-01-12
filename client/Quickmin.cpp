@@ -27,27 +27,19 @@ Quickmin::~Quickmin()
     return;
 }
 
-VectorXd Quickmin::getStep()
+bool Quickmin::step(double maxMove)
 {
     VectorXd force = -objf->getGradient();
-    VectorXd f_unit = force/force.norm();
     if (velocity.dot(force) < 0) {
         velocity.setZero();
     }
     else {
+        VectorXd f_unit = force/force.norm();
         velocity = velocity.dot(f_unit) * f_unit;
     }
     velocity += force * dt;
-    return velocity * dt;
-}
-
-bool Quickmin::step(double maxMove)
-{
-    VectorXd d = getStep();
-    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
-    VectorXd positions = objf->getPositions();
-    positions += dr;
-    objf->setPositions(positions);  
+    VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt, parameters->optMaxMove);
+    objf->setPositions(objf->getPositions() + dr);  
     iteration++;
     return objf->isConverged();
 }
