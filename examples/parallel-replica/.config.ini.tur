@@ -14,16 +14,16 @@ num_jobs = 1                        ;totoal number of search
 
 [Dynamics]
 time_step = 2.0                     ;timestep of MD run in fs
-steps = 12000                       ;the total number of MD steps to run
+time = 12000.0                      ;the total number of MD steps to run
 thermostat = andersen               ;using Andersen thermostat with Verlet algorithm
 andersen_alpha = 0.2                ;the collision strength in the andersen thermostat
-andersen_collision_freq = 10.0      ;the collision period of andersen thermostat in unit of fs
+andersen_collision_period = 10.0    ;the collision period of andersen thermostat in unit of fs
 
 [Parallel Replica]
-dephase_steps = 200                 ;number of steps used to decorrelate the replica trajectories.
-state_check_period = 3000           ;every 3000 steps the system is quenched and check whether a new state is found.
-state_save_period = 200             ;every 500 steps the system is recorded to a buffer array and once a new state is found, this buffer array is used to refine the accurate transition step.
-post_transition_steps = 200         ;after a new state is found, 200 additional steps will be performed to confirm that the state is stable.
+dephase_time = 200                  ;number of steps used to decorrelate the replica trajectories.
+state_check_interval = 3000         ;every 3000 steps the system is quenched and check whether a new state is found.
+state_save_interval  = 200          ;every 500 steps the system is recorded to a buffer array and once a new state is found, this buffer array is used to refine the accurate transition step.
+post_transition_time = 200          ;after a new state is found, 200 additional steps will be performed to confirm that the state is stable.
 stop_after_transition = false       ;whether or not stop the job when a new state is found.
 
 

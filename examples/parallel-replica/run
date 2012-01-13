@@ -1,0 +1,17 @@
+#!/bin/sh
+if [ -e config.ini ] 
+then
+   echo "All input files are ready, start to run this sample job "
+else
+   echo "Input files are not ready, please run ./init before ./run "
+   exit 1
+fi
+nrun=10
+for (( i=1; i<$nrun; i++ ))
+do
+rand=$RANDOM
+./init
+#sed -i "s/1234567/$rand/" config.ini
+#grep  "random_seed" config.ini
+../../bin/eon
+done
