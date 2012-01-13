@@ -55,10 +55,10 @@ void Dynamics::oneStep(void)
     }
     else if(parameters->thermostat == NONE){
        velocityVerlet();
-     //   double potE, kinE;
-     //   kinE = matter->getKineticEnergy();
-     //   potE = matter->getPotentialEnergy();
-     //   log("totE = %10.5f\n",kinE+potE);
+        //double potE, kinE;
+        //kinE = matter->getKineticEnergy();
+        //potE = matter->getPotentialEnergy();
+        //log("totE = %10.5f\n",kinE+potE);
     }
 }
 
