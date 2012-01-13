@@ -1,3 +1,0 @@
-echo "y"|../../../bin/eon -R
-rm -rf config.ini reactant.con
-
