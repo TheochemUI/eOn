@@ -7,7 +7,7 @@ Running a Parallel Replica Job
 Regular Parallel Replica Job
 -----------------------------
 
-A sample parallel replica simulation can be found in your copy of eon under the directory: ``examples/parallel-replica/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
+A sample parallel replica simulation can be found in your copy of eon under the directory: ``examples/parallel-replica/``. There are 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
 
 The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
 
@@ -18,10 +18,9 @@ Here is the ``config.ini`` file which will run a parallel replica job using 1 lo
 
 .. literalinclude:: ../examples/parallel-replica/.config.ini
 
-Now we can run 1 search by executing the script ``run``::
+Now we can run 1 search by executing the command ``../eon/main.py``::
 
-    $ ./run 
-    All input files are ready, start to run this sample job 
+    $ ../eon/main.py
     simulation time is 0.000000e+00
     state list path does not exist, creating .//states/
     registering results
@@ -31,18 +30,24 @@ Now we can run 1 search by executing the script ``run``::
     making 1 searches
     job finished in .//jobs/scratch/0_0
     1 searches created
+
+Then use "main.py -n" to registrate the results::
+
+    $ ../eon/main.py -n
     simulation time is 0.000000e+00
     registering results
-    found transition with time 6.036e-12
+    found transition with time 3.200e-12
     1 (result) searches processed
     time in current state is 0.000000e+00
     currently in state 1
     0 searches in the queue
     making 0 searches
 
-Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
+Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``::
 
-.. literalinclude:: ../examples/parallel-replica/.dynamics.txt
+    step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate
+    ---------------------------------------------------------------------------------------------------------------
+                0             0             0             1  3.200000e-12  3.200000e-12      0.000000  0.000000e+00
 
 The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
