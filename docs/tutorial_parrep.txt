@@ -16,7 +16,7 @@ The system we are looking at is the diffusion of Al adatom on Al(100) surface. A
 
 Here is the ``config.ini`` file which will run a parallel replica job using 1 local cpu for 1 search. 
 
-.. literalinclude:: ../examples/parallel-replica/.config.ini
+.. literalinclude:: ../examples/parallel-replica/.config.ini.tur
 
 Now we can run 1 search by executing the command ``../eon/main.py``::
 
@@ -59,7 +59,7 @@ Detailed information of the simulation is stored in the folder ``states``. where
 Compared to the reactant geometric, we can tell that the transition we found follows the exchange mechanism.
 
 Parallel Replica with Hyperdynamics
-----------------------------------
+--------------------------------------
 If you want to run Hyperdynamics, you can turn on the Hyperdynamics function by adding the following section to you ``config.ini`` file::
 
     [Hyperdynamics]
