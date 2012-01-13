@@ -7,6 +7,7 @@ import os
 import sys
 import cPickle as pickle
 from copy import copy
+import numpy
 
 import atoms
 import communicator
@@ -138,9 +139,6 @@ class ClientMinModeExplorer(MinModeExplorer):
         io.savecon(reactIO, self.reactant)
         invariants['reactant_passed.con']=reactIO
 
-        ini_changes = [ ('Main', 'job', 'process_search') ]
-        invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
-
         #Merge potential files into invariants
         invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
@@ -157,6 +155,13 @@ class ClientMinModeExplorer(MinModeExplorer):
                                      'wuid':self.wuid,
                                      'type':disp_type } )
 
+            ini_changes = [ ('Main', 'job', 'process_search'),
+                            ('Main', 'random_seed',
+                                str(int(numpy.random.random()*10**9))),
+                          ]
+            search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+
+
             if displacement:
                 dispIO = StringIO.StringIO()
                 io.savecon(dispIO, displacement)
@@ -168,6 +173,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 self.wuid += 1
                 # eager write
                 self.save_wuid()
+
 
         if config.recycling_on and self.nrecycled > 0:
             logger.info("recycled %i saddles" % self.nrecycled)
