@@ -335,7 +335,7 @@ void ParallelReplicaJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", transitionTime);
+        fprintf(fileResults, "%e transition_time_s\n", transitionTime*10e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
