@@ -65,10 +65,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", transitionTime);
+        log("Transition time: %.2e s\n", transitionTime*1.0e-15);
     }else{
-       log("No new state was found in %ld dynamics steps (%.2f fs)\n",
-           parameters->mdSteps, time);
+       log("No new state was found in %ld dynamics steps (%.3e s)\n",
+           parameters->mdSteps, time*1.0e-15);
     }
 
     delete current;
@@ -335,13 +335,13 @@ void ParallelReplicaJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1e-15);
+        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
     else
     { 
-        fprintf(fileResults, "%e simulation_time_s\n", time);
+        fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
     }
     fclose(fileResults);
 
