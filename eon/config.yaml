@@ -951,6 +951,7 @@ Optimizer:
                 - cg
                 - qm
                 - lbfgs
+                - fire
 
         lbfgs_memory:
             kind: int
