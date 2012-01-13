@@ -7,7 +7,7 @@ Running a Parallel Replica Job
 Regular Parallel Replica Job
 -----------------------------
 
-A sample parallel replica simulation can be found in your copy of eon under the directory: ``samples/pr-AlAdatom/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
+A sample parallel replica simulation can be found in your copy of eon under the directory: ``examples/parallel-replica/``. There are 3 scripts ``init``, ``run``, ``clean`` in this directory. Execute ``init`` first to get 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
 
 The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
 
@@ -16,7 +16,7 @@ The system we are looking at is the diffusion of Al adatom on Al(100) surface. A
 
 Here is the ``config.ini`` file which will run a parallel replica job using 1 local cpu for 1 search. 
 
-.. literalinclude:: ../samples/pr-AlAdatom/.config.ini
+.. literalinclude:: ../examples/parallel-replica/.config.ini
 
 Now we can run 1 search by executing the script ``run``::
 
@@ -42,7 +42,7 @@ Now we can run 1 search by executing the script ``run``::
 
 Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``, 
 
-.. literalinclude:: ../samples/pr-aladatom/.dynamics.txt
+.. literalinclude:: ../examples/parallel-replica/.dynamics.txt
 
 The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
