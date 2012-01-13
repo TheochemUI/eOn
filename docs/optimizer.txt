@@ -26,6 +26,8 @@ The eon client provides three optimizers quick-min, conjugate gradients, and L-B
         ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton
         optimizer
 
+        ``fire``: Fast inertial relaxation engine
+
 
 **converged_force**: When the maximum force (in eV/A) on any one atom is
 smaller than this value, the structure is considered minimized.
