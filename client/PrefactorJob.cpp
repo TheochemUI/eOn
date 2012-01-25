@@ -125,6 +125,10 @@ std::vector<std::string> PrefactorJob::run(void)
             {
                 fprintf(fileFreq, "%f\n", sqrt(freqs[i])/(2*M_PI*10.18e-15));
             }
+            else
+            {
+                fprintf(fileFreq, "%f\n", -sqrt(-freqs[i])/(2*M_PI*10.18e-15));                
+            }
         }
     }
 
