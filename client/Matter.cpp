@@ -631,6 +631,12 @@ bool Matter::matter2con(FILE *file) const
     double mass[MAXC];
     long atomicNrs[MAXC];
     first[0] = 0;
+    
+    if(usePeriodicBoundaries)
+    { 
+        applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
+    }
+    
     if(numberOfAtoms()>0) {
         if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
         mass[0] = getMass(0);
@@ -998,6 +1004,12 @@ bool Matter::matter2convel(FILE *file) const
     double mass[MAXC];
     long atomicNrs[MAXC];
     first[0] = 0;
+    
+    if(usePeriodicBoundaries)
+    { 
+        applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
+    }
+    
     if(numberOfAtoms() > 0) {
         if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
         mass[0] = getMass(0);
