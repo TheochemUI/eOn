@@ -105,11 +105,11 @@ public:
     bool con2matter(FILE *file); // read con file and load data into Matter, return true if successful
     bool convel2matter(std::string filename); // read con file with both coordinates and velocities into Matter
     bool convel2matter(FILE *file); // read con file with both coordinates and velocities and load data into Matter
-    bool matter2con(std::string filename, bool append=false) const; // print con file from data in Class Matter
-    bool matter2con(FILE *file) const; // print con file from data in Class Matter
-    bool matter2convel(std::string filename) const; // print con file with both coordinates and velocities  in Class Matter
-    bool matter2convel(FILE *file) const; // print con file with both coordinates and velocities from data in Class Matter
-    void matter2xyz(std::string filename, bool append=false) const; // print xyz file from data in Matter
+    bool matter2con(std::string filename, bool append=false); // print con file from data in Class Matter
+    bool matter2con(FILE *file); // print con file from data in Class Matter
+    bool matter2convel(std::string filename); // print con file with both coordinates and velocities  in Class Matter
+    bool matter2convel(FILE *file); // print con file with both coordinates and velocities from data in Class Matter
+    void matter2xyz(std::string filename, bool append=false); // print xyz file from data in Matter
     AtomMatrix getFree() const;
     VectorXd getFreeV() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
