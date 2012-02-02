@@ -138,8 +138,8 @@ class Displace:
 
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
-
-        displacement_norm = 0.
+        logger.debug("Displacement epicenter: %d" % atom_index)
+        displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
 
         #ensures that the total displacement vector exceeds a given length
@@ -181,9 +181,6 @@ class Displace:
         mode = displacement/numpy.linalg.norm(displacement)
         mode = displacement
         io.save_mode(os.path.join(path, "mode_passed.dat"), displacement)
-
-#class KDB()
-#class Recycle()
 
 class Undercoordinated(Displace):
     def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
