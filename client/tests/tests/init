@@ -1,0 +1,6 @@
+cp .parameters_passed.dat.orig parameters_passed.dat
+cp .reactant_test.con.orig reactant_test.con
+
+cp .displacement_test.con.orig displacement_test.con
+cp .mode_test.dat.orig mode_test.dat
+
