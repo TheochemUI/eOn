@@ -45,9 +45,8 @@ endif
 #Optional potentials
 ifdef BOPFOX
     CXXFLAGS += -DBOPFOX
-    LDFLAGS += libbopfox.a -lgfortran
     POTDIRS += ./potentials/bop
-    LIBS += ./potentials/bop/libbop.a
+    LIBS += ./potentials/bop/libbop.a libbopfox.a
     POTENTIALS += "+bop"
 else
     OPOTDIRS += ./potentials/bop
