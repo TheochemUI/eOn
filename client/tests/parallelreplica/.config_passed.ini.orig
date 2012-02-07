@@ -1,0 +1,32 @@
+[Main]
+# The type of job to run. Current options are
+# ProcessSearch and Minimization
+JOB=Parallel_Replica
+#JOB=MD
+
+temperature=1500
+
+# description RANDOM_SEED
+# -1 = time is used to seed the random generator
+RANDOM_SEED=200
+
+[Potential]
+potential=morse_pt
+
+[Dynamics]
+time_step=1.0 #unit of fs
+time=5000.0
+thermostat=andersen
+nose_mass=1.0
+andersen_alpha=0.2
+andersen_collision_period=10.0
+langevin_friction=0.01
+
+[Parallel Replica]
+stop_after_transition=F
+dephase_time=200.0
+refine_transition_time=T
+state_save_interval=10.0
+state_check_interval=1000.0
+post_transition_time=200.0
+

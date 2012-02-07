@@ -1,0 +1,16 @@
+[Main]
+job=replica_exchange
+random_seed=0
+temperature=600
+
+[Potential]
+potential=qsc
+
+[Replica Exchange]
+temperature_distribution=exponential
+replicas=10
+sampling_time=1000
+temperature_low=600
+temperature_high=1200
+exchange_period=100
+
