@@ -1,0 +1,5 @@
+cp .displacement_passed.con.orig displacement_passed.con
+cp .parameters_passed.dat.orig parameters_passed.dat
+cp .mode_passed.dat.orig mode_passed.dat
+cp .reactant_passed.con.orig reactant_passed.con
+

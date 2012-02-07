@@ -1,0 +1,32 @@
+[Main]
+# The type of job to run. Current options are
+# ProcessSearch and Minimization
+JOB=Process_Search
+
+# describtion RANDOM_SEED
+# -1 = time is used to seed the random generator
+RANDOM_SEED=-1
+
+
+[Optimizer]
+max_iterations=512
+
+[Potential]
+potential=eam_al
+
+[Process Search]
+minimize_first=True
+
+[Saddle Search]
+min_mode_method = dimer
+
+# tweakable parameters
+converged=0.001
+max_Energy=10.000000
+
+[Hessian]
+min_Displacement=0.250000
+within_Radius_Displaced=3.500000
+
+[Dimer]
+rotations=2

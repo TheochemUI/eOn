@@ -1,0 +1,65 @@
+
+/------------------------------------------------------------------------
+/ Versions
+/------------------------------------------------------------------------
+
+moments = 6 
+AtomsVersion  = v2          
+BondsVersion  = v2         
+RepVersion = v2
+Version = bop          
+screening  = false
+screeningVersion = v0
+restart = F
+
+#############
+TASK = force  
+#############
+
+!!! new self-consistency scheme switched-on !!!
+!scfnewscheme = T 
+scfmixer = broyden
+scfmixpara = 0.3        
+scftol = 0.001
+
+scfreusehii = F
+scfSteps = 100
+
+
+! Here analytic are previous numeric
+forces    = analytic
+numFdisp  = 2   
+numfinc   = 0.0001
+
+facrcut    = 1.0 
+rskin      = 0.0
+rthickskin = 0.0
+ecut       = 0.0
+
+rCut     =  4.40  
+dcut     =  1.60
+r2Cut    =  6.00
+d2cut    =  0.00
+
+StrucFile = struc.bx
+
+!RELAX part
+rxsaveframes = 1
+rxfconv  = 0.01
+rxkernel = damped-newton
+rxmaxsteps = 1000
+!rxsteplimit = 0.10
+
+!Newton related parameters
+dndamping  = 0.00 
+dnrecmass  = 0.03    
+
+terminator = averaged
+
+verbose = F
+printsc = F
+printefermi = F
+
+printtsse = T
+
+
