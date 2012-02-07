@@ -1,0 +1,1 @@
+rm config_passed.ini reactant_passed.con reactant.con results.dat client.log 2> /dev/null

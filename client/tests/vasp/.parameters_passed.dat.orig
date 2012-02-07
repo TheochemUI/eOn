@@ -1,0 +1,54 @@
+[Default]
+# The type of job to run. Current options are
+# ProcessSearch and Minimization
+JOB_TYPE=Process_Search
+
+# describtion RANDOM_SEED
+# -1 = time is used to seed the random generator
+RANDOM_SEED=-1
+
+# describtion POTENTIAL_TAG
+# 1 = lennard-jones potential
+# 2 = morse
+# 3 = emt
+# 4 = edip
+# 5 = VASP
+# 6 = Tersoff
+# 7 = Stilling Weber
+# 8 = Lenosky
+# 9 = Lennard-jones binary
+# 10 = Aluminum
+# 12 = QSC
+POTENTIAL_TAG=5
+
+
+maximum_iterations=512
+
+[ProcessSearch]
+minimize_first=1
+
+[Saddle_Point]
+# describtion LOWEST_EIGENMODE_DETERMINATION_SP
+# 1 = dimer method
+# 2 = lanczos method
+LOWEST_EIGENMODE_DETERMINATION=1
+
+# Refine saddle point.
+REFINE=1
+
+# tweakable parameters
+converged_Relax=0.001
+converged=0.002
+max_Energy=10.000000
+
+[Hessian]
+min_Displacement=0.250000
+within_Radius_Displaced=3.500000
+
+[Dimer]
+rotations = 16
+separation = 0.1
+angle = 0.1
+
+[CG]
+curvature_step = 0.1
