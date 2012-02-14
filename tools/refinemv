@@ -2,10 +2,9 @@
 
 import sys
 
-import pathfix
-import atoms
+from eon import fileio as io
+from eon import atoms
 import numpy
-import io
 
 def abort():
     print "\n   usage: refinemv [input movie file] [ouput movie file] <intermediate frames>"
@@ -24,7 +23,7 @@ try:
     outfile = sys.argv[2]
 except:
     abort()
-        
+
 try:
     N = int(sys.argv[3])
 except:
