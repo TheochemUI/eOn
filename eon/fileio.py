@@ -54,7 +54,7 @@ def loadcons(filename):
     p = []
     while True:
         try:
-            p.append(loadcon(filein))
+            p.append(loadcon(filein, reset=False))
         except:
             return p
 
@@ -69,7 +69,7 @@ def loadposcars(filename):
             return p
 
 
-def loadcon(filein):
+def loadcon(filein, reset = True):
     '''
     Load a con file
         filein: may be either a filename or a file-like object
@@ -123,7 +123,8 @@ def loadcon(filein):
             if not int(vals[dim])==0:
                 a.free[index]=0
             index += 1
-    con.seek(0)
+    if reset:
+        con.seek(0)
     return a
 
 def savecon(fileout, p, w = 'w'):
