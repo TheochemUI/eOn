@@ -211,6 +211,7 @@ def init(config_file = ""):
     config.comm_type = parser.get('Communicator', 'type')
     config.comm_job_bundle_size = parser.getint('Communicator', 'jobs_per_bundle')
     config.comm_job_buffer_size = parser.getint('Communicator', 'num_jobs')
+    config.comm_job_max_size = parser.getint('Communicator', 'max_jobs')
     config.path_scratch = parser.get('Paths', 'scratch')
     if config.comm_type == 'local':
         config.comm_local_client = parser.get('Communicator', 'client_path')

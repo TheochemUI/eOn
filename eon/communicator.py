@@ -310,7 +310,6 @@ class BOINC(Communicator):
         self.cursor.execute(query)
         row = self.cursor.fetchone()
         number_unsent = row['count(*)']
-
         return number_unsent
 
     def cancel_state(self, statenumber):
