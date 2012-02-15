@@ -666,6 +666,10 @@ Communicator:
             kind: int
             default: 1
 
+        max_jobs:
+            kind: int
+            default: 0
+
         number_of_CPUs:
             kind: int
             default: 1
@@ -701,7 +705,7 @@ Communicator:
         queued_jobs:
             kind: string
             default: queued_jobs.sh
-
+            
         script_path:
             kind: string
             default: ./
