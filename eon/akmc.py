@@ -90,7 +90,7 @@ def akmc(config):
 
     current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining)
 
-    # Write out metadata. XXX:ugly
+    # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
 
