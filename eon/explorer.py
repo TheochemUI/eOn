@@ -26,7 +26,9 @@ def get_minmodexplorer():
 class Explorer:
     def __init__(self):
         self.wuid_path = os.path.join(config.path_scratch, "wuid")
+        self.job_count_path = os.path.join(config.path_scratch, "job_count")
         self.load_wuid()
+        self.load_jc()
 
     def load_wuid(self):
         try:
@@ -40,7 +42,20 @@ class Explorer:
         f = open(self.wuid_path, 'w')
         f.write("%i\n" % self.wuid)
         f.close()
-
+        
+    def load_jc(self):
+        try:
+            f = open(self.job_count_path)
+            self.jc = int(f.read())
+            f.close()
+        except IOError:
+            self.jc = 0
+    
+    def save_jc(self):
+        f = open(self.job_count_path, 'w')
+        f.write("%i\n" % self.jc)
+        f.close()
+        
 
 class MinModeExplorer(Explorer):
     def __init__(self, states, previous_state, state):
@@ -87,6 +102,8 @@ class MinModeExplorer(Explorer):
         if self.state.get_confidence() < config.akmc_confidence:
             self.make_jobs()
         else:
+            self.jc = 0
+            self.save_jc()
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("cancelled %i workunits from state %i", 
                         num_cancelled, self.state.number)
@@ -126,6 +143,10 @@ class ClientMinModeExplorer(MinModeExplorer):
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
         logger.info("%i searches in the queue" % num_in_buffer)
         num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
+        if config.comm_job_max_size != 0:
+            if self.jc + num_to_make>= config.comm_job_max_size:
+                num_to_make = max(0, config.comm_job_max_size - self.jc)
+                logger.info("reached max_jobs")
         logger.info("making %i process searches" % num_to_make)
 
         if num_to_make == 0:
@@ -171,8 +192,10 @@ class ClientMinModeExplorer(MinModeExplorer):
                 search['mode_passed.dat'] = modeIO
                 searches.append(search) 
                 self.wuid += 1
+                self.jc += 1
                 # eager write
                 self.save_wuid()
+                self.save_jc()
 
 
         if config.recycling_on and self.nrecycled > 0:
@@ -217,6 +240,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             #
             # The reactant, product, and mode are passed as lines of the files because
             # the information contained in them is not needed for registering results
+            self.jc -= 1
             if config.debug_keep_all_results:
                 #XXX: We should only do these checks once to speed things up,
                 #     but at the same time debug options don't have to be fast
@@ -265,6 +289,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             logger.debug("%.1f results per second", (num_registered/(t2-t1)))
 
         self.job_table.write()
+        self.save_jc()
         return num_registered
 
 
@@ -322,6 +347,8 @@ class ServerMinModeExplorer(MinModeExplorer):
             if self.state.get_confidence() >= config.akmc_confidence:
                 self.process_searches = {}
                 self.save()
+                self.jc = 0
+                self.save_jc()
 
         MinModeExplorer.explore(self)
 
@@ -352,6 +379,7 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         num_registered = 0
         for result in self.comm.get_results(config.path_jobs_in, keep_result): 
+            self.jc -= 1
             state_num = int(result['name'].split("_")[0])
             # XXX: doesn't this doesn't give the correct id wrt bundling
             id = int(result['name'].split("_")[1]) + result['number']
@@ -395,12 +423,17 @@ class ServerMinModeExplorer(MinModeExplorer):
             logger.debug("%.1f results per second", (num_registered/(t2-t1)))
 
         self.save()
+        self.save_jc()
         return num_registered
 
     def make_jobs(self):
         num_running = self.comm.get_queue_size()*config.comm_job_bundle_size
         logger.info("%i jobs running" % num_running)
         num_to_make = max(config.comm_job_buffer_size - num_running, 0)
+        if config.comm_job_max_size != 0:
+            if self.jc + num_to_make>= config.comm_job_max_size:
+                num_to_make = max(0, config.comm_job_max_size - self.jc)
+                logger.info("reached max_jobs")
         logger.info("making %i jobs" % num_to_make)
 
         if num_to_make == 0:
@@ -444,7 +477,9 @@ class ServerMinModeExplorer(MinModeExplorer):
             self.job_info[sid][job['id']] = job_entry
 
             self.wuid += 1
+            self.jc += 1
             self.save_wuid()
+            self.save_jc()
             jobs.append(job)
 
         self.save()
