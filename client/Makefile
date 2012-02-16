@@ -8,6 +8,10 @@ LD=ld
 AR=ar cru
 RANLIB=ranlib
 
+#intel 12 linking
+#LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
+
+
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
 OPT=-O0
@@ -31,8 +35,14 @@ endif
 #------------------------------------
 #Ensures all code is statically linked on a Linux machine
 UNAME := $(shell uname)
+MACHINE := $(shell uname -m)
 ifeq ($(UNAME), Linux)
   LINUX=1
+  ifeq ($(MACHINE), x86_64)
+    LINUX64=1
+  else
+    LINUX32=1
+  endif
   #MPI often doesn't mix well with static linking...
   ifndef EONMPI
 	  LDFLAGS += -static
