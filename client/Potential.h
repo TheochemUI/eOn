@@ -47,6 +47,9 @@ class Potential
 
         static int fcalls;
         static int fcallsTotal;
+        static int wu_fcallsTotal;
+        
+        Parameters *params;
 
         AtomMatrix force(long nAtoms, AtomMatrix positions,
                          VectorXi atomicNrs, double *energy, Matrix3d box);

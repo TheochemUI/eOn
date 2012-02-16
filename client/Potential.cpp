@@ -48,6 +48,18 @@
     #include "potentials/VASP/VASP.h"
 #endif
 
+#ifdef BOINC
+    #include <boinc/boinc_api.h>
+    #include <boinc/diagnostics.h>
+    #include <boinc/filesys.h>
+#ifdef WIN32
+    #include <boinc/boinc_win.h>
+    #include <boinc/win_util.h>
+#endif
+#else
+    #include "false_boinc.h"
+#endif
+
 #include <cstdlib>
 
 const char Potential::POT_LJ[] =          "lj";
@@ -143,11 +155,13 @@ Potential *Potential::getPotential(Parameters *parameters)
         std::exit(1);
     }
     pot->initialize();
+    pot->params = parameters;
     return pot;
 };
 
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
+int Potential::wu_fcallsTotal = 0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
                             VectorXi atomicNrs, double *energy, Matrix3d box)
@@ -168,6 +182,10 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
 
     fcalls += 1;
     fcallsTotal += 1;
-
+    
+    wu_fcallsTotal += 1;
+    boinc_fraction_done(min(1.0, wu_fcallsTotal / (double)params->boincProgressMax));
     return forces;
 };
+
+
