@@ -190,6 +190,7 @@ public:
     int MPIPotentialRank;
 
     // [Debug]
+    long   boincProgressMax;
     bool   keepAllResultFiles;
     bool   writeMovies;
     long   writeMoviesInterval;
