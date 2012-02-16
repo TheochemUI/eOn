@@ -229,6 +229,10 @@ Debug:
         write_movie_interval:
             kind: int
             default: 1
+            
+        boinc_progress_max:
+            kind: int
+            default: 5000
 
 ################################################################################
 

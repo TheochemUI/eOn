@@ -384,7 +384,6 @@ int main(int argc, char **argv)
             bundledFilenames = filenames;
         }
 
-        boinc_fraction_done((double)(i+1)/(bundleSize));
         delete job;
 
         log_close();
