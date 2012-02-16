@@ -46,7 +46,19 @@ endif
 ifdef BOPFOX
     CXXFLAGS += -DBOPFOX
     POTDIRS += ./potentials/bop
-    LIBS += ./potentials/bop/libbop.a libbopfox.a
+    LIBS += ./potentials/bop/libbop.a
+    ifdef WIN32
+        LIBS += bopfox/libbopfox_win32.a
+    endif
+    ifdef LINUX32
+        LIBS += bopfox/libbopfox_lnx32.a
+    endif
+    ifdef LINUX64
+        LIBS += bopfox/libbopfox_lnx64.a
+    endif
+    ifdef OSX
+        LIBS += bopfox/libbopfox_osx.a
+    endif
     POTENTIALS += "+bop"
 else
     OPOTDIRS += ./potentials/bop
