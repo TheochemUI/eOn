@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
+#include <dirent.h>
 
 #ifdef EONMPI
     #include <mpi.h>
@@ -389,6 +390,18 @@ int main(int argc, char **argv)
         log_close();
     }
 
+    if(parameters.keepAllResultFiles) {
+        bundledFilenames.clear();
+        DIR *dp;
+        struct dirent *ep;     
+        dp = opendir ("./");
+        while( (ep = readdir(dp)) ) {
+            if (ep->d_name[0] == '.') { continue; }
+            bundledFilenames.push_back(std::string(ep->d_name));
+        }
+        (void) closedir (dp);
+    }
+    
     #ifdef EONMPI
         if (client_standalone) {
             break;
