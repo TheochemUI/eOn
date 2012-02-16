@@ -8,7 +8,6 @@ LD=ld
 AR=ar cru
 RANLIB=ranlib
 
-
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
 OPT=-O0
