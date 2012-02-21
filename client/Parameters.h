@@ -45,6 +45,7 @@ public:
     string iniFilename;
     string conFilename;
     double finiteDifference;
+    long maxForceCalls;
 
     // [Potential] //
     string potential;
@@ -195,6 +196,7 @@ public:
     long   writeMoviesInterval;
 private:
     string toLowerCase(string s);
+    
 
 };
 

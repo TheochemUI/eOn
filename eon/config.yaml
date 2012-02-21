@@ -38,6 +38,10 @@ Main:
         quiet:
             kind: boolean
             default: False
+            
+        max_force_calls:
+            kind: int
+            default: 0
 
 ################################################################################
 
@@ -230,10 +234,6 @@ Debug:
             kind: int
             default: 1
             
-        boinc_progress_max:
-            kind: int
-            default: 5000
-
 ################################################################################
 
 Structure Comparison:
