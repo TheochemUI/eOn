@@ -34,6 +34,7 @@ Parameters::Parameters(){
     iniFilename = "config.ini";
     conFilename = "reactant.con";
     finiteDifference = 0.01;
+    maxForceCalls = 0;
 
     // [Prefactor]
     prefactorDefaultValue = 0.0;
@@ -59,7 +60,6 @@ Parameters::Parameters(){
     // [Debug] //
     writeMovies = false;
     writeMoviesInterval = 1;
-    boincProgressMax = 5000;
 
     // [Process Search] //
     processSearchMinimizeFirst = false;
@@ -171,6 +171,7 @@ Parameters::Parameters(){
     basinHoppingJumpSteps = 0;
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
+    
 }
 
 Parameters::~Parameters(){
@@ -224,6 +225,7 @@ int Parameters::load(FILE *file){
         }else{
             helper_functions::random(randomSeed);
         }
+        maxForceCalls = ini.GetValueL("Main", "max_force_calls", maxForceCalls);
 
         // [Potential] //
 
@@ -236,7 +238,6 @@ int Parameters::load(FILE *file){
 
         writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
         writeMoviesInterval = ini.GetValueL("Debug","write_movies_interval",writeMoviesInterval);
-        boincProgressMax = ini.GetValueL("Debug","boinc_progress_max", boincProgressMax);
 
         // [Structure Comparison] //
 

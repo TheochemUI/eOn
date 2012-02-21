@@ -161,7 +161,6 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
-int Potential::wu_fcallsTotal = 0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
                             VectorXi atomicNrs, double *energy, Matrix3d box)
@@ -183,8 +182,13 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     fcalls += 1;
     fcallsTotal += 1;
     
-    wu_fcallsTotal += 1;
-    boinc_fraction_done(min(1.0, wu_fcallsTotal / (double)params->boincProgressMax));
+    if (params->maxForceCalls != 0) {
+        boinc_fraction_done(min(1.0, fcallsTotal / (double)params->maxForceCalls));
+        if (fcallsTotal > params->maxForceCalls) {
+            throw 1017;
+        }
+    }
+    
     return forces;
 };
 
