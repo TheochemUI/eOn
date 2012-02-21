@@ -340,7 +340,7 @@ int main(int argc, char **argv)
         bundleSize = 1;
         bundlingEnabled = false;
     }
-
+    
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
         Potential::fcalls = 0;
@@ -372,7 +372,14 @@ int main(int argc, char **argv)
             printf("error: Unknown job: %s\n", parameters.job.c_str());
             return 1;
         }
-        std::vector<std::string> filenames = job->run();
+        
+        std::vector<std::string> filenames;
+        try {
+            filenames = job->run();
+        }
+        catch (int e) {
+            log("[ERROR] job exited on error %d\n", e);
+        }
 
         filenames.push_back(std::string("client.log"));
 
