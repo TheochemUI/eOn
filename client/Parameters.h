@@ -191,7 +191,6 @@ public:
 
     // [Debug]
     long   boincProgressMax;
-    bool   keepAllResultFiles;
     bool   writeMovies;
     long   writeMoviesInterval;
 private:

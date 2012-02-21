@@ -57,7 +57,6 @@ Parameters::Parameters(){
     checkRotation = false;
 
     // [Debug] //
-    keepAllResultFiles = false;
     writeMovies = false;
     writeMoviesInterval = 1;
     boincProgressMax = 5000;
@@ -235,7 +234,6 @@ int Parameters::load(FILE *file){
 
         // [Debug] //
 
-        keepAllResultFiles = ini.GetValueB("Debug", "keep_all_result_files", keepAllResultFiles);
         writeMovies = ini.GetValueB("Debug", "write_movies", writeMovies);
         writeMoviesInterval = ini.GetValueL("Debug","write_movies_interval",writeMoviesInterval);
         boincProgressMax = ini.GetValueL("Debug","boinc_progress_max", boincProgressMax);
