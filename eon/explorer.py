@@ -342,7 +342,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if not os.path.isdir(config.path_jobs_in):
+        if not os.path.isdir(config.path_jobs_in): #XXX: does this condition ever happen?
             os.makedirs(config.path_jobs_in)
             if self.state.get_confidence() >= config.akmc_confidence:
                 self.process_searches = {}
@@ -452,7 +452,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         for i in range(num_to_make):
             job = None
             for ps in self.process_searches.values():
-                job, job_type = ps.get_job()
+                job, job_type = ps.get_job(self.state.number)
                 if job:
                     self.wuid_to_search_id[self.wuid] = ps.search_id
                     sid = ps.search_id
@@ -462,10 +462,10 @@ class ServerMinModeExplorer(MinModeExplorer):
                 displacement, mode, disp_type = self.generate_displacement()
                 reactant = self.state.get_reactant()
                 process_search = ProcessSearch(reactant, displacement, mode,
-                                               disp_type, self.search_id)
+                                               disp_type, self.search_id, self.state.number)
                 self.process_searches[self.search_id] = process_search
                 self.wuid_to_search_id[self.wuid] = self.search_id
-                job, job_type = process_search.get_job()
+                job, job_type = process_search.get_job(self.state.number)
                 sid = self.search_id
                 self.search_id += 1
 
@@ -496,12 +496,13 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__ (self, reactant, displacement, mode, disp_type, search_id):
+    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number):
         self.reactant = reactant
         self.displacement = displacement
         self.mode = mode
         self.search_id = search_id
         self.displacement_type = disp_type
+        self.state_number = state_number
 
         #valid statuses are 'not_started', 'running', 'complete', 'unneeded', and 'error'
         self.job_statuses = {
@@ -541,7 +542,10 @@ class ProcessSearch:
                       'force_calls_prefactors':0,
                     }
 
-    def get_job(self):
+    def get_job(self, state_number):
+        if state_number != self.state_number:
+            return None, None
+    
         if True in [ s == 'error' for s in self.job_statuses.values() ]:
             return None, None
 

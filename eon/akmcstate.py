@@ -188,6 +188,7 @@ class AKMCState(state.State):
             rps.append(r[0])
         return rps
 
+
     def get_confidence(self):
         """ The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique
             processes and Ns is the number of searches performed.
