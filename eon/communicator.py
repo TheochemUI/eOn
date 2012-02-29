@@ -312,6 +312,15 @@ class BOINC(Communicator):
         number_unsent = row['count(*)']
         return number_unsent
 
+    def get_number_in_progress(self):
+        server_state = self.boinc_db_constants.RESULT_SERVER_STATE_IN_PROGRESS
+        query = 'select count(*) from result where batch=%i and server_state=%i'
+        query = query % (self.uniqueid, server_state)
+        self.cursor.execute(query)
+        row = self.cursor.fetchone()
+        number_in_progress = row['count(*)']
+        return number_in_progress
+
     def cancel_state(self, statenumber):
         # XXX: This function might be too expensive. Probably needs to be
         #      profiled later. It has to get all of the result rows that correspond
