@@ -427,9 +427,11 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        num_running = self.comm.get_queue_size()*config.comm_job_bundle_size
-        logger.info("%i jobs running" % num_running)
-        num_to_make = max(config.comm_job_buffer_size - num_running, 0)
+        num_unsent = self.comm.get_queue_size()*config.comm_job_bundle_size
+        logger.info("%i jobs queued" % num_unsent)
+        num_in_progress = self.comm.get_number_in_progress()*config.comm_job_bundle_size
+        logger.info("%i jobs running" % num_in_progress)
+        num_to_make = max(config.comm_job_buffer_size - num_unsent, 0)
         if config.comm_job_max_size != 0:
             if self.jc + num_to_make>= config.comm_job_max_size:
                 num_to_make = max(0, config.comm_job_max_size - self.jc)
