@@ -811,6 +811,9 @@ class Script(Communicator):
                 continue
         return list(set(self.jobids).intersection(queued_job_ids))
 
+    def get_number_in_progress(self):
+        return 0
+
     def get_queue_size(self):
         return len(self.get_queued_jobs())
 
