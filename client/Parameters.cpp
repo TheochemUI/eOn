@@ -22,6 +22,8 @@
 #include "NudgedElasticBand.h"
 #include "ReplicaExchangeJob.h"
 #include "Potential.h"
+#include "Prefactor.h"
+#include "PrefactorJob.h"
 
 Parameters::Parameters(){
 
@@ -42,7 +44,8 @@ Parameters::Parameters(){
     prefactorMinValue = 1e+9;
     prefactorWithinRadius = 5.0;
     prefactorMinDisplacement = 0.25;
-    prefactorConfiguration = "reactant";
+    prefactorRate = Prefactor::RATE_HTST;
+    prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
     prefactorAllFreeAtoms = false;
 
     // [Potential]
@@ -313,6 +316,7 @@ int Parameters::load(FILE *file){
         prefactorMinValue = ini.GetValueF("Prefactor", "min_value", prefactorMinValue);
         prefactorWithinRadius = ini.GetValueF("Prefactor", "within_radius", prefactorWithinRadius);
         prefactorMinDisplacement = ini.GetValueF("Prefactor", "min_displacement", prefactorMinDisplacement);
+        prefactorRate = toLowerCase(ini.GetValue("Prefactor", "rate_estimation", prefactorRate));
         prefactorConfiguration = toLowerCase(ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
         prefactorAllFreeAtoms = ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
         

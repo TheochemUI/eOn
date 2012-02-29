@@ -12,7 +12,7 @@
 #include "Prefactor.h"
 #include "Hessian.h"
 
-int getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2)
+int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2)
 {
     VectorXd min1Freqs, saddleFreqs, min2Freqs;
 
@@ -112,25 +112,46 @@ int getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, Matter *
     // calculate the prefactors
     pref1 = 1.0;
     pref2 = 1.0;
+    
+    if (parameters->prefactorRate == Prefactor::RATE_HTST){
 
-    // products are calculated this way in order to avoid overflow
-    for(int i=0; i<saddleFreqs.size(); i++)
-    {
-        pref1 *= min1Freqs[i];
-        pref2 *= min2Freqs[i];
-        if(saddleFreqs[i]>0)
+        // products are calculated this way in order to avoid overflow
+        for(int i=0; i<saddleFreqs.size(); i++)
         {
-            pref1 /= saddleFreqs[i];
-            pref2 /= saddleFreqs[i];
+            pref1 *= min1Freqs[i];
+            pref2 *= min2Freqs[i];
+            if(saddleFreqs[i]>0)
+            {
+                pref1 /= saddleFreqs[i];
+                pref2 /= saddleFreqs[i];
+            }
         }
+        pref1 = sqrt(pref1)/(2*M_PI*10.18e-15);
+        pref2 = sqrt(pref2)/(2*M_PI*10.18e-15);
     }
-    pref1 = sqrt(pref1)/(2*M_PI*10.18e-15);
-    pref2 = sqrt(pref2)/(2*M_PI*10.18e-15);
-
+    if (parameters->prefactorRate == Prefactor::RATE_QQHTST){
+        float kB_T = parameters->temperature * 8.617332e-5; // eV
+        float h_bar = 6.582119e-16; // eV*s
+        float h = 4.135667e-15; // eV*s
+        // products are calculated this way in order to avoid overflow
+        for(int i=0; i<saddleFreqs.size(); i++)
+        {
+            pref1 *= 2. * sinh (h_bar * sqrt(min1Freqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+            pref2 *= 2. * sinh (h_bar * sqrt(min2Freqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+            if(saddleFreqs[i]>0)
+            {
+                pref1 /= 2. * sinh (h_bar * sqrt(saddleFreqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+                pref2 /= 2. * sinh (h_bar * sqrt(saddleFreqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+            }
+        }
+        pref1 = kB_T / ( 2 * M_PI * h) * pref1;
+        pref2 = kB_T / ( 2 * M_PI * h) * pref2;
+    }
+        
     return 0;
 }
 
-VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2)
+VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2)
 {
     long nAtoms = saddle->numberOfAtoms();
 
@@ -173,7 +194,7 @@ VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
 
-VectorXi allFreeAtoms(Matter *matter)
+VectorXi Prefactor::allFreeAtoms(Matter *matter)
 {
     long nAtoms = matter->numberOfAtoms();
     
@@ -192,7 +213,7 @@ VectorXi allFreeAtoms(Matter *matter)
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
 
-VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs)
+VectorXd Prefactor::removeZeroFreqs(Parameters *parameters, VectorXd freqs)
 {
     int size = freqs.size();
     VectorXd newfreqs(size);

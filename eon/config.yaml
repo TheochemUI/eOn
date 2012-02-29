@@ -546,6 +546,13 @@ Process Search:
 Prefactor:
 
     options:
+        rate_estimation:
+            kind: string
+            default: htst
+            values:
+                - htst
+                - qqhtst
+
         all_free_atoms:
             kind: boolean
             default: False

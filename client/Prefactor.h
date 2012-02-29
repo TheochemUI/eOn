@@ -17,9 +17,14 @@
 #include "Prefactor.h"
 #include "Parameters.h"
 
-int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2);
-VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
-VectorXi allFreeAtoms(Matter *matter);
-VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+namespace Prefactor
+{
+    const char RATE_HTST[] =            "htst";;
+    const char RATE_QQHTST[] =          "qqhtst";;
 
+    int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2);
+    VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
+    VectorXi allFreeAtoms(Matter *matter);
+    VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+}
 #endif
