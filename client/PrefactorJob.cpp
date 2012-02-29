@@ -67,7 +67,7 @@ std::vector<std::string> PrefactorJob::run(void)
         product->con2matter(matter_passed);
 
         // account for all free atoms
-        atoms = allFreeAtoms(reactant);        
+        atoms = Prefactor::allFreeAtoms(reactant);        
     }
     else
     {
@@ -76,7 +76,7 @@ std::vector<std::string> PrefactorJob::run(void)
         product->con2matter(product_passed);
 
         // determine which atoms moved in the process
-        atoms = movedAtoms(parameters, reactant, saddle, product);
+        atoms = Prefactor::movedAtoms(parameters, reactant, saddle, product);
     }
     assert(3*atoms.rows() > 0);
     
