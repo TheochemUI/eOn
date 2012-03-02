@@ -701,6 +701,9 @@ class Local(Communicator):
 
     def get_queue_size(self):
         return 0
+        
+    def get_number_in_progress(self):
+        return 0
 
 
 class Script(Communicator):
