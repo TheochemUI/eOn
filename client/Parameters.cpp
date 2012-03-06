@@ -79,7 +79,9 @@ Parameters::Parameters(){
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 10.;
     saddleConvergedForce = 0.005;
-    saddleNonnegativeDisplacementAbort = false;    
+    saddleNonnegativeDisplacementAbort = false;
+    saddleNonlocalCountAbort = 0;
+    saddleNonlocalDistanceAbort = 0.0;    
     saddlePerpForceRatio = 0.0; // undocumented
     saddleConfinePositive = false; // undocumented
     saddleConfinePositiveMinForce = 0.5; // undocumented
@@ -277,13 +279,14 @@ int Parameters::load(FILE *file){
         saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce);
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
-        // XXX: This is a result of mixing our server/client config files.
+        saddleNonlocalCountAbort = ini.GetValueL("Saddle Search", "nonlocal_count_abort", saddleNonlocalCountAbort); // undocumented
+        saddleNonlocalDistanceAbort = ini.GetValueF("Saddle Search", "nonlocal_distance_abort", saddleNonlocalDistanceAbort); // undocumented
         if(saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
            saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED &&
            saddleDisplaceType != EpiCenters::DISP_LAST_ATOM &&
-           saddleDisplaceType != EpiCenters::DISP_RANDOM){
+           saddleDisplaceType != EpiCenters::DISP_RANDOM) {
               saddleDisplaceType = EpiCenters::DISP_LOAD;
-           }
+        }
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
         if(saddleConfinePositive) {
             saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
