@@ -489,7 +489,8 @@ class ProcessSearch:
                 'saddle_search':[ "good", unknown, "no_convex", "high_energy",
                                   "max_concave_iterations",
                                   "max_iterations", unknown, unknown, unknown,
-                                  unknown, unknown, "potential_failed", "nonnegative_abort"],
+                                  unknown, unknown, "potential_failed", 
+                                  "nonnegative_abort", "nonlocal abort"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
         self.finished_jobs = []

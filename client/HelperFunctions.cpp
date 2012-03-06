@@ -268,32 +268,37 @@ bool helper_functions::rotationMatch(const Matter *m1, const Matter *m2, const d
     return true;
 }
 
-double helper_functions::maxAtomMotion(const AtomMatrix v1)
-{
+double helper_functions::maxAtomMotion(const AtomMatrix v1) {
     double max = 0.0;
-    for(int i = 0; i < v1.rows(); i++)
-    {
+    for(int i = 0; i < v1.rows(); i++) {
         double norm = v1.row(i).norm();
-        if(max < norm)
-        {
+        if(max < norm) {
             max = norm;
         }
     }    
     return max;
 }
 
-double helper_functions::maxAtomMotionV(const VectorXd v1)
-{
+double helper_functions::maxAtomMotionV(const VectorXd v1) {
     double max = 0.0;
-    for(int i=0;i<v1.rows();i+=3)
-    {
+    for(int i=0;i<v1.rows();i+=3) {
         double norm = v1.segment<3>(i).norm();
-        if(max < norm)
-        {
+        if(max < norm) {
             max = norm;
         }
     }    
     return max;
+}
+
+long helper_functions::numAtomsMoved(const AtomMatrix v1, double cutoff) {
+    long num = 0;
+    for(int i = 0; i < v1.rows(); i++) {
+        double norm = v1.row(i).norm();
+        if(norm >= cutoff) {
+            num += 1;
+        }
+    }    
+    return num;
 }
 
 AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double maxMotion)

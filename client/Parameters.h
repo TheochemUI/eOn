@@ -63,7 +63,6 @@ public:
     double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
 
     // [Saddle Search]
-//    bool   saddleDisplace; // do saddle search displacements client-side
     long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
     string saddleMethod;
@@ -77,6 +76,8 @@ public:
     double saddleConvergedForce; // force convergence criterion required for a saddle point search
     double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
     bool   saddleNonnegativeDisplacementAbort; // abort the saddle search if the displacement does not have a negative mode
+    long   saddleNonlocalCountAbort; // abort the search if this many atoms move more than NonlocalDistanceAbort
+    double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort atoms move more than this distance
 
     bool   saddleConfinePositive; // undocumented
     double saddleConfinePositiveMinForce; // undocumented

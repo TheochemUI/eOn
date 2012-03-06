@@ -38,6 +38,7 @@ public:
         STATUS_FAILED_PREFACTOR, //10
         STATUS_POTENTIAL_FAILED, //11
         STATUS_NONNEGATIVE_ABORT, //12
+        STATUS_NONLOCAL_ABORT, //13
     };
 
     MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
