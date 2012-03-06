@@ -826,6 +826,14 @@ Saddle Search:
                 - load
                 - not_FCC_HCP_coordinated
 
+        nonlocal_count_abort:
+            kind: int
+            default: 0
+        
+        nonlocal_distance_abort:
+            kind: float
+            default: 0.0
+
         perp_force_ratio:
             kind: float
             default: 0.0

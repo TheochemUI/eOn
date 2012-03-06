@@ -143,6 +143,8 @@ int MinModeSaddleSearch::run()
     {
         matter->matter2con(climb.str(), false);
     }
+    
+    AtomMatrix initialPosition = matter->getPositions();
 
     MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
     objf.getGradient();
@@ -155,7 +157,16 @@ int MinModeSaddleSearch::run()
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
     while (!objf.isConverged()) {
-
+        
+        if(parameters->saddleNonlocalCountAbort != 0) {
+            long nm = numAtomsMoved(initialPosition - matter->getPositions(), 
+                                    parameters->saddleNonlocalDistanceAbort);
+            if(nm >= parameters->saddleNonlocalCountAbort) {
+                status = STATUS_NONLOCAL_ABORT;
+                break;
+            }
+        }
+        
         if (iteration >= parameters->saddleMaxIterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
             break;

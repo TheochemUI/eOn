@@ -56,6 +56,7 @@ namespace helper_functions {
     bool rotationMatch(const Matter *m1, const Matter *m2, const double max_diff);
     double maxAtomMotion(const AtomMatrix v1);
     double maxAtomMotionV(const VectorXd v1);
+    long numAtomsMoved(const AtomMatrix v1, double cutoff);
     AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
     VectorXd   maxAtomMotionAppliedV(const VectorXd  v1, double maxMotion);
     void getTime(double *real, double *user, double *sys);
