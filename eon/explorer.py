@@ -676,7 +676,18 @@ class ProcessSearch:
             self.data['barrier_product_to_reactant'] = 0.0
             return
 
-        if is_reactant(atoms1):
+        # Check the connectivity of the process
+        if (not is_reactant(atoms1) and not is_reactant(atoms2)) or \
+           (is_reactant(atoms1) and is_reactant(atoms2)):
+            #Not connected
+            self.data['termination_reason'] = 6
+            self.data['potential_energy_saddle'] = 0.0
+            self.data['potential_energy_reactant'] = 0.0
+            self.data['potential_energy_product'] = 0.0
+            self.data['barrier_reactant_to_product'] = 0.0
+            self.data['barrier_product_to_reactant'] = 0.0
+            return
+        elif is_reactant(atoms1):
             reactant_results_dat = results_dat1
             product_results_dat = results_dat2
             self.finished_reactant_name = self.finished_min1_name
@@ -686,16 +697,6 @@ class ProcessSearch:
             product_results_dat = results_dat1
             self.finished_reactant_name = self.finished_min2_name
             self.finished_product_name = self.finished_min1_name
-        else:
-            #Not connected
-
-            self.data['termination_reason'] = 6
-            self.data['potential_energy_saddle'] = 0.0
-            self.data['potential_energy_reactant'] = 0.0
-            self.data['potential_energy_product'] = 0.0
-            self.data['barrier_reactant_to_product'] = 0.0
-            self.data['barrier_product_to_reactant'] = 0.0
-            return
 
         self.data['potential_energy_reactant'] = reactant_results_dat['potential_energy']
         self.data['potential_energy_product'] = product_results_dat['potential_energy']
