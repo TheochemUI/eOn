@@ -263,6 +263,7 @@ def init(config_file = ""):
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
     config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight')
+    config.random_mode = parser.getboolean('Saddle Search', 'random_mode')
     if config.displace_listed_weight != 0.0:
         config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
         if config.disp_listed_atoms == ['None']:
