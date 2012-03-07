@@ -173,15 +173,6 @@ class Displace:
                 new_epicenters.append(e)
         return new_epicenters
 
-    def save_files(self, path, displacement):
-        self.temp_array = self.reactant.r.copy()
-        self.reactant.r += displacement
-        io.savecon(os.path.join(path, "displacement_passed.con"), self.reactant)
-        self.reactant.r = self.temp_array
-        mode = displacement/numpy.linalg.norm(displacement)
-        mode = displacement
-        io.save_mode(os.path.join(path, "mode_passed.dat"), displacement)
-
 class Undercoordinated(Displace):
     def __init__(self, reactant, max_coordination, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
