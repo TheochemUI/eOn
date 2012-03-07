@@ -861,6 +861,10 @@ Saddle Search:
         displace_min_norm:
             kind: float
             default: 0.0
+            
+        random_mode:
+            kind: boolean
+            default: True
 
         confine_positive:
             kind: boolean

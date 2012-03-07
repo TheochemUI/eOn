@@ -141,13 +141,10 @@ class Displace:
         logger.debug("Displacement epicenter: %d" % atom_index)
         displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
+        displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
         #ensures that the total displacement vector exceeds a given length
         while (displacement_norm <= config.disp_min_norm):
-            #get neighboring atoms to the atom_index atom
-            #and add the selected atom to the list
-            displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
-
             displacement = numpy.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
                 #don't displace frozen atoms
@@ -160,7 +157,16 @@ class Displace:
 
         displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
-        return displacement_atoms, displacement
+        
+        if config.random_mode:
+            displacement *= 0.0
+            for i in range(len(displaced_atoms)):
+                if not self.reactant.free[displaced_atoms[i]]:
+                    continue
+                displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
+        
+        displacement /= numpy.linalg.norm(displacement)        
+        return displacement_atoms, displacement/numpy.linalg.norm(displacement)
 
     def filter_epicenters(self, epicenters):
         '''Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
