@@ -70,6 +70,10 @@ ifdef LAMMPS_POT
    POTDIRS += ./potentials/LAMMPS
    LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libfakempi.a
    POTENTIALS += "+LAMMPS"
+   ifdef LAMMPS_MEAM
+      LIBS += ./potentials/LAMMPS/libmeam.a
+      POTENTIALS += "+LAMMPS_MEAM"
+   endif    
 else
    OPOTDIRS += ./potentials/LAMMPS
    POTENTIALS += "-LAMMPS"
