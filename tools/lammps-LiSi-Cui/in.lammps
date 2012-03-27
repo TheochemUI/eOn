@@ -1,0 +1,2 @@
+pair_style meam
+pair_coeff * * library.meam Li Si LiSi.meam Li Si
