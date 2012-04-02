@@ -11,6 +11,7 @@
 #include <math.h>
 #include "Prefactor.h"
 #include "Hessian.h"
+#include "Log.h"
 
 int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2)
 {
@@ -83,7 +84,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     if(numNegFreq != 0)
     {
-        cout<<"Error: "<<numNegFreq<<" negative modes at min1"<<endl;
+        log("Error: %i negative modes at min1\n", numNegFreq);
         return -1;
     }
 
@@ -94,7 +95,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     if(numNegFreq != 1)
     {
-        cout<<"Error: "<<numNegFreq<<" negative modes at the saddle"<<endl;
+        log("Error: %i negative modes at saddle\n", numNegFreq);
         return -1;
     }
 
@@ -105,7 +106,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     if(numNegFreq != 0)
     {
-        cout<<"Error: "<<numNegFreq<<" negative modes at min2"<<endl;
+        log("Error: %i negative modes at min2\n", numNegFreq);
         return -1;
     }
 
