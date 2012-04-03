@@ -13,7 +13,8 @@
 #include "Hessian.h"
 #include "Log.h"
 
-int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2)
+int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddle, 
+                             Matter *min2, double &pref1, double &pref2)
 {
     VectorXd min1Freqs, saddleFreqs, min2Freqs;
 
@@ -70,13 +71,16 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     // check Hessian sizes
     if((min1Freqs.size() != saddleFreqs.size()) || (min1Freqs.size() != saddleFreqs.size())) {
         if(!parameters->quiet) {
-            printf("Bad prefactor: Hessian sizes do not match\n");
+            log("Bad prefactor: Hessian sizes do not match\n");
         }
         return -1;
     }
 
-    // check for correct number of negative modes
+    logFreqs(min1Freqs, "minimum 1");
+    logFreqs(saddleFreqs, "saddle");
+    logFreqs(min2Freqs, "minimum 2");
 
+    // check for correct number of negative modes
     int i, numNegFreq = 0;
     for(i=0; i<size; i++)
     {
@@ -150,6 +154,19 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
         
     return 0;
+}
+
+void Prefactor::logFreqs(VectorXd freqs, char *name)
+{
+    log("Frequencies at %s\n", name);
+    int i;
+    for (i=0;i<freqs.size();i++) {
+        log_file("%10.6f ", freqs(i));
+        if ((i+1)%5 == 0) {
+            log_file("\n");
+        }
+    }
+    log_file("\n");
 }
 
 VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2)
