@@ -102,7 +102,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     numNegFreq = 0;
     for(i=0; i<size; i++)
     {
-        if(min1Freqs(i) < 0) { numNegFreq++; }
+        if(min2Freqs(i) < 0) { numNegFreq++; }
     }
     if(numNegFreq != 0)
     {
