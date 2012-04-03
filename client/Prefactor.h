@@ -26,5 +26,6 @@ namespace Prefactor
     VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
     VectorXi allFreeAtoms(Matter *matter);
     VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+    void logFreqs(VectorXd freqs, char *name);
 }
 #endif
