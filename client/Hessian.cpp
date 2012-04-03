@@ -10,6 +10,7 @@
 
 #include <math.h>
 #include "Hessian.h"
+#include "Log.h"
 
 Hessian::Hessian(Parameters* params, Matter *matter)
 {
@@ -166,7 +167,7 @@ bool Hessian::removeZeroFreqs(VectorXd freqs)
     }
     if(nremoved != 6)
     {
-        cout<<"Error: Found "<<nremoved<<" trivial eigenmodes instead of 6."<<endl;
+        log("Error: Found %i trivial eigenmodes instead of 6\n", nremoved);
     }
     freqs = newfreqs;
     return true;
