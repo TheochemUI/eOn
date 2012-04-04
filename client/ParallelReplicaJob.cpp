@@ -254,6 +254,7 @@ int ParallelReplicaJob::dynamics()
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
+        log("[Parallel Replica] Refining transition time.\n");
         refFCalls = Potential::fcalls;
         refineStep = refine(mdBuffer, mdBufferLength, reactant);
 
@@ -463,7 +464,7 @@ bool ParallelReplicaJob::checkState(Matter *current, Matter *reactant)
 
 long ParallelReplicaJob::refine(Matter *buff[], long length, Matter *reactant)
 {
-    log("[Parallel Replica] Refining transition time.\n");
+    //log("[Parallel Replica] Refining transition time.\n");
 
     bool midTest;
     long min, max, mid;
