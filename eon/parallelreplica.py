@@ -268,6 +268,11 @@ def main():
     lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
 
     if lock.aquirelock():
+        if config.comm_type == 'mpi':
+            from mpiwait import mpiwait
+            while True:
+                mpiwait()
+                parallelreplica()
         parallelreplica()
     else:
         logger.warning("couldn't get lock")
