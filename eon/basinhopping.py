@@ -157,7 +157,8 @@ def make_searches(comm, wuid, bhstates):
            numpy.random.random() < config.bh_md_probability:
             number_random += 1
             reactIO = initial_react
-            ini_changes.append( ('Basin Hopping', 'initial_md', 'true') )
+            #ini_changes.append( ('Basin Hopping', 'initial_md', 'true') )
+            ini_changes.append( ('Basin Hopping', 'initial_md', 'false') )
         else:
             number_minima += 1
             reactIO = bhstates.get_random_minimum()
@@ -275,6 +276,11 @@ def main():
     lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
 
     if lock.aquirelock():
+        if config.comm_type == 'mpi':
+            from mpiwait import mpiwait
+            while True:
+                mpiwait()
+                basinhopping()
         basinhopping()
     else:
         logger.warning("couldn't get lock")
