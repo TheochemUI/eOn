@@ -198,7 +198,7 @@ def register_results(comm, bhstates):
             continue
         if result_info['termination_reason'] == 0:
             if bhstates.add_state(result, result_info):
-                logger.info("new structure with energy %.3e",
+                logger.info("new structure with energy %.8e",
                             result_info['minimum_energy'])
 
             #logger.info("found new structure with energy %.3e", fe)
