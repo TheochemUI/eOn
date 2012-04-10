@@ -4,7 +4,110 @@
 AKMC Tutorial
 =============
 
-You can find a sample setup for the AKMC method in the eon/samples/AlAdatom directory of your copy of eon. The system we are looking at in this sample is an aluminum adatom on an aluminum surface. Let's take a look at the configuration file, config.ini:
+You can find a sample setup for the AKMC method in the examples/akmc-pt directory of your copy of eon. The system we are looking at in this sample is a platinum heptamer island on a platinum (111) surface:
 
-.. literalinclude:: ../samples/akmc-AlAdatom/.config.ini
+..  image:: fig/akmc-1.png
+    :align: center
+
+If you have already compiled your client, go ahead and go to the examples/akmc-pt directory now and run Eon::
+
+    $ ../../bin/eon
+    state list path does not exist, creating .//states/
+    registering results
+    0 (result) searches processed
+    Approximately 0 (result) searches discarded.
+    0 searches in the queue
+    making 2 process searches
+    job finished in .//jobs/scratch/0_1
+    job finished in .//jobs/scratch/0_0
+    2 searches created
+    currently in state 0 with confidence 0.000000
+
+Every time you run Eon, it first tries to register results from the previous execution. Because this is the first time you've run it, there are no results to register. Also, while two saddle searches have been executed, the results have not been registered yet. That will happen on the next execution of Eon. You can see this by looking at the ``search_results.txt`` file in your states directory::
+
+    $ cat states/0/search_results.txt 
+        wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
+    -------------------------------------------------------------------------------------
+
+It's empty. We can register the results of the first execution of Eon by running it again::
+
+    $ ../../bin/eon
+    registering results
+    found new lowest barrier 1.615476 for state 0
+    2 (result) searches processed
+    Approximately 0 (result) searches discarded.
+    0 searches in the queue
+    making 2 process searches
+    job finished in .//jobs/scratch/0_3
+    job finished in .//jobs/scratch/0_2
+    2 searches created
+    currently in state 0 with confidence 0.000000
+
+Now we should have some results::
+
+    $ cat states/0/search_results.txt 
+        wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
+    -------------------------------------------------------------------------------------
+           1     random    0.00000    0.00000        383        219          0    Not Connected
+           0     random    1.61548    0.00000        421        201        378    good-0
+
+The search_results.txt file provides information about how a particular job went. If we want to look at the data collected, we can take a look at the ``processtable`` file in the state directory::
+
+    $ cat states/0/processtable 
+     proc #    saddle energy   prefactor   product   product energy product prefactor  barrier         rate repeats
+          0      -1774.17568 9.98760e+13        -1      -1774.97273       1.33950e+13  1.61548  2.33649e+02       0
+
+You can find the files relevant to a process in the ``procdata`` directory of a given state::
+
+    $ ls states/0/procdata
+    mode_0.dat  product_0.con  reactant_0.con  results_0.dat  saddle_0.con
+
+Here we can see the data relevant to process 0 on the process table. Let's take a look at the reactant, saddle, and product configurations for this process:
+
+..  image:: fig/akmc-2.png
+    :align: center
+
+If we keep running eon, we will start to see our confidence increasing as we stop finding previously undiscovered processes in our energy window::
+
+    currently in state 0 with confidence 0.313698
+    ...
+    currently in state 0 with confidence 0.641981
+    ...
+    currently in state 0 with confidence 0.675757
+
+And eventually, we will reach the required confidence and take a KMC step to the next state::
+
+    $ eon
+    registering results
+    1 (result) searches processed
+    Approximately 1 (result) searches discarded.
+    cancelled 0 workunits from state 0
+    kmc step from state 0 through process 3 to state 1 
+    currently in state 1 with confidence 0.000000
+
+We can see this reflected in the ``dynamics.txt`` file of our simulation directory::
+
+    $ cat dynamics.txt 
+     step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate
+    ---------------------------------------------------------------------------------------------------------------
+               0             0             3             1  8.976889e-10  1.049672e-09      0.601060  3.930510e+08
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
