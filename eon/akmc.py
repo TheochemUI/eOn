@@ -23,10 +23,6 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 
-# DO NOT DELETE THE FOLLOWING LINE.
-from numpy import array, uint32 #required for random seed, even though it does not appear to be used in the code.
-# DO NOT DELETE THE PREVIOUS LINE.
-
 numpy.seterr(all='raise')
 
 import communicator
@@ -101,6 +97,8 @@ def akmc(config):
 
     parser.write(open(metafile, 'w')) 
 
+    io.save_prng_state()
+
 def get_akmc_metadata():
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
@@ -119,17 +117,6 @@ def get_akmc_metadata():
         previous_state_num = -1
         first_run = True
 
-    if config.main_random_seed:
-        try:
-            parser = ConfigParser.RawConfigParser()
-            parser.read(metafile)
-            seed = parser.get("aKMC Metadata", "random_state")
-            numpy.random.set_state(eval(seed))
-            logger.debug("Set random state from previous run's state")
-        except:
-            numpy.random.seed(config.main_random_seed)
-            logger.debug("Set random state from seed")
-
     return start_state_num, time, previous_state_num, first_run
 
 def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
@@ -139,8 +126,6 @@ def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
     parser.set('Simulation Information', 'first_run', str(False))
-    if config.main_random_seed:
-        parser.set('aKMC Metadata', 'random_state', repr(numpy.random.get_state()))
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'reactant.con')
@@ -440,6 +425,7 @@ def main():
                             os.path.join(config.path_results, "akmc.log"),
                             os.path.join(config.path_results, "jobs.tbl"),
                             os.path.join(config.path_root, "results"),
+                            os.path.join(config.path_root, "prng.pkl"),
                             os.path.join(config.path_root, "explorer.pickle"),]
                 for thing in rmthings:
                     attempt_removal(thing)

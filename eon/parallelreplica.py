@@ -59,6 +59,7 @@ def parallelreplica():
     parser = ConfigParser.RawConfigParser() 
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
+    io.save_prng_state()
 
 def step(current_time, current_state, states, transition):
     next_state = states.get_product_state(current_state.number, transition['process_id'])
