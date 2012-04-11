@@ -18,9 +18,20 @@ logger = logging.getLogger('io')
 import numpy
 import os
 
+import cPickle as pickle
+
 import atoms
 import config
 
+def save_prng_state():
+    state = numpy.random.get_state()
+    fh = open('prng.pkl', 'wb')
+    pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
+
+def get_prng_state():
+    fh = open('prng.pkl')
+    state = pickle.load(fh)
+    numpy.random.set_state(state)
 
 def length_angle_to_box(boxlengths, angles):
     box = numpy.zeros( (3,3) )

@@ -119,6 +119,8 @@ def basinhopping():
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
 
+    io.save_prng_state()
+
 def make_searches(comm, wuid, bhstates):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
