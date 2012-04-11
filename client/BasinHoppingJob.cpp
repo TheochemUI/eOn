@@ -252,7 +252,7 @@ AtomMatrix BasinHoppingJob::displaceRandom()
                 double Cq = md/(distvec.maxCoeff()*distvec.maxCoeff());
                 mdp = Cq*dist*dist;
             }else{
-                printf("Unknown max_displacement_algorithm\n");
+                log("Unknown max_displacement_algorithm\n");
                 exit(1);
             }
             for(int j=0; j<3; j++) {
@@ -263,7 +263,7 @@ AtomMatrix BasinHoppingJob::displaceRandom()
                     displacement(i,j) = gaussRandom(0.0, mdp);
                 }
                 else {
-                    printf("Unknown displacement_distribution\n");
+                    log("Unknown displacement_distribution\n");
                     exit(1);
                 }
             }
