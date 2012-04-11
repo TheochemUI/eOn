@@ -16,6 +16,8 @@ import string
 import config
 import yaml
 
+import fileio as io
+
 config.init_done = False
 
 config.format = []
@@ -149,10 +151,6 @@ def init(config_file = ""):
     config.main_checkpoint = parser.getboolean('Main', 'checkpoint')
 
     config.main_random_seed = parser.getint('Main', 'random_seed')
-    if int(config.main_random_seed) >= 0:
-        numpy.random.seed(config.main_random_seed)
-    else:
-        config.main_random_seed = None
 
 #    try:
 #        config.main_random_seed = parser.getint('Main', 'random_seed')
@@ -206,6 +204,14 @@ def init(config_file = ""):
             pass
         else:
             sys.exit(3)
+
+    if int(config.main_random_seed) >= 0:
+        if os.path.isfile(os.path.join(config.path_root, 'prng.pkl')):
+            io.get_prng_state()
+        else:
+            numpy.random.seed(config.main_random_seed)
+    else:
+        config.main_random_seed = None
 
     # Communicator options
     config.comm_type = parser.get('Communicator', 'type')
