@@ -2,7 +2,7 @@
 EON: Long timescale dynamics
 ================================
 
-The EON program contains a set of algorithms used primarily to model the
+The EON software package contains a set of algorithms used primarily to model the
 evolution of atomic scale systems over long time scales.  Standard molecular
 dynamics algorithms, based upon solving Newton's equations, are limited by the
 femtosecond time scale of atomic vibrations.  EON simulations are designed for
