@@ -27,6 +27,49 @@ import config
 import fileio as io
 import locking
 
+class RandomStructure:
+    def __init__(self, structure):
+        self.structure = structure
+        self.radii = numpy.array([ atoms.elements[name]['radius'] 
+                                   for name in structure.names ])
+        self.box_center = numpy.diagonal(structure.box)/2.0
+        self.p = 0.1                                                                                 
+
+    def generate(self):
+        rs = atoms.Atoms(0)
+        rs.append(numpy.zeros(3), True, self.structure.names[0], 
+                  self.structure.mass[0])
+
+        failures = 0
+        for i in range(1,len(self.structure)):
+            rs.append(numpy.zeros(3), True, 
+                      self.structure.names[i], self.structure.mass[0])
+            rs.box = self.box_p(rs)
+            valid = False
+            while not valid:
+                rs.r[i] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
+                distances = numpy.zeros(len(rs)-1)
+                for j in range(len(rs)-1):
+                    distances[j] = numpy.linalg.norm(rs.r[i]-rs.r[j])
+                    bond_length = self.radii[i]+self.radii[j]
+
+                if min(distances) < 0.8*bond_length:
+                    failures += 1
+                    valid = False
+                elif min(distances) > 1.3*bond_length:
+                    failures += 1
+                    valid = False
+                else:
+                    #print '%i/%i' % (i+1,len(self.structure))
+                    valid = True
+        rs.box = self.structure.box
+        return rs
+
+    def box_p(self, rs):
+        V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])
+        a = (V_atoms/self.p)**(1/3.)
+        return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )
+
 class BHStates:
     def __init__(self):
         if not os.path.isdir(config.path_states):
@@ -147,30 +190,24 @@ def make_searches(comm, wuid, bhstates):
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
+    rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "reactant.con")))
+
     searches = []
-    number_random = 0
-    number_minima = 0
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d" % wuid
-        ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*10**9))) ]
-        reactIO = StringIO()
-        if len(bhstates.energy_table) == 0 or \
-           numpy.random.random() < config.bh_md_probability:
-            number_random += 1
-            reactIO = initial_react
-            #ini_changes.append( ('Basin Hopping', 'initial_md', 'true') )
-            ini_changes.append( ('Basin Hopping', 'initial_md', 'false') )
+        ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*2**32))) ]
+
+        if config.bh_random_structure:
+            reactIO = StringIO()
+            io.savecon(reactIO, rs.generate())
         else:
-            number_minima += 1
-            reactIO = bhstates.get_random_minimum()
-            ini_changes.append( ('Basin Hopping', 'initial_md', 'false') )
+            reactIO = initial_react
         search['reactant_passed.con'] = reactIO
         search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)
         wuid += 1
 
-    logger.info("%i from random structures %i from previous minima", number_random, number_minima)
     comm.submit_jobs(searches, invariants)
     logger.info( str(num_to_make) + " searches created")
     return wuid
@@ -251,7 +288,8 @@ def main():
                         os.removedirs(i)
                 log_path = os.path.join(config.path_results, "bh.log") 
                 wuid_path = os.path.join(config.path_results, "wuid.dat")
-                for i in [log_path, wuid_path ]:
+                prng_path = os.path.join(config.path_results, "prng.pkl")
+                for i in [log_path, wuid_path, prng_path ]:
                     if os.path.isfile(i):
                         os.remove(i)
                 print "Reset."
