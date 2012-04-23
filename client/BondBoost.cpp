@@ -205,7 +205,7 @@ double BondBoost::Booststeps()
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;
     step_boost = 1.0;
-    kb = 1.0/11604.5;
+    kb = 1.0/11604.519;
     Epsr_MAX = 0.0;
     A_EPS_M = 0.0;
     Boost_Fact = 0.0;
