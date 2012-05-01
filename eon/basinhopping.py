@@ -20,6 +20,7 @@ import optparse
 import os
 import shutil
 import sys
+import random
 
 import atoms
 import communicator
@@ -36,21 +37,25 @@ class RandomStructure:
         self.p = 0.1                                                                                 
 
     def generate(self):
+        indexes = range(len(self.structure))
+        random.shuffle(indexes)
+         
         rs = atoms.Atoms(0)
-        rs.append(numpy.zeros(3), True, self.structure.names[0], 
-                  self.structure.mass[0])
+        first = indexes[0]
+        rs.append(numpy.zeros(3), True, self.structure.names[first], 
+                  self.structure.mass[first])
 
         failures = 0
-        for i in range(1,len(self.structure)):
+        for i in indexes[1:]:
             rs.append(numpy.zeros(3), True, 
-                      self.structure.names[i], self.structure.mass[0])
+                      self.structure.names[i], self.structure.mass[i])
             rs.box = self.box_p(rs)
             valid = False
             while not valid:
-                rs.r[i] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
+                rs.r[-1] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
                 distances = numpy.zeros(len(rs)-1)
                 for j in range(len(rs)-1):
-                    distances[j] = numpy.linalg.norm(rs.r[i]-rs.r[j])
+                    distances[j] = numpy.linalg.norm(rs.r[-1]-rs.r[j])
                     bond_length = self.radii[i]+self.radii[j]
 
                 if min(distances) < 0.8*bond_length:
