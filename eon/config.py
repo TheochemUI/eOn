@@ -185,7 +185,7 @@ def init(config_file = ""):
     config.akmc_confidence_correction      = parser.getboolean('AKMC', "confidence_correction")
 
     # Basin Hopping options
-    config.bh_md_probability = parser.getfloat('Basin Hopping', 'initial_md_probability')
+    config.bh_random_structure = parser.getboolean('Basin Hopping', 'random_structure')
 
     # Path options
     config.path_root         = parser.get('Paths', 'main_directory')

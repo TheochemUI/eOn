@@ -23,7 +23,7 @@ class BasinHoppingJob : public Job {
 
     private:
         VectorXd calculateDistanceFromCenter(Matter *matter);
-        AtomMatrix displaceRandom();
+        AtomMatrix displaceRandom(double maxDisplacement);
         void randomSwap(Matter *matter);
         Parameters *parameters;
         Matter *current;

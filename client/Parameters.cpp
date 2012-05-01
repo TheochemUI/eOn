@@ -176,6 +176,9 @@ Parameters::Parameters(){
     basinHoppingJumpSteps = 0;
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
+    basinHoppingAdjustPeriod = 10;
+    basinHoppingAdjustFraction = 0.05;
+    basinHoppingTargetRatio = 0.5;
     
 }
 
@@ -395,6 +398,9 @@ int Parameters::load(FILE *file){
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
         basinHoppingInitialMD = ini.GetValueB("Basin Hopping", "initial_md", basinHoppingInitialMD);
         basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", temperature);
+        basinHoppingAdjustPeriod = ini.GetValueL("Basin Hopping", "adjust_period", basinHoppingAdjustPeriod);
+        basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
+        basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
 
     }
     else

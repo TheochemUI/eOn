@@ -27,6 +27,21 @@ atoms.  Otherwise the starting geometry is always the one specified in
 
     default: ``true``
 
+**adjust_fraction**: The fraction by which to change the step size in order to
+meet the target acceptance ratio.
+
+    default: ``0.05``
+
+**adjust_period**: The number of Monte Carlo steps between adjustments of the
+step size.
+
+    default: ``10``
+
+**target_ratio**: The target acceptance ratio that will be used to determine
+whether to increase or decrease the step size.
+    
+    default: ``0.5``
+
 **displacement_distribution**: The distribution used for the displacement of
 each atom.
 

@@ -396,6 +396,22 @@ Basin Hopping:
             kind: float
             default: 0.5
 
+        random_structure:
+            kind: boolean
+            default: true
+
+        adjust_fraction:
+            kind: float
+            default: 0.05
+
+        adjust_period:
+            kind: int
+            default: 10
+
+        target_ratio:
+            kind: float
+            default: 0.5
+
         quenching_steps:
             kind: int
             default: 0
