@@ -186,6 +186,9 @@ public:
     long   basinHoppingJumpSteps;
     bool   basinHoppingInitialMD;
     double basinHoppingInitialMDTemperature;
+    long   basinHoppingAdjustPeriod;
+    double basinHoppingAdjustFraction;
+    double basinHoppingTargetRatio;
 
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI
