@@ -68,6 +68,8 @@ class RandomStructure:
                     #print '%i/%i' % (i+1,len(self.structure))
                     valid = True
         rs.box = self.structure.box
+        #XXX: shift to center of box, only correct for cubic cells
+        rs.r += rs.box.diagonal()/2.0
         return rs
 
     def box_p(self, rs):
