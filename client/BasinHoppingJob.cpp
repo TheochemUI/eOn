@@ -84,8 +84,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
     FILE * pFile;
     pFile = fopen("bh.dat","w");
 
-    log("%4s %12s %12s %12s %4s\n", "mcs", "current", "trial", "global min", "fc");
-    log("%4s %12s %12s %12s %4s\n", "---", "-------", "-----", "----------", "--");
+    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "mcs", "current", "trial", "global min", "fc", "ar", "md");
+    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "---", "-------", "-----", "----------", "--", "--", "--");
+
+    int recentAccept=0;
+    double maxDisplacement = parameters->basinHoppingMaxDisplacement;
 
     for (int step=0; step<nsteps; step++) {
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
@@ -96,7 +99,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             *minTrial = *swapTrial;
         }else{
             AtomMatrix displacement;
-            displacement = displaceRandom();
+            displacement = displaceRandom(maxDisplacement);
 
             trial->setPositions(current->getPositions() + displacement);
             swapMove=false;
@@ -132,10 +135,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 *current = *trial;
             }
             if(swapMove){
-                swap_accept = swap_accept + 1.0;
+                swap_accept += 1;
             }
             if(step<parameters->basinHoppingSteps) {
-                totalAccept = totalAccept + 1.0;
+                totalAccept += 1;
+                recentAccept += 1;
             }
 
             currentEnergy = minTrial->getPotentialEnergy();
@@ -152,9 +156,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         totalfc = Potential::fcallsTotal;
-        log("%4i %12.3f %12.3f %12.3f %4i\n",
+        log("[Basin Hopping] %4i %12.3f %12.3f %12.3f %4i %5.3f %5.3f\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
-               minfcalls);
+               minfcalls, totalAccept/((double)step+1), maxDisplacement);
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
@@ -163,7 +167,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             AtomMatrix jump;
             for(int j=0; j<parameters->basinHoppingJumpSteps; j++){
                 jcount++;
-                jump = displaceRandom();
+                jump = displaceRandom(maxDisplacement);
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
                     current->relax(true);
@@ -175,6 +179,21 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 }
             }
         }
+
+        int nadjust = parameters->basinHoppingAdjustPeriod;
+        double adjustFraction = parameters->basinHoppingAdjustFraction;
+        if ((step+1)%nadjust == 0) {
+            double recentRatio = ((double)recentAccept)/((double)nadjust);
+            if (recentRatio > parameters->basinHoppingTargetRatio) {
+                maxDisplacement *= 1.0 + adjustFraction;
+            }else{
+                maxDisplacement *= 1.0 - adjustFraction;
+            }
+
+            //log("recentRatio %.3f md: %.3f\n", recentRatio, maxDisplacement);
+            recentAccept = 0;
+        }
+
         boinc_fraction_done(((double)step+1.0)/(double)nsteps);
     }
     fclose(pFile);
@@ -220,14 +239,13 @@ std::vector<std::string> BasinHoppingJob::run(void)
     return returnFiles;
 }
 
-AtomMatrix BasinHoppingJob::displaceRandom()
+AtomMatrix BasinHoppingJob::displaceRandom(double maxDisplacement)
 {
     dcount++;
     // Create a random displacement.
     AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
-    double md = parameters->basinHoppingMaxDisplacement;
     VectorXd distvec = calculateDistanceFromCenter(current);
     int num = trial->numberOfAtoms();
     int m = 0;
@@ -242,14 +260,14 @@ AtomMatrix BasinHoppingJob::displaceRandom()
 
         if(!trial->getFixed(i)) {
             if(parameters->basinHoppingMaxDisplacementAlgorithm=="standard") {
-                mdp = md;
+                mdp = maxDisplacement;
             }
             else if(parameters->basinHoppingMaxDisplacementAlgorithm=="linear") {
-                double Cs = md/distvec.maxCoeff();
+                double Cs = maxDisplacement/distvec.maxCoeff();
                 mdp = Cs*dist;
             }
             else if(parameters->basinHoppingMaxDisplacementAlgorithm=="quadratic") {
-                double Cq = md/(distvec.maxCoeff()*distvec.maxCoeff());
+                double Cq = maxDisplacement/(distvec.maxCoeff()*distvec.maxCoeff());
                 mdp = Cq*dist*dist;
             }else{
                 log("Unknown max_displacement_algorithm\n");
