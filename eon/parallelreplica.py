@@ -45,9 +45,12 @@ def parallelreplica():
 
     # Register all the results. There is  no need to ever discard found
     # processes like we do with akmc. There is no confidence to calculate.
-    num_registered, transition = register_results(comm, current_state, states)
-    logger.info("time in current state is %e", current_state.get_time())
-
+    num_registered, transition, sum_spdup = register_results(comm, current_state, states)
+   
+    logger.info("time in current state is %e", current_state.get_time()) 
+    if num_registered >= 1:
+        avg_spdup = sum_spdup/num_registered
+        logger.info("Total Speedup is %f",avg_spdup)
     if transition:
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
@@ -167,6 +170,7 @@ def register_results(comm, current_state, states):
 
     transition = None
     num_registered = 0
+    speedup = 0
     for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # reactant.con - an array of strings containing the reactant
@@ -183,6 +187,7 @@ def register_results(comm, current_state, states):
 
         #read in the results
         result['results'] = io.parse_results(result['results.dat'])
+        speedup += result['results']['speedup']
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
@@ -196,8 +201,9 @@ def register_results(comm, current_state, states):
         num_registered += 1
 
     logger.info("%i (result) searches processed", num_registered)
-
-    return num_registered, transition
+    if num_registered >=1:
+        logger.info("Average Speedup is  %f", speedup/num_registered)
+    return num_registered, transition, speedup
 
 def main():
     optpar = optparse.OptionParser(usage="usage: %prog [options] config.ini")
