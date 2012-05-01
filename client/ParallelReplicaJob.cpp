@@ -245,6 +245,7 @@ int ParallelReplicaJob::dynamics()
     log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
 
+    log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
@@ -340,10 +341,11 @@ void ParallelReplicaJob::saveData(int status)
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
-    else
-    { 
-        fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
-    }
+
+     
+    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
+    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    
     fclose(fileResults);
 
     std::string reactantFilename("reactant.con");
