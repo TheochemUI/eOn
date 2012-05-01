@@ -61,14 +61,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
     Matter *minTrial = new Matter(parameters);
     Matter *swapTrial = new Matter(parameters);
 
-//    current->con2matter("reactant_passed.con");
     string conFilename = getRelevantFile(parameters->conFilename);
     current->con2matter(conFilename);
-    if(parameters->basinHoppingInitialMD == true){
-        Dynamics dyn(current,parameters);
-        dyn.setTemperature(parameters->basinHoppingInitialMDTemperature);
-        dyn.run();
-    }
+
     *trial = *current;
     *minTrial = *current;
 
@@ -91,6 +86,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
     double maxDisplacement = parameters->basinHoppingMaxDisplacement;
 
     for (int step=0; step<nsteps; step++) {
+
+        //Swap or displace
         if(randomDouble(1.0)<parameters->basinHoppingSwapProbability && 
            step<parameters->basinHoppingSteps){
             *swapTrial = *current;
@@ -124,7 +121,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if (deltaE <= 0.0) {
                 p = 1.0;
             }else{
-                p = exp(-deltaE / (parameters->temperature*8.617343e-5));
+                p = exp(-deltaE / (parameters->temperature*8.6173324e-5));
             }
         }
 
@@ -147,6 +144,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 minimumEnergy = currentEnergy;
                 *minimumEnergyStructure = *minTrial;
             }
+            consecutive_rejected_trials = 0; //STC: I think this should go here.
         }else{
             consecutive_rejected_trials++;
         }
@@ -356,33 +354,16 @@ vector<long> BasinHoppingJob::getElements(Matter *matter)
 VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter)
 {
     AtomMatrix pos = matter->getPositions();
-    double cenx = 0;
-    double ceny = 0;
-    double cenz = 0;
+    Vector3d cen(0,0,0);
     int num = matter->numberOfAtoms();
 
-    for(int k=0; k<num; k++) {
-        cenx = cenx + pos(k,0);
-        ceny = ceny + pos(k,1);
-        cenz = cenz + pos(k,2);
-    }
-    cenx = cenx / (double)num;
-    ceny = ceny / (double)num;
-    cenz = cenz / (double)num;
-
-    double cen[] = {cenx, ceny, cenz};
+    cen = pos.colwise().sum() / (double)num;
 
     VectorXd dist(num);
      
-    for(int l = 0; l < num; l++)
-    {
-        double xd = pos(l,0)-cen[0];
-        double yd = pos(l,1)-cen[1];
-        double zd = pos(l,2)-cen[2];
-        xd = xd*xd;
-        yd = yd*yd;
-        zd = zd*zd;
-        dist(l) = sqrt(xd + yd + zd);
+    for(int n=0; n<num; n++) {
+        pos.row(n) -= cen;
+        dist(n) = pos.row(n).norm();
     }
 
     return dist;
