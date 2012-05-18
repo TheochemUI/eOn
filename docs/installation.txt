@@ -29,15 +29,9 @@ Server Installation
 ===================
 
 We recommend installing Eon to your ``$HOME`` folder. To download the
-latest snapshot to your home folder::
+latest developer version to your home folder::
 
     $ cd $HOME
-    $ wget http://theory.cm.utexas.edu/eon-files/eon-trunk.tgz
-    $ tar xfvz eon-trunk.tgz
-    $ mv eon-1637 eon
-
-Or using subversion::
-
     $ svn co http://theory.cm.utexas.edu/svn/eon
 
 The directory ``$HOME/eon`` needs to be added to your ``$PYTHONPATH``
