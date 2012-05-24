@@ -85,6 +85,10 @@ Potential:
             kind: boolean
             default: false
 
+        potential_logging:
+            kind: boolean
+            default: false
+
 
 ################################################################################
 
