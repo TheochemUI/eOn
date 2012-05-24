@@ -39,7 +39,7 @@ Debug
 
     default: ``False``
 
-**write_movie**: Output a movie of the calculation
+**write_movies**: Output a movie of the calculation
 
     default: ``False``
 
