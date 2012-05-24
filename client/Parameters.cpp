@@ -52,7 +52,7 @@ Parameters::Parameters(){
     potential = Potential::POT_LJ;
     MPIPollPeriod = 0.25;
     MPIPotentialRank = -1;
-    LAMMPSLogging = true;
+    LogPotential = false;
     EMTRasmussen = false;
     
     // [Structure Comparison] //
@@ -241,6 +241,17 @@ int Parameters::load(FILE *file){
         MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
         LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
+
+        if (potential == "mpi"    || 
+            potential == "vasp"   ||
+            potential == "bopfox" ||
+            potential == "bop")
+        {
+            LogPotential = true;
+        }else{
+            LogPotential = false;
+        }
+        LogPotential = ini.GetValueB("Potential", "log_potential", LAMMPSLogging);
 
         // [Debug] //
 
