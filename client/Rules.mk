@@ -66,14 +66,17 @@ else
 endif
 
 ifdef LAMMPS_POT
-   CXXFLAGS += -DLAMMPS_POT
-   POTDIRS += ./potentials/LAMMPS
-   LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a ./potentials/LAMMPS/libfakempi.a
-   POTENTIALS += "+LAMMPS"
-   ifdef LAMMPS_MEAM
-      LIBS += ./potentials/LAMMPS/libmeam.a
-      POTENTIALS += "+LAMMPS_MEAM"
-   endif    
+    CXXFLAGS += -DLAMMPS_POT
+    POTDIRS += ./potentials/LAMMPS
+    LIBS += ./potentials/LAMMPS/liblammps.a ./potentials/LAMMPS/liblmp_serial.a 
+    ifndef EONMPI
+        LIBS += ./potentials/LAMMPS/libfakempi.a
+    endif
+    POTENTIALS += "+LAMMPS"
+    ifdef LAMMPS_MEAM
+        LIBS += ./potentials/LAMMPS/libmeam.a
+        POTENTIALS += "+LAMMPS_MEAM"
+    endif    
 else
    OPOTDIRS += ./potentials/LAMMPS
    POTENTIALS += "-LAMMPS"
