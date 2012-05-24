@@ -242,11 +242,13 @@ def kmc_step(current_state, states, time, kT, superbasining):
 
         # Accounting for time
         if config.debug_use_mean_time:
-            time += mean_time
+            step_time = mean_time
         else:
             #numpy.random.random_sample() uses [0,1)
             #which could produce issues with math.log()
-            time -= mean_time*math.log(1 - numpy.random.random_sample())
+            step_time = -mean_time*math.log(1 - numpy.random.random_sample())
+
+        time += step_time
 
         # Pass transition information to extension schemes
         if config.askmc_on:
@@ -263,11 +265,11 @@ def kmc_step(current_state, states, time, kT, superbasining):
         dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
         if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
-            dynamics.append(current_state.number, proc_id_out, next_state.number, mean_time, time, proc['barrier'], proc['rate'])
+            dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'])
             logger.info("kmc step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
         else:
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
-            dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, mean_time, time, sb_id)
+            dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id)
             logger.info("sb step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
 
         previous_state = current_state
