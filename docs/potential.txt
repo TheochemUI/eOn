@@ -46,6 +46,10 @@ Potential
                  forces. More information can be found on the 
                  :ref:`MPI Potential<mpi_potential>` page.
 
+**log_potential**: If true write timing informaiton about each force call to client.log
+
+    default: ``true`` if ``potential`` is ``mpi``, ``vasp``, ``bop``,  or ``bopfox``
+             otherwise ``false``
 
 .. [#vasp] Georg, Kresse, `"VASP Group, Theoretical Physics Departments, Vienna" <http://cms.mpi.univie.ac.at/vasp/>`_
 .. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 

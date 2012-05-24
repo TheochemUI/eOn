@@ -52,6 +52,7 @@ public:
     double MPIPollPeriod;
     bool   LAMMPSLogging;
     bool   EMTRasmussen;
+    bool   LogPotential;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
