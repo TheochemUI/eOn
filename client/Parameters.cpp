@@ -251,7 +251,7 @@ int Parameters::load(FILE *file){
         }else{
             LogPotential = false;
         }
-        LogPotential = ini.GetValueB("Potential", "log_potential", LAMMPSLogging);
+        LogPotential = ini.GetValueB("Potential", "log_potential", LogPotential);
 
         // [Debug] //
 
