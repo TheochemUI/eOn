@@ -85,7 +85,7 @@ Potential:
             kind: boolean
             default: false
 
-        potential_logging:
+        log_potential:
             kind: boolean
             default: false
 
