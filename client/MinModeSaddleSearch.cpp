@@ -147,11 +147,12 @@ int MinModeSaddleSearch::run()
     AtomMatrix initialPosition = matter->getPositions();
 
     MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
-    objf.getGradient();
-
-    if (parameters->saddleNonnegativeDisplacementAbort && minModeMethod->getEigenvalue() > 0) {
-        printf("%f\n", minModeMethod->getEigenvalue());
-        return STATUS_NONNEGATIVE_ABORT;
+    if (parameters->saddleNonnegativeDisplacementAbort) {
+        objf.getGradient();
+        if (minModeMethod->getEigenvalue() > 0) {
+            printf("%f\n", minModeMethod->getEigenvalue());
+            return STATUS_NONNEGATIVE_ABORT;
+        }
     }
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
