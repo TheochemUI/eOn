@@ -55,9 +55,6 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
 void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box){
 
     numberOfAtoms = N;
-    box0 = box[0];
-    box4 = box[4];
-    box8 = box[8];
     
     if(LAMMPSObj != NULL){
         cleanMemory();
@@ -87,7 +84,7 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     lammps_open_no_mpi(7, lammps_argv, &LAMMPSObj);
     void *ptr = LAMMPSObj;
 
-    char cmd[80];
+    char cmd[200];
 
     //Gives units in Angstoms and eV
     lammps_command(ptr, "units metal");
@@ -98,15 +95,21 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
 
 
     //Define periodic cell
-    snprintf(cmd, 80, "region box block 0 %.8f 0 %.8f 0 %.8f units box", 
-             box0, box4, box8);    
+    //    prism args = xlo xhi ylo yhi zlo zhi xy xz yz
+    //        xlo,xhi,ylo,yhi,zlo,zhi = bounds of untilted prism 
+    //        xy = distance to tilt y in x direction
+    //        xz = distance to tilt z in x direction
+    //        yz = distance to tilt z in y direction
+    snprintf(cmd, 200, "region cell prism 0 %f 0 %f 0 %f %f %f %f units box", 
+             box[0], box[4], box[8], box[3], box[6], box[7]);
+
     lammps_command(ptr, cmd);
-    snprintf(cmd, 80, "create_box %i box", ntypes);
+    snprintf(cmd, 200, "create_box %i cell", ntypes);
     lammps_command(ptr, cmd);
 
     //Initialize the atoms and their types
     for (int i=0;i<N;i++) {
-        snprintf(cmd, 80, "create_atoms %i single %f %f %f units box", 
+        snprintf(cmd, 200, "create_atoms %i single %f %f %f units box", 
                  type_map[atomicNrs[i]], 0.0, 0.0, 0.0);
         lammps_command(ptr, cmd);
     }
