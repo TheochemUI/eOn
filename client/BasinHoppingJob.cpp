@@ -143,6 +143,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if (currentEnergy < minimumEnergy) {
                 minimumEnergy = currentEnergy;
                 *minimumEnergyStructure = *minTrial;
+                minimumEnergyStructure->matter2con("product.con");
             }
             consecutive_rejected_trials = 0; //STC: I think this should go here.
         }else{
