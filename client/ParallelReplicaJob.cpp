@@ -252,6 +252,7 @@ int ParallelReplicaJob::dynamics()
         newStateFlag = false;
     }
 
+    *product=*final;
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
