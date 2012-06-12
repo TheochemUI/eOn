@@ -204,6 +204,7 @@ int ParallelReplicaJob::dynamics()
                 }else{
                     log("Found New State.\n");
                     *final = *current;
+                    transitionTime=time - parameters->parrepRelaxTime;
                     //refFCalls = Potential::fcalls;
                     //product->relax(true);
                    // minimizeFCalls += Potential::fcalls - refFCalls;
@@ -252,7 +253,7 @@ int ParallelReplicaJob::dynamics()
         newStateFlag = false;
     }
 
-    *product=*final;
+    *product=*final; 
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
