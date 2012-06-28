@@ -1,3 +1,13 @@
+##-----------------------------------------------------------------------------------
+## eOn is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## A copy of the GNU General Public License is available at
+## http://www.gnu.org/licenses/
+##-----------------------------------------------------------------------------------
+
 import logging
 logger = logging.getLogger('explorer')
 from time import time
@@ -40,7 +50,7 @@ class Explorer:
         f = open(self.wuid_path, 'w')
         f.write("%i\n" % self.wuid)
         f.close()
-        
+
 
 class MinModeExplorer(Explorer):
     def __init__(self, states, previous_state, state):
@@ -137,10 +147,10 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        invariants['reactant_passed.con']=reactIO
+        invariants['reactant_passed.con'] = reactIO
 
-        #Merge potential files into invariants
-        invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
+        # Merge potential files into invariants
+        invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
         t1 = time()
         for i in range(num_to_make):
@@ -161,7 +171,6 @@ class ClientMinModeExplorer(MinModeExplorer):
                           ]
             search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
 
-
             if displacement:
                 dispIO = StringIO.StringIO()
                 io.savecon(dispIO, displacement)
@@ -173,7 +182,6 @@ class ClientMinModeExplorer(MinModeExplorer):
                 self.wuid += 1
                 # eager write
                 self.save_wuid()
-
 
         if config.recycling_on and self.nrecycled > 0:
             logger.info("recycled %i saddles" % self.nrecycled)
@@ -194,9 +202,9 @@ class ClientMinModeExplorer(MinModeExplorer):
             shutil.rmtree(config.path_jobs_in)  
         os.makedirs(config.path_jobs_in)
 
-        #Function used by communicator to determine whether to discard a result
+        # Function used by communicator to determine whether to discard a result
         def keep_result(name):
-            # note that all processes are assigned to the current state 
+            # note that all processes are assigned to the current state
             state_num = int(name.split("_")[0])
             return (state_num == self.state.number and \
                     self.state.get_confidence() < config.akmc_confidence)
@@ -206,7 +214,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             #        self.state.get_confidence() < config.akmc_confidence)
 
         num_registered = 0
-        for result in self.comm.get_results(config.path_jobs_in, keep_result): 
+        for result in self.comm.get_results(config.path_jobs_in, keep_result):
             # The result dictionary contains the following key-value pairs:
             # reactant - an array of strings containing the reactant
             # saddle - an atoms object containing the saddle
@@ -241,7 +249,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 self.job_table.delete_row('wuid', id)
             result['wuid'] = id
 
-            #read in the results
+            # read in the results
             result['results'] = io.parse_results(result['results.dat'])
             if result['results']['termination_reason'] == 0:
                 self.state.add_process(result)
@@ -253,7 +261,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 if not config.debug_register_extra_results:
                     break
 
-        #Approximate number of searches recieved
+        # Approximate number of searches recieved
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
 
         t2 = time()
@@ -339,7 +347,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         if not os.path.isdir(config.path_incomplete):
             os.makedirs(config.path_incomplete)
 
-        #Function used by communicator to determine whether to keep a result
+        # Function used by communicator to determine whether to keep a result
         def keep_result(name):
             # note that all processes are assigned to the current state 
             state_num = int(name.split("_")[0])
@@ -384,7 +392,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                 if not config.debug_register_extra_results:
                     break
 
-        #Approximate number of searches recieved
+        # Approximate number of searches received
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
 
         t2 = time()
@@ -418,12 +426,12 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         invariants = {}
 
-        #Merge potential files into invariants
-        invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
+        # Merge potential files into invariants
+        invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
         t1 = time()
 
-        #start new searches
+        # start new searches
         for i in range(num_to_make):
             job = None
             for ps in self.process_searches.values():
@@ -477,7 +485,7 @@ class ProcessSearch:
         self.displacement_type = disp_type
         self.state_number = state_number
 
-        #valid statuses are 'not_started', 'running', 'complete', 'unneeded', and 'error'
+        # valid statuses are 'not_started', 'running', 'complete', 'unneeded', and 'error'
         self.job_statuses = {
                              'saddle_search':'not_started',
                              'min1':'not_started',
@@ -680,7 +688,7 @@ class ProcessSearch:
         # Check the connectivity of the process
         if (not is_reactant(atoms1) and not is_reactant(atoms2)) or \
            (is_reactant(atoms1) and is_reactant(atoms2)):
-            #Not connected
+            # Not connected
             self.data['termination_reason'] = 6
             self.data['potential_energy_saddle'] = 0.0
             self.data['potential_energy_reactant'] = 0.0

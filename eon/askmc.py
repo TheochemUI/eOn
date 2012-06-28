@@ -39,16 +39,13 @@ class ASKMC:
 
         # --- Defining the "acceleration" parameters ---
 
-        # "delta" is more or less a measure of maximum error encountered
-        # as a result of using this method.
-        # Smaller values of delta correspond to higher assurance that
-        # the superbasin exiting will be correct with respect to exit
-        # time and direction (and smaller computational speed-up).
+        # "delta" is more or less a measure of maximum error encountered as a result of using this method.
+        # Smaller values of delta correspond to higher assurance that the superbasin exiting will be correct
+        #  with respect to exit time and direction (and smaller computational speed-up).
         self.delta = (1 - confidence)
-        # alpha is the factor by which the rate constants are lowered
-        # when the superbasin criterion is passed.
-        # In general Chatterjee & Voter found 2 to be an acceptable value,
-        # but if there are "overlapping timescales", it should be less than the square root of gamma.
+        # alpha is the factor by which the rate constants are lowered when the superbasin criterion is passed.
+        # In general Chatterjee & Voter found 2 to be an acceptable value, but if there are "overlapping timescales",
+        # it should be less than the square root of gamma.
         # Default in the config:  1.5.
         self.alpha = alpha
         # gamma determines what is a "high" barrier in the superbasin criterion.

@@ -22,10 +22,10 @@ def make_movie(movie_type, path_root, states):
         atoms_list = dynamics(path_root, states, True)
         movie_path = "states.poscar"
     elif movie_type == 'fastestpath':
-        atoms_list = fastestpath(path_root, states)
+        atoms_list = fastest_path(path_root, states)
         movie_path = "fastestpath.poscar"
     elif movie_type == 'fastestfullpath':
-        atoms_list = fastestpath(path_root, states, full=True)
+        atoms_list = fastest_path(path_root, states, full=True)
         movie_path = "fastestfullpath.poscar"
     elif movie_type.split(',')[0] == 'processes':
         try:
@@ -145,7 +145,7 @@ def make_graph(states):
                 G.add_edge(state, neighbor_state, weight=1.0/p['rate'])
     return G
 
-def fastestpath(path_root, states, full=False):
+def fastest_path(path_root, states, full=False):
     G = make_graph(states) 
 
     state_list = [states.get_state(0)]
@@ -176,7 +176,6 @@ def fastestpath(path_root, states, full=False):
 
         print time, state_list[i].number 
         time += 1/ratesum
-
 
     return atoms_list
 
@@ -259,7 +258,7 @@ class Graph:
                 if w in D:
                     if vwLength < D[w]:
                         raise ValueError, \
-      "Dijkstra: found better path to already-final vertex"
+                        "Dijkstra: found better path to already-final vertex"
                 elif w not in Q or vwLength < Q[w]:
                     Q[w] = vwLength
                     P[w] = v
@@ -279,9 +278,10 @@ class Graph:
 class priorityDictionary(dict):
     def __init__(self):
         '''Initialize priorityDictionary by creating binary heap
-of pairs (value,key).  Note that changing or removing a dict entry will
-not remove the old pair from the heap until it is found by smallest() or
-until the heap is rebuilt.'''
+           of pairs (value,key).  Note that changing or removing a dict entry will
+           not remove the old pair from the heap until it is found by smallest() or
+           until the heap is rebuilt.
+        '''
         self.__heap = []
         dict.__init__(self)
 
@@ -316,8 +316,9 @@ until the heap is rebuilt.'''
 
     def __setitem__(self,key,val):
         '''Change value stored in dictionary and add corresponding
-pair to heap.  Rebuilds the heap if the number of deleted items grows
-too large, to avoid memory leakage.'''
+           pair to heap.  Rebuilds the heap if the number of deleted items grows
+           too large, to avoid memory leakage.
+        '''
         dict.__setitem__(self,key,val)
         heap = self.__heap
         if len(heap) > 2 * len(self):

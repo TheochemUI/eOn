@@ -119,21 +119,21 @@ class DisplaceError(Exception):
 class Displace:
     def __init__(self, reactant, std_dev, radius, hole_epicenters):
         '''Reactant is an Atoms object. std_dev is the standard deviation
-        of the normal distribution used to create the random displacements.
-        radius is the distance to neighbors that will also be displaced.'''
+           of the normal distribution used to create the random displacements.
+           radius is the distance to neighbors that will also be displaced.
+        '''
         self.reactant = reactant
         self.std_dev = std_dev
         self.radius = radius
         self.hole_epicenters = hole_epicenters
 
-        #temporary numpy array of same size as self.reactant.r
+        # temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
 
         self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
 
     def make_displacement(self):
-        '''Writes the displacement_passed.con and mode_passed.dat to
-        path.'''
+        '''Writes the displacement_passed.con and mode_passed.dat to path.'''
         raise NotImplementedError
 
     def get_displacement(self, atom_index):
@@ -143,15 +143,15 @@ class Displace:
         displacement = numpy.zeros(self.reactant.r.shape)
         displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
-        #ensures that the total displacement vector exceeds a given length
+        # ensures that the total displacement vector exceeds a given length
         while (displacement_norm <= config.disp_min_norm):
             displacement = numpy.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
-                #don't displace frozen atoms
+                # don't displace frozen atoms
                 if not self.reactant.free[displaced_atoms[i]]:
                     continue
-                #Displace one of the free atoms by a gaussian distributed
-                #random number with a standard deviation of self.std_dev.
+                # Displace one of the free atoms by a gaussian distributed
+                # random number with a standard deviation of self.std_dev.
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
             displacement_norm = numpy.sqrt(numpy.sum(displacement.flatten()**2))
 
@@ -188,11 +188,10 @@ class Undercoordinated(Displace):
 
         self.coordination_distance = cutoff
 
-        #cns is an array of the coordination numbers for each of the atoms.
+        # cns is an array of the coordination numbers for each of the atoms.
         cns = atoms.coordination_numbers(self.reactant, self.coordination_distance)
 
-        #Only allow displacements for atoms <= the maximum coordination and
-        #that are free.
+        # Only allow displacements for atoms <= the maximum coordination and that are free.
         self.undercoordinated_atoms = [ i for i in range(len(cns)) 
                 if cns[i] <= self.max_coordination and 
                     self.reactant.free[i] == 1]
@@ -205,11 +204,9 @@ class Undercoordinated(Displace):
             raise DisplaceError(errmsg)
 
     def make_displacement(self):
-        """Select an undercoordinated atom and displace all atoms in a radius
-        about it."""
-        # TODO: We should make sure that the amount of I/O to disk
-        #       is what we think it should be: about 100 kB or so per
-        #       make_displacement().
+        """Select an undercoordinated atom and displace all atoms in a radius about it."""
+        # TODO: We should make sure that the amount of I/O to disk is what we think it should be:
+        #       about 100 kB or so per make_displacement().
         epicenter = self.undercoordinated_atoms[numpy.random.randint(len(self.undercoordinated_atoms))]
         return self.get_displacement(epicenter)
 
@@ -266,7 +263,7 @@ class ListedAtoms(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
-        #each item in this list is the index of a free atom
+        # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in config.disp_listed_atoms 
                 if self.reactant.free[i] ]
 
@@ -277,7 +274,7 @@ class ListedAtoms(Displace):
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
-        #chose a random atom from the supplied list
+        # chose a random atom from the supplied list
         epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
         return self.get_displacement(epicenter)
 
@@ -285,7 +282,7 @@ class Random(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
-        #each item in this list is the index of a free atom
+        # each item in this list is the index of a free atom
         self.free_atoms = [ i for i in range(len(self.reactant.free))
                 if self.reactant.free[i] ]
 
@@ -296,7 +293,7 @@ class Random(Displace):
 
     def make_displacement(self):
         """Select a random atom and displace all atoms in a radius about it."""
-        #chose a random atom
+        # chose a random atom
         epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))]
         return self.get_displacement(epicenter)
 

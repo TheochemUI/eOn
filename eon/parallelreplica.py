@@ -43,8 +43,8 @@ def parallelreplica():
     # get communicator
     comm = communicator.get_communicator()
 
-    # Register all the results. There is  no need to ever discard found
-    # processes like we do with akmc. There is no confidence to calculate.
+    # Register all the results. There is no need to ever discard processes
+    # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
     logger.info("time in current state is %e", current_state.get_time()) 
@@ -135,10 +135,10 @@ def make_searches(comm, current_state, wuid):
     io.savecon(reactIO, reactant)
     #invariants['reactant_passed.con']=reactIO
 
-    #Merge potential files into invariants
+    # Merge potential files into invariants
     #XXX: Should this be in our "science" maybe the communicator should
     #     handle this.
-    invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
+    invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
     searches = []
     for i in range(num_to_make):
@@ -164,7 +164,7 @@ def register_results(comm, current_state, states):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
 
-    #Function used by communicator to determine whether to discard a result
+    # Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
 
