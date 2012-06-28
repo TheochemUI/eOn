@@ -327,8 +327,8 @@ def init(config_file = ""):
     if config.debug_interactive_shell:
         import signal, code
         signal.signal(signal.SIGQUIT, lambda signum, frame: code.interact(local=locals()))
-    config.debug_keep_bad_saddles  = parser.getboolean('Debug', 'keep_bad_saddles')
-    config.debug_keep_all_results  = parser.getboolean('Debug', 'keep_all_result_files')
+    config.debug_keep_bad_saddles = parser.getboolean('Debug', 'keep_bad_saddles')
+    config.debug_keep_all_results = parser.getboolean('Debug', 'keep_all_result_files')
     config.debug_results_path = parser.get('Debug', 'result_files_path')
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')

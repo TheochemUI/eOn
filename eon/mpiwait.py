@@ -1,3 +1,13 @@
+##-----------------------------------------------------------------------------------
+## eOn is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## A copy of the GNU General Public License is available at
+## http://www.gnu.org/licenses/
+##-----------------------------------------------------------------------------------
+
 import numpy
 import os
 import logging
@@ -21,7 +31,7 @@ def mpiwait():
         MPI.COMM_WORLD.Abort()
 
     MPI.COMM_WORLD.Probe(MPI.ANY_SOURCE, MPI.ANY_TAG)
-    #we now need to clear out any other mpi_send to us
+    # we now need to clear out any other mpi_send to us
     for r in client_ranks:
         if MPI.COMM_WORLD.Iprobe(source=r, tag=1):
             tmp = numpy.empty(1, dtype='i')

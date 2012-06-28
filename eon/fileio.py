@@ -89,28 +89,28 @@ def loadcon(filein, reset = True):
         con = filein
     else:
         con = open(filein, 'r')
-    con.readline() #Line 1: comment
-    con.readline() #Line 2: comment
+    con.readline() # line 1: comment
+    con.readline() # line 2: comment
     # determine how many dimensions
-    tmp = numpy.array(con.readline().split()) #Line 3: Box lengths
+    tmp = numpy.array(con.readline().split()) # line 3: Box lengths
     for i in range(len(tmp)):
         dim=i+1
         try: float(tmp[i])
         except:
             dim=i
             break
-    #handle the box
+    # handle the box
     boxlengths=numpy.zeros(dim)
     for i in range(dim):
         boxlengths[i]=float(tmp[i])
-    boxangles=numpy.array([ float(f) for f in con.readline().split()[0:dim] ]) #Line 4: Box angles
+    boxangles=numpy.array([ float(f) for f in con.readline().split()[0:dim] ]) # line 4: Box angles
     boxtemp=numpy.zeros((dim,dim),'d')
     boxtemp = length_angle_to_box(boxlengths,boxangles)
-    con.readline() #Line 5: comment
-    con.readline() #Line 6: comment
-    num_types = int(con.readline().split()[0]) #Line 7: number of atom types
-    num_each_type = con.readline().split() #line 8: number of each type of atom
-    mass_of_type = con.readline().split() #line 9: mass of each type of atom
+    con.readline() # line 5: comment
+    con.readline() # line 6: comment
+    num_types = int(con.readline().split()[0]) # line 7: number of atom types
+    num_each_type = con.readline().split() # line 8: number of each type of atom
+    mass_of_type = con.readline().split() # line 9: mass of each type of atom
     num_atoms = 0
     for i in range(num_types):
         num_each_type[i] = int(num_each_type[i])
@@ -124,7 +124,7 @@ def loadcon(filein, reset = True):
         if abs(1.0-mass_of_type[i]) < 1e-6 and name != "H":
             logger.warning("WARNING: Mass of %s set to 1.0", name)
 
-        con.readline() #skip meaningless line
+        con.readline() # skip meaningless line
         for j in range(num_each_type[i]):
             vals = con.readline().split()
             for k in range(dim):
@@ -242,8 +242,7 @@ def modify_config(config_path, changes):
 
 def parse_results(filein):
     '''
-    Reads a results.dat file and gives a dictionary of the values contained
-    therein
+    Reads a results.dat file and gives a dictionary of the values contained therein
     '''
     if hasattr(filein, 'readline'):
         f = filein
@@ -273,8 +272,7 @@ def parse_results(filein):
 
 def loadposcar(filein):
     '''
-    Load the POSCAR file named filename
-    Returns an atoms object
+    Load the POSCAR file named filename and returns an atoms object
     '''
     if hasattr(filein, 'readline'):
         f = filein
@@ -442,16 +440,16 @@ class Dynamics:
             f.close()
             self.next_step = 0
 
-        #read last lines of the file to determine iteration nr
+        # read last lines of the file to determine iteration nr
         else:
             f = open(self.filename,'r')
             f.seek(0,2)	#seek to EOF
             fsize = f.tell()
-            #seek 1024 bytes back (or to beginning of file if fsize < 1024 )
-            #last line must be contained in this block
+            # seek 1024 bytes back (or to beginning of file if fsize < 1024 )
+            # last line must be contained in this block
             f.seek( max( fsize - 1024 , 0 ) , 0)
             lines = f.readlines()
-            self.next_step = int ( lines[-1].split()[0] ) + 1 #determine iteration nr of next step
+            self.next_step = int ( lines[-1].split()[0] ) + 1 # determine iteration nr of next step
 
     def append(self, reactant_id, process_id, product_id, step_time, total_time, barrier, rate):
         f = open(self.filename, 'a')
@@ -533,8 +531,8 @@ class Table:
 """
 
     #XXX: This is the number of digits that a floating point number gets
-    #     serialized with. Should it be some sort of config option? Or
-    #     is there just a good default?
+    #     serialized with. Should it be some sort of config option?
+    #     Or is there just a good default?
 
     def __init__(self, filename, columns=None, overwrite=False):
         self.filename = filename
@@ -574,7 +572,7 @@ class Table:
         for c in self.columns:
             self.columnwidths[c] = len(c)
 
-        #skip comment line
+        # skip comment line
         f.readline()
 
         for line in f:
