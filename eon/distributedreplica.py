@@ -53,8 +53,8 @@ def distributedreplica():
     # get communicator
     comm = communicator.get_communicator()
 
-    # Register all the results. There is  no need to ever discard found
-    # processes like we do with akmc. There is no confidence to calculate.
+    # Register all the results. There is no need to ever discard processes
+    # like we do with akmc. There is no confidence to calculate.
     num_registered, new_min_energy_structure = register_results(comm, min_energy)
 
     if new_min_energy_structure:
@@ -65,7 +65,7 @@ def distributedreplica():
         min_energy_file.write("".join(new_min_energy_structure[1]))
         min_energy_file.close()
     elif not os.path.isfile(min_energy_con_path):
-        #this should only happen on the first run
+        # this should only happen on the first run
         shutil.copy("reactant.con", min_energy_con_path)
 
     wuid = make_searches(comm, wuid, min_energy_con_path)
@@ -96,7 +96,7 @@ def make_searches(comm, wuid, min_energy_con_path):
     invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
     invariants['reactant_passed.con']  = reactIO
 
-    #Merge potential files into invariants
+    # Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
     searches = []
@@ -119,7 +119,7 @@ def register_results(comm, min_energy):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
 
-    #Function used by communicator to determine whether to discard a result
+    # Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
 
@@ -134,7 +134,7 @@ def register_results(comm, min_energy):
 
         id = result['name']
 
-        #read in the results
+        # read in the results
         result['results'] = io.parse_results(result['results.dat'])
 ##        if result['results']['termination_reason'] == 0:
         fe = result['results']['minimum_energy']
@@ -151,7 +151,7 @@ def register_results(comm, min_energy):
 def main():
     optpar = optparse.OptionParser(usage="usage: %prog [options] config.ini")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
-    optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
+    optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register completed results")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the simulation, discarding all data")
     options, args = optpar.parse_args()
 
@@ -164,7 +164,7 @@ def main():
         config.init(sys.argv[-1])
     else:
         config.init()
-    #set options.path_root to be where the config file is if given as an arg
+    # set options.path_root to be where the config file is, if given as an arg
     if config.path_root.strip() == '.' and len(args) == 1:
         config.path_root = os.path.abspath(os.path.dirname(args[0]))
         os.chdir(config.path_root)
@@ -199,7 +199,7 @@ def main():
             print "Not resetting."
             sys.exit(1)
 
-    #setup logging
+    # setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "bh.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",

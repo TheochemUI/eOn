@@ -17,8 +17,8 @@ import config
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
-    to which superbasins, the SuperBasin object of those superbasins, and
-    superbasining criteria. It also expands and merges superbasins'''
+        to which superbasins, the SuperBasin object of those superbasins, and
+        superbasining criteria. It also expands and merges superbasins'''
 
     def __init__(self, superbasin_path, states, kT):
         self.path = superbasin_path
@@ -54,7 +54,7 @@ class SuperbasinScheme:
 
         # is there an upper limit for the size of a superbasin
         if config.sb_max_size:
-            #first determine how many states will be in the new superbasin
+            # first determine how many states will be in the new superbasin
             numstates = 0
             for i in merge_states:
                 sb = self.get_containing_superbasin(i)
@@ -62,7 +62,7 @@ class SuperbasinScheme:
                     numstates += 1
                 else:
                     numstates += len(sb.states)
-            #if number of states in the new superbasin wil be larger than 2, do not proceed:
+            # if number of states in the new superbasin wil be larger than 2, do not proceed:
             if numstates > config.sb_max_size:
                 return
         
@@ -85,9 +85,9 @@ class SuperbasinScheme:
                 self.superbasins.remove(sb)
 
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
-        #However, it will likely be very slow. We should be able to do without it.
-        #Also, if confidence is changed and new processes are found, the superbasin
-        #will ignore these new processes.
+        # However, it will likely be very slow. We should be able to do without it.
+        # Also, if confidence is changed and new processes are found, the superbasin
+        # will ignore these new processes.
 
         self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, state_list = new_sb_states)) 
 
@@ -138,7 +138,6 @@ class TransitionCounting(SuperbasinScheme):
             logger.debug( "Making basin....")
             self.make_basin([start_state, end_state])
 
-
     def write_data(self):
         logger.debug('writing')
         for start_state in self.count:
@@ -183,27 +182,27 @@ class EnergyLevel(SuperbasinScheme):
         else:
             return [ state ]
 
-    #start_state and end_state are the non-sb ids. 
+    # start_state and end_state are the non-sb ids. 
     def register_transition(self, start_state, end_state):
         '''Increments the energy level of the end state or sets it equal to the energy
            of the end_state if it hasn't been visited before.'''
 
-        #error
+        # error
         if start_state == end_state and not config.comp_use_identical:
-#        if start_state == end_state:
+        #if start_state == end_state:
             return
 
-        #if the start state does not have an energy level yet, we set it to the energy of the state.
+        # if the start state does not have an energy level yet, we set it to the energy of the state.
         if start_state not in self.levels:
             self.levels[start_state] = start_state.get_energy()
 
-        #if the end state does not have an energy level yet, set it to the energy of the state.
+        # if the end state does not have an energy level yet, set it to the energy of the state.
         if end_state not in self.levels:
             self.levels[end_state] = end_state.get_energy()
 
-        #determine wheter or not the start and end states belong to a superbasin.
-        #if they belong to a superbasin, we need to know the ids of the states inside
-        #that superbasin to determine the minimum energy state inside the superbasin.
+        # determine wheter or not the start and end states belong to a superbasin.
+        # if they belong to a superbasin, we need to know the ids of the states inside
+        # that superbasin to determine the minimum energy state inside the superbasin.
 
         start_statelist = self.get_statelist(start_state)
         end_statelist   = self.get_statelist(end_state)
@@ -211,8 +210,8 @@ class EnergyLevel(SuperbasinScheme):
         e_min        = min ( state.get_energy() for state in end_statelist )
         e_global_min = min ( e_min , ( state.get_energy() for state in start_statelist ) )
 
-        #determine the barrier
-        #(LJ: What happens if there is more then one path between start_state and end_state???)
+        # determine the barrier
+        # (LJ: What happens if there is more then one path between start_state and end_state???)
         barrier = 1e200
         proc_tab = start_state.get_process_table()
         for key in proc_tab:
@@ -224,11 +223,11 @@ class EnergyLevel(SuperbasinScheme):
             return
         saddle_energy = barrier + start_state.get_energy()
 
-        #increment the level of the end_state. 
+        # increment the level of the end_state. 
         for i in end_statelist:
             self.levels[i] += self.get_energy_increment(e_min, e_global_min, saddle_energy)
 
-        #merge states if one of the two levels is higher than the saddle energy
+        # merge states if one of the two levels is higher than the saddle energy
         largest_level = max(self.levels[start_state], self.levels[end_state])
 
         if largest_level > saddle_energy:
@@ -237,7 +236,6 @@ class EnergyLevel(SuperbasinScheme):
             for i in end_statelist: #this may also be just [ end_state ]
                 self.levels[i] = largest_level
             self.make_basin([start_state, end_state])
-
 
     def read_data(self):
         logger.debug('reading')

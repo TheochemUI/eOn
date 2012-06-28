@@ -19,7 +19,6 @@ import tarfile
 
 import fileio as io
 
-
 class State:
     """ The State super class. """
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,

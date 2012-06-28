@@ -26,9 +26,8 @@ import re
 import numpy
 
 def get_communicator():
-    # This is an ugly hack to "remember" a communicator as it
-    # it isn't possible to construct the MPI communicator multiple
-    # times and it needs to remember its object level variables.
+    # This is an ugly hack to "remember" a communicator as it isn't possible to construct
+    # the MPI communicator multiple times and it needs to remember its object level variables.
     if hasattr(get_communicator, 'comm'):
         return get_communicator.comm
 
@@ -68,7 +67,7 @@ class CommunicatorError(Exception):
 class Communicator:
     def __init__(self, scratchpath, bundle_size=1):
         if not os.path.isdir(scratchpath):
-            #should probably log this event
+            # should probably log this event
             os.makedirs(scratchpath)
         self.scratchpath = scratchpath
         self.bundle_size = bundle_size
@@ -137,7 +136,7 @@ class Communicator:
                 if '_passed' in filename:
                     continue
                 try:
-                    #parse filename
+                    # parse filename
                     rootname, fname = os.path.split(filename)
 
                     match = re.match(regex, fname)
@@ -148,14 +147,14 @@ class Communicator:
                     index = int(parts[1])
                     key = parts[0]+parts[2]
 
-                    #Load data into stringIO object (should we just return filehandles?
+                    # Load data into stringIO object (should we just return filehandles?)
                     f = open(filename,'r')
                     filedata = StringIO(f.read())
                     f.close()
 
-                    #add result to results
-                    results[index][key]=filedata
-                    results[index]['number']=index
+                    # add result to results
+                    results[index][key] = filedata
+                    results[index]['number'] = index
                 except:
                     logger.exception("Failed to handle file %s" % filename)
 
@@ -174,7 +173,7 @@ class Communicator:
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
         for chunk in chunks:
-            #create the bundle's directory
+            # create the bundle's directory
 
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
@@ -201,16 +200,16 @@ class Communicator:
             yield job_path
 
 class BOINC(Communicator):
-    def __init__(self, scratchpath, boinc_project_dir, wu_template,
-                 result_template, appname, boinc_results_path, bundle_size,
-                 priority):
-
-        '''This constructor modifies sys.path to include the BOINC python
+    def __init__(self, scratchpath, boinc_project_dir, wu_template, result_template,
+                 appname, boinc_results_path, bundle_size, priority):
+        '''
+        This constructor modifies sys.path to include the BOINC python
         modules.  It then tries to connect to the BOINC mysql database raising
         exceptions if there are problems connecting. It also creates a file
         named uniqueid in the scratchpath to identify BOINC jobs as belonging
         to this akmc run if it doesn't exist. It then reads in the uniqueid
-        file and stores that as an integer in self.uniqueid.'''
+        file and stores that as an integer in self.uniqueid.
+        '''
 
         Communicator.__init__(self, scratchpath, bundle_size)
         self.wu_template = wu_template
@@ -227,8 +226,8 @@ class BOINC(Communicator):
             import Boinc.db_base
             import Boinc.boinc_db
         except ImportError:
-            raise CommunicatorError("The Boinc python module could not be imported.\nPerhaps "
-                "the boinc project path is set incorrectly?")
+            raise CommunicatorError("The Boinc python module could not be imported.\n"
+                "Perhaps the boinc project path is set incorrectly?")
 
         self.database = Boinc.database 
         self.boinc_db_constants = Boinc.boinc_db
@@ -250,7 +249,7 @@ class BOINC(Communicator):
         self.dbconnection = self.db_base.dbconnection
         self.cursor = self.dbconnection.cursor()
 
-        #generate our unique id if it doesn't already exist.
+        # generate our unique id if it doesn't already exist.
         uniqueid_path = os.path.join(self.scratchpath, "uniqueid")
 
         if not os.path.isfile(uniqueid_path):
@@ -280,7 +279,7 @@ class BOINC(Communicator):
         'mysql indices on result.cpu_time, result.workunits, result.hostid, '
         'and workunit.batch.'
 
-        #number of wus to average over
+        # number of wus to average over
         limit = 500
         query = "select r.cpu_time*h.p_fpops " \
                 "from workunit w, result r, host h "\
@@ -298,7 +297,7 @@ class BOINC(Communicator):
                 counter += 1
             average_flops /= counter
         else:
-            #2e11 flops is about a 100 second job (assuming 2 gigaflop cpu)
+            # 2e11 flops is about a 100 second job (assuming 2 gigaflop cpu)
             average_flops = 2e11
 
         return average_flops
@@ -395,11 +394,11 @@ class BOINC(Communicator):
                     jobfiles[newname] = data
                 n += 1
 
-            #Add the files in job and in invariants to the tar file
+            # Add the files in job and in invariants to the tar file
             for filelist in (jobfiles, invariants):
                 for filename, filehandle in filelist.iteritems():
                     info = tarfile.TarInfo(name=filename)
-                    info.size=len(filehandle.getvalue())
+                    info.size = len(filehandle.getvalue())
                     info.mtime = now
                     filehandle.seek(0)
                     tar.addfile(info, filehandle);
@@ -410,8 +409,8 @@ class BOINC(Communicator):
     def create_work(self, tarpath, wu_name):
         create_wu_cmd = os.path.join('bin', 'create_work')
 
-        #XXX: make sure permissions are correct
-        #this should be a config option for the boinc group
+        # XXX: make sure permissions are correct
+        # this should be a config option for the boinc group
         mode = 0666
         os.chmod(tarpath, mode)
 
@@ -430,7 +429,7 @@ class BOINC(Communicator):
         arglist.append(str(self.priority))
         arglist.append("-rsc_fpops_est")
         arglist.append(str(self.average_flops))
-        #last arguments are the filenames
+        # last arguments are the filenames
         arglist.append("%s.tgz" % wu_name)
 
         p = subprocess.Popen(arglist, cwd=self.boinc_project_dir,
@@ -452,8 +451,8 @@ class BOINC(Communicator):
                                 'no_output_files' not in f]
 
         for resultfile in my_results:
-            #jobname looks like state#_job#
-            #jobname is everything but the first underscore records
+            # jobname looks like state#_job#
+            # jobname is everything but the first underscore records
             jobname = '_'.join(resultfile.split('_')[1:])
             resultpath = os.path.join(self.boinc_results_path, resultfile)
             if not keep_result(jobname):
@@ -477,9 +476,8 @@ class BOINC(Communicator):
                         continue
                     splitname = tarinfo.name.rsplit(".",1) 
                     newfilename = "%s.%s" % (splitname[0].rsplit("_",1)[0],splitname[1])
-                    #Read the file in the tar archive into a stringio
-                    #you cannot return the the filehandle that extractfile returns
-                    #as it will be closed when tar.close() is called.
+                    # Read the file in the tar archive into a stringio; you cannot return the filehandle
+                    # that extractfile returns as it will be closed when tar.close() is called.
                     fh = StringIO(tar.extractfile(tarinfo).read())
                     if config.debug_keep_all_results:
                         f = open(os.path.join(config.path_root, config.debug_results_path, jobname, tarinfo.name),'w')
@@ -596,20 +594,20 @@ class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
         Communicator.__init__(self, scratchpath, bundle_size)
 
-        #number of cpus to use
+        # number of cpus to use
         self.ncpus = ncpus
 
-        #path to the client
+        # path to the client
         if '/' in client:
             self.client = os.path.abspath(client)
             if not os.path.isfile(self.client):
                 logger.error("can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
         else:
-            #is the client in the local directory?
+            # is the client in the local directory?
             if os.path.isfile(client):
                 self.client = os.path.abspath(client)
-            #is the client in the path?
+            # is the client in the path?
             elif sum([ os.path.isfile(os.path.join(d, client)) for d in 
                        os.environ['PATH'].split(':') ]) != 0:
                 self.client = client
@@ -620,7 +618,7 @@ class Local(Communicator):
         self.joblist = []
 
         import atexit
-        #don't let clients hang around if the script dies
+        # don't let clients hang around if the script dies
         atexit.register(self.cleanup)
 
     def cleanup(self):
@@ -647,7 +645,7 @@ class Local(Communicator):
             for result in bundle:
                 yield result
 
-        #Clean out scratch directory
+        # Clean out scratch directory
         for name in os.listdir(self.scratchpath):
             path_name = os.path.join(self.scratchpath, name)
             if not os.path.isdir(path_name):
@@ -666,12 +664,12 @@ class Local(Communicator):
 
     def submit_jobs(self, data, invariants):
         '''Run up to ncpu number of clients to process the work in jobpaths.
-           The job directories are moved to the scratch path before the calculcation
+           The job directories are moved to the scratch path before the calculation
            is run. This method doesn't return anything.'''
 
         for jobpath in self.make_bundles(data, invariants):
-            #move the job directory to the scratch directory
-            #update jobpath to be in the scratch directory
+            # move the job directory to the scratch directory
+            # update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
             p = subprocess.Popen(self.client,cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)
@@ -690,7 +688,7 @@ class Local(Communicator):
                         break
                 sleep(0.1)
 
-        #wait for everything to finish
+        # wait for everything to finish
         for job in self.joblist:
             p = job[0]
             p.wait()
@@ -719,7 +717,7 @@ class Script(Communicator):
 
         self.name_prefix = name_prefix
 
-        #read in job ids
+        # read in job ids
         try:
             f = open(self.job_id_path, "r")
             self.jobids = pickle.load(f)
