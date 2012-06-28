@@ -8,7 +8,7 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-""" The state module. """
+""" The PRState module. """
 
 import logging
 logger = logging.getLogger('state')
@@ -34,7 +34,7 @@ class PRState(state.State):
         """ Adds a process to this State. """
         state.State.add_process(self, result)
 
-        resultdata = result["results"] #The information from the result.dat file
+        resultdata = result["results"] # The information from the result.dat file
 
         # We may not already have the energy for this State.  If not, it should be in the result data.
         if self.get_energy() == None:

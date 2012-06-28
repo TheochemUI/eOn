@@ -53,7 +53,7 @@ def query(state):
         logger.error('tsase module not found, kdb unavailable')
         return
     if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
-        shutil.rmtree(os.path.join(config.kdb_scratch_path, "kdbmatches"))        
+        shutil.rmtree(os.path.join(config.kdb_scratch_path, "kdbmatches"))
     os.makedirs(os.path.join(config.kdb_scratch_path, "kdbmatches"))
     kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
     if state.number == 0:
@@ -82,5 +82,4 @@ def make_suggestion():
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
             return displacement, mode
     return None, None
-
 
