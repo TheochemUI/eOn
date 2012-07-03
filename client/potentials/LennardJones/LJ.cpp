@@ -11,8 +11,7 @@
 #include"LJ.h"
 
 LJ::LJ(){
-    // Values from Voter
-    this->setParameters(1.0, 30.0, 1.0);
+    this->setParameters(1.0, 15.0, 1.0);
 }
 
 LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
