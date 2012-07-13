@@ -140,7 +140,8 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            SaddleSearchJob.o ImprovedDimer.o NudgedElasticBand.o Lanczos.o \
            Bundling.o Job.o CommandLine.o DynamicsJob.o Log.o \
            LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o \
-           DynamicsSaddleSearch.o PrefactorJob.o FIRE.o
+           DynamicsSaddleSearch.o PrefactorJob.o FIRE.o \
+		   MinimaHoppingJob.o MinimaHopping.o
 
 #------------------------------------
 #Build rules

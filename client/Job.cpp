@@ -13,6 +13,7 @@
 #include "DynamicsJob.h"
 #include "PrefactorJob.h"
 #include "TestJob.h"
+#include "MinimaHoppingJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
@@ -26,6 +27,7 @@ const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
 const char Job::DYNAMICS[] =                 "md";
 const char Job::PREFACTOR[] =                "prefactor";
+const char Job::MINIMA_HOPPING[] =           "minima_hopping";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -54,6 +56,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new DynamicsJob(parameters);
     }else if (parameters->job == Job::PREFACTOR) {
         job =  new PrefactorJob(parameters);
+    }else if (parameters->job == Job::MINIMA_HOPPING) {
+        job =  new MinimaHoppingJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }
