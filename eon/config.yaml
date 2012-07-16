@@ -825,6 +825,10 @@ Saddle Search:
             kind: float
             default: 0.0
 
+        displace_not_TCP_weight:
+            kind: float
+            default: 0.0
+
         displace_under_coordinated_weight:
             kind: float
             default: 0.0
@@ -845,6 +849,7 @@ Saddle Search:
                 - last_atom
                 - load
                 - not_FCC_HCP_coordinated
+                - not_TCP_coordinated
 
         nonlocal_count_abort:
             kind: int
