@@ -60,6 +60,16 @@ class DisplacementManager:
             self.water = Water(self.reactant,
                                config.stdev_translation, config.stdev_rotation,
                                config.molecule_list, config.disp_at_random)
+        # ### TShacked start
+        if config.displace_not_TCP_weight > 0:
+            self.not_TCP = NotTCP(self.reactant, 
+                                           config.disp_magnitude,
+                                           config.disp_radius,
+                                           hole_epicenters=moved_atoms,
+                                           cutoff=config.comp_neighbor_cutoff,
+                                           use_covalent=config.comp_use_covalent,
+                                           covalent_scale=config.comp_covalent_scale)
+        # ### TShacked end
         total = 0.0
         total += config.displace_random_weight
         total += config.displace_listed_weight
@@ -67,6 +77,9 @@ class DisplacementManager:
         total += config.displace_under_coordinated_weight
         total += config.displace_least_coordinated_weight
         total += config.displace_water_weight
+        # ### TShacked start
+        total += config.displace_not_TCP_weight
+        # ### TShacked end
         # If no fractions are defined, do 100% random displacements.
         if total == 0.0:
             total = 1.0
@@ -81,6 +94,9 @@ class DisplacementManager:
         self.plist.append(self.plist[-1] + config.displace_under_coordinated_weight/total)
         self.plist.append(self.plist[-1] + config.displace_least_coordinated_weight/total)
         self.plist.append(self.plist[-1] + config.displace_water_weight/total)
+        # ### TShacked start
+        self.plist.append(self.plist[-1] + config.displace_not_TCP_weight/total)
+        # ### TShacked end
 
     def make_displacement(self):
         disp_types = ["random", "listed", "not_FCC_HCP", "under", "least", "water"]
@@ -107,6 +123,11 @@ class DisplacementManager:
         elif disp_type == "water":
             logger.debug("Made water displacement")
             return self.water.make_displacement()
+        # ### TShacked start
+        elif disp_type == "not_TCP":
+            logger.debug("Made not-TCP displacement")
+            return self.not_TCP.make_displacement()
+        # ### TShacked end
         raise DisplaceError()
 
 
@@ -258,6 +279,33 @@ class NotFCCorHCP(Displace):
         """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
         epicenter = self.not_HCP_or_FCC_atoms[numpy.random.randint(len(self.not_HCP_or_FCC_atoms))] 
         return self.get_displacement(epicenter)
+
+# ### TShacked start
+class NotTCP(Displace):
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
+        Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
+
+        self.not_TCP_atoms = []
+
+        self.coordination_distance = cutoff
+
+        self.not_TCP_atoms = atoms.not_TCP(self.reactant, 
+                self.coordination_distance)
+
+        self.not_TCP_atoms = [ i for i in self.not_TCP_atoms
+                                        if self.reactant.free[i] == 1]
+
+        self.not_TCP_atoms = self.filter_epicenters(self.not_TCP_atoms)
+
+        if len(self.not_TCP_atoms) == 0:
+            errmsg = "The atoms without TCP coordination are all frozen."
+            raise DisplaceError(errmsg)
+
+    def make_displacement(self):
+        """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
+        epicenter = self.not_TCP_atoms[numpy.random.randint(len(self.not_TCP_atoms))] 
+        return self.get_displacement(epicenter)
+# ### TShacked end
 
 class ListedAtoms(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
