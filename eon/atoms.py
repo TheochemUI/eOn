@@ -478,6 +478,76 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
     return not_cna
 
 
+# ### TShacked start
+def cnat(p, cutoff, brute=False):
+    """ Returns a list of cna numbers for all atoms in p 
+        Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
+    can_values = numpy.zeros(len(p))
+    nr_5 = numpy.zeros(len(p))
+    nr_6 = numpy.zeros(len(p))
+    nl = neighbor_list(p, cutoff, brute)
+
+    # loops over all the atoms
+    for a2 in range(len(p)):
+        nl_a2 = nl[a2]
+        # loops over the atoms neighboring a2
+        for n2 in range(len(nl_a2)):
+            a1 = nl_a2[n2];
+            if a1 < a2:
+                common = []
+                nl_a1 = nl[a1]
+                # loops over the atoms neighboring a1
+                for n1 in range(len(nl_a1)):
+                    a3 = nl_a1[n1]
+                    # checks if atom a_3 is a common neighbor to a1 and a2
+                    for m2 in range(len(nl_a2)):
+                        if a3 == nl_a2[m2]:
+                            common.append(a3)
+                # determines the connectivity of common neighbors
+                #print a2, n2, len(common)
+                if len(common) in [5,6]:
+                    bonds_nr = 0
+                    bonds_sum = 0
+                    for j2 in range(1,len(common)):
+                        nl_j2 = nl[common[j2]]
+                        for j1 in range(j2):
+                            for n in range(len(nl_j2)):
+                                if common[j1] == nl_j2[n]:
+                                    bonds_nr += 1
+                                    bonds_sum += j1 + j2
+
+                    if bonds_nr == 5 and len(common) == 5:
+                        nr_5[a1] += 1
+                        nr_5[a2] += 1
+                    elif bonds_nr == 6 and len(common) == 6:
+                        nr_6[a1] += 1
+                        nr_6[a2] += 1
+
+    # 1: CN12, 2: CN14, 3: CN15, 4: CN16, 0: other
+    for i in range(len(p)):
+        if nr_5[i] == 12:
+            if len(nl[i]) == 12:
+                can_values[i] = 1
+            if (len(nl[i]) == 14) and (nr_6[i] == 2):
+                can_values[i] = 2
+            if (len(nl[i]) == 15) and (nr_6[i] == 3):
+                can_values[i] = 3
+            if (len(nl[i]) == 16) and (nr_6[i] == 4):
+                can_values[i] = 4
+    return can_values
+
+def not_TCP(p, cutoff, brute=False):
+    """ Returns a list of indices for the atoms with cna = 0 """
+    not_cna = []
+    cna_numbers = cnat(p, cutoff, brute)
+    #print cna_numbers
+    for i in range(len(cna_numbers)):
+        if cna_numbers[i] == 0:
+            not_cna.append(i)
+    return not_cna
+# ### TShacked end
+
+
 import sys
 sys.setrecursionlimit(10000)
 def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
