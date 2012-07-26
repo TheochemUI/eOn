@@ -95,6 +95,7 @@ public:
     double optMaxTimeStep; // maximum time step for FIRE.
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
+    bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
 
     // [Dimer]
     double dimerRotationAngle; // finite difference rotation angle
@@ -119,8 +120,8 @@ public:
     double prefactorMinDisplacement;// atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
     string prefactorRate;// method to estimate prefactor
     string prefactorConfiguration;// configuration for which the frequencies should be determined
-    bool prefactorAllFreeAtoms;// use all free atom when determining the prefactor
-    
+    bool   prefactorAllFreeAtoms;// use all free atom when determining the prefactor
+      
     // [Hessian]
     string hessianAtomList;
     double hessianZeroFreqValue;

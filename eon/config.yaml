@@ -1012,3 +1012,8 @@ Optimizer:
         lbfgs_inverse_curvature:
             kind: float
             default: 0.1
+        
+        qm_steepest_descent:
+            kind: bool
+            default: False
+        

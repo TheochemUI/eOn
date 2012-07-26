@@ -30,13 +30,19 @@ Quickmin::~Quickmin()
 bool Quickmin::step(double maxMove)
 {
     VectorXd force = -objf->getGradient();
-    if (velocity.dot(force) < 0) {
+    if (parameters->optQMSteepestDecent) {
         velocity.setZero();
     }
     else {
-        VectorXd f_unit = force/force.norm();
-        velocity = velocity.dot(f_unit) * f_unit;
+        if (velocity.dot(force) < 0) {
+            velocity.setZero();
+        }
+        else {
+            VectorXd f_unit = force/force.norm();
+            velocity = velocity.dot(f_unit) * f_unit;
+        }
     }
+    
     velocity += force * dt;
     VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt, parameters->optMaxMove);
     objf->setPositions(objf->getPositions() + dr);  
