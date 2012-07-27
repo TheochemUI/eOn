@@ -14,7 +14,7 @@ repository with the following command:
 
     svn co http://theory.cm.utexas.edu/svn/eon
 
-If you are a developer you should checkout the code like so:
+If you are a developer you can checkout the code using the command:
 
 .. code-block:: sh
 

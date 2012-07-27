@@ -72,7 +72,6 @@ Parameters::Parameters(){
     saddleDisplaceType = EpiCenters::DISP_LOAD;
     saddleMethod = "min_mode";
     saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
-    saddleMaxStepSize = 0.2;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
     saddleDisplaceRadius = 4.0;
@@ -288,7 +287,6 @@ int Parameters::load(FILE *file){
         saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
         saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
         saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
-        saddleMaxStepSize = ini.GetValueF("Saddle Search", "max_step_size", optMaxMove);
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
         saddleNonnegativeDisplacementAbort = ini.GetValueB("Saddle Search", "nonnegative_displacement_abort", saddleNonnegativeDisplacementAbort); 
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);

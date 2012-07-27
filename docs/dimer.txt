@@ -9,6 +9,8 @@ The dimer method of Henkelman and Jónsson with improvements by Heyden et al
 and Kästner and Sherwood for estimating the lowest eigenmode using only first derivatives.
 [#henkelman99_7010]_ [#heyden05_224101]_ [#kastner08_014106]_
 
+The dimer separation is set in the **[Main]** section with the finiteDifference parameter.
+
 [Dimer] Options
 ===============
 

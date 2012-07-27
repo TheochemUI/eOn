@@ -68,8 +68,9 @@ using the Intel Fortran Compiler (ifort) you will need to edit the Makefile to
 change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 ``FAR`` (fortran archiver) variables to work for your system.
 
-For most setups the binary ``client`` should be copied to a directory in your
-``$PATH`` and named ``eonclient``. If you added ``$HOME/eon/bin`` to your path during the server installation the following command will install the client::
+For most installations, the binary ``client`` can be copied to a directory in your
+``$PATH`` and named ``eonclient``. If you added ``$HOME/eon/bin`` to your path
+during the server installation the following command will install the client::
 
     $ cp client ../bin/eonclient
 
