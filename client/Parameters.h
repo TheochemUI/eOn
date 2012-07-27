@@ -69,7 +69,6 @@ public:
     string saddleMethod;
     string saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
     string saddleDisplaceType; // displacement type to use
-    double saddleMaxStepSize; // maximum length of the norm of the displacement when positive eigenvalue
     double saddleMaxEnergy; // energy above product state that will cause termination of the saddle point search
     double saddleDisplaceMagnitude; // norm of the displacement vector
     double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z direction for atoms being displaced

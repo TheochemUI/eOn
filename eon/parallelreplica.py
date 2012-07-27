@@ -185,7 +185,7 @@ def register_results(comm, current_state, states):
 
         state = states.get_state(state_num)
 
-        #read in the results
+        # read in the results
         result['results'] = io.parse_results(result['results.dat'])
         speedup += result['results']['speedup']
         if result['results']['transition_found'] == 1:
@@ -221,7 +221,7 @@ def main():
         config.init(sys.argv[-1])
     else:
         config.init()
-    #set options.path_root to be where the config file is if given as an arg
+    # set options.path_root to be where the config file is if given as an arg
     if config.path_root.strip() == '.' and len(args) == 1:
         config.path_root = os.path.abspath(os.path.dirname(args[0]))
         os.chdir(config.path_root)
@@ -257,7 +257,7 @@ def main():
             print "Reset."
         sys.exit(0)
 
-    #setup logging
+    # setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "pr.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",

@@ -1,34 +1,33 @@
 [Main]
 job = parallel_replica 
-temperature = 500                   ;temperature of MD simulate 
+temperature = 500                   ; temperature of the MD simulations
 random_seed = 1024
 
 [Potential]
-potential = eam_al                  ;Embedded atom method parameterized for aluminum.
+potential = eam_al                  ; embedded atom method potential for aluminum
 
 [Communicator]
-type = local                        ;run the clinet locally
-client_path =../../client/client    ;The $PATH for the client binary
-number_of_cpus = 1                  ;number of job running at a time
-num_jobs = 1                        ;totoal number of search 
+type = local                        ; run the client locally
+client_path =../../client/client    ; $PATH for the client binary
+number_of_cpus = 1                  ; number of jobs to run locally
+num_jobs = 1                        ; total number of trajectories to run
 
 [Dynamics]
-time_step = 2.0                     ;timestep of MD run in fs
-time = 12000.0                      ;the total number of MD steps to run
-thermostat = andersen               ;using Andersen thermostat with Verlet algorithm
-andersen_alpha = 0.2                ;the collision strength in the andersen thermostat
-andersen_collision_period = 10.0    ;the collision period of andersen thermostat in unit of fs
+time_step = 2.0                     ; timestep of the MD simulation (in fs)
+time = 12000.0                      ; total number of MD steps to run
+thermostat = andersen               ; Andersen thermostat with Verlet algorithm
+andersen_alpha = 0.2                ; collision strength in the andersen thermostat
+andersen_collision_period = 10.0    ; collision period of andersen thermostat (in fs)
 
 [Parallel Replica]
-dephase_time = 200                  ;number of steps used to decorrelate the replica trajectories.
-state_check_interval = 3000         ;every 3000 steps the system is quenched and check whether a new state is found.
-state_save_interval  = 200          ;every 500 steps the system is recorded to a buffer array and once a new state is found, this buffer array is used to refine the accurate transition step.
-post_transition_time = 200          ;after a new state is found, 200 additional steps will be performed to confirm that the state is stable.
-stop_after_transition = false       ;whether or not stop the job when a new state is found.
-
+dephase_time = 200                  ; number of steps used to decorrelate the replica trajectories.
+state_check_interval = 3000         ; number of steps between quanches to check if a new state is found
+state_save_interval  = 200          ; number of steps recorded to a buffer array to refine the transition time
+post_transition_time = 200          ; number of additional MD steps run after a new state is found
+stop_after_transition = false       ; flag to stop the job when a new state is found
 
 [Optimizer]
-opt_method = cg                     ;use the Conjugate gradient optimizer
-converged_force = 0.005             ;stop the optimization once the max force per atom reaches 0.005 eV/A
+opt_method = cg                     ; use the conjugate gradient optimizer
+converged_force = 0.005             ; stop optimizations when the max force per atom reaches 0.005 eV/A
 
 
