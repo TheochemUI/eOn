@@ -11,7 +11,7 @@ The example system is the diffusion of an Al adatom on the Al(100) surface. A sn
 ..  image:: fig/aladatom1.png
     :align: center
 
-The ``config.ini`` file will run a parallel replica job with a single trajectory on one local core. 
+The ``config.ini`` file will run a parallel replica job with 2 replicas on one local core. 
 
 .. literalinclude:: ../examples/parallel-replica/.config.ini.tur
 
@@ -24,17 +24,19 @@ Now we can run the trajectory by executing the command ``../eon/main.py``::
     0 (result) searches processed
     time in current state is 0.000000e+00
     0 searches in the queue
-    making 1 searches
+    making 2 searches
     job finished in .//jobs/scratch/0_0
-    1 searches created
+    job finished in .//jobs/scratch/0_1
+    2 searches created
 
 Then use "main.py -n" to register the result::
 
     $ ../eon/main.py -n
     simulation time is 0.000000e+00
     registering results
-    found transition with time 3.200e-12
-    1 (result) searches processed
+    found transition with time 8.200e-12
+    2 (result) searches processed
+    Average Speedup is  1.000000
     time in current state is 0.000000e+00
     currently in state 1
     0 searches in the queue
@@ -44,7 +46,7 @@ Information from the trajectoy is written in the ``dynamics.txt`` file::
 
     step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate
     ---------------------------------------------------------------------------------------------------------------
-                0             0             0             1  3.200000e-12  3.200000e-12      0.000000  0.000000e+00
+                0             0             0             1  8.200000e-12  8.200000e-12      0.000000  0.000000e+00
 
 The first column contains the number of the trajectories which find a transition label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
