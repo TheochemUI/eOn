@@ -77,10 +77,6 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``[Optimizer] converged_force``
 
-**max_step_size**: 
-
-    default: ``[Optimizer] max_move``
-
 **max_iterations**: The maximum number of translation steps to be taken.
 
     default: ``[Optimizer] max_iterations``

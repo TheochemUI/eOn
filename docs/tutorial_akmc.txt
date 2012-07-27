@@ -4,12 +4,12 @@
 AKMC Tutorial
 =============
 
-You can find a sample setup for the AKMC method in the examples/akmc-pt directory of your copy of eon. The system we are looking at in this sample is a platinum heptamer island on a platinum (111) surface:
+You can find a sample setup for the AKMC method in the examples/akmc-pt directory of your copy of eon. The system is a Pt heptamer island on a Pt(111) surface:
 
 ..  image:: fig/akmc-1.png
     :align: center
 
-If you have already compiled your client, go ahead and go to the examples/akmc-pt directory now and run Eon::
+If you have already compiled your client, go to the examples/akmc-pt directory and run Eon::
 
     $ ../../bin/eon
     state list path does not exist, creating .//states/
@@ -23,13 +23,13 @@ If you have already compiled your client, go ahead and go to the examples/akmc-p
     2 searches created
     currently in state 0 with confidence 0.000000
 
-Every time you run Eon, it first tries to register results from the previous execution. Because this is the first time you've run it, there are no results to register. Also, while two saddle searches have been executed, the results have not been registered yet. That will happen on the next execution of Eon. You can see this by looking at the ``search_results.txt`` file in your states directory::
+Each time you run EON, the server registers results from the previous execution. The first time the EON server is run, there are no results to register. Two saddle searches are executed, but their results will only be registered on the next execution of EON. You can see this by looking at the ``search_results.txt`` file in your states directory::
 
     $ cat states/0/search_results.txt 
         wuid       type    barrier   max-dist    sad-fcs   mins-fcs   pref-fcs    result
     -------------------------------------------------------------------------------------
 
-It's empty. We can register the results of the first execution of Eon by running it again::
+It's empty. We can register the results of the first execution of EON by running the server again::
 
     $ ../../bin/eon
     registering results
@@ -51,7 +51,7 @@ Now we should have some results::
            1     random    0.00000    0.00000        383        219          0    Not Connected
            0     random    1.61548    0.00000        421        201        378    good-0
 
-The search_results.txt file provides information about how a particular job went. If we want to look at the data collected, we can take a look at the ``processtable`` file in the state directory::
+The search_results.txt file provides information about how a particular job went. The data collected is contained in the ``processtable`` file in the state directory::
 
     $ cat states/0/processtable 
      proc #    saddle energy   prefactor   product   product energy product prefactor  barrier         rate repeats
@@ -62,12 +62,12 @@ You can find the files relevant to a process in the ``procdata`` directory of a 
     $ ls states/0/procdata
     mode_0.dat  product_0.con  reactant_0.con  results_0.dat  saddle_0.con
 
-Here we can see the data relevant to process 0 on the process table. Let's take a look at the reactant, saddle, and product configurations for this process:
+The data relevant to process 0 is in the process table. The figures below show the reactant, saddle, and product configurations for this process:
 
 ..  image:: fig/akmc-2.png
     :align: center
 
-If we keep running eon, we will start to see our confidence increasing as we stop finding previously undiscovered processes in our energy window::
+Subsequent runs of EON will show an increasing confidence as the event table (in the specified energy window) becomes complete::
 
     currently in state 0 with confidence 0.313698
     ...
@@ -75,7 +75,7 @@ If we keep running eon, we will start to see our confidence increasing as we sto
     ...
     currently in state 0 with confidence 0.675757
 
-And eventually, we will reach the required confidence and take a KMC step to the next state::
+Eventually, the simulation will reach the required confidence and take a KMC step to the next state::
 
     $ eon
     registering results
@@ -85,29 +85,10 @@ And eventually, we will reach the required confidence and take a KMC step to the
     kmc step from state 0 through process 3 to state 1 
     currently in state 1 with confidence 0.000000
 
-We can see this reflected in the ``dynamics.txt`` file of our simulation directory::
+This is reflected in the ``dynamics.txt`` file of the simulation directory::
 
     $ cat dynamics.txt 
      step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate
     ---------------------------------------------------------------------------------------------------------------
                0             0             3             1  8.976889e-10  1.049672e-09      0.601060  3.930510e+08
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

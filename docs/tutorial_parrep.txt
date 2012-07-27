@@ -4,21 +4,18 @@
 Running a Parallel Replica Job
 ===================================
 
-Regular Parallel Replica Job
------------------------------
+A sample parallel replica simulation can be found in the directory: ``examples/parallel-replica/``. Two input files ``config.ini`` and ``reactant.con`` are required for EON simlution.
 
-A sample parallel replica simulation can be found in your copy of eon under the directory: ``examples/parallel-replica/``. There are 2 input files ``config.ini`` and ``reactant.con`` required for eon simlution.
-
-The system we are looking at is the diffusion of Al adatom on Al(100) surface. A snapshot of the system is given below:
+The example system is the diffusion of an Al adatom on the Al(100) surface. A snapshot of the system is given below:
 
 ..  image:: fig/aladatom1.png
     :align: center
 
-Here is the ``config.ini`` file which will run a parallel replica job using 1 local cpu for 1 search. 
+The ``config.ini`` file will run a parallel replica job with a single trajectory on one local core. 
 
 .. literalinclude:: ../examples/parallel-replica/.config.ini.tur
 
-Now we can run 1 search by executing the command ``../eon/main.py``::
+Now we can run the trajectory by executing the command ``../eon/main.py``::
 
     $ ../eon/main.py
     simulation time is 0.000000e+00
@@ -31,7 +28,7 @@ Now we can run 1 search by executing the command ``../eon/main.py``::
     job finished in .//jobs/scratch/0_0
     1 searches created
 
-Then use "main.py -n" to registrate the results::
+Then use "main.py -n" to register the result::
 
     $ ../eon/main.py -n
     simulation time is 0.000000e+00
@@ -43,13 +40,13 @@ Then use "main.py -n" to registrate the results::
     0 searches in the queue
     making 0 searches
 
-Here Eon makes 1 searches, the dynamic information of these searches are printed in the ``dynamics.txt``::
+Information from the trajectoy is written in the ``dynamics.txt`` file::
 
     step-number   reactant-id    process-id    product-id     step-time    total-time       barrier          rate
     ---------------------------------------------------------------------------------------------------------------
                 0             0             0             1  3.200000e-12  3.200000e-12      0.000000  0.000000e+00
 
-The first column is the label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
+The first column contains the number of the trajectories which find a transition label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
     
 Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id. You can find the geometric of the prodcut in ``states/1/reactant.con/``, a snapshot is shown below:
 
@@ -60,15 +57,16 @@ Compared to the reactant geometric, we can tell that the transition we found fol
 
 Parallel Replica with Hyperdynamics
 --------------------------------------
-If you want to run Hyperdynamics, you can turn on the Hyperdynamics function by adding the following section to you ``config.ini`` file::
+
+You can turn on the hyperdynamics method by adding the following section to your ``config.ini`` file::
 
     [Hyperdynamics]
-    bias_potential=bond_boost       ;using bond_boost scheme for the bias potential
-    bb_boost_atomlist=0,1,2,3,4,5,6 ;atoms that are tagged, those bonds involving these atoms and shorter than bb_rcut will be boosted
-    bb_rcut=3.0 
-    bb_rmd_time=100.0               ;100.0 fs regular md will be performed to get equilibrium configuration.
-    bb_dvmax=0.4                    ;the magnitude of the bond-boost bias potential.
-    bb_stretch_threshold=0.2        ;defines the bond-boost dividing surface. It should be smaller than the maximum fractional nearest-neighbor bond stretch or compression at any transition state
-    bb_ds_curvature=0.95            ;the curvature near the bond-boost dividing surface, it should has a value <= 1. We recommend the value to be 0.9-0.98
+    bias_potential=bond_boost       ; bond_boost bias potential
+    bb_boost_atomlist=0,1,2,3,4,5,6 ; atoms that are boosted in the bias potential
+    bb_rcut=3.0                     ; boost radius
+    bb_rmd_time=100.0               ; MD time to obtain the equilibrium configuration
+    bb_dvmax=0.4                    ; magnitude of the bond-boost bias potential
+    bb_stretch_threshold=0.2        ; defines the bond-boost dividing surface
+    bb_ds_curvature=0.95            ; curvature near the bond-boost dividing surface, it should be <= 1; a value of 0.9-0.98 is recommended
    
-All the other setting and print-out infomation are similar to the regular parallel replica simulation.
+All other settings and output infomation are as in a regular parallel replica dynamics simulation.

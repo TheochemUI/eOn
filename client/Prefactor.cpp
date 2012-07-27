@@ -76,9 +76,9 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
         return -1;
     }
 
-    logFreqs(min1Freqs, "minimum 1");
-    logFreqs(saddleFreqs, "saddle");
-    logFreqs(min2Freqs, "minimum 2");
+    logFreqs(min1Freqs, (char*) "minimum 1");
+    logFreqs(saddleFreqs, (char*) "saddle");
+    logFreqs(min2Freqs, (char*) "minimum 2");
 
     // check for correct number of negative modes
     int i, numNegFreq = 0;
