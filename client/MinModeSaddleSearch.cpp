@@ -88,7 +88,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         void setPositions(VectorXd x) { matter->setPositionsV(x); }
         VectorXd getPositions() { return matter->getPositionsV(); }
         int degreesOfFreedom() { return 3*matter->numberOfAtoms(); }
-        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
+        bool isConverged() { return getConvergence() < parameters->saddleConvergedForce; }
         double getConvergence() { return matter->maxForce(); }
 
     private:
