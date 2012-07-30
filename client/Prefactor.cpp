@@ -134,25 +134,26 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
         pref1 = sqrt(pref1)/(2*M_PI*10.18e-15);
         pref2 = sqrt(pref2)/(2*M_PI*10.18e-15);
     }
-    if (parameters->prefactorRate == Prefactor::RATE_QQHTST){
+    else if (parameters->prefactorRate == Prefactor::RATE_QQHTST){
         float kB_T = parameters->temperature * 8.617332e-5; // eV
         float h_bar = 6.582119e-16; // eV*s
         float h = 4.135667e-15; // eV*s
-        // products are calculated this way in order to avoid overflow
-        for(int i=0; i<saddleFreqs.size(); i++)
+        float temp = (h_bar / ( 2. * kB_T));
+        
+        for(int i=0; i<min1Freqs.size(); i++)
         {
-            pref1 *= 2. * sinh (h_bar * sqrt(min1Freqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
-            pref2 *= 2. * sinh (h_bar * sqrt(min2Freqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+            pref1 = pref1 * (sinh (temp * (sqrt(min1Freqs[i]) / 10.18e-15)));
+            pref2 = pref2 * (sinh (temp * (sqrt(min2Freqs[i]) / 10.18e-15)));
+            
             if(saddleFreqs[i]>0)
             {
-                pref1 /= 2. * sinh (h_bar * sqrt(saddleFreqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
-                pref2 /= 2. * sinh (h_bar * sqrt(saddleFreqs[i])/(2*M_PI*10.18e-15) / ( 2. * kB_T));
+                pref1 = pref1 / (sinh ( temp * (sqrt(saddleFreqs[i]) / 10.18e-15)));
+                pref2 = pref2 / (sinh ( temp * (sqrt(saddleFreqs[i]) / 10.18e-15)));
             }
         }
-        pref1 = kB_T / ( 2 * M_PI * h) * pref1;
-        pref2 = kB_T / ( 2 * M_PI * h) * pref2;
+        pref1 = 2. * kB_T / (h) * pref1;
+        pref2 = 2. * kB_T / (h) * pref2;
     }
-        
     return 0;
 }
 
