@@ -77,7 +77,7 @@ Parameters::Parameters(){
     saddleDisplaceRadius = 4.0;
     saddleDisplaceMagnitude = 0.1;
     saddleMaxSingleDisplace = 10.;
-    saddleConvergedForce = 0.005;
+//    saddleConvergedForce = optConvergedForce; default value is set after the value of optConvergedForce is loaded
     saddleNonnegativeDisplacementAbort = false;
     saddleNonlocalCountAbort = 0;
     saddleNonlocalDistanceAbort = 0.0;    
@@ -91,7 +91,7 @@ Parameters::Parameters(){
     // [Optimizers] //
     optMethod = "cg";
     optMaxIterations = 1000;
-    optConvergedForce = 0.005;
+    optConvergedForce = 0.01;
     optMaxMove = 0.2;
     optTimeStep = 0.25;
     optMaxTimeStep = 2.5;
@@ -290,7 +290,8 @@ int Parameters::load(FILE *file){
         saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
         saddleNonnegativeDisplacementAbort = ini.GetValueB("Saddle Search", "nonnegative_displacement_abort", saddleNonnegativeDisplacementAbort); 
         saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
-        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce);
+        // must be loaded after optConvergedForce
+        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce); 
         saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
         saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
         saddleNonlocalCountAbort = ini.GetValueL("Saddle Search", "nonlocal_count_abort", saddleNonlocalCountAbort); // undocumented
