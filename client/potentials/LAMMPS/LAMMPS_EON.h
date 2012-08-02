@@ -10,7 +10,7 @@ class lammps_eon : public Potential {
 
 private:
 	long numberOfAtoms;
-	double box0, box4, box8;
+	double oldBox[9];
 	void *LAMMPSObj;
 	void makeNewLAMMPS(long N, const double *R,  const int *atomicNrs, const double *box);
 	Parameters *parameters;
