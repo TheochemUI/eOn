@@ -168,15 +168,16 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     AtomMatrix forces(nAtoms,3);
 
     double start, userStart, sysStart;
-    helper_functions::getTime(&start, &userStart, &sysStart);
-
+    if (params->LogPotential) {
+        helper_functions::getTime(&start, &userStart, &sysStart);
+    }
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy,
           box.data());
 
     double finish, userFinish, sysFinish;
-    helper_functions::getTime(&finish, &userFinish, &sysFinish);
-
     if (params->LogPotential) {
+        helper_functions::getTime(&finish, &userFinish, &sysFinish);
+
         log_file("[Potential] fcall#: %4d  real: %8.2g  user: %8.2g  sys: %8.2g seconds\n",
                  fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
     }
