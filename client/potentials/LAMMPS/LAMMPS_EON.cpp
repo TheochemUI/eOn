@@ -3,15 +3,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "string.h"
+#include <string.h>
 #include "library.h"
 
 // General Functions
 lammps_eon::lammps_eon(Parameters *p){
     parameters = p;
     numberOfAtoms = 0;
-    box0 = box4 = box8 = 0;
     LAMMPSObj=NULL;
+    for (int i=0;i<9;i++) oldBox[i] = 0.0;
 }
 
 void lammps_eon::cleanMemory(void){
@@ -26,9 +26,12 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
                        double *F, double *U, const double *box){
 
     int i;
-
-    if (numberOfAtoms != N || box0 != box[0] || box4 != box[4] || 
-        box8 != box[8]){
+    bool newLammps=false;
+    for (int i=0;i<9;i++) {
+        if (oldBox[i] != box[i]) newLammps = true;
+    }
+    if (numberOfAtoms != N) newLammps = true;
+    if (newLammps) { 
         makeNewLAMMPS(N, R, atomicNrs, box);
     }    
 
@@ -53,8 +56,8 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
 }
 
 void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box){
-
     numberOfAtoms = N;
+    for (int i=0;i<9;i++) oldBox[i] = box[i];
     
     if(LAMMPSObj != NULL){
         cleanMemory();
