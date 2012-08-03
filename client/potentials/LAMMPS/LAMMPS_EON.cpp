@@ -84,7 +84,11 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     lammps_argv[4] = "log";
     lammps_argv[5] = "-screen";
     lammps_argv[6] = "none";
-    lammps_open_no_mpi(7, lammps_argv, &LAMMPSObj);
+    #ifdef EONMPI
+        lammps_open(7, lammps_argv, parameters->MPIClientComm, &LAMMPSObj);
+    #else
+        lammps_open_no_mpi(7, lammps_argv, &LAMMPSObj);
+    #endif
     void *ptr = LAMMPSObj;
 
     char cmd[200];

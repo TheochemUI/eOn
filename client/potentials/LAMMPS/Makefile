@@ -4,7 +4,11 @@ MPI_OBJECTS = mpi.o
 CXXFLAGS += -I../..
 #LINK =		g++
 
+ifdef EONMPI
+all: liblammps.a
+else
 all: liblammps.a libfakempi.a
+endif
 
 LIB := liblammps.a
 $(LIB) : $(OBJECTS)

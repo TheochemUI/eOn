@@ -233,6 +233,21 @@ int main(int argc, char **argv)
             }
         }
 
+        #ifdef LAMMPS_POT
+            for (i=0;i<client_ranks.size();i++) {
+                MPI_Group world_group, new_group;
+                MPI_Comm_group(MPI_COMM_WORLD, &world_group);
+                int r = client_ranks[i];
+                MPI_Group_incl(world_group, 1, &r, &new_group);
+                MPI_Comm new_comm;
+                MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
+                if (new_comm != MPI_COMM_NULL) {
+                    parameters.MPIClientComm = new_comm;
+                }
+                printf("creating group with ranks: %i\n", r);
+            }
+        #endif
+
         if (!client_standalone) {
             server_rank = client_ranks[number_of_clients];
             if (my_client_number == number_of_clients) {
