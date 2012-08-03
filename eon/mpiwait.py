@@ -14,6 +14,7 @@ import logging
 import logging.handlers
 logger = logging.getLogger('mpiwait')
 import config
+from time import sleep
 
 def mpiwait():
     from mpi4py import MPI
@@ -30,7 +31,11 @@ def mpiwait():
             MPI.COMM_WORLD.Isend(buf, i)
         MPI.COMM_WORLD.Abort()
 
-    MPI.COMM_WORLD.Probe(MPI.ANY_SOURCE, MPI.ANY_TAG)
+    while True:
+        if MPI.COMM_WORLD.Iprobe(MPI.ANY_SOURCE, MPI.ANY_TAG):
+            break
+        sleep(config.mpi_poll_period)
+
     # we now need to clear out any other mpi_send to us
     for r in client_ranks:
         if MPI.COMM_WORLD.Iprobe(source=r, tag=1):
