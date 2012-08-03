@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#ifdef EONMPI
+    #include "mpi.h"
+#endif
+
 using namespace std;
 
 /** Contains all runtime parameters and results. No functionality just bookkeeping.*/
@@ -195,6 +199,7 @@ public:
     // this is used to pass information to the GPAW MPI
     // potential.
     int MPIPotentialRank;
+    MPI_Comm MPIClientComm;
 
     // [Debug]
     long   boincProgressMax;

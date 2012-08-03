@@ -18,10 +18,17 @@
 
 /* ifdefs allow this file to be included in a C program */
 
+#ifdef EONMPI
+    #include <mpi.h>
+#else
+    #include "fakempi.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+void lammps_open(int, char**, MPI_Comm, void **);
 void lammps_open_no_mpi(int, char **, void **);
 void lammps_close(void *);
 void lammps_file(void *, char *);
