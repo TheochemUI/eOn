@@ -199,7 +199,9 @@ public:
     // this is used to pass information to the GPAW MPI
     // potential.
     int MPIPotentialRank;
-    MPI_Comm MPIClientComm;
+    #ifdef EONMPI
+        MPI_Comm MPIClientComm;
+    #endif
 
     // [Debug]
     long   boincProgressMax;
