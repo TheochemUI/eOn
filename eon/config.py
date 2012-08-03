@@ -337,4 +337,6 @@ def init(config_file = ""):
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
     config.debug_target_trajectory = parser.get('Debug', 'target_trajectory')
 
+    config.mpi_poll_period = parser.getfloat('Potential', 'mpi_poll_period')
+
     del parser
