@@ -87,7 +87,7 @@ int ParallelReplicaJob::dynamics()
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
-    long nCheck = 0, nRelax = 0, nRecord = 0, nboost = 1;
+    long nCheck = 0, nRelax = 0, nRecord = 0, nboost = 0;
     long StateCheckInterval, RecordInterval, RelaxSteps;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
     double sumT = 0.0, sumT2 = 0.0;
@@ -249,11 +249,15 @@ int ParallelReplicaJob::dynamics()
     // calculate avearges
     avgT = sumT/step;
     varT = sumT2/step - avgT*avgT;
-
-    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
+   
+    if (nboost > 0){
+        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
-
-    log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    }else{
+        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
+        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
+    }
+    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
