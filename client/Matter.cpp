@@ -373,7 +373,13 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
             matter2con(chk.str(), false);
         }
     }
-
+    
+    if (iteration == 0) {
+        if (!quiet) {
+            log("%4i    %9.5f    %9.5f    %11.5f\n",
+                    iteration, 0.0, maxForce(), getPotentialEnergy());
+        }
+    }
 //    bool converged = optimizer->run(parameters->optMaxIterations, parameters->optMaxMove);
     delete optimizer;
     return objf.isConverged();
