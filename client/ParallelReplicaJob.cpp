@@ -87,10 +87,11 @@ int ParallelReplicaJob::dynamics()
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
-    long nCheck = 0, nRelax = 0, nRecord = 0;
+    long nCheck = 0, nRelax = 0, nRecord = 0, nboost = 1;
     long StateCheckInterval, RecordInterval, RelaxSteps;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
     double sumT = 0.0, sumT2 = 0.0;
+    double sumboost = 0.0, boost = 0.0;
 
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
@@ -138,7 +139,13 @@ int ParallelReplicaJob::dynamics()
         if( (parameters->biasPotential == Hyperdynamics::BOND_BOOST) && !newStateFlag ) {
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
             //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
-            time += parameters->mdTimeStepInput*bondBoost.boost();
+            boost = bondBoost.boost();   
+            time += parameters->mdTimeStepInput*boost;
+            if (boost > 1.0){
+                sumboost += boost;
+                nboost ++;
+            }
+            
         } else {
             time += parameters->mdTimeStepInput;
         }
@@ -243,8 +250,8 @@ int ParallelReplicaJob::dynamics()
     avgT = sumT/step;
     varT = sumT2/step - avgT*avgT;
 
-    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
+    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
+        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
 
     log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
