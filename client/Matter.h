@@ -25,6 +25,7 @@ struct MatterPrivateData {
     AtomMatrix positions;
     AtomMatrix velocities;
     AtomMatrix forces;
+    AtomMatrix biasForces;
     VectorXd masses;
     VectorXi atomicNrs;
     VectorXi isFixed; // array of bool, false for movable atom, true for fixed
@@ -71,10 +72,12 @@ public:
 
     AtomMatrix getVelocities() const;
     void setVelocities(const AtomMatrix v);
+    void setBiasForces(const AtomMatrix bf);
     void setForces(const AtomMatrix f);
     AtomMatrix getAccelerations(); 
 
     AtomMatrix getForces(); // return forces applied on all atoms in array force
+    AtomMatrix getBiasForces();
     VectorXd   getForcesV();
     AtomMatrix getForcesFree();
     VectorXd   getForcesFreeV();

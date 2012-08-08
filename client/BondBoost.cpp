@@ -187,17 +187,15 @@ double BondBoost::Booststeps()
     double Dforce, Fact_1, Fact_2, step_boost, Temp, kb; //, Mforce
     double Ri[3] = {0.0} , R = 0.0;
 
-    AtomMatrix OldForce(nAtoms,3);
     AtomMatrix Free(nAtoms,3);
-    AtomMatrix AddForce(nBBs,3);
+    AtomMatrix AddForces(nBBs,3);
     AtomMatrix TADF(nAtoms,3);
-    AtomMatrix NewForce(nAtoms,3);
+    AtomMatrix BiasForces(nAtoms,3);
  
-    OldForce.setZero();
     TADF.setZero();
     Free.setZero();
-    AddForce.setZero();
-    NewForce.setZero();
+    AddForces.setZero();
+    BiasForces.setZero();
 
     //dt = parameters->parrepTimeStepInput;
     Temp = parameters->temperature;
@@ -257,9 +255,9 @@ double BondBoost::Booststeps()
 
                 for(j=0;j<3;j++){
                     Ri[j] = matter->pdistance(AtomI_1,AtomI_2,j);
-                    AddForce(i,j) = Ri[j]/R*Dforce;
-                    TADF(AtomI_1,j) = TADF(AtomI_1,j)+AddForce(i,j);
-                    TADF(AtomI_2,j) = TADF(AtomI_2,j)-AddForce(i,j);
+                    AddForces(i,j) = Ri[j]/R*Dforce;
+                    TADF(AtomI_1,j) = TADF(AtomI_1,j)+AddForces(i,j);
+                    TADF(AtomI_2,j) = TADF(AtomI_2,j)-AddForces(i,j);
                 }
               //  printf("%ld Bond:: Rx=%lf;Ry=%lf;Rz=%lf;Rsum=%lf;R=%lf\n",i,Ri[0],Ri[1],Ri[2],sqrt(Ri[0]*Ri[0]+Ri[1]*Ri[1]+Ri[2]*Ri[2]),R);
 
@@ -280,25 +278,20 @@ double BondBoost::Booststeps()
 
                 for(j=0;j<3;j++){
                     Ri[j] = matter->pdistance(AtomI_1,AtomI_2,j);
-                    AddForce(i,j) = Ri[j]/R*Dforce;
-                    TADF(AtomI_1,j) = TADF(AtomI_1,j)+AddForce(i,j);
-                    TADF(AtomI_2,j) = TADF(AtomI_2,j)-AddForce(i,j);
+                    AddForces(i,j) = Ri[j]/R*Dforce;
+                    TADF(AtomI_1,j) = TADF(AtomI_1,j)+AddForces(i,j);
+                    TADF(AtomI_2,j) = TADF(AtomI_2,j)-AddForces(i,j);
                 }
             }
 /*
             if(i != Mi){
-            printf("DeltaF(Epsr_Q = %lf ), %lf  %lf  %lf; Atom %ld and Atom %ld\n", Epsr_Q[i],AddForce(i,0),AddForce(i,1),AddForce(i,2),BBAList[2*i],BBAList[2*i+1]);
+            printf("DeltaF(Epsr_Q = %lf ), %lf  %lf  %lf; Atom %ld and Atom %ld\n", Epsr_Q[i],AddForces(i,0),AddForces(i,1),AddForces(i,2),BBAList[2*i],BBAList[2*i+1]);
         }else{
-        printf("DeltaF(Epsr_MAX = %lf) = %lf, %lf  %lf  %lf; Atom %ld and Atom %ld\n", Epsr_MAX,Mforce,AddForce(i,0),AddForce(i,1),AddForce(i,2),BBAList[2*i],BBAList[2*i+1]);
+        printf("DeltaF(Epsr_MAX = %lf) = %lf, %lf  %lf  %lf; Atom %ld and Atom %ld\n", Epsr_MAX,Mforce,AddForces(i,0),AddForces(i,1),AddForces(i,2),BBAList[2*i],BBAList[2*i+1]);
        }
 */
     }
 
-    OldForce = matter->getForces();
-    NewForce = OldForce + TADF;
-    Free = matter->getFree();
-    NewForce = NewForce.cwise() * Free;
-    matter->setForces(NewForce);
 /*
         printf("TADF::\n");
         for(i=0;i<nAtoms;i++){
@@ -323,13 +316,17 @@ double BondBoost::Booststeps()
 
     }else if(Epsr_MAX >= 1.0){
         Boost_Fact = 0.0;
+        TADF.setZero();
         //Ave_Boost_Fact =
     }
     //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
     //update bdt;
     step_boost = 1.0*exp(Boost_Fact/kb/Temp);
-    //printf("bdt = %E\n",bdt);
-    
+    //printf("bdt = %E\n",bdt);   
+    BiasForces = TADF;
+    Free = matter->getFree();
+    BiasForces = BiasForces.cwise() * Free;
+    matter->setBiasForces(BiasForces);
     return step_boost;
 }
 
