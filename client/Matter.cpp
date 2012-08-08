@@ -227,6 +227,9 @@ void Matter::resize(const long int length)
         velocities.resize(length ,3);
         velocities.setZero();
 
+        biasForces.resize(length,3);
+        biasForces.setZero();
+
         forces.resize(length ,3);
         forces.setZero();
 
@@ -371,13 +374,6 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         }
     }
 
-    if (iteration == 0) {
-        if (!quiet) {
-            log("%4i    %9.5f    %9.5f    %11.5f\n",
-                iteration, 0.0, maxForce(), getPotentialEnergy());
-        }
-    }
-
 //    bool converged = optimizer->run(parameters->optMaxIterations, parameters->optMaxMove);
     delete optimizer;
     return objf.isConverged();
@@ -427,7 +423,15 @@ void Matter::setPositionsFreeV(const VectorXd pos)
     setPositionsFree(AtomMatrix::Map(pos.data(),numberOfFreeAtoms(),3));
 }
 
+AtomMatrix Matter::getBiasForces()
+{
+    return biasForces.cwise() * getFree();
+}
 
+void Matter::setBiasForces(const AtomMatrix bf)
+{
+    biasForces = bf.cwise() * getFree();
+}
 // return forces applied on all atoms in array 'force' 
 AtomMatrix Matter::getForces()
 {
@@ -486,13 +490,9 @@ double Matter::pdistance(long index1, long index2,int axis) const
 {
     Matrix<double, 1, 3> ret;
     ret.setZero();
-    for(int i=0; i<3; i++){
-        ret(0,i) = 0.0;
-        if(i == axis){
-            ret(0,i) = positions(index1,axis)-positions(index2,axis);
-        }
-    }
-    return pbc(ret).norm();
+    ret(0,axis) = positions(index1,axis)-positions(index2,axis);
+    ret = pbc(ret);
+    return ret(0,axis);
 }
 
 
@@ -978,7 +978,8 @@ void Matter::setForces(const AtomMatrix f)
 
 AtomMatrix Matter::getAccelerations()
 {
-    AtomMatrix ret = getForces().cwise() * getFree();
+    AtomMatrix totF = getForces() + getBiasForces();
+    AtomMatrix ret = totF.cwise() * getFree();
     ret.col(0).cwise() /= masses;
     ret.col(1).cwise() /= masses;
     ret.col(2).cwise() /= masses;
