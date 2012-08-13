@@ -15,7 +15,7 @@ The ``config.ini`` file will run a parallel replica job with 2 replicas on one l
 
 .. literalinclude:: ../examples/parallel-replica/.config.ini.tur
 
-Now we can run the trajectory by executing the command ``../eon/main.py``::
+Now we can run the trajectory by executing the command ``../../bin/eon``::
 
     $ ../eon/main.py
     simulation time is 0.000000e+00
@@ -29,7 +29,7 @@ Now we can run the trajectory by executing the command ``../eon/main.py``::
     job finished in .//jobs/scratch/0_1
     2 searches created
 
-Then use "main.py -n" to register the result::
+Then use "../../bin/eon -n" to register the result::
 
     $ ../eon/main.py -n
     simulation time is 0.000000e+00
