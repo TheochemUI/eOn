@@ -1,0 +1,38 @@
+# before compiling you must execute:
+# module swap PrgEnv-pgi PrgEnv-gnu
+# module load python
+# module unload xt-shmem
+TARGET_NAME=client
+
+CC=cc
+CXX=CC
+LD=ld
+AR=ar cru
+RANLIB=ranlib
+LDFLAGS += -dynamic 
+
+CXXFLAGS += -Wall -Wfatal-errors $(OPT)
+
+OPT=-O0
+ifndef DEBUG
+    NDEBUG=1
+    OPT=-O2
+endif
+
+ifdef EONMPI
+    CXXFLAGS += -DEONMPI
+    TARGET_NAME=client_mpi
+endif
+
+CXXFLAGS += -DLINUX
+
+ifdef NO_FORTRAN
+    CXXFLAGS += -DNO_FORTRAN
+else
+    FC = ftn
+    FFLAGS += $(OPT)
+    FAR = ar cru
+	LDFLAGS += -lgfortran
+endif
+
+include Rules.mk
