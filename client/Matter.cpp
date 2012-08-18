@@ -101,6 +101,8 @@ void Matter::initializeDataMembers(Parameters *params)
     nAtoms = 0;
     cellBoundaries.resize(3,3);
     cellBoundaries.setZero();
+    cellInverse.resize(3,3);
+    cellInverse.setZero();
     usePeriodicBoundaries = true;
     recomputePotential = true;
     forceCalls = 0;
@@ -134,6 +136,7 @@ const Matter& Matter::operator=(const Matter& matter)
     atomicNrs = matter.atomicNrs;
     isFixed = matter.isFixed;
     cellBoundaries = matter.cellBoundaries;
+    cellInverse = matter.cellInverse;
     velocities = matter.velocities;
 
     parameters = matter.parameters;
@@ -177,8 +180,7 @@ double Matter::distanceTo(const Matter& matter)
 
 AtomMatrix Matter::pbc(AtomMatrix diff) const
 {
-    Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
-    AtomMatrix ddiff = diff*ibox;
+    AtomMatrix ddiff = diff*cellInverse;
 
     int i,j;
     for(i=0; i<diff.rows(); i++)
@@ -267,6 +269,7 @@ double Matter::getBoundary(int axis1, int axis2) const
 void Matter::setBoundary(int axis, Vector3d bound)
 {
     cellBoundaries.row(axis) = bound;
+    cellInverse = cellBoundaries.inverse();
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary();
@@ -278,6 +281,7 @@ void Matter::setBoundary(int axis, Vector3d bound)
 void Matter::setBoundary(int axis1, int axis2, double val)
 {
     cellBoundaries(axis1,axis2) = val;
+    cellInverse = cellBoundaries.inverse();
     if(usePeriodicBoundaries)
     {
         applyPeriodicBoundary();
@@ -784,6 +788,7 @@ bool Matter::con2matter(FILE *file)
         cellBoundaries(2,1) *= lengths[2];
         cellBoundaries(2,2) *= lengths[2];
     }
+    cellInverse = cellBoundaries.inverse();
 
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
@@ -910,8 +915,7 @@ void Matter::computePotential()
 // Transform the coordinate to use the minimum image convention.
 void Matter::applyPeriodicBoundary()
 {
-    Matrix<double, 3, 3> ibox = cellBoundaries.inverse();
-    AtomMatrix ddiff = positions*ibox;
+    AtomMatrix ddiff = positions*cellInverse;
 
     int i,j;
     for(i=0; i<ddiff.rows(); i++)
@@ -1165,6 +1169,7 @@ bool Matter::convel2matter(FILE *file)
         cellBoundaries(2,1) *= lengths[2];
         cellBoundaries(2,2) *= lengths[2];
     }
+    cellInverse = cellBoundaries.inverse();
 
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
