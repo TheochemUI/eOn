@@ -30,6 +30,7 @@ struct MatterPrivateData {
     VectorXi atomicNrs;
     VectorXi isFixed; // array of bool, false for movable atom, true for fixed
     Matrix3d cellBoundaries;
+    Matrix3d cellInverse;
     mutable double potentialEnergy;
 };
 
