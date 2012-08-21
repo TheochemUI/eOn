@@ -50,9 +50,6 @@ private:
     long  nTABs;
     long  nReg;
     long  nBBs;
-    double SDtime;
-    double SPtime;
-    double SDtime_B;
 };
 
 class Hyperdynamics {
