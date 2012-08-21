@@ -16,7 +16,7 @@
 #include "SafeHyperJob.h"
 #include "Optimizer.h"
 #include "Log.h"
-
+#include <vector>
 #ifdef BOINC
     #include <boinc/boinc_api.h>
     #include <boinc/diagnostics.h>
@@ -43,7 +43,6 @@ std::vector<std::string> SafeHyperJob::run(void)
     current = new Matter(parameters);
     reactant = new Matter(parameters);
     saddle = new Matter(parameters);
-    meta = new Matter(parameters);
     product = new Matter(parameters);
     final = new Matter(parameters);
 
@@ -74,7 +73,6 @@ std::vector<std::string> SafeHyperJob::run(void)
     delete current;
     delete reactant;
     delete saddle;
-    delete meta;
     delete product;
     delete final;
 
@@ -83,19 +81,23 @@ std::vector<std::string> SafeHyperJob::run(void)
 
 int SafeHyperJob::dynamics()
 {
-    bool transitionFlag = false, recordFlag = true, stopFlag = false;
+    bool transitionFlag = false, recordFlag = true, stopFlag = false, firstTransitFlag = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
-    long nCheck = 0, nRelax = 0, nRecord = 0, nboost = 0;
+    long nCheck = 0, nRecord = 0, nBoost = 0, nState = 1;
     long StateCheckInterval, RecordInterval, RelaxSteps;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
-    double sumT = 0.0, sumT2 = 0.0;
+    double correctedTime = 0.0;
+    double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
     double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
+    AtomMatrix velocity;
 
+    minCorrectedTime = 1.0e200;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
     RelaxSteps = int(parameters->parrepRelaxTime/parameters->mdTimeStepInput);
+    Temp = parameters->temperature;
     newStateFlag = metaStateFlag = false;
 
     mdBufferLength = long(StateCheckInterval/RecordInterval);
@@ -122,7 +124,7 @@ int SafeHyperJob::dynamics()
 
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
-        parameters->temperature, 
+        Temp, 
         parameters->mdSteps*parameters->mdTimeStepInput,
         parameters->mdTimeStepInput,
         parameters->mdSteps);
@@ -141,16 +143,13 @@ int SafeHyperJob::dynamics()
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
             //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
             boostPotential = bondBoost.boost();   
-            boost = 1.0*exp(boostPotential/kb/parameters->temperature);    
+            boost = 1.0*exp(boostPotential/kb/Temp);
             time += parameters->mdTimeStepInput*boost;
             if (boost > 1.0){
                 sumboost += boost;
-                nboost ++;
-            }
-            
-        } else {
-            time += parameters->mdTimeStepInput;
-        }
+                nBoost ++;
+            }            
+        } 
 
         kinE = current->getKineticEnergy();
         kinT = (2.0*kinE/nFreeCoord/kb); 
@@ -176,12 +175,6 @@ int SafeHyperJob::dynamics()
             }
         }
 
-//#ifndef NDEBUG
-//        if (ncheck == StateCheckInterval && !newState){
-//           current->matter2xyz("movie", true);
-//        }
-//#endif
-
         // time to do a state check; if a transiton if found, stop recording
         if ( (nCheck == StateCheckInterval) && !newStateFlag )
         {
@@ -191,42 +184,51 @@ int SafeHyperJob::dynamics()
             transitionFlag = checkState(current, reactant);
             minimizeFCalls += Potential::fcalls - refFCalls;
             if(transitionFlag == true){
-                log("Found New State.\n");
-                *final = *current;
+                log("New State %ld: ",nState);
+                *final_tmp = *current;
                 transitionTime=time;
                 newStateStep = step; // remember the step when we are in a new state
                 transitionStep = newStateStep;
-                recordFlag = false;
+                firstTransitFlag = 1;
+                nState ++;
             }
         }
 
         //Refine transition step
         *product = *final;
-        if(parameters->parrepRefineTransition && newStateFlag)
+        if(parameters->parrepRefineTransition && transitionFlag)
         {
-            log("[Parallel Replica] Refining transition time.\n");
+            //log("[Parallel Replica] Refining transition time.\n");
             refFCalls = Potential::fcalls;
             refineStep = refine(mdBuffer, mdBufferLength, reactant);
 
             transitionStep = newStateStep - StateCheckInterval + refineStep*RecordInterval;
-/* this is equivilant:
-        transitionStep = transitionStep - StateCheckInterval
-                         + refineStep*RecordInterval;
-*/
-            *saddle = *mdBuffer[refineStep];
             transitionTime = timeBuffer[refineStep];
             transitionPot = biasBuffer[refineStep];
-
-            log("Found transition at step %ld\n", transitionStep);
+            correctedTime = transitionTime * exp(transitionPot/kb/Temp);
+            
+            //reverse the momenten;
+            *current = *mdBuffer[transitionStep-1];
+            velocity = current->getVelocities();
+            velocity = velocity*(-1);
+            current->setVelocities(velocity);
+            
+            if (correctedTime < minCorrectedTime){
+                minCorrectedTime = correctedTime;
+                *saddle = *mdBuffer[refineStep];
+                *final = *final_tmp;
+            }
+            log("tranisitonTime= %lf, biasPot= %lf, correctedTime= %lf, simulateTime= %lf, minCorTime= %lf\n",transitionTime,transitionPot,correctedTime,time, minCorrectedTime);
 
             refineFCalls += Potential::fcalls - refFCalls;
-    }
-
-
+            transitionFlag = false;
+        }
+            
         // we have run enough md steps; time to stop
-        if (step >= parameters->mdSteps-refineFCalls)
+        if (firstTransitFlag && time >= minCorrectedTime)
         {
             stopFlag = true;
+            newStateFlag = true;
         }
 
         //BOINC Progress
@@ -249,9 +251,9 @@ int SafeHyperJob::dynamics()
     avgT = sumT/step;
     varT = sumT2/step - avgT*avgT;
    
-    if (nboost > 0){
+    if (nBoost > 0){
         log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
+        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nBoost);
     }else{
         log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
@@ -303,7 +305,7 @@ void SafeHyperJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
+        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
@@ -339,16 +341,6 @@ void SafeHyperJob::saveData(int status)
             fileSaddle = fopen(saddleFilename.c_str(), "wb");
             saddle->matter2con(fileSaddle);
             fclose(fileSaddle);
-        }
-
-        if(metaStateFlag)
-        {
-            FILE *fileMeta;
-            std::string metaFilename("meta.con");
-            returnFiles.push_back(metaFilename);
-            fileMeta = fopen(metaFilename.c_str(), "wb");
-            meta->matter2con(fileMeta);
-            fclose(fileMeta);
         }
     }
     return;
