@@ -17,7 +17,7 @@
 class Job { 
     public:
 
-        virtual ~Job() {}
+        virtual ~Job() {};
         virtual std::vector<std::string> run()=0;
 
         static const char PROCESS_SEARCH[];
@@ -25,6 +25,7 @@ class Job {
         static const char MINIMIZATION[];
         static const char POINT[];
         static const char PARALLEL_REPLICA[];
+        static const char SAFE_HYPER[];
         static const char REPLICA_EXCHANGE[];
         static const char BASIN_HOPPING[];
         static const char HESSIAN[];
