@@ -16,8 +16,6 @@
 #include "ParallelReplicaJob.h"
 #include "Optimizer.h"
 #include "Log.h"
-#include <time.h>
-#include "HelperFunctions.h"
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -94,7 +92,7 @@ int ParallelReplicaJob::dynamics()
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
     double sumT = 0.0, sumT2 = 0.0;
     double sumboost = 0.0, boost = 0.0;
-    double begint= 0.0, tot_rtime = 0.0, rtime = 0.0;
+
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
     RelaxSteps = int(parameters->parrepRelaxTime/parameters->mdTimeStepInput);
@@ -138,10 +136,7 @@ int ParallelReplicaJob::dynamics()
     // loop dynamics iterations until some condition tells us to stop
     while(!stopFlag)
     {
-        begint = 0.0;
-        helper_functions::getTime(&begint, NULL, NULL);
-
-        if( (parameters->biasPotential == Hyperdynamics::BOND_BOOST) ) {
+        if( parameters->biasPotential == Hyperdynamics::BOND_BOOST ) {
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
             //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
             boost = bondBoost.boost();   
@@ -154,10 +149,6 @@ int ParallelReplicaJob::dynamics()
         } else {
             time += parameters->mdTimeStepInput;
         }
-
-        rtime = 0.0;
-        helper_functions::getTime(&rtime, NULL, NULL);
-        tot_rtime += rtime-begint;
 
         kinE = current->getKineticEnergy();
         kinT = (2.0*kinE/nFreeCoord/kb); 
@@ -250,8 +241,8 @@ int ParallelReplicaJob::dynamics()
         //stdout Progress
         if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
             double maxAtomDistance = current->perAtomNorm(*reactant);
-            log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld, wctime %lf\n",
-                (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps,tot_rtime);
+            log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
+                (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
         }
     }
 
@@ -266,7 +257,6 @@ int ParallelReplicaJob::dynamics()
         log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
     }
-    log("Total wctime on bondboost= %lf\n",tot_rtime);
     //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
     {
