@@ -17,7 +17,7 @@ The ``config.ini`` file will run a parallel replica job with 2 replicas on one l
 
 Now we can run the trajectory by executing the command ``../../bin/eon``::
 
-    $ ../eon/main.py
+    $ ../bin/eon
     simulation time is 0.000000e+00
     state list path does not exist, creating .//states/
     registering results
@@ -31,7 +31,7 @@ Now we can run the trajectory by executing the command ``../../bin/eon``::
 
 Then use "../../bin/eon -n" to register the result::
 
-    $ ../eon/main.py -n
+    $ ../bin/eon -n
     simulation time is 0.000000e+00
     registering results
     found transition with time 8.200e-12
@@ -64,7 +64,7 @@ You can turn on the hyperdynamics method by adding the following section to your
 
     [Hyperdynamics]
     bias_potential=bond_boost       ; bond_boost bias potential
-    bb_boost_atomlist=0,1,2,3,4,5,6 ; atoms that are boosted in the bias potential
+    bb_boost_atomlist=20,26,50,56,150 ; atoms that are boosted in the bias potential
     bb_rcut=3.0                     ; boost radius
     bb_rmd_time=100.0               ; MD time to obtain the equilibrium configuration
     bb_dvmax=0.4                    ; magnitude of the bond-boost bias potential
