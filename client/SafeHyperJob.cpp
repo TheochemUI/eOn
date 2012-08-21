@@ -45,6 +45,7 @@ std::vector<std::string> SafeHyperJob::run(void)
     saddle = new Matter(parameters);
     product = new Matter(parameters);
     final = new Matter(parameters);
+    final_tmp = new Matter(parameters);
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
@@ -74,6 +75,7 @@ std::vector<std::string> SafeHyperJob::run(void)
     delete reactant;
     delete saddle;
     delete product;
+    delete final_tmp;
     delete final;
 
     return returnFiles;
@@ -186,16 +188,16 @@ int SafeHyperJob::dynamics()
             if(transitionFlag == true){
                 log("New State %ld: ",nState);
                 *final_tmp = *current;
-                transitionTime=time;
+                transitionTime = time;
                 newStateStep = step; // remember the step when we are in a new state
                 transitionStep = newStateStep;
                 firstTransitFlag = 1;
                 nState ++;
             }
         }
-
+        printf("step=%ld, time=%lf, biasPot=%lf\n",step,time,boostPotential);
         //Refine transition step
-        *product = *final;
+  
         if(parameters->parrepRefineTransition && transitionFlag)
         {
             //log("[Parallel Replica] Refining transition time.\n");
@@ -208,7 +210,7 @@ int SafeHyperJob::dynamics()
             correctedTime = transitionTime * exp(transitionPot/kb/Temp);
             
             //reverse the momenten;
-            *current = *mdBuffer[transitionStep-1];
+            *current = *mdBuffer[refineStep-1];
             velocity = current->getVelocities();
             velocity = velocity*(-1);
             current->setVelocities(velocity);
@@ -223,6 +225,7 @@ int SafeHyperJob::dynamics()
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
         }
+    
             
         // we have run enough md steps; time to stop
         if (firstTransitFlag && time >= minCorrectedTime)
