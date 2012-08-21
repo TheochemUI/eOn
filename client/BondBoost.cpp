@@ -122,12 +122,12 @@ void BondBoost::initialize()
 double BondBoost::boost()
 {
     long RMDS;
-    double boost; // , AVE_Boost_Fact;
+    double biasPot ; // , AVE_Boost_Fact;
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
 
     RMDS = int(parameters->bondBoostRMDTime/parameters->mdTimeStepInput);
-    boost = 1.0;
+    biasPot = 0.0;
 
     if(nReg <= RMDS){
         flag = 0;
@@ -158,11 +158,11 @@ double BondBoost::boost()
 
         Epsr_Q = new double[nBBs];
         CBBLList.setZero(nBBs,1);
-        boost = Booststeps();
+        biasPot = Booststeps();
         nReg++;
         delete Epsr_Q;
     }
-    return boost;
+    return biasPot;
 }
 
 double BondBoost::Booststeps()
@@ -170,7 +170,7 @@ double BondBoost::Booststeps()
     long i,j; //,Mi;
     long AtomI_1,AtomI_2;
     double QRR, PRR, Epsr_MAX, A_EPS_M, Sum_V, Boost_Fact, DVMAX;
-    double Dforce, Fact_1, Fact_2, step_boost, Temp, kb; //, Mforce
+    double Dforce, Fact_1, Fact_2; //, Mforce
     double Ri[3] = {0.0} , R = 0.0;
 
     AtomMatrix Free(nAtoms,3);
@@ -183,12 +183,9 @@ double BondBoost::Booststeps()
     AddForces.setZero();
     BiasForces.setZero();
 
-    Temp = parameters->temperature;
     QRR = parameters->bondBoostQRR;
     PRR = parameters->bondBoostPRR;
     DVMAX = parameters->bondBoostDVMAX;
-    step_boost = 1.0;
-    kb = 1.0/11604.519;
     Epsr_MAX = 0.0;
     A_EPS_M = 0.0;
     Boost_Fact = 0.0;
@@ -290,12 +287,11 @@ double BondBoost::Booststeps()
 */
 
     //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
-    step_boost = 1.0*exp(Boost_Fact/kb/Temp);
     BiasForces = TADF;
     Free = matter->getFree();
     BiasForces = BiasForces.cwise() * Free;
     matter->setBiasForces(BiasForces);
-    return step_boost;
+    return Boost_Fact;
 }
 
 
