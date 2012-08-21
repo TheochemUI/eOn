@@ -51,6 +51,7 @@ class SafeHyperJob: public Job
 
         double time;
         double transitionTime;
+        double transitionPot;
         double *timeBuffer;
         double *biasBuffer;
 
