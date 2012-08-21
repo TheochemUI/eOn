@@ -79,8 +79,6 @@ std::vector<std::string> unbundle(int number) {
     while ((dp=readdir(dir))) {
         int bundleNumber;
         std::string originalFilename(dp->d_name);
-        int stringSize = strlen(dp->d_name) + 10;
-        char *newFilename = new char[stringSize];
 
         if (dp->d_name[0] == '.') {
             continue;
@@ -110,6 +108,9 @@ std::vector<std::string> unbundle(int number) {
         }
 
         *(ch-1) = '\0';
+
+        int stringSize = strlen(dp->d_name) + 10;
+        char *newFilename = new char[stringSize];
         snprintf(newFilename, stringSize, "%s.%s", dp->d_name, cch+1);
 
         int err;
