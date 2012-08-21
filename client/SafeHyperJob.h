@@ -35,8 +35,8 @@ class SafeHyperJob: public Job
         Matter *current;
         Matter *reactant;
         Matter *saddle;
-        Matter *meta;
         Matter *final;
+        Matter *final_tmp;
         Matter *product;
 
         bool metaStateFlag;
@@ -50,6 +50,7 @@ class SafeHyperJob: public Job
         long transitionStep;
 
         double time;
+        double minCorrectedTime;
         double transitionTime;
         double transitionPot;
         double *timeBuffer;
