@@ -441,8 +441,6 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
     str = (char*) malloc(sizeof(char)*(s.length()+1));
     s.copy(str, s.length(), 0);
     str[s.length()] = '\0';
-    cout << "COrrect: " << s << endl;
-    printf("HI: %s\n", str);
     pch = strtok(str, delim.c_str());
 
     std::vector<int> list;

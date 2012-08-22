@@ -390,7 +390,6 @@ int Parameters::load(FILE *file){
 
         bondBoostRMDTime = ini.GetValueF("Hyperdynamics", "bb_rmd_time", bondBoostRMDTime);
         bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics", "bb_boost_atomlist", bondBoostBALS));
-        cout << "Parameters: bondBoostBALS: " << bondBoostBALS << endl;
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics", "bb_dvmax", bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics", "bb_stretch_threshold", bondBoostQRR );
         bondBoostPRR = ini.GetValueF("Hyperdynamics", "bb_ds_curvature", bondBoostPRR );
