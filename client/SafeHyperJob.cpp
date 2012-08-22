@@ -207,7 +207,7 @@ int SafeHyperJob::dynamics()
             transitionStep = newStateStep - StateCheckInterval + refineStep*RecordInterval;
             transitionTime = timeBuffer[refineStep];
             transitionPot = biasBuffer[refineStep];
-            correctedTime = transitionTime * exp(transitionPot/kb/Temp);
+            correctedTime = transitionTime * exp((-1)*transitionPot/kb/Temp);
             
             //reverse the momenten;
             *current = *mdBuffer[refineStep-1];
