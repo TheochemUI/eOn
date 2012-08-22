@@ -38,12 +38,7 @@ def insert(state, process_id):
     saddle = tsase.io.read_con(state.proc_saddle_path(process_id))
     product = tsase.io.read_con(state.proc_product_path(process_id))
     mode = state.get_process_mode(process_id)
-    process = state.get_process(process_id)
-    barrier1 = process["saddle_energy"] - state.get_energy()
-    barrier2 = process["saddle_energy"] - process["product_energy"]
-    prefactor1 = process["prefactor"] 
-    prefactor2 = process["product_prefactor"] 
-    kdb.insert(reactant, saddle, product, mode, config.kdb_path)
+    kdb.insert(reactant, saddle, product, mode=mode, kdbdir=config.kdb_path)
 
 def query(state):
     try:
