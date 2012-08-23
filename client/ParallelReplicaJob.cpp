@@ -225,48 +225,7 @@ int ParallelReplicaJob::dynamics()
                 }
             }
         }
-
-        // we have run enough md steps; time to stop
-        if (step >= parameters->mdSteps)
-        {
-            stopFlag = true;
-        }
-
-        //BOINC Progress
-        if (step % 500 == 0) {
-            // Since we only have a bundle size of 1 we can play with boinc_fraction_done
-            // directly. When we have done parameters->mdSteps number of steps we aren't
-            // quite done so I increase the max steps by 5%.
-            boinc_fraction_done((double)step/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
-        }
-
-        //stdout Progress
-        if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
-            double maxAtomDistance = current->perAtomNorm(*reactant);
-            log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
-                (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
-        }
-    }
-
-    // calculate avearges
-    avgT = sumT/step;
-    varT = sumT2/step - avgT*avgT;
-   
-    if (nboost > 0){
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
-    }else{
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
-    }
-    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
-    if (isfinite(avgT)==0)
-    {
-        log("Infinite average temperature, something went wrong!\n");
-        newStateFlag = false;
-    }
-
-    *product=*final; 
+    //       *product=*final; 
     // new state was detected; determine refined transition time
     if(parameters->parrepRefineTransition && newStateFlag)
     {
@@ -313,6 +272,48 @@ int ParallelReplicaJob::dynamics()
            metaStateFlag = true;
         }
         refineFCalls += Potential::fcalls - refFCalls;
+    }
+
+
+
+        // we have run enough md steps; time to stop
+        if (step >= parameters->mdSteps-refineFCalls-RelaxSteps)
+        {
+            stopFlag = true;
+        }
+
+        //BOINC Progress
+        if (step % 500 == 0) {
+            // Since we only have a bundle size of 1 we can play with boinc_fraction_done
+            // directly. When we have done parameters->mdSteps number of steps we aren't
+            // quite done so I increase the max steps by 5%.
+            boinc_fraction_done((double)step/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
+        }
+
+        //stdout Progress
+        if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
+            double maxAtomDistance = current->perAtomNorm(*reactant);
+            log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
+                (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
+        }
+    }
+
+    // calculate avearges
+    avgT = sumT/step;
+    varT = sumT2/step - avgT*avgT;
+   
+    if (nboost > 0){
+        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
+        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
+    }else{
+        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
+        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
+    }
+    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    if (isfinite(avgT)==0)
+    {
+        log("Infinite average temperature, something went wrong!\n");
+        newStateFlag = false;
     }
 
     for(long i=0; i<mdBufferLength; i++){
