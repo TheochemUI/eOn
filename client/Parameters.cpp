@@ -143,7 +143,7 @@ Parameters::Parameters(){
     parrepDephaseLoopMax = 5;
     parrepStateCheckInterval = 500.0;
     parrepRecordInterval = 50.0;
-    parrepRelaxTime = 500.0;
+    parrepCorrTime = 500.0;
 
     // [Replica Exchange] //
     repexcTemperatureDistribution = "exponential";
@@ -372,7 +372,7 @@ int Parameters::load(FILE *file){
         parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", parrepDephaseLoopMax);
         parrepStateCheckInterval = ini.GetValueF("Parallel Replica", "state_check_interval", parrepStateCheckInterval);
         parrepRecordInterval = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
-        parrepRelaxTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepRelaxTime);
+        parrepCorrTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepCorrTime);
 
         // [Replica Exchange] //
 
