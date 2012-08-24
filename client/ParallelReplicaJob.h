@@ -46,11 +46,13 @@ class ParallelReplicaJob: public Job
         long mdFCalls;
         long dephaseFCalls;
         long refineFCalls;
+        long relaxFCalls;
 
         long transitionStep;
 
         double time;
         double transitionTime;
+        double correlateTime;
         double *timeBuffer;
 
         std::vector<std::string> returnFiles;
