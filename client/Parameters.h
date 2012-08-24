@@ -151,7 +151,7 @@ public:
     long   parrepDephaseLoopMax;
     double parrepStateCheckInterval;
     double parrepRecordInterval;
-    double parrepRelaxTime;
+    double parrepCorrTime;
 
     // [Thermostat]
     string thermostat;
