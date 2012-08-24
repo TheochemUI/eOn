@@ -185,14 +185,19 @@ int ParallelReplicaJob::dynamics()
 //#endif
 
         // time to do a state check; if a transiton if found, stop recording
-        if ( (nCheck == StateCheckInterval) && !newStateFlag )
+        if ( nCheck == StateCheckInterval) 
         {
             nCheck = 0; // reinitialize check state counter
             nRecord = 0; // restart the buffer
             refFCalls = Potential::fcalls;
             transitionFlag = checkState(current, reactant);
             minimizeFCalls += Potential::fcalls - refFCalls;
-            if(transitionFlag == true){
+            // Once one transition is dedected we keep on optimizing, but do nothing else;
+            if(newStateFlag){
+                transitionFlag = false;
+            }
+            //Run addistion Relaxstep to check recrossing event.
+            if(transitionFlag){
                 transitionStep = step;
                 log("Detected one transition, now running additional %ld steps to check whether it will recross\n",RelaxSteps);
                 recordFlag = false;
