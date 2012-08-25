@@ -107,15 +107,18 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     reactant = new Matter(parameters);
     reactant->con2matter(helper_functions::getRelevantFile(parameters->conFilename));
 
+    //Always minimize the initial reactant
     log("%s Minimizing initial reactant\n", LOG_PREFIX);
     reactant->relax();
     reactant->matter2con("reactant.con");
 
+    //trajectory is the matter object for the current MD configuration
     Matter *trajectory = new Matter(parameters);
     *trajectory = *reactant;
 
     dephase(trajectory);
 
+    //convert from simulation times to number of steps
     int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
     int decorrelationSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
@@ -125,14 +128,18 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     std::vector<double> MDTimes;
     double transitionTime = 0;
     Matter transitionStructure(parameters);
+
+    //Main MD loop
     for (int step=1;step<=parameters->mdSteps;step++) {
         dynamics.oneStep();
+        double simulationTime = step*parameters->mdTimeStepInput;
 
-        if (step % recordInterval == 0) {
+        //Snapshots of the trajectory used for the refinement
+        if (step % recordInterval == 0 && parameters->parrepRefineTransition) {
             Matter *tmp = new Matter(parameters);    
             *tmp = *trajectory;
             MDSnapshots.push_back(tmp);
-            MDTimes.push_back(step*parameters->mdTimeStepInput);
+            MDTimes.push_back(simulationTime);
         }
 
         //check for transition every stateCheckInterval or at the end of the simulation
@@ -147,16 +154,28 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             if (min != *reactant && transitionTime == 0) {
                 log("%s transition occurred\n", LOG_PREFIX);
                 log("%s refining transition time\n", LOG_PREFIX);
-                int snapshotIndex = refineTransition(MDSnapshots);
-                transitionTime = MDTimes[snapshotIndex];
-                transitionStructure = *MDSnapshots[snapshotIndex];
+                //perform the binary search for the transition structure
+                if (parameters->parrepRefineTransition) {
+                    int snapshotIndex = refineTransition(MDSnapshots);
+                    transitionTime = MDTimes[snapshotIndex];
+                    transitionStructure = *MDSnapshots[snapshotIndex];
+                //use the current configuration as the transition structure
+                }else{
+                    transitionStructure = *trajectory;
+                    transitionTime = simulationTime;
+                }
                 log("%s transition occurred at %.3f\n", LOG_PREFIX, transitionTime);
+            //at the end of the simulation perform the refinement if it hasn't happened yet
+            //this ensures that if a transition isn't seen that the same number of force
+            //calls will be performed on average
             }else if (step == parameters->mdSteps && transitionTime == 0) {
-                log("%s simulation ended without seeing a transition\n", LOG_PREFIX);
-                log("%s refining anyways...\n", LOG_PREFIX);
-                int snapshotIndex = refineTransition(MDSnapshots, true);
-                transitionStructure = *MDSnapshots[snapshotIndex];
-                transitionTime = parameters->mdTime;
+                //fake refinement
+                if (parameters->parrepRefineTransition) {
+                    log("%s simulation ended without seeing a transition\n", LOG_PREFIX);
+                    log("%s refining anyways to prevent bias...\n", LOG_PREFIX);
+                    refineTransition(MDSnapshots, true);
+                }
+                transitionStructure = *trajectory;
             }
 
             MDSnapshots.clear();
@@ -165,12 +184,14 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     }
 
+    //start the decorrelation dynamics from the transition structure
     *trajectory = transitionStructure;
     log("%s decorrelating for %i steps\n", LOG_PREFIX, decorrelationSteps);
     for (int step=1;step<=decorrelationSteps;step++) {
         dynamics.oneStep();
     }
 
+    //minimize the final structure
     trajectory->relax(true);
     trajectory->matter2con("product.con");
 
