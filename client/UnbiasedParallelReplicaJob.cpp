@@ -61,6 +61,8 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
 
+    int refineForceCalls=0;
+
     Dynamics dynamics(trajectory, parameters);
     std::vector<Matter*> MDSnapshots;
     std::vector<double> MDTimes;
@@ -95,7 +97,10 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
                 //perform the binary search for the transition structure
                 if (parameters->parrepRefineTransition) {
+                    int tmpFcalls= Potential::fcalls;
                     int snapshotIndex = refineTransition(MDSnapshots);
+                    refineForceCalls += Potential::fcalls - tmpFcalls;
+
                     transitionTime = MDTimes[snapshotIndex];
                     transitionStructure = *MDSnapshots[snapshotIndex];
 
@@ -115,7 +120,9 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                 if (parameters->parrepRefineTransition) {
                     log("%s simulation ended without seeing a transition\n", LOG_PREFIX);
                     log("%s refining anyways to prevent bias...\n", LOG_PREFIX);
+                    int tmpFcalls= Potential::fcalls;
                     refineTransition(MDSnapshots, true);
+                    refineForceCalls += Potential::fcalls - tmpFcalls;
                 }
                 transitionStructure = *trajectory;
 
@@ -146,6 +153,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
+    fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
 
 
@@ -153,6 +161,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
         fprintf(fileResults, "0 transition_found\n");
         fprintf(fileResults, "%e simulation_time_s\n", parameters->mdTime*1.0e-15);
     }else{
+        fprintf(fileResults, "1 transition_found\n");
         fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
         fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", trajectory->getPotentialEnergy());
@@ -169,12 +178,12 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
 {
     Dynamics dynamics(trajectory, parameters);
-    dynamics.setThermalVelocity();
 
     int dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
     log("%s dephasing for %i steps\n", LOG_PREFIX, dephaseSteps);
 
     while (true) {
+        dynamics.setThermalVelocity();
         // Dephase MD trajectory
         for (int step=1;step<=dephaseSteps;step++) {
             dynamics.oneStep();
