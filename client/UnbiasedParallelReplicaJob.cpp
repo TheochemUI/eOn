@@ -54,6 +54,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     //trajectory is the matter object for the current MD configuration
     Matter *trajectory = new Matter(parameters);
     *trajectory = *reactant;
+    Dynamics dynamics(trajectory, parameters);
 
     dephase(trajectory);
 
@@ -63,7 +64,6 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     int refineForceCalls=0;
 
-    Dynamics dynamics(trajectory, parameters);
     std::vector<Matter*> MDSnapshots;
     std::vector<double> MDTimes;
     double transitionTime = 0;
@@ -143,8 +143,10 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     }
 
     //minimize the final structure
-    trajectory->relax(true);
-    trajectory->matter2con("product.con");
+    Matter product(parameters);
+    product = *trajectory;
+    product.relax(true);
+    product.matter2con("product.con");
 
     FILE *fileResults;
     std::string resultsFilename("results.dat");
@@ -152,7 +154,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     fileResults = fopen(resultsFilename.c_str(), "wb");
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
+    fprintf(fileResults, "%f potential_energy_reactant\n", reactant->getPotentialEnergy());
     fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
 
@@ -164,7 +166,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
         fprintf(fileResults, "1 transition_found\n");
         fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
         fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*1.0e-15);
-        fprintf(fileResults, "%lf potential_energy_product\n", trajectory->getPotentialEnergy());
+        fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
 
 
@@ -183,6 +185,7 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
     log("%s dephasing for %i steps\n", LOG_PREFIX, dephaseSteps);
 
     while (true) {
+        *trajectory = *reactant;
         dynamics.setThermalVelocity();
         // Dephase MD trajectory
         for (int step=1;step<=dephaseSteps;step++) {
