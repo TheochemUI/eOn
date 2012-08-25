@@ -118,7 +118,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
-    int decorrelationSteps = int(parameters->parrepRelaxTime/parameters->mdTimeStepInput);
+    int decorrelationSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
 
     Dynamics dynamics(trajectory, parameters);
     std::vector<Matter*> MDSnapshots;
