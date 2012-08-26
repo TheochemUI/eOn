@@ -43,10 +43,11 @@ UnbiasedParallelReplicaJob::~UnbiasedParallelReplicaJob()
 
 std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 {
+    //load reactant_passed.con
     reactant = new Matter(parameters);
     reactant->con2matter(helper_functions::getRelevantFile(parameters->conFilename));
 
-    //Always minimize the initial reactant
+    //minimize the initial reactant
     log("%s Minimizing initial reactant\n", LOG_PREFIX);
     reactant->relax();
     reactant->matter2con("reactant.con");
@@ -62,12 +63,11 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
 
-    int refineForceCalls=0;
-
     std::vector<Matter*> MDSnapshots;
     std::vector<double> MDTimes;
     double transitionTime = 0;
     Matter transitionStructure(parameters);
+    int refineForceCalls = 0;
 
     //Main MD loop
     for (int step=1;step<=parameters->mdSteps;step++) {
@@ -82,7 +82,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             MDTimes.push_back(simulationTime);
         }
 
-        //check for transition every stateCheckInterval or at the end of the simulation
+        //check for a transition every stateCheckInterval or at the end of the simulation
         if (step % stateCheckInterval == 0 || step == parameters->mdSteps) {
             log("%s checking for transition\n", LOG_PREFIX);
 
@@ -93,10 +93,10 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             //only check for a transition if one has yet to occur 
             if (min != *reactant && transitionTime == 0) {
                 log("%s transition occurred\n", LOG_PREFIX);
-                log("%s refining transition time\n", LOG_PREFIX);
 
                 //perform the binary search for the transition structure
                 if (parameters->parrepRefineTransition) {
+                    log("%s refining transition time\n", LOG_PREFIX);
                     int tmpFcalls= Potential::fcalls;
                     int snapshotIndex = refineTransition(MDSnapshots);
                     refineForceCalls += Potential::fcalls - tmpFcalls;
@@ -104,7 +104,8 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                     transitionTime = MDTimes[snapshotIndex];
                     transitionStructure = *MDSnapshots[snapshotIndex];
 
-                //use the current configuration as the transition structure
+                //if not using refinement use the current configuration as the
+                //transition structure
                 }else{
                     transitionStructure = *trajectory;
                     transitionTime = simulationTime;
@@ -148,6 +149,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     product.relax(true);
     product.matter2con("product.con");
 
+    //report the results
     FILE *fileResults;
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -184,9 +186,14 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
     int dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
     log("%s dephasing for %i steps\n", LOG_PREFIX, dephaseSteps);
 
+    Matter initial(parameters);
+    initial = *trajectory;
+
     while (true) {
-        *trajectory = *reactant;
+        //always start from the initial configuration
+        *trajectory = initial;
         dynamics.setThermalVelocity();
+
         // Dephase MD trajectory
         for (int step=1;step<=dephaseSteps;step++) {
             dynamics.oneStep();
@@ -196,27 +203,24 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
         Matter min(parameters);
         min = *trajectory;
         min.relax(true);
+
         if (min == *reactant) {
-            // Dephasing successful
             log("%s dephasing successful\n", LOG_PREFIX);
             break;
         }else{
-            // A transition occurred. Retry.
             log("%s transition occured during dephasing, restarting\n", LOG_PREFIX);
-            continue;
         }
     }
 }
 
 int UnbiasedParallelReplicaJob::refineTransition(std::vector<Matter*> MDSnapshots, bool fake)
 {
-    long min, max, mid;
+    int min, max, mid;
     bool midTest;
     min = 0;
     max = MDSnapshots.size() - 1;
 
     while( (max-min) > 1 ) {
-
         mid = min + (max-min)/2;
         Matter *snapshot = MDSnapshots[mid];
         snapshot->relax(true);
