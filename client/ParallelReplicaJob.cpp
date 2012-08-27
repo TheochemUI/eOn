@@ -220,7 +220,13 @@ int ParallelReplicaJob::dynamics()
             if(CorrSteps > parameters->mdSteps-step){
                 jobStatus = ParallelReplicaJob::STATUS_TRAN_NOTIME;
                 newStateFlag = true;
+                refineFlag = false;
                 corrTime = nCorr*parameters->mdTimeStepInput;
+                *product_relaxed=*product;
+                relaxStatus = product_relaxed->relax(true);
+                if(!relaxStatus){
+                    jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;
+                }
             }
             if (nCorr > CorrSteps){
                 // state check; reset counters
@@ -263,7 +269,7 @@ int ParallelReplicaJob::dynamics()
             *transition = *mdBuffer[refineStep];
             refinedTime = timeBuffer[refineStep];
 
-            log("Found transition at step %ld, now start uncorrelating steps\n",
+            log("Found transition at step %ld, now start decorrelation steps\n",
             transitionStep, parameters->parrepCorrTime);
 
             long corrBufferLength = long(CorrSteps/RecordInterval) + 1;
@@ -278,13 +284,15 @@ int ParallelReplicaJob::dynamics()
                 *product_relaxed = *product;
                 corrTime = time - refinedTime;
             }
-            log("%.2f fs has been run to uncorrelate\n",corrTime);
+            log("%.2f fs has been run to decorrelate\n",corrTime);
 
             *transition_relaxed = *transition;
             relaxStatus = transition_relaxed->relax(true);
             if(!relaxStatus){
                 jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;   
             }
+
+            *product_relaxed = *product;
             relaxStatus = product_relaxed->relax(true);
             if(!relaxStatus){
                 jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;
@@ -301,8 +309,9 @@ int ParallelReplicaJob::dynamics()
 
 
         // we have run enough md steps; time to stop
-        if (step >= parameters->mdSteps-refineFCalls-corrFCalls)
+        if (step >= parameters->mdSteps-refineFCalls)
         {
+            log("Achieved the prechosen md simulation time\n");
             stopFlag = true;
         }
 
@@ -406,7 +415,7 @@ void ParallelReplicaJob::saveData(int state)
         product_relaxed->matter2con(fileProduct);
         fclose(fileProduct);
 
-        if(parameters->parrepRefineTransition)
+        if(refineFCalls > 0)
         {
             FILE *fileTransition;
             std::string transitionFilename("transition.con");
@@ -549,7 +558,7 @@ void ParallelReplicaJob::printEndStatus() {
         log("[ParallelReplica] New state found, and corrlating event detected, metastable staet has beeen saved as meta.con\n");  
 
     else if(jobStatus == ParallelReplicaJob::STATUS_TRAN_NOTIME){
-        log("[ParallelReplica] Unfortunately we don't have sufficient force calls to perform uncorrlating and refinement\n");
+        log("[ParallelReplica] Unfortunately we don't have sufficient force calls to perform decorrelation and transition state refinement\n");
         log("[ParallelReplica] The last checkpoint that detected transition will be reported \n");
     }
     
