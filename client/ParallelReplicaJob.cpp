@@ -309,15 +309,7 @@ int ParallelReplicaJob::dynamics()
             refineFlag = false;
         }
 
-
-        // we have run enough md steps; time to stop
-        if (step >= parameters->mdSteps-refineFCalls)
-        {
-            log("Achieved the specified md simulation time\n");
-            stopFlag = true;
-        }
-
-        //BOINC Progress
+        // BOINC Progress
         if (step % 500 == 0) {
             // Since we only have a bundle size of 1 we can play with boinc_fraction_done
             // directly. When we have done parameters->mdSteps number of steps we aren't
@@ -325,11 +317,18 @@ int ParallelReplicaJob::dynamics()
             boinc_fraction_done((double)step/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
         }
 
-        //stdout progress
+        // stdout progress
         if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
             double maxAtomDistance = current->perAtomNorm(*reactant);
             log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
                 (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
+        }
+
+        // we have run enough md steps; time to stop
+        if (step >= parameters->mdSteps-refineFCalls)
+        {
+            log("Achieved the specified md simulation time\n");
+            stopFlag = true;
         }
     }
     // calculate averages
