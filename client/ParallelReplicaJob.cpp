@@ -100,6 +100,7 @@ int ParallelReplicaJob::dynamics()
     double sumT = 0.0, sumT2 = 0.0;
     double sumboost = 0.0, boost = 0.0, boostPotential = 0.0;
     double refinedTime=0.0;
+    Matter **mdBuffer;
 
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
@@ -108,7 +109,8 @@ int ParallelReplicaJob::dynamics()
 
 
     mdBufferLength = long(StateCheckInterval/RecordInterval);
-    Matter *mdBuffer[mdBufferLength];
+//GH    Matter *mdBuffer[mdBufferLength];
+    mdBuffer = new Matter *[mdBufferLength];
     for(long i=0; i<mdBufferLength; i++) {
         mdBuffer[i] = new Matter(parameters);
     }
@@ -352,6 +354,7 @@ int ParallelReplicaJob::dynamics()
     for(long i=0; i<mdBufferLength; i++){
         delete mdBuffer[i];
     }
+    delete [] mdBuffer;
     delete [] timeBuffer;
 
     if(newStateFlag){
@@ -444,26 +447,35 @@ void ParallelReplicaJob::dephase()
 {
     bool transitionFlag = false;
     long step, stepNew, loop;
-    long DephaseSteps;
+    long dephaseSteps;
     long dephaseBufferLength, dephaseRefineStep;
     AtomMatrix velocity;
+    Matter **dephaseBuffer;
 
-    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
+    dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
     Dynamics dephaseDynamics(current, parameters);
     log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime);
 
     step = stepNew = loop = 0;
 
-    while(step < DephaseSteps)
-    {
-        // this should be allocated once, and of length DephaseSteps
-        dephaseBufferLength = DephaseSteps - step;
-        loop++;
-        Matter *dephaseBuffer[dephaseBufferLength];
+    //GH allocate dephase buffer memory
+    dephaseBufferLength = dephaseSteps; // these are now the same variable
+    dephaseBuffer = new Matter *[dephaseBufferLength];
+    for(long i=0; i<dephaseBufferLength; i++){
+        dephaseBuffer[i] = new Matter(parameters);
+    }
 
-        for(long i=0; i<dephaseBufferLength; i++)
+    while(step < dephaseSteps)
+    {
+        loop++;
+        // this should be allocated once, and of length dephaseSteps
+//GH        dephaseBufferLength = dephaseSteps - step;
+//GH        Matter *dephaseBuffer[dephaseBufferLength];
+
+//GH        for(long i=0; i<dephaseBufferLength; i++)
+        for(long i=step; i<dephaseBufferLength; i++)
         {
-            dephaseBuffer[i] = new Matter(parameters);
+//GH            dephaseBuffer[i] = new Matter(parameters);
             dephaseDynamics.oneStep();
             *dephaseBuffer[i] = *current;
         }
@@ -476,31 +488,41 @@ void ParallelReplicaJob::dephase()
             log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
             transitionStep = dephaseRefineStep - 1; // check that this is correct
             transitionStep = (transitionStep > 0) ? transitionStep : 0;
-            log("Dephasing warning: in a new state, invert the momentum and restart from step %ld\n", step+transitionStep);
+//GH            log("Dephasing warning: in a new state, invert the momentum and restart from step %ld\n", step+transitionStep);
+            log("Dephasing warning: in a new state, invert the momentum and restart from step %ld\n", transitionStep);
             *current = *dephaseBuffer[transitionStep];
             velocity = current->getVelocities();
             velocity = velocity*(-1);
             current->setVelocities(velocity);
-            step = step + transitionStep;
+//GH            step = step + transitionStep;
+            step = transitionStep;
         }
         else
         {
-            step = step + dephaseBufferLength;
+//GH            step = step + dephaseBufferLength;
+            step = dephaseBufferLength;
             //log("Successful dephasing for %.2f steps \n", step);
         }
-
+/*GH
         for(long i=0; i<dephaseBufferLength; i++)
         {
            delete dephaseBuffer[i];
         }
-
+*/
         if( (parameters->parrepDephaseLoopStop) && (loop > parameters->parrepDephaseLoopMax) ) {
-            log("Reach dephase loop maximum, stop dephasing. Dephased for %ld steps\n", step);
+            log("Exceeded dephasing loop maximum; dephased for %ld steps\n", step);
             break;
         }
         log("Successfully dephased for %.2f fs", step*parameters->mdTimeStepInput);
 
     }
+
+    //GH deallocation dephase buffer memory
+    for(long i=0; i<dephaseSteps; i++){
+        delete dephaseBuffer[i];
+    }
+    delete [] dephaseBuffer;
+
 }
 
 
