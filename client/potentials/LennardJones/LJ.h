@@ -36,7 +36,7 @@ class LJ : public Potential
 
         ~LJ();
 	
-        // Just to satify interface
+        // Just to satisfy interface
         void initialize() {};
         void cleanMemory();    
         

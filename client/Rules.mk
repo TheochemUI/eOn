@@ -32,14 +32,17 @@ POTENTIALS += "+bopfox"
 ifdef NO_FORTRAN
     POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H"
     OPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
-                ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/
+                ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
+                ./potentials/FeHe/
 else
     POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H"
     FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
-                ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/
+                ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
+                ./potentials/FeHe/
     LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a \
             ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a \
-            ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a
+            ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a \
+            ./potentials/FeHe/libFeHe.a
 endif
 
 #Optional potentials
