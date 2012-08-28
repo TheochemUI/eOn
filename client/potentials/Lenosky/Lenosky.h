@@ -13,25 +13,25 @@
 
 #include "../../Potential.h"
 
-    /** External function implemented in Fortran. Calculate interactions between atoms using forcefield Lenosky.
-    @param[in]	N           Number of atoms.
-    @param[in]	R           Array to positions of the atoms in Angstrom.
-    @param[out]	F           Array used to return the forces resulting from interactions between molecules. Forces are in eV/Angstrom.
-    @param[out]	U           Pointer to energy in eV.
-    @param[in]  bx, by, bz  Pointer to box dimensions in Angstrom.
+    /** External function implemented in Fortran; calculate interactions between atoms using Lenosky force field
+    @param[in]	N           number of atoms
+    @param[in]	R           array to positions of the atoms in Angstrom
+    @param[out]	F           array used to return the forces between atoms, in eV/Angstrom
+    @param[out]	U           pointer to energy in eV
+    @param[in]  bx, by, bz  pointer to box dimensions in Angstrom
     */
 extern "C" {
     void lenosky_(const long int *N, const double *R, double *F, double *U, const double* bx, const double* by, const double* bz);
 }    
 
-/** Lenosky potential.*/
+/** Lenosky potential */
 class Lenosky : public Potential{    
 public:
 // Functions
 	// constructor
     Lenosky(void);
 	
-    // To satify interface
+    // To satisfy interface
     void initialize(void);    
     void cleanMemory(void);    
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);

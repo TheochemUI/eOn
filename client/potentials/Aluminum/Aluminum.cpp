@@ -30,7 +30,7 @@ Aluminum::~Aluminum()
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
-// adress to supercell size
+// address to supercell size
 void Aluminum::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     assert((int)N > 1);

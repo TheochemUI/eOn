@@ -1,21 +1,21 @@
 !   for version EAMf of the MD code, Feb 1995.  (Modified by Graeme)
 !   for EAM version E     Feb 1994
-!   Tersoff potential:   Sept 14. 1993   based on EAMd version             
-!      two components                                                                                   
+!   Tersoff potential:   Sept 14. 1993   based on EAMd version
+!      two components
 !      No neighborlist, no FPI chains
 
-!     SUBROUTINE TO COMPUTE FORCE, ENERGY AND VIRIAL FOR A GROUP OF                       
-!     ATOMS INTERACTING WITH ANOTHER GROUP OF ATOMS.                    
-!     THE GROUPS MAY BE THE SAME.                                                         
-!     The force is scaled in such a way that the real force is ax*fa.                     
-!                                                                                         
+!     SUBROUTINE TO COMPUTE FORCE, ENERGY AND VIRIAL FOR A GROUP OF
+!     ATOMS INTERACTING WITH ANOTHER GROUP OF ATOMS.
+!     THE GROUPS MAY BE THE SAME.
+!     The force is scaled in such a way that the real force is ax*fa.
+!
 
 
 !AA      SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az, MAXCOO)
       SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az)
-    
+
       implicit real*8 (a-h,o-z)
-                                                                                         
+
       real*8 ax, ay, az
 !AA      integer(4) NATOM, MAXCOO
       integer(4) NATOM
@@ -23,7 +23,6 @@
 !AA      DIMENSION RA(MAXCOO),FA(MAXCOO)
       DIMENSION RA(3*NATOM),FA(3*NATOM)
 
-    
       real*8 lamdaij,lamda,muij,kaij,nei,np,mu
       DIMENSION PL(3),drij(3),drik(3),XYZ(3,NATOM),FRC(3,NATOM),    &
      &          ftj(3,NATOM),ftk(3,NATOM),lid(NATOM)
@@ -66,14 +65,14 @@
       PL(2)=ay
       PL(3)=az
 
-	k=0
-	do i=1,natom
-	 do j=1,3
-	  k=k+1
-	  XYZ(j,i)=RA(k)
-	 enddo
-	enddo
-	k=0
+      k=0
+      do i=1,natom
+       do j=1,3
+        k=k+1
+        XYZ(j,i)=RA(k)
+       enddo
+      enddo
+      k=0
 
       do 99 i=1,natom
          do 99 l=1,3
@@ -107,10 +106,10 @@
                endif
                rij2=rij2+drij(ii)**2
  120        continue
-            
+
             rij=sqrt(rij2)
             if(rij.ge.Sij) goto 101
-            
+
             if(rij.le.RLD) then
                fcij=1.0
                dfcij=0.0
@@ -118,7 +117,7 @@
                fcij=Fcfn(rij)
                dfcij=DFcfn(rij)
             endif
-            
+
             zeta=0.0
             do 102 k=1,natom
                lid(k)=0
@@ -134,7 +133,7 @@
                   endif
                   rik2=rik2+drik(ii)**2
  130           continue 
-               
+
                rik=sqrt(rik2)
                if(rik.ge.Sij) goto 102
                lid(k)=1
@@ -150,13 +149,13 @@
                do 140 ii=1,3
                   tijk=tijk+drij(ii)*drik(ii) 
  140           continue
-               
+
                cosijk=tijk/(rij*rik)
                drijk=rij-rik
                zeta=zeta+fcik*Gfn(cosijk)
 
                cf1=fcik*Qfn(cosijk)
-               
+
                do 104 l=1,3
 
                   ftj(l,k)=0.0
@@ -164,15 +163,14 @@
 
                   ftk(l,k)=ftk(l,k)                  &
      &                 +drik(l)/rik*dfcik*Gfn(cosijk)
-                  
+
                   ftj(l,k)=ftj(l,k)+cf1*(drik(l)/rik       &
      &                 -cosijk*drij(l)/rij)/rij
                   ftk(l,k)=ftk(l,k)+cf1*(drij(l)/rij        &
      &                 -cosijk*drik(l)/rik)/rik
 
-
  104           continue
- 102        continue   
+ 102        continue
 
 !         write(6,*) ' '
 !         write(6,*) '  From Gagafe:  zeta = ',zeta
@@ -191,18 +189,18 @@
                fjk=0.0
                do 103 k=1,natom
                   if (lid(k).eq.0) goto 103
-                  
+
                   fik=fik+ftj(l,k)+ftk(l,k)
                   fjk=fjk+ftj(l,k)
-                  
+
                   FRC(l,k)=FRC(l,k)-cf*ftk(l,k)
  103           continue
 
                Cf2=drij(l)/rij
-               
+
                FRC(l,i)=FRC(l,i)+cf2*Fcf+cf*fik
                FRC(l,j)=FRC(l,j)-cf2*Fcf-cf*fjk
-               
+
  105        continue
             
             ENG=ENG+fcij*(Frfn(rij)+Cf1*Fafn(rij))
@@ -215,7 +213,7 @@
          do 200 l=1,3
             FRC(l,i)=FRC(l,i)/2.0
  200  continue
-      
+
       ENG=ENG/2.0
 
 !   Translate back:   Change sign to get force rather than gradient

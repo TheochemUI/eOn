@@ -26,7 +26,7 @@
       */
 
 Morse::Morse(){
-      // Parameters De in eV, a in /Angstrom, re in Angstrom, cutoff in Agnstrom.
+      // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
       setParameters(0.7102, 1.6047, 2.8970, 9.5);
 }
 
