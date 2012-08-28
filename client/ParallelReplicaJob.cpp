@@ -109,7 +109,6 @@ int ParallelReplicaJob::dynamics()
 
 
     mdBufferLength = long(StateCheckInterval/RecordInterval);
-//GH    Matter *mdBuffer[mdBufferLength];
     mdBuffer = new Matter *[mdBufferLength];
     for(long i=0; i<mdBufferLength; i++) {
         mdBuffer[i] = new Matter(parameters);
@@ -206,8 +205,8 @@ int ParallelReplicaJob::dynamics()
             if(transitionFlag){
                 transitionStep = step;
                 *product = *current;
-                transitionTime = time;
-                log("Detected a transition, now running %ld md steps to see if it will recross\n",CorrSteps);
+                transitionTime = timeBuffer[int(mdBufferLength/2)];
+                log("Detected a transition, now running %ld MD steps to see if it will recross\n",CorrSteps);
                 recordFlag = false;
             }
         }
@@ -224,6 +223,7 @@ int ParallelReplicaJob::dynamics()
                 newStateFlag = true;
                 refineFlag = false;
                 corrTime = nCorr*parameters->mdTimeStepInput;
+
                 *product_relaxed=*product;
                 relaxStatus = product_relaxed->relax(true);
                 if(!relaxStatus){
@@ -247,7 +247,6 @@ int ParallelReplicaJob::dynamics()
                     jobStatus = ParallelReplicaJob::STATUS_NEWSTATE;
                     log("No recrossing, found New State\n");
                     *product = *current;
-                    transitionTime = time;
                     newStateStep = step; // remember the step when we are in a new state
                     if(parameters->parrepAutoStop){  // stop at transition; primarily for debugging
                         stopFlag = true;
@@ -269,7 +268,7 @@ int ParallelReplicaJob::dynamics()
                          + refineStep*RecordInterval;
 */
             *transition = *mdBuffer[refineStep];
-            refinedTime = timeBuffer[refineStep];
+            refinedTime = (timeBuffer[refineStep]+timeBuffer[refineStep-1])/2.0;
 
             log("Found transition at step %ld; start decorrelation steps\n",
             transitionStep, parameters->parrepCorrTime);
@@ -325,9 +324,13 @@ int ParallelReplicaJob::dynamics()
         }
 
         // we have run enough md steps; time to stop
-        if (step >= parameters->mdSteps-refineFCalls)
+        if (step == parameters->mdSteps-refineFCalls)
         {
-            log("Achieved the specified md simulation time\n");
+            log("Achieved the specified MD simulation time\n");
+            stopFlag = true;
+        }else if (step > parameters->mdSteps-refineFCalls) {
+            log("This trajectory will take more forcecalls\n");
+            jobStatus = ParallelReplicaJob::STATUS_NEWSTATE_OVERFC;
             stopFlag = true;
         }
     }
@@ -468,13 +471,8 @@ void ParallelReplicaJob::dephase()
     {
         loop++;
         // this should be allocated once, and of length dephaseSteps
-//GH        dephaseBufferLength = dephaseSteps - step;
-//GH        Matter *dephaseBuffer[dephaseBufferLength];
-
-//GH        for(long i=0; i<dephaseBufferLength; i++)
         for(long i=step; i<dephaseBufferLength; i++)
         {
-//GH            dephaseBuffer[i] = new Matter(parameters);
             dephaseDynamics.oneStep();
             *dephaseBuffer[i] = *current;
         }
@@ -487,27 +485,18 @@ void ParallelReplicaJob::dephase()
             log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
             transitionStep = dephaseRefineStep - 1; // check that this is correct
             transitionStep = (transitionStep > 0) ? transitionStep : 0;
-//GH            log("Dephasing warning: in a new state, invert the momentum and restart from step %ld\n", step+transitionStep);
             log("Dephasing warning: in a new state, invert the momentum and restart from step %ld\n", transitionStep);
             *current = *dephaseBuffer[transitionStep];
             velocity = current->getVelocities();
             velocity = velocity*(-1);
             current->setVelocities(velocity);
-//GH            step = step + transitionStep;
-            step = transitionStep;
+            step =  transitionStep;
         }
         else
         {
-//GH            step = step + dephaseBufferLength;
             step = dephaseBufferLength;
-            //log("Successful dephasing for %.2f steps \n", step);
+            log("Successful dephasing for %.2f steps \n", step);
         }
-/*GH
-        for(long i=0; i<dephaseBufferLength; i++)
-        {
-           delete dephaseBuffer[i];
-        }
-*/
         if( (parameters->parrepDephaseLoopStop) && (loop > parameters->parrepDephaseLoopMax) ) {
             log("Exceeded dephasing loop maximum; dephased for %ld steps\n", step);
             break;
@@ -578,6 +567,9 @@ void ParallelReplicaJob::printEndStatus() {
     else if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE_CORR) 
         log("[ParallelReplica] New state found; correlated event detected; metastable state has beeen saved as meta.con\n");  
 
+    
+    else if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE_OVERFC)
+        log("[ParallelReplica] New state found; refineFCalls exceeds the remaining MD steps after transition, traj will take longer time to report\n");   
     else if(jobStatus == ParallelReplicaJob::STATUS_TRAN_NOTIME){
         log("[ParallelReplica] Insufficient force calls remaining to perform decorrelation and transition state refinement\n");
         log("[ParallelReplica] The last checkpoint that detected a transition will be reported\n");
@@ -587,7 +579,7 @@ void ParallelReplicaJob::printEndStatus() {
         log("[ParallelReplica] Transition found but has been determined as a recrossing event\n");
             
     else if(jobStatus == ParallelReplicaJob::STATUS_NOTRAN)
-        log("[ParallelReplica] No transition was been found during the md simulation time\n");
+        log("[ParallelReplica] No transition was been found during the MD simulation time\n");
     
     else if( jobStatus == ParallelReplicaJob::STATUS_BAD_RELAXFAILED)
         log("[ParallelReplica] WARNING: Job failed in an optimization calculation\n");
