@@ -27,12 +27,13 @@ class ParallelReplicaJob: public Job
         enum{// DONT CHANGE THE ORDER OF THIS LIST
             STATUS_NEWSTATE, //0
             STATUS_NEWSTATE_CORR, //1
-            STATUS_TRAN_NOTIME, //2
-            STATUS_TRAN_RECROSS, //3
-            STATUS_NOTRAN, //4
-            STATUS_BAD_RELAXFAILED, //5
-            STATUS_BAD_REFINEFAILED, //6
-            STATUS_BAD_INFTEMP, //7
+            STATUS_NEWSTATE_OVERFC, //2
+            STATUS_TRAN_NOTIME, //3
+            STATUS_TRAN_RECROSS, //4
+            STATUS_NOTRAN, //5
+            STATUS_BAD_RELAXFAILED, //6
+            STATUS_BAD_REFINEFAILED, //7
+            STATUS_BAD_INFTEMP, //8
         };
 
         int dynamics();
