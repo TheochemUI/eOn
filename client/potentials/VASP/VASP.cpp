@@ -189,7 +189,7 @@ void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
     fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
     fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
 
-    // the number of atoms of each of the the different atomic types
+    // the number of atoms of each different atomic type
     i_old = 0;
     for(i = 0; i < N; i++)
     {

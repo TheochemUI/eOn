@@ -13,7 +13,7 @@
 
 #include "../../Potential.h"
 
-/** Template to use if user want to provide potential.*/
+/** Template to use if user want to provide potential. */
 class NewPotential : public Potential{
 
 private:
@@ -26,7 +26,7 @@ public:
 	// constructor and destructor
     NewPotential(Parameters *p);
 	
-    // To satify interface
+    // To satisfy interface
     void initialize(void);    
     void cleanMemory(void);    
 
