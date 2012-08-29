@@ -550,6 +550,11 @@ void Matter::setFixed(long int indexAtom, int isFixed_passed)
 }
 
 
+//void Matter::setPotentialEnergy(double epot_input)
+//{
+//	potentialEnergy=epot_input;
+//}
+
 double Matter::getPotentialEnergy()
 {
     if(nAtoms>0) {

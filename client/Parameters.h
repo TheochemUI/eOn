@@ -195,6 +195,14 @@ public:
     double basinHoppingAdjustFraction;
     double basinHoppingTargetRatio;
 
+	// [Global Optimization]
+	string globalOptimizationMoveType;
+	long globalOptimizationSteps;
+	double globalOptimizationBeta;
+	double globalOptimizationAlpha;
+	double globalOptimizationEtoler;
+	long globalOptimizationMdmin;
+
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI
     // potential.
