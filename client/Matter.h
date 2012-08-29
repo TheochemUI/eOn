@@ -90,6 +90,7 @@ public:
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
     void setFixed(long int atom, int isFixed); // set the atom to fixed (true) or movable (false)
+    //void setPotentialEnergy(double);
     double getPotentialEnergy();
     double getKineticEnergy() const;
     double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic plus potential energy)
