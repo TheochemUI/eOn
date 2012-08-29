@@ -179,7 +179,14 @@ Parameters::Parameters(){
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
-    
+
+	// [Global Optimization]
+	globalOptimizationMoveType = "md";
+	globalOptimizationSteps = 10000;
+	globalOptimizationBeta = 1.05;
+	globalOptimizationAlpha = 1.02;
+	globalOptimizationEtoler = 1.E-2;
+	globalOptimizationMdmin = 3;
 }
 
 Parameters::~Parameters(){
@@ -414,6 +421,13 @@ int Parameters::load(FILE *file){
         basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
         basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
 
+		// [Global Optimization]
+		globalOptimizationMoveType = toLowerCase(ini.GetValue("Global Optimization", "move_type", globalOptimizationMoveType));
+		globalOptimizationSteps = ini.GetValueL("Global Optimization", "steps", globalOptimizationSteps);
+		globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
+		globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
+		globalOptimizationEtoler = ini.GetValueF("Global Optimization", "etoler", globalOptimizationEtoler);
+		globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
     }
     else
     {
