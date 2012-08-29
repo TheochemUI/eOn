@@ -28,8 +28,10 @@
     
 extern "C" 
 {
-    void force_(const long int *N, const double *RX, const double *RX, const double *RX, const long int *ISPEC,
-                double *FX, double *FY, double *FZ, double *U, const double* bx, const double* by, const double* bz);
+    void force_(const long int *N, const double *RX, const double *RY, 
+                const double *RZ, const long int *ISPEC,
+                double *FX, double *FY, double *FZ, double *U, 
+                const double* bx, const double* by, const double* bz);
 }
 /* No potential initialization    
 extern "C" 
