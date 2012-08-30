@@ -30,6 +30,7 @@
 #include "potentials/Water/Water.hpp"
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
+#include "potentials/FeHe/FeHe.h"
 
 #include "potentials/bopfox/bopfox.h"
 #ifdef BOPFOX
@@ -76,6 +77,7 @@ const char Potential::POT_LENOSKY_SI[] =  "lenosky_si";
 const char Potential::POT_SW_SI[] =       "sw_si";
 const char Potential::POT_TERSOFF_SI[] =  "tersoff_si";
 const char Potential::POT_EDIP[] =        "edip";
+const char Potential::POT_FEHE[] =        "fehe";
 const char Potential::POT_VASP[] =        "vasp";
 const char Potential::POT_BOPFOX[] =      "bopfox";
 const char Potential::POT_BOP[] =         "bop";
@@ -120,6 +122,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new EDIP();
     else if(parameters->potential == POT_TIP4P_H)
         pot = new Tip4p_H();
+    else if(parameters->potential == POT_FEHE)
+        pot = new FeHe();
 #endif
 
     else if(parameters->potential == POT_BOPFOX)

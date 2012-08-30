@@ -56,7 +56,7 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F, doubl
         }
     }
 
-    force_(&N, RX, RY, RZ, ISPEC, FX, FY, FZ, U, &box[0], &box[4], &box[8]);
+    feforce_(&N, RX, RY, RZ, ISPEC, FX, FY, FZ, U, &box[0], &box[4], &box[8]);
 
     for(i=0; i<N; i++){
         F[i*N]   = FX[i];

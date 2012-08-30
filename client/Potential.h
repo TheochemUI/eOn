@@ -36,6 +36,7 @@ class Potential
         static const char POT_SW_SI[];
         static const char POT_TERSOFF_SI[];
         static const char POT_EDIP[];
+        static const char POT_FEHE[];
         static const char POT_VASP[];
         static const char POT_BOPFOX[];
         static const char POT_BOP[];
