@@ -1,5 +1,5 @@
 !force
-      subroutine FORCE(nm,x0,y0,z0,ispec,fx,fy,fz,pe,ax,ay,az)
+      subroutine FEFORCE(nm,x0,y0,z0,ispec,fx,fy,fz,pe,ax,ay,az)
           implicit  real*8 ( a-h,o-z )
           integer*4       tv0001
 c***************************************************
