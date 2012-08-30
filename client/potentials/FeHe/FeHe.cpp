@@ -45,9 +45,9 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F, doubl
     long *ISPEC = new long[N];
 
     for(i=0; i<N; i++){
-        RX[i] = R[i*N];
-        RY[i] = R[i*N+1];
-        RZ[i] = R[i*N+2];
+        RX[i] = R[i*3+0];
+        RY[i] = R[i*3+1];
+        RZ[i] = R[i*3+2];
         assert(atomicNrs[i]==26 || atomicNrs[i]==2);
         if(atomicNrs[i] == 26){
             ISPEC[i] = 0;
@@ -59,9 +59,9 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F, doubl
     feforce_(&N, RX, RY, RZ, ISPEC, FX, FY, FZ, U, &box[0], &box[4], &box[8]);
 
     for(i=0; i<N; i++){
-        F[i*N]   = FX[i];
-        F[i*N+1] = FY[i];
-        F[i*N+2] = FZ[i];
+        F[i*3]   = FX[i];
+        F[i*3+1] = FY[i];
+        F[i*3+2] = FZ[i];
     }
 
     delete [] RX;
