@@ -708,7 +708,6 @@ bool Matter::matter2con(FILE *file)
     }
     fprintf(file, "\n");
     for(j=0; j<Ncomponent; j++) {
-        // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
         fprintf(file, "%f ", mass[j]);
     }
     fprintf(file, "\n");
@@ -764,7 +763,7 @@ bool Matter::con2matter(FILE *file)
     // The third line contains the length of the periodic cell
     fgets(line,sizeof(line),file);
     sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
- 
+
     double angles[3];
     fgets(headerCon4,sizeof(line),file);
     // The fourth line contains the angles of the cell vectors
@@ -858,7 +857,6 @@ bool Matter::con2matter(FILE *file)
 // *1*       sscanf(line, "%lf", &mass[j]);
         // split at either space or tab
         split = strtok(NULL, " \t");
-        // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
     }
 
     int atomicNr;
