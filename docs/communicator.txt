@@ -108,7 +108,7 @@ until all of the jobs have finished running.
 
     default: ``eonclient``
 
-    **number_of_CPUs**: The number of jobs that will run simultaneously.
+    **number_of_cpus**: The number of jobs that will run simultaneously.
 
     type: int
 
