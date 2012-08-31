@@ -66,5 +66,10 @@ namespace helper_functions {
     AtomMatrix loadMode(string filename, int nAtoms);
     void saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode);
     std::vector<int> split_string_int(std::string s, std::string delim);
+
+    bool identical(const Matter* m1, const Matter* m2, const double distanceDifference);
+
+    bool KDBMatch(const Matter *m1, const Matter *m2, const double distanceDifference,
+                  const double neighborCutoff);
 }
 #endif

@@ -35,6 +35,7 @@ class Job {
         static const char DYNAMICS[];
         static const char PREFACTOR[];
 		static const char MINIMA_HOPPING[];
+		static const char STRUCTURE_COMPARISON[];
         static const char TEST[];
 
         static Job *getJob(Parameters *parameters);
