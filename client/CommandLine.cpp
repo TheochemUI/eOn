@@ -35,6 +35,7 @@ void usage(void)
     fprintf(stderr, fmtStr, "m", "Minimization of inputConfile saves to outputConfile");
     fprintf(stderr, fmtStr, "s", "Single point energy of inputConfile");
     fprintf(stderr, fmtStr, "o", "Optimization method [default: qm]");
+    fprintf(stderr, fmtStr, "f", "Convergence force [default: 0.001]");
 
     fprintf(stderr, "Required Options:\n");
     fprintf(stderr, fmtStr, "p", "The potential (e.g. qsc, lj, eam_al)");
@@ -46,12 +47,13 @@ void commandLine(int argc, char **argv)
     #ifndef WIN32
     int c;
     bool sflag = false, mflag = false, pflag = false;
+    double optConvergedForce = 0.001;
 
     string potential;
     string confile;
     string optimizer("cg");
 
-    while ((c=getopt(argc,argv,"hsmp:o:")) != -1) {
+    while ((c=getopt(argc,argv,"hsmp:f:o:")) != -1) {
         switch (c) {
             case 's':
                 sflag = true;
@@ -65,6 +67,10 @@ void commandLine(int argc, char **argv)
                 break;
             case 'o':
                 optimizer = optarg;
+                break;
+            case 'f':
+                cout <<optarg<<endl;
+                optConvergedForce = atof(optarg);
                 break;
             case 'h':
                 usage();
@@ -105,6 +111,7 @@ void commandLine(int argc, char **argv)
     Parameters *parameters = new Parameters;
     parameters->potential = potential;
     parameters->optMethod = optimizer;
+    parameters->optConvergedForce = optConvergedForce;
 
     log_init(parameters, (char*)"client.log");
 
