@@ -460,3 +460,15 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
     free(str);
     return list;
 }
+
+bool helper_functions::identical(const Matter* m1, const Matter* m2, const double distanceDifference)
+{
+    return true;
+}
+
+bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2, 
+                                const double distanceDifference,
+                                const double neighborCutoff)
+{
+    return true;
+}
