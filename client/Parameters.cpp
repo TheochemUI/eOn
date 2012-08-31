@@ -59,6 +59,7 @@ Parameters::Parameters(){
     distanceDifference = 0.1;
     neighborCutoff = 3.3;
     checkRotation = false;
+    indistinguishableAtoms = true;
 
     // [Debug] //
     writeMovies = false;
@@ -270,6 +271,7 @@ int Parameters::load(FILE *file){
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
         neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
         checkRotation = ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
+        indistinguishableAtoms = ini.GetValueB("Structure Comparison", "indistinguishable_atoms", indistinguishableAtoms);
 
         // [Process Search] //
 

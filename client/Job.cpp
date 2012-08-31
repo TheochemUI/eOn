@@ -16,6 +16,7 @@
 #include "PrefactorJob.h"
 #include "TestJob.h"
 #include "MinimaHoppingJob.h"
+#include "StructureComparisonJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
@@ -32,6 +33,7 @@ const char Job::DYNAMICS[] =                 "md";
 const char Job::SAFE_HYPER[] =                "safe_hyper";
 const char Job::PREFACTOR[] =                "prefactor";
 const char Job::MINIMA_HOPPING[] =           "minima_hopping";
+const char Job::STRUCTURE_COMPARISON[] =    "structure_comparison";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -66,6 +68,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new PrefactorJob(parameters);
     }else if (parameters->job == Job::MINIMA_HOPPING) {
         job =  new MinimaHoppingJob(parameters);
+    }else if (parameters->job == Job::STRUCTURE_COMPARISON) {
+        job =  new StructureComparisonJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
     }
