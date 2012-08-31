@@ -64,6 +64,7 @@ Potential:
                 - bop
                 - emt
                 - eam_al
+                - fehe
                 - vasp
                 - tersoff_si
                 - lammps
