@@ -37,8 +37,9 @@ def main():
         files = [ f for f in os.listdir(".") if os.path.isfile(f) ]
         for f in files:
             fh = open(f)
-            f_passed = f.split('.')[0] + "_passed." + f.split('.')[1]
-            job[f_passed] = StringIO(fh.read())
+            if(len(f.split('.')) > 1):
+                f_passed = f.split('.')[0] + "_passed." + f.split('.')[1]
+                job[f_passed] = StringIO(fh.read())
             fh.close()
         job["id"] = "output"
         if os.path.isdir("output_old"):
