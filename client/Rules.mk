@@ -30,12 +30,12 @@ POTENTIALS += "+bopfox"
 
 #Potentials relying on fortran
 ifdef NO_FORTRAN
-    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H"
+    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H -FeHe"
     OPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
                 ./potentials/FeHe/
 else
-    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H"
+    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H +FeHe"
     FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
                 ./potentials/FeHe/
