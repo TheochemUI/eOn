@@ -62,6 +62,7 @@ public:
     double distanceDifference; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
     bool   checkRotation;
+    bool   indistinguishableAtoms;
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
