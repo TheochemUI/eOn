@@ -4,6 +4,9 @@
 # directory, and that the states directory is named 'states'.
 
 import os
+import sys
+
+args = ' '.join(sys.argv[1:])
 
 n = 0
 while os.path.exists(os.path.join('states', '%d' % n)):
@@ -15,6 +18,6 @@ while os.path.exists(os.path.join('states', '%d' % n)):
 		saddle_path = os.path.join('states', '%d' % n, 'procdata', 'saddle_%s.con' % proc)
 		product_path = os.path.join('states', '%d' % n, 'procdata', 'product_%s.con' % proc)
 		mode_path = os.path.join('states', '%d' % n, 'procdata', 'mode_%s.dat' % proc)
-		os.system('kdbinsert.py %s %s %s -o %s' % (reactant_path, saddle_path, product_path, mode_path))
+		os.system('kdbinsert.py %s %s %s -o %s %s' % (reactant_path, saddle_path, product_path, mode_path, args))
 	n += 1
 
