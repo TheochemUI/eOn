@@ -34,7 +34,7 @@ class Job {
         static const char NUDGED_ELASTIC_BAND[];
         static const char DYNAMICS[];
         static const char PREFACTOR[];
-		static const char MINIMA_HOPPING[];
+		static const char GLOBAL_OPTIMIZATION[];
 		static const char STRUCTURE_COMPARISON[];
         static const char TEST[];
 

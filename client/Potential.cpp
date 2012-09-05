@@ -195,6 +195,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
             throw 1017;
         }
     }
+//    cout <<forces<<endl;
     
     return forces;
 };

@@ -19,10 +19,10 @@ const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
 const char Dynamics::NONE[] = "none";
 
-Dynamics::Dynamics(Matter *matter_passed, Parameters *parameters_passed)
+Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in)
 {
-    matter = matter_passed;
-    parameters = parameters_passed;
+    matter = matter_in;
+    parameters = parameters_in;
     dt = parameters->mdTimeStep;
     nAtoms = matter->numberOfAtoms();
     nFreeCoords = matter->numberOfFreeAtoms()*3;
@@ -36,9 +36,9 @@ Dynamics::~Dynamics()
     return;
 }
 
-void Dynamics::setTemperature(double temperature_passed)
+void Dynamics::setTemperature(double temperature_in)
 {
-    temperature = temperature_passed;
+    temperature = temperature_in;
 }
 
 void Dynamics::oneStep(void)
@@ -55,10 +55,12 @@ void Dynamics::oneStep(void)
     }
     else if(parameters->thermostat == NONE){
        velocityVerlet();
-        //double potE, kinE;
-        //kinE = matter->getKineticEnergy();
-        //potE = matter->getPotentialEnergy();
-        //log("totE = %10.5f\n",kinE+potE);
+///*
+       double potE, kinE;
+       kinE = matter->getKineticEnergy();
+       potE = matter->getPotentialEnergy();
+       log("totE = %10.5f\n",kinE+potE);
+//*/
     }
 }
 

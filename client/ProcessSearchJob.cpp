@@ -32,9 +32,9 @@ ProcessSearchJob::~ProcessSearchJob()
 
 std::vector<std::string> ProcessSearchJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
-    string displacement_passed("displacement_passed.con");
-    string mode_passed("mode_passed.dat");
+    string reactantFilename("reactant_in.con");
+    string displacementFilename("displacement.con");
+    string modeFilename("mode_in.dat");
 
     initial = new Matter(parameters);
     if (parameters->saddleMethod == "min_mode") {
@@ -46,7 +46,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     min1 = new Matter(parameters);
     min2 = new Matter(parameters);
 
-    if (!initial->con2matter(reactant_passed)) {
+    if (!initial->con2matter(reactantFilename)) {
         printf("Stop\n");
         exit(1);
     }
@@ -64,7 +64,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     if (parameters->saddleMethod == "min_mode") {
         if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
             // displacement was passed from the server
-            if(!saddle->con2matter(displacement_passed)) {
+            if(!saddle->con2matter(displacementFilename)) {
                 printf("Stop\n");
                 exit(1);
             }
@@ -83,7 +83,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     if (parameters->saddleMethod == "min_mode") {
         if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
             // mode was passed from the server
-            mode = helper_functions::loadMode(mode_passed, initial->numberOfAtoms()); 
+            mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
         saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
     }
@@ -279,25 +279,25 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
     fclose(fileResults);
 
-    std::string reactantFilename("reactant.con");
+    std::string reactantFilename("reactant_out.con");
     returnFiles.push_back(reactantFilename);
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
 
-    std::string modeFilename("mode.dat");
+    std::string modeFilename("mode_out.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
     fclose(fileReactant);
 
-    std::string saddleFilename("saddle.con");
+    std::string saddleFilename("saddle_out.con");
     returnFiles.push_back(saddleFilename);
     fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
-    std::string productFilename("product.con");
+    std::string productFilename("product_out.con");
     returnFiles.push_back(productFilename);
     fileProduct = fopen(productFilename.c_str(), "wb");
     min2->matter2con(fileProduct);

@@ -31,9 +31,9 @@
 
 static const char LOG_PREFIX[] = "[UnbiasedParallelReplica]";
 
-UnbiasedParallelReplicaJob::UnbiasedParallelReplicaJob(Parameters *parameters_passed)
+UnbiasedParallelReplicaJob::UnbiasedParallelReplicaJob(Parameters *params)
 {
-    parameters = parameters_passed;
+    parameters = params;
 }
 
 UnbiasedParallelReplicaJob::~UnbiasedParallelReplicaJob()
@@ -43,12 +43,12 @@ UnbiasedParallelReplicaJob::~UnbiasedParallelReplicaJob()
 
 std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 {
-    //load reactant_passed.con
+    //load reactant.con
     reactant = new Matter(parameters);
     reactant->con2matter(helper_functions::getRelevantFile(parameters->conFilename));
 
     //minimize the initial reactant
-    log("%s Minimizing initial reactant\n", LOG_PREFIX);
+    log("%s Minimizing initial position\n", LOG_PREFIX);
     reactant->relax();
     reactant->matter2con("reactant.con");
 
