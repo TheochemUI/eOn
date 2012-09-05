@@ -589,6 +589,9 @@ class MPI(Communicator):
         qs = len(self.client_ranks) - num_ready + num_resume
         return qs
 
+    def get_number_in_progress(self):
+        return int(os.environ['EON_NUMBER_OF_CLIENTS'])
+
 
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
