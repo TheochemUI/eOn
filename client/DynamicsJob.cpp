@@ -43,7 +43,7 @@ std::vector<std::string> DynamicsJob::run(void)
 {
     Matter *R = new Matter(parameters);
     Matter *F = new Matter(parameters);
-    R->con2matter("reactant_passed.con");
+    R->con2matter("pos_in.con");
     *F = *R;
 
     Dynamics *d = new Dynamics(R, parameters);
@@ -51,7 +51,7 @@ std::vector<std::string> DynamicsJob::run(void)
 
     *F = *R;
     FILE *fileProduct;
-    std::string productFilename("product.con");
+    std::string productFilename("pos_out.con");
     returnFiles.push_back(productFilename);
 
     fileProduct = fopen(productFilename.c_str(), "wb");

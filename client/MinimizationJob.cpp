@@ -24,15 +24,14 @@ MinimizationJob::~MinimizationJob(){ }
 
 std::vector<std::string> MinimizationJob::run(void)
 {
-//    string reactant_passed("reactant_passed.con");
-    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
-    string reactant_output("reactant.con");
+    string posInFilename("pos_in.con");
+    string posOutFilename("pos_out.con");
 
     if (parameters->checkpoint) {
-        FILE *react;
-        react = fopen("reactant_checkpoint.con", "r");
-        if (react != NULL) {
-            reactant_passed = "reactant_checkpoint.con";
+        FILE *pos;
+        pos = fopen("pos_cp.con", "r");
+        if (pos != NULL) {
+            posInFilename = "pos_cp.con";
             log("Resuming from checkpoint\n");
         }else{
             log("No checkpoint files found\n");
@@ -40,19 +39,19 @@ std::vector<std::string> MinimizationJob::run(void)
     }
 
     std::vector<std::string> returnFiles;
-    returnFiles.push_back(reactant_output);
+    returnFiles.push_back(posOutFilename);
 
-    Matter *reactant = new Matter(parameters);
-    reactant->con2matter(reactant_passed);
+    Matter *pos = new Matter(parameters);
+    pos->con2matter(posInFilename);
 
-    printf("\nBeginning minimization of %s\n", reactant_passed.c_str());
+    printf("\nBeginning minimization of %s\n", posInFilename.c_str());
 
     int status;
 
     bool converged;
     try {
-        converged = reactant->relax(false, parameters->writeMovies, 
-                                    parameters->checkpoint, "min", "reactant");
+        converged = pos->relax(false, parameters->writeMovies, 
+                                    parameters->checkpoint, "min", "pos");
         if (converged) {
             status = STATUS_GOOD;
             printf("Minimization converged within tolerence\n");
@@ -69,10 +68,10 @@ std::vector<std::string> MinimizationJob::run(void)
         }
     }
 
-    printf("Saving result to %s\n", reactant_output.c_str());
-    reactant->matter2con(reactant_output);
+    printf("Saving result to %s\n", posOutFilename.c_str());
+    pos->matter2con(posOutFilename);
     if (status != STATUS_POTENTIAL_FAILED) {
-        printf("Final Energy: %f\n", reactant->getPotentialEnergy());
+        printf("Final Energy: %f\n", pos->getPotentialEnergy());
     }
 
     FILE *fileResults;
@@ -86,7 +85,7 @@ std::vector<std::string> MinimizationJob::run(void)
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     if (status != STATUS_POTENTIAL_FAILED) {
-        fprintf(fileResults, "%f potential_energy\n", reactant->getPotentialEnergy());
+        fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());
     }
     fclose(fileResults);
 
