@@ -36,14 +36,21 @@ int getBundleSize(void)
 
         //If "passed" is not in the filename
         //then skip.
-        if (strstr(dp->d_name, "passed")==NULL) {
-            continue;
-        }
+        //XXX: we no longer used passed in the filename
+        //if (strstr(dp->d_name, "passed")==NULL) {
+        //    continue;
+        //}
 
         //Find the last underscore
-        char *ch = strrchr(dp->d_name, '_') + 1;
+        char *ch = strrchr(dp->d_name, '_');
+        if (ch == NULL) {
+            continue;
+        }else{
+            ch += 1;
+        }
         //Find the last period
         char *cch = strrchr(dp->d_name, '.');
+        if (cch == NULL) continue;
         *cch = '\0';
         if (isdigit(*ch)) {
             int i=atoi(ch)+1;
@@ -86,19 +93,25 @@ std::vector<std::string> unbundle(int number) {
 
         //If "passed" is not in the filename
         //then skip.
-        if (strstr(dp->d_name, "passed")==NULL) {
-            continue;
-        }
+        //if (strstr(dp->d_name, "passed")==NULL) {
+        //    continue;
+        //}
 
         int numUnderscores = strchrcount(dp->d_name, '_');
-        if (numUnderscores < 2) {
+        if (numUnderscores < 1) {
             continue;
         }
 
         //Find the last underscore
-        char *ch = strrchr(dp->d_name, '_') + 1;
+        char *ch = strrchr(dp->d_name, '_');
+        if (ch == NULL) {
+            continue;
+        }else{
+            ch += 1;
+        }
         //Find the last period
         char *cch = strrchr(dp->d_name, '.');
+        if (cch == NULL) continue;
         *cch = '\0';
         if (isdigit(*ch)) {
             bundleNumber=atoi(ch);
