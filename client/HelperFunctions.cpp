@@ -377,16 +377,16 @@ string helper_functions::getRelevantFile(string filename)
     string filenamePrefix;
     string filenamePostfix;
 
-    // check if the _checkpoint version of the file is present
+    // check if the _cp version of the file is present
     int i = filename.rfind(".");
     filenamePrefix.assign(filename, 0, i);
     filenamePostfix.assign(filename, i, filename.size());
-    filenameRelevant = filenamePrefix + "_checkpoint" + filenamePostfix;
+    filenameRelevant = filenamePrefix + "_cp" + filenamePostfix;
     if(existsFile(filenameRelevant)) {
         return filenameRelevant;
     }
-    // check if the _passed version of the file is present
-    filenameRelevant = filenamePrefix + "_passed" + filenamePostfix;
+    // check if the _in version of the file is present
+    filenameRelevant = filenamePrefix + "_in" + filenamePostfix;
     if(existsFile(filenameRelevant)) {
         return filenameRelevant;
     }

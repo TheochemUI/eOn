@@ -30,17 +30,17 @@ SaddleSearchJob::~SaddleSearchJob()
 
 std::vector<std::string> SaddleSearchJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
-    string displacement_passed("displacement_passed.con");
-    string mode_passed("mode_passed.dat");
+    string reactantFilename("reactant_in.con");
+    string displacementFilename("displacement_in.con");
+    string modeFilename("mode_in.dat");
 
     if (parameters->checkpoint) {
         FILE *disp, *mode;
-        disp = fopen("displacement_checkpoint.con", "r");
-        mode = fopen("mode_checkpoint.dat", "r");
+        disp = fopen("displacement_cp.con", "r");
+        mode = fopen("mode_cp.dat", "r");
         if (disp != NULL && mode != NULL) {
-            displacement_passed = "displacement_checkpoint.con";
-            mode_passed = "mode_checkpoint.dat";
+            displacementFilename = "displacement_cp.con";
+            modeFilename = "mode_cp.dat";
             log("Resuming from checkpoint\n");
         }else{
             log("No checkpoint files found\n");
@@ -51,11 +51,11 @@ std::vector<std::string> SaddleSearchJob::run(void)
     displacement = new Matter(parameters);
     saddle = new Matter(parameters);
 
-    initial->con2matter(reactant_passed);
+    initial->con2matter(reactantFilename);
 
     if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // displacement was passed from the server
-        saddle->con2matter(displacement_passed);
+        saddle->con2matter(displacementFilename);
     }
     else {
         // displacement and mode will be made on the client
@@ -65,7 +65,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
     AtomMatrix mode;
     if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // mode was passed from the server
-        mode = helper_functions::loadMode(mode_passed, initial->numberOfAtoms());
+        mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
 
     saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
@@ -129,13 +129,13 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%f potential_energy_reactant\n", initial->getPotentialEnergy());
     fclose(fileResults);
 
-    std::string modeFilename("mode.dat");
+    std::string modeFilename("mode_out.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
 
-    std::string saddleFilename("saddle.con");
+    std::string saddleFilename("saddle_out.con");
     returnFiles.push_back(saddleFilename);
     fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);

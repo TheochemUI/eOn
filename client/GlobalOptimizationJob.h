@@ -8,17 +8,17 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef MINIMAHOPPINGJOB_H
-#define MINIMAHOPPINGJOB_H
+#ifndef GLOBALOPTIMIZATIONJOB_H
+#define GLOBALOPTIMIZATIONJOB_H
 
 #include "Job.h"
 #include "Parameters.h"
 #include "Matter.h"
 
-class MinimaHoppingJob: public Job {
+class GlobalOptimizationJob: public Job {
     public:
-        MinimaHoppingJob(Parameters *params);
-        ~MinimaHoppingJob(void);
+        GlobalOptimizationJob(Parameters *params);
+        ~GlobalOptimizationJob(void);
         void move_step(Matter *);
         void accept_reject_step(Matter *,Matter *);
         void accept_reject_minhopp(Matter *,Matter *);

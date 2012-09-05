@@ -29,9 +29,9 @@
     #include "false_boinc.h"
 #endif
 
-SafeHyperJob::SafeHyperJob(Parameters *parameters_passed)
+SafeHyperJob::SafeHyperJob(Parameters *params)
 {
-    parameters = parameters_passed;
+    parameters = params;
 }
 
 SafeHyperJob::~SafeHyperJob()
@@ -49,8 +49,8 @@ std::vector<std::string> SafeHyperJob::run(void)
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
-    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
-    current->con2matter(reactant_passed);
+    string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
+    current->con2matter(reactantFilename);
 
     log("\nMinimizing initial reactant\n");
     long refFCalls = Potential::fcalls;
@@ -319,7 +319,7 @@ void SafeHyperJob::saveData(int status)
     
     fclose(fileResults);
 
-    std::string reactantFilename("reactant.con");
+    std::string reactantFilename("reactant_out.con");
     returnFiles.push_back(reactantFilename);
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     reactant->matter2con(fileReactant);
@@ -328,7 +328,7 @@ void SafeHyperJob::saveData(int status)
     if(newStateFlag)
     {
         FILE *fileProduct;
-        std::string productFilename("product.con");
+        std::string productFilename("product_out.con");
         returnFiles.push_back(productFilename);
 
         fileProduct = fopen(productFilename.c_str(), "wb");
@@ -338,7 +338,7 @@ void SafeHyperJob::saveData(int status)
         if(parameters->parrepRefineTransition)
         {
             FILE *fileSaddle;
-            std::string saddleFilename("saddle.con");
+            std::string saddleFilename("saddle_out.con");
             returnFiles.push_back(saddleFilename);
 
             fileSaddle = fopen(saddleFilename.c_str(), "wb");

@@ -29,7 +29,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
 
     // Load the displacement con file and get the position.
     Matter *reactant = new Matter(parameters);
-    reactant->con2matter("reactant_passed.con");
+    reactant->con2matter("pos_in.con");
     AtomMatrix posA;
     posA = reactant->getPositions();
 

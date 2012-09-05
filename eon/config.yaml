@@ -17,7 +17,7 @@ Main:
                 - basin_hopping
                 - akmc
                 - hessian
-                - md
+                - molecular_dynamics
 
         random_seed:
             kind: int

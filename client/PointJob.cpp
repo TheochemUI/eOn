@@ -21,19 +21,19 @@ PointJob::~PointJob(){ }
 std::vector<std::string> PointJob::run(void)
 {
     std::vector<std::string> returnFiles;
-    string reactant_passed("reactant_passed.con");
-    string data_out("results.dat");
-    returnFiles.push_back(data_out);
+    string posInFilename("pos_in.con");
+    string resultsFilename("results.dat");
+    returnFiles.push_back(resultsFilename);
 
-    Matter *reactant = new Matter(parameters);
-    reactant->con2matter(reactant_passed);
+    Matter *pos = new Matter(parameters);
+    pos->con2matter(posInFilename);
 
-    printf("Energy:         %f\n", reactant->getPotentialEnergy());
-    printf("Max atom force: %g\n", reactant->maxForce());
+    printf("Energy:         %f\n", pos->getPotentialEnergy());
+    printf("Max atom force: %g\n", pos->maxForce());
 
-    FILE *fileResults = fopen(data_out.c_str(), "wb");
-    fprintf(fileResults, "%f Energy\n", reactant->getPotentialEnergy());
-    fprintf(fileResults, "%f Max_Force\n", reactant->maxForce());
+    FILE *fileResults = fopen(resultsFilename.c_str(), "wb");
+    fprintf(fileResults, "%f Energy\n", pos->getPotentialEnergy());
+    fprintf(fileResults, "%f Max_Force\n", pos->maxForce());
     fclose(fileResults);
 
     return returnFiles;

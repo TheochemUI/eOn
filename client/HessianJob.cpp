@@ -24,9 +24,9 @@ HessianJob::~HessianJob()
 
 std::vector<std::string> HessianJob::run(void)
 {
-    string reactant_passed("reactant_passed.con");
-    string saddle_passed("saddle_passed.con");
-    string product_passed("product_passed.con");
+    string reactant_in("reactant_in.con");
+    string saddle_in("saddle_in.con");
+    string product_in("product_in.con");
 
     std::vector<std::string> returnFiles;
 
@@ -34,9 +34,9 @@ std::vector<std::string> HessianJob::run(void)
     Matter *saddle = new Matter(parameters);
     Matter *product = new Matter(parameters);
 
-    reactant->con2matter(reactant_passed);
-    saddle->con2matter(saddle_passed);
-    product->con2matter(product_passed);
+    reactant->con2matter(reactant_in);
+    saddle->con2matter(saddle_in);
+    product->con2matter(product_in);
 
 // GH: need to fix this
 
@@ -51,7 +51,7 @@ std::vector<std::string> HessianJob::run(void)
     FILE *fileMode;
 
     std::string results_file("results.dat");
-    std::string mode_file("mode.dat");
+    std::string mode_file("mode_out.dat");
 
     returnFiles.push_back(results_file);
     returnFiles.push_back(mode_file);

@@ -13,10 +13,10 @@
 #include <cassert>
 #include <cmath>
 
-ConjugateGradients::ConjugateGradients(ObjectiveFunction *objf_passed, Parameters *parameters_passed)
+ConjugateGradients::ConjugateGradients(ObjectiveFunction *objf_in, Parameters *parameters_in)
 {
-    objf = objf_passed;
-    parameters = parameters_passed;
+    objf = objf_in;
+    parameters = parameters_in;
     forceOld = objf->getPositions() * 0.0;
     directionOld = objf->getPositions() * 0.0;
 }

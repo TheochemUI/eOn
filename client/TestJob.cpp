@@ -49,9 +49,9 @@ void TestJob::checkFullSearch(void){
     Matter *matterTemp; 
 //    SaddleSearch *saddleSearch;
 
-    string reactant_passed("reactant_test.con");
-    string displacement_passed("displacement_test.con");
-    string mode_passed("mode_test.dat");
+    string reactantFilename("reactant_test.con");
+    string displacementFilename("displacement_test.con");
+    string modeFilename("mode_test.dat");
 
     parameters->potential = "emt";
 
@@ -62,8 +62,8 @@ void TestJob::checkFullSearch(void){
     min2 = new Matter(parameters);
     matterTemp = new Matter(parameters);
 
-    saddle->con2matter(displacement_passed);
-    initial->con2matter(reactant_passed);
+    saddle->con2matter(displacementFilename);
+    initial->con2matter(reactantFilename);
     *min1 = *min2 = *initial;
 
     printf("\n---Output for saddle point search start---\n");
@@ -304,21 +304,21 @@ void TestJob::checkPotentials(void)
 
 double TestJob::getEnergyDiff(string pot, double refEnergy)
 {
-    string reactant_passed("reactant_test.con");
+    string posFilename("pos_test.con");
     parameters->potential = pot;
-    Matter *reactant = new Matter(parameters);
-    reactant->con2matter(reactant_passed);
-//    printf("Energy: %f\n", reactant->getPotentialEnergy());
-    return reactant->getPotentialEnergy()-refEnergy;
+    Matter *pos = new Matter(parameters);
+    pos->con2matter(posFilename);
+//    printf("Energy: %f\n", pos->getPotentialEnergy());
+    return pos->getPotentialEnergy()-refEnergy;
 }
 
 double TestJob::getForceDiff(string pot, double refForce)
 {
-    string reactant_passed("reactant_test.con");
+    string posFilename("pos_test.con");
     parameters->potential = pot;
-    Matter *reactant = new Matter(parameters);
-    reactant->con2matter(reactant_passed);
-//    printf("Force: %f\n", reactant->maxForce());
-    return reactant->maxForce()-refForce;
+    Matter *pos = new Matter(parameters);
+    pos->con2matter(posFilename);
+//    printf("Force: %f\n", pos->maxForce());
+    return pos->maxForce()-refForce;
 }
 
