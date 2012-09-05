@@ -147,7 +147,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        invariants['reactant_passed.con'] = reactIO
+        invariants['reactant_in.con'] = reactIO
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(config.path_pot))
@@ -169,15 +169,15 @@ class ClientMinModeExplorer(MinModeExplorer):
                             ('Main', 'random_seed',
                                 str(int(numpy.random.random()*10**9))),
                           ]
-            search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+            search['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
             if displacement:
                 dispIO = StringIO.StringIO()
                 io.savecon(dispIO, displacement)
-                search['displacement_passed.con'] = dispIO
+                search['displacement.con'] = dispIO
                 modeIO = StringIO.StringIO()
                 io.save_mode(modeIO, mode)
-                search['mode_passed.dat'] = modeIO
+                search['mode_in.dat'] = modeIO
                 searches.append(search) 
                 self.wuid += 1
                 # eager write
@@ -596,12 +596,12 @@ class ProcessSearch:
 
         if self.finished_reactant_name and self.finished_product_name:
             reactant_result = self.load_result(self.finished_reactant_name) 
-            result['reactant.con'] = reactant_result['reactant.con']
+            result['reactant.con'] = reactant_result['pos_out.con']
             product_result = self.load_result(self.finished_product_name)
-            result['product.con'] = product_result['reactant.con']
+            result['product.con'] = product_result['pos_out.con']
 
-        result['saddle.con'] = saddle_result['saddle.con']
-        result['mode.dat'] = saddle_result['mode.dat']
+        result['saddle.con'] = saddle_result['saddle_out.con']
+        result['mode.dat'] = saddle_result['mode_out.dat']
         result['results'] = self.data
 
         results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ])
@@ -615,7 +615,7 @@ class ProcessSearch:
     def get_saddle(self):
         if self.finished_saddle_name:
             saddle_result = self.load_result(self.finished_saddle_name)
-            saddle = io.loadcon(saddle_result['saddle.con'])
+            saddle = io.loadcon(saddle_result['saddle_out.con'])
         else:
             saddle = None
         return saddle
@@ -623,7 +623,7 @@ class ProcessSearch:
     def get_saddle_file(self):
         if self.finished_saddle_name:
             saddle_result = self.load_result(self.finished_saddle_name)
-            saddle = saddle_result['saddle.con']
+            saddle = saddle_result['saddle_out.con']
         else:
             saddle = None
         return saddle
@@ -633,11 +633,11 @@ class ProcessSearch:
 
         saddle_path = os.path.join(config.path_incomplete, self.finished_saddle_name)
 
-        mode_file = open(os.path.join(saddle_path, "mode.dat"))
+        mode_file = open(os.path.join(saddle_path, "mode_out.dat"))
         mode = io.load_mode(mode_file)
         mode_file.close()
 
-        reactant_file = open(os.path.join(saddle_path, "saddle.con"))
+        reactant_file = open(os.path.join(saddle_path, "saddle_out.con"))
         reactant = io.loadcon(reactant_file)
         reactant_file.close()
 
@@ -648,10 +648,10 @@ class ProcessSearch:
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, reactant)
-        job['reactant_passed.con'] = reactIO
+        job['pos_in.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'minimization') ]
-        job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+        job['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
         return job
 
@@ -659,8 +659,8 @@ class ProcessSearch:
         result1 = self.load_result(self.finished_min1_name)
         result2 = result
 
-        atoms1 = io.loadcon(result1['reactant.con'])
-        atoms2 = io.loadcon(result2['reactant.con'])
+        atoms1 = io.loadcon(result1['pos_out.con'])
+        atoms2 = io.loadcon(result2['pos_out.con'])
 
         results_dat1 = io.parse_results(result1['results.dat'])
         results_dat2 = io.parse_results(result2['results.dat'])
@@ -720,18 +720,18 @@ class ProcessSearch:
 
         dispIO = StringIO.StringIO()
         io.savecon(dispIO, self.displacement)
-        job['displacement_passed.con'] = dispIO
+        job['displacement_in.con'] = dispIO
 
         modeIO = StringIO.StringIO()
         io.save_mode(modeIO, self.mode)
-        job['mode_passed.dat'] = modeIO
+        job['mode_in.dat'] = modeIO
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        job['reactant_passed.con'] = reactIO
+        job['reactant_in.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'saddle_search') ]
-        job['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+        job['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
         return job
 

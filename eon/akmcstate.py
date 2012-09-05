@@ -83,7 +83,7 @@ class AKMCState(state.State):
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
-        id = self.find_repeat(result["saddle.con"], barrier)
+        id = self.find_repeat(result["saddle_out.con"], barrier)
         if id != None:
             self.append_search_result(result, "repeat-%d" % id)
             self.procs[id]['repeats'] += 1
@@ -98,13 +98,13 @@ class AKMCState(state.State):
         # Check if the mode, reactant, saddle, and product are legit
         try:
             if 'mode' not in result:
-                io.load_mode(result['mode.dat'])
+                io.load_mode(result['mode_out.dat'])
             if 'reactant' not in result:
-                io.loadcon(result['reactant.con'])
+                io.loadcon(result['reactant_out.con'])
             if 'saddle' not in result:
-                io.loadcon(result['saddle.con'])
+                io.loadcon(result['saddle_out.con'])
             if 'product' not in result:
-                io.loadcon(result['product.con'])
+                io.loadcon(result['product_out.con'])
         except:
             logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
@@ -124,10 +124,10 @@ class AKMCState(state.State):
         id = self.get_num_procs()
 
         # Move the relevant files into the procdata directory.
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
-        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'].getvalue())
-        open(self.proc_product_path(id), 'w').writelines(result['product.con'].getvalue())
-        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'].getvalue())
+        open(self.proc_reactant_path(id), 'w').writelines(result['reactant_out.con'].getvalue())
+        open(self.proc_mode_path(id), 'w').writelines(result['mode_out.dat'].getvalue())
+        open(self.proc_product_path(id), 'w').writelines(result['product_out.con'].getvalue())
+        open(self.proc_saddle_path(id), 'w').writelines(result['saddle_out.con'].getvalue())
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Append this barrier to the process table (in memory and on disk).
