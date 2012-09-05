@@ -383,7 +383,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
 
         if (checkpoint) {
             ostringstream chk;
-            chk << prefixCheckpoint << "_checkpoint";
+            chk << prefixCheckpoint << "_cp";
             matter2con(chk.str(), false);
         }
     }

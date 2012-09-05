@@ -206,8 +206,8 @@ int MinModeSaddleSearch::run()
         }
 
         if (parameters->checkpoint) {
-            matter->matter2con("displacement_checkpoint.con", false);
-            FILE *fileMode = fopen("mode_checkpoint.dat", "wb");
+            matter->matter2con("displacement_cp.con", false);
+            FILE *fileMode = fopen("mode_cp.dat", "wb");
             helper_functions::saveMode(fileMode, matter, 
                                        minModeMethod->getEigenvector());
             fclose(fileMode);

@@ -16,9 +16,9 @@
 #include "ReplicaExchangeJob.h"
 #include "HelperFunctions.h"
 
-ReplicaExchangeJob::ReplicaExchangeJob(Parameters *parameters_passed)
+ReplicaExchangeJob::ReplicaExchangeJob(Parameters *params)
 {
-    parameters = parameters_passed;
+    parameters = params;
 }
 
 ReplicaExchangeJob::~ReplicaExchangeJob()
@@ -34,9 +34,9 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     double pAcc;
     Matter *tmpMatter;
 
-    string reactantPassedFilename = helper_functions::getRelevantFile(parameters->conFilename);
-    reactant = new Matter(parameters);
-    reactant->con2matter(reactantPassedFilename);
+    string posFilename = helper_functions::getRelevantFile(parameters->conFilename);
+    pos = new Matter(parameters);
+    pos->con2matter(posFilename);
 
     log("\nRunning Replica Exchange\n\n");
 
@@ -47,7 +47,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     Dynamics *replicaDynamics[parameters->repexcReplicas];
     for(i=0; i<parameters->repexcReplicas; i++) {
         replica[i] = new Matter(parameters);
-        *replica[i] = *reactant;
+        *replica[i] = *pos;
         replicaDynamics[i] = new Dynamics(replica[i], parameters);
     }
 
@@ -117,14 +117,14 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
 
     // delete Matter and Dynamics objects
 
-    delete reactant;
+    delete pos;
     return returnFiles;
 }
 
 void ReplicaExchangeJob::saveData(void)
 {
 
-    FILE *fileResults, *fileReactant; //, *fileProduct;
+    FILE *fileResults, *filePos;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -135,10 +135,10 @@ void ReplicaExchangeJob::saveData(void)
     fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
     fclose(fileResults);
 
-    std::string reactantFilename("reactant.con");
-    returnFiles.push_back(reactantFilename);
-    fileReactant = fopen(reactantFilename.c_str(), "wb");
-    fclose(fileReactant);
+    std::string posFilename("pos_out.con");
+    returnFiles.push_back(posFilename);
+    filePos = fopen(posFilename.c_str(), "wb");
+    fclose(filePos);
 
     return;
 }

@@ -12,7 +12,7 @@ These are the options that go in **[Main]** section of the config.ini file.
 
     options:
 
-        ``md``: Molecular dynamics.
+        ``molecular_dynamics``: Molecular dynamics.
 
         ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
 

@@ -1,5 +1,5 @@
-#include "MinimaHoppingJob.h"
-#include "MinimaHopping.h"
+#include "GlobalOptimizationJob.h"
+#include "GlobalOptimization.h"
 //#include "MinimizationJob.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
@@ -9,7 +9,7 @@ using namespace helper_functions;
 static FILE *monfile;
 static FILE *earrfile;
 //****************************************************************************************
-MinimaHoppingJob::MinimaHoppingJob(Parameters *params)
+GlobalOptimizationJob::GlobalOptimizationJob(Parameters *params)
 {
 	parameters = params;
 	nlmin=0;
@@ -30,28 +30,28 @@ MinimaHoppingJob::MinimaHoppingJob(Parameters *params)
 	trial_minimum="new";
 }
 //****************************************************************************************
-MinimaHoppingJob::~MinimaHoppingJob(void)
+GlobalOptimizationJob::~GlobalOptimizationJob(void)
 {
 }
 //****************************************************************************************
-std::vector<std::string> MinimaHoppingJob::run(void)
+std::vector<std::string> GlobalOptimizationJob::run(void)
 {
     //int status;
-	MinimaHopping mh = MinimaHopping(parameters);
-    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
+	GlobalOptimization go = GlobalOptimization(parameters);
+    string posFilename = helper_functions::getRelevantFile(parameters->conFilename);
     //string reactant_output("reactant.con");
     std::vector<std::string> returnFiles;
     //returnFiles.push_back(reactant_output);
     Matter *matter_curr = new Matter(parameters);
     Matter *matter_hopp = new Matter(parameters);
-    matter_curr->con2matter(reactant_passed);
+    matter_curr->con2matter(posFilename);
     bool converged;
 	long nstep = parameters->globalOptimizationSteps;
 	AtomMatrix rat_t(matter_curr->numberOfAtoms(),3);
 	double epot_hopp;
 	//std::vector<double> earr;
 	//std::vector<Matter> allmatter;
-    printf("\nBeginning minima hopping of %s\n", reactant_passed.c_str());
+    printf("\nBeginning minima hopping of %s\n", posFilename.c_str());
 	//long fcalls;
 	//printf("fcalls= %ld\n",matter_curr->getForceCalls());
 	//printf("epot= %24.15E\n",matter_curr->getPotentialEnergy());
@@ -71,12 +71,12 @@ std::vector<std::string> MinimaHoppingJob::run(void)
 	fprintf(monfile,"%15.5f  %15.5f  %15.5f  %15.5f         --\n",
 		matter_hopp->getPotentialEnergy(),ediff,temp,dt);
 	for(long istep=1;istep<=nstep;istep++) {
-		MinimaHoppingJob::move_step(matter_hopp);
+		GlobalOptimizationJob::move_step(matter_hopp);
     	converged = matter_hopp->relax(false, parameters->writeMovies, 
                                 parameters->checkpoint, "min", "matter_hopp");
     	printf("converged %s \n",(converged)?"TRUE":"FALSE");
-		MinimaHoppingJob::examine_escape(matter_curr,matter_hopp);
-		MinimaHoppingJob::apply_move_feedback_p1(matter_hopp);
+		GlobalOptimizationJob::examine_escape(matter_curr,matter_hopp);
+		GlobalOptimizationJob::apply_move_feedback_p1(matter_hopp);
 		if(escaped=="failure") {
 			//rat_t=matter_curr->getPositions();
 			//matter_hopp->setPositions(rat_t);
@@ -86,8 +86,8 @@ std::vector<std::string> MinimaHoppingJob::run(void)
 			continue;
 		}
 		//following will decide to accept or reject the trial step
-		MinimaHoppingJob::accept_reject_step(matter_curr,matter_hopp);
-		MinimaHoppingJob::apply_move_feedback_p2(matter_hopp);
+		GlobalOptimizationJob::accept_reject_step(matter_curr,matter_hopp);
+		GlobalOptimizationJob::apply_move_feedback_p2(matter_hopp);
 		if(acc_rej_decision=="accepted") {
 			//double epot_c=matter_curr->getPotentialEnergy();
 			//rat_t=matter_hopp->getPositions();
@@ -128,13 +128,13 @@ std::vector<std::string> MinimaHoppingJob::run(void)
 		}
 		fprintf(earrfile,"%5lu  %15.5f  %15.5f  %15.5f  \n",i+1,earr[i],earr[i]-earr[0],earr[i]-earrim1);
 	}
-	//mh.run();
+	//go.run();
 	fclose(monfile);
 	fclose(earrfile);
 	return returnFiles;
-} //end of MinimaHoppingJob::run
+} //end of GlobalOptimizationJob::run
 //****************************************************************************************
-void MinimaHoppingJob::examine_escape(Matter *matter_curr,Matter *matter_hopp) {
+void GlobalOptimizationJob::examine_escape(Matter *matter_curr,Matter *matter_hopp) {
 	//fprintf(monfile,"%15.5f  %15.5f  %15.5f  \n",matter_hopp->getPotentialEnergy(),
 	//		matter_curr->getPotentialEnergy(),matter_hopp->getPotentialEnergy()-matter_curr->getPotentialEnergy());
 	double epot, epot_hopp;
@@ -149,7 +149,7 @@ void MinimaHoppingJob::examine_escape(Matter *matter_curr,Matter *matter_hopp) {
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::apply_move_feedback_p1(Matter *matter_hopp) {
+void GlobalOptimizationJob::apply_move_feedback_p1(Matter *matter_hopp) {
 	if(move_feedback=="none") {
 	}
 	else if(move_feedback=="minima_hopping") {
@@ -171,7 +171,7 @@ void MinimaHoppingJob::apply_move_feedback_p1(Matter *matter_hopp) {
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::apply_move_feedback_p2(Matter *matter_hopp) {
+void GlobalOptimizationJob::apply_move_feedback_p2(Matter *matter_hopp) {
 	if(move_feedback=="none") {
 	}
 	else if(move_feedback=="minima_hopping") {
@@ -205,10 +205,10 @@ void MinimaHoppingJob::apply_move_feedback_p2(Matter *matter_hopp) {
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::accept_reject_step(Matter *matter_curr,Matter *matter_hopp) {
+void GlobalOptimizationJob::accept_reject_step(Matter *matter_curr,Matter *matter_hopp) {
 	if(acc_rej_type=="minima_hopping") {
-		MinimaHoppingJob::accept_reject_minhopp(matter_curr,matter_hopp);
-		//MinimaHoppingJob::update_minhopp_param(matter_hopp);
+		GlobalOptimizationJob::accept_reject_minhopp(matter_curr,matter_hopp);
+		//GlobalOptimizationJob::update_minhopp_param(matter_hopp);
 	}
 	else if(acc_rej_type=="basin_hopping") {
 		printf("WARNING: it will be implemented by Sam\n");
@@ -220,7 +220,7 @@ void MinimaHoppingJob::accept_reject_step(Matter *matter_curr,Matter *matter_hop
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::accept_reject_minhopp(Matter *matter_curr,Matter *matter_hopp) {
+void GlobalOptimizationJob::accept_reject_minhopp(Matter *matter_curr,Matter *matter_hopp) {
 	//double epot;
 	//epot=matter_hopp->getPotentialEnergy();
 	double epot;
@@ -242,9 +242,9 @@ void MinimaHoppingJob::accept_reject_minhopp(Matter *matter_curr,Matter *matter_
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::move_step(Matter *matter_curr) {
+void GlobalOptimizationJob::move_step(Matter *matter_curr) {
 	if(parameters->globalOptimizationMoveType=="md") {
-		MinimaHoppingJob::mdescape(matter_curr);
+		GlobalOptimizationJob::mdescape(matter_curr);
 	}
 	else if(parameters->globalOptimizationMoveType=="random") {
 		printf("WARNING: it will be implemented by Sam\n");
@@ -252,7 +252,7 @@ void MinimaHoppingJob::move_step(Matter *matter_curr) {
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::mdescape(Matter *matter)
+void GlobalOptimizationJob::mdescape(Matter *matter)
 {
 	int nmd;
 	double ekinc, epot, etot, epot0, etot0;
@@ -303,7 +303,7 @@ void MinimaHoppingJob::mdescape(Matter *matter)
 	}
 }
 //****************************************************************************************
-void MinimaHoppingJob::velopt(Matter *matter)
+void GlobalOptimizationJob::velopt(Matter *matter)
 {
 	AtomMatrix vat(matter->numberOfAtoms(),3);
 	double tt1, tt2, tt3, vtot[3]; //, ekin_t;
@@ -346,7 +346,7 @@ void MinimaHoppingJob::velopt(Matter *matter)
 //    matter->setVelocities(velocity*sqrt(temperature/kinT));
 //}
 //****************************************************************************************
-void MinimaHoppingJob::insert(Matter *matter)
+void GlobalOptimizationJob::insert(Matter *matter)
 {
 	double epot;
 	//vector<double> epot_hopp;
@@ -365,7 +365,7 @@ void MinimaHoppingJob::insert(Matter *matter)
 	}
 }
 //****************************************************************************************
-size_t MinimaHoppingJob::hunt(double epot) {
+size_t GlobalOptimizationJob::hunt(double epot) {
     //epot is in interval [earr(jlo),earr(jlo+1)[ ; earr(0)=-Infinity ; earr(n+1) = Infinity
     size_t jlo;
 	double de;

@@ -33,14 +33,14 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     long status;
     int f1;
 
-    string reactant_passed = helper_functions::getRelevantFile("reactant.con");
-    string product_passed = helper_functions::getRelevantFile("product.con");
+    string reactantFilename = helper_functions::getRelevantFile("reactant.con");
+    string productFilename = helper_functions::getRelevantFile("product.con");
 
     Matter *initial = new Matter(parameters);
     Matter *final = new Matter(parameters);
 
-    initial->con2matter(reactant_passed);
-    final->con2matter(product_passed);
+    initial->con2matter(reactantFilename);
+    final->con2matter(productFilename);
 
     NudgedElasticBand *neb = new NudgedElasticBand(initial, final, parameters);
 

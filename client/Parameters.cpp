@@ -34,7 +34,7 @@ Parameters::Parameters(){
     checkpoint = false;
     quiet = false;
     iniFilename = "config.ini";
-    conFilename = "reactant.con";
+    conFilename = "pos_in.con";
     finiteDifference = 0.01;
     maxForceCalls = 0;
 
@@ -433,8 +433,7 @@ int Parameters::load(FILE *file){
     }
     else
     {
-        fprintf(stderr, "Couldn't parse the ini file. Perhaps you are "
-                        "using the old style config?\n");
+        fprintf(stderr, "Couldn't parse the ini file.\n");
         error = 1;
     }
     return error;

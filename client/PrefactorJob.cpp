@@ -32,9 +32,9 @@ std::vector<std::string> PrefactorJob::run(void)
     std::vector<std::string> returnFiles;
     VectorXd freqs;
 
-    string reactant_passed("reactant_passed.con");
-    string saddle_passed("saddle_passed.con");
-    string product_passed("product_passed.con");
+    string reactantFilename("reactant.con");
+    string saddleFilename("saddle.con");
+    string productFilename("product.con");
 
     Matter *reactant = new Matter(parameters);
     Matter *saddle = new Matter(parameters);
@@ -46,34 +46,34 @@ std::vector<std::string> PrefactorJob::run(void)
     {
         // it is sufficient to pass the configuration 
         // for which the frequencies should be determined
-        string matter_passed;
+        string matterFilename;
         if (parameters->prefactorConfiguration == 
             PrefactorJob::PREFACTOR_REACTANT)
         {
-            matter_passed = reactant_passed;
+            matterFilename = reactantFilename;
         }
         else if (parameters->prefactorConfiguration == 
                  PrefactorJob::PREFACTOR_SADDLE)
         {
-            matter_passed = saddle_passed;
+            matterFilename = saddleFilename;
         }
         else if (parameters->prefactorConfiguration == 
                  PrefactorJob::PREFACTOR_PRODUCT)
         {
-            matter_passed = product_passed;
+            matterFilename = productFilename;
         }
-        reactant->con2matter(matter_passed);
-        saddle->con2matter(matter_passed);
-        product->con2matter(matter_passed);
+        reactant->con2matter(matterFilename);
+        saddle->con2matter(matterFilename);
+        product->con2matter(matterFilename);
 
         // account for all free atoms
         atoms = Prefactor::allFreeAtoms(reactant);        
     }
     else
     {
-        reactant->con2matter(reactant_passed);
-        saddle->con2matter(saddle_passed);
-        product->con2matter(product_passed);
+        reactant->con2matter(reactantFilename);
+        saddle->con2matter(saddleFilename);
+        product->con2matter(productFilename);
 
         // determine which atoms moved in the process
         atoms = Prefactor::movedAtoms(parameters, reactant, saddle, product);
