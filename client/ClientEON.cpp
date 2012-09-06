@@ -146,13 +146,8 @@ int main(int argc, char **argv)
         int error;
         string config_file = "config.ini";
         if (client_standalone) {
-            if(helper_functions::existsFile("config_passed.ini"))
-            {
-                config_file = "config_passed.ini";
-            }
-            else if(helper_functions::existsFile("config_passed_0.ini"))
-            {
-                config_file = "config_passed_0.ini";
+            if(helper_functions::existsFile("config_0.ini")) {
+                config_file = "config_0.ini";
             }
             printf("Loading parameter file %s\n",config_file.c_str());
             error = parameters.load(config_file);
@@ -162,7 +157,7 @@ int main(int argc, char **argv)
         }
         if (error) {
             fprintf(stderr, "\nproblem loading parameter file\n");
-            abort(); // or perhaps an mpi abort call?
+            MPI::COMM_WORLD.Abort(1);
         }
 
         //XXX: Barrier for gpaw-python
@@ -204,7 +199,7 @@ int main(int argc, char **argv)
         if (clients < number_of_clients) {
             fprintf(stderr, "didn't launch as many mpi client ranks as"
                             "specified in EON_NUMBER_OF_CLIENTS\n");
-            return 1;
+            MPI::COMM_WORLD.Abort(1);
         }
         clients = number_of_clients;
 
@@ -260,7 +255,7 @@ int main(int argc, char **argv)
                 char **py_argv = (char **)malloc(sizeof(char **)*2);
                 py_argv[0] = argv[0];
                 py_argv[1] = getenv("EON_SERVER_PATH");
-                //fprintf(stderr, "rank: %i becoming %s\n", irank, py_argv[1]);
+                fprintf(stderr, "rank: %i becoming %s\n", irank, py_argv[1]);
                 Py_Initialize();
                 Py_Main(2, py_argv);
                 Py_Finalize();
