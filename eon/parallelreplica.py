@@ -80,7 +80,7 @@ def step(current_time, current_state, states, transition):
     return current_state, previous_state
 
 def get_statelist():
-    initial_state_path = os.path.join(config.path_root, 'reactant.con')
+    initial_state_path = os.path.join(config.path_root, 'pos_in.con')
     return prstatelist.PRStateList(initial_state_path)
 
 def get_pr_metadata():
@@ -133,7 +133,6 @@ def make_searches(comm, current_state, wuid):
 
     reactIO = StringIO()
     io.savecon(reactIO, reactant)
-    #invariants['reactant_passed.con']=reactIO
 
     # Merge potential files into invariants
     #XXX: Should this be in our "science" maybe the communicator should
@@ -144,13 +143,13 @@ def make_searches(comm, current_state, wuid):
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
-        search['reactant_passed.con']  = reactIO
+        search['pos_in.con']  = reactIO
         ini_changes = [
                         ('Main', 'job', 'parallel_replica'),
                         ('Main', 'random_seed',
                             str(int(numpy.random.random()*10**9))),
                       ]
-        search['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
+        search['config.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)
         wuid += 1
 

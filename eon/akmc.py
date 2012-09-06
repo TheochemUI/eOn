@@ -128,7 +128,7 @@ def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
     parser.set('Simulation Information', 'first_run', str(False))
 
 def get_statelist(kT):
-    initial_state_path = os.path.join(config.path_root, 'reactant.con')
+    initial_state_path = os.path.join(config.path_root, 'pos_in.con')
     return akmcstatelist.AKMCStateList(kT,
                                config.akmc_thermal_window,
                                config.akmc_max_thermal_window,
