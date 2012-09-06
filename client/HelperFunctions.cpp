@@ -16,6 +16,7 @@
 #include <iostream>
 #include <time.h>
 #include <string.h>
+#include <set>
 
 #ifndef WIN32
     #include <sys/time.h>
@@ -460,15 +461,91 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
     free(str);
     return list;
 }
-
+struct atom {
+  double r;
+  int z;
+};  
+struct by_atom {
+  bool operator()(atom const &a, atom const &b) {
+    if (a.z != b.z) return a.z < b.z;                                                   
+    else return a.r < b.r;
+  }
+}; 
+ 
 bool helper_functions::identical(const Matter* m1, const Matter* m2, const double distanceDifference)
 {
-    return true;
+   AtomMatrix r1 = m1->getPositions();
+   AtomMatrix r2 = m2->getPositions();
+   std::set<int> matched;
+   double tolerance = 0.00001;
+   if(r1.rows()!=r2.rows())  return false;
+   for(int i=0; i<=r1.rows(); i++){
+     if(fabs((m1->pbc(r1.row(i)-r2.row(i))).norm())<tolerance && m1->getAtomicNr(i)==m2->getAtomicNr(i)) matched.insert(i);
+   }
+   for(int j=0; j<r1.rows(); j++){
+     if(matched.count(j)==1) continue;
+     for(int k=0; k<r1.rows();k++){
+       if(matched.count(j)==1) break;
+       if(fabs((m1->pbc(r1.row(j)-r2.row(k))).norm())<tolerance && m1->getAtomicNr(j)==m2->getAtomicNr(k)) matched.insert(j);
+     }
+   }
+   if(matched.size()==r1.rows())return true;
 }
+
+
+
+
+
+
 
 bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2, 
                                 const double distanceDifference,
                                 const double neighborCutoff)
 {
-    return true;
+  AtomMatrix r1 = m1->getPositions();
+  AtomMatrix r2 = m2->getPositions();
+  double tolerance=0.1;
+  int matches=0;
+  set<atom,by_atom> rdf2;
+  set<atom,by_atom> rdf1;
+  if(r1.rows()!=r2.rows())  return false;
+  for(int i1=0; i1<r1.rows(); i1++){
+    rdf1.clear();
+    set<atom>::iterator it;
+    for(int j1=0; j1<r1.rows(); j1++){
+      if(j1==i1) continue;
+      atom a;
+      a.r=m1->distance(i1,j1);
+      a.z=m1->getAtomicNr(j1);
+      rdf1.insert(a);
+    }
+    for(int i2=0; i2<r2.rows(); i2++){
+      rdf2.clear();
+      set<atom>::iterator it2;
+      for(int j2=0; j2<r2.rows(); j2++){
+	if(j2==i2) continue;
+	atom a2;
+	a2.r=m2->distance(i2,j2);
+	a2.z=m2->getAtomicNr(j2);
+	rdf2.insert(a2);
+      }
+      it2=rdf2.begin();
+      int c=0;
+      int counter=0;
+      for(it = rdf1.begin(); c<r1.rows(); c++){
+	atom k1;
+	k1=*it;
+	atom k2;
+	k2=*it2;
+	if(fabs(k1.r-k2.r)<tolerance && k1.z==k2.z) counter++;
+	it2++;
+	it++;
+      }
+      if (counter==r1.rows()-1)	matches++;
+    }
+  }
+  if (matches!=r1.rows()) return false;
 }
+
+
+
