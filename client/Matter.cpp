@@ -161,19 +161,19 @@ bool Matter::operator==(const Matter& matter) {
 
     //XXX: This needs to be changed to select the correct
     //     algorithm based on settings in parameters.
-    return (parameters->distanceDifference) > perAtomNorm(matter);
+    //return (parameters->distanceDifference) > perAtomNorm(matter);
 
     //XXX: Does not get reached
-    //if(parameters->checkRotation && parameters->indistinguishableAtoms) {
-    //    return helper_functions::KDBMatch(this, &matter, parameters->distanceDifference,
-    //                                      parameters->neighborCutoff);
-    //}else if(parameters->indistinguishableAtoms) {
-    //    return helper_functions::identical(this, &matter, parameters->distanceDifference);
-    //}else if(parameters->checkRotation) {
-    //    return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
-    //}else{
-    //    return (parameters->distanceDifference) > perAtomNorm(matter);
-    //}
+    if(parameters->checkRotation && parameters->indistinguishableAtoms) {
+        return helper_functions::KDBMatch(this, &matter, parameters->distanceDifference,
+                                          parameters->neighborCutoff);
+    }else if(parameters->indistinguishableAtoms) {
+        return helper_functions::identical(this, &matter, parameters->distanceDifference);
+    }else if(parameters->checkRotation) {
+        return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
+    }else{
+        return (parameters->distanceDifference) > perAtomNorm(matter);
+    }
 }
 
 bool Matter::operator!=(const Matter& matter) {
