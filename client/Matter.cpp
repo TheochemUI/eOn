@@ -158,15 +158,8 @@ const Matter& Matter::operator=(const Matter& matter)
 
 // Two matter objects are considered the same if all differences in positions are below distanceDifference.
 bool Matter::operator==(const Matter& matter) {
-
-    //XXX: This needs to be changed to select the correct
-    //     algorithm based on settings in parameters.
-    //return (parameters->distanceDifference) > perAtomNorm(matter);
-
-    //XXX: Does not get reached
     if(parameters->checkRotation && parameters->indistinguishableAtoms) {
-        return helper_functions::KDBMatch(this, &matter, parameters->distanceDifference,
-                                          parameters->neighborCutoff);
+        return helper_functions::sortedR(this, &matter, parameters->distanceDifference);
     }else if(parameters->indistinguishableAtoms) {
         return helper_functions::identical(this, &matter, parameters->distanceDifference);
     }else if(parameters->checkRotation) {
