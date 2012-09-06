@@ -68,8 +68,6 @@ namespace helper_functions {
     std::vector<int> split_string_int(std::string s, std::string delim);
 
     bool identical(const Matter* m1, const Matter* m2, const double distanceDifference);
-
-    bool KDBMatch(const Matter *m1, const Matter *m2, const double distanceDifference,
-                  const double neighborCutoff);
+    bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
 }
 #endif

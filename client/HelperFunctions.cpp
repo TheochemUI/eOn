@@ -522,9 +522,8 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
     }
 }
 
-bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2, 
-                                const double distanceDifference,
-                                const double neighborCutoff)
+bool helper_functions::sortedR(const Matter *m1, const Matter *m2, 
+                               const double distanceDifference)
 {
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
@@ -544,7 +543,7 @@ bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2,
             a.r=m1->distance(i1,j1);
             a.z=m1->getAtomicNr(j1);
             rdf1.insert(a);
-            printf("rdf1: %.3f\n", a.r);
+            //printf("rdf1: %.3f\n", a.r);
         }
         for(int i2=0; i2<r2.rows(); i2++){
             rdf2.clear();
@@ -555,7 +554,7 @@ bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2,
                 a2.r=m2->distance(i2,j2);
                 a2.z=m2->getAtomicNr(j2);
                 rdf2.insert(a2);
-                printf("rdf2: %.3f\n", a2.r);
+                //printf("rdf2: %.3f\n", a2.r);
             }
             it2=rdf2.begin();
             int c=0;
@@ -572,10 +571,10 @@ bool helper_functions::KDBMatch(const Matter *m1, const Matter *m2,
                 it++;
             }
             if (counter==r1.rows()-1) {
-                printf("found a match\n");
+                //printf("found a match\n");
                 matches++;
             }else{
-                printf("no match\n");
+                //printf("no match\n");
             }
         }
     }
