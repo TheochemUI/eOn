@@ -32,7 +32,7 @@ ProcessSearchJob::~ProcessSearchJob()
 
 std::vector<std::string> ProcessSearchJob::run(void)
 {
-    string reactantFilename("reactant_in.con");
+    string reactantFilename("pos_in.con");
     string displacementFilename("displacement.con");
     string modeFilename("mode_in.dat");
 
@@ -279,7 +279,7 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
     fclose(fileResults);
 
-    std::string reactantFilename("reactant_out.con");
+    std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
@@ -291,13 +291,13 @@ void ProcessSearchJob::saveData(int status)
     fclose(fileMode);
     fclose(fileReactant);
 
-    std::string saddleFilename("saddle_out.con");
+    std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
     fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
     fclose(fileSaddle);
 
-    std::string productFilename("product_out.con");
+    std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
     fileProduct = fopen(productFilename.c_str(), "wb");
     min2->matter2con(fileProduct);
