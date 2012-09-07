@@ -30,7 +30,7 @@ SaddleSearchJob::~SaddleSearchJob()
 
 std::vector<std::string> SaddleSearchJob::run(void)
 {
-    string reactantFilename("reactant_in.con");
+    string reactantFilename("pos_in.con");
     string displacementFilename("displacement_in.con");
     string modeFilename("mode_in.dat");
 
