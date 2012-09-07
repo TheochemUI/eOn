@@ -64,6 +64,8 @@ public:
     bool   checkRotation;
     bool   indistinguishableAtoms;
 
+	double energyDifference;
+
     // [Process Search] //
     bool   processSearchMinimizeFirst;
     double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
@@ -197,11 +199,11 @@ public:
     double basinHoppingTargetRatio;
 
 	// [Global Optimization]
-	string globalOptimizationMoveType;
+	string globalOptimizationMoveMethod;
+	string globalOptimizationDecisionMethod;
 	long globalOptimizationSteps;
 	double globalOptimizationBeta;
 	double globalOptimizationAlpha;
-	double globalOptimizationEtoler;
 	long globalOptimizationMdmin;
 
     // MPI stuff, not actually specified in config file
