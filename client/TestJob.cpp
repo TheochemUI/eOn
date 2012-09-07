@@ -95,7 +95,7 @@ void TestJob::checkFullSearch(void){
 //  fCallsMin += cgMin2.totalForceCalls;
 
     // If min2 corresponds to initial state swap min1 && min2
-    if(!(*initial==*min1) && ((*initial==*min2))){
+    if (!initial->compare(min1) && initial->compare(min2)) {
         *matterTemp = *min1;
         *min1 = *min2;
         *min2 = *matterTemp;
