@@ -34,8 +34,10 @@ void usage(void)
     fprintf(stderr, "Job Type:\n");
     fprintf(stderr, fmtStr, "m", "Minimization of inputConfile saves to outputConfile");
     fprintf(stderr, fmtStr, "s", "Single point energy of inputConfile");
+    fprintf(stderr, fmtStr, "c", "Compare structures of inputConfile to outputConfile");
     fprintf(stderr, fmtStr, "o", "Optimization method [default: qm]");
     fprintf(stderr, fmtStr, "f", "Convergence force [default: 0.001]");
+    fprintf(stderr, fmtStr, "t", "Distance tolerance [default: 0.1]");
 
     fprintf(stderr, "Required Options:\n");
     fprintf(stderr, fmtStr, "p", "The potential (e.g. qsc, lj, eam_al)");
@@ -46,15 +48,20 @@ void commandLine(int argc, char **argv)
     // no getopt on windows
     #ifndef WIN32
     int c;
-    bool sflag = false, mflag = false, pflag = false;
+    bool sflag = false, mflag = false, pflag = false, cflag = false;
     double optConvergedForce = 0.001;
 
     string potential;
     string confile;
     string optimizer("cg");
 
-    while ((c=getopt(argc,argv,"hsmp:f:o:")) != -1) {
+    Parameters *parameters = new Parameters;
+
+    while ((c=getopt(argc,argv,"chsmp:f:o:t:")) != -1) {
         switch (c) {
+            case 'c':
+                cflag = true;
+                break;
             case 's':
                 sflag = true;
                 break;
@@ -64,6 +71,9 @@ void commandLine(int argc, char **argv)
             case 'p':
                 pflag = true;
                 potential = optarg;
+                break;
+            case 't':
+                parameters->distanceDifference = atof(optarg);
                 break;
             case 'o':
                 optimizer = optarg;
@@ -90,10 +100,10 @@ void commandLine(int argc, char **argv)
         exit(2);
     }
 
-    if (!pflag) {
+    if (!pflag && (sflag || mflag)) {
         fprintf(stderr, "Must specify a potential\n");
         exit(2);
-    }else{
+    }else if (!cflag) {
         for (string::size_type i = 0; i < potential.length(); ++i) {
           potential[i] = tolower(potential[i]);
         }
@@ -108,28 +118,39 @@ void commandLine(int argc, char **argv)
         confile = argv[optind];
     }
 
-    Parameters *parameters = new Parameters;
-    parameters->potential = potential;
+    if (!cflag) {
+        parameters->potential = potential;
+    }
     parameters->optMethod = optimizer;
     parameters->optConvergedForce = optConvergedForce;
 
     log_init(parameters, (char*)"client.log");
 
     Matter *matter = new Matter(parameters);
+    Matter *matter2 = new Matter(parameters);
     matter->con2matter(confile);
 
     string confileout;
     if (extraArgs == 2) {
         confileout = argv[optind+1];
+        if (cflag) matter2->con2matter(confileout);
     }
 
     if (sflag) {
         singlePoint(parameters, matter);
     }else if (mflag) {
         minimize(parameters, matter, confileout);
+    }else if (cflag) {
+        parameters->checkRotation = true;
+        if (matter->compare(matter2, true)) {
+            printf("structures match\n");
+        }else{
+            printf("structures do not match\n");
+        }
     }
 
     delete parameters;
     delete matter;
+    delete matter2;
     #endif
 }
