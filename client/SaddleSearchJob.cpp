@@ -135,7 +135,7 @@ void SaddleSearchJob::saveData(int status){
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
 
-    std::string saddleFilename("saddle_out.con");
+    std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
     fileSaddle = fopen(saddleFilename.c_str(), "wb");
     saddle->matter2con(fileSaddle);
