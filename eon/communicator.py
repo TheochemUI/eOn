@@ -130,10 +130,21 @@ class Communicator:
             basename, dirname = os.path.split(jobpath)
 
             results = [{'name':dirname} for i in range(bundle_size)]
-            for filename in glob.glob(os.path.join(jobpath,"*_*.*")):
+
+            filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
+            if len(filenames) == 0:
+                for filename in glob.glob(os.path.join(jobpath, "*.*")):
+                    rootname, fname = os.path.split(filename)
+                    f = open(filename,'r')
+                    filedata = StringIO(f.read())
+                    f.close()
+
+                    # add result to results
+                    results[0][fname] = filedata
+                    results[0]['number'] = 0
+
+            for filename in filenames:
                 if filename[-3:] != 'con' and filename[-3:] != 'dat':
-                    continue
-                if '_passed' in filename:
                     continue
                 try:
                     # parse filename
@@ -159,8 +170,8 @@ class Communicator:
                     logger.exception("Failed to handle file %s" % filename)
 
             # XXX: UGLY: We need a way to check if there are no results.
-            if 'number' not in results[0]:
-                logger.warning("Failed to find any results for %s",results[0]['name'])
+            if not any([ filename.startswith('results') for filename in results[0].keys() ]):
+                logger.warning("Failed to find a result.dat file for %s",results[0]['name'])
                 results = []
             yield results
 
@@ -190,7 +201,10 @@ class Communicator:
                     splitname = basename.rsplit(".", 1)
                     if len(splitname)!=2:
                         continue
-                    filename = "%s_%d.%s" % (splitname[0], n, splitname[1])
+                    if self.bundle_size == 1:
+                        filename = basename
+                    else:
+                        filename = "%s_%d.%s" % (splitname[0], n, splitname[1])
                     f = open(os.path.join(job_path, filename), 'w')
                     f.write(job[basename].getvalue())
                     f.close()

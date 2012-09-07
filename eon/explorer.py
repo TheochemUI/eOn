@@ -147,7 +147,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        invariants['reactant_in.con'] = reactIO
+        invariants['pos_in.con'] = reactIO
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(config.path_pot))
@@ -600,8 +600,8 @@ class ProcessSearch:
             product_result = self.load_result(self.finished_product_name)
             result['product.con'] = product_result['pos_out.con']
 
-        result['saddle.con'] = saddle_result['saddle_out.con']
-        result['mode.dat'] = saddle_result['mode_out.dat']
+        result['saddle.con'] = saddle_result['saddle.con']
+        result['mode_out.dat'] = saddle_result['mode_out.dat']
         result['results'] = self.data
 
         results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ])
@@ -615,7 +615,7 @@ class ProcessSearch:
     def get_saddle(self):
         if self.finished_saddle_name:
             saddle_result = self.load_result(self.finished_saddle_name)
-            saddle = io.loadcon(saddle_result['saddle_out.con'])
+            saddle = io.loadcon(saddle_result['saddle.con'])
         else:
             saddle = None
         return saddle
@@ -623,7 +623,7 @@ class ProcessSearch:
     def get_saddle_file(self):
         if self.finished_saddle_name:
             saddle_result = self.load_result(self.finished_saddle_name)
-            saddle = saddle_result['saddle_out.con']
+            saddle = saddle_result['saddle.con']
         else:
             saddle = None
         return saddle
@@ -637,7 +637,7 @@ class ProcessSearch:
         mode = io.load_mode(mode_file)
         mode_file.close()
 
-        reactant_file = open(os.path.join(saddle_path, "saddle_out.con"))
+        reactant_file = open(os.path.join(saddle_path, "saddle.con"))
         reactant = io.loadcon(reactant_file)
         reactant_file.close()
 
@@ -728,7 +728,7 @@ class ProcessSearch:
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        job['reactant_in.con'] = reactIO
+        job['pos_in.con'] = reactIO
 
         ini_changes = [ ('Main', 'job', 'saddle_search') ]
         job['config.ini'] = io.modify_config(config.config_path, ini_changes)
