@@ -171,23 +171,23 @@ int ProcessSearchJob::doProcessSearch(void)
     }
 
     // if min2 corresponds to initial state, swap min1 && min2
-    if(!(*initial==*min1) && ((*initial==*min2))){
+    if(!(initial->compare(min1)) && initial->compare(min2)){
         matterTemp = *min1;
         *min1 = *min2;
         *min2 = matterTemp;
     }
 
-    if ((*initial==*min1) == false) {
-        printf("initial != min1\n");
+    if ((initial->compare(min1)) == false) {
+        log("initial != min1\n");
         if((!min1->maxForce() <= parameters->optConvergedForce)  &&
            (!min2->maxForce() <= parameters->optConvergedForce)) {
         }
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
-    if (*initial==*min2) {
+    if (initial->compare(min2)) {
         // both minima are the initial state
-        printf("both minima are the initial state");
+        log("both minima are the initial state");
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
