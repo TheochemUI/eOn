@@ -60,6 +60,7 @@ Parameters::Parameters(){
     neighborCutoff = 3.3;
     checkRotation = false;
     indistinguishableAtoms = true;
+	energyDifference = 0.001;
 
     // [Debug] //
     writeMovies = false;
@@ -182,11 +183,11 @@ Parameters::Parameters(){
     basinHoppingTargetRatio = 0.5;
 
 	// [Global Optimization]
-	globalOptimizationMoveType = "md";
+	globalOptimizationMoveMethod = "md";
+	globalOptimizationDecisionMethod = "npew";
 	globalOptimizationSteps = 10000;
 	globalOptimizationBeta = 1.05;
 	globalOptimizationAlpha = 1.02;
-	globalOptimizationEtoler = 1.E-2;
 	globalOptimizationMdmin = 3;
 }
 
@@ -271,6 +272,7 @@ int Parameters::load(FILE *file){
         distanceDifference = ini.GetValueF("Structure Comparison", "distance_difference", distanceDifference);
         neighborCutoff = ini.GetValueF("Structure Comparison", "neighbor_cutoff", neighborCutoff);
         checkRotation = ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
+        energyDifference = ini.GetValueF("Structure Comparison", "energy_difference", energyDifference);
         indistinguishableAtoms = ini.GetValueB("Structure Comparison", "indistinguishable_atoms", indistinguishableAtoms);
 
         // [Process Search] //
@@ -424,11 +426,11 @@ int Parameters::load(FILE *file){
         basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
 
 		// [Global Optimization]
-		globalOptimizationMoveType = toLowerCase(ini.GetValue("Global Optimization", "move_type", globalOptimizationMoveType));
+		globalOptimizationMoveMethod = toLowerCase(ini.GetValue("Global Optimization", "move_method", globalOptimizationMoveMethod));
+		globalOptimizationDecisionMethod = toLowerCase(ini.GetValue("Global Optimization", "decision_method", globalOptimizationDecisionMethod));
 		globalOptimizationSteps = ini.GetValueL("Global Optimization", "steps", globalOptimizationSteps);
 		globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
 		globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
-		globalOptimizationEtoler = ini.GetValueF("Global Optimization", "etoler", globalOptimizationEtoler);
 		globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
     }
     else
