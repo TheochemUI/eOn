@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef GLOBALOPTIMIZATIONJOB_H
-#define GLOBALOPTIMIZATIONJOB_H
+#ifndef GLOBALOPTIMIZATION_HJOB_H
+#define GLOBALOPTIMIZATION_HJOB_H
 
 #include "Job.h"
 #include "Parameters.h"
@@ -19,12 +19,14 @@ class GlobalOptimizationJob: public Job {
     public:
         GlobalOptimizationJob(Parameters *params);
         ~GlobalOptimizationJob(void);
-        void move_step(Matter *);
-        void accept_reject_step(Matter *,Matter *);
-        void accept_reject_minhopp(Matter *,Matter *);
-        void examine_escape(Matter *,Matter *);
-        void apply_move_feedback_p1(Matter *);
-        void apply_move_feedback_p2(Matter *);
+        void hoppingStep(long,Matter *,Matter *);
+        void decisionStep(Matter *,Matter *);
+        void report(Matter *);
+        void acceptRejectNPEW(Matter *,Matter *);
+        void analyze(Matter *,Matter *);
+        void examineEscape(Matter *,Matter *);
+        void applyMoveFeedbackMD(void);
+        void applyDecisionFeedback(void);
         void mdescape(Matter *);
         void insert(Matter *);
         size_t hunt(double);
@@ -39,16 +41,17 @@ class GlobalOptimizationJob: public Job {
     private:
         Parameters *parameters;
 		size_t nlmin;
-		double etoler;
+		long fcallsMove;
+		long fcallsRelax;
 		double ediff;
 		double ekin;
+		bool firstStep;
 		std::vector<double> earr;
-		string escaped;
-		string move_type;
-		string move_feedback;
-		string acc_rej_type;
-		string acc_rej_decision;
-		string trial_minimum;
+		string escapeResult;
+		//string moveFeedbackMethod;
+		//string decisionMethod;
+		string decisionResult;
+		string hoppingResult;
 };
 
 #endif

@@ -13,12 +13,10 @@ GlobalOptimizationJob::GlobalOptimizationJob(Parameters *params)
 {
 	parameters = params;
 	nlmin=0;
-	etoler=parameters->globalOptimizationEtoler;
-	//globalOptimizationMoveType="md";
-	acc_rej_type="minima_hopping";
-	ediff=2.E-1;
-	ekin=10.E-2;
-	move_feedback="minima_hopping";
+	//etoler=parameters->globalOptimizationEtoler;
+	//decisionMethod="NPEW";
+	ediff=1.E-1;
+	ekin=5.E-2;
 	beta1=parameters->globalOptimizationBeta;
 	beta2=parameters->globalOptimizationBeta;
 	beta3=1.0/parameters->globalOptimizationBeta;
@@ -27,7 +25,9 @@ GlobalOptimizationJob::GlobalOptimizationJob(Parameters *params)
 	mdmin=parameters->globalOptimizationMdmin;
 	monfile=fopen("monitoring.dat","w");
 	earrfile=fopen("earr.dat","w");
-	trial_minimum="new";
+	firstStep=true;
+	fcallsMove=0;
+	fcallsRelax=0;
 }
 //****************************************************************************************
 GlobalOptimizationJob::~GlobalOptimizationJob(void)
@@ -37,21 +37,21 @@ GlobalOptimizationJob::~GlobalOptimizationJob(void)
 std::vector<std::string> GlobalOptimizationJob::run(void)
 {
     //int status;
-	GlobalOptimization go = GlobalOptimization(parameters);
-    string posFilename = helper_functions::getRelevantFile(parameters->conFilename);
+	GlobalOptimization mh = GlobalOptimization(parameters);
+    string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
     //string reactant_output("reactant.con");
     std::vector<std::string> returnFiles;
     //returnFiles.push_back(reactant_output);
     Matter *matter_curr = new Matter(parameters);
     Matter *matter_hopp = new Matter(parameters);
-    matter_curr->con2matter(posFilename);
+    matter_curr->con2matter(reactant_passed);
     bool converged;
 	long nstep = parameters->globalOptimizationSteps;
 	AtomMatrix rat_t(matter_curr->numberOfAtoms(),3);
-	double epot_hopp;
+	//double epot_hopp;
 	//std::vector<double> earr;
 	//std::vector<Matter> allmatter;
-    printf("\nBeginning minima hopping of %s\n", posFilename.c_str());
+    printf("\nBeginning minima hopping of %s\n", reactant_passed.c_str());
 	//long fcalls;
 	//printf("fcalls= %ld\n",matter_curr->getForceCalls());
 	//printf("epot= %24.15E\n",matter_curr->getPotentialEnergy());
@@ -65,57 +65,16 @@ std::vector<std::string> GlobalOptimizationJob::run(void)
 	//if(nlmin==0) 
 	earr.push_back(matter_curr->getPotentialEnergy());
 	matter_hopp[0]=matter_curr[0];
-	//fprintf(monfile,"%15.5f",matter_hopp->getPotentialEnergy());
-	double temp = (2.0*ekin/8.6173857E-5);
-	double dt=parameters->mdTimeStep/0.09823;
-	fprintf(monfile,"%15.5f  %15.5f  %15.5f  %15.5f         --\n",
-		matter_hopp->getPotentialEnergy(),ediff,temp,dt);
+	GlobalOptimizationJob::report(matter_hopp);
 	for(long istep=1;istep<=nstep;istep++) {
-		GlobalOptimizationJob::move_step(matter_hopp);
-    	converged = matter_hopp->relax(false, parameters->writeMovies, 
-                                parameters->checkpoint, "min", "matter_hopp");
-    	printf("converged %s \n",(converged)?"TRUE":"FALSE");
-		GlobalOptimizationJob::examine_escape(matter_curr,matter_hopp);
-		GlobalOptimizationJob::apply_move_feedback_p1(matter_hopp);
-		if(escaped=="failure") {
-			//rat_t=matter_curr->getPositions();
-			//matter_hopp->setPositions(rat_t);
-			//epot_hopp=matter_curr->getPotentialEnergy();
-			//matter_hopp->setPotentialEnergy(epot_hopp);
-			matter_hopp[0]=matter_curr[0];
-			continue;
-		}
-		//following will decide to accept or reject the trial step
-		GlobalOptimizationJob::accept_reject_step(matter_curr,matter_hopp);
-		GlobalOptimizationJob::apply_move_feedback_p2(matter_hopp);
-		if(acc_rej_decision=="accepted") {
-			//double epot_c=matter_curr->getPotentialEnergy();
-			//rat_t=matter_hopp->getPositions();
-			//matter_curr->setPositions(rat_t);
-			epot_hopp=matter_hopp->getPotentialEnergy();
-			//matter_curr->setPotentialEnergy(epot_hopp);
-			matter_curr[0]=matter_hopp[0];
-			size_t jlo=hunt(matter_hopp->getPotentialEnergy());
-			if(trial_minimum=="new" && jlo==0 && epot_hopp<earr[0]) {
-				printf("new lowest: nlmin,epot_hopp,dE %7d %15.5f %10.5f\n",1,
-					epot_hopp,epot_hopp-earr[0]);
-			}
-			//printf("%15.5f  %15.5f  %15.5f  \n",epot_hopp,earr[0],earr[1]);
-			//exit(1);
-			insert(matter_curr);
-			
-		}
-		else if(acc_rej_decision=="rejected") {
-			//rat_t=matter_curr->getPositions();
-			//matter_hopp->setPositions(rat_t);
-			//epot_hopp=matter_curr->getPotentialEnergy();
-			//matter_hopp->setPotentialEnergy(epot_hopp);
-			matter_hopp[0]=matter_curr[0];
-		}
-		else {
-			printf("ERROR: new minimum is neither accepted nor rejected: client stops.\n");
-			exit(0);
-		}
+		//hoppingStep attempts to hopp into a new state followed by a minimization
+		hoppingStep(istep,matter_curr,matter_hopp);
+		//decisionStep decides to accept or reject this step if it escaped
+		decisionStep(matter_curr,matter_hopp);
+		//analyzing what happened in this step if it escaped
+		analyze(matter_curr,matter_hopp);
+		//reporting useful information about this hopp
+		report(matter_hopp);
 	}
 	for(size_t i=0;i<earr.size();i++) {
 		double earrim1;
@@ -128,89 +87,131 @@ std::vector<std::string> GlobalOptimizationJob::run(void)
 		}
 		fprintf(earrfile,"%5lu  %15.5f  %15.5f  %15.5f  \n",i+1,earr[i],earr[i]-earr[0],earr[i]-earrim1);
 	}
-	//go.run();
+	//mh.run();
 	fclose(monfile);
 	fclose(earrfile);
 	return returnFiles;
 } //end of GlobalOptimizationJob::run
 //****************************************************************************************
-void GlobalOptimizationJob::examine_escape(Matter *matter_curr,Matter *matter_hopp) {
+void GlobalOptimizationJob::analyze(Matter *matter_curr,Matter *matter_hopp) {
+	if(escapeResult=="failure") {
+		//matter_hopp[0]=matter_curr[0];
+		hoppingResult="same";
+		return;
+	}
+	double epot=matter_hopp->getPotentialEnergy();
+	size_t jlo=hunt(epot);
+	//printf("REZA: %lu \n",jlo);
+	if(abs(epot-earr[jlo])<parameters->energyDifference) {
+		hoppingResult="already_visited";
+	}
+	else {
+		hoppingResult="new";
+	}
+	if(decisionResult=="accepted") {
+		double epot_hopp=matter_hopp->getPotentialEnergy();
+		matter_curr[0]=matter_hopp[0];
+		size_t jlo=hunt(matter_hopp->getPotentialEnergy());
+		if(hoppingResult=="new" && jlo==0 && epot_hopp<earr[0]) {
+			printf("new lowest: nlmin,epot_hopp,dE %7d %15.5f %10.5f\n",1,
+				epot_hopp,epot_hopp-earr[0]);
+		}
+		//printf("%15.5f  %15.5f  %15.5f  \n",epot_hopp,earr[0],earr[1]);
+		//exit(1);
+		insert(matter_curr);
+	}
+	else if(decisionResult=="rejected") {
+		//matter_hopp[0]=matter_curr[0];
+	}
+	else {
+		printf("ERROR: new minimum is neither accepted nor rejected: client stops.\n");
+		exit(0);
+	}
+}
+//****************************************************************************************
+void GlobalOptimizationJob::examineEscape(Matter *matter_curr,Matter *matter_hopp) {
 	//fprintf(monfile,"%15.5f  %15.5f  %15.5f  \n",matter_hopp->getPotentialEnergy(),
 	//		matter_curr->getPotentialEnergy(),matter_hopp->getPotentialEnergy()-matter_curr->getPotentialEnergy());
 	double epot, epot_hopp;
 	epot=matter_curr->getPotentialEnergy();
 	epot_hopp=matter_hopp->getPotentialEnergy();
-	if(abs(epot_hopp-epot)<etoler) {
-		escaped="failure";
+	if(abs(epot_hopp-epot)<parameters->energyDifference) {
+		escapeResult="failure";
 	}
 	else {
-		escaped="success";
+		escapeResult="success";
 		//fprintf(monfile,"%15.5f  %15.5f  %15.5f           \n",epot_hopp,ediff,ekin);
 	}
 }
 //****************************************************************************************
-void GlobalOptimizationJob::apply_move_feedback_p1(Matter *matter_hopp) {
-	if(move_feedback=="none") {
+void GlobalOptimizationJob::applyMoveFeedbackMD(void) {
+	if(firstStep) {
+		firstStep=false;
+		return;
 	}
-	else if(move_feedback=="minima_hopping") {
-		if(escaped=="failure") {
-			ekin*=beta1;
-			double temp = (2.0*ekin/8.6173857E-5);
-			double dt=parameters->mdTimeStep/0.09823;
-			fprintf(monfile,"%15.5f  %15.5f  %15.5f  %15.5f         S-\n",
-				matter_hopp->getPotentialEnergy(),ediff,temp,dt);
-		}
-		else if(escaped=="success") {
-			//rest of move feedback wille be appllied in apply_move_feedback_p2
-		}
-		else {
-			printf("ERROR: client does not know what to do with ekin. \n");
-			printf("ERROR: client stops in apply_move_feedback_p1.\n");
-			exit(0);
-		}
+	if     (hoppingResult=="same")            {ekin*=beta1;}
+	else if(hoppingResult=="already_visited") {ekin*=beta2;}
+	else if(hoppingResult=="new")             {ekin*=beta3;}
+	else {
+		printf("ERROR: client does not know what to do with ekin. \n");
+		printf("ERROR: client stops in applyMoveFeedbackMD.\n");
+		exit(0);
 	}
 }
 //****************************************************************************************
-void GlobalOptimizationJob::apply_move_feedback_p2(Matter *matter_hopp) {
-	if(move_feedback=="none") {
-	}
-	else if(move_feedback=="minima_hopping") {
-		char C1, C2;
-		if(trial_minimum=="already_visited") { 
-			ekin*=beta2;
-			C1='O';
-		}
-		else if(trial_minimum=="new") { 
-			ekin*=beta3;
-			C1='N';
-		}
-		else {
-			printf("ERROR: client does not know what to do with ekin. \n");
-			printf("ERROR: client stops in apply_move_feedback_p2.\n");
-			exit(0);
-		}
-		if(acc_rej_decision=="accepted") {
-			ediff*=alpha1;
-			C2='A';
-		}
-		else {
-			ediff*=alpha2;
-			C2='R';
-		}
-		double epot_hopp=matter_hopp->getPotentialEnergy();
-		double temp = (2.0*ekin/8.6173857E-5);
-		double dt=parameters->mdTimeStep/0.09823;
-		fprintf(monfile,"%15.5f  %15.5f  %15.5f  %15.5f         %c%c\n",
-			epot_hopp,ediff,temp,dt,C1,C2);
-	}
+void GlobalOptimizationJob::applyDecisionFeedback(void) {
+	if(decisionResult=="accepted") {ediff*=alpha1;}
+	else {ediff*=alpha2;}
 }
 //****************************************************************************************
-void GlobalOptimizationJob::accept_reject_step(Matter *matter_curr,Matter *matter_hopp) {
-	if(acc_rej_type=="minima_hopping") {
-		GlobalOptimizationJob::accept_reject_minhopp(matter_curr,matter_hopp);
+void GlobalOptimizationJob::report(Matter *matter_hopp) {
+	char C1, C2;
+	double ekin_p;
+	if(hoppingResult=="same") {
+		C1='S';
+		C2='-';
+		ekin_p=ekin*beta1;
+	}
+	else if(hoppingResult=="already_visited") { 
+		C1='O';
+		ekin_p=ekin*beta2;
+	}
+	else if(hoppingResult=="new") { 
+		C1='N';
+		ekin_p=ekin*beta3;
+	}
+	else {
+		C1='-';
+		ekin_p=ekin;
+	}
+	if(decisionResult=="accepted") {
+		C2='A';
+	}
+	else if(decisionResult=="rejected") {
+		C2='R';
+	}
+	else {
+		C2='-';
+	}
+	double epot_hopp=matter_hopp->getPotentialEnergy();
+	double temp = (2.0*ekin_p/8.6173857E-5);
+	double dt=parameters->mdTimeStep/0.09823;
+	fprintf(monfile,"%15.5f  %15.5f  %11lu  %12.2f         %c%c  %5ld  %5ld\n",
+		epot_hopp,ediff,(size_t)temp,dt,C1,C2,fcallsMove,fcallsRelax);
+}
+//****************************************************************************************
+void GlobalOptimizationJob::decisionStep(Matter *matter_curr,Matter *matter_hopp) {
+	decisionResult="unknown";
+	examineEscape(matter_curr,matter_hopp);
+	if(escapeResult=="failure") {
+		//matter_hopp[0]=matter_curr[0];
+		return;
+	}
+	if(parameters->globalOptimizationDecisionMethod=="npew") {
+		acceptRejectNPEW(matter_curr,matter_hopp);
 		//GlobalOptimizationJob::update_minhopp_param(matter_hopp);
 	}
-	else if(acc_rej_type=="basin_hopping") {
+	else if(parameters->globalOptimizationDecisionMethod=="boltzmann") {
 		printf("WARNING: it will be implemented by Sam\n");
 		exit(0);
 	}
@@ -218,38 +219,39 @@ void GlobalOptimizationJob::accept_reject_step(Matter *matter_curr,Matter *matte
 		printf("ERROR: accept/reject method not specified. client stops.\n");
 		exit(0);
 	}
+	applyDecisionFeedback();
 }
 //****************************************************************************************
-void GlobalOptimizationJob::accept_reject_minhopp(Matter *matter_curr,Matter *matter_hopp) {
-	//double epot;
-	//epot=matter_hopp->getPotentialEnergy();
-	double epot;
-	size_t jlo;
+//NPEW: non-probablistic energy window (used in minima hopping method)
+void GlobalOptimizationJob::acceptRejectNPEW(Matter *matter_curr,Matter *matter_hopp) {
 	if(matter_hopp->getPotentialEnergy()<matter_curr->getPotentialEnergy()+ediff) {
-		acc_rej_decision="accepted";
+		decisionResult="accepted";
 	}
 	else {
-		acc_rej_decision="rejected";
-	}
-	epot=matter_hopp->getPotentialEnergy();
-	jlo=hunt(epot);
-	printf("REZA: %lu \n",jlo);
-	if(abs(epot-earr[jlo])<etoler) {
-		trial_minimum="already_visited";
-	}
-	else {
-		trial_minimum="new";
+		decisionResult="rejected";
 	}
 }
 //****************************************************************************************
-void GlobalOptimizationJob::move_step(Matter *matter_curr) {
-	if(parameters->globalOptimizationMoveType=="md") {
-		GlobalOptimizationJob::mdescape(matter_curr);
+void GlobalOptimizationJob::hoppingStep(long istep,Matter *matter_curr,Matter *matter_hopp) {
+    bool converged;
+	matter_hopp[0]=matter_curr[0];
+	long fcalls1=matter_hopp->getForceCalls();
+	if(parameters->globalOptimizationMoveMethod=="md") {
+		applyMoveFeedbackMD();
+		mdescape(matter_hopp);
 	}
-	else if(parameters->globalOptimizationMoveType=="random") {
+	else if(parameters->globalOptimizationMoveMethod=="random") {
 		printf("WARNING: it will be implemented by Sam\n");
 		exit(0);
 	}
+	long fcalls2=matter_hopp->getForceCalls();
+	hoppingResult="unknown";
+    converged = matter_hopp->relax(false, parameters->writeMovies, 
+		parameters->checkpoint, "min", "matter_hopp");
+    printf("converged %s \n",(converged)?"TRUE":"FALSE");
+	long fcalls3=matter_hopp->getForceCalls();
+	fcallsMove=fcalls2-fcalls1;
+	fcallsRelax=fcalls3-fcalls2;
 }
 //****************************************************************************************
 void GlobalOptimizationJob::mdescape(Matter *matter)
@@ -290,11 +292,11 @@ void GlobalOptimizationJob::mdescape(Matter *matter)
 	devcon=econs_max-econs_min;
 	if(md_presumably_escaped) {
 		devcon=devcon/(double)(matter->numberOfFreeAtoms()*3);
-		if(devcon/ekin<6.E-3) {
-			parameters->mdTimeStep*=1.05;
+		if(devcon/ekin<2.E-3) {
+			parameters->mdTimeStep*=1.1;
 		}
 		else {
-			parameters->mdTimeStep/=1.05;
+			parameters->mdTimeStep/=1.1;
 		}
 	}
 	else {
@@ -357,7 +359,7 @@ void GlobalOptimizationJob::insert(Matter *matter)
     printf("JLO= %5lu  %10.5f  \n",jlo,abs(epot-earr[jlo]));
 	//it=earr.begin()+jlo;
 	//epot_hopp.push_back(epot);
-	if(!(abs(epot-earr[jlo])<etoler)) {
+	if(!(abs(epot-earr[jlo])<parameters->energyDifference)) {
 		//earr.insert(it,epot_hopp.begin(),epot_hopp.end());
 		jlo_insert=jlo;
 		if(epot>earr[jlo]) jlo_insert++;
@@ -373,7 +375,7 @@ size_t GlobalOptimizationJob::hunt(double epot) {
     if(jlo==earr.size()) jlo--;
 	de=abs(epot-earr[jlo]);
     if(jlo>0) if(abs(epot-earr[jlo-1])<de) jlo--; //{jlo--;de=abs(epot-earr[jlo]);}
-    //if(jlo!=earr.size()-1) if(abs(epot-earr[jlo+1])<etoler) jlo++;
+    //if(jlo!=earr.size()-1) if(abs(epot-earr[jlo+1])<parameters->energyDifference) jlo++;
 	return jlo;
 }
 //****************************************************************************************
