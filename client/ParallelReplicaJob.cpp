@@ -299,7 +299,7 @@ int ParallelReplicaJob::dynamics()
                 jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;
             }
       
-            if(*transition_relaxed == *product_relaxed){
+            if(transition_relaxed->compare(product_relaxed)) {
                 jobStatus = ParallelReplicaJob::STATUS_NEWSTATE;
             }else{
                 jobStatus = ParallelReplicaJob::STATUS_NEWSTATE_CORR;
@@ -522,8 +522,9 @@ bool ParallelReplicaJob::checkState(Matter *current, Matter *reactant)
     if(relaxStatus == false){
         jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;
     }
-    if (tmp == *reactant) {
-        return false; }
+    if (tmp.compare(reactant)) {
+        return false; 
+    }
     return true;
 }
 

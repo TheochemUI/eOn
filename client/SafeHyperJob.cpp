@@ -419,8 +419,9 @@ bool SafeHyperJob::checkState(Matter *current, Matter *reactant)
     Matter tmp(parameters);
     tmp = *current;
     tmp.relax(true);
-    if (tmp == *reactant) {
-        return false; }
+    if (tmp.compare(reactant)) {
+        return false; 
+    }
     return true;
 }
 

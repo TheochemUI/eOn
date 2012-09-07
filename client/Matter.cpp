@@ -156,22 +156,30 @@ const Matter& Matter::operator=(const Matter& matter)
 }
 
 
-// Two matter objects are considered the same if all differences in positions are below distanceDifference.
-bool Matter::operator==(const Matter& matter) {
-    if(parameters->checkRotation && parameters->indistinguishableAtoms) {
-        return helper_functions::sortedR(this, &matter, parameters->distanceDifference);
-    }else if(parameters->indistinguishableAtoms) {
-        return helper_functions::identical(this, &matter, parameters->distanceDifference);
+//The == comparison considers identity. This is crucial for process search.
+//bool Matter::operator==(const Matter& matter) {
+//    if(parameters->checkRotation) {
+//        return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
+//    }else{
+//        return (parameters->distanceDifference) > perAtomNorm(matter);
+//    }
+//}
+
+bool Matter::compare(const Matter *matter, bool indistinguishable) {
+    if(parameters->checkRotation && indistinguishable) {
+        return helper_functions::sortedR(this, matter, parameters->distanceDifference);
+    }else if(indistinguishable) {
+        return helper_functions::identical(this, matter, parameters->distanceDifference);
     }else if(parameters->checkRotation) {
-        return helper_functions::rotationMatch(this, &matter, parameters->distanceDifference);
+        return helper_functions::rotationMatch(this, matter, parameters->distanceDifference);
     }else{
-        return (parameters->distanceDifference) > perAtomNorm(matter);
+        return (parameters->distanceDifference) > perAtomNorm(*matter);
     }
 }
 
-bool Matter::operator!=(const Matter& matter) {
-    return !operator==(matter);
-}
+//bool Matter::operator!=(const Matter& matter) {
+//    return !operator==(matter);
+//}
 
 
 // Returns the distance to the given matter object.
