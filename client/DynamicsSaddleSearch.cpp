@@ -38,7 +38,7 @@ int DynamicsSaddleSearch::run(void)
             *product = *saddle;
             product->relax(true, false);
 
-            if (*product != *reactant) {
+            if (!product->compare(reactant)) {
                 log("Found new state\n");
 
                 NudgedElasticBand neb(reactant, product, parameters);

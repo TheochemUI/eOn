@@ -91,7 +91,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             min.relax(true);
 
             //only check for a transition if one has yet to occur 
-            if (min != *reactant && transitionTime == 0) {
+            if (!min.compare(reactant) && transitionTime == 0) {
                 log("%s transition occurred\n", LOG_PREFIX);
 
                 //perform the binary search for the transition structure
@@ -204,7 +204,7 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
         min = *trajectory;
         min.relax(true);
 
-        if (min == *reactant) {
+        if (min.compare(reactant)) {
             log("%s dephasing successful\n", LOG_PREFIX);
             break;
         }else{
@@ -226,7 +226,7 @@ int UnbiasedParallelReplicaJob::refineTransition(std::vector<Matter*> MDSnapshot
         snapshot->relax(true);
 
         if (fake == false) {
-            midTest = *snapshot == *reactant;
+            midTest = snapshot->compare(reactant);
         }else{
             //if we are faking the refinement just generate a random answer
             //for the comparison test
