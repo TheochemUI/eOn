@@ -1,0 +1,23 @@
+#!/bin/bash
+#$ -cwd
+#$ -V
+#$ -o ll_out
+#$ -S /bin/bash
+#$ -pe mpi2 50
+#$ -j y
+#$ -N eon-vasp-test
+
+set -x 
+export EON_NUMBER_OF_CLIENTS=25
+
+export EON_SERVER_PATH=~chill/code/eon/eon/akmc.py
+VASP_PATH=~/bin/vasp_mpmd_gamma
+EON_CLIENT_PATH=~/code/eon/client/client_mpi
+~/code/eon/tools/mkvasp.py $EON_NUMBER_OF_CLIENTS .
+
+msg='$NSLOTS not evenly divisible by $EON_NUMBER_OF_CLIENTS'
+[ $(( $NSLOTS % $EON_NUMBER_OF_CLIENTS )) -ne 0 ] && { echo $msg; exit 1; }
+
+vasp_ranks=$(( $NSLOTS / $EON_NUMBER_OF_CLIENTS ))
+mpirun -n $vasp_ranks ~/bin/vasp_mpmd_gamma : \
+       -n $(( $EON_NUMBER_OF_CLIENTS + 1)) ~/code/eon/client/client_mpi
