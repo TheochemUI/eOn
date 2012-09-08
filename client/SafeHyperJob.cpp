@@ -319,7 +319,7 @@ void SafeHyperJob::saveData(int status)
     
     fclose(fileResults);
 
-    std::string reactantFilename("reactant_out.con");
+    std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     reactant->matter2con(fileReactant);
@@ -328,7 +328,7 @@ void SafeHyperJob::saveData(int status)
     if(newStateFlag)
     {
         FILE *fileProduct;
-        std::string productFilename("product_out.con");
+        std::string productFilename("product.con");
         returnFiles.push_back(productFilename);
 
         fileProduct = fopen(productFilename.c_str(), "wb");
@@ -338,7 +338,7 @@ void SafeHyperJob::saveData(int status)
         if(parameters->parrepRefineTransition)
         {
             FILE *fileSaddle;
-            std::string saddleFilename("saddle_out.con");
+            std::string saddleFilename("saddle.con");
             returnFiles.push_back(saddleFilename);
 
             fileSaddle = fopen(saddleFilename.c_str(), "wb");
