@@ -43,7 +43,7 @@ UnbiasedParallelReplicaJob::~UnbiasedParallelReplicaJob()
 
 std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 {
-    //load reactant.con
+    //load pos.con
     reactant = new Matter(parameters);
     reactant->con2matter(helper_functions::getRelevantFile(parameters->conFilename));
 
