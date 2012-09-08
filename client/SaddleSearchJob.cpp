@@ -30,17 +30,17 @@ SaddleSearchJob::~SaddleSearchJob()
 
 std::vector<std::string> SaddleSearchJob::run(void)
 {
-    string reactantFilename("pos_in.con");
-    string displacementFilename("displacement_in.con");
-    string modeFilename("mode_in.dat");
+    string reactantFilename("pos.con");
+    string displacementFilename("displacement.con");
+    string modeFilename("direction.dat");
 
     if (parameters->checkpoint) {
         FILE *disp, *mode;
         disp = fopen("displacement_cp.con", "r");
-        mode = fopen("mode_cp.dat", "r");
+        mode = fopen("direction_cp.dat", "r");
         if (disp != NULL && mode != NULL) {
             displacementFilename = "displacement_cp.con";
-            modeFilename = "mode_cp.dat";
+            modeFilename = "direction_cp.dat";
             log("Resuming from checkpoint\n");
         }else{
             log("No checkpoint files found\n");
@@ -129,7 +129,7 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%f potential_energy_reactant\n", initial->getPotentialEnergy());
     fclose(fileResults);
 
-    std::string modeFilename("mode_out.dat");
+    std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());

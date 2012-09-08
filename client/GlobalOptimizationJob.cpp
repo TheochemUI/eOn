@@ -37,9 +37,8 @@ GlobalOptimizationJob::~GlobalOptimizationJob(void)
 std::vector<std::string> GlobalOptimizationJob::run(void)
 {
     //int status;
-	GlobalOptimization mh = GlobalOptimization(parameters);
+	GlobalOptimization globopt = GlobalOptimization(parameters);
     string reactant_passed = helper_functions::getRelevantFile(parameters->conFilename);
-    //string reactant_output("reactant.con");
     std::vector<std::string> returnFiles;
     //returnFiles.push_back(reactant_output);
     Matter *matter_curr = new Matter(parameters);
@@ -87,7 +86,7 @@ std::vector<std::string> GlobalOptimizationJob::run(void)
 		}
 		fprintf(earrfile,"%5lu  %15.5f  %15.5f  %15.5f  \n",i+1,earr[i],earr[i]-earr[0],earr[i]-earrim1);
 	}
-	//mh.run();
+	//globopt.run();
 	fclose(monfile);
 	fclose(earrfile);
 	return returnFiles;
