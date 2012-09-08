@@ -34,7 +34,7 @@ Parameters::Parameters(){
     checkpoint = false;
     quiet = false;
     iniFilename = "config.ini";
-    conFilename = "pos_in.con";
+    conFilename = "pos.con";
     finiteDifference = 0.01;
     maxForceCalls = 0;
 

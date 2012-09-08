@@ -32,9 +32,9 @@ ProcessSearchJob::~ProcessSearchJob()
 
 std::vector<std::string> ProcessSearchJob::run(void)
 {
-    string reactantFilename("pos_in.con");
+    string reactantFilename("pos.con");
     string displacementFilename("displacement.con");
-    string modeFilename("mode_in.dat");
+    string modeFilename("mode.dat");
 
     initial = new Matter(parameters);
     if (parameters->saddleMethod == "min_mode") {
