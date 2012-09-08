@@ -404,7 +404,7 @@ void ParallelReplicaJob::saveData(int state)
     
     fclose(fileResults);
 
-    std::string reactantFilename("reactant_in.con");
+    std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     reactant->matter2con(fileReactant);
@@ -413,7 +413,7 @@ void ParallelReplicaJob::saveData(int state)
     if(newStateFlag)
     {
         FILE *fileProduct;
-        std::string productFilename("product_in.con");
+        std::string productFilename("product.con");
         returnFiles.push_back(productFilename);
 
         fileProduct = fopen(productFilename.c_str(), "wb");
@@ -423,7 +423,7 @@ void ParallelReplicaJob::saveData(int state)
         if(refineFCalls > 0)
         {
             FILE *fileTransition;
-            std::string transitionFilename("transition_out.con");
+            std::string transitionFilename("transition.con");
             returnFiles.push_back(transitionFilename);
 
             fileTransition = fopen(transitionFilename.c_str(), "wb");
@@ -434,7 +434,7 @@ void ParallelReplicaJob::saveData(int state)
         if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE_CORR)
         {
             FILE *fileMeta;
-            std::string metaFilename("meta_out.con");
+            std::string metaFilename("meta.con");
             returnFiles.push_back(metaFilename);
             fileMeta = fopen(metaFilename.c_str(), "wb");
             transition_relaxed->matter2con(fileMeta);

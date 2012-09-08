@@ -24,8 +24,8 @@ MinimizationJob::~MinimizationJob(){ }
 
 std::vector<std::string> MinimizationJob::run(void)
 {
-    string posInFilename("pos_in.con");
-    string posOutFilename("pos_out.con");
+    string posInFilename("pos.con");
+    string posOutFilename("min.con");
 
     if (parameters->checkpoint) {
         FILE *pos;
@@ -51,7 +51,7 @@ std::vector<std::string> MinimizationJob::run(void)
     bool converged;
     try {
         converged = pos->relax(false, parameters->writeMovies, 
-                                    parameters->checkpoint, "min", "pos");
+                                    parameters->checkpoint, "minimization", "pos");
         if (converged) {
             status = STATUS_GOOD;
             printf("Minimization converged within tolerence\n");

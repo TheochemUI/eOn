@@ -143,7 +143,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             if (currentEnergy < minimumEnergy) {
                 minimumEnergy = currentEnergy;
                 *minimumEnergyStructure = *minTrial;
-                minimumEnergyStructure->matter2con("global_min.con");
+                minimumEnergyStructure->matter2con("min.con");
             }
             consecutive_rejected_trials = 0; //STC: I think this should go here.
         }else{
@@ -223,7 +223,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fclose(fileResults);
 
-    std::string productFilename("global_min.con");
+    std::string productFilename("min.con");
     returnFiles.push_back(productFilename);
     fileProduct = fopen(productFilename.c_str(), "wb");
     minimumEnergyStructure->matter2con(fileProduct);

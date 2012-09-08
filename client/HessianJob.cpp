@@ -24,9 +24,9 @@ HessianJob::~HessianJob()
 
 std::vector<std::string> HessianJob::run(void)
 {
-    string reactant_in("reactant_in.con");
-    string saddle_in("saddle_in.con");
-    string product_in("product_in.con");
+    string reactant_in("reactant.con");
+    string saddle_in("saddle.con");
+    string product_in("product.con");
 
     std::vector<std::string> returnFiles;
 
@@ -51,7 +51,7 @@ std::vector<std::string> HessianJob::run(void)
     FILE *fileMode;
 
     std::string results_file("results.dat");
-    std::string mode_file("mode_out.dat");
+    std::string mode_file("mode.dat");
 
     returnFiles.push_back(results_file);
     returnFiles.push_back(mode_file);

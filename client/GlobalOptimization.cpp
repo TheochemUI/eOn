@@ -14,5 +14,5 @@ GlobalOptimization::~GlobalOptimization(void)
 
 void GlobalOptimization::run(void)
 {
-	log("HELLO FROM MH\n");
+	log("HELLO FROM GO\n");
 }
