@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -cwd
 #$ -V
-#$ -o ll_out
+#$ -o $JOB_NAME.$JOB_ID
 #$ -S /bin/bash
 #$ -pe mpi48 384
 #$ -j y
@@ -18,6 +18,5 @@ EON_CLIENT_PATH=~/code/eon/client/client_mpi
 msg='$NSLOTS not evenly divisible by $EON_NUMBER_OF_CLIENTS'
 [ $(( $NSLOTS % $EON_NUMBER_OF_CLIENTS )) -ne 0 ] && { echo $msg; exit 1; }
 
-vasp_ranks=$(( $NSLOTS / $EON_NUMBER_OF_CLIENTS ))
-mpirun -n $vasp_ranks ~/bin/vasp_mpmd_gamma : \
+mpirun -n $NSLOTS vasp_mpmd_gamma : \
        -n $(( $EON_NUMBER_OF_CLIENTS + 1)) ~/code/eon/client/client_mpi
