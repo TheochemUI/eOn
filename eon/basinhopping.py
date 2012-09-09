@@ -101,7 +101,7 @@ class BHStates:
                 if abs(energy-row['energy']) < config.comp_eps_e:
                     energetically_close.append(row['state'])
             if len(energetically_close) != 0:
-                a1 = io.loadcon(result_files['global_min.con'])
+                a1 = io.loadcon(result_files['min.con'])
                 for state_number in energetically_close:
                     state_con_path = os.path.join(config.path_states, 
                                                   str(state_number),
@@ -127,8 +127,8 @@ class BHStates:
             state_path = os.path.join(config.path_states, str(state_number))
             os.mkdir(state_path)
 
-            result_files['minimum.con'] = result_files['global_min.con']
-            del result_files['global_min.con']
+            result_files['minimum.con'] = result_files['min.con']
+            del result_files['min.con']
 
             for fn, fh in result_files.iteritems():
                 if hasattr(fh, 'getvalue') == False:
@@ -184,7 +184,7 @@ def make_searches(comm, wuid, bhstates):
 
     invariants = {}
 
-    f = open(os.path.join(config.path_root, 'pos_in.con'))
+    f = open(os.path.join(config.path_root, 'pos.con'))
     initial_react = StringIO(f.read())
     f.close()
 
@@ -197,7 +197,7 @@ def make_searches(comm, wuid, bhstates):
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
-    rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "pos_in.con")))
+    rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "pos.con")))
 
     searches = []
     for i in range(num_to_make):
@@ -210,7 +210,7 @@ def make_searches(comm, wuid, bhstates):
             io.savecon(reactIO, rs.generate())
         else:
             reactIO = initial_react
-        search['global_min.con'] = reactIO
+        search['pos.con'] = reactIO
         search['config.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)
         wuid += 1
