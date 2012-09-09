@@ -80,7 +80,7 @@ def step(current_time, current_state, states, transition):
     return current_state, previous_state
 
 def get_statelist():
-    initial_state_path = os.path.join(config.path_root, 'pos_in.con')
+    initial_state_path = os.path.join(config.path_root, 'pos.con')
     return prstatelist.PRStateList(initial_state_path)
 
 def get_pr_metadata():
@@ -143,7 +143,7 @@ def make_searches(comm, current_state, wuid):
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
-        search['pos_in.con']  = reactIO
+        search['reactant.con']  = reactIO
         ini_changes = [
                         ('Main', 'job', 'parallel_replica'),
                         ('Main', 'random_seed',

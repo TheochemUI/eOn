@@ -34,7 +34,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
 {
     string reactantFilename("pos.con");
     string displacementFilename("displacement.con");
-    string modeFilename("mode.dat");
+    string modeFilename("direction.dat");
 
     initial = new Matter(parameters);
     if (parameters->saddleMethod == "min_mode") {
@@ -284,7 +284,7 @@ void ProcessSearchJob::saveData(int status)
     fileReactant = fopen(reactantFilename.c_str(), "wb");
     min1->matter2con(fileReactant);
 
-    std::string modeFilename("mode_out.dat");
+    std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());

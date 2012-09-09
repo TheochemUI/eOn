@@ -98,7 +98,7 @@ class AKMCState(state.State):
         # Check if the mode, reactant, saddle, and product are legit
         try:
             if 'mode' not in result:
-                io.load_mode(result['mode_out.dat'])
+                io.load_mode(result['mode.dat'])
             if 'reactant' not in result:
                 io.loadcon(result['reactant.con'])
             if 'saddle' not in result:
@@ -125,7 +125,7 @@ class AKMCState(state.State):
 
         # Move the relevant files into the procdata directory.
         open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
-        open(self.proc_mode_path(id), 'w').writelines(result['mode_out.dat'].getvalue())
+        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'].getvalue())
         open(self.proc_product_path(id), 'w').writelines(result['product.con'].getvalue())
         open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'].getvalue())
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
