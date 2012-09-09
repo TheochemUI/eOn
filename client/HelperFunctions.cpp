@@ -529,59 +529,63 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     AtomMatrix r2 = m2->getPositions();
     double tolerance=distanceDifference;
     int matches=0;
-    set<atom,by_atom> rdf2;
-    set<atom,by_atom> rdf1;
-
+    set<atom,by_atom> rdf1[r1.rows()];
+    set<atom,by_atom>rdf2 [r2.rows()];
     if(r1.rows()!=r2.rows()) return false;
-
-    for(int i1=0; i1<r1.rows(); i1++){
-        rdf1.clear();
-        set<atom>::iterator it;
-        for(int j1=0; j1<r1.rows(); j1++){
+    int i1=1;
+    int i2=1;
+    for(; i2<=r2.rows(); i2++){    
+      rdf2[i2].clear();
+      for(int j2=1; j2<=r2.rows(); j2++){
+	if(j2==i2) continue;
+	atom a2;
+	a2.r=m2->distance(i2,j2);
+	a2.z=m2->getAtomicNr(j2);
+	rdf2[i2].insert(a2);
+	rdf2[j2].insert(a2);
+      }
+    }
+    set<atom>::iterator it;
+    set<atom>::iterator it2;
+    for(; i1<=r1.rows(); i1++){
+        for(int j1=1; j1<=r1.rows(); j1++){
             if(j1==i1) continue;
             atom a;
             a.r=m1->distance(i1,j1);
             a.z=m1->getAtomicNr(j1);
-            rdf1.insert(a);
-            //printf("rdf1: %.3f\n", a.r);
+	    rdf1[i1].insert(a);
+	    rdf1[j1].insert(a);
+	      //printf("rdf1: %.3f\n", a.r);
         }
-        for(int i2=0; i2<r2.rows(); i2++){
-            rdf2.clear();
-            set<atom>::iterator it2;
-            for(int j2=0; j2<r2.rows(); j2++){
-                if(j2==i2) continue;
-                atom a2;
-                a2.r=m2->distance(i2,j2);
-                a2.z=m2->getAtomicNr(j2);
-                rdf2.insert(a2);
-                //printf("rdf2: %.3f\n", a2.r);
-            }
-            it2=rdf2.begin();
-            int c=0;
-            int counter=0;
-            for(it = rdf1.begin(); c<r1.rows(); c++){
-                atom k1;
-                k1=*it;
-                atom k2;
-                k2=*it2;
-                if(fabs(k1.r-k2.r)<tolerance && k1.z==k2.z) {
-                    counter++;
-                }
-                it2++;
-                it++;
-            }
-            if (counter==r1.rows()-1) {
-                //printf("found a match\n");
-                matches++;
-            }else{
-                //printf("no match\n");
-            }
-        }
+	for(int x=0; x<=r2.rows(); x++){    
+	  it2=rdf2[x].begin();
+	  int c=0;
+	  int counter=0;
+	  for(it = rdf1[i1].begin(); c<r1.rows(); c++){
+	    atom k1;
+	    k1=*it;
+	    atom k2;
+	    k2=*it2;
+	    if(fabs(k1.r-k2.r)<tolerance && k1.z==k2.z){
+	      counter++;
+	    }
+	    else{
+	      break;
+	    }
+	    it2++;
+	    it++;
+	  }
+	  if (counter==r1.rows()-1) {
+	    //printf("found a match\n");
+	    matches++;
+	  }else{
+	    //printf("no match\n");
+	  }
+	}
     }
-
     if (matches!=r1.rows()) {
-        return false;
+      return false;
     }else{
-        return true;
+      return true;
     }
 }
