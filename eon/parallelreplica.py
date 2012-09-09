@@ -143,7 +143,7 @@ def make_searches(comm, current_state, wuid):
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
-        search['reactant.con']  = reactIO
+        search['pos.con']  = reactIO
         ini_changes = [
                         ('Main', 'job', 'parallel_replica'),
                         ('Main', 'random_seed',
