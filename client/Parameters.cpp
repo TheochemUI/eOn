@@ -37,6 +37,7 @@ Parameters::Parameters(){
     conFilename = "pos.con";
     finiteDifference = 0.01;
     maxForceCalls = 0;
+    removeTranslation = true;
 
     // [Prefactor]
     prefactorDefaultValue = 0.0;
@@ -243,6 +244,7 @@ int Parameters::load(FILE *file){
             helper_functions::random(randomSeed);
         }
         maxForceCalls = ini.GetValueL("Main", "max_force_calls", maxForceCalls);
+        removeTranslation = ini.GetValueB("Main", "remove_translation", removeTranslation);
 
         // [Potential] //
 
