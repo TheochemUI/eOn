@@ -16,6 +16,7 @@ import akmc
 import basinhopping
 import config
 import parallelreplica
+import escaperate
 
 def main():
     config.init()
@@ -26,6 +27,8 @@ def main():
         parallelreplica.main()
     elif job == 'basin_hopping':
         basinhopping.main()
+    elif job == 'escape_rate':
+        escaperate.main()
     else:
         import communicator
         import shutil

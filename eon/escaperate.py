@@ -52,7 +52,7 @@ def parallelreplica():
         avg_spdup = sum_spdup/num_registered
         logger.info("Total Speedup is %f",avg_spdup)
     if transition:
-        current_state, previous_state = step(time, current_state, states, transition)
+        #current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
 
     wuid = make_searches(comm, current_state, wuid)
