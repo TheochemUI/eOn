@@ -532,11 +532,11 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     set<atom,by_atom> rdf1[r1.rows()];
     set<atom,by_atom>rdf2 [r2.rows()];
     if(r1.rows()!=r2.rows()) return false;
-    int i1=1;
-    int i2=1;
-    for(; i2<=r2.rows(); i2++){    
+    int i1=0;
+    int i2=0;
+    for(; i2<r2.rows(); i2++){    
       rdf2[i2].clear();
-      for(int j2=1; j2<=r2.rows(); j2++){
+      for(int j2=0; j2<r2.rows(); j2++){
 	if(j2==i2) continue;
 	atom a2;
 	a2.r=m2->distance(i2,j2);
@@ -547,8 +547,8 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     }
     set<atom>::iterator it;
     set<atom>::iterator it2;
-    for(; i1<=r1.rows(); i1++){
-        for(int j1=1; j1<=r1.rows(); j1++){
+    for(; i1<r1.rows(); i1++){
+        for(int j1=0; j1<r1.rows(); j1++){
             if(j1==i1) continue;
             atom a;
             a.r=m1->distance(i1,j1);
@@ -557,7 +557,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
 	    rdf1[j1].insert(a);
 	      //printf("rdf1: %.3f\n", a.r);
         }
-	for(int x=0; x<=r2.rows(); x++){    
+	for(int x=0; x<r2.rows(); x++){    
 	  it2=rdf2[x].begin();
 	  int c=0;
 	  int counter=0;
