@@ -557,7 +557,8 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
 	    rdf1[j1].insert(a);
 	      //printf("rdf1: %.3f\n", a.r);
         }
-	for(int x=0; x<r2.rows(); x++){    
+	int store=0;
+	for(int x=0; x<=r2.rows(); x++){    
 	  it2=rdf2[x].begin();
 	  int c=0;
 	  int counter=0;
@@ -575,12 +576,13 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
 	    it2++;
 	    it++;
 	  }
+	  store==matches;
 	  if (counter==r1.rows()-1) {
-	    //printf("found a match\n");
 	    matches++;
 	  }else{
 	    //printf("no match\n");
 	  }
+	  if(store==matches) return false;
 	}
     }
     if (matches!=r1.rows()) {
