@@ -99,7 +99,9 @@ class DisplacementManager:
         # ### TShacked end
 
     def make_displacement(self):
-        disp_types = ["random", "listed", "not_FCC_HCP", "under", "least", "water"]
+        # ### TShacked start
+        disp_types = ["random", "listed", "not_FCC_HCP", "under", "least", "water","not_TCP"]
+        # ### TShacked end
         r = numpy.random.random_sample()
         i = 0
         while self.plist[i] < r:
