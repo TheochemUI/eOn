@@ -50,6 +50,7 @@ public:
     string conFilename;
     double finiteDifference;
     long maxForceCalls;
+    bool removeTranslation;
 
     // [Potential] //
     string potential;
