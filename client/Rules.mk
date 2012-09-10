@@ -24,9 +24,13 @@ POTENTIALS += "+H2O_Pt"
 POTDIRS += ./potentials/IMD/
 LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
-POTDIRS += ./potentials/bopfox
+POTDIRS += ./potentials/bopfox/
 LIBS += ./potentials/bopfox/libbopfox.a
 POTENTIALS += "+bopfox"
+POTDIRS += ./potentials/TerminalPotential/
+LIBS += ./potentials/TerminalPotential/libterminalpotential.a
+POTENTIALS += "+TerminalPotential"
+
 
 #Potentials relying on fortran
 ifdef NO_FORTRAN

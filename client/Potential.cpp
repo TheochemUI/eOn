@@ -31,6 +31,7 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
+#include "potentials/TerminalPotential/TerminalPotential.h"
 
 #include "potentials/bopfox/bopfox.h"
 #ifdef BOPFOX
@@ -83,6 +84,7 @@ const char Potential::POT_BOPFOX[] =      "bopfox";
 const char Potential::POT_BOP[] =         "bop";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
+const char Potential::POT_TERMINAL[] =    "terminalpotential";
 const char Potential::POT_NEW[] =         "new";
 
 Potential* Potential::pot = NULL;
@@ -108,7 +110,9 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new Tip4p_Pt();
     else if(parameters->potential == POT_SPCE)
         pot = new SpceCcl();
-
+    else if(parameters->potential == POT_TERMINAL)
+        pot = new TerminalPotential(parameters);
+    
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
