@@ -73,6 +73,7 @@ Potential:
                 - tip4p
                 - tip4p_h
                 - tip4p_pt
+                - terminalpotential
                 - new
 
         mpi_poll_period:
