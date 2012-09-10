@@ -5,7 +5,10 @@
 c***************************************************
 c
       parameter (nmat=3,nnbrs=800)
-      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=5,nlcy=5,nlcz=5)
+      parameter (nlcx=3,nlcy=3,nlcz=3)
+c      parameter (nlcx=1,nlcy=1,nlcz=1)
       parameter (nlc=nlcx*nlcy*nlcz)
 c  Ackland Many body potential for a-Fe ***********
       integer*4 nix(27),niy(27),niz(27)
@@ -35,6 +38,12 @@ c
 c     write(6,796)
 c 796 format(2x,'into force of Fe')
 c
+c      write(*,*) 'box: ',ax,ay,az
+c      write(*,*) 'nm: ',nm
+c      write(*,*) 'pos and input: '
+c      do i = 1,nm
+c        write(*,*) i,x0(i),y0(i),z0(i)
+c      enddo
       point5 = 0.5d0
       pe = 0.0d0
       ev = 1.602177d-19 
@@ -100,6 +109,10 @@ c changing to -0.5*ax and 0.5*ax
        z0(i) = z00*az
       end do
 c
+c      write(*,*) 'pos after -0.5 .. 0.5: '
+c      do i = 1,nm
+c        write(*,*) i,x0(i),y0(i),z0(i)
+c      enddo
       call linvlc(nm,x0,y0,z0,ax,ay,az,ltop,link)
 c
 c
@@ -431,6 +444,11 @@ c
          pe=pe+etom(kl)+emedtom(kl)+emedtoms(kl)
       end do
 
+c      write(*,*) 'force:'
+c      do i = 1, nm
+c        write(*,*) i,fx(i),fy(i),fz(i)
+c      enddo
+
       return
 999   write(idout,1004) m,nnbrs
 1004  format(' sorry user, the run is stopping now in "kravlc"',/,
@@ -444,7 +462,10 @@ c     *****************
 c
 c sets up the link cell map
 c
-      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=5,nlcy=5,nlcz=5)
+      parameter (nlcx=3,nlcy=3,nlcz=3)
+c      parameter (nlcx=1,nlcy=1,nlcz=1)
       parameter (nlc=nlcx*nlcy*nlcz)
       parameter (hmeps=0.5d0-1d-9)
       dimension x0(nm),y0(nm),z0(nm)
@@ -465,6 +486,7 @@ c function operates on an atom exactly at the box boundary, when in
 c the original version it would return an integer one greater than
 c the correct one.
 c
+c      write(*,*) 'link cells:'
       do 110 i=1,nm
       xx0 = x0(i)/ax
       yy0 = y0(i)/ay
@@ -472,6 +494,7 @@ c
       ix = int( (xx0+hmeps)*fnlcx     ) + 1
       iy = int( (yy0+hmeps)*fnlcy     )
       iz = int( (zz0+hmeps)*fnlcz     )
+c      write(*,*) i,':',ix,iy,iz
       ip = ix + nlcx*iy + nlcx*nlcy*iz
 c
 c assign atom i to link cell ip
@@ -489,7 +512,10 @@ c
           integer*4       tv0001
 c     *****************
       parameter (nmat=3,nnbrs=800)
-      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=7,nlcy=7,nlcz=7)
+c      parameter (nlcx=5,nlcy=5,nlcz=5)
+      parameter (nlcx=3,nlcy=3,nlcz=3)
+c      parameter (nlcx=1,nlcy=1,nlcz=1)
       parameter (nlc=nlcx*nlcy*nlcz)
       integer*4 nix(27),niy(27),niz(27)
 cdata block

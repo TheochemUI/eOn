@@ -58,11 +58,14 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F, doubl
 
     feforce_(&N, RX, RY, RZ, ISPEC, FX, FY, FZ, U, &box[0], &box[4], &box[8]);
 
+//    cout <<"forces in c:\n";
     for(i=0; i<N; i++){
         F[i*3]   = FX[i];
         F[i*3+1] = FY[i];
         F[i*3+2] = FZ[i];
+//        cout <<F[i*3]<<" "<<F[i*3+1]<<" "<<F[i*3+2]<<endl;
     }
+//    cout <<endl;
 
     delete [] RX;
     delete [] RY;
