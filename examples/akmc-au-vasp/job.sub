@@ -3,12 +3,13 @@
 #$ -V
 #$ -o $JOB_NAME.$JOB_ID
 #$ -S /bin/bash
-#$ -pe mpi48 384
+#$ -pe mpi48 480
 #$ -j y
-#$ -N akmc-au8
+#$ -N akmc-au8-benchmark
+#$ -l h_rt=13:30:00
 
 set -x 
-export EON_NUMBER_OF_CLIENTS=48
+export EON_NUMBER_OF_CLIENTS=60
 
 export EON_SERVER_PATH=~chill/code/eon/eon/akmc.py
 VASP_PATH=~/bin/vasp_mpmd_gamma
