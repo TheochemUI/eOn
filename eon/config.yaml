@@ -11,6 +11,7 @@ Main:
             values:
                 - finite_difference
                 - parallel_replica
+                - escape_rate
                 - saddle_search
                 - minimization
                 - process_search
