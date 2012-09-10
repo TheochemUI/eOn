@@ -913,7 +913,7 @@ void Matter::computePotential()
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
-        if(isFixed.sum() == 0){
+        if(isFixed.sum() == 0 and parameters->removeTranslation){
             Vector3d tempForce(3);
             tempForce = forces.colwise().sum()/nAtoms;
 
