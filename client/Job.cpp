@@ -17,6 +17,7 @@
 #include "TestJob.h"
 #include "GlobalOptimizationJob.h"
 #include "StructureComparisonJob.h"
+#include "MonteCarloJob.h"
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
@@ -34,6 +35,7 @@ const char Job::SAFE_HYPER[] =               "safe_hyper";
 const char Job::PREFACTOR[] =                "prefactor";
 const char Job::GLOBAL_OPTIMIZATION[] =      "global_optimization";
 const char Job::STRUCTURE_COMPARISON[] =     "structure_comparison";
+const char Job::MONTE_CARLO[] =              "monte_carlo";
 const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
@@ -72,6 +74,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new StructureComparisonJob(parameters);
     }else if (parameters->job == Job::TEST) {
         job =  new TestJob(parameters);
+    }else if (parameters->job == Job::MONTE_CARLO) {
+        job = new MonteCarloJob(parameters);
     }
 
     return job;

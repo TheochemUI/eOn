@@ -36,6 +36,7 @@ class Job {
         static const char PREFACTOR[];
 		static const char GLOBAL_OPTIMIZATION[];
 		static const char STRUCTURE_COMPARISON[];
+        static const char MONTE_CARLO[];
         static const char TEST[];
 
         static Job *getJob(Parameters *parameters);
