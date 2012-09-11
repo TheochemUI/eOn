@@ -154,7 +154,8 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            Bundling.o Job.o CommandLine.o DynamicsJob.o Log.o \
            LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o \
            DynamicsSaddleSearch.o PrefactorJob.o FIRE.o \
-		   GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o
+		   GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
+		   MonteCarloJob.o MonteCarlo.o
 
 #------------------------------------
 #Build rules
