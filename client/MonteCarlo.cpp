@@ -26,5 +26,21 @@ MonteCarlo::~MonteCarlo()
 
 void MonteCarlo::run(int numSteps, double temperature, double stepSize)
 {
+    //double e1, e2;
+    //e1 = matter->getPotentialEnergy();
+    //p1 = matter->getPositions();
+    //p1 += d;
+    ////d(0,0) = gaussRandom(0.0, stepSize);
+    //matter->setPositions(p1);
+    //e2 = matter->getPotentialEnergy();
+    //
+
+    //matter->matter2con(filename, append);
+    //matter->matter2con("movie.con", true);
+
+    //double de = e2 - e1;
+    //r = randomDouble();
+    //p = exp(-de/(kB*T));
+    //if (r<p) { accept; }
 
 }
