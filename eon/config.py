@@ -277,6 +277,7 @@ def init(config_file = ""):
         config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
         if config.disp_listed_atoms == ['None']:
             config.disp_listed_atoms = []
+    config.displace_1d = parser.getboolean('Saddle Search', 'displace_1d')
 
     # KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
