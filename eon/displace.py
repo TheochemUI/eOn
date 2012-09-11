@@ -176,6 +176,8 @@ class Displace:
                 # Displace one of the free atoms by a gaussian distributed
                 # random number with a standard deviation of self.std_dev.
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
+                if config.displace_1d:
+                    displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
             displacement_norm = numpy.sqrt(numpy.sum(displacement.flatten()**2))
 
         displacement_atoms = self.reactant.copy()
@@ -187,8 +189,10 @@ class Displace:
                 if not self.reactant.free[displaced_atoms[i]]:
                     continue
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
+                if config.displace_1d:
+                    displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
         
-        displacement /= numpy.linalg.norm(displacement)        
+        displacement /= numpy.linalg.norm(displacement)
         return displacement_atoms, displacement/numpy.linalg.norm(displacement)
 
     def filter_epicenters(self, epicenters):
