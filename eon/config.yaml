@@ -858,6 +858,10 @@ Saddle Search:
                 - not_FCC_HCP_coordinated
                 - not_TCP_coordinated
 
+        displace_1d:
+            kind: boolean
+            default: false
+
         nonlocal_count_abort:
             kind: int
             default: 0
