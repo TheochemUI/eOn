@@ -45,7 +45,7 @@ std::vector<std::string> MonteCarloJob::run(void)
 
     //code will go
     MonteCarlo mc = MonteCarlo(matter, parameters);
-    mc.run(1, 300.0, 0.2);
+    mc.run(100, 300.0, 0.2);
 
 
     FILE *fileResults;
