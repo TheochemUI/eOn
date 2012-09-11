@@ -121,14 +121,11 @@ int main(int argc, char **argv)
         if (getenv("EON_CLIENT_STANDALONE") != NULL) {
             client_standalone = true;
         }
-        char *eon_server = NULL;
         int number_of_clients;
         if (!client_standalone) {
             if (getenv("EON_SERVER_PATH") == NULL) {
                 fprintf(stderr, "error: must set the env var EON_SERVER_PATH\n");
                 return 1;
-            }else{
-                eon_server = getenv("EON_SERVER_PATH");
             }
             if (getenv("EON_NUMBER_OF_CLIENTS") == NULL) {
                 fprintf(stderr, "error: must set the env var EON_NUMBER_OF_CLIENTS\n");
@@ -320,7 +317,7 @@ int main(int argc, char **argv)
             char *path = new char[1024];
             int ready=1;
             if (!client_standalone) {
-                fprintf(stderr, "client: is ready, posting send to server rank: %i!\n", server_rank);
+                fprintf(stderr, "client: rank %i is ready, posting send to server rank: %i!\n", irank, server_rank);
                 //Tag "0" is tell communicator we are ready
                 MPI::COMM_WORLD.Isend(&ready,     1, MPI::INT,  server_rank, 0);
                 //Tag "1" is to tell the main akmc loop that a client is ready

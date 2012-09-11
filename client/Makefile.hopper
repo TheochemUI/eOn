@@ -1,5 +1,6 @@
 # before compiling you must execute:
 # module swap PrgEnv-pgi PrgEnv-gnu
+# module load gcc/4.6.3
 # module load python
 # module unload xt-shmem
 TARGET_NAME=client
