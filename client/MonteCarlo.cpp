@@ -24,76 +24,60 @@ MonteCarlo::MonteCarlo(Matter const *matterIn, Parameters *params)
 MonteCarlo::~MonteCarlo()
 {
 }
-
 void MonteCarlo::run(int numSteps, double temperature, double stepSize)
 {
 
-    remove("movie.con");
-    AtomMatrix p1=matter->getPositions();
-    AtomMatrix store;
+    matter->matter2con("movie.con");
+    AtomMatrix current;
+    AtomMatrix trial;
     double T=temperature;
-    T = 1.0;
-    numSteps=1000;
-    stepSize=1.0;
+    T = 100.0;
+    numSteps=100;
+    stepSize=0.1;
     int accepts=0;
     for(int steps=0; steps<numSteps; steps++){
-        store=matter->getPositions();
-        double e1, e2;
-        e1 = matter->getPotentialEnergy();
+        current=matter->getPositions();
+	trial=current;
+        double ecurrent, etrial;
+        ecurrent = matter->getPotentialEnergy();
         matter->matter2con("movie.con", true);
-        for (int i=0; i<p1.rows(); i++){
+        for (int i=0; i<trial.rows(); i++){
             for(int j=0; j<3; j++){
                 double d = gaussRandom(0.0, stepSize);
-                p1(i,j)+=d;
+                trial(i,j)+=d;
             }
         }
-
-        matter->setPositions(p1);
-        e2 = matter->getPotentialEnergy();
-        double de= e2-e1;
+        matter->setPositions(trial);
+        etrial = matter->getPotentialEnergy();
+        double de= ecurrent-etrial;
+	cout<<"de="<<de<<"\n";
         if(de <= 0.0){
             printf("%i: accept de <= 0.0\n", steps);
-            accepts++;
-            continue;
+	    accepts++;
+	    continue;
         }
         double r=randomDouble();
         double kb= 8.6173324e-5;
         double arg = -de/(kb*T);
         printf("arg: %f\n", arg);
         if (arg < -50.0) {
-            matter->setPositions(store);
-            printf("%i: reject\n", steps);
-            continue;
+	    matter->setPositions(current);
+            printf("%i: reject small arg\n", steps);
+	    continue;	  
         }
             
         double p=exp(arg);
         if(r<p){
-            accepts++;
             printf("%i: accept r<p\n", steps);
-            matter->setPositions(p1);
+	    accepts++;
+	    continue;
         }else{
-            matter->setPositions(store);
+	    matter->setPositions(current);	    
             printf("%i: reject\n", steps);
         }
 
     }
     cout<<accepts<<"\n";
 
-    //double e1, e2;
-    //e1 = matter->getPotentialEnergy();
-    //p1 = matter->getPositions();
-    //p1 += d;
-    ////d(0,0) = gaussRandom(0.0, stepSize);
-    //matter->setPositions(p1);
-    //e2 = matter->getPotentialEnergy();
-    //
-
-    //matter->matter2con(filename, append);
-    //matter->matter2con("movie.con", true);
-
-    //double de = e2 - e1;
-    //r = randomDouble();
-    //p = exp(-de/(kB*T));
-    //if (r<p) { accept; }
 
 }
