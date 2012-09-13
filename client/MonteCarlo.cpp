@@ -32,13 +32,14 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize)
     AtomMatrix p1=matter->getPositions();
     AtomMatrix store;
     double T=temperature;
-    numSteps=20;
-    stepSize=0.1;
+    T = 1.0;
+    numSteps=1000;
+    stepSize=1.0;
     int accepts=0;
-    for(int steps=0; steps<=numSteps; steps++){
+    for(int steps=0; steps<numSteps; steps++){
         store=matter->getPositions();
         double e1, e2;
-        e1 = matter ->getPotentialEnergy();
+        e1 = matter->getPotentialEnergy();
         matter->matter2con("movie.con", true);
         for (int i=0; i<p1.rows(); i++){
             for(int j=0; j<3; j++){
@@ -47,20 +48,32 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize)
             }
         }
 
-        //XXX: e2 uninitialized in first iteration
-        if(e1>e2){
-            matter->setPositions(p1);
+        matter->setPositions(p1);
+        e2 = matter->getPotentialEnergy();
+        double de= e2-e1;
+        if(de <= 0.0){
+            printf("%i: accept de <= 0.0\n", steps);
             accepts++;
             continue;
         }
-        e2 = matter ->getPotentialEnergy();
         double r=randomDouble();
-        double de= e2-e1;
         double kb= 8.6173324e-5;
-        double p=exp(de/(kb*T));  
+        double arg = -de/(kb*T);
+        printf("arg: %f\n", arg);
+        if (arg < -50.0) {
+            matter->setPositions(store);
+            printf("%i: reject\n", steps);
+            continue;
+        }
+            
+        double p=exp(arg);
         if(r<p){
             accepts++;
+            printf("%i: accept r<p\n", steps);
             matter->setPositions(p1);
+        }else{
+            matter->setPositions(store);
+            printf("%i: reject\n", steps);
         }
 
     }
