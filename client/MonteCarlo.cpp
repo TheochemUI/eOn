@@ -28,7 +28,7 @@ MonteCarlo::~MonteCarlo()
 void MonteCarlo::run(int numSteps, double temperature, double stepSize)
 {
 
-    remove( "movie.con");
+    remove("movie.con");
     AtomMatrix p1=matter->getPositions();
     AtomMatrix store;
     double T=temperature;
@@ -36,30 +36,32 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize)
     stepSize=0.1;
     int accepts=0;
     for(int steps=0; steps<=numSteps; steps++){
-	store=matter->getPositions();
-	double e1, e2;
-	e1 = matter ->getPotentialEnergy();
-	matter->matter2con("movie.con", true);
-	for (int i=0; i<p1.rows(); i++){
-	    for(int j=0; j<3; j++){
-		double d = gaussRandom(0.0, stepSize);
-		p1(i,j)+=d;
-	    }
-	}
-	if(e1>e2){
-	    matter->setPositions(p1);
-	    accepts++;
-	    continue;
-	}
-	e2 = matter ->getPotentialEnergy();
-	double r=randomDouble();
-	double de= e2-e1;
-	double kb= 8.6173324*pow(10,-5);
-	double p=exp(de/(kb*T));  
-	if(r<p){
-	    accepts++;
-	    matter->setPositions(p1);
-	}
+        store=matter->getPositions();
+        double e1, e2;
+        e1 = matter ->getPotentialEnergy();
+        matter->matter2con("movie.con", true);
+        for (int i=0; i<p1.rows(); i++){
+            for(int j=0; j<3; j++){
+                double d = gaussRandom(0.0, stepSize);
+                p1(i,j)+=d;
+            }
+        }
+
+        //XXX: e2 uninitialized in first iteration
+        if(e1>e2){
+            matter->setPositions(p1);
+            accepts++;
+            continue;
+        }
+        e2 = matter ->getPotentialEnergy();
+        double r=randomDouble();
+        double de= e2-e1;
+        double kb= 8.6173324e-5;
+        double p=exp(de/(kb*T));  
+        if(r<p){
+            accepts++;
+            matter->setPositions(p1);
+        }
 
     }
     cout<<accepts<<"\n";
