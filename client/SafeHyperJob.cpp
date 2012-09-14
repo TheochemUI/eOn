@@ -65,7 +65,7 @@ std::vector<std::string> SafeHyperJob::run(void)
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", transitionTime*1.0e-15);
+        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15);
     }else{
        log("No new state was found in %ld dynamics steps (%.3e s)\n",
            parameters->mdSteps, time*1.0e-15);
@@ -87,10 +87,10 @@ int SafeHyperJob::dynamics()
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
-    long nCheck = 0, nRecord = 0, nBoost = 0, nState = 1;
+    long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
     long StateCheckInterval, RecordInterval, CorrSteps;
     double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
-    double correctedTime = 0.0;
+    double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
     double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
     AtomMatrix velocity;
@@ -186,19 +186,19 @@ int SafeHyperJob::dynamics()
             transitionFlag = checkState(current, reactant);
             minimizeFCalls += Potential::fcalls - refFCalls;
             if(transitionFlag == true){
+                nState ++;
                 log("New State %ld: ",nState);
                 *final_tmp = *current;
                 transitionTime = time;
                 newStateStep = step; // remember the step when we are in a new state
                 transitionStep = newStateStep;
                 firstTransitFlag = 1;
-                nState ++;
             }
         }
-        printf("step=%ld, time=%lf, biasPot=%lf\n",step,time,boostPotential);
+        //printf("step=%ld, time=%lf, biasPot=%lf\n",step,time,boostPotential);
         //Refine transition step
   
-        if(parameters->parrepRefineTransition && transitionFlag)
+        if(transitionFlag)
         {
             //log("[Parallel Replica] Refining transition time.\n");
             refFCalls = Potential::fcalls;
@@ -208,7 +208,10 @@ int SafeHyperJob::dynamics()
             transitionTime = timeBuffer[refineStep];
             transitionPot = biasBuffer[refineStep];
             correctedTime = transitionTime * exp((-1)*transitionPot/kb/Temp);
-            
+            sumCorrectedTime += correctedTime;
+            if ( nState == 1 ){
+                firstTransitionTime = transitionTime;
+            }
             //reverse the momenten;
             *current = *mdBuffer[refineStep-1];
             velocity = current->getVelocities();
@@ -220,7 +223,7 @@ int SafeHyperJob::dynamics()
                 *saddle = *mdBuffer[refineStep];
                 *final = *final_tmp;
             }
-            log("tranisitonTime= %lf, biasPot= %lf, correctedTime= %lf, simulateTime= %lf, minCorTime= %lf\n",transitionTime,transitionPot,correctedTime,time, minCorrectedTime);
+            log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -228,7 +231,7 @@ int SafeHyperJob::dynamics()
     
             
         // we have run enough md steps; time to stop
-        if (firstTransitFlag && time >= minCorrectedTime)
+        if (firstTransitFlag &&  sumCorrectedTime > firstTransitionTime) 
         {
             stopFlag = true;
             newStateFlag = true;
