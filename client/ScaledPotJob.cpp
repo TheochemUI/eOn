@@ -12,8 +12,7 @@
 
 #include "Matter.h"
 #include "Dynamics.h"
-#include "BondBoost.h"
-#include "SafeHyperJob.h"
+#include "ScaledPotJob.h"
 #include "Optimizer.h"
 #include "Log.h"
 #include <vector>
@@ -29,16 +28,16 @@
     #include "false_boinc.h"
 #endif
 
-SafeHyperJob::SafeHyperJob(Parameters *params)
+ScaledPotJob::ScaledPotJob(Parameters *params)
 {
     parameters = params;
 }
 
-SafeHyperJob::~SafeHyperJob()
+ScaledPotJob::~ScaledPotJob()
 {
 }
 
-std::vector<std::string> SafeHyperJob::run(void)
+std::vector<std::string> ScaledPotJob::run(void)
 {
     current = new Matter(parameters);
     reactant = new Matter(parameters);
@@ -49,6 +48,7 @@ std::vector<std::string> SafeHyperJob::run(void)
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
+    scale = 0.5;
     string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
     current->con2matter(reactantFilename);
 
@@ -81,7 +81,7 @@ std::vector<std::string> SafeHyperJob::run(void)
     return returnFiles;
 }
 
-int SafeHyperJob::dynamics()
+int ScaledPotJob::dynamics()
 {
     bool transitionFlag = false, recordFlag = true, stopFlag = false, firstTransitFlag = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
@@ -89,12 +89,13 @@ int SafeHyperJob::dynamics()
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
     long StateCheckInterval, RecordInterval, CorrSteps;
-    double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
+    double kinE, kinT, avgT, varT, potE, kb = 1.0/11604.5;
     double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
-    double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
-    double transitionTime_current=0.0, transitionTime_pre=0.0;
+    double preBoost = 1.0, sumpreBoost = 0.0, sumBoost=0.0, sumpreBoost_tmp = 0.0, correctionFactor = 1.0;
+    double transitionTime_current=0.0, transitionTime_previous=0.0;
     AtomMatrix velocity;
+    AtomMatrix reducedForces;
 
     minCorrectedTime = 1.0e200;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
@@ -109,16 +110,10 @@ int SafeHyperJob::dynamics()
         mdBuffer[i] = new Matter(parameters);
     }
     timeBuffer = new double[mdBufferLength];
-    biasBuffer = new double[mdBufferLength];
+    potBuffer = new double[mdBufferLength];
 
-    Dynamics safeHyper(current, parameters);
-    BondBoost bondBoost(current, parameters);
-
-    if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
-        bondBoost.initialize();
-    }
-
-    safeHyper.setThermalVelocity();
+    Dynamics scaledPot(current, parameters);
+    scaledPot.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
     refFCalls = Potential::fcalls;
@@ -142,27 +137,35 @@ int SafeHyperJob::dynamics()
     // loop dynamics iterations until some condition tells us to stop
     while(!stopFlag)
     {
-        if( (parameters->biasPotential == Hyperdynamics::BOND_BOOST) && !newStateFlag ) {
-            // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
-            //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
-            boostPotential = bondBoost.boost();   
-            boost = 1.0*exp(boostPotential/kb/Temp);
-            time += parameters->mdTimeStepInput*boost;
-            if (boost > 1.0){
-                sumboost += boost;
-                nBoost ++;
-            }            
+        if( ! newStateFlag ) {
+            reducedForces = -1.0* (1-scale)* current->getForces();
         } 
+        else{
+            reducedForces.setZero();
+        }
+        current->setBiasForces(reducedForces);
 
         kinE = current->getKineticEnergy();
         kinT = (2.0*kinE/nFreeCoord/kb); 
+        potE= current->getPotentialEnergy()-reactant->getPotentialEnergy();
         sumT += kinT;
         sumT2 += kinT*kinT;
         //log("steps = %10d temp = %10.5f \n",step,kinT);
 
-        safeHyper.oneStep();
+        scaledPot.oneStep();
         mdFCalls++;
+        
+        if(! newStateFlag) {
+            preBoost = exp((1.0-scale)*potE/kb/parameters->temperature);
+            sumpreBoost_tmp += preBoost; 
+            nBoost ++;
+        }
+        else{
+            preBoost = 1.0;
+        }
 
+
+        time += parameters->mdTimeStepInput*preBoost;
         nCheck++; // count up to parameters->parrepStateCheckInterval before checking for a transition
         step++;
         //log("step = %4d, time= %10.4f\n",step,time);
@@ -173,7 +176,7 @@ int SafeHyperJob::dynamics()
             {
                 *mdBuffer[nRecord] = *current;
                 timeBuffer[nRecord] = time;
-                biasBuffer[nRecord] = boostPotential;
+                potBuffer[nRecord] = potE;
                 nRecord++; // current location in the buffer
             }
         }
@@ -207,11 +210,16 @@ int SafeHyperJob::dynamics()
 
             transitionStep = newStateStep - StateCheckInterval + refineStep*RecordInterval;
             transitionTime_current = timeBuffer[refineStep];
-            transitionTime = transitionTime_current - transitionTime_pre;
-            transitionTime_pre = transitionTime_current;
-            transitionPot = biasBuffer[refineStep];
-            correctedTime = transitionTime * exp((-1)*transitionPot/kb/Temp);
+            transitionTime = transitionTime_current - transitionTime_previous;
+            transitionTime_previous = transitionTime_current;
+            transitionPot = potBuffer[refineStep];
+            log("trpot= %.3f\n",transitionPot);
+            correctionFactor = exp(-1.0*(1.0-scale)*transitionPot/kb/parameters->temperature); 
+            correctedTime = transitionTime * correctionFactor;
             sumCorrectedTime += correctedTime;
+            sumBoost += sumpreBoost_tmp*correctionFactor;
+            sumpreBoost += sumpreBoost_tmp;
+            sumpreBoost_tmp = 0.0;
             if ( nState == 1 ){
                 firstTransitionTime = transitionTime;
             }
@@ -226,7 +234,8 @@ int SafeHyperJob::dynamics()
                 *saddle = *mdBuffer[refineStep];
                 *final = *final_tmp;
             }
-            log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15);
+            //log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15);
+            log("tranisitonTime= %.3e s, transitioPot= %.3f eV, correctedTime= %.3e s, average preBoost= %.3f average totalBoost= %.3e \n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumpreBoost/nBoost,sumBoost/nBoost);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -234,7 +243,8 @@ int SafeHyperJob::dynamics()
     
             
         // we have run enough md steps; time to stop
-        if (firstTransitFlag &&  sumCorrectedTime > firstTransitionTime) 
+        //if (firstTransitFlag &&  sumCorrectedTime > firstTransitionTime) 
+        if (firstTransitFlag) 
         {
             stopFlag = true;
             newStateFlag = true;
@@ -254,19 +264,23 @@ int SafeHyperJob::dynamics()
             log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
                 (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
         }
+
+        if (step == parameters->mdSteps){
+            stopFlag = true;
+            if(firstTransitFlag){
+                log("Detected one transition\n");
+            }else{
+                log("Failed to detect any transition\n");
+            }
+        }
     }
 
     // calculate avearges
     avgT = sumT/step;
     varT = sumT2/step - avgT*avgT;
    
-    if (nBoost > 0){
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nBoost);
-    }else{
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
-    }
+    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Average_Boost = %lf\n\n",
+            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, minCorrectedTime/step/parameters->mdTimeStepInput);
     //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
     {
@@ -280,7 +294,7 @@ int SafeHyperJob::dynamics()
         delete mdBuffer[i];
     }
     delete [] timeBuffer;
-    delete [] biasBuffer;
+    delete [] potBuffer;
 
     if(newStateFlag){
         return 1;
@@ -289,7 +303,7 @@ int SafeHyperJob::dynamics()
     }
 }
 
-void SafeHyperJob::saveData(int status)
+void ScaledPotJob::saveData(int status)
 {
     FILE *fileResults, *fileReactant;
 
@@ -356,7 +370,7 @@ void SafeHyperJob::saveData(int status)
 }
 
 
-void SafeHyperJob::dephase()
+void ScaledPotJob::dephase()
 {
     bool transitionFlag = false;
     long step, stepNew, loop;
@@ -420,7 +434,7 @@ void SafeHyperJob::dephase()
 }
 
 
-bool SafeHyperJob::checkState(Matter *current, Matter *reactant)
+bool ScaledPotJob::checkState(Matter *current, Matter *reactant)
 {
     Matter tmp(parameters);
     tmp = *current;
@@ -432,7 +446,7 @@ bool SafeHyperJob::checkState(Matter *current, Matter *reactant)
 }
 
 
-long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant)
+long ScaledPotJob::refine(Matter *buff[], long length, Matter *reactant)
 {
     //log("[Parallel Replica] Refining transition time.\n");
 
