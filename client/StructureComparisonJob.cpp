@@ -30,7 +30,7 @@ std::vector<std::string> StructureComparisonJob::run(void)
     Matter matter2(parameters);
     matter2.con2matter("matter2.con");
 
-    if (matter1.compare(&matter2)) {
+    if (matter1.compare(&matter2, parameters->indistinguishableAtoms)) {
         printf("structures match\n");
     }else{
         printf("structures do not match\n");
