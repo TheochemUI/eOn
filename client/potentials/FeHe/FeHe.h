@@ -29,7 +29,7 @@
 extern "C" 
 {
     void feforce_(const long int *N, const double *RX, const double *RY, 
-                const double *RZ, const long int *ISPEC,
+                const double *RZ, const int *ISPEC,
                 double *FX, double *FY, double *FZ, double *U, 
                 const double* bx, const double* by, const double* bz);
 }
