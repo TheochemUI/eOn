@@ -42,7 +42,8 @@ void FeHe::force(long N, const double *R, const int *atomicNrs, double *F, doubl
     double *FX = new double[N];
     double *FY = new double[N];
     double *FZ = new double[N];
-    long *ISPEC = new long[N];
+//    long *ISPEC = new long[N];
+    int *ISPEC = new int[N];
 
     for(i=0; i<N; i++){
         RX[i] = R[i*3+0];

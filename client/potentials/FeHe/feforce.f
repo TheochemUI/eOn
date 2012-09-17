@@ -42,7 +42,7 @@ c      write(*,*) 'box: ',ax,ay,az
 c      write(*,*) 'nm: ',nm
 c      write(*,*) 'pos and input: '
 c      do i = 1,nm
-c        write(*,*) i,x0(i),y0(i),z0(i)
+c        write(*,*) i,ispec(i),x0(i),y0(i),z0(i)
 c      enddo
       point5 = 0.5d0
       pe = 0.0d0
