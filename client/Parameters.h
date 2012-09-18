@@ -157,6 +157,11 @@ public:
     double parrepRecordInterval;
     double parrepCorrTime;
 
+    // [Scaled PES Dynamics]
+    double scaledpesScale;
+    double scaledpesMinPrefactor;
+    double scaledpesConfidence;
+
     // [Thermostat]
     string thermostat;
     double thermoAndersenAlpha;
