@@ -237,7 +237,7 @@ int ScaledPESJob::dynamics()
     
             
         // we have run enough md steps; time to stop
-        if (firstTransitFlag &&  sumCorrectedTime > stopTime) 
+        if (firstTransitFlag &&  sumCorrectedTime >= stopTime) 
         {
             stopFlag = true;
             newStateFlag = true;
