@@ -148,6 +148,11 @@ Parameters::Parameters(){
     parrepRecordInterval = 50.0;
     parrepCorrTime = 500.0;
 
+    // [Scaled PES]
+    scaledpesScale = 1.0;
+    scaledpesMinPrefactor = 0.001; //in unit of fs-1 
+    scaledpesConfidence = 0.001;
+
     // [Replica Exchange] //
     repexcTemperatureDistribution = "exponential";
     repexcReplicas = 10;
@@ -387,8 +392,11 @@ int Parameters::load(FILE *file){
         parrepRecordInterval = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
         parrepCorrTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepCorrTime);
 
+        //[Scaled PES Dynamics]
+        scaledpesScale = ini.GetValueF("Scaled PES", "scale", scaledpesScale);
+        scaledpesMinPrefactor = ini.GetValueF("Scaled PES", "min_prefactor", scaledpesMinPrefactor);
+        scaledpesConfidence = ini.GetValueF("Scaled PES", "confidence", scaledpesConfidence);
         // [Replica Exchange] //
-
         repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
         repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
         repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);

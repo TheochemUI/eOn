@@ -12,7 +12,7 @@
 
 #include "Matter.h"
 #include "Dynamics.h"
-#include "ScaledPotJob.h"
+#include "ScaledPESJob.h"
 #include "Optimizer.h"
 #include "Log.h"
 #include <vector>
@@ -28,27 +28,28 @@
     #include "false_boinc.h"
 #endif
 
-ScaledPotJob::ScaledPotJob(Parameters *params)
+ScaledPESJob::ScaledPESJob(Parameters *params)
 {
     parameters = params;
 }
 
-ScaledPotJob::~ScaledPotJob()
+ScaledPESJob::~ScaledPESJob()
 {
 }
 
-std::vector<std::string> ScaledPotJob::run(void)
+std::vector<std::string> ScaledPESJob::run(void)
 {
     current = new Matter(parameters);
     reactant = new Matter(parameters);
     saddle = new Matter(parameters);
+    crossing = new Matter(parameters);
     product = new Matter(parameters);
     final = new Matter(parameters);
     final_tmp = new Matter(parameters);
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
-    scale = 0.5;
+    scale = parameters->scaledpesScale;
     string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
     current->con2matter(reactantFilename);
 
@@ -57,7 +58,7 @@ std::vector<std::string> ScaledPotJob::run(void)
     *reactant = *current;
     reactant->relax();
     minimizeFCalls += (Potential::fcalls - refFCalls);
-
+    
     log("\nParallel Replica Dynamics, running\n\n");
     
     int status = dynamics();
@@ -73,6 +74,7 @@ std::vector<std::string> ScaledPotJob::run(void)
 
     delete current;
     delete reactant;
+    delete crossing;
     delete saddle;
     delete product;
     delete final_tmp;
@@ -81,23 +83,29 @@ std::vector<std::string> ScaledPotJob::run(void)
     return returnFiles;
 }
 
-int ScaledPotJob::dynamics()
+int ScaledPESJob::dynamics()
 {
     bool transitionFlag = false, recordFlag = true, stopFlag = false, firstTransitFlag = false;
+    bool saddleSearchStatus = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
-    long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
+    long nCheck = 0, nRecord = 0, nState = 0;
     long StateCheckInterval, RecordInterval, CorrSteps;
-    double kinE, kinT, avgT, varT, potE, kb = 1.0/11604.5;
-    double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
+    double kinE, kinT, avgT, varT, kb = 1.0/11604.5;
+    double correctedTime = 0.0, firstTransitionTime = 0.0; 
+    double stopTime = 0.0, sumCorrectedTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
-    double preBoost = 1.0, sumpreBoost = 0.0, sumBoost=0.0, sumpreBoost_tmp = 0.0, correctionFactor = 1.0;
+    double correctionFactor = 1.0;
     double transitionTime_current=0.0, transitionTime_previous=0.0;
+    double delta, minmu;
+
     AtomMatrix velocity;
     AtomMatrix reducedForces;
 
     minCorrectedTime = 1.0e200;
+    delta = parameters->scaledpesConfidence;
+    minmu = parameters->scaledpesMinPrefactor;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
     CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
@@ -110,10 +118,9 @@ int ScaledPotJob::dynamics()
         mdBuffer[i] = new Matter(parameters);
     }
     timeBuffer = new double[mdBufferLength];
-    potBuffer = new double[mdBufferLength];
 
-    Dynamics scaledPot(current, parameters);
-    scaledPot.setThermalVelocity();
+    Dynamics scaledPES(current, parameters);
+    scaledPES.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
     refFCalls = Potential::fcalls;
@@ -147,25 +154,14 @@ int ScaledPotJob::dynamics()
 
         kinE = current->getKineticEnergy();
         kinT = (2.0*kinE/nFreeCoord/kb); 
-        potE= current->getPotentialEnergy()-reactant->getPotentialEnergy();
         sumT += kinT;
         sumT2 += kinT*kinT;
         //log("steps = %10d temp = %10.5f \n",step,kinT);
 
-        scaledPot.oneStep();
+        scaledPES.oneStep();
         mdFCalls++;
         
-        if(! newStateFlag) {
-            preBoost = exp((1.0-scale)*potE/kb/parameters->temperature);
-            sumpreBoost_tmp += preBoost; 
-            nBoost ++;
-        }
-        else{
-            preBoost = 1.0;
-        }
-
-
-        time += parameters->mdTimeStepInput*preBoost;
+        time += parameters->mdTimeStepInput;
         nCheck++; // count up to parameters->parrepStateCheckInterval before checking for a transition
         step++;
         //log("step = %4d, time= %10.4f\n",step,time);
@@ -176,7 +172,6 @@ int ScaledPotJob::dynamics()
             {
                 *mdBuffer[nRecord] = *current;
                 timeBuffer[nRecord] = time;
-                potBuffer[nRecord] = potE;
                 nRecord++; // current location in the buffer
             }
         }
@@ -210,16 +205,15 @@ int ScaledPotJob::dynamics()
 
             transitionStep = newStateStep - StateCheckInterval + refineStep*RecordInterval;
             transitionTime_current = timeBuffer[refineStep];
+            *crossing = *mdBuffer[refineStep];
             transitionTime = transitionTime_current - transitionTime_previous;
             transitionTime_previous = transitionTime_current;
-            transitionPot = potBuffer[refineStep];
-            log("trpot= %.3f\n",transitionPot);
-            correctionFactor = exp(-1.0*(1.0-scale)*transitionPot/kb/parameters->temperature); 
+            saddleSearchStatus = saddleSearch(crossing);
+            barrier = crossing->getPotentialEnergy()-reactant->getPotentialEnergy();
+            log("barrier= %.3f\n",barrier);
+            correctionFactor = scale*exp((1.0-scale)*barrier/kb/Temp); 
             correctedTime = transitionTime * correctionFactor;
             sumCorrectedTime += correctedTime;
-            sumBoost += sumpreBoost_tmp*correctionFactor;
-            sumpreBoost += sumpreBoost_tmp;
-            sumpreBoost_tmp = 0.0;
             if ( nState == 1 ){
                 firstTransitionTime = transitionTime;
             }
@@ -231,11 +225,11 @@ int ScaledPotJob::dynamics()
             
             if (correctedTime < minCorrectedTime){
                 minCorrectedTime = correctedTime;
-                *saddle = *mdBuffer[refineStep];
+                *saddle = *crossing;
                 *final = *final_tmp;
             }
-            //log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15);
-            log("tranisitonTime= %.3e s, transitioPot= %.3f eV, correctedTime= %.3e s, average preBoost= %.3f average totalBoost= %.3e \n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumpreBoost/nBoost,sumBoost/nBoost);
+            stopTime = log(1.0/delta)/minmu*pow(scale*minCorrectedTime*minmu/log(1.0/delta),1/scale);
+            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15,barrier,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15, stopTime*1.0e-15);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -243,8 +237,7 @@ int ScaledPotJob::dynamics()
     
             
         // we have run enough md steps; time to stop
-        //if (firstTransitFlag &&  sumCorrectedTime > firstTransitionTime) 
-        if (firstTransitFlag) 
+        if (firstTransitFlag &&  sumCorrectedTime > stopTime) 
         {
             stopFlag = true;
             newStateFlag = true;
@@ -294,7 +287,6 @@ int ScaledPotJob::dynamics()
         delete mdBuffer[i];
     }
     delete [] timeBuffer;
-    delete [] potBuffer;
 
     if(newStateFlag){
         return 1;
@@ -303,7 +295,7 @@ int ScaledPotJob::dynamics()
     }
 }
 
-void ScaledPotJob::saveData(int status)
+void ScaledPESJob::saveData(int status)
 {
     FILE *fileResults, *fileReactant;
 
@@ -370,7 +362,7 @@ void ScaledPotJob::saveData(int status)
 }
 
 
-void ScaledPotJob::dephase()
+void ScaledPESJob::dephase()
 {
     bool transitionFlag = false;
     long step, stepNew, loop;
@@ -434,7 +426,7 @@ void ScaledPotJob::dephase()
 }
 
 
-bool ScaledPotJob::checkState(Matter *current, Matter *reactant)
+bool ScaledPESJob::checkState(Matter *current, Matter *reactant)
 {
     Matter tmp(parameters);
     tmp = *current;
@@ -445,8 +437,22 @@ bool ScaledPotJob::checkState(Matter *current, Matter *reactant)
     return true;
 }
 
+bool ScaledPESJob::saddleSearch(Matter *cross){
+    AtomMatrix mode;
+    long status;
+    mode = cross->getPositions() - reactant->getPositions();
+    mode.normalize();
+    dimerSearch = NULL;
+    dimerSearch = new MinModeSaddleSearch(cross,mode,reactant->getPotentialEnergy(),parameters);
+    status = dimerSearch->run();
+    log("dimer search status %ld\n",status);
+    if(status != MinModeSaddleSearch::STATUS_GOOD){
+        return false;
+    }
+    return false;
+}
 
-long ScaledPotJob::refine(Matter *buff[], long length, Matter *reactant)
+long ScaledPESJob::refine(Matter *buff[], long length, Matter *reactant)
 {
     //log("[Parallel Replica] Refining transition time.\n");
 
