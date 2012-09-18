@@ -8,18 +8,19 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef SCALEDPOTJOB_H
-#define SCALEDPOTJOB_H
+#ifndef SCALEDPESJOB_H
+#define SCALEDPESJOB_H
 
 #include "Job.h"
 #include "Parameters.h"
+#include "MinModeSaddleSearch.h"
 
-class ScaledPotJob: public Job
+class ScaledPESJob: public Job
 {
     public:
 
-        ScaledPotJob(Parameters *params);
-        ~ScaledPotJob(void);
+        ScaledPESJob(Parameters *params);
+        ~ScaledPESJob(void);
         std::vector<std::string> run(void);
 
     private:
@@ -29,12 +30,13 @@ class ScaledPotJob: public Job
         bool checkState(Matter *current, Matter *reactant);
         void saveData(int status);
         void dephase();
-
+        bool saddleSearch(Matter *tran);
         Parameters *parameters;
 
         Matter *current;
         Matter *reactant;
         Matter *saddle;
+        Matter *crossing;
         Matter *final;
         Matter *final_tmp;
         Matter *product;
@@ -53,9 +55,9 @@ class ScaledPotJob: public Job
         double scale;
         double minCorrectedTime;
         double transitionTime;
-        double transitionPot;
+        double barrier;
         double *timeBuffer;
-        double *potBuffer;
+        MinModeSaddleSearch *dimerSearch;
 
         std::vector<std::string> returnFiles;
 };
