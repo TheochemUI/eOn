@@ -257,7 +257,7 @@ Structure Comparison:
 
         energy_difference:
             kind: float
-            default: 0.01
+            default: 0.1
 
         brute_neighbors:
             kind: boolean

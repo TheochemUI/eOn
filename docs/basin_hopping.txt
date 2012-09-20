@@ -79,7 +79,7 @@ Iwamatsu and Okabe. [#iwamatsu]_
 
 **significant_structure**: Displace from minimized structures. [#white]_
 
-    default: ``False``
+    default: ``True``
 
 **jump_steps**: The number of jump steps to take after the jump_max number of
 consecutive rejections have taken place.
