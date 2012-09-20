@@ -34,12 +34,12 @@ int getBundleSize(void)
             continue;
         }
 
-        //If "passed" is not in the filename
+        //If "config" is not in the filename
         //then skip.
-        //XXX: we no longer used passed in the filename
-        //if (strstr(dp->d_name, "passed")==NULL) {
-        //    continue;
-        //}
+        if (strstr(dp->d_name, "config")==NULL &&
+            strstr(dp->d_name, "ini")==NULL) {
+            continue;
+        }
 
         //Find the last underscore
         char *ch = strrchr(dp->d_name, '_');
