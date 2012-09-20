@@ -61,7 +61,7 @@ Parameters::Parameters(){
     neighborCutoff = 3.3;
     checkRotation = false;
     indistinguishableAtoms = true;
-	energyDifference = 0.001;
+	energyDifference = 0.1;
 
     // [Debug] //
     writeMovies = false;
@@ -176,7 +176,7 @@ Parameters::Parameters(){
     basinHoppingSteps = 10000;
     basinHoppingQuenchingSteps = 0;
     basinHoppingSingleAtomDisplace = false;
-    basinHoppingSignificantStructure = false;
+    basinHoppingSignificantStructure = true;
     basinHoppingMaxDisplacementAlgorithm = "standard";
     basinHoppingDisplacementDistribution = "uniform";
     basinHoppingSwapProbability = 0.0;

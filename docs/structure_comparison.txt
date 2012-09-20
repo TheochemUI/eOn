@@ -10,9 +10,9 @@ Parameters in the **[Structure Comparison]** section of the config.ini file.
 
     default: ``False``
 
-**energy_difference**: How close in energy two configurations must be to be considered energetically equivalent.
+**energy_difference**: How different in energy two configurations must be to be considered different structures.
 
-    default: ``0.01``
+    default: ``0.1``
 
 **brute_neighbors**: Determine neighbors by brute force (use this with nonorthogonal boxes).
 
