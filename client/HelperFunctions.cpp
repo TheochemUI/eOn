@@ -531,7 +531,6 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
 bool helper_functions::sortedR(const Matter *m1, const Matter *m2, 
                                const double distanceDifference)
 {
-    cout<<"hello from sortedR"<<"\n";
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
     double tolerance=distanceDifference;
@@ -546,7 +545,6 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
             atom a2;
             a2.r=m2->distance(i2,j2);
             a2.z=m2->getAtomicNr(j2);
-	    cout<<a2.z<<"\n";
             rdf2[i2].insert(a2);
             rdf2[j2].insert(a2);
         }
@@ -555,7 +553,6 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     set<atom>::iterator it2;
     for(int i1=0; i1<r1.rows(); i1++){
         if(matches==i1-2){
-	    cout<<"false 1 \n";
 	    return false;
 	}
         for(int j1=0; j1<r1.rows(); j1++){
@@ -576,9 +573,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
                 k1=*it;
                 atom k2;
                 k2=*it2;
-                printf("%f %f %i %i\n", k1.r, k2.r, k1.z, k2.z);
                 if(fabs(k1.r-k2.r)<tolerance && k1.z==k2.z){
-                    printf("match\n");
                     counter++;
                 }else{
                     //printf("no match\n");
@@ -596,7 +591,6 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
 	it++;
     }
     if (matches<r1.rows()) {
-	cout<<matches<<" "<<r1.rows()<<" false 2 \n";
         return false;
     }else{
         return true;

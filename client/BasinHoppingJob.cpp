@@ -125,7 +125,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
         }
 
+        bool accepted=false;
         if (randomDouble(1.0) < p) {
+            accepted=true;
             if(parameters->basinHoppingSignificantStructure){
                 *current = *minTrial;
             }else{
@@ -140,11 +142,43 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
 
             currentEnergy = minTrial->getPotentialEnergy();
+
             if (currentEnergy < minimumEnergy) {
                 minimumEnergy = currentEnergy;
                 *minimumEnergyStructure = *minTrial;
                 minimumEnergyStructure->matter2con("min.con");
             }
+
+            bool newStructure = true;
+            for (unsigned int i=0;i<uniqueEnergies.size();i++) {
+                //if minTrial has a different energy or a different structure 
+                //it is new, otherwise it is old
+                if (fabs(currentEnergy - uniqueEnergies[i]) < parameters->energyDifference) {
+                    if (current->compare(uniqueStructures[i], parameters->indistinguishableAtoms) == true) {
+                        printf("same as %i\n", i);
+                        newStructure = false;
+                    }
+                }
+            }
+
+            if (newStructure) {
+                uniqueEnergies.push_back(currentEnergy);
+                Matter *currentCopy = new Matter(parameters);
+                *currentCopy = *current;
+                uniqueStructures.push_back(currentCopy);
+
+                char fname[128];
+                snprintf(fname, 128, "min_%.4i.con", step+1);
+                current->matter2con(fname);
+                returnFiles.push_back(fname);
+
+                snprintf(fname, 128, "energy_%.4i.dat", step+1);
+                returnFiles.push_back(fname);
+                FILE *fh = fopen(fname, "w");
+                fprintf(fh, "%.10e\n", currentEnergy);
+                fclose(fh);
+            }
+
             consecutive_rejected_trials = 0; //STC: I think this should go here.
         }else{
             consecutive_rejected_trials++;
@@ -155,9 +189,16 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }
 
         totalfc = Potential::fcallsTotal;
-        log("[Basin Hopping] %4i %12.3f %12.3f %12.3f %4i %5.3f %5.3f\n",
+        char acceptReject[2];
+        acceptReject[1] = '\0';
+        if (accepted) {
+            acceptReject[0] = 'A';
+        }else{
+            acceptReject[0] = 'R';
+        }
+        log("[Basin Hopping] %4i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
-               minfcalls, totalAccept/((double)step+1), maxDisplacement);
+               minfcalls, totalAccept/((double)step+1), maxDisplacement, acceptReject);
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
