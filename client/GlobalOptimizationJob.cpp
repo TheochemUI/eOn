@@ -211,8 +211,7 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_curr,Matter *matter_hopp
 		//GlobalOptimizationJob::update_minhopp_param(matter_hopp);
 	}
 	else if(parameters->globalOptimizationDecisionMethod=="boltzmann") {
-		printf("WARNING: it will be implemented by Sam\n");
-		exit(0);
+		acceptRejectBoltzmann(matter_curr, matter_hopp);
 	}
 	else {
 		printf("ERROR: accept/reject method not specified. client stops.\n");
@@ -230,6 +229,29 @@ void GlobalOptimizationJob::acceptRejectNPEW(Matter *matter_curr,Matter *matter_
 		decisionResult="rejected";
 	}
 }
+
+void GlobalOptimizationJob::acceptRejectBoltzmann(Matter *matter_curr, Matter *matter_hopp)
+{
+    double eTrial = matter_hopp->getPotentialEnergy(); 
+    double eCurrent = matter_hopp->getPotentialEnergy();
+
+    double deltaE = eTrial - eCurrent;
+    double kB = 8.6173324e-5;
+
+    double p;
+    if (deltaE <= 0.0) {
+        p = 1.0;
+    }else{
+        p = exp(-deltaE / (parameters->temperature*kB));
+    }
+
+    if (randomDouble(1.0) < p) {
+		decisionResult="accepted";
+    }else{
+		decisionResult="rejected";
+    }
+}
+
 //****************************************************************************************
 void GlobalOptimizationJob::hoppingStep(long istep,Matter *matter_curr,Matter *matter_hopp) {
     bool converged;
@@ -240,8 +262,7 @@ void GlobalOptimizationJob::hoppingStep(long istep,Matter *matter_curr,Matter *m
 		mdescape(matter_hopp);
 	}
 	else if(parameters->globalOptimizationMoveMethod=="random") {
-		printf("WARNING: it will be implemented by Sam\n");
-		exit(0);
+	    randomMove(matter_hopp);
 	}
 	long fcalls2=matter_hopp->getForceCalls();
 	hoppingResult="unknown";
@@ -252,6 +273,35 @@ void GlobalOptimizationJob::hoppingStep(long istep,Matter *matter_curr,Matter *m
 	fcallsMove=fcalls2-fcalls1;
 	fcallsRelax=fcalls3-fcalls2;
 }
+
+void GlobalOptimizationJob::randomMove(Matter *matter)
+{
+    // Create a random displacement.
+    AtomMatrix displacement;
+    displacement.resize(matter->numberOfAtoms(), 3);
+    displacement.setZero();
+    int num = matter->numberOfAtoms();
+
+    for(int i = 0; i < num; i++) {
+        double mdp = parameters->basinHoppingMaxDisplacement;
+
+        if(!matter->getFixed(i)) {
+            for(int j=0; j<3; j++) {
+                if(parameters->basinHoppingDisplacementDistribution=="uniform") {
+                    displacement(i,j) = randomDouble(2*mdp) - mdp;
+                }
+                else if(parameters->basinHoppingDisplacementDistribution=="gaussian") {
+                    displacement(i,j) = gaussRandom(0.0, mdp);
+                }else{
+                    log("Unknown displacement_distribution\n");
+                    exit(1);
+                }
+            }
+        }
+    }
+    matter->setPositions(matter->getPositions() + displacement);
+}
+
 //****************************************************************************************
 void GlobalOptimizationJob::mdescape(Matter *matter)
 {
