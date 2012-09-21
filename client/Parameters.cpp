@@ -196,6 +196,7 @@ Parameters::Parameters(){
 	globalOptimizationBeta = 1.05;
 	globalOptimizationAlpha = 1.02;
 	globalOptimizationMdmin = 3;
+	globalOptimizationTargetEnergy = -1.E50;
 
 	// [Monte Carlo]
 	monteCarloStepSize = 0.005;
@@ -448,6 +449,7 @@ int Parameters::load(FILE *file){
 		globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
 		globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
 		globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
+		globalOptimizationTargetEnergy = ini.GetValueF("Global Optimization", "target_energy", globalOptimizationTargetEnergy);
 
 		// [Monte Carlo]
 		monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);

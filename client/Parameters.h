@@ -212,6 +212,7 @@ public:
 	double globalOptimizationBeta;
 	double globalOptimizationAlpha;
 	long globalOptimizationMdmin;
+	double globalOptimizationTargetEnergy;
 
 	// [Monte Carlo]
 	double monteCarloStepSize;
