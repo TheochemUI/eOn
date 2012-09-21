@@ -212,6 +212,10 @@ public:
 	double globalOptimizationAlpha;
 	long globalOptimizationMdmin;
 
+	// [Monte Carlo]
+	double monteCarloStepSize;
+	int monteCarloSteps;
+
     // MPI stuff, not actually specified in config file
     // this is used to pass information to the GPAW MPI
     // potential.
