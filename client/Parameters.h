@@ -203,6 +203,7 @@ public:
     long   basinHoppingAdjustPeriod;
     double basinHoppingAdjustFraction;
     double basinHoppingTargetRatio;
+    bool   basinHoppingWriteUnique;
 
 	// [Global Optimization]
 	string globalOptimizationMoveMethod;
