@@ -74,6 +74,7 @@ std::vector<std::string> GlobalOptimizationJob::run(void)
 		analyze(matter_curr,matter_hopp);
 		//reporting useful information about this hopp
 		report(matter_hopp);
+		if(matter_curr->getPotentialEnergy()<parameters->globalOptimizationTargetEnergy) break;
 	}
 	for(size_t i=0;i<earr.size();i++) {
 		double earrim1;
@@ -266,7 +267,7 @@ void GlobalOptimizationJob::hoppingStep(long istep,Matter *matter_curr,Matter *m
 	}
 	long fcalls2=matter_hopp->getForceCalls();
 	hoppingResult="unknown";
-    converged = matter_hopp->relax(false, parameters->writeMovies, 
+    converged = matter_hopp->relax(true, parameters->writeMovies, 
 		parameters->checkpoint, "min", "matter_hopp");
     printf("converged %s \n",(converged)?"TRUE":"FALSE");
 	long fcalls3=matter_hopp->getForceCalls();
@@ -329,7 +330,7 @@ void GlobalOptimizationJob::mdescape(Matter *matter)
 		en0000=epot-epot0;
 		if(enmin1>enmin2 && enmin1>en0000)  nummax=nummax+1;
 		if(enmin1<enmin2 && enmin1<en0000)  nummin=nummin+1;
-    	printf("MD  %5d  %15.5f  %15.5f  %12.2E  %4lu  %4lu\n",imd,epot-epot0,ekinc,etot-etot0,nummax,nummin);
+    	//printf("MD  %5d  %15.5f  %15.5f  %12.2E  %4lu  %4lu\n",imd,epot-epot0,ekinc,etot-etot0,nummax,nummin);
 		econs_max=max(econs_max,ekinc+epot);
 		econs_min=min(econs_min,ekinc+epot);
 		if(nummin>=(size_t) mdmin) {
