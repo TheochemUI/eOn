@@ -884,6 +884,11 @@ bool Matter::con2matter(FILE *file)
 
             setAtomicNr(i, atomicNr);
             fgets(line, sizeof(line), file);
+            if (strlen(line) < 6) {
+                cerr << "error parsing position in con file" << endl;
+                return false;
+            }
+
             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
             setPosition(i, 0, x);
             setPosition(i, 1, y);
