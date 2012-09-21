@@ -34,6 +34,9 @@ class BasinHoppingJob : public Job {
         int dcount;
         int scount;
         int fcalls;
+
+        std::vector<Matter *> uniqueStructures;
+        std::vector<double>   uniqueEnergies;
 };
 
 #endif
