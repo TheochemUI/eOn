@@ -14,7 +14,7 @@ atoms.center(30.0)
 tsase.io.write_con('matter1.con', atoms)
 
 atoms.positions += random()*3.0
-atoms.rattle(stdev=.002, seed=int(random()*2**30))
+atoms.rattle(stdev=.915, seed=int(random()*2**30))
 atoms.rotate_euler(center='COM', phi=random()*np.pi*2, theta=random()*np.pi, psi=random()*np.pi/2)
 
 tsase.io.write_con('matter2.con', atoms)
