@@ -23,11 +23,13 @@ class GlobalOptimizationJob: public Job {
         void decisionStep(Matter *,Matter *);
         void report(Matter *);
         void acceptRejectNPEW(Matter *,Matter *);
+        void acceptRejectBoltzmann(Matter *, Matter *);
         void analyze(Matter *,Matter *);
         void examineEscape(Matter *,Matter *);
         void applyMoveFeedbackMD(void);
         void applyDecisionFeedback(void);
         void mdescape(Matter *);
+        void randomMove(Matter *);
         void insert(Matter *);
         size_t hunt(double);
         void velopt(Matter *);
