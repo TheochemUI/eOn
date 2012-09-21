@@ -187,6 +187,7 @@ Parameters::Parameters(){
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
+    basinHoppingWriteUnique = true;
 
 	// [Global Optimization]
 	globalOptimizationMoveMethod = "md";
@@ -438,6 +439,7 @@ int Parameters::load(FILE *file){
         basinHoppingAdjustPeriod = ini.GetValueL("Basin Hopping", "adjust_period", basinHoppingAdjustPeriod);
         basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
         basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
+        basinHoppingWriteUnique = ini.GetValueB("Basin Hopping", "write_unique", basinHoppingWriteUnique);
 
 		// [Global Optimization]
 		globalOptimizationMoveMethod = toLowerCase(ini.GetValue("Global Optimization", "move_method", globalOptimizationMoveMethod));

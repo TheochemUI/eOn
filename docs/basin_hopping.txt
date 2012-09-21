@@ -24,6 +24,14 @@ ratio (ar), and the current max displacement (md).
 
     default: ``0.5``
 
+**write_unique**: If ``true`` the client will write out all the unique geometries
+that it sees and there energies to files named min_%4i.con and energy_%4i.con
+where the number in the filename corresponds to the monte carlo step where
+that structure was first seen. For clusters it is important to set **check_rotation**
+in the **[Structure Comparison]** section.
+
+    defalt: ``true``
+
 **random_structure**: If ``true`` the server creates a random geometry subject
 to the condition that every atom should have at least one neighbor that is
 between 0.8 r and 1.3 r, where r is the sum of the covalent radii of the two
