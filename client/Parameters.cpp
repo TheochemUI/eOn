@@ -195,6 +195,10 @@ Parameters::Parameters(){
 	globalOptimizationBeta = 1.05;
 	globalOptimizationAlpha = 1.02;
 	globalOptimizationMdmin = 3;
+
+	// [Monte Carlo]
+	monteCarloStepSize = 0.005;
+    monteCarloSteps = 1000;
 }
 
 Parameters::~Parameters(){
@@ -442,6 +446,10 @@ int Parameters::load(FILE *file){
 		globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
 		globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
 		globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
+
+		// [Monte Carlo]
+		monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
+		monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
     }
     else
     {
