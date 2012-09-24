@@ -30,7 +30,7 @@ where the number in the filename corresponds to the monte carlo step where
 that structure was first seen. For clusters it is important to set **check_rotation**
 in the **[Structure Comparison]** section.
 
-    defalt: ``true``
+    defalt: ``false``
 
 **random_structure**: If ``true`` the server creates a random geometry subject
 to the condition that every atom should have at least one neighbor that is
