@@ -2,7 +2,6 @@
 # module swap PrgEnv-pgi PrgEnv-gnu
 # module load gcc/4.6.3
 # module load python
-# module unload xt-shmem
 TARGET_NAME=client
 
 CC=cc
@@ -10,7 +9,7 @@ CXX=CC
 LD=ld
 AR=ar cru
 RANLIB=ranlib
-LDFLAGS += -dynamic 
+LDFLAGS += -static 
 
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
@@ -37,3 +36,4 @@ else
 endif
 
 include Rules.mk
+LDFLAGS += -ldl -lutil
