@@ -63,7 +63,9 @@ bool Hessian::calculate(void)
     int size = 0;
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
-    assert(size > 0);
+    if(size > 0) {
+        return false;
+    }
 
     // Build the hessian 
     Matter matterTemp(parameters);
