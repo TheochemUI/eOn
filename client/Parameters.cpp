@@ -187,7 +187,7 @@ Parameters::Parameters(){
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
-    basinHoppingWriteUnique = true;
+    basinHoppingWriteUnique = false;
 
 	// [Global Optimization]
 	globalOptimizationMoveMethod = "md";
