@@ -198,6 +198,7 @@ def init(config_file = ""):
     config.path_bh_minima    = parser.get('Paths', 'bh_minima')
 
     # Rye-requested check
+    # Should we have some kind of sanity-check module/function somewhere?
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
         res = raw_input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
