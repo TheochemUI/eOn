@@ -10,6 +10,7 @@
 
 #!/usr/bin/env python
 import os
+import glob
 from cStringIO import StringIO
 
 import akmc
@@ -20,6 +21,12 @@ import escaperate
 
 def main():
     config.init()
+
+    # Should we have some kind of sanity-check module/function somewhere?
+    fnames = [os.path.basename(f) for f in glob.glob(os.path.join(config.path_pot, '*'))]
+    if 'pos.con' in fnames:
+        print "WARNING: pos.con found in potfiles path. Are you sure you want this? It will overwrite the pos.con in the calculation directory when your jobs are being run."
+
     job = config.main_job.lower()
     if job == 'akmc':
         akmc.main()
