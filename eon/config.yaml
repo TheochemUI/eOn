@@ -474,6 +474,10 @@ Basin Hopping:
             kind: float
             default: 300.0
 
+        write_unique:
+            kind: boolean
+            default: true
+
 ################################################################################
 
 Recycling:
