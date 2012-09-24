@@ -476,7 +476,7 @@ Basin Hopping:
 
         write_unique:
             kind: boolean
-            default: true
+            default: false
 
 ################################################################################
 

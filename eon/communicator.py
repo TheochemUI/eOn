@@ -98,6 +98,8 @@ class Communicator:
             raise CommunicatorError("job_path wasn't a str or a list")
 
         for filename in filenames:
+            if not filename.startswith('config'):
+                continue
             if filename[-3:] != 'con' and filename[-3] != 'dat':
                 continue
             try:
