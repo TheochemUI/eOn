@@ -5,11 +5,11 @@ import tsase
 from random import random
 from sys import argv
 
+cell_size=5.0
 
 atoms = ase.Atoms(argv[1])
-atoms.set_cell((30.0,30.0,30.0))
+atoms.set_cell((cell_size,cell_size,cell_size))
 atoms.set_positions(np.random.random((len(atoms),3))*10.0)
-atoms.center(30.0)
 
 tsase.io.write_con('matter1.con', atoms)
 
