@@ -596,3 +596,48 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
         return true;
     }
 }
+bool helper_functions::pushApart(Matter *m1)
+{
+    m1->matter2con("movie.con");
+    cout<<"hello from pushApart"<<"\n";
+    AtomMatrix r1 = m1->getPositions();
+    MatrixXd Force(r1.rows(), 3);    
+    double f=0.05;
+    double cut=3.0;
+    double pushAparts=100;
+    for(int p=0; p<r1.rows(); p++){
+	for(int axis=0; axis<=2; axis++){
+	    Force(p,axis)=0;
+	}
+    }
+    for(int count =0; count<pushAparts; count++){
+	int moved =0;
+	for(int i=0; i<r1.rows(); i++){
+	    for(int j=i+1; j<r1.rows(); j++){
+		double d=m1->distance(i,j);
+		cout<<d<<"\n";
+		if(d < cut){
+		    moved++;
+		    for(int axis=0; axis<=2; axis++){	
+			double componant=f*(r1(i,axis)-r1(j,axis))/d;
+			Force(i,axis)+=componant;
+			Force(j,axis)-=componant;
+		    }
+		}
+	    }
+
+	}
+	if(moved==0) break;
+	for(int k=0; k<r1.rows(); k++){
+	    for(int axis=0; axis<=2; axis++){
+		r1(k,axis)+=Force(k,axis);
+		Force(k,axis)=0;
+	    }
+	}
+	m1->setPositions(r1);
+	m1->matter2con("movie.con", true);
+    }
+
+
+
+}
