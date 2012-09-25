@@ -24,17 +24,14 @@ StructureComparisonJob::~StructureComparisonJob(){ }
 std::vector<std::string> StructureComparisonJob::run(void)
 {
     std::vector<std::string> returnFiles;
+    
+    Matter *matter1 = new Matter(parameters);
+    matter1->con2matter("matter1.con");
 
-    Matter matter1(parameters);
-    matter1.con2matter("matter1.con");
-    Matter matter2(parameters);
-    matter2.con2matter("matter2.con");
+   
 
-    if (matter1.compare(&matter2, parameters->indistinguishableAtoms)) {
-        printf("structures match\n");
-    }else{
-        printf("structures do not match\n");
-    }
+    helper_functions::pushApart(matter1);
+
 
     return returnFiles;
 }
