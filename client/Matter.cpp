@@ -99,8 +99,8 @@ Matter::Matter(Parameters *parameters, const long int nAtoms)
 void Matter::initializeDataMembers(Parameters *params)
 {
     nAtoms = 0;
-    cellBoundaries.resize(3,3);
-    cellBoundaries.setZero();
+    cell.resize(3,3);
+    cell.setZero();
     cellInverse.resize(3,3);
     cellInverse.setZero();
     usePeriodicBoundaries = true;
@@ -135,7 +135,7 @@ const Matter& Matter::operator=(const Matter& matter)
     masses = matter.masses;
     atomicNrs = matter.atomicNrs;
     isFixed = matter.isFixed;
-    cellBoundaries = matter.cellBoundaries;
+    cell = matter.cell;
     cellInverse = matter.cellInverse;
     velocities = matter.velocities;
 
@@ -202,7 +202,7 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const
         }
     }
 
-    return ddiff*cellBoundaries;
+    return ddiff*cell;
 }
 
 
@@ -264,40 +264,12 @@ long int Matter::numberOfAtoms() const
     return(nAtoms);
 }
 
-
-Vector3d Matter::getBoundary(int axis) const
-{
-    return(cellBoundaries.row(axis));
+Matrix3d Matter::getCell() const {
+    return cell;
 }
 
-
-double Matter::getBoundary(int axis1, int axis2) const
-{
-    return cellBoundaries(axis1, axis2);
-}
-
-
-void Matter::setBoundary(int axis, Vector3d bound)
-{
-    cellBoundaries.row(axis) = bound;
-    cellInverse = cellBoundaries.inverse();
-    if(usePeriodicBoundaries)
-    {
-        applyPeriodicBoundary();
-    }
-    recomputePotential = true;
-}
-
-
-void Matter::setBoundary(int axis1, int axis2, double val)
-{
-    cellBoundaries(axis1,axis2) = val;
-    cellInverse = cellBoundaries.inverse();
-    if(usePeriodicBoundaries)
-    {
-        applyPeriodicBoundary();
-    }
-    recomputePotential = true;
+void Matter::setCell(Matrix3d newCell) {
+    cell = newCell;
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const
@@ -701,14 +673,14 @@ bool Matter::matter2con(FILE *file)
     fputs(headerCon1, file);
     fputs(headerCon2, file);
     double lengths[3];
-    lengths[0] = cellBoundaries.row(0).norm();
-    lengths[1] = cellBoundaries.row(1).norm();
-    lengths[2] = cellBoundaries.row(2).norm();
+    lengths[0] = cell.row(0).norm();
+    lengths[1] = cell.row(1).norm();
+    lengths[2] = cell.row(2).norm();
     fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
     double angles[3];
-    angles[0] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(1))/lengths[0]/lengths[1])*180/M_PI;
-    angles[1] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(2))/lengths[0]/lengths[2])*180/M_PI;
-    angles[2] = acos(cellBoundaries.row(1).dot(cellBoundaries.row(2))/lengths[1]/lengths[2])*180/M_PI;
+    angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
+    angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
+    angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
     fputs(headerCon5, file);
     fputs(headerCon6, file);
@@ -781,29 +753,29 @@ bool Matter::con2matter(FILE *file)
     sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
 
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-        cellBoundaries(0,0) = lengths[0];
-        cellBoundaries(1,1) = lengths[1];
-        cellBoundaries(2,2) = lengths[2];
+        cell(0,0) = lengths[0];
+        cell(1,1) = lengths[1];
+        cell(2,2) = lengths[2];
     }else{
         angles[0] *= M_PI/180.0;
         angles[1] *= M_PI/180.0;
         angles[2] *= M_PI/180.0;
 
-        cellBoundaries(0,0) = 1.0;
-        cellBoundaries(1,0) = cos(angles[0]);
-        cellBoundaries(1,1) = sin(angles[0]);
-        cellBoundaries(2,0) = cos(angles[1]);
-        cellBoundaries(2,1) = (cos(angles[2])-cellBoundaries(1,0)*cellBoundaries(2,0))/cellBoundaries(1,1);
-        cellBoundaries(2,2) = sqrt(1.0-pow(cellBoundaries(2,0),2)-pow(cellBoundaries(2,1),2));
+        cell(0,0) = 1.0;
+        cell(1,0) = cos(angles[0]);
+        cell(1,1) = sin(angles[0]);
+        cell(2,0) = cos(angles[1]);
+        cell(2,1) = (cos(angles[2])-cell(1,0)*cell(2,0))/cell(1,1);
+        cell(2,2) = sqrt(1.0-pow(cell(2,0),2)-pow(cell(2,1),2));
 
-        cellBoundaries(0,0) *= lengths[0];
-        cellBoundaries(1,0) *= lengths[1];
-        cellBoundaries(1,1) *= lengths[1];
-        cellBoundaries(2,0) *= lengths[2];
-        cellBoundaries(2,1) *= lengths[2];
-        cellBoundaries(2,2) *= lengths[2];
+        cell(0,0) *= lengths[0];
+        cell(1,0) *= lengths[1];
+        cell(1,1) *= lengths[1];
+        cell(2,0) *= lengths[2];
+        cell(2,1) *= lengths[2];
+        cell(2,2) *= lengths[2];
     }
-    cellInverse = cellBoundaries.inverse();
+    cellInverse = cell.inverse();
 
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
@@ -914,7 +886,7 @@ void Matter::computePotential()
             potential = Potential::getPotential(parameters);
         }
 
-        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cellBoundaries);
+        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cell);
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
@@ -944,7 +916,7 @@ void Matter::applyPeriodicBoundary()
             ddiff(i,j) = fmod(ddiff(i,j) + 1.0, 1.0);
         }
     }
-    positions = ddiff*cellBoundaries;
+    positions = ddiff*cell;
 }
 
 
@@ -1078,14 +1050,14 @@ bool Matter::matter2convel(FILE *file)
     fputs(headerCon1, file);
     fputs(headerCon2, file);
     double lengths[3];
-    lengths[0] = cellBoundaries.row(0).norm();
-    lengths[1] = cellBoundaries.row(1).norm();
-    lengths[2] = cellBoundaries.row(2).norm();
+    lengths[0] = cell.row(0).norm();
+    lengths[1] = cell.row(1).norm();
+    lengths[2] = cell.row(2).norm();
     fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
     double angles[3];
-    angles[0] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(1))/lengths[0]/lengths[1])*180/M_PI;
-    angles[1] = acos(cellBoundaries.row(0).dot(cellBoundaries.row(2))/lengths[0]/lengths[2])*180/M_PI;
-    angles[2] = acos(cellBoundaries.row(1).dot(cellBoundaries.row(2))/lengths[1]/lengths[2])*180/M_PI;
+    angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
+    angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
+    angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
     fputs(headerCon5, file);
     fputs(headerCon6, file);
@@ -1166,29 +1138,29 @@ bool Matter::convel2matter(FILE *file)
     sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
 
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-        cellBoundaries(0,0) = lengths[0];
-        cellBoundaries(1,1) = lengths[1];
-        cellBoundaries(2,2) = lengths[2];
+        cell(0,0) = lengths[0];
+        cell(1,1) = lengths[1];
+        cell(2,2) = lengths[2];
     }else{
         angles[0] *= M_PI/180.0;
         angles[1] *= M_PI/180.0;
         angles[2] *= M_PI/180.0;
 
-        cellBoundaries(0,0) = 1.0;
-        cellBoundaries(1,0) = cos(angles[0]);
-        cellBoundaries(1,1) = sin(angles[0]);
-        cellBoundaries(2,0) = cos(angles[1]);
-        cellBoundaries(2,1) = (cos(angles[2])-cellBoundaries(1,0)*cellBoundaries(2,0))/cellBoundaries(1,1);
-        cellBoundaries(2,2) = sqrt(1.0-pow(cellBoundaries(2,0),2)-pow(cellBoundaries(2,1),2));
+        cell(0,0) = 1.0;
+        cell(1,0) = cos(angles[0]);
+        cell(1,1) = sin(angles[0]);
+        cell(2,0) = cos(angles[1]);
+        cell(2,1) = (cos(angles[2])-cell(1,0)*cell(2,0))/cell(1,1);
+        cell(2,2) = sqrt(1.0-pow(cell(2,0),2)-pow(cell(2,1),2));
 
-        cellBoundaries(0,0) *= lengths[0];
-        cellBoundaries(1,0) *= lengths[1];
-        cellBoundaries(1,1) *= lengths[1];
-        cellBoundaries(2,0) *= lengths[2];
-        cellBoundaries(2,1) *= lengths[2];
-        cellBoundaries(2,2) *= lengths[2];
+        cell(0,0) *= lengths[0];
+        cell(1,0) *= lengths[1];
+        cell(1,1) *= lengths[1];
+        cell(2,0) *= lengths[2];
+        cell(2,1) *= lengths[2];
+        cell(2,2) *= lengths[2];
     }
-    cellInverse = cellBoundaries.inverse();
+    cellInverse = cell.inverse();
 
     fgets(headerCon5,sizeof(line),file);
     fgets(headerCon6,sizeof(line),file);
