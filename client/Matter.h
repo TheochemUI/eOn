@@ -29,7 +29,7 @@ struct MatterPrivateData {
     VectorXd masses;
     VectorXi atomicNrs;
     VectorXi isFixed; // array of bool, false for movable atom, true for fixed
-    Matrix3d cellBoundaries;
+    Matrix3d cell;
     Matrix3d cellInverse;
     mutable double potentialEnergy;
 };
@@ -52,10 +52,8 @@ public:
     void setPotential(); // set potential function to use
     void resize(long int nAtoms); // set or reset the number of atoms
     long int numberOfAtoms() const; // return the number of atoms
-    Vector3d getBoundary(int axis) const; // return the length of the periodic cell for the axis specified
-    double getBoundary(int axis1, int axis2) const; // return the length of the periodic cell for the axis specified
-    void setBoundary(int axis, Vector3d); // set the length of the periodic cell for the axis specified
-    void setBoundary(int axis1, int axis2, double val); // set the length of the periodic cell for the axis specified
+    Matrix3d getCell() const;
+    void setCell(Matrix3d newCell);
     double getPosition(long int atom, int axis) const; // return the position of an atom along one of the axis
     void setPosition(long int atom, int axis, double position); // set the position of atom along axis to position
     void setVelocity(long int atom, int axis, double velocity); // set the velocity of atom along axis to velocity
