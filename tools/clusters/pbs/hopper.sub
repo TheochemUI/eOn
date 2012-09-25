@@ -1,0 +1,53 @@
+#!/bin/bash
+#PBS -q debug
+#PBS -l walltime=00:10:00 
+#PBS -A m1247
+#PBS -j oe 
+#PBS -S /bin/bash 
+#PBS -l gres=scratch2
+#PBS -V 
+
+[ -n "$PBS_O_WORKDIR" ] && set -x 
+
+export EON_NUMBER_OF_CLIENTS=71
+CORES_PER_VASP=24
+export EON_SERVER_PATH=eon/eon/akmc.py
+VASP=/global/homes/c/chill/bin/hopper/vasp_gamma
+EON_CLIENT=/global/homes/c/chill/work/au8/akmc/eon/client/client_mpi
+
+[ -x "$VASP" ] || { echo "$VASP not found or not executable"; exit 1; }
+[ -x "$EON_CLIENT" ] || { echo "$VASP not found or not executable"; exit 1; }
+
+if [ $CORES_PER_VASP -lt 12 ]; then
+    echo "set NPAR=1"
+else
+    echo "set NPAR=$((CORES_PER_VASP / 12))"
+fi
+
+
+VASP_RANKS=$((EON_NUMBER_OF_CLIENTS * $CORES_PER_VASP))
+EON_RANKS=$((EON_NUMBER_OF_CLIENTS + 1))
+echo "VASP  RANKS: $VASP_RANKS"
+echo "EON   RANKS: $EON_RANKS"
+TOTAL_RANKS=$(($VASP_RANKS + $EON_RANKS))
+echo "TOTAL RANKS: $TOTAL_RANKS"
+
+if [ $(( $TOTAL_RANKS % 24 )) -gt 0 ]; then
+    echo "set -l mppwidth=$(( ($TOTAL_RANKS / 24)*24 + 24 ))"
+else
+    echo "set -l mppwidth=$TOTAL_RANKS"
+fi
+
+cmd="aprun -n $VASP_RANKS $VASP : -n $EON_RANKS $EON_CLIENT"
+echo "will run: $cmd"
+
+[ -z "$PBS_O_WORKDIR" ] && exit 0
+
+
+module load python
+export CRAY_ROOTFS=DSL
+cd $PBS_O_WORKDIR
+
+~/work/au8/akmc/eon/tools/mkvasp.py $EON_NUMBER_OF_CLIENTS .
+
+$cmd
