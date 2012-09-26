@@ -85,7 +85,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0`` (off)
     
-**nonlocal_distance_abort*: If **nonlocal_count_abort** is not zero, the saddle search will abort when **nonlocal_count_abort* atoms have moved more than this distance.
+**nonlocal_distance_abort**: If **nonlocal_count_abort** is not zero, the saddle search will abort when **nonlocal_count_abort** atoms have moved more than this distance.
 
     default: ``0.0``
 
