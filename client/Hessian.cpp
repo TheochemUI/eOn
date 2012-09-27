@@ -63,7 +63,7 @@ bool Hessian::calculate(void)
     int size = 0;
     size = atoms.rows()*3;
     cout<<"Hessian size: "<<size<<endl;
-    if(size > 0) {
+    if(size == 0) {
         return false;
     }
 
