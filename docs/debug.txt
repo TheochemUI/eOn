@@ -43,7 +43,7 @@ Debug
 
     default: ``False``
 
-**write_movie_interval**: Write a movie frame every write_movie_intervals steps.
+**write_movies_interval**: Write a movie frame every write_movie_intervals steps.
 
     default: ``1``
 
