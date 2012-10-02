@@ -8,7 +8,7 @@
 #include "ParallelReplicaJob.h"
 #include "UnbiasedParallelReplicaJob.h"
 #include "SafeHyperJob.h"
-#include "ScaledPESJob.h"
+#include "TADJob.h"
 #include "ReplicaExchangeJob.h"
 #include "BasinHoppingJob.h"
 #include "FiniteDifferenceJob.h"
@@ -33,7 +33,7 @@ const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
 const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
 const char Job::DYNAMICS[] =                 "molecular_dynamics";
 const char Job::SAFE_HYPER[] =               "safe_hyper";
-const char Job::SCALED_PES[] =               "scaled_pes";
+const char Job::TAD[] =               "tad";
 const char Job::PREFACTOR[] =                "prefactor";
 const char Job::GLOBAL_OPTIMIZATION[] =      "global_optimization";
 const char Job::STRUCTURE_COMPARISON[] =     "structure_comparison";
@@ -58,8 +58,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new UnbiasedParallelReplicaJob(parameters);
     }else if (parameters->job == Job::REPLICA_EXCHANGE) {
         job =  new ReplicaExchangeJob(parameters);
-    }else if (parameters->job == Job::SCALED_PES){
-        job = new ScaledPESJob(parameters);
+    }else if (parameters->job == Job::TAD){
+        job = new TADJob(parameters);
     }else if (parameters->job == Job::SAFE_HYPER){
         job = new SafeHyperJob(parameters);
     }else if (parameters->job == Job::BASIN_HOPPING) {

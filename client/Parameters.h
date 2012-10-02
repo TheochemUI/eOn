@@ -157,10 +157,10 @@ public:
     double parrepRecordInterval;
     double parrepCorrTime;
 
-    // [Scaled PES Dynamics]
-    double scaledpesScale;
-    double scaledpesMinPrefactor;
-    double scaledpesConfidence;
+    // [TAD]
+    double tadLowT;
+    double tadMinPrefactor;
+    double tadConfidence;
 
     // [Thermostat]
     string thermostat;
