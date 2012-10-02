@@ -27,7 +27,7 @@ class Job {
         static const char PARALLEL_REPLICA[];
         static const char UNBIASED_PARALLEL_REPLICA[];
         static const char SAFE_HYPER[];
-        static const char SCALED_PES[];
+        static const char TAD[];
         static const char REPLICA_EXCHANGE[];
         static const char BASIN_HOPPING[];
         static const char HESSIAN[];
