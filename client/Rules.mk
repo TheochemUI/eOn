@@ -147,7 +147,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            Hessian.o ConjugateGradients.o HelperFunctions.o Matter.o \
            Parameters.o Potential.o Quickmin.o ProcessSearchJob.o PointJob.o \
            MinimizationJob.o HessianJob.o ParallelReplicaJob.o UnbiasedParallelReplicaJob.o \
-           SafeHyperJob.o ScaledPESJob.o\
+           SafeHyperJob.o TADJob.o\
            ReplicaExchangeJob.o Dynamics.o BondBoost.o FiniteDifferenceJob.o \
            NudgedElasticBandJob.o TestJob.o BasinHoppingJob.o \
            SaddleSearchJob.o ImprovedDimer.o NudgedElasticBand.o Lanczos.o \
