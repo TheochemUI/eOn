@@ -12,7 +12,7 @@
 
 #include "Matter.h"
 #include "Dynamics.h"
-#include "ScaledPESJob.h"
+#include "TADJob.h"
 #include "Optimizer.h"
 #include "Log.h"
 #include <vector>
@@ -28,16 +28,16 @@
     #include "false_boinc.h"
 #endif
 
-ScaledPESJob::ScaledPESJob(Parameters *params)
+TADJob::TADJob(Parameters *params)
 {
     parameters = params;
 }
 
-ScaledPESJob::~ScaledPESJob()
+TADJob::~TADJob()
 {
 }
 
-std::vector<std::string> ScaledPESJob::run(void)
+std::vector<std::string> TADJob::run(void)
 {
     current = new Matter(parameters);
     reactant = new Matter(parameters);
@@ -49,7 +49,6 @@ std::vector<std::string> ScaledPESJob::run(void)
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
-    scale = parameters->scaledpesScale;
     string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
     current->con2matter(reactantFilename);
 
@@ -59,7 +58,8 @@ std::vector<std::string> ScaledPESJob::run(void)
     reactant->relax();
     minimizeFCalls += (Potential::fcalls - refFCalls);
     
-    log("\nParallel Replica Dynamics, running\n\n");
+    log("\nTemperature Accelerated Dynamics, running\n\n");
+    log("High temperature MD simulation running at %.2f K to simulate dynamics at %.2f K\n",parameters->temperature,parameters->tadLowT);
     
     int status = dynamics();
 
@@ -83,7 +83,7 @@ std::vector<std::string> ScaledPESJob::run(void)
     return returnFiles;
 }
 
-int ScaledPESJob::dynamics()
+int TADJob::dynamics()
 {
     bool transitionFlag = false, recordFlag = true, stopFlag = false, firstTransitFlag = false;
     bool saddleSearchStatus = false;
@@ -94,18 +94,21 @@ int ScaledPESJob::dynamics()
     long StateCheckInterval, RecordInterval, CorrSteps;
     double kinE, kinT, avgT, varT, kb = 1.0/11604.5;
     double correctedTime = 0.0, firstTransitionTime = 0.0; 
-    double stopTime = 0.0, sumCorrectedTime = 0.0;
+    double stopTime = 0.0, sumSimulatedTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
     double correctionFactor = 1.0;
     double transitionTime_current=0.0, transitionTime_previous=0.0;
-    double delta, minmu;
+    double delta, minmu, factor, highT, lowT;
 
     AtomMatrix velocity;
     AtomMatrix reducedForces;
 
     minCorrectedTime = 1.0e200;
-    delta = parameters->scaledpesConfidence;
-    minmu = parameters->scaledpesMinPrefactor;
+    lowT=parameters->tadLowT;
+    highT=parameters->temperature;
+    delta = parameters->tadConfidence;
+    minmu = parameters->tadMinPrefactor;
+    factor = log(1.0/delta)/minmu;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
     CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
@@ -119,8 +122,8 @@ int ScaledPESJob::dynamics()
     }
     timeBuffer = new double[mdBufferLength];
 
-    Dynamics scaledPES(current, parameters);
-    scaledPES.setThermalVelocity();
+    Dynamics TAD(current, parameters);
+    TAD.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
     refFCalls = Potential::fcalls;
@@ -144,13 +147,6 @@ int ScaledPESJob::dynamics()
     // loop dynamics iterations until some condition tells us to stop
     while(!stopFlag)
     {
-        if( ! newStateFlag ) {
-            reducedForces = -1.0* (1-scale)* current->getForces();
-        } 
-        else{
-            reducedForces.setZero();
-        }
-        current->setBiasForces(reducedForces);
 
         kinE = current->getKineticEnergy();
         kinT = (2.0*kinE/nFreeCoord/kb); 
@@ -158,7 +154,7 @@ int ScaledPESJob::dynamics()
         sumT2 += kinT*kinT;
         //log("steps = %10d temp = %10.5f \n",step,kinT);
 
-        scaledPES.oneStep();
+        TAD.oneStep();
         mdFCalls++;
         
         time += parameters->mdTimeStepInput;
@@ -211,9 +207,9 @@ int ScaledPESJob::dynamics()
             saddleSearchStatus = saddleSearch(crossing);
             barrier = crossing->getPotentialEnergy()-reactant->getPotentialEnergy();
             log("barrier= %.3f\n",barrier);
-            correctionFactor = scale*exp((1.0-scale)*barrier/kb/Temp); 
+            correctionFactor = 1.0*exp(barrier/kb*(1.0/lowT-1.0/highT)); 
             correctedTime = transitionTime * correctionFactor;
-            sumCorrectedTime += correctedTime;
+            sumSimulatedTime += transitionTime;
             if ( nState == 1 ){
                 firstTransitionTime = transitionTime;
             }
@@ -228,8 +224,8 @@ int ScaledPESJob::dynamics()
                 *saddle = *crossing;
                 *final = *final_tmp;
             }
-            stopTime = log(1.0/delta)/minmu*pow(scale*minCorrectedTime*minmu/log(1.0/delta),1/scale);
-            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15,barrier,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15, stopTime*1.0e-15);
+            stopTime = factor*pow(minCorrectedTime/factor,lowT/highT);
+            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15,barrier,correctedTime*1e-15,sumSimulatedTime*1e-15, minCorrectedTime*1.0e-15, stopTime*1.0e-15);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -237,7 +233,7 @@ int ScaledPESJob::dynamics()
     
             
         // we have run enough md steps; time to stop
-        if (firstTransitFlag &&  time >= stopTime) 
+        if (firstTransitFlag &&  sumSimulatedTime >= stopTime) 
         {
             stopFlag = true;
             newStateFlag = true;
@@ -295,7 +291,7 @@ int ScaledPESJob::dynamics()
     }
 }
 
-void ScaledPESJob::saveData(int status)
+void TADJob::saveData(int status)
 {
     FILE *fileResults, *fileReactant;
 
@@ -362,7 +358,7 @@ void ScaledPESJob::saveData(int status)
 }
 
 
-void ScaledPESJob::dephase()
+void TADJob::dephase()
 {
     bool transitionFlag = false;
     long step, stepNew, loop;
@@ -426,7 +422,7 @@ void ScaledPESJob::dephase()
 }
 
 
-bool ScaledPESJob::checkState(Matter *current, Matter *reactant)
+bool TADJob::checkState(Matter *current, Matter *reactant)
 {
     Matter tmp(parameters);
     tmp = *current;
@@ -437,7 +433,7 @@ bool ScaledPESJob::checkState(Matter *current, Matter *reactant)
     return true;
 }
 
-bool ScaledPESJob::saddleSearch(Matter *cross){
+bool TADJob::saddleSearch(Matter *cross){
     AtomMatrix mode;
     long status;
     mode = cross->getPositions() - reactant->getPositions();
@@ -452,7 +448,7 @@ bool ScaledPESJob::saddleSearch(Matter *cross){
     return false;
 }
 
-long ScaledPESJob::refine(Matter *buff[], long length, Matter *reactant)
+long TADJob::refine(Matter *buff[], long length, Matter *reactant)
 {
     //log("[Parallel Replica] Refining transition time.\n");
 
@@ -482,3 +478,4 @@ long ScaledPESJob::refine(Matter *buff[], long length, Matter *reactant)
 
     return (min+max)/2 + 1;
 }
+

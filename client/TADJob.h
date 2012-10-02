@@ -8,19 +8,19 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef SCALEDPESJOB_H
-#define SCALEDPESJOB_H
+#ifndef TADJOB_H
+#define TADJOB_H
 
 #include "Job.h"
 #include "Parameters.h"
 #include "MinModeSaddleSearch.h"
 
-class ScaledPESJob: public Job
+class TADJob: public Job
 {
     public:
 
-        ScaledPESJob(Parameters *params);
-        ~ScaledPESJob(void);
+        TADJob(Parameters *params);
+        ~TADJob(void);
         std::vector<std::string> run(void);
 
     private:
@@ -52,7 +52,6 @@ class ScaledPESJob: public Job
         long transitionStep;
 
         double time;
-        double scale;
         double minCorrectedTime;
         double transitionTime;
         double barrier;
