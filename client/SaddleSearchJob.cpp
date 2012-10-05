@@ -40,7 +40,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
         mode = fopen("direction_cp.dat", "r");
         if (disp != NULL && mode != NULL) {
             displacementFilename = "displacement_cp.con";
-            modeFilename = "direction_cp.dat";
+            modeFilename = "mode_cp.dat";
             log("Resuming from checkpoint\n");
         }else{
             log("No checkpoint files found\n");
