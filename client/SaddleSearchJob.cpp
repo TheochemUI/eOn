@@ -37,7 +37,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
     if (parameters->checkpoint) {
         FILE *disp, *mode;
         disp = fopen("displacement_cp.con", "r");
-        mode = fopen("direction_cp.dat", "r");
+        mode = fopen("mode_cp.dat", "r");
         if (disp != NULL && mode != NULL) {
             displacementFilename = "displacement_cp.con";
             modeFilename = "mode_cp.dat";
