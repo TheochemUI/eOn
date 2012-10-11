@@ -380,7 +380,7 @@ int Parameters::load(FILE *file){
         mdTimeStepInput = ini.GetValueF("Dynamics", "time_step", mdTimeStepInput);
         mdTimeStep = mdTimeStepInput * 0.09823; //transfer the time unit from fs to 10.18 fs
         mdTime = ini.GetValueF("Dynamics", "time", mdTime);
-        mdSteps = int(mdTime/mdTimeStepInput);
+        mdSteps = long(mdTime/mdTimeStepInput);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcol);
