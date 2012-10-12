@@ -89,25 +89,11 @@ class Communicator:
         raise NotImplementedError()
 
     def get_bundle_size(self, job_path):
-        biggest = 0
-        if type(job_path) == type(str()):
-            filenames = glob.glob(os.path.join(job_path, "*_*.*"))
-        elif type(job_path) == type(list()):
-            filenames = job_path
-        else:
-            raise CommunicatorError("job_path wasn't a str or a list")
-
-        for filename in filenames:
-            if not filename.startswith('config'):
-                continue
-            if filename[-3:] != 'con' and filename[-3] != 'dat':
-                continue
-            try:
-                num = int(filename.rsplit("_",1)[1].split(".",1)[0])
-                biggest = max(biggest, num)
-            except:
-                pass
-        return biggest + 1
+        fnames = [os.path.basename(f) for f in glob.glob(os.path.join(job_path, "config_*.ini"))]
+        big = 0
+        for name in fnames:
+            big = max(big, int(name.replace('_','.').split('.')[1]))
+        return big + 1
 
     def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple jobs into multiple single 
