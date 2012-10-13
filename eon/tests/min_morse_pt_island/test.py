@@ -8,7 +8,7 @@ test_name = os.path.basename(test_path)
 
 # this first command will echo the output to stdout as well
 #os.system("../../client/client | tee minimization.txt")
-os.system("../../client/client > minimization.txt")
+os.system("../../../client/client > minimization.txt")
 
 for line in open("minimization.txt"):
     if "Final Energy" in line:
