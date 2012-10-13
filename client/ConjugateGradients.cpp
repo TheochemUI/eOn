@@ -66,10 +66,33 @@ bool ConjugateGradients::step(double maxMove)
     {
         stepSize = projectedForce1 / curvature;
     }
-
-    pos += helper_functions::maxAtomMotionAppliedV(stepSize * directionNorm, maxMove);
-    objf->setPositions(pos);
-
+    if (!parameters->optCGNoOvershooting)
+    {
+        pos += helper_functions::maxAtomMotionAppliedV(stepSize * directionNorm, maxMove);
+        objf->setPositions(pos);
+    }
+    else
+    {
+        // negative if product of the projected forces before and after the step are in opposite directions
+        double passedMinimum = -1.;
+        double forceChange = 0.;
+        while (passedMinimum < 0.) {
+            posStep = pos + helper_functions::maxAtomMotionAppliedV(stepSize * directionNorm, maxMove);
+            objf->setPositions(posStep);
+            forceAfterStep = -objf->getGradient(true);
+            projectedForce2 = forceAfterStep.dot(directionNorm);
+            
+            passedMinimum = projectedForce1 * projectedForce2;
+            if (passedMinimum < 0.)
+            {
+                forceChange = (projectedForce1 - projectedForce2);
+                stepSize = (projectedForce1 / forceChange) * stepSize;
+                
+                // knockout old search direction
+                directionOld = objf->getPositions() * 0.0;
+            }
+        }
+    }
     return objf->isConverged();
 }
 

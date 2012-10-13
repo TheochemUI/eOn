@@ -1031,4 +1031,10 @@ Optimizer:
         qm_steepest_descent:
             kind: bool
             default: False
+
+        cg_no_overshooting:
+            kind: bool
+            default: False
+            
+
         
