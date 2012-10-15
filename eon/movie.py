@@ -70,9 +70,11 @@ def save_movie(atoms_list, movie_path):
 def get_trajectory(trajectory_path):
     f = open(trajectory_path)
     trajectory = [0]
+    f.readline()
+    f.readline()
     for line in f:
         fields = line.split()
-        statenr = int(fields[0])
+        statenr = int(fields[3])
         trajectory.append(statenr)
 
     return trajectory
