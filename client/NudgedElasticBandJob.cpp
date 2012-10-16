@@ -82,7 +82,7 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
         fprintf(fileResults, "%f image%li_projected_force\n", neb->projectedForce[i]->norm(), i);
     }
     fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
-    for(long i=0; i<=neb->numExtrema; i++) {
+    for(long i=0; i<neb->numExtrema; i++) {
         fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i], i);
         fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
     }
