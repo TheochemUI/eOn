@@ -372,12 +372,12 @@ void NudgedElasticBand::findExtrema(void)
 //    long numExtrema = 0;
 //    double extremaEnergy[2*(images+1)]; // the maximum number of extrema
 //    double extremaPosition[2*(images+1)];
-    double descriminant, f;
+    double discriminant, f;
 
     for(long i=0; i<=images; i++)
     {
-        descriminant = pow(c[i],2) - 3.*b[i]*d[i];
-        if(descriminant >= 0) {
+        discriminant = pow(c[i],2) - 3.*b[i]*d[i];
+        if(discriminant >= 0) {
             f = -1;
 
             // quadratic case
@@ -386,7 +386,7 @@ void NudgedElasticBand::findExtrema(void)
             }
             // cubic case 1
             else if( d[i] != 0 ) {
-                f = -(c[i] + sqrt(descriminant))/(3.*d[i]);
+                f = -(c[i] + sqrt(discriminant))/(3.*d[i]);
             }
             if( (f >= 0) && (f <= 1) ) {
                 extremumPosition[numExtrema] = i + f;
@@ -395,7 +395,7 @@ void NudgedElasticBand::findExtrema(void)
             }
             // cubic case 2
             if( d[i] != 0 ) {
-                f = ( -(c[i] - sqrt(descriminant))/(3.*d[i]) );
+                f = ( -(c[i] - sqrt(discriminant))/(3.*d[i]) );
             }
             if( (f >= 0) && (f <= 1) ) {
                 extremumPosition[numExtrema] = i + f;
