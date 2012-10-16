@@ -88,6 +88,7 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     projectedForce = new AtomMatrix *[images+2];
     extremumPosition = new double[2*(images+1)];
     extremumEnergy = new double[2*(images+1)];
+    numExtrema = 0;
 
     log("\nNEB: initialize\n");
     for(long i=0; i<=images+1; i++)
@@ -368,9 +369,9 @@ void NudgedElasticBand::findExtrema(void)
 
     // finding extrema along the MEP
 
-    long numExtrema = 0;
-    double extremaEnergy[2*(images+1)]; // the maximum number of extrema
-    double extremaPosition[2*(images+1)];
+//    long numExtrema = 0;
+//    double extremaEnergy[2*(images+1)]; // the maximum number of extrema
+//    double extremaPosition[2*(images+1)];
     double descriminant, f;
 
     for(long i=0; i<=images; i++)
@@ -388,8 +389,8 @@ void NudgedElasticBand::findExtrema(void)
                 f = -(c[i] + sqrt(descriminant))/(3.*d[i]);
             }
             if( (f >= 0) && (f <= 1) ) {
-                extremaPosition[numExtrema] = i + f;
-                extremaEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                extremumPosition[numExtrema] = i + f;
+                extremumEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
                 numExtrema ++;
             }
             // cubic case 2
@@ -397,8 +398,8 @@ void NudgedElasticBand::findExtrema(void)
                 f = ( -(c[i] - sqrt(descriminant))/(3.*d[i]) );
             }
             if( (f >= 0) && (f <= 1) ) {
-                extremaPosition[numExtrema] = i + f;
-                extremaEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                extremumPosition[numExtrema] = i + f;
+                extremumEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
                 numExtrema ++;
             }
         }
@@ -407,6 +408,6 @@ void NudgedElasticBand::findExtrema(void)
     log("\nFound %li extrema\n",numExtrema);
     log("Energy reference: %f\n",image[0]->getPotentialEnergy());
     for(long i=0; i<numExtrema; i++) {
-        log(" %li at image position %f with energy %f\n",i,extremaPosition[i],extremaEnergy[i]-image[0]->getPotentialEnergy());
+        log(" %li at image position %f with energy %f\n",i,extremumPosition[i],extremumEnergy[i]-image[0]->getPotentialEnergy());
     }
 }
