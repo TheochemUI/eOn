@@ -87,6 +87,9 @@ public:
     long   saddleNonlocalCountAbort; // abort the search if this many atoms move more than NonlocalDistanceAbort
     double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort atoms move more than this distance
 
+    double saddleDynamicsTemperature; //temperature for dynamics saddle search method
+    double saddleDynamicsStateCheckInterval; //how often to minimize 
+
     bool   saddleConfinePositive; // undocumented
     double saddleConfinePositiveMinForce; // undocumented
     double saddleConfinePositiveScaleRatio; // undocumented
