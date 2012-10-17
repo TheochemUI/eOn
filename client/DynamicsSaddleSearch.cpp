@@ -29,12 +29,22 @@ int DynamicsSaddleSearch::run(void)
     log("Starting dynamics NEB saddle search\n");
 
     Dynamics dyn(saddle, parameters);
+    dyn.setTemperature(parameters->saddleDynamicsTemperature);
 
-    int checkInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
+    int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStepInput);
+
+    if (parameters->writeMovies == true) {
+        saddle->matter2con("dynamics", false);
+    }
 
     for (int i=0;i<parameters->mdSteps;i++) {
         dyn.oneStep();
-        if (i%checkInterval == 0) {
+
+        if (parameters->writeMovies == true) {
+            saddle->matter2con("dynamics", true);
+        }
+
+        if (i%checkInterval == 0 && i > 0) {
             log("Checking, step %i\n", i);
 
             *product = *saddle;
@@ -46,6 +56,11 @@ int DynamicsSaddleSearch::run(void)
                 NudgedElasticBand neb(reactant, product, parameters);
                 neb.compute();
                 *saddle = *neb.image[neb.climbingImage];
+
+                if (saddle->maxForce() > parameters->optConvergedForce) {
+                    log("CI-NEB did not converge to a saddle, force too big\n");
+                    return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                }
 
                 AtomMatrix mode;
                 mode = saddle->getPositions()- neb.image[neb.climbingImage-1]->getPositions();
@@ -68,6 +83,12 @@ int DynamicsSaddleSearch::run(void)
                 eigenvector = minModeMethod->getEigenvector();
                 log("eigenvalue: %.3f\n", eigenvalue);
                 delete minModeMethod;
+
+                if (eigenvalue > 0.0) {
+                    log("eigenvalue not negative\n");
+                    //XXX:error is not meaningful
+                    return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                }
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("Barrier of %.3f\n", barrier);
