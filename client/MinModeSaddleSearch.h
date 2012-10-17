@@ -11,6 +11,7 @@
 #ifndef MIN_MODE_SADDLE_SEARCH_H
 #define MIN_MODE_SADDLE_SEARCH_H
 
+#include "SaddleSearchMethod.h"
 #include "Matter.h"
 #include "LowestEigenmode.h"
 #include "Eigen.h"
@@ -18,7 +19,7 @@
 
 #include <string>
 
-class MinModeSaddleSearch
+class MinModeSaddleSearch : public SaddleSearchMethod
 {
 
 public:

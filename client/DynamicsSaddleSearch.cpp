@@ -3,21 +3,24 @@
 #include "Dynamics.h"
 #include "NudgedElasticBand.h"
 #include "MinModeSaddleSearch.h"
+#include "LowestEigenmode.h"
+#include "Dimer.h"
+#include "ImprovedDimer.h"
+#include "Lanczos.h"
 
 DynamicsSaddleSearch::DynamicsSaddleSearch(Matter *matterPassed, 
                                            Parameters *parametersPassed)
 {
-    reactant = matterPassed;
+    reactant = new Matter(parameters);
+    *reactant = *matterPassed;
     parameters = parametersPassed;
-    saddle = new Matter(parameters);
     product = new Matter(parameters);
-    *saddle = *reactant;
-    saddleSearch = NULL;
+    saddle = matterPassed;
 }
 
 DynamicsSaddleSearch::~DynamicsSaddleSearch()
 {
-    delete saddle;
+    delete reactant;
     delete product;
 }
 
@@ -27,10 +30,9 @@ int DynamicsSaddleSearch::run(void)
 
     Dynamics dyn(saddle, parameters);
 
-    int checkInterval = parameters->parrepStateCheckInterval;
-    int maxSteps = parameters->mdTime/parameters->mdTimeStepInput;
+    int checkInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
 
-    for (int i=0;i<maxSteps;i++) {
+    for (int i=0;i<parameters->mdSteps;i++) {
         dyn.oneStep();
         if (i%checkInterval == 0) {
             log("Checking, step %i\n", i);
@@ -49,25 +51,41 @@ int DynamicsSaddleSearch::run(void)
                 mode = saddle->getPositions()- neb.image[neb.climbingImage-1]->getPositions();
                 mode.normalize();
 
-                if (saddleSearch != NULL) {
-                    delete saddleSearch;
+                LowestEigenmode *minModeMethod;
+
+                if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+                    if (parameters->dimerImproved) {
+                        minModeMethod = new ImprovedDimer(saddle, parameters);
+                    }else{
+                        minModeMethod = new Dimer(saddle, parameters);
+                    }
+                }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+                    minModeMethod = new Lanczos(saddle, parameters);
                 }
-                saddleSearch = new MinModeSaddleSearch(saddle, mode, 
-                                                       reactant->getPotentialEnergy(),
-                                                       parameters);
-                saddleSearch->run();
+
+                minModeMethod->compute(saddle, mode);
+                eigenvalue = minModeMethod->getEigenvalue();
+                eigenvector = minModeMethod->getEigenvector();
+                log("eigenvalue: %.3f\n", eigenvalue);
+                delete minModeMethod;
+
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("Barrier of %.3f\n", barrier);
-                return 0; 
+                return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
-                AtomMatrix mode;
-                mode = saddle->getPositions() - reactant->getPositions();
-                saddleSearch = new MinModeSaddleSearch(saddle, mode, 
-                                                       reactant->getPotentialEnergy(),
-                                                       parameters);
             }
         }
     }
-    return 1;
+    return MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS; 
+}
+
+double DynamicsSaddleSearch::getEigenvalue()
+{
+    return eigenvalue;
+}
+
+AtomMatrix DynamicsSaddleSearch::getEigenvector()
+{
+    return eigenvector;
 }

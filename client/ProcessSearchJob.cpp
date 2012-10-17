@@ -86,6 +86,8 @@ std::vector<std::string> ProcessSearchJob::run(void)
             mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
         saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
+    }else{
+        saddleSearch = new DynamicsSaddleSearch(saddle, parameters);
     }
 
     int status = doProcessSearch();
@@ -118,21 +120,7 @@ int ProcessSearchJob::doProcessSearch(void)
     f1 = Potential::fcalls;
 
     
-    if (parameters->saddleMethod == "min_mode") {
-        status = saddleSearch->run();
-    }else{
-        DynamicsSaddleSearch dynSearch(initial, parameters);
-        int dynSearchStatus = dynSearch.run();
-
-        *saddle = *dynSearch.saddle;
-        saddleSearch = dynSearch.saddleSearch;
-
-        if (dynSearchStatus != 0) {
-            status = MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
-        }else{
-            status = saddleSearch->status;
-        }
-    }
+    status = saddleSearch->run();
     fCallsSaddle += Potential::fcalls - f1;
 
     if (status != MinModeSaddleSearch::STATUS_GOOD) {
@@ -145,6 +133,7 @@ int ProcessSearchJob::doProcessSearch(void)
     AtomMatrix displacedPos;
 
     *min1 = *saddle;
+
     displacedPos = posSaddle - saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
     min1->setPositions(displacedPos);
 
