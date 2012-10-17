@@ -90,6 +90,8 @@ Parameters::Parameters(){
     saddleConfinePositiveScaleRatio = 0.9; // undocumented
     saddleConfinePositiveBoost = 10.; // undocumented
     saddleConfinePositiveMinActive = 30; // undocumented
+    saddleDynamicsTemperature = 0.0; //set later
+    saddleDynamicsStateCheckInterval = 0.0; //set later
 
     // [Optimizers] //
     optMethod = "cg";
@@ -306,35 +308,6 @@ int Parameters::load(FILE *file){
         optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent", optQMSteepestDecent);
         optCGNoOvershooting = ini.GetValueB("Optimizer", "cg_no_overshooting", optCGNoOvershooting);
 
-        // [Saddle Search] //
-
-        saddleMethod = toLowerCase(ini.GetValue("Saddle Search", "method", saddleMethod));
-        saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", saddleMinmodeMethod));
-        saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
-        saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
-        saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
-        saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
-        saddleNonnegativeDisplacementAbort = ini.GetValueB("Saddle Search", "nonnegative_displacement_abort", saddleNonnegativeDisplacementAbort); 
-        saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
-        // must be loaded after optConvergedForce
-        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce); 
-        saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
-        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
-        saddleNonlocalCountAbort = ini.GetValueL("Saddle Search", "nonlocal_count_abort", saddleNonlocalCountAbort); // undocumented
-        saddleNonlocalDistanceAbort = ini.GetValueF("Saddle Search", "nonlocal_distance_abort", saddleNonlocalDistanceAbort); // undocumented
-        if(saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
-           saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED &&
-           saddleDisplaceType != EpiCenters::DISP_LAST_ATOM &&
-           saddleDisplaceType != EpiCenters::DISP_RANDOM) {
-              saddleDisplaceType = EpiCenters::DISP_LOAD;
-        }
-        saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
-        if(saddleConfinePositive) {
-            saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
-            saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
-            saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_scale_boost", saddleConfinePositiveBoost);
-            saddleConfinePositiveMinActive = ini.GetValueL("Saddle Search", "confine_positive_scale_min_active", saddleConfinePositiveMinActive);            
-        }
 
         // [Dimer] //
 
@@ -425,6 +398,41 @@ int Parameters::load(FILE *file){
         bondBoostPRR = ini.GetValueF("Hyperdynamics", "bb_ds_curvature", bondBoostPRR );
         bondBoostQcut = ini.GetValueF("Hyperdynamics", "bb_rcut", bondBoostQcut);
         biasPotential = toLowerCase(ini.GetValue("Hyperdynamics", "bias_potential", biasPotential));
+
+        // [Saddle Search] //
+
+        saddleMethod = toLowerCase(ini.GetValue("Saddle Search", "method", saddleMethod));
+        saddleMinmodeMethod = toLowerCase(ini.GetValue("Saddle Search", "min_mode_method", saddleMinmodeMethod));
+        saddleDisplaceMagnitude = ini.GetValueF("Saddle Search", "displace_magnitude", saddleDisplaceMagnitude);
+        saddleDisplaceRadius = ini.GetValueF("Saddle Search", "displace_radius", saddleDisplaceRadius);
+        saddleMaxEnergy = ini.GetValueF("Saddle Search", "max_energy", saddleMaxEnergy);
+        saddleMaxIterations = ini.GetValueL("Saddle Search", "max_iterations", optMaxIterations);
+        saddleNonnegativeDisplacementAbort = ini.GetValueB("Saddle Search", "nonnegative_displacement_abort", saddleNonnegativeDisplacementAbort); 
+        saddleMaxSingleDisplace = ini.GetValueF("Saddle Search", "max_single_displace", saddleMaxSingleDisplace);
+        // must be loaded after optConvergedForce
+        saddleConvergedForce = ini.GetValueF("Saddle Search", "converged_force", optConvergedForce); 
+        saddlePerpForceRatio = ini.GetValueF("Saddle Search", "perp_force_ratio", saddlePerpForceRatio); // undocumented
+        saddleDisplaceType = toLowerCase(ini.GetValue("Saddle Search", "client_displace_type", EpiCenters::DISP_LOAD));
+        saddleNonlocalCountAbort = ini.GetValueL("Saddle Search", "nonlocal_count_abort", saddleNonlocalCountAbort); // undocumented
+        saddleNonlocalDistanceAbort = ini.GetValueF("Saddle Search", "nonlocal_distance_abort", saddleNonlocalDistanceAbort); // undocumented
+        if(saddleDisplaceType != EpiCenters::DISP_NOT_FCC_OR_HCP &&
+           saddleDisplaceType != EpiCenters::DISP_MIN_COORDINATED &&
+           saddleDisplaceType != EpiCenters::DISP_LAST_ATOM &&
+           saddleDisplaceType != EpiCenters::DISP_RANDOM) {
+              saddleDisplaceType = EpiCenters::DISP_LOAD;
+        }
+        saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
+        if(saddleConfinePositive) {
+            saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
+            saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
+            saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_scale_boost", saddleConfinePositiveBoost);
+            saddleConfinePositiveMinActive = ini.GetValueL("Saddle Search", "confine_positive_scale_min_active", saddleConfinePositiveMinActive);            
+        }
+
+        saddleDynamicsTemperature = temperature;
+        saddleDynamicsStateCheckInterval = mdTime;
+        saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
+        saddleDynamicsStateCheckInterval = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckInterval);
 
         // [Basin Hopping] //
 
