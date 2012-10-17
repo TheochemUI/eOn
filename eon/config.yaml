@@ -663,7 +663,7 @@ AKMC:
 
         confidence_scheme:
             kind: string
-            default: new
+            default: old
             values:
                 - new
                 - old
