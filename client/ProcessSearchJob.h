@@ -31,7 +31,7 @@ class ProcessSearchJob : public Job {
         std::vector<std::string> returnFiles;
 
         Parameters *parameters;
-        MinModeSaddleSearch *saddleSearch; 
+        SaddleSearchMethod *saddleSearch; 
         Matter *initial;      // initial configuration.
         Matter *saddle;       // configuration used during the saddle point search.
         Matter *displacement; // configuration used during the saddle point search.
