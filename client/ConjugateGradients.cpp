@@ -60,12 +60,13 @@ bool ConjugateGradients::step(double maxMove)
     double projectedForce2 = forceAfterStep.dot(directionNorm);
     double curvature = (projectedForce1 - projectedForce2) / parameters->finiteDifference;
 
-    double stepSize = 100.0;
+    double stepSize = maxMove;
 
     if(curvature > 0.0)
     {
         stepSize = projectedForce1 / curvature;
     }
+    
     if (!parameters->optCGNoOvershooting)
     {
         pos += helper_functions::maxAtomMotionAppliedV(stepSize * directionNorm, maxMove);
@@ -87,14 +88,20 @@ bool ConjugateGradients::step(double maxMove)
             {
                 forceChange = (projectedForce1 - projectedForce2);
                 stepSize = (projectedForce1 / forceChange) * stepSize;
-                
-                // knockout old search direction
-                directionOld = objf->getPositions() * 0.0;
-                
-//                passedMinimum = 1.;
             }
         }
     }
+    
+    if (parameters->optCGKnockOutMaxMove)
+    {
+        if (stepSize == maxMove)
+        {
+            // knockout old search direction
+            directionOld = objf->getPositions() * 0.0;
+            std::cout<<"knock_out\n";
+        }
+    }
+
     return objf->isConverged();
 }
 
