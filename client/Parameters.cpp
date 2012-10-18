@@ -104,6 +104,7 @@ Parameters::Parameters(){
     optLBFGSInverseCurvature = 0.1;
     optQMSteepestDecent = false;
     optCGNoOvershooting = false;
+    optCGKnockOutMaxMove = false;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
@@ -307,7 +308,7 @@ int Parameters::load(FILE *file){
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
         optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent", optQMSteepestDecent);
         optCGNoOvershooting = ini.GetValueB("Optimizer", "cg_no_overshooting", optCGNoOvershooting);
-
+        optCGKnockOutMaxMove = ini.GetValueB("Optimizer", "cg_knock_out_max_move", optCGKnockOutMaxMove);
 
         // [Dimer] //
 
