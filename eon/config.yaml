@@ -1035,6 +1035,9 @@ Optimizer:
         cg_no_overshooting:
             kind: bool
             default: False
-            
+
+        cg_knock_out_max_move:
+            kind: bool
+            default: False
 
         
