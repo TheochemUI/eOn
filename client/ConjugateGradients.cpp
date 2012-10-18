@@ -90,6 +90,8 @@ bool ConjugateGradients::step(double maxMove)
                 
                 // knockout old search direction
                 directionOld = objf->getPositions() * 0.0;
+                
+//                passedMinimum = 1.;
             }
         }
     }
