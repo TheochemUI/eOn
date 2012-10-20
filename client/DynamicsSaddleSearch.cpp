@@ -1,6 +1,7 @@
 #include "DynamicsSaddleSearch.h"
 #include "Log.h"
 #include "Dynamics.h"
+#include "BondBoost.h"
 #include "NudgedElasticBand.h"
 #include "MinModeSaddleSearch.h"
 #include "LowestEigenmode.h"
@@ -30,6 +31,12 @@ int DynamicsSaddleSearch::run(void)
 
     Dynamics dyn(saddle, parameters);
     dyn.setTemperature(parameters->saddleDynamicsTemperature);
+    dyn.setThermalVelocity();
+
+    BondBoost bondBoost(saddle, parameters);
+    if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
+        bondBoost.initialize();
+    }
 
     int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStepInput);
 
