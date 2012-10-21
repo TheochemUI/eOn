@@ -75,12 +75,11 @@ int DynamicsSaddleSearch::run(void)
                 product->relax(false, false);
 
                 NudgedElasticBand neb(reactant, product, parameters);
-                product->matter2con("new_product.con");
-                for (int i=0;i<=neb.images;i++) {
-                    char name[128];
-                    snprintf(name, 128, "neb_%i.con", i);
-                    neb.image[i]->matter2con(name);
-                }
+                //for (int i=0;i<=neb.images;i++) {
+                //    char name[128];
+                //    snprintf(name, 128, "neb_%i.con", i);
+                //    neb.image[i]->matter2con(name);
+                //}
                 neb.compute();
                 *saddle = *neb.image[neb.climbingImage];
 
