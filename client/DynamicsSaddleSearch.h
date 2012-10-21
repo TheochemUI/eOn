@@ -5,6 +5,7 @@
 #include "Matter.h"
 #include "SaddleSearchMethod.h"
 #include "MinModeSaddleSearch.h"
+#include <vector>
 
 class DynamicsSaddleSearch : public SaddleSearchMethod
 {
@@ -15,6 +16,8 @@ class DynamicsSaddleSearch : public SaddleSearchMethod
         int run(void);
         double getEigenvalue();
         AtomMatrix getEigenvector();
+
+        int refineTransition(std::vector<Matter*>);
 
         double eigenvalue;
         AtomMatrix eigenvector;

@@ -89,6 +89,7 @@ public:
 
     double saddleDynamicsTemperature; //temperature for dynamics saddle search method
     double saddleDynamicsStateCheckInterval; //how often to minimize 
+    double saddleDynamicsRecordInterval;
 
     bool   saddleConfinePositive; // undocumented
     double saddleConfinePositiveMinForce; // undocumented

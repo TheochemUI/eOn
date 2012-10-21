@@ -434,6 +434,8 @@ int Parameters::load(FILE *file){
         saddleDynamicsStateCheckInterval = mdTime;
         saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
         saddleDynamicsStateCheckInterval = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckInterval);
+        saddleDynamicsRecordInterval = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordInterval);
+
 
         // [Basin Hopping] //
 
