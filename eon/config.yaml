@@ -11,6 +11,7 @@ Main:
             values:
                 - finite_difference
                 - parallel_replica
+                - unbiased_parallel_replica
                 - escape_rate
                 - saddle_search
                 - minimization
@@ -157,7 +158,7 @@ Paths:
 
 ################################################################################
 
-NEB:
+Nudged Elastic Band:
 
     options:
 
@@ -180,6 +181,10 @@ NEB:
         opt_method:
             kind: string
             default: OPT_CG
+
+        max_iterations:
+            kind: int
+            default: 5
 
 ################################################################################
 
@@ -925,6 +930,18 @@ Saddle Search:
         confine_positive_min_active:
             kind: int
             default: 30
+
+        dynamics_temperature:
+            kind: float
+            default: 300
+
+        dynamics_state_check_interval:
+            kind: float
+            default: 100
+
+        dynamics_record_interval:
+            kind: float
+            default: 10
 
 ################################################################################
 
