@@ -20,6 +20,7 @@
 #include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
 #include "potentials/LennardJones/LJ.h"
+#include "potentials/LennardJonesCluster/LJCluster.h"
 #include "potentials/SW/SW.h"
 #include "potentials/Tersoff/Tersoff.h"
 #include "potentials/Aluminum/Aluminum.h"
@@ -65,6 +66,7 @@
 #include <cstdlib>
 
 const char Potential::POT_LJ[] =          "lj";
+const char Potential::POT_LJCLUSTER[] =   "lj_cluster";
 const char Potential::POT_IMD[] =         "imd";
 const char Potential::POT_EAM_AL[] =      "eam_al";
 const char Potential::POT_MORSE_PT[] =    "morse_pt";
@@ -96,6 +98,8 @@ Potential *Potential::getPotential(Parameters *parameters)
     }
     if(parameters->potential == POT_LJ)
         pot = new LJ();
+    else if(parameters->potential == POT_LJCLUSTER)
+        pot = new LJCluster();
     else if(parameters->potential == POT_IMD)
         pot = new IMD();
     else if(parameters->potential == POT_MORSE_PT)
