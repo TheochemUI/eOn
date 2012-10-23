@@ -23,6 +23,7 @@ class Potential
         virtual ~Potential(){}
 
         static const char POT_LJ[];
+        static const char POT_LJCLUSTER[];
         static const char POT_IMD[];
         static const char POT_EAM_AL[];
         static const char POT_MORSE_PT[];
