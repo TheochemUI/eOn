@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <unistd.h>
 
 using namespace std;
 
