@@ -288,32 +288,41 @@ void NudgedElasticBand::updateForces(void)
         // project the forces and add springs
         force = image[i]->getForces();
 
+        // calculate the force perpendicular to the tangent
+        forcePerp = force - (force.cwise() * *tangent[i]).sum() * *tangent[i];
+        forceSpring = parameters->nebSpring * image[i]->pbc((posNext - pos) - (pos - posPrev));
+
+        // calculate the spring force
+        distPrev = image[i]->pbc(posPrev - pos).squaredNorm();
+        distNext = image[i]->pbc(posNext - pos).squaredNorm();
+        forceSpringPar = parameters->nebSpring * (distNext-distPrev) * *tangent[i];
+
+        if (parameters->nebDoublyNudged) {
+            forceSpringPerp = forceSpring - (forceSpring.cwise() * *tangent[i]).sum() * *tangent[i];
+            forceDNEB = forceSpringPerp - (forceSpringPerp.cwise() * forcePerp.normalized()).sum() * forcePerp.normalized();
+            if (parameters->nebDoublyNudgedSwitching) {
+                double switching;
+                switching = 2.0/M_PI * atan(pow(forcePerp.norm(),2) / pow(forceSpringPerp.norm(),2)); 
+                forceDNEB *= switching;
+            }
+        }else{
+            forceDNEB.setZero();
+        }
+
+
         if(parameters->nebClimbingImageMethod && i==maxEnergyImage)
         {
             // we are at the climbing image
             climbingImage = maxEnergyImage;
-            *projectedForce[i] = force - 2.0 * (force.cwise() * *tangent[i]).sum() * *tangent[i];
+            *projectedForce[i] = force - (2.0 * (force.cwise() * *tangent[i]).sum() * *tangent[i]) + forceDNEB;
         }
         else  // all non-climbing images
         {
-            // calculate the force perpendicular to the tangent
-            forcePerp = force - (force.cwise() * *tangent[i]).sum() * *tangent[i];
-            forceSpring = parameters->nebSpring * image[i]->pbc((posNext - pos) - (pos - posPrev));
-
-            // calculate the spring force
-            distPrev = image[i]->pbc(posPrev - pos).squaredNorm();
-            distNext = image[i]->pbc(posNext - pos).squaredNorm();
-            forceSpringPar = parameters->nebSpring * (distNext-distPrev) * *tangent[i];
-
-            if (parameters->nebDoublyNudged) {
-                forceSpringPerp = forceSpring - (forceSpring.cwise() * *tangent[i]).sum() * *tangent[i];
-                forceDNEB = forceSpringPerp - (forceSpringPerp.cwise() * forcePerp.normalized()).sum() * forcePerp.normalized();
-            }else{
-                forceDNEB.setZero();
-            }
-
             // sum the spring and potential forces for the neb force
             *projectedForce[i] = (forceSpringPar + forcePerp + forceDNEB);
+
+            //if (parameters->nebFullSpring) {
+
 
             movedAfterForceCall = false;  // so that we don't repeat a force call
         }

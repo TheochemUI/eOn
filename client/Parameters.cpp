@@ -130,6 +130,8 @@ Parameters::Parameters(){
     nebClimbingImageMethod = true;
     nebOldTangent = false;
     nebMaxIterations = 1000;
+    nebDoublyNudged = false;
+    nebDoublyNudgedSwitching = false;
 
     // [Dynamics] //
     mdTimeStepInput = 1.0;
@@ -350,6 +352,8 @@ int Parameters::load(FILE *file){
         nebClimbingImageMethod = ini.GetValueB("Nudged Elastic Band", "climbing_image_method", nebClimbingImageMethod);
         nebOldTangent = ini.GetValueB("Nudged Elastic Band", "old_tangent", nebOldTangent);
         nebMaxIterations = ini.GetValueL("Nudged Elastic Band", "max_iterations", optMaxIterations);
+        nebDoublyNudged = ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
+        nebDoublyNudgedSwitching = ini.GetValueB("Nudged Elastic Band", "doubly_nudged_switching", nebDoublyNudgedSwitching);
 
         // [Dynamics] //
 
