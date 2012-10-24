@@ -145,6 +145,8 @@ public:
     double nebSpring;
     bool   nebClimbingImageMethod;
     bool   nebOldTangent;
+    bool   nebDoublyNudged;
+    bool   nebDoublyNudgedSwitching;
     string nebOptMethod;
 
     // [Molecular Dynamics]
