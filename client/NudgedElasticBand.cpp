@@ -153,11 +153,18 @@ int NudgedElasticBand::compute(void)
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
-    log("\niteration     force     cimage\n");
-    log("------------------------------\n");
+    log("%10s %12s %11s %12s\n", "iteration", "force", "max image", "max energy");
+    log("-------------------------------------------\n");
+
+    char fmt[] = "%10li %12.4f %11li %12.4f\n";
 
     while (!objf.isConverged())
     {
+        if (parameters->writeMovies) {
+            bool append = true;
+            if (iteration == 0) append = false;
+            image[maxEnergyImage]->matter2con("neb_maximage.con", append);
+        }
         if(iteration) { // so that we print forces before taking an optimizer step
             if (iteration >= parameters->nebMaxIterations) {
                 status = STATUS_BAD_MAX_ITERATIONS;
@@ -167,12 +174,9 @@ int NudgedElasticBand::compute(void)
         }
         iteration++;
 
-        log(" %7li  %10.4f",iteration,convergenceForce());
-        if( parameters->nebClimbingImageMethod ) {
-            log("     %4li\n",climbingImage);
-        } else {
-            log("      - \n");
-        }
+        double dE = image[maxEnergyImage]->getPotentialEnergy() - 
+                    image[0]->getPotentialEnergy();
+        log(fmt, iteration, convergenceForce(), maxEnergyImage, dE);
     }
 
     if(objf.isConverged()) {
@@ -214,11 +218,11 @@ void NudgedElasticBand::updateForces(void)
 
     // variables for climbing image
     double maxEnergy;
-    long maxEnergyImage;
 
     // variables for force projections
     AtomMatrix force(atoms,3), forcePerp(atoms,3), forcePar(atoms,3);
-    AtomMatrix forceSpringPar(atoms,3);
+    AtomMatrix forceSpringPar(atoms,3), forceSpring(atoms,3), forceSpringPerp(atoms,3);
+    AtomMatrix forceDNEB(atoms, 3);
     AtomMatrix pos(atoms,3), posNext(atoms,3), posPrev(atoms,3);
     double distNext, distPrev;
 
@@ -294,14 +298,22 @@ void NudgedElasticBand::updateForces(void)
         {
             // calculate the force perpendicular to the tangent
             forcePerp = force - (force.cwise() * *tangent[i]).sum() * *tangent[i];
+            forceSpring = parameters->nebSpring * image[i]->pbc((posNext - pos) - (pos - posPrev));
 
             // calculate the spring force
             distPrev = image[i]->pbc(posPrev - pos).squaredNorm();
             distNext = image[i]->pbc(posNext - pos).squaredNorm();
             forceSpringPar = parameters->nebSpring * (distNext-distPrev) * *tangent[i];
 
+            if (parameters->nebDoublyNudged) {
+                forceSpringPerp = forceSpring - (forceSpring.cwise() * *tangent[i]).sum() * *tangent[i];
+                forceDNEB = forceSpringPerp - (forceSpringPerp.cwise() * forcePerp.normalized()).sum() * forcePerp.normalized();
+            }else{
+                forceDNEB.setZero();
+            }
+
             // sum the spring and potential forces for the neb force
-            *projectedForce[i] = (forceSpringPar + forcePerp);
+            *projectedForce[i] = (forceSpringPar + forcePerp + forceDNEB);
 
             movedAfterForceCall = false;  // so that we don't repeat a force call
         }

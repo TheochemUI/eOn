@@ -167,8 +167,8 @@ Nudged Elastic Band:
             default: 5
 
         spring:
-            kind: boolean
-            default: True
+            kind: float
+            default: 5.0
 
         climbing_image_method:
             kind: boolean
@@ -185,6 +185,10 @@ Nudged Elastic Band:
         max_iterations:
             kind: int
             default: 5
+
+        doubly_nudged:
+            kind: boolean
+            default: false
 
 ################################################################################
 
