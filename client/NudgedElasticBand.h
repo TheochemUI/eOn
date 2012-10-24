@@ -53,6 +53,8 @@ public:
     double *extremumEnergy;
     double *extremumPosition;
 
+    long maxEnergyImage;
+
 private:
 
     Parameters *parameters;
