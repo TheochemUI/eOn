@@ -63,6 +63,7 @@ Potential:
                 - lenosky_Si
                 - sw_si
                 - lj
+                - lj_cluster
                 - edip
                 - morse_pt
                 - zpice
