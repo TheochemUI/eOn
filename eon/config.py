@@ -258,6 +258,7 @@ def init(config_file = ""):
     # Saddle Search options
     config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
     config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight')
+    config.displace_not_TCP_BCC_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_BCC_weight')
     config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight')
     config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight')
     config.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
