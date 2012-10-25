@@ -440,7 +440,6 @@ def cna(p, cutoff, brute=False):
                         if a3 == nl_a2[m2]:
                             common.append(a3)
                 # determines the connectivity of common neighbors
-                print len(common)
                 if len(common) == 4:
                     bonds_nr = 0
                     bonds_sum = 0
