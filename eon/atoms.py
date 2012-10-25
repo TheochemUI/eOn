@@ -440,6 +440,7 @@ def cna(p, cutoff, brute=False):
                         if a3 == nl_a2[m2]:
                             common.append(a3)
                 # determines the connectivity of common neighbors
+                print len(common)
                 if len(common) == 4:
                     bonds_nr = 0
                     bonds_sum = 0
@@ -523,7 +524,7 @@ def cnat(p, cutoff, brute=False):
                         nr_6[a1] += 1
                         nr_6[a2] += 1
 
-    # 1: CN12, 2: CN14, 3: CN15, 4: CN16, 0: other
+    # 1: CN12, 2: CN14, 3: CN15, 4: CN16, 5: BCC, 0: other
     for i in range(len(p)):
         if nr_5[i] == 12:
             if len(nl[i]) == 12:
@@ -534,18 +535,28 @@ def cnat(p, cutoff, brute=False):
                 can_values[i] = 3
             if (len(nl[i]) == 16) and (nr_6[i] == 4):
                 can_values[i] = 4
+        if nr_5[i] == 0:
+            if nr_6[i] == 8 and len(nl[i]) == 14:
+                can_values[i] = 5
     return can_values
 
 def not_TCP(p, cutoff, brute=False):
     """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
     cna_numbers = cnat(p, cutoff, brute)
-    #print cna_numbers
+    for i in range(len(cna_numbers)):
+        if cna_numbers[i] == 0 or cna_numbers[i] == 5:
+            not_cna.append(i)
+    return not_cna
+
+def not_TCP_or_BCC(p, cutoff, brute=False):
+    """ Returns a list of indices for the atoms with cna = 0 """
+    not_cna = []
+    cna_numbers = cnat(p, cutoff, brute)
     for i in range(len(cna_numbers)):
         if cna_numbers[i] == 0:
             not_cna.append(i)
     return not_cna
-# ### TShacked end
 
 
 import sys
