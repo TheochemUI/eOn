@@ -850,6 +850,10 @@ Saddle Search:
             kind: float
             default: 0.0
 
+        displace_not_TCP_BCC_weight:
+            kind: float
+            default: 0.0
+
         displace_not_TCP_weight:
             kind: float
             default: 0.0
