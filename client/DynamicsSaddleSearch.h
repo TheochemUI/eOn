@@ -17,7 +17,7 @@ class DynamicsSaddleSearch : public SaddleSearchMethod
         double getEigenvalue();
         AtomMatrix getEigenvector();
 
-        int refineTransition(std::vector<Matter*>);
+        int refineTransition(std::vector<Matter*>, Matter *product);
 
         double eigenvalue;
         AtomMatrix eigenvector;
