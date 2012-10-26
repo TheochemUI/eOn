@@ -92,6 +92,7 @@ Parameters::Parameters(){
     saddleConfinePositiveMinActive = 30; // undocumented
     saddleDynamicsTemperature = 0.0; //set later
     saddleDynamicsStateCheckInterval = 0.0; //set later
+    saddleDynamicsLinearInterpolation = false;
 
     // [Optimizers] //
     optMethod = "cg";
@@ -439,6 +440,7 @@ int Parameters::load(FILE *file){
         saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
         saddleDynamicsStateCheckInterval = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckInterval);
         saddleDynamicsRecordInterval = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordInterval);
+        saddleDynamicsLinearInterpolation = ini.GetValueB("Saddle Search", "dynamics_linear_interpolation", saddleDynamicsLinearInterpolation);
 
 
         // [Basin Hopping] //

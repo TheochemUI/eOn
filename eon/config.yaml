@@ -956,6 +956,10 @@ Saddle Search:
             kind: float
             default: 10
 
+        dynamics_linear_interpolation:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 Coarse Graining:
