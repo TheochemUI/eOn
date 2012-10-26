@@ -319,7 +319,10 @@ void NudgedElasticBand::updateForces(void)
         else  // all non-climbing images
         {
             // sum the spring and potential forces for the neb force
-            *projectedForce[i] = (forceSpringPar + forcePerp + forceDNEB);
+            *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
+            //*projectedForce[i] = forceSpring + force;
+            //*projectedForce[i] = forceSpring + forcePerp;
+
 
             //if (parameters->nebFullSpring) {
 
@@ -331,7 +334,7 @@ void NudgedElasticBand::updateForces(void)
 }
 
 // Print NEB image data
-void NudgedElasticBand::printImageData(void)
+void NudgedElasticBand::printImageData(bool writeToFile)
 {
     double dist, distTotal=0;
     AtomMatrix tangentStart = image[0]->pbc(image[1]->getPositions() - image[0]->getPositions());
@@ -339,6 +342,11 @@ void NudgedElasticBand::printImageData(void)
     AtomMatrix tang;
 
     log("Image data (as in neb.dat)\n");
+
+    FILE *fh=NULL;
+    if (writeToFile) {
+        fh = fopen("neb.dat", "w");
+    }
 
     for(long i=0; i<=images+1; i++)
     {
@@ -349,8 +357,13 @@ void NudgedElasticBand::printImageData(void)
             dist = image[i]->distanceTo(*image[i-1]);
             distTotal += dist;
         }
-        log("%3i %12.6f %12.6f %12.6f\n",i,distTotal,
-            image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
+        if (fh == NULL) {
+            log("%3li %12.6f %12.6f %12.6f\n",i,distTotal,
+                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
+        }else{
+            fprintf(fh, "%3li %12.6f %12.6f %12.6f\n",i,distTotal,
+                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
+        }
     }
 }
 
