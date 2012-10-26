@@ -176,7 +176,6 @@ int MinModeSaddleSearch::run()
         AtomMatrix pos = matter->getPositions();
 
         optimizer->step(parameters->optMaxMove);
-        iteration++;
 
         double de = objf.getEnergy()-reactantEnergy;
         double stepSize = (matter->pbc(matter->getPositions() - pos )).norm();
@@ -185,21 +184,24 @@ int MinModeSaddleSearch::run()
             status = STATUS_BAD_HIGH_ENERGY;
             break;
         }
-            if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
-            {
-                log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.4f   %7.3f   %6.3f   %4ld\n",
-                            iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
-                            matter->maxForce(),
-                            minModeMethod->getEigenvalue(),
-                            minModeMethod->statsTorque,
-                            minModeMethod->statsAngle,
-                            minModeMethod->statsRotations);
-            }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-                log("[Lanczos]  %9ld  % 9.6f   %10.4f  %9.5f  %9.5f\n", 
-                    iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
-                    matter->maxForce(),
-                    minModeMethod->getEigenvalue());
-            }
+        
+        iteration++;
+
+        if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
+        {
+            log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.4f   %7.3f   %6.3f   %4ld\n",
+                        iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
+                        matter->maxForce(),
+                        minModeMethod->getEigenvalue(),
+                        minModeMethod->statsTorque,
+                        minModeMethod->statsAngle,
+                        minModeMethod->statsRotations);
+        }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+            log("[Lanczos]  %9ld  % 9.6f   %10.4f  %9.5f  %9.5f\n", 
+                iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
+                matter->maxForce(),
+                minModeMethod->getEigenvalue());
+        }
 
         if (parameters->writeMovies) {
             matter->matter2con(climb.str(), true);
@@ -213,6 +215,8 @@ int MinModeSaddleSearch::run()
             fclose(fileMode);
         }
     }
+
+    if (iteration == 0) minModeMethod->compute(matter, mode);
 
     delete optimizer;
 

@@ -36,6 +36,17 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     string reactantFilename = helper_functions::getRelevantFile("reactant.con");
     string productFilename = helper_functions::getRelevantFile("product.con");
 
+    string transitionStateFilename = helper_functions::getRelevantFile("ts.con");
+    Matter *transitionState = NULL;
+    bool tsInterpolate = false;
+    FILE *fhTransitionState = fopen("ts.con", "r");
+    if (fhTransitionState != NULL) {
+        tsInterpolate = true;
+        fclose(fhTransitionState);
+        transitionState = new Matter(parameters);
+        transitionState->con2matter(transitionStateFilename);
+    }
+
     Matter *initial = new Matter(parameters);
     Matter *final = new Matter(parameters);
 
@@ -43,6 +54,23 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     final->con2matter(productFilename);
 
     NudgedElasticBand *neb = new NudgedElasticBand(initial, final, parameters);
+
+    if (tsInterpolate) {
+        AtomMatrix reactantToTS = transitionState->pbc(transitionState->getPositions()  - initial->getPositions());
+        AtomMatrix TSToProduct  = transitionState->pbc(final->getPositions() - transitionState->getPositions());
+        for (int image=1;image<=neb->images;image++) {
+            int mid = neb->images/2 + 1;
+            if (image < mid) {
+                double frac = ((double)image) / ((double)mid);
+                neb->image[image]->setPositions(initial->getPositions() + frac * reactantToTS);
+            }else if (image > mid) {
+                double frac = (double)(image-mid) / (double)(neb->images - mid + 1);
+                neb->image[image]->setPositions(transitionState->getPositions() + frac * TSToProduct);
+            }else if (image == mid) {
+                neb->image[image]->setPositions(transitionState->getPositions());
+            }
+        }
+    }
 
     f1 = Potential::fcalls;
     status = neb->compute();
@@ -96,6 +124,9 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
         neb->image[i]->matter2con(fileNEB);
     }
     fclose(fileNEB);
+
+    returnFiles.push_back("neb.dat");
+    neb->printImageData(true);
 }
 
 void NudgedElasticBandJob::printEndState(int status)

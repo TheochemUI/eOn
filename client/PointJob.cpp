@@ -21,7 +21,7 @@ PointJob::~PointJob(){ }
 std::vector<std::string> PointJob::run(void)
 {
     std::vector<std::string> returnFiles;
-    string posInFilename("pos_in.con");
+    string posInFilename("pos.con");
     string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
 

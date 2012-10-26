@@ -17,6 +17,8 @@ DynamicsSaddleSearch::DynamicsSaddleSearch(Matter *matterPassed,
     parameters = parametersPassed;
     product = new Matter(parameters);
     saddle = matterPassed;
+    eigenvector.resize(reactant->numberOfAtoms(), 3);
+    eigenvector.setZero();
 }
 
 DynamicsSaddleSearch::~DynamicsSaddleSearch()
@@ -55,9 +57,9 @@ int DynamicsSaddleSearch::run(void)
             MDSnapshots.push_back(tmp);
         }
 
-        if (parameters->writeMovies == true) {
-            saddle->matter2con("dynamics", true);
-        }
+        //if (parameters->writeMovies == true) {
+        //    saddle->matter2con("dynamics", true);
+        //}
 
         if (i%checkInterval == 0 && i > 0) {
             log("Checking, step %i\n", i);
@@ -67,24 +69,46 @@ int DynamicsSaddleSearch::run(void)
 
             if (!product->compare(reactant)) {
                 log("Found new state\n");
-                int image = refineTransition(MDSnapshots);
+                int image = refineTransition(MDSnapshots, product);
+                *saddle = *MDSnapshots[image];
                 printf("Found trasition at image %i\n", image);
                 printf("Time %.2f fs\n", image * parameters->saddleDynamicsRecordInterval + 
                         parameters->mdTimeStepInput*(i%checkInterval));
-                *product = *MDSnapshots[image];
+
                 product->relax(false, false);
 
                 NudgedElasticBand neb(reactant, product, parameters);
-                //for (int i=0;i<=neb.images;i++) {
-                //    char name[128];
-                //    snprintf(name, 128, "neb_%i.con", i);
-                //    neb.image[i]->matter2con(name);
-                //}
-                neb.compute();
-                *saddle = *neb.image[neb.climbingImage];
+
+                if (parameters->saddleDynamicsLinearInterpolation == false) {
+                    AtomMatrix reactantToSaddle = saddle->pbc(saddle->getPositions()  - reactant->getPositions());
+                    AtomMatrix saddleToProduct  = saddle->pbc(product->getPositions() - saddle->getPositions());
+                    neb.image[0]->matter2con("neb_initial_band.con", false);
+                    for (int image=1;image<=neb.images;image++) {
+                        int mid = neb.images/2 + 1;
+                        if (image < mid) {
+                            double frac = ((double)image) / ((double)mid);
+                            neb.image[image]->setPositions(reactant->getPositions() + frac * reactantToSaddle);
+                        }else if (image > mid) {
+                            double frac = (double)(image-mid) / (double)(neb.images - mid + 1);
+                            neb.image[image]->setPositions(saddle->getPositions() + frac * saddleToProduct);
+                        }else if (image == mid) {
+                            neb.image[image]->setPositions(saddle->getPositions());
+                        }
+                        neb.image[image]->matter2con("neb_initial_band.con",true);
+                    }
+                    neb.image[neb.images+1]->matter2con("neb_initial_band.con",true);
+                }
+
+                if (parameters->nebMaxIterations > 0) {
+                    neb.compute();
+                    neb.printImageData(true);
+                    *saddle = *neb.image[neb.maxEnergyImage];
+                }else{
+                    neb.maxEnergyImage = neb.images/2 + 1;
+                }
 
                 AtomMatrix mode;
-                mode = saddle->getPositions()- neb.image[neb.climbingImage-1]->getPositions();
+                mode = saddle->getPositions()- neb.image[neb.maxEnergyImage-1]->getPositions();
                 mode.normalize();
 
 
@@ -109,7 +133,7 @@ int DynamicsSaddleSearch::run(void)
                 }
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
-                log("Barrier of %.3f\n", barrier);
+                log("found barrier of %.3f\n", barrier);
                 MDSnapshots.clear();
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
@@ -122,7 +146,7 @@ int DynamicsSaddleSearch::run(void)
     return MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS; 
 }
 
-int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots)
+int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Matter *product)
 {
     int min, max, mid;
     bool midTest;
@@ -131,14 +155,17 @@ int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots)
 
     while( (max-min) > 1 ) {
         mid = min + (max-min)/2;
-        Matter *snapshot = MDSnapshots[mid];
-        snapshot->relax(true);
+        Matter snapshot(parameters);
+        snapshot = *MDSnapshots[mid];
 
-        midTest = snapshot->compare(reactant);
+        snapshot.relax(true);
+
+        midTest = snapshot.compare(reactant);
 
         if (midTest){
             min = mid;
         } else {
+            *product = snapshot;
             max = mid;
         }
     }
