@@ -149,6 +149,7 @@ public:
     bool   nebDoublyNudged;
     bool   nebDoublyNudgedSwitching;
     string nebOptMethod;
+    bool   nebElasticBand;
 
     // [Molecular Dynamics]
     double mdTimeStepInput;
