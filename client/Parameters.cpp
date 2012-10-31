@@ -133,6 +133,7 @@ Parameters::Parameters(){
     nebMaxIterations = 1000;
     nebDoublyNudged = false;
     nebDoublyNudgedSwitching = false;
+    nebElasticBand = false;
 
     // [Dynamics] //
     mdTimeStepInput = 1.0;
@@ -355,6 +356,7 @@ int Parameters::load(FILE *file){
         nebMaxIterations = ini.GetValueL("Nudged Elastic Band", "max_iterations", optMaxIterations);
         nebDoublyNudged = ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
         nebDoublyNudgedSwitching = ini.GetValueB("Nudged Elastic Band", "doubly_nudged_switching", nebDoublyNudgedSwitching);
+        nebElasticBand = ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
 
         // [Dynamics] //
 

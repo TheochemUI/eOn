@@ -319,8 +319,11 @@ void NudgedElasticBand::updateForces(void)
         else  // all non-climbing images
         {
             // sum the spring and potential forces for the neb force
-            *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
-            //*projectedForce[i] = forceSpring + force;
+            if (parameters->nebElasticBand) {
+                *projectedForce[i] = forceSpring + force;
+            }else{
+                *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
+            }
             //*projectedForce[i] = forceSpring + forcePerp;
 
 
