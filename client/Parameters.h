@@ -70,6 +70,7 @@ public:
     // [Process Search] //
     bool   processSearchMinimizeFirst;
     double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
+    double processSearchMinimumDistance; // The minimum distance between product and reactant at which the process is valid
 
     // [Saddle Search]
     long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement

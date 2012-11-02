@@ -70,6 +70,7 @@ Parameters::Parameters(){
     // [Process Search] //
     processSearchMinimizeFirst = false;
     processSearchMinimizationOffset = 0.2;
+    processSearchMinimumDistance = 0.0;
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
@@ -300,6 +301,7 @@ int Parameters::load(FILE *file){
 
         processSearchMinimizeFirst = ini.GetValueB("Process Search", "minimize_first", processSearchMinimizeFirst);
         processSearchMinimizationOffset = ini.GetValueF("Process Search", "minimization_offset", processSearchMinimizationOffset);
+        processSearchMinimumDistance = ini.GetValueF("Process Search", "minimum_distance", processSearchMinimumDistance);
 
         // [Optimizers] //
 
