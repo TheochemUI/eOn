@@ -40,7 +40,7 @@ Main:
         quiet:
             kind: boolean
             default: False
-
+            
         max_force_calls:
             kind: int
             default: 0
@@ -258,7 +258,7 @@ Debug:
         write_movies_interval:
             kind: int
             default: 1
-
+            
 ################################################################################
 
 Structure Comparison:
@@ -592,6 +592,7 @@ Process Search:
             default: 0.0
 
 ################################################################################
+
 Prefactor:
 
     options:
@@ -765,7 +766,7 @@ Communicator:
         queued_jobs:
             kind: string
             default: queued_jobs.sh
-
+            
         script_path:
             kind: string
             default: ./
@@ -891,7 +892,7 @@ Saddle Search:
         nonlocal_count_abort:
             kind: int
             default: 0
-
+        
         nonlocal_distance_abort:
             kind: float
             default: 0.0
@@ -923,7 +924,7 @@ Saddle Search:
         displace_min_norm:
             kind: float
             default: 0.0
-
+            
         random_mode:
             kind: boolean
             default: True
@@ -1065,7 +1066,7 @@ Optimizer:
         lbfgs_inverse_curvature:
             kind: float
             default: 0.1
-
+        
         qm_steepest_descent:
             kind: bool
             default: False
@@ -1077,3 +1078,5 @@ Optimizer:
         cg_knock_out_max_move:
             kind: bool
             default: False
+
+        
