@@ -27,8 +27,8 @@ ProcessSearchJob::ProcessSearchJob (Parameters *params)
     fCallsSaddle = fCallsPrefactors = fCallsMin = 0;
 }
 
-ProcessSearchJob::~ProcessSearchJob(){    
-}
+ProcessSearchJob::~ProcessSearchJob()
+{}
 
 std::vector<std::string> ProcessSearchJob::run(void)
 {
@@ -178,10 +178,6 @@ int ProcessSearchJob::doProcessSearch(void)
         // both minima are the initial state
         log("both minima are the initial state");
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
-    }
-
-    if (initial->perAtomNorm(*min2) < parameters->processSearchMinimumDistance) {
-        return MinModeSaddleSearch::STATUS_BAD_TOO_CLOSE;
     }
 
     // use the structure passed to the client when determining 
@@ -334,9 +330,6 @@ void ProcessSearchJob::printEndState(int status)
 
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
         log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
-
-    else if(status == MinModeSaddleSearch::STATUS_BAD_TOO_CLOSE)
-        log("[SaddleSearch] Discovered minima were too close.\n");
 
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
