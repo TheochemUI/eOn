@@ -88,6 +88,7 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     projectedForce = new AtomMatrix *[images+2];
     extremumPosition = new double[2*(images+1)];
     extremumEnergy = new double[2*(images+1)];
+    extremumCurvature = new double[2*(images+1)];
     numExtrema = 0;
 
     log("\nNEB: initialize\n");
@@ -428,6 +429,7 @@ void NudgedElasticBand::findExtrema(void)
             if( (f >= 0) && (f <= 1) ) {
                 extremumPosition[numExtrema] = i + f;
                 extremumEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                extremumCurvature[numExtrema] = 6.0*d[i]*f + 2*c[i];
                 numExtrema ++;
             }
             // cubic case 2
@@ -437,6 +439,7 @@ void NudgedElasticBand::findExtrema(void)
             if( (f >= 0) && (f <= 1) ) {
                 extremumPosition[numExtrema] = i + f;
                 extremumEnergy[numExtrema] = d[i]*pow(f,3) + c[i]*pow(f,2) + b[i]*f + a[i];
+                extremumCurvature[numExtrema] = 6*d[i]*f + 2*c[i];
                 numExtrema ++;
             }
         }
@@ -445,6 +448,6 @@ void NudgedElasticBand::findExtrema(void)
     log("\nFound %li extrema\n",numExtrema);
     log("Energy reference: %f\n",image[0]->getPotentialEnergy());
     for(long i=0; i<numExtrema; i++) {
-        log(" %li at image position %f with energy %f\n",i,extremumPosition[i],extremumEnergy[i]-image[0]->getPotentialEnergy());
+        log(" %li at image position %f with energy %f and curvature %f\n",i,extremumPosition[i],extremumEnergy[i]-image[0]->getPotentialEnergy(), extremumCurvature[i]);
     }
 }

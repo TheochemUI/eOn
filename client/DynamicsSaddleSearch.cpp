@@ -75,7 +75,9 @@ int DynamicsSaddleSearch::run(void)
                 printf("Time %.2f fs\n", image * parameters->saddleDynamicsRecordInterval + 
                         parameters->mdTimeStepInput*(i%checkInterval));
 
-                product->relax(false, false);
+                if (product->compare(reactant)) {
+                    printf("THEY ARE THE SAME!?!?!?!\n");
+                }
 
                 NudgedElasticBand neb(reactant, product, parameters);
 
@@ -99,17 +101,46 @@ int DynamicsSaddleSearch::run(void)
                     neb.image[neb.images+1]->matter2con("neb_initial_band.con",true);
                 }
 
+                AtomMatrix mode;
                 if (parameters->nebMaxIterations > 0) {
                     neb.compute();
                     neb.printImageData(true);
-                    *saddle = *neb.image[neb.maxEnergyImage];
+                    int extremumImage = -1; 
+                    int j=0;
+                    for (j=0;j<neb.numExtrema;j++) {
+                        if (neb.extremumCurvature[j] < 0.0) { 
+                            extremumImage = floor(neb.extremumPosition[j]);
+                            log("chose image %i as extremum image\n", extremumImage);
+                            break;
+                        }
+                    }
+                    if (extremumImage != -1) {
+                        *saddle = *neb.image[extremumImage];
+                        double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
+                        log("interpDistance %f\n", interpDistance);
+                        AtomMatrix bandDirection = saddle->pbc(neb.image[extremumImage+1]->getPositions() - 
+                                                               neb.image[extremumImage]->getPositions());
+                        saddle->setPositions(interpDistance * bandDirection + saddle->getPositions());
+                        mode = saddle->pbc( neb.image[extremumImage+1]->getPositions() - saddle->getPositions());
+                        mode.normalize();
+                    }else{
+                        log("no maxima found, using max energy inside image\n");
+                        double maxEnergy=neb.image[1]->getPotentialEnergy();
+                        *saddle = *neb.image[1];
+                        for (int image=2;image<=neb.images;image++) {
+                            double U = neb.image[image]->getPotentialEnergy();
+                            if (U > maxEnergy) {
+                                maxEnergy = U;
+                                *saddle = *neb.image[image];
+                                mode = saddle->pbc(neb.image[image+1]->getPositions() - saddle->getPositions());
+                                mode.normalize();
+                            }
+                        }
+                    }
                 }else{
                     neb.maxEnergyImage = neb.images/2 + 1;
                 }
 
-                AtomMatrix mode;
-                mode = saddle->getPositions()- neb.image[neb.maxEnergyImage-1]->getPositions();
-                mode.normalize();
 
 
                 MinModeSaddleSearch search = MinModeSaddleSearch(saddle, 
@@ -164,7 +195,7 @@ int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Mat
 
         if (midTest){
             min = mid;
-        } else {
+        }else{
             *product = snapshot;
             max = mid;
         }
