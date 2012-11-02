@@ -195,6 +195,10 @@ Nudged Elastic Band:
             kind: boolean
             default: false
 
+        elastic_band:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 Distributed Replica:
