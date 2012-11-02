@@ -52,6 +52,7 @@ public:
     bool movedAfterForceCall;
     double *extremumEnergy;
     double *extremumPosition;
+    double *extremumCurvature;
 
     long maxEnergyImage;
 
