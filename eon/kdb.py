@@ -52,7 +52,7 @@ def query(state):
     os.makedirs(os.path.join(config.kdb_scratch_path, "kdbmatches"))
     kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
     if state.number == 0:
-        reactant = tsase.io.read_con(os.path.abspath(os.path.join(config.path_root, "reactant.con")))
+        reactant = tsase.io.read_con(os.path.abspath(os.path.join(config.path_root, "pos.con")))
     else:
         reactant = tsase.io.read_con(os.path.abspath(state.reactant_path))
     kdb.query(reactant, kdbpath, os.path.join(config.kdb_scratch_path, "kdbmatches"), nodupes = config.kdb_nodupes)
