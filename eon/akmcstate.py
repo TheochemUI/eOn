@@ -169,7 +169,7 @@ class AKMCState(state.State):
         #except:
         #    logger.warning("Failed to append search result.")
 
-    def get_ratetable(self):
+    def get_ratetable(self, filter_min_dist=True):
         """ Loads the process table if it has not been loaded and generates a rate table 
             according to kT and thermal_window. """
         self.load_process_table()
@@ -177,12 +177,18 @@ class AKMCState(state.State):
         table = []
         for id in self.procs.keys():
             proc = self.procs[id]
-            if proc['barrier'] < lowest + (self.statelist.kT * self.statelist.thermal_window):
-                table.append((id, proc['rate']))
+            if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
+                continue
+            if filter_min_dist and config.process_search_minimum_distance > 0.0:
+                react = self.get_process_reactant(id)
+                d = max(atoms.per_atom_norm(react.r - self.get_process_product(id).r, react.box))
+                if d < config.process_search_minimum_distance:
+                    continue
+            table.append((id, proc['rate']))
         return table
  
     def get_relevant_procids(self):
-        rt = self.get_ratetable()
+        rt = self.get_ratetable(False)
         rps = []
         for r in rt:
             rps.append(r[0])
@@ -210,7 +216,7 @@ class AKMCState(state.State):
             intersect the hole. """
         alpha = 1.0
         if config.akmc_confidence_correction:
-            rt = self.get_ratetable()
+            rt = self.get_ratetable(False)
             prc = self.get_proc_random_count()
             mn = 1e300
             mx = 0
@@ -223,7 +229,7 @@ class AKMCState(state.State):
             else:
                 alpha = float(mn)/mx
         if config.akmc_confidence_scheme == "new":
-            rt = self.get_ratetable()
+            rt = self.get_ratetable(False)
             prc = self.get_proc_random_count()
             Nf = 0.0
             Ns = 0.0
@@ -237,7 +243,7 @@ class AKMCState(state.State):
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
         elif config.akmc_confidence_scheme == "boltzmann":
-            rt = self.get_ratetable()
+            rt = self.get_ratetable(False)
             prc = self.get_proc_random_count()
             Nf = 0.0
             Ns = 0.0
@@ -377,8 +383,7 @@ class AKMCState(state.State):
                              "Failed Prefactor Calculation",
                              "Potential Failed",
                              "Nonnegative Displacement Abort",
-                             "Nonlocal abort",
-                             "Minima too close"]
+                             "Nonlocal abort"]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])
         if store:
