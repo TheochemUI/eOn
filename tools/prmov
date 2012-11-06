@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+st = sys.argv[1]
+pr = sys.argv[2]
+
+os.system('cat states/%s/procdata/reactant_%s.con states/%s/procdata/saddle_%s.con states/%s/procdata/product_%s.con > temp_mov.con' % (st,pr,st,pr,st,pr))
+os.system('xyz temp_mov.con')
+
+
+
+
