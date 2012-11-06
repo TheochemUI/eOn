@@ -175,17 +175,36 @@ class AKMCState(state.State):
         self.load_process_table()
         lowest = self.get_lowest_barrier()
         table = []
+        maxd_id = -1
+        maxd_rate = 0
+        maxd = 0
         for id in self.procs.keys():
             proc = self.procs[id]
             if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
                 continue
+            
+            # Optionally reject processes with atoms that moved too little from the 
+            # rate table.
             if filter_min_dist and config.process_search_minimum_distance > 0.0:
                 react = self.get_process_reactant(id)
                 d = max(atoms.per_atom_norm(react.r - self.get_process_product(id).r, react.box))
+                if d > maxd:
+                    maxd = d
+                    maxd_id = id
+                    maxd_rate = proc['rate']
                 if d < config.process_search_minimum_distance:
                     continue
+                    
             table.append((id, proc['rate']))
+
+        # If filtering by process distance, ensure at least one process is returned in
+        # the rate table (the one with the greatest single-atom motion).
+        if filter_min_dist and config.process_search_minimum_distance > 0.0:
+            if len(table) == 0:
+                table.append((maxd_id, maxd_rate))
+        
         return table
+ 
  
     def get_relevant_procids(self):
         rt = self.get_ratetable(False)
