@@ -101,8 +101,8 @@ Parameters::Parameters(){
     optMaxMove = 0.2;
     optTimeStep = 0.25;
     optMaxTimeStep = 2.5;
-    optLBFGSMemory = 50;
-    optLBFGSInverseCurvature = 0.1;
+    optLBFGSMemory = 20;
+    optLBFGSInverseCurvature = 0.01;
     optQMSteepestDecent = false;
     optCGNoOvershooting = false;
     optCGKnockOutMaxMove = false;
