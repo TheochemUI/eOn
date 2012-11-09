@@ -11,6 +11,7 @@
 ##-----------------------------------------------------------------------------------
 
 import ConfigParser
+
 from cStringIO import StringIO
 import logging
 import logging.handlers
@@ -21,6 +22,7 @@ import optparse
 import os
 import shutil
 import sys
+import atoms
 
 import communicator
 import config
@@ -47,7 +49,8 @@ def parallelreplica():
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
-    logger.info("time in current state is %e", current_state.get_time()) 
+    logger.info("time in current state is %e", current_state.get_time())
+ 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total Speedup is %f",avg_spdup)
@@ -123,7 +126,7 @@ def make_searches(comm, current_state, wuid):
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("making %i searches" % num_to_make)
-
+    
     if num_to_make == 0:
         return wuid
 
@@ -162,14 +165,14 @@ def register_results(comm, current_state, states):
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
-
     # Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
-
     transition = None
     num_registered = 0
     speedup = 0
+    times = []
+    count = 0
     for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # reactant.con - an array of strings containing the reactant
@@ -179,6 +182,8 @@ def register_results(comm, current_state, states):
         #
         # The reactant, product, and mode are passed as lines of the files because
         # the information contained in them is not needed for registering results
+        f = open ("states/0/resultstable","a+")
+        f.write('Product_Energy    Product_State    Transition_Time    Time_Since_State \n')
         state_num = int(result['name'].split("_")[0])
         id = int(result['name'].split("_")[1]) + result['number']
 
@@ -189,6 +194,44 @@ def register_results(comm, current_state, states):
         speedup += result['results']['speedup']
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
+            a = result['results']['potential_energy_product']
+            end_state = 0
+            trans_time = 0
+            end_state_prev = 0
+            store = 0
+            flag = 0
+            time_since_state = 0.0
+            i = 0;
+            product = io.loadcon (result['product.con'])
+            for n in f.readlines():
+                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i)
+                energy, end_state_prev, trans_time, time_since = [float (x) for x in n.split()]
+                time_since_state += trans_time
+                if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):
+                    end_state = end_state_prev
+                    flag += 1
+                    time_since_state = 0
+                else:
+                    if flag == 0:
+                        store = end_state_prev + 1
+                        if store > end_state:
+                            end_state = store
+                i += 1
+            time_since_state += result['results']['transition_time_s']
+            if flag == 0:
+                count += 1
+                times.append(time_since_state)
+            else:
+                times [int(end_state - 1)] += time_since_state
+                times[int(end_state - 1)] /= (flag + 1)
+            f.write(str(a))
+            f.write("    ")
+            f.write(str(int(end_state)))
+            f.write("    ")
+            f.write(str(result['results']['transition_time_s']))
+            f.write("    ")
+            f.write(str(time_since_state))
+            f.write("\n")
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
@@ -198,7 +241,14 @@ def register_results(comm, current_state, states):
         else:
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
-
+        f.close
+    g = open ("states/0/end_state_table","w")
+    g.write('End_State_ID    average_time_to_state \n')
+    for k in range(0,count):
+        g.write(str(k))
+        g.write("             ")
+        g.write(str(times[k]))
+        g.write("\n")
     logger.info("%i (result) searches processed", num_registered)
     if num_registered >=1:
         logger.info("Average Speedup is  %f", speedup/num_registered)
