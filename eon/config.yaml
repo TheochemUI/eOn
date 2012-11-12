@@ -690,6 +690,7 @@ AKMC:
             values:
                 - new
                 - old
+                - sampling
 
         thermally_accessible_window:
             kind: float
