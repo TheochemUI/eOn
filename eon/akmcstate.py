@@ -276,6 +276,23 @@ class AKMCState(state.State):
                 Nf = 1.0
             conf = 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
             return conf
+        elif config.akmc_confidence_scheme == 'sampling':
+            repeats = self.get_proc_random_count()
+            #number of events
+            m = len(repeats)
+            #number of searches
+            n = sum(repeats.values())
+            if n < 10: return 0.0
+
+            #probabilities
+            ps = numpy.array(repeats.values(),dtype=numpy.float)
+            ps /= sum(ps)
+
+            C = numpy.zeros(m)
+            for i in xrange(n):
+                C += (1.0-C)*ps
+
+            return sum(C)/float(m)
         else:
             Nr = self.get_repeats()
             if Nr < 1:
