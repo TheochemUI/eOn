@@ -591,10 +591,6 @@ Process Search:
             kind: boolean
             default: False
 
-        minimum_distance:
-            kind: float
-            default: 0.0
-
 ################################################################################
 
 Prefactor:

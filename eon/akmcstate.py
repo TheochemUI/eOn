@@ -169,7 +169,7 @@ class AKMCState(state.State):
         #except:
         #    logger.warning("Failed to append search result.")
 
-    def get_ratetable(self, filter_min_dist=True):
+    def get_ratetable(self):
         """ Loads the process table if it has not been loaded and generates a rate table 
             according to kT and thermal_window. """
         self.load_process_table()
@@ -182,32 +182,12 @@ class AKMCState(state.State):
             proc = self.procs[id]
             if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
                 continue
-            
-            # Optionally reject processes with atoms that moved too little from the 
-            # rate table.
-            if filter_min_dist and config.process_search_minimum_distance > 0.0:
-                react = self.get_process_reactant(id)
-                d = max(atoms.per_atom_norm(react.r - self.get_process_product(id).r, react.box))
-                if d > maxd:
-                    maxd = d
-                    maxd_id = id
-                    maxd_rate = proc['rate']
-                if d < config.process_search_minimum_distance:
-                    continue
-                    
             table.append((id, proc['rate']))
-
-        # If filtering by process distance, ensure at least one process is returned in
-        # the rate table (the one with the greatest single-atom motion).
-        if filter_min_dist and config.process_search_minimum_distance > 0.0:
-            if len(table) == 0:
-                table.append((maxd_id, maxd_rate))
-        
         return table
  
  
     def get_relevant_procids(self):
-        rt = self.get_ratetable(False)
+        rt = self.get_ratetable()
         rps = []
         for r in rt:
             rps.append(r[0])
