@@ -254,7 +254,6 @@ def init(config_file = ""):
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
     config.process_search_default_prefactor = parser.getfloat('Prefactor', 'default_value')
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
-    config.process_search_minimum_distance = parser.getfloat('Process Search', 'minimum_distance')
 
     # Saddle Search options
     config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
