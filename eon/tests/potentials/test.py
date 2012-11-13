@@ -3,7 +3,7 @@ import shutil
 import os
 import sys
 
-if not os.path.isfile("../../client/client"):
+if not os.path.isfile("../../../client/client"):
     print "Client binary missing"
     sys.exit(1)
 tab = open('energies')
@@ -20,17 +20,17 @@ tab.close()
 
 for test in tests:
     #copy the reactant
-    shutil.copy(os.path.join('structs/',test['file']), 'reactant_passed.con')    
+    shutil.copy(os.path.join('structs/',test['file']), 'pos.con')   
     
     #write the config
-    conf = open('config_passed.ini','w')
+    conf = open('config.ini','w')
     print >> conf, '[Main]'
     print >> conf, 'job = point'
     print >> conf, '[Potential]'
     print >> conf, 'potential =', test['potential']
     conf.close()
     
-    os.system("../../client/client > /dev/null")
+    os.system("../../../client/client > /dev/null")
 
     result = open("results.dat",'r')
     energy = float(result.readline().split()[0])
@@ -50,8 +50,8 @@ for test in tests:
     if not test['pass']:
         allpassed = False
 
-os.unlink('config_passed.ini')
-os.unlink('reactant_passed.con')
+os.unlink('config.ini')
+os.unlink('pos.con')
 os.unlink('results.dat')
 
 if not allpassed:
