@@ -263,6 +263,10 @@ void ProcessSearchJob::saveData(int status)
     }else{
         fprintf(fileResults, "%f displacement_saddle_distance\n", 0.0);
     }
+    if (parameters->saddleMethod == "dynamics") {
+        DynamicsSaddleSearch *ds = (DynamicsSaddleSearch*)saddleSearch;
+        fprintf(fileResults, "%e simulation_time\n", ds->time);
+    }
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
     fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);

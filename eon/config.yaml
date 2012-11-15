@@ -687,6 +687,7 @@ AKMC:
                 - new
                 - old
                 - sampling
+                - dynamics
 
         thermally_accessible_window:
             kind: float
