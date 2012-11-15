@@ -279,7 +279,7 @@ class AKMCState(state.State):
 
         elif config.akmc_confidence_scheme == 'dynamics':
             if self.get_time() == 0.0: return 0.0
-            rt = self.get_ratetable(False)
+            rt = self.get_ratetable()
             T1 = config.main_temperature
             T2 = config.saddle_dynamics_temperature
 
