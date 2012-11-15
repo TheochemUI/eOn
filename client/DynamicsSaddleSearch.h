@@ -22,6 +22,8 @@ class DynamicsSaddleSearch : public SaddleSearchMethod
         double eigenvalue;
         AtomMatrix eigenvector;
 
+        double time;
+
         Matter *reactant;
         Matter *saddle;
         Matter *product;

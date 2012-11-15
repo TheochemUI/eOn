@@ -30,6 +30,7 @@ DynamicsSaddleSearch::~DynamicsSaddleSearch()
 int DynamicsSaddleSearch::run(void)
 {
     std::vector<Matter*> MDSnapshots;
+    std::vector<double> MDTimes;
     log("Starting dynamics NEB saddle search\n");
 
     Dynamics dyn(saddle, parameters);
@@ -55,6 +56,8 @@ int DynamicsSaddleSearch::run(void)
             Matter *tmp = new Matter(parameters);    
             *tmp = *saddle;
             MDSnapshots.push_back(tmp);
+            MDTimes.push_back((i+1)*parameters->mdTimeStepInput);
+            printf("t = %.3f\n", MDTimes[(i/recordInterval)%(checkInterval/recordInterval)]);
         }
 
         //if (parameters->writeMovies == true) {
@@ -72,8 +75,8 @@ int DynamicsSaddleSearch::run(void)
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
                 printf("Found trasition at image %i\n", image);
-                printf("Time %.2f fs\n", image * parameters->saddleDynamicsRecordInterval + 
-                        parameters->mdTimeStepInput*(i%checkInterval));
+                time = MDTimes[image];
+                printf("Time %.2f fs\n", time);
 
                 if (product->compare(reactant)) {
                     printf("THEY ARE THE SAME!?!?!?!\n");
@@ -166,9 +169,11 @@ int DynamicsSaddleSearch::run(void)
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("found barrier of %.3f\n", barrier);
                 MDSnapshots.clear();
+                MDTimes.clear();
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
+                MDTimes.clear();
                 MDSnapshots.clear();
             }
         }
