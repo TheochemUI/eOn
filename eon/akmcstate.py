@@ -64,6 +64,9 @@ class AKMCState(state.State):
 
         resultdata = result["results"] #The information from the result.dat file
 
+        if 'simulation_time' in resultdata:
+            self.increment_time(resultdata['simulation_time'])
+
         # We may not already have the energy for this State.  If not, it should be placed in the result data.
         if self.get_energy() == None:
             # This energy now defines the reference energy for the state
@@ -273,6 +276,26 @@ class AKMCState(state.State):
                 C += (1.0-C)*ps
 
             return sum(C)/float(m)
+
+        elif config.akmc_confidence_scheme == 'dynamics':
+            if self.get_time() == 0.0: return 0.0
+            rt = self.get_ratetable(False)
+            T1 = config.main_temperature
+            T2 = config.saddle_dynamics_temperature
+
+            #rates are at T1
+            rates = numpy.array([ r[1] for r in rt ])
+            if len(rates) == 0: return 0.0
+            #extrapolate to T2
+            rates_md = 5e12*(rates/5e12)**(T1/T2)
+            
+            time = self.get_time()*1e-15
+            C = 1.0-numpy.exp(-time*rates_md*1.0)
+            total_rate = sum(rates)
+
+            conf = sum(C*rates)/total_rate
+            return conf
+
         else:
             Nr = self.get_repeats()
             if Nr < 1:
@@ -374,6 +397,12 @@ class AKMCState(state.State):
 
     def set_good_saddle_count(self, num):
         self.info.set("MetaData", "good_saddles", num)
+
+    def increment_time(self, dt):
+        self.info.set("MetaData", "time", self.get_time() + dt)
+
+    def get_time(self):
+        return self.info.get("MetaData", "time", 0.0)
 
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()

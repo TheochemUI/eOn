@@ -327,6 +327,7 @@ def init(config_file = ""):
 
     # Saddle Search
     config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')
+    config.saddle_dynamics_temperature = parser.getfloat('Saddle Search', 'dynamics_temperature')
 
     # Debug options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
