@@ -166,7 +166,7 @@ class Displace:
         # temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
 
-        self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
+        self.neighbors_list = None
 
     def make_displacement(self):
         '''Writes the displacement_passed.con and mode_passed.dat to path.'''
@@ -174,6 +174,8 @@ class Displace:
 
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
+        if self.neighbors_list == None:
+            self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
         logger.debug("Displacement epicenter: %d" % atom_index)
         displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
@@ -227,6 +229,9 @@ class Undercoordinated(Displace):
         self.undercoordinated_atoms = []
 
         self.coordination_distance = cutoff
+        self.initialized = False
+
+    def init(self):
 
         # cns is an array of the coordination numbers for each of the atoms.
         cns = atoms.coordination_numbers(self.reactant, self.coordination_distance)
@@ -247,6 +252,8 @@ class Undercoordinated(Displace):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
         # TODO: We should make sure that the amount of I/O to disk is what we think it should be:
         #       about 100 kB or so per make_displacement().
+        if not self.initialized:
+            self.init()
         epicenter = self.undercoordinated_atoms[numpy.random.randint(len(self.undercoordinated_atoms))]
         return self.get_displacement(epicenter)
 
