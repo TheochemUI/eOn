@@ -279,7 +279,9 @@ def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
         if indistinguishable and config.comp_use_identical:
             return identical(a,b)
         else:
-            return max(per_atom_norm(a.r-b.r, a.box))<eps_r
+            diff = pbc(a.r-b.r, a.box)
+            return numpy.max(numpy.sum(diff**2.0, axis=1)) < eps_r**2.0
+            #return max(per_atom_norm(a.r-b.r, a.box))<eps_r
 
 
 def point_energy_match(file_a, energy_a, file_b, energy_b):
