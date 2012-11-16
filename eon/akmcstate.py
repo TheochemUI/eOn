@@ -49,10 +49,24 @@ class AKMCState(state.State):
 
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
+        self.con_cache = {}
+
     def find_repeat(self, saddle_file, barrier):
         self.load_process_table()
+        energy_a = barrier
+        p1 = io.loadcon(saddle_file)
         for id in self.procs.keys():
-            if atoms.point_energy_match(saddle_file, barrier, self.proc_saddle_path(id), self.procs[id]['barrier']):
+            energy_b = self.procs[id]['barrier']
+            if abs(energy_a - energy_b) > config.comp_eps_e:
+                continue
+
+            if id in self.con_cache:
+                p2 = self.con_cache[id]
+            else:
+                p2 = io.loadcon(self.proc_saddle_path(id)) 
+                self.con_cache[id] = p2
+
+            if atoms.match(p1, p2, config.comp_eps_r, config.comp_neighbor_cutoff, False):
                 return id
         return None
 
@@ -91,7 +105,7 @@ class AKMCState(state.State):
             self.append_search_result(result, "repeat-%d" % id)
             self.procs[id]['repeats'] += 1
             self.save_process_table()
-            if result['type'] == "random":
+            if result['type'] == "random" or result['type'] == "dynamics":
                 self.inc_proc_random_count(id)
                 if id in self.get_relevant_procids():
                     self.inc_repeats()
@@ -145,7 +159,7 @@ class AKMCState(state.State):
                                   repeats =           0)
 
         # If this is a random search type, add this proc to the random proc dict.
-        if result['type'] == "random":
+        if result['type'] == "random" or result['type'] == "dynamics":
             self.inc_proc_random_count(id)
 
         # This was a unique process, so return the id.
@@ -260,7 +274,12 @@ class AKMCState(state.State):
             conf = 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
             return conf
         elif config.akmc_confidence_scheme == 'sampling':
-            repeats = self.get_proc_random_count()
+            all_repeats = self.get_proc_random_count()
+            rt = self.get_ratetable()
+            repeats = {}
+            for event in rt:
+                id = event[0]
+                repeats[id] = all_repeats[id]
             #number of events
             m = len(repeats)
             #number of searches
