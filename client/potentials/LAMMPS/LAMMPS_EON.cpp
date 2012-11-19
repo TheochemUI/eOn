@@ -72,7 +72,8 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
         }
     }
 
-    char *lammps_argv[7];
+    char *lammps_argv[9];
+    int nargs=7;
     lammps_argv[0] = "";
     lammps_argv[1] = "-log";
     if (parameters->LAMMPSLogging) {
@@ -84,10 +85,17 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     lammps_argv[4] = "log";
     lammps_argv[5] = "-screen";
     lammps_argv[6] = "none";
+
+
+    if (parameters->LAMMPSThreads > 0) {
+        lammps_argv[7] = "-suffix";
+        lammps_argv[8] = "omp";
+        nargs += 2;
+    }
     #ifdef EONMPI
-        lammps_open(7, lammps_argv, parameters->MPIClientComm, &LAMMPSObj);
+        lammps_open(nargs, lammps_argv, parameters->MPIClientComm, &LAMMPSObj);
     #else
-        lammps_open_no_mpi(7, lammps_argv, &LAMMPSObj);
+        lammps_open_no_mpi(nargs, lammps_argv, &LAMMPSObj);
     #endif
     void *ptr = LAMMPSObj;
 
