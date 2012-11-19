@@ -93,6 +93,11 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
 
     char cmd[200];
 
+    if (parameters->LAMMPSThreads > 0) {
+        snprintf(cmd, 200, "package omp %i force/neigh", parameters->LAMMPSThreads);
+        lammps_command(ptr, cmd);
+    }
+
     //Gives units in Angstoms and eV
     lammps_command(ptr, "units metal");
     lammps_command(ptr, "atom_style	atomic");

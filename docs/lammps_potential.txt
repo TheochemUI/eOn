@@ -35,3 +35,8 @@ Options
 LAMMPS will log to the file ``log.lammps``.
 
     default: ``true``
+
+**lammps_threads**: Controls how many threads to use if LAMMPS has been
+compiled with OpenMP support via the USER-OMP LAMMPS package.
+
+    default: ``0``

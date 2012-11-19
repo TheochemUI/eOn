@@ -90,6 +90,10 @@ Potential:
             kind: boolean
             default: true
 
+        lammps_threads:
+            kind: int
+            default: 0
+
         emt_rasmussen:
             kind: boolean
             default: false
@@ -198,6 +202,10 @@ Nudged Elastic Band:
         elastic_band:
             kind: boolean
             default: false
+
+        converged_force:
+            kind: float
+            default: 0.01
 
 ################################################################################
 

@@ -54,6 +54,8 @@ Parameters::Parameters(){
     MPIPollPeriod = 0.25;
     MPIPotentialRank = -1;
     LogPotential = false;
+    LAMMPSLogging = false;
+    LAMMPSThreads = 0;
     EMTRasmussen = false;
     
     // [Structure Comparison] //
@@ -134,6 +136,7 @@ Parameters::Parameters(){
     nebDoublyNudged = false;
     nebDoublyNudgedSwitching = false;
     nebElasticBand = false;
+    nebConvergedForce = optConvergedForce;
 
     // [Dynamics] //
     mdTimeStepInput = 1.0;
@@ -270,6 +273,7 @@ int Parameters::load(FILE *file){
         potential = toLowerCase(ini.GetValue("Potential", "potential"));
         MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
         LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
+        LAMMPSThreads = (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
 
         if (potential == "mpi"    || 
@@ -357,6 +361,7 @@ int Parameters::load(FILE *file){
         nebDoublyNudged = ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
         nebDoublyNudgedSwitching = ini.GetValueB("Nudged Elastic Band", "doubly_nudged_switching", nebDoublyNudgedSwitching);
         nebElasticBand = ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
+        nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force", optConvergedForce); 
 
         // [Dynamics] //
 
@@ -369,6 +374,7 @@ int Parameters::load(FILE *file){
         thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcol);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
         thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
+        //thermoAtoms = helper_functions::split_string_int(ini.GetValue("Dynamics", "thermo_atoms", ""), ",");
 
         // [Parallel Replica]
 
