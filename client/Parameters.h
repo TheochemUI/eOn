@@ -17,12 +17,13 @@
 #include <string>
 #include <stdio.h>
 #include <ctype.h>
+#include <vector>
+
+using namespace std;
 
 #ifdef EONMPI
     #include "mpi.h"
 #endif
-
-using namespace std;
 
 /** Contains all runtime parameters and results. No functionality just bookkeeping.*/
 class Parameters {
@@ -56,6 +57,7 @@ public:
     string potential;
     double MPIPollPeriod;
     bool   LAMMPSLogging;
+    int    LAMMPSThreads;
     bool   EMTRasmussen;
     bool   LogPotential;
 
@@ -150,6 +152,7 @@ public:
     bool   nebDoublyNudgedSwitching;
     string nebOptMethod;
     bool   nebElasticBand;
+    double nebConvergedForce; // force convergence criterion required for an optimization
 
     // [Molecular Dynamics]
     double mdTimeStepInput;
@@ -178,6 +181,7 @@ public:
     double thermoAndersenTcol;
     double thermoNoseMass;
     double thermoLangvinFriction;
+    //std::vector<int> thermoAtoms;
 
     // [Replica Exchange]
     string repexcTemperatureDistribution;
