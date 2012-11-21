@@ -1,4 +1,6 @@
-cp .displacement_passed.con.orig displacement_passed.con
-cp .config_passed.ini.orig config_passed.ini
-cp .mode_passed.dat.orig mode_passed.dat
-cp .reactant_passed.con.orig reactant_passed.con
+#!/bin/bash
+
+for i in {pos.con,displacement.con,direction.dat,config.ini}
+do
+    cp {.,}$i
+done
