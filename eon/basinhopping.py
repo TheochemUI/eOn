@@ -34,12 +34,12 @@ class RandomStructure:
         self.radii = numpy.array([ atoms.elements[name]['radius'] 
                                    for name in structure.names ])
         self.box_center = numpy.diagonal(structure.box)/2.0
-        self.p = 0.1                                                                                 
+        self.p = 0.1
 
     def generate(self):
         indexes = range(len(self.structure))
         random.shuffle(indexes)
-         
+
         rs = atoms.Atoms(0)
         first = indexes[0]
         rs.append(numpy.zeros(3), True, self.structure.names[first], 
@@ -225,7 +225,7 @@ def register_results(comm, bhstates):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
 
-    #Function used by communicator to determine whether to discard a result
+    # Function used by communicator to determine whether to discard a result
     def keep_result(name):
         return True
 
@@ -271,7 +271,7 @@ def main():
         config.init(sys.argv[-1])
     else:
         config.init()
-    #set options.path_root to be where the config file is if given as an arg
+    # set options.path_root to be where the config file is if given as an arg
     if config.path_root.strip() == '.' and len(args) == 1:
         config.path_root = os.path.abspath(os.path.dirname(args[0]))
         os.chdir(config.path_root)
@@ -305,7 +305,7 @@ def main():
             print "Not resetting."
             sys.exit(1)
 
-    #setup logging
+    # setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "bh.log"),
             format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
