@@ -66,14 +66,13 @@ public:
     double neighborCutoff; // radius used in the local atomic structure analysis
     bool   checkRotation;
     bool   indistinguishableAtoms;
-
 	double energyDifference;
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
     double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
 
-    // [Saddle Search]
+    // [Saddle Search] //
     long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement
     long   saddleMaxIterations; // max iterations for saddle point searches and minimization
     string saddleMethod;
@@ -100,7 +99,7 @@ public:
     double saddleConfinePositiveBoost; // undocumented
     long   saddleConfinePositiveMinActive; // undocumented
 
-    // [Optimizer]
+    // [Optimizer] //
     string optMethod;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
@@ -110,10 +109,10 @@ public:
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
     bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
-    bool   optCGNoOvershooting; // if set it is ensured that the approximate line search in conjugate gradients never overshoot the minimum along the search line
-    bool   optCGKnockOutMaxMove; // if set the old search direction is nullified when steps larger than the optMaxMove are conducted 
+    bool   optCGNoOvershooting; // ensure that the line search in conjugate gradients does not overshoot the minimum
+    bool   optCGKnockOutMaxMove; // the old search direction is nullified when steps larger than the optMaxMove are conducted 
     
-    // [Dimer]
+    // [Dimer] //
     double dimerRotationAngle; // finite difference rotation angle
     bool   dimerImproved; // turn on the improved dimer method
     double dimerConvergedAngle; // stop rotating when angle drops below this value
@@ -124,7 +123,7 @@ public:
     double dimerTorqueMax; // old
     double dimerTorqueMin; // old
 
-    // [Lanczos]
+    // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
 
@@ -138,11 +137,11 @@ public:
     string prefactorConfiguration;// configuration for which the frequencies should be determined
     bool   prefactorAllFreeAtoms;// use all free atom when determining the prefactor
       
-    // [Hessian]
+    // [Hessian] //
     string hessianAtomList;
     double hessianZeroFreqValue;
 
-    // [Nudged Elastic Band]
+    // [Nudged Elastic Band] //
     long   nebImages;
     long   nebMaxIterations;
     double nebSpring;
@@ -154,13 +153,13 @@ public:
     bool   nebElasticBand;
     double nebConvergedForce; // force convergence criterion required for an optimization
 
-    // [Molecular Dynamics]
+    // [Molecular Dynamics] //
     double mdTimeStepInput;
     double mdTimeStep;
     double mdTime;  
     long   mdSteps;
 
-    // [Parallel Replica]
+    // [Parallel Replica] //
     bool   parrepRefineTransition;
     bool   parrepAutoStop;
     bool   parrepDephaseLoopStop;
@@ -170,12 +169,12 @@ public:
     double parrepRecordInterval;
     double parrepCorrTime;
 
-    // [TAD]
+    // [Temperature Accelerated Dynamics] //
     double tadLowT;
     double tadMinPrefactor;
     double tadConfidence;
 
-    // [Thermostat]
+    // [Thermostat] //
     string thermostat;
     double thermoAndersenAlpha;
     double thermoAndersenTcol;
@@ -183,7 +182,7 @@ public:
     double thermoLangvinFriction;
     //std::vector<int> thermoAtoms;
 
-    // [Replica Exchange]
+    // [Replica Exchange] //
     string repexcTemperatureDistribution;
     long   repexcReplicas;
     long   repexcExchangeTrials;
@@ -192,7 +191,7 @@ public:
     double repexcTemperatureLow;
     double repexcExchangePeriod;
 
-    // [Bond Boost]
+    // [Bond Boost] //
     string biasPotential;
     string bondBoostBALS;
     double bondBoostRMDTime;
@@ -201,52 +200,53 @@ public:
     double bondBoostPRR;
     double bondBoostQcut;
 
-    // [Basin Hopping]
-    double basinHoppingMaxDisplacement;
+    // [Basin Hopping] //
+    double basinHoppingDisplacement;
     long   basinHoppingSteps;
     long   basinHoppingQuenchingSteps;
     bool   basinHoppingSignificantStructure;
     bool   basinHoppingSingleAtomDisplace;
-    string basinHoppingMaxDisplacementAlgorithm;
+    string basinHoppingDisplacementAlgorithm;
     string basinHoppingDisplacementDistribution;
     double basinHoppingSwapProbability;
     long   basinHoppingJumpMax;
     long   basinHoppingJumpSteps;
     bool   basinHoppingInitialMD;
     double basinHoppingInitialMDTemperature;
+    bool   basinHoppingAdjustDisplacement;
     long   basinHoppingAdjustPeriod;
     double basinHoppingAdjustFraction;
     double basinHoppingTargetRatio;
     bool   basinHoppingWriteUnique;
 
-	// [Global Optimization]
-	string globalOptimizationMoveMethod;
-	string globalOptimizationDecisionMethod;
-	long globalOptimizationSteps;
-	double globalOptimizationBeta;
-	double globalOptimizationAlpha;
-	long globalOptimizationMdmin;
-	double globalOptimizationTargetEnergy;
+    // [Global Optimization] //
+    string globalOptimizationMoveMethod;
+    string globalOptimizationDecisionMethod;
+    long globalOptimizationSteps;
+    double globalOptimizationBeta;
+    double globalOptimizationAlpha;
+    long globalOptimizationMdmin;
+    double globalOptimizationTargetEnergy;
 
-	// [Monte Carlo]
-	double monteCarloStepSize;
-	int monteCarloSteps;
+    // [Monte Carlo] //
+    double monteCarloStepSize;
+    int monteCarloSteps;
 
     // MPI stuff, not actually specified in config file
-    // this is used to pass information to the GPAW MPI
-    // potential.
+    // it is used to pass information to the GPAW MPI potential.
     int MPIPotentialRank;
     #ifdef EONMPI
         MPI_Comm MPIClientComm;
     #endif
 
-    // [Debug]
+    // [Debug] //
     long   boincProgressMax;
     bool   writeMovies;
     long   writeMoviesInterval;
+
 private:
+
     string toLowerCase(string s);
-    
 
 };
 
