@@ -53,9 +53,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
 {
     bool swapMove;
     double swap_accept = 0.0;
-    jcount = 0;
-    scount = 0;
-    dcount = 0;
+    jump_count = 0; // count of jump movies
+    swap_count = 0; // count of swap moves
+    disp_count = 0; // count of displacement moves
     int consecutive_rejected_trials = 0;
     double totalAccept = 0.0;
     Matter *minTrial = new Matter(parameters);
@@ -79,11 +79,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
     FILE * pFile;
     pFile = fopen("bh.dat","w");
 
-    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "mcs", "current", "trial", "global min", "fc", "ar", "md");
-    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "---", "-------", "-----", "----------", "--", "--", "--");
+    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "step", "current", "trial", "global min", "fc", "ar", "md");
+    log("[Basin Hopping] %4s %12s %12s %12s %4s %5s %5s\n", "----", "-------", "-----", "----------", "--", "--", "--");
 
-    int recentAccept=0;
-    double maxDisplacement = parameters->basinHoppingMaxDisplacement;
+    int recentAccept = 0;
+    double curDisplacement = parameters->basinHoppingDisplacement;
 
     for (int step=0; step<nsteps; step++) {
 
@@ -96,10 +96,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
             *minTrial = *swapTrial;
         }else{
             AtomMatrix displacement;
-            displacement = displaceRandom(maxDisplacement);
+            displacement = displaceRandom(curDisplacement);
 
             trial->setPositions(current->getPositions() + displacement);
-            swapMove=false;
+            swapMove = false;
             *minTrial = *trial;
         }
 
@@ -168,11 +168,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
                     uniqueStructures.push_back(currentCopy);
 
                     char fname[128];
-                    snprintf(fname, 128, "min_%.4i.con", step+1);
+                    snprintf(fname, 128, "min_%.5i.con", step+1);
                     current->matter2con(fname);
                     returnFiles.push_back(fname);
 
-                    snprintf(fname, 128, "energy_%.4i.dat", step+1);
+                    snprintf(fname, 128, "energy_%.5i.dat", step+1);
                     returnFiles.push_back(fname);
                     FILE *fh = fopen(fname, "w");
                     fprintf(fh, "%.10e\n", currentEnergy);
@@ -197,9 +197,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else{
             acceptReject[0] = 'R';
         }
-        log("[Basin Hopping] %4i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
+        log("[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
                step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
-               minfcalls, totalAccept/((double)step+1), maxDisplacement, acceptReject);
+               minfcalls, totalAccept/((double)step+1), curDisplacement, acceptReject);
         fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
                 minTrial->getPotentialEnergy());
 
@@ -207,8 +207,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
             consecutive_rejected_trials = 0;
             AtomMatrix jump;
             for(int j=0; j<parameters->basinHoppingJumpSteps; j++){
-                jcount++;
-                jump = displaceRandom(maxDisplacement);
+                jump_count++;
+                jump = displaceRandom(curDisplacement);
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
                     current->relax(true);
@@ -226,12 +226,12 @@ std::vector<std::string> BasinHoppingJob::run(void)
         if ((step+1)%nadjust == 0) {
             double recentRatio = ((double)recentAccept)/((double)nadjust);
             if (recentRatio > parameters->basinHoppingTargetRatio) {
-                maxDisplacement *= 1.0 + adjustFraction;
+                curDisplacement *= 1.0 + adjustFraction;
             }else{
-                maxDisplacement *= 1.0 - adjustFraction;
+                curDisplacement *= 1.0 - adjustFraction;
             }
 
-            //log("recentRatio %.3f md: %.3f\n", recentRatio, maxDisplacement);
+            //log("recentRatio %.3f md: %.3f\n", recentRatio, curDisplacement);
             recentAccept = 0;
         }
 
@@ -257,11 +257,12 @@ std::vector<std::string> BasinHoppingJob::run(void)
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     if(parameters->basinHoppingSwapProbability>0){
-        fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(scount));
+        fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(swap_count));
     }
-    fprintf(fileResults, "%ld total_normal_displacement_steps\n",dcount-jcount-parameters->basinHoppingQuenchingSteps);
-    fprintf(fileResults, "%d total_jump_steps\n", jcount);
-    fprintf(fileResults, "%d total_swap_steps\n", scount);
+    fprintf(fileResults, "%ld total_normal_displacement_steps\n",
+        disp_count-jump_count-parameters->basinHoppingQuenchingSteps);
+    fprintf(fileResults, "%d total_jump_steps\n", jump_count);
+    fprintf(fileResults, "%d total_swap_steps\n", swap_count);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fclose(fileResults);
 
@@ -280,10 +281,10 @@ std::vector<std::string> BasinHoppingJob::run(void)
     return returnFiles;
 }
 
-AtomMatrix BasinHoppingJob::displaceRandom(double maxDisplacement)
+AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement)
 {
-    dcount++;
-    // Create a random displacement.
+    disp_count++;
+    // Create a random displacement
     AtomMatrix displacement;
     displacement.resize(trial->numberOfAtoms(), 3);
     displacement.setZero();
@@ -297,29 +298,31 @@ AtomMatrix BasinHoppingJob::displaceRandom(double maxDisplacement)
 
     for(int i = m; i < num; i++) {
         double dist = distvec(i);
-        double mdp = 0.0;
+        double disp = 0.0; // displacement size, possibly scaled
 
         if(!trial->getFixed(i)) {
-            if(parameters->basinHoppingMaxDisplacementAlgorithm=="standard") {
-                mdp = maxDisplacement;
+            if(parameters->basinHoppingDisplacementAlgorithm=="standard") {
+                disp = curDisplacement;
             }
-            else if(parameters->basinHoppingMaxDisplacementAlgorithm=="linear") {
-                double Cs = maxDisplacement/distvec.maxCoeff();
-                mdp = Cs*dist;
+            // scale displacement linearly with the particle radius
+            else if(parameters->basinHoppingDisplacementAlgorithm=="linear") {
+                double Cs = curDisplacement/distvec.maxCoeff();
+                disp = Cs*dist;
             }
-            else if(parameters->basinHoppingMaxDisplacementAlgorithm=="quadratic") {
-                double Cq = maxDisplacement/(distvec.maxCoeff()*distvec.maxCoeff());
-                mdp = Cq*dist*dist;
+            // scale displacement quadratically with the particle radius
+            else if(parameters->basinHoppingDisplacementAlgorithm=="quadratic") {
+                double Cq = curDisplacement/(distvec.maxCoeff()*distvec.maxCoeff());
+                disp = Cq*dist*dist;
             }else{
-                log("Unknown max_displacement_algorithm\n");
+                log("Unknown displacement_algorithm\n");
                 exit(1);
             }
             for(int j=0; j<3; j++) {
                 if(parameters->basinHoppingDisplacementDistribution=="uniform") {
-                    displacement(i, j) = randomDouble(2*mdp) - mdp;
+                    displacement(i, j) = randomDouble(2*disp) - disp;
                 }
                 else if(parameters->basinHoppingDisplacementDistribution=="gaussian") {
-                    displacement(i,j) = gaussRandom(0.0, mdp);
+                    displacement(i,j) = gaussRandom(0.0, disp);
                 }
                 else {
                     log("Unknown displacement_distribution\n");
@@ -334,7 +337,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double maxDisplacement)
 
 void BasinHoppingJob::randomSwap(Matter *matter)
 {
-    scount++;
+    swap_count++;
     vector<long> Elements;
     Elements=getElements(matter);
 
