@@ -120,6 +120,9 @@ class MinModeExplorer(Explorer):
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
 
+        if config.saddle_method == 'dynamics':
+            return None, None, 'dynamics'
+
         displacement, mode = self.displace.make_displacement() 
         return displacement, mode, 'random'
 
@@ -169,6 +172,9 @@ class ClientMinModeExplorer(MinModeExplorer):
                             ('Main', 'random_seed',
                                 str(int(numpy.random.random()*10**9))),
                           ]
+            if config.saddle_method == 'dynamics' and disp_type != 'dynamics':
+                ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
+
             search['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
             if displacement:
@@ -178,10 +184,11 @@ class ClientMinModeExplorer(MinModeExplorer):
                 modeIO = StringIO.StringIO()
                 io.save_mode(modeIO, mode)
                 search['direction.dat'] = modeIO
-                searches.append(search) 
-                self.wuid += 1
-                # eager write
-                self.save_wuid()
+
+            searches.append(search) 
+            self.wuid += 1
+            # eager write
+            self.save_wuid()
 
         if config.recycling_on and self.nrecycled > 0:
             logger.info("recycled %i saddles" % self.nrecycled)
