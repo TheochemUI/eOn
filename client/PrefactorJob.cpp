@@ -40,6 +40,13 @@ std::vector<std::string> PrefactorJob::run(void)
     Matter *saddle = new Matter(parameters);
     Matter *product = new Matter(parameters);
 
+    reactant->con2matter("reactant.con");
+    saddle->con2matter("saddle.con");
+    product->con2matter("product.con");
+    double pref1, pref2;
+    Prefactor::getPrefactors(parameters, reactant, saddle, product, pref1, pref2);
+    printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
+
     
     VectorXi atoms;
     if (parameters->prefactorAllFreeAtoms)
