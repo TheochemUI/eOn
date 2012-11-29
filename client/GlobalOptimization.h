@@ -4,13 +4,13 @@
 
 class GlobalOptimization
 {
-	public:
-		GlobalOptimization(Parameters *params);
-		~GlobalOptimization(void);
-		void run(void);
+    public:
+        GlobalOptimization(Parameters *params);
+        ~GlobalOptimization(void);
+        void run(void);
 
-	private:
-		Parameters *parameters;
+    private:
+        Parameters *parameters;
 };
 
 #endif

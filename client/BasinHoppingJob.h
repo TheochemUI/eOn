@@ -27,12 +27,12 @@ class BasinHoppingJob : public Job {
         void randomSwap(Matter *matter);
         Parameters *parameters;
         Matter *current;
-        Matter *trial;  // initial configuration.
+        Matter *trial; // initial configuration
         vector<long> getElements(Matter *matter);
         std::vector<std::string> returnFiles;
-        int jcount;
-        int dcount;
-        int scount;
+        int jump_count; // count of jump moves
+        int disp_count; // count of displacement moves
+        int swap_count; // count of swap moves
         int fcalls;
 
         std::vector<Matter *> uniqueStructures;

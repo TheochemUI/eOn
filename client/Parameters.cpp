@@ -39,7 +39,7 @@ Parameters::Parameters(){
     maxForceCalls = 0;
     removeTranslation = true;
 
-    // [Prefactor]
+    // [Prefactor] //
     prefactorDefaultValue = 0.0;
     prefactorMaxValue = 1e+21;
     prefactorMinValue = 1e+9;
@@ -49,7 +49,7 @@ Parameters::Parameters(){
     prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
     prefactorAllFreeAtoms = false;
 
-    // [Potential]
+    // [Potential] //
     potential = Potential::POT_LJ;
     MPIPollPeriod = 0.25;
     MPIPotentialRank = -1;
@@ -159,7 +159,7 @@ Parameters::Parameters(){
     parrepRecordInterval = 50.0;
     parrepCorrTime = 500.0;
 
-    // [Scaled PES]
+    // [Temperature Accelerated Dynamics] //
     tadLowT = 300.0;
     tadMinPrefactor = 0.001; //in unit of fs-1 
     tadConfidence = 0.001;
@@ -168,7 +168,7 @@ Parameters::Parameters(){
     repexcTemperatureDistribution = "exponential";
     repexcReplicas = 10;
     repexcExchangeTrials = repexcReplicas;
-    repexcSamplingTime = 1000.0 ;
+    repexcSamplingTime = 1000.0;
     repexcTemperatureLow = 0.0;
     repexcTemperatureHigh = 0.0;
     repexcExchangePeriod = 100.0;
@@ -183,34 +183,35 @@ Parameters::Parameters(){
     bondBoostRMDTime = 100.0;
 
     // [Basin Hopping] //
-    basinHoppingMaxDisplacement = 0.5;
+    basinHoppingDisplacement = 0.5;
     basinHoppingSteps = 10000;
     basinHoppingQuenchingSteps = 0;
     basinHoppingSingleAtomDisplace = false;
     basinHoppingSignificantStructure = true;
-    basinHoppingMaxDisplacementAlgorithm = "standard";
+    basinHoppingDisplacementAlgorithm = "standard";
     basinHoppingDisplacementDistribution = "uniform";
     basinHoppingSwapProbability = 0.0;
     basinHoppingJumpMax = 10;
     basinHoppingJumpSteps = 0;
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
+    basinHoppingAdjustDisplacement = false;
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
     basinHoppingWriteUnique = false;
 
-	// [Global Optimization]
-	globalOptimizationMoveMethod = "md";
-	globalOptimizationDecisionMethod = "npew";
-	globalOptimizationSteps = 10000;
-	globalOptimizationBeta = 1.05;
-	globalOptimizationAlpha = 1.02;
-	globalOptimizationMdmin = 3;
-	globalOptimizationTargetEnergy = -1.E50;
+    // [Global Optimization] //
+    globalOptimizationMoveMethod = "md";
+    globalOptimizationDecisionMethod = "npew";
+    globalOptimizationSteps = 10000;
+    globalOptimizationBeta = 1.05;
+    globalOptimizationAlpha = 1.02;
+    globalOptimizationMdmin = 3;
+    globalOptimizationTargetEnergy = -1.E50;
 
-	// [Monte Carlo]
-	monteCarloStepSize = 0.005;
+    // [Monte Carlo] //
+    monteCarloStepSize = 0.005;
     monteCarloSteps = 1000;
 }
 
@@ -345,7 +346,7 @@ int Parameters::load(FILE *file){
         prefactorRate = toLowerCase(ini.GetValue("Prefactor", "rate_estimation", prefactorRate));
         prefactorConfiguration = toLowerCase(ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
         prefactorAllFreeAtoms = ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
-        
+
         // [Hessian] //
 
         hessianAtomList = toLowerCase(ini.GetValue("Hessian", "atom_list", hessianAtomList));
@@ -361,7 +362,7 @@ int Parameters::load(FILE *file){
         nebDoublyNudged = ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
         nebDoublyNudgedSwitching = ini.GetValueB("Nudged Elastic Band", "doubly_nudged_switching", nebDoublyNudgedSwitching);
         nebElasticBand = ini.GetValueB("Nudged Elastic Band", "elastic_band", nebElasticBand);
-        nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force", optConvergedForce); 
+        nebConvergedForce = ini.GetValueF("Nudged Elastic Band", "converged_force", optConvergedForce);
 
         // [Dynamics] //
 
@@ -387,12 +388,14 @@ int Parameters::load(FILE *file){
         parrepRecordInterval = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
         parrepCorrTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepCorrTime);
 
-        //[TAD]
+        //[Temperature Accelerated Dynamics] //
+
         tadLowT = ini.GetValueF("TAD", "low_temperature", tadLowT);
         tadMinPrefactor = ini.GetValueF("TAD", "min_prefactor", tadMinPrefactor);
         tadConfidence = ini.GetValueF("TAD", "confidence", tadConfidence);
 
         // [Replica Exchange] //
+
         repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
         repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
         repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);
@@ -442,7 +445,6 @@ int Parameters::load(FILE *file){
             saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_scale_boost", saddleConfinePositiveBoost);
             saddleConfinePositiveMinActive = ini.GetValueL("Saddle Search", "confine_positive_scale_min_active", saddleConfinePositiveMinActive);            
         }
-
         saddleDynamicsTemperature = temperature;
         saddleDynamicsStateCheckInterval = mdTime;
         saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
@@ -450,38 +452,41 @@ int Parameters::load(FILE *file){
         saddleDynamicsRecordInterval = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordInterval);
         saddleDynamicsLinearInterpolation = ini.GetValueB("Saddle Search", "dynamics_linear_interpolation", saddleDynamicsLinearInterpolation);
 
-
         // [Basin Hopping] //
 
-        basinHoppingMaxDisplacement = ini.GetValueF("Basin Hopping", "max_displacement", basinHoppingMaxDisplacement);
+        basinHoppingDisplacement = ini.GetValueF("Basin Hopping", "displacement", basinHoppingDisplacement);
         basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
         basinHoppingQuenchingSteps = ini.GetValueL("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
         basinHoppingSignificantStructure = ini.GetValueB("Basin Hopping", "significant_structure", basinHoppingSignificantStructure);
-        basinHoppingMaxDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "max_displacement_algorithm", basinHoppingMaxDisplacementAlgorithm));
+        basinHoppingDisplacementAlgorithm = toLowerCase(ini.GetValue("Basin Hopping", "displacement_algorithm", basinHoppingDisplacementAlgorithm));
         basinHoppingDisplacementDistribution = toLowerCase(ini.GetValue("Basin Hopping", "displacement_distribution", basinHoppingDisplacementDistribution));
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
         basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
         basinHoppingInitialMD = ini.GetValueB("Basin Hopping", "initial_md", basinHoppingInitialMD);
         basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", temperature);
+        basinHoppingAdjustDisplacement = ini.GetValueB("Basin Hopping", "adjust_displacement", basinHoppingAdjustDisplacement);
         basinHoppingAdjustPeriod = ini.GetValueL("Basin Hopping", "adjust_period", basinHoppingAdjustPeriod);
         basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
         basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
         basinHoppingWriteUnique = ini.GetValueB("Basin Hopping", "write_unique", basinHoppingWriteUnique);
 
-		// [Global Optimization]
-		globalOptimizationMoveMethod = toLowerCase(ini.GetValue("Global Optimization", "move_method", globalOptimizationMoveMethod));
-		globalOptimizationDecisionMethod = toLowerCase(ini.GetValue("Global Optimization", "decision_method", globalOptimizationDecisionMethod));
-		globalOptimizationSteps = ini.GetValueL("Global Optimization", "steps", globalOptimizationSteps);
-		globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
-		globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
-		globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
-		globalOptimizationTargetEnergy = ini.GetValueF("Global Optimization", "target_energy", globalOptimizationTargetEnergy);
+        // [Global Optimization] //
 
-		// [Monte Carlo]
-		monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
-		monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
+        globalOptimizationMoveMethod = toLowerCase(ini.GetValue("Global Optimization", "move_method", globalOptimizationMoveMethod));
+        globalOptimizationDecisionMethod = toLowerCase(ini.GetValue("Global Optimization", "decision_method", globalOptimizationDecisionMethod));
+        globalOptimizationSteps = ini.GetValueL("Global Optimization", "steps", globalOptimizationSteps);
+        globalOptimizationBeta = ini.GetValueF("Global Optimization", "beta", globalOptimizationBeta);
+        globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
+        globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
+        globalOptimizationTargetEnergy = ini.GetValueF("Global Optimization", "target_energy", globalOptimizationTargetEnergy);
+
+        // [Monte Carlo] //
+
+        monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
+        monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
+
     }
     else
     {

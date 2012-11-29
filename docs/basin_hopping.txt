@@ -20,12 +20,12 @@ ratio (ar), and the current max displacement (md).
 
     default: ``10000``
 
-**max_displacement**: Max displacement in each degree of freedom.
+**displacement**: Displacement in each degree of freedom.
 
     default: ``0.5``
 
 **write_unique**: If ``true`` the client will write out all the unique geometries
-that it sees and there energies to files named min_%4i.con and energy_%4i.con
+that it sees and there energies to files named min_xxxxx.con and energy_xxxxx.con
 where the number in the filename corresponds to the monte carlo step where
 that structure was first seen. For clusters it is important to set **check_rotation**
 in the **[Structure Comparison]** section.
@@ -38,7 +38,12 @@ between 0.8 r and 1.3 r, where r is the sum of the covalent radii of the two
 atoms.  Otherwise the starting geometry is always the one specified in
 ``reactant.con``.
 
-    default: ``true``
+    default: ``false``
+
+**adjust_displacement**: Flag to automatically adjust the displacement to meet
+the target acceptance ratio.
+
+    default: ``false``
 
 **adjust_fraction**: The fraction by which to change the step size in order to
 meet the target acceptance ratio.
@@ -52,7 +57,7 @@ step size.
 
 **target_ratio**: The target acceptance ratio that will be used to determine
 whether to increase or decrease the step size.
-    
+
     default: ``0.5``
 
 **displacement_distribution**: The distribution used for the displacement of
@@ -62,12 +67,12 @@ each atom.
 
     options:
 
-        ``gaussian``: The max_displacement serves as the standard deviation of a
+        ``gaussian``: The **displacement** serves as the standard deviation of a
         gaussian distribution used to select displacements.
 
-        ``uniform``: A random number is selected between 0 and max_displacement.
+        ``uniform``: A random number is selected between -**displacement** and **displacement**.
 
-**swap_probability**: The probability in range [0,1.0] that a swapping step
+**swap_probability**: The probability in range [0,1] that a swapping step
 takes place instead of a displacement step. The swap step selects two atoms of
 different elements and swaps their position.
 
