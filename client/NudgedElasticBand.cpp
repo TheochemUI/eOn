@@ -67,7 +67,7 @@ class NEBObjectiveFunction : public ObjectiveFunction
 
         int degreesOfFreedom() { return 3*neb->images*neb->atoms; }
 
-        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
+        bool isConverged() { return getConvergence() < parameters->nebConvergedForce; }
 
         double getConvergence() { return neb->convergenceForce(); }
 

@@ -52,35 +52,31 @@ int DynamicsSaddleSearch::run(void)
     for (int i=0;i<parameters->mdSteps;i++) {
         dyn.oneStep();
 
-        if (i % recordInterval == 0) {
+        if ((i+1) % recordInterval == 0) {
             Matter *tmp = new Matter(parameters);    
             *tmp = *saddle;
             MDSnapshots.push_back(tmp);
             MDTimes.push_back((i+1)*parameters->mdTimeStepInput);
-            printf("t = %.3f\n", MDTimes[(i/recordInterval)%(checkInterval/recordInterval)]);
         }
 
         //if (parameters->writeMovies == true) {
         //    saddle->matter2con("dynamics", true);
         //}
 
-        if (i%checkInterval == 0 && i > 0) {
-            log("Checking, step %i\n", i);
+        if ((i+1)%checkInterval == 0) {
+            log("Checking, step %i\n", i+1);
 
             *product = *saddle;
             product->relax(false, false);
 
             if (!product->compare(reactant)) {
+                log("Force calls total: %i\n", Potential::fcallsTotal);
                 log("Found new state\n");
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
-                printf("Found trasition at image %i\n", image);
+                log("Found trasition at image %i\n", image);
                 time = MDTimes[image];
-                printf("Time %.2f fs\n", time);
-
-                if (product->compare(reactant)) {
-                    printf("THEY ARE THE SAME!?!?!?!\n");
-                }
+                log("Transition Time %.2f fs\n", time);
 
                 NudgedElasticBand neb(reactant, product, parameters);
 
@@ -170,6 +166,7 @@ int DynamicsSaddleSearch::run(void)
                 log("found barrier of %.3f\n", barrier);
                 MDSnapshots.clear();
                 MDTimes.clear();
+                log("Force calls total: %i\n", Potential::fcallsTotal);
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
@@ -189,18 +186,23 @@ int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Mat
     min = 0;
     max = MDSnapshots.size() - 1;
 
+    log("refining transition time\n");
+
     while( (max-min) > 1 ) {
         mid = min + (max-min)/2;
+        log("minimizing image %i\n", mid);
         Matter snapshot(parameters);
         snapshot = *MDSnapshots[mid];
 
-        snapshot.relax(true);
+        snapshot.relax(false);
 
         midTest = snapshot.compare(reactant);
 
         if (midTest){
+            log("image %i minimizes to reactant\n", mid);
             min = mid;
         }else{
+            log("image %i minimizes to product\n", mid);
             *product = snapshot;
             max = mid;
         }
