@@ -437,6 +437,8 @@ void helper_functions::saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode)
 
 std::vector<int> helper_functions::split_string_int(std::string s, std::string delim)
 {
+    std::vector<int> list;
+    if (s.length() == 0) return list;
     char *pch;
     char *str;
     str = (char*) malloc(sizeof(char)*(s.length()+1));
@@ -444,7 +446,6 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
     str[s.length()] = '\0';
     pch = strtok(str, delim.c_str());
 
-    std::vector<int> list;
 
     while (pch != NULL) {
         char *endptr;
