@@ -123,10 +123,9 @@ int DynamicsSaddleSearch::run(void)
                         mode = saddle->pbc( neb.image[extremumImage+1]->getPositions() - saddle->getPositions());
                         mode.normalize();
                     }else{
-                        log("no maxima found, using max energy inside image\n");
-                        double maxEnergy=neb.image[1]->getPotentialEnergy();
-                        *saddle = *neb.image[1];
-                        for (int image=2;image<=neb.images;image++) {
+                        log("no maxima found, using max energy non-endpoint image\n");
+                        double maxEnergy = -INFINITY;
+                        for (int image=1;image<=neb.images;image++) {
                             double U = neb.image[image]->getPotentialEnergy();
                             if (U > maxEnergy) {
                                 maxEnergy = U;
