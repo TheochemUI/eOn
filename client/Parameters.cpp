@@ -24,6 +24,7 @@
 #include "Potential.h"
 #include "Prefactor.h"
 #include "PrefactorJob.h"
+#include "Log.h"
 
 Parameters::Parameters(){
 
@@ -486,6 +487,17 @@ int Parameters::load(FILE *file){
 
         monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
         monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
+
+
+        //Sanity Checks
+        log_init(this, (char *)"client.log");
+
+        if (parrepStateCheckInterval > mdTime) {
+            char msg[] = "error: state_check_interval must be <= time\n";
+            fprintf(stderr, msg);
+            log(msg);
+            exit(1);
+        }
 
     }
     else
