@@ -370,7 +370,6 @@ int main(int argc, char **argv)
             abort();
         }
 
-        log_init(&parameters, (char *)"client.log");
 
         // Determine what type of job we are running according 
         // to the parameters file. 
