@@ -7,7 +7,7 @@ CXX=g++
 LD=ld
 AR=ar cru
 RANLIB=ranlib
-DEPFLAGS=-MM
+DEPFLAGS=-MMD
 
 #if building omp lammps
 #LDFLAGS += -fopenmp
