@@ -108,7 +108,7 @@ int DynamicsSaddleSearch::run(void)
                     int j=0;
                     for (j=0;j<neb.numExtrema;j++) {
                         if (neb.extremumCurvature[j] < 0.0) { 
-                            extremumImage = floor(neb.extremumPosition[j]);
+                            extremumImage = (int)floor(neb.extremumPosition[j]);
                             log("chose image %i as extremum image\n", extremumImage);
                             break;
                         }
