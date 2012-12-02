@@ -195,7 +195,7 @@ clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
 
 %.o:%.cpp
-	$(CC) $(CXXFLAGS) $(DEPFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $<
 
 DEPENDS= $(wildcard *.d)
 -include $(DEPENDS)
