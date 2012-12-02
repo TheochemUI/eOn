@@ -69,6 +69,6 @@ namespace helper_functions {
 
     bool identical(const Matter* m1, const Matter* m2, const double distanceDifference);
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
-    bool pushApart(Matter *m1);
+    void pushApart(Matter *m1);
 }
 #endif
