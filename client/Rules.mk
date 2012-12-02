@@ -160,11 +160,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
 		   GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
 		   MonteCarloJob.o MonteCarlo.o
 
-%.o:%.cpp
-	$(CC) $(CXXFLAGS) -c $<
 
-%.d:%.cpp
-	$(CC) $(CXXFLAGS) $(DEPFLAGS) $< > $@
 
 #------------------------------------
 #Build rules
@@ -180,10 +176,6 @@ client: $(OBJECTS) $(LIBS)
 
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
-
-#include Depend.mk
-DEPENDS = $(OBJECTS:.o=.d)
-sinclude $(DEPENDS)
 
 $(LIBS):
 	$(MAKE) -C $@
@@ -201,6 +193,12 @@ clean:
 
 clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
+
+%.o:%.cpp
+	$(CC) $(CXXFLAGS) $(DEPFLAGS) -c $<
+
+DEPENDS= $(wildcard *.d)
+-include $(DEPENDS)
 
 .PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all
 # DO NOT DELETE
