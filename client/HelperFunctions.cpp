@@ -597,9 +597,10 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
         return true;
     }
 }
-bool helper_functions::pushApart(Matter *m1)
+
+void helper_functions::pushApart(Matter *m1)
 {
-    m1->matter2con("movie.con");
+    //m1->matter2con("movie.con");
 
     AtomMatrix r1 = m1->getPositions();
     MatrixXd Force(r1.rows(), 3);    
@@ -635,6 +636,6 @@ bool helper_functions::pushApart(Matter *m1)
             }
         }
         m1->setPositions(r1);
-        m1->matter2con("movie.con", true);
+        //m1->matter2con("movie.con", true);
     }
 }
