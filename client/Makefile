@@ -7,6 +7,10 @@ CXX=g++
 LD=ld
 AR=ar cru
 RANLIB=ranlib
+DEPFLAGS=-MM
+
+#if building omp lammps
+#LDFLAGS += -fopenmp
 
 #intel 12 linking
 #LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
