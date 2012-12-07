@@ -109,6 +109,10 @@ Parameters::Parameters(){
     optQMSteepestDecent = false;
     optCGNoOvershooting = false;
     optCGKnockOutMaxMove = false;
+    optCGLineConverged = 0.1;
+    optCGLineSearch = false;
+    optCGMaxIterBeforeReset = 0;
+    optCGLineSearchMaxIter = 10;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
@@ -319,7 +323,12 @@ int Parameters::load(FILE *file){
         optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent", optQMSteepestDecent);
         optCGNoOvershooting = ini.GetValueB("Optimizer", "cg_no_overshooting", optCGNoOvershooting);
         optCGKnockOutMaxMove = ini.GetValueB("Optimizer", "cg_knock_out_max_move", optCGKnockOutMaxMove);
+        optCGLineSearch = ini.GetValueB("Optimizer", "cg_line_search", optCGLineSearch);
+        optCGLineConverged = ini.GetValueF("Optimizer", "cg_line_converged", optCGLineConverged);
+        optCGMaxIterBeforeReset = ini.GetValueL("Optimizer", "cg_max_iter_before_reset", optCGMaxIterBeforeReset);
+        optCGLineSearchMaxIter = ini.GetValueL("Optimizer", "cg_max_iter_line_search", optCGLineSearchMaxIter);
 
+        
         // [Dimer] //
 
         dimerRotationAngle = ini.GetValueF("Dimer", "finite_angle", dimerRotationAngle);

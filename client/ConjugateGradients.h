@@ -38,6 +38,12 @@ class ConjugateGradients : public Optimizer
         VectorXd directionNorm;
         VectorXd force;
         VectorXd forceOld;
+    
+        int cg_i;
+    
+        bool single_step(double maxMove);
+        bool line_search(double maxMove);
+    
 };
 
 #endif
