@@ -109,8 +109,12 @@ public:
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
     bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
-    bool   optCGNoOvershooting; // ensure that the line search in conjugate gradients does not overshoot the minimum
-    bool   optCGKnockOutMaxMove; // the old search direction is nullified when steps larger than the optMaxMove are conducted 
+    bool   optCGNoOvershooting; // if set it is ensured that the approximate line search in conjugate gradients never overshoot the minimum along the search line
+    bool   optCGKnockOutMaxMove; // if set the old search direction is nullified when steps larger than the optMaxMove are conducted 
+    bool optCGLineSearch; // if set full line search is conducted
+    double optCGLineConverged; // convergence criteria for line search, ratio between force component along search line and the orthogonal part
+    long optCGLineSearchMaxIter; // maximal nr of iterations during line search
+    long optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no resetting is done
     
     // [Dimer] //
     double dimerRotationAngle; // finite difference rotation angle
