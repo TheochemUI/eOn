@@ -25,6 +25,16 @@ import glob
 import re
 import numpy
 
+# To ensure backward compatibility
+import sys
+if sys.version_info < (2, 5):
+     def any(iterable):
+         for element in iterable:
+             if element:
+                return True
+         return False
+
+
 def get_communicator():
     # This is an ugly hack to "remember" a communicator as it isn't possible to construct
     # the MPI communicator multiple times and it needs to remember its object level variables.
