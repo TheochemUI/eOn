@@ -1089,19 +1089,19 @@ Optimizer:
             kind: bool
             default: False
 
-        cg_line_search
+        cg_line_search:
             kind: bool
             default: False
     
-        cg_max_iter_line_search
+        cg_max_iter_line_search:
             kind: int
             default: 5
 
-        cg_max_iter_before_reset
+        cg_max_iter_before_reset:
             kind: int
             default: 10
 
-        cg_line_converged
+        cg_line_converged:
             kind: float
             default: 0.1
         
