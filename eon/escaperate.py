@@ -171,8 +171,7 @@ def register_results(comm, current_state, states):
     transition = None
     num_registered = 0
     speedup = 0
-    times = []
-    count = 0
+    numres = 0
     for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # reactant.con - an array of strings containing the reactant
@@ -182,8 +181,8 @@ def register_results(comm, current_state, states):
         #
         # The reactant, product, and mode are passed as lines of the files because
         # the information contained in them is not needed for registering results
-        f = open ("states/0/resultstable","a+")
-        f.write('Product_Energy    Product_State    Transition_Time    Time_Since_State \n')
+        
+        
         state_num = int(result['name'].split("_")[0])
         id = int(result['name'].split("_")[1]) + result['number']
 
@@ -195,43 +194,61 @@ def register_results(comm, current_state, states):
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
             a = result['results']['potential_energy_product']
-            end_state = 0
-            trans_time = 0
-            end_state_prev = 0
-            store = 0
+            f = open ("states/0/end_state_table","a+")
+            lines = f.readlines()
+            f.close()
+            proc = []
+            time_total = 0
+            end_states = 0                                              #append a state,0 to end states
+            count = 0 
             flag = 0
-            time_since_state = 0.0
-            i = 0;
+            match = 0
             product = io.loadcon (result['product.con'])
-            for n in f.readlines():
-                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i)
-                energy, end_state_prev, trans_time, time_since = [float (x) for x in n.split()]
-                time_since_state += trans_time
-                if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):
-                    end_state = end_state_prev
-                    flag += 1
-                    time_since_state = 0
-                else:
-                    if flag == 0:
-                        store = end_state_prev + 1
-                        if store > end_state:
-                            end_state = store
-                i += 1
-            time_since_state += result['results']['transition_time_s']
-            if flag == 0:
+            if numres > 0:                                                #if there are previous results
+                for i in range(0, numres):                                #between 0 and the number of results
+                    product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )                           #load product i
+                    if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):     #if the products are the same
+                        if flag == 0:                                                                         #if no previous products have been the same
+                            match = i     
+                            flag = 1
+            prev_states = []
+            count = 0
+            for line in lines[1:]:                                                                           #for the liness in the end state file
+                l = line.split()                                                                              #split the line and put into a list l
+                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})                       #add the elements of teh list to the proc dictionary
+                prev_states.append(int(l[0]))                                                                 #append the state to the previously viewed states list
+                if count == match:
+                    match = int(l[0])
+                if time_total < float(l[3]):
+                    time_total = float(l[3])                                                            # make the total time = to the maximum total time of this list
+                if flag > 0:
+                    if count == match:
+                        v = int(proc[count]['views']) + 1
+                        proc[count]['views'] = str(v)
+                        proc[count]['time'] = str(time_total)
+                        proc[count]['rate'] = str(1/(float(proc[count]['time'])/float(proc[count]['views'])))
                 count += 1
-                times.append(time_since_state)
+            if flag >0:
+                end_states =  match
             else:
-                times [int(end_state - 1)] += time_since_state
-                times[int(end_state - 1)] /= (flag + 1)
-            f.write(str(a))
-            f.write("    ")
-            f.write(str(int(end_state)))
-            f.write("    ")
-            f.write(str(result['results']['transition_time_s']))
-            f.write("    ")
-            f.write(str(time_since_state))
-            f.write("\n")
+                if len(prev_states)>0:
+                    end_states = max(prev_states) + 1
+            time_total += result['results']['transition_time_s']
+            if flag == 0:
+                proc.append({'state': end_states,  'views': 1, 'rate': 1/(float(time_total)) , 'time': time_total})                             
+            g = open ("states/0/end_state_table","w")
+            g.write('state       views         rate        time \n')
+            for j in range(0,len(proc)):
+                g.write(str(proc[j]['state']))
+                g.write("             ")
+                g.write(str(proc[j]['views']))
+                g.write("             ")
+                g.write(str(proc[j]['rate']))
+                g.write("             ")
+                g.write(str(proc[j]['time']))
+                g.write("\n")
+            g.close() 
+            numres += 1
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
             logger.info("found transition with time %.3e", time)
@@ -241,14 +258,6 @@ def register_results(comm, current_state, states):
         else:
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
-        f.close
-    g = open ("states/0/end_state_table","w")
-    g.write('End_State_ID    average_time_to_state \n')
-    for k in range(0,count):
-        g.write(str(k))
-        g.write("             ")
-        g.write(str(times[k]))
-        g.write("\n")
     logger.info("%i (result) searches processed", num_registered)
     if num_registered >=1:
         logger.info("Average Speedup is  %f", speedup/num_registered)
