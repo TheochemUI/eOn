@@ -232,7 +232,7 @@ class Undercoordinated(Displace):
         self.initialized = False
 
     def init(self):
-
+        self.initialized = True
         # cns is an array of the coordination numbers for each of the atoms.
         cns = atoms.coordination_numbers(self.reactant, self.coordination_distance)
 
