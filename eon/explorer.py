@@ -134,6 +134,9 @@ class ClientMinModeExplorer(MinModeExplorer):
         job_table_columns = [ 'state', 'wuid', 'type']
         self.job_table = io.Table(job_table_path, job_table_columns)
 
+        self.job_table.delete_row_func('state', lambda s: s != state.number)
+
+
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
