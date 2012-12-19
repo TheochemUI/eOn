@@ -36,7 +36,7 @@ Here is the config.ini file::
     displacement_distribution=gaussian #use a gaussian distribution
                                        #for the displacements instead
                                        #of a uniform distribution
-    max_displacement=0.3 #the standard deviation for the gaussian
+    displacement=0.3 #the standard deviation for the gaussian
                          #which is used to displace each degree of
                          #freedom
     initial_md_probability=0.9 #each basin hopping job has a 90% chance
