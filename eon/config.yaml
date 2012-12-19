@@ -429,13 +429,13 @@ Basin Hopping:
 
     options:
 
-        max_displacement:
+        displacement:
             kind: float
             default: 0.5
 
         random_structure:
             kind: boolean
-            default: true
+            default: false
 
         adjust_fraction:
             kind: float
@@ -471,7 +471,7 @@ Basin Hopping:
 
         significant_structure:
             kind: boolean
-            default: False
+            default: True
 
         displacement_distribution:
             kind: string
@@ -499,6 +499,10 @@ Basin Hopping:
         initial_md_temperature:
             kind: float
             default: 300.0
+
+        adjust_displacement:
+            kind: boolean
+            default: false
 
         write_unique:
             kind: boolean
