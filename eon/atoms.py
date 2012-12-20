@@ -80,7 +80,7 @@ def per_atom_norm(v, box, ibox = None):
         ibox:   the inverse of the box. will be calculated if not provided
     '''
     diff = pbc(v, box, ibox)
-    return numpy.array([numpy.linalg.norm(d) for d in diff])
+    return numpy.sqrt(numpy.sum(diff**2.0, axis=1)) 
 
 def per_atom_norm_gen(v, box, ibox = None):
     '''
