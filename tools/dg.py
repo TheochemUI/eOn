@@ -54,7 +54,7 @@ for i in range(num_minima):
 graphwrapper = Graph(db)
 graph = graphwrapper.graph
 
-dg = disconnectivity_graph.DisconnectivityGraph(graph,subgraph_size=0,nlevels=nlevels)
+dg = disconnectivity_graph.DisconnectivityGraph(graph,subgraph_size=0,nlevels=nlevels,center_gmin=True)
 dg.calculate()
 
 print 'Plotting (this can take a while)...'
