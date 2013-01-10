@@ -99,7 +99,7 @@ bool ConjugateGradients::line_search(double maxMove)
     {
         // Determine curvature from last step
         curvature = fabs((projectedForceBeforeStep - projectedForce) / stepSize);
-        stepSize = projectedForce / curvature;
+        stepSize = projectedForceBeforeStep / curvature;
         
         if (maxMove < fabs(stepSize))
         {
