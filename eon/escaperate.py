@@ -171,6 +171,7 @@ def register_results(comm, current_state, states):
     transition = None
     num_registered = 0
     speedup = 0
+    number_state = []
     numres = 0
     for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
@@ -198,44 +199,45 @@ def register_results(comm, current_state, states):
             lines = f.readlines()
             f.close()
             proc = []
-            time_total = 0
-            end_states = 0                                              #append a state,0 to end states
+            number_state.append(0)                                      
             count = 0 
+            state_match = 0
             flag = 0
-            match = 0
-            product = io.loadcon (result['product.con'])
-            if numres > 0:                                                #if there are previous results
-                for i in range(0, numres):                                #between 0 and the number of results
-                    product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )                           #load product i
-                    if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):     #if the products are the same
-                        if flag == 0:                                                                         #if no previous products have been the same
-                            match = i     
-                            flag = 1
-            prev_states = []
-            count = 0
-            for line in lines[1:]:                                                                           #for the liness in the end state file
-                l = line.split()                                                                              #split the line and put into a list l
-                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})                       #add the elements of teh list to the proc dictionary
-                prev_states.append(int(l[0]))                                                                 #append the state to the previously viewed states list
-                if count == match:
-                    match = int(l[0])
-                if time_total < float(l[3]):
-                    time_total = float(l[3])                                                            # make the total time = to the maximum total time of this list
-                if flag > 0:
-                    if count == match:
-                        v = int(proc[count]['views']) + 1
-                        proc[count]['views'] = str(v)
-                        proc[count]['time'] = str(time_total)
-                        proc[count]['rate'] = str(1/(float(proc[count]['time'])/float(proc[count]['views'])))
+            product = io.loadcon (result['product.con'])                            
+
+
+            for i in range(0, numres):                                                                        
+                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )                                 
+                if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):          
+                    if flag == 0:                                                                                
+                        state_match = number_state[i]
+                        number_state[numres] = state_match
+                        flag = 1            
+                        break
+            count = 0 
+            time_to_state = 0
+            time_check = 0
+            for line in lines[1:]:                                                                         
+                l = line.split()                                      
+                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})  
+                if float(l[3]) > time_check:
+                    time_check = float(l[3])
+                if flag == 0:
+                    number_state[numres] = int(l[0])+1
+                else:
+                    if state_match == int(l[0]):
+                        proc[count]['views'] = str(int(l[1]) + 1)
+                        time_to_state = float(l[3]) + result['results']['transition_time_s']
+                        proc[count]['time'] = str(time_to_state)
+                        proc[count]['rate'] = str(1/(time_to_state/float(proc[count]['views'])))
                 count += 1
-            if flag >0:
-                end_states =  match
-            else:
-                if len(prev_states)>0:
-                    end_states = max(prev_states) + 1
-            time_total += result['results']['transition_time_s']
+
+
             if flag == 0:
-                proc.append({'state': end_states,  'views': 1, 'rate': 1/(float(time_total)) , 'time': time_total})                             
+                proc.append({'state': number_state[numres],  'views': 1, 'rate': 1/(float(time_check+result['results']['transition_time_s'])) , 'time': time_check + result['results']['transition_time_s']}) 
+
+
+                            
             g = open ("states/0/end_state_table","w")
             g.write('state       views         rate        time \n')
             for j in range(0,len(proc)):
