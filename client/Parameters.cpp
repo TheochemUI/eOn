@@ -497,10 +497,10 @@ int Parameters::load(FILE *file){
         monteCarloStepSize = ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
         monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
 
-
-        //Sanity Checks
+        log_close();
         log_init(this, (char *)"client.log");
 
+        //Sanity Checks
         if (parrepStateCheckInterval > mdTime) {
             char msg[] = "error: state_check_interval must be <= time\n";
             fprintf(stderr, msg);
