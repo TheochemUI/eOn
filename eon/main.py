@@ -30,7 +30,7 @@ def main():
     job = config.main_job.lower()
     if job == 'akmc':
         akmc.main()
-    elif job == 'parallel_replica':
+    elif job == 'parallel_replica' or job == 'unbiased_parallel_replica':
         parallelreplica.main()
     elif job == 'basin_hopping':
         basinhopping.main()
