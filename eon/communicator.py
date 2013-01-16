@@ -516,42 +516,42 @@ class MPI(Communicator):
     def __init__(self, scratchpath, bundle_size):
         Communicator.__init__(self, scratchpath, bundle_size)
 
-        from mpi4py import MPI as PyMPI
-        self.comm = PyMPI.COMM_WORLD
+        from mpi4py.MPI import COMM_WORLD
+        self.comm = COMM_WORLD
 
-        # GET VIA ENVIRONMENT VARS
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(":") ]
         config.comm_job_buffer_size = len(self.client_ranks)
-        logger.info("server knows about client ranks %r" % self.client_ranks)
-
-        self.ready_ranks = []
-        self.running_jobs = {}
 
         self.resume_jobs = []
         if config.main_checkpoint:
             self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
             logger.info("found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
+        self.run_resume_jobs()
 
-    def run_resume_jobs(self):
-        while True:
-            if len(self.resume_jobs) == 0:
-                break
-            if len(self.ready_ranks) == 0:
-                break
-            jobdir = self.resume_jobs.pop()
-            jobpath = os.path.join(self.scratchpath,jobdir)
+    def submit_jobs(self, data, invariants):
+        from mpi4py.MPI import ANY_SOURCE, Status
+
+        for jobpath in self.make_bundles(data, invariants):
+            #find a ready client
+            status = Status() 
+            tmp = numpy.empty(1, dtype='i')
+            self.comm.Recv(tmp, source=ANY_SOURCE, tag=1, status=status)
+            client_rank = status.source
+
             buf = array('c', jobpath+'\0')
-            client_rank = self.ready_ranks.pop()
             self.comm.Send(buf, client_rank)
-            self.running_jobs[jobdir] = client_rank
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
+        from mpi4py.MPI import ANY_SOURCE, Status
 
-        self.poll_clients()
-        jobdirs = self.get_finished_job_dirs()
+        status = Status()
+        while self.comm.Iprobe(ANY_SOURCE, tag=0, status=status):
+            buf = array('c', '\0'*1024)
+            self.comm.Recv(buf, source=status.source, tag=0)
+            jobdir = buf[:buf.index('\0')].tostring()
+            jobdir = os.path.split(jobdir)[1]
 
-        for jobdir in jobdirs:
             if config.debug_keep_all_results:
                 shutil.copytree(os.path.join(self.scratchpath,jobdir),
                                 os.path.join(config.path_root, config.debug_results_path, jobdir))
@@ -561,49 +561,39 @@ class MPI(Communicator):
             for result in bundle:
                 yield result
 
-    def get_finished_job_dirs(self):
-        self.poll_clients()
-        finished_job_dirs = []
-        for dir, rank in self.running_jobs.iteritems():
-            if rank in self.ready_ranks:
-                finished_job_dirs.append(dir)
+    def run_resume_jobs(self):
+        if len(self.resume_jobs) == 0:
+            return
 
-        for dir in finished_job_dirs:
-                del self.running_jobs[dir]
-        return finished_job_dirs
-
-    def poll_clients(self):
-        for rank in self.client_ranks:
-            ready = self.comm.Iprobe(rank, 0)
-            if ready:
-                logger.debug("rank %i is ready" % rank)
-                self.ready_ranks.append(rank)
-                tmp = numpy.empty(1, dtype='i')
-                self.comm.Recv(tmp, source=rank, tag=0)
-        if len(self.resume_jobs) != 0:
-            self.run_resume_jobs()
-
-    def submit_jobs(self, data, invariants):
-        for jobpath in self.make_bundles(data, invariants):
+        ready_ranks = self.get_ready_ranks()
+        for rank in ready_ranks:
+            jobdir = self.resume_jobs.pop()
+            jobpath = os.path.join(self.scratchpath,jobdir)
             buf = array('c', jobpath+'\0')
-            client_rank = self.ready_ranks.pop()
-            self.comm.Send(buf,  client_rank)
-            self.running_jobs[os.path.split(jobpath)[-1]] = client_rank
+            self.comm.Send(buf, rank)
 
-    def cancel_state(self, state):
-        #XXX: how to support this...
-        return 0
+    def get_ready_ranks(self):
+        ready_ranks = []
+        for rank in self.client_ranks:
+            ready = self.comm.Iprobe(rank, tag=1)
+            if ready:
+                logger.info("rank %i is ready" % rank)
+                ready_ranks.append(rank)
+
+        return ready_ranks
 
     def get_queue_size(self):
-        self.poll_clients()
-        num_ready = len(self.ready_ranks)
-        num_resume = len(self.resume_jobs)
-        qs = len(self.client_ranks) - num_ready + num_resume
+        num_ready = len(self.get_ready_ranks())
+        qs = len(self.client_ranks) - num_ready
+
         return qs
 
     def get_number_in_progress(self):
         return int(os.environ['EON_NUMBER_OF_CLIENTS'])
 
+    def cancel_state(self, state):
+        #XXX: how to support this...
+        return 0
 
 class Local(Communicator):
     def __init__(self, scratchpath, client, ncpus, bundle_size):
