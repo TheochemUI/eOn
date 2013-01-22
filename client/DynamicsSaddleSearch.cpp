@@ -52,7 +52,7 @@ int DynamicsSaddleSearch::run(void)
     for (int i=0;i<parameters->mdSteps;i++) {
         dyn.oneStep();
 
-        if ((i+1) % recordInterval == 0) {
+        if ((i+1) % recordInterval == 0 && recordInterval != 0) {
             Matter *tmp = new Matter(parameters);    
             *tmp = *saddle;
             MDSnapshots.push_back(tmp);
@@ -105,10 +105,14 @@ int DynamicsSaddleSearch::run(void)
                     neb.compute();
                     neb.printImageData(true);
                     int extremumImage = -1; 
-                    int j=0;
+                    int j;
                     for (j=0;j<neb.numExtrema;j++) {
                         if (neb.extremumCurvature[j] < 0.0) { 
                             extremumImage = (int)floor(neb.extremumPosition[j]);
+                            if (extremumImage == 0) {
+                                extremumImage = -1;
+                                continue;
+                            }
                             log("chose image %i as extremum image\n", extremumImage);
                             break;
                         }
@@ -184,6 +188,9 @@ int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Mat
     bool midTest;
     min = 0;
     max = MDSnapshots.size() - 1;
+    if (max == 0) {
+        return 0;
+    }
 
     log("refining transition time\n");
 
