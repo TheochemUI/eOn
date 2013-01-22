@@ -90,7 +90,6 @@ class AKMCState(state.State):
         # Calculate the forward barrier for this process, and abort if the energy is too high.
         oldlowest = self.get_lowest_barrier()
         barrier = resultdata["potential_energy_saddle"] - reactant_energy
-#        barrier = resultdata["potential_energy_saddle"] - resultdata["potential_energy_reactant"]
 
         lowest = self.update_lowest_barrier(barrier)
         ediff = (barrier - lowest) - (self.statelist.kT *
@@ -133,6 +132,9 @@ class AKMCState(state.State):
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
+        elif config.saddle_method == 'dynamics':
+            logger.info("found new barrier %f for state %i", barrier, self.number)
+
 
         # Update the search result table.
         self.append_search_result(result, "good-%d" % self.get_num_procs())
