@@ -192,14 +192,12 @@ class AKMCState(state.State):
         self.load_process_table()
         lowest = self.get_lowest_barrier()
         table = []
-        maxd_id = -1
-        maxd_rate = 0
-        maxd = 0
+
         for id in self.procs.keys():
             proc = self.procs[id]
             if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
                 continue
-            table.append((id, proc['rate']))
+            table.append((id, proc['rate'], proc['prefactor']))
         return table
  
  
@@ -258,21 +256,6 @@ class AKMCState(state.State):
             if Nf < 1:
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
-        elif config.akmc_confidence_scheme == "boltzmann":
-            rt = self.get_ratetable(False)
-            prc = self.get_proc_random_count()
-            Nf = 0.0
-            Ns = 0.0
-            for r in rt:
-                if r[0] in prc:
-                    Nf += r[1]
-                    Ns += prc[r[0]] * r[1]
-            if Ns < 1:
-                return 0.0
-            if Nf < 1:
-                Nf = 1.0
-            conf = 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
-            return conf
         elif config.akmc_confidence_scheme == 'sampling':
             all_repeats = self.get_proc_random_count()
             rt = self.get_ratetable()
@@ -303,10 +286,11 @@ class AKMCState(state.State):
             T2 = config.saddle_dynamics_temperature
 
             #rates are at T1
-            rates = numpy.array([ r[1] for r in rt ])
+            rates = numpy.array([ p[1] for p in rt ])
+            prefactors = numpy.array([ p[2] for p in rt ])
             if len(rates) == 0: return 0.0
             #extrapolate to T2
-            rates_md = 5e12*(rates/5e12)**(T1/T2)
+            rates_md = prefactors*(rates/prefactors)**(T1/T2)
             
             time = self.get_time()*1e-15
             C = 1.0-numpy.exp(-time*rates_md*1.0)
