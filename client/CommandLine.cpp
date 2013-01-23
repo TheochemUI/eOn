@@ -3,6 +3,7 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include "Log.h"
+#include "version.h"
 
 #include <cstdlib>
 #include <string>
@@ -33,6 +34,7 @@ void usage(void)
     char fmtStr[] = "  -%-2s %s\n";
 
     fprintf(stderr, "Job Type:\n");
+    fprintf(stderr, fmtStr, "v", "print version information");
     fprintf(stderr, fmtStr, "m", "Minimization of inputConfile saves to outputConfile");
     fprintf(stderr, fmtStr, "s", "Single point energy of inputConfile");
     fprintf(stderr, fmtStr, "c", "Compare structures of inputConfile to outputConfile");
@@ -58,7 +60,7 @@ void commandLine(int argc, char **argv)
 
     Parameters *parameters = new Parameters;
 
-    while ((c=getopt(argc,argv,"chsmp:f:o:t:")) != -1) {
+    while ((c=getopt(argc,argv,"chsmp:f:o:t:v")) != -1) {
         switch (c) {
             case 'c':
                 cflag = true;
@@ -85,6 +87,10 @@ void commandLine(int argc, char **argv)
                 break;
             case 'h':
                 usage();
+                exit(0);
+            case 'v':
+                printf("eonclient version r%s\n", VERSION);
+                printf("          compiled %s\n", BUILD_DATE);
                 exit(0);
             case '?':
                 if (optopt == 'p')

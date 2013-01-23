@@ -96,7 +96,7 @@ void enableFPE(void)
 void printSystemInfo()
 {
     printf("EON Client\n");
-    printf("VERSION: %s\n", VERSION);
+    printf("VERSION: r%s\n", VERSION);
     printf("BUILD DATE: %s\n\n", BUILD_DATE);
     // System Information
     #ifdef WIN32
