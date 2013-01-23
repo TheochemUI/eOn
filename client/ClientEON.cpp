@@ -15,6 +15,7 @@
 #include "Log.h"
 #include "HelperFunctions.h"
 #include "EpiCenters.h"
+#include "version.h"
 
 #include <errno.h>
 #include <string.h>
@@ -94,7 +95,9 @@ void enableFPE(void)
 
 void printSystemInfo()
 {
-    printf("EON Client\n\n");
+    printf("EON Client\n");
+    printf("VERSION: %s\n", VERSION);
+    printf("BUILD DATE: %s\n\n", BUILD_DATE);
     // System Information
     #ifdef WIN32
         printf("OS: Microsoft Windows\n");
@@ -416,7 +419,7 @@ int main(int argc, char **argv)
     helper_functions::getTime(&rtime, &utime, &stime);
     rtime = rtime - beginTime;
 
-    printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
+    log("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime,stime);
 
     #ifdef OSX
@@ -430,7 +433,7 @@ int main(int argc, char **argv)
         }
         unsigned int rss = t_info.resident_size;
         unsigned int vs  = t_info.virtual_size;
-        printf("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+        log("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
                (double)rss/1024/1024, (double)vs/1024/1024);
     #endif
 

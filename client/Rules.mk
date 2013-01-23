@@ -177,6 +177,11 @@ client: $(OBJECTS) $(LIBS)
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
 
+ClientEON.o: version.h
+
+version.h: 
+	./version.sh > version.h
+
 $(LIBS):
 	$(MAKE) -C $@
 
@@ -200,5 +205,5 @@ clean-all: clean
 DEPENDS= $(wildcard *.d)
 -include $(DEPENDS)
 
-.PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all
+.PHONY : all $(POTDIRS) $(FPOTDIRS) clean clean-all version.h
 # DO NOT DELETE
