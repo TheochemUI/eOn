@@ -419,7 +419,7 @@ int main(int argc, char **argv)
     helper_functions::getTime(&rtime, &utime, &stime);
     rtime = rtime - beginTime;
 
-    log("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
+    printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime,stime);
 
     #ifdef OSX
