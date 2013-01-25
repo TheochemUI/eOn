@@ -36,7 +36,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
     }    
 
     lammps_put_coords(LAMMPSObj, (double *)R);
-    lammps_command(LAMMPSObj,"run 0");  
+    lammps_command(LAMMPSObj,"run 1 pre no post no");  
     double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", NULL);
     *U = *pe;
     free(pe);
