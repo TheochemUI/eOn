@@ -190,7 +190,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     if (params->LogPotential) {
         helper_functions::getTime(&finish, &userFinish, &sysFinish);
 
-        log_file("[Potential] fcall#: %4d  real: %8.2g  user: %8.2g  sys: %8.2g seconds\n",
+        log_file("[Potential] fcall#: %4d  real: %.6e  user: %.6e  sys: %.6e seconds\n",
                  fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
     }
 
