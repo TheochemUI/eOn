@@ -17,8 +17,6 @@
 #include "Log.h"
 #include "HelperFunctions.h"
 
-#include <time.h>
-
 #ifdef BOINC
     #include <boinc/boinc_api.h>
     #include <boinc/diagnostics.h>
@@ -173,13 +171,6 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
         fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
 
-    #ifdef EONMPI
-        fprintf(fileResults, "%i mpi_rank\n", MPI::COMM_WORLD.Get_rank());
-        time_t t;
-        time(&t);
-        fprintf(fileResults, "%i finished\n", t);
-    #endif
-    fclose(fileResults);
 
     MDSnapshots.clear();
     MDTimes.clear();

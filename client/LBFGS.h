@@ -31,8 +31,6 @@ public:
     void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
 
 private:
-    MatrixXd FSHessian(VectorXd r);
-    double FSEnergy(VectorXd r0, VectorXd r);
     VectorXd getStep(VectorXd f);
     Parameters *parameters;
     ObjectiveFunction *objf;
