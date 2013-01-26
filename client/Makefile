@@ -2,18 +2,20 @@ TARGET_NAME=client
 
 #------------------------------------
 #C compiler settings
-CC=gcc
-CXX=g++
+CC=icc
+CXX=icpc
 LD=ld
 AR=ar cru
 RANLIB=ranlib
 DEPFLAGS=-MMD
 
+#LDFLAGS += 
+
 #if building omp lammps
 #LDFLAGS += -fopenmp
 
 #intel 12 linking
-#LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
+LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
 
 
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
@@ -88,8 +90,8 @@ else
         LDFLAGS += -lgfortran
     endif
     # ifort
-    #FC = ifort
-    #FFLAGS += $(OPT) -fpe0
+    FC = ifort
+    FFLAGS += $(OPT) -fpe0
     # Linux linking
     #FAR = ar cru
     #LDFLAGS += -limf -lsvml -lifcore -ldl
