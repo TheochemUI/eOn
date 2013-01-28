@@ -173,6 +173,7 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
+double Potential::totalUserTime=0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
                             VectorXi atomicNrs, double *energy, Matrix3d box)
@@ -192,6 +193,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
 
         log_file("[Potential] fcall#: %4d  real: %.6e  user: %.6e  sys: %.6e seconds\n",
                  fcalls, finish - start, userFinish - userStart, sysFinish - sysStart);
+        totalUserTime += userFinish - userStart;
     }
 
     fcalls += 1;

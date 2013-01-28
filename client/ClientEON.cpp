@@ -15,6 +15,7 @@
 #include "Log.h"
 #include "HelperFunctions.h"
 #include "EpiCenters.h"
+#include "Potential.h"
 #include "version.h"
 
 #include <errno.h>
@@ -419,7 +420,11 @@ int main(int argc, char **argv)
     helper_functions::getTime(&rtime, &utime, &stime);
     rtime = rtime - beginTime;
 
-    printf("\ntiming information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
+    if (Potential::totalUserTime > 0) {
+        printf("\ntime not in potential: %.4f%%\n", 100*(1-Potential::totalUserTime/utime));
+    }
+
+    printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime,stime);
 
     #ifdef OSX
