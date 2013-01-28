@@ -50,6 +50,7 @@ class AKMCState(state.State):
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
         self.con_cache = {}
+        
 
     def find_repeat(self, saddle_file, barrier):
         self.load_process_table()
@@ -331,21 +332,32 @@ class AKMCState(state.State):
     def load_process_table(self):
         """ Load the process table.  If the process table is not loaded, load it.  If it is
             loaded, do nothing. """
-        if self.procs == None:
-            f = open(self.proctable_path)
-            lines = f.readlines()
-            f.close()
-            self.procs = {}
-            for l in lines[1:]:
-                l = l.strip().split()
-                self.procs[int(l[self.ID])] = {"saddle_energy":     float(l[self.ENERGY]),
-                                               "prefactor":         float(l[self.PREFACTOR]),
-                                               "product":           int  (l[self.PRODUCT]),
-                                               "product_energy":    float(l[self.PRODUCT_ENERGY]),
-                                               "product_prefactor": float(l[self.PRODUCT_PREFACTOR]),
-                                               "barrier":           float(l[self.BARRIER]),
-                                               "rate":              float(l[self.RATE]),
-                                               "repeats":           int  (l[self.REPEATS])}
+        if self.procs != None:
+            return
+        f = open(self.proctable_path)
+        lines = f.readlines()
+        f.close()
+        self.procs = {}
+        for l in lines[1:]:
+            l = l.strip().split()
+            self.procs[int(l[self.ID])] = {"saddle_energy":     float(l[self.ENERGY]),
+                                           "prefactor":         float(l[self.PREFACTOR]),
+                                           "product":           int  (l[self.PRODUCT]),
+                                           "product_energy":    float(l[self.PRODUCT_ENERGY]),
+                                           "product_prefactor": float(l[self.PRODUCT_PREFACTOR]),
+                                           "barrier":           float(l[self.BARRIER]),
+                                           "rate":              float(l[self.RATE]),
+                                           "repeats":           int  (l[self.REPEATS])}
+        try:
+            kT = self.info.get('MetaData', 'kT')
+        except NameError:
+            self.info.set('MetaData', 'kT', self.statelist.kT)
+            return
+        if kT != self.statelist.kT:
+            for id, proc in self.procs.items():
+                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+            self.save_process_table()            
+                
 
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
@@ -359,6 +371,7 @@ class AKMCState(state.State):
                                                   proc['product_prefactor'], proc['barrier'],
                                                   proc['rate'], proc['repeats']))
             f.close() 
+
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy,
                              product_prefactor, barrier, rate, repeats):
@@ -377,6 +390,7 @@ class AKMCState(state.State):
                               "barrier":          barrier,
                               "rate":             rate,
                               "repeats":          repeats}
+
 
     def update_lowest_barrier(self, barrier):
         """ Compares the parameter barrier to the lowest barrier stored in info. Updates the lowest
