@@ -171,6 +171,8 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
         fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
 
+    fclose(fileResults);
+
 
     MDSnapshots.clear();
     MDTimes.clear();
