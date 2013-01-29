@@ -37,6 +37,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
 
     lammps_put_coords(LAMMPSObj, (double *)R);
     lammps_command(LAMMPSObj,"run 1 pre no post no");  
+
     double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", NULL);
     *U = *pe;
     free(pe);
@@ -112,6 +113,9 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
 
     //Preserves atomic index ordering
     lammps_command(ptr, "atom_modify map array sort 0 0");
+
+    //Always check to see if the neighbor list must be updated
+    lammps_command(ptr, "neigh_modify delay 1");
 
 
     //Define periodic cell
