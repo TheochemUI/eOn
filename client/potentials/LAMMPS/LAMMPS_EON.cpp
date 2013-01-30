@@ -35,7 +35,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
         makeNewLAMMPS(N, R, atomicNrs, box);
     }    
 
-    lammps_put_coords(LAMMPSObj, (double *)R);
+    lammps_scatter_atoms(LAMMPSObj, "x", 1, 3, R);
     lammps_command(LAMMPSObj,"run 1 pre no post no");  
 
     double *pe = (double *)lammps_extract_variable(LAMMPSObj, "pe", NULL);
