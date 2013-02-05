@@ -40,6 +40,7 @@ public:
         STATUS_POTENTIAL_FAILED, //11
         STATUS_NONNEGATIVE_ABORT, //12
         STATUS_NONLOCAL_ABORT, //13
+        STATUS_NEGATIVE_BARRIER, //14
     };
 
     MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
