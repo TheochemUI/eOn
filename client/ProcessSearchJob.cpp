@@ -194,6 +194,10 @@ int ProcessSearchJob::doProcessSearch(void)
        (parameters->saddleMaxEnergy < barriersValues[1])) {
         return MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER;
     }
+    
+    if (barriersValues[0] < 0.0 || barriersValues[1] < 0.0) {
+        return MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER;
+    }
 
     // calculate the prefactor
     if(!parameters->prefactorDefaultValue)
@@ -334,6 +338,9 @@ void ProcessSearchJob::printEndState(int status)
 
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
         log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
+        log("[SaddleSearch] Negative barrier detected.\n");
 
     else
         fprintf(stdout, "Unknown status: %i!\n", status);
