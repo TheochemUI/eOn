@@ -438,7 +438,7 @@ int main(int argc, char **argv)
         }
         unsigned int rss = t_info.resident_size;
         unsigned int vs  = t_info.virtual_size;
-        log("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
+        printf("\nmemory usage:\nresident size (MB): %8.2f\nvirtual size (MB):  %8.2f\n",
                (double)rss/1024/1024, (double)vs/1024/1024);
     #endif
 
