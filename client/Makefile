@@ -33,7 +33,7 @@ endif
 ifdef EONMPI
     CXX=mpicxx
     CXXFLAGS += -DEONMPI
-    TARGET_NAME=client_mpi
+    TARGET_NAME=eonclientmpi
 endif
 
 #------------------------------------
