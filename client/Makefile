@@ -1,4 +1,4 @@
-TARGET_NAME=client
+TARGET_NAME=eonclient
 
 #------------------------------------
 #C compiler settings
@@ -105,7 +105,7 @@ ifdef BOINC
     OBJECTS += Compression.o
     CXXFLAGS += -DNDEBUG -DBOINC -Iboinc/include
     OBJECTS += Compression.o
-    TARGET_NAME = client_boinc
+    TARGET_NAME = eonclientboinc
 
     ifdef WIN32
         LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc 
