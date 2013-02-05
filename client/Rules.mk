@@ -164,14 +164,14 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
 
 #------------------------------------
 #Build rules
-all: $(POTDIRS) $(FPOTDIRS) client
+all: $(POTDIRS) $(FPOTDIRS) eonclient
 	@echo
 	@echo "EON Client Compilation Options"
 	@echo "BOINC: $(BOINC)" 
 	@echo "DEBUG: $(DEBUG)"
 	@echo "POTENTIALS: $(POTENTIALS)"
 
-client: $(OBJECTS) $(LIBS)
+eonclient: $(OBJECTS) $(LIBS)
 	$(CXX) -o $(TARGET_NAME) $^ $(LDFLAGS)
 
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
@@ -195,7 +195,7 @@ $(FPOTDIRS):
 	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(FAR)" FC="$(FC)" FFLAGS="$(FFLAGS)" RANLIB="$(RANLIB)" CXXFLAGS="$(CXXFLAGS)"
 
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) client
+	rm -f $(OBJECTS) $(DEPENDS) eonclient
 
 clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
