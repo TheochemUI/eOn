@@ -305,45 +305,45 @@ void ProcessSearchJob::saveData(int status)
 
 void ProcessSearchJob::printEndState(int status)
 {
-    fprintf(stdout, "Final state: ");
+    log("[Saddle Search] Final state: ");
     if(status == MinModeSaddleSearch::STATUS_GOOD)
-        fprintf(stdout, "Successful.\n");
+        log("[Saddle Search] success\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-        fprintf(stdout, "Initial displacement, not able to reach convex region.\n");
+        log("[Saddle Search] initial displacement unable to reach convex region\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-        fprintf(stdout, "Saddle search, barrier too high.\n");
+        log("[Saddle Search] barrier too high\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-        fprintf(stdout, "Saddle search, too many iterations in concave region.\n");
+        log("[Saddle Search] too many iterations in concave region\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-        fprintf(stdout, "Saddle search, too many iterations in saddle point search.\n");
+        log("[Saddle Search] too many iterations\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-        fprintf(stdout, "Minima, saddle is not connected to initial state.\n");
+        log("[Saddle Search] saddle is not connected to initial state\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-            fprintf(stdout, "Prefactors, not within window\n");
+        log("[Saddle Search] prefactors not within window\n");
 
     else if(status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-            fprintf(stdout, "Prefactors, hessian calculation failed\n");
+        log("[Saddle Search] hessian calculation failed\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-        fprintf(stdout, "Energy barriers, not within window\n");
+        log("[Saddle Search] energy barrier not within window\n");
 
     else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-        fprintf(stdout, "Minima, from saddle did not converge\n");
+        log("[Saddle Search] minimizations from saddle did not converge\n");
 
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-        log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
+        log("[Saddle Search] nonnegative initial mode, aborting\n");
 
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-        log("[SaddleSearch] Negative barrier detected.\n");
+        log("[Saddle Search] negative barrier detected\n");
 
     else
-        fprintf(stdout, "Unknown status: %i!\n", status);
+        log("[Saddle Search] unknown status: %i!\n", status);
 
     return;
 }
