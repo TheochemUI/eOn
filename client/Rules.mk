@@ -80,9 +80,9 @@ ifdef LAMMPS_POT
     POTDIRS += ./potentials/LAMMPS
     LIBS += ./potentials/LAMMPS/liblammps.a 
     ifdef EONMPI
-        LIBS += ./potentials/LAMMPS/liblmp_mpi.a 
+        LIBS += ./potentials/LAMMPS/liblammps_mpi.a 
     else
-        LIBS += ./potentials/LAMMPS/liblmp_serial.a 
+        LIBS += ./potentials/LAMMPS/liblammps_serial.a 
     endif
     ifndef EONMPI
         LIBS += ./potentials/LAMMPS/libfakempi.a
