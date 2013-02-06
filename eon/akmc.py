@@ -62,7 +62,27 @@ def akmc(config):
         sys.exit(1)
 
     # Load metadata, the state list, and the current state.
-    start_state_num, time, previous_state_num, first_run = get_akmc_metadata()
+    start_state_num, time, previous_state_num, first_run, previous_temperature = get_akmc_metadata()
+    
+    if first_run:
+        previous_temperature = config.main_temperature
+    
+    if previous_temperature != config.main_temperature:
+        # Remove superbasin data.
+        if os.path.isdir(config.sb_path):
+            shutil.rmtree(config.sb_path)
+            os.mkdir(config.sb_path)
+            os.removedirs(config.sb_path)
+        state_dirs = os.listdir(config.path_states)
+        for i in state_dirs:
+            if i == 'state_table':
+                continue
+            superbasin_file = os.path.join(config.path_states, i)
+            superbasin_file = os.path.join(superbasin_file, config.sb_state_file)
+            if os.path.isfile(superbasin_file):
+                os.remove(superbasin_file)
+        # Keep the new temperature.
+        previous_temperature = config.main_temperature
 
     states = get_statelist(kT) 
     current_state = states.get_state(start_state_num)
@@ -93,7 +113,7 @@ def akmc(config):
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
 
-    write_akmc_metadata(parser, current_state.number, time, previous_state_num)
+    write_akmc_metadata(parser, current_state.number, time, previous_state_num, previous_temperature)
 
     parser.write(open(metafile, 'w')) 
 
@@ -110,22 +130,25 @@ def get_akmc_metadata():
         start_state_num = parser.get("Simulation Information",'current_state', 0)
         time = parser.get("Simulation Information", 'time_simulated', 0.0) 
         previous_state_num = parser.get("Simulation Information", "previous_state", -1)
+        previous_temperature = parser.get("Simulation Information", "previous_temperature", 0)
         first_run = parser.get("Simulation Information", "first_run", True)
     else:
         time = 0
         start_state_num = 0
         previous_state_num = -1
         first_run = True
+        previous_temperature = config.main_temperature
 
-    return start_state_num, time, previous_state_num, first_run
+    return start_state_num, time, previous_state_num, first_run, previous_temperature
 
-def write_akmc_metadata(parser, current_state_num, time, previous_state_num):
+def write_akmc_metadata(parser, current_state_num, time, previous_state_num, previous_temperature):
     parser.add_section('aKMC Metadata')
     parser.add_section('Simulation Information')
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
     parser.set('Simulation Information', 'previous_state', str(previous_state_num))
     parser.set('Simulation Information', 'first_run', str(False))
+    parser.set('Simulation Information', 'previous_temperature', str(previous_temperature))
 
 def get_statelist(kT):
     initial_state_path = os.path.join(config.path_root, 'pos.con')
