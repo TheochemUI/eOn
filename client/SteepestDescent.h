@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef LBFGS_H
-#define LBFGS_H
+#ifndef SteepestDescent_H
+#define SteepestDescent_H
 
 #include "Eigen.h"
 #include "Matter.h"
@@ -19,17 +19,15 @@
 #include "HelperFunctions.h"
 #include <vector>
 
-class LBFGS : public Optimizer
+class SteepestDescent : public Optimizer
 {
 
 public:
-    LBFGS(ObjectiveFunction *objf, Parameters *parameters);
-    ~LBFGS();
+    SteepestDescent(ObjectiveFunction *objf, Parameters *parameters);
+    ~SteepestDescent();
 
     bool step(double maxMove);
     bool run(int maxIterations, double maxMove);
-    void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
-    void reset();
 
 private:
     VectorXd getStep(VectorXd f);
@@ -37,11 +35,6 @@ private:
     ObjectiveFunction *objf;
 
     int iteration;
-    int memory;
-
-    std::vector<VectorXd> s;
-    std::vector<VectorXd> y;
-    std::vector<double> rho;
 
     VectorXd rPrev;
     VectorXd fPrev;
