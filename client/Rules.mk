@@ -158,7 +158,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o \
            DynamicsSaddleSearch.o PrefactorJob.o FIRE.o \
 		   GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
-		   MonteCarloJob.o MonteCarlo.o
+		   MonteCarloJob.o MonteCarlo.o SteepestDescent.o
 
 
 

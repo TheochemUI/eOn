@@ -115,6 +115,8 @@ public:
     double optCGLineConverged; // convergence criteria for line search, ratio between force component along search line and the orthogonal part
     long optCGLineSearchMaxIter; // maximal nr of iterations during line search
     long optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no resetting is done
+    double optSDAlpha;
+    bool optSDTwoPoint;
     
     // [Dimer] //
     double dimerRotationAngle; // finite difference rotation angle
