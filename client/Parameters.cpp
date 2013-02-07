@@ -113,6 +113,8 @@ Parameters::Parameters(){
     optCGLineSearch = false;
     optCGMaxIterBeforeReset = 0;
     optCGLineSearchMaxIter = 10;
+    optSDAlpha = 0.1;
+    optSDTwoPoint = false;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
@@ -327,7 +329,8 @@ int Parameters::load(FILE *file){
         optCGLineConverged = ini.GetValueF("Optimizer", "cg_line_converged", optCGLineConverged);
         optCGMaxIterBeforeReset = ini.GetValueL("Optimizer", "cg_max_iter_before_reset", optCGMaxIterBeforeReset);
         optCGLineSearchMaxIter = ini.GetValueL("Optimizer", "cg_max_iter_line_search", optCGLineSearchMaxIter);
-
+        optSDAlpha = ini.GetValueF("Optimizer", "sd_alpha", optSDAlpha);
+        optSDTwoPoint = ini.GetValueB("Optimizer", "sd_twopoint", optSDTwoPoint);
         
         // [Dimer] //
 
@@ -501,7 +504,7 @@ int Parameters::load(FILE *file){
         log_init(this, (char *)"client.log");
 
         //Sanity Checks
-        if (parrepStateCheckInterval > mdTime) {
+        if (parrepStateCheckInterval > mdTime && job == "parallel_replica") {
             char msg[] = "error: state_check_interval must be <= time\n";
             fprintf(stderr, msg);
             log(msg);
