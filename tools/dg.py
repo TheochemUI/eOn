@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import sys
 
 import numpy
@@ -26,30 +27,36 @@ print 'Creating a disconnectivity graph with %d energy levels.' % nlevels
 minima_energies = [float(line.strip().split()[1]) for line in open("states/state_table", 'r').readlines()]
 num_minima = len(minima_energies)
 
-db = pygmin.storage.Database(accuracy=0)
+build_database = True
+if os.path.exists('tree.db'):
+    print "Using existing tree.db file. If you want to see more recent information, delete tree.db first."
+    build_database = False
 
-print 'Loading states...'
-minima = []
-for i in range(num_minima):
-    minima.append(db.addMinimum(minima_energies[i], numpy.array([i])))
+db = pygmin.storage.Database('tree.db', accuracy=0)
 
-print 'Loading transitions...'
-transitions = []
-for i in range(num_minima):
-    lines = open('states/%d/processtable' % i, 'r').readlines()[1:]
-    reac = minima[i]
-    for j in range(len(lines)):
-        line = lines[j].split()
-        prod = int(line[3])
-        if prod == -1:
-            continue
-        prod = minima[prod]
-        e = float(line[1])
-        proc_id = int(line[0])
-        coords = int('%d%d' % (i+1,j))    
-        if [reac,prod] not in transitions and [prod,reac] not in transitions:
-            db.addTransitionState(e, coords, reac, prod)
-            transitions.append([reac,prod])
+if build_database:
+    print 'Loading states...'
+    minima = []
+    for i in range(num_minima):
+        minima.append(db.addMinimum(minima_energies[i], numpy.array([i])))
+
+    print 'Loading transitions...'
+    transitions = []
+    for i in range(num_minima):
+        lines = open('states/%d/processtable' % i, 'r').readlines()[1:]
+        reac = minima[i]
+        for j in range(len(lines)):
+            line = lines[j].split()
+            prod = int(line[3])
+            if prod == -1:
+                continue
+            prod = minima[prod]
+            e = float(line[1])
+            proc_id = int(line[0])
+            coords = int('%d%d' % (i+1,j))    
+            if [reac,prod] not in transitions and [prod,reac] not in transitions:
+                db.addTransitionState(e, coords, reac, prod)
+                transitions.append([reac,prod])
         
 graphwrapper = Graph(db)
 graph = graphwrapper.graph
