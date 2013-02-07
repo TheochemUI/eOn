@@ -16,7 +16,9 @@
    new LAMMPS-specific functions can be added
 */
 
+#ifndef EONMPI
 #include "fakempi.h"
+#endif
 
 /* ifdefs allow this file to be included in a C program */
 
