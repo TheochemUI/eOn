@@ -3,7 +3,7 @@
 import sys
 
 if 'help' in sys.argv or len(sys.argv) < 4:
-    print '\nusage: cna-filter input.con output.con [bcc,]\n'
+    print '\nusage: cna-filter input.con output.con [bcc,a15]\n'
     sys.exit()
 
 import pathfix
@@ -14,11 +14,19 @@ traj = io.loadcons(sys.argv[1])
 filtered = []
 
 for p in traj:
+
     rejects = []
+
     if 'bcc' in sys.argv:
         ids = atoms.cnat(p, 3.5)
         for i in range(len(ids)):
             if ids[i] == 5:
+                rejects.append(i)
+
+    if 'a15' in sys.argv:
+        ids = atoms.cnat(p, 3.5)
+        for i in range(len(ids)):
+            if ids[i] in [1,2]:
                 rejects.append(i)
 
     rejects = list(set(rejects))
