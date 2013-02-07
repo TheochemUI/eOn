@@ -91,16 +91,22 @@ bool LBFGS::step(double maxMove)
     if (vd<-1.0) vd=-1.0;
     double angle = acos(vd) * (180.0 / M_PI);
 
+    VectorXd dr;
+    
+    dr = helper_functions::maxAtomMotionAppliedV(d, maxMove);
+
     if (angle > 90.0) {
-        log_file("LBFGS reset angle = %.4f\n", angle);
+        log("LBFGS reset angle = %.4f\n", angle);
         s.erase(s.begin(), s.end());
         y.erase(y.begin(), y.end());
         rho.erase(rho.begin(), rho.end());
         d = getStep(f);
+    }else if (dr != d) {
+        log("LBFGS reset, step too big\n");
+        s.erase(s.begin(), s.end());
+        y.erase(y.begin(), y.end());
+        rho.erase(rho.begin(), rho.end());
     }
-
-    VectorXd dr;
-    dr = helper_functions::maxAtomMotionAppliedV(d, parameters->optMaxMove);
 
     objf->setPositions(r+dr);
 
