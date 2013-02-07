@@ -541,6 +541,52 @@ def cnat(p, cutoff, brute=False):
                 can_values[i] = 5
     return can_values
 
+def cnar(p, cutoff, brute=False):
+    """ Returns a list of cna numbers for all atoms in p 
+        Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
+    cna = {i:{} for i in range(len(p))} # make a dict of dicts for each atom.
+    nl = neighbor_list(p, cutoff, brute)
+
+    def codeString(j,k,l):
+        return "%d,%d,%d" % (j,k,l)
+
+    # loops over all the atoms
+    for a2 in range(len(p)):
+        nl_a2 = nl[a2]
+        # loops over the atoms neighboring a2
+        for n2 in range(len(nl_a2)):
+            a1 = nl_a2[n2];
+            if a1 < a2: # prevent double counting?
+                common = []
+                nl_a1 = nl[a1]
+                # loops over the atoms neighboring a1
+                for n1 in range(len(nl_a1)):
+                    a3 = nl_a1[n1]
+                    # checks if atom a_3 is a common neighbor to a1 and a2
+                    for m2 in range(len(nl_a2)):
+                        if a3 == nl_a2[m2]:
+                            common.append(a3)
+                # determines the connectivity of common neighbors
+                bonds_nr = 0
+                bonds_sum = 0
+                for j2 in range(1,len(common)):
+                    nl_j2 = nl[common[j2]]
+                    for j1 in range(j2):
+                        for n in range(len(nl_j2)):
+                            if common[j1] == nl_j2[n]:
+                                bonds_nr += 1
+                                bonds_sum += j1 + j2
+                code = codeString(len(common), bonds_nr, bonds_sum)
+                if not code in cna[a1]:
+                    cna[a1][code] = 0
+                cna[a1][code] += 1
+                if not code in cna[a2]:
+                    cna[a2][code] = 0
+                cna[a2][code] += 1
+
+    return cna        
+
+
 def not_TCP(p, cutoff, brute=False):
     """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
