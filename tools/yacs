@@ -11,7 +11,7 @@ except:
     print "\nusage: yacs input.con"
     sys.exit()
 
-codes = atoms.cnar(p, 3.5, True)
+codes = atoms.cnar(p, 3.5, False)
 
 newcodes = [[] for i in range(len(p))]
 
