@@ -45,6 +45,10 @@ VectorXd LBFGS::getStep(VectorXd f)
         q -= a[i] * y[i];
     }
 
+    if (loopmax > 0 && parameters->optLBFGSAutoScale) {
+        H0 = s[loopmax-1].dot(s[loopmax-1])/s[loopmax-1].dot(y[loopmax-1]);
+        log_file("[LBFGS] H0: %.4e\n", H0); 
+    }
     VectorXd z = H0 * q;
 
     for (int i=0;i<loopmax;i++) {
