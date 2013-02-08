@@ -11,7 +11,6 @@ DEPFLAGS=-MMD
 
 #if building omp lammps
 #LDFLAGS += -fopenmp
-LDFLAGS += -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib/
 
 #intel 12 linking
 #LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
