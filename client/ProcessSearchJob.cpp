@@ -16,6 +16,7 @@
 #include "Log.h"
 #include "Prefactor.h"
 #include "DynamicsSaddleSearch.h"
+#include "BasinHoppingSaddleSearch.h"
 
 #include <stdio.h>
 #include <string>
@@ -37,9 +38,9 @@ std::vector<std::string> ProcessSearchJob::run(void)
     string modeFilename("direction.dat");
 
     initial = new Matter(parameters);
-    if (parameters->saddleMethod == "min_mode") {
+    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping") {
         displacement = new Matter(parameters);
-    }else{
+    }else if (parameters->saddleMethod == "dynamics") {
         displacement = NULL;
     }
     saddle = new Matter(parameters);
@@ -61,7 +62,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->saddleMethod == "min_mode") {
+    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping") {
         if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
             // displacement was passed from the server
             if(!saddle->con2matter(displacementFilename)) {
@@ -86,7 +87,9 @@ std::vector<std::string> ProcessSearchJob::run(void)
             mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
         saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
-    }else{
+    }else if (parameters->saddleMethod == "basin_hopping") {
+        saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, parameters);
+    }else if (parameters->saddleMethod == "dynamics") {
         saddleSearch = new DynamicsSaddleSearch(saddle, parameters);
     }
 
