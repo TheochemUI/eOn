@@ -106,10 +106,10 @@ bool LBFGS::step(double maxMove)
         rho.erase(rho.begin(), rho.end());
         d = getStep(f);
     }else if (dr != d) {
-        log("LBFGS reset, step too big\n");
-        s.erase(s.begin(), s.end());
-        y.erase(y.begin(), y.end());
-        rho.erase(rho.begin(), rho.end());
+        //log("LBFGS reset, step too big\n");
+        //s.erase(s.begin(), s.end());
+        //y.erase(y.begin(), y.end());
+        //rho.erase(rho.begin(), rho.end());
     }
 
     objf->setPositions(r+dr);
