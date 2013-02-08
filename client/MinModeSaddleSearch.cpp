@@ -157,7 +157,7 @@ int MinModeSaddleSearch::run()
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
-    while (!objf.isConverged() && iteration > 0) {
+    while (!objf.isConverged() || iteration == 0) {
         
         if(parameters->saddleNonlocalCountAbort != 0) {
             long nm = numAtomsMoved(initialPosition - matter->getPositions(), 
