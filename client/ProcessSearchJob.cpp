@@ -259,23 +259,23 @@ void ProcessSearchJob::saveData(int status)
     fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
 //    fprintf(fileResults, "%ld force_calls_minimization\n", SaddleSearch->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
-    fprintf(fileResults, "%f potential_energy_saddle\n", saddle->getPotentialEnergy());
-    fprintf(fileResults, "%f potential_energy_reactant\n", min1->getPotentialEnergy());
-    fprintf(fileResults, "%f potential_energy_product\n", min2->getPotentialEnergy());
-    fprintf(fileResults, "%f barrier_reactant_to_product\n", barriersValues[0]);
-    fprintf(fileResults, "%f barrier_product_to_reactant\n", barriersValues[1]);
+    fprintf(fileResults, "%e potential_energy_saddle\n", saddle->getPotentialEnergy());
+    fprintf(fileResults, "%e potential_energy_reactant\n", min1->getPotentialEnergy());
+    fprintf(fileResults, "%e potential_energy_product\n", min2->getPotentialEnergy());
+    fprintf(fileResults, "%e barrier_reactant_to_product\n", barriersValues[0]);
+    fprintf(fileResults, "%e barrier_product_to_reactant\n", barriersValues[1]);
     if (parameters->saddleMethod == "min_mode") {
-        fprintf(fileResults, "%f displacement_saddle_distance\n",
+        fprintf(fileResults, "%e displacement_saddle_distance\n",
             displacement->perAtomNorm(*saddle));
     }else{
-        fprintf(fileResults, "%f displacement_saddle_distance\n", 0.0);
+        fprintf(fileResults, "%e displacement_saddle_distance\n", 0.0);
     }
     if (parameters->saddleMethod == "dynamics") {
         DynamicsSaddleSearch *ds = (DynamicsSaddleSearch*)saddleSearch;
         fprintf(fileResults, "%e simulation_time\n", ds->time);
     }
     fprintf(fileResults, "%d force_calls_prefactors\n", fCallsPrefactors);
-    fprintf(fileResults, "%.4e prefactor_reactant_to_product\n", prefactorsValues[0]);
+    fprintf(fileResults, "%e prefactor_reactant_to_product\n", prefactorsValues[0]);
     fprintf(fileResults, "%.4e prefactor_product_to_reactant\n", prefactorsValues[1]);
     fclose(fileResults);
 
