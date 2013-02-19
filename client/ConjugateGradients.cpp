@@ -97,9 +97,10 @@ bool ConjugateGradients::line_search(double maxMove)
     int line_i = 0;
     do
     {
-        // Determine curvature from last step
+        // Determine curvature from last step (Secant method)
         curvature = fabs((projectedForceBeforeStep - projectedForce) / stepSize);
-        stepSize = projectedForceBeforeStep / curvature;
+        stepSize = projectedForce / curvature;
+        //stepSize = projectedForceBeforeStep / curvature;
         
         if (maxMove < fabs(stepSize))
         {
@@ -173,7 +174,6 @@ bool ConjugateGradients::single_step(double maxMove)
             {
                 forceChange = (projectedForce1 - projectedForce2);
                 stepSize = (projectedForce1 / forceChange) * stepSize;
-//                std::cout<<"correct\n";
             }
         }
     }
@@ -184,7 +184,6 @@ bool ConjugateGradients::single_step(double maxMove)
             // knockout old search direction
             directionOld = objf->getPositions() * 0.0;
             forceOld = objf->getPositions() * 0.0;
-//            std::cout<<"knock_out\n";
         }
     }
     
