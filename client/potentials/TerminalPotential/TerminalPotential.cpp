@@ -13,6 +13,7 @@
 
 TerminalPotential::TerminalPotential(Parameters *p)
 {
+    eon_terminal_path = p->terminalPotentialPath.c_str();
     return;
 }
 
@@ -30,7 +31,7 @@ TerminalPotential::~TerminalPotential()
 void TerminalPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     passToSystem(N, R, atomicNrs, box);  
-    system("eon_terminal");
+    system(eon_terminal_path);
     recieveFromSystem(N, F, U);
     return;
 }

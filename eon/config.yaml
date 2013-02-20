@@ -101,6 +101,10 @@ Potential:
         log_potential:
             kind: boolean
             default: false
+            
+        terminal_potential_path
+            kind: string
+            default: eon_terminal
 
 
 ################################################################################
