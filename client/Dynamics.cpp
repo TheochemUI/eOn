@@ -41,7 +41,7 @@ void Dynamics::setTemperature(double temperature_in)
     temperature = temperature_in;
 }
 
-void Dynamics::oneStep(void)
+void Dynamics::oneStep(int stepNumber)
 {
     if(parameters->thermostat == ANDERSEN){
        andersenCollision();
@@ -55,12 +55,21 @@ void Dynamics::oneStep(void)
     }
     else if(parameters->thermostat == NONE){
        velocityVerlet();
-///*
-       double potE, kinE;
-       kinE = matter->getKineticEnergy();
-       potE = matter->getPotentialEnergy();
-       log("totE = %10.5f\n",kinE+potE);
-//*/
+    }
+
+
+    if (stepNumber != -1) {
+        if (stepNumber == 1) {
+            log("[Dynamics] %8s %10s %12s %12s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+        }
+        AtomMatrix velocity;
+        double potE, kinE, kinT;
+        velocity = matter->getVelocities();
+        kinE = matter->getKineticEnergy();
+        potE = matter->getPotentialEnergy();
+        kinT = (2.0*kinE/nFreeCoords/kb);
+
+        log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", stepNumber, kinE, potE, kinE+potE, kinT);
     }
 }
 
