@@ -32,7 +32,7 @@ public:
     ~Dynamics();
 
     void setTemperature(double temperature);
-    void oneStep();
+    void oneStep(int stepNumber=-1);
     void velocityVerlet();
     void run(); 
     void andersenCollision();
