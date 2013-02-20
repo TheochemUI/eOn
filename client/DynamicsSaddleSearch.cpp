@@ -50,7 +50,7 @@ int DynamicsSaddleSearch::run(void)
     }
 
     for (int i=0;i<parameters->mdSteps;i++) {
-        dyn.oneStep();
+        dyn.oneStep(i+1);
 
         if ((i+1) % recordInterval == 0 && recordInterval != 0) {
             Matter *tmp = new Matter(parameters);    
@@ -145,6 +145,7 @@ int DynamicsSaddleSearch::run(void)
 
 
 
+                saddle->matter2con("saddle_initial_guess.con");
                 MinModeSaddleSearch search = MinModeSaddleSearch(saddle, 
                         mode, reactant->getPotentialEnergy(), parameters);
                 search.run();
