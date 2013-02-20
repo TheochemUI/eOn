@@ -30,9 +30,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     min1Freqs = hessian.getFreqs(min1, atoms);
     if(min1Freqs.size() == 0)
     {
-        if(!parameters->quiet) {
-            printf("Bad hessian: min1\n");
-        }
+        log("[Prefactor] Bad hessian: min1\n");
          return -1;
     }
     // remove zero modes
@@ -44,9 +42,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     saddleFreqs = hessian.getFreqs(saddle, atoms);
     if(saddleFreqs.size() == 0)
     {
-        if(!parameters->quiet) {
-            printf("Bad hessian: saddle\n");
-        }
+        log("[Prefactor] Bad hessian: saddle\n");
         return -1;
     }
     // remove zero modes
@@ -59,7 +55,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     if(min2Freqs.size() == 0)
     {
         if(!parameters->quiet) {
-            printf("Bad hessian: min2\n");
+            log("[Prefactor] Bad hessian: min2\n");
         }
         return -1;
     }
@@ -71,7 +67,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     // check Hessian sizes
     if((min1Freqs.size() != saddleFreqs.size()) || (min1Freqs.size() != saddleFreqs.size())) {
         if(!parameters->quiet) {
-            log("Bad prefactor: Hessian sizes do not match\n");
+            log("[Prefactor] Bad prefactor: Hessian sizes do not match\n");
         }
         return -1;
     }
@@ -88,7 +84,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     if(numNegFreq != 0)
     {
-        log("Error: %i negative modes at min1\n", numNegFreq);
+        log("[Prefactor] Error: %i negative modes at min1\n", numNegFreq);
         return -1;
     }
 
@@ -250,7 +246,7 @@ VectorXd Prefactor::removeZeroFreqs(Parameters *parameters, VectorXd freqs)
     }
     if(nremoved != 6)
     {
-        cout<<"Error: Found "<<nremoved<<" trivial eigenmodes instead of 6."<<endl;
+        log("[Prefactor] Error: found %i trivial eigenmodes instead of 6\n", nremoved);
     }
     return newfreqs;
 }

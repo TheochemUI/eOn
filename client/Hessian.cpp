@@ -10,6 +10,7 @@
 
 #include <math.h>
 #include "Hessian.h"
+#include "HelperFunctions.h"
 #include "Log.h"
 
 Hessian::Hessian(Parameters* params, Matter *matter)
@@ -23,7 +24,7 @@ Hessian::~Hessian()
 {
 }
 
-Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Hessian::getHessian(Matter *matterIn, VectorXi atomsIn)
+MatrixXd Hessian::getHessian(Matter *matterIn, VectorXi atomsIn)
 {
     if((matter != matterIn) || (atoms != atomsIn) || (hessian.rows() == 0))
     {
@@ -62,7 +63,7 @@ bool Hessian::calculate(void)
     // Determine the Hessian size
     int size = 0;
     size = atoms.rows()*3;
-    cout<<"Hessian size: "<<size<<endl;
+    log("[Hessian] Hessian size: %i\n", size);
     if(size == 0) {
         return false;
     }
@@ -129,13 +130,18 @@ bool Hessian::calculate(void)
 
     if(!parameters->quiet)
     {
-        cout <<"writing hessian"<<endl;
+        log("[Hessian] writing hessian\n");
         ofstream hessfile;
         hessfile.open("hessian.dat");
         hessfile <<hessian;
     }
 
+    double t0,t1;
+    helper_functions::getTime(&t0, NULL, NULL);
+    log("[Hessian] calculating eigen values of the hessian\n");
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
+    helper_functions::getTime(&t1, NULL, NULL);
+    log("[Hessian] eigenvalue problem took %.4e seconds\n", t1-t0);
     freqs = es.eigenvalues();
 
     return true;
@@ -169,7 +175,7 @@ bool Hessian::removeZeroFreqs(VectorXd freqs)
     }
     if(nremoved != 6)
     {
-        log("Error: Found %i trivial eigenmodes instead of 6\n", nremoved);
+        log("[Hessian] Error: Found %i trivial eigenmodes instead of 6\n", nremoved);
     }
     freqs = newfreqs;
     return true;
