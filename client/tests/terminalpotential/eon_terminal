@@ -1,0 +1,21 @@
+#!/opt/local/bin/python
+
+import pes_2d
+
+f = open('from_eon_to_terminal')
+lines = f.readlines()
+f.close()
+
+x = float(lines[-2].split()[1])
+y = float(lines[-1].split()[1])
+
+PES = pes_2d.PES_2D(x,y)
+fx = PES.get_fx()
+fy = PES.get_fy()
+E = PES.get_E()
+
+f = open('from_terminal_to_eon','w')
+f.write(str(E)  + '\n')
+f.write(str(fx) + ' 0. 0. \n')
+f.write(str(fy) + ' 0. 0. \n')
+f.close()

@@ -60,6 +60,7 @@ public:
     int    LAMMPSThreads;
     bool   EMTRasmussen;
     bool   LogPotential;
+    string terminalPotentialPath;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
