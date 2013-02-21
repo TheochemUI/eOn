@@ -162,7 +162,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
 
 void Prefactor::logFreqs(VectorXd freqs, char *name)
 {
-    log("Frequencies at %s\n", name);
+    log_file("[Prefactor] Frequencies at %s\n", name);
     int i;
     for (i=0;i<freqs.size();i++) {
         log_file("%10.6f ", freqs(i));
@@ -238,6 +238,8 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
         sum += diff[i];
     }
+    log("[Prefactor] sum of atom distances moved %.4f\n", sum);
+    log("[Prefactor] max moved atom distance: %.4f\n", diff.maxCoeff());
 
     int nMoved = 0;
     double d = 0.0;
