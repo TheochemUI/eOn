@@ -653,14 +653,14 @@ Prefactor:
                 
         filter_mode:
             kind: string
-            default: percent
+            default: fraction
             values:
-                - percent
+                - fraction
                 - cutoff
                 
-        filter_percent:
+        filter_fraction:
             kind: float
-            default: 0.99
+            default: 0.90
 
 
 
