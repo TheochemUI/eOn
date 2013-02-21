@@ -21,7 +21,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     // determine which atoms moved in the process
     VectorXi atoms;
     
-    if (parameters->prefactorFilterMode == Prefactor::FILTER_PERCENT) {
+    if (parameters->prefactorFilterMode == Prefactor::FILTER_FRACTION) {
         atoms = movedAtomsPct(parameters, min1, saddle, min2);
     }
     else {
@@ -234,19 +234,19 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
     diff.setConstant(0.0);
     
     log("[Prefactor] including all atoms that make up %.3f%% of the motion\n", 
-            parameters->prefactorFilterPercent);
+            parameters->prefactorFilterFraction*100);
     double sum = 0.0;
     for (int i = 0; i < nAtoms; i++) {
         diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
         sum += diff[i];
     }
-    log("[Prefactor] including %i atoms in the hessian\n", diff.size());
+
     log("[Prefactor] sum of atom distances moved %.4f\n", sum);
     log("[Prefactor] max moved atom distance: %.4f\n", diff.maxCoeff());
 
     int nMoved = 0;
     double d = 0.0;
-    while (d/sum <= parameters->prefactorFilterPercent && nMoved < nFree) {
+    while (d/sum <= parameters->prefactorFilterFraction && nMoved < nFree) {
         double maxi = 0;
         for (int i = 0; i < nAtoms; i++) {
             if (diff[i] >= diff[maxi]) {
@@ -259,6 +259,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         nMoved++;
         d += diff[maxi];
     }
+    log("[Prefactor] including %i atoms in the hessian\n", nMoved);    
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
 
