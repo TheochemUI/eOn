@@ -650,6 +650,17 @@ Prefactor:
                 - reactant
                 - saddle
                 - product
+                
+        filter_mode:
+            kind: string
+            default: percent
+            values:
+                - percent
+                - cutoff
+                
+        filter_percent:
+            kind: float
+            default: 0.99
 
 
 
