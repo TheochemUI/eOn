@@ -49,8 +49,8 @@ Parameters::Parameters(){
     prefactorRate = Prefactor::RATE_HTST;
     prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
     prefactorAllFreeAtoms = false;
-    prefactorFilterMode = Prefactor::FILTER_PERCENT;
-    prefactorFilterPercent = 0.99;
+    prefactorFilterMode = Prefactor::FILTER_FRACTION;
+    prefactorFilterFraction = 0.99;
 
     // [Potential] //
     potential = Potential::POT_LJ;
@@ -366,7 +366,7 @@ int Parameters::load(FILE *file){
         prefactorConfiguration = toLowerCase(ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
         prefactorAllFreeAtoms = ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
         prefactorFilterMode = toLowerCase(ini.GetValue("Prefactor", "filter_mode", prefactorFilterMode));
-        prefactorFilterPercent = ini.GetValueF("Prefactor", "filter_percent", prefactorMinDisplacement);
+        prefactorFilterFraction = ini.GetValueF("Prefactor", "filter_fraction", prefactorFilterFraction);
 
         // [Hessian] //
 

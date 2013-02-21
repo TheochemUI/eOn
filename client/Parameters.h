@@ -139,13 +139,13 @@ public:
     double prefactorDefaultValue; // default prefactor; calculate explicitly if zero
     double prefactorMaxValue; // max prefactor allowed
     double prefactorMinValue; // min prefactor allowed
-    double prefactorWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian, unless filterMode is percent
+    double prefactorWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian, unless filterMode is fraction
     double prefactorMinDisplacement;// atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
     string prefactorRate;// method to estimate prefactor
     string prefactorConfiguration;// configuration for which the frequencies should be determined
     bool   prefactorAllFreeAtoms;// use all free atom when determining the prefactor
-    string prefactorFilterMode; // "cutoff" or "percent", which use prefactorMinDisplacement or prefactorFilterPercent, respectively.
-    double prefactorFilterPercent; // Include atoms whose summed motion comprise more than prefactorFilterPercent in the prefactor calculation. Prioritizes atoms that move more.
+    string prefactorFilterMode; // "cutoff" or "fraction", which use prefactorMinDisplacement or prefactorFilterFraction, respectively.
+    double prefactorFilterFraction; // Include atoms whose summed motion comprise more than prefactorFilterFraction in the prefactor calculation. Prioritizes atoms that move more.
       
     // [Hessian] //
     string hessianAtomList;
