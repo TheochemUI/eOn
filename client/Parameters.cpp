@@ -50,7 +50,7 @@ Parameters::Parameters(){
     prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
     prefactorAllFreeAtoms = false;
     prefactorFilterMode = Prefactor::FILTER_FRACTION;
-    prefactorFilterFraction = 0.99;
+    prefactorFilterFraction = 0.90;
 
     // [Potential] //
     potential = Potential::POT_LJ;
