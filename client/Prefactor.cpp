@@ -20,8 +20,18 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
 
     // determine which atoms moved in the process
     VectorXi atoms;
-    atoms = movedAtoms(parameters, min1, saddle, min2);
-    // cout<<"Hessian size: "<<size<<endl;
+    
+    if (parameters->prefactorFilterMode == Prefactor::FILTER_PERCENT) {
+        atoms = movedAtomsPct(parameters, min1, saddle, min2);
+    }
+    else {
+        atoms = movedAtoms(parameters, min1, saddle, min2);
+    }
+
+    cout << atoms <<"\n";
+    
+    
+
     int size = 3*atoms.rows();
     assert(size > 0);
 
@@ -208,6 +218,49 @@ VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *sad
     }
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
+
+VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2)
+{
+    long nAtoms = saddle->numberOfAtoms();
+    long nFree = saddle->numberOfFreeAtoms();
+
+    VectorXi moved(nAtoms);
+    moved.setConstant(-1);
+
+    AtomMatrix diffMin1 = saddle->pbc(saddle->getPositions() - min1->getPositions());
+    AtomMatrix diffMin2 = saddle->pbc(saddle->getPositions() - min2->getPositions());
+
+    diffMin1.cwise() *= saddle->getFree();
+    diffMin2.cwise() *= saddle->getFree();
+
+    VectorXd diff(nAtoms);
+    diff.setConstant(0.0);
+    
+    double sum = 0.0;
+    for (int i = 0; i < nAtoms; i++) {
+        diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
+        sum += diff[i];
+    }
+
+    int nMoved = 0;
+    double d = 0.0;
+    while (d/sum <= parameters->prefactorFilterPercent && nMoved < nFree) {
+        double maxi = 0;
+        for (int i = 0; i < nAtoms; i++) {
+            if (diff[i] >= diff[maxi]) {
+                if (!(moved.cwise() == i).any()) {
+                    maxi = i;
+                }
+            }
+        }
+        moved[nMoved] = maxi;
+        nMoved++;
+        d += diff[maxi];
+        printf("%f\n", d/sum);
+    }
+    return (VectorXi) moved.block(0,0,nMoved,1);
+}
+
 
 VectorXi Prefactor::allFreeAtoms(Matter *matter)
 {
