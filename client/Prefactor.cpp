@@ -233,11 +233,14 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
     VectorXd diff(nAtoms);
     diff.setConstant(0.0);
     
+    log("[Prefactor] including all atoms that make up %.3f%% of the motion\n", 
+            parameters->prefactorFilterPercent);
     double sum = 0.0;
     for (int i = 0; i < nAtoms; i++) {
         diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
         sum += diff[i];
     }
+    log("[Prefactor] including %i atoms in the hessian\n", diff.size());
     log("[Prefactor] sum of atom distances moved %.4f\n", sum);
     log("[Prefactor] max moved atom distance: %.4f\n", diff.maxCoeff());
 
