@@ -28,10 +28,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
         atoms = movedAtoms(parameters, min1, saddle, min2);
     }
 
-    cout << atoms <<"\n";
     
-    
-
     int size = 3*atoms.rows();
     assert(size > 0);
 
@@ -256,7 +253,6 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         moved[nMoved] = maxi;
         nMoved++;
         d += diff[maxi];
-        printf("%f\n", d/sum);
     }
     return (VectorXi) moved.block(0,0,nMoved,1);
 }
