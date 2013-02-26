@@ -157,7 +157,7 @@ int NudgedElasticBand::compute(void)
     log("%10s %12s %11s %12s\n", "iteration", "force", "max image", "max energy");
     log("-------------------------------------------\n");
 
-    char fmt[] = "%10li %12.4f %11li %12.4f\n";
+    char fmt[] = "%10li %12.4e %11li %12.4e\n";
 
     while (!objf.isConverged())
     {
