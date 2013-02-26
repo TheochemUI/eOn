@@ -178,7 +178,7 @@ int MinModeSaddleSearch::run()
         optimizer->step(parameters->optMaxMove);
 
         double de = objf.getEnergy()-reactantEnergy;
-        double stepSize = (matter->pbc(matter->getPositions() - pos )).norm();
+        double stepSize = helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() - pos));
 
         if (de > parameters->saddleMaxEnergy) {
             status = STATUS_BAD_HIGH_ENERGY;
