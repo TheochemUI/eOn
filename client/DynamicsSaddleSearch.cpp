@@ -34,11 +34,13 @@ int DynamicsSaddleSearch::run(void)
     log("Starting dynamics NEB saddle search\n");
 
     Dynamics dyn(saddle, parameters);
+    log("Initializing velocities from Maxwell-Boltzmann distribution\n");
     dyn.setTemperature(parameters->saddleDynamicsTemperature);
     dyn.setThermalVelocity();
 
     BondBoost bondBoost(saddle, parameters);
     if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
+        log("Initializing Bond Boost\n");
         bondBoost.initialize();
     }
 
@@ -59,12 +61,12 @@ int DynamicsSaddleSearch::run(void)
             MDTimes.push_back((i+1)*parameters->mdTimeStepInput);
         }
 
-        //if (parameters->writeMovies == true) {
-        //    saddle->matter2con("dynamics", true);
-        //}
+        if (parameters->writeMovies == true) {
+            saddle->matter2con("dynamics", true);
+        }
 
         if ((i+1)%checkInterval == 0) {
-            log("Checking, step %i\n", i+1);
+            log("Minimizing trajecotry, step %i\n", i+1);
 
             *product = *saddle;
             product->relax(false, false);
@@ -74,15 +76,17 @@ int DynamicsSaddleSearch::run(void)
                 log("Found new state\n");
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
-                log("Found trasition at image %i\n", image);
+                log("Found trasition at snapshot image %i\n", image);
                 time = MDTimes[image];
-                log("Transition Time %.2f fs\n", time);
+                log("Transition time %.2f fs\n", time);
 
                 NudgedElasticBand neb(reactant, product, parameters);
 
                 if (parameters->saddleDynamicsLinearInterpolation == false) {
+                    log("Interpolating initial band through MD transition state\n");
                     AtomMatrix reactantToSaddle = saddle->pbc(saddle->getPositions()  - reactant->getPositions());
                     AtomMatrix saddleToProduct  = saddle->pbc(product->getPositions() - saddle->getPositions());
+                    log("Initial band saved to neb_initial_band.con\n");
                     neb.image[0]->matter2con("neb_initial_band.con", false);
                     for (int image=1;image<=neb.images;image++) {
                         int mid = neb.images/2 + 1;
@@ -98,6 +102,8 @@ int DynamicsSaddleSearch::run(void)
                         neb.image[image]->matter2con("neb_initial_band.con",true);
                     }
                     neb.image[neb.images+1]->matter2con("neb_initial_band.con",true);
+                }else{
+                    log("Linear interpolation between minima used for initial band\n");
                 }
 
                 AtomMatrix mode;
@@ -138,6 +144,9 @@ int DynamicsSaddleSearch::run(void)
                                 mode.normalize();
                             }
                         }
+                        if (maxEnergy <= reactant->getPotentialEnergy()) {
+                            return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                        }
                     }
                 }else{
                     neb.maxEnergyImage = neb.images/2 + 1;
@@ -145,6 +154,7 @@ int DynamicsSaddleSearch::run(void)
 
 
 
+                log("Initial saddle guess saved to saddle_initial_guess.con\n");
                 saddle->matter2con("saddle_initial_guess.con");
                 MinModeSaddleSearch search = MinModeSaddleSearch(saddle, 
                         mode, reactant->getPotentialEnergy(), parameters);
@@ -152,7 +162,7 @@ int DynamicsSaddleSearch::run(void)
 
                 if (saddle->maxForce() > parameters->optConvergedForce) {
                     log("did not converge to a saddle, force too big\n");
-                    return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                    return MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
                 }
 
 
@@ -163,7 +173,7 @@ int DynamicsSaddleSearch::run(void)
                 if (eigenvalue > 0.0) {
                     log("eigenvalue not negative\n");
                     //XXX:error is not meaningful
-                    return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                    return MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
                 }
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
@@ -180,7 +190,7 @@ int DynamicsSaddleSearch::run(void)
         }
     }
     MDSnapshots.clear();
-    return MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS; 
+    return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 
 int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Matter *product)
