@@ -451,6 +451,7 @@ class AKMCState(state.State):
                              "Negative barrier",
                              "MD Trajecotry too short", 
                              "No negative mode at saddle",
+                             "No forward barrier in minimized band",
                              ]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])

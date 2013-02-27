@@ -66,7 +66,7 @@ int DynamicsSaddleSearch::run(void)
         }
 
         if ((i+1)%checkInterval == 0) {
-            log("Minimizing trajecotry, step %i\n", i+1);
+            log("Minimizing trajectory, step %i\n", i+1);
 
             *product = *saddle;
             product->relax(false, false);
@@ -76,7 +76,7 @@ int DynamicsSaddleSearch::run(void)
                 log("Found new state\n");
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
-                log("Found trasition at snapshot image %i\n", image);
+                log("Found transition at snapshot image %i\n", image);
                 time = MDTimes[image];
                 log("Transition time %.2f fs\n", time);
 
@@ -145,7 +145,8 @@ int DynamicsSaddleSearch::run(void)
                             }
                         }
                         if (maxEnergy <= reactant->getPotentialEnergy()) {
-                            return MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY;
+                            log("warning: no barrier found\n");
+                            return MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
                         }
                     }
                 }else{
