@@ -218,6 +218,11 @@ int MinModeSaddleSearch::run()
 
     if (iteration == 0) minModeMethod->compute(matter, mode);
 
+    if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
+        log("[MinModeSaddleSearch] eigenvalue not negative\n");
+        status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+    }
+
     delete optimizer;
 
     return status;

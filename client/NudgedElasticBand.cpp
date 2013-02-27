@@ -155,9 +155,10 @@ int NudgedElasticBand::compute(void)
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
     log("%10s %12s %11s %12s\n", "iteration", "force", "max image", "max energy");
-    log("-------------------------------------------\n");
+    log("------------------------------------------------\n");
 
-    char fmt[] = "%10li %12.4e %11li %12.4e\n";
+    char fmt[] = "%10li %12.4e %11li %12.4f\n";
+    char fmtTiny[] = "%10li %12.4e %11li %12.4e\n";
 
     while (!objf.isConverged())
     {
@@ -177,7 +178,11 @@ int NudgedElasticBand::compute(void)
 
         double dE = image[maxEnergyImage]->getPotentialEnergy() - 
                     image[0]->getPotentialEnergy();
-        log(fmt, iteration, convergenceForce(), maxEnergyImage, dE);
+        if (dE > 0.01) {
+            log(fmt, iteration, convergenceForce(), maxEnergyImage, dE);
+        }else{
+            log(fmtTiny, iteration, convergenceForce(), maxEnergyImage, dE);
+        }
     }
 
     if(objf.isConverged()) {
