@@ -348,6 +348,8 @@ void ProcessSearchJob::printEndState(int status)
         log("no reaction found during MD trajectory\n");
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
         log("converged to stationary point with zero negative modes\n");
+    else if(status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
+        log("no forward barrier was found along minimized band\n");
     else
         log("unknown status: %i!\n", status);
 
