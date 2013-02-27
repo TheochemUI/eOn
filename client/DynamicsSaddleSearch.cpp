@@ -159,23 +159,16 @@ int DynamicsSaddleSearch::run(void)
                 saddle->matter2con("saddle_initial_guess.con");
                 MinModeSaddleSearch search = MinModeSaddleSearch(saddle, 
                         mode, reactant->getPotentialEnergy(), parameters);
-                search.run();
+                int minModeStatus = search.run();
 
-                if (saddle->maxForce() > parameters->optConvergedForce) {
-                    log("did not converge to a saddle, force too big\n");
-                    return MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS;
+                if (minModeStatus != MinModeSaddleSearch::STATUS_GOOD) {
+                    log("error in min mode saddle search\n");
+                    return minModeStatus;
                 }
-
 
                 eigenvalue = search.getEigenvalue();
                 eigenvector = search.getEigenvector();
                 log("eigenvalue: %.3f\n", eigenvalue);
-
-                if (eigenvalue > 0.0) {
-                    log("eigenvalue not negative\n");
-                    //XXX:error is not meaningful
-                    return MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
-                }
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("found barrier of %.3f\n", barrier);
