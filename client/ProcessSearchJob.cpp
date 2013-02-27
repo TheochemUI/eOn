@@ -308,45 +308,48 @@ void ProcessSearchJob::saveData(int status)
 
 void ProcessSearchJob::printEndState(int status)
 {
-    log("[Saddle Search] Final state: ");
+    log("[Saddle Search] Final status: ");
     if(status == MinModeSaddleSearch::STATUS_GOOD)
-        log("[Saddle Search] success\n");
+        log("success\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-        log("[Saddle Search] initial displacement unable to reach convex region\n");
+        log("initial displacement unable to reach convex region\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-        log("[Saddle Search] barrier too high\n");
+        log("barrier too high\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-        log("[Saddle Search] too many iterations in concave region\n");
+        log("too many iterations in concave region\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-        log("[Saddle Search] too many iterations\n");
+        log("too many iterations\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-        log("[Saddle Search] saddle is not connected to initial state\n");
+        log("saddle is not connected to initial state\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-        log("[Saddle Search] prefactors not within window\n");
+        log("prefactors not within window\n");
 
     else if(status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-        log("[Saddle Search] hessian calculation failed\n");
+        log("hessian calculation failed\n");
 
     else if(status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-        log("[Saddle Search] energy barrier not within window\n");
+        log("energy barrier not within window\n");
 
     else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-        log("[Saddle Search] minimizations from saddle did not converge\n");
+        log("minimizations from saddle did not converge\n");
 
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-        log("[Saddle Search] nonnegative initial mode, aborting\n");
+        log("nonnegative initial mode, aborting\n");
 
-    else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-        log("[Saddle Search] negative barrier detected\n");
-
+    else if(status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
+        log("negative barrier detected\n");
+    else if(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
+        log("no reaction found during MD trajectory\n");
+    else if(status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
+        log("converged to stationary point with zero negative modes\n");
     else
-        log("[Saddle Search] unknown status: %i!\n", status);
+        log("unknown status: %i!\n", status);
 
     return;
 }

@@ -89,6 +89,26 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
+Options for Dynamics Method
+---------------------------
+
+**dynamics_temperature**: The temperature, in Kelvin, for the molecular dynamics run. A good initial choice might be near melting temperature of the material.
+
+    default: ``[Main] temperature``
+
+**dynamics_state_check_interval**: The time interval, in femtoseconds, to minimizing the geometry and check if the system has left the initial state.
+
+    default: ``100.0``
+
+**dynamics_record_interval**: The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory. These snapshots are then used to locate when the system first left the initial state. A binary search is used to locate the first snapshot that minimizes to a new geometry.
+
+    default: ``10.0``
+
+**dynamics_linear_interpolation**: If set to ``true``, then the band connecting the initial and final states will be initialized using a linear interpolation. If set to ``false``, then the band
+is interpolated through the first snapshot that minimizes to the final state.
+
+    default: ``true``
+
 .. rubric:: References
 
 .. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives," *J. Chem. Phys.* **111**, 7010-7022 (1999). `DOI <http://dx.doi.org/10.1063/1.480097>`_
