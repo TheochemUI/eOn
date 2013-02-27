@@ -96,9 +96,10 @@ Parameters::Parameters(){
     saddleConfinePositiveScaleRatio = 0.9; // undocumented
     saddleConfinePositiveBoost = 10.; // undocumented
     saddleConfinePositiveMinActive = 30; // undocumented
-    saddleDynamicsTemperature = 0.0; //set later
-    saddleDynamicsStateCheckInterval = 0.0; //set later
-    saddleDynamicsLinearInterpolation = false;
+    saddleDynamicsTemperature = 0.0; //defaults to temperature
+    saddleDynamicsStateCheckInterval = 100.0; //fs
+    saddleDynamicsRecordInterval = 10.0; //fs
+    saddleDynamicsLinearInterpolation = true;
 
     // [Optimizers] //
     optMethod = "cg";
@@ -467,7 +468,6 @@ int Parameters::load(FILE *file){
             saddleConfinePositiveMinActive = ini.GetValueL("Saddle Search", "confine_positive_scale_min_active", saddleConfinePositiveMinActive);            
         }
         saddleDynamicsTemperature = temperature;
-        saddleDynamicsStateCheckInterval = mdTime;
         saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
         saddleDynamicsStateCheckInterval = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckInterval);
         saddleDynamicsRecordInterval = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordInterval);
