@@ -23,9 +23,11 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     
     if (parameters->prefactorFilterMode == Prefactor::FILTER_FRACTION) {
         atoms = movedAtomsPct(parameters, min1, saddle, min2);
+        cout << atoms << "\n";
     }
     else {
         atoms = movedAtoms(parameters, min1, saddle, min2);
+        cout << atoms << "\n";
     }
 
     
@@ -236,9 +238,13 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
     log("[Prefactor] including all atoms that make up %.3f%% of the motion\n", 
             parameters->prefactorFilterFraction*100);
     double sum = 0.0;
+    int mini = 0;
     for (int i = 0; i < nAtoms; i++) {
         diff[i] = max(diffMin1.row(i).norm(), diffMin2.row(i).norm());
         sum += diff[i];
+        if (diff[i] <= diff[mini]) {
+            mini = i;
+        }
     }
 
     log("[Prefactor] sum of atom distances moved %.4f\n", sum);
@@ -247,7 +253,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
     int nMoved = 0;
     double d = 0.0;
     while (d/sum <= parameters->prefactorFilterFraction && nMoved < nFree) {
-        double maxi = 0;
+        int maxi = mini;
         for (int i = 0; i < nAtoms; i++) {
             if (diff[i] >= diff[maxi]) {
                 if (!(moved.cwise() == i).any()) {
