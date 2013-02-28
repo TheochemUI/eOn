@@ -1,5 +1,6 @@
 #include "BasinHoppingSaddleSearch.h"
 #include "Log.h"
+#include <stdio.h>
 #include "NudgedElasticBand.h"
 #include "MinModeSaddleSearch.h"
 #include "LowestEigenmode.h"
@@ -28,17 +29,57 @@ BasinHoppingSaddleSearch::~BasinHoppingSaddleSearch()
 
 int BasinHoppingSaddleSearch::run(void)
 {
-    //minimize "saddle"
-
-    //*product = *saddle;
-    //accept or reject based on boltzman exp(-de/(kB*parameters->temperature))
-
-    // NEB reactant to minimized "saddle"
-
-    // pick the maximum energy image along the band and do dimer
+                                                      //minimize "saddle"
+    saddle -> relax(false, true, false, "displacementmin");
+    product = new Matter(parameters);
+    *product = *saddle;
+                                                     //accept or reject based on boltzman exp(-de/(kB*parameters->temperature))
+    double eproduct, ereactant, de;
+    eproduct = product->getPotentialEnergy();
+    ereactant = reactant -> getPotentialEnergy();
+    de = eproduct - ereactant;
+    double kb= 8.6173324e-5;
+    double Temperature = parameters->temperature;
+    double arg = -de/(kb*Temperature);
+    double p=exp(arg);
+    double r=drand48(); 
+    if(ereactant < eproduct){
+	if(r>p){                                      //reject
+	    return 1;
+	}
+    }
+                                                     // NEB reactant to minimized "saddle"
+    NudgedElasticBand neb(reactant, product, parameters);
+    neb.image[0] -> matter2con("neb_initial_band.con", false);
+    for(int j=1; j<neb.images; j++){
+	neb.image[j] ->matter2con("neb_initial_band", true);
+    }
+    neb.compute();
+                                                     // pick the maximum energy image along the band
+    double Emax = -1e100;
+    int HighestImage = 0;
     
-    //eigenvalue = ;
-    //eigenvector = ;
+    for (int i=1; i<neb.images; i++) {
+	double Etest = neb.image[i]->getPotentialEnergy();
+	printf ("i: %i Etest: %f \n",i, Etest); 
+	if(Etest>Emax){
+	    Emax = Etest;
+	    HighestImage = i;
+	}
+    }
+                                                      //do dimer
+    //Calculate initial direction
+    AtomMatrix r_1 = neb.image[HighestImage-1]->getPositions();
+    AtomMatrix r_2 = neb.image[HighestImage]->getPositions();
+    AtomMatrix r_3 = neb.image[HighestImage+1]->getPositions();
+    AtomMatrix direction = (r_3-r_1)/2;
+    MinModeSaddleSearch dim(neb.image[HighestImage],direction.normalized(),ereactant, parameters);
+    dim.run();
+    *saddle = *neb.image[HighestImage];
+    eigenvalue = dim.getEigenvalue();
+    eigenvector = dim.getEigenvector();
+    return 0;
+
 
 }
 
