@@ -23,11 +23,9 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     
     if (parameters->prefactorFilterMode == Prefactor::FILTER_FRACTION) {
         atoms = movedAtomsPct(parameters, min1, saddle, min2);
-        cout << atoms << "\n";
     }
     else {
         atoms = movedAtoms(parameters, min1, saddle, min2);
-        cout << atoms << "\n";
     }
 
     
