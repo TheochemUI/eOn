@@ -25,8 +25,8 @@ FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
     alpha_start = 0.1;
     alpha = alpha_start;
     f_a = 0.99;
-    v0.resize(objf->degreesOfFreedom());
-    v0.setZero();
+    v.resize(objf->degreesOfFreedom());
+    v.setZero();
     iteration = 0;
 }
 
@@ -37,34 +37,37 @@ FIRE::~FIRE()
 
 bool FIRE::step(double maxMove)
 {
+    double P = 0;
     // Check convergence.
     if(objf->isConverged()) {
         return true;
     }
 
     // Velocity Verlet
-    VectorXd f0 = -objf->getGradient();
-    VectorXd x0 = objf->getPositions();
-    VectorXd dx = (v0 * dt) + (0.5 * f0 * dt * dt);
+    VectorXd f = -objf->getGradient();
+    VectorXd x = objf->getPositions();
+
+    v += f * dt;
+    VectorXd dx = v * dt;
+
     dx = helper_functions::maxAtomMotionAppliedV(dx, parameters->optMaxMove);
-    objf->setPositions(x0 + dx);
-    VectorXd f1 = -objf->getGradient();
-    VectorXd f1_unit = f1 / f1.norm();
-    VectorXd v1 = v0 + ((f0 + f1) * 0.5) * dt;
+    objf->setPositions(x + dx);
+
+    f = -objf->getGradient();
+    VectorXd f_unit = f / f.norm();
 
     // FIRE
-    double P = f1.dot(v1);
-    v0 = (1 - alpha) * v1 + alpha * f1_unit * v1.norm();
+    P = f.dot(v);
+    v = (1 - alpha) * v + alpha * f_unit * v.norm();
     if(P >= 0) {
         N++;
         if (N > N_min) {
             dt = min(dt * f_inc, dt_max);
             alpha = alpha * f_a;
         }
-    }
-    else {
+    }else{
         dt = dt * f_dec;
-        v0 = v0 * 0.0;
+        v = v * 0.0;
         alpha = alpha_start;
         N = 0;
     }
