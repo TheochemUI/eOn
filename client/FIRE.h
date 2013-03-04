@@ -30,7 +30,7 @@ class FIRE : public Optimizer
     private:
         ObjectiveFunction *objf;
         Parameters *parameters;
-        VectorXd v0;
+        VectorXd v;
         double alpha;
         double alpha_start;
         int N, N_min;
