@@ -195,15 +195,20 @@ class AKMCState(state.State):
         self.load_process_table()
         lowest = self.get_lowest_barrier()
         table = []
-
         for id in self.procs.keys():
             proc = self.procs[id]
             if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
                 continue
             table.append((id, proc['rate'], proc['prefactor']))
         return table
- 
- 
+
+    def get_process_table(self):
+        rps = self.get_relevant_procids()
+        pt = {}
+        for id in self.get_relevant_procids():
+            pt[id] = self.procs[id]
+        return pt
+
     def get_relevant_procids(self):
         rt = self.get_ratetable()
         rps = []
