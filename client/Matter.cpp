@@ -75,7 +75,18 @@ class MatterObjectiveFunction : public ObjectiveFunction
         VectorXd getPositions() { return matter->getPositionsFreeV(); }
         int degreesOfFreedom() { return 3*matter->numberOfFreeAtoms(); }
         bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
-        double getConvergence() { return matter->maxForce(); }
+        double getConvergence() {
+            if (parameters->optConvergenceCriterion == "norm") {
+                return matter->getForcesFreeV().norm(); 
+            } else if (parameters->optConvergenceCriterion == "max_atom") {
+                return matter->maxForce(); 
+            } else if (parameters->optConvergenceCriterion == "max_component") {
+                return matter->getForces().maxCoeff(); 
+            } else {
+                log("unknown opt_convergence_criterion: %s\n", parameters->optConvergenceCriterion.data());
+                exit(1);
+            }
+        }
     private:
         Matter *matter;
         Parameters *parameters;
