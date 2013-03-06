@@ -89,7 +89,19 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         VectorXd getPositions() { return matter->getPositionsV(); }
         int degreesOfFreedom() { return 3*matter->numberOfAtoms(); }
         bool isConverged() { return getConvergence() < parameters->saddleConvergedForce; }
-        double getConvergence() { return matter->maxForce(); }
+
+        double getConvergence() {
+            if (parameters->optConvergenceCriterion == "norm") {
+                return matter->getForcesFreeV().norm(); 
+            } else if (parameters->optConvergenceCriterion == "max_atom") {
+                return matter->maxForce(); 
+            } else if (parameters->optConvergenceCriterion == "max_component") {
+                return matter->getForces().maxCoeff(); 
+            } else {
+                log("unknown opt_convergence_criterion: %s\n", parameters->optConvergenceCriterion.data());
+                exit(1);
+            }
+        }
 
     private:
         AtomMatrix eigenvector;

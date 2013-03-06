@@ -103,6 +103,7 @@ Parameters::Parameters(){
 
     // [Optimizers] //
     optMethod = "cg";
+    optConvergenceCriterion = "max_atom";
     optMaxIterations = 1000;
     optConvergedForce = 0.01;
     optMaxMove = 0.2;
@@ -322,6 +323,7 @@ int Parameters::load(FILE *file){
         // [Optimizers] //
 
         optMethod = toLowerCase(ini.GetValue("Optimizer", "opt_method", optMethod));
+        optConvergenceCriterion = toLowerCase(ini.GetValue("Optimizer", "opt_convergence_criterion", optConvergenceCriterion));
         optConvergedForce = ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
