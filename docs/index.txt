@@ -1,5 +1,5 @@
 ================================
-EON: Long timescale dynamics
+EON: Long timescale dynamics (new)
 ================================
 
 The EON software package contains a set of algorithms used primarily to model the
