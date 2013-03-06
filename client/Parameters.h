@@ -102,6 +102,7 @@ public:
 
     // [Optimizer] //
     string optMethod;
+    string optConvergenceCriterion; // norm, max atom, max component
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
