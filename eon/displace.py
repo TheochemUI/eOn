@@ -63,7 +63,8 @@ class DisplacementManager:
                                       hole_epicenters=moved_atoms,
                                       cutoff=config.comp_neighbor_cutoff,
                                       use_covalent=config.comp_use_covalent,
-                                      covalent_scale=config.comp_covalent_scale)
+                                      covalent_scale=config.comp_covalent_scale,
+                                      displace_all=config.displace_all_listed)
         if config.displace_water_weight > 0:
             self.water = Water(self.reactant,
                                config.stdev_translation, config.stdev_rotation,
@@ -176,10 +177,19 @@ class Displace:
         '''Returns a displacement to be added to self.reactant.r'''
         if self.neighbors_list == None:
             self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
-        logger.debug("Displacement epicenter: %d" % atom_index)
         displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
-        displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
+        if hasattr(atom_index, '__getitem__'):
+            logger.debug("Displacement epicenters: ", atom_index)
+            neighbors = [ self.neighbors_list[i] for i in xrange(len(self.neighbors_list)) if i in atom_index ]
+            #flatten
+            neighbors = sum(neighbors,[])
+            neighbors = numpy.array(list(set(neighbors)), dtype=int)
+
+            displaced_atoms = numpy.append(atom_index, neighbors)
+        else:
+            logger.debug("Displacement epicenter: %d" % atom_index)
+            displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
         # ensures that the total displacement vector exceeds a given length
         while (displacement_norm <= config.disp_min_norm):
@@ -359,9 +369,10 @@ class NotTCP(Displace):
 # ### TShacked end
 
 class ListedAtoms(Displace):
-    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3):
+    def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
+        self.displace_all = displace_all
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in config.disp_listed_atoms 
                 if self.reactant.free[i] ]
@@ -374,7 +385,10 @@ class ListedAtoms(Displace):
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
         # chose a random atom from the supplied list
-        epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
+        if self.displace_all:
+            epicenter = self.listed_atoms
+        else:
+            epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
         return self.get_displacement(epicenter)
 
 class Random(Displace):
