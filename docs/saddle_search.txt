@@ -69,6 +69,10 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0``
 
+**displace_all_listed**: If ``true``, each displacement will include all of the degrees of freedom of all of the listed atoms in **displace_atomlist**. If ``false`` one of the atoms in **displace_atomlist** will be selected at random for each displacement. In either case all atoms up to **displace_radius** distance away from any displaced atom will be included in the displacement. This can be disabled by setting **displace_radius** to 0.
+
+    default: ``false``
+
 **displace_max_coordination**: When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
 
     default: ``11``
