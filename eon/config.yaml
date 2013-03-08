@@ -834,6 +834,10 @@ Saddle Search:
             kind: string
             default: 0
 
+        displace_all_listed:
+            kind: boolean
+            default: false
+
         max_step_size:
             kind: float
             default: 0.2
