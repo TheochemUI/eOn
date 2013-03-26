@@ -97,9 +97,9 @@ void Dynamics::run()
     setThermalVelocity();
 
     if(parameters->thermostat != NONE) {
-        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %10ld steps\n", temperature, parameters->mdSteps);
+        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %ld steps (%.4e s)\n", temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStepInput*parameters->mdSteps);
     }else{
-        log("[Dynamics] Running NVE molecular dynamics for %10ld steps\n", parameters->mdSteps);
+        log("[Dynamics] Running NVE molecular dynamics for %ld steps\n", parameters->mdSteps);
     }
 
     if (parameters->writeMovies == true) {
@@ -119,7 +119,9 @@ void Dynamics::run()
         sumT += kinT;
         sumT2 += kinT*kinT;
 
-        log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", step, kinE, potE, kinE+potE, kinT);
+        if (step % parameters->writeMoviesInterval == 0) {
+            log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", step, kinE, potE, kinE+potE, kinT);
+        }
 
         if ( (parameters->writeMovies == true) && (step % parameters->writeMoviesInterval == 0) ) {
             matter->matter2con("dynamics", true);
