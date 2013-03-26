@@ -374,6 +374,9 @@ void NudgedElasticBand::printImageData(bool writeToFile)
                 image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
         }
     }
+    if (writeToFile) {
+        fclose(fh);
+    }
 }
 
 // Estimate the barrier using a cubic spline
@@ -453,6 +456,6 @@ void NudgedElasticBand::findExtrema(void)
     log("\nFound %li extrema\n",numExtrema);
     log("Energy reference: %f\n",image[0]->getPotentialEnergy());
     for(long i=0; i<numExtrema; i++) {
-        log(" %li at image position %f with energy %f and curvature %f\n",i,extremumPosition[i],extremumEnergy[i]-image[0]->getPotentialEnergy(), extremumCurvature[i]);
+        log("extrema #%li at image position %f with energy %f and curvature %f\n",i+1,extremumPosition[i],extremumEnergy[i]-image[0]->getPotentialEnergy(), extremumCurvature[i]);
     }
 }
