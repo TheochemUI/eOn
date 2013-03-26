@@ -104,6 +104,10 @@ int DynamicsSaddleSearch::run(void)
                     neb.image[neb.images+1]->matter2con("neb_initial_band.con",true);
                 }else{
                     log("Linear interpolation between minima used for initial band\n");
+                    neb.image[0]->matter2con("neb_initial_band.con", false);
+                    for(int j=1; j<=neb.images+1; j++){
+                        neb.image[j]->matter2con("neb_initial_band.con", true);
+                    }
                 }
 
                 AtomMatrix mode;
@@ -115,10 +119,6 @@ int DynamicsSaddleSearch::run(void)
                     for (j=0;j<neb.numExtrema;j++) {
                         if (neb.extremumCurvature[j] < 0.0) { 
                             extremumImage = (int)floor(neb.extremumPosition[j]);
-                            if (extremumImage == 0) {
-                                extremumImage = -1;
-                                continue;
-                            }
                             log("chose image %i as extremum image\n", extremumImage);
                             break;
                         }
