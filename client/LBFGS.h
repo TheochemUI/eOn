@@ -29,7 +29,6 @@ public:
     bool step(double maxMove);
     bool run(int maxIterations, double maxMove);
     void update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0);
-    void reset();
 
 private:
     VectorXd getStep(VectorXd f);

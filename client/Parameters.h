@@ -111,6 +111,8 @@ public:
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
     bool   optLBFGSAutoScale;
+    bool   optLBFGSAngleReset;
+    bool   optLBFGSDistanceReset;
     bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
     bool   optCGNoOvershooting; // if set it is ensured that the approximate line search in conjugate gradients never overshoot the minimum along the search line
     bool   optCGKnockOutMaxMove; // if set the old search direction is nullified when steps larger than the optMaxMove are conducted 
