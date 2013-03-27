@@ -35,6 +35,31 @@ VectorXd LBFGS::getStep(VectorXd f)
 {
     double H0 = parameters->optLBFGSInverseCurvature;
 
+    if (iteration > 0 && parameters->optLBFGSAutoScale) {
+        VectorXd dr = objf->getPositions() - rPrev;
+        VectorXd dg = -f+fPrev;
+        H0 = dr.dot(dr)/dr.dot(dg);
+    }
+    if ((iteration == 0 || H0 < 0) && parameters->optLBFGSAutoScale) {
+        //calculate H0 via finite difference
+        VectorXd r = objf->getPositions();
+        objf->setPositions(r+parameters->finiteDifference*f.normalized());
+        VectorXd dg = objf->getGradient(true)+f;
+        H0 = dg.dot(f.normalized())/parameters->finiteDifference;
+        H0 = 1.0/H0;
+        objf->setPositions(r);
+        if (H0 > 0) {
+            log_file("[LBFGS] H0 calculated via FD: %.4e\n", H0); 
+        }else{
+            log_file("[LBFGS] H0 calculated via FD: %.4e, sd instead\n", H0); 
+            iteration = 0;
+            return 100*f.normalized();
+        }
+
+    }else if (parameters->optLBFGSAutoScale) {
+        log_file("[LBFGS] H0: %.4e\n", H0); 
+    }
+
     int loopmax = s.size();
     double a[loopmax];
 
@@ -45,10 +70,6 @@ VectorXd LBFGS::getStep(VectorXd f)
         q -= a[i] * y[i];
     }
 
-    if (loopmax > 0 && parameters->optLBFGSAutoScale) {
-        H0 = s[loopmax-1].dot(s[loopmax-1])/s[loopmax-1].dot(y[loopmax-1]);
-        log_file("[LBFGS] H0: %.4e\n", H0); 
-    }
     VectorXd z = H0 * q;
 
     for (int i=0;i<loopmax;i++) {
@@ -61,16 +82,15 @@ VectorXd LBFGS::getStep(VectorXd f)
     return d;
 }
 
-
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
     VectorXd s0 = r1 - r0;
-    s.push_back(s0);
 
     //y0 is the change in the gradient, not the force
     VectorXd y0 = f0 - f1;
-    y.push_back(y0);
 
+    s.push_back(s0);
+    y.push_back(y0);
     rho.push_back(1.0/(s0.dot(y0)));
 
     if ((int)s.size() > memory) {
@@ -86,6 +106,18 @@ bool LBFGS::step(double maxMove)
     VectorXd f = -objf->getGradient();
 
     if (iteration > 0) {
+        double C = (r-rPrev).dot(fPrev-f)/(r-rPrev).dot(r-rPrev);
+        if (C<0) {
+            log("[LBFGS] Curvature: %.4f\n",C);
+            s.clear();
+            y.clear();
+            rho.clear();
+            iteration = 0;
+        }
+    }
+
+
+    if (iteration > 0) {
         update(r, rPrev, f, fPrev);
     }
 
@@ -99,17 +131,23 @@ bool LBFGS::step(double maxMove)
     
     dr = helper_functions::maxAtomMotionAppliedV(d, maxMove);
 
-    if (angle > 90.0) {
-        log("LBFGS reset angle = %.4f\n", angle);
-        s.erase(s.begin(), s.end());
-        y.erase(y.begin(), y.end());
-        rho.erase(rho.begin(), rho.end());
+    bool reset;
+    reset = false;
+    if (angle > 90.0 && parameters->optLBFGSAngleReset) {
+        log("LBFGS reset, angle, %.4f\n", angle);
+        reset = true;
+    }
+
+    if (dr != d && parameters->optLBFGSDistanceReset) {
+        log("LBFGS reset, step too big, %.4f\n", d.norm());
+        reset = true;
+    }
+
+    if (reset) {
+        s.clear();
+        y.clear();
+        rho.clear();
         d = getStep(f);
-    }else if (dr != d) {
-        log("LBFGS reset, step too big\n");
-        s.erase(s.begin(), s.end());
-        y.erase(y.begin(), y.end());
-        rho.erase(rho.begin(), rho.end());
     }
 
     objf->setPositions(r+dr);
