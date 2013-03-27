@@ -16,7 +16,8 @@ import config
 try:
     import mpsuperbasin
 except:
-    logger.debug('failed to import mpsuperbasin.')
+    logger.debug('failed to import mpsuperbasin')
+    mpsuperbasin = None
 import superbasin
 
 class SuperbasinScheme:
@@ -27,6 +28,10 @@ class SuperbasinScheme:
     def __init__(self, superbasin_path, states, kT):
 
         if config.sb_use_arbitrary_precision:
+            if mpsuperbasin is None:
+                print "Was unable to import mpsuperbasin. Is mpmath installed?"
+                import sys
+                sys.exit()
             global superbasin
             superbasin = mpsuperbasin
 
