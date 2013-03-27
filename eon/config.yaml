@@ -675,6 +675,10 @@ Hessian:
             kind: string
             default: All
 
+        zero_freq_value:
+            kind: float
+            default: 1e-6
+
 ################################################################################
 
 Lanczos:
@@ -1100,6 +1104,18 @@ Optimizer:
         lbfgs_inverse_curvature:
             kind: float
             default: 0.1
+
+        lbfgs_auto_scale:
+            kind: bool
+            default: false
+
+        lbfgs_angle_reset:
+            kind: bool
+            default: true
+
+        lbfgs_distance_reset:
+            kind: bool
+            default: true
         
         qm_steepest_descent:
             kind: bool

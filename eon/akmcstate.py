@@ -133,8 +133,7 @@ class AKMCState(state.State):
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
             logger.info("found new lowest barrier %f for state %i", lowest, self.number)
-        elif config.saddle_method == 'dynamics':
-            logger.info("found new barrier %f for state %i", barrier, self.number)
+        logger.info("found new barrier %f for state %i", barrier, self.number)
 
 
         # Update the search result table.
