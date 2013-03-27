@@ -35,6 +35,20 @@ VectorXd LBFGS::getStep(VectorXd f)
 {
     double H0 = parameters->optLBFGSInverseCurvature;
 
+    if (iteration > 0) {
+        VectorXd r = objf->getPositions();
+        double C = (r-rPrev).dot(fPrev-f)/(r-rPrev).dot(r-rPrev);
+        if (C<0) {
+            log_file("[LBFGS] Negative curvature: %.4f take sd step\n",C);
+            s.clear();
+            y.clear();
+            rho.clear();
+            iteration = 0;
+            return 10000*f.normalized();
+        }
+    }
+
+
     if (iteration > 0 && parameters->optLBFGSAutoScale) {
         VectorXd dr = objf->getPositions() - rPrev;
         VectorXd dg = -f+fPrev;
@@ -57,6 +71,7 @@ VectorXd LBFGS::getStep(VectorXd f)
             rho.clear();
             y.clear();
             H0 = parameters->optLBFGSInverseCurvature;
+            return 10000*f.normalized();
         }
 
     }else if (parameters->optLBFGSAutoScale) {
@@ -107,18 +122,6 @@ bool LBFGS::step(double maxMove)
 {
     VectorXd r = objf->getPositions();
     VectorXd f = -objf->getGradient();
-
-    if (iteration > 0) {
-        double C = (r-rPrev).dot(fPrev-f)/(r-rPrev).dot(r-rPrev);
-        if (C<0) {
-            log_file("[LBFGS] Negative curvature: %.4f take sd step\n",C);
-            s.clear();
-            y.clear();
-            rho.clear();
-            iteration = 0;
-        }
-    }
-
 
     if (iteration > 0) {
         update(r, rPrev, f, fPrev);
