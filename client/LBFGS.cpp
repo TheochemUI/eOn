@@ -53,7 +53,10 @@ VectorXd LBFGS::getStep(VectorXd f)
         }else{
             log_file("[LBFGS] H0 calculated via FD: %.4e, sd instead\n", H0); 
             iteration = 0;
-            return 100*f.normalized();
+            s.clear();
+            rho.clear();
+            y.clear();
+            H0 = parameters->optLBFGSInverseCurvature;
         }
 
     }else if (parameters->optLBFGSAutoScale) {
@@ -84,7 +87,7 @@ VectorXd LBFGS::getStep(VectorXd f)
 
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
-    VectorXd s0 = r1 - r0;
+    VectorXd s0 = objf->difference(r1, r0);
 
     //y0 is the change in the gradient, not the force
     VectorXd y0 = f0 - f1;
@@ -108,7 +111,7 @@ bool LBFGS::step(double maxMove)
     if (iteration > 0) {
         double C = (r-rPrev).dot(fPrev-f)/(r-rPrev).dot(r-rPrev);
         if (C<0) {
-            log("[LBFGS] Curvature: %.4f\n",C);
+            log_file("[LBFGS] Negative curvature: %.4f take sd step\n",C);
             s.clear();
             y.clear();
             rho.clear();
@@ -134,12 +137,12 @@ bool LBFGS::step(double maxMove)
     bool reset;
     reset = false;
     if (angle > 90.0 && parameters->optLBFGSAngleReset) {
-        log("LBFGS reset, angle, %.4f\n", angle);
+        log_file("[LBFGS] reset, angle, %.4f\n", angle);
         reset = true;
     }
 
     if (dr != d && parameters->optLBFGSDistanceReset) {
-        log("LBFGS reset, step too big, %.4f\n", d.norm());
+        log_file("[LBFGS] reset, step too big, %.4f\n", d.norm());
         reset = true;
     }
 
