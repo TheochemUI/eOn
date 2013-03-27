@@ -48,7 +48,6 @@ class Superbasin:
             raise ValueError('Passed entry state is not in this superbasin')
 
         probability_vector = self.probability_matrix.transpose()[entry_state_index]
-        sys.exit()
         if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
             logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
@@ -163,18 +162,6 @@ class Superbasin:
         # fundamental_matrix = numpy.linalg.inv(transient_matrix)
         fundamental_matrix_mp = transient_matrix_mp**-1
 
-        # print 'recurrent vector-----------------------------------'
-        # print recurrent_vector
-        # print 'recurrent vector mp--------------------------------'
-        # print recurrent_vector_mp
-        # print 'transient matrix-----------------------------------'
-        # print transient_matrix
-        # print 'transient matrix mp -------------------------------'
-        # print transient_matrix_mp
-        # print 'fundamental matrix --------------------------------'
-        # print fundamental_matrix
-        # print 'fundamental matrix mp------------------------------'
-        # print fundamental_matrix_mp
 
         # mean_residence_times contains the lifetime of state i in the composite state.
         # mean_residence_times = numpy.zeros(len(self.states))
@@ -195,15 +182,6 @@ class Superbasin:
 
         self.mean_residence_times = numpy.array(mean_residence_times_mp.tolist()[0], numpy.float64)
         self.probability_matrix = numpy.array(probability_matrix_mp.tolist(), numpy.float64)
-
-        print 'self.mean residence times----------------------------------'
-        print self.mean_residence_times
-        print 'mean residence times mp-------------------------------'
-        print mean_residence_times_mp
-        print 'self.probability matrix------------------------------------'
-        print self.probability_matrix
-        print 'probability matrix mp---------------------------------'
-        print probability_matrix_mp
 
         for i in self.probability_matrix.transpose():
             if abs(1-i.sum()) > 1e-3:
