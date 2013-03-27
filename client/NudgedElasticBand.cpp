@@ -71,6 +71,16 @@ class NEBObjectiveFunction : public ObjectiveFunction
 
         double getConvergence() { return neb->convergenceForce(); }
 
+        VectorXd difference(VectorXd a, VectorXd b) {
+            VectorXd pbcDiff(3*neb->images*neb->atoms);
+            for (int i=1;i<=neb->images;i++) {
+                int n = (i-1)*3*neb->atoms;
+                int m = 3*neb->atoms;
+                pbcDiff.segment(n,m) = neb->image[i]->pbcV(a.segment(n,m)-b.segment(n,m));
+            }
+            return pbcDiff;
+        }
+
     private:
 
         NudgedElasticBand *neb;

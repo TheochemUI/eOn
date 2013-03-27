@@ -87,6 +87,9 @@ class MatterObjectiveFunction : public ObjectiveFunction
                 exit(1);
             }
         }
+        VectorXd difference(VectorXd a, VectorXd b) {
+            return matter->pbcV(a-b);
+        }
     private:
         Matter *matter;
         Parameters *parameters;
@@ -214,6 +217,12 @@ AtomMatrix Matter::pbc(AtomMatrix diff) const
     }
 
     return ddiff*cell;
+}
+
+VectorXd Matter::pbcV(VectorXd diffVector) const
+{
+    AtomMatrix pbcMatrix = pbc(AtomMatrix::Map(diffVector.data(),numberOfAtoms(),3));
+    return VectorXd::Map(pbcMatrix.data(),3*numberOfAtoms());
 }
 
 
