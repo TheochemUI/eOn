@@ -13,7 +13,7 @@ import sys
 import numpy
 import logging
 import mpmath
-logger = logging.getLogger('superbasin')
+logger = logging.getLogger('mpsuperbasin')
 
 
 class Superbasin:
