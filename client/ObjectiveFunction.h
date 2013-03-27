@@ -18,6 +18,7 @@ class ObjectiveFunction
         virtual int degreesOfFreedom()=0;
         virtual bool isConverged()=0;
         virtual double getConvergence()=0;
+        virtual VectorXd difference(VectorXd a, VectorXd b)=0;
 };
 
 #endif

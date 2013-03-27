@@ -103,6 +103,10 @@ class MinModeObjectiveFunction : public ObjectiveFunction
             }
         }
 
+        VectorXd difference(VectorXd a, VectorXd b) {
+            return matter->pbcV(a-b);
+        }
+
     private:
         AtomMatrix eigenvector;
         LowestEigenmode *minModeMethod;

@@ -61,6 +61,7 @@ public:
                string prefixMovie=string(), string prefixCheckpoint=string());
 
     AtomMatrix pbc(AtomMatrix diff) const;
+    VectorXd pbcV(VectorXd diff) const;
 
     AtomMatrix getPositions() const; // return coordinates of atoms in array pos
     VectorXd getPositionsV() const;
