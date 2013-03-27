@@ -12,8 +12,12 @@ import os
 import logging
 logger = logging.getLogger('superbasinscheme')
 
-import superbasin
 import config
+try:
+    import mpsuperbasin
+except:
+    logger.debug('failed to import mpsuperbasin.')
+import superbasin
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
@@ -21,6 +25,11 @@ class SuperbasinScheme:
         superbasining criteria. It also expands and merges superbasins'''
 
     def __init__(self, superbasin_path, states, kT):
+
+        if config.sb_use_arbitrary_precision:
+            global superbasin
+            superbasin = mpsuperbasin
+
         self.path = superbasin_path
         self.path_storage = superbasin_path+"storage/"
 
