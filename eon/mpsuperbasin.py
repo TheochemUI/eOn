@@ -13,6 +13,9 @@ import sys
 import numpy
 import logging
 import mpmath
+from mpmath import matrix
+from numpy import array
+import pickle
 logger = logging.getLogger('mpsuperbasin')
 
 
@@ -47,11 +50,12 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-        probability_vector = self.probability_matrix.transpose()[entry_state_index]
-        if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
+        # probability_vector = self.probability_matrix.transpose()[entry_state_index]
+        probability_vector = self.probability_matrix.T[entry_state_index,0:]
+        if abs(1.0-sum(probability_vector)) > 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
-            logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
-        probability_vector /= numpy.sum(probability_vector)
+            logger.warning('probability_vector ' + str(probability_vector) + " " + str(sum(probability_vector)))
+        probability_vector /= sum(probability_vector)
 
         u = numpy.random.random_sample()
         p = 0.0
@@ -181,12 +185,16 @@ class Superbasin:
 
 
         self.mean_residence_times = numpy.array(mean_residence_times_mp.tolist()[0], numpy.float64)
-        self.probability_matrix = numpy.array(probability_matrix_mp.tolist(), numpy.float64)
+        # self.probability_matrix = numpy.array(probability_matrix_mp.tolist(), numpy.float64)
+        self.probability_matrix = probability_matrix_mp
 
-        for i in self.probability_matrix.transpose():
-            if abs(1-i.sum()) > 1e-3:
+        # for i in self.probability_matrix.transpose():
+        #     if abs(1-i.sum()) > 1e-3:
+        for i in range(self.probability_matrix.T.rows):
+            row = self.probability_matrix.T[i,0:]
+            if abs(1-sum(row)) > 1e-3:
                 logger.debug('Probability matrix has row which does not add up to 1')
-                logger.debug('Row: %s' % str(i))
+                logger.debug('Row: %s' % str(row))
                 logger.debug('Transient matrix:\n%s' % str(transient_matrix_mp))
                 logger.debug('Recurrent vector:\n%s' % str(recurrent_vector_mp))
                 logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix_mp))
@@ -194,30 +202,35 @@ class Superbasin:
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
-        f = open(self.path, 'w')
-        for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
-            for j in i:
-                print >> f, repr(j),
-            print >> f
-        f.close()
+        pickle.dump([repr(self.state_numbers), repr(self.mean_residence_times), repr(self.probability_matrix)], open(self.path, 'w'))
+        # f = open(self.path, 'w')
+        # for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
+        #     for j in i:
+        #         print >> f, repr(j),
+        #     print >> f
+        # f.close()
 
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
-        f = open(self.path, 'r')
-
-        self.state_numbers = []
-        for i in f.readline().rstrip().split():
-            self.state_numbers.append(int(i)) 
+        data = [eval(d) for d in pickle.load(open(self.path, 'r'))]
+        self.state_numbers = data[0]
         self.states = [get_state(i) for i in self.state_numbers]
-        self.mean_residence_times = []
-        for i in f.readline().rstrip().split():
-            self.mean_residence_times.append(numpy.float64(i))
-        pmat = []
-        for i in f.readline().rstrip().split():
-            pmat.append(numpy.float64(i))
-        self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
-        f.close()
+        self.mean_residence_times = data[1]
+        self.probability_matrix = data[2]
+        # f = open(self.path, 'r')
+        # self.state_numbers = []
+        # for i in f.readline().rstrip().split():
+        #     self.state_numbers.append(int(i)) 
+        # self.states = [get_state(i) for i in self.state_numbers]
+        # self.mean_residence_times = []
+        # for i in f.readline().rstrip().split():
+        #     self.mean_residence_times.append(numpy.float64(i))
+        # pmat = []
+        # for i in f.readline().rstrip().split():
+        #     pmat.append(numpy.float64(i))
+        # self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
+        # f.close()
 
     def delete(self, storage=None):
         if storage is None:
