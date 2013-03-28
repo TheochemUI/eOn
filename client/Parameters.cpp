@@ -335,8 +335,8 @@ int Parameters::load(FILE *file){
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
         optLBFGSAutoScale = ini.GetValueB("Optimizer", "lbfgs_auto_scale", optLBFGSAutoScale);
-        optLBFGSAngleReset = ini.GetValueB("Optimizer", "lbfgs_angle_reset", optLBFGSAutoScale);
-        optLBFGSDistanceReset = ini.GetValueB("Optimizer", "lbfgs_distance_reset", optLBFGSAutoScale);
+        optLBFGSAngleReset = ini.GetValueB("Optimizer", "lbfgs_angle_reset", optLBFGSAngleReset);
+        optLBFGSDistanceReset = ini.GetValueB("Optimizer", "lbfgs_distance_reset", optLBFGSDistanceReset);
         optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent", optQMSteepestDecent);
         optCGNoOvershooting = ini.GetValueB("Optimizer", "cg_no_overshooting", optCGNoOvershooting);
         optCGKnockOutMaxMove = ini.GetValueB("Optimizer", "cg_knock_out_max_move", optCGKnockOutMaxMove);
