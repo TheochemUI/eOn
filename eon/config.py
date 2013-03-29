@@ -323,6 +323,7 @@ def init(config_file = ""):
         config.askmc_barrier_test_on = parser.getboolean('Coarse Graining','askmc_barrier_test_on')
         config.askmc_connections_test_on = parser.getboolean('Coarse Graining','askmc_connections_test_on')
     config.sb_use_arbitrary_precision = parser.getboolean('Coarse Graining', 'use_arbitrary_precision')
+    config.sb_arbitrary_precision = parser.getint('Coarse Graining', 'arbitrary_precision')
 
     # Optimizers
     config.optimizers_max_iterations = parser.getint('Optimizer', 'max_iterations')
