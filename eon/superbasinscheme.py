@@ -13,11 +13,7 @@ import logging
 logger = logging.getLogger('superbasinscheme')
 
 import config
-try:
-    import mpsuperbasin
-except:
-    logger.debug('failed to import mpsuperbasin')
-    mpsuperbasin = None
+import mpsuperbasin
 import superbasin
 
 class SuperbasinScheme:
