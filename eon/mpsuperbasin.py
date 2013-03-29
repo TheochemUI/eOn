@@ -15,6 +15,7 @@ import logging
 import mpmath
 from mpmath import matrix
 import pickle
+import config
 logger = logging.getLogger('mpsuperbasin')
 
 
@@ -23,6 +24,10 @@ class Superbasin:
     """based on Novotny's Absorbing Markov Chain algorithm."""
 
     def __init__(self, path, id, state_list = None, get_state = None):
+
+        # Set the precision.
+        mpmath.mp.dps = config.sb_arbitrary_precision
+
         #FIXME: self.states is literally a list of states, while in the superbasinscheme
         # self.states is a StateList object. Some renaming should happen.
         if state_list is None and get_state is None:
@@ -129,13 +134,13 @@ class Superbasin:
 
         # The i'th component of the recurrent vector contains the sum of all rates leaving state i (which 
         # is inside the composite) and entering a state which is not in the superbasin
-        recurrent_vector_mp = mpmath.matrix([[0]*len(self.states)])
+        recurrent_vector = mpmath.matrix([[0]*len(self.states)])
 
         # The i'th diagonal component of the transient matrix contains minus the sum of _all_ rates 
         # from processes leaving state i to any other state (whether inside the composite or not).
         # the offdiagonal [i][j] components of the transient matrix contains the rate from state 
         # i (inside the superbasin) to state j (also in the superbasin)
-        transient_matrix_mp = mpmath.matrix(len(self.states))
+        transient_matrix = mpmath.matrix(len(self.states))
 
         for i in range(len(self.states)):
             proc_table = self.states[i].get_process_table()
@@ -143,46 +148,43 @@ class Superbasin:
 
                 # process is leaving the superbasin
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
-                    recurrent_vector_mp[i] += process['rate']
+                    recurrent_vector[i] += process['rate']
 
                 # process remains in superbasin
                 else:
                     j = self.state_numbers.index(process['product'])
                     # columns and rows interchanged as compared to theory?
-                    transient_matrix_mp[j,i] += process['rate']
+                    transient_matrix[j,i] += process['rate']
 
-                transient_matrix_mp[i,i] -= process['rate']
+                transient_matrix[i,i] -= process['rate']
 
         # Calculate mean residence time
 
         # Fundamental matrix is the inverse of the transient matrix T (not the inverse of (I-T) )
-        fundamental_matrix_mp = transient_matrix_mp**-1
+        fundamental_matrix = transient_matrix**-1
 
 
         # mean_residence_times contains the lifetime of state i in the composite state.
-        mean_residence_times_mp = mpmath.matrix([[0]*len(self.states)])
+        self.mean_residence_times = mpmath.matrix([[0]*len(self.states)])
         # the probability matrix contains on the [i][j]'th position the probability of leaving 
         # the superbasin from state j, given that the system entered the superbasin from state i (or vice versa ;) )
         
-        probability_matrix_mp = mpmath.matrix(len(self.states))
+        self.probability_matrix = mpmath.matrix(len(self.states))
 
         for i in range(len(self.states)):
             for j in range(len(self.states)):
-                mean_residence_times_mp[j] -= fundamental_matrix_mp[i,j]
-                probability_matrix_mp[i,j] = -recurrent_vector_mp[i] * fundamental_matrix_mp[i,j]
+                self.mean_residence_times[j] -= fundamental_matrix[i,j]
+                self.probability_matrix[i,j] = -recurrent_vector[i] * fundamental_matrix[i,j]
 
-
-        self.mean_residence_times = mean_residence_times_mp
-        self.probability_matrix = probability_matrix_mp
 
         for i in range(self.probability_matrix.T.rows):
             row = self.probability_matrix.T[i,0:]
             if abs(1-sum(row)) > 1e-3:
                 logger.debug('Probability matrix has row which does not add up to 1')
                 logger.debug('Row: %s' % str(row))
-                logger.debug('Transient matrix:\n%s' % str(transient_matrix_mp))
-                logger.debug('Recurrent vector:\n%s' % str(recurrent_vector_mp))
-                logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix_mp))
+                logger.debug('Transient matrix:\n%s' % str(transient_matrix))
+                logger.debug('Recurrent vector:\n%s' % str(recurrent_vector))
+                logger.debug('Fundamental matrix:\n%s' % str(fundamental_matrix))
 
 
     def write_data(self):
