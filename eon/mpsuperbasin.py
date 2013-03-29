@@ -14,7 +14,6 @@ import numpy
 import logging
 import mpmath
 from mpmath import matrix
-from numpy import array
 import pickle
 logger = logging.getLogger('mpsuperbasin')
 
@@ -50,7 +49,6 @@ class Superbasin:
         else:
             raise ValueError('Passed entry state is not in this superbasin')
 
-        # probability_vector = self.probability_matrix.transpose()[entry_state_index]
         probability_vector = self.probability_matrix.T[entry_state_index,0:]
         if abs(1.0-sum(probability_vector)) > 1e-3:
             logger.warning("the probability vector isn't close to 1.0")
@@ -131,14 +129,12 @@ class Superbasin:
 
         # The i'th component of the recurrent vector contains the sum of all rates leaving state i (which 
         # is inside the composite) and entering a state which is not in the superbasin
-        # recurrent_vector = numpy.zeros(len(self.states))
         recurrent_vector_mp = mpmath.matrix([[0]*len(self.states)])
 
         # The i'th diagonal component of the transient matrix contains minus the sum of _all_ rates 
         # from processes leaving state i to any other state (whether inside the composite or not).
         # the offdiagonal [i][j] components of the transient matrix contains the rate from state 
         # i (inside the superbasin) to state j (also in the superbasin)
-        # transient_matrix = numpy.zeros((len(self.states), len(self.states)))
         transient_matrix_mp = mpmath.matrix(len(self.states))
 
         for i in range(len(self.states)):
@@ -147,49 +143,38 @@ class Superbasin:
 
                 # process is leaving the superbasin
                 if process['product']==-1 or process['product'] not in self.state_numbers: 
-                    # recurrent_vector[i] += process['rate']
                     recurrent_vector_mp[i] += process['rate']
 
                 # process remains in superbasin
                 else:
                     j = self.state_numbers.index(process['product'])
                     # columns and rows interchanged as compared to theory?
-                    # transient_matrix[j][i] += process['rate']
                     transient_matrix_mp[j,i] += process['rate']
 
-                # transient_matrix[i][i] -= process['rate']
                 transient_matrix_mp[i,i] -= process['rate']
 
         # Calculate mean residence time
 
         # Fundamental matrix is the inverse of the transient matrix T (not the inverse of (I-T) )
-        # fundamental_matrix = numpy.linalg.inv(transient_matrix)
         fundamental_matrix_mp = transient_matrix_mp**-1
 
 
         # mean_residence_times contains the lifetime of state i in the composite state.
-        # mean_residence_times = numpy.zeros(len(self.states))
         mean_residence_times_mp = mpmath.matrix([[0]*len(self.states)])
         # the probability matrix contains on the [i][j]'th position the probability of leaving 
         # the superbasin from state j, given that the system entered the superbasin from state i (or vice versa ;) )
         
-        # probability_matrix = numpy.zeros((len(self.states), len(self.states)))
         probability_matrix_mp = mpmath.matrix(len(self.states))
 
         for i in range(len(self.states)):
             for j in range(len(self.states)):
-                # mean_residence_times[j] -= fundamental_matrix[i][j]
                 mean_residence_times_mp[j] -= fundamental_matrix_mp[i,j]
-                # probability_matrix[i][j] = -recurrent_vector[i]*fundamental_matrix[i][j]
                 probability_matrix_mp[i,j] = -recurrent_vector_mp[i] * fundamental_matrix_mp[i,j]
 
 
-        self.mean_residence_times = numpy.array(mean_residence_times_mp.tolist()[0], numpy.float64)
-        # self.probability_matrix = numpy.array(probability_matrix_mp.tolist(), numpy.float64)
+        self.mean_residence_times = mean_residence_times_mp
         self.probability_matrix = probability_matrix_mp
 
-        # for i in self.probability_matrix.transpose():
-        #     if abs(1-i.sum()) > 1e-3:
         for i in range(self.probability_matrix.T.rows):
             row = self.probability_matrix.T[i,0:]
             if abs(1-sum(row)) > 1e-3:
@@ -203,13 +188,6 @@ class Superbasin:
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
         pickle.dump([repr(self.state_numbers), repr(self.mean_residence_times), repr(self.probability_matrix)], open(self.path, 'w'))
-        # f = open(self.path, 'w')
-        # for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
-        #     for j in i:
-        #         print >> f, repr(j),
-        #     print >> f
-        # f.close()
-
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
@@ -218,19 +196,6 @@ class Superbasin:
         self.states = [get_state(i) for i in self.state_numbers]
         self.mean_residence_times = data[1]
         self.probability_matrix = data[2]
-        # f = open(self.path, 'r')
-        # self.state_numbers = []
-        # for i in f.readline().rstrip().split():
-        #     self.state_numbers.append(int(i)) 
-        # self.states = [get_state(i) for i in self.state_numbers]
-        # self.mean_residence_times = []
-        # for i in f.readline().rstrip().split():
-        #     self.mean_residence_times.append(numpy.float64(i))
-        # pmat = []
-        # for i in f.readline().rstrip().split():
-        #     pmat.append(numpy.float64(i))
-        # self.probability_matrix = numpy.array(pmat).reshape((len(self.states), len(self.states)))
-        # f.close()
 
     def delete(self, storage=None):
         if storage is None:
