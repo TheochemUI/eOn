@@ -100,6 +100,23 @@ VectorXd LBFGS::getStep(VectorXd f)
     return d;
 }
 
+void LBFGS::eigenvalues(void)
+{
+    int m = s.size();
+    MatrixXd H(m,m);
+
+    for (int i=0;i<m;i++) {
+        for (int j=0;j<m;j++) {
+            H(i,j) = y[i].dot(s[j].normalized())/s[i].norm();
+        }
+    }
+
+    cout << "Hessian:" << endl << H << endl;
+    Eigen::SelfAdjointEigenSolver<MatrixXd> es(H);
+    VectorXd eigs = es.eigenvalues();
+    cout << "Eigs:" << eigs << endl;
+}
+
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
     VectorXd s0 = objf->difference(r1, r0);
@@ -116,6 +133,7 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
         y.erase(y.begin());
         rho.erase(rho.begin());
     }
+
 }
 
 bool LBFGS::step(double maxMove)
@@ -153,7 +171,9 @@ bool LBFGS::step(double maxMove)
         s.clear();
         y.clear();
         rho.clear();
-        d = getStep(f);
+        if (iteration != 0) {
+            d = getStep(f);
+        }
     }
 
     objf->setPositions(r+dr);
