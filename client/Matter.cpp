@@ -363,7 +363,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         optimizer->step(parameters->optMaxMove); 
         iteration++;
 
-        double stepSize = (pbc(getPositions() - pos)).norm();
+        double stepSize = helper_functions::maxAtomMotion(getPositions());
 
         if (!quiet) {
             log("%4i    %12.5e    %12.5e    %11.5f\n",
