@@ -34,6 +34,7 @@ private:
     VectorXd getStep(VectorXd f);
     Parameters *parameters;
     ObjectiveFunction *objf;
+    void eigenvalues(void);
 
     int iteration;
     int memory;
