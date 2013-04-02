@@ -110,6 +110,7 @@ public:
     double optMaxTimeStep; // maximum time step for FIRE.
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
+    double optLBFGSMaxInverseCurvature;
     bool   optLBFGSAutoScale;
     bool   optLBFGSAngleReset;
     bool   optLBFGSDistanceReset;
