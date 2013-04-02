@@ -112,6 +112,17 @@ int DynamicsSaddleSearch::run(void)
 
                 AtomMatrix mode;
                 if (parameters->nebMaxIterations > 0) {
+                    LowestEigenmode *minModeMethod;
+                    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+                        if (parameters->dimerImproved) {
+                            minModeMethod = new ImprovedDimer(saddle, parameters);
+                        }else{
+                            minModeMethod = new Dimer(saddle, parameters);
+                        }
+                    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+                        minModeMethod = new Lanczos(saddle, parameters);
+                    }
+
                     neb.compute();
                     neb.printImageData(true);
                     int extremumImage = -1; 
@@ -119,10 +130,26 @@ int DynamicsSaddleSearch::run(void)
                     for (j=0;j<neb.numExtrema;j++) {
                         if (neb.extremumCurvature[j] < 0.0) { 
                             extremumImage = (int)floor(neb.extremumPosition[j]);
-                            log("chose image %i as extremum image\n", extremumImage);
-                            break;
+                            *saddle = *neb.image[extremumImage];
+                            double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
+                            AtomMatrix bandDirection = saddle->pbc(neb.image[extremumImage+1]->getPositions() - 
+                                                                   neb.image[extremumImage]->getPositions());
+                            saddle->setPositions(interpDistance * bandDirection + saddle->getPositions());
+                            mode = saddle->pbc( neb.image[extremumImage+1]->getPositions() - saddle->getPositions());
+                            mode.normalize();
+                            minModeMethod->compute(saddle, mode);
+                            double eigenvalue = minModeMethod->getEigenvalue();
+                            log("extrema #%i has eigenvalue %.8f\n", j+1, eigenvalue);
+
+                            if (eigenvalue < 0) {
+                                log("chose image %i (extrema #%i) as extremum image\n", extremumImage, j+1);
+                                break;
+                            }else{
+                                extremumImage=-1;
+                            }
                         }
                     }
+
                     if (extremumImage != -1) {
                         *saddle = *neb.image[extremumImage];
                         double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
