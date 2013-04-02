@@ -31,51 +31,40 @@ LBFGS::~LBFGS()
     return;
 }
 
-VectorXd LBFGS::getStep(VectorXd f)
+VectorXd LBFGS::getStep(double maxMove)
 {
     double H0 = parameters->optLBFGSInverseCurvature;
+    VectorXd r = objf->getPositions();
+    VectorXd f = -objf->getGradient();
 
     if (iteration > 0) {
-        VectorXd r = objf->getPositions();
-        double C = (r-rPrev).dot(fPrev-f)/(r-rPrev).dot(r-rPrev);
+        VectorXd dr = objf->difference(r,rPrev);
+        double C = dr.dot(fPrev-f)/dr.dot(dr);
         if (C<0) {
-            log_file("[LBFGS] Negative curvature: %.4f take sd step\n",C);
-            s.clear();
-            y.clear();
-            rho.clear();
-            iteration = 0;
-            return 10000*f.normalized();
+            log_file("[LBFGS] Negative curvature: %.4f take max move step\n",C);
+            reset();
+            return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+        }
+
+        if (parameters->optLBFGSAutoScale) {
+            H0 = min(1/C, parameters->optLBFGSInverseCurvature);
+            log_file("[LBFGS] H0: %.4e\n", H0); 
         }
     }
 
-
-    if (iteration > 0 && parameters->optLBFGSAutoScale) {
-        VectorXd dr = objf->getPositions() - rPrev;
-        VectorXd dg = -f+fPrev;
-        H0 = dr.dot(dr)/dr.dot(dg);
-    }
-    if ((iteration == 0 || H0 < 0) && parameters->optLBFGSAutoScale) {
-        //calculate H0 via finite difference
-        VectorXd r = objf->getPositions();
+    if (iteration == 0 && parameters->optLBFGSAutoScale) {
         objf->setPositions(r+parameters->finiteDifference*f.normalized());
         VectorXd dg = objf->getGradient(true)+f;
-        H0 = dg.dot(f.normalized())/parameters->finiteDifference;
-        H0 = 1.0/H0;
+        double C = dg.dot(f.normalized())/parameters->finiteDifference;
+        H0 = 1.0/C;
         objf->setPositions(r);
         if (H0 > 0) {
             log_file("[LBFGS] H0 calculated via FD: %.4e\n", H0); 
         }else{
-            log_file("[LBFGS] H0 calculated via FD: %.4e, sd instead\n", H0); 
-            iteration = 0;
-            s.clear();
-            rho.clear();
-            y.clear();
-            H0 = parameters->optLBFGSInverseCurvature;
-            return 10000*f.normalized();
+            log_file("[LBFGS] H0 calculated via FD: %.4e, max move step instead\n", H0); 
+            reset();
+            return helper_functions::maxAtomMotionAppliedV(f, maxMove);
         }
-
-    }else if (parameters->optLBFGSAutoScale) {
-        log_file("[LBFGS] H0: %.4e\n", H0); 
     }
 
     int loopmax = s.size();
@@ -97,24 +86,32 @@ VectorXd LBFGS::getStep(VectorXd f)
 
     VectorXd d = -z;
 
+    double distance = helper_functions::maxAtomMotionV(d);
+    if (distance >= maxMove && parameters->optLBFGSDistanceReset) {
+        log_file("[LBFGS] reset, step too big, %.4f\n", distance);
+        reset();
+        return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+    }
+
+    double vd = d.normalized().dot(f.normalized());
+    if (vd>1.0) vd=1.0;
+    if (vd<-1.0) vd=-1.0;
+    double angle = acos(vd) * (180.0 / M_PI);
+    if (angle > 90.0 && parameters->optLBFGSAngleReset) {
+        log_file("[LBFGS] reset, angle, %.4f\n", angle);
+        reset();
+        return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+    }
+
     return d;
 }
 
-void LBFGS::eigenvalues(void)
+void LBFGS::reset(void)
 {
-    int m = s.size();
-    MatrixXd H(m,m);
-
-    for (int i=0;i<m;i++) {
-        for (int j=0;j<m;j++) {
-            H(i,j) = y[i].dot(s[j].normalized())/s[i].norm();
-        }
-    }
-
-    cout << "Hessian:" << endl << H << endl;
-    Eigen::SelfAdjointEigenSolver<MatrixXd> es(H);
-    VectorXd eigs = es.eigenvalues();
-    cout << "Eigs:" << eigs << endl;
+    s.clear();
+    y.clear();
+    rho.clear();
+    iteration = 0;
 }
 
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
@@ -133,7 +130,6 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
         y.erase(y.begin());
         rho.erase(rho.begin());
     }
-
 }
 
 bool LBFGS::step(double maxMove)
@@ -145,36 +141,8 @@ bool LBFGS::step(double maxMove)
         update(r, rPrev, f, fPrev);
     }
 
-    VectorXd d = getStep(f);
-    double vd = d.normalized().dot(f.normalized());
-    if (vd>1.0) vd=1.0;
-    if (vd<-1.0) vd=-1.0;
-    double angle = acos(vd) * (180.0 / M_PI);
-
-    VectorXd dr;
-    
-    dr = helper_functions::maxAtomMotionAppliedV(d, maxMove);
-
-    bool reset;
-    reset = false;
-    if (angle > 90.0 && parameters->optLBFGSAngleReset) {
-        log_file("[LBFGS] reset, angle, %.4f\n", angle);
-        reset = true;
-    }
-
-    if (dr != d && parameters->optLBFGSDistanceReset) {
-        log_file("[LBFGS] reset, step too big, %.4f\n", d.norm());
-        reset = true;
-    }
-
-    if (reset) {
-        s.clear();
-        y.clear();
-        rho.clear();
-        if (iteration != 0) {
-            d = getStep(f);
-        }
-    }
+    VectorXd d = getStep(maxMove);
+    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, maxMove);
 
     objf->setPositions(r+dr);
 
