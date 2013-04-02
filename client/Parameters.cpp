@@ -111,8 +111,9 @@ Parameters::Parameters(){
     optMaxTimeStep = 2.5;
 
     optLBFGSMemory = 20;
-    optLBFGSInverseCurvature = 0.01;
-    optLBFGSAutoScale = false;
+    optLBFGSInverseCurvature = 0.01; //assumes stiffest curvature at minimum is 100 eV/A^2
+    optLBFGSMaxInverseCurvature = 0.1; // assumes softest curvature is 10 eV/A^2
+    optLBFGSAutoScale = true;
     optLBFGSAngleReset = true;
     optLBFGSDistanceReset = true;
 
@@ -334,6 +335,7 @@ int Parameters::load(FILE *file){
         optTimeStep = ini.GetValueF("Optimizer","time_step", optTimeStep);
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
+        optLBFGSMaxInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
         optLBFGSAutoScale = ini.GetValueB("Optimizer", "lbfgs_auto_scale", optLBFGSAutoScale);
         optLBFGSAngleReset = ini.GetValueB("Optimizer", "lbfgs_angle_reset", optLBFGSAngleReset);
         optLBFGSDistanceReset = ini.GetValueB("Optimizer", "lbfgs_distance_reset", optLBFGSDistanceReset);
