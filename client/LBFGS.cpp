@@ -47,7 +47,7 @@ VectorXd LBFGS::getStep(double maxMove)
         }
 
         if (parameters->optLBFGSAutoScale) {
-            H0 = min(1/C, parameters->optLBFGSInverseCurvature);
+            H0 = min(1/C, parameters->optLBFGSMaxInverseCurvature);
             log_file("[LBFGS] H0: %.4e\n", H0); 
         }
     }
@@ -58,12 +58,12 @@ VectorXd LBFGS::getStep(double maxMove)
         double C = dg.dot(f.normalized())/parameters->finiteDifference;
         H0 = 1.0/C;
         objf->setPositions(r);
-        if (H0 > 0) {
-            log_file("[LBFGS] H0 calculated via FD: %.4e\n", H0); 
-        }else{
+        if (H0 < 0) {
             log_file("[LBFGS] H0 calculated via FD: %.4e, max move step instead\n", H0); 
             reset();
             return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+        }else{
+            log_file("[LBFGS] H0 calculated via FD: %.4e\n", H0); 
         }
     }
 
@@ -90,7 +90,7 @@ VectorXd LBFGS::getStep(double maxMove)
     if (distance >= maxMove && parameters->optLBFGSDistanceReset) {
         log_file("[LBFGS] reset, step too big, %.4f\n", distance);
         reset();
-        return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+        return helper_functions::maxAtomMotionAppliedV(H0*f, maxMove);
     }
 
     double vd = d.normalized().dot(f.normalized());
@@ -100,7 +100,7 @@ VectorXd LBFGS::getStep(double maxMove)
     if (angle > 90.0 && parameters->optLBFGSAngleReset) {
         log_file("[LBFGS] reset, angle, %.4f\n", angle);
         reset();
-        return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+        return helper_functions::maxAtomMotionAppliedV(H0*f, maxMove);
     }
 
     return d;
@@ -111,7 +111,7 @@ void LBFGS::reset(void)
     s.clear();
     y.clear();
     rho.clear();
-    iteration = 0;
+//    iteration = 0;
 }
 
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
@@ -141,8 +141,7 @@ bool LBFGS::step(double maxMove)
         update(r, rPrev, f, fPrev);
     }
 
-    VectorXd d = getStep(maxMove);
-    VectorXd dr = helper_functions::maxAtomMotionAppliedV(d, maxMove);
+    VectorXd dr = getStep(maxMove);
 
     objf->setPositions(r+dr);
 

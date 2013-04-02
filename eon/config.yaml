@@ -1107,9 +1107,13 @@ Optimizer:
 
         lbfgs_memory:
             kind: int
-            default: 50
+            default: 20
 
         lbfgs_inverse_curvature:
+            kind: float
+            default: 0.01
+
+        lbfgs_max_inverse_curvature:
             kind: float
             default: 0.1
 
