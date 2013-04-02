@@ -164,11 +164,11 @@ int NudgedElasticBand::compute(void)
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
-    log("%10s %12s %11s %12s\n", "iteration", "force", "max image", "max energy");
-    log("------------------------------------------------\n");
+    log("%10s %12s %12s %11s %12s\n", "iteration", "step size", "force", "max image", "max energy");
+    log("--------------------------------------------------------------\n");
 
-    char fmt[] = "%10li %12.4e %11li %12.4f\n";
-    char fmtTiny[] = "%10li %12.4e %11li %12.4e\n";
+    char fmt[] = "%10li %12.4e %12.4e %11li %12.4f\n";
+    char fmtTiny[] = "%10li %12.4e %12.4e %11li %12.4e\n";
 
     while (!objf.isConverged())
     {
@@ -177,6 +177,7 @@ int NudgedElasticBand::compute(void)
             if (iteration == 0) append = false;
             image[maxEnergyImage]->matter2con("neb_maximage.con", append);
         }
+        VectorXd pos = objf.getPositions();
         if(iteration) { // so that we print forces before taking an optimizer step
             if (iteration >= parameters->nebMaxIterations) {
                 status = STATUS_BAD_MAX_ITERATIONS;
@@ -188,10 +189,11 @@ int NudgedElasticBand::compute(void)
 
         double dE = image[maxEnergyImage]->getPotentialEnergy() - 
                     image[0]->getPotentialEnergy();
+        double stepSize = helper_functions::maxAtomMotionV(image[0]->pbcV(objf.getPositions()-pos));
         if (dE > 0.01) {
-            log(fmt, iteration, convergenceForce(), maxEnergyImage, dE);
+            log(fmt, iteration, stepSize, convergenceForce(), maxEnergyImage, dE);
         }else{
-            log(fmtTiny, iteration, convergenceForce(), maxEnergyImage, dE);
+            log(fmtTiny, iteration, stepSize, convergenceForce(), maxEnergyImage, dE);
         }
     }
 
