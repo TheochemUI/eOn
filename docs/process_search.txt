@@ -17,11 +17,11 @@ distance those images are displaced from the saddle.
 
     type: float
 
-    default: ``0.2``
+    default: ``[Optimizer] max_move``
 
 **minimize_first**: Every time a process search is run by a client the reactant
 will be minimized first before doing any saddle searches.
 
     type: boolean
 
-    default: ``False``
+    default: ``True``
