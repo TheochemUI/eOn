@@ -16,7 +16,7 @@ ratio (ar), and the current max displacement (md).
 [Basin Hopping] Options
 =======================
 
-**steps**: Number at steps to take at the temeprature assigned.
+**steps**: Number at steps to take at the assigned temeprature.
 
     default: ``10000``
 
@@ -43,7 +43,7 @@ atoms.  Otherwise the starting geometry is always the one specified in
 **adjust_displacement**: Flag to automatically adjust the displacement to meet
 the target acceptance ratio.
 
-    default: ``false``
+    default: ``true``
 
 **adjust_fraction**: The fraction by which to change the step size in order to
 meet the target acceptance ratio.
