@@ -16,6 +16,7 @@
 #include "UnbiasedParallelReplicaJob.h"
 #include "Log.h"
 #include "HelperFunctions.h"
+#include "BondBoost.h"
 
 #ifdef BOINC
     #include <boinc/boinc_api.h>
@@ -56,12 +57,17 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     Matter *trajectory = new Matter(parameters);
     *trajectory = *reactant;
     Dynamics dynamics(trajectory, parameters);
+    BondBoost bondBoost(trajectory, parameters);
+
+    if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
+        bondBoost.initialize();
+    }
 
     dephase(trajectory);
 
     //convert from simulation times to number of steps
-    int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
-    int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
+    int stateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
+    int recordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
 
     std::vector<Matter*> MDSnapshots;
     std::vector<double> MDTimes;
@@ -70,9 +76,19 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     int refineForceCalls = 0;
 
     //Main MD loop
+    double simulationTime;
     for (int step=1;step<=parameters->mdSteps;step++) {
-        dynamics.oneStep();
-        double simulationTime = step*parameters->mdTimeStepInput;
+        dynamics.oneStep(step);
+        if( parameters->biasPotential == Hyperdynamics::BOND_BOOST ) {
+            double boostPotential = bondBoost.boost();   
+            double kB = 8.6173324e-5;
+            double boost = 1.0*exp(boostPotential/kB/parameters->temperature);   
+            
+            simulationTime += parameters->mdTimeStep*boost;
+            log("[Bond Boost] simulation time: %.4e boost: %.8f\n", simulationTime*parameters->timeUnit, boost);
+        } else {
+            simulationTime += parameters->mdTimeStep;
+        }
 
         //Snapshots of the trajectory used for the refinement
         if (step % recordInterval == 0 && parameters->parrepRefineTransition) {
@@ -110,7 +126,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                     transitionStructure = *trajectory;
                     transitionTime = simulationTime;
                 }
-                log("%s transition occurred at %.3f\n", LOG_PREFIX, transitionTime);
+                log("%s transition occurred at %.3f\n", LOG_PREFIX, transitionTime*parameters->timeUnit);
 
             //at the end of the simulation perform the refinement if it hasn't happened yet
             //this ensures that if a transition isn't seen that the same number of force
@@ -137,7 +153,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     //start the decorrelation dynamics from the transition structure
     *trajectory = transitionStructure;
-    int decorrelationSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
+    int decorrelationSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     log("%s decorrelating for %i steps\n", LOG_PREFIX, decorrelationSteps);
     for (int step=1;step<=decorrelationSteps;step++) {
         dynamics.oneStep();
@@ -163,11 +179,11 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     if (transitionTime == 0) {
         fprintf(fileResults, "0 transition_found\n");
-        fprintf(fileResults, "%e simulation_time_s\n", parameters->mdTime*1.0e-15);
+        fprintf(fileResults, "%e simulation_time_s\n", parameters->mdTime*parameters->timeUnit*1.0e-15);
     }else{
         fprintf(fileResults, "1 transition_found\n");
-        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
-        fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*1.0e-15);
+        fprintf(fileResults, "%e transition_time_s\n", transitionTime*parameters->timeUnit*1.0e-15);
+        fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*parameters->timeUnit*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
 
@@ -185,7 +201,7 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
 {
     Dynamics dynamics(trajectory, parameters);
 
-    int dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
+    int dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStep);
     log("%s dephasing for %i steps\n", LOG_PREFIX, dephaseSteps);
 
     Matter initial(parameters);
@@ -198,7 +214,7 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
 
         // Dephase MD trajectory
         for (int step=1;step<=dephaseSteps;step++) {
-            dynamics.oneStep();
+            dynamics.oneStep(step);
         }
 
         // Check to see if a transition occured

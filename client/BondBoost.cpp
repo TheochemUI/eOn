@@ -126,7 +126,7 @@ double BondBoost::boost()
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp(nTABs,1);
     bool flag = 0;
 
-    RMDS = int(parameters->bondBoostRMDTime/parameters->mdTimeStepInput);
+    RMDS = int(parameters->bondBoostRMDTime/parameters->mdTimeStep);
     biasPot = 0.0;
 
     if(nReg <= RMDS){

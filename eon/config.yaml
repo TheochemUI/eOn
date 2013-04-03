@@ -287,7 +287,7 @@ Structure Comparison:
 
         energy_difference:
             kind: float
-            default: 0.1
+            default: 0.01
 
         brute_neighbors:
             kind: boolean
@@ -333,15 +333,15 @@ Dynamics:
 
         andersen_alpha:
             kind: float
-            default: 0.2
+            default: 1.0
 
         andersen_collision_period:
             kind: float
-            default: 10.0
+            default: 100.0
 
         langevin_friction:
             kind: float
-            default: 0.005
+            default: 0.01
 
         nose_mass:
             kind: float
@@ -355,7 +355,7 @@ Parallel Replica:
 
         dephase_time:
             kind: float
-            default: 200.0
+            default: 1000.0
 
         refine_transition:
             kind: boolean
@@ -363,11 +363,11 @@ Parallel Replica:
 
         post_transition_time:
             kind: float
-            default: 500.0
+            default: 1000.0
 
         state_check_interval:
             kind: float
-            default: 500.0
+            default: 1000.0
 
         dephase_loop_max:
             kind: int
@@ -379,11 +379,11 @@ Parallel Replica:
 
         state_save_interval:
             kind: float
-            default: 50.0
+            default: 100.0
 
         stop_after_transition:
             kind: boolean
-            default: True
+            default: False
 
 ################################################################################
 
@@ -506,7 +506,7 @@ Basin Hopping:
 
         adjust_displacement:
             kind: boolean
-            default: false
+            default: true
 
         write_unique:
             kind: boolean
@@ -605,7 +605,7 @@ Process Search:
 
         minimize_first:
             kind: boolean
-            default: False
+            default: True
 
 ################################################################################
 
@@ -651,7 +651,7 @@ Prefactor:
                 - saddle
                 - product
                 
-        filter_mode:
+        filter_scheme:
             kind: string
             default: fraction
             values:

@@ -65,10 +65,10 @@ std::vector<std::string> SafeHyperJob::run(void)
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15);
+        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
     }else{
        log("No new state was found in %ld dynamics steps (%.3e s)\n",
-           parameters->mdSteps, time*1.0e-15);
+           parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
     }
 
     delete current;
@@ -97,9 +97,9 @@ int SafeHyperJob::dynamics()
     AtomMatrix velocity;
 
     minCorrectedTime = 1.0e200;
-    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
-    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
-    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
+    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
+    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
+    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     Temp = parameters->temperature;
     newStateFlag = metaStateFlag = false;
 
@@ -128,8 +128,8 @@ int SafeHyperJob::dynamics()
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         Temp, 
-        parameters->mdSteps*parameters->mdTimeStepInput,
-        parameters->mdTimeStepInput,
+        parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit,
+        parameters->mdTimeStep*parameters->timeUnit,
         parameters->mdSteps);
     log("MD buffer length: %ld\n", mdBufferLength);
 
@@ -147,7 +147,7 @@ int SafeHyperJob::dynamics()
             //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
             boostPotential = bondBoost.boost();   
             boost = 1.0*exp(boostPotential/kb/Temp);
-            time += parameters->mdTimeStepInput*boost;
+            time += parameters->mdTimeStep*boost;
             if (boost > 1.0){
                 sumboost += boost;
                 nBoost ++;
@@ -226,7 +226,7 @@ int SafeHyperJob::dynamics()
                 *saddle = *mdBuffer[refineStep];
                 *final = *final_tmp;
             }
-            log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15,transitionPot,correctedTime*1e-15,sumCorrectedTime*1e-15, minCorrectedTime*1.0e-15);
+            log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15*parameters->timeUnit,transitionPot,correctedTime*1e-15*parameters->timeUnit,sumCorrectedTime*1e-15*parameters->timeUnit, minCorrectedTime*1.0e-15*parameters->timeUnit);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -267,7 +267,6 @@ int SafeHyperJob::dynamics()
         log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
     }
-    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
@@ -314,14 +313,14 @@ void SafeHyperJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15);
+        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
 
      
-    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
-    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*parameters->timeUnit);
+    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStep);
     
     fclose(fileResults);
 
@@ -364,9 +363,9 @@ void SafeHyperJob::dephase()
     long dephaseBufferLength, dephaseRefineStep;
     AtomMatrix velocity;
 
-    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
+    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStep);
     Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime);
+    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime*parameters->timeUnit);
 
     step = stepNew = loop = 0;
 
@@ -414,7 +413,7 @@ void SafeHyperJob::dephase()
             log("Reach dephase loop maximum, stop dephasing! Dephased for %ld steps\n ", step);
             break;
         }
-        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStepInput);
+        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStep*parameters->timeUnit);
 
     }
 }

@@ -66,10 +66,10 @@ std::vector<std::string> TADJob::run(void)
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15);
+        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
     }else{
        log("No new state was found in %ld dynamics steps (%.3e s)\n",
-           parameters->mdSteps, time*1.0e-15);
+           parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
     }
 
     delete current;
@@ -109,9 +109,9 @@ int TADJob::dynamics()
     delta = parameters->tadConfidence;
     minmu = parameters->tadMinPrefactor;
     factor = log(1.0/delta)/minmu;
-    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
-    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
-    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
+    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
+    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
+    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     Temp = parameters->temperature;
     newStateFlag = metaStateFlag = false;
 
@@ -133,8 +133,8 @@ int TADJob::dynamics()
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         Temp, 
-        parameters->mdSteps*parameters->mdTimeStepInput,
-        parameters->mdTimeStepInput,
+        parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit,
+        parameters->mdTimeStep*parameters->timeUnit,
         parameters->mdSteps);
     log("MD buffer length: %ld\n", mdBufferLength);
 
@@ -157,7 +157,7 @@ int TADJob::dynamics()
         TAD.oneStep();
         mdFCalls++;
         
-        time += parameters->mdTimeStepInput;
+        time += parameters->mdTimeStep;
         nCheck++; // count up to parameters->parrepStateCheckInterval before checking for a transition
         step++;
         //log("step = %4d, time= %10.4f\n",step,time);
@@ -225,7 +225,7 @@ int TADJob::dynamics()
                 *final = *final_tmp;
             }
             stopTime = factor*pow(minCorrectedTime/factor,lowT/highT);
-            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15,barrier,correctedTime*1e-15,sumSimulatedTime*1e-15, minCorrectedTime*1.0e-15, stopTime*1.0e-15);
+            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15*parameters->timeUnit,barrier,correctedTime*1e-15*parameters->timeUnit,sumSimulatedTime*1e-15*parameters->timeUnit, minCorrectedTime*1.0e-15*parameters->timeUnit, stopTime*1.0e-15*parameters->timeUnit);
 
             refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -269,8 +269,7 @@ int TADJob::dynamics()
     varT = sumT2/step - avgT*avgT;
    
     log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Average_Boost = %lf\n\n",
-            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, minCorrectedTime/step/parameters->mdTimeStepInput);
-    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, minCorrectedTime/step/parameters->mdTimeStep);
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
@@ -316,14 +315,14 @@ void TADJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15);
+        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
 
      
-    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
-    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*parameters->timeUnit);
+    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStep);
     
     fclose(fileResults);
 
@@ -366,9 +365,9 @@ void TADJob::dephase()
     long dephaseBufferLength, dephaseRefineStep;
     AtomMatrix velocity;
 
-    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
+    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStep);
     Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime);
+    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime*parameters->timeUnit);
 
     step = stepNew = loop = 0;
 
@@ -416,7 +415,7 @@ void TADJob::dephase()
             log("Reach dephase loop maximum, stop dephasing! Dephased for %ld steps\n ", step);
             break;
         }
-        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStepInput);
+        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStep*parameters->timeUnit);
 
     }
 }

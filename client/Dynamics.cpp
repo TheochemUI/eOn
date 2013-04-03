@@ -97,7 +97,7 @@ void Dynamics::run()
     setThermalVelocity();
 
     if(parameters->thermostat != NONE) {
-        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %ld steps (%.4e s)\n", temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStepInput*parameters->mdSteps);
+        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %ld steps (%.4e s)\n", temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStep*parameters->timeUnit*parameters->mdSteps);
     }else{
         log("[Dynamics] Running NVE molecular dynamics for %ld steps\n", parameters->mdSteps);
     }
@@ -143,7 +143,7 @@ void Dynamics::andersenCollision()
 
     alpha = parameters->thermoAndersenAlpha; // collision strength
     tCol = parameters->thermoAndersenTcol; // average time between collisions, in unit of fs
-    pCol = 1.0-exp(-parameters->mdTimeStepInput/tCol);
+    pCol = 1.0-exp(-parameters->mdTimeStep/tCol);
 
     velocity = matter->getVelocities();
     mass = matter->getMasses();
@@ -265,7 +265,7 @@ void Dynamics::langevinVerlet()
     AtomMatrix noise;
     double gamma;
 
-    gamma = parameters->thermoLangvinFriction;
+    gamma = parameters->thermoLangevinFriction;
     pos = matter->getPositions();
     vel = matter->getVelocities();
 
