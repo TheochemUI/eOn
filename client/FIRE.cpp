@@ -11,6 +11,7 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
 #include <cmath>
+#include "Log.h"
 
 FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
