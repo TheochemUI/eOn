@@ -28,6 +28,9 @@
 
 Parameters::Parameters(){
 
+    kB = 8.6173324e-5; // eV/K
+    timeUnit = 10.1805055; // fs
+
     // [Main] //
     job = Job::PROCESS_SEARCH;
     randomSeed = -1;
@@ -49,12 +52,12 @@ Parameters::Parameters(){
     prefactorRate = Prefactor::RATE_HTST;
     prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;
     prefactorAllFreeAtoms = false;
-    prefactorFilterMode = Prefactor::FILTER_FRACTION;
+    prefactorFilterScheme = Prefactor::FILTER_FRACTION;
     prefactorFilterFraction = 0.90;
 
     // [Potential] //
     potential = Potential::POT_LJ;
-    MPIPollPeriod = 0.25;
+    MPIPollPeriod = 0.25; //seconds
     MPIPotentialRank = -1;
     LogPotential = false;
     LAMMPSLogging = false;
@@ -67,15 +70,11 @@ Parameters::Parameters(){
     neighborCutoff = 3.3;
     checkRotation = false;
     indistinguishableAtoms = true;
-	energyDifference = 0.1;
+	energyDifference = 0.01;
 
     // [Debug] //
     writeMovies = false;
     writeMoviesInterval = 1;
-
-    // [Process Search] //
-    processSearchMinimizeFirst = false;
-    processSearchMinimizationOffset = 0.2;
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
@@ -97,18 +96,18 @@ Parameters::Parameters(){
     saddleConfinePositiveBoost = 10.; // undocumented
     saddleConfinePositiveMinActive = 30; // undocumented
     saddleDynamicsTemperature = 0.0; //defaults to temperature
-    saddleDynamicsStateCheckInterval = 100.0; //fs
-    saddleDynamicsRecordInterval = 10.0; //fs
+    saddleDynamicsStateCheckIntervalInput = 100.0; //fs
+    saddleDynamicsRecordIntervalInput = 10.0; //fs
     saddleDynamicsLinearInterpolation = true;
 
     // [Optimizers] //
     optMethod = "cg";
-    optConvergenceCriterion = "max_atom";
+    optConvergenceCriterion = "max_atom"; //undocumented
     optMaxIterations = 1000;
     optConvergedForce = 0.01;
     optMaxMove = 0.2;
-    optTimeStep = 0.25;
-    optMaxTimeStep = 2.5;
+    optTimeStepInput = 1.0;
+    optMaxTimeStepInput = 2.5;
 
     optLBFGSMemory = 20;
     optLBFGSInverseCurvature = 0.01; //assumes stiffest curvature at minimum is 100 eV/A^2
@@ -126,6 +125,10 @@ Parameters::Parameters(){
     optCGLineSearchMaxIter = 10;
     optSDAlpha = 0.1;
     optSDTwoPoint = false;
+
+    // [Process Search] //
+    processSearchMinimizeFirst = true;
+    processSearchMinimizationOffset = optMaxMove;
 
     // [Dimer] //
     dimerRotationAngle = 0.005;
@@ -158,24 +161,24 @@ Parameters::Parameters(){
 
     // [Dynamics] //
     mdTimeStepInput = 1.0;
-    mdTime = 1000.0;
+    mdTimeInput = 1000.0;
 
     // [Thermostat] //
     thermostat = Dynamics::NONE;
-    thermoAndersenAlpha = 0.2; // collision strength
-    thermoAndersenTcol = 10.0; // collision frequency in unit of fs
+    thermoAndersenAlpha = 1.0; // collision strength
+    thermoAndersenTcolInput = 100.0; // collision frequency in unit of fs
     thermoNoseMass = 1.0;
-    thermoLangvinFriction = 0.005;
+    thermoLangevinFrictionInput = 0.01;
 
     // [Parallel Replica] //
     parrepRefineTransition = true;
     parrepAutoStop = false;
     parrepDephaseLoopStop = false;
-    parrepDephaseTime = 200.0;
+    parrepDephaseTimeInput = 1000.0;
     parrepDephaseLoopMax = 5;
-    parrepStateCheckInterval = 500.0;
-    parrepRecordInterval = 50.0;
-    parrepCorrTime = 500.0;
+    parrepStateCheckIntervalInput = 1000.0;
+    parrepRecordIntervalInput = 50.0; 
+    parrepCorrTimeInput = 1000.0;
 
     // [Temperature Accelerated Dynamics] //
     tadLowT = 300.0;
@@ -186,7 +189,7 @@ Parameters::Parameters(){
     repexcTemperatureDistribution = "exponential";
     repexcReplicas = 10;
     repexcExchangeTrials = repexcReplicas;
-    repexcSamplingTime = 1000.0;
+    repexcSamplingTimeInput = 1000.0;
     repexcTemperatureLow = 0.0;
     repexcTemperatureHigh = 0.0;
     repexcExchangePeriod = 100.0;
@@ -198,7 +201,7 @@ Parameters::Parameters(){
     bondBoostQRR = 0.2; // can not be set to 0
     bondBoostPRR = 0.95;
     bondBoostQcut = 3.0;
-    bondBoostRMDTime = 100.0;
+    bondBoostRMDTimeInput = 100.0;
 
     // [Basin Hopping] //
     basinHoppingDisplacement = 0.5;
@@ -213,7 +216,7 @@ Parameters::Parameters(){
     basinHoppingJumpSteps = 0;
     basinHoppingInitialMD = false;
     basinHoppingInitialMDTemperature = 300.0;
-    basinHoppingAdjustDisplacement = false;
+    basinHoppingAdjustDisplacement = true;
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
@@ -332,7 +335,9 @@ int Parameters::load(FILE *file){
         optConvergedForce = ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
         optMaxIterations = ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
         optMaxMove = ini.GetValueF("Optimizer","max_move", optMaxMove);
-        optTimeStep = ini.GetValueF("Optimizer","time_step", optTimeStep);
+        processSearchMinimizationOffset = optMaxMove;
+        optTimeStepInput = ini.GetValueF("Optimizer","time_step", optTimeStepInput);
+        optTimeStep = optTimeStepInput/timeUnit;
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
         optLBFGSMaxInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
@@ -376,7 +381,7 @@ int Parameters::load(FILE *file){
         prefactorRate = toLowerCase(ini.GetValue("Prefactor", "rate_estimation", prefactorRate));
         prefactorConfiguration = toLowerCase(ini.GetValue("Prefactor", "configuration", prefactorConfiguration));
         prefactorAllFreeAtoms = ini.GetValueB("Prefactor", "all_free_atoms", prefactorAllFreeAtoms);
-        prefactorFilterMode = toLowerCase(ini.GetValue("Prefactor", "filter_mode", prefactorFilterMode));
+        prefactorFilterScheme = toLowerCase(ini.GetValue("Prefactor", "filter_scheme", prefactorFilterScheme));
         prefactorFilterFraction = ini.GetValueF("Prefactor", "filter_fraction", prefactorFilterFraction);
 
         // [Hessian] //
@@ -399,14 +404,16 @@ int Parameters::load(FILE *file){
         // [Dynamics] //
 
         mdTimeStepInput = ini.GetValueF("Dynamics", "time_step", mdTimeStepInput);
-        mdTimeStep = mdTimeStepInput * 0.09823; //transfer the time unit from fs to 10.18 fs
-        mdTime = ini.GetValueF("Dynamics", "time", mdTime);
-        mdSteps = long(mdTime/mdTimeStepInput);
+        mdTimeStep = mdTimeStepInput/timeUnit;
+        mdTimeInput = ini.GetValueF("Dynamics", "time", mdTime);
+        mdTime = mdTimeInput/timeUnit;
+        mdSteps = long(mdTime/mdTimeStep);
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
-        thermoAndersenTcol = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcol);
+        thermoAndersenTcolInput = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcolInput);
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
-        thermoLangvinFriction = ini.GetValueF("Dynamics","langevin_friction",thermoLangvinFriction);
+        thermoLangevinFrictionInput = ini.GetValueF("Dynamics","langevin_friction",thermoLangevinFrictionInput);
+        thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
         //thermoAtoms = helper_functions::split_string_int(ini.GetValue("Dynamics", "thermo_atoms", ""), ",");
 
         // [Parallel Replica]
@@ -414,11 +421,15 @@ int Parameters::load(FILE *file){
         parrepAutoStop = ini.GetValueB("Parallel Replica", "stop_after_transition", parrepAutoStop);
         parrepRefineTransition = ini.GetValueB("Parallel Replica", "refine_transition", parrepRefineTransition);
         parrepDephaseLoopStop = ini.GetValueB("Parallel Replica", "dephase_loop_stop", parrepDephaseLoopStop);
-        parrepDephaseTime = ini.GetValueF("Parallel Replica", "dephase_time", parrepDephaseTime);
+        parrepDephaseTimeInput = ini.GetValueF("Parallel Replica", "dephase_time", parrepDephaseTimeInput);
+        parrepDephaseTime = parrepDephaseTimeInput/timeUnit;
         parrepDephaseLoopMax = ini.GetValueL("Parallel Replica", "dephase_loop_max", parrepDephaseLoopMax);
-        parrepStateCheckInterval = ini.GetValueF("Parallel Replica", "state_check_interval", parrepStateCheckInterval);
-        parrepRecordInterval = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckInterval);
-        parrepCorrTime = ini.GetValueF("Parallel Replica", "post_transition_time", parrepCorrTime);
+        parrepStateCheckIntervalInput = ini.GetValueF("Parallel Replica", "state_check_interval", parrepStateCheckIntervalInput);
+        parrepStateCheckInterval = parrepStateCheckIntervalInput/timeUnit;
+        parrepRecordIntervalInput = ini.GetValueF("Parallel Replica", "state_save_interval", 0.1*parrepStateCheckIntervalInput);
+        parrepRecordInterval = parrepRecordIntervalInput/timeUnit;
+        parrepCorrTimeInput = ini.GetValueF("Parallel Replica", "post_transition_time", parrepCorrTimeInput);
+        parrepCorrTime = parrepCorrTimeInput/timeUnit;
 
         //[Temperature Accelerated Dynamics] //
 
@@ -431,16 +442,17 @@ int Parameters::load(FILE *file){
         repexcTemperatureDistribution = toLowerCase(ini.GetValue("Replica Exchange", "temperature_distribution", repexcTemperatureDistribution));
         repexcReplicas = ini.GetValueL("Replica Exchange", "replicas", repexcReplicas);
         repexcExchangeTrials = ini.GetValueL("Replica Exchange", "exchange_trials", repexcExchangeTrials);
-        repexcSamplingTime = ini.GetValueF("Replica Exchange", "sampling_time", repexcSamplingTime);
-        repexcSamplingTime = repexcSamplingTime * 0.09823; //transfer the time unit from fs to 10.18 fs
+        repexcSamplingTimeInput = ini.GetValueF("Replica Exchange", "sampling_time", repexcSamplingTimeInput);
+        repexcSamplingTime = repexcSamplingTimeInput / timeUnit;
         repexcTemperatureLow = ini.GetValueF("Replica Exchange", "temperature_low", temperature);
         repexcTemperatureHigh = ini.GetValueF("Replica Exchange", "temperature_high", repexcTemperatureHigh);
-        repexcExchangePeriod = ini.GetValueF("Replica Exchange", "exchange_period", repexcExchangePeriod);
-        repexcExchangePeriod = repexcExchangePeriod * 0.09823; //transfer the time unit from fs to 10.18 fs
+        repexcExchangePeriodInput = ini.GetValueF("Replica Exchange", "exchange_period", repexcExchangePeriodInput);
+        repexcExchangePeriod = repexcExchangePeriodInput / timeUnit;
 
         // [Hyperdynamics] //
 
-        bondBoostRMDTime = ini.GetValueF("Hyperdynamics", "bb_rmd_time", bondBoostRMDTime);
+        bondBoostRMDTimeInput = ini.GetValueF("Hyperdynamics", "bb_rmd_time", bondBoostRMDTimeInput);
+        bondBoostRMDTime = bondBoostRMDTimeInput/timeUnit;
         bondBoostBALS = toLowerCase(ini.GetValue("Hyperdynamics", "bb_boost_atomlist", bondBoostBALS));
         bondBoostDVMAX = ini.GetValueF("Hyperdynamics", "bb_dvmax", bondBoostDVMAX);
         bondBoostQRR = ini.GetValueF("Hyperdynamics", "bb_stretch_threshold", bondBoostQRR );
@@ -479,8 +491,10 @@ int Parameters::load(FILE *file){
         }
         saddleDynamicsTemperature = temperature;
         saddleDynamicsTemperature = ini.GetValueF("Saddle Search", "dynamics_temperature", saddleDynamicsTemperature);
-        saddleDynamicsStateCheckInterval = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckInterval);
-        saddleDynamicsRecordInterval = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordInterval);
+        saddleDynamicsStateCheckIntervalInput = ini.GetValueF("Saddle Search", "dynamics_state_check_interval", saddleDynamicsStateCheckIntervalInput);
+        saddleDynamicsStateCheckInterval = saddleDynamicsStateCheckIntervalInput/timeUnit;
+        saddleDynamicsRecordIntervalInput = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordIntervalInput);
+        saddleDynamicsRecordInterval = saddleDynamicsRecordIntervalInput/timeUnit;
         saddleDynamicsLinearInterpolation = ini.GetValueB("Saddle Search", "dynamics_linear_interpolation", saddleDynamicsLinearInterpolation);
 
         // [Basin Hopping] //

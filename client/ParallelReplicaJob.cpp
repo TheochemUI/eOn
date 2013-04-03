@@ -72,10 +72,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     printEndStatus();
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", transitionTime*1.0e-15);
+        log("Transition time: %.2e s\n", transitionTime*1.0e-15*parameters->timeUnit);
     }else{
        log("No new state was found in %ld dynamics steps (%.3e s)\n",
-           parameters->mdSteps, time*1.0e-15);
+           parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
     }
 
     delete current;
@@ -102,9 +102,9 @@ int ParallelReplicaJob::dynamics()
     double refinedTime=0.0;
     Matter **mdBuffer;
 
-    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStepInput);
-    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStepInput);
-    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStepInput);
+    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
+    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
+    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     refineFlag = parameters->parrepRefineTransition;
 
 
@@ -132,8 +132,8 @@ int ParallelReplicaJob::dynamics()
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         parameters->temperature, 
-        parameters->mdSteps*parameters->mdTimeStepInput,
-        parameters->mdTimeStepInput,
+        parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit,
+        parameters->mdTimeStep*parameters->timeUnit,
         parameters->mdSteps);
     log("MD buffer length: %ld\n", mdBufferLength);
 
@@ -148,16 +148,16 @@ int ParallelReplicaJob::dynamics()
     {
         if( parameters->biasPotential == Hyperdynamics::BOND_BOOST ) {
             boostPotential = bondBoost.boost();   
-            boost = 1.0*exp(boostPotential/kb/parameters->temperature);   
+            boost = 1.0*exp(boostPotential/parameters->kB/parameters->temperature);   
             
-            time += parameters->mdTimeStepInput*boost;
+            time += parameters->mdTimeStep*boost;
             if (boost > 1.0){
                 sumboost += boost;
                 nboost ++;
             }
             
         } else {
-            time += parameters->mdTimeStepInput;
+            time += parameters->mdTimeStep;
         }
 
         kinE = current->getKineticEnergy();
@@ -222,7 +222,7 @@ int ParallelReplicaJob::dynamics()
                 jobStatus = ParallelReplicaJob::STATUS_TRAN_NOTIME;
                 newStateFlag = true;
                 refineFlag = false;
-                corrTime = nCorr*parameters->mdTimeStepInput;
+                corrTime = nCorr*parameters->mdTimeStep;
 
                 *product_relaxed=*product;
                 relaxStatus = product_relaxed->relax(true);
@@ -285,7 +285,7 @@ int ParallelReplicaJob::dynamics()
                 *product_relaxed = *product;
                 corrTime = time - refinedTime;
             }
-            log("%.2f fs correlation trajectory has been run\n",corrTime);
+            log("%.2f fs correlation trajectory has been run\n",corrTime*parameters->timeUnit);
 
             *transition_relaxed = *transition;
             relaxStatus = transition_relaxed->relax(true);
@@ -345,7 +345,7 @@ int ParallelReplicaJob::dynamics()
         log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
         avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
     }
-    //log("Total Speedup is %lf\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
@@ -392,15 +392,15 @@ void ParallelReplicaJob::saveData(int state)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15);
-        fprintf(fileResults, "%e corr_time_s\n", corrTime*1.0e-15);
+        fprintf(fileResults, "%e transition_time_s\n", transitionTime*1.0e-15*parameters->timeUnit);
+        fprintf(fileResults, "%e corr_time_s\n", corrTime*1.0e-15*parameters->timeUnit);
         fprintf(fileResults, "%lf potential_energy_product\n", product_relaxed->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product_relaxed->distanceTo(*reactant));
     }
 
      
-    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15);
-    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStepInput);
+    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*parameters->timeUnit);
+    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStep*parameters->timeUnit);
     
     fclose(fileResults);
 
@@ -454,9 +454,9 @@ void ParallelReplicaJob::dephase()
     AtomMatrix velocity;
     Matter **dephaseBuffer;
 
-    dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStepInput);
+    dephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStep);
     Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime);
+    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime*parameters->timeUnit);
 
     step = stepNew = loop = 0;
 
@@ -501,7 +501,7 @@ void ParallelReplicaJob::dephase()
             log("Exceeded dephasing loop maximum; dephased for %ld steps\n", step);
             break;
         }
-        log("Successfully dephased for %.2f fs", step*parameters->mdTimeStepInput);
+        log("Successfully dephased for %.2f fs", step*parameters->mdTimeStep*parameters->timeUnit);
 
     }
 
