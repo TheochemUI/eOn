@@ -28,24 +28,24 @@ Molecular dynamics based upon Newton's classical equations of motion.
 
        ``andersen``: Andersen thermostat with the Verlet algorithm.
 
-       ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
-
        ``langevin``: Langevin thermostat with the Verlet algorithm.
 
-**andersen_alpha**: The collision strength in the Andersen thermostat.
-
-   default: ``0.2``
+..       ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
 
 **andersen_collision_period**: The collision period (in fs) for the
 Andersen thermostat.
 
-   default: ``10.0``
+   default: ``100.0``
+ 
+**andersen_alpha**: The collision strength in the Andersen thermostat.
 
-**nose_mass**: The effective mass of the additional degree of freedom in the
-Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.
+   default: ``1.0``
 
-   default: ``1``
+..    **nose_mass**: The effective mass of the additional degree of freedom in the
+     Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.
 
-**langevin_friction**: The damping coefficient for Langevin dynamics.
+..   default: ``1.0``
+
+**langevin_friction**: The damping coefficient for Langevin dynamics (1/fs).
 
    default: ``0.01``
