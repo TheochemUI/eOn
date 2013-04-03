@@ -338,6 +338,8 @@ int Parameters::load(FILE *file){
         processSearchMinimizationOffset = optMaxMove;
         optTimeStepInput = ini.GetValueF("Optimizer","time_step", optTimeStepInput);
         optTimeStep = optTimeStepInput/timeUnit;
+        optMaxTimeStepInput = ini.GetValueF("Optimizer","time_step_max", optMaxTimeStepInput);
+        optMaxTimeStep = optMaxTimeStepInput/timeUnit;
         optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
         optLBFGSInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
         optLBFGSMaxInverseCurvature = ini.GetValueF("Optimizer", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
