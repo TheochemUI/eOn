@@ -44,8 +44,8 @@ int DynamicsSaddleSearch::run(void)
         bondBoost.initialize();
     }
 
-    int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStepInput);
-    int recordInterval = int(parameters->saddleDynamicsRecordInterval/parameters->mdTimeStepInput);
+    int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStep);
+    int recordInterval = int(parameters->saddleDynamicsRecordInterval/parameters->mdTimeStep);
 
     if (parameters->writeMovies == true) {
         saddle->matter2con("dynamics", false);
@@ -58,7 +58,7 @@ int DynamicsSaddleSearch::run(void)
             Matter *tmp = new Matter(parameters);    
             *tmp = *saddle;
             MDSnapshots.push_back(tmp);
-            MDTimes.push_back((i+1)*parameters->mdTimeStepInput);
+            MDTimes.push_back((i+1)*parameters->mdTimeStep);
         }
 
         if (parameters->writeMovies == true) {
@@ -78,7 +78,7 @@ int DynamicsSaddleSearch::run(void)
                 *saddle = *MDSnapshots[image];
                 log("Found transition at snapshot image %i\n", image);
                 time = MDTimes[image];
-                log("Transition time %.2f fs\n", time);
+                log("Transition time %.2f fs\n", time*parameters->timeUnit);
 
                 NudgedElasticBand neb(reactant, product, parameters);
 
