@@ -223,7 +223,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
         int nadjust = parameters->basinHoppingAdjustPeriod;
         double adjustFraction = parameters->basinHoppingAdjustFraction;
-        if ((step+1)%nadjust == 0) {
+        if ((step+1)%nadjust == 0 && parameters->basinHoppingAdjustDisplacement == true) {
             double recentRatio = ((double)recentAccept)/((double)nadjust);
             if (recentRatio > parameters->basinHoppingTargetRatio) {
                 curDisplacement *= 1.0 + adjustFraction;

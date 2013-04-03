@@ -39,6 +39,10 @@ public:
     // potentials //    
     // jobs //
 
+    // Physical Constants
+    double kB;
+    double timeUnit;
+
 /** input parameters **/
 
     // [Main] //
@@ -90,7 +94,9 @@ public:
     double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort atoms move more than this distance
 
     double saddleDynamicsTemperature; //temperature for dynamics saddle search method
+    double saddleDynamicsStateCheckIntervalInput; 
     double saddleDynamicsStateCheckInterval; //how often to minimize 
+    double saddleDynamicsRecordIntervalInput;
     double saddleDynamicsRecordInterval;
     bool   saddleDynamicsLinearInterpolation;
 
@@ -106,7 +112,9 @@ public:
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
+    double optTimeStepInput;
     double optTimeStep; // time step size used in quickmin
+    double optMaxTimeStepInput; // maximum time step for FIRE.
     double optMaxTimeStep; // maximum time step for FIRE.
     long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
     double optLBFGSInverseCurvature;
@@ -148,7 +156,7 @@ public:
     string prefactorRate;// method to estimate prefactor
     string prefactorConfiguration;// configuration for which the frequencies should be determined
     bool   prefactorAllFreeAtoms;// use all free atom when determining the prefactor
-    string prefactorFilterMode; // "cutoff" or "fraction", which use prefactorMinDisplacement or prefactorFilterFraction, respectively.
+    string prefactorFilterScheme; // "cutoff" or "fraction", which use prefactorMinDisplacement or prefactorFilterFraction, respectively.
     double prefactorFilterFraction; // Include atoms whose summed motion comprise more than prefactorFilterFraction in the prefactor calculation. Prioritizes atoms that move more.
       
     // [Hessian] //
@@ -170,6 +178,7 @@ public:
     // [Molecular Dynamics] //
     double mdTimeStepInput;
     double mdTimeStep;
+    double mdTimeInput;  
     double mdTime;  
     long   mdSteps;
 
@@ -177,10 +186,14 @@ public:
     bool   parrepRefineTransition;
     bool   parrepAutoStop;
     bool   parrepDephaseLoopStop;
+    double parrepDephaseTimeInput;
     double parrepDephaseTime;
     long   parrepDephaseLoopMax;
+    double parrepStateCheckIntervalInput;
     double parrepStateCheckInterval;
+    double parrepRecordIntervalInput;
     double parrepRecordInterval;
+    double parrepCorrTimeInput;
     double parrepCorrTime;
 
     // [Temperature Accelerated Dynamics] //
@@ -191,23 +204,28 @@ public:
     // [Thermostat] //
     string thermostat;
     double thermoAndersenAlpha;
+    double thermoAndersenTcolInput;
     double thermoAndersenTcol;
     double thermoNoseMass;
-    double thermoLangvinFriction;
+    double thermoLangevinFrictionInput;
+    double thermoLangevinFriction;
     //std::vector<int> thermoAtoms;
 
     // [Replica Exchange] //
     string repexcTemperatureDistribution;
     long   repexcReplicas;
     long   repexcExchangeTrials;
+    double repexcSamplingTimeInput;
     double repexcSamplingTime;
     double repexcTemperatureHigh;
     double repexcTemperatureLow;
+    double repexcExchangePeriodInput;
     double repexcExchangePeriod;
 
     // [Bond Boost] //
     string biasPotential;
     string bondBoostBALS;
+    double bondBoostRMDTimeInput;
     double bondBoostRMDTime;
     double bondBoostDVMAX;
     double bondBoostQRR;
