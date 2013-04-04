@@ -91,14 +91,14 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         bool isConverged() { return getConvergence() < parameters->saddleConvergedForce; }
 
         double getConvergence() {
-            if (parameters->optConvergenceCriterion == "norm") {
+            if (parameters->optConvergenceMetric == "norm") {
                 return matter->getForcesFreeV().norm(); 
-            } else if (parameters->optConvergenceCriterion == "max_atom") {
+            } else if (parameters->optConvergenceMetric == "max_atom") {
                 return matter->maxForce(); 
-            } else if (parameters->optConvergenceCriterion == "max_component") {
+            } else if (parameters->optConvergenceMetric == "max_component") {
                 return matter->getForces().maxCoeff(); 
             } else {
-                log("unknown opt_convergence_criterion: %s\n", parameters->optConvergenceCriterion.data());
+                log("[MinModeSaddleSearch] unknown opt_convergence_metric: %s\n", parameters->optConvergenceMetric.c_str());
                 exit(1);
             }
         }

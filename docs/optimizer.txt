@@ -28,9 +28,22 @@ The eon client provides three optimizers quick-min, conjugate gradients, and L-B
 
         ``fire``: Fast inertial relaxation engine
 
+**convergence_metric**: The metric to use to determine when an optimization is complete.
 
-**converged_force**: When the maximum force (in eV/A) on any one atom is
-smaller than this value, the structure is considered minimized.
+    type: string
+
+    default: ``norm``
+
+    options:
+
+        ``norm``: The norm of the entire force vector
+
+        ``max_atom``: The maximum force on any non-frozen atom
+
+        ``max_component``: The maximum force on any non-frozen degree of freedom
+
+**converged_force**: When the **convergence_metric** is
+smaller than this value (eV/A), the structure is considered minimized.
 
     type: float
 

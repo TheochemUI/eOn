@@ -1071,6 +1071,14 @@ Optimizer:
 
     options:
 
+        convergence_metric:
+            kind: string
+            default: norm
+            values:
+                - norm
+                - max_atom
+                - max_component
+
         converged_force:
             kind: float
             default: 0.01
