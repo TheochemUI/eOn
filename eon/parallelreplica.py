@@ -27,8 +27,10 @@ import config
 import fileio as io
 import locking
 import prstatelist
+from version import version
 
 def parallelreplica():
+    logger.info('Eon version %s', version())
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist")
