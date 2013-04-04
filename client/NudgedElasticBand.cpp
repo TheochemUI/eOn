@@ -209,18 +209,33 @@ int NudgedElasticBand::compute(void)
     return status;
 }
 
+
 // generate the force value that is compared to the convergence criterion
 double NudgedElasticBand::convergenceForce(void)
 {
     if(movedAfterForceCall) updateForces();
-    if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
-        return projectedForce[climbingImage]->norm();
-    }
-    double fmax = projectedForce[1]->norm();
-    for(long i=2; i<=images; i++) {
-        if( fmax < projectedForce[i]->norm() ) {
-            fmax = projectedForce[i]->norm();
-        }
+    double fmax = 0;
+
+    for(long i=1; i<=images; i++) {
+            if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
+                i = climbingImage;
+            }
+            if (parameters->optConvergenceMetric == "norm") {
+                fmax = max(fmax, projectedForce[i]->norm());
+            } else if (parameters->optConvergenceMetric == "max_atom") {
+                for (int j=0;j<image[0]->numberOfAtoms();j++) {
+                    if (image[0]->getFixed(j)) continue;
+                    fmax = max(fmax, projectedForce[i]->row(j).norm());
+                }
+            } else if (parameters->optConvergenceMetric == "max_component") {
+                fmax = max(fmax, projectedForce[i]->maxCoeff());
+            } else {
+                log("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n", parameters->optConvergenceMetric.c_str());
+                exit(1);
+            }
+            if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
+                break;
+            }
     }
     return fmax;
 }
