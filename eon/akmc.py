@@ -35,9 +35,11 @@ import atoms
 import superbasinscheme
 import askmc
 import movie
+from version import version
 
 def akmc(config): 
-
+    #log version information
+    logger.info('Eon version %s', version())
     # Here's what this does:
     # 1) Read in the state of our calculation from last time
     # 2) Initialize necessary data structures (statelist, communicator, displace)
@@ -301,7 +303,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("currently in state %i with confidence %.6f", current_state.number, current_state.get_confidence())
+    logger.info("currently in state %i with confidence %.6f", current_state.number, current_state.get_confidence(), 1-current_state.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
