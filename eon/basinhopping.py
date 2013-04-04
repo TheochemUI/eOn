@@ -27,6 +27,7 @@ import communicator
 import config
 import fileio as io
 import locking
+from version import  version
 
 class RandomStructure:
     def __init__(self, structure):
@@ -141,6 +142,7 @@ class BHStates:
         return added 
 
 def basinhopping():
+    logger.info('Eon version %s', version())
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist")
