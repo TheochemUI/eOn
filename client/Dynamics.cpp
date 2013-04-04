@@ -69,7 +69,9 @@ void Dynamics::oneStep(int stepNumber)
         potE = matter->getPotentialEnergy();
         kinT = (2.0*kinE/nFreeCoords/kb);
 
-        log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", stepNumber, kinE, potE, kinE+potE, kinT);
+        if (stepNumber % parameters->writeMoviesInterval == 0) {
+            log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", stepNumber, kinE, potE, kinE+potE, kinT);
+        }
     }
 }
 
