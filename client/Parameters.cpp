@@ -152,6 +152,7 @@ Parameters::Parameters(){
     nebImages = 5;
     nebSpring = 5.0;
     nebClimbingImageMethod = true;
+    nebClimbingImageConvergedOnly = true;
     nebOldTangent = false;
     nebMaxIterations = 1000;
     nebDoublyNudged = false;
@@ -334,8 +335,11 @@ int Parameters::load(FILE *file){
         optConvergenceMetric = toLowerCase(ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
 
         if (optConvergenceMetric == "max_atom") {
+            optConvergenceMetricLabel = "max atom force";
         }else if (optConvergenceMetric == "max_component") {
+            optConvergenceMetricLabel = "max force comp";
         }else if (optConvergenceMetric == "norm") {
+            optConvergenceMetricLabel = "||force||";
         }else{
             fprintf(stderr, "unknown convergence_metric %s\n", optConvergenceMetric.c_str());
             exit(1);
@@ -405,6 +409,7 @@ int Parameters::load(FILE *file){
         nebImages = ini.GetValueL("Nudged Elastic Band", "images", nebImages);
         nebSpring = ini.GetValueF("Nudged Elastic Band", "spring", nebSpring);
         nebClimbingImageMethod = ini.GetValueB("Nudged Elastic Band", "climbing_image_method", nebClimbingImageMethod);
+        nebClimbingImageConvergedOnly = ini.GetValueB("Nudged Elastic Band", "climbing_image_converged_only", nebClimbingImageConvergedOnly);
         nebOldTangent = ini.GetValueB("Nudged Elastic Band", "old_tangent", nebOldTangent);
         nebMaxIterations = ini.GetValueL("Nudged Elastic Band", "max_iterations", optMaxIterations);
         nebDoublyNudged = ini.GetValueB("Nudged Elastic Band", "doubly_nudged", nebDoublyNudged);
@@ -422,6 +427,7 @@ int Parameters::load(FILE *file){
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcolInput = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcolInput);
+        thermoAndersenTcol = thermoAndersenTcolInput/timeUnit;
         thermoNoseMass = ini.GetValueF("Dynamics","nose_mass",thermoNoseMass);
         thermoLangevinFrictionInput = ini.GetValueF("Dynamics","langevin_friction",thermoLangevinFrictionInput);
         thermoLangevinFriction = thermoLangevinFrictionInput * timeUnit;
