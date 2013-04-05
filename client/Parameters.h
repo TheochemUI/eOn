@@ -108,7 +108,8 @@ public:
 
     // [Optimizer] //
     string optMethod;
-    string optConvergenceMetric ; // norm, max_atom, max_component
+    string optConvergenceMetric; // norm, max_atom, max_component
+    string optConvergenceMetricLabel;
     long   optMaxIterations; // maximum iterations for saddle point searches and minimization
     double optMaxMove; // maximum displacement vector for a step during optimization
     double optConvergedForce; // force convergence criterion required for an optimization
@@ -168,6 +169,7 @@ public:
     long   nebMaxIterations;
     double nebSpring;
     bool   nebClimbingImageMethod;
+    bool   nebClimbingImageConvergedOnly;
     bool   nebOldTangent;
     bool   nebDoublyNudged;
     bool   nebDoublyNudgedSwitching;

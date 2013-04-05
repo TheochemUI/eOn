@@ -164,11 +164,12 @@ int NudgedElasticBand::compute(void)
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
-    log("%10s %12s %12s %11s %12s\n", "iteration", "step size", "force", "max image", "max energy");
+    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
+    log("%10s %12s %14s %11s %12s\n", "iteration", "step size", forceLabel, "max image", "max energy");
     log("--------------------------------------------------------------\n");
 
-    char fmt[] = "%10li %12.4e %12.4e %11li %12.4f\n";
-    char fmtTiny[] = "%10li %12.4e %12.4e %11li %12.4e\n";
+    char fmt[] = "%10li %12.4e %14.4e %11li %12.4f\n";
+    char fmtTiny[] = "%10li %12.4e %14.4e %11li %12.4e\n";
 
     while (!objf.isConverged())
     {
@@ -217,7 +218,10 @@ double NudgedElasticBand::convergenceForce(void)
     double fmax = 0;
 
     for(long i=1; i<=images; i++) {
-            if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
+    
+            if( parameters->nebClimbingImageConvergedOnly == true && 
+                parameters->nebClimbingImageMethod && 
+                climbingImage!=0 ) {
                 i = climbingImage;
             }
             if (parameters->optConvergenceMetric == "norm") {
@@ -233,7 +237,9 @@ double NudgedElasticBand::convergenceForce(void)
                 log("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n", parameters->optConvergenceMetric.c_str());
                 exit(1);
             }
-            if( parameters->nebClimbingImageMethod && climbingImage!=0 ) {
+            if( parameters->nebClimbingImageConvergedOnly == true && 
+                parameters->nebClimbingImageMethod && 
+                climbingImage!=0 ) {
                 break;
             }
     }

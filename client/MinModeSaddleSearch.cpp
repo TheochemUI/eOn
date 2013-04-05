@@ -144,13 +144,14 @@ int MinModeSaddleSearch::run()
 {
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
+    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-        log("[Dimer]  %9s   %9s   %10s   %9s   %9s   %7s   %6s   %4s\n", 
-            "Step", "Step Size", "Delta E", "Force", "Curvature", 
+        log("[Dimer]  %9s   %9s   %10s   %14s   %9s   %7s   %6s   %4s\n", 
+            "Step", "Step Size", "Delta E", forceLabel, "Curvature", 
             "Torque", "Angle", "Rots");
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-        log("[Lanczos]  %9s  %9s  %10s  %9s  %9s\n", 
-            "Step", "Step Size", "Delta E", "Force", "Curvature");
+        log("[Lanczos]  %9s  %9s  %10s  %14s  %9s\n", 
+            "Step", "Step Size", "Delta E", forceLabel, "Curvature");
     }
 
     ostringstream climb;
@@ -205,17 +206,17 @@ int MinModeSaddleSearch::run()
 
         if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
         {
-            log("[Dimer]  %9ld   %9.7f   %10.4f   %9.5f   %9.4f   %7.3f   %6.3f   %4ld\n",
+            log("[Dimer]  %9ld   %9.7f   %10.4f   %14.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
                         iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
-                        matter->maxForce(),
+                        objf.getConvergence(),
                         minModeMethod->getEigenvalue(),
                         minModeMethod->statsTorque,
                         minModeMethod->statsAngle,
                         minModeMethod->statsRotations);
         }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-            log("[Lanczos]  %9ld  % 9.6f   %10.4f  %9.5f  %9.5f\n", 
+            log("[Lanczos]  %9ld  % 9.6f   %10.4f  %14.5e  %9.5f\n", 
                 iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
-                matter->maxForce(),
+                objf.getConvergence(),
                 minModeMethod->getEigenvalue());
         }
 
