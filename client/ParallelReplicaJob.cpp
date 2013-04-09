@@ -400,7 +400,7 @@ void ParallelReplicaJob::saveData(int state)
 
      
     fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*parameters->timeUnit);
-    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStep*parameters->timeUnit);
+    fprintf(fileResults, "%lf speedup\n", time/(parameters->mdSteps*parameters->mdTimeStep));
     
     fclose(fileResults);
 
