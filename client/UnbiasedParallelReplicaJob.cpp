@@ -104,7 +104,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
             Matter min(parameters);
             min = *trajectory;
-            min.relax(true);
+            min.relax();
 
             //only check for a transition if one has yet to occur 
             if (!min.compare(reactant) && transitionTime == 0) {
@@ -115,6 +115,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                     log("%s refining transition time\n", LOG_PREFIX);
                     int tmpFcalls= Potential::fcalls;
                     int snapshotIndex = refineTransition(MDSnapshots);
+
                     refineForceCalls += Potential::fcalls - tmpFcalls;
 
                     transitionTime = MDTimes[snapshotIndex];
@@ -131,7 +132,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             //at the end of the simulation perform the refinement if it hasn't happened yet
             //this ensures that if a transition isn't seen that the same number of force
             //calls will be performed on average
-            }else if (step == parameters->mdSteps && transitionTime == 0) {
+            }else if (step+1 == parameters->mdSteps && transitionTime == 0) {
 
                 //fake refinement
                 if (parameters->parrepRefineTransition) {
@@ -152,17 +153,17 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     }
 
     //start the decorrelation dynamics from the transition structure
-    *trajectory = transitionStructure;
     int decorrelationSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     log("%s decorrelating for %i steps\n", LOG_PREFIX, decorrelationSteps);
     for (int step=1;step<=decorrelationSteps;step++) {
-        dynamics.oneStep();
+        dynamics.oneStep(step);
     }
+    log("%s decorrelation complete\n", LOG_PREFIX);
 
     //minimize the final structure
     Matter product(parameters);
     product = *trajectory;
-    product.relax(true);
+    product.relax();
     product.matter2con("product.con");
 
     //report the results
@@ -220,7 +221,7 @@ void UnbiasedParallelReplicaJob::dephase(Matter *trajectory)
         // Check to see if a transition occured
         Matter min(parameters);
         min = *trajectory;
-        min.relax(true);
+        min.relax();
 
         if (min.compare(reactant)) {
             log("%s dephasing successful\n", LOG_PREFIX);
