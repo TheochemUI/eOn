@@ -64,6 +64,24 @@ std::vector<std::string> BasinHoppingJob::run(void)
     string conFilename = getRelevantFile(parameters->conFilename);
     current->con2matter(conFilename);
 
+    double randomProb = parameters->basinHoppingInitialRandomStructureProbability;
+    if (randomProb > 0.0) { 
+        log("generating random structure with probability %.4f\n", randomProb);
+    }
+    double u = helper_functions::random();
+    if (u < parameters->basinHoppingInitialRandomStructureProbability) { 
+        AtomMatrix randomPositions = current->getPositionsFree();
+        for (int i=0;i<current->numberOfFreeAtoms();i++) {
+            for (int j=0;j<3;j++) {
+                randomPositions(i,j) = helper_functions::random(); 
+            }
+        }
+        randomPositions *= current->getCell();
+        current->setPositionsFree(randomPositions);
+    
+        pushApart(current, parameters->basinHoppingPushApartDistance);
+    }
+
     *trial = *current;
     *minTrial = *current;
 
@@ -94,15 +112,13 @@ std::vector<std::string> BasinHoppingJob::run(void)
             randomSwap(swapTrial);
             swapMove = true;
             *minTrial = *swapTrial;
-            pushApart(minTrial);
-
         }else{
             AtomMatrix displacement;
             displacement = displaceRandom(curDisplacement);
 
             trial->setPositions(current->getPositions() + displacement);
             swapMove = false;
-            pushApart(trial);
+            pushApart(trial, parameters->basinHoppingPushApartDistance);
 
             *minTrial = *trial;
         }
@@ -215,7 +231,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 jump = displaceRandom(curDisplacement);
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
-                pushApart(current);
+                    pushApart(current, parameters->basinHoppingPushApartDistance);
                     current->relax(true);
                 }
                 currentEnergy = current->getPotentialEnergy();

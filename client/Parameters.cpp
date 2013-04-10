@@ -206,6 +206,8 @@ Parameters::Parameters(){
 
     // [Basin Hopping] //
     basinHoppingDisplacement = 0.5;
+    basinHoppingPushApartDistance = 0.4;
+    basinHoppingInitialRandomStructureProbability = 0.0;
     basinHoppingSteps = 10000;
     basinHoppingQuenchingSteps = 0;
     basinHoppingSingleAtomDisplace = false;
@@ -215,8 +217,6 @@ Parameters::Parameters(){
     basinHoppingSwapProbability = 0.0;
     basinHoppingJumpMax = 10;
     basinHoppingJumpSteps = 0;
-    basinHoppingInitialMD = false;
-    basinHoppingInitialMDTemperature = 300.0;
     basinHoppingAdjustDisplacement = true;
     basinHoppingAdjustPeriod = 10;
     basinHoppingAdjustFraction = 0.05;
@@ -517,6 +517,8 @@ int Parameters::load(FILE *file){
         // [Basin Hopping] //
 
         basinHoppingDisplacement = ini.GetValueF("Basin Hopping", "displacement", basinHoppingDisplacement);
+        basinHoppingPushApartDistance = ini.GetValueF("Basin Hopping", "push_apart_distance", basinHoppingPushApartDistance);
+        basinHoppingInitialRandomStructureProbability = ini.GetValueF("Basin Hopping", "initial_random_structure_probability", basinHoppingInitialRandomStructureProbability);
         basinHoppingSteps = ini.GetValueL("Basin Hopping", "steps", basinHoppingSteps);
         basinHoppingQuenchingSteps = ini.GetValueL("Basin Hopping", "quenching_steps", basinHoppingQuenchingSteps);
         basinHoppingSingleAtomDisplace = ini.GetValueB("Basin Hopping", "single_atom_displace", basinHoppingSingleAtomDisplace);
@@ -526,8 +528,6 @@ int Parameters::load(FILE *file){
         basinHoppingSwapProbability = ini.GetValueF("Basin Hopping", "swap_probability", basinHoppingSwapProbability);
         basinHoppingJumpMax = ini.GetValueL("Basin Hopping", "jump_max", basinHoppingJumpMax);
         basinHoppingJumpSteps = ini.GetValueL("Basin Hopping", "jump_steps", basinHoppingJumpSteps);
-        basinHoppingInitialMD = ini.GetValueB("Basin Hopping", "initial_md", basinHoppingInitialMD);
-        basinHoppingInitialMDTemperature = ini.GetValueF("Basin Hopping", "initial_md_temperature", temperature);
         basinHoppingAdjustDisplacement = ini.GetValueB("Basin Hopping", "adjust_displacement", basinHoppingAdjustDisplacement);
         basinHoppingAdjustPeriod = ini.GetValueL("Basin Hopping", "adjust_period", basinHoppingAdjustPeriod);
         basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
