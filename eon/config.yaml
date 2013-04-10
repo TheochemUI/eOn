@@ -437,6 +437,10 @@ Basin Hopping:
             kind: float
             default: 0.5
 
+        initial_state_pool_size:
+            kind: int
+            default: 1
+
         random_structure:
             kind: boolean
             default: false
