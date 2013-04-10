@@ -87,7 +87,10 @@ class BHStates:
         self.energy_table = io.Table(state_table_path, ['state', 'energy', 'repeats'])
 
     def get_random_minimum(self):
-        i = numpy.random.randint(0,len(self.energy_table))
+        N = config.bh_initial_state_pool_size
+        self.energy_table.rows.sort(key=lambda r:-r['energy'])
+        lowest_N = self.energy_table.rows[:N]
+        i = random.choice(lowest_N)['state']
         f = open(os.path.join(config.path_states, str(i), 'minimum.con'))
         return StringIO(f.read())
 
@@ -207,11 +210,20 @@ def make_searches(comm, wuid, bhstates):
         search['id'] = "%d" % wuid
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*2**32))) ]
 
-        if config.bh_random_structure:
-            reactIO = StringIO()
-            io.savecon(reactIO, rs.generate())
-        else:
+        #if config.bh_random_structure:
+        #    reactIO = StringIO()
+        #    io.savecon(reactIO, rs.generate())
+        #else:
+        #    reactIO = initial_react
+
+        if config.bh_initial_state_pool_size == 0:
             reactIO = initial_react
+        elif config.bh_initial_state_pool_size > 0:
+            reactIO = bhstates.get_random_minimum()
+        else:
+            logger.fatal("initial state pool size negative")
+            sys.exit(1)
+
         search['pos.con'] = reactIO
         search['config.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)
