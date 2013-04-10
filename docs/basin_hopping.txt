@@ -30,7 +30,7 @@ where the number in the filename corresponds to the monte carlo step where
 that structure was first seen. For clusters it is important to set **check_rotation**
 in the **[Structure Comparison]** section.
 
-    defalt: ``false``
+    default: ``false``
 
 **initial_state_pool_size**: The number of lowest energy states in the pool from
 which the initial structures are drawn.  The default value of 1 corresponds to a
@@ -38,13 +38,10 @@ simulation which will always start from the lowest energy found so far.
 
     default: ``1``
 
-**random_structure**: If ``true`` the server creates a random geometry subject
-to the condition that every atom should have at least one neighbor that is
-between 0.8 r and 1.3 r, where r is the sum of the covalent radii of the two
-atoms.  Otherwise the starting geometry is always the one specified in
-``pos.con``.
+**initial_random_structure_probability**: Probability that the initial structure
+is generated at random.
 
-    default: ``false``
+    default: ``0.0``
 
 **adjust_displacement**: Flag to automatically adjust the displacement to meet
 the target acceptance ratio.
