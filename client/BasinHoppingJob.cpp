@@ -94,12 +94,16 @@ std::vector<std::string> BasinHoppingJob::run(void)
             randomSwap(swapTrial);
             swapMove = true;
             *minTrial = *swapTrial;
+            pushApart(minTrial);
+
         }else{
             AtomMatrix displacement;
             displacement = displaceRandom(curDisplacement);
 
             trial->setPositions(current->getPositions() + displacement);
             swapMove = false;
+            pushApart(trial);
+
             *minTrial = *trial;
         }
 
@@ -211,6 +215,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
                 jump = displaceRandom(curDisplacement);
                 current->setPositions(current->getPositions() + jump);
                 if(parameters->basinHoppingSignificantStructure){
+                pushApart(current);
                     current->relax(true);
                 }
                 currentEnergy = current->getPotentialEnergy();
