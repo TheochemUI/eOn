@@ -236,6 +236,8 @@ public:
 
     // [Basin Hopping] //
     double basinHoppingDisplacement;
+    double basinHoppingInitialRandomStructureProbability;
+    double basinHoppingPushApartDistance;
     long   basinHoppingSteps;
     long   basinHoppingQuenchingSteps;
     bool   basinHoppingSignificantStructure;
@@ -245,8 +247,6 @@ public:
     double basinHoppingSwapProbability;
     long   basinHoppingJumpMax;
     long   basinHoppingJumpSteps;
-    bool   basinHoppingInitialMD;
-    double basinHoppingInitialMDTemperature;
     bool   basinHoppingAdjustDisplacement;
     long   basinHoppingAdjustPeriod;
     double basinHoppingAdjustFraction;
