@@ -598,14 +598,14 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     }
 }
 
-void helper_functions::pushApart(Matter *m1)
+void helper_functions::pushApart(Matter *m1, double minDistance)
 {
-    //m1->matter2con("movie.con");
+    if (minDistance <= 0) return;
 
     AtomMatrix r1 = m1->getPositions();
     MatrixXd Force(r1.rows(), 3);    
     double f=0.025;
-    double cut=0.7;
+    double cut=minDistance;
     double pushAparts=500;
     for(int p=0; p<r1.rows(); p++){
         for(int axis=0; axis<=2; axis++){
@@ -626,7 +626,6 @@ void helper_functions::pushApart(Matter *m1)
                     }
                 }
             }
-
         }
         if(moved==0) break;
         for(int k=0; k<r1.rows(); k++){

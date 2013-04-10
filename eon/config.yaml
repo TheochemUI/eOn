@@ -437,17 +437,25 @@ Basin Hopping:
             kind: float
             default: 0.5
 
+        initial_random_structure_probability:
+            kind: float
+            default: 0.0
+
+        push_apart_distance:
+            kind: float
+            default: 0.4
+
         initial_state_pool_size:
             kind: int
             default: 1
 
-        random_structure:
-            kind: boolean
-            default: false
-
         adjust_fraction:
             kind: float
             default: 0.05
+
+        adjust_displacement:
+            kind: boolean
+            default: true
 
         adjust_period:
             kind: int
@@ -500,21 +508,11 @@ Basin Hopping:
             kind: int
             default: 0
 
-        initial_md_probability:
-            kind: float
-            default: 0.9
-
-        initial_md_temperature:
-            kind: float
-            default: 300.0
-
-        adjust_displacement:
-            kind: boolean
-            default: true
-
         write_unique:
             kind: boolean
             default: false
+
+
 
 ################################################################################
 
