@@ -29,54 +29,54 @@ import fileio as io
 import locking
 from version import  version
 
-class RandomStructure:
-    def __init__(self, structure):
-        self.structure = structure
-        self.radii = numpy.array([ atoms.elements[name]['radius'] 
-                                   for name in structure.names ])
-        self.box_center = numpy.diagonal(structure.box)/2.0
-        self.p = 0.1
-
-    def generate(self):
-        indexes = range(len(self.structure))
-        random.shuffle(indexes)
-
-        rs = atoms.Atoms(0)
-        first = indexes[0]
-        rs.append(numpy.zeros(3), True, self.structure.names[first], 
-                  self.structure.mass[first])
-
-        failures = 0
-        for i in indexes[1:]:
-            rs.append(numpy.zeros(3), True, 
-                      self.structure.names[i], self.structure.mass[i])
-            rs.box = self.box_p(rs)
-            valid = False
-            while not valid:
-                rs.r[-1] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
-                distances = numpy.zeros(len(rs)-1)
-                for j in range(len(rs)-1):
-                    distances[j] = numpy.linalg.norm(rs.r[-1]-rs.r[j])
-                    bond_length = self.radii[i]+self.radii[j]
-
-                if min(distances) < 0.8*bond_length:
-                    failures += 1
-                    valid = False
-                elif min(distances) > 1.3*bond_length:
-                    failures += 1
-                    valid = False
-                else:
-                    #print '%i/%i' % (i+1,len(self.structure))
-                    valid = True
-        rs.box = self.structure.box
-        #XXX: shift to center of box, only correct for cubic cells
-        rs.r += rs.box.diagonal()/2.0
-        return rs
-
-    def box_p(self, rs):
-        V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])
-        a = (V_atoms/self.p)**(1/3.)
-        return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )
+#class RandomStructure:
+#    def __init__(self, structure):
+#        self.structure = structure
+#        self.radii = numpy.array([ atoms.elements[name]['radius'] 
+#                                   for name in structure.names ])
+#        self.box_center = numpy.diagonal(structure.box)/2.0
+#        self.p = 0.1
+#
+#    def generate(self):
+#        indexes = range(len(self.structure))
+#        random.shuffle(indexes)
+#
+#        rs = atoms.Atoms(0)
+#        first = indexes[0]
+#        rs.append(numpy.zeros(3), True, self.structure.names[first], 
+#                  self.structure.mass[first])
+#
+#        failures = 0
+#        for i in indexes[1:]:
+#            rs.append(numpy.zeros(3), True, 
+#                      self.structure.names[i], self.structure.mass[i])
+#            rs.box = self.box_p(rs)
+#            valid = False
+#            while not valid:
+#                rs.r[-1] = numpy.random.uniform(-rs.box[0][0]/2.0,rs.box[0][0]/2.0,3)
+#                distances = numpy.zeros(len(rs)-1)
+#                for j in range(len(rs)-1):
+#                    distances[j] = numpy.linalg.norm(rs.r[-1]-rs.r[j])
+#                    bond_length = self.radii[i]+self.radii[j]
+#
+#                if min(distances) < 0.8*bond_length:
+#                    failures += 1
+#                    valid = False
+#                elif min(distances) > 1.3*bond_length:
+#                    failures += 1
+#                    valid = False
+#                else:
+#                    #print '%i/%i' % (i+1,len(self.structure))
+#                    valid = True
+#        rs.box = self.structure.box
+#        #XXX: shift to center of box, only correct for cubic cells
+#        rs.r += rs.box.diagonal()/2.0
+#        return rs
+#
+#    def box_p(self, rs):
+#        V_atoms = sum(4./3*3.14159*self.radii[0:len(rs)])
+#        a = (V_atoms/self.p)**(1/3.)
+#        return numpy.array( ((a,0,0),(0,a,0),(0,0,a)) )
 
 class BHStates:
     def __init__(self):
@@ -87,6 +87,7 @@ class BHStates:
         self.energy_table = io.Table(state_table_path, ['state', 'energy', 'repeats'])
 
     def get_random_minimum(self):
+        if len(self.energy_table.rows) == 0: return None
         N = config.bh_initial_state_pool_size
         self.energy_table.rows.sort(key=lambda r:-r['energy'])
         lowest_N = self.energy_table.rows[:N]
@@ -202,8 +203,6 @@ def make_searches(comm, wuid, bhstates):
     #Merge potential files into invariants
     invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
 
-    rs = RandomStructure(io.loadcon(os.path.join(config.path_root, "pos.con")))
-
     searches = []
     for i in range(num_to_make):
         search = {}
@@ -220,6 +219,8 @@ def make_searches(comm, wuid, bhstates):
             reactIO = initial_react
         elif config.bh_initial_state_pool_size > 0:
             reactIO = bhstates.get_random_minimum()
+            if reactIO == None:
+                reactIO = initial_react
         else:
             logger.fatal("initial state pool size negative")
             sys.exit(1)
