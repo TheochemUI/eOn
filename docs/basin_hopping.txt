@@ -43,6 +43,11 @@ is generated at random.
 
     default: ``0.0``
 
+**push_apart_distance**: Push atoms apart by this distance initially and after any
+trial move.
+
+    default: ``0.4``
+
 **adjust_displacement**: Flag to automatically adjust the displacement to meet
 the target acceptance ratio.
 
