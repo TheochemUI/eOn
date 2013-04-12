@@ -21,10 +21,9 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     // determine which atoms moved in the process
     VectorXi atoms;
     
-    if (parameters->prefactorFilterMode == Prefactor::FILTER_FRACTION) {
+    if (parameters->prefactorFilterScheme == Prefactor::FILTER_FRACTION) {
         atoms = movedAtomsPct(parameters, min1, saddle, min2);
-    }
-    else {
+    }else{
         atoms = movedAtoms(parameters, min1, saddle, min2);
     }
 
