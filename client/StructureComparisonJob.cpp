@@ -28,10 +28,5 @@ std::vector<std::string> StructureComparisonJob::run(void)
     Matter *matter1 = new Matter(parameters);
     matter1->con2matter("matter1.con");
 
-   
-
-    helper_functions::pushApart(matter1);
-
-
     return returnFiles;
 }
