@@ -25,7 +25,7 @@ public:
     Matrix<double, Eigen::Dynamic, Eigen::Dynamic> getHessian(Matter *matterIn, VectorXi atomsIn);
     VectorXd getFreqs(Matter *matterIn, VectorXi atomsIn);
 //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
-    bool removeZeroFreqs(VectorXd freqs);
+    VectorXd removeZeroFreqs(VectorXd freqs);
 
 private:
     Matter *matter;
