@@ -47,7 +47,7 @@ Parameters::Parameters(){
     prefactorDefaultValue = 0.0;
     prefactorMaxValue = 1e+21;
     prefactorMinValue = 1e+9;
-    prefactorWithinRadius = 5.0;
+    prefactorWithinRadius = 3.3;
     prefactorMinDisplacement = 0.25;
     prefactorRate = Prefactor::RATE_HTST;
     prefactorConfiguration = PrefactorJob::PREFACTOR_REACTANT;

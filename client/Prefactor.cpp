@@ -41,7 +41,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     // remove zero modes
     if(parameters->checkRotation){
-        hessian.removeZeroFreqs(min1Freqs);
+        min1Freqs = hessian.removeZeroFreqs(min1Freqs);
     }
 
     // calculate saddle frequencies
@@ -53,7 +53,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     // remove zero modes
     if(parameters->checkRotation){
-        hessian.removeZeroFreqs(saddleFreqs);
+        saddleFreqs = hessian.removeZeroFreqs(saddleFreqs);
     }
 
     // calculate min2 frequencies
@@ -67,7 +67,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     }
     // remove zero modes
     if(parameters->checkRotation){
-        hessian.removeZeroFreqs(min2Freqs);
+        min2Freqs = hessian.removeZeroFreqs(min2Freqs);
     }
 
     // check Hessian sizes
@@ -86,7 +86,10 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     int i, numNegFreq = 0;
     for(i=0; i<size; i++)
     {
-        if(min1Freqs(i) < 0) { numNegFreq++; }
+        if(min1Freqs(i) < 0) { 
+            log("[Prefactor] min1 had negative mode of %e\n", min1Freqs(i));
+            numNegFreq++;
+        }
     }
     if(numNegFreq != 0)
     {
@@ -156,6 +159,8 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
         pref1 = 2. * kB_T / (h) * pref1;
         pref2 = 2. * kB_T / (h) * pref2;
     }
+    log("[Prefactor] reactant to product prefactor: %.3e\n", pref1);
+    log("[Prefactor] product to reactant prefactor: %.3e\n", pref2);
     return 0;
 }
 
@@ -242,6 +247,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         if (diff[i] <= diff[mini]) {
             mini = i;
         }
+
     }
 
     log("[Prefactor] sum of atom distances moved %.4f\n", sum);
@@ -262,8 +268,27 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         nMoved++;
         d += diff[maxi];
     }
-    log("[Prefactor] including %i atoms in the hessian\n", nMoved);    
-    return (VectorXi) moved.block(0,0,nMoved,1);
+
+    int totalAtoms = nMoved;
+    for (int i=0;i<nMoved;i++) {
+        for(int j=0;j<nAtoms;j++)
+        {
+            if (moved[i] == j) continue;
+
+            double diffRSaddle = saddle->distance(moved[i],j);
+            
+            if(diffRSaddle<parameters->prefactorWithinRadius
+               && (!saddle->getFixed(j))) {
+
+                if(!(moved.cwise() == j).any()) {
+                    moved[totalAtoms++] = j;
+                }
+
+            }
+        }
+    }
+    log("[Prefactor] including %i atoms in the hessian (%i moved + %i neighbors)\n", totalAtoms, nMoved, totalAtoms-nMoved);    
+    return (VectorXi) moved.block(0,0,totalAtoms,1);
 }
 
 
@@ -283,29 +308,5 @@ VectorXi Prefactor::allFreeAtoms(Matter *matter)
             nMoved++;
         }
     }
-    return (VectorXi) moved.block(0,0,nMoved,1);
+    return moved.head(nMoved);
 }
-
-VectorXd Prefactor::removeZeroFreqs(Parameters *parameters, VectorXd freqs)
-{
-    int size = freqs.size();
-    VectorXd newfreqs(size);
-    int nremoved = 0;
-    for(int i=0; i<size; i++)
-    {
-        if(abs(freqs(i)) > parameters->hessianZeroFreqValue)
-        {
-            newfreqs(i-nremoved) = freqs(i);
-        }
-        else
-        {
-            nremoved++;
-        }
-    }
-    if(nremoved != 6)
-    {
-        log("[Prefactor] Error: found %i trivial eigenmodes instead of 6\n", nremoved);
-    }
-    return newfreqs;
-}
-

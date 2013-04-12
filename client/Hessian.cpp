@@ -154,30 +154,28 @@ bool Hessian::calculate(void)
 // get the 6 rotational and translational modes.
 // XXX: what happens if the entire particle rotates about one atom or a line of atoms?
 
-bool Hessian::removeZeroFreqs(VectorXd freqs)
+VectorXd Hessian::removeZeroFreqs(VectorXd freqs)
 {
+    log("[Hessian] removing zero frequency modes\n");
     int size = freqs.size();
     if(size != 3*matter->numberOfAtoms()) {
-        return false;
+        return freqs;
     }
-    VectorXd newfreqs(size);
+    VectorXd newfreqs;
+    newfreqs.resize(size);
     int nremoved = 0;
     for(int i=0; i<size; i++)
     {
-        if(abs(freqs(i)) > parameters->hessianZeroFreqValue)
-        {
+        if(abs(freqs(i)) > parameters->hessianZeroFreqValue) {
             newfreqs(i-nremoved) = freqs(i);
-        }
-        else
-        {
+        }else{
             nremoved++;
         }
     }
-    if(nremoved != 6)
-    {
+
+    if(nremoved != 6) {
         log("[Hessian] Error: Found %i trivial eigenmodes instead of 6\n", nremoved);
     }
-    freqs = newfreqs;
-    return true;
+    return newfreqs.head(size-nremoved);
 }
 
