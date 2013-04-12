@@ -77,17 +77,36 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     //Main MD loop
     double simulationTime;
+    if(parameters->biasPotential == Hyperdynamics::NONE ) {
+        log("%s %8s %10s %10s %12s %12s %10s\n", LOG_PREFIX, "Step", "Time (s)", "KE", "PE", "TE", "kinT");
+    }else{
+        log("%s %8s %10s %10s %10s %12s %12s %10s\n", LOG_PREFIX, "Step", "Time (s)", "Boost", "KE", "PE", "TE", "kinT");
+    }
     for (int step=1;step<=parameters->mdSteps;step++) {
-        dynamics.oneStep(step);
+        dynamics.oneStep();
+        double boost = 1.0;
         if( parameters->biasPotential == Hyperdynamics::BOND_BOOST ) {
             double boostPotential = bondBoost.boost();   
-            double kB = 8.6173324e-5;
-            double boost = 1.0*exp(boostPotential/kB/parameters->temperature);   
+            double kB = parameters->kB;
+            boost = exp(boostPotential/kB/parameters->temperature);   
             
             simulationTime += parameters->mdTimeStep*boost;
-            log("[Bond Boost] simulation time: %.4e boost: %.8f\n", simulationTime*parameters->timeUnit, boost);
         } else {
             simulationTime += parameters->mdTimeStep;
+        }
+
+        double kinE = trajectory->getKineticEnergy();
+        double potE = trajectory->getPotentialEnergy();
+        double kinT = (2.0*kinE/(trajectory->numberOfFreeAtoms()*3)/parameters->kB);
+
+        if(parameters->biasPotential == Hyperdynamics::NONE ) {
+            log("%s %8ld %10.4e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX, 
+                    step, simulationTime*parameters->timeUnit*1e-15,
+                    kinE, potE, kinE+potE, kinT);
+        }else{
+            log("%s %8ld %10.4e %10.3e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
+                    step, simulationTime*parameters->timeUnit*1e-15,
+                    boost, kinE, potE, kinE+potE, kinT);
         }
 
         //Snapshots of the trajectory used for the refinement
@@ -180,13 +199,14 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
 
     if (transitionTime == 0) {
         fprintf(fileResults, "0 transition_found\n");
-        fprintf(fileResults, "%e simulation_time_s\n", parameters->mdTime*parameters->timeUnit*1.0e-15);
+        fprintf(fileResults, "%e simulation_time_s\n", simulationTime*parameters->timeUnit*1.0e-15);
     }else{
         fprintf(fileResults, "1 transition_found\n");
         fprintf(fileResults, "%e transition_time_s\n", transitionTime*parameters->timeUnit*1.0e-15);
         fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*parameters->timeUnit*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
+    fprintf(fileResults, "%lf speedup\n", simulationTime/(parameters->mdSteps*parameters->mdTimeStep));
 
     fclose(fileResults);
 
