@@ -9,8 +9,12 @@ AR=ar cru
 RANLIB=ranlib
 DEPFLAGS=-MMD
 
+
+
 #if building omp lammps
 #LDFLAGS += -fopenmp
+#if building lammps with meam
+#LDFLAGS += potentials/LAMMPS/libmeam.a
 
 #intel 12 linking
 #LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
