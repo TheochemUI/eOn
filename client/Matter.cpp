@@ -883,9 +883,9 @@ bool Matter::con2matter(FILE *file)
             }
 
             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-            setPosition(i, 0, x);
-            setPosition(i, 1, y);
-            setPosition(i, 2, z);
+            positions(i,0) = x;
+            positions(i,1) = y;
+            positions(i,2) = z;
             setFixed(i, static_cast<bool>(fixed));
         }
     }
