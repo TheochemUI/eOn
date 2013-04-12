@@ -34,7 +34,7 @@ the Hessian calculation. Used only with filter_scheme "cutoff"
 **within_radius**: Atoms within this radius of moving atoms are included in the
 Hessian. Used only with filter_scheme "cutoff"
 
-    default: ``5.0``
+    default: ``3.3``
 
 **default_value**: Calculate prefactor if zero, otherwise use given value
 instead of doing a full prefactor calculation.
