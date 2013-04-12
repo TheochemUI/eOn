@@ -42,7 +42,7 @@ int BasinHoppingSaddleSearch::run(void)
     double Temperature = parameters->temperature;
     double arg = -de/(kb*Temperature);
     double p=exp(arg);
-    double r=drand48(); 
+    double r=helper_functions::random(); 
     if(ereactant < eproduct){
 	if(r>p){                                      //reject
 	    return 1;
