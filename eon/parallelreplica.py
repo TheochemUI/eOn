@@ -146,8 +146,10 @@ def make_searches(comm, current_state, wuid):
         search = {}
         search['id'] = "%d_%d" % (current_state.number, wuid)
         search['pos.con']  = reactIO
+
+        client_job = config.main_job.lower()
         ini_changes = [
-                        ('Main', 'job', 'parallel_replica'),
+                        ('Main', 'job', client_job),
                         ('Main', 'random_seed',
                             str(int(numpy.random.random()*10**9))),
                       ]
