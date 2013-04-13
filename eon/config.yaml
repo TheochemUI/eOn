@@ -631,7 +631,7 @@ Prefactor:
 
         within_radius:
             kind: float
-            default: 5.0
+            default: 3.3
 
         min_value:
             kind: float
