@@ -204,8 +204,8 @@ void GlobalOptimizationJob::report(Matter *matter_hop) {
         C2 = '-';
     }
     double epot_hop = matter_hop->getPotentialEnergy();
-    double temp = (2.0*ekin_p/8.6173857E-5);
-    double dt = parameters->mdTimeStep/0.09823;
+    double temp = (2.0*ekin_p/parameters->kB);
+    double dt = parameters->mdTimeStep;
     fprintf(monfile,"%15.5f  %15.5f  %11lu  %12.2f         %c%c  %5ld  %5ld\n",
         epot_hop, ediff, (size_t)temp, dt, C1, C2, fcallsMove, fcallsRelax);
 }
