@@ -13,7 +13,13 @@ import logging
 logger = logging.getLogger('superbasinscheme')
 
 import config
-import mpsuperbasin
+
+import sys
+if sys.version_info < (2, 6):
+    mpsuperbasin = None
+else:
+    import mpsuperbasin
+
 import superbasin
 
 class SuperbasinScheme:
@@ -26,7 +32,7 @@ class SuperbasinScheme:
         if config.sb_use_arbitrary_precision:
             if mpsuperbasin is None:
                 print "Was unable to import mpsuperbasin. Is mpmath installed?"
-                import sys
+#                import sys
                 sys.exit()
             global superbasin
             superbasin = mpsuperbasin
