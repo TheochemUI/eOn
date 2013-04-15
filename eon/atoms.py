@@ -544,14 +544,13 @@ def cnat(p, cutoff, brute=False):
 def cnar(p, cutoff, brute=False):
     """ Returns a list of cna numbers for all atoms in p 
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
-     # make a dict of dicts for each atom.
-    if sys.version_info < (2.5):
+    # not compatible with older python versions
+    #cna = {i:{} for i in range(len(p))}
 
-        cna = {}
-        for i in range(len(p)):
-            cna[i] = {}
-    else:
-        cna = {i:{} for i in range(len(p))}
+    # make a dict of dicts for each atom.
+    cna = {}
+    for i in range(len(p)):
+        cna[i] = {}
 
     nl = neighbor_list(p, cutoff, brute)
 
