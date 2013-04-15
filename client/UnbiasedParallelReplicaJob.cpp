@@ -104,9 +104,10 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                     step, simulationTime*parameters->timeUnit*1e-15,
                     kinE, potE, kinE+potE, kinT);
         }else{
+            double boostPotential = bondBoost.boost();   
             log("%s %8ld %10.4e %10.3e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
                     step, simulationTime*parameters->timeUnit*1e-15,
-                    boost, kinE, potE, kinE+potE, kinT);
+                    boost, kinE, potE+boostPotential, kinE+potE+boostPotential, kinT);
         }
 
         //Snapshots of the trajectory used for the refinement
@@ -146,7 +147,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
                     transitionStructure = *trajectory;
                     transitionTime = simulationTime;
                 }
-                log("%s transition occurred at %.3f\n", LOG_PREFIX, transitionTime*parameters->timeUnit);
+                log("%s transition occurred at %.3e s\n", LOG_PREFIX, transitionTime*parameters->timeUnit*1e-15);
 
             //at the end of the simulation perform the refinement if it hasn't happened yet
             //this ensures that if a transition isn't seen that the same number of force
