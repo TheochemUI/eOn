@@ -99,7 +99,11 @@ class Communicator:
         raise NotImplementedError()
 
     def get_bundle_size(self, job_path):
-        fnames = [os.path.basename(f) for f in glob.glob(os.path.join(job_path, "config_*.ini"))]
+        if type(job_path) != list:
+            fnames = [os.path.basename(f) for f in glob.glob(os.path.join(job_path, "results*.dat"))]
+        else:
+            fnames = job_path
+
         big = 0
         for name in fnames:
             big = max(big, int(name.replace('_','.').split('.')[1]))
