@@ -89,7 +89,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
             double boostPotential = bondBoost.boost();   
             double kB = parameters->kB;
             boost = exp(boostPotential/kB/parameters->temperature);   
-            
+             
             simulationTime += parameters->mdTimeStep*boost;
         } else {
             simulationTime += parameters->mdTimeStep;
@@ -99,15 +99,17 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
         double potE = trajectory->getPotentialEnergy();
         double kinT = (2.0*kinE/(trajectory->numberOfFreeAtoms()*3)/parameters->kB);
 
-        if(parameters->biasPotential == Hyperdynamics::NONE ) {
-            log("%s %8ld %10.4e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX, 
-                    step, simulationTime*parameters->timeUnit*1e-15,
-                    kinE, potE, kinE+potE, kinT);
-        }else{
-            double boostPotential = bondBoost.boost();   
-            log("%s %8ld %10.4e %10.3e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
-                    step, simulationTime*parameters->timeUnit*1e-15,
-                    boost, kinE, potE+boostPotential, kinE+potE+boostPotential, kinT);
+        if (step % parameters->writeMoviesInterval == 0) {
+            if(parameters->biasPotential == Hyperdynamics::NONE ) {
+                log("%s %8ld %10.4e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX, 
+                        step, simulationTime*parameters->timeUnit*1e-15,
+                        kinE, potE, kinE+potE, kinT);
+            }else{
+                double boostPotential = bondBoost.boost();   
+                log("%s %8ld %10.4e %10.3e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
+                        step, simulationTime*parameters->timeUnit*1e-15,
+                        boost, kinE, potE+boostPotential, kinE+potE+boostPotential, kinT);
+            }
         }
 
         //Snapshots of the trajectory used for the refinement
