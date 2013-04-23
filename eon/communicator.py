@@ -104,10 +104,14 @@ class Communicator:
         else:
             fnames = job_path
 
-        big = 0
-        for name in fnames:
-            big = max(big, int(name.replace('_','.').split('.')[1]))
-        return big + 1
+        pattern = re.compile('results_\d+.dat')
+        size = len([ fname for fname in fnames if pattern.match(fname) ])
+        if size == 0 and 'results.dat' in fnames:
+            size = 1
+        else:
+            size = 0
+        return size
+
 
     def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple jobs into multiple single 

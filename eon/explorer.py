@@ -209,8 +209,12 @@ class ClientMinModeExplorer(MinModeExplorer):
         logger.info("registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
-            shutil.rmtree(config.path_jobs_in)  
-        os.makedirs(config.path_jobs_in)
+            try:
+                shutil.rmtree(config.path_jobs_in)  
+            except:
+                pass
+        if not os.path.isdir(config.path_jobs_in):
+            os.makedirs(config.path_jobs_in)
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -245,12 +249,16 @@ class ClientMinModeExplorer(MinModeExplorer):
                 #XXX: This is currently broken by the new result passing 
                 #      scheme. Should it be done in communicator?
                 pass
+            if len(result) == 0: continue
             state_num = int(result['name'].split("_")[0])
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
             # Store information about the search into result_data for the
             # search_results.txt file in the state directory.
-            job_type = self.job_table.get_row('wuid', id)['type']
+            try:
+                job_type = self.job_table.get_row('wuid', id)['type']
+            except TypeError:
+                continue
             result['type'] = job_type
             if job_type == None:
                 logger.warning("Could not find search data for search %s" 
