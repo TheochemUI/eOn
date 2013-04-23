@@ -8,8 +8,6 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-import numpy
-import os
 import logging
 import logging.handlers
 logger = logging.getLogger('mpiwait')
