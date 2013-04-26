@@ -530,7 +530,7 @@ Recycling:
 
         use_recycling:
             kind: boolean
-            default: False
+            default: True
 
         use_sb_recycling:
             kind: boolean
