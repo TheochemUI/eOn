@@ -30,7 +30,7 @@ is local, the overall cost does not increase with the total system size.
 
 **use_recycling**: Turn recycling on and off.
 
-    default: ``False``
+    default: ``True``
 
 **move_distance**: The distance an atom must move to be considered in the "hole".
 

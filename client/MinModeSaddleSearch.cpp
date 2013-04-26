@@ -218,6 +218,9 @@ int MinModeSaddleSearch::run()
                 iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                 objf.getConvergence(),
                 minModeMethod->getEigenvalue());
+        }else{
+            log("[MinModeSaddleSearch] Unknown min_mode_method: %s\n", parameters->saddleMinmodeMethod.c_str());
+            exit(1);
         }
 
         if (parameters->writeMovies) {
