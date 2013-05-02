@@ -303,7 +303,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("currently in state %i with confidence %.6f", current_state.number, current_state.get_confidence(), 1-current_state.get_confidence())
+    logger.info("currently in state %i with confidence %.6f", current_state.number, 
+            current_state.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
@@ -453,7 +454,9 @@ def main():
                             os.path.join(config.path_results, "jobs.tbl"),
                             os.path.join(config.path_root, "results"),
                             os.path.join(config.path_root, "prng.pkl"),
-                            os.path.join(config.path_root, "explorer.pickle"),]
+                            os.path.join(config.path_root, "explorer.pickle"),
+                            os.path.join(config.path_root, "temperatures.dat"),
+                            ]
                 for thing in rmthings:
                     attempt_removal(thing)
                 if not options.quiet:
