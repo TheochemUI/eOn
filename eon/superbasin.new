@@ -16,8 +16,6 @@ logger = logging.getLogger('superbasin')
 
 
 class Superbasin:
-    """Class to manage superbasins: Calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
-    """based on Novotny's Absorbing Markov Chain algorithm."""
 
 
     def __init__(self, path, id, state_list = None, get_state = None):
@@ -35,45 +33,6 @@ class Superbasin:
         else:
             self.read_data(get_state)
 
-
-    def pick_exit_state(self, entry_state):
-        """Choose an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
-        for i in range(len(self.state_numbers)):
-            if entry_state.number == self.state_numbers[i]:
-                entry_state_index = i
-                break
-        else:
-            raise ValueError('Passed entry state is not in this superbasin')
-
-        probability_vector = self.probability_matrix.transpose()[entry_state_index]
-        if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
-            logger.warning("Probability vector is not 1.0")
-            logger.warning('Probability vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
-        probability_vector /= numpy.sum(probability_vector)
-
-        u = numpy.random.random_sample()
-        p = 0.0
-        for i in range(len(self.states)):
-            p += probability_vector[i]
-            if p>u:
-                exit_state_index = i 
-                break
-        else:
-            logger.warning("Warning: Failed to select exit state; p = " + str(p))
-        time = self.mean_residence_times[entry_state_index]
-        return time, exit_state_index
-
-    def test(self, entry_state):
-        n=len(self.mean_residence_times)
-        p=[0]*n
-        m=10
-        for i in range(m):
-            time, exit_state_index=self.pick_exit_state(entry_state)
-            p[exit_state_index]+=1
-        for i in range(n):
-            p[i]=float(p[i])/m
-        print 'pick up p:', p
-        return time, exit_state_index
 
     def step(self, entry_state, get_product_state):
     
@@ -139,7 +98,12 @@ class Superbasin:
                 exit_state_number, exit_proc_id = col2st[i]
                 break
         else:
-            logger.warning("Warning: Failed to select rate; p = " + str(p))
+            raise ValueError("Failed to select exit process.")
+            
+        exit_state = self.state_dict[exit_state_number]
+        product_state = get_product_state(exit_state_number, exit_proc_id)        
+        mean_time = t[st2i[entry_state.number]]
+        return mean_time, exit_state, product_state, exit_proc_id, self.id
         
                     
     def mcamc(self, Q, R, c):
@@ -154,7 +118,7 @@ class Superbasin:
 
 
     def write_data(self):
-        logger.debug('Saving data to %s' % self.path)
+        logger.debug('saving data to %s' %self.path)
         f = open(self.path, 'w')
         for number in self.state_numbers:
             f.write("%d " % number)
@@ -162,17 +126,17 @@ class Superbasin:
 
 
     def read_data(self, get_state):
-        logger.debug('Reading data from %s' % self.path)
+        logger.debug('reading data from %s' % self.path)
         self.state_numbers = [number for number in open(self.path, 'r').readline().strip().split()]
         self.states = [get_state(number) for number in self.state_numbers]
 
 
     def delete(self, storage=None):
         if storage is None:
-            logger.debug('Deleting %s' % self.path)
+            logger.debug('deleting %s' % self.path)
             os.remove(self.path)
         else:
-            logger.debug('Storing %s' % self.path)
+            logger.debug('storing %s' % self.path)
             path_storage = storage+str(self.id)
             os.rename(self.path, path_storage)
         self.states = None
