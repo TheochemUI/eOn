@@ -15,7 +15,7 @@ logger = logging.getLogger('superbasin')
 
 
 class Superbasin:
-    """Class to manage super basin: calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
+    """Class to manage superbasins: Calculate the mean residence time, exit probabilities, and perform Monte Carlo transitions out of the basin, """\
     """based on Novotny's Absorbing Markov Chain algorithm."""
 
     def __init__(self, path, id, state_list = None, get_state = None):
@@ -37,7 +37,7 @@ class Superbasin:
 
 
     def pick_exit_state(self, entry_state):
-        """Chosse an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
+        """Choose an exit state (state of the basin from which we will be leaving) using absorbing Markov chain theory."""
         for i in range(len(self.state_numbers)):
             if entry_state.number == self.state_numbers[i]:
                 entry_state_index = i
@@ -47,8 +47,8 @@ class Superbasin:
 
         probability_vector = self.probability_matrix.transpose()[entry_state_index]
         if abs(1.0-numpy.sum(probability_vector)) > 1e-3:
-            logger.warning("the probability vector isn't close to 1.0")
-            logger.warning('probability_vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
+            logger.warning("Probability vector is not 1.0")
+            logger.warning('Probability vector ' + str(probability_vector) + " " + str(numpy.sum(probability_vector)))
         probability_vector /= numpy.sum(probability_vector)
 
         u = numpy.random.random_sample()
@@ -59,7 +59,7 @@ class Superbasin:
                 exit_state_index = i 
                 break
         else:
-            logger.warning("Warning: failed to select exit state. p = " + str(p))
+            logger.warning("Warning: Failed to select exit state; p = " + str(p))
         time = self.mean_residence_times[entry_state_index]
         return time, exit_state_index
 
@@ -106,7 +106,7 @@ class Superbasin:
                 exit_proc_id = rate_table[i][0]
                 break
         else:
-            logger.warning("Warning: failed to select rate. p = " + str(p))
+            logger.warning("Warning: Failed to select rate; p = " + str(p))
         
         # When requesting the product state the process
         # gets added to the tables of events for both the forward
@@ -175,7 +175,7 @@ class Superbasin:
 
 
     def write_data(self):
-        logger.debug('saving data to %s' %self.path)
+        logger.debug('Saving data to %s' % self.path)
         f = open(self.path, 'w')
         for i in [self.state_numbers, self.mean_residence_times, self.probability_matrix.ravel()]:
             for j in i:
@@ -185,7 +185,7 @@ class Superbasin:
 
 
     def read_data(self, get_state):
-        logger.debug('reading data from %s' % self.path)
+        logger.debug('Reading data from %s' % self.path)
         f = open(self.path, 'r')
 
         self.state_numbers = []
@@ -203,10 +203,10 @@ class Superbasin:
 
     def delete(self, storage=None):
         if storage is None:
-            logger.debug('deleting %s' % self.path)
+            logger.debug('Deleting %s' % self.path)
             os.remove(self.path)
         else:
-            logger.debug('storing %s' % self.path)
+            logger.debug('Storing %s' % self.path)
             path_storage = storage+str(self.id)
             os.rename(self.path, path_storage)
 

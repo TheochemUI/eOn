@@ -278,7 +278,7 @@ class BOINC(Communicator):
             uid = random.randint(0, 2147483647)
             f.write("%s\n" % uid)
             f.close()
-            logger.debug("wrote new unique id %i to %s" % (uid, uniqueid_path))
+            logger.debug("Wrote new unique id %i to %s" % (uid, uniqueid_path))
         try:
             f = open(uniqueid_path)
         except IOError:
@@ -286,13 +286,13 @@ class BOINC(Communicator):
 
         try:
             self.uniqueid = int(f.read().strip())
-            logger.debug("read in unique id %i from %s" % (self.uniqueid, 
+            logger.debug("Read in unique id %i from %s" % (self.uniqueid, 
                 uniqueid_path))
         except ValueError:
             raise CommunicatorError("Trouble converting uniqueid value in %s to integer" % uniqueid_path)
 
         self.average_flops = self.get_average_flops()
-        logger.debug("current average flops per wu is %.2e", self.average_flops)
+        logger.debug("Current average flops per wu is %.2e", self.average_flops)
 
     def get_average_flops(self):
         'This function might be slow with large result tables and without '
@@ -533,7 +533,7 @@ class MPI(Communicator):
         self.resume_jobs = []
         if config.main_checkpoint:
             self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
-            logger.info("found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
+            logger.info("Found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
         self.run_resume_jobs()
 
     def submit_jobs(self, data, invariants):
@@ -585,7 +585,7 @@ class MPI(Communicator):
         for rank in self.client_ranks:
             ready = self.comm.Iprobe(rank, tag=1)
             if ready:
-                logger.info("rank %i is ready" % rank)
+                logger.info("Rank %i is ready" % rank)
                 ready_ranks.append(rank)
 
         return ready_ranks
@@ -614,7 +614,7 @@ class Local(Communicator):
         if '/' in client:
             self.client = os.path.abspath(client)
             if not os.path.isfile(self.client):
-                logger.error("can't find client: %s", client)
+                logger.error("Can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
         else:
             # is the client in the local directory?
@@ -625,7 +625,7 @@ class Local(Communicator):
                        os.environ['PATH'].split(':') ]) != 0:
                 self.client = client
             else:
-                logger.error("can't find client: %s", client)
+                logger.error("Can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
 
         self.joblist = []
@@ -668,7 +668,7 @@ class Local(Communicator):
     def check_job(self, job):
         p, jobpath = job
         if p.returncode == 0:
-            logger.info('job finished in %s' % jobpath)
+            logger.info('Job finished in %s' % jobpath)
             return True
         else:
             stdout, stderr = p.communicate()
@@ -804,7 +804,7 @@ class Script(Communicator):
             cmd = "%s %i" % (self.cancel_job_cmd, job_id)
             status, output = commands.getstatusoutput(cmd)
             if status != 0:
-                logger.warn("job cancel failed with error: %s" % output)
+                logger.warn("Job cancel failed with error: %s" % output)
         self.jobids = {}
         self.save_jobids()
         shutil.rmtree(config.path_scratch) 
@@ -1092,9 +1092,9 @@ class ARC(Communicator):
 
                 self.arclib.AddJobID(job_id, job_name)
                 self.active_jobs.append({"id": job_id, "name": job_name, "stage":"Queueing"})
-                logger.info("submitted " + job_id)
+                logger.info("Submitted " + job_id)
             else:
-                logger.info("failed to submit to " + hostname)                
+                logger.info("Failed to submit to " + hostname)                
 
 
     def get_targets_hostnames(self, xrsl):

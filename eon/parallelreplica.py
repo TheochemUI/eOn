@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("simulation time is %e", time)
+    logger.info("Simulation time is %e", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -49,10 +49,10 @@ def parallelreplica():
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
-    logger.info("time in current state is %e", current_state.get_time()) 
+    logger.info("Time in current state is %e", current_state.get_time()) 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
-        logger.info("Total Speedup is %f",avg_spdup)
+        logger.info("Total speedup is %f",avg_spdup)
     if transition:
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
@@ -77,7 +77,7 @@ def step(current_time, current_state, states, transition):
     previous_state = current_state
     current_state = next_state
 
-    logger.info("currently in state %i", current_state.number)
+    logger.info("Currently in state %i", current_state.number)
 
     return current_state, previous_state
 
@@ -122,9 +122,9 @@ def make_searches(comm, current_state, wuid):
     reactant = current_state.get_reactant()
     #XXX:what if the user changes the bundle size?
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
-    logger.info("%i searches in the queue" % num_in_buffer)
+    logger.info("Queue contains %i searches" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-    logger.info("making %i searches" % num_to_make)
+    logger.info("Making %i searches" % num_to_make)
 
     if num_to_make == 0:
         return wuid
@@ -158,11 +158,11 @@ def make_searches(comm, current_state, wuid):
         wuid += 1
 
     comm.submit_jobs(searches, invariants)
-    logger.info( str(num_to_make) + " searches created")
+    logger.info( "Created " + str(num_to_make) + " searches")
     return wuid
 
 def register_results(comm, current_state, states):
-    logger.info("registering results")
+    logger.info("Registering results")
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
@@ -195,7 +195,7 @@ def register_results(comm, current_state, states):
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
-            logger.info("found transition with time %.3e", time)
+            logger.info("Found transition with time %.3e", time)
             if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
@@ -203,9 +203,9 @@ def register_results(comm, current_state, states):
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
 
-    logger.info("%i (result) searches processed", num_registered)
+    logger.info("Processed %i results", num_registered)
     if num_registered >=1:
-        logger.info("Average Speedup is  %f", speedup/num_registered)
+        logger.info("Average speedup is %f", speedup/num_registered)
     return num_registered, transition, speedup
 
 def main():
@@ -216,7 +216,7 @@ def main():
     options, args = optpar.parse_args()
 
     if len(args) > 1:
-        print "takes only one positional argument"
+        print "Only one positional argument allowed"
     sys.argv = sys.argv[0:1]
     if len(args) == 1:
         sys.argv += args
@@ -258,13 +258,13 @@ def main():
                 if os.path.isfile(i):
                     os.remove(i)
 
-            print "Reset."
+            print "Reset"
         sys.exit(0)
 
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "pr.log"),
-            format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
+            format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
 
@@ -286,7 +286,7 @@ def main():
                 parallelreplica()
         parallelreplica()
     else:
-        logger.warning("couldn't get lock")
+        logger.warning("Couldn't get lock")
         sys.exit(1)
 
 if __name__ == '__main__':

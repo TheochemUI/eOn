@@ -301,7 +301,7 @@ def points_energies_match(file_a, energy_a, files_b, energies_b):
 
 def rot_match(a, b):
     if not (a.free.all() and b.free.all()):
-        logger.warning("Comparing structures with frozen atoms with rotational matching. This may indicate that check_rotation is set incorrectly and could lead to unexpected behavior")
+        logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
     

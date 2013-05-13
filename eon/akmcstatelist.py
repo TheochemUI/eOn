@@ -126,7 +126,7 @@ class AKMCStateList(statelist.StateList):
         product.update_lowest_barrier( barrier )
 
         # Register the process in the search result file.
-        result_fake = { 'barrier_reactant_to_product' : barrier,
+        result_fake = {'barrier_reactant_to_product' : barrier,
                        'displacement_saddle_distance' : 0.0,
                        'force_calls_saddle' : 0,
                        'force_calls_minimization' : 0,

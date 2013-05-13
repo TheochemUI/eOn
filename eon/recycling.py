@@ -36,12 +36,12 @@ class SB_Recycling:
         current_state - the state object just moved to
         move_didstance - distance an atom must move to be in the "hole"
         path - the path to the superbasin recycling directory.
-        sb_type - either "novotny" or "askmc"
-        superbasining - if sb_type is "novotny", then this is the superbasining object; otherwise it's None
+        sb_scheme - either "mcamc" or "askmc"
+        superbasining - if sb_scheme is "mcamc", then this is the superbasining object; otherwise it is "None"
     """
 
 
-    def __init__(self, states, previous_state, current_state, move_distance, recycle_save, path, sb_type, superbasining):
+    def __init__(self, states, previous_state, current_state, move_distance, recycle_save, path, sb_scheme, superbasining):
         """ Initialize the data for the super-basin recycling object. """
         # Establish the base data
         self.states = states
@@ -50,7 +50,7 @@ class SB_Recycling:
         self.path = path
         self.move_distance = move_distance
         self.recycle_save = recycle_save
-        self.sb_type = sb_type
+        self.sb_scheme = sb_scheme
         self.superbasining = superbasining
 
         # Establish the working directory.
@@ -66,9 +66,9 @@ class SB_Recycling:
         if (self.current_state.number not in [pair[1] for pair in self.sb_state_nums]):
             self.in_progress = True
             # Get sb_state_nums and the sb_states
-            if self.sb_type == None:
+            if self.sb_scheme == None:
                 self.in_progress = False
-            elif self.sb_type == "novotny":
+            elif self.sb_scheme == "mcacm":
                 # Getting the superbasin that the previous state was in (if it was in one)
                 containing_sb = self.superbasining.get_containing_superbasin(self.previous_state)
                 # If there was a return value other than None,
@@ -99,7 +99,7 @@ class SB_Recycling:
                 # Otherwise, the previous state was not in a superbasin -- we're done for now.
                 else:
                     self.in_progress = False
-            elif self.sb_type == "askmc":
+            elif self.sb_scheme == "askmc":
                 if os.path.isfile(os.path.join(self.path, "current_sb_states")):
                     fi = open(os.path.join(self.path, "current_sb_states"), "r")
                     fi.readline() # The header
@@ -145,7 +145,7 @@ class SB_Recycling:
         return next_state_process_id
 
     def make_suggestion(self):
-        """ This will use the Recycling class to make saddle search suggestions. """
+        """ This will use the recycling class to make saddle search suggestions. """
         if not self.in_progress:
             self.write_metadata()
             return None, None

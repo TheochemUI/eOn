@@ -254,7 +254,7 @@ class Undercoordinated(Displace):
         self.undercoordinated_atoms = self.filter_epicenters(self.undercoordinated_atoms)
 
         if len(self.undercoordinated_atoms) == 0:
-            errmsg = "No free atoms have a coordination of %i or less."
+            errmsg = "No free atoms have a coordination of %i or less"
             errmsg = errmsg % self.max_coordination
             raise DisplaceError(errmsg)
 
@@ -283,7 +283,7 @@ class Leastcoordinated(Displace):
         self.leastcoordinated_atoms = self.filter_epicenters(self.leastcoordinated_atoms)
 
         if len(self.leastcoordinated_atoms) == 0:
-            errmsg = "The least coordinated atoms are all frozen."
+            errmsg = "The least coordinated atoms are all frozen"
             raise DisplaceError(errmsg)
 
     def make_displacement(self):
@@ -308,7 +308,7 @@ class NotFCCorHCP(Displace):
         self.not_HCP_or_FCC_atoms = self.filter_epicenters(self.not_HCP_or_FCC_atoms)
 
         if len(self.not_HCP_or_FCC_atoms) == 0:
-            errmsg = "The atoms without FCC or HCP coordination are all frozen."
+            errmsg = "The atoms without FCC or HCP coordination are all frozen"
             raise DisplaceError(errmsg)
 
     def make_displacement(self):
@@ -359,7 +359,7 @@ class NotTCP(Displace):
         self.not_TCP_atoms = self.filter_epicenters(self.not_TCP_atoms)
 
         if len(self.not_TCP_atoms) == 0:
-            errmsg = "The atoms without TCP coordination are all frozen."
+            errmsg = "The atoms without TCP coordination are all frozen"
             raise DisplaceError(errmsg)
 
     def make_displacement(self):
@@ -380,7 +380,7 @@ class ListedAtoms(Displace):
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
 
         if len(self.listed_atoms) == 0:
-            raise DisplaceError("None of the listed atoms are free.")
+            raise DisplaceError("Listed atoms are all frozen")
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
@@ -402,7 +402,7 @@ class Random(Displace):
         self.free_atoms = self.filter_epicenters(self.free_atoms)
 
         if len(self.free_atoms) == 0: 
-            raise DisplaceError("There are no free atoms in the reactant.")
+            raise DisplaceError("There are no free atoms in the reactant")
 
     def make_displacement(self):
         """Select a random atom and displace all atoms in a radius about it."""
@@ -411,13 +411,13 @@ class Random(Displace):
         return self.get_displacement(epicenter)
 
 class Water(Displace):
-    '''Displace molecules of water without streatching them'''
+    '''Displace molecules of water without streatching them.'''
     def __init__(self, reactant, stdev_translation, stdev_rotation, molecule_list=[], random=0):
         """reactant: structure to be displaced\n"""\
         """stdev_translation: translational standard deviation (Angstrom)\n"""\
         """stdev_rotation: rotational standard deviation (radian)"""\
-        """molecules: list of indices of the molecules to displace or None to displace all the molecules."""\
-        """random: if 0 displace all molecules in molecule_list, if 'random > 0' picked up at random in 'molecule_list' a number of molecules equal to the number soted in 'random' and displace only these."""
+        """molecules: list of indices of the molecules to displace or None to displace all the molecules"""\
+        """random: if 0 displace all molecules in molecule_list, if 'random > 0' picked up at random in 'molecule_list' a number of molecules equal to the number soted in 'random' and displace only these"""
         assert(isinstance(molecule_list, list))
         self.reactant = reactant
         self.stdev_translation = stdev_translation
@@ -431,11 +431,11 @@ class Water(Displace):
         self.random = random
 
     def make_displacement(self):
-        '''Returns Atom object containing displaced structure and an array containing the displacement'''
+        '''Returns Atom object containing displaced structure and an array containing the displacement.'''
         return self.get_displacement()
 
     def get_displacement(self):
-        '''Returns Atom object containing displaced structure and an array containing the displacement'''
+        '''Returns Atom object containing displaced structure and an array containing the displacement.'''
         free = self.reactant.free
         displaced_atoms = self.reactant.copy()
         if self.random > 0:
