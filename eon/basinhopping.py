@@ -113,7 +113,7 @@ class BHStates:
                                                   'minimum.con')
                     a2 = io.loadcon(state_con_path)
                     if atoms.match(a1, a2, config.comp_eps_r, config.comp_neighbor_cutoff, True):
-                        logger.info("found a repeat of state %i", state_number)
+                        logger.info("Found a repeat of state %i", state_number)
                         added = False
                         for row in self.energy_table.rows:
                             if row['state'] == state_number:
@@ -181,7 +181,7 @@ def make_searches(comm, wuid, bhstates):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-    logger.info("making %i searches" % num_to_make)
+    logger.info("Making %i searches" % num_to_make)
 
     if num_to_make == 0:
         return wuid
@@ -222,7 +222,7 @@ def make_searches(comm, wuid, bhstates):
             if reactIO == None:
                 reactIO = initial_react
         else:
-            logger.fatal("initial state pool size negative")
+            logger.fatal("Initial state pool size negative")
             sys.exit(1)
 
         search['pos.con'] = reactIO
@@ -235,7 +235,7 @@ def make_searches(comm, wuid, bhstates):
     return wuid
 
 def register_results(comm, bhstates):
-    logger.info("registering results")
+    logger.info("Registering results")
     if os.path.isdir(config.path_jobs_in):
         shutil.rmtree(config.path_jobs_in)
     os.makedirs(config.path_jobs_in)
@@ -259,7 +259,7 @@ def register_results(comm, bhstates):
             continue
         if result_info['termination_reason'] == 0:
             if bhstates.add_state(result, result_info):
-                logger.info("new structure with energy %.8e",
+                logger.info("New structure with energy %.8e",
                             result_info['minimum_energy'])
 
             #logger.info("found new structure with energy %.3e", fe)
@@ -323,7 +323,7 @@ def main():
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "bh.log"),
-            format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
+            format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
 
@@ -345,7 +345,7 @@ def main():
                 basinhopping()
         basinhopping()
     else:
-        logger.warning("couldn't get lock")
+        logger.warning("Couldn't get lock")
         sys.exit(1)
 
 if __name__ == '__main__':

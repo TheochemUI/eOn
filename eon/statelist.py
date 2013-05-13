@@ -36,14 +36,14 @@ class StateList:
 
         # Create the statelist directory if it does not exist.
         if not os.path.isdir(self.path):
-            logger.warning("state list path does not exist, creating %s" % self.path)
+            logger.warning("State list path does not exist, creating %s" % self.path)
             os.makedirs(self.path)
             open(self.state_table_path, 'w').close()
 
         # Create the zero state directory if it does not exist.
         if not os.path.isdir(os.path.join(self.path, "0")):
             if initial_state == None:
-                raise IOError("Missing zeroth state directory and no reactant provided.")
+                raise IOError("Missing zeroth state directory and no reactant provided")
             self.StateClass(statepath = os.path.join(self.path, "0"), 
                         statenumber = 0, 
                         statelist = self,
@@ -94,7 +94,7 @@ class StateList:
                     p = self.get_state(id).get_reactant()
                     if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                         if id == state_number:
-                            logging.warning("in state %i process %i leads back to initial state",
+                            logging.warning("State %i process %i leads back to initial state",
                                             state_number, process_id)
                         self.register_process(st.number, id, process_id)
                         return self.get_state(id)

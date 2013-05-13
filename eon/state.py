@@ -20,10 +20,10 @@ import tarfile
 import fileio as io
 
 class State:
-    """ The State super class. """
+    """ The state super class. """
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
                  reactant_path = None):                 
-        """ Creates a new State, with lazily loaded data. """
+        """ Creates a new state, with lazily loaded data. """
 
         # The parent statelist.
         self.statelist = statelist
@@ -46,7 +46,7 @@ class State:
         # If this state does not exist on disk, create it.
         if not os.path.isdir(self.path):
             if reactant_path == None:
-                raise IOError("State needs a reactant_path when it is being instantiated to disk.")
+                raise IOError("State needs a reactant_path when it is being instantiated to disk")
             os.mkdir(self.path)
             os.mkdir(self.procdata_path)
             shutil.copy(reactant_path, self.reactant_path)

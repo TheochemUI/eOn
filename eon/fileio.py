@@ -178,7 +178,7 @@ def savecon(fileout, p, w = 'w'):
     index = 0
     for i in range(len(name_order)):
         print >> con, name_order[i]
-        print >> con, "Coordinates of Component", i+1
+        print >> con, "Coordinates of component", i+1
         for j in range(atom_count[name_order[i]]):
             con.write("%.6f %.6f %.6f %d %d\n" %( p.r[index][0], p.r[index][1], p.r[index][2], int(not p.free[index]), index+1))
             index += 1
@@ -258,7 +258,7 @@ def parse_results(filein):
             try:
                 results[line[1]] = float(line[0])
             except ValueError:
-                logger.warning("couldn't parse float in results.dat: %s", line)
+                logger.warning("Couldn't parse float in results.dat: %s", line)
         else:
             try:
                 results[line[1]] = int(line[0])
@@ -266,7 +266,7 @@ def parse_results(filein):
                 try:
                     results[line[1]] = line[0]
                 except ValueError:
-                    logger.warning("couldn't parse string in results.dat: %s", line)
+                    logger.warning("Couldn't parse string in results.dat: %s", line)
 
     return results
 
@@ -390,7 +390,7 @@ class ini(SCP):
             value = SCP.get(self, section, option)
         except:
             if default == "ini_no_default":
-                raise NameError("Section or option missing, no default specified.")
+                raise NameError("Section or option missing, no default specified")
             return default
         try:
             return int(value)
@@ -407,11 +407,11 @@ class ini(SCP):
         return value
 
     def getint(self, *args):
-        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper")
     def getfloat(self, *args):
-        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper")
     def getboolean(self, *args):
-        raise NotImplementedError("Use the get function with this ConfigParser wrapper.")
+        raise NotImplementedError("Use the get function with this ConfigParser wrapper")
 
     def set(self, section, option, value):
         if section not in self.sections():
@@ -554,7 +554,7 @@ class Table:
             self.read(self.filename)
         else:
             if self.columns == None:
-                raise TableException("columns aren't optional for new tables")
+                raise TableException("Columns are not optional for new tables")
 
             for c in self.columns:
                 self.columnwidths[c] = len(c)
@@ -565,7 +565,7 @@ class Table:
         filecolumns = f.readline().split()
         if self.columns != None:
             if filecolumns != self.columns:
-                raise TableException("column name mismatch: %s"%filename)
+                raise TableException("Column name mismatch: %s" % filename)
         else:
             self.columns = filecolumns
 
@@ -641,7 +641,7 @@ class Table:
             self.init()
         mismatched_columns = set(self.columns).symmetric_difference(set(row.keys()))
         if len(mismatched_columns) != 0:
-            raise TableException("mismatched columns %s"%str(mismatched_columns))
+            raise TableException("Mismatched columns %s" % str(mismatched_columns))
 
         if len(self.rows) == 0:
             for c in row:
@@ -649,7 +649,7 @@ class Table:
         else:
             for c in row:
                 if type(row[c]) != self.columntypes[c]:
-                    raise TableException("type mismatch for column %s"%c)
+                    raise TableException("Type mismatch for column %s" % c)
 
         for c in row:
             if self.columntypes[c] == float:

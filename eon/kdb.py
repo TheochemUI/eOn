@@ -24,16 +24,16 @@ try:
     from tsase import kdb
     import tsase
 except:
-    logger.debug('tsase module not found, kdb unavailable')
+    logger.debug('Python module tsase not found, kdb unavailable')
 
 def insert(state, process_id):
     try:
         from tsase import kdb
         import tsase
     except:
-        logger.error('tsase module not found, kdb unavailable')
+        logger.error('Python module tsase not found, kdb unavailable')
         return
-    logger.debug("Inserting process.")
+    logger.debug("KDB inserting process")
     reactant = tsase.io.read_con(state.proc_reactant_path(process_id))
     saddle = tsase.io.read_con(state.proc_saddle_path(process_id))
     product = tsase.io.read_con(state.proc_product_path(process_id))
@@ -45,7 +45,7 @@ def query(state):
         from tsase import kdb
         import tsase
     except:
-        logger.error('tsase module not found, kdb unavailable')
+        logger.error('Python module tsase not found, kdb unavailable')
         return
     if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
         shutil.rmtree(os.path.join(config.kdb_scratch_path, "kdbmatches"))
@@ -62,7 +62,7 @@ def make_suggestion():
         from tsase import kdb
         import tsase
     except:
-        logger.error('tsase module not found, kdb unavailable')
+        logger.error('Python module tsase not found, kdb unavailable')
         return None, None
     if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
         dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches",".done_*"))
