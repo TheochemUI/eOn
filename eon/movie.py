@@ -47,21 +47,21 @@ def make_movie(movie_type, path_root, states):
     elif movie_type == 'graph':
         s = dot(path_root, states)
         if os.path.isfile("graph.dot"):
-            print "file %s already exists" % "graph.dot"
+            print "File %s already exists" % "graph.dot"
             sys.exit(1)
         f = open("graph.dot",'w')
         f.write(s)
         f.close()
-        print "if you have graphviz installed:"
+        print "If you have graphviz installed:"
         print "dot graph.dot -Tpng -o graph.png"
         sys.exit(0)
     else:
-        print "unknown MOVIE_TYPE"
+        print "Unknown MOVIE_TYPE"
         sys.exit(1)
     if os.path.isfile(movie_path):
         os.unlink(movie_path)
     save_movie(atoms_list, movie_path)
-    print "saved %i frames to %s" % (len(atoms_list), movie_path)
+    print "Saved %i frames to %s" % (len(atoms_list), movie_path)
 
 def save_movie(atoms_list, movie_path):
     for atoms in atoms_list:
@@ -83,7 +83,7 @@ def processes(states, statenr, limit):
     try:
         state = states.get_state(statenr)
     except IOError:
-        print "error: Cannot make move for non-existant state"
+        print "error: Cannot make movie for non-existant state"
         sys.exit(1)
 
     process_table = state.get_process_table()
@@ -123,7 +123,7 @@ def dynamics(path_root, states, unique=False):
     atoms_list = []
 
     if len(trajectory) == 0:
-        print "error: there have been no dynamics steps"
+        print "error: There have been no dynamics steps"
         sys.exit(1)
 
     for n in trajectory:

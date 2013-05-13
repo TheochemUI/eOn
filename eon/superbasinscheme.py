@@ -31,20 +31,20 @@ class SuperbasinScheme:
 
         if config.sb_use_arbitrary_precision:
             if mpsuperbasin is None:
-                print "Was unable to import mpsuperbasin. Is mpmath installed?"
+                print "Was unable to import mpsuperbasin; is mpmath installed?"
 #                import sys
                 sys.exit()
             global superbasin
             superbasin = mpsuperbasin
 
         self.path = superbasin_path
-        self.path_storage = superbasin_path+"storage/"
+        self.path_storage = superbasin_path + "storage/"
 
         self.states = states
         self.kT = kT
 
         if not os.path.isdir(self.path):
-            logger.warning('superbasin path does not exist, creating %s' % self.path)
+            logger.warning('Superbasin path does not exist, creating %s' % self.path)
             os.makedirs(self.path)
             os.makedirs(self.path_storage)
 
@@ -132,7 +132,7 @@ class SuperbasinScheme:
 
 
 class TransitionCounting(SuperbasinScheme):
-    ''' Implements the transition counting scheme for superbasining '''
+    ''' Implements the transition counting scheme for superbasin detection '''
 
     def __init__(self, superbasin_path, states, kT, num_transitions):
         self.num_transitions = num_transitions
@@ -151,7 +151,7 @@ class TransitionCounting(SuperbasinScheme):
         start_count[end_state] += 1
 
         if start_count[end_state] >= self.num_transitions:
-            logger.debug( "Making basin....")
+            logger.debug( "Making basin ....")
             self.make_basin([start_state, end_state])
 
     def write_data(self):

@@ -2,7 +2,6 @@ import commands
 from os.path import abspath, dirname
 
 
-
 def version():
     path = dirname(abspath( __file__ ))
     status, output = commands.getstatusoutput('svnversion %s' % path) 

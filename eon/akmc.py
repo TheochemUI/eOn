@@ -198,8 +198,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
             else:
                 rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
-                logger.error("No processes in rate table, but confidence" \
-                             " has been reached")
+                logger.error("No processes in rate table, but confidence " \
+                             "has been reached")
 
             ratesum = 0.0
             for i in range(len(rate_table)):
@@ -227,7 +227,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                 try:
                     procid = targetdynamics[current_step]['process']
                 except:
-                    print "Can no longer follow target trajectory."
+                    print "Can no longer follow target trajectory"
                     sys.exit(1)
                 # Load the con file for that process saddle.
                 targetSaddleCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
@@ -248,7 +248,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                             nsid = i
                             break
                 else:
-                    print "Can no longer follow target trajectory."
+                    print "Can no longer follow target trajectory"
                     sys.exit(1)
 
             # We are not following another trajectory:
@@ -259,7 +259,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                         nsid = i
                         break
                 else:
-                    logger.warning("Warning: failed to select rate. p = " + str(p))
+                    logger.warning("Warning: Failed to select rate; p = " + str(p))
                     break
 
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
@@ -291,11 +291,11 @@ def kmc_step(current_state, states, time, kT, superbasining):
         if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
             dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'])
-            logger.info("kmc step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
+            logger.info("KMC step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
         else:
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id)
-            logger.info("sb step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
+            logger.info("SB step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
 
         previous_state = current_state
         current_state = next_state
@@ -303,7 +303,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("currently in state %i with confidence %.6f", current_state.number, 
+    logger.info("Currently in state %i with confidence %.6f", current_state.number, 
             current_state.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
@@ -347,7 +347,7 @@ def main():
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
             filename=os.path.join(config.path_results, "akmc.log"),
-            format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
+            format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
 
@@ -372,7 +372,7 @@ def main():
 
     if sum(exclusive_options.values()) > 1:
         offending_options = [ k for k,v in exclusive_options.iteritems() if v ]
-        optpar.error("the options %s are mutually exclusive" % ", ".join(offending_options))
+        optpar.error("Options %s are mutually exclusive" % ", ".join(offending_options))
 
     if len(options.movie_type) > 0:
         states = get_statelist(config.main_temperature / 11604.5)
@@ -381,7 +381,7 @@ def main():
 
     # From the config file: The Novotny and C&V (ASKMC) methods should not be used together.
     if config.sb_on and config.askmc_on:
-        logger.error("Both superbasin methods should not be used at the same time.")
+        logger.error("Both superbasin methods should not be used at the same time")
         sys.exit(1)
 
     if options.print_status:
@@ -460,10 +460,10 @@ def main():
                 for thing in rmthings:
                     attempt_removal(thing)
                 if not options.quiet:
-                    print "Reset."
+                    print "Reset"
                 sys.exit(0)
         else:
-            print "Not resetting."
+            print "Not resetting"
             sys.exit(1)
 
     elif options.restart:
@@ -515,7 +515,7 @@ def main():
                 print "Restart"+string_sb_clear+"."
             sys.exit(0)
         else:
-            print "Not restarting."
+            print "Not restarting"
             sys.exit(1)
 
     if lock.aquirelock():
@@ -526,7 +526,7 @@ def main():
                 akmc(config)
         akmc(config)
     else:
-        logger.info("the server is locked by pid %i" % lock.pid)
+        logger.info("Server is locked by pid %i" % lock.pid)
         sys.exit(1)
 
 if __name__ == '__main__':

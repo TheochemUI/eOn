@@ -67,14 +67,14 @@ def init(config_file = ""):
             parser.read(config_file)
             config.config_path = os.path.abspath(config_file)
         else:
-            print >> sys.stderr, "specified configuration file %s does not exist" % config_file
+            print >> sys.stderr, "Specified configuration file %s does not exist" % config_file
             sys.exit(2)
     elif os.path.isfile('config.ini'):
         parser.read('config.ini')
         config.config_path = os.path.abspath('config.ini')
         gave_config = False
     else:
-        print >> sys.stderr, "You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory."
+        print >> sys.stderr, "You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory"
         sys.exit(2)
     sections = False
     options = False
