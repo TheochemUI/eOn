@@ -26,12 +26,12 @@ class PRState(state.State):
     search_result_header += "-" * len(search_result_header) + '\n'
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
                  reactant_path = None):                 
-        """ Creates a new State, with lazily loaded data. """
+        """ Creates a new state, with lazily loaded data. """
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
                     reactant_path)
 
     def add_process(self, result):
-        """ Adds a process to this State. """
+        """ Adds a process to this state. """
         state.State.add_process(self, result)
 
         resultdata = result["results"] # The information from the result.dat file

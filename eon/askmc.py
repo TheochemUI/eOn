@@ -26,7 +26,7 @@ processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
 
 class ASKMC:
     """ This is a class to keep track of things associated with
-        performing the Chatterjee & Voter Accelerated Superbasin KMC method. """
+        performing the Chatterjee & Voter accelerated superbasin KMC method. """
 
     def __init__(self, kT, states, confidence, alpha, gamma, barrier_test_on, connection_test_on, sb_recycling_on, path_root, thermal_window, recycle_path):
         self.kT = kT

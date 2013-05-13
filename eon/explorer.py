@@ -98,11 +98,11 @@ class MinModeExplorer(Explorer):
             self.make_jobs()
         else:
             num_cancelled = self.comm.cancel_state(self.state.number)
-            logger.info("cancelled %i workunits from state %i", 
+            logger.info("Cancelled %i workunits from state %i", 
                         num_cancelled, self.state.number)
             #XXX: Do we ever call explore on a completed state twice?
             if config.kdb_on:
-                logger.info("Adding relevant processes to kinetic database.")
+                logger.info("Adding relevant processes to kinetic database")
                 for process_id in self.state.get_process_ids():
                     output = kdb.insert(self.state, process_id)
                     logger.debug("kdb insert: %s" % output)
@@ -140,9 +140,9 @@ class ClientMinModeExplorer(MinModeExplorer):
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
-        logger.info("%i searches in the queue" % num_in_buffer)
+        logger.info("Queue contains %i searches" % num_in_buffer)
         num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-        logger.info("making %i process searches" % num_to_make)
+        logger.info("Making %i process searches" % num_to_make)
 
         if num_to_make == 0:
             return
@@ -194,19 +194,19 @@ class ClientMinModeExplorer(MinModeExplorer):
             self.save_wuid()
 
         if config.recycling_on and self.nrecycled > 0:
-            logger.info("recycled %i saddles" % self.nrecycled)
+            logger.info("Recycled %i saddles" % self.nrecycled)
 
         try:
             self.comm.submit_jobs(searches, invariants)
             t2 = time()
-            logger.info( str(len(searches)) + " searches created") 
-            logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
+            logger.info( "Created " + str(len(searches)) + " searches") 
+            logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
         except:
-            logger.exception("Failed to submit searches.")
+            logger.exception("Failed to submit searches")
         self.job_table.write()
 
     def register_results(self):
-        logger.info("registering results")
+        logger.info("Registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
             try:
@@ -283,13 +283,10 @@ class ClientMinModeExplorer(MinModeExplorer):
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
 
         t2 = time()
-        logger.info("%i results processed", num_registered)
+        logger.info("Processed %i results", num_registered)
         if tot_searches != num_registered:
-            logger.info("Approximately %i results discarded." % (tot_searches - num_registered))
-        if num_registered == 0:
-            logger.debug("0 results per second", num_registered)
-        else:
-            logger.debug("%.1f results per second", (num_registered/(t2-t1)))
+            logger.info("Discarded approximately %i results" % (tot_searches - num_registered))
+        logger.debug("Registered %.1f results per second", (num_registered/(t2-t1)))
 
         self.job_table.write()
         return num_registered
@@ -353,13 +350,13 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.explore(self)
 
     def register_results(self):
-        logger.info("registering results")
+        logger.info("Registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
             try:
                 shutil.rmtree(config.path_jobs_in)
             except OSError, msg:
-                logger.error("error cleaning up %s: %s", config.path_jobs_in, msg)
+                logger.error("Error cleaning up %s: %s", config.path_jobs_in, msg)
             else:
                 os.makedirs(config.path_jobs_in)
 
@@ -415,29 +412,26 @@ class ServerMinModeExplorer(MinModeExplorer):
         tot_searches = len(os.listdir(config.path_jobs_in)) * config.comm_job_bundle_size
 
         t2 = time()
-        logger.info("%i results processed", num_registered)
+        logger.info("Processed %i results", num_registered)
         if tot_searches != num_registered:
-            logger.info("Approximately %i results discarded." % (tot_searches - num_registered))
-        if num_registered == 0:
-            logger.debug("0 results per second", num_registered)
-        else:
-            logger.debug("%.1f results per second", (num_registered/(t2-t1)))
+            logger.info("Discarded approximately %i results" % (tot_searches - num_registered))
+        logger.debug("Registered %.1f results per second", (num_registered/(t2-t1)))
 
         self.save()
         return num_registered
 
     def make_jobs(self):
         num_unsent = self.comm.get_queue_size()*config.comm_job_bundle_size
-        logger.info("%i jobs queued" % num_unsent)
+        logger.info("Queued %i jobs" % num_unsent)
         num_in_progress = self.comm.get_number_in_progress()*config.comm_job_bundle_size
-        logger.info("%i jobs running" % num_in_progress)
+        logger.info("Running %i jobs" % num_in_progress)
         num_total = num_unsent + num_in_progress
         num_to_make = max(config.comm_job_buffer_size - num_unsent, 0)
         if config.comm_job_max_size != 0:
             if num_total + num_to_make>= config.comm_job_max_size:
                 num_to_make = max(0, config.comm_job_max_size - num_total)
-                logger.info("reached max_jobs")
-        logger.info("making %i jobs" % num_to_make)
+                logger.info("Reached max_jobs")
+        logger.info("Making %i jobs" % num_to_make)
 
         if num_to_make == 0:
             return
@@ -485,15 +479,15 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         self.save()
         if config.recycling_on and self.nrecycled > 0:
-            logger.info("recycled %i saddles" % self.nrecycled)
+            logger.info("Recycled %i saddles" % self.nrecycled)
 
         try:
             self.comm.submit_jobs(jobs, invariants)
             t2 = time()
-            logger.info( str(len(jobs)) + " searches created") 
-            logger.debug( str(num_to_make/(t2-t1)) + " searches per second")
+            logger.info( "Created " + str(len(jobs)) + " searches") 
+            logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
         except:
-            logger.exception("Failed to submit searches.")
+            logger.exception("Failed to submit searches")
 
 
 class ProcessSearch:
@@ -579,7 +573,7 @@ class ProcessSearch:
 
         if job_type == 'saddle_search':
             self.data['termination_reason'] = termination_code
-            logger.info("search_id: %i saddle search complete" % self.search_id)
+            logger.info("Search_id: %i saddle search complete" % self.search_id)
             if termination_code == 0:
                 self.job_statuses[job_type] = 'complete'
             else:
@@ -598,7 +592,7 @@ class ProcessSearch:
                 self.finished_min2_name = result['name']
 
             self.job_statuses[min_name] = 'complete'
-            logger.info("search_id: %i minimization %i complete" % (self.search_id, min_number))
+            logger.info("Search_id: %i minimization %i complete" % (self.search_id, min_number))
 
             if min_number == 2:
                 self.finish_minimization(result)
