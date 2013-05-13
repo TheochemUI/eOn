@@ -32,7 +32,6 @@ class SuperbasinScheme:
         if config.sb_use_arbitrary_precision:
             if mpsuperbasin is None:
                 print "Was unable to import mpsuperbasin; is mpmath installed?"
-#                import sys
                 sys.exit()
             global superbasin
             superbasin = mpsuperbasin
