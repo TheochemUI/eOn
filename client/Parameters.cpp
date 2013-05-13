@@ -423,7 +423,7 @@ int Parameters::load(FILE *file){
         mdTimeStep = mdTimeStepInput/timeUnit;
         mdTimeInput = ini.GetValueF("Dynamics", "time", mdTime);
         mdTime = mdTimeInput/timeUnit;
-        mdSteps = long(mdTime/mdTimeStep);
+        mdSteps = long(floor(mdTime/mdTimeStep+0.5));
         thermostat = toLowerCase(ini.GetValue("Dynamics", "thermostat", "andersen"));
         thermoAndersenAlpha = ini.GetValueF("Dynamics","andersen_alpha",thermoAndersenAlpha);
         thermoAndersenTcolInput = ini.GetValueF("Dynamics","andersen_collision_period",thermoAndersenTcolInput);
