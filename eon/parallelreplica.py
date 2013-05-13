@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("Simulation time is %e", time)
+    logger.info("Simulation time is %e s", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -49,10 +49,10 @@ def parallelreplica():
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
-    logger.info("Time in current state is %e", current_state.get_time()) 
+    logger.info("Time in current state is %e s", current_state.get_time()) 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
-        logger.info("Total speedup is %f",avg_spdup)
+        logger.info("Total speedup: %f",avg_spdup)
     if transition:
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
@@ -195,7 +195,7 @@ def register_results(comm, current_state, states):
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
-            logger.info("Found transition with time %.3e", time)
+            logger.info("Found transition with time: %.3e", time, "s")
             if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
@@ -203,9 +203,9 @@ def register_results(comm, current_state, states):
             state.inc_time(result['results']['simulation_time_s'])
         num_registered += 1
 
-    logger.info("Processed %i results", num_registered)
+    logger.info("Processed results: %i", num_registered)
     if num_registered >=1:
-        logger.info("Average speedup is %f", speedup/num_registered)
+        logger.info("Average speedup: %f", speedup/num_registered)
     return num_registered, transition, speedup
 
 def main():
