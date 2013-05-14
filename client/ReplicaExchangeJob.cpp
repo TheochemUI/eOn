@@ -30,7 +30,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     long i, step, samplingSteps = long(parameters->repexcSamplingTime/parameters->mdTimeStep+0.5);
     long exchangePeriodSteps = long(parameters->repexcExchangePeriod/parameters->mdTimeStep+0.5);
     double energyLow, energyHigh;
-    double kbTLow, kbTHigh, kb = 1.0/11604.5;
+    double kbTLow, kbTHigh;
+    double kB = parameters->kB;
     double pAcc;
     Matter *tmpMatter;
 
@@ -90,8 +91,8 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
                 i = helper_functions::randomInt(0, parameters->repexcReplicas-2);
                 energyLow = replica[i]->getPotentialEnergy();
                 energyHigh = replica[i+1]->getPotentialEnergy();
-                kbTLow = kb*replicaTemperature[i];
-                kbTHigh = kb*replicaTemperature[i+1];
+                kbTLow = kB*replicaTemperature[i];
+                kbTHigh = kB*replicaTemperature[i+1];
                 pAcc = min(1.0, exp((energyHigh-energyLow)*(1.0/kbTHigh-1.0/kbTLow)));
                 double tmp = helper_functions::randomDouble();
                 cout <<"step: "<<step<<" trial swap, i "<<i<<" elow: "<<energyLow<<" ehigh: "<<energyHigh<<" pAcc: "<<pAcc<<" rand: "<<tmp;

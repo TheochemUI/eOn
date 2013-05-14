@@ -49,7 +49,7 @@ private:
     Parameters *parameters;
 
     double dt;
-    double kb;
+    double kB;
     double temperature;
     double vxi1, vxi2, xi1, xi2;
 };
