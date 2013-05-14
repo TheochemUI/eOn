@@ -36,7 +36,7 @@ class StateList:
 
         # Create the statelist directory if it does not exist.
         if not os.path.isdir(self.path):
-            logger.warning("State list path does not exist, creating %s" % self.path)
+            logger.warning("State list path does not exist; Creating: %s" % self.path)
             os.makedirs(self.path)
             open(self.state_table_path, 'w').close()
 
