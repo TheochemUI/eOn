@@ -1,20 +1,18 @@
 #include <stdio.h>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <qd/dd_real.h>
 #include <qd/qd_real.h>
 
 using namespace Eigen;
 
-
 extern "C" {
-    void solve_float(int, double *, int, double *, double *, double *, double *);
-    void solve_double(int, double *, int, double *, double *, double *, double *);
-    void solve_double_double(int, double *, int, double *, double *, double *, double *);
-    void solve_quad_double(int, double *, int, double *, double *, double *, double *);
+    void solve_float(int, double *, int, double *, double *, double *, double *, double *);
+    void solve_double(int, double *, int, double *, double *, double *, double *, double *);
+    void solve_double_double(int, double *, int, double *, double *, double *, double *, double *);
+    void solve_quad_double(int, double *, int, double *, double *, double *, double *, double *);
 }
 
-template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double *Rflat, double *c_in, double *B, double *t) {
+template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double *Rflat, double *c_in, double *B, double *t, double *residual) {
     typedef Matrix<T,Dynamic,Dynamic> MatrixXdd;
     typedef Matrix<T,Dynamic,1> VectorXdd;
 
@@ -55,6 +53,8 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
     VectorXdd t_calc = lu.solve(c);
     MatrixXdd B_calc = lu.solve(R);
 
+    *residual = (A*t_calc-c).maxCoeff();
+
     // Store the solution t_calc into the array t.
     for (i = 0; i < Qsize; i++) {
         t[i] = t_calc[i];
@@ -72,22 +72,21 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
 }
 
 void solve_float(int Qsize, double *Qflat, int Rcols, double *Rflat, 
-                  double *c_in, double *B, double *t) {
-    solve_general<float>(Qsize, Qflat, Rcols, Rflat, c_in, B, t);
+                  double *c_in, double *B, double *t, double *residual) {
+    solve_general<float>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
 
 void solve_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
-                  double *c_in, double *B, double *t) {
-    solve_general<double>(Qsize, Qflat, Rcols, Rflat, c_in, B, t);
+                  double *c_in, double *B, double *t, double *residual) {
+    solve_general<double>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
 
 void solve_double_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
-                  double *c_in, double *B, double *t) {
-    solve_general<dd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t);
+                  double *c_in, double *B, double *t, double *residual) {
+    solve_general<dd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
 
 void solve_quad_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
-                  double *c_in, double *B, double *t) {
-    solve_general<qd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t);
+                  double *c_in, double *B, double *t, double *residual) {
+    solve_general<qd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
-

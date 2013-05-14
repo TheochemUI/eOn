@@ -12,37 +12,11 @@ def random_chain(t,r,p):
     c = numpy.ones(t)
     return Q,R,c
 
-#def auto_precision(Q,R):
-#    N = len(Q)
-#    for i in range(Q
-#    Q = numpy.divide(Q,numpy.sum(Q,1)+numpy.sum(R,1))
-#    print Q
-#
-#    cond_number = 0.0
-#    for r in range(N):
-#        idx = numpy.argsort(Q[r])
-#        k = 1.0
-#        for i in range(len(Q[r])):
-#            k -= Q[r,i]
-#        #cond_number = max(cond_number, -numpy.log10(abs(k)))
-#        print k
-#
-#    if cond_number < 6:
-#        prec = 'f'
-#    elif cond_number < 12:
-#        prec = 'd'
-#    elif cond_number < 24:
-#        prec = 'dd'
-#    elif cond_number < 48:
-#        prec = 'qd'
-#    else:
-#        raise RuntimeWarning("Problems is too ill-conditioned")
-#    print 'chose precision: %s' % prec
-
 def main():
 
     Ntrans = 200
     Nabs = 50
+
     print 'PRECISION TESTING'
     print '-----------------'
     print 'Solving MCAMC problem with %i transient states and %i absorbing states' % (Ntrans, Nabs)
@@ -52,22 +26,23 @@ def main():
         errors = []
         for prec in ['f','d','dd','qd']:
             Q,R,c = random_chain(Ntrans,Nabs,p)
-            t, B = mcamc(Q,R,c,prec)
-            errors.append(abs(1.0-max(abs(numpy.sum(B,1)))))
+            t, B, res = mcamc(Q,R,c,prec)
+            #errors.append(abs(1.0-max(abs(numpy.sum(B,1)))))
+            errors.append(res)
         print '%5.0e %5.0e %5.0e %5.0e %5.0e' % (p,errors[0],errors[1],errors[2],errors[3])
 
     print '\nPERFORMANCE TESTING'
     print '-------------------'
 
     print '%8s %8s %8s %8s %8s' % ('N', 'f', 'd', 'dd', 'qd')
-    for Ntrans in [10,100,200,500,800,1000,1200,1500]:
+    for Ntrans in [10,100,200,500,800]:
         times = []
         for prec in ['f','d','dd','qd']:
             p = 1e-5
             Nabs = 50
             Q,R,c = random_chain(Ntrans,Nabs,p)
             t1 = time()
-            t, B = mcamc(Q,R,c,prec)
+            t, B, res = mcamc(Q,R,c,prec)
             t2 = time()
             times.append(t2-t1)
         print '%8i %8.3f %8.3f %8.3f %8.3f' % (Ntrans,times[0],times[1],times[2],times[3])
