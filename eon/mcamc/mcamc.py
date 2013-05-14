@@ -14,6 +14,8 @@ def mcamc(Q, R, c, prec='dd'):
     Bflat = (ctypes.c_double * len(Rflat))()
     tflat = (ctypes.c_double * len(cflat))()
 
+    residual = (ctypes.c_double * 1)()
+
     libmcamc = ctypes.CDLL(abspath('libmcamc.so'))
 
     if prec == 'f':
@@ -28,9 +30,10 @@ def mcamc(Q, R, c, prec='dd'):
         raise ValueError('Unknown prec value "%s"' % prec)
     # void solve(int Qsize, double *Qflat, int Rcols, double *Rflat, 
     #           double *c_in, double *B, double *t)
-    solve(Q.shape[0], Qflat, R.shape[1], Rflat, cflat, Bflat, tflat)
+    solve(Q.shape[0], Qflat, R.shape[1], Rflat, cflat, Bflat, tflat, residual)
 
     B = np.array(list(Bflat)).reshape(R.shape)
     t = list(tflat)
+    residual = list(residual)[0]
 
-    return t, B
+    return t, B, residual
