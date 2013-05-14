@@ -48,7 +48,7 @@ def np_mcamc(Q, R, c, prec="NA"):
     A = np.identity(Q.shape[0]) - Q
     t = np.linalg.solve(A, c)
     B = np.linalg.solve(A, R)
-    residual = (A*t - c).max()
+    residual = (A.dot(t) - c).max()
     return t, B, residual
 
 
