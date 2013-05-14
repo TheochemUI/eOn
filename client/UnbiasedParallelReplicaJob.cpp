@@ -204,7 +204,7 @@ std::vector<std::string> UnbiasedParallelReplicaJob::run(void)
     }else{
         fprintf(fileResults, "1 transition_found\n");
         fprintf(fileResults, "%e transition_time_s\n", transitionTime*parameters->timeUnit*1.0e-15);
-        fprintf(fileResults, "%e corr_time_s\n", parameters->parrepCorrTime*parameters->timeUnit*1.0e-15);
+        fprintf(fileResults, "%e correlation_time_s\n", parameters->parrepCorrTime*parameters->timeUnit*1.0e-15);
         fprintf(fileResults, "%lf potential_energy_product\n", product.getPotentialEnergy());
     }
     fprintf(fileResults, "%lf speedup\n", simulationTime/(parameters->mdSteps*parameters->mdTimeStep));
