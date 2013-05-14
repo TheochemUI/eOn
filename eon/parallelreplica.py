@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("Simulation time: %e s", time)
+    logger.info("Time of simulation: %e s", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -49,7 +49,6 @@ def parallelreplica():
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
-    logger.info("Time in current state: %e s", current_state.get_time()) 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total speedup: %f",avg_spdup)
@@ -57,6 +56,8 @@ def parallelreplica():
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
 
+    logger.info("Time in current state: %e s", current_state.get_time()) 
+    logger.info("Simulation time: %e s", time)
     wuid = make_searches(comm, current_state, wuid)
 
     # Write out metadata. XXX:ugly
