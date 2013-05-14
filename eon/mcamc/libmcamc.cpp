@@ -17,8 +17,6 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
     typedef Matrix<T,Dynamic,1> VectorXdd;
 
     int i, row, col;
-    unsigned int oldcw;
-    fpu_fix_start(&oldcw);
 
     // Build an Eigen vector out of c_in.
     VectorXdd c = VectorXdd(Qsize);
@@ -53,21 +51,19 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
     VectorXdd t_calc = lu.solve(c);
     MatrixXdd B_calc = lu.solve(R);
 
-    *residual = (A*t_calc-c).maxCoeff();
+    *residual = (double)(A*t_calc-c).maxCoeff();
 
     // Store the solution t_calc into the array t.
     for (i = 0; i < Qsize; i++) {
-        t[i] = t_calc[i];
+        t[i] = (double)t_calc[i];
     }
 
     // Store the solution B_calc into the array B.
     for (row = 0; row < Qsize; row++) {
         for (col = 0; col < Rcols; col++) {
-            B[row*Rcols+col] = B_calc(row, col);
+            B[row*Rcols+col] = (double)B_calc(row, col);
         }
     }
-
-    fpu_fix_end(&oldcw);
 
 }
 
@@ -83,10 +79,20 @@ void solve_double(int Qsize, double *Qflat, int Rcols, double *Rflat,
 
 void solve_double_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
                   double *c_in, double *B, double *t, double *residual) {
+    //turns on round-to-double bit in FPU
+    //needed for libqd to work on x86 due to the 80bit FPU registers
+    unsigned int oldcw;
+    fpu_fix_start(&oldcw);
     solve_general<dd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
+    fpu_fix_end(&oldcw);
 }
 
 void solve_quad_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
                   double *c_in, double *B, double *t, double *residual) {
+    unsigned int oldcw;
+    //turns on round-to-double bit in FPU
+    //needed for libqd to work on x86 due to the 80bit FPU registers
+    fpu_fix_start(&oldcw);
     solve_general<qd_real>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
+    fpu_fix_end(&oldcw);
 }

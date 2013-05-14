@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import ctypes
 import numpy as np
-from os.path import abspath
+from os.path import join, abspath, dirname
 
 def mcamc(Q, R, c, prec='dd'):
     Qflat = list(Q.ravel())
@@ -15,8 +15,8 @@ def mcamc(Q, R, c, prec='dd'):
     tflat = (ctypes.c_double * len(cflat))()
 
     residual = (ctypes.c_double * 1)()
-
-    libmcamc = ctypes.CDLL(abspath('libmcamc.so'))
+    libpath = join(dirname(abspath(__file__)), 'libmcamc.so')
+    libmcamc = ctypes.CDLL(libpath)
 
     if prec == 'f':
         solve = libmcamc.solve_float
