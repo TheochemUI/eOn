@@ -57,8 +57,8 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize)
 	    continue;
         }
         double r=randomDouble();
-        double kb= 8.6173324e-5;
-        double arg = -de/(kb*T);
+        double kB = parameters->kB;
+        double arg = -de/(kB*T);
         printf("arg: %f\n", arg);
         if (arg < -50.0) {
 	    matter->setPositions(current);

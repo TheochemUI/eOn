@@ -92,7 +92,8 @@ int TADJob::dynamics()
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRecord = 0, nState = 0;
     long StateCheckInterval, RecordInterval, CorrSteps;
-    double kinE, kinT, avgT, varT, kb = 1.0/11604.5;
+    double kinE, kinT, avgT, varT;
+    double kB = parameters->kB;
     double correctedTime = 0.0, firstTransitionTime = 0.0; 
     double stopTime = 0.0, sumSimulatedTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
@@ -149,7 +150,7 @@ int TADJob::dynamics()
     {
 
         kinE = current->getKineticEnergy();
-        kinT = (2.0*kinE/nFreeCoord/kb); 
+        kinT = (2.0*kinE/nFreeCoord/kB); 
         sumT += kinT;
         sumT2 += kinT*kinT;
         //log("steps = %10d temp = %10.5f \n",step,kinT);
@@ -207,7 +208,7 @@ int TADJob::dynamics()
             saddleSearchStatus = saddleSearch(crossing);
             barrier = crossing->getPotentialEnergy()-reactant->getPotentialEnergy();
             log("barrier= %.3f\n",barrier);
-            correctionFactor = 1.0*exp(barrier/kb*(1.0/lowT-1.0/highT)); 
+            correctionFactor = 1.0*exp(barrier/kB*(1.0/lowT-1.0/highT)); 
             correctedTime = transitionTime * correctionFactor;
             sumSimulatedTime += transitionTime;
             if ( nState == 1 ){

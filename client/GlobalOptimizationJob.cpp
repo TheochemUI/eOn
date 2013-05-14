@@ -393,8 +393,9 @@ void GlobalOptimizationJob::velopt(Matter *matter)
     matter->setVelocities(vat);
     long nFreeCoords = matter->numberOfFreeAtoms()*3;
     double kinE = matter->getKineticEnergy();
-    double kinT = (2.0*kinE/nFreeCoords/8.6173857E-5);
-    double temperature = (2.0*ekin/8.6173857E-5);
+    double kB = parameters->kB;
+    double kinT = (2.0*kinE/nFreeCoords/kB);
+    double temperature = (2.0*ekin/kB);
     matter->setVelocities(vat*sqrt(temperature/kinT));
 }
 
