@@ -15,10 +15,6 @@ logger = logging.getLogger('superbasinscheme')
 import config
 
 import sys
-if sys.version_info < (2, 6):
-    mpsuperbasin = None
-else:
-    import mpsuperbasin
 
 import superbasin
 
@@ -28,13 +24,6 @@ class SuperbasinScheme:
         superbasining criteria. It also expands and merges superbasins'''
 
     def __init__(self, superbasin_path, states, kT):
-
-        if config.sb_use_arbitrary_precision:
-            if mpsuperbasin is None:
-                print "Was unable to import mpsuperbasin; is mpmath installed?"
-                sys.exit()
-            global superbasin
-            superbasin = mpsuperbasin
 
         self.path = superbasin_path
         self.path_storage = superbasin_path + "storage/"
