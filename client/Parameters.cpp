@@ -1,4 +1,4 @@
-//----------------------------------------------------------------------------------
+
 // eOn is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -335,11 +335,11 @@ int Parameters::load(FILE *file){
         optConvergenceMetric = toLowerCase(ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
 
         if (optConvergenceMetric == "max_atom") {
-            optConvergenceMetricLabel = "max atom force";
+            optConvergenceMetricLabel = "Max atom force";
         }else if (optConvergenceMetric == "max_component") {
-            optConvergenceMetricLabel = "max force comp";
+            optConvergenceMetricLabel = "Max force comp";
         }else if (optConvergenceMetric == "norm") {
-            optConvergenceMetricLabel = "\u2016force\u2016";
+            optConvergenceMetricLabel = "\u2016Force\u2016";
         }else{
             fprintf(stderr, "unknown convergence_metric %s\n", optConvergenceMetric.c_str());
             exit(1);

@@ -38,9 +38,9 @@ int BasinHoppingSaddleSearch::run(void)
     eproduct = product->getPotentialEnergy();
     ereactant = reactant -> getPotentialEnergy();
     de = eproduct - ereactant;
-    double kb= 8.6173324e-5;
+    double kB = parameters->kB;
     double Temperature = parameters->temperature;
-    double arg = -de/(kb*Temperature);
+    double arg = -de/(kB*Temperature);
     double p=exp(arg);
     double r=helper_functions::random(); 
     if(ereactant < eproduct){
