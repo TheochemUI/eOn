@@ -668,11 +668,11 @@ class Local(Communicator):
     def check_job(self, job):
         p, jobpath = job
         if p.returncode == 0:
-            logger.info('Job finished in %s' % jobpath)
+            logger.info('Job finished: %s' % jobpath)
             return True
         else:
             stdout, stderr = p.communicate()
-            errmsg = "job failed in %s: %s" % (jobpath, stderr)
+            errmsg = "job failed: %s: %s" % (jobpath, stderr)
             logger.warning(errmsg)
 
     def submit_jobs(self, data, invariants):
