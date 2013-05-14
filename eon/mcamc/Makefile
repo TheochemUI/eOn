@@ -13,4 +13,4 @@ libqd/libqd.a:
 .PHONY: clean
 
 clean:
-	-rm -f mcamc.so libqd/{*.a,*.o}
+	-rm -f libmcamc.so libqd/{*.a,*.o}
