@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("Time of simulation: %e s", time)
+    logger.info("Simulation time: %e s", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -130,16 +130,13 @@ def make_searches(comm, current_state, wuid):
     if num_to_make == 0:
         return wuid
 
-    searches = []
-
-    invariants = {}
-
     reactIO = StringIO()
     io.savecon(reactIO, reactant)
 
     # Merge potential files into invariants
     #XXX: Should this be in our "science" maybe the communicator should
     #     handle this.
+    invariants = {}
     invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
     searches = []
