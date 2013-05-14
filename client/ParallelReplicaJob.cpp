@@ -29,6 +29,8 @@
     #include "false_boinc.h"
 #endif
 
+static const char LOG_PREFIX[] = "[ParallelReplica]";
+
 ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 {
     parameters = params;
@@ -54,7 +56,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     relaxStatus = true;
     string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
     current->con2matter(reactantFilename);
-    log("\nMinimizing initial reactant\n");
+    log("%s Minimizing initial reactant\n", LOG_PREFIX);
     long refFCalls = Potential::fcalls;
     *reactant = *current;
     relaxStatus = reactant->relax();
@@ -64,7 +66,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
 
     minimizeFCalls += (Potential::fcalls - refFCalls);
 
-    log("\nParallel Replica Dynamics, running\n\n");
+    log("%s Dynamics, running\n", LOG_PREFIX);
     
     int state=dynamics();
 
@@ -72,10 +74,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     printEndStatus();
 
     if(newStateFlag){
-        log("[ParallelReplica] Transition time: %.2e s\n", transitionTime*1.0e-15*parameters->timeUnit);
+        log("%s Transition time: %.2e s\n", LOG_PREFIX, transitionTime*1.0e-15*parameters->timeUnit);
     }else{
-       log("[ParallelReplica] No new state was found in %ld dynamics steps and a time: %.3e s\n",
-           parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
+       log("%s No new state was found in %ld dynamics steps and a time: %.3e s\n",
+           LOG_PREFIX, parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
     }
 
     delete current;
@@ -129,12 +131,12 @@ int ParallelReplicaJob::dynamics()
     dephase();
     dephaseFCalls = Potential::fcalls - refFCalls;
 
-    log("\nStarting MD run\nTemperature: %.2f K\nTotal simulation time: %.2f fs\nTime step: %.2f fs\nTotal steps: %ld\n\n", 
-        parameters->temperature, 
-        parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit,
-        parameters->mdTimeStep*parameters->timeUnit,
-        parameters->mdSteps);
-    log("MD buffer length: %ld\n", mdBufferLength);
+    log("%s Starting MD run\n", LOG_PREFIX);
+    log("%s Temperature: %.2f K\n", LOG_PREFIX, parameters->temperature);
+    log("%s Total simulation time: %.2f fs\n", LOG_PREFIX, parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit);
+    log("%s Time step: %.2f fs\n", LOG_PREFIX, parameters->mdTimeStep*parameters->timeUnit);
+    log("%s Total steps: %ld\n", LOG_PREFIX, parameters->mdSteps);
+    log("%s MD buffer length: %ld\n", LOG_PREFIX, mdBufferLength);
 
     long tenthSteps = parameters->mdSteps/10;
     // prevents a division by zero if mdSteps is < 10
@@ -205,7 +207,7 @@ int ParallelReplicaJob::dynamics()
                 transitionStep = step;
                 *product = *current;
                 transitionTime = timeBuffer[int(floor(mdBufferLength/2.)+0.5)];
-                log("Detected transition; Running %ld MD steps to see if it will recross\n",CorrSteps);
+                log("%s Detected transition; Running %ld MD steps to see if it will recross\n", LOG_PREFIX, CorrSteps);
                 recordFlag = false;
             }
         }
@@ -240,11 +242,11 @@ int ParallelReplicaJob::dynamics()
                 transitionFlag = false;
                 if(newStateFlag == false){
                     jobStatus = ParallelReplicaJob::STATUS_TRAN_RECROSS;
-                    log("Returning back to initial state, previous transition is a recrossing event\n");
+                    log("%s Returning back to initial state, previous transition is a recrossing event\n", LOG_PREFIX);
                     recordFlag = true;
                 }else{
                     jobStatus = ParallelReplicaJob::STATUS_NEWSTATE;
-                    log("No recrossing, found new state\n");
+                    log("%s No recrossing, found new state\n", LOG_PREFIX);
                     *product = *current;
                     newStateStep = step; // remember the step when we are in a new state
                     if(parameters->parrepAutoStop){  // stop at transition; primarily for debugging
@@ -257,7 +259,7 @@ int ParallelReplicaJob::dynamics()
          // new state was detected; determine refined transition time
         if(refineFlag && newStateFlag)
         {
-            log("[Parallel Replica] Refining transition time\n");
+            log("%s Refining transition time\n", LOG_PREFIX);
             refFCalls = Potential::fcalls;
             refineStep = refine(mdBuffer, mdBufferLength, reactant);
             transitionStep = newStateStep - StateCheckInterval
@@ -269,8 +271,8 @@ int ParallelReplicaJob::dynamics()
             *transition = *mdBuffer[refineStep];
             refinedTime = (timeBuffer[refineStep]+timeBuffer[refineStep-1])/2.0;
 
-            log("Found transition at step %ld; start decorrelation steps\n",
-            transitionStep, parameters->parrepCorrTime);
+            log("%s Found transition at step %ld; start decorrelation steps\n", LOG_PREFIX,
+                transitionStep, parameters->parrepCorrTime);
 
             long corrBufferLength = long(CorrSteps/RecordInterval) + 1;
             if( (refineStep + corrBufferLength) < (mdBufferLength - 1) )
@@ -284,7 +286,8 @@ int ParallelReplicaJob::dynamics()
                 *product_relaxed = *product;
                 corrTime = time - refinedTime;
             }
-            log("Correlation trajectory has been run for %.2f fs\n",corrTime*parameters->timeUnit);
+            log("%s Correlation trajectory has been run for %.2f fs\n",
+                LOG_PREFIX, corrTime*parameters->timeUnit);
 
             *transition_relaxed = *transition;
             relaxStatus = transition_relaxed->relax(true);
@@ -318,17 +321,17 @@ int ParallelReplicaJob::dynamics()
         // stdout progress
         if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
             double maxAtomDistance = current->perAtomNorm(*reactant);
-            log("Progress: %3.0f%% ; Max displacement: %6.3lf ; Step: %7ld/%ld\n",
+            log("%s Progress: %3.0f%% ; Max displacement: %6.3lf ; Step: %7ld/%ld\n", LOG_PREFIX,
                 (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
         }
 
         // we have run enough md steps; time to stop
         if (step == parameters->mdSteps-refineFCalls)
         {
-            log("Achieved the specified MD simulation time\n");
+            log("%s Achieved the specified MD simulation time\n", LOG_PREFIX);
             stopFlag = true;
         }else if (step > parameters->mdSteps-refineFCalls) {
-            log("This trajectory will require more force calls\n");
+            log("%s This trajectory will require more force calls\n", LOG_PREFIX);
             jobStatus = ParallelReplicaJob::STATUS_NEWSTATE_OVERFC;
             stopFlag = true;
         }
@@ -338,16 +341,16 @@ int ParallelReplicaJob::dynamics()
     varT = sumT2/step - avgT*avgT;
 
     if (nboost > 0){
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, sumboost/nboost);
+        log("%s Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = %lf\n", LOG_PREFIX,
+            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2., sumboost/nboost);
     }else{
-        log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n",
-        avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2);
+        log("%s Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n", LOG_PREFIX,
+            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2.);
     }
 
     if (isfinite(avgT)==0)
     {
-        log("Infinite average temperature, something went wrong!\n");
+        log("%s Infinite average temperature, something went wrong!\n", LOG_PREFIX);
         newStateFlag = false;
         jobStatus = ParallelReplicaJob::STATUS_BAD_INFTEMP;
     }
@@ -454,7 +457,7 @@ void ParallelReplicaJob::dephase()
 
     dephaseSteps = int(floor(parameters->parrepDephaseTime/parameters->mdTimeStep+0.5));
     Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime*parameters->timeUnit);
+    log("%s Dephasing for %.2f fs\n", LOG_PREFIX, parameters->parrepDephaseTime*parameters->timeUnit);
 
     step = stepNew = loop = 0;
 
@@ -480,10 +483,10 @@ void ParallelReplicaJob::dephase()
         if(transitionFlag)
         {
             dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant);
-            log("Loop = %ld ; Dephase refine step = %ld\n", loop, dephaseRefineStep);
+            log("%s Loop = %ld ; Dephase refine step = %ld\n", LOG_PREFIX, loop, dephaseRefineStep);
             transitionStep = dephaseRefineStep - 1; // check that this is correct
             transitionStep = (transitionStep > 0) ? transitionStep : 0;
-            log("Dephasing warning: In a new state, invert the momentum and restart from step %ld\n", transitionStep);
+            log("%s Dephasing warning: In a new state, invert the momentum and restart from step %ld\n", LOG_PREFIX, transitionStep);
             *current = *dephaseBuffer[transitionStep];
             velocity = current->getVelocities();
             velocity = velocity*(-1);
@@ -493,13 +496,13 @@ void ParallelReplicaJob::dephase()
         else
         {
             step = dephaseBufferLength;
-            log("Successful dephasing steps: %ld\n", step);
+            log("%s Successful dephasing steps: %ld\n", LOG_PREFIX, step);
         }
         if( (parameters->parrepDephaseLoopStop) && (loop > parameters->parrepDephaseLoopMax) ) {
-            log("Exceeded dephasing loop maximum; Dephasing steps: %ld\n", step);
+            log("%s Exceeded dephasing loop maximum; Dephasing steps: %ld\n", LOG_PREFIX, step);
             break;
         }
-        log("Successful dephasing time: %.2f fs", step*parameters->mdTimeStep*parameters->timeUnit);
+        log("%s Successful dephasing time: %.2f fs\n", LOG_PREFIX, step*parameters->mdTimeStep*parameters->timeUnit);
 
     }
 
@@ -550,7 +553,7 @@ long ParallelReplicaJob::refine(Matter *buff[], long length, Matter *reactant)
             max = mid;
         }
         else {
-            log("Refine step failed!\n");
+            log("%s Refine step failed!\n", LOG_PREFIX);
             jobStatus = ParallelReplicaJob::STATUS_BAD_REFINEFAILED;
             exit(1);
         }
@@ -559,37 +562,37 @@ long ParallelReplicaJob::refine(Matter *buff[], long length, Matter *reactant)
     return (min+max)/2 + 1;
 }
 void ParallelReplicaJob::printEndStatus() {
-    fprintf(stdout, "Final state: ");
+    log("%s Final state\n", LOG_PREFIX);
     if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE)
-        log("[ParallelReplica] New state found and is stable\n");
+        log("%s New state found and is stable\n", LOG_PREFIX);
 
     else if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE_CORR) 
-        log("[ParallelReplica] New state found; Correlated event detected; Metastable state has beeen saved as meta.con\n");  
+        log("%s New state found; Correlated event detected; Metastable state has beeen saved as meta.con\n", LOG_PREFIX);  
 
 
     else if(jobStatus == ParallelReplicaJob::STATUS_NEWSTATE_OVERFC)
-        log("[ParallelReplica] New state found; RefineFCalls exceeds the remaining MD steps after transition; Traj will take longer time to report\n");   
+        log("%s New state found; RefineFCalls exceeds the remaining MD steps after transition; Traj will take longer time to report\n", LOG_PREFIX);
     else if(jobStatus == ParallelReplicaJob::STATUS_TRAN_NOTIME){
-        log("[ParallelReplica] Insufficient force calls remaining to perform decorrelation and transition state refinement\n");
-        log("[ParallelReplica] The last checkpoint that detected a transition will be reported\n");
+        log("%s Insufficient force calls remaining to perform decorrelation and transition state refinement\n", LOG_PREFIX);
+        log("%s The last checkpoint that detected a transition will be reported\n", LOG_PREFIX);
     }
 
     else if(jobStatus == ParallelReplicaJob::STATUS_TRAN_RECROSS)
-        log("[ParallelReplica] Transition found but has been determined as a recrossing event\n");
+        log("%s Transition found but has been determined as a recrossing event\n", LOG_PREFIX);
 
     else if(jobStatus == ParallelReplicaJob::STATUS_NOTRAN)
-        log("[ParallelReplica] No transition was been found during the MD simulation time\n");
+        log("%s No transition was been found during the MD simulation time\n", LOG_PREFIX);
 
     else if( jobStatus == ParallelReplicaJob::STATUS_BAD_RELAXFAILED)
-        log("[ParallelReplica] WARNING: Job failed in an optimization calculation\n");
+        log("%s WARNING: Job failed in an optimization calculation\n", LOG_PREFIX);
 
     else if( jobStatus == ParallelReplicaJob::STATUS_BAD_REFINEFAILED)
-        log("[ParallelReplica] WARNING: Job failed in the refinement process\n");
+        log("%s WARNING: Job failed in the refinement process\n", LOG_PREFIX);
 
     else if( jobStatus == ParallelReplicaJob::STATUS_BAD_INFTEMP)
-        log("[ParallelReplica] WARNING: Job running at INF temperature\n");
+        log("%s WARNING: Job running at INF temperature\n", LOG_PREFIX);
 
     else
-        log("[ParallelReplica] Unknown jobStatus: %i!\n", jobStatus);
+        log("%s Unknown jobStatus: %i!\n", jobStatus);
     return;
 }

@@ -32,9 +32,9 @@ std::vector<std::string> MinimizationJob::run(void)
         pos = fopen("pos_cp.con", "r");
         if (pos != NULL) {
             posInFilename = "pos_cp.con";
-            log("Resuming from checkpoint\n");
+            log("[Minimization] Resuming from checkpoint\n");
         }else{
-            log("No checkpoint files found\n");
+            log("[Minimization] No checkpoint files found\n");
         }
     }
 

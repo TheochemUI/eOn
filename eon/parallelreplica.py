@@ -30,7 +30,7 @@ import prstatelist
 from version import version
 
 def parallelreplica():
-    logger.info('Eon version %s', version())
+    logger.info('Eon version: %s', version())
     # First of all, does the root directory even exist?
     if not os.path.isdir(config.path_root):
         logger.critical("Root directory does not exist")
@@ -38,7 +38,7 @@ def parallelreplica():
 
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
-    logger.info("Simulation time is %e s", time)
+    logger.info("Simulation time: %e s", time)
     states = get_statelist() 
     current_state = states.get_state(start_state_num)
 
@@ -49,7 +49,7 @@ def parallelreplica():
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
    
-    logger.info("Time in current state is %e s", current_state.get_time()) 
+    logger.info("Time in current state: %e s", current_state.get_time()) 
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total speedup: %f",avg_spdup)
@@ -77,7 +77,7 @@ def step(current_time, current_state, states, transition):
     previous_state = current_state
     current_state = next_state
 
-    logger.info("Currently in state %i", current_state.number)
+    logger.info("Currently in state: %i", current_state.number)
 
     return current_state, previous_state
 
@@ -122,9 +122,9 @@ def make_searches(comm, current_state, wuid):
     reactant = current_state.get_reactant()
     #XXX:what if the user changes the bundle size?
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
-    logger.info("Queue contains %i searches" % num_in_buffer)
+    logger.info("Queue contains: %i searches" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
-    logger.info("Making %i searches" % num_to_make)
+    logger.info("Making: %i searches" % num_to_make)
 
     if num_to_make == 0:
         return wuid
@@ -158,7 +158,7 @@ def make_searches(comm, current_state, wuid):
         wuid += 1
 
     comm.submit_jobs(searches, invariants)
-    logger.info( "Created " + str(num_to_make) + " searches")
+    logger.info( "Created: " + str(num_to_make) + " searches")
     return wuid
 
 def register_results(comm, current_state, states):
