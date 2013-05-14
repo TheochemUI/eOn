@@ -19,6 +19,8 @@ const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
 const char Dynamics::NONE[] = "none";
 
+static const char LOG_PREFIX[] = "[Dynamics]";
+
 Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in)
 {
     matter = matter_in;
@@ -27,7 +29,7 @@ Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in)
     nAtoms = matter->numberOfAtoms();
     nFreeCoords = matter->numberOfFreeAtoms()*3;
     temperature = parameters->temperature;
-    kb = 8.6173857E-5; // Kb in unit of eV
+    kB = parameters->kB;
     vxi1 = vxi2 = xi1 = xi2 = 0.0; // NoseHoover variables
 }
 
@@ -60,17 +62,19 @@ void Dynamics::oneStep(int stepNumber)
 
     if (stepNumber != -1) {
         if (stepNumber == 1) {
-            log("[Dynamics] %8s %10s %12s %12s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+            log("%s %8s %10s %12s %12s %10s\n", LOG_PREFIX,
+                "Step", "KE", "PE", "TE", "KinT");
         }
         AtomMatrix velocity;
         double potE, kinE, kinT;
         velocity = matter->getVelocities();
         kinE = matter->getKineticEnergy();
         potE = matter->getPotentialEnergy();
-        kinT = (2.0*kinE/nFreeCoords/kb);
+        kinT = (2.0*kinE/nFreeCoords/kB);
 
         if (stepNumber % parameters->writeMoviesInterval == 0) {
-            log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", stepNumber, kinE, potE, kinE+potE, kinT);
+            log("%s %8ld %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
+                 stepNumber, kinE, potE, kinE+potE, kinT);
         }
     }
 }
@@ -99,16 +103,18 @@ void Dynamics::run()
     setThermalVelocity();
 
     if(parameters->thermostat != NONE) {
-        log("[Dynamics] Running NVT molecular dynamics at %8.2lf K for %ld steps (%.4e s)\n", temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStep*parameters->timeUnit*parameters->mdSteps);
+        log("%s Running NVT molecular dynamics: %8.2lf K for %ld steps (%.4e s)\n", LOG_PREFIX,
+            temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStep*parameters->timeUnit*parameters->mdSteps);
     }else{
-        log("[Dynamics] Running NVE molecular dynamics for %ld steps\n", parameters->mdSteps);
+        log("%s Running NVE molecular dynamics: %ld steps\n", LOG_PREFIX, parameters->mdSteps);
     }
 
     if (parameters->writeMovies == true) {
         matter->matter2con("dynamics", false);
     }
 
-    log("[Dynamics] %8s %10s %12s %12s %10s\n", "Step", "KE", "PE", "TE", "kinT");
+    log("%s %8s %10s %12s %12s %10s\n", LOG_PREFIX,
+        "step", "KE", "PE", "TE", "kinT");
 
     for(long step=0; step<=parameters->mdSteps; step++)
     {
@@ -117,12 +123,13 @@ void Dynamics::run()
         velocity = matter->getVelocities();
         kinE = matter->getKineticEnergy();
         potE = matter->getPotentialEnergy();
-        kinT = (2.0*kinE/nFreeCoords/kb);
+        kinT = (2.0*kinE/nFreeCoords/kB);
         sumT += kinT;
         sumT2 += kinT*kinT;
 
         if (step % parameters->writeMoviesInterval == 0) {
-            log("[Dynamics] %8ld %10.4f %12.4f %12.4f %10.2f\n", step, kinE, potE, kinE+potE, kinT);
+            log("%s %8ld %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
+                 step, kinE, potE, kinE+potE, kinT);
         }
 
         if ( (parameters->writeMovies == true) && (step % parameters->writeMoviesInterval == 0) ) {
@@ -132,7 +139,7 @@ void Dynamics::run()
     avgT = sumT/double(parameters->mdSteps);
     varT = sumT2/double(parameters->mdSteps) - avgT*avgT;
     stdT = sqrt(varT);
-    log("[Dynamics] Temperature : Average = %.2lf ; StdDev = %.2lf ; Factor = %.2lf\n",
+    log("%s Temperature : Average = %.2lf ; StdDev = %.2lf ; Factor = %.2lf\n", LOG_PREFIX,
         avgT, stdT, varT/avgT/avgT*nFreeCoords/2.0);
 }
 
@@ -157,7 +164,7 @@ void Dynamics::andersenCollision()
             for (int j=0; j<3; j++)
            {
                 vOld = velocity(i,j);
-                vNew = sqrt(kb*temperature/mass[i])*gaussRandom(0.0,1.0);
+                vNew = sqrt(kB*temperature/mass[i])*gaussRandom(0.0,1.0);
                 velocity(i,j) = sqrt(1.0-alpha*alpha)*vOld + alpha*vNew;
             }
         }
@@ -175,7 +182,7 @@ void Dynamics::setThermalVelocity()
         if(!matter->getFixed(i)){
             for (int j=0; j<3; j++)
             {
-                velocity(i,j) = sqrt(kb*temperature/mass[i])*gaussRandom(0.0,1.0);
+                velocity(i,j) = sqrt(kB*temperature/mass[i])*gaussRandom(0.0,1.0);
             }
         }
     }
@@ -186,7 +193,7 @@ void Dynamics::rescaleVelocity()
 {
     AtomMatrix velocity = matter->getVelocities();
     double kinE = matter->getKineticEnergy();
-    double kinT = (2.0*kinE/nFreeCoords/kb);
+    double kinT = (2.0*kinE/nFreeCoords/kB);
     matter->setVelocities(velocity*sqrt(temperature/kinT));
 }
 
@@ -201,7 +208,7 @@ void Dynamics::noseHooverVerlet()
     dt8 = 0.125*dt;
     q1 = q2 = parameters->thermoNoseMass;
     g1 = g2 = 0.0;
-    Temp = kb*temperature; // imposed temperature
+    Temp = kB*temperature; // imposed temperature
 
     vel = matter->getVelocities();
     pos = matter->getPositions();
@@ -279,7 +286,7 @@ void Dynamics::langevinVerlet()
     for (long i=0; i<nAtoms; i++){
         if(!matter->getFixed(i)){
             for (int j=0; j<3; j++){
-                noise(i,j) = sqrt(4.0*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
+                noise(i,j) = sqrt(4.0*gamma*kB*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
             }
         }
     }
@@ -294,7 +301,7 @@ void Dynamics::langevinVerlet()
     for (long i=0; i<nAtoms; i++){
         if(!matter->getFixed(i)){
             for (int j=0; j<3; j++){
-                noise(i,j) = sqrt(4.0*gamma*kb*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
+                noise(i,j) = sqrt(4.0*gamma*kB*temperature/dt/mass[i])*gaussRandom(0.0,1.0);
             }
         }
     }

@@ -357,8 +357,8 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     int iteration=0;
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     if (!quiet) {
-        log("%s %4s    %12s    %14s    %11s\n", LOG_PREFIX,
-            "iter", "step size", forceLabel, "energy");
+        log("%s %10s  %14s  %20s  %13s\n", LOG_PREFIX,
+            "Iter", "Step size", forceLabel, "Energy");
     }
     while (!objf.isConverged() && 
            iteration < parameters->optMaxIterations) {
@@ -371,7 +371,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         double stepSize = helper_functions::maxAtomMotion(pbc(getPositions()-pos));
 
         if (!quiet) {
-            log("%s %4i    %12.5e    %14.5e    %11.5f\n", LOG_PREFIX,
+            log("%s %10i  %14.5e  %16.5e  %13.5f\n", LOG_PREFIX,
                 iteration, stepSize, objf.getConvergence(), getPotentialEnergy());
         }
 
@@ -388,7 +388,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     
     if (iteration == 0) {
         if (!quiet) {
-            log("%s %4i    %12.5e    %12.5e    %11.5f\n", LOG_PREFIX,
+            log("%s %10i  %14.5e  %16.5e  %13.5f\n", LOG_PREFIX,
                 iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
         }
     }

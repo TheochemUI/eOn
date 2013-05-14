@@ -89,7 +89,8 @@ int SafeHyperJob::dynamics()
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
     long StateCheckInterval, RecordInterval, CorrSteps;
-    double kinE, kinT, avgT, varT,  kb = 1.0/11604.5;
+    double kinE, kinT, avgT, varT;
+    double kB = parameters->kB;
     double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
     double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
@@ -146,7 +147,7 @@ int SafeHyperJob::dynamics()
             // GH: boost should be a unitless factor, multipled by TimeStep to get the boosted time
             //log("step= %3d, boost = %10.5f",step,bondBoost.boost());
             boostPotential = bondBoost.boost();   
-            boost = 1.0*exp(boostPotential/kb/Temp);
+            boost = 1.0*exp(boostPotential/kB/Temp);
             time += parameters->mdTimeStep*boost;
             if (boost > 1.0){
                 sumboost += boost;
@@ -155,7 +156,7 @@ int SafeHyperJob::dynamics()
         } 
 
         kinE = current->getKineticEnergy();
-        kinT = (2.0*kinE/nFreeCoord/kb); 
+        kinT = (2.0*kinE/nFreeCoord/kB); 
         sumT += kinT;
         sumT2 += kinT*kinT;
         //log("steps = %10d temp = %10.5f \n",step,kinT);
@@ -210,7 +211,7 @@ int SafeHyperJob::dynamics()
             transitionTime = transitionTime_current - transitionTime_pre;
             transitionTime_pre = transitionTime_current;
             transitionPot = biasBuffer[refineStep];
-            correctedTime = transitionTime * exp((-1)*transitionPot/kb/Temp);
+            correctedTime = transitionTime * exp((-1)*transitionPot/kB/Temp);
             sumCorrectedTime += correctedTime;
             if ( nState == 1 ){
                 firstTransitionTime = transitionTime;
