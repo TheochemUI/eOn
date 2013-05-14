@@ -195,7 +195,7 @@ def register_results(comm, current_state, states):
             result['results']['transition_time_s'] += state.get_time()
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)
-            logger.info("Found transition with time: %.3e", time, "s")
+            logger.info("Found transition with time: %.3e s", time)
             if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
