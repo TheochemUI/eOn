@@ -10,9 +10,50 @@ extern "C" {
     void solve_double(int, double *, int, double *, double *, double *, double *, double *);
     void solve_double_double(int, double *, int, double *, double *, double *, double *, double *);
     void solve_quad_double(int, double *, int, double *, double *, double *, double *, double *);
+    double estimate_condition(int, double*, int, double*);
 }
 
-template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double *Rflat, double *c_in, double *B, double *t, double *residual) {
+double estimate_condition(int Qsize, double *Qflat, int Rcols, double *Rflat)
+{
+    typedef Matrix<qd_real,Dynamic,Dynamic> MatrixXdd;
+    typedef Matrix<qd_real,Dynamic,1> VectorXdd;
+
+    // Convert the Qflat array into an Eigen matrix.
+    MatrixXdd Q = MatrixXdd(Qsize, Qsize);
+
+    int row, col;
+    for (row = 0; row < Qsize; row++) {
+        qd_real total = 0;
+        for (col = 0; col < Qsize; col++) {
+            Q(row, col) =  Qflat[row*Qsize + col];    
+            total += Q(row, col);
+        }
+        for (col = 0; col < Rcols; col++) {
+            total +=  Rflat[row*Rcols + col];    
+        }
+        Q.row(row) /= total;
+    }
+
+    qd_real cond_number("0.0");
+    qd_real one("1.0");
+    for (row = 0; row < Qsize; row++) {
+        qd_real total = 0;
+        for (col = 0; col < Qsize; col++) {
+            total += Q(row,col);
+        }
+        qd_real k = one/abs(one-total);
+        if (row == 0) {
+            cond_number = k;
+        }else{
+            cond_number = max(cond_number, k);
+        }
+    }
+
+    return (double)cond_number;
+}
+
+template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double *Rflat, double *c_in, double *B, double *t, double *residual)
+{
     typedef Matrix<T,Dynamic,Dynamic> MatrixXdd;
     typedef Matrix<T,Dynamic,1> VectorXdd;
 
@@ -22,7 +63,7 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
     VectorXdd c = VectorXdd(Qsize);
     for (i = 0; i < Qsize; i++) {
         c(i) = 1.0 / c_in[i];
-    };
+    }
 
     // Convert the Qflat array into an Eigen matrix.
     MatrixXdd Q = MatrixXdd(Qsize, Qsize);
