@@ -6,6 +6,30 @@ import logging
 logger = logging.getLogger('mcamc')
 
 
+def estimate_condition(Q, R):
+    Qflat = list(Q.ravel())
+    Qflat = (ctypes.c_double * len(Qflat))(*Qflat)
+    Rflat = list(R.ravel())
+    Rflat = (ctypes.c_double * len(Rflat))(*Rflat)
+    libmcamc.estimate_condition.restype = ctypes.c_double
+    return libmcamc.estimate_condition(Q.shape[0], Qflat, R.shape[1], Rflat)
+
+
+def guess_precision(Q, R):
+    cond = estimate_condition(Q, R)
+    k = np.log10(cond)
+    if k < 11:
+        prec = 'd'
+    elif k < 26:
+        prec = 'dd'
+    elif k < 60:
+        prec = 'qd'
+    else:
+        #problem is too ill-conditioned to solve accurately
+        prec = '-'
+    return prec
+
+
 def c_mcamc(Q, R, c, prec='dd'):
     Qflat = list(Q.ravel())
     Qflat = (ctypes.c_double * len(Qflat))(*Qflat)
