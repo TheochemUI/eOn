@@ -1023,14 +1023,6 @@ Coarse Graining:
             kind: boolean
             default: False
 
-        use_arbitrary_precision:
-            kind: boolean
-            default: False
-
-        arbitrary_precision:
-            kind: int
-            default: 30
-
         superbasin_scheme:
             kind: string
             default: transition_counting
