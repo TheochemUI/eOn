@@ -3,13 +3,11 @@ TARGET_NAME=eonclient
 #------------------------------------
 #C compiler settings
 CC=gcc
-CXX=g++
+CXX=clang++
 LD=ld
 AR=ar cru
 RANLIB=ranlib
 DEPFLAGS=-MMD
-
-
 
 #if building omp lammps
 #LDFLAGS += -fopenmp
