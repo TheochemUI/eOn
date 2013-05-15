@@ -554,17 +554,24 @@ int Parameters::load(FILE *file){
 
         //Sanity Checks
         if (parrepStateCheckInterval > mdTime && job == "parallel_replica") {
-            char msg[] = "error: state_check_interval must be <= time\n";
+            char msg[] = "error: [Parallel Replica] state_check_interval must be <= time\n";
             fprintf(stderr, msg);
             log(msg);
             exit(1);
         }
 
-    }
-    else
-    {
+        if (saddleDynamicsRecordIntervalInput > saddleDynamicsStateCheckInterval) {
+            char msg[] = "error:  [Saddle Search] dynamics_record_interval must be <= dynamics_state_check_interval\n";
+            fprintf(stderr, msg);
+            log(msg);
+            exit(1);
+        }
+
+
+    }else{
         fprintf(stderr, "Couldn't parse the ini file.\n");
         error = 1;
     }
+
     return error;
 }
