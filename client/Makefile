@@ -3,7 +3,7 @@ TARGET_NAME=eonclient
 #------------------------------------
 #C compiler settings
 CC=gcc
-CXX=clang++
+CXX=g++
 LD=ld
 AR=ar cru
 RANLIB=ranlib
