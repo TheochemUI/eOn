@@ -560,7 +560,7 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-        if (saddleDynamicsRecordIntervalInput > saddleDynamicsStateCheckInterval) {
+        if (saddleDynamicsRecordIntervalInput > saddleDynamicsStateCheckIntervalInput) {
             char msg[] = "error:  [Saddle Search] dynamics_record_interval must be <= dynamics_state_check_interval\n";
             fprintf(stderr, msg);
             log(msg);
