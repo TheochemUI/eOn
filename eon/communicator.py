@@ -108,8 +108,6 @@ class Communicator:
         size = len([ fname for fname in fnames if pattern.match(fname) ])
         if size == 0 and 'results.dat' in fnames:
             size = 1
-        else:
-            size = 0
         return size
 
 
