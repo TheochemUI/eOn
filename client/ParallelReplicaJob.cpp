@@ -248,6 +248,11 @@ int ParallelReplicaJob::dynamics()
                     jobStatus = ParallelReplicaJob::STATUS_NEWSTATE;
                     log("%s No recrossing, found new state\n", LOG_PREFIX);
                     *product = *current;
+                    *product_relaxed = *product;
+                    relaxStatus = product_relaxed->relax(true);
+                    if(!relaxStatus){
+                        jobStatus = ParallelReplicaJob::STATUS_BAD_RELAXFAILED;
+                    }
                     newStateStep = step; // remember the step when we are in a new state
                     if(parameters->parrepAutoStop){  // stop at transition; primarily for debugging
                         stopFlag = true;
