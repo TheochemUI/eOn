@@ -266,7 +266,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
             mean_time = 1.0/ratesum
 
         # Accounting for time
-        if config.debug_use_mean_time:
+        if config.debug_use_mean_time or sb:
             step_time = mean_time
         else:
             #numpy.random.random_sample() uses [0,1)
