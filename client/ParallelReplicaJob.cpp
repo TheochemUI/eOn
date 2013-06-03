@@ -152,10 +152,8 @@ int ParallelReplicaJob::dynamics()
             boost = 1.0*exp(boostPotential/parameters->kB/parameters->temperature);   
             
             time += parameters->mdTimeStep*boost;
-            if (boost > 1.0){
-                sumboost += boost;
-                nboost ++;
-            }
+            sumboost += boost;
+            nboost ++;
             
         } else {
             time += parameters->mdTimeStep;
