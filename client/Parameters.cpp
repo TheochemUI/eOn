@@ -111,7 +111,6 @@ Parameters::Parameters(){
 
     optLBFGSMemory = 20;
     optLBFGSInverseCurvature = 0.01; //assumes stiffest curvature at minimum is 100 eV/A^2
-    optLBFGSMaxInverseCurvature = 0.1; // assumes softest curvature is 10 eV/A^2
     optLBFGSAutoScale = true;
     optLBFGSAngleReset = true;
     optLBFGSDistanceReset = true;
