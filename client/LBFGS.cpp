@@ -41,14 +41,14 @@ VectorXd LBFGS::getStep(double maxMove)
         VectorXd dr = objf->difference(r,rPrev);
         double C = dr.dot(fPrev-f)/dr.dot(dr);
         if (C<0) {
-            log_file("[LBFGS] Negative curvature: %.4f take max move step\n",C);
+            log_file("[LBFGS] Negative curvature: %.4f eV/A^2 take max move step\n",C);
             reset();
             return helper_functions::maxAtomMotionAppliedV(f, maxMove);
         }
 
         if (parameters->optLBFGSAutoScale) {
-            H0 = min(1/C, parameters->optLBFGSMaxInverseCurvature);
-            log_file("[LBFGS] H0: %.4e\n", H0); 
+            H0 = 1/C;
+            log_file("[LBFGS] Curvature: %.4e eV/A^2\n", C); 
         }
     }
 
@@ -59,11 +59,11 @@ VectorXd LBFGS::getStep(double maxMove)
         H0 = 1.0/C;
         objf->setPositions(r);
         if (H0 < 0) {
-            log_file("[LBFGS] H0 calculated via FD: %.4e, max move step instead\n", H0); 
+            log_file("[LBFGS] Negative curvature calculated via FD: %.4e eV/A^2, take max move step\n", C); 
             reset();
             return helper_functions::maxAtomMotionAppliedV(f, maxMove);
         }else{
-            log_file("[LBFGS] H0 calculated via FD: %.4e\n", H0); 
+            log_file("[LBFGS] Curvature calculated via FD: %.4e eV/A^2\n", C); 
         }
     }
 
@@ -88,7 +88,7 @@ VectorXd LBFGS::getStep(double maxMove)
 
     double distance = helper_functions::maxAtomMotionV(d);
     if (distance >= maxMove && parameters->optLBFGSDistanceReset) {
-        log_file("[LBFGS] reset, step too big, %.4f\n", distance);
+        log_file("[LBFGS] reset memory, proposed step too large: %.4f\n", distance);
         reset();
         return helper_functions::maxAtomMotionAppliedV(H0*f, maxMove);
     }
@@ -98,7 +98,7 @@ VectorXd LBFGS::getStep(double maxMove)
     if (vd<-1.0) vd=-1.0;
     double angle = acos(vd) * (180.0 / M_PI);
     if (angle > 90.0 && parameters->optLBFGSAngleReset) {
-        log_file("[LBFGS] reset, angle, %.4f\n", angle);
+        log_file("[LBFGS] reset memory, angle between LBFGS angle and force too large: %.4f\n", angle);
         reset();
         return helper_functions::maxAtomMotionAppliedV(H0*f, maxMove);
     }
@@ -111,7 +111,6 @@ void LBFGS::reset(void)
     s.clear();
     y.clear();
     rho.clear();
-//    iteration = 0;
 }
 
 void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
