@@ -359,10 +359,10 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     if (!quiet) {
         log("%s %10s  %14s  %20s  %13s\n", LOG_PREFIX,
             "Iter", "Step size", forceLabel, "Energy");
+        log("%s %10i  %14.5e  %16.5e  %13.5f\n", LOG_PREFIX,
+            iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
     }
 
-    log("%s %10i  %14.5e  %16.5e  %13.5f\n", LOG_PREFIX,
-        iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
 
     while (!objf.isConverged() && 
            iteration < parameters->optMaxIterations) {
