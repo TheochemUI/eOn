@@ -14,9 +14,10 @@
 // J. Chem. Phys. 121, 9776-9792 (2004).
 
 #include "Lanczos.h"
+#include "Log.h"
 #include <cmath>
 
-Lanczos::Lanczos(Matter const *matter, Parameters *params)
+Lanczos::Lanczos(Matter *matter, Parameters *params)
 {
     parameters = params;
     lowestEv.resize(matter->numberOfAtoms(),3);
@@ -30,7 +31,7 @@ Lanczos::~Lanczos()
 
 // The 1 character variables in this method match the variables in the
 // equations in the paper given at the top of this file.
-void Lanczos::compute(Matter const *matter, AtomMatrix direction)
+void Lanczos::compute(Matter *matter, AtomMatrix direction)
 {
     int size = 3*matter->numberOfFreeAtoms();
     MatrixXd T(size,size), Q(size,size);
@@ -40,18 +41,12 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     // Convert the AtomMatrix of all the atoms into
     // a single column vector with just the free coordinates.
     int i,j;
-    for (i=0,j=0;i<matter->numberOfAtoms();i++) {
-        if (!matter->getFixed(i)) {
-            r.segment<3>(j) = direction.row(i);
-            j+=3;
-        }
-    }
-    r.normalize();
+    r = VectorXd::Map(direction.data(),3*matter->numberOfFreeAtoms());
 
     double alpha, beta=r.norm();
     double ew=0, ewOld=0, ewAbsRelErr;
     double dr = parameters->finiteDifference;
-    VectorXd evEst, evT;
+    VectorXd evEst, evT, evOldEst;
 
     VectorXd force1, force2;
     Matter *tmpMatter = new Matter(parameters);
@@ -59,6 +54,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
     force1 = tmpMatter->getForcesFreeV();
 
     for (i=0;i<size;i++) {
+        statsRotations = i;
         Q.col(i) = r/beta;
 
         // Finite difference force in the direction of the ith Lanczos vector
@@ -90,6 +86,7 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
                 ew = alpha;
                 evEst = Q.col(0);
             }
+            log_file("[ILanczos] ERROR: linear dependence\n");
             break;
         }
         //Check Eigenvalues
@@ -103,18 +100,24 @@ void Lanczos::compute(Matter const *matter, AtomMatrix direction)
             //Convert eigenvector of T matrix to eigenvector of full Hessian
             evEst = Q.block(0,0,size,i+1)*evT;
             evEst.normalize();
-
-            //printf("rotation angle: %f ewdiff: %f\n", acos(fabs(evEst.dot(evOldEst)))*(180/M_PI), ewChange);
+            statsAngle = acos(fabs(evEst.dot(evOldEst)))*(180/M_PI);
+            statsTorque = ewAbsRelErr;
+            evOldEst = evEst;
+            log_file("[ILanczos] %9s %9s %10s %14s %9.4f %10.6f %7.3f %5i\n", 
+                "----", "----", "----", "----", ew, ewAbsRelErr, statsAngle, i);
             if (ewAbsRelErr < parameters->lanczosTolerance) {
+                log_file("[ILanczos] Tolerence reached: %f\n", parameters->lanczosTolerance);
                 break;
             }
         }else{
             ew = alpha;
             ewOld = ew;
             evEst = Q.col(0);
+            evOldEst = Q.col(0);
         }
 
         if (i >= parameters->lanczosMaxIterations) {
+            log_file("[ILanczos] Max iterations\n");
             break;
         }
     }

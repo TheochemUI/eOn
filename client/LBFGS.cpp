@@ -31,19 +31,19 @@ LBFGS::~LBFGS()
     return;
 }
 
-VectorXd LBFGS::getStep(double maxMove)
+VectorXd LBFGS::getStep(double maxMove, VectorXd f)
 {
     double H0 = parameters->optLBFGSInverseCurvature;
     VectorXd r = objf->getPositions();
-    VectorXd f = -objf->getGradient();
 
     if (iteration > 0) {
         VectorXd dr = objf->difference(r,rPrev);
-        double C = dr.dot(fPrev-f)/dr.dot(dr);
+        //double C = dr.dot(fPrev-f)/dr.dot(dr);
+        double C = (fPrev-f).dot(fPrev-f)/dr.dot(fPrev-f);
         if (C<0) {
             log_file("[LBFGS] Negative curvature: %.4f eV/A^2 take max move step\n",C);
             reset();
-            return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+            return helper_functions::maxAtomMotionAppliedV(1000*f, maxMove);
         }
 
         if (parameters->optLBFGSAutoScale) {
@@ -61,7 +61,7 @@ VectorXd LBFGS::getStep(double maxMove)
         if (H0 < 0) {
             log_file("[LBFGS] Negative curvature calculated via FD: %.4e eV/A^2, take max move step\n", C); 
             reset();
-            return helper_functions::maxAtomMotionAppliedV(f, maxMove);
+            return helper_functions::maxAtomMotionAppliedV(1000*f, maxMove);
         }else{
             log_file("[LBFGS] Curvature calculated via FD: %.4e eV/A^2\n", C); 
         }
@@ -140,7 +140,7 @@ bool LBFGS::step(double maxMove)
         update(r, rPrev, f, fPrev);
     }
 
-    VectorXd dr = getStep(maxMove);
+    VectorXd dr = getStep(maxMove,f);
 
     objf->setPositions(r+dr);
 

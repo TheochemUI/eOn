@@ -31,10 +31,10 @@ class ImprovedDimer : public LowestEigenmode
     static const char OPT_CG[];
     static const char OPT_LBFGS[];
 
-    ImprovedDimer(Matter const *matter, Parameters *parameters);
+    ImprovedDimer(Matter *matter, Parameters *parameters);
     ~ImprovedDimer();
 
-    void compute(Matter const *matter, AtomMatrix initialDirection);
+    void compute(Matter *matter, AtomMatrix initialDirection);
     double getEigenvalue();
     AtomMatrix getEigenvector();
 

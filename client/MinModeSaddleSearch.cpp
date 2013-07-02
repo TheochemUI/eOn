@@ -24,6 +24,13 @@ using namespace helper_functions;
 
 class MinModeObjectiveFunction : public ObjectiveFunction
 {
+    private:
+        AtomMatrix eigenvector;
+        LowestEigenmode *minModeMethod;
+        Matter *matter;
+        Parameters *parameters;
+        int iteration;
+
     public:
         MinModeObjectiveFunction(Matter *matterPassed, LowestEigenmode *minModeMethodPassed,
                                  AtomMatrix modePassed, Parameters *parametersPassed)
@@ -33,15 +40,18 @@ class MinModeObjectiveFunction : public ObjectiveFunction
             eigenvector = modePassed;
             parameters = parametersPassed;
         }
-        ~MinModeObjectiveFunction(void){};
+
+        ~MinModeObjectiveFunction(void)
+        { }
 
         VectorXd getGradient(bool fdstep=false)
         {
             AtomMatrix proj;
             AtomMatrix force = matter->getForces();
 
-            if (!fdstep) {
+            if (!fdstep || iteration == 0) {
                 minModeMethod->compute(matter, eigenvector);
+                iteration++;
             }
 
             eigenvector = minModeMethod->getEigenvector();
@@ -106,12 +116,6 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         VectorXd difference(VectorXd a, VectorXd b) {
             return matter->pbcV(a-b);
         }
-
-    private:
-        AtomMatrix eigenvector;
-        LowestEigenmode *minModeMethod;
-        Matter *matter;
-        Parameters *parameters;
 };
 
 MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
@@ -146,12 +150,12 @@ int MinModeSaddleSearch::run()
 
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-        log("[Dimer]  %9s   %9s   %10s   %14s   %9s   %7s   %6s   %4s\n", 
+        log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", 
             "Torque", "Angle", "Rots");
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-        log("[Lanczos]  %9s  %9s  %10s  %14s  %9s\n", 
-            "Step", "Step Size", "Delta E", forceLabel, "Curvature");
+        log("[Lanczos]  %9s %9s %10s %18s %9s %10s %7s %5s\n", 
+            "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change", "Angle", "Iters");
     }
 
     ostringstream climb;
@@ -214,10 +218,13 @@ int MinModeSaddleSearch::run()
                         minModeMethod->statsAngle,
                         minModeMethod->statsRotations);
         }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-            log("[Lanczos]  %9ld  % 9.6f   %10.4f  %14.5e  %9.5f\n", 
+            log("[Lanczos]  %9i %9.6f %10.4f %14.5e %9.4f %10.6f %7.3f %5i\n", 
                 iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                 objf.getConvergence(),
-                minModeMethod->getEigenvalue());
+                minModeMethod->getEigenvalue(),
+                minModeMethod->statsTorque,
+                minModeMethod->statsAngle,
+                minModeMethod->statsRotations);
         }else{
             log("[MinModeSaddleSearch] Unknown min_mode_method: %s\n", parameters->saddleMinmodeMethod.c_str());
             exit(1);

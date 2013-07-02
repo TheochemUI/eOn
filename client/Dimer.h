@@ -27,11 +27,11 @@ class Dimer : public LowestEigenmode {
 
 public:
 
-    Dimer(Matter const *matter, Parameters *parameters);
+    Dimer(Matter *matter, Parameters *parameters);
     ~Dimer();
 
-    void initialize(Matter const *matter, AtomMatrix); // initialize the dimer
-    void compute(Matter const *matter, AtomMatrix initialDirection); // compute the lowest eigenmode
+    void initialize(Matter *matter, AtomMatrix); // initialize the dimer
+    void compute(Matter *matter, AtomMatrix initialDirection); // compute the lowest eigenmode
     double getEigenvalue(); // return the current eigenvalue
     AtomMatrix getEigenvector();  // return the current eigenvector
 
