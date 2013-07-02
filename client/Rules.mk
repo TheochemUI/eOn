@@ -195,7 +195,7 @@ $(FPOTDIRS):
 	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(FAR)" FC="$(FC)" FFLAGS="$(FFLAGS)" RANLIB="$(RANLIB)" CXXFLAGS="$(CXXFLAGS)"
 
 clean:
-	rm -f $(OBJECTS) $(DEPENDS) eonclient
+	rm -f $(OBJECTS) $(DEPENDS) eonclient client
 
 clean-all: clean
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done

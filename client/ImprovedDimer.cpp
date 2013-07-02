@@ -23,7 +23,7 @@ const char ImprovedDimer::OPT_SD[] = "sd";
 const char ImprovedDimer::OPT_CG[] = "cg";
 const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
 
-ImprovedDimer::ImprovedDimer(Matter const *matter, Parameters *params)
+ImprovedDimer::ImprovedDimer(Matter *matter, Parameters *params)
 {
     parameters    = params;
     x0            = new Matter(parameters);
@@ -46,7 +46,7 @@ ImprovedDimer::~ImprovedDimer()
     delete x1;
 }
 
-void ImprovedDimer::compute(Matter const *matter, AtomMatrix initialDirectionAtomMatrix)
+void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatrix)
 {
 
     VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(), 3*matter->numberOfAtoms());
