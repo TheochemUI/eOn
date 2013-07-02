@@ -183,6 +183,7 @@ const Matter& Matter::operator=(const Matter& matter)
 //}
 
 bool Matter::compare(const Matter *matter, bool indistinguishable) {
+    if (nAtoms != matter->numberOfAtoms()) return false;
     if(parameters->checkRotation && indistinguishable) {
         return helper_functions::sortedR(this, matter, parameters->distanceDifference);
     }else if(indistinguishable) {

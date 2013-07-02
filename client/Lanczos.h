@@ -21,10 +21,10 @@ class Lanczos : public LowestEigenmode
 {
 
     public:
-        Lanczos(Matter const *matter, Parameters *parameters);
+        Lanczos(Matter *matter, Parameters *parameters);
         ~Lanczos();
 
-        void compute(Matter const *matter, AtomMatrix direction);
+        void compute(Matter *matter, AtomMatrix direction);
         double getEigenvalue();
         AtomMatrix getEigenvector();
 

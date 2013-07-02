@@ -13,7 +13,7 @@
 
 using namespace helper_functions;
 
-Dimer::Dimer(Matter const *matter, Parameters *params)
+Dimer::Dimer(Matter *matter, Parameters *params)
 {
     parameters    = params;
     matterCenter  = new Matter(parameters);
@@ -36,7 +36,7 @@ Dimer::~Dimer()
 }
 
 // was estimateLowestEigenmode. rename to compute
-void Dimer::compute(Matter const *matter, AtomMatrix initialDirection)
+void Dimer::compute(Matter *matter, AtomMatrix initialDirection)
 {
     long rotations = 0;
     long forceCallsCenter;
