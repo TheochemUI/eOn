@@ -32,7 +32,7 @@ public:
     void reset(void);
 
 private:
-    VectorXd getStep(double maxMove);
+    VectorXd getStep(double maxMove, VectorXd f);
     Parameters *parameters;
     ObjectiveFunction *objf;
 
