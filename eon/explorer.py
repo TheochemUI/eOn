@@ -155,6 +155,26 @@ class ClientMinModeExplorer(MinModeExplorer):
         io.savecon(reactIO, self.reactant)
         invariants['pos.con'] = reactIO
 
+        if config.saddle_method == 'dynamics' and \
+                config.disp_moved_only and \
+                self.state.number != 0:
+            nl_weights = atoms.sweep_and_prune(self.reactant, 
+                    config.recycling_active_region*config.comp_neighbor_cutoff)
+
+            moved_atoms = self.recycler.process_atoms
+
+            mass_weights = self.reactant.mass.copy()
+            mass_weights *= config.recycling_mass_weight_factor
+
+            for i in range(len(self.reactant)):
+                if i in moved_atoms:
+                    for j in nl_weights[i]:
+                        mass_weights[j] = self.reactant.mass[j]
+
+            weightsIO = StringIO.StringIO()
+            numpy.savetxt(weightsIO, mass_weights)
+            invariants['masses.dat'] = weightsIO
+
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
@@ -175,8 +195,11 @@ class ClientMinModeExplorer(MinModeExplorer):
                             ('Main', 'random_seed',
                                 str(int(numpy.random.random()*10**9))),
                           ]
+            #if we are recycling a saddle, but using "dynamics saddle search" we need
+            #to switch to min_mode searches
             if config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
+
 
             search['config.ini'] = io.modify_config(config.config_path, ini_changes)
 

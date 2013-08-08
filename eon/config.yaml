@@ -540,6 +540,14 @@ Recycling:
             kind: boolean
             default: False
 
+        active_region:
+            kind: float
+            default: 2
+
+        mass_weight_factor:
+            kind: float
+            default: 1000.0
+
 ################################################################################
 
 KDB:
