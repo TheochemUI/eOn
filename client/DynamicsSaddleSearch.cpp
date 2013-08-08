@@ -33,6 +33,18 @@ int DynamicsSaddleSearch::run(void)
     std::vector<double> MDTimes;
     log("Starting dynamics NEB saddle search\n");
 
+    ifstream massFile("masses.dat");
+    if (massFile.is_open()) {
+        log("Found mass weights file\n");
+        massFile.close();
+        VectorXd masses = helper_functions::loadMasses("masses.dat", saddle->numberOfAtoms());
+        saddle->setMasses(masses);
+        log("Applied mass weights\n");
+    }else{
+        log("No mass weights file found\n");
+        massFile.close();
+    }
+
     Dynamics dyn(saddle, parameters);
     log("Initializing velocities from Maxwell-Boltzmann distribution\n");
     dyn.setTemperature(parameters->saddleDynamicsTemperature);
