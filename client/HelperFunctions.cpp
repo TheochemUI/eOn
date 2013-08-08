@@ -395,6 +395,32 @@ string helper_functions::getRelevantFile(string filename)
     return filename;
 }
 
+VectorXd helper_functions::loadMasses(string filename, int nAtoms)
+{
+    ifstream massFile(filename.c_str());
+    if (!massFile.is_open()) {
+        cerr << "File " << filename << " was not found.\n";
+        log("Stop\n");
+        exit(1);
+    }
+
+    VectorXd masses(nAtoms);
+    for (int i=0;i<nAtoms;i++) {
+        double mass;
+        if (!(massFile >> mass)) {
+            log("error reading ");
+            log(filename.c_str());
+            log("\n");
+            exit(1);
+        }
+        masses(i) = mass;
+    }
+
+    massFile.close();
+
+    return masses;
+}
+
 AtomMatrix helper_functions::loadMode(FILE *modeFile, int nAtoms)
 {
     AtomMatrix mode;

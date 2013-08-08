@@ -62,6 +62,7 @@ namespace helper_functions {
     void getTime(double *real, double *user, double *sys);
     bool existsFile(string filename); // does filename exist
     string getRelevantFile(string filename); // return filename containing _checkpoint or  _passed if such a file exists
+    VectorXd loadMasses(string filename, int nAtoms);
     AtomMatrix loadMode(FILE *modeFile, int nAtoms);
     AtomMatrix loadMode(string filename, int nAtoms);
     void saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode);

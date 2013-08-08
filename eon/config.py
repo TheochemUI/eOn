@@ -298,6 +298,8 @@ def init(config_file = ""):
     else:
         config.disp_moved_only = parser.getboolean('Recycling', 'displace_moved_only')
     config.recycling_move_distance = parser.getfloat('Recycling', 'move_distance')
+    config.recycling_active_region = parser.getfloat('Recycling', 'active_region')
+    config.recycling_mass_weight_factor = parser.getfloat('Recycling', 'mass_weight_factor')
     config.sb_recycling_on = parser.getboolean('Recycling','use_sb_recycling')
     config.sb_recycling_path = None
     if config.sb_recycling_on:

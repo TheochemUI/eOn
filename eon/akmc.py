@@ -189,6 +189,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
         # The system might be in a superbasin
         if config.sb_on:
             sb = superbasining.get_containing_superbasin(current_state)
+        else:
+            sb = None
 
         if config.sb_on and sb:
             mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
