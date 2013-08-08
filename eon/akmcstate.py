@@ -289,6 +289,31 @@ class AKMCState(state.State):
         elif config.akmc_confidence_scheme == 'dynamics':
             if self.get_time() == 0.0: return 0.0
             rt = self.get_ratetable()
+
+            #filter out recycled saddles if displace_moved_only is true
+            dyn_saddles = set()
+            if config.disp_moved_only:
+                f = open(self.search_result_path)
+                f.readline()
+                f.readline()
+
+                for line in f:
+                    status = line.split()[7]
+                    if not (status.startswith('good') or status.startswith('repeat')):
+                        continue
+                    search_type = line.split()[1]
+                    if search_type != 'dynamics':
+                        continue
+                    pid = int(status.split('-')[1])
+                    dyn_saddles.add(pid)
+                f.close()
+
+                new_rt = []
+                for i in range(len(rt)):
+                    if rt[i][0] in dyn_saddles:
+                        new_rt.append(rt[i])
+                rt = new_rt
+
             T1 = config.main_temperature
             T2 = config.saddle_dynamics_temperature
 
@@ -352,6 +377,7 @@ class AKMCState(state.State):
                                            "barrier":           float(l[self.BARRIER]),
                                            "rate":              float(l[self.RATE]),
                                            "repeats":           int  (l[self.REPEATS])}
+
         try:
             kT = self.info.get('MetaData', 'kT')
         except NameError:

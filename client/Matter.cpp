@@ -537,6 +537,14 @@ void Matter::setMass(long int indexAtom, double mass)
     masses[indexAtom]=mass;
 }
 
+void Matter::setMasses(VectorXd massesIn)
+{
+    for (int i=0;i<nAtoms;i++) {
+        masses[i] = massesIn[i];
+    }
+}
+
+
 
 long Matter::getAtomicNr(long int indexAtom) const
 {

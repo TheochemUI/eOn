@@ -44,6 +44,15 @@ is local, the overall cost does not increase with the total system size.
 
     default: ``False``
 
+**active_region**: When using dynamics based saddle searches, this defines a region around the atoms that moved
+that will not have the mass weighting applied. **active_region** represents a multiple of **[Structure Comparison] neighbor_distace**. 
+
+    default: 2.0
+
+**mass_weight_factor**:  Atoms that are not in within the active region have their atomic masses multiplied by
+this factor.
+
+    default: 1000.0
 
 .. rubric:: References
 

@@ -86,6 +86,7 @@ public:
 
     double getMass(long int atom) const; // return the mass of the atom specified
     void setMass(long int atom, double mass); // set the mass of an atom
+    void setMasses(VectorXd massesIn); // set the mass of an atom
     long getAtomicNr(long int atom) const; // return the atomic number of the atom specified
     void setAtomicNr(long int atom, long atomicNr); // set the atomic number of an atom
 
