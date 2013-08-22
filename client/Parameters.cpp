@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <time.h>
+#include <float.h>
 #include "Parameters.h"
 #include "INIFile.h"
 #include "EpiCenters.h"
@@ -221,6 +222,7 @@ Parameters::Parameters(){
     basinHoppingAdjustFraction = 0.05;
     basinHoppingTargetRatio = 0.5;
     basinHoppingWriteUnique = false;
+    basinHoppingStopEnergy = -DBL_MAX;
 
     // [Global Optimization] //
     globalOptimizationMoveMethod = "md";
@@ -532,6 +534,7 @@ int Parameters::load(FILE *file){
         basinHoppingAdjustFraction = ini.GetValueF("Basin Hopping", "adjust_fraction", basinHoppingAdjustFraction);
         basinHoppingTargetRatio = ini.GetValueF("Basin Hopping", "target_ratio", basinHoppingTargetRatio);
         basinHoppingWriteUnique = ini.GetValueB("Basin Hopping", "write_unique", basinHoppingWriteUnique);
+        basinHoppingStopEnergy = ini.GetValueF("Basin Hopping", "stop_energy", basinHoppingStopEnergy);
 
         // [Global Optimization] //
 

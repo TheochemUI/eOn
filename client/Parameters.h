@@ -252,6 +252,7 @@ public:
     double basinHoppingAdjustFraction;
     double basinHoppingTargetRatio;
     bool   basinHoppingWriteUnique;
+    double basinHoppingStopEnergy;
 
     // [Global Optimization] //
     string globalOptimizationMoveMethod;
