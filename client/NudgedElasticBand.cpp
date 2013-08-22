@@ -371,7 +371,17 @@ void NudgedElasticBand::updateForces(void)
 
             movedAfterForceCall = false;  // so that we don't repeat a force call
         }
+
+        //zero net translational force
+        if (image[i]->numberOfFreeAtoms() == image[i]->numberOfAtoms()) {
+            for (int j=0;j<=2;j++) {
+                double translationMag = projectedForce[i]->col(j).sum();
+                int natoms = projectedForce[i]->col(j).size();
+                projectedForce[i]->col(j).array() -= translationMag/((double)natoms);
+            }
+        }
     }
+
     return;
 }
 
