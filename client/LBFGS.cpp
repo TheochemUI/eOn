@@ -103,7 +103,7 @@ VectorXd LBFGS::getStep(double maxMove, VectorXd f)
         return helper_functions::maxAtomMotionAppliedV(H0*f, maxMove);
     }
 
-    return d;
+    return helper_functions::maxAtomMotionAppliedV(d, maxMove);
 }
 
 void LBFGS::reset(void)
