@@ -41,7 +41,12 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
     // Convert the AtomMatrix of all the atoms into
     // a single column vector with just the free coordinates.
     int i,j;
-    r = VectorXd::Map(direction.data(),3*matter->numberOfFreeAtoms());
+    for (i=0,j=0;i<matter->numberOfAtoms();i++) {
+        if (!matter->getFixed(i)) {
+            r.segment<3>(j) = direction.row(i);
+            j+=3;
+        }
+    }
 
     double alpha, beta=r.norm();
     double ew=0, ewOld=0, ewAbsRelErr;
