@@ -18,7 +18,7 @@ DEPFLAGS=-MMD
 #LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
 
 
-CXXFLAGS += -Wall -Wfatal-errors -DEIGEN_NO_DEBUG $(OPT)
+CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 
 OPT=-O0
 ifndef DEBUG
