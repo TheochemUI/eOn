@@ -319,7 +319,7 @@ double CIniFile::GetValueF(string const keyname, string const valuename, double 
 {
   char svalue[MAX_VALUEDATA];
 
-  sprintf( svalue, "%f", defValue);
+  sprintf( svalue, "%.15e", defValue);
   return atof( GetValue( keyname, valuename, svalue).c_str());
 }
 
