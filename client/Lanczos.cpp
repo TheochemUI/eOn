@@ -119,6 +119,14 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
             ewOld = ew;
             evEst = Q.col(0);
             evOldEst = Q.col(0);
+            if (lowestEw != 0.0) {
+                double Cprev = lowestEw;
+                double Cnew = u.dot(Q.col(i));
+                if (fabs((Cnew-Cprev)/Cprev) <= parameters->lanczosTolerance) {
+                    log_file("[ILanczos] Tolerence reached: %f\n", parameters->lanczosTolerance);
+                    break;
+                }
+            }
         }
 
         if (i >= parameters->lanczosMaxIterations) {
