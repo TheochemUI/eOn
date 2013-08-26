@@ -200,11 +200,6 @@ int MinModeSaddleSearch::run()
 
         double de = objf.getEnergy()-reactantEnergy;
         double stepSize = helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() - pos));
-
-        if (de > parameters->saddleMaxEnergy) {
-            status = STATUS_BAD_HIGH_ENERGY;
-            break;
-        }
         
         iteration++;
 
@@ -232,6 +227,11 @@ int MinModeSaddleSearch::run()
 
         if (parameters->writeMovies) {
             matter->matter2con(climb.str(), true);
+        }
+
+        if (de > parameters->saddleMaxEnergy) {
+            status = STATUS_BAD_HIGH_ENERGY;
+            break;
         }
 
         if (parameters->checkpoint) {
