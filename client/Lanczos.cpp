@@ -122,7 +122,10 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
             if (lowestEw != 0.0) {
                 double Cprev = lowestEw;
                 double Cnew = u.dot(Q.col(i));
-                if (fabs((Cnew-Cprev)/Cprev) <= parameters->lanczosTolerance) {
+                ewAbsRelErr = fabs((Cnew-Cprev)/Cprev);
+                if (ewAbsRelErr <= parameters->lanczosTolerance) {
+                    statsAngle = 0.0;
+                    statsTorque = ewAbsRelErr;
                     log_file("[ILanczos] Tolerence reached: %f\n", parameters->lanczosTolerance);
                     break;
                 }
