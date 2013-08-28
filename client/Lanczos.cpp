@@ -34,7 +34,7 @@ Lanczos::~Lanczos()
 void Lanczos::compute(Matter *matter, AtomMatrix direction)
 {
     int size = 3*matter->numberOfFreeAtoms();
-    MatrixXd T(size,size), Q(size,size);
+    MatrixXd T(size,parameters->lanczosMaxIterations), Q(size,parameters->lanczosMaxIterations);
     T.setZero();
     VectorXd u(size), r(size);
 
