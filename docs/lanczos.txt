@@ -10,7 +10,7 @@ The Lanczos method for determining the lowest eigenmode.
 [Lanczos] Options
 =================
 
-**tolerance**: This is the convergence critera for relative error of the lowest eigenvalue.
+**tolerance**: This is the convergence critera for relative change in the estimated lowest eigenvalue.
 
     default: ``0.01``
 
@@ -18,3 +18,6 @@ The Lanczos method for determining the lowest eigenmode.
 
     default: ``20``
 
+**quit_early**: If the relative change between the previous lowest eigenvalue and the curvature along the initial direction is less than **tolerance** terminate.
+
+    default: ``true``

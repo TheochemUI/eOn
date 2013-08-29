@@ -147,6 +147,7 @@ public:
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
     long   lanczosMaxIterations; // maximum number of iterations
+    bool   lanczosQuitEarly;
 
     // [Prefactor] //
     double prefactorDefaultValue; // default prefactor; calculate explicitly if zero
