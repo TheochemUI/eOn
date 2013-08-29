@@ -38,6 +38,9 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
     T.setZero();
     VectorXd u(size), r(size);
 
+    positions.resize(3*matter->numberOfAtoms(),parameters->lanczosMaxIterations);
+    forces.resize(3*matter->numberOfAtoms(),parameters->lanczosMaxIterations);
+
     // Convert the AtomMatrix of all the atoms into
     // a single column vector with just the free coordinates.
     int i,j;
@@ -65,6 +68,8 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
         // Finite difference force in the direction of the ith Lanczos vector
         tmpMatter->setPositionsFreeV(matter->getPositionsFreeV()+dr*Q.col(i));
         force2 = tmpMatter->getForcesFreeV();
+        forces.col(i) = tmpMatter->getForcesV();
+        positions.col(i) = tmpMatter->getPositionsV();
 
         u = -(force2-force1)/dr;
 
@@ -119,7 +124,7 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
             ewOld = ew;
             evEst = Q.col(0);
             evOldEst = Q.col(0);
-            if (lowestEw != 0.0) {
+            if (lowestEw != 0.0 && parameters->lanczosQuitEarly) {
                 double Cprev = lowestEw;
                 double Cnew = u.dot(Q.col(i));
                 ewAbsRelErr = fabs((Cnew-Cprev)/Cprev);
