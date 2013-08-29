@@ -703,6 +703,10 @@ Lanczos:
             kind: int
             default: 20
 
+        quit_early:
+            kind: boolean
+            default: true
+
 ################################################################################
 
 AKMC:
