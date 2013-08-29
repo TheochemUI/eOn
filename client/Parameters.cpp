@@ -143,6 +143,7 @@ Parameters::Parameters(){
     // [Lanczos] //
     lanczosTolerance = 0.01;
     lanczosMaxIterations = 20;
+    lanczosQuitEarly = true;
 
     // [Hessian] //
     hessianAtomList = string("All");
@@ -386,6 +387,7 @@ int Parameters::load(FILE *file){
 
         lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
+        lanczosQuitEarly = ini.GetValueB("Lanczos", "quit_early", lanczosQuitEarly);
 
         // [Prefactor] //
 
