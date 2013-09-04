@@ -586,6 +586,7 @@ class Table:
                     try:
                         field = float(field)
                     except ValueError:
+                        field = field.strip()
                         pass
                 row[self.columns[coli]] = field
                 coli += 1
