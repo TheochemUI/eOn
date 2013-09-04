@@ -222,6 +222,10 @@ int DynamicsSaddleSearch::run(void)
             }
         }
     }
+
+    for (int i=0;i<MDSnapshots.size();i++) {
+        delete MDSnapshots[i];
+    }
     MDSnapshots.clear();
     return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }

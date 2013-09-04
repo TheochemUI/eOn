@@ -23,53 +23,12 @@ class ParallelReplicaJob: public Job
         std::vector<std::string> run(void);
 
     private:
-
-        enum{// DONT CHANGE THE ORDER OF THIS LIST
-            STATUS_NEWSTATE, //0
-            STATUS_NEWSTATE_CORR, //1
-            STATUS_NEWSTATE_OVERFC, //2
-            STATUS_TRAN_NOTIME, //3
-            STATUS_TRAN_RECROSS, //4
-            STATUS_NOTRAN, //5
-            STATUS_BAD_RELAXFAILED, //6
-            STATUS_BAD_REFINEFAILED, //7
-            STATUS_BAD_INFTEMP, //8
-        };
-
-        int dynamics();
-        long refine(Matter *mdBuffer[], long length, Matter *reactant);
-        bool checkState(Matter *current, Matter *reactant);
-        void saveData(int state);
-        void dephase();
-        void printEndStatus();
-
         Parameters *parameters;
-
-        Matter *current;
-        Matter *reactant;
-        Matter *transition;
-        Matter *transition_relaxed;
-        Matter *product;
-        Matter *product_relaxed;
-
-        bool newStateFlag;
-        bool relaxStatus;
-        int jobStatus;
-
-        long minimizeFCalls;
-        long mdFCalls;
-        long dephaseFCalls;
-        long refineFCalls;
-        long corrFCalls;
-
-        long transitionStep;
-
-        double time;
-        double transitionTime;
-        double corrTime;
-        double *timeBuffer;
-
         std::vector<std::string> returnFiles;
+        Matter *reactant;
+
+        void dephase(Matter *trajectory);
+        int refineTransition(std::vector<Matter*> MDSnapshots, bool fake=false);
 };
 
 #endif
