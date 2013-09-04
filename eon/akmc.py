@@ -65,10 +65,10 @@ def akmc(config):
 
     # Load metadata, the state list, and the current state.
     start_state_num, time, previous_state_num, first_run, previous_temperature = get_akmc_metadata()
-    
+
     if first_run:
         previous_temperature = config.main_temperature
-    
+
     if previous_temperature != config.main_temperature:
         # Remove superbasin data.
         if os.path.isdir(config.sb_path):
