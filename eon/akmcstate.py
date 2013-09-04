@@ -132,8 +132,8 @@ class AKMCState(state.State):
         # Respond to finding a new lowest barrier.
         self.set_unique_saddle_count(self.get_unique_saddle_count() + 1)
         if barrier == lowest and barrier < oldlowest - self.statelist.epsilon_e:
-            logger.info("Found new lowest barrier %f for state %i", lowest, self.number)
-        logger.info("Found new barrier %f for state %i", barrier, self.number)
+            logger.info("Found new lowest barrier %f for state %i (type: %s)", lowest, self.number, result['type'])
+        logger.info("Found new barrier %f for state %i (type: %s)", barrier, self.number, result['type'])
 
 
         # Update the search result table.
@@ -202,7 +202,6 @@ class AKMCState(state.State):
         return table
 
     def get_process_table(self):
-        rps = self.get_relevant_procids()
         pt = {}
         for id in self.get_relevant_procids():
             pt[id] = self.procs[id]
@@ -235,6 +234,14 @@ class AKMCState(state.State):
             region means you can do possibly far fewer searches to reach confidence. When using
             the hole to filter processes, Nf and Ns only take into account processes that 
             intersect the hole. """
+
+        # checking to see if all recycling jobs are complete
+        if config.recycling_on and config.disp_moved_only:
+            job_table_path = os.path.join(config.path_root, "jobs.tbl")
+            job_table = io.Table(job_table_path)
+            if any([ t == 'recycling' for t in job_table.get_column('type') ]):
+                return 0.0
+
         alpha = 1.0
         if config.akmc_confidence_correction:
             rt = self.get_ratetable(False)

@@ -34,6 +34,25 @@ if sys.version_info < (2, 5):
                 return True
          return False
 
+import re
+
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
+     
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
+
+def sort_nicely(l):
+    """ Sort the given list in the way that humans expect.
+    """
+    l.sort(key=alphanum_key)
+
 
 def get_communicator():
     # This is an ugly hack to "remember" a communicator as it isn't possible to construct
@@ -758,6 +777,9 @@ class Script(Communicator):
         jobdirs = [ d for d in os.listdir(self.scratchpath)
                     if os.path.isdir(os.path.join(self.scratchpath,d))
                     if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
+
+        #try to return jobs in order
+        sort_nicely(jobdirs)
 
         for jobdir in jobdirs:
             if config.debug_keep_all_results:
