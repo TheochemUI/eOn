@@ -14,6 +14,10 @@ lammps_eon::lammps_eon(Parameters *p){
     for (int i=0;i<9;i++) oldBox[i] = 0.0;
 }
 
+lammps_eon::~lammps_eon(){
+    cleanMemory();
+}
+
 void lammps_eon::cleanMemory(void){
     if(LAMMPSObj != NULL){
         lammps_close(LAMMPSObj);

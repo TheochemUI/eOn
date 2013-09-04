@@ -17,7 +17,7 @@ private:
 
 public:
     lammps_eon(Parameters *p);
-    ~lammps_eon(void) {};
+    ~lammps_eon(void);
     void cleanMemory(void);
     
     void initialize() {};

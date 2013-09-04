@@ -11,8 +11,6 @@
 #include "BondBoost.h"
 #include <math.h>
 #include "HelperFunctions.h"
-//const string Hyperdynamics::NONE = "none";
-//const string Hyperdynamics::BOND_BOOST = "bond_boost";
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
