@@ -6,7 +6,6 @@
 #include "PointJob.h"
 #include "HessianJob.h"
 #include "ParallelReplicaJob.h"
-#include "UnbiasedParallelReplicaJob.h"
 #include "SafeHyperJob.h"
 #include "TADJob.h"
 #include "ReplicaExchangeJob.h"
@@ -25,7 +24,6 @@ const char Job::SADDLE_SEARCH[] =            "saddle_search";
 const char Job::MINIMIZATION[] =             "minimization";
 const char Job::POINT[] =                    "point";
 const char Job::PARALLEL_REPLICA[] =         "parallel_replica";
-const char Job::UNBIASED_PARALLEL_REPLICA[]= "unbiased_parallel_replica";
 const char Job::REPLICA_EXCHANGE[] =         "replica_exchange";
 const char Job::BASIN_HOPPING[] =            "basin_hopping";
 const char Job::HESSIAN[] =                  "hessian";
@@ -54,8 +52,6 @@ Job *Job::getJob(Parameters *parameters) {
         job = new HessianJob(parameters);
     }else if (parameters->job == Job::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-    }else if (parameters->job == Job::UNBIASED_PARALLEL_REPLICA) {
-        job =  new UnbiasedParallelReplicaJob(parameters);
     }else if (parameters->job == Job::REPLICA_EXCHANGE) {
         job =  new ReplicaExchangeJob(parameters);
     }else if (parameters->job == Job::TAD){
