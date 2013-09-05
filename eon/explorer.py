@@ -136,6 +136,15 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         self.job_table.delete_row_func('state', lambda s: s != state.number)
 
+        self.nl_weights_path = os.path.join(state.path,'nl_weights.pkl')
+        if os.path.isfile(self.nl_weights_path):
+            f = open(self.nl_weights_path)
+            self.nl_weights = pickle.load(f)
+            f.close()
+        else:
+            self.nl_weights = None
+
+
 
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
@@ -155,11 +164,19 @@ class ClientMinModeExplorer(MinModeExplorer):
         io.savecon(reactIO, self.reactant)
         invariants['pos.con'] = reactIO
 
+        t1 = time()
         if config.saddle_method == 'dynamics' and \
+                config.recycling_on and \
                 config.disp_moved_only and \
                 self.state.number != 0:
-            nl_weights = atoms.sweep_and_prune(self.reactant, 
-                    config.recycling_active_region*config.comp_neighbor_cutoff)
+
+            if self.nl_weights == None:
+                self.nl_weights = atoms.sweep_and_prune(self.reactant, 
+                        config.recycling_active_region*config.comp_neighbor_cutoff)
+                f = open(self.nl_weights_path, 'w')
+                pickle.dump(self.nl_weights, f)
+                f.close()
+
 
             moved_atoms = self.recycler.process_atoms
 
@@ -168,7 +185,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             for i in range(len(self.reactant)):
                 if i in moved_atoms:
-                    for j in nl_weights[i]:
+                    for j in self.nl_weights[i]:
                         mass_weights[j] = self.reactant.mass[j]
 
             weightsIO = StringIO.StringIO()
@@ -178,7 +195,6 @@ class ClientMinModeExplorer(MinModeExplorer):
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
-        t1 = time()
         for i in range(num_to_make):
             search = {}
             # The search dictionary contains the following key-value pairs:
@@ -299,6 +315,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             num_registered += 1
 
             if self.state.get_confidence() >= config.akmc_confidence:
+                self.nl_weights = None
                 if not config.debug_register_extra_results:
                     break
 
