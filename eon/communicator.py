@@ -548,23 +548,49 @@ class MPI(Communicator):
         config.comm_job_buffer_size = len(self.client_ranks)
 
         self.resume_jobs = []
-        if config.main_checkpoint:
+        if os.path.isdir(self.scratchpath):
             self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
-            logger.info("Found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
-        self.run_resume_jobs()
+        logger.info("Found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
+        self.ready_ranks = []
 
     def submit_jobs(self, data, invariants):
-        from mpi4py.MPI import ANY_SOURCE, Status
-
+        self.get_ready_ranks()
         for jobpath in self.make_bundles(data, invariants):
-            #find a ready client
-            status = Status() 
-            tmp = numpy.empty(1, dtype='i')
-            self.comm.Recv(tmp, source=ANY_SOURCE, tag=1, status=status)
-            client_rank = status.source
-
+            rank = self.ready_ranks.pop()
             buf = array('c', jobpath+'\0')
-            self.comm.Send(buf, client_rank)
+            self.comm.Send(buf, rank)
+
+    def run_resume_jobs(self):
+        if len(self.resume_jobs) == 0: return
+        self.get_ready_ranks()
+        while True:
+            if len(self.resume_jobs) == 0: break
+            if len(self.ready_ranks) == 0: break
+
+            jobdir = self.resume_jobs.pop()
+            rank = self.ready_ranks.pop()
+
+            jobpath = os.path.join(self.scratchpath,jobdir)
+            buf = array('c', jobpath+'\0')
+            self.comm.Send(buf, rank)
+
+    def get_ready_ranks(self):
+        for rank in self.client_ranks:
+            ready = self.comm.Iprobe(rank, tag=1)
+            if ready:
+                logger.info("Rank %i is ready" % rank)
+                self.ready_ranks.append(rank)
+                tmp = numpy.empty(1, dtype='i')
+                self.comm.Recv(tmp, source=rank, tag=1)
+
+    def get_queue_size(self):
+        self.get_ready_ranks()
+        self.run_resume_jobs()
+        nready = len(self.ready_ranks)
+        nclients = len(self.client_ranks)
+        qs = nclients - nready
+
+        return qs
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
@@ -586,32 +612,6 @@ class MPI(Communicator):
             for result in bundle:
                 yield result
 
-    def run_resume_jobs(self):
-        if len(self.resume_jobs) == 0:
-            return
-
-        ready_ranks = self.get_ready_ranks()
-        for rank in ready_ranks:
-            jobdir = self.resume_jobs.pop()
-            jobpath = os.path.join(self.scratchpath,jobdir)
-            buf = array('c', jobpath+'\0')
-            self.comm.Send(buf, rank)
-
-    def get_ready_ranks(self):
-        ready_ranks = []
-        for rank in self.client_ranks:
-            ready = self.comm.Iprobe(rank, tag=1)
-            if ready:
-                logger.info("Rank %i is ready" % rank)
-                ready_ranks.append(rank)
-
-        return ready_ranks
-
-    def get_queue_size(self):
-        num_ready = len(self.get_ready_ranks())
-        qs = len(self.client_ranks) - num_ready
-
-        return qs
 
     def get_number_in_progress(self):
         return int(os.environ['EON_NUMBER_OF_CLIENTS'])
