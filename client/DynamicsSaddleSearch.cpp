@@ -162,6 +162,8 @@ int DynamicsSaddleSearch::run(void)
                         }
                     }
 
+                    delete minModeMethod;
+
                     if (extremumImage != -1) {
                         *saddle = *neb.image[extremumImage];
                         double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
@@ -211,21 +213,24 @@ int DynamicsSaddleSearch::run(void)
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("found barrier of %.3f\n", barrier);
+                for (int i=0;i<MDSnapshots.size();i++) {
+                    delete MDSnapshots[i];
+                }
                 MDSnapshots.clear();
                 MDTimes.clear();
                 log("Force calls total: %i\n", Potential::fcallsTotal);
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
+                for (int i=0;i<MDSnapshots.size();i++) {
+                    delete MDSnapshots[i];
+                }
                 MDTimes.clear();
                 MDSnapshots.clear();
             }
         }
     }
 
-    for (int i=0;i<MDSnapshots.size();i++) {
-        delete MDSnapshots[i];
-    }
     MDSnapshots.clear();
     return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
