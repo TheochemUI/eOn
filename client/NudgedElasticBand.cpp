@@ -148,6 +148,7 @@ void NudgedElasticBand::clean(void)
     delete [] projectedForce;
     delete [] extremumPosition;
     delete [] extremumEnergy;
+    delete [] extremumCurvature;
     return;
 }
 
