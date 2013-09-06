@@ -93,7 +93,7 @@ def per_atom_norm_gen(v, box, ibox = None):
     for d in diff:
         yield numpy.linalg.norm(d)
 
-def get_process_atoms(r, p):
+def get_process_atoms(r, p, epsilon_r=0.2, nshells=1):
     '''
     Given the reactant and product configurations of a process, return 
     the atoms that move significantly and their neighbors along the trajectory.
@@ -101,7 +101,7 @@ def get_process_atoms(r, p):
     mobileAtoms = []
     r2p = per_atom_norm(p.r - r.r, r.box)
     for i in range(len(r)):
-        if r2p[i] > 0.7:
+        if r2p[i] > epsilon_r:
             mobileAtoms.append(i)
     if len(mobileAtoms) == 0:
         mobileAtoms.append(list(r2p).index(max(r2p)))
@@ -112,7 +112,7 @@ def get_process_atoms(r, p):
             if i in mobileAtoms or i in neighborAtoms:
                 continue
             r2 = elements[r.names[i]]["radius"]
-            maxDist = (r1 + r2) * (1.0 + 0.2)
+            maxDist = (r1 + r2) * (1.0 + 0.2)*nshells
             if numpy.linalg.norm(pbc(p.r[atom] - p.r[i], p.box)) < maxDist:
                 neighborAtoms.append(i)
     return mobileAtoms + neighborAtoms

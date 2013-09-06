@@ -551,42 +551,44 @@ class MPI(Communicator):
         if os.path.isdir(self.scratchpath):
             self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
         logger.info("Found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
-        self.ready_ranks = []
 
     def submit_jobs(self, data, invariants):
-        self.get_ready_ranks()
+        ready_ranks = self.get_ready_ranks()
         for jobpath in self.make_bundles(data, invariants):
-            rank = self.ready_ranks.pop()
+            rank = ready_ranks.pop()
+            tmp = numpy.empty(1, dtype='i')
+            self.comm.Recv(tmp, source=rank, tag=1)
             buf = array('c', jobpath+'\0')
             self.comm.Send(buf, rank)
 
     def run_resume_jobs(self):
         if len(self.resume_jobs) == 0: return
-        self.get_ready_ranks()
+        ready_ranks = self.get_ready_ranks()
         while True:
             if len(self.resume_jobs) == 0: break
-            if len(self.ready_ranks) == 0: break
+            if len(ready_ranks) == 0: break
 
             jobdir = self.resume_jobs.pop()
-            rank = self.ready_ranks.pop()
+            rank = ready_ranks.pop()
 
             jobpath = os.path.join(self.scratchpath,jobdir)
+            tmp = numpy.empty(1, dtype='i')
+            self.comm.Recv(tmp, source=rank, tag=1)
             buf = array('c', jobpath+'\0')
             self.comm.Send(buf, rank)
 
     def get_ready_ranks(self):
+        ready_ranks = []
         for rank in self.client_ranks:
             ready = self.comm.Iprobe(rank, tag=1)
             if ready:
                 logger.info("Rank %i is ready" % rank)
-                self.ready_ranks.append(rank)
-                tmp = numpy.empty(1, dtype='i')
-                self.comm.Recv(tmp, source=rank, tag=1)
+                ready_ranks.append(rank)
+        return ready_ranks
 
     def get_queue_size(self):
-        self.get_ready_ranks()
         self.run_resume_jobs()
-        nready = len(self.ready_ranks)
+        nready = len(self.get_ready_ranks())
         nclients = len(self.client_ranks)
         qs = nclients - nready
 
