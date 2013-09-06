@@ -136,16 +136,6 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         self.job_table.delete_row_func('state', lambda s: s != state.number)
 
-        self.nl_weights_path = os.path.join(state.path,'nl_weights.pkl')
-        if os.path.isfile(self.nl_weights_path):
-            f = open(self.nl_weights_path)
-            self.nl_weights = pickle.load(f)
-            f.close()
-        else:
-            self.nl_weights = None
-
-
-
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
         num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
@@ -170,23 +160,13 @@ class ClientMinModeExplorer(MinModeExplorer):
                 config.disp_moved_only and \
                 self.state.number != 0:
 
-            if self.nl_weights == None:
-                self.nl_weights = atoms.sweep_and_prune(self.reactant, 
-                        config.recycling_active_region*config.comp_neighbor_cutoff)
-                f = open(self.nl_weights_path, 'w')
-                pickle.dump(self.nl_weights, f)
-                f.close()
-
-
             moved_atoms = self.recycler.process_atoms
-
             mass_weights = self.reactant.mass.copy()
             mass_weights *= config.recycling_mass_weight_factor
 
             for i in range(len(self.reactant)):
                 if i in moved_atoms:
-                    for j in self.nl_weights[i]:
-                        mass_weights[j] = self.reactant.mass[j]
+                    mass_weights[i] = self.reactant.mass[i]
 
             weightsIO = StringIO.StringIO()
             numpy.savetxt(weightsIO, mass_weights)
@@ -297,6 +277,8 @@ class ClientMinModeExplorer(MinModeExplorer):
             try:
                 job_type = self.job_table.get_row('wuid', id)['type']
             except TypeError:
+                logger.warning("Could not find job type for search %s" 
+                               % searchdata_id)
                 continue
             result['type'] = job_type
             if job_type == None:
@@ -315,7 +297,6 @@ class ClientMinModeExplorer(MinModeExplorer):
             num_registered += 1
 
             if self.state.get_confidence() >= config.akmc_confidence:
-                self.nl_weights = None
                 if not config.debug_register_extra_results:
                     break
 

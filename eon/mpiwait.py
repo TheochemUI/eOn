@@ -13,23 +13,29 @@ import logging.handlers
 logger = logging.getLogger('mpiwait')
 import config
 from time import sleep
+from sys import exit
+import signal
+
+QUIT = False
+def signal_handler(signum, frame):
+    global QUIT
+    QUIT = True
+    logger.info('Signal handler caught signal %i', signum)
+
 
 def mpiwait():
     from mpi4py import MPI
 
+    signal.signal(signal.SIGINT,  signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGUSR1, signal_handler)
+    signal.signal(signal.SIGUSR2, signal_handler)
+
     while True:
+        sleep(config.mpi_poll_period)
+        if QUIT:
+            exit(0)
+
         if MPI.COMM_WORLD.Iprobe(MPI.ANY_SOURCE, MPI.ANY_TAG):
             break
-        sleep(config.mpi_poll_period)
 
-    #from array import array
-    #stopcar_path = os.path.join(config.path_root, "STOPCAR")
-    #if os.path.isfile(stopcar_path):
-    #    os.unlink(stopcar_path)
-
-    #if os.path.isfile(stopcar_path):
-    #    logging.info("stopping due to STOPCAR")
-    #    for i in range(MPI.COMM_WORLD.Get_size()):
-    #        buf = array('c', 'STOPCAR\0')
-    #        MPI.COMM_WORLD.Isend(buf, i)
-    #    MPI.COMM_WORLD.Abort()
