@@ -52,6 +52,7 @@ def parallelreplica():
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total speedup: %f",avg_spdup)
+
     if transition:
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
@@ -182,7 +183,6 @@ def register_results(comm, current_state, states):
         # The reactant, product, and mode are passed as lines of the files because
         # the information contained in them is not needed for registering results
         state_num = int(result['name'].split("_")[0])
-        id = int(result['name'].split("_")[1]) + result['number']
 
         state = states.get_state(state_num)
 

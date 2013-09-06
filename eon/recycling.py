@@ -12,6 +12,7 @@ import os
 import numpy
 import atoms
 import fileio as io
+import config
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
@@ -317,7 +318,10 @@ class Recycling:
             self.curr_reactant = self.current_state.get_reactant()
             self.ref_reactant = self.ref_state.get_reactant()
 
-            self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant)
+            if config.saddle_method == 'dynamics':
+                self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
+            else:
+                self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r)
 
             # Make a vector of distances between previous
             # current positions for each atom in the state.
@@ -356,12 +360,15 @@ class Recycling:
 
         # Now, for all the things that did *not* move getting to this state,
         # suggest this particular process's position to them.
+
         for i in self.unmoved:
             saddle.r[i] = process_saddle.r[i]
             self.mode[i] = process_mode[i]
+
         # And, for all the things that *did* move getting to this state,
         # suggest the *motion* that they had available before to the
         # current position they're in.
+
         for i in self.moved:
             movement = process_saddle.r[i] - self.ref_reactant.r[i]
             saddle.r[i] += movement
