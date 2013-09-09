@@ -244,7 +244,7 @@ class AKMCState(state.State):
 
         alpha = 1.0
         if config.akmc_confidence_correction:
-            rt = self.get_ratetable(False)
+            rt = self.get_ratetable()
             prc = self.get_proc_random_count()
             mn = 1e300
             mx = 0
@@ -257,7 +257,7 @@ class AKMCState(state.State):
             else:
                 alpha = float(mn)/mx
         if config.akmc_confidence_scheme == "new":
-            rt = self.get_ratetable(False)
+            rt = self.get_ratetable()
             prc = self.get_proc_random_count()
             Nf = 0.0
             Ns = 0.0
