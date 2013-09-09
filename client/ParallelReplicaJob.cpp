@@ -168,6 +168,9 @@ std::vector<std::string> ParallelReplicaJob::run(void)
                 }
                 transitionStructure = *trajectory;
             }
+            for (int i=0;i<MDSnapshots.size();i++) {
+                delete MDSnapshots[i];
+            }
             MDSnapshots.clear();
             MDTimes.clear();
         }
