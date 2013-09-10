@@ -39,7 +39,6 @@ ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
 
 ParallelReplicaJob::~ParallelReplicaJob()
 {
-    delete reactant;
 }
 
 std::vector<std::string> ParallelReplicaJob::run(void)
@@ -168,6 +167,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
                 }
                 transitionStructure = *trajectory;
             }
+
             for (int i=0;i<MDSnapshots.size();i++) {
                 delete MDSnapshots[i];
             }
@@ -217,6 +217,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     MDSnapshots.clear();
     MDTimes.clear();
     delete trajectory;
+    delete reactant;
 
     return returnFiles;
 }

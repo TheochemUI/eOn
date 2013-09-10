@@ -13,7 +13,7 @@ void log_init(Parameters *p, char *filename) {
         }else{
             logfile = fopen(filename, "w");
         }
-        setvbuf(logfile, NULL, _IOLBF, 0);
+        //setvbuf(logfile, NULL, _IOLBF, 0);
     }
 }
 
@@ -35,9 +35,12 @@ void log(const char* format, ...) {
         vfprintf(stdout, format, args);
         va_end(args);
     }
-    va_start(args, format);
-    vfprintf(logfile, format, args);
-    va_end(args);
+
+    if (params->writeLog == true) {
+        va_start(args, format);
+        vfprintf(logfile, format, args);
+        va_end(args);
+    }
 }
 
 void log_file(const char* format, ...) {
@@ -45,8 +48,10 @@ void log_file(const char* format, ...) {
         fprintf(stderr, "error: log() called before log_init\n");
         return;
     }
-    va_list args;
-    va_start(args, format);
-    vfprintf(logfile, format, args);
-    va_end(args);
+    if (params->writeLog == true) {
+        va_list args;
+        va_start(args, format);
+        vfprintf(logfile, format, args);
+        va_end(args);
+    }
 }
