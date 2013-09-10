@@ -25,6 +25,10 @@ BondBoost::BondBoost(Matter *matt,Parameters *params)
 
 BondBoost::~BondBoost()
 {
+    delete [] BAList;
+    delete [] RAList;
+    delete [] TABAList;
+    delete [] BBAList;
     return;
 }
 
