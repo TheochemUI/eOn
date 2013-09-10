@@ -50,6 +50,7 @@ public:
     long   randomSeed;
     double temperature;
     bool   quiet;
+    bool   writeLog;
     bool   checkpoint;
     string iniFilename;
     string conFilename;

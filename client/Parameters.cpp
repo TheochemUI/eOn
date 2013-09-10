@@ -38,6 +38,7 @@ Parameters::Parameters(){
     temperature = 300.0;
     checkpoint = false;
     quiet = false;
+    writeLog = true;
     iniFilename = "config.ini";
     conFilename = "pos.con";
     finiteDifference = 0.01;
@@ -281,6 +282,7 @@ int Parameters::load(FILE *file){
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
         quiet = ini.GetValueB("Main", "quiet", quiet);
+        writeLog = ini.GetValueB("Main", "write_log", writeLog);
         finiteDifference = ini.GetValueF("Main", "finite_difference", finiteDifference);
         // Initialize random generator
         if(randomSeed < 0){
