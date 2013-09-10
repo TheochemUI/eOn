@@ -40,6 +40,10 @@ Main:
         quiet:
             kind: boolean
             default: False
+
+        write_log:
+            kind: boolean
+            default: True
             
         max_force_calls:
             kind: int
