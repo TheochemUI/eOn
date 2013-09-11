@@ -20,15 +20,27 @@ BondBoost::BondBoost(Matter *matt,Parameters *params)
     matter = matt;    
     parameters = params;
     nAtoms = matter->numberOfAtoms();
+    BAList=NULL;
+    RAList=NULL;
+    TABAList=NULL;
+    BBAList=NULL;
 }
 
 
 BondBoost::~BondBoost()
 {
-    delete [] BAList;
-    delete [] RAList;
-    delete [] TABAList;
-    delete [] BBAList;
+    if (BAList != NULL) {
+        delete [] BAList;
+    }
+    if (RAList != NULL) {
+        delete [] RAList;
+    }
+    if (TABAList != NULL ) {
+        delete [] TABAList;
+    }
+    if (BBAList != NULL) {
+        delete [] BBAList;
+    }
     return;
 }
 
