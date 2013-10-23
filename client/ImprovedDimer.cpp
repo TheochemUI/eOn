@@ -138,14 +138,16 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             if (init_lbfgs == false) {
                 VectorXd s0 = x1->getPositionsV() - rPrev;
                 s.push_back(s0);
-                VectorXd y0 = F_R_Old - F_R;
+                // xph: rescale the force; or rescale s0 = s0*delta
+                VectorXd y0 = (F_R_Old - F_R) / delta;
                 y.push_back(y0);
                 rho.push_back(1.0/(s0.dot(y0)));
             }else{
                 init_lbfgs=false;
             }
 
-            double H0 = 1./10.;
+            // xph: 60 is better than 10. The default H0 in ASE is 70. 
+            double H0 = 1./60.;
 
             int loopmax = s.size();
             double a[loopmax];
@@ -169,7 +171,8 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             if (vd<-1.0) vd=-1.0;
             double angle = acos(vd) * (180.0 / M_PI);
 
-            if (angle>70.0) {
+            // xph: larger angle is allowed to avoid frequent restart (was 70.0) 
+            if (angle>87.0) {
                 s.clear();
                 y.clear();
                 rho.clear();
@@ -177,6 +180,10 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             }
 
             theta = -z.normalized();
+            // xph: orthogonalize theta to tau
+            theta = theta - theta.dot(tau)*tau;
+            theta.normalize();
+
             thetaOld = theta;
             F_R_Old = F_R;
             rPrev = x1->getPositionsV();
