@@ -88,7 +88,7 @@ int SafeHyperJob::dynamics()
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
-    long StateCheckInterval, RecordInterval, CorrSteps;
+    long StateCheckInterval, RecordInterval;
     double kinE, kinT, avgT, varT;
     double kB = parameters->kB;
     double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
@@ -100,7 +100,6 @@ int SafeHyperJob::dynamics()
     minCorrectedTime = 1.0e200;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
-    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     Temp = parameters->temperature;
     newStateFlag = metaStateFlag = false;
 

@@ -224,7 +224,7 @@ bool NeighborList::CheckAndUpdateNeighborList()
 void NeighborList::UpdateImagePositions()
 {
   const Vec* translations = atoms->GetSuperCell()->translations;
-  for (int n = 0; n < images.size(); n++)
+  for (unsigned int n = 0; n < images.size(); n++)
     positions[nSize + n] = positions[images[n].number] + 
       translations[images[n].nTranslation];
 }
