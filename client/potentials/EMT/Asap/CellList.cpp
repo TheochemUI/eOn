@@ -312,7 +312,7 @@ int CellList::GetNeighbors(Vec point, int *neighbors, int space) const
                 for (i = 0; i < 3; i++)
                     if (diff[i] != 0)
                         tCenter -= superCell->vectors[i] * (diff[i] / nCells[i]);
-                for (int n = 0; n < cell.size(); n++)
+                for (unsigned int n = 0; n < cell.size(); n++)
                 {
                     int a = cell[n];
                     if (Length2(positions[a] - tCenter) < rMax2)

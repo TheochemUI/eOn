@@ -31,9 +31,9 @@ void EAM::cleanMemory()
 {
     if(initialized)
     {
-        delete celllist_old;
-        delete celllist_new;
-        delete neigh_list;
+        delete [] celllist_old;
+        delete [] celllist_new;
+        delete [] neigh_list;
     }
 }
 
@@ -154,9 +154,9 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double
     //{
     //    diff = box[0] - diff;
     //}
-    delete Rtemp;
-    delete Rnew;
-    delete Rold;
+    delete [] Rtemp;
+    delete [] Rnew;
+    delete [] Rold;
     initialized = true;
 }
 

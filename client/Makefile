@@ -12,13 +12,13 @@ DEPFLAGS=-MMD
 #if building omp lammps
 #LDFLAGS += -fopenmp
 #if building lammps with meam
-#LDFLAGS += potentials/LAMMPS/libmeam.a
+LDFLAGS += potentials/LAMMPS/libmeam.a
 
 #intel 12 linking
 #LDFLAGS += -limf -lsvml -lifcore -ldl -lirc
 
 
-CXXFLAGS += -Wall -Wfatal-errors $(OPT)
+CXXFLAGS += -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors $(OPT)
 
 OPT=-O0
 ifndef DEBUG

@@ -86,12 +86,11 @@ std::vector<std::string> TADJob::run(void)
 int TADJob::dynamics()
 {
     bool transitionFlag = false, recordFlag = true, stopFlag = false, firstTransitFlag = false;
-    bool saddleSearchStatus = false;
     long nFreeCoord = reactant->numberOfFreeAtoms()*3;
     long mdBufferLength, refFCalls;
     long step = 0, refineStep, newStateStep = 0; // check that newStateStep is set before used
     long nCheck = 0, nRecord = 0, nState = 0;
-    long StateCheckInterval, RecordInterval, CorrSteps;
+    long StateCheckInterval, RecordInterval;
     double kinE, kinT, avgT, varT;
     double kB = parameters->kB;
     double correctedTime = 0.0, firstTransitionTime = 0.0; 
@@ -112,7 +111,6 @@ int TADJob::dynamics()
     factor = log(1.0/delta)/minmu;
     StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
     RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
-    CorrSteps = int(parameters->parrepCorrTime/parameters->mdTimeStep);
     Temp = parameters->temperature;
     newStateFlag = metaStateFlag = false;
 
@@ -205,7 +203,6 @@ int TADJob::dynamics()
             *crossing = *mdBuffer[refineStep];
             transitionTime = transitionTime_current - transitionTime_previous;
             transitionTime_previous = transitionTime_current;
-            saddleSearchStatus = saddleSearch(crossing);
             barrier = crossing->getPotentialEnergy()-reactant->getPotentialEnergy();
             log("barrier= %.3f\n",barrier);
             correctionFactor = 1.0*exp(barrier/kB*(1.0/lowT-1.0/highT)); 

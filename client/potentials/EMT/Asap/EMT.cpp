@@ -131,7 +131,7 @@ void EMT::Allocate()
   // atoms have ghosts, otherwise no reallocation will happen.
 
   // First, check if reallocation is necessary.
-  if (nSize != Ec.size() || nAtoms != Eas.size()) 
+  if (nSize != int(Ec.size()) || nAtoms != int(Eas.size())) 
     {
       DEBUGPRINT;
       /* Resize/intialize the internal variables. */
@@ -140,7 +140,7 @@ void EMT::Allocate()
       // Do the reserve trick if the atoms have ghosts.
       if (ghostatoms)
         {
-          if (Ec.capacity() < nSize) 
+          if (int(Ec.capacity()) < nSize) 
             {
               nSizeRes = nSize + nSize/20;
               for (i = 0; i < nelements; i++) {
@@ -152,7 +152,7 @@ void EMT::Allocate()
               radius.reserve(nSizeRes);
               id.reserve(nSizeRes);
             }
-          if (Eas.capacity() < nAtoms)
+          if (int(Eas.capacity()) < nAtoms)
             {
               nAtomsRes = nAtoms + nAtoms/20;
               Eas.reserve(nAtomsRes);
@@ -189,7 +189,7 @@ void EMT::Allocate()
 void EMT::AllocateStress()
 {
   DEBUGPRINT;
-  if (ghostatoms && (stress.capacity() < 6*nAtoms))
+  if (ghostatoms && (int(stress.capacity()) < 6*nAtoms))
     stress.reserve(6*nAtomsRes);
   stress.resize(6*nAtoms);
   DEBUGPRINT;
