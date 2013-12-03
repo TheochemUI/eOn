@@ -213,7 +213,7 @@ int DynamicsSaddleSearch::run(void)
 
                 double barrier = saddle->getPotentialEnergy()-reactant->getPotentialEnergy();
                 log("found barrier of %.3f\n", barrier);
-                for (int i=0;i<MDSnapshots.size();i++) {
+                for (unsigned int i=0;i<MDSnapshots.size();i++) {
                     delete MDSnapshots[i];
                 }
                 MDSnapshots.clear();
@@ -222,7 +222,7 @@ int DynamicsSaddleSearch::run(void)
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
-                for (int i=0;i<MDSnapshots.size();i++) {
+                for (unsigned int i=0;i<MDSnapshots.size();i++) {
                     delete MDSnapshots[i];
                 }
                 MDTimes.clear();
