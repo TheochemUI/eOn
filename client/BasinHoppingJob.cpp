@@ -48,7 +48,7 @@ BasinHoppingJob::~BasinHoppingJob()
     delete current;
     delete trial;
 
-    for (int i=0;i<uniqueStructures.size();i++) {
+    for (unsigned int i=0;i<uniqueStructures.size();i++) {
         delete uniqueStructures[i];
     }
 }

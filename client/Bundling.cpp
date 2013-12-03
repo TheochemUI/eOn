@@ -149,11 +149,13 @@ int copyfile(char *filenameSrc, char *filenameDest)
     FILE *fSrc = fopen(filenameSrc, "rb"); 
     if (fSrc == NULL) {
         fprintf(stderr, "error: copyfile: problem opening src file\n");
+        delete [] buff;
         return 1;
     }
     FILE *fDest = fopen(filenameDest, "wb");
     if (fDest == NULL) {
         fprintf(stderr, "error: copyfile: problem opening dest file\n");
+        delete [] buff;
         return 1;
     }
 
@@ -163,7 +165,7 @@ int copyfile(char *filenameSrc, char *filenameDest)
         fwrite(buff, sizeof(char), count, fDest);
     }
     
-    delete buff;
+    delete [] buff;
     fclose(fSrc);
     fclose(fDest);
 
@@ -198,8 +200,8 @@ void bundle(int number, std::vector<std::string> filenames,
             snprintf(buff, stringSize, "%s_%i.%s", 
                      newFilename, number, fileEnding);
             strncpy(newFilename, buff, stringSize);
-            delete fileEnding;
-            delete buff;
+            delete [] fileEnding;
+            delete [] buff;
         }else{
             snprintf(newFilename, stringSize, "%s_%i",
                      newFilename, number);
@@ -212,6 +214,6 @@ void bundle(int number, std::vector<std::string> filenames,
         }
         bundledFilenames->push_back(std::string(newFilename));
 
-        delete newFilename;
+        delete [] newFilename;
     }
 }

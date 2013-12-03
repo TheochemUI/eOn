@@ -49,11 +49,11 @@ std::vector<std::string> MonteCarloJob::run(void)
             parameters->monteCarloStepSize);
 
 
-    FILE *fileResults;
+    //FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
-    fileResults = fopen(resultsFilename.c_str(), "wb");
+    //fileResults = fopen(resultsFilename.c_str(), "wb");
 
     //fprintf(fileResults, "%d termination_reason\n", status);
     //fprintf(fileResults, "minimization job_type\n");
