@@ -132,7 +132,7 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction)
             }
         }
 
-        if (i >= parameters->lanczosMaxIterations) {
+        if (i >= parameters->lanczosMaxIterations-1) {
             log_file("[ILanczos] Max iterations\n");
             break;
         }
