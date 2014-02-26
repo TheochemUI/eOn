@@ -60,6 +60,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
 
     if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
         bondBoost.initialize();
+        trajectory->setBiasPotential(&bondBoost);
     }
 
     dephase(trajectory);
