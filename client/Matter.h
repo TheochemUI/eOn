@@ -15,6 +15,9 @@
 #include "Parameters.h"
 #include "Potential.h"
 
+// This is a forward declaration of BondBoost to avoid a circular dependency.
+class BondBoost;
+
 #include <string>
 
 /* This structure is used as a inherited by Matter. It contains data about an atomic structure. It is used when a fast and direct access to the private data members is required in Matter. It should not be used alone.  Use carefully. Avoid it and use Matter instead if possible. */
@@ -26,6 +29,7 @@ struct MatterPrivateData {
     AtomMatrix velocities;
     AtomMatrix forces;
     AtomMatrix biasForces;
+    BondBoost *biasPotential;
     VectorXd masses;
     VectorXi atomicNrs;
     VectorXi isFixed; // array of bool, false for movable atom, true for fixed
@@ -75,6 +79,7 @@ public:
     AtomMatrix getVelocities() const;
     void setVelocities(const AtomMatrix v);
     void setBiasForces(const AtomMatrix bf);
+    void setBiasPotential(BondBoost *bondBoost);
     void setForces(const AtomMatrix f);
     AtomMatrix getAccelerations(); 
 
