@@ -13,6 +13,7 @@
 #include "HelperFunctions.h"
 #include "Optimizer.h"
 #include "ObjectiveFunction.h"
+#include "BondBoost.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -448,7 +449,13 @@ void Matter::setPositionsFreeV(const VectorXd pos)
 
 AtomMatrix Matter::getBiasForces()
 {
+    biasPotential->boost();
     return biasForces.cwise() * getFree();
+}
+
+void Matter::setBiasPotential(BondBoost *bondBoost)
+{
+    biasPotential = bondBoost;
 }
 
 void Matter::setBiasForces(const AtomMatrix bf)
