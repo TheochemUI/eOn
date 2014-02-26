@@ -117,6 +117,7 @@ Matter::Matter(Parameters *parameters, const long int nAtoms)
 void Matter::initializeDataMembers(Parameters *params)
 {
     nAtoms = 0;
+    biasPotential = NULL;
     cell.resize(3,3);
     cell.setZero();
     cellInverse.resize(3,3);
@@ -449,7 +450,9 @@ void Matter::setPositionsFreeV(const VectorXd pos)
 
 AtomMatrix Matter::getBiasForces()
 {
-    biasPotential->boost();
+    if (biasPotential != NULL) {
+        biasPotential->boost();
+    }
     return biasForces.cwise() * getFree();
 }
 
