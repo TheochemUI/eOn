@@ -84,29 +84,30 @@ int DynamicsSaddleSearch::run(void)
         bondBoost.initialize();
     }
 
-    int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStep);
-    int recordInterval = int(parameters->saddleDynamicsRecordInterval/parameters->mdTimeStep);
+    int checkInterval = int(parameters->saddleDynamicsStateCheckInterval/parameters->mdTimeStep+0.5);
+    int recordInterval = int(parameters->saddleDynamicsRecordInterval/parameters->mdTimeStep+0.5);
 
     if (parameters->writeMovies == true) {
         saddle->matter2con("dynamics", false);
     }
 
-    for (int i=0;i<parameters->mdSteps;i++) {
-        dyn.oneStep(i+1);
+    for (int step=1;step<=parameters->mdSteps;step++) {
+        dyn.oneStep(step);
 
-        if ((i+1) % recordInterval == 0 && recordInterval != 0) {
+        if (step % recordInterval == 0 && recordInterval != 0) {
+            log("recording configuration at step %i time %.3f\n", step, step*parameters->mdTimeStep*parameters->timeUnit);
             Matter *tmp = new Matter(parameters);    
             *tmp = *saddle;
             MDSnapshots.push_back(tmp);
-            MDTimes.push_back((i+1)*parameters->mdTimeStep);
+            MDTimes.push_back(step*parameters->mdTimeStep);
         }
 
         if (parameters->writeMovies == true) {
             saddle->matter2con("dynamics", true);
         }
 
-        if ((i+1)%checkInterval == 0) {
-            log("Minimizing trajectory, step %i\n", i+1);
+        if (step%checkInterval == 0) {
+            log("Minimizing trajectory, step %i\n", step);
 
             *product = *saddle;
             product->relax(false, false);
@@ -117,6 +118,7 @@ int DynamicsSaddleSearch::run(void)
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
                 log("Found transition at snapshot image %i\n", image);
+                for (int ii=0;ii<MDTimes.size();ii++) log("MDTimes[%i] = %.3f\n", ii, MDTimes[ii]*parameters->timeUnit);
                 // subtract off half the record interval in order to not introduce a systematic
                 // bias towards longer times.
                 time = MDTimes[image] - parameters->saddleDynamicsRecordInterval/2.0;
@@ -297,7 +299,7 @@ int DynamicsSaddleSearch::refineTransition(std::vector<Matter*> MDSnapshots, Mat
         }
     }
 
-    return (min+max)/2 + 1;
+    return (min+max)/2;
 }
 
 double DynamicsSaddleSearch::getEigenvalue()
