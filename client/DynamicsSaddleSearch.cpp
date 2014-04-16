@@ -50,6 +50,34 @@ int DynamicsSaddleSearch::run(void)
     dyn.setTemperature(parameters->saddleDynamicsTemperature);
     dyn.setThermalVelocity();
 
+    int dephaseSteps = int(floor(parameters->parrepDephaseTime/parameters->mdTimeStep+0.5));
+
+    while (true) {
+        log("Dephasing: %i steps\n", dephaseSteps);
+        //always start from the initial configuration
+        *saddle = *reactant;
+        dyn.setThermalVelocity();
+
+        // Dephase MD trajectory
+        for (int step=1; step<=dephaseSteps; step++) {
+            dyn.oneStep(step);
+        }
+
+        // Check to see if a transition occured
+        Matter min(parameters);
+        min = *saddle;
+        min.relax();
+
+        if (min.compare(reactant)) {
+            log("Dephasing successful\n");
+            break;
+        }else{
+            log("Transition occured during dephasing; Restarting\n");
+            dephaseSteps /= 2;
+            if (dephaseSteps < 1) dephaseSteps = 1;
+        }
+    }
+
     BondBoost bondBoost(saddle, parameters);
     if(parameters->biasPotential == Hyperdynamics::BOND_BOOST){
         log("Initializing Bond Boost\n");
@@ -89,7 +117,9 @@ int DynamicsSaddleSearch::run(void)
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
                 log("Found transition at snapshot image %i\n", image);
-                time = MDTimes[image];
+                // subtract off half the record interval in order to not introduce a systematic
+                // bias towards longer times.
+                time = MDTimes[image] - parameters->saddleDynamicsRecordInterval/2.0;
                 log("Transition time %.2f fs\n", time*parameters->timeUnit);
 
                 NudgedElasticBand neb(reactant, product, parameters);
