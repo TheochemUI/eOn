@@ -109,6 +109,9 @@ class AKMCState(state.State):
                 self.inc_proc_random_count(id)
                 if id in self.get_relevant_procids():
                     self.inc_repeats()
+            if 'simulation_time' in resultdata:
+                current_time = self.get_time()
+                logger.debug("event %3i found at time %f fs" % (id, current_time))
             return None
 
         # This appears to be a unique process.
@@ -141,6 +144,10 @@ class AKMCState(state.State):
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
+
+        if 'simulation_time' in resultdata:
+            current_time = self.get_time()
+            logger.debug("new event %3i found at time %f fs" % (id, current_time))
 
         # Move the relevant files into the procdata directory.
         open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
@@ -332,10 +339,11 @@ class AKMCState(state.State):
             rates_md = prefactors*(rates/prefactors)**(T1/T2)
             
             time = self.get_time()*1e-15
-            C = 1.0-numpy.exp(-time*rates_md*1.0)
+            C = 1.0-numpy.exp(-time*rates_md)
             total_rate = sum(rates)
 
             conf = sum(C*rates)/total_rate
+
             return conf
 
         else:
@@ -492,6 +500,12 @@ class AKMCState(state.State):
                              ]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])
+
+        # If a MD saddle search is too short add it to the total clock time.
+        if 'simulation_time' in result['results']:
+            if result['results']['termination_reason'] == 15: #too short
+                self.increment_time(result['results']['simulation_time'])
+
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
