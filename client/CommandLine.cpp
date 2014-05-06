@@ -13,8 +13,8 @@ using namespace std;
 
 void singlePoint(Parameters *parameters, Matter *matter)
 {
-    printf("Energy:         %f\n", matter->getPotentialEnergy());
-    printf("Max atom force: %g\n", matter->maxForce());
+    printf("Energy:         %.10f\n", matter->getPotentialEnergy());
+    printf("Max atom force: %.10g\n", matter->maxForce());
 }
 
 void minimize(Parameters *parameters, Matter *matter, string confileout)
