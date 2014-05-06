@@ -167,7 +167,7 @@ int NudgedElasticBand::compute(void)
 
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     log("%10s %12s %14s %11s %12s\n", "iteration", "step size", forceLabel, "max image", "max energy");
-    log("--------------------------------------------------------------\n");
+    log("---------------------------------------------------------------\n");
 
     char fmt[] = "%10li %12.4e %14.4e %11li %12.4f\n";
     char fmtTiny[] = "%10li %12.4e %14.4e %11li %12.4e\n";

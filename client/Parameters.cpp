@@ -343,7 +343,8 @@ int Parameters::load(FILE *file){
         }else if (optConvergenceMetric == "max_component") {
             optConvergenceMetricLabel = "Max force comp";
         }else if (optConvergenceMetric == "norm") {
-            optConvergenceMetricLabel = "\u2016Force\u2016";
+            //optConvergenceMetricLabel = "\u2016Force\u2016";
+            optConvergenceMetricLabel = "||Force||";
         }else{
             fprintf(stderr, "unknown convergence_metric %s\n", optConvergenceMetric.c_str());
             exit(1);
