@@ -264,6 +264,7 @@ int DynamicsSaddleSearch::run(void)
     }
 
     MDSnapshots.clear();
+    time = parameters->mdSteps*parameters->mdTimeStep;
     return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 
