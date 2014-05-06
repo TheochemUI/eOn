@@ -1,7 +1,17 @@
-NEB
----
+.. _neb:
+
+===================
+Nudged Elastic Band
+===================
+
+Local minimization of the energy of a structure given the specified optimizer.
+
+In order to run a nudged elastic band calculation, set **job** to *nudged_elastic_band* in the
+**[Main]** section. Details of the optimizer can be set in the **[optimizer]** section.
 
 
+[Nudged Elastic Band] Options
+=============================
 
     **images**: Number of NEB images between the fixed endpoints
 
@@ -9,11 +19,11 @@ NEB
 
         default: ``5``
 
-    **spring**: 
+    **spring**: The spring constant, in eV / Ang^2  between the images. 
 
-        type: boolean
+        type: float
 
-        default: ``True``
+        default: 5.0
 
     **climbing_image_method**: 
 
@@ -26,10 +36,3 @@ NEB
         type: boolean
 
         default: ``False``
-
-    **opt_method**: 
-
-        type: string
-
-        default: ``OPT_CG``
-
