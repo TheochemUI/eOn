@@ -41,6 +41,8 @@ Jobs
 
 :ref:`Minimization <minimization>`: optimize the geometry of a structure.
 
+:ref:`Nudged Elastic Band <neb>`: Locate minimum energy pathways using nudged elastic band calculation.
+
 
 General Options
 ---------------
