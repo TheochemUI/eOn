@@ -17,6 +17,7 @@
 #include "Prefactor.h"
 #include "DynamicsSaddleSearch.h"
 #include "BasinHoppingSaddleSearch.h"
+#include "BiasedGradientSquaredDescent.h"
 
 #include <stdio.h>
 #include <string>
@@ -38,7 +39,9 @@ std::vector<std::string> ProcessSearchJob::run(void)
     string modeFilename("direction.dat");
 
     initial = new Matter(parameters);
-    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping") {
+    if (parameters->saddleMethod == "min_mode" || 
+        parameters->saddleMethod == "basin_hopping" ||
+        parameters->saddleMethod == "bgsd") {
         displacement = new Matter(parameters);
     }else if (parameters->saddleMethod == "dynamics") {
         displacement = NULL;
@@ -91,6 +94,8 @@ std::vector<std::string> ProcessSearchJob::run(void)
         saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, parameters);
     }else if (parameters->saddleMethod == "dynamics") {
         saddleSearch = new DynamicsSaddleSearch(saddle, parameters);
+    }else if (parameters->saddleMethod == "bgsd") {
+        saddleSearch = new BiasedGradientSquaredDescent(saddle, parameters);
     }
 
     int status = doProcessSearch();
@@ -171,9 +176,6 @@ int ProcessSearchJob::doProcessSearch(void)
 
     if ((initial->compare(min1)) == false) {
         log("initial != min1\n");
-        if((!min1->maxForce() <= parameters->optConvergedForce)  &&
-           (!min2->maxForce() <= parameters->optConvergedForce)) {
-        }
         return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
     }
 
