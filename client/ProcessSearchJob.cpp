@@ -65,7 +65,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     barriersValues[0] = barriersValues[1] = 0;
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
-    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping") {
+    if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping" || parameters->saddleMethod == "bgsd") {
         if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
             // displacement was passed from the server
             if(!saddle->con2matter(displacementFilename)) {
