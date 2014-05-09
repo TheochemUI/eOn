@@ -33,7 +33,13 @@ class BGSDObjectiveFunction : public ObjectiveFunction
             parameters = parametersPassed;
         }
         ~BGSDObjectiveFunction(void){};
-        double getEnergy() { return matter->getPotentialEnergy(); }
+        double getEnergy()
+        { 
+
+            double energy = matter->getPotentialEnergy();
+            double energySq = energy * energy;
+            return energySq;
+        }
         VectorXd getGradient(bool fdstep=false) { return -matter->getForcesFreeV(); }
         void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
         VectorXd getPositions() { return matter->getPositionsFreeV(); }
@@ -78,7 +84,15 @@ BiasedGradientSquaredDescent::~BiasedGradientSquaredDescent()
 
 int BiasedGradientSquaredDescent::run()
 {
-    //code goes here.
+    BGSDObjectiveFunction objf(saddle, parameters);
+    Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+    int iteration = 0;
+    while (!objf.isConverged() || iteration == 0) {
+        optimizer->step(parameters->optMaxMove);
+        printf("iteration %i energy: %.8f\n", iteration, saddle->getPotentialEnergy());
+        iteration++;
+    }
+
     return 0;
 }
 
