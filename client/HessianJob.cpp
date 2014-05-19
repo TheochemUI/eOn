@@ -24,57 +24,45 @@ HessianJob::~HessianJob()
 
 std::vector<std::string> HessianJob::run(void)
 {
-    string reactant_in("reactant.con");
-    string saddle_in("saddle.con");
-    string product_in("product.con");
+    string matter_in("pos.con");
 
     std::vector<std::string> returnFiles;
 
-    Matter *reactant = new Matter(parameters);
-    Matter *saddle = new Matter(parameters);
-    Matter *product = new Matter(parameters);
+    Matter *matter = new Matter(parameters);
 
-    reactant->con2matter(reactant_in);
-    saddle->con2matter(saddle_in);
-    product->con2matter(product_in);
+    matter->con2matter(matter_in);
 
-// GH: need to fix this
-
-//    Hessian hessian(reactant, saddle, product, parameters);
-//    VectorXd modes = hessian.getModes(parameters->hessianType);
-    //XXX: to fix build for now...
-    VectorXd modes;
-
-    bool failed = modes.size()==0;
+    Hessian hessian(parameters, matter);
+    long nAtoms = matter->numberOfAtoms();
+    
+    VectorXi moved(nAtoms);
+    moved.setConstant(-1);
+    
+    int nMoved = 0;
+    for(int i=0; i<nAtoms; i++)
+    {
+        if(!matter->getFixed(i))
+        {
+            moved[nMoved] = i;
+            nMoved++;
+        }
+    }
+    moved = moved.head(nMoved);
+    hessian.getFreqs(matter, moved);
 
     FILE *fileResults;
     FILE *fileMode;
 
     std::string results_file("results.dat");
-    std::string mode_file("mode.dat");
 
     returnFiles.push_back(results_file);
-    returnFiles.push_back(mode_file);
 
     fileResults = fopen(results_file.c_str(), "wb");
-    fileMode = fopen(mode_file.c_str(), "wb");
 
-    fprintf(fileResults, "%s good\n", failed ? "false" : "true");
     fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
-//XXX: to fix build
-//    fprintf(fileResults, "%d hessian_size\n", 
-//            (int)hessian.getHessian(parameters->hessianType).rows());
-    if(!failed)
-    {
-        for(int i=0; i<modes.size(); i++)
-        {
-            fprintf(fileMode, "%f\n", modes[i]);
-        }
-    }
+    fclose(fileResults);
 
-    delete reactant;
-    delete product;
-    delete saddle;
+    delete matter;
 
     return returnFiles;
 }
