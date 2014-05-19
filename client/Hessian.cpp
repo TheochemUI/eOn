@@ -134,6 +134,7 @@ bool Hessian::calculate(void)
         ofstream hessfile;
         hessfile.open("hessian.dat");
         hessfile <<hessian;
+        hessfile.close();
     }
 
     double t0,t1;
