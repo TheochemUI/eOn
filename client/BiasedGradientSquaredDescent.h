@@ -10,7 +10,7 @@
 class BiasedGradientSquaredDescent : public SaddleSearchMethod
 {
     public:
-        BiasedGradientSquaredDescent(Matter *matterPassed, Parameters *parametersPassed);
+        BiasedGradientSquaredDescent(Matter *matterPassed, double reactantEnergyPassed, Parameters *parametersPassed);
         ~BiasedGradientSquaredDescent();
 
         int run(void);
@@ -26,6 +26,7 @@ class BiasedGradientSquaredDescent : public SaddleSearchMethod
 
     private:
         Parameters *parameters;
+        double reactantEnergy;
 };
 
 #endif
