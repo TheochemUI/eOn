@@ -95,7 +95,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     }else if (parameters->saddleMethod == "dynamics") {
         saddleSearch = new DynamicsSaddleSearch(saddle, parameters);
     }else if (parameters->saddleMethod == "bgsd") {
-        saddleSearch = new BiasedGradientSquaredDescent(saddle, parameters);
+        saddleSearch = new BiasedGradientSquaredDescent(saddle, initial->getPotentialEnergy(), parameters);
     }
 
     int status = doProcessSearch();

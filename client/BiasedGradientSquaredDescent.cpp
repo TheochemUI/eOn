@@ -70,9 +70,10 @@ class BGSDObjectiveFunction : public ObjectiveFunction
 
 
 
-BiasedGradientSquaredDescent::BiasedGradientSquaredDescent(Matter *matterPassed, Parameters *parametersPassed)
+BiasedGradientSquaredDescent::BiasedGradientSquaredDescent(Matter *matterPassed, double reactantEnergyPassed, Parameters *parametersPassed)
 {
     parameters = parametersPassed;
+    reactantEnergy = reactantEnergyPassed;
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
