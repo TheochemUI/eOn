@@ -238,6 +238,14 @@ Parameters::Parameters(){
     // [Monte Carlo] //
     monteCarloStepSize = 0.005;
     monteCarloSteps = 1000;
+
+    // [BGSD] //
+    alpha = 10.0;
+    beta = 0.2;
+    gradientfinitedifference = 0.000001;
+    Hforceconvergence = 0.01;
+    grad2energyconvergence = 0.000001;
+    grad2forceconvergence = 0.0001;
 }
 
 Parameters::~Parameters(){
@@ -550,6 +558,14 @@ int Parameters::load(FILE *file){
         globalOptimizationAlpha = ini.GetValueF("Global Optimization", "alpha", globalOptimizationAlpha);
         globalOptimizationMdmin = ini.GetValueL("Global Optimization", "mdmin", globalOptimizationMdmin);
         globalOptimizationTargetEnergy = ini.GetValueF("Global Optimization", "target_energy", globalOptimizationTargetEnergy);
+
+        // [BGSD] //
+
+        alpha = ini.GetValueF("BGSD","alpha",alpha);
+        beta = ini.GetValueF("BGSD","beta",beta);
+        gradientfinitedifference = ini.GetValueF("BGSD","gradientfinitedifference",gradientfinitedifference);
+        grad2energyconvergence = ini.GetValueF("BGSD","grad2energyconvergence",grad2energyconvergence);
+        grad2forceconvergence = ini.GetValueF("BGSD","grad2forceconvergence",grad2forceconvergence);
 
         // [Monte Carlo] //
 

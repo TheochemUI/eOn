@@ -37,7 +37,7 @@ class ProcessSearchJob : public Job {
         Matter *displacement; // configuration used during the saddle point search.
         Matter *min1;         // first minimum from the saddle
         Matter *min2;         // second minimum from the saddle
-
+        
         double barriersValues[2];
         double prefactorsValues[2];
 

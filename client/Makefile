@@ -2,8 +2,8 @@ TARGET_NAME=eonclient
 
 #------------------------------------
 #C compiler settings
-CC=gcc-4.9
-CXX=g++-4.9
+CC=gcc
+CXX=g++
 LD=ld
 AR=ar cru
 RANLIB=ranlib
@@ -77,7 +77,7 @@ ifdef NO_FORTRAN
     CXXFLAGS += -DNO_FORTRAN
 else
     # gfortran
-    FC = $(CROSS)gfortran-4.9
+    FC = $(CROSS)gfortran
     FFLAGS += $(OPT) -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
     ifdef BOINC
