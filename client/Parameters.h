@@ -269,6 +269,15 @@ public:
     double monteCarloStepSize;
     int monteCarloSteps;
 
+    // [BGSD] //
+
+    double alpha;
+    double beta;
+    double gradientfinitedifference;
+    double Hforceconvergence;
+    double grad2energyconvergence;
+    double grad2forceconvergence;
+
     // MPI stuff, not actually specified in config file
     // it is used to pass information to the GPAW MPI potential.
     int MPIPotentialRank;
