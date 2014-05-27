@@ -205,7 +205,7 @@ int MinModeSaddleSearch::run()
 
         if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
         {
-            log("[Dimer]  %9ld   %9.7f   %10.4f   %14.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
+            log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
                         iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                         objf.getConvergence(),
                         minModeMethod->getEigenvalue(),
@@ -213,7 +213,7 @@ int MinModeSaddleSearch::run()
                         minModeMethod->statsAngle,
                         minModeMethod->statsRotations);
         }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
-            log("[Lanczos]  %9i %9.6f %10.4f %14.5e %9.4f %10.6f %7.3f %5i\n", 
+            log("[Lanczos]  %9i %9.6f %10.4f %18.5e %9.4f %10.6f %7.3f %5i\n", 
                 iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                 objf.getConvergence(),
                 minModeMethod->getEigenvalue(),
