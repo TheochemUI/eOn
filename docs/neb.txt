@@ -19,7 +19,7 @@ In order to run a nudged elastic band calculation, set **job** to *nudged_elasti
 
         default: ``5``
 
-    **spring**: The spring constant, in eV / Ang^2  between the images. 
+    **spring**: The spring constant, in eV / Ang^2 between the images. 
 
         type: float
 
