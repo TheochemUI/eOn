@@ -67,20 +67,58 @@ class MinModeObjectiveFunction : public ObjectiveFunction
 
                 // zero out the smallest forces to keep displacement confined
                 }else if(parameters->saddleConfinePositive) {
-                    int sufficientForce = 0;
-                    double minForce = parameters->saddleConfinePositiveMinForce;
-                    while(sufficientForce < parameters->saddleConfinePositiveMinActive){
-                        sufficientForce = 0;
-                        force = matter->getForces();
-                        for (int i=0; i<3*matter->numberOfAtoms(); i++) {
-                            if (fabs(force[i]) < minForce)
-                                force[i] = 0;
-                            else{
-                                sufficientForce = sufficientForce + 1;
-                                force[i] = -parameters->saddleConfinePositiveBoost*proj[i];
+                    if (parameters->saddleBowlBreakout){
+                        AtomMatrix forceTemp = matter->getForces();
+                        double *indicies_max;
+                        indicies_max = new double[parameters->saddleBowlActive];
+
+                        // determine the force for the x largest component
+                        double f_max;
+                        int i_max;
+                        for (int j=0; j < parameters->saddleBowlActive; j++){
+                            f_max = forceTemp.row(0).norm();
+                            i_max = 0;
+                            for (int i=0; i<matter->numberOfAtoms(); i++) {
+                                if (f_max  < forceTemp.row(i).norm()){
+                                    f_max = forceTemp.row(i).norm();
+                                    i_max = i;
+                                }
                             }
+                            forceTemp[3*i_max+0] = 0;
+                            forceTemp[3*i_max+1] = 0;
+                            forceTemp[3*i_max+2] = 0;
+                            indicies_max[j] = i_max;
                         }
-                        minForce *= parameters->saddleConfinePositiveScaleRatio;
+                        for (int i=0; i<matter->numberOfAtoms(); i++) {
+                            forceTemp[3*i+0] = 0.0;
+                            forceTemp[3*i+1] = 0.0;
+                            forceTemp[3*i+2] = 0.0;
+                        }
+                        // only set the projected forces corresponding to the atoms subject to the largest forces
+                        for (int j=0; j< parameters->saddleBowlActive; j++) {
+                            forceTemp[3*indicies_max[j]+0] = -proj[3*indicies_max[j]+0];
+                            forceTemp[3*indicies_max[j]+1] = -proj[3*indicies_max[j]+1];
+                            forceTemp[3*indicies_max[j]+2] = -proj[3*indicies_max[j]+2];
+                        }
+                        force = forceTemp;
+                        delete[] indicies_max;
+                    }
+                    else{
+                        int sufficientForce = 0;
+                        double minForce = parameters->saddleConfinePositiveMinForce;
+                        while(sufficientForce < parameters->saddleConfinePositiveMinActive){
+                            sufficientForce = 0;
+                            force = matter->getForces();
+                            for (int i=0; i<3*matter->numberOfAtoms(); i++) {
+                                if (fabs(force[i]) < minForce)
+                                    force[i] = 0;
+                                else{
+                                    sufficientForce = sufficientForce + 1;
+                                    force[i] = -parameters->saddleConfinePositiveBoost*proj[i];
+                                }
+                            }
+                            minForce *= parameters->saddleConfinePositiveScaleRatio;
+                        }
                     }
                 }else{
                     // follow eigenmode
@@ -196,11 +234,24 @@ int MinModeSaddleSearch::run()
 
         AtomMatrix pos = matter->getPositions();
 
-        optimizer->step(parameters->optMaxMove);
+        if (parameters->saddleBowlBreakout){
+            // use negative step to communicate that the system is the negative region and a max step should be performed
+          if (minModeMethod->getEigenvalue() < 0){
+              optimizer->step(parameters->optMaxMove);
+          }
+          else{
+              optimizer->step(-parameters->optMaxMove);
+          }
+        }
+        else{
+            optimizer->step(parameters->optMaxMove);
+        }
 
         double de = objf.getEnergy()-reactantEnergy;
-        double stepSize = helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() - pos));
-        
+        // should be the total displacement of the system not just a single atom
+        //double stepSize = helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() - pos));
+        double stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
+  
         iteration++;
 
         if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
