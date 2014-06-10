@@ -18,6 +18,7 @@ import basinhopping
 import config
 import parallelreplica
 import escaperate
+import fileio as io
 
 def main():
     config.init()
@@ -43,12 +44,17 @@ def main():
         comm = communicator.get_communicator()
 
         invariants = {}
+
+        # Merge potential files into invariants
+        invariants = dict(invariants, **io.load_potfiles(config.path_pot))
+
         job = {}
         files = [ f for f in os.listdir(".") if os.path.isfile(f) ]
         for f in files:
             fh = open(f)
             if(len(f.split('.')) > 1):
-                f_passed = f.split('.')[0] + "_passed." + f.split('.')[1]
+                #f_passed = f.split('.')[0] + "_passed." + f.split('.')[1]
+		f_passed = f.split('.')[0] + "." + f.split('.')[1]
                 job[f_passed] = StringIO(fh.read())
             fh.close()
         job["id"] = "output"
