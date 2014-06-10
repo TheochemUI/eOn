@@ -102,6 +102,8 @@ public:
     bool   saddleDynamicsLinearInterpolation;
 
     bool   saddleConfinePositive; // undocumented
+    bool   saddleBowlBreakout; // undocumented
+    long   saddleBowlActive; // undocumented
     double saddleConfinePositiveMinForce; // undocumented
     double saddleConfinePositiveScaleRatio; // undocumented
     double saddleConfinePositiveBoost; // undocumented

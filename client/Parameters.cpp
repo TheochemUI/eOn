@@ -93,6 +93,8 @@ Parameters::Parameters(){
     saddleNonlocalDistanceAbort = 0.0;    
     saddlePerpForceRatio = 0.0; // undocumented
     saddleConfinePositive = false; // undocumented
+    saddleBowlBreakout= false; // undocumented
+    saddleBowlActive=20;
     saddleConfinePositiveMinForce = 0.5; // undocumented
     saddleConfinePositiveScaleRatio = 0.9; // undocumented
     saddleConfinePositiveBoost = 10.; // undocumented
@@ -515,6 +517,8 @@ int Parameters::load(FILE *file){
         }
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
         if(saddleConfinePositive) {
+            saddleBowlBreakout = ini.GetValueB("Saddle Search", "bowl_breakout", saddleBowlBreakout);
+            saddleBowlActive = ini.GetValueL("Saddle Search", "bowl_min_active", saddleBowlActive);
             saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
             saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
             saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_boost", saddleConfinePositiveBoost);
