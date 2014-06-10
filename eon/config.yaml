@@ -989,6 +989,14 @@ Saddle Search:
             kind: boolean
             default: False
 
+        bowl_breakout:
+            kind: boolean
+            default: False
+
+        bowl_active_atoms:
+            kind: int
+            default: 20
+
         confine_positive_min_force:
             kind: float
             default: 0.5
