@@ -330,6 +330,34 @@ VectorXd helper_functions::maxAtomMotionAppliedV(const VectorXd v1, double maxMo
     return v2;
 }
 
+
+AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1, double maxMotion)
+{
+    /*
+     Function ensures (by scaling) that the norm of the AtomMatrix is not larger than maxMotion.
+     */
+    AtomMatrix v2(v1);
+    
+    double max = v1.norm();
+    if(max > maxMotion)
+    {
+        v2 *= maxMotion/max;
+    }
+    return v2;
+}
+
+VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1, double maxMotion)
+{
+    VectorXd v2(v1);
+    
+    double max = v1.norm();
+    if (max > maxMotion)
+    {
+        v2 *= maxMotion/max;
+    }
+    return v2;
+}
+
 void helper_functions::getTime(double *real, double *user, double *sys)
 {
     #ifdef WIN32

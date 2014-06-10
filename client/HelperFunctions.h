@@ -59,6 +59,8 @@ namespace helper_functions {
     long numAtomsMoved(const AtomMatrix v1, double cutoff);
     AtomMatrix maxAtomMotionApplied(const AtomMatrix v1, double maxMotion);
     VectorXd   maxAtomMotionAppliedV(const VectorXd  v1, double maxMotion);
+    AtomMatrix maxMotionApplied(const AtomMatrix v1, double maxMotion);
+    VectorXd   maxMotionAppliedV(const VectorXd  v1, double maxMotion);
     void getTime(double *real, double *user, double *sys);
     bool existsFile(string filename); // does filename exist
     string getRelevantFile(string filename); // return filename containing _checkpoint or  _passed if such a file exists
