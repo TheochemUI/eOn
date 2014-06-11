@@ -236,11 +236,11 @@ int MinModeSaddleSearch::run()
 
         if (parameters->saddleBowlBreakout){
             // use negative step to communicate that the system is the negative region and a max step should be performed
-          if (minModeMethod->getEigenvalue() < 0){
-              optimizer->step(parameters->optMaxMove);
+          if ((minModeMethod->getEigenvalue() > 0) and (parameters->optMethod == "cg")){
+              optimizer->step(-parameters->optMaxMove);
           }
           else{
-              optimizer->step(-parameters->optMaxMove);
+              optimizer->step(parameters->optMaxMove);
           }
         }
         else{
