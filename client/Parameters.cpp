@@ -518,7 +518,7 @@ int Parameters::load(FILE *file){
         saddleConfinePositive = ini.GetValueB("Saddle Search", "confine_positive", saddleConfinePositive);
         if(saddleConfinePositive) {
             saddleBowlBreakout = ini.GetValueB("Saddle Search", "bowl_breakout", saddleBowlBreakout);
-            saddleBowlActive = ini.GetValueL("Saddle Search", "bowl_min_active", saddleBowlActive);
+            saddleBowlActive = ini.GetValueL("Saddle Search", "bowl_active_atoms", saddleBowlActive);
             saddleConfinePositiveMinForce = ini.GetValueF("Saddle Search", "confine_positive_min_move", saddleConfinePositiveMinForce);
             saddleConfinePositiveScaleRatio = ini.GetValueF("Saddle Search", "confine_positive_scale_ratio", saddleConfinePositiveScaleRatio);
             saddleConfinePositiveBoost = ini.GetValueF("Saddle Search", "confine_positive_boost", saddleConfinePositiveBoost);
