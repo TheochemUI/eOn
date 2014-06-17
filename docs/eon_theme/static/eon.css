@@ -1,0 +1,14 @@
+
+@import url("default.css");
+
+tt {
+    background-color: #ecf0f3;
+    padding: 0 1px 0 1px;
+    font-size: 120%;
+}
+
+div.body h2 {
+    background-color: #FFFFFF;
+    border: none;
+    color: #555555;;
+}
