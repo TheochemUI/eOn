@@ -70,6 +70,7 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
     VectorXd x1_rp;
     VectorXd x1_r;
     VectorXd tau_prime;
+    VectorXd tau_Old;
     VectorXd g1_prime;
 
     double delta = parameters->finiteDifference;
@@ -124,19 +125,24 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             if(gamma == 0.0) {
                 theta = F_R;
             }else{
-                theta = F_R + thetaOld * F_R_Old.norm() * gamma;
+                // theta = F_R + thetaOld * F_R_Old.norm() * gamma;
+                // xph: use thetaOld before normalized, not F_R_Old
+                theta = F_R + thetaOld * gamma;
             }
 
             theta = theta - theta.dot(tau)*tau;
+            // xph: use thetaOld before normalized
+            thetaOld = theta;
             theta.normalize();
 
             F_R_Old = F_R;
-            thetaOld = theta;
         }
         else if(parameters->dimerOptMethod == OPT_LBFGS) // quasi-newton
         {
             if (init_lbfgs == false) {
-                VectorXd s0 = x1->getPositionsV() - rPrev;
+                // xph: s0 should the difference between tau and tau_Old, which are normalized vectors. 
+                // VectorXd s0 = x1->getPositionsV() - rPrev;
+                VectorXd s0 = tau - tau_Old;
                 s.push_back(s0);
                 // xph: rescale the force; or rescale s0 = s0*delta
                 VectorXd y0 = (F_R_Old - F_R) / delta;
@@ -180,13 +186,13 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             }
 
             theta = -z.normalized();
-            // xph: orthogonalize theta to tau
+            // xph:  rethogonalize theta to tau
             theta = theta - theta.dot(tau)*tau;
             theta.normalize();
 
             thetaOld = theta;
             F_R_Old = F_R;
-            rPrev = x1->getPositionsV();
+            tau_Old = tau;
         }
 
         // Calculate the curvature along tau, C_tau.
@@ -203,7 +209,12 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
 
             // Calculate g1_prime. 
             x0_r = x0->getPositionsV();
-            x1_rp = x0_r + (tau * cos(phi_prime) + theta * sin(phi_prime)) * delta;
+            // xph: renormalize the new tangent after rotating phi_prime
+            // x1_rp = x0_r + (tau * cos(phi_prime) + theta * sin(phi_prime)) * delta;
+            tau_prime = tau * cos(phi_prime) + theta * sin(phi_prime);
+            tau_prime = tau_prime.normalized();
+            x1_rp = x0_r + tau_prime * delta;
+            
             *x1p = *x1;
             x1p->setPositionsV(x1_rp);
             g1_prime = -x1p->getForcesV();
@@ -213,7 +224,7 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             gradients.push_back(g1_prime);
 
             // Calculate C_tau_prime.
-            tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm();
+            // tau_prime = (x1_rp - x0_r) / (x1_rp - x0_r).norm(); //xph
             double C_tau_prime = (g1_prime - g0).dot(tau_prime)/delta;
 
             // Calculate phi_min.
@@ -231,12 +242,21 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
                 C_tau_min = 0.5 * a0 + a1 * cos(2.0*phi_min) + b1 * sin(2.0*phi_min);
             }
 
+            // xph: for accurate LBFGS
+            if(phi_min > M_PI * 0.5)
+            {
+                phi_min -= M_PI;
+            }
             statsAngle = phi_min * (180.0 / M_PI);
 
             // Update x1, tau, and C_tau.
-            x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
+            // xph: normalize first
+            tau   = tau * cos(phi_min) + theta * sin(phi_min);
+            tau   = tau.normalized();
+            x1_r  = x0_r + tau * delta;
+            // x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositionsV(x1_r);
-            tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
+            // tau = (x1_r - x0_r) / (x1_r - x0_r).norm();
 
             C_tau = C_tau_min;
 
