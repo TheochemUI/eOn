@@ -93,6 +93,18 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
+**confine_positive**: Activates a confinement scheme when the search is within a positive region of the PES. 
+
+    default: ``false``
+
+**bowl_breakout**: When activated the search within positive regions of PES is confined to the subset of atoms (**bowl_active_atoms**) that are subject to the the largest forces[#pedersen14]_. To activate **confine_positive** must also be ``true``
+
+    default: ``false``
+
+**bowl_active_atoms**: Size of the applied confinement in the bowl breakout scheme.  
+
+	default: ``20``
+
 Options for Dynamics Method
 ---------------------------
 
@@ -118,3 +130,6 @@ is interpolated through the first snapshot that minimizes to the final state.
 .. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives," *J. Chem. Phys.* **111**, 7010-7022 (1999). `DOI <http://dx.doi.org/10.1063/1.480097>`_
 
 .. [#malek00_7723] R. Malek and N. Mousseau, "Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique," *Phys. Rev. E* **62**, 7723 (2000). `DOI <http://dx.doi.org/10.1103/PhysRevE.62.7723>`_
+
+.. [#pedersen14] A Pedersen and M Luiser, "Bowl breakout, escaping the positive region when searching for saddle
+  points," *JCP* **In press**, In press (2014). `arXiv <http://arxiv.org/abs/1406.4606>`_

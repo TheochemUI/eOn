@@ -34,12 +34,14 @@ void log(const char* format, ...) {
         va_start(args, format);
         vfprintf(stdout, format, args);
         va_end(args);
+        fflush(logfile);
     }
 
     if (params->writeLog == true) {
         va_start(args, format);
         vfprintf(logfile, format, args);
         va_end(args);
+        fflush(logfile);
     }
 }
 
@@ -53,5 +55,6 @@ void log_file(const char* format, ...) {
         va_start(args, format);
         vfprintf(logfile, format, args);
         va_end(args);
+        fflush(logfile);
     }
 }
