@@ -97,7 +97,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``false``
 
-**bowl_breakout**: When activated the search within positive regions of PES is confined to the subset of atoms (**bowl_active_atoms**) that are subject to the the largest forces[#pedersen14]_. To activate **confine_positive** must also be ``true``
+**bowl_breakout**: When activated the search within positive regions of PES is confined to the subset of atoms (**bowl_active_atoms**) that are subject to the the largest forces[#pedersen14]_ . To activate **confine_positive** must also be ``true``
 
     default: ``false``
 
