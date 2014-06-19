@@ -10,7 +10,7 @@
           {%- block sidebarsearch %}
           {%- if pagename != "search" %}
             <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
-        <div class="toprightsearch" style="float:right">
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
             <form class="search" action="{{ pathto('search') }}" method="get">
               <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
               <input type="hidden" name="check_keywords" value="yes" />
@@ -34,7 +34,7 @@
         {%- endfor %}
 
         {%- block rootrellink %}
-        <li><a href="{{ pathto('index') }}"><img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="EON logo"/></a></li>
+        <li><a href="{{ pathto('index') }}"><img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
         {%- endblock %}
 
     <!-- <li> {{ reldelim1 }} <a href="{{ pathto('download') }}">Download</a>{{ reldelim1 }}</li> -->
@@ -43,7 +43,7 @@
         <!-- <li> {{ reldelim1 }} <a href="{{ pathto('documentation/documentation') }}">Documentation</a>{{ reldelim1 }}</li> -->
         <!-- <li> {{ reldelim1 }} <a href="{{ pathto('performance') }}">Performance</a>{{ reldelim1 }}</li> -->
         <!-- <li> {{ reldelim1 }} <a href="{{ pathto('faq') }}">FAQ</a>{{ reldelim1 }}</li> -->
-        <li> {{ reldelim1 }} <a href="{{ pathto('contents') }}">Contents</a>{{ reldelim1 }}</li>
+<!--        <li> {{ reldelim1 }} <a href="{{ pathto('contents') }}">Contents</a>{{ reldelim1 }}</li> -->
         <!-- <li> {{ reldelim1 }} <a href="{{ pathto('genindex') }}">Index</a>{{ reldelim1 }}</li> -->
 
         {%- for parent in parents %}
