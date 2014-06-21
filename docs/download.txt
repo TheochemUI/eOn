@@ -23,7 +23,7 @@ If you are a developer you can checkout the code using the command:
 This will fetch a copy of the latest code to a local directory named eon. 
 For more information on subversion read its `online documentation`_.
 
-The code can also be download directly from a `tarfile`_.
+The code can also be download directly from this `tarfile`_.
 
 .. _online documentation: http://svnbook.red-bean.com/en/1.5/index.html
 .. _GNU General Public License version 3: http://www.gnu.org/copyleft/gpl.html
