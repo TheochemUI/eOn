@@ -131,5 +131,4 @@ is interpolated through the first snapshot that minimizes to the final state.
 
 .. [#malek00_7723] R. Malek and N. Mousseau, "Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique," *Phys. Rev. E* **62**, 7723 (2000). `DOI <http://dx.doi.org/10.1103/PhysRevE.62.7723>`_
 
-.. [#pedersen14] A. Pedersen and M. Luiser, "Bowl breakout, escaping the positive region when searching for saddle
-  points," *J. Chem. Phys.* **141**, 024109 (2014). `DOI <http://dx.doi.org/10.1063/1.4885852>`_
+.. [#pedersen14] A. Pedersen and M. Luiser, "Bowl breakout, escaping the positive region when searching for saddle points," *J. Chem. Phys.* **141**, 024109 (2014). `DOI <http://dx.doi.org/10.1063/1.4885852>`_
