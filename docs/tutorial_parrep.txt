@@ -31,7 +31,7 @@ Now we can run the trajectory by executing the command ``../../bin/eon``::
 
 Then use "../../bin/eon -n" to register the result::
 
-    $ ../bin/eon -n
+    $ ../../bin/eon -n
     simulation time is 0.000000e+00
     registering results
     found transition with time 8.200e-12
