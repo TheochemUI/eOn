@@ -17,7 +17,7 @@ The ``config.ini`` file will run a parallel replica job with 2 replicas on one l
 
 Now we can run the trajectory by executing the command ``../../bin/eon``::
 
-    $ ../bin/eon
+    $ ../../bin/eon
     simulation time is 0.000000e+00
     state list path does not exist, creating .//states/
     registering results
