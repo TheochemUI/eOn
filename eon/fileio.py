@@ -482,10 +482,12 @@ class Dynamics:
 def load_potfiles(pot_dir):
     ret = {}
     if os.path.isdir(pot_dir):
-        for i in os.listdir(pot_dir):
-            a = open(os.path.join(pot_dir, i), 'r')
+        for name in os.listdir(pot_dir):
+            if os.path.isdir(name):
+                continue
+            a = open(os.path.join(pot_dir, name), 'r')
             b = StringIO("".join(a.readlines()))
-            ret[i] = b
+            ret[name] = b
     return ret
 
 class TableException(Exception):

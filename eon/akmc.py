@@ -15,6 +15,7 @@ import sys
 import ConfigParser
 import os.path
 import shutil
+from time import sleep
 import os
 import time as unix_time
 import optparse
@@ -314,6 +315,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
 
 def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
+    optpar.add_option("-C", "--continuous", action="store_true", dest="continuous", default=False, help="don't quit")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the aKMC simulation, discarding all data")
     optpar.add_option("-f", "--force", action="store_true", dest="force", default = False, help="force a reset, no questions asked")
     optpar.add_option("-r", "--restart", action="store_true", dest="restart", default = False, help="restart the aKMC simulations from a clean dynamics.txt file")
@@ -526,7 +528,12 @@ def main():
             while True:
                 mpiwait()
                 akmc(config)
-        akmc(config)
+        elif options.continuous:
+            while True:
+                sleep(10.0)
+                akmc(config)
+        else:
+            akmc(config)
     else:
         logger.info("Server is locked by pid %i" % lock.pid)
         sys.exit(1)
