@@ -85,7 +85,7 @@ ifdef LAMMPS_POT
         LIBS += ./potentials/LAMMPS/liblammps_serial.a 
     endif
     ifndef EONMPI
-        LIBS += ./potentials/LAMMPS/libfakempi.a
+        LIBS += ./potentials/LAMMPS/libmpi_stubs.a
     endif
     POTENTIALS += "+LAMMPS"
     ifdef LAMMPS_MEAM
