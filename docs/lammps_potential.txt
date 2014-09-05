@@ -8,14 +8,17 @@ LAMMPS Potential
 In order to use the LAMMPS potential you must first build the serial library
 version of LAMMPS. This can be done by following the instructions in the
 `lammps documentation <http://lammps.sandia.gov/doc/Section_start.html>`_ . For
-most cases the following should work::
+most cases executing these commands from the LAMMPS ``src`` folder should work::
 
+    $ cd STUBS
+    $ make
+    $ cd ..
     $ make makelib
     $ make -f Makefile.lib serial
 
-Once you have compiled the library copy ``liblmp_serial.a`` to the
-client/potentials/lammps directory in the Eon source code.  The client can then
-be built like so::
+Once you have compiled the library copy ``liblmp_serial.a`` and
+``STUBS/libmpi_stubs.a`` to the client/potentials/lammps directory in the Eon
+source code.  The Eon client can then be built like so::
 
     $ make LAMMPS_POT=1
 
@@ -34,7 +37,7 @@ Options
 **lammps_logging**: This option enables/disables the LAMMPS logfile. If enabled
 LAMMPS will log to the file ``log.lammps``.
 
-    default: ``true``
+    default: ``false``
 
 **lammps_threads**: Controls how many threads to use if LAMMPS has been
 compiled with OpenMP support via the USER-OMP LAMMPS package.

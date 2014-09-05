@@ -70,13 +70,13 @@ change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 ``FAR`` (fortran archiver) variables to work for your system.
 
 If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS.  If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use. 
- Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
+Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
 
-For most installations, the binary ``client`` can be copied to a directory in your
-``$PATH`` and named ``eonclient``. If you added ``$HOME/eon/bin`` to your path
+For most installations, the binary ``eonclient`` can be copied to a directory in your
+``$PATH``. If you added ``$HOME/eon/bin`` to your path
 during the server installation the following command will install the client::
 
-    $ cp client ../bin/eonclient
+    $ cp eonclient ../bin/eonclient
 
 Otherwise you will need to give the path to the client binary in your
 ``config.ini``. 
