@@ -390,7 +390,8 @@ def main():
 
     if options.print_status:
         states = get_statelist(config.main_temperature / 11604.5)
-        start_state_num, time, previous_state_num, first_run = get_akmc_metadata()
+        start_state_num, time, previous_state_num, first_run, previous_temperature =\
+            get_akmc_metadata()
 
         print
         print "General"
