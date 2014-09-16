@@ -531,8 +531,8 @@ def main():
                 akmc(config)
         elif options.continuous:
             while True:
-                sleep(10.0)
                 akmc(config)
+                sleep(10.0)
         else:
             akmc(config)
     else:
