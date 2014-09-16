@@ -205,7 +205,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                 logger.error("No processes in rate table, but confidence " \
                              "has been reached")
 
-            ratesum = sum(row[1] for row in rate_table)
+            ratesum = sum(row[1] for row in rate_table, 0.0)
 
             u = numpy.random.random_sample()
             p = 0.0
