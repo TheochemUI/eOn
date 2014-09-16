@@ -178,25 +178,31 @@ The MPI communicator allows for the server and client to be run as a MPI job.
 The number of clients that are run and thus the number of jobs is set at
 runtime by the MPI environment.
 
-A MPI aware client must be compiled. It can only be used to run MPI jobs. It
-can be compiled like so:
+A MPI aware client must be compiled, which will be named ``eonclientmpi``
+instead of ``eonclient``. It can only be used to run MPI jobs. It can
+be compiled like so:
 
 ::
 
     make EONMPI=1
 
-Additionally two environment variables must be set. The variable
-``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks should become
-clients and ``EON_SERVER_PATH`` is the path to the server Python script.
-Currently only AKMC is supported. Below is an example of running using the MPI
-communicator:
+If your MPI C++ compiler wrapper is not ``mpicxx``, search for the line
+``CXX=mpicxx`` in ``client/Makefile`` and adjust it accordingly.
+
+To run EON with MPI, two environment variables must be set. The
+variable ``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks
+should become clients and ``EON_SERVER_PATH`` is the path to the
+server Python script. In MPI mode the clients need to be started
+instead of the server and one of them will become the server process.
+Currently only AKMC is supported. Below is an example of running using
+the MPI communicator:
 
 ::
 
     #!/bin/bash
     export EON_NUMBER_OF_CLIENTS=7
     export EON_SERVER_PATH=~/eon/akmc.py
-    mpirun -n 8 ~/eon/client/client_mpi
+    mpirun -n 8 ~/eon/client/eonclientmpi
 
 There must be at least ``EON_NUMBER_OF_CLIENTS`` + 1 ranks running. This is
 because the one additional rank is needed to become the server.
