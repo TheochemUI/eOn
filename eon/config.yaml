@@ -727,7 +727,7 @@ AKMC:
 
         max_kmc_steps:
             kind: int
-            default: 100000
+            default: 0
 
         confidence_scheme:
             kind: string
