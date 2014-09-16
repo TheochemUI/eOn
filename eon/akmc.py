@@ -193,6 +193,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
         else:
             sb = None
 
+        # Do a KMC step.
         if config.sb_on and sb:
             mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
         else:
@@ -204,9 +205,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                 logger.error("No processes in rate table, but confidence " \
                              "has been reached")
 
-            ratesum = 0.0
-            for i in range(len(rate_table)):
-                ratesum += rate_table[i][1]
+            ratesum = sum(row[1] for row in rate_table)
 
             u = numpy.random.random_sample()
             p = 0.0
@@ -256,8 +255,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
 
             # We are not following another trajectory:
             else:
-                for i in range(len(rate_table)):
-                    p += rate_table[i][1]/ratesum
+                for i, row in enumerate(rate_table):
+                    p += row[1]/ratesum
                     if p>u:
                         nsid = i
                         break
