@@ -38,7 +38,14 @@ import askmc
 import movie
 from version import version
 
-def akmc(config): 
+def akmc(config, steps=0):
+    """Poll for status of AKMC clients and possibly make KMC steps.
+
+    Returns the number of KMC steps in the current run at the end of
+    this function. The argument "steps" gives the number of KMC steps
+    done before calling this function, defaulting to zero.
+
+    """
     #log version information
     logger.info('Eon version %s', version())
     # Here's what this does:
@@ -107,7 +114,7 @@ def akmc(config):
     else:
         pass_superbasining = None
 
-    current_state, previous_state, time = kmc_step(current_state, states, time, kT, pass_superbasining)
+    current_state, previous_state, time, steps = kmc_step(current_state, states, time, kT, pass_superbasining, steps)
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
@@ -121,6 +128,8 @@ def akmc(config):
     parser.write(open(metafile, 'w')) 
 
     io.save_prng_state()
+
+    return steps
 
 def get_akmc_metadata():
     if not os.path.isdir(config.path_results):
@@ -169,10 +178,9 @@ def get_superbasin_scheme(states):
     return superbasining
 
 
-def kmc_step(current_state, states, time, kT, superbasining):
+def kmc_step(current_state, states, time, kT, superbasining, steps=0):
     t1 = unix_time.time()
     previous_state = current_state 
-    steps = 0
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
         pass_rec_path = None
@@ -182,8 +190,8 @@ def kmc_step(current_state, states, time, kT, superbasining):
                             config.path_root, config.akmc_thermal_window,
                             recycle_path = pass_rec_path)
 
-    while (current_state.get_confidence() >= config.akmc_confidence) and \
-            steps < config.akmc_max_kmc_steps:
+    while (current_state.get_confidence() >= config.akmc_confidence and
+           (steps < config.akmc_max_kmc_steps or config.akmc_max_kmc_steps == 0)):
 
         steps += 1
 
@@ -205,7 +213,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
                 logger.error("No processes in rate table, but confidence " \
                              "has been reached")
 
-            ratesum = sum(row[1] for row in rate_table, 0.0)
+            ratesum = sum((row[1] for row in rate_table), 0.0)
 
             u = numpy.random.random_sample()
             p = 0.0
@@ -310,7 +318,7 @@ def kmc_step(current_state, states, time, kT, superbasining):
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
-    return current_state, previous_state, time
+    return current_state, previous_state, time, steps
 
 def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
@@ -523,15 +531,23 @@ def main():
             sys.exit(1)
 
     if lock.aquirelock():
-        if config.comm_type == 'mpi':
-            from mpiwait import mpiwait
+        if options.continuous or config.comm_type == 'mpi':
+            # Define a wait method.
+            if config.comm_type == 'mpi':
+                from mpiwait import mpiwait
+                wait = mpiwait
+            elif options.continuous:
+                wait = lambda: sleep(10.0)
+            else:
+                raise RuntimeError("You have found a bug in EON!")
+            # Run a specified number of steps or forever.
+            steps = 0
             while True:
-                mpiwait()
-                akmc(config)
-        elif options.continuous:
-            while True:
-                akmc(config)
-                sleep(10.0)
+                steps = akmc(config, steps)
+                if (config.akmc_max_kmc_steps > 0 and
+                    steps >= config.akmc_max_kmc_steps):
+                    break
+                wait()
         else:
             akmc(config)
     else:

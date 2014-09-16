@@ -113,9 +113,11 @@ hessian calculations. This option is usually used when a single
 
     default: ``False``
 
-**max_kmc_steps**: The maximum number of KMC transitions in a row.
+**max_kmc_steps**: The maximum number of KMC transitions in a row.  In
+MPI or continuous mode, EON will exit after performing this many KMC
+steps. If this is set to 0, EON will run forever.
 
-    default: ``100000``
+    default: ``0``
 
 
 .. rubric:: References
