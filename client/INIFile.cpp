@@ -279,58 +279,77 @@ string CIniFile::GetValue( unsigned const keyID, unsigned const valueID, string 
   return defValue;
 }
 
-string CIniFile::GetValue( string const keyname, string const valuename, string const defValue) const
+/* This one sets the "found" flag to false if the keyname/valuename
+   combo was not found and returns an empty string. */
+string CIniFile::GetValue( string const keyname, string const valuename, bool &found) const
 {
   long keyID = FindKey( keyname);
   if ( keyID == noID)
   {
-    //printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
-    return defValue;
+    found = false;
+    return "";
   }
 
   long valueID = FindValue( unsigned(keyID), valuename);
   if ( valueID == noID)
   {
-    //printf("  [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), defValue.c_str());
-    return defValue;
+    found = false;
+    return "";
   }
 
   printf("* [%s] %s: %s\n", keyname.c_str(), valuename.c_str(), keys[keyID].values[valueID].c_str());
+  found = true;
   return keys[keyID].values[valueID];
+}
+
+string CIniFile::GetValue( string const keyname, string const valuename, string const defValue) const
+{
+  bool found;
+  string value = GetValue(keyname, valuename, found);
+  if (found)
+    return value;
+  else
+    return defValue;
 }
 
 int CIniFile::GetValueI(string const keyname, string const valuename, int const defValue) const
 {
-  char svalue[MAX_VALUEDATA];
-
-  sprintf( svalue, "%d", defValue);
-  return atoi( GetValue( keyname, valuename, svalue).c_str());
+  bool found;
+  string value = GetValue( keyname, valuename, found);
+  if (found)
+    return atoi(value.c_str());
+  else
+    return defValue;
 }
 
 long CIniFile::GetValueL(string const keyname, string const valuename, long const defValue) const
 {
-  char svalue[MAX_VALUEDATA];
-
-  sprintf( svalue, "%ld", defValue);
-  return atol( GetValue( keyname, valuename, svalue).c_str());
+  bool found;
+  string value = GetValue(keyname, valuename, found);
+  if (found)
+    return atol(value.c_str());
+  else
+    return defValue;
 }
 
 double CIniFile::GetValueF(string const keyname, string const valuename, double const defValue) const
 {
-  char svalue[MAX_VALUEDATA];
-
-  sprintf( svalue, "%.15e", defValue);
-  return atof( GetValue( keyname, valuename, svalue).c_str());
+  bool found;
+  string value = GetValue(keyname, valuename, found);
+  if (found)
+    return atof(value.c_str());
+  else
+    return defValue;
 }
 
 bool CIniFile::GetValueB(string const keyname, string const valuename, bool const defValue) const
 {
-  char svalue[MAX_VALUEDATA];
-
-  if(!defValue){sprintf( svalue, "False");}
-  else{sprintf( svalue, "True");}
-  string val = GetValue( keyname, valuename, svalue);
-  return (val[0] == 'T' || val[0] =='t');
+  bool found;
+  string value = GetValue(keyname, valuename, found);
+  if (found)
+    return value[0] == 'T' || value[0] =='t';
+  else
+    return defValue;
 }
 
 // 16 variables may be a bit of over kill, but hey, it's only code.

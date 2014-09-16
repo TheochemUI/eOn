@@ -107,6 +107,7 @@ public:
   // Returns defValue if key/value not found.
   string GetValue( unsigned const keyID, unsigned const valueID, string const defValue = "") const;
   string GetValue(string const keyname, string const valuename, string const defValue = "") const; 
+  string GetValue(string const keyname, string const valuename, bool &found) const; 
   int    GetValueI(string const keyname, string const valuename, int const defValue = 0) const;
   long    GetValueL(string const keyname, string const valuename, long const defValue = 0) const;
   bool   GetValueB(string const keyname, string const valuename, bool const defValue = false) const;
