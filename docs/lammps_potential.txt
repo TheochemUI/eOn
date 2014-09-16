@@ -17,7 +17,7 @@ most cases executing these commands from the LAMMPS ``src`` folder should work::
     $ make -f Makefile.lib serial
 
 Once you have compiled the library copy ``liblmp_serial.a`` and
-``STUBS/libmpi_stubs.a`` to the client/potentials/lammps directory in the Eon
+``STUBS/libmpi_stubs.a`` to the client/potentials/LAMMPS directory in the Eon
 source code.  The Eon client can then be built like so::
 
     $ make LAMMPS_POT=1
