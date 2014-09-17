@@ -81,8 +81,6 @@ def akmc(config, steps=0):
         # Remove superbasin data.
         if os.path.isdir(config.sb_path):
             shutil.rmtree(config.sb_path)
-            os.mkdir(config.sb_path)
-            os.removedirs(config.sb_path)
         state_dirs = os.listdir(config.path_states)
         for i in state_dirs:
             if i == 'state_table':
