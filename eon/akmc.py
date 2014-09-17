@@ -77,7 +77,7 @@ def akmc(config, steps=0):
     if first_run:
         previous_temperature = config.main_temperature
 
-    if previous_temperature != config.main_temperature:
+    if abs(previous_temperature - config.main_temperature) > 1e-6:
         # Remove superbasin data.
         if os.path.isdir(config.sb_path):
             shutil.rmtree(config.sb_path)
