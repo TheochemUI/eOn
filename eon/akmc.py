@@ -77,16 +77,16 @@ def akmc(config, steps=0):
     if first_run:
         previous_temperature = config.main_temperature
 
+    # Did the temperature change? Then the existing superbasins are invalid now.
     if abs(previous_temperature - config.main_temperature) > 1e-6:
         # Remove superbasin data.
         if os.path.isdir(config.sb_path):
             shutil.rmtree(config.sb_path)
         state_dirs = os.listdir(config.path_states)
-        for i in state_dirs:
-            if i == 'state_table':
+        for state_dir in state_dirs:
+            if state_dir == 'state_table':
                 continue
-            superbasin_file = os.path.join(config.path_states, i)
-            superbasin_file = os.path.join(superbasin_file, config.sb_state_file)
+            superbasin_file = os.path.join(config.path_states, state_dir, config.sb_state_file)
             if os.path.isfile(superbasin_file):
                 os.remove(superbasin_file)
         # Keep the new temperature.
