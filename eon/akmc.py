@@ -105,14 +105,11 @@ def akmc(config, steps=0):
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
+    else:
+        superbasining = None
 
     # Take a KMC step, if it's time.
-    if config.sb_on:
-        pass_superbasining = superbasining
-    else:
-        pass_superbasining = None
-
-    current_state, previous_state, time, steps = kmc_step(current_state, states, time, kT, pass_superbasining, steps)
+    current_state, previous_state, time, steps = kmc_step(current_state, states, time, kT, superbasining, steps)
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
