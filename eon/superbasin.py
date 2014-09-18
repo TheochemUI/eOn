@@ -18,16 +18,26 @@ logger = logging.getLogger('superbasin')
 
 class Superbasin:
 
-    def __init__(self, path, id, state_list = None, get_state = None):
-        if state_list is None and get_state is None:
+    def __init__(self, path, id, state_list=None, get_state=None):
+        """Initialize superbasin.
+
+        Must pass either state_list or get_state:
+        * state_list: Create a new state (must not exist, yet)
+        * get_state: Read an existing state from path (must exist)
+
+        """
+        if (state_list is None) != (get_state is None):
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
         self.id = int(id)
         self.path = os.path.join(path, str(self.id))
-        if not os.path.isfile(self.path):
+        # Get the states.
+        if state_list is not None:
+            if os.path.isfile(self.path):
+                raise IOError("Superbasin file '%s' already exists!" % self.path)
             self.states = state_list
             self.state_numbers = [state.number for state in state_list]
             self.write_data()
-        else:
+        else: # get_state is not None
             self.read_data(get_state)
         self.state_dict = {}
         for state in self.states:
@@ -100,7 +110,10 @@ class Superbasin:
         return mean_time, exit_state, product_state, exit_proc_id, self.id
 
     def contains_state(self, state):
-        return state in self.state_dict.values()
+        try:
+            return state.number in self.state_dict
+        except AttributeError:
+            return False
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
