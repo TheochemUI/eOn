@@ -61,6 +61,12 @@ class State:
     def __repr__(self):
         return "State #%i" % self.number
 
+    def __eq__(self, other):
+        return isinstance(other, State) and self.number == other.number
+
+    def __hash__(self):
+        return hash(self.number)
+
     def add_process(self, result):
         if 'stdout.dat' in result:
             id = self.get_num_procs()
