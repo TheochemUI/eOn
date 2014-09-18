@@ -26,7 +26,7 @@ class SuperbasinScheme:
     def __init__(self, superbasin_path, states, kT):
 
         self.path = superbasin_path
-        self.path_storage = superbasin_path + "storage/"
+        self.path_storage = os.path.join(superbasin_path, "storage")
 
         self.states = states
         self.kT = kT
@@ -37,26 +37,27 @@ class SuperbasinScheme:
             os.makedirs(self.path_storage)
 
         self.superbasins = []
-        dirs = os.listdir(self.path)
         self.next_sb_num = 0
-        for i in dirs:
-            if i != 'storage':
-
-                self.next_sb_num = max(self.next_sb_num, int(i))
-                self.superbasins.append(superbasin.Superbasin(self.path, i, get_state = states.get_state))
+        for i in os.listdir(self.path):
+            if i == 'storage':
+                continue
+            self.next_sb_num = max(self.next_sb_num, int(i))
+            self.superbasins.append(
+                superbasin.Superbasin(self.path, i,
+                                      get_state=states.get_state)
+            )
 
         self.next_sb_num += 1
         self.read_data()
 
     def get_containing_superbasin(self, state):
-        for i in self.superbasins:
-            if i.contains_state(state):
-                return i
+        for sb in self.superbasins:
+            if sb.contains_state(state):
+                return sb
         return None
 
     def make_basin(self, merge_states):
-
-        # is there an upper limit for the size of a superbasin
+        # Is there an upper limit for the size of a superbasin?
         if config.sb_max_size:
             # first determine how many states will be in the new superbasin
             numstates = 0
@@ -66,10 +67,11 @@ class SuperbasinScheme:
                     numstates += 1
                 else:
                     numstates += len(sb.states)
-            # if number of states in the new superbasin wil be larger than 2, do not proceed:
+            # if number of states in the new superbasin will be larger
+            # than the maximum size, do not proceed
             if numstates > config.sb_max_size:
                 return
-        
+        # Now start creating the new superbasin.
         new_sb_states = []
         for i in merge_states:
             sb = self.get_containing_superbasin(i)
@@ -81,11 +83,10 @@ class SuperbasinScheme:
                     if j not in new_sb_states:
                         new_sb_states.append(j)
                 # keep basins to analyze data
-                if 1:
+                if True:
                     sb.delete(self.path_storage)
                 else:
                     sb.delete()
-
                 self.superbasins.remove(sb)
 
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
@@ -93,8 +94,10 @@ class SuperbasinScheme:
         # Also, if confidence is changed and new processes are found, the superbasin
         # will ignore these new processes.
 
-        self.superbasins.append(superbasin.Superbasin(self.path, self.next_sb_num, state_list = new_sb_states)) 
-
+        self.superbasins.append(
+            superbasin.Superbasin(self.path, self.next_sb_num,
+                                  state_list=new_sb_states)
+        )
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
 
@@ -130,7 +133,6 @@ class TransitionCounting(SuperbasinScheme):
         logger.debug('Registering transitions')
 
         if start_state == end_state and not config.comp_use_identical:
-#        if start_state == end_state:
             return
 
         start_count = self.get_count(start_state)
@@ -157,7 +159,7 @@ class TransitionCounting(SuperbasinScheme):
     def get_count(self, state):
         try:
             return self.count[state]
-        except:
+        except KeyError:
             data_path = os.path.join(state.path, config.sb_state_file)
             self.count[state] = {}
             if os.path.isfile(data_path):
