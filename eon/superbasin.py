@@ -33,9 +33,7 @@ class Superbasin:
         for state in self.states:
             self.state_dict[state.number] = state
 
-
     def step(self, entry_state, get_product_state):
-    
         # c_i (forming vector c) is the inverse of the sum of the rates for each transient state i
         # Q is the transient matrix of the canonical markov matrix. 
         # R is the recurrent matrix of the canonical markov matrix.
@@ -80,7 +78,6 @@ class Superbasin:
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
         
-        
         # import pdb; pdb.set_trace()
         
         t, B, residual = mcamc(Q, R, c)
@@ -101,11 +98,9 @@ class Superbasin:
         product_state = get_product_state(exit_state_number, exit_proc_id)        
         mean_time = t[st2i[entry_state.number]]
         return mean_time, exit_state, product_state, exit_proc_id, self.id
-        
-                    
+
     def contains_state(self, state):
         return state in self.state_dict.values()
-
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
@@ -114,12 +109,10 @@ class Superbasin:
             f.write("%d " % number)
         f.close()
 
-
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
         self.state_numbers = [number for number in open(self.path, 'r').readline().strip().split()]
         self.states = [get_state(number) for number in self.state_numbers]
-
 
     def delete(self, storage=None):
         if storage is None:
@@ -127,7 +120,7 @@ class Superbasin:
             os.remove(self.path)
         else:
             logger.debug('storing %s' % self.path)
-            path_storage = storage+str(self.id)
+            path_storage = os.path.join(storage, str(self.id))
             os.rename(self.path, path_storage)
         self.states = None
 
