@@ -105,13 +105,20 @@ class Superbasin:
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
         f = open(self.path, 'w')
-        for number in self.state_numbers:
-            f.write("%d " % number)
-        f.close()
+        try:
+            for number in self.state_numbers:
+                f.write("%d " % number)
+        finally:
+            f.close()
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)
-        self.state_numbers = [number for number in open(self.path, 'r').readline().strip().split()]
+        f = open(self.path)
+        try:
+            self.state_numbers = [int(number)
+                                  for number in f.read().split()]
+        finally:
+            f.close()
         self.states = [get_state(number) for number in self.state_numbers]
 
     def delete(self, storage=None):
