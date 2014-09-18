@@ -31,6 +31,27 @@ Here is an example in.lammps file that uses the morse potential::
     pair_coeff * * 0.7102 1.6047 2.797 #specify parameters
     pair_modify shift yes #shift the potential to be zero at the cutoff
 
+
+MEAM
+====
+
+If you compiled LAMMPS with the MEAM package you need to copy
+``lib/meam/libmeam.a`` from the LAMMPS directory to
+``potentials/LAMMPS`` in EON. After that, add the following line to
+``client/Makefile``::
+
+    LDFLAGS += potentials/LAMMPS/libmeam.a
+
+OpenMP
+======
+
+Compile LAMMPS with the USER-OMP package. Then add the following line
+to ``client/Makefile``::
+
+    LDFLAGS += -fopenmp
+
+See below for setting the number of threads.
+
 Options
 =======
 
