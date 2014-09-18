@@ -72,22 +72,20 @@ class SuperbasinScheme:
             if numstates > config.sb_max_size:
                 return
         # Now start creating the new superbasin.
-        new_sb_states = []
+        new_sb_states = set()
         for i in merge_states:
             sb = self.get_containing_superbasin(i)
             if sb is None:
-                if i not in new_sb_states:
-                    new_sb_states.append(i)
+                new_sb_states.add(i)
             else:
-                for j in sb.states:
-                    if j not in new_sb_states:
-                        new_sb_states.append(j)
+                new_sb_states.update(sb.states)
                 # keep basins to analyze data
                 if True:
                     sb.delete(self.path_storage)
                 else:
                     sb.delete()
                 self.superbasins.remove(sb)
+        new_sb_states = list(new_sb_states)
 
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         # However, it will likely be very slow. We should be able to do without it.
