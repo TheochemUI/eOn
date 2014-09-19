@@ -26,7 +26,7 @@ class Superbasin:
         * get_state: Read an existing state from path (must exist)
 
         """
-        if (state_list is None) != (get_state is None):
+        if (state_list is None) == (get_state is None):
             raise ValueError('Superbasin must either have a list of states or a reference to get_state of a StateList')
         self.id = int(id)
         self.path = os.path.join(path, str(self.id))
