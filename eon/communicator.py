@@ -28,11 +28,11 @@ import numpy
 # To ensure backward compatibility
 import sys
 if sys.version_info < (2, 5):
-     def any(iterable):
-         for element in iterable:
-             if element:
+    def any(iterable):
+        for element in iterable:
+            if element:
                 return True
-         return False
+        return False
 
 import re
 
@@ -41,7 +41,7 @@ def tryint(s):
         return int(s)
     except:
         return s
-     
+
 def alphanum_key(s):
     """ Turn a string into a list of string and number chunks.
         "z23a" -> ["z", 23, "a"]
@@ -118,17 +118,18 @@ class Communicator:
         raise NotImplementedError()
 
     def get_bundle_size(self, job_path):
-        if type(job_path) != list:
-            fnames = [os.path.basename(f) for f in glob.glob(os.path.join(job_path, "results*.dat"))]
+        if not isinstance(job_path, list):
+            # List files in job_path.
+            fnames = os.listdir(job_path)
         else:
+            # job_path is already a list of filenames.
             fnames = job_path
-
-        pattern = re.compile('results_\d+.dat')
-        size = len([ fname for fname in fnames if pattern.match(fname) ])
-        if size == 0 and 'results.dat' in fnames:
-            size = 1
+        # Count results*.dat files.
+        pattern = re.compile(r'results(?:_\d+)?.dat$')
+        size = sum(1
+                   for fname in fnames
+                   if pattern.match(fname))
         return size
-
 
     def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple jobs into multiple single 
