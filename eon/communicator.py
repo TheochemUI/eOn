@@ -87,11 +87,19 @@ def get_communicator():
     get_communicator.comm = comm
     return comm
 
+
 class NotImplementedError(Exception):
     pass
 
+
 class CommunicatorError(Exception):
     pass
+
+
+class EONClientError(Exception):
+    """An EON client finished without outputting results, it probably crashed."""
+    pass
+
 
 class Communicator:
     def __init__(self, scratchpath, bundle_size=1):
@@ -132,11 +140,15 @@ class Communicator:
         return size
 
     def unbundle(self, resultpath, keep_result):
-        '''This method unbundles multiple jobs into multiple single 
-           jobs so the akmc script can process them.'''
+        '''This method unbundles multiple jobs into multiple single
+           jobs so the akmc script can process them.
 
+           If the job did not return results (probably because it
+           crashed or was canceled), this method will raise
+           EONClientError.
+
+        '''
         # These are the files in the result directory that we keep.
-
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
 
@@ -149,11 +161,13 @@ class Communicator:
             # and then create the new job directories with the split files.
             bundle_size = self.get_bundle_size(jobpath)
 
-            # Get the number at the end of the jobpath. Looks like path/to/job/#_#
-            # and we want the second #.
-            basename, dirname = os.path.split(jobpath)
+            if bundle_size == 0:
+                logger.error("Client running in %s returned no results. "
+                             "Check its output for errors." % jobpath)
+                raise EONClientError("Client running in %s returned no results. "
+                                     "Check its output for errors." % jobpath)
 
-            results = [{'name':dirname} for i in range(bundle_size)]
+            results = [{'name': dirname} for i in xrange(bundle_size)]
 
             filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
             if len(filenames) == 0:
@@ -174,7 +188,7 @@ class Communicator:
                     # parse filename
                     rootname, fname = os.path.split(filename)
 
-                    match = re.match(regex, fname)
+                    match = regex.match(fname)
                     if not match:
                         continue
                     parts = match.groups()
