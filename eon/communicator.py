@@ -152,7 +152,7 @@ class Communicator:
         jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
                     if os.path.isdir(os.path.join(resultpath,d)) ]
 
-        regex = re.compile("([\w]+)_([\d]+)(\.[\w]+)")
+        regex = re.compile(r"(\w+)_(\d+)(\.\w+)")
         for jobpath in jobpaths:
             basename, dirname = os.path.split(jobpath)
             if not keep_result(dirname):
@@ -170,8 +170,12 @@ class Communicator:
             results = [{'name': dirname} for i in xrange(bundle_size)]
 
             filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
-            if len(filenames) == 0:
+            if not filenames:
+                # Only a single task inside this job, no need to unbundle.
                 for filename in glob.glob(os.path.join(jobpath, "*.*")):
+                    if not (filename.endswith(".con") or
+                            filename.endswith(".dat")):
+                        continue
                     rootname, fname = os.path.split(filename)
                     f = open(filename,'r')
                     filedata = StringIO(f.read())
@@ -180,32 +184,34 @@ class Communicator:
                     # add result to results
                     results[0][fname] = filedata
                     results[0]['number'] = 0
+            else:
+                # Several tasks bundled inside this job, we need to unbundle.
+                for filename in filenames:
+                    if not (filename.endswith(".con") or
+                            filename.endswith(".dat")):
+                        continue
 
-            for filename in filenames:
-                if filename[-3:] != 'con' and filename[-3:] != 'dat':
-                    continue
-                try:
                     # parse filename
                     rootname, fname = os.path.split(filename)
-
                     match = regex.match(fname)
                     if not match:
                         continue
                     parts = match.groups()
-
                     index = int(parts[1])
                     key = parts[0]+parts[2]
 
                     # Load data into stringIO object (should we just return filehandles?)
-                    f = open(filename,'r')
-                    filedata = StringIO(f.read())
-                    f.close()
+                    try:
+                        f = open(filename,'r')
+                        filedata = StringIO(f.read())
+                        f.close()
+                    except (IOError, OSError):
+                        logger.exception("Failed to read file %s" % filename)
+                        continue
 
                     # add result to results
                     results[index][key] = filedata
                     results[index]['number'] = index
-                except:
-                    logger.exception("Failed to handle file %s" % filename)
 
             # XXX: UGLY: We need a way to check if there are no results.
             if not any([ filename.startswith('results') for filename in results[0].keys() ]):
