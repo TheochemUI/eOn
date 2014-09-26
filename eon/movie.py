@@ -10,10 +10,11 @@
 
 import os
 import sys
+import glob
 
 import fileio as io
 
-def make_movie(movie_type, path_root, states):
+def make_movie(movie_type, path_root, states, separate_files=False):
     movie_path = "movie.poscar"
     if movie_type == 'dynamics':
         atoms_list = dynamics(path_root, states)
@@ -41,7 +42,6 @@ def make_movie(movie_type, path_root, states):
             limit = int(movie_type.split(',')[2])
         else:
             limit = 0
-
         atoms_list = processes(states, statenr, limit)
         movie_path = "processes_%i.poscar" % statenr
     elif movie_type == 'graph':
@@ -58,14 +58,28 @@ def make_movie(movie_type, path_root, states):
     else:
         print "Unknown MOVIE_TYPE"
         sys.exit(1)
-    if os.path.isfile(movie_path):
-        os.unlink(movie_path)
-    save_movie(atoms_list, movie_path)
-    print "Saved %i frames to %s" % (len(atoms_list), movie_path)
+    if separate_files:
+        movie_dir = "movies"
+        if not os.path.exists(movie_dir):
+            os.mkdir(movie_dir)
+        movie_path = os.path.join(movie_dir, movie_path)
+        # Delete existing files with the same root.
+        for old_poscar in glob.glob(movie_path + ".*"):
+            os.unlink(old_poscar)
+        # Write new movie.
+        for i, atoms in enumerate(atoms_list):
+            path_i = movie_path + (".%010d" % i)
+            io.saveposcar(path_i, atoms, 'w')
+        print "Saved %i frames to %s.*" % (len(atoms_list), movie_path)
+    else:
+        # Delete existing file.
+        if os.path.isfile(movie_path):
+            os.unlink(movie_path)
+        # Write movie.
+        for atoms in atoms_list:
+            io.saveposcar(movie_path, atoms, 'a')
+        print "Saved %i frames to %s" % (len(atoms_list), movie_path)
 
-def save_movie(atoms_list, movie_path):
-    for atoms in atoms_list:
-        io.saveposcar(movie_path, atoms, 'a')
 
 def get_trajectory(trajectory_path):
     f = open(trajectory_path)
