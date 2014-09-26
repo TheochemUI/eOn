@@ -324,6 +324,7 @@ def main():
     optpar.add_option("-s", "--status", action="store_true", dest="print_status", default = False, help = "print the status of the simulation and currently running jobs")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     optpar.add_option("-m", "--movie", action="store", dest="movie_type", default = "", help="Specify the type of movie to make [dynamics, states, fastestpath, fastestfullpath, graph, processes]. Process movies are specified like so: --movie processes,statenumber,processlimit. Where processes is the string processes, statenumber is the number of the state that you want to view, and process limit is the maximum number of processes you would like in the movie. The returned processes are reverse sorted by rate such that the fastest processes is the first in the movie.")
+    optpar.add_option("-M", "--separate-movie-files", action="store_true", dest="separate_movie_files", default=False, help="Do not write the movie into a single file but use a separate POSCAR for every state. These are created in the \"movies\" directory. Only useful in conjunction with --movie.")
     optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
     (options, args) = optpar.parse_args()
 
@@ -382,7 +383,8 @@ def main():
 
     if len(options.movie_type) > 0:
         states = get_statelist(config.main_temperature / 11604.5)
-        movie.make_movie(options.movie_type, config.path_root, states)
+        movie.make_movie(options.movie_type, config.path_root, states,
+                         options.separate_movie_files)
         sys.exit(0)
 
     # From the config file: The Novotny and C&V (ASKMC) methods should not be used together.
