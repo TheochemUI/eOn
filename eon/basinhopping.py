@@ -15,7 +15,7 @@ import logging
 import logging.handlers
 logger = logging.getLogger('basinhopping')
 import numpy
-numpy.seterr(all='raise')
+numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
 import os
 import shutil
