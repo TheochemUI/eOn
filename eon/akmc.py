@@ -24,7 +24,7 @@ import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
 
-numpy.seterr(all='raise')
+numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
 import communicator
 import config
