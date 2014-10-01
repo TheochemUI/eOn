@@ -137,7 +137,8 @@ class Communicator:
         size = sum(1
                    for fname in fnames
                    if pattern.match(fname))
-        return size
+        is_bundle = not (size == 1 and fnames[0] == "results.dat")
+        return size, is_bundle
 
     def unbundle(self, resultpath, keep_result):
         '''This method unbundles multiple jobs into multiple single
@@ -159,7 +160,7 @@ class Communicator:
                 continue
             # Need to figure out how many jobs were bundled together
             # and then create the new job directories with the split files.
-            bundle_size = self.get_bundle_size(jobpath)
+            bundle_size, is_bundle = self.get_bundle_size(jobpath)
 
             if bundle_size == 0:
                 logger.error("Client running in %s returned no results. "
@@ -169,8 +170,7 @@ class Communicator:
 
             results = [{'name': dirname} for i in xrange(bundle_size)]
 
-            filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
-            if not filenames:
+            if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.
                 for filename in glob.glob(os.path.join(jobpath, "*.*")):
                     if not (filename.endswith(".con") or
@@ -186,6 +186,7 @@ class Communicator:
                     results[0]['number'] = 0
             else:
                 # Several tasks bundled inside this job, we need to unbundle.
+                filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
                 for filename in filenames:
                     if not (filename.endswith(".con") or
                             filename.endswith(".dat")):
@@ -519,7 +520,7 @@ class BOINC(Communicator):
 
             try:
                 tar = tarfile.open(resultpath)
-                bundle_size = self.get_bundle_size(tar.getnames())
+                bundle_size, _ = self.get_bundle_size(tar.getnames())
                 results = [ {'name':jobname} for i in range(bundle_size) ]
                 if config.debug_keep_all_results:
                     rp = os.path.join(config.path_root,config.debug_results_path)
