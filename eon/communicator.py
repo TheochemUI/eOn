@@ -137,7 +137,7 @@ class Communicator:
         size = sum(1
                    for fname in fnames
                    if pattern.match(fname))
-        is_bundle = not (size == 1 and fnames[0] == "results.dat")
+        is_bundle = not (size == 1 and "results.dat" in fnames)
         return size, is_bundle
 
     def unbundle(self, resultpath, keep_result):
