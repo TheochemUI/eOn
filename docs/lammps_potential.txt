@@ -64,3 +64,6 @@ LAMMPS will log to the file ``log.lammps``.
 compiled with OpenMP support via the USER-OMP LAMMPS package.
 
     default: ``0``
+
+test
+====
