@@ -494,7 +494,7 @@ class AKMCState(state.State):
                              "Nonnegative Displacement Abort",
                              "Nonlocal abort",
                              "Negative barrier",
-                             "MD Trajecotry too short", 
+                             "MD Trajectory too short", 
                              "No negative mode at saddle",
                              "No forward barrier in minimized band",
                              ]
