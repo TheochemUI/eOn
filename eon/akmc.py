@@ -534,7 +534,12 @@ def main():
                 from mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
-                wait = lambda: sleep(10.0)
+                if config.comm_type == "local":
+                    # In local, everything is synchronous, so no need
+                    # to wait here.
+                    wait = lambda: None
+                else:
+                    wait = lambda: sleep(10.0)
             else:
                 raise RuntimeError("You have found a bug in EON!")
             # Run a specified number of steps or forever.
