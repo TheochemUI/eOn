@@ -155,6 +155,12 @@ class Superbasin:
         considered.
 
         """
+        # Do not filter states if superbasin_confidence is disabled.
+        if not config.sb_superbasin_confidence:
+            for state in self.states:
+                yield state
+            return
+        # The code for an enabled superbasin_confidence feature follows.
         if config.saddle_method == "dynamics":
             # Use time spent in dynamics.
             try:
@@ -176,8 +182,8 @@ class Superbasin:
             # Use number of searches.
             try:
                 max_searches = max(state.get_number_of_searches()
-                               for state in self.states
-                               if state.get_ratetable(self))
+                                   for state in self.states
+                                   if state.get_ratetable(self))
             except ValueError:
                 # There is no state with an exit process, yet.
                 max_searches = 0

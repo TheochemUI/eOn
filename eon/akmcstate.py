@@ -261,9 +261,15 @@ class AKMCState(state.State):
 
         If superbasin is passed, that means the state is in that
         superbasin. The confidence calculation is adjusted so that
-        only processes that lead out of the superbasin are counted.
+        only processes that lead out of the superbasin are
+        counted. This may be disabled by the
+        config.sb_superbasin_confidence option.
 
         """
+        # Possibly disable superbasin feature.
+        if not config.sb_superbasin_confidence:
+            superbasin = None
+
         # checking to see if all recycling jobs are complete
         if config.recycling_on and config.disp_moved_only:
             job_table_path = os.path.join(config.path_root, "jobs.tbl")

@@ -43,6 +43,10 @@ Monte Carlo with Absorbing Markov Chains
 
     default: ``0.01``
 
+**superbasin_confidence**: Superbasin KMC steps only consider exit processes from the superbasin. As fast processes get absorbed more and more into the superbasin, the relevant exit processes have higher and higher barriers. The confidence to have found all relevant processes leading away from a state is heavily influenced by the fast processes, that no longer exit the superbasin. To make sure that the confidence is adequately high for the barrier energies leaving the superbasin, additional searches need to be performed. This setting (which defaults to true) enables these additional searches. The searches are marked in states/<state_number>/search_results.txt by appending the number of the superbasin in which the search was performed in brackets. In general, this option should not be disabled! It exists only for debug purposes and cases where the user is sure that the additional searches are not needed.
+
+    default: ``True``
+
 
 Accelerated Superbasin Kinetic Monte Carlo
 ------------------------------------------
