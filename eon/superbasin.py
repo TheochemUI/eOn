@@ -14,6 +14,7 @@ import numpy
 from mcamc import mcamc
 import logging
 logger = logging.getLogger('superbasin')
+import config
 
 
 class Superbasin:
@@ -144,3 +145,56 @@ class Superbasin:
             os.rename(self.path, path_storage)
         self.states = None
 
+    def _get_filtered_states(self):
+        """Filter out states, which have no processes leading out of the superbasin
+        and which have spent at least twice as much time in dynamics
+        search as the longest time of all other states which do have
+        processes leading out.
+
+        Returns an interator over states that should still be
+        considered.
+
+        """
+        if config.saddle_method == "dynamics":
+            # Use time spent in dynamics.
+            try:
+                max_time = max(state.get_time()
+                               for state in self.states
+                               if state.get_ratetable(self))
+            except ValueError:
+                # There is no state with an exit process, yet.
+                max_time = 0.0
+            if max_time < 100.0:
+                # If no state was searched for at least 100 fs, do not
+                # filter yet.
+                for state in self.states:
+                    yield state
+            for state in self.states:
+                if state.get_ratetable(self) or state.get_time() < 2*max_time:
+                    yield state
+        else:
+            # Use number of searches.
+            try:
+                max_searches = max(state.get_number_of_searches()
+                               for state in self.states
+                               if state.get_ratetable(self))
+            except ValueError:
+                # There is no state with an exit process, yet.
+                max_searches = 0
+            if max_searches < 1:
+                # If no state was searched at least once, do not
+                # filter yet.
+                for state in self.states:
+                    yield state
+            for state in self.states:
+                if state.get_ratetable(self) or state.get_number_of_searches() < 2*max_searches:
+                    yield state
+
+    def get_confidence(self):
+        return min(state.get_confidence(self)
+                   for state in self._get_filtered_states()) #self.states)
+
+    def get_lowest_confidence_state(self):
+        return sorted(self._get_filtered_states(),
+                      key=lambda state: state.get_confidence(self)
+                      )[0]
