@@ -33,6 +33,7 @@ def get_minmodexplorer():
     else:
         return ClientMinModeExplorer
 
+
 class Explorer:
     def __init__(self):
         self.wuid_path = os.path.join(config.path_scratch, "wuid")
@@ -53,11 +54,20 @@ class Explorer:
 
 
 class MinModeExplorer(Explorer):
-    def __init__(self, states, previous_state, state):
+    def __init__(self, states, previous_state, state, superbasin=None):
+        """Init MinModeExplorer.
+
+        If superbasin is passed, all states in the superbasin will be
+        searched until all of them have the required confidence. It
+        will also lead to a different confidence definition being
+        used, which takes only processes exiting the SB into account.
+
+        """
         Explorer.__init__(self)
         self.states = states
         self.state = state
         self.previous_state = previous_state
+        self.superbasin = superbasin
         self.comm = communicator.get_communicator()
 
         if config.recycling_on: 
@@ -94,7 +104,7 @@ class MinModeExplorer(Explorer):
 
     def explore(self):
         self.register_results()
-        if self.state.get_confidence() < config.akmc_confidence:
+        if self.state.get_confidence(self.superbasin) < config.akmc_confidence:
             self.make_jobs()
         else:
             num_cancelled = self.comm.cancel_state(self.state.number)
@@ -128,13 +138,16 @@ class MinModeExplorer(Explorer):
 
 
 class ClientMinModeExplorer(MinModeExplorer):
-    def __init__(self, states, previous_state, state):
-        MinModeExplorer.__init__(self, states, previous_state, state)
+    def __init__(self, states, previous_state, state, superbasin=None):
+        MinModeExplorer.__init__(self, states, previous_state, state, superbasin)
         job_table_path = os.path.join(config.path_root, "jobs.tbl")
         job_table_columns = [ 'state', 'wuid', 'type']
         self.job_table = io.Table(job_table_path, job_table_columns)
 
-        self.job_table.delete_row_func('state', lambda s: s != state.number)
+        if self.superbasin:
+            self.job_table.delete_row_func('state', lambda s: s not in self.superbasin.state_dict)
+        else:
+            self.job_table.delete_row_func('state', lambda s: s != state.number)
 
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
@@ -230,7 +243,7 @@ class ClientMinModeExplorer(MinModeExplorer):
         if os.path.isdir(config.path_jobs_in):
             try:
                 shutil.rmtree(config.path_jobs_in)  
-            except:
+            except (OSError, IOError):
                 pass
         if not os.path.isdir(config.path_jobs_in):
             os.makedirs(config.path_jobs_in)
@@ -239,12 +252,12 @@ class ClientMinModeExplorer(MinModeExplorer):
         def keep_result(name):
             # note that all processes are assigned to the current state
             state_num = int(name.split("_")[0])
-            return (state_num == self.state.number and \
-                    self.state.get_confidence() < config.akmc_confidence)
-
-            #return (config.debug_register_extra_results or \
-            #        state_num == self.state.number or \
-            #        self.state.get_confidence() < config.akmc_confidence)
+            if self.superbasin:
+                return (state_num in self.superbasin.state_dict and
+                        self.superbasin.get_confidence() < config.akmc_confidence)
+            else:
+                return (state_num == self.state.number and
+                        self.state.get_confidence() < config.akmc_confidence)
 
         num_registered = 0
         for result in self.comm.get_results(config.path_jobs_in, keep_result):
@@ -288,15 +301,28 @@ class ClientMinModeExplorer(MinModeExplorer):
                 self.job_table.delete_row('wuid', id)
             result['wuid'] = id
 
+            # If we are doing a search for a superbasin the results
+            # could be for a different state.
+            if self.superbasin:
+                try:
+                    state = self.superbasin.state_dict[state_num]
+                except KeyError:
+                    logger.warning("State of job %s is not part of "
+                                   "the superbasin" % result['name'])
+                    continue
+            else:
+                state = self.state
+
             # read in the results
             result['results'] = io.parse_results(result['results.dat'])
             if result['results']['termination_reason'] == 0:
-                self.state.add_process(result)
+                state.add_process(result, self.superbasin)
             else:
-                self.state.register_bad_saddle(result, config.debug_keep_bad_saddles)
+                state.register_bad_saddle(result, config.debug_keep_bad_saddles)
             num_registered += 1
 
-            if self.state.get_confidence() >= config.akmc_confidence:
+            if ((self.superbasin and self.superbasin.get_confidence() >= config.akmc_confidence) or
+                (not self.superbasin and self.state.get_confidence() >= config.akmc_confidence)):
                 if not config.debug_register_extra_results:
                     break
 
@@ -315,7 +341,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
 class ServerMinModeExplorer(MinModeExplorer):
 
-    def __init__(self, states, previous_state, state):
+    def __init__(self, states, previous_state, state, superbasin=None):
         #XXX: need to init somehow
         self.search_id = 0
 
@@ -329,7 +355,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             f.close()
             self.__dict__.update(tmp_dict)
 
-        MinModeExplorer.__init__(self, states, previous_state, state)
+        MinModeExplorer.__init__(self, states, previous_state, state, superbasin)
 
     def save(self):
         f = open("explorer.pickle", "w")
@@ -364,7 +390,7 @@ class ServerMinModeExplorer(MinModeExplorer):
     def explore(self):
         if not os.path.isdir(config.path_jobs_in): #XXX: does this condition ever happen?
             os.makedirs(config.path_jobs_in)
-            if self.state.get_confidence() >= config.akmc_confidence:
+            if self.state.get_confidence(self.superbasin) >= config.akmc_confidence:
                 self.process_searches = {}
                 self.save()
 
@@ -389,11 +415,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             # note that all processes are assigned to the current state 
             state_num = int(name.split("_")[0])
             return (state_num == self.state.number and \
-                    self.state.get_confidence() < config.akmc_confidence)
-
-            #return (config.debug_register_extra_results or \
-            #        state_num == self.state.number or \
-            #        self.state.get_confidence() < config.akmc_confidence)
+                    self.state.get_confidence(self.superbasin) < config.akmc_confidence)
 
         num_registered = 0
         for result in self.comm.get_results(config.path_jobs_in, keep_result): 
@@ -425,7 +447,7 @@ class ServerMinModeExplorer(MinModeExplorer):
                         self.state.add_process(ps.build_result())
                         del self.process_searches[search_id]
             num_registered += 1
-            if self.state.get_confidence() >= config.akmc_confidence:
+            if self.state.get_confidence(self.superbasin) >= config.akmc_confidence:
                 if not config.debug_register_extra_results:
                     break
 

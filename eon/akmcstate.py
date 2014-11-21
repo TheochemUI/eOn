@@ -71,7 +71,7 @@ class AKMCState(state.State):
                 return id
         return None
 
-    def add_process(self, result):
+    def add_process(self, result, superbasin=None):
         """ Adds a process to this State. """
         state.State.add_process(self, result)
 
@@ -107,7 +107,11 @@ class AKMCState(state.State):
             self.save_process_table()
             if result['type'] == "random" or result['type'] == "dynamics":
                 self.inc_proc_random_count(id)
-                if id in self.get_relevant_procids():
+                # Do not increase repeats if we are currently in a
+                # superbasin and the process does not lead out of it;
+                # or if the process barrier is outside the thermanl
+                # window.
+                if id in self.get_relevant_procids(superbasin):
                     self.inc_repeats()
             if 'simulation_time' in resultdata:
                 current_time = self.get_time()
@@ -195,53 +199,66 @@ class AKMCState(state.State):
         #except:
         #    logger.warning("Failed to append search result.")
 
-    def get_ratetable(self):
+    def get_ratetable(self, superbasin=None):
         """ Loads the process table if it has not been loaded and generates a rate table 
             according to kT and thermal_window. """
         self.load_process_table()
         lowest = self.get_lowest_barrier()
-        table = []
-        for id in self.procs.keys():
-            proc = self.procs[id]
-            if proc['barrier'] > lowest + (self.statelist.kT * self.statelist.thermal_window):
-                continue
-            table.append((id, proc['rate'], proc['prefactor']))
-        return table
+        # Maximum barrier according to thermal window.
+        max_barrier = lowest + self.statelist.kT * self.statelist.thermal_window
+        rt = [(id, proc['rate'], proc['prefactor'])
+              for id, proc in self.procs.iteritems()
+              if proc['barrier'] <= max_barrier]
+        if not superbasin:
+            return rt
+        else:
+            # Filter out processes that lead to another state in
+            # the superbasin.
+            return [entry
+                    for entry in rt
+                    if self.procs[entry[0]]["product"] not in superbasin.state_dict]
 
     def get_process_table(self):
-        pt = {}
-        for id in self.get_relevant_procids():
-            pt[id] = self.procs[id]
-        return pt
+        """Return dictionary of processes (id->proc) inside thermal window."""
+        return dict([id, self.procs[id]]
+                    for id in self.get_relevant_procids())
 
-    def get_relevant_procids(self):
-        rt = self.get_ratetable()
-        rps = []
-        for r in rt:
-            rps.append(r[0])
-        return rps
+    def get_relevant_procids(self, superbasin=None):
+        """Get process IDs inside thermal window."""
+        return [entry[0] for entry in self.get_ratetable(superbasin)]
 
+    def get_confidence(self, superbasin=None):
+        """Confidence that all relevant processes for this state were found.
 
-    def get_confidence(self):
-        """ The confidence is a function of the ratio Nf/Ns, where Nf is the number of unique
-            processes and Ns is the number of searches performed.
-            
-            When Nf or Ns are zero, there is no confidence.  Zero is returned in this case.
-            
-            As the ratio Nf/Ns decreases, the confidence increases from 0.0 to a limit of 1.0.
-            This is roughly equivalent to the statement: I am more confident that I have found
-            all relevant processes if I have found 10 processes after 1000 searches than if I 
-            have found 900 processes after 1000 searches.
-            
-            Nf is calculated to be the number of processes in the rate table. Ns is calculated
-            to be the number of searches that resulted in a process on the rate table.
-            
-            When using recycling or kdb, it is useful to ignore processes that occur outside
-            the hole, the region in which the last process took place.  Focusing on this
-            region means you can do possibly far fewer searches to reach confidence. When using
-            the hole to filter processes, Nf and Ns only take into account processes that 
-            intersect the hole. """
+        The confidence is a function of the ratio Nf/Ns, where Nf is
+        the number of unique processes and Ns is the number of
+        searches performed.
 
+        When Nf or Ns are zero, there is no confidence.  Zero is
+        returned in this case.
+
+        As the ratio Nf/Ns decreases, the confidence increases from
+        0.0 to a limit of 1.0.  This is roughly equivalent to the
+        statement: I am more confident that I have found all relevant
+        processes if I have found 10 processes after 1000 searches
+        than if I have found 900 processes after 1000 searches.
+
+        Nf is calculated to be the number of processes in the rate
+        table. Ns is calculated to be the number of searches that
+        resulted in a process on the rate table.
+
+        When using recycling or kdb, it is useful to ignore processes
+        that occur outside the hole, the region in which the last
+        process took place.  Focusing on this region means you can do
+        possibly far fewer searches to reach confidence. When using
+        the hole to filter processes, Nf and Ns only take into account
+        processes that intersect the hole.
+
+        If superbasin is passed, that means the state is in that
+        superbasin. The confidence calculation is adjusted so that
+        only processes that lead out of the superbasin are counted.
+
+        """
         # checking to see if all recycling jobs are complete
         if config.recycling_on and config.disp_moved_only:
             job_table_path = os.path.join(config.path_root, "jobs.tbl")
@@ -249,10 +266,18 @@ class AKMCState(state.State):
             if any([ t == 'recycling' for t in job_table.get_column('type') ]):
                 return 0.0
 
+        # Load the rate table. If we are in a superbasin, we filter
+        # out all processes leading to another state in the same
+        # superbasin.
+        rt = self.get_ratetable(superbasin)
+        # Load the repeat counts and filter if we are in a superbasin.
+        prc = self.get_proc_random_count()
+        if superbasin:
+            prc = dict([proc, count]
+                       for proc, count in prc.iteritems()
+                       if self.procs[proc]["product"] not in superbasin.state_dict)
         alpha = 1.0
         if config.akmc_confidence_correction:
-            rt = self.get_ratetable()
-            prc = self.get_proc_random_count()
             mn = 1e300
             mx = 0
             for r in rt:
@@ -263,9 +288,8 @@ class AKMCState(state.State):
                 alpha = 1.0
             else:
                 alpha = float(mn)/mx
+
         if config.akmc_confidence_scheme == "new":
-            rt = self.get_ratetable()
-            prc = self.get_proc_random_count()
             Nf = 0.0
             Ns = 0.0
             for r in rt:
@@ -278,8 +302,7 @@ class AKMCState(state.State):
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
         elif config.akmc_confidence_scheme == 'sampling':
-            all_repeats = self.get_proc_random_count()
-            rt = self.get_ratetable()
+            all_repeats = prc
             repeats = {}
             for event in rt:
                 id = event[0]
@@ -299,10 +322,8 @@ class AKMCState(state.State):
                 C += (1.0-C)*ps
 
             return sum(C)/float(m)
-
         elif config.akmc_confidence_scheme == 'dynamics':
             if self.get_time() == 0.0: return 0.0
-            rt = self.get_ratetable()
 
             #filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
@@ -322,11 +343,9 @@ class AKMCState(state.State):
                     dyn_saddles.add(pid)
                 f.close()
 
-                new_rt = []
-                for i in range(len(rt)):
-                    if rt[i][0] in dyn_saddles:
-                        new_rt.append(rt[i])
-                rt = new_rt
+                rt = [entry
+                      for entry in rt
+                      if entry[0] in dyn_saddles]
 
             T1 = config.main_temperature
             T2 = config.saddle_dynamics_temperature
@@ -337,7 +356,7 @@ class AKMCState(state.State):
             if len(rates) == 0: return 0.0
             #extrapolate to T2
             rates_md = prefactors*(rates/prefactors)**(T1/T2)
-            
+
             time = self.get_time()*1e-15
             C = 1.0-numpy.exp(-time*rates_md)
             total_rate = sum(rates)
@@ -345,8 +364,10 @@ class AKMCState(state.State):
             conf = sum(C*rates)/total_rate
 
             return conf
-
         else:
+            # No superbasin-specific code needed here, the number of
+            # repeats is adjusted for that in the add_process()
+            # method!
             Nr = self.get_repeats()
             if Nr < 1:
                 return 0.0
@@ -467,6 +488,19 @@ class AKMCState(state.State):
 
     def get_time(self):
         return self.info.get("MetaData", "time", 0.0)
+
+    def get_number_of_searches(self):
+        # TODO: this is inefficient!
+        f = open(self.search_result_path)
+        try:
+            n = 0
+            f.readline()
+            f.readline()
+            for line in f:
+                n += 1
+        finally:
+            f.close()
+        return n
 
     def get_total_saddle_count(self):
         return self.get_good_saddle_count() + self.get_bad_saddle_count()
