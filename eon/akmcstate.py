@@ -96,13 +96,13 @@ class AKMCState(state.State):
         ediff = (barrier - lowest) - (self.statelist.kT *
                 (self.statelist.thermal_window+self.statelist.max_thermal_window))
         if ediff > 0.0:
-            self.append_search_result(result, "barrier > max_thermal_window")
+            self.append_search_result(result, "barrier > max_thermal_window", superbasin)
             return None
 
         # Determine the number of processes in the process table that have a similar energy.
         id = self.find_repeat(result["saddle.con"], barrier)
         if id != None:
-            self.append_search_result(result, "repeat-%d" % id)
+            self.append_search_result(result, "repeat-%d" % id, superbasin)
             self.procs[id]['repeats'] += 1
             self.save_process_table()
             if result['type'] == "random" or result['type'] == "dynamics":
@@ -144,7 +144,7 @@ class AKMCState(state.State):
 
 
         # Update the search result table.
-        self.append_search_result(result, "good-%d" % self.get_num_procs())
+        self.append_search_result(result, "good-%d" % self.get_num_procs(), superbasin)
 
         # The id of this process is the number of processes.
         id = self.get_num_procs()
@@ -178,7 +178,7 @@ class AKMCState(state.State):
         # This was a unique process, so return the id.
         return id
 
-    def append_search_result(self, result, comment):
+    def append_search_result(self, result, comment, superbasin):
         #try:
         f = open(self.search_result_path, 'a')
         resultdata = result['results']
@@ -187,6 +187,10 @@ class AKMCState(state.State):
             first_column = "search_id"
         else:
             first_column = "wuid"
+
+        if superbasin:
+            comment += " [%i]" % superbasin.id
+
         f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column], 
                  result["type"], 
                  resultdata["barrier_reactant_to_product"],
@@ -511,7 +515,7 @@ class AKMCState(state.State):
     def set_bad_saddle_count(self, num):
         self.info.set("MetaData", "bad_saddles", num)
 
-    def register_bad_saddle(self, result, store = False):
+    def register_bad_saddle(self, result, store=False, superbasin=None):
         """ Registers a bad saddle. """
         result_state_code = ["Good",
                              "Init",
@@ -533,7 +537,7 @@ class AKMCState(state.State):
                              "No forward barrier in minimized band",
                              ]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
-        self.append_search_result(result, result_state_code[result["results"]["termination_reason"]])
+        self.append_search_result(result, result_state_code[result["results"]["termination_reason"]], superbasin)
 
         # If a MD saddle search is too short add it to the total clock time.
         if 'simulation_time' in result['results']:
