@@ -195,6 +195,18 @@ class Superbasin:
                    for state in self._get_filtered_states()) #self.states)
 
     def get_lowest_confidence_state(self):
-        return sorted(self._get_filtered_states(),
-                      key=lambda state: state.get_confidence(self)
-                      )[0]
+        # If there are several states with equal confidence, order by
+        # time spent searching.  This is needed in the case where we
+        # know no exit at all from the superbasin. All states have
+        # confidence 0.0 and we keep searching the same state. If that
+        # state happens to have no exit but another one has, we will
+        # never find anything. When we sort by time spent searching,
+        # though, we will cycle the search through all states.
+        if config.saddle_method == "dynamics":
+            return sorted(self._get_filtered_states(),
+                          key=lambda state: (state.get_confidence(self), state.get_time())
+                          )[0]
+        else:
+            return sorted(self._get_filtered_states(),
+                          key=lambda state: (state.get_confidence(self), state.get_number_of_searches())
+                          )[0]
