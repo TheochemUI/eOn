@@ -1083,6 +1083,10 @@ Coarse Graining:
             kind: float
             default: 0.9
 
+        superbasin_confidence:
+            kind: boolean
+            default: True
+
 ################################################################################
 
 Optimizer:
