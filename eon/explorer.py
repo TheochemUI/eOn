@@ -318,7 +318,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             if result['results']['termination_reason'] == 0:
                 state.add_process(result, self.superbasin)
             else:
-                state.register_bad_saddle(result, config.debug_keep_bad_saddles)
+                state.register_bad_saddle(result, config.debug_keep_bad_saddles, superbasin=self.superbasin)
             num_registered += 1
 
             if ((self.superbasin and self.superbasin.get_confidence() >= config.akmc_confidence) or

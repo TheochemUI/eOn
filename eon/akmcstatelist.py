@@ -138,7 +138,7 @@ class AKMCStateList(statelist.StateList):
         result = { first_column : 0,
                    'type' : 'reverse',
                    'results' : result_fake}
-        product.append_search_result(result, 'reverse from '+str(reactant_number))
+        product.append_search_result(result, 'reverse from '+str(reactant_number), None)
         return
 
     def connect_states(self, states):
