@@ -317,6 +317,7 @@ def init(config_file = ""):
             config.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
         elif config.sb_scheme == 'energy_level':
             config.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
+        config.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
 
     config.askmc_on = parser.getboolean('Coarse Graining','use_askmc')
     if config.askmc_on:
