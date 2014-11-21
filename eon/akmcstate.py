@@ -12,6 +12,7 @@
 
 import os
 import math
+import ConfigParser
 import logging
 logger = logging.getLogger('state')
 
@@ -80,7 +81,7 @@ class AKMCState(state.State):
         resultdata = result["results"] #The information from the result.dat file
 
         if 'simulation_time' in resultdata:
-            self.increment_time(resultdata['simulation_time'])
+            self.increment_time(resultdata['simulation_time'], resultdata['md_temperature'])
 
         # We may not already have the energy for this State.  If not, it should be placed in the result data.
         if self.get_energy() == None:
@@ -327,8 +328,6 @@ class AKMCState(state.State):
 
             return sum(C)/float(m)
         elif config.akmc_confidence_scheme == 'dynamics':
-            if self.get_time() == 0.0: return 0.0
-
             #filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if config.disp_moved_only:
@@ -351,23 +350,25 @@ class AKMCState(state.State):
                       for entry in rt
                       if entry[0] in dyn_saddles]
 
+            conf = 0.0
             T1 = config.main_temperature
-            T2 = config.saddle_dynamics_temperature
+            for T2, T2_time in self.get_time_by_temp().iteritems():
+                if T2_time == 0.0:
+                    continue
+                #rates are at T1
+                rates = numpy.array([ p[1] for p in rt ])
+                prefactors = numpy.array([ p[2] for p in rt ])
+                if len(rates) == 0: return 0.0
+                #extrapolate to T2
+                rates_md = prefactors*(rates/prefactors)**(T1/T2)
 
-            #rates are at T1
-            rates = numpy.array([ p[1] for p in rt ])
-            prefactors = numpy.array([ p[2] for p in rt ])
-            if len(rates) == 0: return 0.0
-            #extrapolate to T2
-            rates_md = prefactors*(rates/prefactors)**(T1/T2)
+                time = T2_time*1e-15
+                C = 1.0-numpy.exp(-time*rates_md)
+                total_rate = sum(rates)
 
-            time = self.get_time()*1e-15
-            C = 1.0-numpy.exp(-time*rates_md)
-            total_rate = sum(rates)
-
-            conf = sum(C*rates)/total_rate
-
+                conf += sum(C*rates)/total_rate
             return conf
+
         else:
             # No superbasin-specific code needed here, the number of
             # repeats is adjusted for that in the add_process()
@@ -487,11 +488,42 @@ class AKMCState(state.State):
     def set_good_saddle_count(self, num):
         self.info.set("MetaData", "good_saddles", num)
 
-    def increment_time(self, dt):
+    def increment_time(self, dt, T_search):
+        """Increment MD search time by dt at temperature T_search."""
         self.info.set("MetaData", "time", self.get_time() + dt)
+        temp_str = "%.0f" % T_search # rounded to nearest Kelvin
+        if self.info.has_section("SearchTime"):
+            # Increase time spent at current search temperature.
+            new_time_at_current_temp = \
+                self.info.get("SearchTime", temp_str, 0.0) + dt
+        else:
+            # The info file must come from an older version of EON,
+            # which didn't have this section, yet. In this case we
+            # assume all prior searches were done at the current
+            # temperature and add the SearchTime section. This makes
+            # this codes backwards compatible and the correctness is
+            # not worse than before.
+            new_time_at_current_temp = self.get_time() # time is already
+                                                       # updated, so no +dt!
+        self.info.set("SearchTime", temp_str,
+                      new_time_at_current_temp)
 
     def get_time(self):
         return self.info.get("MetaData", "time", 0.0)
+
+    def get_time_by_temp(self):
+        try:
+            return dict([int(temp), float(time)]
+                        for temp, time in self.info.items("SearchTime"))
+        except ConfigParser.NoSectionError:
+            # The "info" file seems to have been produced by an old
+            # version of EON which didn't have the SearchTime
+            # section. We simply upgrade and try again (no recursion
+            # to avoid endless recursion if the exception is raised
+            # again).
+            self.increment_time(0.0, config.saddle_dynamics_temperature)
+            return dict([int(temp), float(time)]
+                        for temp, time in self.info.items("SearchTime"))
 
     def get_number_of_searches(self):
         # TODO: this is inefficient!
@@ -542,7 +574,7 @@ class AKMCState(state.State):
         # If a MD saddle search is too short add it to the total clock time.
         if 'simulation_time' in result['results']:
             if result['results']['termination_reason'] == 15: #too short
-                self.increment_time(result['results']['simulation_time'])
+                self.increment_time(result['results']['simulation_time'], result['results']['md_temperature'])
 
         if store:
             if not os.path.isdir(self.bad_procdata_path):
