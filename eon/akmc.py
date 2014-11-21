@@ -99,14 +99,25 @@ def akmc(config, steps=0):
     else:
         previous_state = states.get_state(previous_state_num)
 
-    state_explorer = explorer.get_minmodexplorer()(states, previous_state, current_state)
-    state_explorer.explore()
-
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
+        sb = superbasining.get_containing_superbasin(current_state)
+        # If we are exploring states in a superbasin, we will always
+        # explore the state with the lowest confidence.
+        if sb:
+            explore_state = sb.get_lowest_confidence_state()
+            previous_state = explore_state # TODO: perhaps there is a better value for previous_state?
+        else:
+            explore_state = current_state
     else:
         superbasining = None
+        sb = None
+        explore_state = current_state
+
+    state_explorer = explorer.get_minmodexplorer()(states, previous_state,
+                                                   explore_state, superbasin=sb)
+    state_explorer.explore()
 
     # Take a KMC step, if it's time.
     current_state, previous_state, time, steps = kmc_step(current_state, states, time, kT, superbasining, steps)
@@ -175,7 +186,7 @@ def get_superbasin_scheme(states):
 
 def kmc_step(current_state, states, time, kT, superbasining, steps=0):
     t1 = unix_time.time()
-    previous_state = current_state 
+    previous_state = current_state
     # If the Chatterjee & Voter superbasin acceleration method is being used
     if config.askmc_on:
         pass_rec_path = None
@@ -185,18 +196,20 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
                             config.path_root, config.akmc_thermal_window,
                             recycle_path = pass_rec_path)
 
-    while (current_state.get_confidence() >= config.akmc_confidence and
+    # The system might be in a superbasin
+    if config.sb_on:
+        sb = superbasining.get_containing_superbasin(current_state)
+    else:
+        sb = None
+
+    while ((
+            (not sb and current_state.get_confidence() >= config.akmc_confidence) or
+            (sb and sb.get_confidence() >= config.akmc_confidence)
+           ) and
            (steps < config.akmc_max_kmc_steps or config.akmc_max_kmc_steps == 0)):
 
-        steps += 1
-
-        # The system might be in a superbasin
-        if config.sb_on:
-            sb = superbasining.get_containing_superbasin(current_state)
-        else:
-            sb = None
-
         # Do a KMC step.
+        steps += 1
         if config.sb_on and sb:
             mean_time, current_state, next_state, sb_proc_id_out, sb_id = sb.step(current_state, states.get_product_state)
         else:
@@ -205,7 +218,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
             else:
                 rate_table = current_state.get_ratetable()
             if len(rate_table) == 0:
-                logger.error("No processes in rate table, but confidence " \
+                logger.error("No processes in rate table, but confidence "
                              "has been reached")
 
             ratesum = sum((row[1] for row in rate_table), 0.0)
@@ -239,7 +252,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
                 targetProductCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "product_%d.con" % procid))
                 ibox = numpy.linalg.inv(targetSaddleCon.box)
                 # See if we have this process
-                for i in range(len(rate_table)):
+                for i in xrange(len(rate_table)):
                     p1 = current_state.get_process_saddle(rate_table[i][0])
                     for dist in atoms.per_atom_norm_gen(p1.free_r() - targetSaddleCon.free_r(), targetSaddleCon.box, ibox):
                         if dist > config.comp_eps_r:
@@ -305,15 +318,28 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
         previous_state = current_state
         current_state = next_state
 
+        # The system might be in a superbasin
+        if config.sb_on:
+            sb = superbasining.get_containing_superbasin(current_state)
+        else:
+            sb = None
+
     if config.sb_on:
         superbasining.write_data()
 
-    logger.info("Currently in state %i with confidence %.6f", current_state.number, 
-            current_state.get_confidence())
+    if not sb:
+        logger.info("Currently in state %i with confidence %.6f", current_state.number,
+                    current_state.get_confidence())
+    else:
+        logger.info("Currently in state %i (superbasin %i) with confidence %.6f",
+                    current_state.number,
+                    sb.id,
+                    sb.get_confidence())
     t2 = unix_time.time()
     logger.debug("KMC finished in " + str(t2-t1) + " seconds")
     logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
     return current_state, previous_state, time, steps
+
 
 def main():
     optpar = optparse.OptionParser(usage = "usage: %prog [options] config.ini")
@@ -396,19 +422,36 @@ def main():
         states = get_statelist(config.main_temperature / 11604.5)
         start_state_num, time, previous_state_num, first_run, previous_temperature =\
             get_akmc_metadata()
-
+        current_state = states.get_state(start_state_num)
+        if config.sb_on:
+            sb_scheme = get_superbasin_scheme(states)
+            sb = sb_scheme.get_containing_superbasin(current_state)
+        else:
+            sb = None
         print
         print "General"
         print "-------"
-        print "Current state:", start_state_num
-        print "Number of states:",states.get_num_states()  
+        if not sb:
+            print "Current state:", start_state_num
+        else:
+            print "Current state:", start_state_num, "in superbasin", sb.id
+        print "Number of states:",states.get_num_states()
         print "Time simulated: %.3e seconds" % time
         print
 
-        current_state = states.get_state(start_state_num)
         print "Current State"
         print "-------------"
-        print "Confidence: %.4f" % current_state.get_confidence()
+        if not sb:
+            print "Confidence: %.4f" % current_state.get_confidence()
+        else:
+            print "Superbasin Confidence: %.4f" % sb.get_confidence()
+            non_ignored_states = set(sb._get_filtered_states())
+            for s in sb.states:
+                if s in non_ignored_states:
+                    ignore_string = ""
+                else:
+                    ignore_string = " (no exit from superbasin found)"
+                print "       %4i: %.4f%s" % (s.number, s.get_confidence(sb), ignore_string)
         print "Unique Saddles:", current_state.get_unique_saddle_count()
         print "Good Saddles:", current_state.get_good_saddle_count()
         print "Bad Saddles:", current_state.get_bad_saddle_count()
@@ -420,14 +463,11 @@ def main():
         print "---------------" 
         print "Searches in queue:", comm.get_queue_size() 
         print
-
-        if config.sb_on: 
-            sb = get_superbasin_scheme(states)
+        if config.sb_on:
             print "Superbasins"
             print "-----------"
-            for i in sb.superbasins:
-                print i.state_numbers
-
+            for i in sb_scheme.superbasins:
+                print "%s: %s" % (i.id, i.state_numbers)
         sys.exit(0)
     elif options.reset:
         if options.force:
