@@ -46,7 +46,7 @@ class Explorer:
             self.wuid = int(f.read())
             f.close()
         except IOError:
-            if not superbasin:
+            if not self.superbasin:
                 self.wuid = 0
             else:
                 # In a superbasin search, WUIDs would be repeated. So
