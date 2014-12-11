@@ -45,7 +45,7 @@ class State:
 
         # If this state does not exist on disk, create it.
         if not os.path.isdir(self.path):
-            if reactant_path == None:
+            if reactant_path is None:
                 raise IOError("State needs a reactant_path when it is being instantiated to disk")
             os.mkdir(self.path)
             os.mkdir(self.procdata_path)

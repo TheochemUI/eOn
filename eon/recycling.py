@@ -67,7 +67,7 @@ class SB_Recycling:
         if (self.current_state.number not in [pair[1] for pair in self.sb_state_nums]):
             self.in_progress = True
             # Get sb_state_nums and the sb_states
-            if self.sb_scheme == None:
+            if self.sb_scheme is None:
                 self.in_progress = False
             elif self.sb_scheme == "mcacm":
                 # Getting the superbasin that the previous state was in (if it was in one)
@@ -264,7 +264,7 @@ class SB_Recycling:
                         break
                     else:
                         product_con = None
-            if product_con == None:
+            if product_con is None:
                 self.in_progress = False
                 return
             # Now that we know which process from the reference state

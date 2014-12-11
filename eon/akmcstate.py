@@ -84,7 +84,7 @@ class AKMCState(state.State):
             self.increment_time(resultdata['simulation_time'], resultdata['md_temperature'])
 
         # We may not already have the energy for this State.  If not, it should be placed in the result data.
-        if self.get_energy() == None:
+        if self.get_energy() is None:
             # This energy now defines the reference energy for the state
             self.set_energy(resultdata["potential_energy_reactant"])
         reactant_energy = self.get_energy()
