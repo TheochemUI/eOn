@@ -219,7 +219,7 @@ def make_searches(comm, wuid, bhstates):
             reactIO = initial_react
         elif config.bh_initial_state_pool_size > 0:
             reactIO = bhstates.get_random_minimum()
-            if reactIO == None:
+            if reactIO is None:
                 reactIO = initial_react
         else:
             logger.fatal("Initial state pool size negative")

@@ -42,7 +42,7 @@ class StateList:
 
         # Create the zero state directory if it does not exist.
         if not os.path.isdir(os.path.join(self.path, "0")):
-            if initial_state == None:
+            if initial_state is None:
                 raise IOError("Missing zeroth state directory and no reactant provided")
             self.StateClass(statepath = os.path.join(self.path, "0"), 
                         statenumber = 0, 
@@ -131,7 +131,7 @@ class StateList:
         return st
 
     def load_state_table(self):
-        if self.state_table == None:
+        if self.state_table is None:
             f = open(self.state_table_path, 'r')
             lines = f.readlines()
             f.close()

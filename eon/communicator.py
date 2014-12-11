@@ -398,7 +398,7 @@ class BOINC(Communicator):
         workunit_ids = []
         while 1:
             row = self.cursor.fetchone()
-            if row == None:
+            if row is None:
                 break
 
             result_id = row['id']
@@ -734,7 +734,7 @@ class Local(Communicator):
                 for i in range(len(self.joblist)):
                     p = self.joblist[i][0]
                     retval = p.poll()
-                    if retval == None:
+                    if retval is None:
                         continue
                     else:
                         self.check_job(self.joblist[i])
