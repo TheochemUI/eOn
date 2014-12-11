@@ -35,8 +35,9 @@ def get_minmodexplorer():
 
 
 class Explorer:
-    def __init__(self):
+    def __init__(self, superbasin=None):
         self.wuid_path = os.path.join(config.path_scratch, "wuid")
+        self.superbasin = superbasin
         self.load_wuid()
 
     def load_wuid(self):
@@ -45,7 +46,14 @@ class Explorer:
             self.wuid = int(f.read())
             f.close()
         except IOError:
-            self.wuid = 0
+            if not superbasin:
+                self.wuid = 0
+            else:
+                # In a superbasin search, WUIDs would be repeated. So
+                # we assume there will never be more than 1e6 searches
+                # per state, so we start at superbasin number times
+                # one million.
+                self.wuid = self.superbasin.id * 1000000
 
     def save_wuid(self):
         f = open(self.wuid_path, 'w')
@@ -63,11 +71,10 @@ class MinModeExplorer(Explorer):
         used, which takes only processes exiting the SB into account.
 
         """
-        Explorer.__init__(self)
+        Explorer.__init__(self, superbasin)
         self.states = states
         self.state = state
         self.previous_state = previous_state
-        self.superbasin = superbasin
         self.comm = communicator.get_communicator()
 
         if config.recycling_on: 
