@@ -223,7 +223,7 @@ class ASKMC:
         # Determine if the process is new -- Try to find the process_id in the modified process table.
         next_state_process_id = self.get_process_id(current_state_mod_procs, next_state.number, "try")
         # If we've never been along this path before, add it to our modified list
-        if next_state_process_id == None:
+        if next_state_process_id is None:
             # Find the find the process id from the real process table
             current_state_real_procs = self.get_real_process_table(current_state)
             next_state_process_id = self.get_process_id(current_state_real_procs, next_state.number, "find")
@@ -355,7 +355,7 @@ class ASKMC:
                             current_state_id = self.get_process_id(next_state_mod_procs, current_state.number, "try")
                             # If the number of sightings is below the cut-off, the superbasin criterion fails.
                             # Both forward and backward reaction counts are checked.
-                            if current_state_mod_procs[next_state_id]["view_count"] < self.Nf or current_state_id == None or next_state_mod_procs[current_state_id]["view_count"] < self.Nf:
+                            if current_state_mod_procs[next_state_id]["view_count"] < self.Nf or current_state_id is None or next_state_mod_procs[current_state_id]["view_count"] < self.Nf:
                                 self.welltest = 0
                             # Otherwise, add this process to "edgelist" to note it's been viewed, and continue the search
                             else:

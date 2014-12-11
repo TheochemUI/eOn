@@ -37,7 +37,7 @@ class PRState(state.State):
         resultdata = result["results"] # The information from the result.dat file
 
         # We may not already have the energy for this State.  If not, it should be in the result data.
-        if self.get_energy() == None:
+        if self.get_energy() is None:
             self.set_energy(resultdata["potential_energy_reactant"])
 
         # Check if the reactant, and product are legit
@@ -76,7 +76,7 @@ class PRState(state.State):
     def load_process_table(self):
         """ Load the process table.  If the process table is not loaded, load it.  If it is
             loaded, do nothing. """
-        if self.procs == None:
+        if self.procs is None:
             f = open(self.proctable_path)
             lines = f.readlines()
             f.close()
