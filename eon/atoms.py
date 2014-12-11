@@ -66,7 +66,7 @@ def pbc(r, box, ibox = None):
         box:    the box that defines the boundary conditions
         ibox:   the inverse of the box. This will be calcluated if not provided.
     """
-    if ibox == None:    
+    if ibox is None:    
         ibox = numpy.linalg.inv(box)
     vdir = numpy.dot(r, ibox)
     vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
@@ -628,7 +628,7 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
         through translation and rotation. """
     # If this is the top-level user call, create and loop through top-level
     # mappings.
-    if mappings == None:
+    if mappings is None:
         # Find the least common coordination number in b.
         bCoordinations = coordination_numbers(b, neighbor_cutoff)
         bCoordinationsCounts = {}

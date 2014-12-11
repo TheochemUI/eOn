@@ -294,7 +294,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                                % searchdata_id)
                 continue
             result['type'] = job_type
-            if job_type == None:
+            if job_type is None:
                 logger.warning("Could not find search data for search %s" 
                                % searchdata_id)
             else:

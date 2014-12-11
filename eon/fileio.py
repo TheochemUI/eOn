@@ -555,7 +555,7 @@ class Table:
         if os.path.isfile(self.filename) and not self.overwrite:
             self.read(self.filename)
         else:
-            if self.columns == None:
+            if self.columns is None:
                 raise TableException("Columns are not optional for new tables")
 
             for c in self.columns:
@@ -694,7 +694,7 @@ class Table:
             self.init()
         value = None
         for row in self.rows:
-            if value == None:
+            if value is None:
                 value = row[column]
                 continue
             value = func(value, row[column])
@@ -705,7 +705,7 @@ class Table:
             self.init()
         value = None
         for row in self.rows:
-            if value == None:
+            if value is None:
                 value = row
                 continue
 

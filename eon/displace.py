@@ -175,7 +175,7 @@ class Displace:
 
     def get_displacement(self, atom_index):
         '''Returns a displacement to be added to self.reactant.r'''
-        if self.neighbors_list == None:
+        if self.neighbors_list is None:
             self.neighbors_list = atoms.neighbor_list(self.reactant, self.radius, config.comp_brute_neighbors)
         displacement_norm = 0.0
         displacement = numpy.zeros(self.reactant.r.shape)
@@ -223,7 +223,7 @@ class Displace:
     def filter_epicenters(self, epicenters):
         '''Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
            If Displace.hole_epicenters is None, all of the epicenters are accepted.'''
-        if self.hole_epicenters == None:
+        if self.hole_epicenters is None:
             return epicenters
         new_epicenters = []
         for e in epicenters:
