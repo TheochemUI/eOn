@@ -1,7 +1,10 @@
 # before compiling you must execute:
 # module swap PrgEnv-pgi PrgEnv-gnu
-# module load gcc/4.6.3
+# module load gcc
 # module load python
+## you may need to confirm the "python_lib_path" is in fact
+## pointing to the proper directory for the machine and version of python
+
 TARGET_NAME=client
 
 CC=cc
