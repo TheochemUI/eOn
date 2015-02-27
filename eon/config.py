@@ -309,15 +309,14 @@ def init(config_file = ""):
     config.sb_on = parser.getboolean('Coarse Graining', 'use_mcamc')
     config.sb_state_file = parser.get('Coarse Graining', 'state_file') 
     config.sb_path = None
-    if config.sb_on:
-        config.sb_path = parser.get('Paths', 'superbasins')
-        config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
-        config.sb_max_size = parser.getint('Coarse Graining', 'max_size')
-        if config.sb_scheme == 'transition_counting':
-            config.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
-        elif config.sb_scheme == 'energy_level':
-            config.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
-        config.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
+    config.sb_path = parser.get('Paths', 'superbasins')
+    config.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
+    config.sb_max_size = parser.getint('Coarse Graining', 'max_size')
+    if config.sb_scheme == 'transition_counting':
+        config.sb_tc_ntrans = parser.getint('Coarse Graining', 'number_of_transitions')
+    elif config.sb_scheme == 'energy_level':
+        config.sb_el_energy_increment = parser.getfloat('Coarse Graining', 'energy_increment')
+    config.sb_superbasin_confidence = parser.getboolean('Coarse Graining', 'superbasin_confidence')
 
     config.askmc_on = parser.getboolean('Coarse Graining','use_askmc')
     if config.askmc_on:
