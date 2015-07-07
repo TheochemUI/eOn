@@ -267,7 +267,11 @@ class AKMCState(state.State):
 
         """
         # Possibly disable superbasin feature.
-        if not config.sb_superbasin_confidence:
+        #if not config.sb_superbasin_confidence:
+        try:
+            if not config.sb_superbasin_confidence:
+                superbasin = None
+        except AttributeError:
             superbasin = None
 
         # checking to see if all recycling jobs are complete
