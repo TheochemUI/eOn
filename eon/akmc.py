@@ -489,7 +489,7 @@ def main():
                             config.path_incomplete,
                             config.path_states,
                             config.path_scratch,
-                            config.kdb_path,
+                            config.kdb_name,
                             config.kdb_scratch_path,
                             config.sb_path,
                             config.sb_recycling_path,
