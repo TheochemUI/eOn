@@ -289,6 +289,11 @@ def init(config_file = ""):
     config.kdb_scratch_path = parser.get('Paths', 'kdb_scratch')
     config.kdb_path = parser.get('Paths', 'kdb')
     config.kdb_nodupes = parser.getboolean('KDB', 'remove_duplicates')
+    config.kdb_name = parser.get('KDB', 'kdb_name')
+    config.kdb_nf = parser.get('KDB', 'kdb_nf')
+    config.kdb_dc = parser.get('KDB', 'kdb_dc')
+    config.kdb_mac = parser.get('KDB', 'kdb_mac')
+
 
     # Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
