@@ -570,6 +570,21 @@ KDB:
             kind: boolean
             default: False
 
+        kdb_name:
+            kind: string
+            default: kdb.db
+
+        kdb_nf:
+            kind: float
+            default: 0.2
+        kdb_dc:
+            kind: float
+            default: 0.3
+        kdb_mac:
+            kind: float
+            default: 0.7
+
+
 ################################################################################
 
 Hyperdynamics:
