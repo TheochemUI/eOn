@@ -1,0 +1,35 @@
+/*! \mainpage The EONClient API
+
+<b>Version \version</b>, Build Date: \builddate
+
+Built by: \builduser on \buildhost
+<hr>
+
+\section Overview
+
+The EONClient API is a set of pages dedicated to the internal documentation of the client-side EON codebase. EON is a software package that is used to explore the configuration space of molecular systems and to accelerate the simulation of their dynamics over long times. The information presented in this document gives weight to a full spectrum coverage of the code as opposed to program usability; the intended goal is to document the full extent and capabilities of the program, and to answer the questions what or how the code is actual running.
+
+This document is logically divided like the EONClient code itself, and is organized into the following modules:
+
+<ul>
+<li>  "Client Overview"
+<li> \ref Jobs
+<li> \ref Optimizers
+<li>  "Potentials"
+<li>  "Support Classes"
+</ul>
+
+One can either traverse the module hiearchy, or the file system hiearchy to get function level documentation. 
+
+\section ToDo
+
+Development is an ongoing process, and therefore documentation is as well; some things that specifcally need to get done, in no particular order, include:
+
+<ul>
+<li> Communicators: need to be schematically organized and documented.
+<li> Inheritance: the polymorphism needs to be cleaned up and standardized throughtout the code.
+<li> Homogenization: Different coding practices are used throughout the Jobs; these need to be standardized to ease use and provide a guidline for future development
+<li> HP Profiling: Most of the time spent running EONClientside is on the potentials; these need to be optimized for running on HP machines.
+</ul>
+
+*/
