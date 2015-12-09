@@ -168,7 +168,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
 
 #------------------------------------
 #Build rules
-all: $(POTDIRS) $(FPOTDIRS) eonclient
+all: $(POTDIRS) $(FPOTDIRS) eonclient docs
 	@echo
 	@echo "EON Client Compilation Options"
 	@echo "BOINC: $(BOINC)" 
@@ -198,7 +198,17 @@ $(POTDIRS):
 $(FPOTDIRS):
 	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(FAR)" FC="$(FC)" FFLAGS="$(FFLAGS)" RANLIB="$(RANLIB)" CXXFLAGS="$(CXXFLAGS)"
 
-clean:
+docs:
+	doxygen $(DOXYCONFIG)
+	@echo "Docs have been generated and output to: $(DOXYDIR)"
+
+docsCheck:
+	@echo $(DOXYCONFIG) $(DOXYDIR) $(VERSION) $(BUILDDATE) $(BUILDHOST) $(BUILDUSER)
+
+docsClean:
+	rm -rf $(DOXYDIR)/*
+
+clean: docsClean
 	rm -f $(OBJECTS) $(DEPENDS) eonclient client
 
 clean-all: clean

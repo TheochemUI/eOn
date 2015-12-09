@@ -26,7 +26,19 @@ ifndef DEBUG
     OPT=-O2
 endif
 
-#------------------------------------
+#-----------------------------------
+# Documentation Settings
+DOXYCONFIG := ClientEON.dox
+# BADPRACTICE: need to export variables so they are recognized
+# by doxygen; there has to be some workaround, so this is a 
+# temporary solution
+export DOXYDIR := ./../doxygen
+export VERSION := $(shell svnversion)
+export BUILDDATE = $(shell date)
+export BUILDHOST := $(shell hostname -d)
+export BUILDUSER := $(shell whoami)
+
+#-----------------------------------
 #MPI settings
 ifdef EONMPIBGP
     EONMPI=1
@@ -51,7 +63,7 @@ ifeq ($(UNAME), Linux)
   endif
   #MPI often doesn't mix well with static linking...
   ifndef EONMPI
-	  LDFLAGS += -static
+	  #LDFLAGS += -static
   endif
 endif
 ifeq ($(UNAME), Darwin)
