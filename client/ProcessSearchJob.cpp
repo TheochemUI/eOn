@@ -18,7 +18,6 @@
 #include "DynamicsSaddleSearch.h"
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
-
 #include <stdio.h>
 #include <string>
 //#include <cassert>
@@ -250,7 +249,7 @@ void ProcessSearchJob::saveData(int status)
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    ///XXX: min_fcalls isn't quite right it should get them from
+    // XXX: min_fcalls isn't quite right it should get them from
     //      the minimizer. But right now the minimizers are in
     //      the SaddleSearch object. They will be taken out eventually.
 
