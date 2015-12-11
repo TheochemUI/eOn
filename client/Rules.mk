@@ -165,6 +165,13 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
 		   BiasedGradientSquaredDescent.o
 
 
+#ifneq ($(or unitTests,check),)
+CXXFLAGS += -std=c++11
+TEMPOBJ := $(filter-out ClientEON.o,$(OBJECTS))
+DEPOBJECTS := $(addprefix ../,$(TEMPOBJ))
+DEPLIBS := $(addprefix ../,$(LIBS))
+export
+#endif
 
 #------------------------------------
 #Build rules
@@ -198,9 +205,26 @@ $(POTDIRS):
 $(FPOTDIRS):
 	$(MAKE) -C $@ CC="$(CC)" CXX="$(CXX)" LD="$(LD)" AR="$(FAR)" FC="$(FC)" FFLAGS="$(FFLAGS)" RANLIB="$(RANLIB)" CXXFLAGS="$(CXXFLAGS)"
 
+mkUnitTests: $(filter-out ClientEON.o,$(OBJECTS))
+	cd unittests && $(MAKE)
+
+testsClean:
+	cd unittests && $(MAKE) clean
+
+testsClobber:
+	cd unittests && $(MAKE) clobber
+
+unitTests: mkUnitTests
+	cd unittests && sh run_unit_tests.sh 
+
+check: unitTests
+	@echo "In the future, regression testing will automatically run now."
+
 docs:
-	doxygen $(DOXYCONFIG)
-	@echo "Docs have been generated and output to: $(DOXYDIR)"
+	@echo "Begin making Docs"
+	@-doxygen $(DOXYCONFIG) \
+	&& ([ $$? -eq 0 ] && echo "Docs have been generated and output to: $(DOXYDIR)")  \
+	|| echo "Couldn't compile Docs; doxygen is not installed on this machine" 
 
 docsCheck:
 	@echo $(DOXYCONFIG) $(DOXYDIR) $(VERSION) $(BUILDDATE) $(BUILDHOST) $(BUILDUSER)
@@ -208,13 +232,13 @@ docsCheck:
 docsClean:
 	rm -rf $(DOXYDIR)/*
 
-clean: docsClean
+clean: testsClean
 	rm -f $(OBJECTS) $(DEPENDS) eonclient client
 
-clean-all: clean
+clean-all: clean docsClean testsClobber
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
 
-%.o:%.cpp
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $<
 
 DEPENDS= $(wildcard *.d)
