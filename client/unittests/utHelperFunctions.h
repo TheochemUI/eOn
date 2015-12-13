@@ -12,7 +12,6 @@
 #define UT_HELPER_FUNCTIONS_H
 
 #include "utObjectiveTest.h"
-//#include "HelperFunctions.h"
 
 class HelperFunctionsTest : public ObjectiveTest 
 {
@@ -24,7 +23,6 @@ class HelperFunctionsTest : public ObjectiveTest
 	
 	private:
 		int test_random();
-		/*
 		int test_randomDouble();
 		int test_randomInt();
 		int test_gaussRandom();
@@ -56,7 +54,6 @@ class HelperFunctionsTest : public ObjectiveTest
 		int test_identical();
 		int test_sortedR();
 		int test_pushApart();
-		*/
 	
 };
 

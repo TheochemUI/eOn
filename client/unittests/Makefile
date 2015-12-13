@@ -18,8 +18,11 @@ $(UTEXEC): $(UTOBJ)
 $(UTOBJ): $(UTSRC)
 
 #targets
-.PHONY: clean clobber
+.PHONY: clean clobber destroy
+
+destroy: clean clobber
+
 clobber:
-	rm -r */ 
+	find . -type d -not -path '*.svn*' | grep './' | xargs rm -rf
 clean:
 	rm -f $(UTEXEC) $(UTOBJ) $(DOTD)  *~ .*~
