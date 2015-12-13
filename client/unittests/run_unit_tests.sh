@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#PLEASE DO NOT RUN THIS SCRIPT DIRECTLY
+#Please run this through running the target 'make check' in the previous directory
+
 echo "Starting unit-testing"
 
 FILE="Test.out"
@@ -50,14 +53,14 @@ echo "Running tests on functions in file HelperFunctions.cpp"
 
 RUN_HELPERFUNCTIONS=`./../Test.out HelperFunctionTest`
 
-if [ $((RUN_HELPERFUNCTIONS)) -eq 0 ]; then
+if [ "$RUN_HELPERFUNCTIONS" -eq "-1" ]; then
+        echo "There was an error trying to run this test..."
+        OUTPUT_HELPERFUNCTIONS="ERROR: there was an error trying to test HelperFunctions.cpp"
+        STATUS_HELPERFUNCTIONS=1
+elif [ $((RUN_HELPERFUNCTIONS)) -eq 0 ]; then
 	echo "All tests ended in success!"
 	OUTPUT_HELPERFUNCTIONS="PASS: all functions in HelperFunctions.cpp ended in success"
 	STATUS_HELPERFUNCTIONS=0
-elif [ $((RUN_HELPERFUNCTIONS)) -eq -1 ]; then
-	echo "There was an error trying to run this test..."
-	OUTPUT_HELPERFUNCTIONS="ERROR: there was an error trying to test HelperFunctions.cpp"
-	STATUS_HELPERFUNCTIONS=1
 else
 	if [ $((RUN_HELPERFUNCTIONS)) -eq 1 ]; then
 		echo "$RUN_HELPERFUNCTIONS test failed..."
