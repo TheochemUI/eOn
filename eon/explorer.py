@@ -211,11 +211,10 @@ class ClientMinModeExplorer(MinModeExplorer):
                             ('Main', 'random_seed',
                                 str(int(numpy.random.random()*10**9))),
                           ]
-            #if we are recycling a saddle, but using "dynamics saddle search" we need
-            #to switch to min_mode searches
+            # if we are recycling a saddle, but using "dynamics saddle search" we need
+            # to switch to min_mode searches
             if config.saddle_method == 'dynamics' and disp_type != 'dynamics':
                 ini_changes.append( ('Saddle Search', 'method', 'min_mode') )
-
 
             search['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
@@ -281,11 +280,11 @@ class ClientMinModeExplorer(MinModeExplorer):
             if config.debug_keep_all_results:
                 #XXX: We should only do these checks once to speed things up,
                 #     but at the same time debug options don't have to be fast
-                #save_path = os.path.join(config.path_root, "old_searches")
-                #if not os.path.isdir(save_path):
+                # save_path = os.path.join(config.path_root, "old_searches")
+                # if not os.path.isdir(save_path):
                 #    os.mkdir(save_path)
-                #shutil.copytree(result_path, os.path.join(save_path, i))
-                #XXX: This is currently broken by the new result passing 
+                # shutil.copytree(result_path, os.path.join(save_path, i))
+                # XXX: This is currently broken by the new result passing 
                 #      scheme. Should it be done in communicator?
                 pass
             if len(result) == 0: continue

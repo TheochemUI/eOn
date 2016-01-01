@@ -548,7 +548,7 @@ def main():
                         os.mkdir(config.sb_path)
                         os.removedirs(config.sb_path)
 
-                    #remove superbasins files from states dirctories
+                    # remove superbasins files from states dirctories
                     state_dirs = os.listdir(config.path_states)
                     for i in state_dirs:
                         if i != 'state_table':
@@ -569,14 +569,13 @@ def main():
 
     if lock.aquirelock():
         if options.continuous or config.comm_type == 'mpi':
-            # Define a wait method.
+            # define a wait method.
             if config.comm_type == 'mpi':
                 from mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":
-                    # In local, everything is synchronous, so no need
-                    # to wait here.
+                    # In local, everything is synchronous, so no need to wait here.
                     wait = lambda: None
                 else:
                     wait = lambda: sleep(10.0)
