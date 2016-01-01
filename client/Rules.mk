@@ -166,7 +166,7 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
 
 
 #ifneq ($(or unitTests,check),)
-CXXFLAGS += -std=c++11
+#CXXFLAGS += -std=c++11
 TEMPOBJ := $(filter-out ClientEON.o,$(OBJECTS))
 DEPOBJECTS := $(addprefix ../,$(TEMPOBJ))
 DEPLIBS := $(addprefix ../,$(LIBS))
