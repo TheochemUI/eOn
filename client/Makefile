@@ -155,5 +155,5 @@ else
         DEBUG=Yes
     endif
 endif
-LDFLAGS += -lquadmath
+#LDFLAGS += -lquadmath
 include Rules.mk
