@@ -185,7 +185,7 @@ void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
     
     // boundary box
     fprintf(POSCAR, "1.0\n");
-    fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[2], box[3]);
+    fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[0], box[1], box[2]);
     fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[3], box[4], box[5]);
     fprintf(POSCAR, " %.8f\t%.8f\t%.8f\n", box[6], box[7], box[8]);
 
