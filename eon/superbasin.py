@@ -151,7 +151,7 @@ class Superbasin:
         search as the longest time of all other states which do have
         processes leading out.
 
-        Returns an interator over states that should still be
+        Returns an iterator over states that should still be
         considered.
 
         """
