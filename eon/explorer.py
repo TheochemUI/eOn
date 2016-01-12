@@ -470,7 +470,6 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        print "server minmode make_jobs"
         num_unsent = self.comm.get_queue_size()*config.comm_job_bundle_size
         logger.info("Queued %i jobs" % num_unsent)
         num_in_progress = self.comm.get_number_in_progress()*config.comm_job_bundle_size
@@ -498,29 +497,21 @@ class ServerMinModeExplorer(MinModeExplorer):
         # start new searches
         for i in range(num_to_make):
             job = None
-            print "entering ",i," job to make"
             for ps in self.process_searches.values():
                 job, job_type = ps.get_job(self.state.number)
-                print "after get_job"
                 if job:
-                    print "job != 0"
                     self.wuid_to_search_id[self.wuid] = ps.search_id
                     sid = ps.search_id
                     break
 
             if not job:
-                print "job == 0"
                 displacement, mode, disp_type = self.generate_displacement()
                 reactant = self.state.get_reactant()
-                print "done reacctant, making process search"
                 process_search = ProcessSearch(reactant, displacement, mode,
                                                disp_type, self.search_id, self.state.number)
-                print "done making process search"
                 self.process_searches[self.search_id] = process_search
                 self.wuid_to_search_id[self.wuid] = self.search_id
-                print "making job ..."
                 job, job_type = process_search.get_job(self.state.number)
-                print "done making job"
                 sid = self.search_id
                 self.search_id += 1
 
@@ -597,7 +588,6 @@ class ProcessSearch:
                     }
 
     def get_job(self, state_number):
-        print "into get_job"
         if state_number != self.state_number:
             return None, None
     
@@ -605,11 +595,8 @@ class ProcessSearch:
             return None, None
 
         if self.job_statuses['saddle_search'] == 'not_started':
-            print "getting job status"
             self.job_statuses['saddle_search'] = 'running'
-            print "starting saddle search"
             return self.start_search(), 'saddle_search'
-            print "done starting saddle search"
 
         if self.job_statuses['min1'] == 'not_started' and \
            self.job_statuses['saddle_search'] == 'complete':
