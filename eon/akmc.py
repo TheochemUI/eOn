@@ -117,7 +117,9 @@ def akmc(config, steps=0):
 
     state_explorer = explorer.get_minmodexplorer()(states, previous_state,
                                                    explore_state, superbasin=sb)
+    print "before explore"
     state_explorer.explore()
+    print "after explore"
 
     # Take a KMC step, if it's time.
     current_state, previous_state, time, steps = kmc_step(current_state, states, time, kT, superbasining, steps)
