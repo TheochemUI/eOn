@@ -103,7 +103,8 @@ void VASP::spawnVASP()
 	}
         else
 	{
-            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1) 
+//            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1) 
+            if (execlp("runvasp.sh", "runvasp.sh", NULL) == -1) 
 	    {
                 fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
                 boinc_finish(1);
