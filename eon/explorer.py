@@ -172,7 +172,8 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         reactIO = StringIO.StringIO()
         io.savecon(reactIO, self.reactant)
-        invariants['pos.con'] = reactIO
+        file_permission = os.stat("pos.con").st_mode
+        invariants['pos.con'] = (reactIO, file_permission)
 
         t1 = time()
         if config.saddle_method == 'dynamics' and \
@@ -190,7 +191,8 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             weightsIO = StringIO.StringIO()
             numpy.savetxt(weightsIO, mass_weights)
-            invariants['masses.dat'] = weightsIO
+            file_permission = os.stat("masses.dat").st_mode
+            invariants['masses.dat'] = (weightsIO, file_permission)
 
         # Merge potential files into invariants
         invariants = dict(invariants, **io.load_potfiles(config.path_pot))
