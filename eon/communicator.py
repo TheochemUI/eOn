@@ -236,8 +236,11 @@ class Communicator:
 
             for filename in invariants.keys():
                 f = open(os.path.join(job_path, filename), 'w')
-                f.write(invariants[filename].getvalue())
+                file_contents, file_permissions = invariants[filename]
+#                f.write(invariants[filename].getvalue())
+                f.write(file_contents.getvalue())
                 f.close()
+                os.chmod(os.path.join(job_path, filename), file_permissions)
 
             # Concatenate all of the displacement and modes together.
             n = 0
@@ -546,7 +549,7 @@ class BOINC(Communicator):
                     results[index][newfilename] = fh
                     results[index]["number"] = index
                 tar.close()
-                os.remove(resultpath)
+#                os.remove(resultpath)
             except:
                 logger.exception(
                         "Something tar-file related went wrong with file %s" % resultpath)
