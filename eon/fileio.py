@@ -487,7 +487,8 @@ def load_potfiles(pot_dir):
                 continue
             a = open(os.path.join(pot_dir, name), 'r')
             b = StringIO("".join(a.readlines()))
-            ret[name] = b
+            c = os.stat(os.path.join(pot_dir, name)).st_mode
+            ret[name] = (b,c)
     return ret
 
 class TableException(Exception):
