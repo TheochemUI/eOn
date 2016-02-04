@@ -165,8 +165,10 @@ class Communicator:
             if bundle_size == 0:
                 logger.error("Client running in %s returned no results. "
                              "Check its output for errors." % jobpath)
-                raise EONClientError("Client running in %s returned no results. "
-                                     "Check its output for errors." % jobpath)
+                # GH: just log the error and continue instead of quitting
+                #raise EONClientError("Client running in %s returned no results. "
+                #                     "Check its output for errors." % jobpath)
+                continue
 
             results = [{'name': dirname} for i in xrange(bundle_size)]
 
