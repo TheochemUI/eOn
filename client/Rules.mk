@@ -175,7 +175,7 @@ export
 
 #------------------------------------
 #Build rules
-all: $(POTDIRS) $(FPOTDIRS) eonclient docs
+all: $(POTDIRS) $(FPOTDIRS) eonclient
 	@echo
 	@echo "EON Client Compilation Options"
 	@echo "BOINC: $(BOINC)" 
