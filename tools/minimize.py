@@ -48,7 +48,8 @@ if __name__ == "__main__":
     if os.path.exists("potfiles"):
         potfiles = os.listdir("potfiles")
         for potfile in potfiles:
-            shutil.copyfile(os.path.join("potfiles", potfile), os.path.join(td, potfile))
+            if os.path.isfile(os.path.join("potfiles", potfile)):
+                shutil.copyfile(os.path.join("potfiles", potfile), os.path.join(td, potfile))
 
     config.set("Main", "job", "minimization")
     config.set("Potential", "potential", potential)
@@ -61,6 +62,7 @@ if __name__ == "__main__":
     cf.close()
 
     os.chdir(td)
-    os.system(os.path.join(pathfix.path, "../client", "eonclient"))
+#    os.system(os.path.join(pathfix.path, "../client", "eonclient"))
+    os.system("eonclient")
     shutil.copyfile(os.path.join(td, "pos.con"), os.path.join(cwd, "min.con"))
 
