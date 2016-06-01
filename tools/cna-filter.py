@@ -3,7 +3,7 @@
 import sys
 
 if 'help' in sys.argv or len(sys.argv) < 4:
-    print '\nusage: cna-filter input.con output.con [bcc,a15]\n'
+    print '\nusage: cna-filter.py input.con output.con [bcc,a15]\n'
     sys.exit()
 
 import pathfix
