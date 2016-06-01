@@ -32,7 +32,7 @@ from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as Navig
 class BHgui(atomview.atomview):
     def __init__(self):
         # Glade imports
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/BHgui.glade"))
+        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/bh-gui.glade"))
         gui = gladetree.get_widget("BHgui")
         atomview.atomview.__init__(self,gui)
         self.stateSB = gladetree.get_widget("stateSB")

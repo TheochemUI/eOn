@@ -7,7 +7,7 @@ from eon import atoms
 import numpy
 
 def abort():
-    print "\n   usage: refinemv [input movie file] [ouput movie file] <intermediate frames>"
+    print "\n   usage: eon-refinemv.pl [input movie file] [ouput movie file] <intermediate frames>"
     sys.exit()
 
 try:
