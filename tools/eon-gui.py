@@ -17,7 +17,7 @@ import atoms
 class eongui(atomview.atomview):
     
     def __init__(self):
-        gladetree = gtk.glade.XML("eongui.glade")
+        gladetree = gtk.glade.XML("eon-gui.glade")
         gui = gladetree.get_widget("eongui")
         atomview.atomview.__init__(self, gui)
         

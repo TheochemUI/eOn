@@ -33,7 +33,7 @@ class akmcgui(atomview.atomview):
 
     def __init__(self):
         # imports from glade
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/akmcgui.glade"))
+        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/akmc-gui.glade"))
         gui = gladetree.get_widget("akmcgui")
         atomview.atomview.__init__(self, gui)
         self.stateScale = gladetree.get_widget("stateScale")
