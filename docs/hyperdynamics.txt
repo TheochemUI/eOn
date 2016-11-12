@@ -18,7 +18,7 @@ good bias potential for systems in which the dynamics is governed by bond
 breaking and forming events.
 
 You can run a hyperdynamics job by setting the **bias_potential** option.
-It may be run with the ``dynamics`` or ``parallel_replica`` job.
+It should be run with the ``parallel_replica`` job.
 
 [Hyperdynamics] Options
 =======================
