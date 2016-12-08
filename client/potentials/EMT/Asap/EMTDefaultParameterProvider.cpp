@@ -156,14 +156,14 @@ emt_parameters *EMTDefaultParameterProvider::GetNewParameters(int element)
       name = "H";
       E0=0.784035 ; S0=0.530015 /bohr ; V0=2.398292; Z=1; eta2=4.401035 *bohr; kappa=4.456708 *bohr;
       lambda=2.108959 *bohr; mass=1.0; n0=0.181636 *(bohr*bohr*bohr);
+      ls = 2.652 / bohr;
   }    
   else 
     {
-		throw Exception("This element isn't defined in EMT.");
+      throw Exception("This element isn't defined in EMT.");
     }
-    
 
-	
+
   p = new emt_parameters;
   p->e0 = E0;
   p->seq = S0 * bohr;

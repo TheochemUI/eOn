@@ -447,7 +447,7 @@ void ZhuPhilpott<P>::interactWithImage(Water & w1, Water & w2, double & U)
 {
     // f is used to store the force on the atoms' images. These forces have no use and are at the end discarded.
     // we use the same vector to store of the forces even when they are on different atoms' images.
-    double r[4][3], f[3][3]={0};
+    double r[4][3], f[3][3]={{0}};
     for (int k=0; k < 2; k++) {
         r[0][k]=w2.rh1_[k];
         r[1][k]=w2.rh2_[k];
@@ -493,7 +493,7 @@ void ZhuPhilpott<P>::coulombWithCutoff(Water & w1, Water & w2, double & U, doubl
         coulombFull(w1, w2, U, relativePermittivity);
     }
     else if (z1 < cutoff_) {
-        double f1[3][3]={0}, f2[3][3]={0};
+        double f1[3][3]={{0}}, f2[3][3]={{0}};
         Water v1(w1, f1[0], f1[1], f1[2]);
         Water v2(w2, f2[0], f2[1], f2[2]);
         double energy=0.0;
