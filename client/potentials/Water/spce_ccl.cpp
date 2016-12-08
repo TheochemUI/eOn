@@ -102,7 +102,7 @@ void SpceCcl::coulombWithCutoff(Water & w1, Water & w2, double & U)
     }
     else if (z1 < cutoff_) {
         // store forces and energy of the full interaction in temporaries
-        double f1[3][3]={0}, f2[3][3]={0};
+        double f1[3][3]={{0}}, f2[3][3]={{0}};
         Water v1(w1.rh1_, w1.rh2_, w1.ro_, w1.rc_, f1[0], f1[1], f1[2]);
         Water v2(w2.rh1_, w2.rh2_, w2.ro_, w2.rc_, f2[0], f2[1], f2[2]);
         double energy=0.0;

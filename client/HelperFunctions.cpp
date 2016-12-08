@@ -590,12 +590,11 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     AtomMatrix r2 = m2->getPositions();
     double tolerance=distanceDifference;
     int matches=0;
-    std::set<atom,by_atom> rdf1[r1.rows()];
-    std::set<atom,by_atom> rdf2[r2.rows()];
-/* GH clang workaround for non-POD allocation
+//   std::set<atom,by_atom> rdf1[r1.rows()];
+//    std::set<atom,by_atom> rdf2[r2.rows()];
+// GH clang workaround for non-POD allocation
     set<atom,by_atom> *rdf1 = new set<atom,by_atom>[r1.rows()];
     set<atom,by_atom> *rdf2 = new set<atom,by_atom>[r2.rows()];
-*/
     if(r1.rows()!=r2.rows()) return false;
     for(int i2=0; i2<r2.rows(); i2++){    
         rdf2[i2].clear();
@@ -612,10 +611,9 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     set<atom>::iterator it2;
     for(int i1=0; i1<r1.rows(); i1++){
         if(matches==i1-2){
-/* GH clang workaround for non-POD allocation
+// GH clang workaround for non-POD allocation
         delete [] rdf1;
         delete [] rdf2;
-*/
 	    return false;
 	}
         for(int j1=0; j1<r1.rows(); j1++){
@@ -653,10 +651,9 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
         }
 	it++;
     }
-/* GH clang workaround for non-POD allocation
+// GH clang workaround for non-POD allocation
     delete [] rdf1;
     delete [] rdf2;
-*/
     if (matches<r1.rows()) {
         return false;
     }else{

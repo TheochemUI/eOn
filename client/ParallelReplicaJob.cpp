@@ -76,7 +76,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     int refineForceCalls = 0;
 
     //Main MD loop
-    double simulationTime;
+    double simulationTime = 0.0;
     if(parameters->biasPotential == Hyperdynamics::NONE ) {
         log("%s %8s %12s %10s %12s %12s %10s\n", LOG_PREFIX,
             "Step", "Time (s)", "KE", "PE", "TE", "KinT");

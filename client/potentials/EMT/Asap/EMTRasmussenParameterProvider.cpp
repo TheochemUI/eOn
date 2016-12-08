@@ -82,6 +82,9 @@ emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element)
     ls = 7.41119853;
   }
 #endif
+    else {
+      throw Exception("This element isn't defined in EMT.");
+    }
 //  else 
 //      throw AsapError("Unknown element Z = ") << element;
 	

@@ -582,14 +582,14 @@ int Parameters::load(FILE *file){
         //Sanity Checks
         if (parrepStateCheckInterval > mdTime && job == "parallel_replica") {
             char msg[] = "error: [Parallel Replica] state_check_interval must be <= time\n";
-            fprintf(stderr, msg);
+            fprintf(stderr, "%s", msg);
             log(msg);
             exit(1);
         }
 
         if (saddleDynamicsRecordIntervalInput > saddleDynamicsStateCheckIntervalInput) {
             char msg[] = "error:  [Saddle Search] dynamics_record_interval must be <= dynamics_state_check_interval\n";
-            fprintf(stderr, msg);
+            fprintf(stderr, "%s", msg);
             log(msg);
             exit(1);
         }

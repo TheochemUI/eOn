@@ -51,7 +51,7 @@ std::vector<std::string> HessianJob::run(void)
     hessian.getFreqs(matter, moved);
 
     FILE *fileResults;
-    FILE *fileMode;
+//    FILE *fileMode;
 
     std::string results_file("results.dat");
 
