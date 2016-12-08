@@ -21,7 +21,7 @@ namespace {
     double const thetae_=104.52*DEGREE;
     
     double const re2_=re_*re_;
-    double const ERGS_PER_ANGSTROM2=ERGS/ANGSTROM2;
+//    double const ERGS_PER_ANGSTROM2=ERGS/ANGSTROM2;
     
     // ------------------------ Quadratic ---------------------------
     double const ro_2_       =  84.54e-12 * ERGS_PER_ANGSTROM2;
@@ -55,7 +55,7 @@ namespace {
     double const thetae_ = 1.82421813418447321;// RADIANS
 
     double const re2_ = 0.91623184; // ANGSTROM^2
-    double const ERGS_PER_ANGSTROM2 = 624150947960.771851; // eV / Angstrom^2
+//    double const ERGS_PER_ANGSTROM2 = 624150947960.771851; // eV / Angstrom^2
 
     // ------------------------ Quadratic ---------------------------
     double const ro_2_ = 52.7657211406036524; // eV / Angstrom^2

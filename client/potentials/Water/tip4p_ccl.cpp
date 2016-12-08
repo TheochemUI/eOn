@@ -186,7 +186,7 @@ void Tip4p::coulombWithCutoff(Water & w1, Water & w2, double & U)
         coulombFull(w1, w2, U);
     }
     else if (z1 < cutoff_) {
-        double f1[3][3]={0}, f2[3][3]={0};
+        double f1[3][3]={{0}}, f2[3][3]={{0}};
         // f1[0], f1[1], 0, f1[2] are respectively, H1, H2, O, N. There is no charge on O.
         Water v1={w1.rh1_, w1.rh2_, w1.ro_, w1.rn_, w1.rc_, f1[0], f1[1], 0, f1[2]};
         Water v2={w2.rh1_, w2.rh2_, w2.ro_, w2.rn_, w2.rc_, f2[0], f2[1], 0, f2[2]};

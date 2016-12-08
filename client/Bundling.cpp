@@ -133,7 +133,7 @@ std::vector<std::string> unbundle(int number) {
                     originalFilename.c_str(), newFilename);
         }
         filenames.push_back(std::string(newFilename));
-        delete newFilename;
+        delete[] newFilename;
     }
 
     closedir(dir);

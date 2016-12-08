@@ -13,7 +13,7 @@ class AtomsBase;
 class Atoms;
 class GhostAtoms;
 class NeighborList;
-class emt_parameters;
+struct emt_parameters;
 
 /// The Effective Medium Theory (EMT) potential.
 
