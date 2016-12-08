@@ -30,10 +30,10 @@ class ReplicaExchangeJob: public Job
 
         Parameters *parameters;
         long forceCalls;
-        Matter **replica;
+//        Matter **replica;
         Matter *pos;
-        Dynamics **replicaDynamics;
-        double *replicaTemperature;
+//        Dynamics **replicaDynamics;
+//        double *replicaTemperature;
         std::vector<std::string> returnFiles;
 };
 

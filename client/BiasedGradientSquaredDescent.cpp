@@ -24,7 +24,7 @@
 #include <string.h>
 #include <map>
 
-static const char LOG_PREFIX[] = "[BGSD]";
+//static const char LOG_PREFIX[] = "[BGSD]";
 
 class BGSDObjectiveFunction : public ObjectiveFunction
 {

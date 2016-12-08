@@ -27,7 +27,7 @@ class BiasedGradientSquaredDescent : public SaddleSearchMethod
     private:
         Parameters *parameters;
         double reactantEnergy;
-        double bgsdAlpha;
+//        double bgsdAlpha;
 };
 
 #endif
