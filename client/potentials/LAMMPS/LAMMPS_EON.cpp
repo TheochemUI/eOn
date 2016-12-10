@@ -6,6 +6,8 @@
 #include <string.h>
 #include "library.h"
 
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 // General Functions
 lammps_eon::lammps_eon(Parameters *p){
     parameters = p;
@@ -49,6 +51,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
     double *fx = (double *)lammps_extract_variable(LAMMPSObj, "fx", "all");
     double *fy = (double *)lammps_extract_variable(LAMMPSObj, "fy", "all");
     double *fz = (double *)lammps_extract_variable(LAMMPSObj, "fz", "all");
+
     for (i=0;i<N;i++) {
         F[3*i+0] = fx[i];
         F[3*i+1] = fy[i];
