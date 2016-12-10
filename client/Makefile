@@ -99,7 +99,7 @@ else
             LDFLAGS += -lgfortran
         endif
     else
-        LDFLAGS += -lgfortran
+        LDFLAGS += -L/usr/local/lib -lgfortran
     endif
     # ifort
     #FC = ifort
