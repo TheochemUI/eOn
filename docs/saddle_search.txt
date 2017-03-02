@@ -61,15 +61,23 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
-**displace_listed_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
+**displace_listed_atom_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
 
     default: ``0.0``
 
-**displace_atomlist**: The individual index should be separated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
+**displace_atom_list**: The individual index should be separated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
 
     default: ``0``
 
-**displace_all_listed**: If ``true``, each displacement will include all of the degrees of freedom of all of the listed atoms in **displace_atomlist**. If ``false`` one of the atoms in **displace_atomlist** will be selected at random for each displacement. In either case all atoms up to **displace_radius** distance away from any displaced atom will be included in the displacement. This can be disabled by setting **displace_radius** to 0.
+**displace_listed_type_weight**: Relative probability to displace with an epicenter listed in displace_typelist. 
+
+    default: ``0.0``
+
+**displace_type_list**: The atom types should be separated by a comma
+
+    default: ``none``
+
+**displace_all_listed**: If ``true``, each displacement will include all of the degrees of freedom of all of the listed atoms in **displace_atom_list** or **displace_type_list**. If ``false`` one of the atoms in **displace_atom_list** or **displace_type_list** will be selected at random for each displacement. In either case all atoms up to **displace_radius** distance away from any displaced atom will be included in the displacement. This can be disabled by setting **displace_radius** to 0.
 
     default: ``false``
 

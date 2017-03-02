@@ -56,6 +56,12 @@ def akmc(config, steps=0):
     # 5) Make new work units
     # 6) Write out the state of the simulation
 
+    # First of all, does the root directory even exist?
+    if not os.path.isdir(config.path_root):
+        logger.critical("Root directory does not exist, as such the " \
+                        "reactant cannot exist. Exiting...")
+        sys.exit(1)
+
     # If we are saving debug results, create the directory if it does not exist.
     if config.debug_keep_all_results:
         rp = os.path.join(config.path_root,config.debug_results_path)
@@ -64,12 +70,6 @@ def akmc(config, steps=0):
 
     # Define constants. 
     kT = config.main_temperature/11604.5 #in eV
-
-    # First of all, does the root directory even exist?
-    if not os.path.isdir(config.path_root):
-        logger.critical("Root directory does not exist, as such the " \
-                        "reactant cannot exist. Exiting...")
-        sys.exit(1)
 
     # Load metadata, the state list, and the current state.
     start_state_num, time, previous_state_num, first_run, previous_temperature = get_akmc_metadata()
