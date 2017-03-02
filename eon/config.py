@@ -258,10 +258,14 @@ def init(config_file = ""):
 
     # Saddle Search options
     config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
-    config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight')
-    config.displace_not_TCP_BCC_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_BCC_weight')
+    config.displace_listed_atom_weight = parser.getfloat('Saddle Search', 'displace_listed_atom_weight')
+    config.displace_listed_type_weight = parser.getfloat('Saddle Search', 'displace_listed_type_weight')
+    config.displace_all_listed = parser.getboolean('Saddle Search', 'displace_all_listed')
     config.displace_under_coordinated_weight = parser.getfloat('Saddle Search', 'displace_under_coordinated_weight')
     config.displace_least_coordinated_weight = parser.getfloat('Saddle Search', 'displace_least_coordinated_weight')
+    config.displace_not_FCC_HCP_weight = parser.getfloat('Saddle Search', 'displace_not_FCC_HCP_weight')
+    config.displace_not_TCP_BCC_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_BCC_weight')
+    config.displace_not_TCP_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_weight')
     config.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
     config.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
     config.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
@@ -271,16 +275,15 @@ def init(config_file = ""):
     config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
-    config.displace_listed_weight = parser.getfloat('Saddle Search', 'displace_listed_weight')
-    config.displace_all_listed = parser.getboolean('Saddle Search', 'displace_all_listed')
     config.random_mode = parser.getboolean('Saddle Search', 'random_mode')
-    # ### TShacked start
-    config.displace_not_TCP_weight = parser.getfloat('Saddle Search', 'displace_not_TCP_weight')
-    # ### TShacked end
-    if config.displace_listed_weight != 0.0:
-        config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atomlist').split(',') ]
+    if config.displace_listed_atom_weight != 0.0:
+        config.disp_listed_atoms = [ int(string.strip(c)) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
         if config.disp_listed_atoms == ['None']:
             config.disp_listed_atoms = []
+    if config.displace_listed_type_weight != 0.0:
+        config.disp_listed_types = [ (string.strip(c)) for c in parser.get('Saddle Search', 'displace_type_list').split(',') ]
+        if config.disp_listed_types == ['None']:
+            config.disp_listed_types = []
     config.displace_1d = parser.getboolean('Saddle Search', 'displace_1d')
 
     # KDB

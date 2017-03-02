@@ -867,7 +867,11 @@ Saddle Search:
             kind: int
             default: 1
 
-        displace_atomlist:
+        displace_atom_list:
+            kind: string
+            default: 0
+
+        displace_type_list:
             kind: string
             default: 0
 
@@ -918,7 +922,19 @@ Saddle Search:
             kind: float
             default: 0.0
 
-        displace_listed_weight:
+        displace_listed_atom_weight:
+            kind: float
+            default: 0.0
+
+        displace_listed_type_weight:
+            kind: float
+            default: 0.0
+
+        displace_under_coordinated_weight:
+            kind: float
+            default: 0.0
+
+        displace_least_coordinated_weight:
             kind: float
             default: 0.0
 
@@ -934,27 +950,23 @@ Saddle Search:
             kind: float
             default: 0.0
 
-        displace_under_coordinated_weight:
-            kind: float
-            default: 0.0
-
-        displace_least_coordinated_weight:
-            kind: float
-            default: 0.0
-
         displace_water_weight:
             kind: float
             default: 0.0
 
         client_displace_type:
             kind: string
-            default: load
+            default: random
             values:
-                - least_coordinated
-                - last_atom
-                - load
-                - not_FCC_HCP_coordinated
-                - not_TCP_coordinated
+                - random
+                - listed_atoms
+                - listed_types
+                - under
+                - least
+                - not_FCC_HCP
+                - not_TCP_BCC
+                - not_TCP
+                - water
 
         displace_1d:
             kind: boolean
