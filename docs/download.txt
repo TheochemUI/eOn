@@ -7,6 +7,8 @@ Download
 
 EON is released under the `GNU General Public License version 2`_.
 
+The EIGEN library, which is included with EON, is released under the Mozilla Public License.
+
 A read-only copy of the code can be anonymously checked out of the subversion
 repository with the following command:
 
