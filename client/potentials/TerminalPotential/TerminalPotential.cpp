@@ -48,8 +48,6 @@ void TerminalPotential::passToSystem(long N, const double *R, const int *atomicN
         fprintf(out, "%.19f\t%.19f\t%.19f\n",  box[i * 3 + 0], box[i * 3 + 1],  box[i * 3 + 2]);
     }
     
-//    fprintf(out, "\n");
-    
     for(int i = 0; i < N; i++)
     {
         fprintf(out, "%i\t%.19f\t%.19f\t%.19f\n", atomicNrs[i], R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
@@ -62,7 +60,6 @@ void TerminalPotential::passToSystem(long N, const double *R, const int *atomicN
 void TerminalPotential::recieveFromSystem(long N, double *F, double *U)
 // first line must be the total 'energy', the following lines should be the 'forces'
 {
-    float tempx, tempy, tempz;
     FILE *in;
     in = fopen("from_terminal_to_eon", "r");
 
@@ -71,11 +68,8 @@ void TerminalPotential::recieveFromSystem(long N, double *F, double *U)
     for(int i = 0; i < N; i++)
     {
         fscanf(in, "%lf %lf %lf", &F[i * 3 + 0], &F[i * 3 + 1], &F[i * 3 + 2]);
-        tempx = F[i * 3 + 0];
-        tempy = F[i * 3 + 1];
-        tempz = F[i * 3 + 2];
     }
-
+    
     fclose(in);
     return;
 }
