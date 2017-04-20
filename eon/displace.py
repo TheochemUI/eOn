@@ -33,7 +33,7 @@ class DisplacementManager:
                                           use_covalent=config.comp_use_covalent,
                                           covalent_scale=config.comp_covalent_scale)
         if config.displace_listed_atom_weight > 0:
-            self.listed = ListedAtoms(self.reactant, 
+            self.listed_atoms = ListedAtoms(self.reactant,
                                       config.disp_magnitude, config.disp_radius,
                                       hole_epicenters=moved_atoms,
                                       cutoff=config.comp_neighbor_cutoff,
@@ -41,7 +41,7 @@ class DisplacementManager:
                                       covalent_scale=config.comp_covalent_scale,
                                       displace_all=config.displace_all_listed)
         if config.displace_listed_type_weight > 0:
-            self.listedtype = ListedTypes(self.reactant, 
+            self.listed_types = ListedTypes(self.reactant,
                                            config.disp_magnitude,
                                            config.disp_radius,
                                            hole_epicenters=moved_atoms,
@@ -116,11 +116,11 @@ class DisplacementManager:
             logger.debug("Made random displacement")
             return self.random.make_displacement()
         elif disp_type == "listed_atoms":
-            logger.debug("Made listed atom displacement")
-            return self.listed_atom.make_displacement()
+            logger.debug("Made listed atoms displacement")
+            return self.listed_atoms.make_displacement()
         elif disp_type == "listed_types":
-            logger.debug("Made listed atom type displacement")
-            return self.listed_type.make_displacement()
+            logger.debug("Made listed atom types displacement")
+            return self.listed_types.make_displacement()
         elif disp_type == "under":
             logger.debug("Made under-coordinated displacement")
             return self.under.make_displacement()
