@@ -13,7 +13,8 @@ private:
 	double oldBox[9];
 	void *LAMMPSObj;
 	void makeNewLAMMPS(long N, const double *R,  const int *atomicNrs, const double *box);
-	Parameters *parameters;
+    Parameters *parameters;
+    bool realunits;
 
 public:
     lammps_eon(Parameters *p);

@@ -313,7 +313,7 @@ int main(int argc, char **argv)
             int ready=1;
             if (!client_standalone) {
                 fprintf(stderr, "client: rank %i is ready, posting send to server rank: %i!\n", irank, server_rank);
-                //Tag "1" is to interrupt the main loop and tell the communicaor that a client is ready
+                //Tag "1" is to interrupt the main loop and tell the communicator that a client is ready
                 MPI::COMM_WORLD.Isend(&ready,     1, MPI::INT,  server_rank, 1);
 
                 //Get the path we should run in from the server
