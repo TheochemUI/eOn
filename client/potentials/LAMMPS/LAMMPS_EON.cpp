@@ -136,7 +136,7 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     }
     char line[256];
     while (fgets(line, sizeof(line), file)) {
-      if (strcmp(line, "#units real\n") == 0){
+      if (strcmp(line, "#!units real\n") == 0){
          realunits = true;
       }
     }
