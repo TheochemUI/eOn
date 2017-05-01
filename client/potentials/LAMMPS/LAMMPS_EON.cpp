@@ -58,6 +58,15 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
         F[3*i+2] = fz[i];
     }
 
+    // convert from kCal/mol -> eV if LAMMPS is using real units
+
+    if(realunits){
+        *U = *U / 23.0609;
+        for (i=0;i<3*N;i++) {
+            F[i] = F[i] / 23.0609;
+        }
+    }
+
     free(fx);
     free(fy);
     free(fz);
@@ -115,7 +124,30 @@ void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, co
     }
 
     //Gives units in Angstoms and eV
-    lammps_command(ptr, "units metal");
+//    lammps_command(ptr, "units metal");
+
+    // We need to allow for 'real' units for reaxff
+    realunits = false;
+    FILE *file;
+    file = fopen("in.lammps", "r");
+    if (!file) {
+        fprintf(stderr, "couldn't open in.lammps: %s\n",strerror(errno));
+        return;
+    }
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+      if (strcmp(line, "#units real\n") == 0){
+         realunits = true;
+      }
+    }
+    fclose(file);
+
+    if (realunits){
+        lammps_command(ptr, "units real");
+    } else {
+        lammps_command(ptr, "units metal");
+    }
+
     lammps_command(ptr, "atom_style	charge");
 
     //Preserves atomic index ordering
