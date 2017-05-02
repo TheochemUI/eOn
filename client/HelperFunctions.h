@@ -43,7 +43,10 @@ namespace helper_functions {
     void normalize(double *v1, long size); // v1 / |v1|
     AtomMatrix makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2); // return orthogonal component of v1 from v2
     void makeProjection(double *result, const double *v1, const double *v2, long size); // result = projection of v1 on v2
+    RotationMatrix rotationExtract(const AtomMatrix r1, const AtomMatrix r2);
     bool rotationMatch(const Matter *m1, const Matter *m2, const double max_diff);
+    void rotationRemove(const AtomMatrix r1, Matter *m2);
+    void rotationRemove(const Matter *m1, Matter *m2);
     double maxAtomMotion(const AtomMatrix v1);
     double maxAtomMotionV(const VectorXd v1);
     long numAtomsMoved(const AtomMatrix v1, double cutoff);

@@ -158,7 +158,18 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce)
 
     // displace to get the dimer configuration A
     posDimer = posCenter + direction*parameters->finiteDifference;
-
+    
+    //Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015 http://doi.org/10.1021/ct501155k
+    if(parameters->dimerRemoveRotation)
+    {
+        matterDimer->setPositions(posDimer);
+        rotationRemove(matterCenter, matterDimer);
+        posDimer = matterDimer->getPositions();
+        direction = posDimer - posCenter;
+        direction.normalize();
+        posDimer = posCenter + direction*parameters->finiteDifference;
+    }
+    
     // obtain the force for the dimer configuration
     matterDimer->setPositions(posDimer);
     forceA = matterDimer->getForces();
