@@ -54,7 +54,7 @@ private:
     Matter *matter;
     Parameters *parameters;
     LowestEigenmode *minModeMethod;
-    double reactantEnergy;
+    double reactantEnergy;    
 };
 
 #endif

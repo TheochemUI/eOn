@@ -80,7 +80,8 @@ Parameters::Parameters(){
 //    saddleConvergedForce = optConvergedForce; default value is set after the value of optConvergedForce is loaded
     saddleNonnegativeDisplacementAbort = false;
     saddleNonlocalCountAbort = 0;
-    saddleNonlocalDistanceAbort = 0.0;    
+    saddleNonlocalDistanceAbort = 0.0;
+    saddleRemoveRotation = false;
     saddlePerpForceRatio = 0.0; // undocumented
     saddleConfinePositive = false; // undocumented
     saddleBowlBreakout= false; // undocumented
@@ -93,6 +94,7 @@ Parameters::Parameters(){
     saddleDynamicsStateCheckIntervalInput = 100.0; //fs
     saddleDynamicsRecordIntervalInput = 10.0; //fs
     saddleDynamicsLinearInterpolation = true;
+
 
     // [Optimizers] //
     optMethod = "cg";
@@ -132,6 +134,7 @@ Parameters::Parameters(){
     dimerTorqueMax = 1.0; // old dimer
     dimerRotationsMin = 1; // old dimer
     dimerRotationsMax = 10; // old dimer and new dimer
+    dimerRemoveRotation = false;
 
     // [Lanczos] //
     lanczosTolerance = 0.01;
@@ -385,6 +388,8 @@ int Parameters::load(FILE *file){
         dimerRotationsMax = ini.GetValueL("Dimer", "rotations_max", dimerRotationsMax); // old & new
         dimerTorqueMin = ini.GetValueF("Dimer", "torque_min", dimerTorqueMin); // old
         dimerTorqueMax = ini.GetValueF("Dimer", "torque_max", dimerTorqueMax); // old
+        dimerRemoveRotation = ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
+
 
         // [Lanczos] //
 
@@ -521,6 +526,7 @@ int Parameters::load(FILE *file){
         saddleDynamicsRecordIntervalInput = ini.GetValueF("Saddle Search", "dynamics_record_interval", saddleDynamicsRecordIntervalInput);
         saddleDynamicsRecordInterval = saddleDynamicsRecordIntervalInput/timeUnit;
         saddleDynamicsLinearInterpolation = ini.GetValueB("Saddle Search", "dynamics_linear_interpolation", saddleDynamicsLinearInterpolation);
+        saddleRemoveRotation = ini.GetValueB("Saddle Search", "remove_rotation", saddleRemoveRotation);
 
         // [Basin Hopping] //
 

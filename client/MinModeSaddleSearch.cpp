@@ -20,7 +20,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
         Matter *matter;
         Parameters *parameters;
         int iteration;
-
+    
     public:
         MinModeObjectiveFunction(Matter *matterPassed, LowestEigenmode *minModeMethodPassed,
                                  AtomMatrix modePassed, Parameters *parametersPassed)
@@ -155,7 +155,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePa
     parameters = parametersPassed;
     status = STATUS_GOOD;
     iteration = 0;
-
+    
     if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         if (parameters->dimerImproved) {
             minModeMethod = new ImprovedDimer(matter, parameters);
@@ -223,7 +223,7 @@ int MinModeSaddleSearch::run()
         }
 
         AtomMatrix pos = matter->getPositions();
-
+        
         if (parameters->saddleBowlBreakout){
             // use negative step to communicate that the system is the negative region and a max step should be performed
           if ((minModeMethod->getEigenvalue() > 0) and (parameters->optMethod == "cg")){
@@ -240,7 +240,18 @@ int MinModeSaddleSearch::run()
         double de = objf.getEnergy()-reactantEnergy;
         // should be the total displacement of the system not just a single atom
         //double stepSize = helper_functions::maxAtomMotion(matter->pbc(matter->getPositions() - pos));
-        double stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
+        
+        double stepSize;
+        
+        //Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015 http://doi.org/10.1021/ct501155k
+        if(parameters->saddleRemoveRotation)
+        {
+            rotationRemove(pos, matter);
+            stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
+        }
+        else{
+            stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
+        }
   
         iteration++;
 

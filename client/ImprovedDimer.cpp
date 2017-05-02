@@ -46,7 +46,7 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
     *x0 = *matter;
     *x1 = *matter;
     VectorXd x0_r = x0->getPositionsV();
-
+    
     x1->setPositionsV(x0_r + parameters->finiteDifference * tau);
 
     if(parameters->dimerOptMethod == OPT_LBFGS) {
@@ -71,6 +71,16 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
     statsRotations = 0;
 
     Matter *x1p = new Matter(parameters);
+    
+    //Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015 http://doi.org/10.1021/ct501155k
+    if(parameters->dimerRemoveRotation)
+    {
+        rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+        x1_r = x1->getPositionsV();
+        tau = x1_r - x0_r;
+        tau.normalize();
+        x1_r  = x0_r + tau * delta;
+    }
 
     // Calculate the gradients on x0 and x1, g0 and g1, respectively.
     VectorXd g0 = -x0->getForcesV();
@@ -244,6 +254,18 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
             tau   = tau * cos(phi_min) + theta * sin(phi_min);
             tau   = tau.normalized();
             x1_r  = x0_r + tau * delta;
+
+            //Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015 http://doi.org/10.1021/ct501155k
+            if(parameters->dimerRemoveRotation)
+            {
+                x1->setPositionsV(x1_r);
+                rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+                x1_r = x1->getPositionsV();
+                tau = x1_r - x0_r;
+                tau.normalize();
+                x1_r  = x0_r + tau * delta;
+            }
+            
             // x1_r = x0_r + (tau * cos(phi_min) + theta * sin(phi_min)) * delta;
             x1->setPositionsV(x1_r);
             // tau = (x1_r - x0_r) / (x1_r - x0_r).norm();

@@ -17,4 +17,5 @@
 using namespace Eigen;
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,3> AtomMatrix;
+typedef Eigen::Matrix<double,3,3> RotationMatrix;
 #endif
