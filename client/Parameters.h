@@ -83,6 +83,7 @@ public:
     bool   saddleNonnegativeDisplacementAbort; // abort the saddle search if the displacement does not have a negative mode
     long   saddleNonlocalCountAbort; // abort the search if this many atoms move more than NonlocalDistanceAbort
     double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort atoms move more than this distance
+    bool   saddleRemoveRotation; // remove dominant rotational component when system is translated
 
     double saddleDynamicsTemperature; //temperature for dynamics saddle search method
     double saddleDynamicsStateCheckIntervalInput; 
@@ -136,6 +137,7 @@ public:
     long   dimerRotationsMin; // old
     double dimerTorqueMax; // old
     double dimerTorqueMin; // old
+    bool   dimerRemoveRotation; // remove dominant rotational component when estimating the eigenmode
 
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
