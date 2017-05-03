@@ -118,7 +118,7 @@ int DynamicsSaddleSearch::run(void)
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
                 log("Found transition at snapshot image %i\n", image);
-                for (int ii=0;ii<MDTimes.size();ii++) log("MDTimes[%i] = %.3f\n", ii, MDTimes[ii]*parameters->timeUnit);
+                for (int ii=0;ii<(int)MDTimes.size();ii++) log("MDTimes[%i] = %.3f\n", ii, MDTimes[ii]*parameters->timeUnit);
                 // subtract off half the record interval in order to not introduce a systematic
                 // bias towards longer times.
                 time = MDTimes[image] - parameters->saddleDynamicsRecordInterval/2.0;
