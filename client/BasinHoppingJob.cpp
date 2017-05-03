@@ -59,6 +59,15 @@ std::vector<std::string> BasinHoppingJob::run(void)
     string conFilename = getRelevantFile(parameters->conFilename);
     current->con2matter(conFilename);
 
+    //Sanity Check
+    vector<long> Elements;
+    Elements=getElements(current);
+    if (parameters->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
+        char msg[] = "error: [Basin Hopping] swap move probability must be zero if there is only one element type\n";
+        log(msg);
+        exit(1);
+    }
+
     double randomProb = parameters->basinHoppingInitialRandomStructureProbability;
     if (randomProb > 0.0) { 
         log("generating random structure with probability %.4f\n", randomProb);
