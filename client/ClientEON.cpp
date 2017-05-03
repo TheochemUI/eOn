@@ -151,6 +151,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "\nproblem loading parameter file\n");
             MPI::COMM_WORLD.Abort(1);
         }
+        printf("\n");
 
         //XXX: Barrier for gpaw-python
         MPI::COMM_WORLD.Barrier();
