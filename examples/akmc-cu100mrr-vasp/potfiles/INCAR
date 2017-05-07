@@ -1,0 +1,35 @@
+SYSTEM = Cu-O:
+
+LCHARG = FALSE
+#LWAVE = False
+
+PREC = Nor
+
+#ISPIN   = 2
+ISPIN   = 1
+ENCUT   = 270
+
+NELMIN = 4
+NELM = 100
+LREAL = Auto
+LPLANE = TRUE
+ALGO = Fast
+NSIM = 4
+NCORE = 12
+
+ISYM = 0
+
+#smearing -  Fermi if ISMEAR = -1
+ISMEAR = 0
+SIGMA = 0.05
+
+#Eon Required Settings
+IBRION = 3
+POTIM = 0
+NSW = 99999999
+EDIFFG = -1e-6
+LWAVE = .FALSE.
+LCHARG = .FALSE.
+ISIF = 0
+ISYM = 0
+LINTERACT = .TRUE.
