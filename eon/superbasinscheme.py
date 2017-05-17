@@ -47,6 +47,66 @@ class SuperbasinScheme:
                 return sb
         return None
 
+    def make_basin_from_sets(self, start_state, end_state):
+        # print "start_state: ",start_state
+        # print "end_state: ",end_state
+
+        start_states = set()
+        sb = self.get_containing_superbasin(start_state)
+        if sb is None:
+            start_states.add(start_state)
+        else:
+            start_states.update(sb.states)
+
+        end_states = set()
+        sb = self.get_containing_superbasin(end_state)
+        if sb is None:
+            end_states.add(end_state)
+        else:
+            end_states.update(sb.states)
+
+        # Is there an upper limit for the size of a superbasin?
+        if config.sb_max_size:
+            numstates = len(start_states) + len(end_states)
+            # if number of states in the new superbasin will be larger
+            # than the maximum size, do not proceed
+            if numstates > config.sb_max_size:
+                return
+
+        # Now start creating the new superbasin.
+        merge_states = [start_state, end_state]
+        new_sb_states = set()
+        for i in merge_states:
+            sb = self.get_containing_superbasin(i)
+            if sb is None:
+                new_sb_states.add(i)
+            else:
+                new_sb_states.update(sb.states)
+                # keep basins to analyze data
+                if True:
+                    sb.delete(self.path_storage)
+                else:
+                    sb.delete()
+                self.superbasins.remove(sb)
+        new_sb_states = list(new_sb_states)
+
+        # print "connect_state: before"
+        # self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
+        # However, it will likely be very slow. We should be able to do without it.
+        # Also, if confidence is changed and new processes are found, the superbasin
+        # will ignore these new processes.
+        self.states.connect_state_sets(start_states, end_states)
+        # print "connect_state: after"
+
+        # print "superbasins.append: before"
+        self.superbasins.append(
+            superbasin.Superbasin(self.path, self.next_sb_num,
+                                  state_list=new_sb_states)
+        )
+        # print "superbasins.append: after"
+        logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
+        self.next_sb_num += 1
+
     def make_basin(self, merge_states):
         # Is there an upper limit for the size of a superbasin?
         if config.sb_max_size:
@@ -78,15 +138,19 @@ class SuperbasinScheme:
                 self.superbasins.remove(sb)
         new_sb_states = list(new_sb_states)
 
+        # print "connect_state: before"
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         # However, it will likely be very slow. We should be able to do without it.
         # Also, if confidence is changed and new processes are found, the superbasin
-        # will ignore these new processes.
+        # #will ignore these new processes.
+        # print "connect_state: after"
 
+        # print "superbasins.append: before"
         self.superbasins.append(
             superbasin.Superbasin(self.path, self.next_sb_num,
                                   state_list=new_sb_states)
         )
+        # print "superbasins.append: after"
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
 
@@ -131,7 +195,8 @@ class TransitionCounting(SuperbasinScheme):
 
         if start_count[end_state] >= self.num_transitions:
             logger.debug( "Making basin ....")
-            self.make_basin([start_state, end_state])
+            # self.make_basin([start_state, end_state])
+            self.make_basin_from_sets(start_state, end_state)
 
     def write_data(self):
         logger.debug('writing')
