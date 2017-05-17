@@ -134,12 +134,13 @@ class AKMCStateList(statelist.StateList):
     def connect_states(self, states):
         '''
         This function goes through the process tables of all states in the argument and checks if any of the 
-        unregistered processes connect these states. It thus tries to connect update the processtables of the
-        state as good as possible. 
+        unregistered processes connect these states. It thus tries to connect update the processtables of the states.
         '''
+        # print "connect_states, states: ",states
         for i in states:
             proc_tab = i.get_process_table()
             for j in proc_tab:
+                # print "checking state, process: ",i," ",j
                 if proc_tab[j]['product'] != -1:
                     continue
                 enew = proc_tab[j]['product_energy']
@@ -150,9 +151,66 @@ class AKMCStateList(statelist.StateList):
 
                 # Perform distance checks on the energetically close configurations.
                 if len(energetically_close) > 0:
+                    # print "energetically close: ",energetically_close
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
+                        # print "atoms.match between state, process, state: ",i," ",j," ",state
                         if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
                             # Update the reactant state to point at the new state id.
+                            # print "structures match"
+                            self.register_process(i.number, state.number, j)
+
+    def connect_state_sets(self, states1, states2):
+        '''
+        This function goes through the process tables of all states in states1 checks if any of the unregistered
+        processes connect to a state in state2. It thus tries to connect update the processtables of the states.
+        '''
+        # print "connect_state_sets: ",states1," ",states2
+        for i in states1:
+            proc_tab = i.get_process_table()
+            for j in proc_tab:
+                # print "checking state, process: ",i," ",j
+                if proc_tab[j]['product'] != -1:
+                    continue
+                enew = proc_tab[j]['product_energy']
+                energetically_close = []
+                for state in states2:
+                    if abs(state.get_energy() - enew) < self.epsilon_e:
+                        energetically_close.append(state)
+
+                # Perform distance checks on the energetically close configurations.
+                if len(energetically_close) > 0:
+                    # print "energetically close: ",energetically_close
+                    pnew = i.get_process_product(j)
+                    for state in energetically_close:
+                        p = state.get_reactant()
+                        # print "atoms.match between state, process, state: ",i," ",j," ",state
+                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                            # Update the reactant state to point at the new state id.
+                            # print "structures match"
+                            self.register_process(i.number, state.number, j)
+
+        for i in states2:
+            proc_tab = i.get_process_table()
+            for j in proc_tab:
+                # print "checking state, process: ",i," ",j
+                if proc_tab[j]['product'] != -1:
+                    continue
+                enew = proc_tab[j]['product_energy']
+                energetically_close = []
+                for state in states1:
+                    if abs(state.get_energy() - enew) < self.epsilon_e:
+                        energetically_close.append(state)
+
+                # Perform distance checks on the energetically close configurations.
+                if len(energetically_close) > 0:
+                    # print "energetically close: ",energetically_close
+                    pnew = i.get_process_product(j)
+                    for state in energetically_close:
+                        p = state.get_reactant()
+                        # print "atoms.match between state, process, state: ",i," ",j," ",state
+                        if atoms.match(p, pnew, config.comp_eps_r, config.comp_neighbor_cutoff, True):
+                            # Update the reactant state to point at the new state id.
+                            # print "structures match"
                             self.register_process(i.number, state.number, j)
