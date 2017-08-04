@@ -101,6 +101,10 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
+**zero_mode_abort_curvature**: The saddle search will abort when the magnitude of the minmode curvature is less than this value.
+
+    default: ``0.0``
+
 **confine_positive**: Activates a confinement scheme when the search is within a positive region of the PES. 
 
     default: ``false``
