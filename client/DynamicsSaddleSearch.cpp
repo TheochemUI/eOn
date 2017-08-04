@@ -172,7 +172,8 @@ int DynamicsSaddleSearch::run(void)
                     int extremumImage = -1; 
                     int j;
                     for (j=0;j<neb.numExtrema;j++) {
-                        if (neb.extremumCurvature[j] < 0.0) { 
+//                        if (neb.extremumCurvature[j] < 0.0) { 
+                        if (neb.extremumCurvature[j] < parameters->saddleDynamicsMaxInitCurvature) { 
                             extremumImage = (int)floor(neb.extremumPosition[j]);
                             *saddle = *neb.image[extremumImage];
                             double interpDistance = neb.extremumPosition[j] - (double)extremumImage;

@@ -104,6 +104,8 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection)
 
             rotationAngle = (atan(2.0*forceDimer/rotationalForceChange)/2.0 - parameters->dimerRotationAngle/2.0);
 
+//            std::cout << "Rotation Angle: " <<rotationAngle <<endl; //debug
+
             if(rotationalForceChange < 0)
             {
                 rotationAngle = rotationAngle + M_PI/2.0;
@@ -232,6 +234,7 @@ void Dimer::rotate(double rotationAngle)
 
     direction = direction * cosAngle + rotationalPlane * sinAngle;
     rotationalPlane = rotationalPlane * cosAngle - direction * sinAngle;
+
     direction.normalize();
     rotationalPlane.normalize();
 
