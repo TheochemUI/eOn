@@ -34,6 +34,7 @@ public:
         STATUS_BAD_MD_TRAJECTORY_TOO_SHORT, //15
         STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE, //16
         STATUS_BAD_NO_BARRIER, //17
+        STATUS_ZEROMODE_ABORT, //18
     };
 
     MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
