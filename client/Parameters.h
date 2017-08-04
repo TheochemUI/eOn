@@ -100,6 +100,7 @@ public:
     double saddleConfinePositiveScaleRatio; // undocumented
     double saddleConfinePositiveBoost; // undocumented
     long   saddleConfinePositiveMinActive; // undocumented
+    double saddleZeroModeAbortCurvature;
 
     // [Optimizer] //
     string optMethod;

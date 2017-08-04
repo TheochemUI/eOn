@@ -435,6 +435,10 @@ Dimer:
             kind: float
             default: 5.0
 
+        zero_mode_abort_curvature:
+            kind: float
+            default: 0.0001
+
 ################################################################################
 
 Basin Hopping:
