@@ -94,7 +94,7 @@ Parameters::Parameters(){
     saddleDynamicsStateCheckIntervalInput = 100.0; //fs
     saddleDynamicsRecordIntervalInput = 10.0; //fs
     saddleDynamicsLinearInterpolation = true;
-
+    saddleDynamicsMaxInitCurvature = 0.0; // eV/Ang^2
 
     // [Optimizers] //
     optMethod = "cg";
@@ -527,6 +527,7 @@ int Parameters::load(FILE *file){
         saddleDynamicsRecordInterval = saddleDynamicsRecordIntervalInput/timeUnit;
         saddleDynamicsLinearInterpolation = ini.GetValueB("Saddle Search", "dynamics_linear_interpolation", saddleDynamicsLinearInterpolation);
         saddleRemoveRotation = ini.GetValueB("Saddle Search", "remove_rotation", saddleRemoveRotation);
+        saddleDynamicsMaxInitCurvature = ini.GetValueF("Saddle Search", "dynamics_max_init_curvature", saddleDynamicsMaxInitCurvature);
 
         // [Basin Hopping] //
 
