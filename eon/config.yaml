@@ -1064,6 +1064,10 @@ Saddle Search:
             kind: boolean
             default: False
 
+        dynamics_max_init_dimer_curvature:
+            kind: float
+            default: 0.
+
 ################################################################################
 
 Coarse Graining:
