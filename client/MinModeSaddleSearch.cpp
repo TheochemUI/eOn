@@ -207,7 +207,8 @@ int MinModeSaddleSearch::run()
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
     while (!objf.isConverged() || iteration == 0) {
-        
+    
+        // Abort if negative mode becomes delocalized
         if(parameters->saddleNonlocalCountAbort != 0) {
             long nm = numAtomsMoved(initialPosition - matter->getPositions(), 
                                     parameters->saddleNonlocalDistanceAbort);
@@ -215,6 +216,13 @@ int MinModeSaddleSearch::run()
                 status = STATUS_NONLOCAL_ABORT;
                 break;
             }
+        }
+
+        // Abort if negative mode becomes zero
+        if(fabs(minModeMethod->getEigenvalue()) < parameters->saddleZeroModeAbortCurvature) {
+//           printf("%f\n", minModeMethod->getEigenvalue());
+           status = STATUS_ZEROMODE_ABORT;
+           break;
         }
         
         if (iteration >= parameters->saddleMaxIterations) {
