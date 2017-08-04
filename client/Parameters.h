@@ -91,6 +91,7 @@ public:
     double saddleDynamicsRecordIntervalInput;
     double saddleDynamicsRecordInterval;
     bool   saddleDynamicsLinearInterpolation;
+    double saddleDynamicsMaxInitCurvature;
 
     bool   saddleConfinePositive; // undocumented
     bool   saddleBowlBreakout; // undocumented
