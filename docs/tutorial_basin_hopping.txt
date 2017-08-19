@@ -16,42 +16,42 @@ Here is the con file of our starting structure:
 .. literalinclude:: lj13.con
 
 Here is the config.ini file::
-
+    
     [Main]
     job=basin_hopping
-    temperature=500 #specifiy the temperature used in the Monte-Carlo
-                    #step acceptance
-
+    # specify the temperature used in the Monte-Carlo step acceptance
+    temperature=500
+    
     [Potential]
-    potential=lj #use the lennard-jones potential, in reduced-units
-
+    # use the lennard-jones potential, in reduced-units
+    potential=lj
+    
     [Communicator]
-    type=local #run the client locally
-    number_of_cpus=1 #only run 1 client at a time
-    num_jobs=10 #only one run job per invocation of eon
-    client_path=eonclient #search $PATH for a binary named eonclient
-
+    # run the client locally
+    type=local
+    # only run 1 client at a time
+    number_of_cpus=1
+    # run 10 jobs per invocation of eon
+    num_jobs=10
+    # search $PATH for a binary named eonclient
+    client_path=eonclient
+    
     [Basin Hopping]
-    steps=10 # perform 100 Monte-Carlo steps
-    displacement_distribution=gaussian #use a gaussian distribution
-                                       #for the displacements instead
-                                       #of a uniform distribution
-    displacement=0.3 #the standard deviation for the gaussian
-                         #which is used to displace each degree of
-                         #freedom
-    initial_md_probability=0.9 #each basin hopping job has a 90% chance
-                               #of running molecular dynamics before
-                               #starting the basin hopping calculation
-    initial_md_temperature=300 #the temperature of the initial molecular
-                               #dynamics calculation
-
+    # perform 100 Monte-Carlo steps
+    steps=100
+    # use a gaussian distribution for the displacements instead of a uniform distribution
+    displacement_distribution=gaussian
+    # the standard deviation for the gaussian which is used to displace each degree of freedom
+    displacement=0.3
+    
     [Optimizer]
-    opt_method=lbfgs #use the lbfgs optimizer
-    converged_force=0.001 #stop the optimization once the max
-                          #force per atom drops below 0.001 eV/A
-    lbfgs_inverse_curvature=0.01 #specifies the value of 1/H0 used in
-                                 #the lbfgs optimizer
-
+    # use the lbfgs optimizer
+    opt_method=lbfgs
+    # stop the optimization once the max force per atom drops below 0.001 eV/A
+    converged_force=0.001
+    # specifies the value of 1/H0 used in the lbfgs optimizer
+    lbfgs_inverse_curvature=0.01
+    
 You should now have a directory with two files in it: ``config.ini`` and
 ``reactant.con``. To run the calculation run the ``eon`` script::
 
