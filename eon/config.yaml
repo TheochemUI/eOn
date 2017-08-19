@@ -1064,7 +1064,7 @@ Saddle Search:
             kind: boolean
             default: False
 
-        dynamics_max_init_dimer_curvature:
+        dynamics_max_init_curvature:
             kind: float
             default: 0.
 
