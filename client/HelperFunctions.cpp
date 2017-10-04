@@ -642,6 +642,7 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
 bool helper_functions::sortedR(const Matter *m1, const Matter *m2, 
                                const double distanceDifference)
 {
+    cout << "into sortedR\n";
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
     double tolerance=distanceDifference;

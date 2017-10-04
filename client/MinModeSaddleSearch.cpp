@@ -196,8 +196,8 @@ int MinModeSaddleSearch::run()
     AtomMatrix initialPosition = matter->getPositions();
 
     MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
+    objf.getGradient();
     if (parameters->saddleNonnegativeDisplacementAbort) {
-        objf.getGradient();
         if (minModeMethod->getEigenvalue() > 0) {
             printf("%f\n", minModeMethod->getEigenvalue());
             return STATUS_NONNEGATIVE_ABORT;
@@ -219,7 +219,8 @@ int MinModeSaddleSearch::run()
         }
 
         // Abort if negative mode becomes zero
-        if(fabs(minModeMethod->getEigenvalue()) < parameters->saddleZeroModeAbortCurvature) {
+//        cout << "curvature: "<<fabs(minModeMethod->getEigenvalue())<<"\n";
+        if(fabs(minModeMethod->getEigenvalue()) < parameters->saddleZeroModeAbortCurvature){
 //           printf("%f\n", minModeMethod->getEigenvalue());
            status = STATUS_ZEROMODE_ABORT;
            break;

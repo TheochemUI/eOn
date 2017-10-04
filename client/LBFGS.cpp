@@ -37,7 +37,7 @@ VectorXd LBFGS::getStep(double maxMove, VectorXd f)
         }
 
         if (parameters->optLBFGSAutoScale) {
-            H0 = 1/C;
+            H0 = 1./C;
 //            log_file("[LBFGS] Curvature: %.4e eV/A^2\n", C); 
         }
     }
@@ -110,8 +110,13 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
     //y0 is the change in the gradient, not the force
     VectorXd y0 = f0 - f1;
 
-    s.push_back(s0);
-    y.push_back(y0);
+    // GH: added to prevent crashing
+    if (s0.dot(y0) < LBFGS_EPS) {
+        cout <<"Error in LBFGS\n";
+        log_file("[LBFGS] error, s0.y0 is too small: %.4f\n", s0.dot(y0));
+        exit(1);
+    }
+
     rho.push_back(1.0/(s0.dot(y0)));
 
     if ((int)s.size() > memory) {

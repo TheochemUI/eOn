@@ -177,10 +177,13 @@ const Matter& Matter::operator=(const Matter& matter)
 bool Matter::compare(const Matter *matter, bool indistinguishable) {
     if (nAtoms != matter->numberOfAtoms()) return false;
     if(parameters->checkRotation && indistinguishable) {
+        cout <<"sortedR\n";
         return helper_functions::sortedR(this, matter, parameters->distanceDifference);
     }else if(indistinguishable) {
+        cout <<"identical\n";
         return helper_functions::identical(this, matter, parameters->distanceDifference);
     }else if(parameters->checkRotation) {
+        cout <<"rotationMatch\n";
         return helper_functions::rotationMatch(this, matter, parameters->distanceDifference);
     }else{
         return (parameters->distanceDifference) > perAtomNorm(*matter);
