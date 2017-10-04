@@ -50,15 +50,9 @@ int DynamicsSaddleSearch::run(void)
     dyn.setTemperature(parameters->saddleDynamicsTemperature);
     dyn.setThermalVelocity();
 
-    std::cout <<"here1\n";
-    
     int dephaseSteps = int(floor(parameters->parrepDephaseTime/parameters->mdTimeStep+0.5));
 
-    std::cout <<"here2\n";
-
     while (true) {
-
-        std::cout <<"here3\n";
 
         log("Dephasing: %i steps\n", dephaseSteps);
         //always start from the initial configuration
