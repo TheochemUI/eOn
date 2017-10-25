@@ -138,19 +138,15 @@ class SuperbasinScheme:
                 self.superbasins.remove(sb)
         new_sb_states = list(new_sb_states)
 
-        # print "connect_state: before"
         self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         # However, it will likely be very slow. We should be able to do without it.
         # Also, if confidence is changed and new processes are found, the superbasin
         # #will ignore these new processes.
-        # print "connect_state: after"
 
-        # print "superbasins.append: before"
         self.superbasins.append(
             superbasin.Superbasin(self.path, self.next_sb_num,
                                   state_list=new_sb_states)
         )
-        # print "superbasins.append: after"
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
 
