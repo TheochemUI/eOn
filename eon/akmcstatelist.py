@@ -66,6 +66,11 @@ class AKMCStateList(statelist.StateList):
                         # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
                         reactant.load_process_table()
 
+                        # Set maximum rate, if defined
+                        current_rate = config.maximum_rate
+                        if config.maximum_rate > 0 and rate > config.maximum_rate:
+                            current_rate = config.maximum_rate
+
                         # Remember we are now looking at the reverse processes 
                         reverse_procs[id]['product'] = reactant_number
                         reverse_procs[id]['saddle_energy'] = saddle_energy
@@ -73,7 +78,8 @@ class AKMCStateList(statelist.StateList):
                         reverse_procs[id]['product_energy'] = reactant.get_energy()
                         reverse_procs[id]['product_prefactor'] = reactant.procs[process_id]['prefactor']
                         reverse_procs[id]['barrier'] = saddle_energy - product.get_energy()
-                        reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
+#                        reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
+                        reverse_procs[id]['rate'] = current_rate
                         product.save_process_table()
 
                         # We are done.
@@ -97,6 +103,12 @@ class AKMCStateList(statelist.StateList):
 
         # Add the reverse process in the product state
         barrier = saddle_energy - product.get_energy()
+
+        # Set maximum rate, if defined
+        current_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
+        if config.maximum_rate > 0 and rate > config.maximum_rate:
+            current_rate = config.maximum_rate
+
         product.append_process_table(id = reverse_process_id,
                                      saddle_energy = saddle_energy,
                                      prefactor = reactant.procs[process_id]['product_prefactor'],
@@ -104,7 +116,8 @@ class AKMCStateList(statelist.StateList):
                                      product_energy = reactant_energy,
                                      product_prefactor = reactant.procs[process_id]['prefactor'],
                                      barrier = barrier,
-                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
+#                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
+                                     rate = current_rate,
                                      repeats = 0)
         product.save_process_table()
 
