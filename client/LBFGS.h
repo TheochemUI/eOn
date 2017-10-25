@@ -9,7 +9,7 @@
 #include "HelperFunctions.h"
 #include <vector>
 
-#define LBFGS_EPS 1e-12
+#define LBFGS_EPS 1e-30
 
 class LBFGS : public Optimizer
 {

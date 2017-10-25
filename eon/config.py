@@ -248,6 +248,9 @@ def init(config_file = ""):
     config.process_search_minimize_first = parser.getboolean('Process Search', 'minimize_first')
 
     # Saddle Search options
+    config.saddle_method = parser.get('Saddle Search', 'method')
+    config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')
+    config.saddle_dynamics_temperature = parser.getfloat('Saddle Search', 'dynamics_temperature')
     config.displace_random_weight = parser.getfloat('Saddle Search', 'displace_random_weight')
     config.displace_listed_atom_weight = parser.getfloat('Saddle Search', 'displace_listed_atom_weight')
     config.displace_listed_type_weight = parser.getfloat('Saddle Search', 'displace_listed_type_weight')
@@ -276,6 +279,8 @@ def init(config_file = ""):
         if config.disp_listed_types == ['None']:
             config.disp_listed_types = []
     config.displace_1d = parser.getboolean('Saddle Search', 'displace_1d')
+    config.dynamics_max_init_curvature = parser.getfloat('Saddle Search', 'dynamics_max_init_curvature')
+    config.zero_mode_abort_curvature = parser.getfloat('Saddle Search', 'zero_mode_abort_curvature')
 
     # KDB
     config.kdb_on = parser.getboolean('KDB', 'use_kdb')
@@ -287,7 +292,6 @@ def init(config_file = ""):
     config.kdb_nf = parser.get('KDB', 'kdb_nf')
     config.kdb_dc = parser.get('KDB', 'kdb_dc')
     config.kdb_mac = parser.get('KDB', 'kdb_mac')
-
 
     # Recycling
     config.recycling_on = parser.getboolean('Recycling', 'use_recycling')
@@ -327,11 +331,6 @@ def init(config_file = ""):
 
     # Optimizers
     config.optimizers_max_iterations = parser.getint('Optimizer', 'max_iterations')
-
-    # Saddle Search
-    config.saddle_search_max_iterations = parser.getint('Saddle Search', 'max_iterations')
-    config.saddle_dynamics_temperature = parser.getfloat('Saddle Search', 'dynamics_temperature')
-    config.saddle_method = parser.get('Saddle Search', 'method')
 
     # Debug options
     config.debug_interactive_shell = parser.getboolean('Debug', 'interactive_shell')
