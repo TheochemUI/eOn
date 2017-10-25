@@ -169,11 +169,12 @@ def init(config_file = ""):
         if parser.getint('Communicator', 'jobs_per_bundle') != 1:
             print "Error: you cannot use a bundle size other than 1 when using server-side process search mode."
             sys.exit()
-    config.akmc_thermal_window             = parser.getfloat('AKMC', 'thermally_accessible_window')
-    config.akmc_max_thermal_window         = parser.getfloat('AKMC', 'thermally_accessible_buffer')
-    config.akmc_max_kmc_steps              = parser.getint('AKMC', 'max_kmc_steps')
-    config.akmc_confidence_scheme          = parser.get('AKMC', 'confidence_scheme')
-    config.akmc_confidence_correction      = parser.getboolean('AKMC', "confidence_correction")
+    config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
+    config.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
+    config.akmc_max_kmc_steps = parser.getint('AKMC', 'max_kmc_steps')
+    config.akmc_confidence_scheme = parser.get('AKMC', 'confidence_scheme')
+    config.akmc_confidence_correction = parser.getboolean('AKMC', "confidence_correction")
+    config.akmc_max_rate = parser.getfloat('AKMC', "max_rate")
 
     # Basin Hopping options
     config.bh_initial_random_structure_probability = parser.getfloat('Basin Hopping', 'initial_random_structure_probability')

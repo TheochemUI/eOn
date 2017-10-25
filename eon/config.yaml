@@ -769,9 +769,9 @@ AKMC:
             kind: boolean
             default: False
 
-#        maximum_rate:
-#            kind: float
-#            default: 0
+        max_rate:
+            kind: float
+            default: 0
 
 ################################################################################
 
