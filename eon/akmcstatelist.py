@@ -67,9 +67,11 @@ class AKMCStateList(statelist.StateList):
                         reactant.load_process_table()
 
                         # Set maximum rate, if defined
-#                        current_rate = config.maximum_rate
-#                        if config.maximum_rate > 0 and rate > config.maximum_rate:
-#                            current_rate = config.maximum_rate
+                        # print "max rate code"
+                        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
+                        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+                            # print "max rate exceeded: ", cur_rate
+                            cur_rate = config.akmc_max_rate
 
                         # Remember we are now looking at the reverse processes 
                         reverse_procs[id]['product'] = reactant_number
@@ -78,8 +80,8 @@ class AKMCStateList(statelist.StateList):
                         reverse_procs[id]['product_energy'] = reactant.get_energy()
                         reverse_procs[id]['product_prefactor'] = reactant.procs[process_id]['prefactor']
                         reverse_procs[id]['barrier'] = saddle_energy - product.get_energy()
-                        reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
-#                        reverse_procs[id]['rate'] = current_rate
+#                        reverse_procs[id]['rate'] = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
+                        reverse_procs[id]['rate'] = cur_rate
                         product.save_process_table()
 
                         # We are done.
@@ -105,9 +107,11 @@ class AKMCStateList(statelist.StateList):
         barrier = saddle_energy - product.get_energy()
 
         # Set maximum rate, if defined
-#        current_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
-#        if config.maximum_rate > 0 and rate > config.maximum_rate:
-#            current_rate = config.maximum_rate
+        # print "max rate code"
+        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT)
+        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+            # print "max rate exceeded: ", cur_rate
+            cur_rate = config.akmc_max_rate
 
         product.append_process_table(id = reverse_process_id,
                                      saddle_energy = saddle_energy,
@@ -116,8 +120,8 @@ class AKMCStateList(statelist.StateList):
                                      product_energy = reactant_energy,
                                      product_prefactor = reactant.procs[process_id]['prefactor'],
                                      barrier = barrier,
-                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
-#                                     rate = current_rate,
+#                                     rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
+                                     rate = cur_rate,
                                      repeats = 0)
         product.save_process_table()
 

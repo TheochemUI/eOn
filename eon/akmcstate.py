@@ -153,9 +153,11 @@ class AKMCState(state.State):
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Set maximum rate, if defined
-#        current_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
-#        if config.maximum_rate > 0 and rate > config.maximum_rate:
-#            current_rate = config.maximum_rate
+        # print "max rate code"
+        cur_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
+        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+            # print "max rate exceeded: ", cur_rate
+            cur_rate = config.akmc_max_rate
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id, 
@@ -165,8 +167,8 @@ class AKMCState(state.State):
                                   product_energy =    resultdata["potential_energy_product"],
                                   product_prefactor = resultdata["prefactor_product_to_reactant"],
                                   barrier =           barrier,
-                                  rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
-                                  # rate =              current_rate,
+                                  #rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
+                                  rate =              cur_rate,
                                   repeats =           0)
 
         # If this is a random search type, add this proc to the random proc dict.
