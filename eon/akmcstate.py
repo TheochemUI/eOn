@@ -359,6 +359,7 @@ class AKMCState(state.State):
                       if entry[0] in dyn_saddles]
 
             conf = 0.0
+            complete_rate_estimator = 0.0
             T1 = config.main_temperature
             for T2, T2_time in self.get_time_by_temp().iteritems():
                 if T2_time == 0.0:
@@ -380,8 +381,9 @@ class AKMCState(state.State):
                 #conf += sum(C*rates)/total_rate
 
                 # Lelievre-Jourdain confidence
-                conf += total_rate/sum(rates/C)
+                complete_rate_estimator += sum(rates/C)
 
+            conf = total_rate/complete_rate_estimator
             return conf
 
         else:
