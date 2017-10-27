@@ -101,8 +101,7 @@ class AKMCState(state.State):
                 self.inc_proc_random_count(id)
                 # Do not increase repeats if we are currently in a
                 # superbasin and the process does not lead out of it;
-                # or if the process barrier is outside the thermanl
-                # window.
+                # or if the process barrier is outside the thermal window.
                 if id in self.get_relevant_procids(superbasin):
                     self.inc_repeats()
             if 'simulation_time' in resultdata:
@@ -153,7 +152,6 @@ class AKMCState(state.State):
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Set maximum rate, if defined
-        # print "max rate code"
         cur_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
         if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
             # print "max rate exceeded: ", cur_rate
@@ -216,8 +214,7 @@ class AKMCState(state.State):
         if not superbasin:
             return rt
         else:
-            # Filter out processes that lead to another state in
-            # the superbasin.
+            # Filter out processes that lead to another state in the superbasin.
             return [entry
                     for entry in rt
                     if self.procs[entry[0]]["product"] not in superbasin.state_dict]
@@ -273,7 +270,7 @@ class AKMCState(state.State):
         except AttributeError:
             superbasin = None
 
-        # checking to see if all recycling jobs are complete
+        # Checking to see if all recycling jobs are complete
         if config.recycling_on and config.disp_moved_only:
             job_table_path = os.path.join(config.path_root, "jobs.tbl")
             job_table = io.Table(job_table_path)
@@ -315,19 +312,20 @@ class AKMCState(state.State):
             if Nf < 1:
                 Nf = 1.0
             return 1.0 + (Nf/(alpha*Ns)) * lambertw(-math.exp(-1.0 / (Nf/(alpha*Ns)))/(Nf/(alpha*Ns)))
+
         elif config.akmc_confidence_scheme == 'sampling':
             all_repeats = prc
             repeats = {}
             for event in rt:
                 id = event[0]
                 repeats[id] = all_repeats[id]
-            #number of events
+            # number of events
             m = len(repeats)
-            #number of searches
+            # number of searches
             n = sum(repeats.values())
             if n < 10: return 0.0
 
-            #probabilities
+            # probabilities
             ps = numpy.array(repeats.values(),dtype=numpy.float)
             ps /= sum(ps)
 
@@ -336,8 +334,9 @@ class AKMCState(state.State):
                 C += (1.0-C)*ps
 
             return sum(C)/float(m)
+
         elif config.akmc_confidence_scheme == 'dynamics':
-            #filter out recycled saddles if displace_moved_only is true
+            # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if config.disp_moved_only:
                 f = open(self.search_result_path)
@@ -364,18 +363,25 @@ class AKMCState(state.State):
             for T2, T2_time in self.get_time_by_temp().iteritems():
                 if T2_time == 0.0:
                     continue
-                #rates are at T1
+
+                # rates are at T1
                 rates = numpy.array([ p[1] for p in rt ])
                 prefactors = numpy.array([ p[2] for p in rt ])
                 if len(rates) == 0: return 0.0
-                #extrapolate to T2
+
+                # extrapolate to T2
                 rates_md = prefactors*(rates/prefactors)**(T1/T2)
 
                 time = T2_time*1e-15
                 C = 1.0-numpy.exp(-time*rates_md)
                 total_rate = sum(rates)
 
-                conf += sum(C*rates)/total_rate
+                # Chill confidence
+                #conf += sum(C*rates)/total_rate
+
+                # Lelievre-Jourdain confidence
+                conf += total_rate/sum(rates/C)
+
             return conf
 
         else:
