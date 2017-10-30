@@ -443,9 +443,15 @@ class AKMCState(state.State):
         except NameError:
             self.info.set('MetaData', 'kT', self.statelist.kT)
             return
-        if kT != self.statelist.kT:
+#        if kT != self.statelist.kT:
+        if abs(kT - self.statelist.kT) > 1e-8:
             for id, proc in self.procs.items():
-                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+                # Set maximum rate, if defined
+                cur_rate = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+                if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+                    cur_rate = config.akmc_max_rate
+                proc['rate'] = cur_rate
+#                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
             self.save_process_table()            
                 
 
