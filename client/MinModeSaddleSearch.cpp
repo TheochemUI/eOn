@@ -196,8 +196,9 @@ int MinModeSaddleSearch::run()
     AtomMatrix initialPosition = matter->getPositions();
 
     MinModeObjectiveFunction objf(matter, minModeMethod, mode, parameters);
-    objf.getGradient();
+    //objf.getGradient();
     if (parameters->saddleNonnegativeDisplacementAbort) {
+        objf.getGradient();
         if (minModeMethod->getEigenvalue() > 0) {
             printf("%f\n", minModeMethod->getEigenvalue());
             return STATUS_NONNEGATIVE_ABORT;
@@ -253,14 +254,10 @@ int MinModeSaddleSearch::run()
         double stepSize;
         
         //Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015 http://doi.org/10.1021/ct501155k
-        if(parameters->saddleRemoveRotation)
-        {
+        if(parameters->saddleRemoveRotation) {
             rotationRemove(pos, matter);
-            stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
         }
-        else{
-            stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
-        }
+        stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
   
         iteration++;
 
