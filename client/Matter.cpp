@@ -177,13 +177,10 @@ const Matter& Matter::operator=(const Matter& matter)
 bool Matter::compare(const Matter *matter, bool indistinguishable) {
     if (nAtoms != matter->numberOfAtoms()) return false;
     if(parameters->checkRotation && indistinguishable) {
-        cout <<"sortedR\n";
         return helper_functions::sortedR(this, matter, parameters->distanceDifference);
     }else if(indistinguishable) {
-        cout <<"identical\n";
         return helper_functions::identical(this, matter, parameters->distanceDifference);
     }else if(parameters->checkRotation) {
-        cout <<"rotationMatch\n";
         return helper_functions::rotationMatch(this, matter, parameters->distanceDifference);
     }else{
         return (parameters->distanceDifference) > perAtomNorm(*matter);
@@ -1210,7 +1207,7 @@ bool Matter::convel2matter(FILE *file)
     int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
     if(sscanf(line,"%d",&Ncomponent) == 0) {
         std::cout << "The number of components cannot be read. One component is assumed instead\n";
-        Ncomponent=1;
+        Ncomponent = 1;
     }
     if((Ncomponent>MAXC)||(Ncomponent<1)) {
         cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
