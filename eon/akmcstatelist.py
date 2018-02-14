@@ -74,9 +74,9 @@ class AKMCStateList(statelist.StateList):
                             cur_rate = config.akmc_max_rate
 
                         # Set equilibrium rate, if defined
-                        forward_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.statelist.kT)
+                        forward_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.kT)
                         reverse_barrier = saddle_energy - reactant.get_energy()
-                        reverse_rate = reactant.procs[process_id]['prefactor'] * math.exp(-reverse_barrier / self.statelist.kT)
+                        reverse_rate = reactant.procs[process_id]['prefactor'] * math.exp(-reverse_barrier / self.kT)
 
                         if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
                             print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
