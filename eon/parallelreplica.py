@@ -64,7 +64,7 @@ def step(current_time, current_state, states, transition):
     dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
     proc = current_state.get_process(transition['process_id'])
     dynamics.append(current_state.number, transition['process_id'],
-                    next_state.number, transition['time'], transition['time']+current_time, 0, 0)
+                    next_state.number, transition['time'], transition['time']+current_time, 0, 0, current_state.get_energy())
 
     previous_state = current_state
     current_state = next_state
