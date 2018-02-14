@@ -298,11 +298,11 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
         dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
         if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
-            dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'])
+            dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'], current_state.get_energy())
             logger.info("KMC step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
         else:
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
-            dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id)
+            dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id, 1.0/mean_time, current_state.get_energy())
             logger.info("SB step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
 
         previous_state = current_state
@@ -495,6 +495,8 @@ def main():
                             os.path.join(config.path_root, "prng.pkl"),
                             os.path.join(config.path_root, "explorer.pickle"),
                             os.path.join(config.path_root, "temperatures.dat"),
+                            os.path.join(config.path_root, "client.log"),
+                            os.path.join(config.path_root, "lockfile"),
                             ]
                 for thing in rmthings:
                     attempt_removal(thing)
