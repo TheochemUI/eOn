@@ -175,6 +175,7 @@ def init(config_file = ""):
     config.akmc_confidence_scheme = parser.get('AKMC', 'confidence_scheme')
     config.akmc_confidence_correction = parser.getboolean('AKMC', "confidence_correction")
     config.akmc_max_rate = parser.getfloat('AKMC', "max_rate")
+    config.akmc_eq_rate = parser.getfloat('AKMC', "eq_rate")
 
     # Basin Hopping options
     config.bh_initial_random_structure_probability = parser.getfloat('Basin Hopping', 'initial_random_structure_probability')

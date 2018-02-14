@@ -773,6 +773,10 @@ AKMC:
             kind: float
             default: 0
 
+        eq_rate:
+            kind: float
+            default: 0
+
 ################################################################################
 
 Communicator:
