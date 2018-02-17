@@ -50,6 +50,13 @@ bool FIRE::step(double maxMove)
     // FIRE
     P = f.dot(v);
     v = (1 - alpha) * v + alpha * f_unit * v.norm();
+
+//    cout <<"FIRE, P: "<<P<<endl;
+//    cout <<"FIRE, v: "<<v<<endl;
+//    cout <<"FIRE, dt: "<<dt<<endl;
+//    cout <<"FIRE, alpha: "<<alpha<<endl;
+//    cout <<"FIRE, N: "<<N<<endl;
+
     if(P >= 0) {
         N++;
         if (N > N_min) {
@@ -61,6 +68,13 @@ bool FIRE::step(double maxMove)
         v = v * 0.0;
         alpha = alpha_start;
         N = 0;
+    }
+
+    // add a sanity check on dt
+    if(dt<1e-6) {
+        cout <<"Error in FIRE\n";
+        log_file("[FIRE] error, dt is too small: %.4f\n", dt);
+        exit(1);
     }
 
     iteration++;
