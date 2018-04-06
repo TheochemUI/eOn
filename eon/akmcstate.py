@@ -152,23 +152,27 @@ class AKMCState(state.State):
         open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
 
         # Set maximum rate, if defined
-        cur_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
-        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
-            # print "max rate exceeded: ", cur_rate
-            cur_rate = config.akmc_max_rate
+#        forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
+#        if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
+#            # print "max rate exceeded: ", cur_rate
+#            forward_rate = config.akmc_max_rate
 
         # Set equilibrium rate, if defined
         forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
         reverse_barrier = barrier - (resultdata["potential_energy_product"] - reactant_energy)
         reverse_rate = resultdata["prefactor_product_to_reactant"] * math.exp(-reverse_barrier / self.statelist.kT)
 
+        eq_rate_flag = False
         if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
+            eq_rate_flag = True
             print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
             if forward_rate < reverse_rate:
-                cur_rate = config.akmc_eq_rate
+                forward_eq_rate = config.akmc_eq_rate
+                reverse_eq_rate = config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
-                cur_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
-            print "new forward rate:", cur_rate
+                forward_eq_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
+                reverse_eq_rate = config.akmc_eq_rate
+            print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id, 
@@ -178,9 +182,14 @@ class AKMCState(state.State):
                                   product_energy =    resultdata["potential_energy_product"],
                                   product_prefactor = resultdata["prefactor_product_to_reactant"],
                                   barrier =           barrier,
-                                  #rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
-                                  rate =              cur_rate,
+                                  rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
+#                                  rate =              forward_rate,
                                   repeats =           0)
+
+        # If equilibrium rate, change the forward rate as well
+        if eq_rate_flag:
+            self.procs[id]['rate'] = forward_eq_rate
+#            reverse_procs[id]['rate'] = reverse_eq_rate
 
         # If this is a random search type, add this proc to the random proc dict.
         if result['type'] == "random" or result['type'] == "dynamics":
@@ -456,15 +465,9 @@ class AKMCState(state.State):
         except NameError:
             self.info.set('MetaData', 'kT', self.statelist.kT)
             return
-#        if kT != self.statelist.kT:
         if abs(kT - self.statelist.kT) > 1e-8:
             for id, proc in self.procs.items():
-                # Set maximum rate, if defined
-                cur_rate = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
-                if config.akmc_max_rate > 0 and cur_rate > config.akmc_max_rate:
-                    cur_rate = config.akmc_max_rate
-                proc['rate'] = cur_rate
-#                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
             self.save_process_table()            
                 
 
