@@ -79,6 +79,14 @@ class Superbasin:
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
         
+        #lei debug
+        print("################")
+        print(str(self.id)+" c is: ")
+        print(c)
+        print(str(self.id)+" Q is: ")
+        print(Q)
+        print(str(self.id)+" R is: ")
+        print(R)
         # import pdb; pdb.set_trace()
         
         t, B, residual = mcamc(Q, R, c)

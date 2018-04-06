@@ -345,6 +345,7 @@ def init(config_file = ""):
     config.debug_register_extra_results = parser.getboolean('Debug', 'register_extra_results')
     config.debug_use_mean_time = parser.getboolean('Debug', 'use_mean_time')
     config.debug_target_trajectory = parser.get('Debug', 'target_trajectory')
+    config.debug_stop_criterion = parser.getfloat('Debug', 'stop_criterion')
 
     config.mpi_poll_period = parser.getfloat('Potential', 'mpi_poll_period')
 
