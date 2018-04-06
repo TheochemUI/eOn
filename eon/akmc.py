@@ -273,6 +273,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
 
+        print("Meantime for Step "+str(steps)+": ", mean_time)
         # Accounting for time
         if config.debug_use_mean_time:
             step_time = mean_time
@@ -304,6 +305,10 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
             #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id, 1.0/mean_time, current_state.get_energy())
             logger.info("SB step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
+
+        #criterion used to stop the job: currently an energy limit is used as criterion
+        if current_state.get_energy() > config.debug_stop_criterion:
+           sys.exit()
 
         previous_state = current_state
         current_state = next_state
