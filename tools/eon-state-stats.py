@@ -10,7 +10,15 @@ num_states = len(sys.argv)-1
 
 if(len(states) == 0):
     state_main_dir = "states/"
-    state_listdir = os.listdir(state_main_dir)
+    full_state_listdir = os.listdir(state_main_dir)
+    state_listdir = []
+    for dir in full_state_listdir:
+        try:
+            int(dir)
+            state_listdir.append(dir)
+        except ValueError:
+            pass
+    state_listdir.sort(key=int)
     for dir in state_listdir:
         state_dir = state_main_dir+dir
         if(os.path.isdir(state_dir)):
