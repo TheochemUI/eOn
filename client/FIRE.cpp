@@ -26,12 +26,12 @@ FIRE::~FIRE()
     return;
 }
 
-bool FIRE::step(double maxMove)
+int FIRE::step(double maxMove)
 {
     double P = 0;
     // Check convergence.
     if(objf->isConverged()) {
-        return true;
+        return 1;
     }
 
     // Velocity Verlet
@@ -74,17 +74,22 @@ bool FIRE::step(double maxMove)
     if(dt<1e-6) {
         cout <<"Error in FIRE\n";
         log_file("[FIRE] error, dt is too small: %.4f\n", dt);
-        exit(1);
+//        exit(1);
+        return -1;
     }
 
     iteration++;
-    return objf->isConverged();
+    //    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
-bool FIRE::run(int maxSteps, double maxMove)
+int FIRE::run(int maxSteps, double maxMove)
 {
     while(!objf->isConverged() && iteration < maxSteps) {
         step(maxMove);
     }
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }

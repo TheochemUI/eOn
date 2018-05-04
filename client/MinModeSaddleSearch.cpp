@@ -176,6 +176,8 @@ int MinModeSaddleSearch::run()
 {
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
+    int optStatus;
+
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", 
@@ -237,14 +239,19 @@ int MinModeSaddleSearch::run()
         if (parameters->saddleBowlBreakout){
             // use negative step to communicate that the system is the negative region and a max step should be performed
           if ((minModeMethod->getEigenvalue() > 0) and (parameters->optMethod == "cg")){
-              optimizer->step(-parameters->optMaxMove);
+              optStatus = optimizer->step(-parameters->optMaxMove);
           }
           else{
-              optimizer->step(parameters->optMaxMove);
+              optStatus = optimizer->step(parameters->optMaxMove);
           }
         }
         else{
-            optimizer->step(parameters->optMaxMove);
+            optStatus = optimizer->step(parameters->optMaxMove);
+        }
+
+        if(optStatus < 0){
+            status = STATUS_OPTIMIZER_ERROR;
+            break;
         }
 
         double de = objf.getEnergy()-reactantEnergy;

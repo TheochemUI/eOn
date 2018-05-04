@@ -590,6 +590,7 @@ class AKMCState(state.State):
 
     def register_bad_saddle(self, result, store=False, superbasin=None):
         """ Registers a bad saddle. """
+        print ("bad saddle ",result["results"]["termination_reason"])
         result_state_code = ["Good",
                              "Init",
                              "Saddle Search No Convex Region",
@@ -603,11 +604,13 @@ class AKMCState(state.State):
                              "Failed Prefactor Calculation",
                              "Potential Failed",
                              "Nonnegative Displacement Abort",
-                             "Nonlocal abort",
-                             "Negative barrier",
-                             "MD Trajectory too short", 
-                             "No negative mode at saddle",
-                             "No forward barrier in minimized band",
+                             "Nonlocal Abort",
+                             "Negative Barrier",
+                             "MD Trajectory Too Short", 
+                             "No Negative Mode at Saddle",
+                             "No Forward Barrier in Minimized Band",
+                             "MinMode Zero Mode Abort",
+                             "Optimizer Error"
                              ]
         self.set_bad_saddle_count(self.get_bad_saddle_count() + 1)
         self.append_search_result(result, result_state_code[result["results"]["termination_reason"]], superbasin)
