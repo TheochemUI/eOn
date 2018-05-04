@@ -46,7 +46,7 @@ VectorXd ConjugateGradients::getStep()
 }
 
 
-bool ConjugateGradients::step(double maxMove)
+int ConjugateGradients::step(double maxMove)
 {
     bool converged;
     if (parameters->optCGLineSearch)
@@ -57,11 +57,12 @@ bool ConjugateGradients::step(double maxMove)
     {
         converged = single_step(maxMove);
     }
-    return converged;
+    if(converged) return 1;
+    return 0;
 }
 
 
-bool ConjugateGradients::line_search(double maxMove)
+int ConjugateGradients::line_search(double maxMove)
 {
     VectorXd pos;
     VectorXd posStep;
@@ -111,11 +112,13 @@ bool ConjugateGradients::line_search(double maxMove)
     // Line search considered converged based in the ratio between the projected force and the norm of the true force 
     } while (parameters->optCGLineConverged < fabs(projectedForce) / (sqrt(force.dot(force)+parameters->optCGLineConverged))
              and (line_i < parameters->optCGLineSearchMaxIter));
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
 
-bool ConjugateGradients::single_step(double maxMove)
+int ConjugateGradients::single_step(double maxMove)
 {
     VectorXd pos;
     VectorXd posStep;
@@ -187,11 +190,13 @@ bool ConjugateGradients::single_step(double maxMove)
         }
     }
     
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
 
-bool ConjugateGradients::run(int maxIterations, double maxMove)
+int ConjugateGradients::run(int maxIterations, double maxMove)
 {
     int iterations = 0;
     while(!objf->isConverged() && iterations <= maxIterations)
@@ -199,7 +204,9 @@ bool ConjugateGradients::run(int maxIterations, double maxMove)
         step(maxMove);
         iterations++;
     }
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
 

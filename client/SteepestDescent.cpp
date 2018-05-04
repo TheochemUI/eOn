@@ -19,7 +19,7 @@ SteepestDescent::~SteepestDescent()
     return;
 }
 
-bool SteepestDescent::step(double maxMove)
+int SteepestDescent::step(double maxMove)
 {
     VectorXd r = objf->getPositions();
     VectorXd f = -objf->getGradient();
@@ -46,14 +46,18 @@ bool SteepestDescent::step(double maxMove)
 
     iteration++;
 
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
 
-bool SteepestDescent::run(int maxSteps, double maxMove)
+int SteepestDescent::run(int maxSteps, double maxMove)
 {
     while(!objf->isConverged() && iteration < maxSteps) {
         step(maxMove);
     }
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }

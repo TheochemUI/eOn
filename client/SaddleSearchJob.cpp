@@ -156,6 +156,27 @@ void SaddleSearchJob::printEndState(int status) {
     else if(status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
         log("[SaddleSearch] Nonnegative initial mode, aborting.\n");
 
+    else if(status == MinModeSaddleSearch::STATUS_NONLOCAL_ABORT)
+        log("[SaddleSearch] Nonlocal abort.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
+        log("[SaddleSearch] Negative barrier.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
+        log("[SaddleSearch] MD trajectory too short.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
+        log("[SaddleSearch] No negative mode at saddle.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
+        log("[SaddleSearch] No barrier found.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
+        log("[SaddleSearch] Zero mode abort.\n");
+
+    else if(status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
+        log("[SaddleSearch] Optimizer error.\n");
+
     else
         log("[SaddleSearch] unknown status: %i!\n", status);
 

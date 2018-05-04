@@ -17,8 +17,8 @@ public:
     SteepestDescent(ObjectiveFunction *objf, Parameters *parameters);
     ~SteepestDescent();
 
-    bool step(double maxMove);
-    bool run(int maxIterations, double maxMove);
+    int step(double maxMove);
+    int run(int maxIterations, double maxMove);
 
 private:
     VectorXd getStep(VectorXd f);
