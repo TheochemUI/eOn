@@ -103,7 +103,7 @@ void LBFGS::reset(void)
     rho.clear();
 }
 
-void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
+int LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 {
     VectorXd s0 = objf->difference(r1, r0);
 
@@ -114,7 +114,7 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
     if (abs(s0.dot(y0)) < LBFGS_EPS) {
         cout <<"Error in LBFGS\n";
         log_file("[LBFGS] error, s0.y0 is too small: %.4f\n", s0.dot(y0));
-        exit(1);
+        return -1;
     }
 
     s.push_back(s0);
@@ -126,16 +126,19 @@ void LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
         y.erase(y.begin());
         rho.erase(rho.begin());
     }
+    return 0;
 }
 
-bool LBFGS::step(double maxMove)
+int LBFGS::step(double maxMove)
 {
+    int status;
     VectorXd r = objf->getPositions();
     VectorXd f = -objf->getGradient();
 
     if (iteration > 0) {
-        update(r, rPrev, f, fPrev);
+        status = update(r, rPrev, f, fPrev);
     }
+    if(status < 0) return -1;
 
     VectorXd dr = getStep(maxMove,f);
 
@@ -146,14 +149,22 @@ bool LBFGS::step(double maxMove)
 
     iteration++;
 
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) 
+        return 1;
+    return 0;
 }
 
 
-bool LBFGS::run(int maxSteps, double maxMove)
+int LBFGS::run(int maxSteps, double maxMove)
 {
+    int status;
     while(!objf->isConverged() && iteration < maxSteps) {
-        step(maxMove);
+        status = step(maxMove);
+        if(status < 0) return -1;
     }
-    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
+
+//    return objf->isConverged();
 }

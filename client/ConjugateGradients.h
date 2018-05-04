@@ -39,13 +39,13 @@ class ConjugateGradients : public Optimizer
  	 * Either calls the single_step or line_search method depending on the parameters
  	 * \return whether or not the algorithm has converged
  	 */
-        bool step(double maxMove);
+        int step(double maxMove);
 	//! Runs the conjugate gradient 
 	/**
  	 * \todo method should also return an error code and message if the algorithm errors out
  	 * \return algorithm convergence
 	 */
-        bool run(int maxIterations, double maxMove);
+        int run(int maxIterations, double maxMove);
 	//! Gets the direction of the next step
         VectorXd getStep();
 
@@ -73,13 +73,13 @@ class ConjugateGradients : public Optimizer
 	/**
  	 *  Checks for convergence based on the change in displacement or direction	
          */
-	bool single_step(double maxMove);
+	int single_step(double maxMove);
 	//! Steps the conjugate gradient
 	/**
  	* Checks for convergence based on the ratio of the projected force along a line
  	* to the norm of the total force 
  	*/ 
-        bool line_search(double maxMove);
+    int line_search(double maxMove);
     
 };
 

@@ -18,7 +18,7 @@ Quickmin::~Quickmin()
     return;
 }
 
-bool Quickmin::step(double maxMove)
+int Quickmin::step(double maxMove)
 {
     VectorXd force = -objf->getGradient();
     if (parameters->optQMSteepestDecent) {
@@ -38,13 +38,17 @@ bool Quickmin::step(double maxMove)
     VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt, parameters->optMaxMove);
     objf->setPositions(objf->getPositions() + dr);  
     iteration++;
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
 
-bool Quickmin::run(int maxSteps, double maxMove)
+int Quickmin::run(int maxSteps, double maxMove)
 {
     while(!objf->isConverged() && iteration < maxSteps) {
         step(maxMove);
     }
-    return objf->isConverged();
+//    return objf->isConverged();
+    if(objf->isConverged()) return 1;
+    return 0;
 }
