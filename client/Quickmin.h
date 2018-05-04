@@ -15,8 +15,8 @@ class Quickmin : public Optimizer
         Quickmin(ObjectiveFunction *objf, Parameters *parameters);
         ~Quickmin();
 
-        bool step(double maxMove);
-        bool run(int maxIterations, double maxMove);
+        int step(double maxMove);
+        int run(int maxIterations, double maxMove);
 
     private:
         ObjectiveFunction *objf;

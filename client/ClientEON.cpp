@@ -199,7 +199,7 @@ int main(int argc, char **argv)
         if (parameters.potential == "mpi") {
             int *potential_ranks = new int[potentials];
             int j;
-            for (i=0,j=0;i<isize;i++) {
+            for (i=0,j=0; i<isize; i++) {
                 if (process_types[i] == 2) {
                     potential_ranks[j] = i;
                     j++;
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
             }
             int potential_group_size = potentials/clients;
 
-            for (i=0;i<clients;i++) {
+            for (i=0; i<clients; i++) {
                 MPI::Group orig_group, new_group;
                 orig_group = MPI::COMM_WORLD.Get_group();
                 int offset = i*potential_group_size;
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
         }
 
         #ifdef LAMMPS_POT
-            for (i=0;i<client_ranks.size();i++) {
+            for (i=0; i<int(client_ranks.size()); i++) {
                 MPI_Group world_group, new_group;
                 MPI_Comm_group(MPI_COMM_WORLD, &world_group);
                 int r = client_ranks[i];

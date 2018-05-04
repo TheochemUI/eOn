@@ -37,9 +37,9 @@ class Optimizer
 	//! optimizer deconstructor
         virtual ~Optimizer(){};
 	//! Template for stepping the optimizer, returns convergence
-        virtual bool step(double maxMove) = 0;
+        virtual int step(double maxMove) = 0;
 	//! Template for runnning the optimizer; uses a series of steps, checking for convergence each time
-        virtual bool run(int maxIterations, double maxMove) = 0;
+        virtual int run(int maxIterations, double maxMove) = 0;
         //! Grabs the correct optimizer as specified by the parameters
         /*!
  	 * \param *objf an ref ObjectiveFunction that tells the optimizer how to run
