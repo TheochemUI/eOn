@@ -12,7 +12,7 @@ DEPFLAGS=-MMD
 #if building omp lammps
 #LDFLAGS += -fopenmp
 #if building lammps with meam
-LDFLAGS += potentials/LAMMPS/libmeam.a
+#LDFLAGS += potentials/LAMMPS/libmeam.a
 #LDFLAGS += potentials/LAMMPS/libreax.a
 
 #intel 12 linking
