@@ -7,27 +7,13 @@ states_traj.py --h
 
 import sys
 import os
-import re
-import glob
-import ast
 import argparse
 import pandas as pd
-import matplotlib.pyplot as plt
-from pele.storage import Database
-from pele.landscape import database2graph
-from pele.utils.disconnectivity_graph import DisconnectivityGraph
-import numpy
-from ase.neighborlist import neighbor_list as nl
 from ase.io import read
 from ase.io.trajectory import Trajectory
 
 current = os.getcwd()
 state_main_dir = current+"/states/"
-#os.chdir(state_main_dir)
-#read in states with energy as dictionary
-#with open('state_table') as f:
-#   states_e = dict([int(pair[0]), float(pair[1])] for pair in [line.strip().split(None, 1) for line in f])
-
 
 atoms = None
 parser = argparse.ArgumentParser()
