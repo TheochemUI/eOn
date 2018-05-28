@@ -28,7 +28,7 @@ Dependencies
 ------------
 
 The kinetic database is contained in a library seperate from eOn. It can be found in our 
-*tsase* Python module located `here <http://theory.cm.utexas.edu/henkelman/code/tsase.php>`_.
+*tsase* Python module located `here <http://theory.cm.utexas.edu/tsase>`_.
 
 [KDB] Options
 -------------
