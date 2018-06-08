@@ -1,6 +1,5 @@
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
-#include "false_boinc.h"
 #include "Potential.h"
 #include "Log.h"
 

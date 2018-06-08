@@ -17,17 +17,12 @@
 #include "potentials/EAM/EAM.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
-//#include "potentials/water/water_for_eon.hpp"
 #include "potentials/Water/Water.hpp"
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/TerminalPotential/TerminalPotential.h"
 
-#include "potentials/bopfox/bopfox.h"
-#ifdef BOPFOX
-    #include "potentials/bop/bop.h"
-#endif
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
 #endif
@@ -39,18 +34,6 @@
 #endif
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
-#endif
-
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>
-    #include <boinc/filesys.h>
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "false_boinc.h"
 #endif
 
 #include <cstdlib>
@@ -72,8 +55,6 @@ const char Potential::POT_TERSOFF_SI[] =  "tersoff_si";
 const char Potential::POT_EDIP[] =        "edip";
 const char Potential::POT_FEHE[] =        "fehe";
 const char Potential::POT_VASP[] =        "vasp";
-const char Potential::POT_BOPFOX[] =      "bopfox";
-const char Potential::POT_BOP[] =         "bop";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
 const char Potential::POT_TERMINAL[] =    "terminalpotential";
@@ -124,14 +105,6 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new FeHe();
 #endif
 
-    else if(parameters->potential == POT_BOPFOX)
-        pot = new bopfox();
-
-#ifdef BOPFOX
-    else if(parameters->potential == POT_BOP)
-        pot = new bop();
-#endif
-    
 #ifdef EONMPI
     else if(parameters->potential == POT_MPI)
         pot = new MPIPot(parameters);
@@ -190,12 +163,10 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     fcallsTotal += 1;
     
     if (params->maxForceCalls != 0) {
-        boinc_fraction_done(min(1.0, fcallsTotal / (double)params->maxForceCalls));
         if (fcallsTotal > params->maxForceCalls) {
             throw 1017;
         }
     }
-//    cout <<forces<<endl;
     
     return forces;
 };

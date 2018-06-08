@@ -45,24 +45,6 @@
     #include <unistd.h>
 #endif
 
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
-    #include <boinc/filesys.h>         // boinc_fopen(), etc...
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "false_boinc.h"
-#endif
-
-#ifdef BOINC
-#include "Compression.h"
-const char BOINC_INPUT_ARCHIVE[] = "input.tgz";
-const char BOINC_RESULT_ARCHIVE[] = "result.tgz";
-#endif
-
 void enableFPE(void)
 {
     // Floating Point Trapping. It is platform specific!
@@ -77,12 +59,6 @@ void enableFPE(void)
                                & ~_MM_MASK_DIV_ZERO
                                & ~_MM_MASK_OVERFLOW);
     #endif 
-//    #ifdef WIN32
-//        unsigned int cw;
-//        cw  = _controlfp(0,0) & _MCW_EM;
-//        cw &= ~(_EM_INVALID|_EM_ZERODIVIDE|_EM_OVERFLOW);
-//        _controlfp(cw,_MCW_EM);
-//    #endif
 }
 
 void printSystemInfo()
@@ -268,35 +244,13 @@ int main(int argc, char **argv)
         }
     #endif
 
-    #ifdef BOINC
-        // BOINC is started
-        int rc;
-        rc = boinc_init();
-        if(rc){
-            boinc_finish(rc);
-        }
-
-        //We want to uncompress our input file
-        char resolved[512];
-        rc = boinc_resolve_filename(BOINC_INPUT_ARCHIVE, resolved, sizeof(resolved));
-        if (rc) {
-            fprintf(stderr, "error: cannot resolve file %s\n", BOINC_INPUT_ARCHIVE);
-            boinc_finish(rc);
-        };
-        if (extract_archive(resolved) != 0) {
-            printf("error extracting input archive\n");
-            boinc_finish(1);
-        }
-    #endif
-
     enableFPE();
 
     double beginTime = 0.0;
     helper_functions::getTime(&beginTime, NULL, NULL);
 
     #ifdef EONMPI
-        //XXX: When do we stop? The server should probably tell everyone 
-        //     when to stop.
+        //XXX: When do we stop? The server should probably tell everyone when to stop.
         char logfilename[1024];
         snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
         //int outFd = open("/dev/null", O_WRONLY);
@@ -362,13 +316,12 @@ int main(int argc, char **argv)
 
         if (error) {
             fprintf(stderr, "\nproblem loading parameter file, stopping\n");
-            boinc_finish(1);
+            exit(1);
             abort();
         }
 
 
-        // Determine what type of job we are running according 
-        // to the parameters file. 
+        // Determine what type of job we are running according to the parameters file. 
         Job *job = Job::getJob(&parameters);
         if (job == NULL) {
             printf("error: Unknown job: %s\n", parameters.job.c_str());
@@ -434,13 +387,6 @@ int main(int argc, char **argv)
                (double)rss/1024/1024, (double)vs/1024/1024);
     #endif
 
-    #ifdef BOINC
-        //XXX: Error handling!
-        rc = boinc_resolve_filename(BOINC_RESULT_ARCHIVE, resolved, sizeof(resolved));
-        char dirToCompress[] = ".";
-        create_archive(resolved, dirToCompress, bundledFilenames);
-    #endif
-
     #ifdef EONMPI
         if (client_standalone) {
             MPI::COMM_WORLD.Abort(0);
@@ -449,5 +395,5 @@ int main(int argc, char **argv)
         }
     #endif
 
-    boinc_finish(0);
+    exit(0);
 }

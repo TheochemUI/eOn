@@ -2,7 +2,6 @@
 #include "SaddleSearchJob.h"
 #include "EpiCenters.h"
 #include "Log.h"
-#include "false_boinc.h"
 #include "Potential.h"
 
 #include <stdio.h>

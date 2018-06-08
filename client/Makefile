@@ -28,18 +28,6 @@ ifndef DEBUG
 endif
 
 #-----------------------------------
-# Documentation Settings
-DOXYCONFIG := ClientEON.dox
-# BADPRACTICE: need to export variables so they are recognized
-# by doxygen; there has to be some workaround, so this is a 
-# temporary solution
-export DOXYDIR := ./../doxygen
-export VERSION := $(shell svnversion)
-export BUILDDATE = $(shell date)
-export BUILDHOST := $(shell hostname -d)
-export BUILDUSER := $(shell whoami)
-
-#-----------------------------------
 #MPI settings
 ifdef EONMPIBGP
     EONMPI=1
@@ -93,16 +81,7 @@ else
     FC = $(CROSS)gfortran
     FFLAGS += $(OPT) -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
-    ifdef BOINC
-        ifdef OSX
-            LDFLAGS += /opt/local/lib/gcc45/libgfortran.a
-        else
-            LDFLAGS += -lgfortran
-        endif
-    else
-#        LDFLAGS += -L/usr/local/lib -lgfortran
-        LDFLAGS += -L/usr/local/lib/gcc/7 -lgfortran
-    endif
+    LDFLAGS += -L/usr/local/lib/gcc/7 -lgfortran
     # ifort
     #FC = ifort
     #FFLAGS += $(OPT) -fpe0
@@ -114,48 +93,14 @@ else
 endif
 
 #------------------------------------
-# define BOINC to link against boinc libs
-ifdef BOINC
-    BOINC=Yes
+# define NDEBUG to remove debugging lines
+ifdef NDEBUG
     DEBUG=No
-    OBJECTS += Compression.o
-    CXXFLAGS += -DNDEBUG -DBOINC -Iboinc/include
-    OBJECTS += Compression.o
-    TARGET_NAME = eonclientboinc
-
-    ifdef WIN32
-        LDFLAGS += -static -Lboinc/lib_win -lboinc_api -lboinc 
-        LDFLAGS += -Larchive/lib_win -larchive -lz 
-        CXXFLAGS += -Iarchive/include -DLIBARCHIVE_STATIC
-    endif
-
-    ifdef OSX
-        OSX_FLAGS=-mmacosx-version-min=10.4 -DMAC_OS_X_VERSION_MIN_REQUIRED=1040  -Wfatal-errors 
-        CC=/usr/bin/gcc
-        CXX=/usr/bin/g++
-        CC += $(OSX_FLAGS)
-        CXX += $(OSX_FLAGS)
-        LDFLAGS += -Lboinc/lib_osx -lboinc_api -lboinc -lpthread -Iarchive/include archive/lib_osx/libarchive.a -lz $(OSX_FLAGS)
-    endif
-
-    ifdef LINUX
-    UNAME := $(shell uname -m)
-    ifeq ($(UNAME), x86_64)
-        LDFLAGS += -static -Lboinc/lib_linux64 -lboinc_api -lboinc -lpthread -larchive -lz
-    else
-    LDFLAGS += -static -Lboinc/lib_linux32 -lboinc_api -lboinc -lpthread -larchive -lz
-    endif
-    endif
+    CXXFLAGS += -DNDEBUG
 else
-    BOINC=No
-    # define NDEBUG to remove debugging lines
-    ifdef NDEBUG
-        DEBUG=No
-        CXXFLAGS += -DNDEBUG
-    else
-        CXXFLAGS += -g
-        DEBUG=Yes
-    endif
+    CXXFLAGS += -g
+    DEBUG=Yes
 endif
+
 #LDFLAGS += -lquadmath
 include Rules.mk

@@ -8,18 +8,6 @@
 #include "HelperFunctions.h"
 #include "BondBoost.h"
 
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>
-    #include <boinc/filesys.h>
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "false_boinc.h"
-#endif
-
 static const char LOG_PREFIX[] = "[ParallelReplica]";
 
 ParallelReplicaJob::ParallelReplicaJob(Parameters *params)
