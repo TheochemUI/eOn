@@ -154,7 +154,6 @@ export
 all: $(POTDIRS) $(FPOTDIRS) eonclient
 	@echo
 	@echo "EON Client Compilation Options"
-	@echo "BOINC: $(BOINC)" 
 	@echo "DEBUG: $(DEBUG)"
 	@echo "POTENTIALS: $(POTENTIALS)"
 

@@ -45,7 +45,7 @@ def main():
             fh = open(f)
             if(len(f.split('.')) > 1):
                 #f_passed = f.split('.')[0] + "_passed." + f.split('.')[1]
-		f_passed = f.split('.')[0] + "." + f.split('.')[1]
+                f_passed = f.split('.')[0] + "." + f.split('.')[1]
                 job[f_passed] = StringIO(fh.read())
             fh.close()
         job["id"] = "output"
