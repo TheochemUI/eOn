@@ -49,7 +49,5 @@ Contents
    kdb
    recycling
    server_config
-   boinc_library
-   boinc_server
    index
 

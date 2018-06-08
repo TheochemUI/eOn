@@ -791,9 +791,7 @@ Communicator:
             default: local
             values:
                 - cluster
-                - arc
                 - local
-                - boinc
                 - mpi
 
         client_path:
@@ -816,30 +814,6 @@ Communicator:
             kind: int
             default: 1
 
-        boinc_project_dir:
-            kind: string
-            default: ./
-
-        boinc_priority:
-            kind: int
-            default: 1
-
-        boinc_re_template_path:
-            kind: string
-            default: None
-
-        boinc_results_path:
-            kind: string
-            default: "%(boinc_project_dir)s/sample_results"
-
-        boinc_wu_template_path:
-            kind: string
-            default: None
-
-        boinc_appname:
-            kind: string
-            default: eonclient
-
         cancel_job:
             kind: string
             default: cancel_job.sh
@@ -859,14 +833,6 @@ Communicator:
         submit_job:
             kind: string
             default: submit_job.sh
-
-        arc_blacklist:
-            kind: string
-            default: None
-
-        arc_num_submit:
-            kind: int
-            default: 10
 
 ################################################################################
 

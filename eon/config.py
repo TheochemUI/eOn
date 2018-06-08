@@ -230,19 +230,6 @@ def init(config_file = ""):
             sys.stderr.write("exception occured on rank %i\n" % MPI.COMM_WORLD.rank);
             MPI.COMM_WORLD.Abort()
         sys.excepthook = mpiexcepthook
-    if config.comm_type == 'boinc':
-        config.comm_boinc_project_dir = parser.get('Communicator', 'boinc_project_dir')
-        config.comm_boinc_wu_template_path = parser.get('Communicator', 'boinc_wu_template_path')
-        config.comm_boinc_re_template_path = parser.get('Communicator', 'boinc_re_template_path')
-        config.comm_boinc_appname = parser.get('Communicator', 'boinc_appname')
-        config.comm_boinc_results_path = parser.get('Communicator', 'boinc_results_path')
-        config.comm_boinc_priority = parser.getint('Communicator', 'boinc_priority')
-    if config.comm_type == 'arc':
-        config.comm_client_path = parser.get('Communicator', 'client_path')
-        config.comm_blacklist = [ string.strip(c) for c in parser.get('Communicator', 'arc_blacklist').split(',') ]
-        if config.comm_blacklist == ['None']:
-            config.comm_blacklist = []
-        config.comm_num_submit = parser.getint('Communicator', 'arc_num_submit')        
 
     # Process Search options
     config.process_search_minimization_offset = parser.getfloat('Process Search', 'minimization_offset')
