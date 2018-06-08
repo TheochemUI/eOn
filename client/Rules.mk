@@ -27,9 +27,6 @@ POTENTIALS += "+H2O_Pt"
 POTDIRS += ./potentials/IMD/
 LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
-POTDIRS += ./potentials/bopfox/
-LIBS += ./potentials/bopfox/libbopfox.a
-POTENTIALS += "+bopfox"
 POTDIRS += ./potentials/TerminalPotential/
 LIBS += ./potentials/TerminalPotential/libterminalpotential.a
 POTENTIALS += "+TerminalPotential"
@@ -53,27 +50,6 @@ else
 endif
 
 #Optional potentials
-ifdef BOPFOX
-    CXXFLAGS += -DBOPFOX
-    POTDIRS += ./potentials/bop
-    LIBS += ./potentials/bop/libbop.a
-    ifdef WIN32
-        LIBS += bopfox/libbopfox_win32.a
-    endif
-    ifdef LINUX32
-        LIBS += bopfox/libbopfox_lnx32.a
-    endif
-    ifdef LINUX64
-        LIBS += bopfox/libbopfox_lnx64.a
-    endif
-    ifdef OSX
-        LIBS += bopfox/libbopfox_osx.a
-    endif
-    POTENTIALS += "+bop"
-else
-    OPOTDIRS += ./potentials/bop
-    POTENTIALS += "-bop"
-endif
 
 ifdef LAMMPS_POT
     CXXFLAGS += -DLAMMPS_POT
@@ -219,18 +195,6 @@ unitTests: mkUnitTests
 
 check: unitTests
 	@echo "In the future, regression testing will automatically run now."
-
-docs:
-	@echo "Begin making Docs"
-	@-doxygen $(DOXYCONFIG) \
-	&& ([ $$? -eq 0 ] && echo "Docs have been generated and output to: $(DOXYDIR)")  \
-	|| echo "Couldn't compile Docs; doxygen is not installed on this machine" 
-
-docsCheck:
-	@echo $(DOXYCONFIG) $(DOXYDIR) $(VERSION) $(BUILDDATE) $(BUILDHOST) $(BUILDUSER)
-
-docsClean:
-	rm -rf $(DOXYDIR)/*
 
 clean: testsClean
 	rm -f $(OBJECTS) $(DEPENDS) eonclient client

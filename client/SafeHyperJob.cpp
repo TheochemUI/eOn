@@ -8,17 +8,6 @@
 #include "Optimizer.h"
 #include "Log.h"
 #include <vector>
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>
-    #include <boinc/filesys.h>
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "false_boinc.h"
-#endif
 
 SafeHyperJob::SafeHyperJob(Parameters *params)
 {
@@ -229,14 +218,6 @@ int SafeHyperJob::dynamics()
         {
             stopFlag = true;
             newStateFlag = true;
-        }
-
-        //BOINC Progress
-        if (step % 500 == 0) {
-            // Since we only have a bundle size of 1 we can play with boinc_fraction_done
-            // directly. When we have done parameters->mdSteps number of steps we aren't
-            // quite done so I increase the max steps by 5%.
-            boinc_fraction_done((double)step/(double)(parameters->mdSteps+0.05*parameters->mdSteps));
         }
 
         //stdout Progress
