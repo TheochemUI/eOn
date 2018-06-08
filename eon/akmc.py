@@ -413,6 +413,11 @@ def main():
         logger.error("Both superbasin methods should not be used at the same time")
         sys.exit(1)
 
+    # From the config file: dynamics confidence can not be used with MinMode searches
+    if config.config.saddle_method=="min_mode" and config.akmc_confidence_scheme=="dynamics":
+        logger.error("Dynamics confidence scheme can not be used with MinMode saddle searches")
+        sys.exit(1)
+
     if options.print_status:
         states = get_statelist(config.main_temperature / 11604.5)
         start_state_num, time, previous_state_num, first_run, previous_temperature =\

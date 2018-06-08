@@ -10,13 +10,9 @@ simulation data is stored on the server and clients are sent jobs and return
 the results. Each time Eon is run it first checks to see if any results have
 come back from clients and processes them accordingly and then submits more
 jobs if needed. In Eon there are several different ways to run jobs. One can
-run them locally on the server, using a job queuing system such as SGE_, using
-a distributed computing system such as BOINC_, or grid computing middleware
-such as ARC_.
+run them locally on the server, via MPI,  or using a job queuing system such as SGE_.
 
 .. _SGE:   http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html
-.. _BOINC: http://boinc.berkeley.edu/
-.. _ARC:   http://www.nordugrid.org/arc/
 
 [Communicator] Options
 ======================
@@ -37,12 +33,6 @@ such as ARC_.
         :ref:`mpi <communicator-mpi>`: Allows for the server and clients to run
         as a MPI job.
 
-        :ref:`boinc <communicator-boinc>`: Jobs can be submitted to a BOINC
-        project.
-
-        :ref:`arc <communicator-arc>`: Jobs can be submitted to the grid
-        computing software ARC.
-
 
 **num_jobs**:
 
@@ -58,18 +48,12 @@ such as ARC_.
     the user would like to run at once and the script will submit jobs to the
     queue as needed to try to achieve the target number.
 
-    When using the *boinc* communicator one often wants to make enough work to
-    keep all of the clients busy. So instead of **num_jobs** being the total
-    number of jobs to run it sets the number of jobs to keep in the queue.
-    This way a buffer of **num_jobs**/**jobs_per_bundle** workunits are always
-    kept in the BOINC queue.
-
 **max_jobs**:
 
     Default: 0 (unlimited)
 
     The maximum number of akmc jobs that can be running at once for the current 
-    state. For communicators with queues (cluster and boinc), this means that no
+    state. For communicators with queues (cluster communicator), this means that no
     more jobs will be queued if the number of jobs queued and in progress equals
     or exceeds this number. The default of 0 turns this off is equivalent to 
     unlimited.
@@ -85,9 +69,7 @@ such as ARC_.
     For example, when using empirical potentials to do saddle searches a single
     search might only take several seconds on modern CPUs. In order to improve
     performance more than one client job (*e.g.*, process search, dimer,
-    minimization) can be run at the same time. This can be used to make BOINC
-    workunits take several minutes when a single process search for the system
-    might only take several seconds.
+    minimization) can be run at the same time.
 
 
 .. _communicator-local:
@@ -207,72 +189,6 @@ the MPI communicator:
 There must be at least ``EON_NUMBER_OF_CLIENTS`` + 1 ranks running. This is
 because the one additional rank is needed to become the server.
 
-.. _communicator-boinc:
-
-BOINC
-=====
-
-The BOINC communicator allows Eon to submit workunits to a BOINC project. 
-
-    **boinc_project_dir**: This is the full path to the root of the BOINC project directory.
-
-    Default: ``./``
-
-
-**boinc_wu_template_path**:
-
-    Default: None
-
-    This is the path, relative from the **boinc_project_dir**, to the boinc
-    workunit template.
-
-**boinc_re_template_path**:
-    
-    Default: None
-
-    This is the path, relative from the **boinc_project_dir**, to the boinc
-    result template.
-
-**boinc_appname**:
-
-    Default: eonclient
-
-    This is the name of the application in BOINC.
-
-**boinc_results_path**:
-
-    Default: **boinc_project_dir**/sample_results
-
-    This is the path where BOINC puts the final results. If you are using
-    the sample_assimilator the results are stored in the project directory
-    in a folder named "sample_results".
-
-**boinc_priority**: The priority of the BOINC workunits that will be submitted.
-
-    type: int
-
-    default: ``1``
-
-.. _communicator-arc:
-
-ARC
-===
-
-When eon is run with the ARC communicator, jobs are executed on the clusters 
-on which the user is authorized.  To prevent over floating the local queues 
-are jobs only submitted to a cluster when the user do not have any jobs queued 
-on this specific cluster.
-
-**arc_blacklist**
-    default: None
-
-    Jobs will not be sent to the listed clusters, host addresses should be 
-    separated by a ','
-
-**arc_max_submit**
-    default: 10
-
-    Size of the batch when jobs are submitted to a cluster
 
 Examples
 ========
