@@ -282,7 +282,6 @@ public:
     #endif
 
     // [Debug] //
-    long   boincProgressMax;
     bool   writeMovies;
     long   writeMoviesInterval;
 

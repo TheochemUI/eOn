@@ -7,18 +7,6 @@
 #include "Potential.h"
 #include "HelperFunctions.h"
 
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>
-    #include <boinc/filesys.h>
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "false_boinc.h"
-#endif
-
 using namespace std;
 using namespace helper_functions;
 
