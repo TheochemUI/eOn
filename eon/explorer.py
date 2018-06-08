@@ -15,8 +15,9 @@ import communicator
 import config
 import displace
 import fileio as io
-import kdb
+#import kdb
 import recycling
+import eon_kdb as kdb
 
 def get_minmodexplorer():
     if config.akmc_server_side_process_search:
