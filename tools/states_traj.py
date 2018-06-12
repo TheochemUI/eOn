@@ -15,6 +15,9 @@ from ase.io.trajectory import Trajectory
 current = os.getcwd()
 state_main_dir = current+"/states/"
 
+with open(state_main_dir+'state_table') as f:
+   states_e = dict([int(pair[0]), float(pair[1])] for pair in [line.strip().split(None, 1) for line in f])
+
 atoms = None
 parser = argparse.ArgumentParser()
 parser.add_argument('--states', type=int, nargs='+', metavar='StateNumbers', 
@@ -52,26 +55,31 @@ if args.states:
 
 if args.akmc_step is not None and args.end is not None:
    rs = []
+   barrier = []
+   output = open(str(args.akmc_step)+'.dat','w')
    log_structures = Trajectory(str(args.akmc_step)+'.traj',
                             'w', atoms)
    dynamics = pd.read_table('dynamics.txt', delimiter = r'\s+', skiprows = [0,1], names=['step-number', 'reactant-id', 'process-id', 'product-id', 'step-time', 'total-time', 'barrier', 'rate', 'energy'])
    selected_dynamics=dynamics[dynamics['step-number']>=args.akmc_step]
    for i in range(len(selected_dynamics['step-number'])):
       rs.append(selected_dynamics['reactant-id'].iloc[i])
-      print "======="
-      print i, rs
+      barrier.append(selected_dynamics['barrier'].iloc[i])
       try:
         index = rs.index(selected_dynamics['product-id'].iloc[i])
         del rs[index:]
-        print 'del', index
+        del barrier[index:]
       except:
         pass
       if selected_dynamics['product-id'].iloc[i]==args.end:
-         print "ending"
          rs.append(selected_dynamics['product-id'].iloc[i])
          break
-   print "final:", rs
-   for dir in rs:
-       os.chdir(state_main_dir+str(dir))
+   for i in range(len(rs)):
+       state_n = rs[i]
+       print state_n, states_e[state_n]
+       try:
+         output.write("%8d  %12.4f\n"%(state_n+0.5, barrier[i]+states_e[state_n]))
+       except:
+         pass
+       os.chdir(state_main_dir+str(state_n))
        atoms = read('reactant.con',index=0)
        log_structures.write(atoms)
