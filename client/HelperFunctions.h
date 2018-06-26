@@ -47,6 +47,8 @@ namespace helper_functions {
     bool rotationMatch(const Matter *m1, const Matter *m2, const double max_diff);
     void rotationRemove(const AtomMatrix r1, Matter *m2);
     void rotationRemove(const Matter *m1, Matter *m2);
+    void translationRemove(Matter *m1, const AtomMatrix r1);
+    void translationRemove(Matter *m1, const Matter *m2);
     double maxAtomMotion(const AtomMatrix v1);
     double maxAtomMotionV(const VectorXd v1);
     long numAtomsMoved(const AtomMatrix v1, double cutoff);
@@ -56,7 +58,7 @@ namespace helper_functions {
     VectorXd   maxMotionAppliedV(const VectorXd  v1, double maxMotion);
     void getTime(double *real, double *user, double *sys);
     bool existsFile(string filename); // does filename exist
-    string getRelevantFile(string filename); // return filename containing _checkpoint or  _passed if such a file exists
+    string getRelevantFile(string filename); // return filename containing _checkpoint or _passed if such a file exists
     VectorXd loadMasses(string filename, int nAtoms);
     AtomMatrix loadMode(FILE *modeFile, int nAtoms);
     AtomMatrix loadMode(string filename, int nAtoms);
