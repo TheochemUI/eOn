@@ -33,7 +33,7 @@ Parameters::Parameters(){
     conFilename = "pos.con";
     finiteDifference = 0.01;
     maxForceCalls = 0;
-    removeTranslation = true;
+    removeNetForce = true;
 
     // [Prefactor] //
     prefactorDefaultValue = 0.0;
@@ -63,6 +63,7 @@ Parameters::Parameters(){
     checkRotation = false;
     indistinguishableAtoms = true;
 	energyDifference = 0.01;
+    removeTranslation = true;
 
     // [Debug] //
     writeMovies = false;
@@ -297,7 +298,7 @@ int Parameters::load(FILE *file){
             helper_functions::random(randomSeed);
         }
         maxForceCalls = ini.GetValueL("Main", "max_force_calls", maxForceCalls);
-        removeTranslation = ini.GetValueB("Main", "remove_translation", removeTranslation);
+        removeNetForce = ini.GetValueB("Main", "remove_net_force", removeNetForce);
 
         // [Potential] //
 
@@ -331,6 +332,7 @@ int Parameters::load(FILE *file){
         checkRotation = ini.GetValueB("Structure Comparison", "check_rotation", checkRotation);
         energyDifference = ini.GetValueF("Structure Comparison", "energy_difference", energyDifference);
         indistinguishableAtoms = ini.GetValueB("Structure Comparison", "indistinguishable_atoms", indistinguishableAtoms);
+        removeTranslation = ini.GetValueB("Structure Comparison", "remove_translation", removeTranslation);
 
         // [Process Search] //
 

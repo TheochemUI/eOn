@@ -46,7 +46,7 @@ public:
     string conFilename;
     double finiteDifference;
     long maxForceCalls;
-    bool removeTranslation;
+    bool removeNetForce;
 
     // [Potential] //
     string potential;
@@ -63,6 +63,7 @@ public:
     bool   checkRotation;
     bool   indistinguishableAtoms;
 	double energyDifference;
+    bool   removeTranslation;
 
     // [Process Search] //
     bool   processSearchMinimizeFirst;
