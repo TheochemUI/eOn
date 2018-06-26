@@ -179,10 +179,14 @@ bool Matter::compare(const Matter *matter, bool indistinguishable) {
     if(parameters->checkRotation && indistinguishable) {
         return helper_functions::sortedR(this, matter, parameters->distanceDifference);
     }else if(indistinguishable) {
+        if(this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+            helper_functions::translationRemove(this, matter);
         return helper_functions::identical(this, matter, parameters->distanceDifference);
     }else if(parameters->checkRotation) {
         return helper_functions::rotationMatch(this, matter, parameters->distanceDifference);
     }else{
+        if(this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
+            helper_functions::translationRemove(this, matter);
         return (parameters->distanceDifference) > perAtomNorm(*matter);
     }
 }
@@ -608,6 +612,11 @@ long int Matter::numberOfFreeAtoms() const
     return nAtoms - isFixed.sum();
 }
 
+long int Matter::numberOfFixedAtoms() const
+{
+    return isFixed.sum();
+}
+
 
 long Matter::getForceCalls() const
 {
@@ -928,7 +937,7 @@ void Matter::computePotential()
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
-        if(isFixed.sum() == 0 and parameters->removeTranslation){
+        if(isFixed.sum() == 0 and parameters->removeNetForce){
             Vector3d tempForce(3);
             tempForce = forces.colwise().sum()/nAtoms;
 
