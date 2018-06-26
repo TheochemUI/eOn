@@ -324,6 +324,39 @@ void helper_functions::rotationRemove(const Matter *m1, Matter *m2)
     return;
 }
 
+void helper_functions::translationRemove(Matter *m1, const AtomMatrix r2_passed)
+{
+    AtomMatrix r1 = m1->getPositions();
+    AtomMatrix r2 = r2_passed;
+
+    // net displacement
+    Eigen::VectorXd disp(3);
+    AtomMatrix r12 = m1->pbc(r2-r1);
+
+    disp[0] = r12.col(0).sum();
+    disp[1] = r12.col(1).sum();
+    disp[2] = r12.col(2).sum();
+    disp/=r1.rows();
+
+    for(int i = 0; i < r1.rows(); i++)
+    {
+        r1(i,0) += disp[0];
+        r1(i,1) += disp[1];
+        r1(i,2) += disp[2];
+    }
+
+    m1->setPositions(r1);
+    return;
+}
+
+
+void helper_functions::translationRemove(Matter *m1, const Matter *m2)
+{
+    AtomMatrix r2 = m2->getPositions();
+    translationRemove(m1, r2);
+    return;
+}
+
 
 double helper_functions::maxAtomMotion(const AtomMatrix v1) {
     double max = 0.0;

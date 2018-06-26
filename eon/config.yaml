@@ -49,7 +49,7 @@ Main:
             kind: int
             default: 0
 
-        remove_translation:
+        remove_net_force:
             kind: boolean
             default: True
 
@@ -282,6 +282,7 @@ Debug:
         stop_criterion:
             kind: float
             default: 1e8
+
 ################################################################################
 
 Structure Comparison:
@@ -319,6 +320,10 @@ Structure Comparison:
         covalent_scale:
             kind: float
             default: 1.3
+
+        remove_translation:
+            kind: boolean
+            default: True
 
 ################################################################################
 

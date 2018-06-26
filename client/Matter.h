@@ -97,6 +97,7 @@ public:
     double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
+    long int numberOfFixedAtoms() const; // return the number of fixed atoms
 
     long getForceCalls() const; // return how many force calls that have been performed
     void resetForceCalls(); // zeroing the value of force calls
