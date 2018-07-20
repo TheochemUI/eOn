@@ -23,18 +23,6 @@
 #include <fcntl.h>
 #endif
 
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
-    #include <boinc/filesys.h>         // boinc_fopen(), etc...
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "../../false_boinc.h"
-#endif
-
 #include "VASP.h"
 bool  VASP::firstRun = true;
 long  VASP::vaspRunCount = 0;
@@ -76,7 +64,7 @@ void VASP::spawnVASP()
 {
     if ((vaspPID=fork()) == -1) {
         fprintf(stderr, "error forking for vasp: %s\n", strerror(errno));
-        boinc_finish(1);
+        exit(1);
     }
 
     if (vaspPID) {
@@ -89,16 +77,16 @@ void VASP::spawnVASP()
         dup2(outFd, 2);
 
         char vaspPath[1024];
-        if(boinc_resolve_filename("vasp", vaspPath, 1024)) {
+        if(strncpy(vaspPath, "vasp", 1024)) {
             fprintf(stderr, "problem resolving vasp filename\n");
-            boinc_finish(1);
+            exit(1);
         }
         if (0)
 	{
             if (execlp(vaspPath, "vasp", NULL) == -1) 
 	    {
 	        fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
-                boinc_finish(1);
+                exit(1);
 	    }
 	}
         else
@@ -107,7 +95,7 @@ void VASP::spawnVASP()
             if (execlp("runvasp.sh", "runvasp.sh", NULL) == -1) 
 	    {
                 fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
-                boinc_finish(1);
+                exit(1);
 	    }
         }
     }
@@ -126,7 +114,7 @@ bool VASP::vaspRunning()
 
     if (pid) {
         fprintf(stderr, "vasp died unexpectedly!\n");
-        boinc_finish(1);
+        exit(1);
     }
 
     return true;

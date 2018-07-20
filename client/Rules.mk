@@ -198,7 +198,7 @@ check: unitTests
 clean: testsClean
 	rm -f $(OBJECTS) $(DEPENDS) eonclient client
 
-clean-all: clean docsClean testsClobber
+clean-all: clean testsClobber
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
 
 %.o: %.cpp
