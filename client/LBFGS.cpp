@@ -131,7 +131,7 @@ int LBFGS::update(VectorXd r1, VectorXd r0, VectorXd f1, VectorXd f0)
 
 int LBFGS::step(double maxMove)
 {
-    int status;
+    int status = 0;
     VectorXd r = objf->getPositions();
     VectorXd f = -objf->getGradient();
 
