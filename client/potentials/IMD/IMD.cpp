@@ -23,18 +23,6 @@
 //#include <fcntl.h>
 //#endif
 
-#ifdef BOINC
-    #include <boinc/boinc_api.h>
-    #include <boinc/diagnostics.h>     // boinc_init_diagnostics()
-    #include <boinc/filesys.h>         // boinc_fopen(), etc...
-#ifdef WIN32
-    #include <boinc/boinc_win.h>
-    #include <boinc/win_util.h>
-#endif
-#else
-    #include "../../false_boinc.h"
-#endif
-
 #include "IMD.h"
 
 IMD::IMD(void)
