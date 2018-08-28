@@ -158,6 +158,7 @@ def init(config_file = ""):
     config.comp_neighbor_cutoff = parser.getfloat('Structure Comparison', 'neighbor_cutoff')
     config.comp_use_covalent = parser.getboolean('Structure Comparison', 'use_covalent')
     config.comp_covalent_scale = parser.getfloat('Structure Comparison', 'covalent_scale')
+    config.comp_remove_translation = parser.getboolean('Structure Comparison', 'remove_translation')
 
     # AKMC options
     config.akmc_confidence                 = parser.getfloat('AKMC', 'confidence')
