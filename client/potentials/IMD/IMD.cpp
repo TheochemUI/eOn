@@ -14,15 +14,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-//#ifdef WIN32
-//#include <windows.h>
-//#define sleep(n) Sleep(1000 * n)
-////#define popen _popen
-//#else
-//#include <sys/wait.h>
-//#include <fcntl.h>
-//#endif
-
 #include "IMD.h"
 
 IMD::IMD(void)

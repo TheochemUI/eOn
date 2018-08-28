@@ -413,7 +413,7 @@ class Local(Communicator):
             # move the job directory to the scratch directory
             # update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
-            p = subprocess.Popen(self.client,cwd=jobpath,
+            p = subprocess.Popen(self.client, cwd=jobpath,
                     stdout=fstdout, stderr=subprocess.PIPE)
             #commands.getoutput("renice -n 20 -p %d" % p.pid)
             self.joblist.append((p,jobpath))
@@ -519,7 +519,7 @@ class Script(Communicator):
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
             status, output = commands.getstatusoutput(cmd)
-            self.check_command(status, output,cmd)
+            self.check_command(status, output, cmd)
 
             jobid = int(output.strip())
             self.jobids[jobid] = eon_jobid
@@ -546,7 +546,23 @@ class Script(Communicator):
     def get_queued_jobs(self):
         # get_queued_jobs.sh
         # should return the jobids of the jobs in the queue
-        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
+        print self.queued_jobs_cmd
+#        sleep(1000)
+#        result = subprocess.check_output(self.queued_jobs_cmd)
+#        print result
+#        p = subprocess.Popen(self.queued_jobs_cmd, shell=True,
+        q = subprocess.Popen(["/opt/gridengine/bin/linux-x64/qstat","|","awk","'$1~/^[0-9]/","{print $1}'"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#        with open(os.devnull, 'w') as devnull:
+#            p = subprocess.Popen("ls", stdout=devnull, stderr=devnull)
+#            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+#        p = subprocess.Popen(self.queued_jobs_cmd, 
+#            stdout=file('output', 'w'), stderr=file('error','w'), bufsize=1)
+        print "popen done"
+        sleep(100)
+        output=""
+        status=""
+#        output, status = p.communicate()
+#        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
         self.check_command(status, output, self.queued_jobs_cmd)
 
         queued_job_ids = []
