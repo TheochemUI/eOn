@@ -196,7 +196,7 @@ check: unitTests
 	@echo "In the future, regression testing will automatically run now."
 
 clean: testsClean
-	rm -f $(OBJECTS) $(DEPENDS) eonclient client
+	rm -f $(OBJECTS) $(DEPENDS)
 
 clean-all: clean testsClobber
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
