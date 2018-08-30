@@ -18,7 +18,11 @@ symbol = ^  v  8   s  p  *   h
 max_color = blue
 check_structure = False
 check_e = -249.8
-#figure_name = ./run9_40.png
+fig_name = ./run9_40.png
+fig_width = 6.0      
+fig_height = 7.0
+ytick_fontsize = 14.0
+marker_size = 50.0
 """
 
 import sys
