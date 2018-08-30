@@ -40,6 +40,10 @@ default_paras = dict(
     nlevels  = 350,
     work_dir = None,
     fig_name = None,
+    fig_width = 6.0,
+    fig_height = 7.0,
+    ytick_fontsize = 14.0,
+    marker_size = 50.0,
     #number of Au in the system
     n_Au =  19,
     #highest energy
@@ -69,6 +73,10 @@ type_define=dict(
     nlevels  = 350,
     work_dir = '/dir',
     fig_name = '../disccon_graph.png',
+    fig_width = 6.0,
+    fig_height = 7.0,
+    ytick_fontsize = 14.0,
+    marker_size = 50.0,
     #number of Au in the system
     n_Au =  19,
     #highest energy
@@ -233,9 +241,20 @@ if paras['check_structure']:
 graph = database2graph(db)
 dg = DisconnectivityGraph(graph,nlevels=paras['nlevels'],Emax=Emax+0.05,node_offset=0)
 dg.calculate()
-dg.plot()
+
+fig = plt.figure(figsize=(paras['fig_width'],paras['fig_height']))
+#fig = plt.figure(figsize=(7, 8))
+fig.set_facecolor('white')
+ax = fig.add_subplot(111, adjustable='box')
+#ax = fig.add_subplot(111)
+
+dg.plot(linewidth=1.0, axes=ax)
+
+plt.yticks(fontsize=paras['ytick_fontsize'], weight=20)
+plt.subplots_adjust(left=0.2, right=0.95, top=0.95, bottom=0.1)
+
 if paras['min_state_n'] == 0:
-   dg.draw_minima([start_state],c='tab:gray')
+   dg.draw_minima([start_state],c='tab:gray', s=50)
 
 if len(emphasize) > 0:
    dg.draw_minima(emphasize,marker='o',c='tab:red')
@@ -253,13 +272,14 @@ if paras['draw_symbol']:
    for i in range(len(paras['minima_to_draw'])):
       print paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i] 
 #      try:
-      dg.draw_minima(Au_seg[int(paras['minima_to_draw'][i])],marker=paras['symbol'][i],c='tab:'+paras['color'][i])
+      dg.draw_minima(Au_seg[int(paras['minima_to_draw'][i])],marker=paras['symbol'][i],c='tab:'+paras['color'][i], s=paras['marker_size'])
 #      except:
 #         continue
 
    if str(max_key) not in paras['minima_to_draw']:
-      dg.draw_minima(Au_seg[max_key],marker='<',c='tab:'+paras['max_color'])
+      dg.draw_minima(Au_seg[max_key],marker='<',c='tab:'+paras['max_color'], s=paras['marker_size'])
 if paras['fig_name']:
    plt.savefig(output_dir+'/'+paras['fig_name'])
+   plt.show()
 else:
    plt.show()
