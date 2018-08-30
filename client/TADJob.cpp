@@ -73,7 +73,7 @@ int TADJob::dynamics()
     long StateCheckInterval, RecordInterval;
     double kinE, kinT, avgT, varT;
     double kB = parameters->kB;
-    double correctedTime = 0.0, firstTransitionTime = 0.0; 
+    double correctedTime = 0.0;
     double stopTime = 0.0, sumSimulatedTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
     double correctionFactor = 1.0;
@@ -188,10 +188,8 @@ int TADJob::dynamics()
             correctionFactor = 1.0*exp(barrier/kB*(1.0/lowT-1.0/highT)); 
             correctedTime = transitionTime * correctionFactor;
             sumSimulatedTime += transitionTime;
-            if ( nState == 1 ){
-                firstTransitionTime = transitionTime;
-            }
-            //reverse the momenten;
+
+            //reverse the momentum;
             *current = *mdBuffer[refineStep-1];
             velocity = current->getVelocities();
             velocity = velocity*(-1);

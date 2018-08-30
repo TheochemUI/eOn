@@ -228,8 +228,6 @@ int DynamicsSaddleSearch::run(void)
                     neb.maxEnergyImage = neb.images/2 + 1;
                 }
 
-
-
                 log("Initial saddle guess saved to saddle_initial_guess.con\n");
                 saddle->matter2con("saddle_initial_guess.con");
                 MinModeSaddleSearch search = MinModeSaddleSearch(saddle, 
