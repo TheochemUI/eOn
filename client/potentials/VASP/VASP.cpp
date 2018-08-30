@@ -75,29 +75,33 @@ void VASP::spawnVASP()
         int outFd = open("vaspout", O_CREAT|O_WRONLY|O_TRUNC, 0644);
         dup2(outFd, 1);
         dup2(outFd, 2);
-
+/*
         char vaspPath[1024];
         if(strncpy(vaspPath, "vasp", 1024)) {
+//        if(strncpy("vasp", vaspPath, 1024)) {
+          
             fprintf(stderr, "problem resolving vasp filename\n");
             exit(1);
         }
-        if (0)
-	{
+*/
+/* if (0)
+        {
             if (execlp(vaspPath, "vasp", NULL) == -1) 
-	    {
-	        fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
-                exit(1);
-	    }
-	}
-        else
-	{
-//            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1) 
-            if (execlp("runvasp.sh", "runvasp.sh", NULL) == -1) 
-	    {
+            {
                 fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
                 exit(1);
-	    }
+            }
         }
+        else
+        {
+//            if (execlp("mpirun", "mpirun", "-n", "8", "vasp", NULL) == -1) 
+*/
+        if (execlp("./runvasp.sh", "./runvasp.sh", NULL) == -1) 
+        {
+            fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
+            exit(1);
+        }
+ //       }
     }
 }
 
