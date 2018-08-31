@@ -102,9 +102,7 @@ class MinModeExplorer(Explorer):
         self.displace = displace.DisplacementManager(self.reactant, moved_atoms)
 
     def explore(self):
-        print "before client reg results"
         self.register_results()
-        print "after client reg results"
         if self.state.get_confidence(self.superbasin) < config.akmc_confidence:
             self.make_jobs()
         else:
@@ -240,27 +238,15 @@ class ClientMinModeExplorer(MinModeExplorer):
         self.job_table.write()
 
     def register_results(self):
-        print "client reg results"
         logger.info("Registering results")
-        print "before time"
         t1 = time()
-        print "after time"
         if os.path.isdir(config.path_jobs_in):
-            print "into os.path.isdir"
             try:
-                print "before shutil.rmtree"
                 shutil.rmtree(config.path_jobs_in)  
-                print "after shutil.rmtree"
             except (OSError, IOError):
-                print "exception 1"
                 pass
-        print "before if not os.path.isdir"
         if not os.path.isdir(config.path_jobs_in):
-            print "before makedirs"
-            print "path_jobs_in: ",config.path_jobs_in
             os.makedirs(config.path_jobs_in)
-            print "after makedirs"
-        print "end register results"
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -411,7 +397,6 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.explore(self)
 
     def register_results(self):
-        print "server register results"
         logger.info("Registering results")
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
