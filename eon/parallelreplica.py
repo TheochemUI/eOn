@@ -51,7 +51,7 @@ def parallelreplica():
     logger.info("Simulation time: %e s", time)
     wuid = make_searches(comm, current_state, wuid)
 
-    # Write out metadata. XXX:ugly
+    # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
     parser = ConfigParser.RawConfigParser() 
     write_pr_metadata(parser, current_state.number, time, wuid)
@@ -65,12 +65,9 @@ def step(current_time, current_state, states, transition):
     proc = current_state.get_process(transition['process_id'])
     dynamics.append(current_state.number, transition['process_id'],
                     next_state.number, transition['time'], transition['time']+current_time, 0, 0, current_state.get_energy())
-
     previous_state = current_state
     current_state = next_state
-
     logger.info("Currently in state: %i", current_state.number)
-
     return current_state, previous_state
 
 def get_statelist():
@@ -125,8 +122,6 @@ def make_searches(comm, current_state, wuid):
     io.savecon(reactIO, reactant)
 
     # Merge potential files into invariants
-    #XXX: Should this be in our "science" maybe the communicator should
-    #     handle this.
     invariants = {}
     invariants = dict(invariants, **io.load_potfiles(config.path_pot))
 
@@ -202,6 +197,7 @@ def register_results(comm, current_state, states):
 
 def main():
     optpar = optparse.OptionParser(usage="usage: %prog [options] config.ini")
+    optpar.add_option("-C", "--continuous", action="store_true", dest="continuous", default=False, help="don't quit")
     optpar.add_option("-q", "--quiet", action="store_true", dest="quiet", default=False,help="only write to the log file")
     optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
     optpar.add_option("-R", "--reset", action="store_true", dest="reset", default = False, help="reset the simulation, discarding all data")
@@ -271,10 +267,21 @@ def main():
     lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
 
     if lock.aquirelock():
-        if config.comm_type == 'mpi':
-            from mpiwait import mpiwait
+        if options.continuous or config.comm_type == 'mpi':
+            # define a wait method.
+            if config.comm_type == 'mpi':
+                from mpiwait import mpiwait
+                wait = mpiwait
+            elif options.continuous:
+                if config.comm_type == "local":
+                    # In local, everything is synchronous, so no need to wait here.
+                    wait = lambda: None
+                else:
+                    wait = lambda: sleep(10.0)
+            else:
+                raise RuntimeError("You have found a bug in EON!")
             while True:
-                mpiwait()
+                wait()
                 parallelreplica()
         parallelreplica()
     else:
