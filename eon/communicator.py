@@ -544,34 +544,8 @@ class Script(Communicator):
         return len(self.jobids.keys())
 
     def get_queued_jobs(self):
-
-        # GH: what is this mess, and why did I make it?
-
-#        # should return the jobids of the jobs in the queue
-#        print self.queued_jobs_cmd
-##        sleep(1000)
-##        result = subprocess.check_output(self.queued_jobs_cmd)
-##        print result
-##        p = subprocess.Popen(self.queued_jobs_cmd, shell=True,
-#        q = subprocess.Popen(["/opt/gridengine/bin/linux-x64/qstat","|","awk","'$1~/^[0-9]/","{print $1}'"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-##        with open(os.devnull, 'w') as devnull:
-##            p = subprocess.Popen("ls", stdout=devnull, stderr=devnull)
-##            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
-##        p = subprocess.Popen(self.queued_jobs_cmd, 
-##            stdout=file('output', 'w'), stderr=file('error','w'), bufsize=1)
-#        print "popen done"
-#        sleep(100)
-#        output=""
-#        status=""
-##        output, status = p.communicate()
-##        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
-
-        # GH: end mess
-        # GH: try a simple revert
         status, output = commands.getstatusoutput(self.queued_jobs_cmd)
-
         self.check_command(status, output, self.queued_jobs_cmd)
-
         queued_job_ids = []
         for line in output.split("\n"):
             try:

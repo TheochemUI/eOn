@@ -15,7 +15,7 @@ class MinModeSaddleSearch : public SaddleSearchMethod
 public:
 
     enum{
-        // DONT CHANGE THE ORDER OF THIS LIST
+        // DO NOT CHANGE THE ORDER OF THIS LIST
         STATUS_GOOD, //0
         STATUS_INIT, //1
         STATUS_BAD_NO_CONVEX, //2
