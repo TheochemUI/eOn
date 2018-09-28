@@ -1,0 +1,42 @@
+SYSTEM = Cr Surface
+
+LCHARG = FALSE
+#LWAVE = False
+
+PREC = Normal
+#PREC = Low
+
+#ISPIN   = 2
+ISPIN   = 1
+ENCUT   = 400
+EDIFF = 1e-6
+
+#smearing -  Fermi if ISMEAR = -1
+ISMEAR = 0
+SIGMA = 0.05
+
+NELMIN = 3
+NELMDL = 2
+NELM = 200
+LREAL = Auto
+LPLANE = TRUE
+ALGO = Fast
+#NSIM = 8
+NCORE = 32
+#NPAR = 8
+
+AMIX = 0.3
+
+#Eon Required Settings
+#IOPT = 1
+#MAXMOVE = 0.2
+#FDSTEP = 0.0001
+IBRION = 3
+POTIM = 0
+NSW = 99999999
+EDIFFG = -0.01
+LWAVE = .FALSE.
+LCHARG = .FALSE.
+ISIF = 0
+ISYM = 0
+LINTERACT = .TRUE.
