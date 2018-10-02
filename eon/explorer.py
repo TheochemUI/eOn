@@ -183,7 +183,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             weightsIO = StringIO.StringIO()
             numpy.savetxt(weightsIO, mass_weights)
-            file_permission = os.stat("masses.dat").st_mode
+#            file_permission = os.stat("masses.dat").st_mode
             invariants['masses.dat'] = (weightsIO, file_permission)
 
         # Merge potential files into invariants
