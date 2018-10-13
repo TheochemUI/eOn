@@ -165,14 +165,14 @@ class AKMCState(state.State):
         eq_rate_flag = False
         if config.akmc_eq_rate > 0 and forward_rate > config.akmc_eq_rate and reverse_rate > config.akmc_eq_rate:
             eq_rate_flag = True
-            print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
+            #print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
             if forward_rate < reverse_rate:
                 forward_eq_rate = config.akmc_eq_rate
                 reverse_eq_rate = config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
                 forward_eq_rate = config.akmc_eq_rate * (forward_rate / reverse_rate)
                 reverse_eq_rate = config.akmc_eq_rate
-            print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
+            #print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id, 
@@ -590,7 +590,7 @@ class AKMCState(state.State):
 
     def register_bad_saddle(self, result, store=False, superbasin=None):
         """ Registers a bad saddle. """
-        print ("bad saddle ",result["results"]["termination_reason"])
+        #print ("bad saddle ",result["results"]["termination_reason"])
         result_state_code = ["Good",
                              "Init",
                              "Saddle Search No Convex Region",
