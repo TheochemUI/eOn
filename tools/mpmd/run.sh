@@ -19,7 +19,6 @@ command="mpirun -n $pot_ranks -wdir vasp $pot_path : -n $client_ranks $client_pa
 
 #if no arguments
 if [ -z $1 ]; then
-    ${eon_path}/tools/mkvasp.py $EON_NUMBER_OF_CLIENTS vasp
     $command
 else
     total_ranks=$(expr $pot_ranks + $client_ranks)
