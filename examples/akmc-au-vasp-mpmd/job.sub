@@ -26,10 +26,6 @@ VASP_PATH=vasp_mpmd_gamma
 # support.  For example: make EONMPI=1
 EON_CLIENT_PATH=eonclientmpi
 
-# Setup the directories for VASP to write its output. These look like 
-# vasp000, vasp001, ..., vasp$EON_NUMBER_OF_CLIENTS.
-~/code/eon/tools/mkvasp.py $EON_NUMBER_OF_CLIENTS .
-
 # Double check that the total number of slots (cores) is divisable by the
 # number of clients.
 msg='$NSLOTS not evenly divisible by $EON_NUMBER_OF_CLIENTS'
