@@ -36,8 +36,7 @@ std::vector<std::string> PrefactorJob::run(void)
     product->con2matter("product.con");
     double pref1, pref2;
     Prefactor::getPrefactors(parameters, reactant, saddle, product, pref1, pref2);
-    printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
-
+    //printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
     
     VectorXi atoms;
     if (parameters->prefactorAllFreeAtoms)
