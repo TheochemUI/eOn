@@ -558,7 +558,7 @@ Recycling:
 
         active_region:
             kind: float
-            default: 2
+            default: 1
 
         mass_weight_factor:
             kind: float

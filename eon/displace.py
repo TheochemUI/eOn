@@ -224,6 +224,13 @@ class Displace:
         for e in epicenters:
             if e in self.hole_epicenters:
                 new_epicenters.append(e)
+
+        #GH: added to prevent case in which there are no displaceable atoms in the active region
+        if len(new_epicenters) == 0:
+            logger.warning("No displaceable atoms found in the active region around atoms that moved in the previous transition;")
+            logger.warning("  reverting to the full list of any displaceable atoms.")
+            return epicenters
+            
         return new_epicenters
 
 class Undercoordinated(Displace):
@@ -294,10 +301,13 @@ class ListedAtoms(Displace):
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in config.disp_listed_atoms 
                 if self.reactant.free[i] ]
-
+        #print "self.listed_atoms:"
+        #print self.listed_atoms
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
 
+        #print self.listed_atoms
         if len(self.listed_atoms) == 0:
+            #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
 
         #print self.listed_atoms
@@ -315,7 +325,7 @@ class ListedTypes(Displace):
     def __init__(self, reactant, std_dev=0.05, radius=5.0, hole_epicenters=None, cutoff=3.3, use_covalent=False, covalent_scale=1.3, displace_all=False):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters)
 
-        print config.disp_listed_types
+#        print config.disp_listed_types
 
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
@@ -327,7 +337,7 @@ class ListedTypes(Displace):
         if len(self.listed_atoms) == 0:
             raise DisplaceError("Listed atom types are all frozen or not found in reactant")
 
-        print self.listed_atoms
+#        print self.listed_atoms
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
