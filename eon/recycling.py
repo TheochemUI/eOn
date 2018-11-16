@@ -309,10 +309,12 @@ class Recycling:
             self.curr_reactant = self.current_state.get_reactant()
             self.ref_reactant = self.ref_state.get_reactant()
 
-            if config.saddle_method == 'dynamics':
-                self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
-            else:
-                self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r)
+            # GH: using the active region for all searches
+            self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
+            #if config.saddle_method == 'dynamics':
+            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r,config.recycling_active_region)
+            #else:
+            #    self.process_atoms = atoms.get_process_atoms(self.curr_reactant, self.ref_reactant,config.comp_eps_r)
 
             # Make a vector of distances between previous
             # current positions for each atom in the state.
