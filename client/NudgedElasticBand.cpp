@@ -244,7 +244,7 @@ void NudgedElasticBand::updateForces(void)
     double maxDiffEnergy, minDiffEnergy;
     double energyDiffPrev, energyDiffNext;
     double energy, energyPrev, energyNext;
-    bool higherEnergyPrev, higherEnergyNext;
+    //bool higherEnergyPrev, higherEnergyNext;
 
     // variables for climbing image
     double maxEnergy;
@@ -283,36 +283,33 @@ void NudgedElasticBand::updateForces(void)
             // old tangent
             *tangent[i] = image[i]->pbc(posNext - posPrev);
         }else{
-            // new tangent
-            higherEnergyPrev = energyPrev > energyNext;
-            higherEnergyNext = energyNext > energyPrev;
+          // new improved tangent
+	  //higherEnergyPrev = energyPrev > energyNext;
+	  //higherEnergyNext = energyNext > energyPrev;
 
-            if(higherEnergyPrev != higherEnergyNext) {
-                // we are not at an extremum
-                if(higherEnergyPrev) {
-                    *tangent[i] = image[i]->pbc(pos - posPrev);
-                }else{
-                    *tangent[i] = image[i]->pbc(posNext - pos);
-                }
-            }else{
-                // we are at an extremum
-                energyDiffPrev = energyPrev - energy;
-                energyDiffNext = energyNext - energy;
-
-                // calculate the energy difference to neighboring images
-                minDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
-                maxDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
-
-                // use these energy differences to weight the tangent
-                if(energyDiffPrev > energyDiffNext) {
-                    *tangent[i] = image[i]->pbc(posNext - pos) * minDiffEnergy;
-                    *tangent[i] += image[i]->pbc(pos - posPrev) * maxDiffEnergy;
-                }else{
-                    *tangent[i] = image[i]->pbc(posNext - pos) * maxDiffEnergy;
-                    *tangent[i] += image[i]->pbc(pos - posPrev) * minDiffEnergy;
-                }
-            }
-        }
+	  if(energyNext > energy && energy > energyPrev) {
+	    *tangent[i] = image[i]->pbc(posNext - pos);
+	  }else if(energy > energyNext && energyPrev > energy){
+	    *tangent[i] = image[i]->pbc(pos - posPrev);
+	  }else{
+	    // we are at an extremum
+	    energyDiffPrev = energyPrev - energy;
+	    energyDiffNext = energyNext - energy;
+	    
+	    // calculate the energy difference to neighboring images
+	    minDiffEnergy = min(abs(energyDiffPrev), abs(energyDiffNext));
+	    maxDiffEnergy = max(abs(energyDiffPrev), abs(energyDiffNext));
+	    
+	    // use these energy differences to weight the tangent
+	    if(energyDiffPrev > energyDiffNext) {
+	      *tangent[i] = image[i]->pbc(posNext - pos) * minDiffEnergy;
+	      *tangent[i] += image[i]->pbc(pos - posPrev) * maxDiffEnergy;
+	    }else{
+	      *tangent[i] = image[i]->pbc(posNext - pos) * maxDiffEnergy;
+	      *tangent[i] += image[i]->pbc(pos - posPrev) * minDiffEnergy;
+	    }
+	  }
+	}
         tangent[i]->normalize();
 
         // project the forces and add springs
