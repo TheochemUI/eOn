@@ -1,0 +1,17 @@
+
+.. _hessian:
+
+=======
+Hessian
+=======
+
+The Hessian matrix, in mass-weighted coordinates, is used to evaluate
+prefactors in hamonic transition state theory rate calculations.
+
+[Hessian] Options
+=================
+
+**atom_list**: The atoms that will be displaced in the calculation of the
+Hessian: a comma delimited list of atom indicies, e.g. 0,1,2.
+
+    default: ``All``

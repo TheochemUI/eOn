@@ -1,0 +1,16 @@
+================================
+Server configuration
+================================
+
+The eOn server uses a single configuration file, config.ini. The format of the
+file is the *.ini* format. The *.ini* format consists of sections, keys, and
+values.  Each section header is surrounded by square brackets, and is followed
+by the key/value pairs. For example, to set the *temperature* key of the 
+*[akmc]* section to the value *450*, your config.ini file would include the 
+lines:
+
+.. code-block:: none
+
+    [akmc]
+    temperature = 450
+    

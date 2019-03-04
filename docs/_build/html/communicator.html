@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Parallelization &mdash; EON: Long Timescale Dynamics</title>
+    <link rel="stylesheet" href="_static/henk.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="EON: Long Timescale Dynamics" href="index.html" />
+    <link rel="next" title="Potential" href="potential.html" />
+    <link rel="prev" title="Main" href="main.html" />
+  </head>
+  <body>
+    <div class="related">
+            <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+
+      <!-- <h3>Navigation</h3> -->
+      <ul>
+        <li><a href="index.html"><img class="logo" src="_static/eon_logo.png" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
+
+    <!-- <li>  &raquo; <a href="download.html">Download</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="setups/setups.html">Setups</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="tutorials/tutorials.html">Tutorials</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="documentation/documentation.html">Documentation</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="performance.html">Performance</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="faq.html">FAQ</a> &raquo;</li> -->
+<!--        <li>  &raquo; <a href="contents.html">Contents</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="genindex.html">Index</a> &raquo;</li> -->
+    
+
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="parallelization">
+<span id="communicator"></span><h1>Parallelization<a class="headerlink" href="#parallelization" title="Permalink to this headline">¶</a></h1>
+<p>Eon has a server client architecture for running its calculations. The
+simulation data is stored on the server and clients are sent jobs and return
+the results. Each time Eon is run it first checks to see if any results have
+come back from clients and processes them accordingly and then submits more
+jobs if needed. In Eon there are several different ways to run jobs. One can
+run them locally on the server, via MPI,  or using a job queuing system such as <a class="reference external" href="http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html">SGE</a>.</p>
+<div class="section" id="communicator-options">
+<h2>[Communicator] Options<a class="headerlink" href="#communicator-options" title="Permalink to this headline">¶</a></h2>
+<p><strong>type</strong>:</p>
+<blockquote>
+<div><p>Default: local</p>
+<p>Options:</p>
+<blockquote>
+<div><p><a class="reference internal" href="#communicator-local"><em>local</em></a>: The local communicator runs the
+calculations on the same computer that the server is run on.</p>
+<p><a class="reference internal" href="#communicator-cluster"><em>cluster</em></a>: A job scheduler can be used to
+run jobs through user supplied shell scripts. Examples are given for
+SGE.</p>
+<p><a class="reference internal" href="#communicator-mpi"><em>mpi</em></a>: Allows for the server and clients to run
+as a MPI job.</p>
+</div></blockquote>
+</div></blockquote>
+<p><strong>num_jobs</strong>:</p>
+<blockquote>
+<div><p>Default: 1</p>
+<p>The meaning of the variable changes depending on the communicator <strong>type</strong>.</p>
+<p>For the <em>local</em> communicator <strong>num_jobs</strong> number of jobs will be run every
+time the program is invoked.</p>
+<p>For the <em>cluster</em> communicator <strong>num_jobs</strong> is the desired sum of the queued
+and running jobs. That is it should be set to the total number of jobs that
+the user would like to run at once and the script will submit jobs to the
+queue as needed to try to achieve the target number.</p>
+</div></blockquote>
+<p><strong>max_jobs</strong>:</p>
+<blockquote>
+<div><p>Default: 0 (unlimited)</p>
+<p>The maximum number of akmc jobs that can be running at once for the current
+state. For communicators with queues (cluster communicator), this means that no
+more jobs will be queued if the number of jobs queued and in progress equals
+or exceeds this number. The default of 0 turns this off is equivalent to
+unlimited.</p>
+</div></blockquote>
+<p><strong>jobs_per_bundle</strong>:</p>
+<blockquote>
+<div><p>Default: 1</p>
+<p>In eon a job is defined as task that the eon client executes, such as a
+process search or a parallel replica run. Sometimes it makes sense to run
+more than one of the same type of job at a time.</p>
+<p>For example, when using empirical potentials to do saddle searches a single
+search might only take several seconds on modern CPUs. In order to improve
+performance more than one client job (<em>e.g.</em>, process search, dimer,
+minimization) can be run at the same time.</p>
+</div></blockquote>
+</div>
+<div class="section" id="local">
+<span id="communicator-local"></span><h2>Local<a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h2>
+<p>When eon is run with the local communicator, <strong>number_of_cpus</strong> bundles are run
+in parallel until <strong>num_jobs</strong> jobs have been run. The program will not exit
+until all of the jobs have finished running.</p>
+<blockquote>
+<div><p><strong>client_path</strong>: Either the name or path to the eon client binary. If only
+a name and not a path is given then eon looks for the binary in same
+directory as config.ini failing to find it there it will search though the
+directories in the $PATH environment variable.</p>
+<p>type: string</p>
+<p>default: <tt class="docutils literal"><span class="pre">eonclient</span></tt></p>
+<p><strong>number_of_cpus</strong>: The number of jobs that will run simultaneously.</p>
+<p>type: int</p>
+<p>default: <tt class="docutils literal"><span class="pre">1</span></tt></p>
+</div></blockquote>
+</div>
+<div class="section" id="cluster">
+<span id="communicator-cluster"></span><h2>Cluster<a class="headerlink" href="#cluster" title="Permalink to this headline">¶</a></h2>
+<p>The cluster communicator works by calling a set of three user provided scripts to
+talk to the job scheduler. An example of these scripts for SGE 6.2 is provided
+in <strong>tools/clusters/sge6.2</strong>. They will most likely need to be modified to run
+on your system.</p>
+<p><strong>script_path</strong>: The path to the user defined scripts for submitting jobs to
+the communicator.</p>
+<blockquote>
+<div><p>type: string</p>
+<p>default: <tt class="docutils literal"><span class="pre">./</span></tt></p>
+</div></blockquote>
+<p><strong>name_prefix</strong>:</p>
+<blockquote>
+<div><p>Default: eon</p>
+<p>When jobs are submitted to the scheduler they are given a unique internally
+used named. In order to make the jobs identifiable by the user the
+<strong>name_prefix</strong> can be set to a meaningful string that will always be prepended
+to the job names.</p>
+</div></blockquote>
+<p><strong>queued_jobs</strong>:</p>
+<blockquote>
+<div><p>Default: queued_jobs.sh</p>
+<p>This is the name of the script that returns the job ids of all the running and
+queued jobs. It does not have to return the job ids of only eon related jobs.</p>
+</div></blockquote>
+<p><strong>submit_job</strong>:</p>
+<blockquote>
+<div><p>Default: submit_job.sh</p>
+<p>This is the name of the script that submits a single job to the queuing system.
+It takes two command line arguments. The first is the name of the job. This is
+not required for eon use, but is highly recommended so that users can identify
+which job is which. The second argument is the working directory. This is the
+path where the Eon client should be executed. All of the needed client files
+will be placed in this directory. The script must return the job id of the
+submitted job. This is how Eon internally keeps track of jobs.</p>
+</div></blockquote>
+<p><strong>cancel_job</strong>:</p>
+<blockquote>
+<div><p>Default: cancel_job.sh</p>
+<p>This is the name of the script that cancels a job. It takes a single argument
+the job id.</p>
+</div></blockquote>
+</div>
+<div class="section" id="mpi">
+<span id="communicator-mpi"></span><h2>MPI<a class="headerlink" href="#mpi" title="Permalink to this headline">¶</a></h2>
+<p>The MPI communicator allows for the server and client to be run as a MPI job.
+The number of clients that are run and thus the number of jobs is set at
+runtime by the MPI environment.</p>
+<p>A MPI aware client must be compiled, which will be named <tt class="docutils literal"><span class="pre">eonclientmpi</span></tt>
+instead of <tt class="docutils literal"><span class="pre">eonclient</span></tt>. It can only be used to run MPI jobs. It can
+be compiled like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>make EONMPI=1
+</pre></div>
+</div>
+<p>If your MPI C++ compiler wrapper is not <tt class="docutils literal"><span class="pre">mpicxx</span></tt>, search for the line
+<tt class="docutils literal"><span class="pre">CXX=mpicxx</span></tt> in <tt class="docutils literal"><span class="pre">client/Makefile</span></tt> and adjust it accordingly.</p>
+<p>To run EON with MPI, two environment variables must be set. The
+variable <tt class="docutils literal"><span class="pre">EON_NUMBER_OF_CLIENTS</span></tt> determines how many of the ranks
+should become clients and <tt class="docutils literal"><span class="pre">EON_SERVER_PATH</span></tt> is the path to the
+server Python script. In MPI mode the clients need to be started
+instead of the server and one of them will become the server process.
+Currently only AKMC is supported. Below is an example of running using
+the MPI communicator:</p>
+<div class="highlight-python"><div class="highlight"><pre>#!/bin/bash
+export EON_NUMBER_OF_CLIENTS=7
+export EON_SERVER_PATH=~/eon/akmc.py
+mpirun -n 8 ~/eon/client/eonclientmpi
+</pre></div>
+</div>
+<p>There must be at least <tt class="docutils literal"><span class="pre">EON_NUMBER_OF_CLIENTS</span></tt> + 1 ranks running. This is
+because the one additional rank is needed to become the server.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>These examples only submit a single search as the <strong>search_buffer_size</strong> defaults to 1.</p>
+<div class="section" id="id1">
+<h3>Local<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>An example communicator section using the local communicator with an Eon client
+binary named &#8220;eonclient-custom&#8221; that either exists in the <strong>$PATH</strong> or in the
+same directory as config.ini and uses makes use of 8 CPUs.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Communicator]</span>
+<span class="na">type</span> <span class="o">=</span> <span class="s">local</span>
+<span class="na">client_path</span> <span class="o">=</span> <span class="s">eonclient-custom</span>
+<span class="na">number_of_cpus</span> <span class="o">=</span> <span class="s">8</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Cluster<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>An example communicator section for the cluster communicator using the provided
+sge6.2 scripts and a name prefix of &#8220;al_diffusion_&#8221;:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Communicator]</span>
+<span class="na">type</span><span class="o">=</span><span class="s">cluster</span>
+<span class="na">name_prefix</span><span class="o">=</span><span class="s">al_diffusion_</span>
+<span class="na">script_path</span><span class="o">=</span><span class="s">/home/user/eon/tools/clusters/sge6.2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+          <h3><a href="index.html">EON</a></h3>
+      <ul class="this-page-menu">
+        <li><a href="download.html">Download</a></li>
+        <li><a href="installation.html">Installation</a></li>
+        <li><a href="tutorials.html">Tutorials</a></li>
+        <li><a href="documentation.html">Documentation</a></li>
+      </ul>
+      <h3>Development</h3>
+      <ul class="this-page-menu">
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+          </ul>
+            <h3>This page</h3>
+            <ul>
+<li><a class="reference internal" href="#">Parallelization</a><ul>
+<li><a class="reference internal" href="#communicator-options">[Communicator] Options</a></li>
+<li><a class="reference internal" href="#local">Local</a></li>
+<li><a class="reference internal" href="#cluster">Cluster</a></li>
+<li><a class="reference internal" href="#mpi">MPI</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#id1">Local</a></li>
+<li><a class="reference internal" href="#id2">Cluster</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      <!-- Where does one find this "prev" variable?
+      
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="main.html"
+            title="previous chapter">Main</a></p>
+        -->
+            <ul class="this-page-menu">
+              <li><a href="_sources/communicator.txt">Page Source</a></li> <!-- label changed from "Show source" to avoid confusion with the source code svn link -->
+            </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<!-- 
+Remove footer.  Sphinx will actually parse anything with curly braces even if
+it is inside a comment.  The footer can be added by removing this comment
+and replacing [] by corresponding curly brackets
+[%- block relbar2 %][[ relbar() ]][% endblock %] 
+-->
+    <div class="footer">
+<!--
+      <div class="sidebarfooter">
+        <a href="http://validator.w3.org/check?uri=http://wiki.fysik.dtu.dk/gpaw/communicator.html">
+          <img src="http://www.w3.org/Icons/valid-xhtml10"
+            alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
+        </a>
+      </div>
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.-->
+    </div>
+  </body>
+</html>

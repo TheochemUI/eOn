@@ -1,0 +1,66 @@
+.. _documentation:
+
+=============
+Documentation
+=============
+
+The EON program can run the following methods or tasks to explore the configuration space of molecular systems and to accelerate the simulation of their dynamics over long times.  To run EON, a config.ini file must be generated using the options specified in the documentation. Each section header is denoted by square brackets, and is followed by the key/value pairs. For example, to set the *job_type* key of the *[Main]* section to the value *process_search*, your config.ini file would include the lines:
+
+.. code-block:: none
+
+    [Main]
+    job_type = process_search
+
+There are specific options for each method, and a set of general options which are shared between methods.  Examples of these general options include specificion of the interatomic potential and the parameters for doing structural optimizations and comparisons.
+
+EON is designed to run in serial on one computer or in parallel using a communicator to send jobs from a server to clients and receive the results back.  Several parallelization schemes have been implemented, including local communication through files, cluster communication via a queuing system or via mpi.  Methods run in parallel are broken up by the eon server into tasks which are run by client program.  The server then compiles the information sent back by the clients in a way that can be used by the sampling or dynamics methods.
+
+Jobs
+----
+
+:ref:`Adaptive kinetic Monte Carlo <akmc>`: uses saddle searches to find possible reactive events and KMC to determine the state-to-state kinetics.
+
+- :ref:`Recycling <recycling>`: reactive events (processes) between states to speed up AKMC.
+- :ref:`Kinetic Database <kdb>`: of reactive events so they can be reused between AKMC runs.
+- :ref:`Coarse Graining <coarse_graining>`: to identify and escape groups of states connected by low barriers.
+
+:ref:`Parallel Replica Dynamics <parallel_replica>`: uses a set of trajectories to accerate the rate of escape from states.
+
+:ref:`Molecular Dynamics <dynamics>`: standard classical dynamics.
+
+- :ref:`Hyperdynamics <hyperdynamics>`: uses a bias potential to accelerate transitions between states.
+
+:ref:`Basin Hopping <basin_hopping>`: lowers the barrier between states to accelerate Monte Carlo sampling.
+
+:ref:`Process Search <process_search>`: finds possible escape mechanisms from a state.
+
+:ref:`Saddle Search <saddle_search>`: finds a nearby saddle point.
+
+- :ref:`Dimer <dimer>`: method to find the lowest curvature mode.
+- :ref:`Lanczos <lanczos>`: method to find the lowest curvature mode.
+
+:ref:`Minimization <minimization>`: optimize the geometry of a structure.
+
+:ref:`Nudged Elastic Band <neb>`: Locate minimum energy pathways using nudged elastic band calculation.
+
+
+General Options
+---------------
+
+:ref:`Main <main>`: options which not specific to a single job type.
+
+:ref:`Communicator <communicator>`: methods by which the code can be run in parallel.
+
+:ref:`Potential <potential>`: the interatomic potentials available, as well as interfaces to LAMMPS and DFT codes.
+
+:ref:`Optimizer <optimizer>`: methods for optimizing atomic structures.
+
+:ref:`Hessian <hessian>`: options for controlling the calculation of Hessian matricies.
+
+:ref:`Prefactor <prefactor>`: options for controlling the calculation of harmonic transition state theory prefactors.
+
+:ref:`Structure Comparison <structure_comparison>`: options for determining if two structures are the same.
+
+:ref:`Paths <paths>`: directories in which the calculations will be run.
+
+:ref:`Debug <debug>`: options for printing more information to help debug calculations.

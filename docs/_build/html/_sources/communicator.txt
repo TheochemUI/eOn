@@ -1,0 +1,223 @@
+
+.. _communicator:
+
+===============
+Parallelization
+===============
+
+Eon has a server client architecture for running its calculations. The
+simulation data is stored on the server and clients are sent jobs and return
+the results. Each time Eon is run it first checks to see if any results have
+come back from clients and processes them accordingly and then submits more
+jobs if needed. In Eon there are several different ways to run jobs. One can
+run them locally on the server, via MPI,  or using a job queuing system such as SGE_.
+
+.. _SGE:   http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html
+
+[Communicator] Options
+======================
+
+**type**:
+
+    Default: local
+    
+    Options: 
+
+        :ref:`local <communicator-local>`: The local communicator runs the
+        calculations on the same computer that the server is run on. 
+
+        :ref:`cluster <communicator-cluster>`: A job scheduler can be used to
+        run jobs through user supplied shell scripts. Examples are given for
+        SGE.
+
+        :ref:`mpi <communicator-mpi>`: Allows for the server and clients to run
+        as a MPI job.
+
+
+**num_jobs**:
+
+    Default: 1
+
+    The meaning of the variable changes depending on the communicator **type**.
+
+    For the *local* communicator **num_jobs** number of jobs will be run every 
+    time the program is invoked.
+
+    For the *cluster* communicator **num_jobs** is the desired sum of the queued
+    and running jobs. That is it should be set to the total number of jobs that
+    the user would like to run at once and the script will submit jobs to the
+    queue as needed to try to achieve the target number.
+
+**max_jobs**:
+
+    Default: 0 (unlimited)
+
+    The maximum number of akmc jobs that can be running at once for the current 
+    state. For communicators with queues (cluster communicator), this means that no
+    more jobs will be queued if the number of jobs queued and in progress equals
+    or exceeds this number. The default of 0 turns this off is equivalent to 
+    unlimited.
+
+**jobs_per_bundle**:
+
+    Default: 1
+
+    In eon a job is defined as task that the eon client executes, such as a
+    process search or a parallel replica run. Sometimes it makes sense to run
+    more than one of the same type of job at a time.
+    
+    For example, when using empirical potentials to do saddle searches a single
+    search might only take several seconds on modern CPUs. In order to improve
+    performance more than one client job (*e.g.*, process search, dimer,
+    minimization) can be run at the same time.
+
+
+.. _communicator-local:
+
+Local
+=====
+
+When eon is run with the local communicator, **number_of_cpus** bundles are run
+in parallel until **num_jobs** jobs have been run. The program will not exit
+until all of the jobs have finished running.
+
+    **client_path**: Either the name or path to the eon client binary. If only
+    a name and not a path is given then eon looks for the binary in same
+    directory as config.ini failing to find it there it will search though the
+    directories in the $PATH environment variable.
+
+    type: string
+
+    default: ``eonclient``
+
+    **number_of_cpus**: The number of jobs that will run simultaneously.
+
+    type: int
+
+    default: ``1``
+
+
+
+.. _communicator-cluster:
+
+Cluster
+=======
+
+The cluster communicator works by calling a set of three user provided scripts to
+talk to the job scheduler. An example of these scripts for SGE 6.2 is provided
+in **tools/clusters/sge6.2**. They will most likely need to be modified to run
+on your system.
+
+**script_path**: The path to the user defined scripts for submitting jobs to
+the communicator.
+
+    type: string
+
+    default: ``./``
+    
+**name_prefix**:
+
+    Default: eon
+
+    When jobs are submitted to the scheduler they are given a unique internally
+    used named. In order to make the jobs identifiable by the user the
+    **name_prefix** can be set to a meaningful string that will always be prepended
+    to the job names.
+    
+**queued_jobs**:
+
+    Default: queued_jobs.sh
+
+    This is the name of the script that returns the job ids of all the running and
+    queued jobs. It does not have to return the job ids of only eon related jobs.
+
+**submit_job**:
+
+    Default: submit_job.sh
+
+    This is the name of the script that submits a single job to the queuing system.
+    It takes two command line arguments. The first is the name of the job. This is
+    not required for eon use, but is highly recommended so that users can identify
+    which job is which. The second argument is the working directory. This is the
+    path where the Eon client should be executed. All of the needed client files
+    will be placed in this directory. The script must return the job id of the
+    submitted job. This is how Eon internally keeps track of jobs.
+    
+**cancel_job**: 
+
+    Default: cancel_job.sh
+
+    This is the name of the script that cancels a job. It takes a single argument
+    the job id.
+
+
+.. _communicator-mpi:
+
+MPI
+===
+
+The MPI communicator allows for the server and client to be run as a MPI job.
+The number of clients that are run and thus the number of jobs is set at
+runtime by the MPI environment.
+
+A MPI aware client must be compiled, which will be named ``eonclientmpi``
+instead of ``eonclient``. It can only be used to run MPI jobs. It can
+be compiled like so:
+
+::
+
+    make EONMPI=1
+
+If your MPI C++ compiler wrapper is not ``mpicxx``, search for the line
+``CXX=mpicxx`` in ``client/Makefile`` and adjust it accordingly.
+
+To run EON with MPI, two environment variables must be set. The
+variable ``EON_NUMBER_OF_CLIENTS`` determines how many of the ranks
+should become clients and ``EON_SERVER_PATH`` is the path to the
+server Python script. In MPI mode the clients need to be started
+instead of the server and one of them will become the server process.
+Currently only AKMC is supported. Below is an example of running using
+the MPI communicator:
+
+::
+
+    #!/bin/bash
+    export EON_NUMBER_OF_CLIENTS=7
+    export EON_SERVER_PATH=~/eon/akmc.py
+    mpirun -n 8 ~/eon/client/eonclientmpi
+
+There must be at least ``EON_NUMBER_OF_CLIENTS`` + 1 ranks running. This is
+because the one additional rank is needed to become the server.
+
+
+Examples
+========
+
+These examples only submit a single search as the **search_buffer_size** defaults to 1.
+
+Local
+-----
+
+An example communicator section using the local communicator with an Eon client
+binary named "eonclient-custom" that either exists in the **$PATH** or in the
+same directory as config.ini and uses makes use of 8 CPUs.
+
+.. code-block:: ini
+
+    [Communicator]
+    type = local
+    client_path = eonclient-custom
+    number_of_cpus = 8
+
+Cluster
+-------
+
+An example communicator section for the cluster communicator using the provided
+sge6.2 scripts and a name prefix of "al_diffusion\_":
+
+.. code-block:: ini
+
+    [Communicator]
+    type=cluster
+    name_prefix=al_diffusion_
+    script_path=/home/user/eon/tools/clusters/sge6.2

@@ -1,0 +1,35 @@
+.. _structure_comparison:
+
+====================
+Structure Comparison
+====================
+
+Parameters in the **[Structure Comparison]** section of the config.ini file.
+
+**use_covalent**: Use the covalent radii of atoms to determine neighbors.
+
+    default: ``False``
+
+**energy_difference**: How different in energy two configurations must be to be considered different structures.
+
+    default: ``0.01``
+
+**brute_neighbors**: Determine neighbors by brute force (use this with nonorthogonal boxes).
+
+    default: ``False``
+
+**check_rotation**: Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.
+
+    default: ``False``
+
+**neighbor_cutoff**: Atoms within this distance of each other are considered neighbors.
+
+    default: ``3.3``
+
+**indistinguishable_atoms**: Use an algorithm to compare structures that does not distinguish between atoms of the same element. That is to say the numbering of the atoms does not affect the structural comparison.
+
+    default: ``True``
+
+**distance_difference**: The maximum distance two mapped atoms may be for two configurations to be considered equivalent.
+
+    default: ``0.1``
