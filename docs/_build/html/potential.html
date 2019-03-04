@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Potential &mdash; EON: Long Timescale Dynamics</title>
+    <link rel="stylesheet" href="_static/henk.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="EON: Long Timescale Dynamics" href="index.html" />
+    <link rel="next" title="MPI Potential" href="mpi_potential.html" />
+    <link rel="prev" title="Parallelization" href="communicator.html" />
+  </head>
+  <body>
+    <div class="related">
+            <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+
+      <!-- <h3>Navigation</h3> -->
+      <ul>
+        <li><a href="index.html"><img class="logo" src="_static/eon_logo.png" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
+
+    <!-- <li>  &raquo; <a href="download.html">Download</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="setups/setups.html">Setups</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="tutorials/tutorials.html">Tutorials</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="documentation/documentation.html">Documentation</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="performance.html">Performance</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="faq.html">FAQ</a> &raquo;</li> -->
+<!--        <li>  &raquo; <a href="contents.html">Contents</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="genindex.html">Index</a> &raquo;</li> -->
+    
+
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="potential">
+<span id="id1"></span><h1>Potential<a class="headerlink" href="#potential" title="Permalink to this headline">¶</a></h1>
+<p><strong>potential</strong>: the type of potential to execute</p>
+<blockquote>
+<div><p>default: <tt class="docutils literal"><span class="pre">lj</span></tt></p>
+<p>options:</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">vasp</span></tt>: Vienna Ab-Initio Simulation Program (VASP) interface. <a class="footnote-reference" href="#vasp" id="id2">[1]</a></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">lammps</span></tt>: The LAMMPS potentials. Detailed documentation can be found</dt>
+<dd>on the <a class="reference internal" href="lammps_potential.html#lammps-potential"><em>LAMMPS Potential</em></a> page. <a class="footnote-reference" href="#lammps" id="id3">[2]</a></dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">eam_al</span></tt>: Embedded atom method parameterized for aluminum.</p>
+<p><tt class="docutils literal"><span class="pre">qsc</span></tt>: Quantum Sutton-Chen potential, for FCC metals.</p>
+<p><tt class="docutils literal"><span class="pre">bopfox</span></tt>: Bond order potential, for metals.</p>
+<p><tt class="docutils literal"><span class="pre">emt</span></tt>: Effective medium theory, for metals.</p>
+<p><tt class="docutils literal"><span class="pre">lj</span></tt>: Lennard-Jones potential in reduced unit <a class="footnote-reference" href="#lj" id="id4">[3]</a></p>
+<p><tt class="docutils literal"><span class="pre">morse_pt</span></tt>: Morse potential for platinum.</p>
+<p><tt class="docutils literal"><span class="pre">lenosky_si</span></tt>: Lenosky potential, for silicon. <a class="footnote-reference" href="#lenosky" id="id5">[4]</a></p>
+<p><tt class="docutils literal"><span class="pre">sw_si</span></tt>: Stillinger-Weber potential, for silicon. <a class="footnote-reference" href="#swsi" id="id6">[5]</a></p>
+<p><tt class="docutils literal"><span class="pre">tersoff_si</span></tt>: Tersoff pair potential with angular terms, for silicon. <a class="footnote-reference" href="#tersoff" id="id7">[6]</a></p>
+<p><tt class="docutils literal"><span class="pre">edip</span></tt>: Environment-Dependent Interatomic Potential, for carbon.
+<a class="footnote-reference" href="#edip" id="id8">[7]</a></p>
+<p><tt class="docutils literal"><span class="pre">zpice</span></tt>: Water on platinum.</p>
+<p><tt class="docutils literal"><span class="pre">tip4p</span></tt>: Point charge model for water. <a class="footnote-reference" href="#tip4p" id="id9">[8]</a></p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">mpi</span></tt>: Communicate with a MPI process to calculate energy and</dt>
+<dd>forces. More information can be found on the
+<a class="reference internal" href="mpi_potential.html#mpi-potential"><em>MPI Potential</em></a> page.</dd>
+<dt><tt class="docutils literal"><span class="pre">terminalpotential</span></tt>: Writes box size and coordinates to the file &#8216;from_eon_to_terminal&#8217;</dt>
+<dd>Make a system call for the binary &#8216;eon_terminal&#8217;
+Reads return energy of forces from the file &#8216;from_terminal_to_eon&#8217;</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<p><strong>log_potential</strong>: If true write timing information about each force call to client.log</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>default: <tt class="docutils literal"><span class="pre">true</span></tt> if <tt class="docutils literal"><span class="pre">potential</span></tt> is <tt class="docutils literal"><span class="pre">mpi</span></tt>, <tt class="docutils literal"><span class="pre">vasp</span></tt>, <tt class="docutils literal"><span class="pre">bop</span></tt>,  or <tt class="docutils literal"><span class="pre">bopfox</span></tt></dt>
+<dd>otherwise <tt class="docutils literal"><span class="pre">false</span></tt></dd>
+</dl>
+</div></blockquote>
+<table class="docutils footnote" frame="void" id="vasp" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Georg, Kresse, <a class="reference external" href="http://cms.mpi.univie.ac.at/vasp/">&#8220;VASP Group, Theoretical Physics Departments, Vienna&#8221;</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="lammps" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference external" href="http://http://lammps.sandia.gov/">&#8220;Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories&#8221;</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="lj" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>Lennard-Jones, J. E. Proc. R. Soc. Lond.A <strong>106</strong> (738): 463–477  doi:<a class="reference external" href="http://dx.doi.org/10.1098%2Frspa.1924.0082">10.1098/rspa.1924.0082</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="lenosky" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>T.J. Lenosky et.al., Modelling Simul. Mater. Sci. Eng., <strong>8</strong>,  825 (2000) doi:<a class="reference external" href="http://dx.doi.org/10.1088/0965-0393/8/6/305">10.1088/0965-0393/8/6/305</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="swsi" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td>Frank H. Stillinger and Thomas A. Weber, Phys. Rev. B <strong>31</strong>, 5262–5271 (1985) doi:<a class="reference external" href="http://link.aps.org/doi/10.1103/PhysRevB.31.5262">10.1103/PhysRevB.31.5262</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="tersoff" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td><ol class="first last upperalpha simple" start="10">
+<li>Tersoff, Phys. Rev. B <strong>38</strong>, 9902–9905 (1988) doi:<a class="reference external" href="http://link.aps.org/doi/10.1103/PhysRevB.38.9902">10.1103/PhysRevB.38.9902</a></li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="edip" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[7]</a></td><td>João F. Justo et.al., Phys. Rev. B <strong>58</strong>, 2539–2550 (1998) doi:<a class="reference external" href="http://link.aps.org/doi/10.1103/PhysRevB.58.2539">10.1103/PhysRevB.58.2539</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="tip4p" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[8]</a></td><td>Jorgensen, W. L. et.al, J. Chem. Phys 1983, <strong>79</strong>, 926-935. doi:<a class="reference external" href="http://dx.doi.org/10.1063%2F1.445869">10.1063/1.445869</a></td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+          <h3><a href="index.html">EON</a></h3>
+      <ul class="this-page-menu">
+        <li><a href="download.html">Download</a></li>
+        <li><a href="installation.html">Installation</a></li>
+        <li><a href="tutorials.html">Tutorials</a></li>
+        <li><a href="documentation.html">Documentation</a></li>
+      </ul>
+      <h3>Development</h3>
+      <ul class="this-page-menu">
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+          </ul>
+      <!-- Where does one find this "prev" variable?
+      
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="communicator.html"
+            title="previous chapter">Parallelization</a></p>
+        -->
+            <ul class="this-page-menu">
+              <li><a href="_sources/potential.txt">Page Source</a></li> <!-- label changed from "Show source" to avoid confusion with the source code svn link -->
+            </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<!-- 
+Remove footer.  Sphinx will actually parse anything with curly braces even if
+it is inside a comment.  The footer can be added by removing this comment
+and replacing [] by corresponding curly brackets
+[%- block relbar2 %][[ relbar() ]][% endblock %] 
+-->
+    <div class="footer">
+<!--
+      <div class="sidebarfooter">
+        <a href="http://validator.w3.org/check?uri=http://wiki.fysik.dtu.dk/gpaw/potential.html">
+          <img src="http://www.w3.org/Icons/valid-xhtml10"
+            alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
+        </a>
+      </div>
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.-->
+    </div>
+  </body>
+</html>

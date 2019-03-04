@@ -1,0 +1,74 @@
+.. _hyperdynamics: 
+
+=============
+Hyperdynamics
+=============
+
+The hyperdynamics method uses a bias potential which should be zero at
+transition states and positive in minima in order to accelerate the rate of
+transitions. [#voter97_3908]_ The hyperdynamics time step :math:`\delta t`
+can be obtained from the molecular dynamics simulation time step :math:`\delta
+t^b` multiplied by a boost factor :math:`e^{\beta \Delta V}`, where
+:math:`{\Delta V}` is the bias potential.
+
+There are several possible forms of bias potential. In EON, we have implemented
+the bond-boost method, [#miron03_6210]_ where the bias potential is controlled
+by the maximal (fractional) change in any bond length in the system.  This is a
+good bias potential for systems in which the dynamics is governed by bond
+breaking and forming events.
+
+You can run a hyperdynamics job by setting the **bias_potential** option.
+It should be run with the ``parallel_replica`` job.
+
+[Hyperdynamics] Options
+=======================
+
+**bias_potential**: 
+
+    default: ``none``
+
+    options:
+
+        ``bond_boost``: bond boost method
+
+        ``none``: with no bias potential, run regular MD
+
+**bb_dvmax**: 
+
+    default: ``0.0``
+
+    The magnitude of the bond-boost bias potential.
+
+**bb_rmd_time**: 
+
+    default: ``100.0``
+
+    Regular MD duration used to determine the equilibrium bond length before the bias potential is added.
+
+**bb_rcut**: 
+
+    default: ``3.0``
+
+    All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
+
+**bb_stretch_threshold**: 
+
+    default: ``0.2``
+
+    Defines the bond-boost dividing surface. It should be smaller than the
+    maximum fractional nearest-neighbor bond stretch or compression at any
+    transition state.
+
+**bb_ds_curvature**: 
+
+    default: ``0.95``
+
+    The curvature near the bond-boost dividing surface, it should has a value
+    <= 1. We recommend the value to be 0.9-0.98.
+
+.. rubric:: References
+
+.. [#voter97_3908] A.F. Voter "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events" *Phys. Rev. Lett.* **78**, 3908 (1997)
+
+.. [#miron03_6210]  R.A. Miron and K.A. Fichthorn "Accelerated molecular-dynamics of rare events with the bond-boost method" *J. Chem. Phys.* **119**, 6210 (2003)
+

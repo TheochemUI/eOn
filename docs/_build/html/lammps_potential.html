@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>LAMMPS Potential &mdash; EON: Long Timescale Dynamics</title>
+    <link rel="stylesheet" href="_static/henk.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="EON: Long Timescale Dynamics" href="index.html" />
+    <link rel="next" title="Optimizer" href="optimizer.html" />
+    <link rel="prev" title="MPI Potential" href="mpi_potential.html" />
+  </head>
+  <body>
+    <div class="related">
+            <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+
+      <!-- <h3>Navigation</h3> -->
+      <ul>
+        <li><a href="index.html"><img class="logo" src="_static/eon_logo.png" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
+
+    <!-- <li>  &raquo; <a href="download.html">Download</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="setups/setups.html">Setups</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="tutorials/tutorials.html">Tutorials</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="documentation/documentation.html">Documentation</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="performance.html">Performance</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="faq.html">FAQ</a> &raquo;</li> -->
+<!--        <li>  &raquo; <a href="contents.html">Contents</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="genindex.html">Index</a> &raquo;</li> -->
+    
+
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="lammps-potential">
+<span id="id1"></span><h1>LAMMPS Potential<a class="headerlink" href="#lammps-potential" title="Permalink to this headline">¶</a></h1>
+<p>In order to use the LAMMPS potential you must first build the serial library
+version of LAMMPS. This can be done by following the instructions in the
+<a class="reference external" href="http://lammps.sandia.gov/doc/Section_start.html">lammps documentation</a> . For
+most cases executing these commands from the LAMMPS <tt class="docutils literal"><span class="pre">src</span></tt> folder should work:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cd STUBS
+$ make
+$ cd ..
+$ make serial mode=lib
+</pre></div>
+</div>
+<p>Once you have compiled the library copy <tt class="docutils literal"><span class="pre">liblammps_serial.a</span></tt> and
+<tt class="docutils literal"><span class="pre">STUBS/libmpi_stubs.a</span></tt> to the client/potentials/LAMMPS directory in the Eon
+source code.  The Eon client can then be built like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ make LAMMPS_POT=1
+</pre></div>
+</div>
+<p>After setting the potential to <tt class="docutils literal"><span class="pre">lammps</span></tt> in <tt class="docutils literal"><span class="pre">config.ini</span></tt> you need to place a
+LAMMPS input file in the <tt class="docutils literal"><span class="pre">potfiles</span></tt> directory in your simulation. This file should
+be named <tt class="docutils literal"><span class="pre">in.lammps</span></tt> and it needs to specify what potential LAMMPS should use.
+Here is an example in.lammps file that uses the morse potential:</p>
+<div class="highlight-python"><div class="highlight"><pre>pair_style morse 9.5 #morse potential with 9.5 Angstrom cutoff
+pair_coeff * * 0.7102 1.6047 2.797 #specify parameters
+pair_modify shift yes #shift the potential to be zero at the cutoff
+</pre></div>
+</div>
+<div class="section" id="meam">
+<h2>MEAM<a class="headerlink" href="#meam" title="Permalink to this headline">¶</a></h2>
+<p>If you compiled LAMMPS with the MEAM package you need to copy
+<tt class="docutils literal"><span class="pre">lib/meam/libmeam.a</span></tt> from the LAMMPS directory to
+<tt class="docutils literal"><span class="pre">potentials/LAMMPS</span></tt> in EON. After that, add the following line to
+<tt class="docutils literal"><span class="pre">client/Makefile</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LDFLAGS</span> <span class="o">+=</span> <span class="n">potentials</span><span class="o">/</span><span class="n">LAMMPS</span><span class="o">/</span><span class="n">libmeam</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="openmp">
+<h2>OpenMP<a class="headerlink" href="#openmp" title="Permalink to this headline">¶</a></h2>
+<p>Compile LAMMPS with the USER-OMP package. Then add the following line
+to <tt class="docutils literal"><span class="pre">client/Makefile</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LDFLAGS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">fopenmp</span>
+</pre></div>
+</div>
+<p>See below for setting the number of threads.</p>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p><strong>lammps_logging</strong>: This option enables/disables the LAMMPS logfile. If enabled
+LAMMPS will log to the file <tt class="docutils literal"><span class="pre">log.lammps</span></tt>.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">false</span></tt></div></blockquote>
+<p><strong>lammps_threads</strong>: Controls how many threads to use if LAMMPS has been
+compiled with OpenMP support via the USER-OMP LAMMPS package.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">0</span></tt></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+          <h3><a href="index.html">EON</a></h3>
+      <ul class="this-page-menu">
+        <li><a href="download.html">Download</a></li>
+        <li><a href="installation.html">Installation</a></li>
+        <li><a href="tutorials.html">Tutorials</a></li>
+        <li><a href="documentation.html">Documentation</a></li>
+      </ul>
+      <h3>Development</h3>
+      <ul class="this-page-menu">
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+          </ul>
+            <h3>This page</h3>
+            <ul>
+<li><a class="reference internal" href="#">LAMMPS Potential</a><ul>
+<li><a class="reference internal" href="#meam">MEAM</a></li>
+<li><a class="reference internal" href="#openmp">OpenMP</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
+</ul>
+
+      <!-- Where does one find this "prev" variable?
+      
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="mpi_potential.html"
+            title="previous chapter">MPI Potential</a></p>
+        -->
+            <ul class="this-page-menu">
+              <li><a href="_sources/lammps_potential.txt">Page Source</a></li> <!-- label changed from "Show source" to avoid confusion with the source code svn link -->
+            </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<!-- 
+Remove footer.  Sphinx will actually parse anything with curly braces even if
+it is inside a comment.  The footer can be added by removing this comment
+and replacing [] by corresponding curly brackets
+[%- block relbar2 %][[ relbar() ]][% endblock %] 
+-->
+    <div class="footer">
+<!--
+      <div class="sidebarfooter">
+        <a href="http://validator.w3.org/check?uri=http://wiki.fysik.dtu.dk/gpaw/lammps_potential.html">
+          <img src="http://www.w3.org/Icons/valid-xhtml10"
+            alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
+        </a>
+      </div>
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.-->
+    </div>
+  </body>
+</html>
