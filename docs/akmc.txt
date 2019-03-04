@@ -76,7 +76,7 @@ with a brief description.
 **confidence_scheme**
 
     default: ``new``
-     options: old, new, newer
+     options: old, new
 
 **confidence**: The confidence (out of 1.0) criterion for moving to the next
 state.
