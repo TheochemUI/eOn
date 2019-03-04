@@ -1,0 +1,146 @@
+
+.. _saddle_search:
+
+=============
+Saddle Search
+=============
+
+A saddle search is initiated by making a local displacement of atoms from their position at the minimum of the current state. This displacement can be done using the different strategies indicated by the displace_type option, and the following parameters. If the user knows something about the local environment where reactions are likely to take place in the system, this information can be used to make saddle searches more efficient by getting them started in the right part of configuration space.
+
+[Saddle Search] Options
+-----------------------
+
+**method**:
+
+    default: ``min_mode``
+
+    options:
+
+        ``min_mode``: Use a min-mode following scheme to locate the saddle point.
+
+        ``dynamics``: Experimental method that uses molecular dynamics to find
+        new states and then runs a climbing image NEB calculation to find the saddle
+        and a dimer calculation to estimate the eigenmode at the saddle.
+
+
+**min_mode_method**: 
+
+    default: ``dimer``
+
+    options:
+
+        ``dimer``: Use the :ref:`dimer <dimer>` min-mode method. [#henkelman99_7010]_
+
+        ``lanczos``: Use the :ref:`Lanczos <lanczos>` min-mode method. [#malek00_7723]_
+
+**max_energy**: The energy at which a saddle search is considered bad and terminated.
+
+    default: ``20.0``
+
+**displace_radius**: Atoms within this distance of the epicenter will be displaced.
+
+    default: ``5.0``
+
+**displace_magnitude**: The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.
+
+    default: ``0.1``
+    
+**displace_random_weight**: Relative probability to displace with a random epicenter.
+
+    default: ``1.0, if no other weights set``
+
+**displace_not_FCC_HCP_weight**:  Relative probabilty to displace with an epicenter that is not FCC or HCP coordinated.
+
+    default: ``0.0``
+
+**displace_least_coordinated_weight**:  Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration. 
+
+    default: ``0.0``
+
+**displace_under_coordinated_weight**:  Relative probability to displace with an epicenter with a coordination equal to or less than displace_max_coordination.
+
+    default: ``0.0``
+
+**displace_listed_atom_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
+
+    default: ``0.0``
+
+**displace_atom_list**: The individual index should be separated by a comma 10, 20,-1 would be the 10, 20 and the last atom.
+
+    default: ``0``
+
+**displace_listed_type_weight**: Relative probability to displace with an epicenter listed in displace_typelist. 
+
+    default: ``0.0``
+
+**displace_type_list**: The atom types should be separated by a comma
+
+    default: ``none``
+
+**displace_all_listed**: If ``true``, each displacement will include all of the degrees of freedom of all of the listed atoms in **displace_atom_list** or **displace_type_list**. If ``false`` one of the atoms in **displace_atom_list** or **displace_type_list** will be selected at random for each displacement. In either case all atoms up to **displace_radius** distance away from any displaced atom will be included in the displacement. This can be disabled by setting **displace_radius** to 0.
+
+    default: ``false``
+
+**displace_max_coordination**: When using under_coordinated as the displacement type, choose only atoms with a coordination equal to or less than this.
+
+    default: ``11``
+
+**converged_force**: When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.
+
+    default: ``[Optimizer] converged_force``
+
+**max_iterations**: The maximum number of translation steps to be taken.
+
+    default: ``[Optimizer] max_iterations``
+
+**nonlocal_count_abort**: If this is not zero, the saddle search will abort when this many atoms have moved more than **nonlocal_distance_abort** from the initial displacement.
+
+    default: ``0`` (off)
+    
+**nonlocal_distance_abort**: If **nonlocal_count_abort** is not zero, the saddle search will abort when **nonlocal_count_abort** atoms have moved more than this distance.
+
+    default: ``0.0``
+
+**zero_mode_abort_curvature**: The saddle search will abort when the magnitude of the minmode curvature is less than this value.
+
+    default: ``0.0``
+
+**confine_positive**: Activates a confinement scheme when the search is within a positive region of the PES. 
+
+    default: ``false``
+
+**bowl_breakout**: When activated the search within positive regions of PES is confined to the subset of atoms (**bowl_active_atoms**) that are subject to the the largest forces [#pedersen14]_ . To activate **confine_positive** must also be ``true``
+
+    default: ``false``
+
+**bowl_active_atoms**: Size of the applied confinement in the bowl breakout scheme.  
+
+	default: ``20``
+
+Options for Dynamics Method
+---------------------------
+
+**dynamics_temperature**: The temperature, in Kelvin, for the molecular dynamics run. A good initial choice might be near melting temperature of the material.
+
+    default: ``[Main] temperature``
+
+**dynamics_state_check_interval**: The time interval, in femtoseconds, to minimizing the geometry and check if the system has left the initial state.
+
+    default: ``100.0``
+
+**dynamics_record_interval**: The time interval, in femtoseconds, between snapshots of the molecular dynamics trajectory. These snapshots are then used to locate when the system first left the initial state. A binary search is used to locate the first snapshot that minimizes to a new geometry.
+
+    default: ``10.0``
+
+**dynamics_linear_interpolation**: If set to ``true``, then the band connecting the initial and final states will be initialized using a linear interpolation. If set to ``false``, then the band
+is interpolated through the first snapshot that minimizes to the final state.
+
+    default: ``true``
+
+.. rubric:: References
+
+.. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives," *J. Chem. Phys.* **111**, 7010-7022 (1999). `DOI <http://dx.doi.org/10.1063/1.480097>`_
+
+.. [#malek00_7723] R. Malek and N. Mousseau, "Dynamics of Lennard-Jones clusters: A characterization of the activation-relaxation technique," *Phys. Rev. E* **62**, 7723 (2000). `DOI <http://dx.doi.org/10.1103/PhysRevE.62.7723>`_
+
+.. [#pedersen14] A. Pedersen and M. Luiser, "Bowl breakout, escaping the positive region when searching for saddle points," *J. Chem. Phys.* **141**, 024109 (2014). `DOI <http://dx.doi.org/10.1063/1.4885852>`_

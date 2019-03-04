@@ -1,0 +1,79 @@
+
+.. _tutorial_basin_hopping:
+
+======================
+Basin Hopping Tutorial
+======================
+
+This tutorial explains how to run a basin hopping global optimization
+calculation on a Lennard-Jones 13 particle.
+
+.. image:: fig/lj13.png
+    :align: center
+
+Here is the con file of our starting structure:
+
+.. literalinclude:: lj13.con
+
+Here is the config.ini file::
+    
+    [Main]
+    job=basin_hopping
+    # specify the temperature used in the Monte-Carlo step acceptance
+    temperature=500
+    
+    [Potential]
+    # use the lennard-jones potential, in reduced-units
+    potential=lj
+    
+    [Communicator]
+    # run the client locally
+    type=local
+    # only run 1 client at a time
+    number_of_cpus=1
+    # run 10 jobs per invocation of eon
+    num_jobs=10
+    # search $PATH for a binary named eonclient
+    client_path=eonclient
+    
+    [Basin Hopping]
+    # perform 100 Monte-Carlo steps
+    steps=100
+    # use a gaussian distribution for the displacements instead of a uniform distribution
+    displacement_distribution=gaussian
+    # the standard deviation for the gaussian which is used to displace each degree of freedom
+    displacement=0.3
+    
+    [Optimizer]
+    # use the lbfgs optimizer
+    opt_method=lbfgs
+    # stop the optimization once the max force per atom drops below 0.001 eV/A
+    converged_force=0.001
+    # specifies the value of 1/H0 used in the lbfgs optimizer
+    lbfgs_inverse_curvature=0.01
+    
+You should now have a directory with two files in it: ``config.ini`` and
+``reactant.con``. To run the calculation run the ``eon`` script::
+
+   $ eon 
+   registering results
+   0 (result) searches processed
+   0 searches in the queue
+   making 10 searches
+   10 from random structures 0 from previous minima
+   job finished in .//jobs/scratch/0
+   job finished in .//jobs/scratch/1
+   job finished in .//jobs/scratch/2
+   job finished in .//jobs/scratch/3
+   job finished in .//jobs/scratch/4
+   job finished in .//jobs/scratch/5
+   job finished in .//jobs/scratch/6
+   job finished in .//jobs/scratch/7
+   job finished in .//jobs/scratch/8
+   job finished in .//jobs/scratch/9
+   10 searches created
+
+Eon first looks for any completed jobs. As this is the first time you have run
+Eon, it finds no previous calculations to register. It then makes the input
+files needed for the 10 basin hopping jobs and writes them to
+``jobs/scratch/0..9``. Then eonclient is run in each of these directories. 

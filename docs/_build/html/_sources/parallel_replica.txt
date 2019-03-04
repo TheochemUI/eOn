@@ -1,0 +1,72 @@
+
+.. _parallel_replica:
+
+================================
+Parallel Replica
+================================
+
+Parallel Replica dynamics (PRD) is the simplest and the accurate way to
+accelerate a molecular dynamics simulation. [#voter98_13985]_ The only
+assumption made in this method is that the reactions satisfy first order kinetics. 
+
+.. math::
+
+     \mathrm{Pr}(t) = k \exp (-k t)
+
+PRD boosts the simulation linearly with the number of replicas and can be
+easily combined with other methods for extending the MD time scale, e.g.
+the hyperdynamics method, giving a multiplicative effect in the time scales that can be achieved.
+
+In the PRD approach,  N replicas of the system are made at first and then the
+momentum in each replica is randomized and dephasing stage is employed to
+decorrelate their motions. The simulation clock starts after this dephasing
+stage and stops when the first transition is detected in any of replicas.
+Because those N trajectories are independent, they can explore the phase space
+N times faster than using a single trajectory. The overall simulation clock is
+advanced by the sum of all the simulation times in replicas. 
+
+In order to work with distributed computing, we have modified the traditional
+scheme for running PRD. The replica generating and dephasing stage is exactly
+the same.  However, we make all replicas run the same number of MD steps to
+avoid biasing the successful transition trajectories. In other words, results
+will only be reported back when the clients finish their full trajectories. The
+server increments the simulation time :math:`t` until the first transition
+occurs.
+
+In order to run Parallel Replica, set **job** to *parallel_replica* in the
+**[Main]** section. For regular MD the stepsize and length of the trajactory and 
+parameters of thermostat can be set in the **[Dynamics]** section. The temperature 
+for the dynamics run is set in the **[Main]** section.
+
+[Parallel Replica] Options
+==========================
+
+**dephase_time**:  Time (in fs) to decorrelate the replica trajectories. The momenta will be inverted when reaching the dividing surface to prevent transitions occurring during this time.
+
+    default: ``1000.0``
+
+**state_check_interval**: How frequently the state of system is checked (in fs). Every state_check_interval, the current configuration is minized and compared to the initial state minimum to decide if a transition to a new state has occured. When refine_transition is set to true, the code will keep a buffer of configurations is saved so that the transition time can be determined to more precision than state_check_interval.
+
+    default: ``1000.0``
+
+**refine_transition**: Whether or not the transition time is refined. When this option is true, an array of (state_check_interval/state_save_interval) configurations along the history of the trajectory is saved. A Binary search is then used to determine the transition time.  Then this option is false, the transition time is taken to be when the new state was found. This function reduces the need for small values of state_check_interval; the precision of the transition time is state_save_interval*time_step.
+
+    default: ``True``
+
+**state_save_interval**: How often the system is recorded to the buffer array when the refine_transition option is activated. Increasing the value of state_save_interval lowers the precision of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.
+
+    default: ``0.1*state_check_interval``
+
+**post_transition_time**: Additional this amount of ``fs`` which will be performed after a new state has been found. A state check will be employed after this post_transition_time to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_interval is recommended.
+
+    default: ``1000.0``
+
+**stop_after_transition**: Whether or not stop the job when a new state is found.
+
+        default: ``False``
+
+
+.. rubric:: References
+
+.. [#voter98_13985] A.F. Voter, "Parallel replica method for dynamics of infrequent events” *Phys. Rev. B* **57**, 13985 (1998). doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
+

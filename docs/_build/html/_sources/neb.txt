@@ -1,0 +1,38 @@
+.. _neb:
+
+===================
+Nudged Elastic Band
+===================
+
+The nudged elastic band (NEB) is a method for finding saddle points and minimum energy paths between known reactants and products. The method works by optimizing a number of intermediate images along the reaction path. Each image finds the lowest energy possible while maintaining equal spacing to neighboring images. This constrained optimization is done by adding spring forces along the band between images and by projecting out the component of the force due to the potential perpendicular to the band.
+
+In order to run a nudged elastic band calculation, set **job** to *nudged_elastic_band* in the
+**[Main]** section. Details of the optimizer can be set in the **[optimizer]** section.
+
+
+[Nudged Elastic Band] Options
+=============================
+
+    **images**: Number of NEB images between the fixed endpoints
+
+        type: int
+
+        default: ``5``
+
+    **spring**: The spring constant, in eV/Ang^2 between the images. 
+
+        type: float
+
+        default: 5.0
+
+    **climbing_image_method**: 
+
+        type: boolean
+
+        default: ``False``
+
+    **old_tangent**: 
+
+        type: boolean
+
+        default: ``False``

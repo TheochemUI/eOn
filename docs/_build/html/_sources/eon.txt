@@ -1,0 +1,225 @@
+
+.. _eon:
+
+=============================
+General Simulation Parameters
+=============================
+
+The following contains general options which specify the calculation to be done
+and general parameters which are shared between job types.
+
+These are the options that go in the following sections of the config.ini file.
+
+**[Main]** section
+------------------
+
+**job**: The type of job to execute.
+
+    default: ``akmc``
+
+    options:
+
+        ``md``: Molecular dynamics.
+
+        ``parallel_replica``: Calculate the rare-event dynamics of the system by combining transitions observed from multiple trajectories run in parallel.
+
+        ``saddle_search``: Do a saddle point search using a minimum mode method.
+
+        ``displacement_sampling``: Job to sample different displacement methods and parameters to see which are the most efficient.
+
+        ``process_search``: Combined saddle search, minimizations, and prefactor calculations. Used by the aKMC method.
+
+        ``basin_hopping``: Search for global minimum using basin hopping method.
+
+        ``minimization``: Find the minimum from an initial configuration.
+
+        ``akmc``: Run an adaptive kinetic monte carlo simulation.
+
+        ``hessian``: Calculate the Hessian matrix for the specified configuration in a process.
+
+        ``prefactor``: Calculate the eigenfrequencies for a given configuration.
+
+
+**potential**: the type of potential to execute
+
+    default: ``lj``
+
+    options:
+
+        ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
+
+        ``lenosky_Si``: Lenosky potential, for silicon.
+
+        ``lammps``: The LAMMPS potentials.
+
+        ``sw_si``: Stillinger-Weber potential, for silicon.
+
+        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+
+        ``lj``: Lennard-Jones potential in reduced units.
+
+        ``morse_pt``: Morse potential for platinum.
+
+        ``zpice``: Water on platinum.
+
+        ``mpi``: Communicate with a mpi process to calculate energy and forces.
+
+        ``bopfox``: Bond order potential, for metals.
+
+        ``emt``: Effective medium theory, for metals.
+
+        ``eam_al``: Embedded atom method parameterized for aluminum.
+
+        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
+
+        ``tersoff_si``: Tersoff pair potential with angular terms, for silicon.
+
+        ``tip4p``: Point charge model for water.
+
+**random_seed**: Takes an integer number for the random seed. If this number is less than zero the current time is used as the random seed.
+
+    default: ``-1``
+
+**temperature**: The temperature that the job will run at.
+
+    default: ``300.0``
+
+**finite_difference**: The finite difference distance to use for dimer, hessian, lanczos, and optimization methods.
+
+    default: ``0.01``
+
+**quiet**:
+
+    default: ``False``
+
+
+**[Structure Comparison]** section
+----------------------------------
+
+**use_covalent**: Use the covalent radii of atoms to determine neighbors.
+
+    default: ``False``
+
+**energy_difference**: How close in energy two configurations must be to be considered energetically equivalent.
+
+    default: ``0.01``
+
+**brute_neighbors**: Determine neighbors by brute force (use this with nonorthogonal boxes).
+
+    default: ``False``
+
+**check_rotation**: Finds optimal overlap of structures via rotation before comparing them. Use this option in systems where structures can become rotated, such as nanoparticles.
+
+    default: ``False``
+
+**neighbor_cutoff**: Atoms within this distance of each other are considered neighbors.
+
+    default: ``3.3``
+
+**indistinguishable_atoms**: Use an algorithm to compare structures that does not distinguish between atoms of the same element. That is to say the numbering of the atoms does not affect the structural comparison.
+
+    default: ``True``
+
+**distance_difference**: The maximum distance two mapped atoms may be for two configurations to be considered equivalent.
+
+    default: ``0.05``
+
+
+**[Paths]** section
+-------------------
+
+Location of files related to the sending and receiving data on the server.
+
+**superbasin_recycling**:
+
+    default: ``%(main_directory)s/SB_recycling``
+
+**superbasins**:
+
+    default: ``%(main_directory)s/superbasins/``
+
+**main_directory**: This is the root directory of the simulation. Configuration files and the initial reactant are here and by default all of the simulation data will be stored under this directory.
+
+    default: ``./``
+
+**scratch**:
+
+    default: ``%(main_directory)s/jobs/scratch/``
+
+**results**:
+
+    default: ``%(main_directory)s``
+
+**kdb**:
+
+    default: ``%(main_directory)s/kdb/``
+
+**kdb_scratch**:
+
+    default: ``%(main_directory)s/kdbscratch/``
+
+**states**: Where all of the information about individual states is located.
+
+    default: ``%(main_directory)s/states/``
+
+**potential_files**: For extra files needed by the client for the potential.
+
+    default: ``%(main_directory)s/potfiles``
+
+**jobs_in**:
+
+    default: ``%(main_directory)s/jobs/in/``
+
+**jobs_out**:
+
+    default: ``%(main_directory)s/jobs/out/``
+
+**incomplete**:
+
+    default: ``%(main_directory)s/jobs/incomplete/``
+
+**bh_minima**:
+
+    default: ``%(main_directory)s/minima``
+
+
+**[Paths]** section
+-------------------
+
+**save_stdout**: Save the standard output from the client to a file named stdout_0.dat
+
+    default: ``False``
+
+**interactive_shell**:
+
+    default: ``True``
+
+**result_files_path**: Where to store all result files. Defaults to 'debug_results'.
+
+    default: ``./debug_results/``
+
+**use_mean_time**: Select transition times from the mean of the exponential distribution of escape times.
+
+    default: ``False``
+
+**register_extra_results**: Register processes found for a state after leaving that state.
+
+    default: ``False``
+
+**target_trajectory**: Follow the state-to-state trajectory of another akmc simulation.
+
+    default: ``False``
+
+**keep_bad_saddles**: Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
+
+    default: ``False``
+
+**keep_all_result_files**: Stores all result files in main_directory/results
+
+    default: ``False``
+
+**write_movies**:
+
+    default: ``False``
+
+

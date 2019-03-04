@@ -1,0 +1,83 @@
+
+.. _optimizer:
+
+Optimizer
+==============
+
+The eon client provides three optimizers quick-min, conjugate gradients, and L-BFGS.
+
+**[Optimizer]** parameters
+--------------------------- 
+
+**opt_method**: The optimization method to use.
+
+    default: ``cg``
+
+    options:
+
+        ``box``: Optimizes the atom positions and box using quickmin
+
+        ``cg``: Conjugate gradient
+
+        ``qm``: Quickmin
+
+        ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton
+        optimizer
+
+        ``fire``: Fast inertial relaxation engine
+
+**convergence_metric**: The metric to use to determine when an optimization is complete.
+
+    default: ``norm``
+
+    options:
+
+        ``norm``: The norm of the entire force vector
+
+        ``max_atom``: The maximum force on any non-frozen atom
+
+        ``max_component``: The maximum force on any non-frozen degree of freedom
+
+**converged_force**: When the **convergence_metric** is
+smaller than this value (eV/A), the structure is considered minimized.
+
+    default: ``0.01``
+
+**max_move**: Maximum distance that an atom may be moved in a single
+optimization step (Angstoms).
+
+    default: ``0.2``
+
+**time_step**: The dynamical timestep for the quickmin algorithm (fs).
+
+    default: ``1.0``
+
+**max_iterations**: The maximum number of optimization iterations that the will
+be performed.
+
+    default: ``1000``
+
+
+L-BFGS
+------
+
+The L-BFGS implementation in Eon resets its memory if a move larger than the max_move is
+attemped or if the angle between the force and the L-BFGS direction is larger than 90 degrees.
+
+
+**lbfgs_memory**: The maximum number of previous gradients and positions that
+are kept in memory for the L-BFGS algorithm.
+
+    default: ``20``
+
+**lbfgs_inverse_curvature**: The initial guess for inverse curvature at each step, which is used to
+construct the inverse Hessian matrix. This setting is only used when **lbfgs_auto_scale** is ``False``.
+
+    default: 0.01
+
+**lbfgs_auto_scale**: The initial guess for the inverse hessian at each step is constructed by
+estimating the curvature along the previous step direction. At the first step a forward finite difference
+calculation along the force is used to estimate the curvature.
+
+    default: ``True``
+

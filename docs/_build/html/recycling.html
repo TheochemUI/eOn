@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Recycling &mdash; EON: Long Timescale Dynamics</title>
+    <link rel="stylesheet" href="_static/henk.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="EON: Long Timescale Dynamics" href="index.html" />
+    <link rel="next" title="Server configuration" href="server_config.html" />
+    <link rel="prev" title="Kinetic Database" href="kdb.html" />
+  </head>
+  <body>
+    <div class="related">
+            <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+
+      <!-- <h3>Navigation</h3> -->
+      <ul>
+        <li><a href="index.html"><img class="logo" src="_static/eon_logo.png" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
+
+    <!-- <li>  &raquo; <a href="download.html">Download</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="setups/setups.html">Setups</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="tutorials/tutorials.html">Tutorials</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="documentation/documentation.html">Documentation</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="performance.html">Performance</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="faq.html">FAQ</a> &raquo;</li> -->
+<!--        <li>  &raquo; <a href="contents.html">Contents</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="genindex.html">Index</a> &raquo;</li> -->
+    
+
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="recycling">
+<span id="id1"></span><h1>Recycling<a class="headerlink" href="#recycling" title="Permalink to this headline">¶</a></h1>
+<p>We have developed a method of saddle point recycling that can significantly
+reduce the computational cost of the AKMC algorithm. <a class="footnote-reference" href="#xu08-114104" id="id2">[1]</a></p>
+<p>Suppose we are in reactant state <span class="math">\(R_0\)</span>, and we have discovered a series of
+saddles and their corresponding products, <span class="math">\(S_i\)</span> and <span class="math">\(P_i\)</span>, respectively.  Once
+we have reached confidence that we have found all energetically
+relevant processes, we select one of these processes and move to the
+corresponding product state.  For this example, let us assume that we have selected
+the process with saddle <span class="math">\(S_0\)</span> and product <span class="math">\(P_0\)</span>.  If we have found <span class="math">\(N\)</span>
+energetically relevant processes in state <span class="math">\(R_0\)</span>, we can make suggestions
+of the saddle geometries <span class="math">\(G_i\)</span> for saddles leading out of state <span class="math">\(P_0\)</span></p>
+<p><span class="math">\(G_i = P_0 + (S_i - R_0)\)</span></p>
+<p>We use a min-mode following algorithm to converge these suggested saddle points.
+To reach confidence again in state <span class="math">\(P_0\)</span>, we need only perform saddle searches
+in the region around the atoms that moved significantly from state <span class="math">\(R_0\)</span> to
+state <span class="math">\(P_0\)</span>, resulting in a significant reduction in computational costs.  If this region
+is local, the overall cost does not increase with the total system size.</p>
+<div class="section" id="recycling-options">
+<h2>[Recycling] Options<a class="headerlink" href="#recycling-options" title="Permalink to this headline">¶</a></h2>
+<p><strong>use_recycling</strong>: Turn recycling on and off.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">True</span></tt></div></blockquote>
+<p><strong>move_distance</strong>: The distance an atom must move to be considered in the &#8220;hole&#8221;.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">0.2</span></tt></div></blockquote>
+<p><strong>displace_moved_only</strong>: When performing saddle search displacements, only use atoms in the vicinty of the hole as displacement epicenters.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">False</span></tt></div></blockquote>
+<p><strong>save_suggestions</strong>: If true, the suggestions made by saddle recycling are saved to the &#8220;saddle_suggestions&#8221; directory of the state directory for which the saddles are being suggested.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">False</span></tt></div></blockquote>
+<p><strong>active_region</strong>: Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state.  For dynamics based saddle searches, atoms in the active region will have mass weighting applied; for min-mode following saddle searches, only these atoms will be selected for displacements.  <strong>active_region</strong> represents a multiple of <strong>[Structure Comparison] neighbor_distace</strong>.</p>
+<blockquote>
+<div>default: 1.0</div></blockquote>
+<p><strong>mass_weight_factor</strong>:  Atoms that are not in within the active region have their atomic masses multiplied by
+this factor.</p>
+<blockquote>
+<div>default: 1000.0</div></blockquote>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="xu08-114104" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><ol class="first last upperalpha simple" start="12">
+<li>Xu and G. Henkelman, &#8220;Adaptive kinetic Monte Carlo for first-principles accelerated dynamics&#8221; <em>J. Chem. Phys.</em> <strong>129</strong>, 114104 (2008).  doi:<a class="reference external" href="http://dx.doi.org/10.1063/1.2976010">10.1063/1.2976010</a></li>
+</ol>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+          <h3><a href="index.html">EON</a></h3>
+      <ul class="this-page-menu">
+        <li><a href="download.html">Download</a></li>
+        <li><a href="installation.html">Installation</a></li>
+        <li><a href="tutorials.html">Tutorials</a></li>
+        <li><a href="documentation.html">Documentation</a></li>
+      </ul>
+      <h3>Development</h3>
+      <ul class="this-page-menu">
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+          </ul>
+            <h3>This page</h3>
+            <ul>
+<li><a class="reference internal" href="#">Recycling</a><ul>
+<li><a class="reference internal" href="#recycling-options">[Recycling] Options</a></li>
+</ul>
+</li>
+</ul>
+
+      <!-- Where does one find this "prev" variable?
+      
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="kdb.html"
+            title="previous chapter">Kinetic Database</a></p>
+        -->
+            <ul class="this-page-menu">
+              <li><a href="_sources/recycling.txt">Page Source</a></li> <!-- label changed from "Show source" to avoid confusion with the source code svn link -->
+            </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<!-- 
+Remove footer.  Sphinx will actually parse anything with curly braces even if
+it is inside a comment.  The footer can be added by removing this comment
+and replacing [] by corresponding curly brackets
+[%- block relbar2 %][[ relbar() ]][% endblock %] 
+-->
+    <div class="footer">
+<!--
+      <div class="sidebarfooter">
+        <a href="http://validator.w3.org/check?uri=http://wiki.fysik.dtu.dk/gpaw/recycling.html">
+          <img src="http://www.w3.org/Icons/valid-xhtml10"
+            alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
+        </a>
+      </div>
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.-->
+    </div>
+  </body>
+</html>
