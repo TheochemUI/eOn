@@ -1,0 +1,51 @@
+
+.. _dynamics:
+
+========
+Dynamics
+========
+
+Molecular dynamics based upon Newton's classical equations of motion.
+
+[Dynamics] Options
+==================
+
+**time_step**: The duration of each MD step, in femtoseconds.
+
+   default: ``1``
+
+**time**: How long the MD simulation will be performed, in femtoseconds.
+
+   default: ``1000.0``
+
+**thermostat**
+
+   default: ``none``
+
+   options:
+
+       ``none``: NVE dynamics with the verlet algorithm. Initial velocities set by temperature.
+
+       ``andersen``: Andersen thermostat with the Verlet algorithm.
+
+       ``langevin``: Langevin thermostat with the Verlet algorithm.
+
+..       ``nose_hoover``: Nosé-Hoover thermostat with the Verlet algorithm.
+
+**andersen_collision_period**: The collision period (in fs) for the
+Andersen thermostat.
+
+   default: ``100.0``
+ 
+**andersen_alpha**: The collision strength in the Andersen thermostat.
+
+   default: ``1.0``
+
+..    **nose_mass**: The effective mass of the additional degree of freedom in the
+     Nosé-Hoover thermostat, which determines the coupling frequency of the thermostat.
+
+..   default: ``1.0``
+
+**langevin_friction**: The damping coefficient for Langevin dynamics (1/fs).
+
+   default: ``0.01``

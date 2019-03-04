@@ -1,0 +1,88 @@
+
+.. _installation:
+
+============
+Installation
+============
+
+Eon is divided up into two separate programs: a server and a client. The client
+does most of the computation (`e.g.` saddle searches, minimizations, and
+molecular dynamics) while the server creates the input for the client and
+processes its results.
+
+Dependencies
+============
+
+* Server
+    * `Python <http://www.python.org/download>`_ (2.4 - 2.7)
+    * `NumPy <http://new.scipy.org/download.html>`_ (>=1.2.1)
+    * `ASE <https://wiki.fysik.dtu.dk/ase/download.html>`_
+    * (optional, for MPI communicator) `mpi4py <http://mpi4py.scipy.org/>`_
+
+* Client
+    * GNU Make
+    * G++ (>=4.0, other C++ compilers might work)
+    * (optional) gfortran or Intel Fortran Compiler
+    * (optional, for LAMMPS potentials) `LAMMPS <http://lammps.sandia.gov/doc/Section_start.html>`__
+
+.. highlight:: bash
+
+Server Installation
+===================
+
+We recommend installing Eon to your ``$HOME`` folder. To download the
+latest developer version to your home folder::
+
+    $ cd $HOME
+    $ svn co http://theory.cm.utexas.edu/svn/eon
+
+The directory ``$HOME/eon`` needs to be added to your ``$PYTHONPATH``
+environment variable. It is also recommended to add ``$HOME/eon/bin`` to your
+``$PATH``. This can be done permanetly by appending the following to your
+``~/.profile`` file::
+
+    export PYTHONPATH=$HOME/eon:$PYTHONPATH
+    export PATH=$HOME/eon/bin:$PATH
+
+If you have root permissions, you can install Eon system-wide::
+
+    $ cd eon
+    $ sudo python setup.py install
+
+This will install the eon python module to Python's site-package directory
+as well as adding the ``eon`` program to your ``$PATH``.
+
+Client Installation
+===================
+
+The client source code is located in a folder named ``client`` under the main
+eon directory.  For most situations you will only need to run the make command
+and a binary named ``client`` will be built in this directory::
+
+    $ cd client
+    $ make
+
+If you wish to use the potentials that depend on fortran you will need a
+fortran compiler. However, this is optional and you can compile the client
+without fortran support by running the command ``make NO_FORTRAN=1``. If you
+are using gfortran the supplied Makefile should work out of the box. If you are
+using the Intel Fortran Compiler (ifort) you will need to edit the Makefile to
+change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
+``FAR`` (fortran archiver) variables to work for your system.
+
+If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS.  If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use. 
+Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
+
+If you want to use the MPI communicator, see the :ref:`MPI
+Communicator<communicator-mpi>` page for instructions.
+
+For most installations, the binary ``eonclient`` can be copied to a directory in your
+``$PATH``. If you added ``$HOME/eon/bin`` to your path
+during the server installation the following command will install the client::
+
+    $ cp eonclient ../bin/eonclient
+
+Otherwise you will need to give the path to the client binary in your
+``config.ini``. 
+
+.. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 

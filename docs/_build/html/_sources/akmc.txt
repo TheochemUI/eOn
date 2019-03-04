@@ -1,0 +1,124 @@
+
+.. _akmc:
+
+================================
+Adaptive kinetic Monte Carlo
+================================
+
+The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
+molecular dynamics for rare event systems. [#henkelman11_9657]_ [#xu08_114104]_
+A rare event system is one in which
+the interesting dynamics is governed by short transitions between stable
+states.  The fast vibrational motion within a stable state is considered to be
+in equilibrium and described statisitcally.  A transition between states is
+assumed to be first order, since it is a rare events, and the rate of the
+transition is calculated from the harmonic approximation to transition state
+theory (hTST).
+
+The hTST approximation of a transition rate is calculated from the energy
+difference between the saddle point along the minimum energy path for the
+transition and the initial minimum.  The vibrational modes at these points are
+also used to calculate the prefactor.  An hTST rate is of the standard
+Arrhenius form :math:`R = v \exp (-\Delta E/kT)` where :math:`v` is the product
+of all positive modes at the minimum divided by those at the saddle,
+:math:`\Delta E` is the energy barrier, and :math:`kT` is the thermal enregy.
+
+In order to propogate the dynamics within aKMC, a list of all possible rates
+leading away from the current stable state to any other state is required.
+Formally, there are an enourmously large number of such transitions (also
+called processes) available in a typical atomic system, but in fact only the
+transitions with the fastest rates with the highest probability of happening
+are required.  The search for processes is then limited to those with rates on
+the same order as the fastest processes found.
+
+The search for possible processes is the primary task of the aKMC simulations.
+Each client does a minimum mode (minmode) following search from the miminum of
+the current state and tries to find a saddle point which connects from the
+minimum in the current state to an adjacent state. [#henkelman99_7010]_
+A saddle point is connected
+to a state if a minimization initiated along the negative mode at the saddle
+converges to the minimum of that state.
+
+Each client is tasked with one or more such searches.  It climbs from the
+minimum to a saddle, and if successful, it minimizes on either side of the
+saddle to determine the connecting states.  The prefactor for the transition is
+also calculated by finite difference and the hTST rate is calculated.  These
+data are reported back to the server.
+
+The server is reponsible for the time evolution of the system by the KMC
+algorithm.  Each process leading to a new state is tabulated in a rate table
+and one transition is selected stochastically with a probability proportional
+to its rate.  The transition time is drawn from a first-order distribution for
+the total rate of escape from the state.
+
+The following describes options for running an aKMC simulation, including both
+KMC options on the server-side and minmode following saddle point searching
+options on the client-side.  Each option is specified in the config.ini file
+under the section name given.  Default values for each option is given along
+with a brief description.
+
+
+- :ref:`Process Search <process_search>`
+
+- :ref:`Saddle Search <saddle_search>`
+
+- Min-Mode Methods
+    - :ref:`Dimer <dimer>`
+
+    - :ref:`Lanczos <lanczos>`
+
+- :ref:`Hessian <hessian>`
+
+
+[AKMC] Options
+==============
+
+**confidence_scheme**
+
+    default: ``new``
+     options: old, new
+
+**confidence**: The confidence (out of 1.0) criterion for moving to the next
+state.
+
+    default: ``0.99``
+
+**confidence_correction**:
+
+    default: ``False``
+
+**thermally_accessible_window**: Processes with barriers within this number of
+kT above the lowest barrier will be used in the rate table and for confidence
+calculations.
+
+    default: ``20.0``
+
+**thermally_accessible_buffer**: Processes with barriers of
+thermally_accessible_window + thermally_accessible_buffer will be stored , in
+the event that they are thermally accessible later, but are not used in the
+rate table or for the confidence calculations. Processes with barriers higher
+than the sum of these two values will be discarded.
+
+    default: ``0.0``
+
+**server_side_process_search**: If true the server does not send out
+"process_search" jobs instead it manages individual dimer, minimization, and
+hessian calculations. This option is usually used when a single
+"process_search" job will take a long time (hours or longer).
+
+    default: ``False``
+
+**max_kmc_steps**: The maximum number of KMC transitions in a row.  In
+MPI or continuous mode, EON will exit after performing this many KMC
+steps. If this is set to 0, EON will run forever.
+
+    default: ``0``
+
+
+.. rubric:: References
+
+.. [#henkelman11_9657] G. Henkelman and H. Jónsson, "Long time scale kinetic Monte Carlo simulations without lattice approximation and predefined event table" *J. Chem. Phys.* **115**, 9657-9666 (2001). doi:`10.1063/1.1415500 <http://dx.doi.org/10.1063/1.1415500>`_
+
+.. [#xu08_114104] L. Xu and G. Henkelman, "Adaptive kinetic Monte Carlo for first-principles accelerated dynamics" *J. Chem. Phys.* **129**, 114104 (2008).  doi:`10.1063/1.2976010 <http://dx.doi.org/10.1063/1.2976010>`_
+
+.. [#henkelman99_7010] G. Henkelman and H. Jónsson, "A dimer method for finding saddle points on high dimensional potential surfaces using only first derivatives" *J. Chem. Phys.* **111**, 7010-7022 (1999).

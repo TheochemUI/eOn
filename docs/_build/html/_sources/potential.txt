@@ -1,0 +1,65 @@
+
+.. _potential:
+
+=========
+Potential
+=========
+
+
+**potential**: the type of potential to execute
+
+    default: ``lj``
+
+    options:
+
+        ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface. [#vasp]_
+
+        ``lammps``: The LAMMPS potentials. Detailed documentation can be found
+         on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
+
+        ``eam_al``: Embedded atom method parameterized for aluminum.
+
+        ``qsc``: Quantum Sutton-Chen potential, for FCC metals. 
+
+        ``bopfox``: Bond order potential, for metals. 
+
+        ``emt``: Effective medium theory, for metals. 
+
+        ``lj``: Lennard-Jones potential in reduced unit [#lj]_
+
+        ``morse_pt``: Morse potential for platinum. 
+
+        ``lenosky_si``: Lenosky potential, for silicon. [#lenosky]_
+
+        ``sw_si``: Stillinger-Weber potential, for silicon. [#swsi]_
+
+        ``tersoff_si``: Tersoff pair potential with angular terms, for silicon. [#tersoff]_
+
+        ``edip``: Environment-Dependent Interatomic Potential, for carbon.
+        [#edip]_
+
+        ``zpice``: Water on platinum. 
+
+        ``tip4p``: Point charge model for water. [#tip4p]_
+
+        ``mpi``: Communicate with a MPI process to calculate energy and
+                 forces. More information can be found on the 
+                 :ref:`MPI Potential<mpi_potential>` page.
+
+        ``terminalpotential``: Writes box size and coordinates to the file 'from_eon_to_terminal'
+			       Make a system call for the binary 'eon_terminal'
+			       Reads return energy of forces from the file 'from_terminal_to_eon'
+
+**log_potential**: If true write timing information about each force call to client.log
+
+    default: ``true`` if ``potential`` is ``mpi``, ``vasp``, ``bop``,  or ``bopfox``
+             otherwise ``false``
+
+.. [#vasp] Georg, Kresse, `"VASP Group, Theoretical Physics Departments, Vienna" <http://cms.mpi.univie.ac.at/vasp/>`_
+.. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 
+.. [#lj] Lennard-Jones, J. E. Proc. R. Soc. Lond.A **106** (738): 463–477  doi:`10.1098/rspa.1924.0082 <http://dx.doi.org/10.1098%2Frspa.1924.0082>`_
+.. [#lenosky] T.J. Lenosky et.al., Modelling Simul. Mater. Sci. Eng., **8**,  825 (2000) doi:`10.1088/0965-0393/8/6/305 <http://dx.doi.org/10.1088/0965-0393/8/6/305>`_
+.. [#swsi] Frank H. Stillinger and Thomas A. Weber, Phys. Rev. B **31**, 5262–5271 (1985) doi:`10.1103/PhysRevB.31.5262 <http://link.aps.org/doi/10.1103/PhysRevB.31.5262>`_ 
+.. [#tersoff] J. Tersoff, Phys. Rev. B **38**, 9902–9905 (1988) doi:`10.1103/PhysRevB.38.9902 <http://link.aps.org/doi/10.1103/PhysRevB.38.9902>`_ 
+.. [#edip] João F. Justo et.al., Phys. Rev. B **58**, 2539–2550 (1998) doi:`10.1103/PhysRevB.58.2539 <http://link.aps.org/doi/10.1103/PhysRevB.58.2539>`_
+.. [#tip4p] Jorgensen, W. L. et.al, J. Chem. Phys 1983, **79**, 926-935. doi:`10.1063/1.445869 <http://dx.doi.org/10.1063%2F1.445869>`_

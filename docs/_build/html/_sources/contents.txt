@@ -1,0 +1,53 @@
+.. eOn documentation master file, created by
+   sphinx-quickstart on Tue Nov 30 14:44:45 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Contents
+===============================
+
+.. toctree::
+   :maxdepth: 2
+
+   eon
+   download
+   installation
+   documentation
+
+   akmc
+   parallel_replica
+   basin_hopping
+
+   prefactor
+   process_search
+   saddle_search
+   hessian
+   dynamics
+   hyperdynamics
+
+   main
+   communicator
+   potential
+   mpi_potential
+   lammps_potential
+   optimizer
+   structure_comparison
+   paths
+   debug
+
+   tutorials
+   tutorial_akmc
+   tutorial_parrep
+   tutorial_basin_hopping
+
+   minimization
+   neb
+
+   dimer
+   lanczos
+   coarse_graining
+   kdb
+   recycling
+   server_config
+   index
+

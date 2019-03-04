@@ -1,0 +1,63 @@
+
+.. _prefactor:
+
+=========
+Prefactor
+=========
+
+
+[Prefactor] Options
+-------------------
+
+**all_free_atoms**: Account for all free atoms when determining the prefactor.
+
+    default: ``false``
+    
+**filter_scheme**: Determines how to filter the atoms for use in the prefactor calculation.
+The two options are "cutoff", which includes atoms that move more than "min_displacement",
+and "fraction", which includes the atoms that make up "filter_fraction" of the total motion, 
+prioritizing the atoms that move the most.
+
+    default: ``fraction``
+    
+**filter_fraction**: When using filter_scheme "fraction", the atoms that move the most will be
+included in the prefactor calculation, limited to the number that make up "filter_fraction" of
+the total motion.
+
+    default: ``0.9``
+
+**min_displacement**: Minimum amount that an atom has to move to be included in
+the Hessian calculation. Used only with filter_scheme "cutoff"
+
+    default: ``0.25``
+
+**within_radius**: Atoms within this radius of moving atoms are included in the
+Hessian. Used only with filter_scheme "cutoff"
+
+    default: ``3.3``
+
+**default_value**: Calculate prefactor if zero, otherwise use given value
+instead of doing a full prefactor calculation.
+
+    default: ``0``
+
+**min_value**: Minimum value for a reasonable prefactor.
+
+    default: ``1e+9``
+
+
+**max_value**: Maximum value for a reasonable prefactor.
+
+    default: ``1e+21``
+
+**configuration**: When EON runs as a prefactor job the eigenfrequencies 
+will be determined for the stated configuration.
+
+    default: ``reactant``
+
+    options:
+        ``reactant``
+        ``saddle``
+        ``product``
+        
+

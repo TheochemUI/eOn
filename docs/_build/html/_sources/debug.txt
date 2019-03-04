@@ -1,0 +1,50 @@
+.. _debug:
+
+=====
+Debug
+=====
+
+[Debug] Options
+===============
+
+**save_stdout**: Save the standard output from the client to a file named stdout_0.dat
+
+    default: ``False``
+
+**interactive_shell**:
+
+    default: ``True``
+
+**result_files_path**: Where to store all result files. Defaults to 'debug_results'.
+
+    default: ``./debug_results/``
+
+**use_mean_time**: Select transition times from the mean of the exponential distribution of escape times.
+
+    default: ``False``
+
+**register_extra_results**: Register processes found for a state after leaving that state.
+
+    default: ``False``
+
+**target_trajectory**: Follow the state-to-state trajectory of another akmc simulation.
+
+    default: ``False``
+
+**keep_bad_saddles**: Keep data about bad saddles. If true, the result files for failed saddle searches are kept in the badprocdata directory within the state directory for that search.
+
+    default: ``False``
+
+**keep_all_result_files**: Stores all result files in main_directory/results
+
+    default: ``False``
+
+**write_movies**: Output a movie of the calculation
+
+    default: ``False``
+
+**write_movies_interval**: Write a movie frame every write_movie_intervals steps.
+
+    default: ``1``
+
+

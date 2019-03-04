@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Parallel Replica &mdash; EON: Long Timescale Dynamics</title>
+    <link rel="stylesheet" href="_static/henk.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://theory.cm.utexas.edu/MathJax/MathJax.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="EON: Long Timescale Dynamics" href="index.html" />
+    <link rel="next" title="Basin Hopping" href="basin_hopping.html" />
+    <link rel="prev" title="Adaptive kinetic Monte Carlo" href="akmc.html" />
+  </head>
+  <body>
+    <div class="related">
+            <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
+        <div class="toprightsearch" style="float:right; position: relative; top: 30px">
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+
+      <!-- <h3>Navigation</h3> -->
+      <ul>
+        <li><a href="index.html"><img class="logo" src="_static/eon_logo.png" alt="EON logo"style="position:relative; left: -240px ; top: 0px"/></a></li>
+
+    <!-- <li>  &raquo; <a href="download.html">Download</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="setups/setups.html">Setups</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="tutorials/tutorials.html">Tutorials</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="documentation/documentation.html">Documentation</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="performance.html">Performance</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="faq.html">FAQ</a> &raquo;</li> -->
+<!--        <li>  &raquo; <a href="contents.html">Contents</a> &raquo;</li> -->
+        <!-- <li>  &raquo; <a href="genindex.html">Index</a> &raquo;</li> -->
+    
+
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="parallel-replica">
+<span id="id1"></span><h1>Parallel Replica<a class="headerlink" href="#parallel-replica" title="Permalink to this headline">¶</a></h1>
+<p>Parallel Replica dynamics (PRD) is the simplest and the accurate way to
+accelerate a molecular dynamics simulation. <a class="footnote-reference" href="#voter98-13985" id="id2">[1]</a> The only
+assumption made in this method is that the reactions satisfy first order kinetics.</p>
+<div class="math">
+\[\mathrm{Pr}(t) = k \exp (-k t)\]</div>
+<p>PRD boosts the simulation linearly with the number of replicas and can be
+easily combined with other methods for extending the MD time scale, e.g.
+the hyperdynamics method, giving a multiplicative effect in the time scales that can be achieved.</p>
+<p>In the PRD approach,  N replicas of the system are made at first and then the
+momentum in each replica is randomized and dephasing stage is employed to
+decorrelate their motions. The simulation clock starts after this dephasing
+stage and stops when the first transition is detected in any of replicas.
+Because those N trajectories are independent, they can explore the phase space
+N times faster than using a single trajectory. The overall simulation clock is
+advanced by the sum of all the simulation times in replicas.</p>
+<p>In order to work with distributed computing, we have modified the traditional
+scheme for running PRD. The replica generating and dephasing stage is exactly
+the same.  However, we make all replicas run the same number of MD steps to
+avoid biasing the successful transition trajectories. In other words, results
+will only be reported back when the clients finish their full trajectories. The
+server increments the simulation time <span class="math">\(t\)</span> until the first transition
+occurs.</p>
+<p>In order to run Parallel Replica, set <strong>job</strong> to <em>parallel_replica</em> in the
+<strong>[Main]</strong> section. For regular MD the stepsize and length of the trajactory and
+parameters of thermostat can be set in the <strong>[Dynamics]</strong> section. The temperature
+for the dynamics run is set in the <strong>[Main]</strong> section.</p>
+<div class="section" id="parallel-replica-options">
+<h2>[Parallel Replica] Options<a class="headerlink" href="#parallel-replica-options" title="Permalink to this headline">¶</a></h2>
+<p><strong>dephase_time</strong>:  Time (in fs) to decorrelate the replica trajectories. The momenta will be inverted when reaching the dividing surface to prevent transitions occurring during this time.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">1000.0</span></tt></div></blockquote>
+<p><strong>state_check_interval</strong>: How frequently the state of system is checked (in fs). Every state_check_interval, the current configuration is minized and compared to the initial state minimum to decide if a transition to a new state has occured. When refine_transition is set to true, the code will keep a buffer of configurations is saved so that the transition time can be determined to more precision than state_check_interval.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">1000.0</span></tt></div></blockquote>
+<p><strong>refine_transition</strong>: Whether or not the transition time is refined. When this option is true, an array of (state_check_interval/state_save_interval) configurations along the history of the trajectory is saved. A Binary search is then used to determine the transition time.  Then this option is false, the transition time is taken to be when the new state was found. This function reduces the need for small values of state_check_interval; the precision of the transition time is state_save_interval*time_step.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">True</span></tt></div></blockquote>
+<p><strong>state_save_interval</strong>: How often the system is recorded to the buffer array when the refine_transition option is activated. Increasing the value of state_save_interval lowers the precision of the transition time estimate but also reduces memory usage and speeds up refinement of the transition step.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">0.1*state_check_interval</span></tt></div></blockquote>
+<p><strong>post_transition_time</strong>: Additional this amount of <tt class="docutils literal"><span class="pre">fs</span></tt> which will be performed after a new state has been found. A state check will be employed after this post_transition_time to confirm that the state is stable. This additional check helps avoid meta-stable states. A value similar to dephase_interval is recommended.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">1000.0</span></tt></div></blockquote>
+<p><strong>stop_after_transition</strong>: Whether or not stop the job when a new state is found.</p>
+<blockquote>
+<div>default: <tt class="docutils literal"><span class="pre">False</span></tt></div></blockquote>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="voter98-13985" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>A.F. Voter, &#8220;Parallel replica method for dynamics of infrequent events” <em>Phys. Rev. B</em> <strong>57</strong>, 13985 (1998). doi:<a class="reference external" href="http://link.aps.org/doi/10.1103/PhysRevB.57.R13985">10.1103/PhysRevB.57.R13985</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+          <h3><a href="index.html">EON</a></h3>
+      <ul class="this-page-menu">
+        <li><a href="download.html">Download</a></li>
+        <li><a href="installation.html">Installation</a></li>
+        <li><a href="tutorials.html">Tutorials</a></li>
+        <li><a href="documentation.html">Documentation</a></li>
+      </ul>
+      <h3>Development</h3>
+      <ul class="this-page-menu">
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/repository">Source Code Browser</a></li>
+            <li><a href="http://theory.cm.utexas.edu/redmine/projects/eon/issues">Bug Tracker</a></li>
+          </ul>
+            <h3>This page</h3>
+            <ul>
+<li><a class="reference internal" href="#">Parallel Replica</a><ul>
+<li><a class="reference internal" href="#parallel-replica-options">[Parallel Replica] Options</a></li>
+</ul>
+</li>
+</ul>
+
+      <!-- Where does one find this "prev" variable?
+      
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="akmc.html"
+            title="previous chapter">Adaptive kinetic Monte Carlo</a></p>
+        -->
+            <ul class="this-page-menu">
+              <li><a href="_sources/parallel_replica.txt">Page Source</a></li> <!-- label changed from "Show source" to avoid confusion with the source code svn link -->
+            </ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<!-- 
+Remove footer.  Sphinx will actually parse anything with curly braces even if
+it is inside a comment.  The footer can be added by removing this comment
+and replacing [] by corresponding curly brackets
+[%- block relbar2 %][[ relbar() ]][% endblock %] 
+-->
+    <div class="footer">
+<!--
+      <div class="sidebarfooter">
+        <a href="http://validator.w3.org/check?uri=http://wiki.fysik.dtu.dk/gpaw/parallel_replica.html">
+          <img src="http://www.w3.org/Icons/valid-xhtml10"
+            alt="Valid XHTML 1.0 Transitional" height="31" width="88" />
+        </a>
+      </div>
+      &copy; Copyright 2010,  .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.2.-->
+    </div>
+  </body>
+</html>

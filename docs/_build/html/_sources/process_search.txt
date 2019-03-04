@@ -1,0 +1,27 @@
+
+.. _process_search:
+
+==============
+Process Search
+==============
+
+The AKMC method can ask clients to do a saddle search, find connecting minima, and calculate prefactors all within the Process Search job type.
+
+[Process Search] Options
+-------------------------
+
+**minimization_offset**: After a saddle is found, images are placed on either
+side of the saddle along the mode and minimized to ensure that the saddle is
+connected to the original minimum and to locate the product state. This is the
+distance those images are displaced from the saddle.
+
+    type: float
+
+    default: ``[Optimizer] max_move``
+
+**minimize_first**: Every time a process search is run by a client the reactant
+will be minimized first before doing any saddle searches.
+
+    type: boolean
+
+    default: ``True``
