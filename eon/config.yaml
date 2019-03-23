@@ -994,6 +994,10 @@ Saddle Search:
             kind: float
             default: 0.0
             
+        void_bias_fraction:
+            kind: float
+            default: 0.0
+            
         random_mode:
             kind: boolean
             default: True
