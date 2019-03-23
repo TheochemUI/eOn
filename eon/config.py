@@ -258,6 +258,7 @@ def init(config_file = ""):
     config.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
     config.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
     config.disp_min_norm = parser.getfloat('Saddle Search', 'displace_min_norm')
+    config.void_bias_fraction = parser.getfloat('Saddle Search', 'void_bias_fraction')
     config.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
     config.random_mode = parser.getboolean('Saddle Search', 'random_mode')
     if config.displace_listed_atom_weight != 0.0:

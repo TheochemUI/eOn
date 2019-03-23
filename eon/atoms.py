@@ -57,7 +57,7 @@ def pbc(r, box, ibox = None):
         box:    the box that defines the boundary conditions
         ibox:   the inverse of the box. This will be calcluated if not provided.
     """
-    if ibox is None:    
+    if ibox is None:
         ibox = numpy.linalg.inv(box)
     vdir = numpy.dot(r, ibox)
     vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
@@ -71,7 +71,7 @@ def per_atom_norm(v, box, ibox = None):
         ibox:   the inverse of the box. will be calculated if not provided
     '''
     diff = pbc(v, box, ibox)
-    return numpy.sqrt(numpy.sum(diff**2.0, axis=1)) 
+    return numpy.sqrt(numpy.sum(diff**2.0, axis=1))
 
 def per_atom_norm_gen(v, box, ibox = None):
     '''
@@ -86,7 +86,7 @@ def per_atom_norm_gen(v, box, ibox = None):
 
 def get_process_atoms(r, p, epsilon_r=0.2, nshells=1):
     '''
-    Given the reactant and product configurations of a process, return 
+    Given the reactant and product configurations of a process, return
     the atoms that move significantly and their neighbors along the trajectory.
     '''
     mobileAtoms = []
@@ -128,7 +128,7 @@ def identical(atoms1, atoms2):
             if abs(atoms1.box[i][j] - atoms2.box[i][j]) > .0001:
                 logger.warning("Identical returned false because boxes were not the same")
                 return False
-    box = atoms1.box 
+    box = atoms1.box
     ibox = numpy.linalg.inv(box)
 
     mismatch = []
@@ -203,8 +203,8 @@ def sweep_and_prune(p_in, cutoff, strict = True, bc = True):
                 if p.box[axis][axis] - sorted_axis[i][1][axis] < cutoff:
                     dist = min(dist, (p.box[axis][axis] - sorted_axis[i][1][axis]) + sorted_axis[j][1][axis])
                 if dist < cutoff:
-                    intersect_axis[sorted_axis[i][0]].append(sorted_axis[j][0]) 
-                    intersect_axis[sorted_axis[j][0]].append(sorted_axis[i][0]) 
+                    intersect_axis[sorted_axis[i][0]].append(sorted_axis[j][0])
+                    intersect_axis[sorted_axis[j][0]].append(sorted_axis[i][0])
                     j += 1
                     if not bc and j >= numatoms:
                         done = True
@@ -236,13 +236,26 @@ def neighbor_list(p, cutoff, brute=False):
         nl = sweep_and_prune(p, cutoff)
     return nl
 
+def neighbor_list_vectors(p, cutoff, brute=False):
+    '''Points from center to neighbor'''
+    nl = neighbor_list(p, cutoff, brute=brute)
+    nl_vec = []
+    
+    ibox = numpy.linalg.inv(p.box)
+    for center_index in range(len(p)):
+        nl_vec.append([])
+        for neighbor_index in nl[center_index]:
+            vec = pbc(p.r[neighbor_index] - p.r[center_index], p.box, ibox)
+            nl_vec[center_index].append(vec)
+    return nl_vec
+
 def coordination_numbers(p, cutoff, brute=False):
     """ Returns a list of coordination numbers for each atom in p """
     nl = neighbor_list(p, cutoff, brute)
     return [len(l) for l in nl]
 
 def least_coordinated(p, cutoff, brute=False):
-    """ Returns a list of atom indices in p with the lowest coordination numbers 
+    """ Returns a list of atom indices in p with the lowest coordination numbers
         for unfrozen atoms"""
     cn = coordination_numbers(p, cutoff, brute)
     maxcoord = max(cn)
@@ -295,12 +308,12 @@ def rot_match(a, b):
         logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
-    
+
     ta = a.copy()
     tb = b.copy()
     ta.r -= acm
     tb.r -= bcm
-    
+
     #Horn, J. Opt. Soc. Am. A, 1987
     m = numpy.dot(tb.r.transpose(), ta.r)
     sxx = m[0][0]
@@ -352,13 +365,13 @@ def rot_match(a, b):
     cd = maxv[2]*maxv[3]
 
     R[0][0] = aa + bb - cc - dd
-    R[0][1] = 2*(bc-ad) 
-    R[0][2] = 2*(bd+ac) 
-    R[1][0] = 2*(bc+ad) 
+    R[0][1] = 2*(bc-ad)
+    R[0][2] = 2*(bd+ac)
+    R[1][0] = 2*(bc+ad)
     R[1][1] = aa - bb + cc - dd
-    R[1][2] = 2*(cd-ab) 
-    R[2][0] = 2*(bd-ac) 
-    R[2][1] = 2*(cd+ab) 
+    R[1][2] = 2*(cd-ab)
+    R[2][0] = 2*(bd-ac)
+    R[2][1] = 2*(cd+ab)
     R[2][2] = aa - bb - cc + dd
     tb.r = numpy.dot(tb.r, R.transpose())
 
@@ -409,7 +422,7 @@ def rotm(axis, theta):
 
 
 def cna(p, cutoff, brute=False):
-    """ Returns a list of cna numbers for all atoms in p 
+    """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     can_values = numpy.zeros(len(p))
     nr_FCC = numpy.zeros(len(p))
@@ -473,7 +486,7 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
 
 # ### TShacked start
 def cnat(p, cutoff, brute=False):
-    """ Returns a list of cna numbers for all atoms in p 
+    """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     can_values = numpy.zeros(len(p))
     nr_5 = numpy.zeros(len(p))
@@ -533,7 +546,7 @@ def cnat(p, cutoff, brute=False):
     return can_values
 
 def cnar(p, cutoff, brute=False):
-    """ Returns a list of cna numbers for all atoms in p 
+    """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     # not compatible with older python versions
     #cna = {i:{} for i in range(len(p))}
@@ -582,7 +595,7 @@ def cnar(p, cutoff, brute=False):
                     cna[a2][code] = 0
                 cna[a2][code] += 1
 
-    return cna        
+    return cna
 
 
 def not_TCP(p, cutoff, brute=False):
@@ -692,7 +705,7 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
                     if newMappings is not None:
                         return newMappings
         # There were no mappings.
-        return None 
+        return None
 
 def get_rotation_matrix(axis, theta):
     axis = axis / numpy.linalg.norm(axis)
@@ -849,20 +862,19 @@ elements[ 99] = elements[ 'Es'] = {'symbol':  'Es', 'name':   'einsteinium', 'ma
 elements[100] = elements[ 'Fm'] = {'symbol':  'Fm', 'name':       'fermium', 'mass': 257.00000000, 'radius':  1.6700, 'color': [0.702, 0.122, 0.729], 'number': 100}
 elements[101] = elements[ 'Md'] = {'symbol':  'Md', 'name':   'mendelevium', 'mass': 258.00000000, 'radius':  1.7300, 'color': [0.702, 0.051, 0.651], 'number': 101}
 elements[102] = elements[ 'No'] = {'symbol':  'No', 'name':      'nobelium', 'mass': 259.00000000, 'radius':  1.7600, 'color': [0.741, 0.051, 0.529], 'number': 102}
-elements[103] = elements[ 'Lr'] = {'symbol':  'Lr', 'name':    'lawrencium', 'mass': 262.00000000, 'radius':  1.6100, 'color': [0.780, 0.000, 0.400], 'number': 103}
-elements[104] = elements[ 'Rf'] = {'symbol':  'Rf', 'name': 'rutherfordium', 'mass': 261.00000000, 'radius':  1.5700, 'color': [0.800, 0.000, 0.349], 'number': 104}
-elements[105] = elements[ 'Db'] = {'symbol':  'Db', 'name':       'dubnium', 'mass': 262.00000000, 'radius':  1.4900, 'color': [0.820, 0.000, 0.310], 'number': 105}
-elements[106] = elements[ 'Sg'] = {'symbol':  'Sg', 'name':    'seaborgium', 'mass': 266.00000000, 'radius':  1.4300, 'color': [0.851, 0.000, 0.271], 'number': 106}
-elements[107] = elements[ 'Bh'] = {'symbol':  'Bh', 'name':       'bohrium', 'mass': 264.00000000, 'radius':  1.4100, 'color': [0.878, 0.000, 0.220], 'number': 107}
-elements[108] = elements[ 'Hs'] = {'symbol':  'Hs', 'name':       'hassium', 'mass': 277.00000000, 'radius':  1.3400, 'color': [0.902, 0.000, 0.180], 'number': 108}
-elements[109] = elements[ 'Mt'] = {'symbol':  'Mt', 'name':    'meitnerium', 'mass': 268.00000000, 'radius':  1.2900, 'color': [0.922, 0.000, 0.149], 'number': 109}
-elements[110] = elements[ 'Ds'] = {'symbol':  'Ds', 'name':            'Ds', 'mass': 271.00000000, 'radius':  1.2800, 'color': [0.922, 0.000, 0.149], 'number': 110}
-elements[111] = elements['Uuu'] = {'symbol': 'Uuu', 'name':           'Uuu', 'mass': 272.00000000, 'radius':  1.2100, 'color': [0.922, 0.000, 0.149], 'number': 111}
-elements[112] = elements['Uub'] = {'symbol': 'Uub', 'name':           'Uub', 'mass': 285.00000000, 'radius':  1.2200, 'color': [0.922, 0.000, 0.149], 'number': 112}
-elements[113] = elements['Uut'] = {'symbol': 'Uut', 'name':           'Uut', 'mass': 284.00000000, 'radius':  1.3600, 'color': [0.922, 0.000, 0.149], 'number': 113}
-elements[114] = elements['Uuq'] = {'symbol': 'Uuq', 'name':           'Uuq', 'mass': 289.00000000, 'radius':  1.4300, 'color': [0.922, 0.000, 0.149], 'number': 114}
-elements[115] = elements['Uup'] = {'symbol': 'Uup', 'name':           'Uup', 'mass': 288.00000000, 'radius':  1.6200, 'color': [0.922, 0.000, 0.149], 'number': 115}
-elements[116] = elements['Uuh'] = {'symbol': 'Uuh', 'name':           'Uuh', 'mass': 292.00000000, 'radius':  1.7500, 'color': [0.922, 0.000, 0.149], 'number': 116}
-elements[117] = elements['Uus'] = {'symbol': 'Uus', 'name':           'Uus', 'mass': 294.00000000, 'radius':  1.6500, 'color': [0.922, 0.000, 0.149], 'number': 117}
-elements[118] = elements['Uuo'] = {'symbol': 'Uuo', 'name':           'Uuo', 'mass': 296.00000000, 'radius':  1.5700, 'color': [0.922, 0.000, 0.149], 'number': 118}
-
+elements[103] = elements[ 'Lr'] = {'symbol':  'Lr', 'name':    'lawrencium', 'mass': 266.00000000, 'radius':  1.6100, 'color': [0.780, 0.000, 0.400], 'number': 103}
+elements[104] = elements[ 'Rf'] = {'symbol':  'Rf', 'name': 'rutherfordium', 'mass': 267.00000000, 'radius':  1.5700, 'color': [0.800, 0.000, 0.349], 'number': 104}
+elements[105] = elements[ 'Db'] = {'symbol':  'Db', 'name':       'dubnium', 'mass': 268.00000000, 'radius':  1.4900, 'color': [0.820, 0.000, 0.310], 'number': 105}
+elements[106] = elements[ 'Sg'] = {'symbol':  'Sg', 'name':    'seaborgium', 'mass': 269.00000000, 'radius':  1.4300, 'color': [0.851, 0.000, 0.271], 'number': 106}
+elements[107] = elements[ 'Bh'] = {'symbol':  'Bh', 'name':       'bohrium', 'mass': 270.00000000, 'radius':  1.4100, 'color': [0.878, 0.000, 0.220], 'number': 107}
+elements[108] = elements[ 'Hs'] = {'symbol':  'Hs', 'name':       'hassium', 'mass': 270.00000000, 'radius':  1.3400, 'color': [0.902, 0.000, 0.180], 'number': 108}
+elements[109] = elements[ 'Mt'] = {'symbol':  'Mt', 'name':    'meitnerium', 'mass': 278.00000000, 'radius':  1.2900, 'color': [0.922, 0.000, 0.149], 'number': 109}
+elements[110] = elements[ 'Ds'] = {'symbol':  'Ds', 'name':  'darmstadtium', 'mass': 281.00000000, 'radius':  1.2800, 'color': [0.922, 0.000, 0.149], 'number': 110}
+elements[111] = elements[ 'Rg'] = {'symbol':  'Rg', 'name':   'roentgenium', 'mass': 282.00000000, 'radius':  1.2100, 'color': [0.922, 0.000, 0.149], 'number': 111}
+elements[112] = elements[ 'Cn'] = {'symbol':  'Cn', 'name':   'copernicium', 'mass': 285.00000000, 'radius':  1.2200, 'color': [0.922, 0.000, 0.149], 'number': 112}
+elements[113] = elements[ 'Nh'] = {'symbol':  'Nh', 'name':      'nihonium', 'mass': 286.00000000, 'radius':  1.3600, 'color': [0.922, 0.000, 0.149], 'number': 113}
+elements[114] = elements[ 'Fl'] = {'symbol':  'Fl', 'name':     'flerovium', 'mass': 289.00000000, 'radius':  1.4300, 'color': [0.922, 0.000, 0.149], 'number': 114}
+elements[115] = elements[ 'Mc'] = {'symbol':  'Mc', 'name':     'moscovium', 'mass': 290.00000000, 'radius':  1.5800, 'color': [0.922, 0.000, 0.149], 'number': 115}
+elements[116] = elements[ 'Lv'] = {'symbol':  'Lv', 'name':   'livermorium', 'mass': 293.00000000, 'radius':  1.6600, 'color': [0.922, 0.000, 0.149], 'number': 116}
+elements[117] = elements[ 'Ts'] = {'symbol':  'Ts', 'name':    'tennessine', 'mass': 294.00000000, 'radius':  1.5600, 'color': [0.922, 0.000, 0.149], 'number': 117}
+elements[118] = elements[ 'Og'] = {'symbol':  'Og', 'name':     'oganesson', 'mass': 294.00000000, 'radius':  1.5700, 'color': [0.922, 0.000, 0.149], 'number': 118}
