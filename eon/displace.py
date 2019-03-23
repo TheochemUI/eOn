@@ -18,7 +18,7 @@ class DisplacementManager:
                                  config.disp_magnitude, config.disp_radius,
                                  hole_epicenters=moved_atoms)
         if config.displace_under_coordinated_weight > 0:
-            self.under = Undercoordinated(self.reactant, 
+            self.under = Undercoordinated(self.reactant,
                                           config.disp_max_coord,
                                           config.disp_magnitude, config.disp_radius,
                                           hole_epicenters=moved_atoms,
@@ -49,7 +49,7 @@ class DisplacementManager:
                                            use_covalent=config.comp_use_covalent,
                                            covalent_scale=config.comp_covalent_scale)
         if config.displace_not_FCC_HCP_weight > 0:
-            self.not_FCC_HCP = NotFCCorHCP(self.reactant, 
+            self.not_FCC_HCP = NotFCCorHCP(self.reactant,
                                            config.disp_magnitude,
                                            config.disp_radius,
                                            hole_epicenters=moved_atoms,
@@ -57,7 +57,7 @@ class DisplacementManager:
                                            use_covalent=config.comp_use_covalent,
                                            covalent_scale=config.comp_covalent_scale)
         if config.displace_not_TCP_BCC_weight > 0:
-            self.not_TCP_BCC = NotTCPorBCC(self.reactant, 
+            self.not_TCP_BCC = NotTCPorBCC(self.reactant,
                                            config.disp_magnitude,
                                            config.disp_radius,
                                            hole_epicenters=moved_atoms,
@@ -65,7 +65,7 @@ class DisplacementManager:
                                            use_covalent=config.comp_use_covalent,
                                            covalent_scale=config.comp_covalent_scale)
         if config.displace_not_TCP_weight > 0:
-            self.not_TCP = NotTCP(self.reactant, 
+            self.not_TCP = NotTCP(self.reactant,
                                            config.disp_magnitude,
                                            config.disp_radius,
                                            hole_epicenters=moved_atoms,
@@ -91,7 +91,7 @@ class DisplacementManager:
         if total == 0.0:
             total = 1.0
             self.plist = [1.0/total]
-            self.random = Random(self.reactant, 
+            self.random = Random(self.reactant,
                                  config.disp_magnitude, config.disp_radius,
                                  hole_epicenters=moved_atoms)
         else:
@@ -159,6 +159,9 @@ class Displace:
         self.radius = radius
         self.hole_epicenters = hole_epicenters
 
+        ## mike w.
+        self.void_bias_fraction = config.void_bias_fraction
+
         # temporary numpy array of same size as self.reactant.r
         self.temp_array = numpy.zeros(self.reactant.r.shape)
 
@@ -186,7 +189,7 @@ class Displace:
             logger.debug("Displacement epicenter: %d" % atom_index)
             displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
-        # ensures that the total displacement vector exceeds a given length
+        # ensures that the total displacement vector exceeds a given length, but the current default is zero
         while (displacement_norm <= config.disp_min_norm):
             displacement = numpy.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
@@ -198,11 +201,49 @@ class Displace:
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
                 if config.displace_1d:
                     displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
-            displacement_norm = numpy.sqrt(numpy.sum(displacement.flatten()**2))
+            displacement_norm = numpy.linalg.norm(displacement)
+
+        ### Mike W.
+        ## this is a fraction of the total displacement magnitude so a small that
+        ## a hard coded value will not break things later. It's essentially 
+        ## negligible at this size.
+        if self.void_bias_fraction > 1e-6:
+
+
+            self.neighbor_list_vectors = atoms.neighbor_list_vectors(self.reactant, 
+                   self.radius, config.comp_brute_neighbors)
+
+#            print config.random_mode
+#            print sorted(displaced_atoms)
+#            print numpy.linalg.norm(displacement)
+
+#            for atom_index in displaced_atoms:
+#                print (atom_index)
+#                print (self.neighbors_list[atom_index])
+#                dist_list = []
+#                for vec in self.neighbor_list_vectors[atom_index]:
+#                    dist_list.append(numpy.linalg.norm(vec))
+#                print (dist_list)
+            
+            ## treats the nearest neighbors as repulsive, since I keep finding
+            ## interstitials
+            pseudoelectrostatic_force = numpy.zeros(self.reactant.r.shape)
+            for atom_index in displaced_atoms:                
+                for vec in self.neighbor_list_vectors[atom_index]:
+                    mag = numpy.linalg.norm(vec) + 1e-6 # I just want to prevent NaNs in perfectly symmetric situations
+                    pseudoelectrostatic_force[atom_index] += -vec/(mag**3)
+            # now we norm it for mixing
+            void_vec = pseudoelectrostatic_force/\
+                numpy.linalg.norm(pseudoelectrostatic_force)
+            
+            displacement = \
+                self.void_bias_fraction*displacement_norm*void_vec + \
+                (1 - self.void_bias_fraction)*displacement
+
 
         displacement_atoms = self.reactant.copy()
         displacement_atoms.r += displacement
-        
+
         if config.random_mode:
             displacement *= 0.0
             for i in range(len(displaced_atoms)):
@@ -211,7 +252,7 @@ class Displace:
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
                 if config.displace_1d:
                     displacement[displaced_atoms[i]] = displacement[displaced_atoms[i]] * [1,0,0]
-        
+
         displacement /= numpy.linalg.norm(displacement)
         return displacement_atoms, displacement/numpy.linalg.norm(displacement)
 
@@ -230,7 +271,7 @@ class Displace:
             logger.warning("No displaceable atoms found in the active region around atoms that moved in the previous transition;")
             logger.warning("  reverting to the full list of any displaceable atoms.")
             return epicenters
-            
+
         return new_epicenters
 
 class Undercoordinated(Displace):
@@ -249,8 +290,8 @@ class Undercoordinated(Displace):
         cns = atoms.coordination_numbers(self.reactant, self.coordination_distance)
 
         # Only allow displacements for atoms <= the maximum coordination and that are free.
-        self.undercoordinated_atoms = [ i for i in range(len(cns)) 
-                if cns[i] <= self.max_coordination and 
+        self.undercoordinated_atoms = [ i for i in range(len(cns))
+                if cns[i] <= self.max_coordination and
                     self.reactant.free[i] == 1]
 
         self.undercoordinated_atoms = self.filter_epicenters(self.undercoordinated_atoms)
@@ -290,7 +331,7 @@ class Leastcoordinated(Displace):
 
     def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
-        epicenter = self.leastcoordinated_atoms[numpy.random.randint(len(self.leastcoordinated_atoms))] 
+        epicenter = self.leastcoordinated_atoms[numpy.random.randint(len(self.leastcoordinated_atoms))]
         return self.get_displacement(epicenter)
 
 class ListedAtoms(Displace):
@@ -299,7 +340,7 @@ class ListedAtoms(Displace):
 
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
-        self.listed_atoms = [ i for i in config.disp_listed_atoms 
+        self.listed_atoms = [ i for i in config.disp_listed_atoms
                 if self.reactant.free[i] ]
         #print "self.listed_atoms:"
         #print self.listed_atoms
@@ -359,7 +400,7 @@ class Random(Displace):
 
         self.free_atoms = self.filter_epicenters(self.free_atoms)
 
-        if len(self.free_atoms) == 0: 
+        if len(self.free_atoms) == 0:
             raise DisplaceError("There are no free atoms in the reactant")
 
     def make_displacement(self):
@@ -376,7 +417,7 @@ class NotFCCorHCP(Displace):
 
         self.coordination_distance = cutoff
 
-        self.not_HCP_or_FCC_atoms = atoms.not_HCP_or_FCC(self.reactant, 
+        self.not_HCP_or_FCC_atoms = atoms.not_HCP_or_FCC(self.reactant,
                 self.coordination_distance)
 
         self.not_HCP_or_FCC_atoms = [ i for i in self.not_HCP_or_FCC_atoms
@@ -390,7 +431,7 @@ class NotFCCorHCP(Displace):
 
     def make_displacement(self):
         """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
-        epicenter = self.not_HCP_or_FCC_atoms[numpy.random.randint(len(self.not_HCP_or_FCC_atoms))] 
+        epicenter = self.not_HCP_or_FCC_atoms[numpy.random.randint(len(self.not_HCP_or_FCC_atoms))]
         return self.get_displacement(epicenter)
 
 class NotTCPorBCC(Displace):
@@ -401,7 +442,7 @@ class NotTCPorBCC(Displace):
 
         self.coordination_distance = cutoff
 
-        self.not_TCP_or_BCC_atoms = atoms.not_TCP_or_BCC(self.reactant, 
+        self.not_TCP_or_BCC_atoms = atoms.not_TCP_or_BCC(self.reactant,
                 self.coordination_distance)
 
         self.not_TCP_or_BCC_atoms = [ i for i in self.not_TCP_or_BCC_atoms
@@ -415,7 +456,7 @@ class NotTCPorBCC(Displace):
 
     def make_displacement(self):
         """Select an atom without TCP or BCC coordination and displace all atoms in a radius about it."""
-        epicenter = self.not_TCP_or_BCC_atoms[numpy.random.randint(len(self.not_TCP_or_BCC_atoms))] 
+        epicenter = self.not_TCP_or_BCC_atoms[numpy.random.randint(len(self.not_TCP_or_BCC_atoms))]
         return self.get_displacement(epicenter)
 
 class NotTCP(Displace):
@@ -426,7 +467,7 @@ class NotTCP(Displace):
 
         self.coordination_distance = cutoff
 
-        self.not_TCP_atoms = atoms.not_TCP(self.reactant, 
+        self.not_TCP_atoms = atoms.not_TCP(self.reactant,
                 self.coordination_distance)
 
         self.not_TCP_atoms = [ i for i in self.not_TCP_atoms
@@ -440,7 +481,7 @@ class NotTCP(Displace):
 
     def make_displacement(self):
         """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
-        epicenter = self.not_TCP_atoms[numpy.random.randint(len(self.not_TCP_atoms))] 
+        epicenter = self.not_TCP_atoms[numpy.random.randint(len(self.not_TCP_atoms))]
         return self.get_displacement(epicenter)
 
 class Water(Displace):
