@@ -126,6 +126,7 @@ class MinModeExplorer(Explorer):
         if config.kdb_on:
             displacement, mode = kdb.make_suggestion()
             if displacement:
+		displacement.mass = self.reactant.mass
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
 
