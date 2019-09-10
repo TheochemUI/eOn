@@ -3,19 +3,19 @@
 
 import os
 import math
-import ConfigParser
+import configparser
 import logging
 logger = logging.getLogger('state')
 
 import numpy
 
-import atoms
-import config
-import fileio as io
-import state
+from . import atoms
+from . import config
+from . import fileio as io
+from . import state
 
 class AKMCState(state.State):
-    ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
+    ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
     processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
     processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", 
                                                    "product", "product energy", "product prefactor",
@@ -48,7 +48,7 @@ class AKMCState(state.State):
         self.load_process_table()
         energy_a = barrier
         p1 = io.loadcon(saddle_file)
-        for id in self.procs.keys():
+        for id in list(self.procs.keys()):
             energy_b = self.procs[id]['barrier']
             if abs(energy_a - energy_b) > config.comp_eps_e:
                 continue
@@ -231,7 +231,7 @@ class AKMCState(state.State):
         # Maximum barrier according to thermal window.
         max_barrier = lowest + self.statelist.kT * self.statelist.thermal_window
         rt = [(id, proc['rate'], proc['prefactor'])
-              for id, proc in self.procs.iteritems()
+              for id, proc in self.procs.items()
               if proc['barrier'] <= max_barrier]
         if not superbasin:
             return rt
@@ -307,7 +307,7 @@ class AKMCState(state.State):
         prc = self.get_proc_random_count()
         if superbasin:
             prc = dict([proc, count]
-                       for proc, count in prc.iteritems()
+                       for proc, count in prc.items()
                        if self.procs[proc]["product"] not in superbasin.state_dict)
         alpha = 1.0
         if config.akmc_confidence_correction:
@@ -348,11 +348,11 @@ class AKMCState(state.State):
             if n < 10: return 0.0
 
             # probabilities
-            ps = numpy.array(repeats.values(),dtype=numpy.float)
+            ps = numpy.array(list(repeats.values()),dtype=numpy.float)
             ps /= sum(ps)
 
             C = numpy.zeros(m)
-            for i in xrange(n):
+            for i in range(n):
                 C += (1.0-C)*ps
 
             return sum(C)/float(m)
@@ -384,7 +384,7 @@ class AKMCState(state.State):
             total_rate_estimator = 0.0
             total_rate_found = 0.0
             T1 = config.main_temperature
-            for T2, T2_time in self.get_time_by_temp().iteritems():
+            for T2, T2_time in self.get_time_by_temp().items():
                 if T2_time == 0.0:
                     continue
 
@@ -466,7 +466,7 @@ class AKMCState(state.State):
             self.info.set('MetaData', 'kT', self.statelist.kT)
             return
         if abs(kT - self.statelist.kT) > 1e-8:
-            for id, proc in self.procs.items():
+            for id, proc in list(self.procs.items()):
                 proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
             self.save_process_table()            
                 
@@ -476,7 +476,7 @@ class AKMCState(state.State):
         if self.procs != None:
             f = open(self.proctable_path, 'w')
             f.write(self.processtable_header)
-            for id in self.procs.keys():
+            for id in list(self.procs.keys()):
                 proc = self.procs[id]
                 f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'],
                                                   proc['product'], proc['product_energy'],
@@ -556,7 +556,7 @@ class AKMCState(state.State):
         try:
             return dict([int(temp), float(time)]
                         for temp, time in self.info.items("SearchTime"))
-        except ConfigParser.NoSectionError:
+        except configparser.NoSectionError:
             # The "info" file seems to have been produced by an old
             # version of EON which didn't have the SearchTime
             # section. We simply upgrade and try again (no recursion
@@ -679,7 +679,7 @@ def lambertw(z):
     else:
         w = math.log(z)
     if z > 3.0: w-=math.log(w)
-    for i in xrange(10):
+    for i in range(10):
         e = math.exp(w)
         t = w * e - z
         p = w + 1.0

@@ -3,11 +3,11 @@ import os
 import logging
 logger = logging.getLogger('superbasinscheme')
 
-import config
+from . import config
 
 import sys
 
-import superbasin
+from . import superbasin
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
@@ -200,7 +200,7 @@ class TransitionCounting(SuperbasinScheme):
             data_path = os.path.join(start_state.path, config.sb_state_file)
             f = open(data_path, 'w')
             for end_state in self.count[start_state]:
-                print >> f, end_state.number, self.count[start_state][end_state]
+                print(end_state.number, self.count[start_state][end_state], f)
             f.close()
 
     def read_data(self):
@@ -308,6 +308,6 @@ class EnergyLevel(SuperbasinScheme):
         for i in self.levels:
             data_path = os.path.join(i.path, config.sb_state_file)
             f = open(data_path, 'w')
-            print >> f, "%f\n" % self.levels[i]
+            print("%f\n" % self.levels[i], f)
             f.close()
 

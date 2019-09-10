@@ -6,8 +6,8 @@ import glob
 import shutil
 import datetime
 from optparse import OptionParser
-import ConfigParser
-import commands
+import configparser
+import subprocess
 
 def initialize(rads, mags, searches):
     os.mkdir('original')
@@ -20,7 +20,7 @@ def initialize(rads, mags, searches):
     
 def restore():
     if not os.path.exists('original'):
-        print 'Nothing to restore!'
+        print('Nothing to restore!')
         return
     os.mkdir('samples/continue')
     things = glob.glob('*')
@@ -68,7 +68,7 @@ def store_sample(location):
 
 def print_table():
     samples = glob.glob('samples/*')
-    print '%10s  %10s  %10s  %s' % ('radius', 'magnitude', '#procs', '#goodsearch')
+    print('%10s  %10s  %10s  %s' % ('radius', 'magnitude', '#procs', '#goodsearch'))
     max_procs = 0
     for sample in samples:
         if not sample.startswith('samples/sample-'):
@@ -82,7 +82,7 @@ def print_table():
         total_searches = len(open('%s/states/0/search_results.txt' % sample, 'r').readlines()) - 2
         good_searches = sum([int(l.split()[8])+1 for l in open('%s/states/0/processtable' % sample, 'r').readlines()[1:]])
         procs = len(open('%s/states/0/processtable' % sample, 'r').readlines()) - 1
-        print '%10.5f  %10.5f  %10d  %d' % (rad, mag, procs, good_searches)
+        print('%10.5f  %10.5f  %10d  %d' % (rad, mag, procs, good_searches))
         
         
     
@@ -115,7 +115,7 @@ def main():
         mags = [float(m) for m in options.magnitudes.split(',')]
         searches = int(options.searches)
         initialize(rads, mags, searches)
-        print 'Initialized new akmc displacement sampling with radii %s, magnitudes %s, and performing %s searches per sample.' % (options.radii, options.magnitudes, options.searches)
+        print('Initialized new akmc displacement sampling with radii %s, magnitudes %s, and performing %s searches per sample.' % (options.radii, options.magnitudes, options.searches))
         return
         
     radi, rads, magi, mags, searches = read_metadata()
@@ -123,7 +123,7 @@ def main():
     # Make sure we're not finished sampling before continuing.
     if magi >= len(mags):
         print_table()
-        print 'Sampling complete.'
+        print('Sampling complete.')
         sys.exit(1)
         return
 
@@ -134,8 +134,8 @@ def main():
         # Initialize the next sample.
         for thing in glob.glob('original/*'):
             shutil.copy(thing, '.')
-        print 'Sampling with radius %f and magnitude %f' % (rad, mag)
-        parser = ConfigParser.SafeConfigParser()
+        print('Sampling with radius %f and magnitude %f' % (rad, mag))
+        parser = configparser.SafeConfigParser()
         parser.read('config.ini')
         parser.set('Saddle Search', 'displace_radius', str(rad))
         parser.set('Saddle Search', 'displace_magnitude', str(mag))
@@ -145,23 +145,23 @@ def main():
         fob.close()
 
     # Register any available results.
-    throwaway = commands.getoutput('eon -n')
+    throwaway = subprocess.getoutput('eon -n')
 
     # Check the number of completed searches.
     n_completed_searches = 0
     if os.path.exists('states/0/search_results.txt'):
         n_completed_searches = len(open('states/0/search_results.txt').readlines()) - 2
-    print '%d searches have been completed for this sample.' % n_completed_searches
+    print('%d searches have been completed for this sample.' % n_completed_searches)
     if n_completed_searches >= searches:
-        print 'Sample finished.'
+        print('Sample finished.')
         store_sample('samples/sample-%f-%f' % (rad, mag))
         # Increment the sample parameters
         inc_attempt = inc_params()
         return
                 
-    print 'Executing eon...'
-    throwaway = commands.getoutput('eon')
-    print 'Done.'
+    print('Executing eon...')
+    throwaway = subprocess.getoutput('eon')
+    print('Done.')
 
 if __name__ == '__main__':
     main()

@@ -75,7 +75,7 @@ if args.akmc_step is not None and args.end is not None:
          break
    for i in range(len(rs)):
        state_n = rs[i]
-       print state_n, states_e[state_n]
+       print(state_n, states_e[state_n])
        try:
          output.write("%8d  %12.4f\n"%(state_n+0.5, barrier[i]+states_e[state_n]))
        except:

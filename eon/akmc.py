@@ -2,7 +2,7 @@
 
 import math
 import sys
-import ConfigParser
+import configparser
 import os.path
 import shutil
 from time import sleep
@@ -16,17 +16,17 @@ import numpy
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-import communicator
-import config
-import locking
-import akmcstatelist
-import explorer
-import fileio as io
-import atoms
-import superbasinscheme
-import askmc
-import movie
-from version import version
+from . import communicator
+from . import config
+from . import locking
+from . import akmcstatelist
+from . import explorer
+from . import fileio as io
+from . import atoms
+from . import superbasinscheme
+from . import askmc
+from . import movie
+from .version import version
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
@@ -114,7 +114,7 @@ def akmc(config, steps=0):
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.RawConfigParser() 
+    parser = configparser.RawConfigParser() 
 
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
@@ -235,14 +235,14 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
                 try:
                     procid = targetdynamics[current_step]['process']
                 except:
-                    print "Can no longer follow target trajectory"
+                    print("Can no longer follow target trajectory")
                     sys.exit(1)
                 # Load the con file for that process saddle.
                 targetSaddleCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
                 targetProductCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "product_%d.con" % procid))
                 ibox = numpy.linalg.inv(targetSaddleCon.box)
                 # See if we have this process
-                for i in xrange(len(rate_table)):
+                for i in range(len(rate_table)):
                     p1 = current_state.get_process_saddle(rate_table[i][0])
                     for dist in atoms.per_atom_norm_gen(p1.free_r() - targetSaddleCon.free_r(), targetSaddleCon.box, ibox):
                         if dist > config.comp_eps_r:
@@ -256,7 +256,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
                             nsid = i
                             break
                 else:
-                    print "Can no longer follow target trajectory"
+                    print("Can no longer follow target trajectory")
                     sys.exit(1)
 
             # We are not following another trajectory:
@@ -350,7 +350,7 @@ def main():
     (options, args) = optpar.parse_args()
 
     if len(args) > 1:
-        print "akmc.py takes only one positional argument"
+        print("akmc.py takes only one positional argument")
     sys.argv = sys.argv[0:1]
     if len(args) == 1:
         sys.argv += args
@@ -399,7 +399,7 @@ def main():
     exclusive_options['reset'] = options.reset
 
     if sum(exclusive_options.values()) > 1:
-        offending_options = [ k for k,v in exclusive_options.iteritems() if v ]
+        offending_options = [ k for k,v in exclusive_options.items() if v ]
         optpar.error("Options %s are mutually exclusive" % ", ".join(offending_options))
 
     if len(options.movie_type) > 0:
@@ -428,52 +428,52 @@ def main():
             sb = sb_scheme.get_containing_superbasin(current_state)
         else:
             sb = None
-        print
-        print "General"
-        print "-------"
+        print()
+        print("General")
+        print("-------")
         if not sb:
-            print "Current state:", start_state_num
+            print("Current state:", start_state_num)
         else:
-            print "Current state:", start_state_num, "in superbasin", sb.id
-        print "Number of states:",states.get_num_states()
-        print "Time simulated: %.3e seconds" % time
-        print
+            print("Current state:", start_state_num, "in superbasin", sb.id)
+        print("Number of states:",states.get_num_states())
+        print("Time simulated: %.3e seconds" % time)
+        print()
 
-        print "Current State"
-        print "-------------"
+        print("Current State")
+        print("-------------")
         if not sb:
-            print "Confidence: %.4f" % current_state.get_confidence()
+            print("Confidence: %.4f" % current_state.get_confidence())
         else:
-            print "Superbasin Confidence: %.4f" % sb.get_confidence()
+            print("Superbasin Confidence: %.4f" % sb.get_confidence())
             non_ignored_states = set(sb._get_filtered_states())
             for s in sb.states:
                 if s in non_ignored_states:
                     ignore_string = ""
                 else:
                     ignore_string = " (no exit from superbasin found)"
-                print "       %4i: %.4f%s" % (s.number, s.get_confidence(sb), ignore_string)
-        print "Unique Saddles:", current_state.get_unique_saddle_count()
-        print "Good Saddles:", current_state.get_good_saddle_count()
-        print "Bad Saddles:", current_state.get_bad_saddle_count()
-        print "Percentage bad saddles: %.1f" % (float(current_state.get_bad_saddle_count())/float(max(current_state.get_bad_saddle_count() + current_state.get_good_saddle_count(), 1)) * 100)
-        print 
+                print("       %4i: %.4f%s" % (s.number, s.get_confidence(sb), ignore_string))
+        print("Unique Saddles:", current_state.get_unique_saddle_count())
+        print("Good Saddles:", current_state.get_good_saddle_count())
+        print("Bad Saddles:", current_state.get_bad_saddle_count())
+        print("Percentage bad saddles: %.1f" % (float(current_state.get_bad_saddle_count())/float(max(current_state.get_bad_saddle_count() + current_state.get_good_saddle_count(), 1)) * 100))
+        print() 
 
         comm = communicator.get_communicator()
-        print "Saddle Searches"
-        print "---------------" 
-        print "Searches in queue:", comm.get_queue_size() 
-        print
+        print("Saddle Searches")
+        print("---------------") 
+        print("Searches in queue:", comm.get_queue_size()) 
+        print()
         if config.sb_on:
-            print "Superbasins"
-            print "-----------"
+            print("Superbasins")
+            print("-----------")
             for i in sb_scheme.superbasins:
-                print "%s: %s" % (i.id, i.state_numbers)
+                print("%s: %s" % (i.id, i.state_numbers))
         sys.exit(0)
     elif options.reset:
         if options.force:
             res = 'y'
         else:
-            res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
+            res = input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
                 def attempt_removal(thing):
                     if thing is None:
@@ -511,10 +511,10 @@ def main():
                 for thing in rmthings:
                     attempt_removal(thing)
                 if not options.quiet:
-                    print "Reset"
+                    print("Reset")
                 sys.exit(0)
         else:
-            print "Not resetting"
+            print("Not resetting")
             sys.exit(1)
 
     elif options.restart:
@@ -523,7 +523,7 @@ def main():
         if options.force:
             res = 'y'
         else:
-            res = raw_input("Are you sure you want to restart (remove dynamics.txt, info.txt and akmc.log)? (y/N) ").lower()
+            res = input("Are you sure you want to restart (remove dynamics.txt, info.txt and akmc.log)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
 
             # remove akmc data that are specific for a trajectory
@@ -539,7 +539,7 @@ def main():
                 if options.force:
                     res = 'y'
                 else:
-                    res = raw_input("Should the superbasins be removed? (y/N) ").lower()
+                    res = input("Should the superbasins be removed? (y/N) ").lower()
 
                 # remove superbasin data (specific for a trajectory)
                 if len(res)>0 and res[0] == 'y':
@@ -563,17 +563,17 @@ def main():
                     string_sb_clear += str(config.sb_state_file) + "' removed"
 
             if not options.quiet:
-                print "Restart"+string_sb_clear+"."
+                print("Restart"+string_sb_clear+".")
             sys.exit(0)
         else:
-            print "Not restarting"
+            print("Not restarting")
             sys.exit(1)
 
     if lock.aquirelock():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
-                from mpiwait import mpiwait
+                from .mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":

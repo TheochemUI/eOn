@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import logging.handlers
 logger = logging.getLogger('basinhopping')
@@ -12,12 +12,12 @@ import shutil
 import sys
 import random
 
-import atoms
-import communicator
-import config
-import fileio as io
-import locking
-from version import  version
+from . import atoms
+from . import communicator
+from . import config
+from . import fileio as io
+from . import locking
+from .version import  version
 
 #class RandomStructure:
 #    def __init__(self, structure):
@@ -125,7 +125,7 @@ class BHStates:
             result_files['minimum.con'] = result_files['min.con']
             del result_files['min.con']
 
-            for fn, fh in result_files.iteritems():
+            for fn, fh in list(result_files.items()):
                 if hasattr(fh, 'getvalue') == False:
                     continue
                 p = os.path.join(state_path, fn)
@@ -268,7 +268,7 @@ def main():
     options, args = optpar.parse_args()
 
     if len(args) > 1:
-        print "takes only one positional argument"
+        print("takes only one positional argument")
     sys.argv = sys.argv[0:1]
     if len(args) == 1:
         sys.argv += args
@@ -282,14 +282,14 @@ def main():
         os.chdir(config.path_root)
 
     if config.comm_job_bundle_size != 1:
-        print "error: Basin Hopping only supports a bundle size of 1"
+        print("error: Basin Hopping only supports a bundle size of 1")
         sys.exit(1)
 
     if options.no_submit:
         config.comm_job_buffer_size = 0
 
     if options.reset:
-        res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
+        res = input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
                 rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_states]
                 for i in rmdirs:
@@ -304,10 +304,10 @@ def main():
                 for i in [log_path, wuid_path, prng_path ]:
                     if os.path.isfile(i):
                         os.remove(i)
-                print "Reset."
+                print("Reset.")
                 sys.exit(0)
         else:
-            print "Not resetting."
+            print("Not resetting.")
             sys.exit(1)
 
     # setup logging
@@ -329,7 +329,7 @@ def main():
 
     if lock.aquirelock():
         if config.comm_type == 'mpi':
-            from mpiwait import mpiwait
+            from .mpiwait import mpiwait
             while True:
                 mpiwait()
                 basinhopping()

@@ -13,7 +13,7 @@
 
 import pathfix
 import config
-import ConfigParser
+import configparser
 import gtk
 import gtk.gdk as gdk
 import pygtk
@@ -123,11 +123,11 @@ class cfggui():
 #display
     def __init__(self):
         button_width = 100
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.SafeConfigParser()
         try:
             self.config.read("./config.ini")
         except:
-            print "No config.ini found in local directory, using default values."
+            print("No config.ini found in local directory, using default values.")
         #window, table, and notebook
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_border_width(10)

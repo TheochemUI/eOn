@@ -7,7 +7,7 @@ import atoms
 import io
 
 def abort():
-    print "\n   usage: bulkview infile outfile"
+    print("\n   usage: bulkview infile outfile")
     sys.exit()
 
 p = io.loadposcars(sys.argv[1])
@@ -27,7 +27,7 @@ for a in p:
     #assumes ortho box, otherwise, need to set brute to True
     cns = atoms.coordination_numbers(a, 3.3, brute=False)
     mc = max(cns)
-    print count, "/", len(p)
+    print(count, "/", len(p))
     b = atoms.Atoms(0)
     b.box = a.box.copy()
     for i in range(len(a)):
