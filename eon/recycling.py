@@ -1,9 +1,9 @@
 
 import os
 import numpy
-import atoms
-import fileio as io
-import config
+from . import atoms
+from . import fileio as io
+from . import config
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
@@ -104,7 +104,7 @@ class SB_Recycling:
                     # The previous state *was* in the last superbasin
                     else:
                         # Find the index of the previous state.
-                        for i in xrange(len(self.sb_state_nums)):
+                        for i in range(len(self.sb_state_nums)):
                             if self.sb_state_nums[i] == self.previous_state.number:
                                 prev_state_index = i
                                 break
@@ -130,7 +130,7 @@ class SB_Recycling:
         """ Return the process id of the process going from the current state
             to the next state (number). """
         next_state_process_id = None
-        for process_id in current_state_procs.keys():
+        for process_id in list(current_state_procs.keys()):
             if current_state_procs[process_id]["product"] == next_state_num:
                 next_state_process_id = process_id
                 break
@@ -182,7 +182,7 @@ class SB_Recycling:
         if not self.in_progress:
             return
         # Only generate states from states in the superbasin which are *not* the previous state.
-        indices_to_gen_from = [i for i in xrange(len(self.sb_states))
+        indices_to_gen_from = [i for i in range(len(self.sb_states))
                                if self.sb_states[i][0].number != self.previous_state.number]
         current_reactant = self.current_state.get_reactant()
         previous_reactant = self.previous_state.get_reactant()
@@ -242,7 +242,7 @@ class SB_Recycling:
             sb_state.load_process_table()
             state_path = sb_state.path
             product_con = None
-            for process_id in sb_state.procs.keys():
+            for process_id in list(sb_state.procs.keys()):
                 # If the process "looks" similar -- it has a rate less than an order of magnitude different, and a barrier less than 0.2 eV different.
                 if (max(sb_state.procs[process_id]["rate"] / ref_rate, ref_rate / sb_state.procs[process_id]["rate"]) < 10
                   and abs(sb_state.procs[process_id]["barrier"] - ref_barrier) < 0.2):

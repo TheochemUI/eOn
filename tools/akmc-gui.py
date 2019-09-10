@@ -19,13 +19,14 @@ import gobject
 import numpy as np
 import pathfix
 import config
-import ConfigParser
+import configparser
 import atomview
 import atoms
 import glob
 import pylab as p
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as drawArea
 from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
+import importlib
 
 
 class akmcgui(atomview.atomview):
@@ -93,7 +94,7 @@ class akmcgui(atomview.atomview):
 
 #used to reload table and states if config.ini is changed
     def startup(self, *args):
-        reload(config)
+        importlib.reload(config)
         config.init(self.directory)
         config.path_root = os.path.dirname(self.directory)
         #changing path_states could cause errors
@@ -387,7 +388,7 @@ class akmcgui(atomview.atomview):
 
 
 if __name__ == "__main__":
-    print os.getcwd()
+    print(os.getcwd())
     pid = os.fork()
     if pid:
         os._exit(0)

@@ -20,7 +20,7 @@ for line in lines:
 
 reac = io.loadcon(os.path.join(stpath, 'reactant.con'))
 
-print "%12s %12s %12s" % ('pid', 'max dist', 'e diff')
+print("%12s %12s %12s" % ('pid', 'max dist', 'e diff'))
 
 lines = open(os.path.join(stpath, 'processtable'), 'r').readlines()
 for line in lines[1:]:
@@ -32,7 +32,7 @@ for line in lines[1:]:
     for i in range(len(reac)):
         d = numpy.linalg.norm(atoms.pbc(reac.r[i] - pr.r[i], reac.box))
         maxd = max(maxd, d)    
-    print "%12s %12.6f %12.6f" % (pid, maxd, pu - reacenergy)
+    print("%12s %12.6f %12.6f" % (pid, maxd, pu - reacenergy))
     
     
 

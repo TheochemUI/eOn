@@ -5,9 +5,9 @@ import os, re
 from math import cos, sin
 import numpy
 
-import atoms
-import fileio as io
-import config
+from . import atoms
+from . import fileio as io
+from . import config
 
 class DisplacementManager:
     def __init__(self, reactant, moved_atoms):
@@ -179,7 +179,7 @@ class Displace:
         displacement = numpy.zeros(self.reactant.r.shape)
         if hasattr(atom_index, '__getitem__'):
             logger.debug("Displacement epicenters: ", atom_index)
-            neighbors = [ self.neighbors_list[i] for i in xrange(len(self.neighbors_list)) if i in atom_index ]
+            neighbors = [ self.neighbors_list[i] for i in range(len(self.neighbors_list)) if i in atom_index ]
             #flatten
             neighbors = sum(neighbors,[])
             neighbors = numpy.array(list(set(neighbors)), dtype=int)
@@ -500,7 +500,7 @@ class Water(Displace):
             if not re.search('^H', name): break
         # For water assume that all the hydrogen are listed first, then all the oxygen
         self.n_water = i/2
-        if len(molecule_list) == 0: molecule_list=range(self.n_water)
+        if len(molecule_list) == 0: molecule_list=list(range(self.n_water))
         self.molecule_list = molecule_list
         self.random = random
 
@@ -569,7 +569,7 @@ if __name__ == '__main__':
     import time
 
     if len(sys.argv) < 3:
-        print "%s: reactant.con outpath" % sys.argv[0]
+        print("%s: reactant.con outpath" % sys.argv[0])
         sys.exit(1)
 
     reactant = io.loadcon(sys.argv[1])
@@ -577,7 +577,7 @@ if __name__ == '__main__':
     #d = Undercoordinated(reactant, 11, 0.05, 5.0)
     t0 = time.time()
     ntimes = 1000
-    for i in xrange(ntimes):
+    for i in range(ntimes):
         d.make_displacement(sys.argv[2])
     dt = time.time()-t0
-    print "%.2f displacements per second" % (float(ntimes)/dt)
+    print("%.2f displacements per second" % (float(ntimes)/dt))

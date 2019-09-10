@@ -61,7 +61,7 @@ potential_group_size = potentials/clients
 my_client_rank = client_ranks[potential_ranks.index(rank)/potential_group_size]
 #print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
 
-for i in xrange(clients):
+for i in range(clients):
     s = potential_group_size
     new_comm = world.new_communicator(numpy.array(potential_ranks[i*s:i*s+s], dtype='i'))
     if new_comm != None:

@@ -11,7 +11,7 @@ import pathfix
 import fileio as io, atoms
 
 def usage():
-    print "usage: %s poscarfile" % (os.path.basename(sys.argv[0]))
+    print("usage: %s poscarfile" % (os.path.basename(sys.argv[0])))
     sys.exit(1)
 
 if len(sys.argv) < 2:
@@ -19,15 +19,16 @@ if len(sys.argv) < 2:
 
 try:
     p = io.loadcon(sys.argv[1])
-except IOError, (errno, strerrno):
-    print "%s: %s" % (sys.argv[1], strerrno)
+except IOError as xxx_todo_changeme:
+    (errno, strerrno) = xxx_todo_changeme.args
+    print("%s: %s" % (sys.argv[1], strerrno))
     usage()
 
-print "set boxwidth 0.10"
-print "set xlabel 'Distance (Angstrom)'"
-print "set ylabel 'Number of Atoms'"
-print "set key off"
-print "plot [0:8] '-' with boxes"
+print("set boxwidth 0.10")
+print("set xlabel 'Distance (Angstrom)'")
+print("set ylabel 'Number of Atoms'")
+print("set key off")
+print("plot [0:8] '-' with boxes")
 
 hist = {}
 for i in range(0, len(p)):
@@ -39,5 +40,5 @@ for i in range(0, len(p)):
         else:
             hist[d] += 1
 
-for k,v in hist.iteritems():
-    print k,v
+for k,v in hist.items():
+    print(k,v)

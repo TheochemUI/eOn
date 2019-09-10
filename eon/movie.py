@@ -3,7 +3,7 @@ import os
 import sys
 import glob
 
-import fileio as io
+from . import fileio as io
 
 def make_movie(movie_type, path_root, states, separate_files=False):
     movie_path = "movie.poscar"
@@ -23,12 +23,12 @@ def make_movie(movie_type, path_root, states, separate_files=False):
         try:
             statenr = int(movie_type.split(',')[1])
         except ValueError:
-            print "state number must be an integer"
+            print("state number must be an integer")
             sys.exit(1)
         except IndexError:
-            print "must give a state number"
+            print("must give a state number")
             sys.exit(1)
-        print "making process movie for state %i" % statenr
+        print("making process movie for state %i" % statenr)
         if len(movie_type.split(',')) > 2:
             limit = int(movie_type.split(',')[2])
         else:
@@ -38,16 +38,16 @@ def make_movie(movie_type, path_root, states, separate_files=False):
     elif movie_type == 'graph':
         s = dot(path_root, states)
         if os.path.isfile("graph.dot"):
-            print "File %s already exists" % "graph.dot"
+            print("File %s already exists" % "graph.dot")
             sys.exit(1)
         f = open("graph.dot",'w')
         f.write(s)
         f.close()
-        print "If you have graphviz installed:"
-        print "dot graph.dot -Tpng -o graph.png"
+        print("If you have graphviz installed:")
+        print("dot graph.dot -Tpng -o graph.png")
         sys.exit(0)
     else:
-        print "Unknown MOVIE_TYPE"
+        print("Unknown MOVIE_TYPE")
         sys.exit(1)
     if separate_files:
         movie_dir = "movies"
@@ -61,7 +61,7 @@ def make_movie(movie_type, path_root, states, separate_files=False):
         for i, atoms in enumerate(atoms_list):
             path_i = movie_path + (".%010d" % i)
             io.saveposcar(path_i, atoms, 'w')
-        print "Saved %i frames to %s.*" % (len(atoms_list), movie_path)
+        print("Saved %i frames to %s.*" % (len(atoms_list), movie_path))
     else:
         # Delete existing file.
         if os.path.isfile(movie_path):
@@ -69,7 +69,7 @@ def make_movie(movie_type, path_root, states, separate_files=False):
         # Write movie.
         for atoms in atoms_list:
             io.saveposcar(movie_path, atoms, 'a')
-        print "Saved %i frames to %s" % (len(atoms_list), movie_path)
+        print("Saved %i frames to %s" % (len(atoms_list), movie_path))
 
 
 def get_trajectory(trajectory_path):
@@ -88,27 +88,27 @@ def processes(states, statenr, limit):
     try:
         state = states.get_state(statenr)
     except IOError:
-        print "error: Cannot make movie for non-existant state"
+        print("error: Cannot make movie for non-existant state")
         sys.exit(1)
 
     process_table = state.get_process_table()
-    for k,v in process_table.iteritems():
+    for k,v in process_table.items():
         process_table[k]['id'] = k
         process_table[k]['reactant'] = state.get_process_reactant(k)
         process_table[k]['saddle'] = state.get_process_saddle(k)
         process_table[k]['product'] = state.get_process_product(k)
-    processes = process_table.values()
+    processes = list(process_table.values())
     sorted_processes = sorted(processes, key=lambda a: a['rate'])
     sorted_processes.reverse()
 
     atoms_list = []
-    print "%4s %16s %16s %16s" % ("ID", "Rate", "Barrier", "Prefactor")
-    print "-------------------------------------------------------"
+    print("%4s %16s %16s %16s" % ("ID", "Rate", "Barrier", "Prefactor"))
+    print("-------------------------------------------------------")
     for p in sorted_processes:
         atoms_list.append(p['reactant'])
         atoms_list.append(p['saddle'])
         atoms_list.append(p['product'])
-        print "%4i %16.5e %16.5f %16.5e" % (p['id'], p['rate'] ,p['barrier'], p['prefactor'])
+        print("%4i %16.5e %16.5f %16.5e" % (p['id'], p['rate'] ,p['barrier'], p['prefactor']))
         limit -= 1
         if limit == 0:
             break
@@ -123,12 +123,12 @@ def dynamics(path_root, states, unique=False):
         trajectory_path = os.path.join(path_root, "dynamics.txt")
         trajectory = get_trajectory(trajectory_path)
     else:
-        trajectory = range(states.get_num_states())
+        trajectory = list(range(states.get_num_states()))
 
     atoms_list = []
 
     if len(trajectory) == 0:
-        print "error: There have been no dynamics steps"
+        print("error: There have been no dynamics steps")
         sys.exit(1)
 
     for n in trajectory:
@@ -145,7 +145,7 @@ def make_graph(states):
         state = states.get_state(statenr)
         G.add_node(state)
         ptable = state.get_process_table()
-        for i,p in ptable.iteritems():
+        for i,p in ptable.items():
             if p['product'] != -1:
                 neighbor_state = states.get_state(p['product'])
                 G.add_node(neighbor_state)
@@ -178,10 +178,10 @@ def fastest_path(path_root, states, full=False):
     time = 0.0
     for i in range(len(state_list)-1):
         ratesum = 0.0
-        for j in state_list[i].get_process_table().values():
+        for j in list(state_list[i].get_process_table().values()):
             ratesum += j['rate']
 
-        print time, state_list[i].number 
+        print(time, state_list[i].number) 
         time += 1/ratesum
 
     return atoms_list
@@ -189,7 +189,7 @@ def fastest_path(path_root, states, full=False):
 def get_fastest_process_id(state1, state2):
     ptable = state1.get_process_table()
     fastest = None
-    for i,p in ptable.iteritems():
+    for i,p in ptable.items():
         if p['product'] == state2.number:
             if not fastest or fastest[1] < p['rate']:
                 fastest = (i, p['rate'])
@@ -198,7 +198,7 @@ def get_fastest_process_id(state1, state2):
 def get_fastest_process_rate(state1, state2):
     ptable = state1.get_process_table()
     fastest = None
-    for i,p in ptable.iteritems():
+    for i,p in ptable.items():
         if p['product'] == state2.number:
             if not fastest or fastest[1] < p['rate']:
                 fastest = (i, p['rate'])
@@ -214,8 +214,8 @@ class Graph:
 
     def dot(self):
         unique_edges = set()
-        for node,edgedict in self.graph.iteritems():
-            edgelist = edgedict.keys()
+        for node,edgedict in self.graph.items():
+            edgelist = list(edgedict.keys())
             for edge in edgelist:
                 if node.number < edge.number:
                     unique_edges.add( (node.number, edge.number) )
@@ -242,12 +242,12 @@ class Graph:
 
     def neighbors(self,node):
         if node in self.graph:
-            return self.graph[node].keys()
+            return list(self.graph[node].keys())
         else:
             return None
 
     def nodes(self):
-        return self.graph.keys()
+        return list(self.graph.keys())
 
     def dijkstra(self, start, end=None):
         G = self.graph
@@ -264,8 +264,7 @@ class Graph:
                 vwLength = D[v] + G[v][w]
                 if w in D:
                     if vwLength < D[w]:
-                        raise ValueError, \
-                        "Dijkstra: found better path to already-final vertex"
+                        raise ValueError("Dijkstra: found better path to already-final vertex")
                 elif w not in Q or vwLength < Q[w]:
                     Q[w] = vwLength
                     P[w] = v
@@ -295,7 +294,7 @@ class priorityDictionary(dict):
     def smallest(self):
         '''Find smallest item after removing deleted items from heap.'''
         if len(self) == 0:
-            raise IndexError, "smallest of empty priorityDictionary"
+            raise IndexError("smallest of empty priorityDictionary")
         heap = self.__heap
         while heap[0][1] not in self or self[heap[0][1]] != heap[0][0]:
             lastItem = heap.pop()
@@ -329,7 +328,7 @@ class priorityDictionary(dict):
         dict.__setitem__(self,key,val)
         heap = self.__heap
         if len(heap) > 2 * len(self):
-            self.__heap = [(v,k) for k,v in self.iteritems()]
+            self.__heap = [(v,k) for k,v in self.items()]
             self.__heap.sort()  # builtin sort likely faster than O(n) heapify
         else:
             newPair = (val,key)

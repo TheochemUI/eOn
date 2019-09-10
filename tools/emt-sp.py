@@ -64,7 +64,7 @@ client_ranks = numpy.empty(clients, dtype='i')
 j = 0
 k = 0
 first_potential_rank = None
-for i in xrange(world.size):
+for i in range(world.size):
     if process_types[i] == 1:
         client_ranks[k] = i
         k += 1
@@ -77,9 +77,9 @@ for i in xrange(world.size):
 my_potential_rank = world.rank-first_potential_rank
 
 my_client_rank = client_ranks[my_potential_rank/potential_group_size]
-print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
+print("pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank))
 
-for i in xrange(clients):
+for i in range(clients):
     s = potential_group_size
     new_comm = world.new_communicator(potential_ranks[i*s:i*s+s])
     if new_comm != None:

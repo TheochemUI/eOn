@@ -4,11 +4,11 @@
 import logging
 logger = logging.getLogger('state')
 
-import fileio as io
-import state
+from . import fileio as io
+from . import state
 
 class PRState(state.State):
-    ID, PRODUCT, PRODUCT_ENERGY, TIME = range(4)
+    ID, PRODUCT, PRODUCT_ENERGY, TIME = list(range(4))
     processtable_head_fmt = "%7s %9s %16s %12s\n"
     processtable_header = processtable_head_fmt % ("proc #", "product", "product energy",
                                                    "time")
@@ -85,7 +85,7 @@ class PRState(state.State):
         if self.procs != None:
             f = open(self.proctable_path, 'w')
             f.write(self.processtable_header)
-            for id in self.procs.keys():
+            for id in list(self.procs.keys()):
                 proc = self.procs[id]
                 f.write(self.processtable_line % (id, proc['product'], proc['product_energy'],
                                                   proc['time']))
