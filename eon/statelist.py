@@ -5,8 +5,8 @@ import logging
 logger = logging.getLogger('statelist')
 import os
 
-import atoms
-import config
+from . import atoms
+from . import config
 
 
 class StateList:

@@ -12,12 +12,12 @@ while os.path.isdir(os.path.join('.', 'states', str(i))):
 	for c in cna:
 		count[int(c)] += 1
 	tally = []
-	for k, v in count.iteritems():
+	for k, v in count.items():
 		tally.append((k, v))
 	tally.sort(key = lambda k: k[0])
 	for t in tally:
-		print "%3d" % t[1],
-	print
+		print("%3d" % t[1], end=" ")
+	print()
 
 	for j in range(len(p)):
 		p.names[j] = eon.atoms.elements[int(cna[j]) + 1]['symbol']

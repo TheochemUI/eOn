@@ -1,10 +1,10 @@
 
 import os
 import numpy
-from mcamc import mcamc
+from .mcamc import mcamc
 import logging
 logger = logging.getLogger('superbasin')
-import config
+from . import config
 
 
 class Superbasin:
@@ -55,7 +55,7 @@ class Superbasin:
         index = 0
         for number in self.state_numbers:
             procs = self.state_dict[number].get_process_table()
-            for id, proc in procs.iteritems():
+            for id, proc in procs.items():
                 if proc['product'] not in self.state_numbers:
                     st2col[(number, id)] = index
                     col2st[index] = (number, id)
@@ -65,7 +65,7 @@ class Superbasin:
         c = numpy.zeros(len(self.state_numbers))
         for number in self.state_numbers:
             procs = self.state_dict[number].get_process_table()
-            for id, proc in procs.iteritems():
+            for id, proc in procs.items():
                 c[st2i[number]] += proc['rate']
 
         # Build Q and R.
@@ -73,7 +73,7 @@ class Superbasin:
         R = numpy.zeros((len(self.state_numbers), len(col2st)))
         for number in self.state_numbers:
             procs = self.state_dict[number].get_process_table()
-            for id, proc in procs.iteritems():
+            for id, proc in procs.items():
                 if proc['product'] in self.state_numbers:
                     Q[st2i[number], st2i[proc['product']]] += proc['rate']
                 else:

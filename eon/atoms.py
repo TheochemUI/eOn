@@ -1,13 +1,13 @@
 
 """ The atoms module. """
-import config
+from . import config
 
 from math import cos, sin, acos
 import numpy
 import logging
 logger = logging.getLogger('atoms')
 
-import fileio as io
+from . import fileio as io
 
 class Atoms:
     """ The Atoms class. """
@@ -641,8 +641,8 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
                 bCoordinationsCounts[coordination] += 1
             else:
                 bCoordinationsCounts[coordination] = 1
-        bLeastCommonCoordination = bCoordinationsCounts.keys()[0]
-        for coordination in bCoordinationsCounts.keys():
+        bLeastCommonCoordination = list(bCoordinationsCounts.keys())[0]
+        for coordination in list(bCoordinationsCounts.keys()):
             if bCoordinationsCounts[coordination] < bCoordinationsCounts[bLeastCommonCoordination]:
                 bLeastCommonCoordination = coordination
         # Find one atom in a with the least common coordination number in b.
@@ -671,19 +671,19 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
         # Find an atom from a that has not yet been mapped.
         unmappedA = 0
         while unmappedA < len(a):
-            if unmappedA not in mappings.keys():
+            if unmappedA not in list(mappings.keys()):
                 break
             unmappedA += 1
         # Calculate the distances from unmappedA to all mapped a atoms.
         distances = {}
-        for i in mappings.keys():
+        for i in list(mappings.keys()):
             distances[i] = numpy.linalg.norm(pbc(a.r[unmappedA] - a.r[i], a.box))
         # Loop over each unmapped b atom. Compare the distances between it and
         # the mapped b atoms to the corresponding distances between unmappedA
         # and the mapped atoms. If everything is similar, create a new mapping
         # and recurse.
         for bAtom in range(len(b)):
-            if bAtom not in mappings.values():
+            if bAtom not in list(mappings.values()):
                 for aAtom in distances:
                     # Break if type check fails.
                     if b.names[bAtom] != a.names[unmappedA]:

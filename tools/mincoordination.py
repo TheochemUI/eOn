@@ -16,4 +16,4 @@ for filename in sys.argv[1:]:
             min=cn[i]
             min_index=i
 
-    print "%s: min coordination %i atom index %i" % (filename, min, min_index)
+    print("%s: min coordination %i atom index %i" % (filename, min, min_index))

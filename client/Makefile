@@ -77,7 +77,8 @@ else
     FC = $(CROSS)gfortran
     FFLAGS += $(OPT) -ffpe-trap=invalid,zero,overflow
     FAR = $(CROSS)ar cru
-    LDFLAGS += -L/usr/local/lib/gcc/7 -lgfortran
+#    LDFLAGS += -L/usr/local/opt/lib/gcc/7 -lgfortran
+    LDFLAGS += -L/usr/local/Cellar/gcc/9.1.0/lib/gcc/9 -lgfortran
     # ifort
     #FC = ifort
     #FFLAGS += $(OPT) -fpe0

@@ -18,4 +18,4 @@ for file2 in sys.argv[2:]:
             max_d = distances[i]
             max_i = i
 
-    print "%s: max distance: %f atom index: %i" % (file2, max_d, max_i)
+    print("%s: max distance: %f atom index: %i" % (file2, max_d, max_i))

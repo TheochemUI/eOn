@@ -2,14 +2,14 @@
 #!/usr/bin/env python
 import os
 import glob
-from cStringIO import StringIO
+from io import StringIO
 
-import akmc
-import basinhopping
-import config
-import parallelreplica
-import escaperate
-import fileio as io
+from . import akmc
+from . import basinhopping
+from . import config
+from . import parallelreplica
+from . import escaperate
+from . import fileio as io
 
 def main():
     config.init()
@@ -17,7 +17,7 @@ def main():
     # Should we have some kind of sanity-check module/function somewhere?
     fnames = [os.path.basename(f) for f in glob.glob(os.path.join(config.path_pot, '*'))]
     if 'pos.con' in fnames:
-        print "WARNING: pos.con found in potfiles path. Are you sure you want this? It will overwrite the pos.con in the calculation directory when your jobs are being run."
+        print("WARNING: pos.con found in potfiles path. Are you sure you want this? It will overwrite the pos.con in the calculation directory when your jobs are being run.")
 
     job = config.main_job.lower()
     if job == 'akmc':
@@ -29,7 +29,7 @@ def main():
     elif job == 'escape_rate':
         escaperate.main()
     else:
-        import communicator
+        from . import communicator
         import shutil
         config.path_scratch = config.path_root
         comm = communicator.get_communicator()

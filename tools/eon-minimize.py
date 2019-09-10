@@ -4,7 +4,7 @@ import os
 import sys
 import shutil
 import tempfile
-import ConfigParser
+import configparser
 import optparse
 
 import pathfix
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     if len(args) > 0:
         posfile = args[0]
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     if os.path.isfile("config.ini"):
         isconfig = True
         config.read("config.ini")

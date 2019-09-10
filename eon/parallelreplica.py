@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import ConfigParser
-from cStringIO import StringIO
+import configparser
+from io import StringIO
 import logging
 import logging.handlers
 logger = logging.getLogger('pr')
@@ -12,12 +12,12 @@ import os
 import shutil
 import sys
 
-import communicator
-import config
-import fileio as io
-import locking
-import prstatelist
-from version import version
+from . import communicator
+from . import config
+from . import fileio as io
+from . import locking
+from . import prstatelist
+from .version import version
 
 def parallelreplica():
     logger.info('Eon version: %s', version())
@@ -53,7 +53,7 @@ def parallelreplica():
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.RawConfigParser() 
+    parser = configparser.RawConfigParser() 
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
     io.save_prng_state()
@@ -78,7 +78,7 @@ def get_pr_metadata():
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
     if os.path.isfile(metafile):
         parser.read(metafile)
         try:
@@ -204,7 +204,7 @@ def main():
     options, args = optpar.parse_args()
 
     if len(args) > 1:
-        print "Only one positional argument allowed"
+        print("Only one positional argument allowed")
     sys.argv = sys.argv[0:1]
     if len(args) == 1:
         sys.argv += args
@@ -218,14 +218,14 @@ def main():
         os.chdir(config.path_root)
 
     if config.comm_job_bundle_size != 1:
-        print "error: Parallel Replica only supports a bundle size of 1"
+        print("error: Parallel Replica only supports a bundle size of 1")
         sys.exit(1)
 
     if options.no_submit:
         config.comm_job_buffer_size = 0
 
     if options.reset:
-        res = raw_input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
+        res = input("Are you sure you want to reset (all data files will be lost)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
             rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_states,
                     config.path_scratch]
@@ -246,7 +246,7 @@ def main():
                 if os.path.isfile(i):
                     os.remove(i)
 
-            print "Reset"
+            print("Reset")
         sys.exit(0)
 
     # setup logging
@@ -270,7 +270,7 @@ def main():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
-                from mpiwait import mpiwait
+                from .mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":

@@ -3,21 +3,21 @@ import logging
 logger = logging.getLogger('explorer')
 from time import time
 import shutil
-import StringIO
+import io
 import os
 import sys
-import cPickle as pickle
+import pickle as pickle
 from copy import copy
 import numpy
 
-import atoms
-import communicator
-import config
-import displace
-import fileio as io
+from . import atoms
+from . import communicator
+from . import config
+from . import displace
+from . import fileio as io
 #import kdb
-import recycling
-import eon_kdb as kdb
+from . import recycling
+from . import eon_kdb as kdb
 
 def get_minmodexplorer():
     if config.akmc_server_side_process_search:
@@ -163,7 +163,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
         invariants = {}
 
-        reactIO = StringIO.StringIO()
+        reactIO = io.StringIO()
         io.savecon(reactIO, self.reactant)
         file_permission = os.stat("pos.con").st_mode
         invariants['pos.con'] = (reactIO, file_permission)
@@ -182,7 +182,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 if i in moved_atoms:
                     mass_weights[i] = self.reactant.mass[i]
 
-            weightsIO = StringIO.StringIO()
+            weightsIO = io.StringIO()
             numpy.savetxt(weightsIO, mass_weights)
 #            file_permission = os.stat("masses.dat").st_mode
             invariants['masses.dat'] = (weightsIO, file_permission)
@@ -214,10 +214,10 @@ class ClientMinModeExplorer(MinModeExplorer):
             search['config.ini'] = io.modify_config(config.config_path, ini_changes)
 
             if displacement:
-                dispIO = StringIO.StringIO()
+                dispIO = io.StringIO()
                 io.savecon(dispIO, displacement)
                 search['displacement.con'] = dispIO
-                modeIO = StringIO.StringIO()
+                modeIO = io.StringIO()
                 io.save_mode(modeIO, mode)
                 search['direction.dat'] = modeIO
 
@@ -373,7 +373,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         for search_id in self.job_info:
             fmt = "%9i %13s %11s %10s\n"
             lines = {'saddle_search':None, 'min1':None, 'min2':None}
-            for name, job in self.job_info[search_id].iteritems():
+            for name, job in self.job_info[search_id].items():
                 lines[job['type']] = fmt % (search_id, job['type'], job['status'], name)
 
             if lines['saddle_search']:
@@ -403,7 +403,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         if os.path.isdir(config.path_jobs_in):
             try:
                 shutil.rmtree(config.path_jobs_in)
-            except OSError, msg:
+            except OSError as msg:
                 logger.error("Error cleaning up %s: %s", config.path_jobs_in, msg)
             else:
                 os.makedirs(config.path_jobs_in)
@@ -492,7 +492,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         # start new searches
         for i in range(num_to_make):
             job = None
-            for ps in self.process_searches.values():
+            for ps in list(self.process_searches.values()):
                 job, job_type = ps.get_job(self.state.number)
                 if job:
                     self.wuid_to_search_id[self.wuid] = ps.search_id
@@ -586,7 +586,7 @@ class ProcessSearch:
         if state_number != self.state_number:
             return None, None
     
-        if True in [ s == 'error' for s in self.job_statuses.values() ]:
+        if True in [ s == 'error' for s in list(self.job_statuses.values()) ]:
             return None, None
 
         if self.job_statuses['saddle_search'] == 'not_started':
@@ -641,9 +641,9 @@ class ProcessSearch:
             if min_number == 2:
                 self.finish_minimization(result)
 
-        done = False not in  [ s == 'complete' for s in self.job_statuses.values() ] 
+        done = False not in  [ s == 'complete' for s in list(self.job_statuses.values()) ] 
         if not done:
-            done = True in [ s == 'error' for s in self.job_statuses.values() ]
+            done = True in [ s == 'error' for s in list(self.job_statuses.values()) ]
 
         if done:
             return self.build_result()
@@ -662,9 +662,9 @@ class ProcessSearch:
         result['mode.dat'] = saddle_result['mode.dat']
         result['results'] = self.data
 
-        results_string = '\n'.join([ "%s %s" % (v,k) for k,v in self.data.items() ])
+        results_string = '\n'.join([ "%s %s" % (v,k) for k,v in list(self.data.items()) ])
         result['results'] = self.data
-        result['results.dat'] = StringIO.StringIO(results_string)
+        result['results.dat'] = io.StringIO(results_string)
         result['type'] = self.displacement_type
         result['search_id'] = self.search_id
 
@@ -704,7 +704,7 @@ class ProcessSearch:
 
         reactant.r += config.process_search_minimization_offset*mode
 
-        reactIO = StringIO.StringIO()
+        reactIO = io.StringIO()
         io.savecon(reactIO, reactant)
         job['pos.con'] = reactIO
 
@@ -776,15 +776,15 @@ class ProcessSearch:
     def start_search(self):
         job = {}
 
-        dispIO = StringIO.StringIO()
+        dispIO = io.StringIO()
         io.savecon(dispIO, self.displacement)
         job['displacement.con'] = dispIO
 
-        modeIO = StringIO.StringIO()
+        modeIO = io.StringIO()
         io.save_mode(modeIO, self.mode)
         job['direction.dat'] = modeIO
 
-        reactIO = StringIO.StringIO()
+        reactIO = io.StringIO()
         io.savecon(reactIO, self.reactant)
         job['pos.con'] = reactIO
 
@@ -817,6 +817,6 @@ class ProcessSearch:
         for file in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file)
             f = open(file_path)
-            result[file] = StringIO.StringIO(f.read())
+            result[file] = io.StringIO(f.read())
             f.close()
         return result

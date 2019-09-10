@@ -4,11 +4,11 @@ import os
 import sys
 
 if not os.path.isdir('states'):
-	print 'Abort: this script should be executed in an akmc directory with a states subdirectory present'
+	print('Abort: this script should be executed in an akmc directory with a states subdirectory present')
 	sys.exit()
 
 
-print '%10s %10s %10s %10s %10s %10s %10s %10s %10s %10s' % ('state', 'good', 'NC', 'energy', 'iterations', 'nonlocal', 'barrier', 'nonneg', 'prefactor', 'unknown')
+print('%10s %10s %10s %10s %10s %10s %10s %10s %10s %10s' % ('state', 'good', 'NC', 'energy', 'iterations', 'nonlocal', 'barrier', 'nonneg', 'prefactor', 'unknown'))
 i = 0
 while os.path.isdir(os.path.join('states', str(i))):
 	results = open(os.path.join('states', str(i), 'search_results.txt'), 'r').readlines()[2:]
@@ -16,7 +16,7 @@ while os.path.isdir(os.path.join('states', str(i))):
 	nc = 0
 	energy = 0
 	iterations = 0
-        nonlocal = 0
+        nonlocalt = 0
         barrier = 0
 	unknown = 0
         nonneg = 0
@@ -35,7 +35,7 @@ while os.path.isdir(os.path.join('states', str(i))):
 		elif 'reverse' in r:
 			pass
                 elif 'Nonlocal' in r:
-                        nonlocal += 1
+                        nonlocalt += 1
                 elif 'barrier >' in r:
                         barrier += 1
                 elif 'Nonneg' in r:
@@ -44,6 +44,6 @@ while os.path.isdir(os.path.join('states', str(i))):
                         prefac +=1
 		else:
 			unknown += 1
-	print '%10d %10d %10d %10d %10d %10d %10d %10d %10d %10d' % (i, good, nc, energy, iterations, nonlocal, barrier, nonneg, prefac, unknown)
+	print('%10d %10d %10d %10d %10d %10d %10d %10d %10d %10d' % (i, good, nc, energy, iterations, nonlocalt, barrier, nonneg, prefac, unknown))
 	i += 1
 
