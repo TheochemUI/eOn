@@ -1,1 +1,1 @@
-from mcamc import mcamc
+from .mcamc import mcamc

@@ -1,13 +1,13 @@
 
-import ConfigParser
+import configparser
 import numpy
 import os.path
 import sys
 import string
-import config
-import yaml
+from . import config
+from . import yaml
 
-import fileio as io
+from . import fileio as io
 
 config.init_done = False
 
@@ -45,7 +45,7 @@ def init(config_file = ""):
         return None
     config.init_done = True
 
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
 
     for i in range(len(config.format)):
         parser.add_section(config.format[i].name)
@@ -58,14 +58,14 @@ def init(config_file = ""):
             parser.read(config_file)
             config.config_path = os.path.abspath(config_file)
         else:
-            print >> sys.stderr, "Specified configuration file %s does not exist" % config_file
+            print("Specified configuration file %s does not exist" % config_file, sys.stderr)
             sys.exit(2)
     elif os.path.isfile('config.ini'):
         parser.read('config.ini')
         config.config_path = os.path.abspath('config.ini')
         gave_config = False
     else:
-        print >> sys.stderr, "You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory"
+        print("You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory", sys.stderr)
         sys.exit(2)
     sections = False
     options = False
@@ -165,10 +165,10 @@ def init(config_file = ""):
     config.akmc_server_side_process_search = parser.getboolean('AKMC', 'server_side_process_search')
     if config.akmc_server_side_process_search:
         if parser.getfloat('Prefactor', 'default_value') == 0:
-            print "Error: you must provide a default prefactor when using server-side process search mode."
+            print("Error: you must provide a default prefactor when using server-side process search mode.")
             sys.exit()
         if parser.getint('Communicator', 'jobs_per_bundle') != 1:
-            print "Error: you cannot use a bundle size other than 1 when using server-side process search mode."
+            print("Error: you cannot use a bundle size other than 1 when using server-side process search mode.")
             sys.exit()
     config.akmc_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_window')
     config.akmc_max_thermal_window = parser.getfloat('AKMC', 'thermally_accessible_buffer')
@@ -195,7 +195,7 @@ def init(config_file = ""):
     # Rye-requested check
     # Should we have some kind of sanity-check module/function somewhere?
     if not gave_config and not os.path.samefile(config.path_root, os.getcwd()):
-        res = raw_input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
+        res = input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
             pass
         else:

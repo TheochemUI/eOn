@@ -2,7 +2,7 @@
 import logging
 import logging.handlers
 logger = logging.getLogger('mpiwait')
-import config
+from . import config
 from time import sleep
 from sys import exit
 import signal

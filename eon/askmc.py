@@ -6,7 +6,7 @@ import numpy
 import logging
 logger = logging.getLogger('askmc')
 
-ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = range(9)
+ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
 mod_processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %12s\n"
 processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", "product", "product energy", "product prefactor", "barrier", "rate", "repeats")
@@ -72,7 +72,7 @@ class ASKMC:
         """ Load the normal process table, and replace all the rates edited by AS-KMC. """
         current_state_procs_compiled = self.get_real_process_table(current_state)
         current_state_mod_procs = self.get_modified_process_table(current_state)
-        for process_id in current_state_mod_procs.keys():
+        for process_id in list(current_state_mod_procs.keys()):
             try:
                 current_state_procs_compiled[process_id] = current_state_mod_procs[process_id]
             except KeyError:
@@ -88,13 +88,13 @@ class ASKMC:
         current_state_procs = self.compile_process_table(current_state)
         # Find the lowest barrier process for the state.
         lowest = 1e300
-        for process_id in current_state_procs.keys():
+        for process_id in list(current_state_procs.keys()):
             barrier = current_state_procs[process_id]["barrier"]
             if barrier < lowest:
                 lowest = barrier
         # Make the rate table.
         table = []
-        for process_id in current_state_procs.keys():
+        for process_id in list(current_state_procs.keys()):
             proc = current_state_procs[process_id]
             if proc["barrier"] < lowest + (self.kT * self.thermal_window):
                 table.append((process_id, proc["rate"]))
@@ -159,7 +159,7 @@ class ASKMC:
         mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
         fo = open(mod_proctable_path,"w")
         fo.write(mod_processtable_header)
-        for process_id in current_state_mod_procs.keys():
+        for process_id in list(current_state_mod_procs.keys()):
             proc = current_state_mod_procs[process_id]
             fo.write(processtable_line % (process_id,
                                          proc['saddle_energy'],
@@ -188,13 +188,13 @@ class ASKMC:
         # If in "try" mode, return "None" if there is no process from current_state to next_state_num.
         if flag == "try":
             next_state_process_id = None
-            for process_id in current_state_procs.keys():
+            for process_id in list(current_state_procs.keys()):
                 if current_state_procs[process_id]["product"] == next_state_num:
                     next_state_process_id = process_id
                     break
         # If in "find" mode, an exception will be raised if the next_state_num is never found.
         elif flag == "find":
-            for process_id in current_state_procs.keys():
+            for process_id in list(current_state_procs.keys()):
                 if current_state_procs[process_id]["product"] == next_state_num:
                     next_state_process_id = process_id
                     break
@@ -284,7 +284,7 @@ class ASKMC:
         # to other states in the superbasin which haven't been caught
         for state in states_in_basin:
             state_real_procs = self.get_real_process_table(state)
-            for process_id in state_real_procs.keys():
+            for process_id in list(state_real_procs.keys()):
                 product_state_num = state_real_procs[process_id]["product"]
                 # If (1) the process goes somewhere in the basin, (2) it's not in the basin edgelist, and (3) it has a low barrier, that's bad.
                 # Note that the "real" process table may be used in this case because if it were in the "modified" process table,
@@ -311,8 +311,8 @@ class ASKMC:
         for state in states_in_basin:
             state_real_procs = self.get_real_process_table(state)
             state_mod_procs = self.get_modified_process_table(state)
-            mod_proc_ids = [process_id for process_id in state_mod_procs.keys()]
-            for process_id in state_real_procs.keys():
+            mod_proc_ids = [process_id for process_id in list(state_mod_procs.keys())]
+            for process_id in list(state_real_procs.keys()):
                 if process_id not in mod_proc_ids and state_real_procs[process_id]["saddle_energy"] < origEtrans + math.log(self.gamma)/self.Beta:
                     testvar = 1
                     return testvar
@@ -331,7 +331,7 @@ class ASKMC:
         if self.welltest == 1:
             current_state_mod_procs = self.get_modified_process_table(current_state)
             # scan all the neighbor states
-            for next_state_id in current_state_mod_procs.keys():
+            for next_state_id in list(current_state_mod_procs.keys()):
                 next_state_num = current_state_mod_procs[next_state_id]["product"]
                 if self.welltest == 1:
                     # If this process has not already been traversed (either direction),

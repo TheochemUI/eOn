@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import ConfigParser
+import configparser
 
 import pathfix
 import yaml
@@ -12,9 +12,9 @@ y = yaml.load(yaml_file)
 yaml_file.close()
 
 for section in y:
-    print
-    print "[%s]" % section
+    print()
+    print("[%s]" % section)
     for option in y[section]['options']:
-	    print "%s = %s" % (option, str(y[section]['options'][option]['default']))
+	    print("%s = %s" % (option, str(y[section]['options'][option]['default'])))
 
 

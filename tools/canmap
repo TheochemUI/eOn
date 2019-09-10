@@ -7,9 +7,9 @@ import fileio as io, atoms
 p1 = io.loadcon(sys.argv[1])
 p2 = io.loadcon(sys.argv[2])
 if atoms.get_mappings(p1,p2,sys.argv[3],sys.argv[4]):
-    print "Found mappings."
+    print("Found mappings.")
     sys.exit(0)
 else:
-    print "Did not find mappings."
+    print("Did not find mappings.")
     sys.exit(1)
 

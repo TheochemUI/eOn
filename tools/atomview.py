@@ -87,7 +87,7 @@ class atomview(gtk.Window):
         self.colors = []
         
     def gui_key_on(self, key):
-        return self.keys.has_key(key)
+        return key in self.keys
         
 #
 # EVENT -----------------------------------------------------------------------------------------

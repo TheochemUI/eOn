@@ -190,7 +190,7 @@ for dir in state_listdir:
       continue
    if dir == paras['max_state_n']:
       break
-   print "state:", dir
+   print("state:", dir)
    try:
      rs = db.addMinimum(states_e[dir], [dir])
    except:
@@ -223,7 +223,7 @@ for dir in state_listdir:
          ts = db.addTransitionState(selected_procs['saddle energy'].iloc[i], [dir, ps_ID], rs, ps)
        except:
          continue
-print "#of states:",len(db.minima())
+print("#of states:",len(db.minima()))
 #for mini in db.minima():
 #   print mini.coords
 Emax = paras['emax']
@@ -232,16 +232,16 @@ if Emax is None:
    for ts in db.transition_states():
       if ts.energy > Emax:
          Emax = ts.energy
-   print 'max ts:', Emax
+   print('max ts:', Emax)
 #check the structures with energy larger than check_e
 #print paras['check_structure']
 if paras['check_structure']:
    for ts in db.transition_states():
        if ts.energy > paras['check_e']:
-          print ts.coords
+          print(ts.coords)
    for rs in db.minima():
        if ts.energy > paras['check_e']:
-          print rs.coords
+          print(rs.coords)
 graph = database2graph(db)
 dg = DisconnectivityGraph(graph,nlevels=paras['nlevels'],Emax=Emax+0.05,node_offset=0)
 dg.calculate()
@@ -270,11 +270,11 @@ max_key = 0
 for key in Au_seg:
    if len(Au_seg[key]) >0 and key > max_key:
       max_key = key
-print 'Max # of surface Au:',max_key
+print('Max # of surface Au:',max_key)
 
 if paras['draw_symbol']:
    for i in range(len(paras['minima_to_draw'])):
-      print paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i] 
+      print(paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i]) 
 #      try:
       dg.draw_minima(Au_seg[int(paras['minima_to_draw'][i])],marker=paras['symbol'][i],c='tab:'+paras['color'][i], s=paras['marker_size'])
 #      except:

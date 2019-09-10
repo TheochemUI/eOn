@@ -13,4 +13,4 @@ if len(sys.argv) == 3:
 else:
     cut = 3.3
 
-print atoms.coordination_numbers(p, cut)
+print(atoms.coordination_numbers(p, cut))
