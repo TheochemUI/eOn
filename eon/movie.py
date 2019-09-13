@@ -3,7 +3,7 @@ import os
 import sys
 import glob
 
-from . import fileio as io
+import fileio as io
 
 def make_movie(movie_type, path_root, states, separate_files=False):
     movie_path = "movie.poscar"

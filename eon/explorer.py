@@ -10,14 +10,14 @@ import pickle as pickle
 from copy import copy
 import numpy
 
-from . import atoms
-from . import communicator
-from . import config
-from . import displace
-from . import fileio as io
+import atoms
+import communicator
+import config
+import displace
+import fileio as io
 #import kdb
-from . import recycling
-from . import eon_kdb as kdb
+import recycling
+import eon_kdb as kdb
 
 def get_minmodexplorer():
     if config.akmc_server_side_process_search:

@@ -1,13 +1,12 @@
 
 """ The atoms module. """
-from . import config
+#import eon.config
+import config
 
 from math import cos, sin, acos
 import numpy
 import logging
 logger = logging.getLogger('atoms')
-
-from . import fileio as io
 
 class Atoms:
     """ The Atoms class. """
@@ -289,6 +288,7 @@ def match(a,b,eps_r,neighbor_cutoff,indistinguishable):
 
 
 def point_energy_match(file_a, energy_a, file_b, energy_b):
+    import eon.fileio as io
     if abs(energy_a - energy_b) > config.comp_eps_e:
         return False
     a = io.loadcon(file_a)

@@ -1,1 +1,1 @@
-from .main import main
+from eon.main import main
