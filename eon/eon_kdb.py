@@ -39,9 +39,9 @@ def query(state):
     os.makedirs(os.path.join(config.kdb_scratch_path, "kdbmatches"))
     kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
     if state.number == 0:
-        reactant = kdb.aselite.read_any(os.path.abspath(os.path.join(config.path_root, "pos.con")))
+        reactant = eon.kdb.aselite.read_any(os.path.abspath(os.path.join(config.path_root, "pos.con")))
     else:
-        reactant = kdb.aselite.read_any(os.path.abspath(state.reactant_path))
+        reactant = eon.kdb.aselite.read_any(os.path.abspath(state.reactant_path))
     db = kdb.local_db.LocalDB(config.kdb_name)
     params = db.get_params()
     query_sub_class = kdb.local_query.LocalQuery()
