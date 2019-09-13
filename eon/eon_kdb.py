@@ -8,8 +8,8 @@ import numpy
 import logging
 logger = logging.getLogger('kdb')    
 
-from . import config
-from . import fileio as io
+import config
+import fileio as io
 
 def insert(state, process_id):
     try:

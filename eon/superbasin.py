@@ -4,7 +4,7 @@ import numpy
 from .mcamc import mcamc
 import logging
 logger = logging.getLogger('superbasin')
-from . import config
+import config
 
 
 class Superbasin:

@@ -5,9 +5,9 @@ import os, re
 from math import cos, sin
 import numpy
 
-from . import atoms
-from . import fileio as io
-from . import config
+import atoms
+import fileio as io
+import config
 
 class DisplacementManager:
     def __init__(self, reactant, moved_atoms):

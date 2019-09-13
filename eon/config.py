@@ -4,10 +4,8 @@ import numpy
 import os.path
 import sys
 import string
-from . import config
-from . import yaml
-
-from . import fileio as io
+import yaml
+import config
 
 config.init_done = False
 
@@ -203,6 +201,7 @@ def init(config_file = ""):
 
     if int(config.main_random_seed) >= 0:
         if os.path.isfile(os.path.join(config.path_root, 'prng.pkl')):
+            from eon import fileio as io
             io.get_prng_state()
         else:
             numpy.random.seed(config.main_random_seed)
