@@ -2,7 +2,7 @@
 
 import math
 import sys
-import configparser
+import ConfigParser
 import os.path
 import shutil
 from time import sleep
@@ -13,20 +13,33 @@ import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
+from builtins import input
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-from . import communicator
-from . import config
-from . import locking
-from . import akmcstatelist
-from . import explorer
-from . import fileio as io
-from . import atoms
-from . import superbasinscheme
-from . import askmc
-from . import movie
-from .version import version
+import communicator
+import config
+import locking
+import akmcstatelist
+import explorer
+import fileio as io
+import atoms
+import superbasinscheme
+import askmc
+import movie
+from version import version
+
+#import eon.communicator
+#import eon.config
+#import eon.locking
+#import eon.akmcstatelist
+#import eon.explorer
+#import eon.fileio as io
+#import eon.atoms
+#import eon.superbasinscheme
+#import eon.askmc
+#import eon.movie
+#from eon.version import version
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
@@ -114,7 +127,7 @@ def akmc(config, steps=0):
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = configparser.RawConfigParser() 
+    parser = ConfigParser.RawConfigParser() 
 
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
@@ -573,7 +586,7 @@ def main():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
-                from .mpiwait import mpiwait
+                from mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":

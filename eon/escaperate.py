@@ -12,14 +12,14 @@ import optparse
 import os
 import shutil
 import sys
-from . import atoms
 
-from . import communicator
-from . import config
-from . import fileio as io
-from . import locking
-from . import prstatelist
-from .version import version
+import atoms
+import communicator
+import config
+import fileio as io
+import locking
+import prstatelist
+from version import version
 
 def parallelreplica():
     logger.info('Eon version %s', version())
