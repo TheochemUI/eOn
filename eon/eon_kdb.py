@@ -18,9 +18,9 @@ def insert(state, process_id):
         logger.error('Python module kdb not found, kdb will not be used.')
         return
     logger.debug("KDB inserting process")
-    reactant = kdb.aselite.read_any(state.proc_reactant_path(process_id))
-    saddle   = kdb.aselite.read_any(state.proc_saddle_path(process_id))
-    product  = kdb.aselite.read_any(state.proc_product_path(process_id))
+    reactant = eon.kdb.aselite.read_any(state.proc_reactant_path(process_id))
+    saddle   = eon.kdb.aselite.read_any(state.proc_saddle_path(process_id))
+    product  = eon.kdb.aselite.read_any(state.proc_product_path(process_id))
     mode     = state.get_process_mode(process_id)
     db = kdb.local_db.LocalDB(config.kdb_name)
     params = db.get_params()
