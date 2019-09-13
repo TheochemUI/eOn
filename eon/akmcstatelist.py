@@ -5,9 +5,10 @@ import logging
 logger = logging.getLogger('statelist')
 import math
 import shutil
-from . import atoms
-from . import akmcstate
-from . import statelist
+
+import atoms
+import akmcstate
+import statelist
 
 
 class AKMCStateList(statelist.StateList):

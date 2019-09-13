@@ -3,11 +3,10 @@ import os
 import logging
 logger = logging.getLogger('superbasinscheme')
 
-from . import config
-
 import sys
 
-from . import superbasin
+import config
+import superbasin
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
