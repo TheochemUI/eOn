@@ -1,6 +1,6 @@
 
 from array import array
-import config
+from eon import config
 import os
 import shutil
 import logging
@@ -8,10 +8,9 @@ logger = logging.getLogger('communicator')
 
 from time import sleep, time
 import subprocess
-import commands
 import tarfile
-from cStringIO import StringIO
-import cPickle as pickle
+from io import StringIO
+import pickle as pickle
 import glob
 import re
 import numpy
@@ -152,7 +151,7 @@ class Communicator:
                 #                     "Check its output for errors." % jobpath)
                 continue
 
-            results = [{'name': dirname} for i in xrange(bundle_size)]
+            results = [{'name': dirname} for i in range(bundle_size)]
 
             if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.
@@ -199,7 +198,7 @@ class Communicator:
                     results[index]['number'] = index
 
             # XXX: UGLY: We need a way to check if there are no results.
-            if not any([ filename.startswith('results') for filename in results[0].keys() ]):
+            if not any([ filename.startswith('results') for filename in list(results[0].keys())]):
                 logger.warning("Failed to find a result.dat file for %s",results[0]['name'])
                 results = []
             yield results
@@ -218,7 +217,7 @@ class Communicator:
             job_path = os.path.join(self.scratchpath, chunk[0]['id'])
             os.mkdir(job_path)
 
-            for filename in invariants.keys():
+            for filename in list(invariants.keys()):
                 f = open(os.path.join(job_path, filename), 'w')
                 file_contents, file_permissions = invariants[filename]
 #                f.write(invariants[filename].getvalue())
@@ -229,7 +228,7 @@ class Communicator:
             # Concatenate all of the displacement and modes together.
             n = 0
             for job in chunk:
-                for basename in job.keys():
+                for basename in list(job.keys()):
                     splitname = basename.rsplit(".", 1)
                     if len(splitname)!=2:
                         continue
@@ -530,9 +529,9 @@ class Script(Communicator):
 
     def cancel_state(self, state):
         # cancel_job.sh jobid
-        if len(self.jobids.keys()) == 0:
+        if len(list(self.jobids.keys())) == 0:
             return 0
-        for job_id in self.jobids.keys():
+        for job_id in list(self.jobids.keys()):
             cmd = "%s %i" % (self.cancel_job_cmd, job_id)
             status, output = commands.getstatusoutput(cmd)
             if status != 0:
@@ -541,7 +540,7 @@ class Script(Communicator):
         self.save_jobids()
         shutil.rmtree(config.path_scratch) 
         os.makedirs(config.path_scratch)
-        return len(self.jobids.keys())
+        return len(list(self.jobids.keys()))
 
     def get_queued_jobs(self):
         status, output = commands.getstatusoutput(self.queued_jobs_cmd)

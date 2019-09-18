@@ -2,10 +2,9 @@
 '''
 Con(figuration) i/o library
 '''
-import ConfigParser
-#from io import StringIO
+import configparser
 #from io import BytesIO as StringIO
-from cStringIO import StringIO
+from io import StringIO
 import logging
 logger = logging.getLogger('io')
 import numpy
@@ -13,8 +12,8 @@ import os
 
 import pickle as pickle
 
-import atoms
-import config
+import eon.atoms as atoms
+import eon.config as config
 
 def save_prng_state():
     state = numpy.random.get_state()
@@ -222,7 +221,7 @@ def save_results_dat(fileout, results):
         print(results[key], key, con)
 
 def modify_config(config_path, changes):
-    parser = ConfigParser.SafeConfigParser()
+    parser = configparser.SafeConfigParser()
     parser.read(config.config_path)
     for change in changes:
         parser.set(*change)
