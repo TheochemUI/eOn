@@ -4,8 +4,8 @@ import numpy
 import os.path
 import sys
 import string
-from eon import yaml
-from eon import config
+from . import yaml
+from . import config
 
 config.init_done = False
 
