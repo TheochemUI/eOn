@@ -92,7 +92,7 @@ def processes(states, statenr, limit):
         sys.exit(1)
 
     process_table = state.get_process_table()
-    for k,v in process_table.items():
+    for k,v in list(process_table.items()):
         process_table[k]['id'] = k
         process_table[k]['reactant'] = state.get_process_reactant(k)
         process_table[k]['saddle'] = state.get_process_saddle(k)
@@ -145,7 +145,7 @@ def make_graph(states):
         state = states.get_state(statenr)
         G.add_node(state)
         ptable = state.get_process_table()
-        for i,p in ptable.items():
+        for i,p in list(ptable.items()):
             if p['product'] != -1:
                 neighbor_state = states.get_state(p['product'])
                 G.add_node(neighbor_state)
@@ -189,7 +189,7 @@ def fastest_path(path_root, states, full=False):
 def get_fastest_process_id(state1, state2):
     ptable = state1.get_process_table()
     fastest = None
-    for i,p in ptable.items():
+    for i,p in list(ptable.items()):
         if p['product'] == state2.number:
             if not fastest or fastest[1] < p['rate']:
                 fastest = (i, p['rate'])
@@ -198,7 +198,7 @@ def get_fastest_process_id(state1, state2):
 def get_fastest_process_rate(state1, state2):
     ptable = state1.get_process_table()
     fastest = None
-    for i,p in ptable.items():
+    for i,p in list(ptable.items()):
         if p['product'] == state2.number:
             if not fastest or fastest[1] < p['rate']:
                 fastest = (i, p['rate'])
@@ -214,7 +214,7 @@ class Graph:
 
     def dot(self):
         unique_edges = set()
-        for node,edgedict in self.graph.items():
+        for node,edgedict in list(self.graph.items()):
             edgelist = list(edgedict.keys())
             for edge in edgelist:
                 if node.number < edge.number:
@@ -328,7 +328,7 @@ class priorityDictionary(dict):
         dict.__setitem__(self,key,val)
         heap = self.__heap
         if len(heap) > 2 * len(self):
-            self.__heap = [(v,k) for k,v in self.items()]
+            self.__heap = [(v,k) for k,v in list(self.items())]
             self.__heap.sort()  # builtin sort likely faster than O(n) heapify
         else:
             newPair = (val,key)
