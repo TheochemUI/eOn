@@ -29,7 +29,7 @@ def main():
     elif job == 'escape_rate':
         escaperate.main()
     else:
-        import communicator
+        from . import communicator
         import shutil
         config.path_scratch = config.path_root
         comm = communicator.get_communicator()

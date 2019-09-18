@@ -400,7 +400,7 @@ def main():
     exclusive_options['reset'] = options.reset
 
     if sum(exclusive_options.values()) > 1:
-        offending_options = [ k for k,v in exclusive_options.items() if v ]
+        offending_options = [ k for k,v in list(exclusive_options.items()) if v ]
         optpar.error("Options %s are mutually exclusive" % ", ".join(offending_options))
 
     if len(options.movie_type) > 0:
@@ -574,7 +574,7 @@ def main():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
-                from mpiwait import mpiwait
+                from .mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":

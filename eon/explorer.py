@@ -373,7 +373,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         for search_id in self.job_info:
             fmt = "%9i %13s %11s %10s\n"
             lines = {'saddle_search':None, 'min1':None, 'min2':None}
-            for name, job in self.job_info[search_id].items():
+            for name, job in list(self.job_info[search_id].items()):
                 lines[job['type']] = fmt % (search_id, job['type'], job['status'], name)
 
             if lines['saddle_search']:

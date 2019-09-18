@@ -231,7 +231,7 @@ class AKMCState(state.State):
         # Maximum barrier according to thermal window.
         max_barrier = lowest + self.statelist.kT * self.statelist.thermal_window
         rt = [(id, proc['rate'], proc['prefactor'])
-              for id, proc in self.procs.items()
+              for id, proc in list(self.procs.items())
               if proc['barrier'] <= max_barrier]
         if not superbasin:
             return rt
@@ -307,7 +307,7 @@ class AKMCState(state.State):
         prc = self.get_proc_random_count()
         if superbasin:
             prc = dict([proc, count]
-                       for proc, count in prc.items()
+                       for proc, count in list(prc.items())
                        if self.procs[proc]["product"] not in superbasin.state_dict)
         alpha = 1.0
         if config.akmc_confidence_correction:
@@ -384,7 +384,7 @@ class AKMCState(state.State):
             total_rate_estimator = 0.0
             total_rate_found = 0.0
             T1 = config.main_temperature
-            for T2, T2_time in self.get_time_by_temp().items():
+            for T2, T2_time in list(self.get_time_by_temp().items()):
                 if T2_time == 0.0:
                     continue
 
