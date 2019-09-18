@@ -9,10 +9,10 @@ logger = logging.getLogger('state')
 
 import numpy
 
-import atoms
-import config
-import fileio as io
-import state
+from . import atoms
+from . import config
+from . import fileio as io
+from . import state
 
 class AKMCState(state.State):
     ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))

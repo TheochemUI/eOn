@@ -12,11 +12,11 @@ import os
 import shutil
 import sys
 
-import communicator
-import config
-import fileio as io
-import locking
-import prstatelist
+from . import communicator
+from . import config
+from . import fileio as io
+from . import locking
+from . import prstatelist
 from eon.version import version
 
 def parallelreplica():

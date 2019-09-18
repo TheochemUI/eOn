@@ -4,8 +4,8 @@
 import logging
 logger = logging.getLogger('state')
 
-import fileio as io
-import state
+from . import fileio as io
+from . import state
 
 class PRState(state.State):
     ID, PRODUCT, PRODUCT_ENERGY, TIME = list(range(4))
