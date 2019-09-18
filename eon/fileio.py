@@ -191,7 +191,7 @@ def load_mode(modefilein):
         l = line.strip().split()
         for j in range(3):
             mode.append(float(l[j]))
-    return numpy.array(mode).reshape(len(mode)/3, 3)
+    return numpy.array(mode).reshape(len(mode)//3, 3)
 
 def save_mode(modefileout, displace_vector):
     '''
