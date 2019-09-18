@@ -13,7 +13,8 @@ from . import fileio as io
 
 def insert(state, process_id):
     try:
-        import eon.kdb as kdb
+#        import eon.kdb as kdb
+        from . import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -30,7 +31,8 @@ def insert(state, process_id):
 
 def query(state):
     try:
-        import eon.kdb as kdb
+#GH        import eon.kdb as kdb
+        from . import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -51,7 +53,8 @@ def query(state):
 
 def make_suggestion():
     try:
-        import eon.kdb as kdb
+#GH        import eon.kdb as kdb
+        from . import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return None, None
