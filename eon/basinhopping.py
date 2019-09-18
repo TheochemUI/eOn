@@ -12,12 +12,12 @@ import shutil
 import sys
 import random
 
-import atoms
-import communicator
-import config
-import fileio as io
-import locking
-from version import version
+from . import atoms
+from . import communicator
+from . import config
+from . import fileio as io
+from . import locking
+from eon.version import version
 
 #class RandomStructure:
 #    def __init__(self, structure):

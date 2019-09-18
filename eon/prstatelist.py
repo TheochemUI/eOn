@@ -4,8 +4,8 @@
 import logging
 logger = logging.getLogger('statelist')
 
-import prstate
-import statelist
+from . import prstate
+from . import statelist
 
 
 class PRStateList(statelist.StateList):
