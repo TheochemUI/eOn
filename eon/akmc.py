@@ -17,17 +17,17 @@ from builtins import input
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-from eon import communicator
-from eon import config
-from eon import locking
-from eon import akmcstatelist
-from eon import explorer
-from eon import fileio as io
-from eon import atoms
-from eon import superbasinscheme
-from eon import askmc
-from eon import movie
-from version import version
+from . import communicator
+from . import config
+from . import locking
+from . import akmcstatelist
+from . import explorer
+from . import fileio as io
+from . import atoms
+from . import superbasinscheme
+from . import askmc
+from . import movie
+from eon.version import version
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.

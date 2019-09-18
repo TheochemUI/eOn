@@ -8,7 +8,7 @@ logger = logging.getLogger('state')
 from configparser import SafeConfigParser
 import tarfile
 
-import fileio as io
+from . import fileio as io
 
 class State:
     """ The state super class. """
