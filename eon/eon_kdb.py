@@ -18,9 +18,9 @@ def insert(state, process_id):
         logger.error('Python module kdb not found, kdb will not be used.')
         return
     logger.debug("KDB inserting process")
-    reactant = eon.kdb.aselite.read_any(state.proc_reactant_path(process_id))
-    saddle   = eon.kdb.aselite.read_any(state.proc_saddle_path(process_id))
-    product  = eon.kdb.aselite.read_any(state.proc_product_path(process_id))
+    reactant = kdb.aselite.read_any(state.proc_reactant_path(process_id))
+    saddle   = kdb.aselite.read_any(state.proc_saddle_path(process_id))
+    product  = kdb.aselite.read_any(state.proc_product_path(process_id))
     mode     = state.get_process_mode(process_id)
     db = kdb.local_db.LocalDB(config.kdb_name)
     params = db.get_params()
@@ -39,9 +39,9 @@ def query(state):
     os.makedirs(os.path.join(config.kdb_scratch_path, "kdbmatches"))
     kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
     if state.number == 0:
-        reactant = eon.kdb.aselite.read_any(os.path.abspath(os.path.join(config.path_root, "pos.con")))
+        reactant = kdb.aselite.read_any(os.path.abspath(os.path.join(config.path_root, "pos.con")))
     else:
-        reactant = eon.kdb.aselite.read_any(os.path.abspath(state.reactant_path))
+        reactant = kdb.aselite.read_any(os.path.abspath(state.reactant_path))
     db = kdb.local_db.LocalDB(config.kdb_name)
     params = db.get_params()
     query_sub_class = kdb.local_query.LocalQuery()
