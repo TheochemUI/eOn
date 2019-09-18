@@ -4,11 +4,11 @@ import os
 import glob
 from io import StringIO
 
-import akmc
-import basinhopping
-import parallelreplica
-import escaperate
-import fileio as io
+from eon import akmc
+from eon import basinhopping
+from eon import parallelreplica
+from eon import escaperate
+from eon import fileio as io
 #from eon import config
 import config
 

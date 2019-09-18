@@ -126,7 +126,7 @@ class MinModeExplorer(Explorer):
         if config.kdb_on:
             displacement, mode = kdb.make_suggestion()
             if displacement:
-		displacement.mass = self.reactant.mass
+                displacement.mass = self.reactant.mass
                 logger.info('Made a KDB suggestion')
                 return displacement, mode, 'kdb'
 
@@ -585,7 +585,7 @@ class ProcessSearch:
     def get_job(self, state_number):
         if state_number != self.state_number:
             return None, None
-    
+
         if True in [ s == 'error' for s in list(self.job_statuses.values()) ]:
             return None, None
 

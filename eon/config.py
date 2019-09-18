@@ -4,8 +4,8 @@ import numpy
 import os.path
 import sys
 import string
-import yaml
-import config
+from eon import yaml
+from eon import config
 
 config.init_done = False
 
@@ -24,7 +24,7 @@ class ConfigKey:
         self.values = []
 
 yaml_file = open(os.path.join(os.path.dirname(__file__), 'config.yaml'))
-y = yaml.load(yaml_file)
+y = yaml.load(yaml_file, Loader=yaml.FullLoader)
 yaml_file.close()
 
 for sectionName in y:
