@@ -4,13 +4,12 @@ import os
 import glob
 from io import StringIO
 
-from eon import akmc
-from eon import basinhopping
-from eon import parallelreplica
-from eon import escaperate
-from eon import fileio as io
-#from eon import config
-import config
+from . import akmc
+from . import basinhopping
+from . import parallelreplica
+from . import escaperate
+from . import fileio as io
+from . import config
 
 def main():
     config.init()
