@@ -4,7 +4,7 @@ import numpy
 import os.path
 import sys
 import string
-from . import yaml
+import yaml
 from . import config
 
 config.init_done = False
