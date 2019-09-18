@@ -115,7 +115,8 @@ def akmc(config, steps=0):
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = configparser.RawConfigParser() 
+#    parser = configparser.RawConfigParser() 
+    parser = configparser.SafeConfigParser() 
 
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number

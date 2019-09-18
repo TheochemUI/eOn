@@ -377,7 +377,8 @@ class ini(SCP):
         if not self.loaded:
             self.read()
         try:
-            value = SCP.get(self, section, option)
+            SCP.read(self, self.filenames)
+            value = SCP.get(self, section, option, raw=True)
         except:
             if default == "ini_no_default":
                 raise NameError("Section or option missing, no default specified")
