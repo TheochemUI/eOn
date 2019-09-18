@@ -2,7 +2,7 @@
 
 import math
 import sys
-import ConfigParser
+import configparser
 import os.path
 import shutil
 from time import sleep
@@ -17,29 +17,17 @@ from builtins import input
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-import communicator
-import config
-import locking
-import akmcstatelist
-import explorer
-import fileio as io
-import atoms
-import superbasinscheme
-import askmc
-import movie
+from eon import communicator
+from eon import config
+from eon import locking
+from eon import akmcstatelist
+from eon import explorer
+from eon import fileio as io
+from eon import atoms
+from eon import superbasinscheme
+from eon import askmc
+from eon import movie
 from version import version
-
-#import eon.communicator
-#import eon.config
-#import eon.locking
-#import eon.akmcstatelist
-#import eon.explorer
-#import eon.fileio as io
-#import eon.atoms
-#import eon.superbasinscheme
-#import eon.askmc
-#import eon.movie
-#from eon.version import version
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.

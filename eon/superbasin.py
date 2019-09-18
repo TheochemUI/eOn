@@ -1,7 +1,7 @@
 
 import os
 import numpy
-from .mcamc import mcamc
+from eon.mcamc import mcamc
 import logging
 logger = logging.getLogger('superbasin')
 import config
