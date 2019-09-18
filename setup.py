@@ -12,4 +12,4 @@ setup(name='eon',
       packages=packages,
       package_dir=package_dir,
       package_data=package_data,
-      scripts=['bin/eon'])
+      entry_points={'console_scripts': ['eon=eon.main:main']})

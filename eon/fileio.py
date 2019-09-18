@@ -21,7 +21,7 @@ def save_prng_state():
     pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
 def get_prng_state():
-    fh = open('prng.pkl')
+    fh = open('prng.pkl', 'rb')
     state = pickle.load(fh)
     numpy.random.set_state(state)
 
@@ -411,7 +411,8 @@ class ini(SCP):
             name = self.filenames
         else:
             name = self.filenames[-1]
-        configfile = open(name, 'wb')
+#        configfile = open(name, 'wb')
+        configfile = open(name, 'w')
         self.write(configfile)
         configfile.close()
 
