@@ -5,7 +5,7 @@ logger = logging.getLogger('superbasinscheme')
 
 import sys
 
-from . import config
+from .config import config
 from . import superbasin
 
 class SuperbasinScheme:

@@ -3,7 +3,7 @@ import os
 import numpy
 from . import atoms
 from . import fileio as io
-from . import config
+from .config import config
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.

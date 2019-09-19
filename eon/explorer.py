@@ -10,9 +10,9 @@ import pickle as pickle
 from copy import copy
 import numpy
 
+from .config import config
 from . import atoms
 from . import communicator
-from . import config
 from . import displace
 from . import fileio as io
 #import kdb
