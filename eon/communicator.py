@@ -1,6 +1,6 @@
 
 from array import array
-from eon import config
+from . import config
 import os
 import shutil
 import logging
