@@ -1,5 +1,5 @@
-
 #!/usr/bin/env python
+
 import os
 import glob
 from io import StringIO
@@ -9,7 +9,7 @@ from . import basinhopping
 from . import parallelreplica
 from . import escaperate
 from . import fileio as io
-from . import config
+from .config import config
 
 def main():
     config.init()

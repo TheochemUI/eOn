@@ -6,7 +6,7 @@ logger = logging.getLogger('statelist')
 import os
 
 from . import atoms
-from . import config
+from .config import config
 
 
 class StateList:

@@ -1,6 +1,6 @@
 
 from array import array
-from . import config
+from .config import config
 import os
 import shutil
 import logging

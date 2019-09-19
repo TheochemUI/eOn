@@ -17,8 +17,9 @@ from builtins import input
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
+from .version import version
+from .config import config
 from . import communicator
-from . import config
 from . import locking
 from . import akmcstatelist
 from . import explorer
@@ -27,7 +28,6 @@ from . import atoms
 from . import superbasinscheme
 from . import askmc
 from . import movie
-from eon.version import version
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
@@ -55,7 +55,7 @@ def akmc(config, steps=0):
 
     # If we are saving debug results, create the directory if it does not exist.
     if config.debug_keep_all_results:
-        rp = os.path.join(config.path_root,config.debug_results_path)
+        rp = os.path.join(config.path_root, config.debug_results_path)
         if not os.path.isdir(rp):
             os.mkdir(rp)
 
@@ -416,7 +416,7 @@ def main():
         sys.exit(1)
 
     # From the config file: dynamics confidence can not be used with MinMode searches
-    if config.config.saddle_method=="min_mode" and config.akmc_confidence_scheme=="dynamics":
+    if config.saddle_method=="min_mode" and config.akmc_confidence_scheme=="dynamics":
         logger.error("Dynamics confidence scheme can not be used with MinMode saddle searches")
         sys.exit(1)
 

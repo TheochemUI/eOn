@@ -9,8 +9,8 @@ logger = logging.getLogger('state')
 
 import numpy
 
+from .config import config
 from . import atoms
-from . import config
 from . import fileio as io
 from . import state
 
