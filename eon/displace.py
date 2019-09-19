@@ -7,7 +7,7 @@ import numpy
 
 from . import atoms
 from . import fileio as io
-from . import config
+from .config import config
 
 class DisplacementManager:
     def __init__(self, reactant, moved_atoms):
