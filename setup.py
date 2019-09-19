@@ -9,7 +9,10 @@ package_dir = {'eon':'eon'}
 package_data = {'eon': ['config.yaml']}
 
 setup(name='eon',
-      packages=packages,
-      package_dir=package_dir,
-      package_data=package_data,
-      entry_points={'console_scripts': ['eon=eon.main:main']})
+    version='1.0.0'
+    author='Henkelman Group'
+    url=http://henkelmanlab/eon/
+    packages=packages,
+    package_dir=package_dir,
+    package_data=package_data,
+    entry_points={'console_scripts': ['eon=eon.main:main']})
