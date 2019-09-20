@@ -24,8 +24,8 @@ class ConfigClass:
         self.format = []
 
         yaml_file = open(os.path.join(os.path.dirname(__file__), 'config.yaml'))
-#        y = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        y = yaml.load(yaml_file)
+        y = yaml.load(yaml_file, Loader=yaml.BaseLoader)
+#        y = yaml.load(yaml_file)
         yaml_file.close()
 
         for sectionName in y:
