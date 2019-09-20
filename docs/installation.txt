@@ -14,9 +14,10 @@ Dependencies
 ============
 
 * Server
-    * `Python <http://www.python.org/download>`_ (2.4 - 2.7)
+    * `Python <http://www.python.org/download>`_ (>=3.5)
     * `NumPy <http://new.scipy.org/download.html>`_ (>=1.2.1)
     * `ASE <https://wiki.fysik.dtu.dk/ase/download.html>`_
+    * `PyYaml <https://pyyaml.org>`_
     * (optional, for MPI communicator) `mpi4py <http://mpi4py.scipy.org/>`_
 
 * Client
