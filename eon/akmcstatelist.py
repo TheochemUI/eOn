@@ -1,6 +1,6 @@
 """ The statelist module. """
 
-from . import config
+from .config import config
 import logging
 logger = logging.getLogger('statelist')
 import math
