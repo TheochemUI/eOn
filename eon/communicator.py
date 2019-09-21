@@ -7,24 +7,13 @@ import logging
 logger = logging.getLogger('communicator')
 
 from time import sleep, time
-import subprocess
+from subprocess import Popen, PIPE
 import tarfile
 from io import StringIO
 import pickle as pickle
 import glob
 import re
 import numpy
-
-# To ensure backward compatibility
-import sys
-if sys.version_info < (2, 5):
-    def any(iterable):
-        for element in iterable:
-            if element:
-                return True
-        return False
-
-import re
 
 def tryint(s):
     try:
@@ -412,8 +401,7 @@ class Local(Communicator):
             # move the job directory to the scratch directory
             # update jobpath to be in the scratch directory
             fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
-            p = subprocess.Popen(self.client, cwd=jobpath,
-                    stdout=fstdout, stderr=subprocess.PIPE)
+            p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=PIPE)
             #commands.getoutput("renice -n 20 -p %d" % p.pid)
             self.joblist.append((p,jobpath))
 
@@ -460,7 +448,8 @@ class Script(Communicator):
 
         # read in job ids
         try:
-            f = open(self.job_id_path, "r")
+#            f = open(self.job_id_path, "r")
+            f = open(self.job_id_path, "rb")
             self.jobids = pickle.load(f)
             f.close()
         except IOError:
@@ -468,7 +457,8 @@ class Script(Communicator):
             pass
 
     def save_jobids(self):
-        f = open(self.job_id_path, "w")
+#        f = open(self.job_id_path, "w")
+        f = open(self.job_id_path, "wb")
         pickle.dump(self.jobids, f)
         f.close()
 
@@ -517,7 +507,12 @@ class Script(Communicator):
             eon_jobid = jobname.rsplit('_',1)[-1]
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
-            status, output = commands.getstatusoutput(cmd)
+#            status, output = commands.getstatusoutput(cmd)
+            p = Popen([self.submit_job_cmd,jobname,jobpath], stdout=PIPE, stderr=PIPE)
+            output, error = p.communicate()
+            output = output.decode()
+            error = error.decode()
+            status = p.returncode
             self.check_command(status, output, cmd)
 
             jobid = int(output.strip())
@@ -543,7 +538,12 @@ class Script(Communicator):
         return len(list(self.jobids.keys()))
 
     def get_queued_jobs(self):
-        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
+#        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
+        p = Popen([self.queued_jobs_cmd,''], stdout=PIPE, stderr=PIPE)
+        output, error = p.communicate()
+        output = output.decode()
+        error = error.decode()
+        status = p.returncode
         self.check_command(status, output, self.queued_jobs_cmd)
         queued_job_ids = []
         for line in output.split("\n"):
