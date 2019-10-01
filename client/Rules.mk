@@ -109,9 +109,9 @@ ifdef EONMPI
         CXXFLAGS += -DEONMPIBGP
         LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.7 -lm
     else
-        python_include_path=$(shell python -c "import sys,os; print os.path.join(sys.prefix, 'include', 'python'+sys.version[:3])")
-        python_lib=$(shell python -c "import sys,os; print 'python'+sys.version[:3]")
-python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib')")       
+        python_include_path=$(shell python -c "import sys,os; print(os.path.join(sys.prefix, 'include', 'python'+sys.version[:3]))")
+        python_lib=$(shell python -c "import sys,os; print('python'+sys.version[:3]"))
+python_lib_path=$(shell python -c "import sys,os;print(os.path.join(sys.prefix, 'lib'))")
         ## uncomment for comilation on hopper, comment above definition
         # python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib','python'+sys.version[:3], 'config')")
         ifneq ($(python_lib_path),/usr/lib)
