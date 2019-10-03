@@ -17,17 +17,17 @@ from builtins import input
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-from .version import version
-from .config import config
-from . import communicator
-from . import locking
-from . import akmcstatelist
-from . import explorer
-from . import fileio as io
-from . import atoms
-from . import superbasinscheme
-from . import askmc
-from . import movie
+from eon.version import version
+from eon.config import config
+from eon import communicator
+from eon import locking
+from eon import akmcstatelist
+from eon import explorer
+from eon import fileio as io
+from eon import atoms
+from eon import superbasinscheme
+from eon import askmc
+from eon import movie
 
 def akmc(config, steps=0):
     """Poll for status of AKMC clients and possibly make KMC steps.
@@ -89,7 +89,6 @@ def akmc(config, steps=0):
         previous_state = current_state
     else:
         previous_state = states.get_state(previous_state_num)
-
     # If the Novotny-based superbasining scheme is being used, initialize it.
     if config.sb_on:
         superbasining = get_superbasin_scheme(states)
@@ -106,8 +105,7 @@ def akmc(config, steps=0):
         sb = None
         explore_state = current_state
 
-    state_explorer = explorer.get_minmodexplorer()(states, previous_state,
-                                                   explore_state, superbasin=sb)
+    state_explorer = explorer.get_minmodexplorer()(states, previous_state, explore_state, superbasin=sb)
     state_explorer.explore()
 
     # Take a KMC step, if it's time.
@@ -115,7 +113,7 @@ def akmc(config, steps=0):
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-#    parser = configparser.RawConfigParser() 
+#    parser = configparser.RawConfigParser()
     parser = configparser.SafeConfigParser() 
 
     if previous_state.number != current_state.number:
@@ -350,7 +348,6 @@ def main():
     optpar.add_option("-M", "--separate-movie-files", action="store_true", dest="separate_movie_files", default=False, help="Do not write the movie into a single file but use a separate POSCAR for every state. These are created in the \"movies\" directory. Only useful in conjunction with --movie.")
     optpar.add_option("-n", "--no-submit", action="store_true", dest="no_submit", default=False,help="don't submit searches; only register finished results")
     (options, args) = optpar.parse_args()
-
     if len(args) > 1:
         print("akmc.py takes only one positional argument")
     sys.argv = sys.argv[0:1]
@@ -575,7 +572,7 @@ def main():
         if options.continuous or config.comm_type == 'mpi':
             # define a wait method.
             if config.comm_type == 'mpi':
-                from .mpiwait import mpiwait
+                from eon.mpiwait import mpiwait
                 wait = mpiwait
             elif options.continuous:
                 if config.comm_type == "local":
