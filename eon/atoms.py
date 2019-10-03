@@ -1,6 +1,6 @@
 
 """ The atoms module. """
-from .config import config
+from eon.config import config
 
 from math import cos, sin, acos
 import numpy

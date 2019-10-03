@@ -1,14 +1,14 @@
 """ The statelist module. """
 
-from .config import config
+from eon.config import config
 import logging
 logger = logging.getLogger('statelist')
 import math
 import shutil
 
-from . import atoms
-from . import akmcstate
-from . import statelist
+from eon import atoms
+from eon import akmcstate
+from eon import statelist
 
 
 class AKMCStateList(statelist.StateList):

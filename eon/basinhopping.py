@@ -12,11 +12,11 @@ import shutil
 import sys
 import random
 
-from . import atoms
-from . import communicator
-from . import config
-from . import fileio as io
-from . import locking
+from eon import atoms
+from eon import communicator
+from eon import config
+from eon import fileio as io
+from eon import locking
 from eon.version import version
 
 #class RandomStructure:
@@ -329,7 +329,7 @@ def main():
 
     if lock.aquirelock():
         if config.comm_type == 'mpi':
-            from .mpiwait import mpiwait
+            from eon.mpiwait import mpiwait
             while True:
                 mpiwait()
                 basinhopping()

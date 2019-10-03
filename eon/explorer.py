@@ -10,21 +10,20 @@ import pickle as pickle
 from copy import copy
 import numpy
 
-from .config import config
-from . import atoms
-from . import communicator
-from . import displace
-from . import fileio as io
+from eon.config import config
+from eon import atoms
+from eon import communicator
+from eon import displace
+from eon import fileio as io
 #import kdb
-from . import recycling
-from . import eon_kdb as kdb
+from eon import recycling
+from eon import eon_kdb as kdb
 
 def get_minmodexplorer():
     if config.akmc_server_side_process_search:
         return ServerMinModeExplorer
     else:
         return ClientMinModeExplorer
-
 
 class Explorer:
     def __init__(self, superbasin=None):
