@@ -236,9 +236,7 @@ int main(int argc, char **argv)
                 py_argv[1] = Py_DecodeLocale(program, NULL);
                 fprintf(stderr, "rank: %i becoming %s\n", irank, program);
                 Py_Initialize();
-                std::cout <<"before main"<<endl;
                 Py_Main(2, py_argv);
-                std::cout <<"after main"<<endl;
                 Py_FinalizeEx();
                 //GH
                 MPI::Finalize();
