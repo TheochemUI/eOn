@@ -30,7 +30,7 @@ ifdef EONMPIBGP
 endif
 
 ifdef EONMPI
-    CC=mpicc
+#    CC=mpicc
     CXX=mpicxx
     CXXFLAGS += -DEONMPI
     TARGET_NAME=eonclientmpi
