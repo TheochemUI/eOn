@@ -1,6 +1,6 @@
 
 from array import array
-from .config import config
+from eon.config import config
 import os
 import shutil
 import logging
@@ -237,7 +237,6 @@ class Communicator:
 class MPI(Communicator):
     def __init__(self, scratchpath, bundle_size):
         Communicator.__init__(self, scratchpath, bundle_size)
-
         from mpi4py.MPI import COMM_WORLD
         self.comm = COMM_WORLD
 

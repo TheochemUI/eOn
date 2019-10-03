@@ -8,13 +8,13 @@ import numpy
 import logging
 logger = logging.getLogger('kdb')    
 
-from .config import config
-from . import fileio as io
+from eon.config import config
+from eon import fileio as io
 
 def insert(state, process_id):
     try:
 #        import eon.kdb as kdb
-        from . import kdb
+        from eon import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -32,7 +32,7 @@ def insert(state, process_id):
 def query(state):
     try:
 #GH        import eon.kdb as kdb
-        from . import kdb
+        from eon import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -54,7 +54,7 @@ def query(state):
 def make_suggestion():
     try:
 #GH        import eon.kdb as kdb
-        from . import kdb
+        from eon import kdb
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return None, None
