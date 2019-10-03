@@ -254,7 +254,10 @@ class MPI(Communicator):
             rank = ready_ranks.pop()
             tmp = numpy.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
-            buf = array('c', jobpath+'\0')
+            #buf = array('c', jobpath+'\0')
+            buf = array('b')
+            bufval = jobpath+'\0'
+            buf.frombytes(bufval.encode())
             self.comm.Send(buf, rank)
 
     def run_resume_jobs(self):
