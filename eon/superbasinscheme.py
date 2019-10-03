@@ -5,8 +5,8 @@ logger = logging.getLogger('superbasinscheme')
 
 import sys
 
-from .config import config
-from . import superbasin
+from eon.config import config
+from eon import superbasin
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong

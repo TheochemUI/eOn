@@ -13,13 +13,13 @@ import os
 import shutil
 import sys
 
-from .config import config
-from .version import version
-from . import atoms
-from . import communicator
-from . import fileio as io
-from . import locking
-from . import prstatelist
+from eon.config import config
+from eon.version import version
+from eon import atoms
+from eon import communicator
+from eon import fileio as io
+from eon import locking
+from eon import prstatelist
 
 def parallelreplica():
     logger.info('Eon version %s', version())
@@ -328,7 +328,7 @@ def main():
 
     if lock.aquirelock():
         if config.comm_type == 'mpi':
-            from .mpiwait import mpiwait
+            from eon.mpiwait import mpiwait
             while True:
                 mpiwait()
                 parallelreplica()

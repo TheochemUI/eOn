@@ -4,12 +4,12 @@ import os
 import glob
 from io import StringIO
 
-from . import akmc
-from . import basinhopping
-from . import parallelreplica
-from . import escaperate
-from . import fileio as io
-from .config import config
+from eon import akmc
+from eon import basinhopping
+from eon import parallelreplica
+from eon import escaperate
+from eon import fileio as io
+from eon.config import config
 
 def main():
     config.init()
@@ -29,7 +29,7 @@ def main():
     elif job == 'escape_rate':
         escaperate.main()
     else:
-        from . import communicator
+        from eon import communicator
         import shutil
         config.path_scratch = config.path_root
         comm = communicator.get_communicator()

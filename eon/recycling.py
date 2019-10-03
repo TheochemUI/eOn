@@ -1,9 +1,9 @@
 
 import os
 import numpy
-from . import atoms
-from . import fileio as io
-from .config import config
+from eon import atoms
+from eon import fileio as io
+from eon.config import config
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
