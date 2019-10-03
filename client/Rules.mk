@@ -109,17 +109,22 @@ ifdef EONMPI
         CXXFLAGS += -DEONMPIBGP
         LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.7 -lm
     else
-        python_include_path=$(shell python -c "import sys,os; print(os.path.join(sys.prefix, 'include', 'python'+sys.version[:3]))")
-        python_lib=$(shell python -c "import sys,os; print('python'+sys.version[:3]"))
-python_lib_path=$(shell python -c "import sys,os;print(os.path.join(sys.prefix, 'lib'))")
+        #python_include_path=$(shell python -c "import sys,os; print(os.path.join(sys.prefix, 'include', 'python'+sys.version[:3]))")
+        python_include_path=$(shell python -c "from sysconfig import get_paths as gp; print(gp()[\"include\"])")
+        #python_lib=$(shell python -c "import sys,os; print('python'+sys.version[:3])")
+        python_lib=$(shell python3-config --libs)
+        #python_lib_path=$(shell python -c "import sys,os;print(os.path.join(sys.prefix, 'lib'))")
+        python_lib_path=$(shell python3-config --prefix)
         ## uncomment for comilation on hopper, comment above definition
         # python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib','python'+sys.version[:3], 'config')")
-        ifneq ($(python_lib_path),/usr/lib)
-            LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
-        else
-            LDFLAGS += -l${python_lib} -lm
-        endif
+        #ifneq ($(python_lib_path),/usr/lib)
+        #    LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
+        #else
+        #    LDFLAGS += -l${python_lib} -lm
+        #endif
+		LDFLAGS += -L$(shell python3-config --prefix) $(shell python3-config --libs)
         CXXFLAGS += -I${python_include_path}
+        #CXXFLAGS += ${python_include_path}
     endif
 endif
 
@@ -136,9 +141,9 @@ OBJECTS += ClientEON.o INIFile.o MinModeSaddleSearch.o Dimer.o EpiCenters.o \
            Bundling.o Job.o CommandLine.o DynamicsJob.o Log.o \
            LBFGS.o LowestEigenmode.o Optimizer.o Prefactor.o \
            DynamicsSaddleSearch.o PrefactorJob.o FIRE.o \
-		   GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
-		   MonteCarloJob.o MonteCarlo.o SteepestDescent.o BasinHoppingSaddleSearch.o \
-		   BiasedGradientSquaredDescent.o
+           GlobalOptimizationJob.o GlobalOptimization.o StructureComparisonJob.o \
+           MonteCarloJob.o MonteCarlo.o SteepestDescent.o BasinHoppingSaddleSearch.o \
+           BiasedGradientSquaredDescent.o
 
 
 #ifneq ($(or unitTests,check),)

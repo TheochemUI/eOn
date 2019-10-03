@@ -221,6 +221,7 @@ int main(int argc, char **argv)
                     oss << ":" << client_ranks.at(i);
                 }
                 setenv("EON_CLIENT_RANKS", oss.str().c_str(), 1);
+                /* GH
                 char **py_argv = (char **)malloc(sizeof(char **)*2);
                 py_argv[0] = argv[0];
                 py_argv[1] = getenv("EON_SERVER_PATH");
@@ -228,6 +229,18 @@ int main(int argc, char **argv)
                 Py_Initialize();
                 Py_Main(2, py_argv);
                 Py_Finalize();
+                */
+                wchar_t** py_argv = (wchar_t**)malloc(sizeof(wchar_t*)*2);
+                py_argv[0] = Py_DecodeLocale(argv[0], NULL);
+                char* program = getenv("EON_SERVER_PATH");
+                py_argv[1] = Py_DecodeLocale(program, NULL);
+                fprintf(stderr, "rank: %i becoming %s\n", irank, program);
+                Py_Initialize();
+                std::cout <<"before main"<<endl;
+                Py_Main(2, py_argv);
+                std::cout <<"after main"<<endl;
+                Py_FinalizeEx();
+                //GH
                 MPI::Finalize();
                 return 0;
             }else if (my_client_number > number_of_clients) {
