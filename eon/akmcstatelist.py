@@ -24,8 +24,6 @@ class AKMCStateList(statelist.StateList):
 
     def register_process(self, reactant_number, product_number, process_id):
 
-        print("into register_process")
-
         # Get the reactant and product state objects.
         reactant = self.get_state(reactant_number)
         product = self.get_state(product_number)

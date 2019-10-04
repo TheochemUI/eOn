@@ -273,7 +273,10 @@ class MPI(Communicator):
             jobpath = os.path.join(self.scratchpath,jobdir)
             tmp = numpy.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
-            buf = array('c', jobpath+'\0')
+            #buf = array('c', jobpath+'\0')
+            buf = array('b')
+            bufval = jobpath+'\0'
+            buf.frombytes(bufval.encode())
             self.comm.Send(buf, rank)
 
     def get_ready_ranks(self):
@@ -299,7 +302,10 @@ class MPI(Communicator):
 
         status = Status()
         while self.comm.Iprobe(ANY_SOURCE, tag=0, status=status):
-            buf = array('c', '\0'*1024)
+            #buf = array('c', '\0'*1024)
+            buf = array('b')
+            bufval = '\0'*1024
+            buf.frombytes(bufval.encode())
             self.comm.Recv(buf, source=status.source, tag=0)
             jobdir = buf[:buf.index('\0')].tostring()
             jobdir = os.path.split(jobdir)[1]
