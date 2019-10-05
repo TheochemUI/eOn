@@ -114,7 +114,7 @@ def akmc(config, steps=0):
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
 #    parser = configparser.RawConfigParser()
-    parser = configparser.SafeConfigParser() 
+    parser = configparser.ConfigParser() 
 
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
@@ -331,7 +331,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0):
                     sb.id,
                     sb.get_confidence())
     t2 = unix_time.time()
-    logger.debug("KMC finished in " + str(t2-t1) + " seconds")
+    logger.debug("KMC finished in %.4f seconds", (t2-t1))
     logger.debug("%.2f KMC steps per second", float(steps)/(t2-t1))
     return current_state, previous_state, time, steps
 

@@ -82,7 +82,7 @@ def get_pr_metadata():
     if not os.path.isdir(config.path_results):
         os.makedirs(config.path_results)
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = configparser.SafeConfigParser()
+    parser = configparser.ConfigParser()
     if os.path.isfile(metafile):
         parser.read(metafile)
         try:

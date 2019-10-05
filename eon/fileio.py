@@ -221,7 +221,7 @@ def save_results_dat(fileout, results):
         print(results[key], key, con)
 
 def modify_config(config_path, changes):
-    parser = configparser.SafeConfigParser()
+    parser = configparser.ConfigParser()
     parser.read(config.config_path)
     for change in changes:
         parser.set(*change)
@@ -361,7 +361,7 @@ def saveposcar(fileout, p, w='w', direct = False):
             print(posline, poscar)
 
 
-from configparser import SafeConfigParser as SCP
+from configparser import ConfigParser as SCP
 class ini(SCP):
 
     def __init__(self, filenames):
