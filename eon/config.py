@@ -44,7 +44,7 @@ class ConfigClass:
             return None
         self.init_done = True
 
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
 
         for i in range(len(self.format)):
             parser.add_section(self.format[i].name)

@@ -113,7 +113,7 @@ class MinModeExplorer(Explorer):
                 logger.info("Adding relevant processes to kinetic database")
                 for process_id in self.state.get_process_ids():
                     output = kdb.insert(self.state, process_id)
-                    logger.debug("kdb insert: %s" % output)
+                    logger.debug("kdb insert: %s", output)
 
     def generate_displacement(self):
         if config.recycling_on and self.state.number is not 0:
@@ -232,7 +232,8 @@ class ClientMinModeExplorer(MinModeExplorer):
             self.comm.submit_jobs(searches, invariants)
             t2 = time()
             logger.info( "Created " + str(len(searches)) + " searches") 
-            logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
+            #logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
+            logger.debug( "Created %.2f searches per second", num_to_make/(t2-t1))
         except:
             logger.exception("Failed to submit searches")
         self.job_table.write()
