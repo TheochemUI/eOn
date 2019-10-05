@@ -331,7 +331,6 @@ int main(int argc, char **argv)
             abort();
         }
 
-
         // Determine what type of job we are running according to the parameters file. 
         Job *job = Job::getJob(&parameters);
         if (job == NULL) {

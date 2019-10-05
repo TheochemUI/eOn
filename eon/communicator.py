@@ -14,6 +14,7 @@ import pickle as pickle
 import glob
 import re
 import numpy
+import sys
 
 def tryint(s):
     try:
@@ -297,18 +298,27 @@ class MPI(Communicator):
         return qs
 
     def get_results(self, resultspath, keep_result):
-        '''Moves work from scratchpath to results path.'''
-        from mpi4py.MPI import ANY_SOURCE, Status
 
-        status = Status()
-        while self.comm.Iprobe(ANY_SOURCE, tag=0, status=status):
+        print("into get_results")
+        '''Moves work from scratchpath to results path.'''
+#        from mpi4py.MPI import ANY_SOURCE, Status
+        import mpi4py.MPI as MPI
+        print("after import")
+
+        status = MPI.Status()
+        while self.comm.Iprobe(source=MPI.ANY_SOURCE, tag=0, status=status):
             #buf = array('c', '\0'*1024)
-            buf = array('b')
-            bufval = '\0'*1024
-            buf.frombytes(bufval.encode())
-            self.comm.Recv(buf, source=status.source, tag=0)
-            jobdir = buf[:buf.index('\0')].tostring()
-            jobdir = os.path.split(jobdir)[1]
+            buf = numpy.array(['\0']*1024, dtype="S1")
+            self.comm.Recv([buf, MPI.CHARACTER], source=status.source, tag=0)
+            #print("after Recv")
+            #print("buf: ",buf)
+            strterm = numpy.where(buf == b'\0')
+            strindex = strterm[0][0]
+            #jobdir = buf[:buf.index('\0')].tostring()
+            jobdir = buf[:strindex].tostring()
+            #print("jobdir: ",jobdir.decode())
+            jobdir = os.path.split(jobdir)[1].decode()
+            #print("jobdir: ",jobdir)
 
             if config.debug_keep_all_results:
                 shutil.copytree(os.path.join(self.scratchpath,jobdir),
