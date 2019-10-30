@@ -609,6 +609,7 @@ class Table:
         if not self.initialized:
             self.init()
         f = open(self.filename, "w")
+        print("into table write: ",self.filename)
         self.writefilehandle(f)
         f.close()
 
@@ -664,7 +665,9 @@ class Table:
         for row in self.rows:
             if row[column] == value:
                 rows_to_delete.append(row)
-        map(self.rows.remove, rows_to_delete)
+#        map(self.rows.remove, rows_to_delete)
+        for row in rows_to_delete:
+            self.rows.remove(row)
         if self.eagerwrite:
             self.write()
         return len(rows_to_delete)
@@ -677,7 +680,9 @@ class Table:
         for row in self.rows:
             if func(row[column]):
                 rows_to_delete.append(row)
-        map(self.rows.remove, rows_to_delete)
+#        map(self.rows.remove, rows_to_delete)
+        for row in rows_to_delete:
+            self.rows.remove(row)
         if self.eagerwrite:
             self.write()
         return len(rows_to_delete)
