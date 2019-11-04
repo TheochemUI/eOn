@@ -546,7 +546,14 @@ class Script(Communicator):
             return 0
         for job_id in list(self.jobids.keys()):
             cmd = "%s %i" % (self.cancel_job_cmd, job_id)
-            status, output = commands.getstatusoutput(cmd)
+#            status, output = commands.getstatusoutput(cmd)
+            p = Popen([self.cancel_job_cmd,jobid], stdout=PIPE, stderr=PIPE)
+            output, error = p.communicate()
+            output = output.decode()
+            error = error.decode()
+            status = p.returncode
+            self.check_command(status, output, cmd)
+
             if status != 0:
                 logger.warn("Job cancel failed with error: %s" % output)
         self.jobids = {}
