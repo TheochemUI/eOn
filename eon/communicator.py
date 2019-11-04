@@ -547,7 +547,7 @@ class Script(Communicator):
         for job_id in list(self.jobids.keys()):
             cmd = "%s %i" % (self.cancel_job_cmd, job_id)
 #            status, output = commands.getstatusoutput(cmd)
-            p = Popen([self.cancel_job_cmd,jobid], stdout=PIPE, stderr=PIPE)
+            p = Popen([self.cancel_job_cmd,job_id], stdout=PIPE, stderr=PIPE)
             output, error = p.communicate()
             output = output.decode()
             error = error.decode()
