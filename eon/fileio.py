@@ -373,12 +373,16 @@ class ini(SCP):
         self.loaded = True
         SCP.read(self, self.filenames)
 
-    def get(self, section, option, default="ini_no_default"):
+    def get(self, section, option, default="ini_no_default", **kwargs):
+#    def get(self, section, option, default="ini_no_default"):
         if not self.loaded:
             self.read()
         try:
             SCP.read(self, self.filenames)
-            value = SCP.get(self, section, option, raw=True)
+            #value = SCP.get(self, section, option, raw=True, **kwargs)
+            value = SCP.get(self, section, option, **kwargs)
+            #value = SCP.get(self, section, option, raw=True)
+            #value = SCP.get(self, section, option)
         except:
             if default == "ini_no_default":
                 raise NameError("Section or option missing, no default specified")
@@ -609,7 +613,7 @@ class Table:
         if not self.initialized:
             self.init()
         f = open(self.filename, "w")
-        print("into table write: ",self.filename)
+        #print("into table write: ",self.filename)
         self.writefilehandle(f)
         f.close()
 
