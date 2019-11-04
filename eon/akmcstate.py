@@ -183,13 +183,13 @@ class AKMCState(state.State):
                                   product_prefactor = resultdata["prefactor_product_to_reactant"],
                                   barrier =           barrier,
                                   rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
-#                                  rate =              forward_rate,
+                                  # rate =              forward_rate,
                                   repeats =           0)
 
         # If equilibrium rate, change the forward rate as well
         if eq_rate_flag:
             self.procs[id]['rate'] = forward_eq_rate
-#            reverse_procs[id]['rate'] = reverse_eq_rate
+            # reverse_procs[id]['rate'] = reverse_eq_rate
 
         # If this is a random search type, add this proc to the random proc dict.
         if result['type'] == "random" or result['type'] == "dynamics":
@@ -322,12 +322,12 @@ class AKMCState(state.State):
             else:
                 alpha = float(mn)/mx
 
-        if config.akmc_confidence_scheme == "new":
+        if config.akmc_confidence_scheme == 'new':
             Nf = 0.0
             Ns = 0.0
             for r in rt:
                 if r[0] in prc:
-                    Nf += 1
+                    Nf += 1.0
                     Ns += prc[r[0]]
             if Ns < 1:
                 return 0.0
@@ -358,6 +358,7 @@ class AKMCState(state.State):
             return sum(C)/float(m)
 
         elif config.akmc_confidence_scheme == 'dynamics':
+            #print("into dynamics confidence")
             # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if config.disp_moved_only:
@@ -385,6 +386,7 @@ class AKMCState(state.State):
             total_rate_found = 0.0
             T1 = config.main_temperature
             for T2, T2_time in list(self.get_time_by_temp().items()):
+                #print("out of get_time_by_temp")
                 if T2_time == 0.0:
                     continue
 
@@ -544,18 +546,16 @@ class AKMCState(state.State):
             # temperature and add the SearchTime section. This makes
             # this codes backwards compatible and the correctness is
             # not worse than before.
-            new_time_at_current_temp = self.get_time() # time is already
-                                                       # updated, so no +dt!
-        self.info.set("SearchTime", temp_str,
-                      new_time_at_current_temp)
+            new_time_at_current_temp = self.get_time() # time is already updated, so no +dt!
+        self.info.set("SearchTime", temp_str, new_time_at_current_temp)
 
     def get_time(self):
         return self.info.get("MetaData", "time", 0.0)
 
     def get_time_by_temp(self):
+        #print("into get_time_by_temp")
         try:
-            return dict([int(temp), float(time)]
-                        for temp, time in self.info.items("SearchTime"))
+            return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime"))
         except configparser.NoSectionError:
             # The "info" file seems to have been produced by an old
             # version of EON which didn't have the SearchTime
@@ -563,8 +563,11 @@ class AKMCState(state.State):
             # to avoid endless recursion if the exception is raised
             # again).
             self.increment_time(0.0, config.saddle_dynamics_temperature)
-            return dict([int(temp), float(time)]
-                        for temp, time in self.info.items("SearchTime"))
+            #try:
+            #    print(self.info.items('SearchTime', raw=True))
+            #except Exception as e:
+            #    print("exception: " + str(e))
+            return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime", raw=True))
 
     def get_number_of_searches(self):
         # TODO: this is inefficient!
