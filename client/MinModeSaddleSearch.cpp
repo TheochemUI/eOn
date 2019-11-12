@@ -177,6 +177,7 @@ int MinModeSaddleSearch::run()
     log("Saddle point search started from reactant with energy %f eV.\n", reactantEnergy);
 
     int optStatus;
+    int firstIteration = 1;
 
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
@@ -210,24 +211,28 @@ int MinModeSaddleSearch::run()
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
 
     while (!objf.isConverged() || iteration == 0) {
-    
-        // Abort if negative mode becomes delocalized
-        if(parameters->saddleNonlocalCountAbort != 0) {
-            long nm = numAtomsMoved(initialPosition - matter->getPositions(), 
+
+        if(!firstIteration){
+
+            // Abort if negative mode becomes delocalized
+            if(parameters->saddleNonlocalCountAbort != 0) {
+                long nm = numAtomsMoved(initialPosition - matter->getPositions(), 
                                     parameters->saddleNonlocalDistanceAbort);
-            if(nm >= parameters->saddleNonlocalCountAbort) {
-                status = STATUS_NONLOCAL_ABORT;
+                if(nm >= parameters->saddleNonlocalCountAbort) {
+                    status = STATUS_NONLOCAL_ABORT;
+                    break;
+                }
+            }
+
+            // Abort if negative mode becomes zero
+            //cout << "curvature: "<<fabs(minModeMethod->getEigenvalue())<<"\n";
+            if(fabs(minModeMethod->getEigenvalue()) < parameters->saddleZeroModeAbortCurvature){
+                printf("%f\n", minModeMethod->getEigenvalue());
+                status = STATUS_ZEROMODE_ABORT;
                 break;
             }
         }
-
-        // Abort if negative mode becomes zero
-//        cout << "curvature: "<<fabs(minModeMethod->getEigenvalue())<<"\n";
-        if(fabs(minModeMethod->getEigenvalue()) < parameters->saddleZeroModeAbortCurvature){
-//           printf("%f\n", minModeMethod->getEigenvalue());
-           status = STATUS_ZEROMODE_ABORT;
-           break;
-        }
+        firstIteration = 0;
         
         if (iteration >= parameters->saddleMaxIterations) {
             status = STATUS_BAD_MAX_ITERATIONS;
