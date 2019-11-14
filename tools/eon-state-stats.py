@@ -28,9 +28,9 @@ if(len(states) == 0):
         if(os.path.isdir(state_dir)):
             states.append(str(dir))
 
-print "#{:>11s}:{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>20s}{:>20s}{:>20s}".format(
+print("#{:>11s}:{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>20s}{:>20s}{:>20s}".format(
                                   "state", "num_search", "num_good", "num_unique", "frac_good", "fcalls_sad",
-                                  "fcalls_min","fcalls_dyn", "fcalls_sad_total", "fcalls_sad_bad", "fcalls_sad_abort")
+                                  "fcalls_min","fcalls_dyn", "fcalls_sad_total", "fcalls_sad_bad", "fcalls_sad_abort"))
 t_num_search    = 0
 t_num_good      = 0
 t_num_unique    = 0
@@ -105,8 +105,8 @@ for state in states:
         #print " fcalls sad total : %d" % fc_sad_tot
         #print " fcalls sad abort : %d" % fc_sad_abort
         #print " fcalls sad bad : %d" % fc_sad_bad
-    print "{:>11s}:{:>12d}{:>12d}{:>12d}{:>12.2f}{:>12.2f}{:>12.2f}{:>12.2f}{:>20d}{:>20d}{:>20d}".format(
-          state, num_search, num_good, num_unique, frac_good, fcalls_sad, fcalls_min, fcalls_dyn, fc_sad_tot, fc_sad_bad, fc_sad_abort)
+    print("{:>11s}:{:>12d}{:>12d}{:>12d}{:>12.2f}{:>12.2f}{:>12.2f}{:>12.2f}{:>20d}{:>20d}{:>20d}".format(
+          state, num_search, num_good, num_unique, frac_good, fcalls_sad, fcalls_min, fcalls_dyn, fc_sad_tot, fc_sad_bad, fc_sad_abort))
     t_num_search   += num_search
     t_num_good     += num_good
     t_num_unique   += num_unique
@@ -125,8 +125,8 @@ lastline= os.popen("tail -1 akmc.log").readline().split()
 t1 = datetime.strptime(firstline[0]+' '+firstline[1],"%Y-%m-%d %H:%M:%S")
 t2 = datetime.strptime(lastline[0]+' '+lastline[1],"%Y-%m-%d %H:%M:%S")
 totaltime = t2-t1
-print "{:>11s}:{:>12d}{:>12d}{:>12d}{:>12.2f}{:>12.2f}{:>12.2f}{:>12.2f}{:>20d}{:>20d}{:>20d}".format(
-      "#average", t_num_search/n_s, t_num_good/n_s, t_num_unique/n_s, t_frac_good/n_s, t_fcalls_sad/n_s, 
-      t_fcalls_min/n_s, t_fcalls_dyn/n_s, t_fc_sad_tot/n_s, t_fc_sad_bad/n_s, t_fc_sad_abort/n_s)
-print "states per minute:", float(n_s)*60.00/totaltime.total_seconds()
-print ""
+print("{:>11s}:{:>12d}{:>12d}{:>12d}{:>12.2f}{:>12.2f}{:>12.2f}{:>12.2f}{:>20d}{:>20d}{:>20d}".format(
+      "#average", int(t_num_search/n_s), int(t_num_good/n_s), int(t_num_unique/n_s), t_frac_good/n_s, t_fcalls_sad/n_s, 
+      t_fcalls_min/n_s, t_fcalls_dyn/n_s, int(t_fc_sad_tot/n_s), int(t_fc_sad_bad/n_s), int(t_fc_sad_abort/n_s)))
+print("states per minute:", float(n_s)*60.00/totaltime.total_seconds())
+print("")
