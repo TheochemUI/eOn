@@ -122,11 +122,11 @@ n_s = len(states)
 os.chdir(current_cwd)
 firstline= os.popen("head -1 akmc.log").readline().split()
 lastline= os.popen("tail -1 akmc.log").readline().split()
-t1 = datetime.strptime(firstline[0]+' '+firstline[1],"%Y-%m-%d %H:%M:%S")
-t2 = datetime.strptime(lastline[0]+' '+lastline[1],"%Y-%m-%d %H:%M:%S")
-totaltime = t2-t1
+#t1 = datetime.strptime(firstline[0]+' '+firstline[1],"%Y-%m-%d %H:%M:%S")
+#t2 = datetime.strptime(lastline[0]+' '+lastline[1],"%Y-%m-%d %H:%M:%S")
+#totaltime = t2-t1
 print("{:>11s}:{:>12d}{:>12d}{:>12d}{:>12.2f}{:>12.2f}{:>12.2f}{:>12.2f}{:>20d}{:>20d}{:>20d}".format(
       "#average", int(t_num_search/n_s), int(t_num_good/n_s), int(t_num_unique/n_s), t_frac_good/n_s, t_fcalls_sad/n_s, 
       t_fcalls_min/n_s, t_fcalls_dyn/n_s, int(t_fc_sad_tot/n_s), int(t_fc_sad_bad/n_s), int(t_fc_sad_abort/n_s)))
-print("states per minute:", float(n_s)*60.00/totaltime.total_seconds())
+#print("states per minute:", float(n_s)*60.00/totaltime.total_seconds())
 print("")
