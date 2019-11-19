@@ -47,8 +47,6 @@ class SuperbasinScheme:
         return None
 
     def make_basin_from_sets(self, start_state, end_state):
-        # print "start_state: ",start_state
-        # print "end_state: ",end_state
 
         start_states = set()
         sb = self.get_containing_superbasin(start_state)
@@ -89,20 +87,16 @@ class SuperbasinScheme:
                 self.superbasins.remove(sb)
         new_sb_states = list(new_sb_states)
 
-        # print "connect_state: before"
         # self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         # However, it will likely be very slow. We should be able to do without it.
         # Also, if confidence is changed and new processes are found, the superbasin
         # will ignore these new processes.
         self.states.connect_state_sets(start_states, end_states)
-        # print "connect_state: after"
 
-        # print "superbasins.append: before"
         self.superbasins.append(
             superbasin.Superbasin(self.path, self.next_sb_num,
                                   state_list=new_sb_states)
         )
-        # print "superbasins.append: after"
         logger.info("Created superbasin with states " + str([i.number for i in new_sb_states]))
         self.next_sb_num += 1
 
@@ -199,7 +193,8 @@ class TransitionCounting(SuperbasinScheme):
             data_path = os.path.join(start_state.path, config.sb_state_file)
             f = open(data_path, 'w')
             for end_state in self.count[start_state]:
-                print(end_state.number, self.count[start_state][end_state], f)
+                #print(end_state.number, self.count[start_state][end_state], f)
+                f.write(end_state.number, self.count[start_state][end_state])
             f.close()
 
     def read_data(self):
@@ -307,6 +302,7 @@ class EnergyLevel(SuperbasinScheme):
         for i in self.levels:
             data_path = os.path.join(i.path, config.sb_state_file)
             f = open(data_path, 'w')
-            print("%f\n" % self.levels[i], f)
+            #print("%f\n" % self.levels[i], f)
+            f.write("%f\n" % self.levels[i])
             f.close()
 
