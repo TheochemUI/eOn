@@ -218,7 +218,8 @@ def save_results_dat(fileout, results):
         f = open(fileout, 'w')
 
     for key in results:
-        print(results[key], key, con)
+        #print(results[key], key, con)  #GH: this made no sense to me - replaced with the following
+        f.write(results[key], key)
 
 def modify_config(config_path, changes):
     parser = configparser.ConfigParser()
