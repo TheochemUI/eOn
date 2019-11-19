@@ -339,18 +339,19 @@ def saveposcar(fileout, p, w='w', direct = False):
             num_each_type[name] = 1
         else:
             num_each_type[name] += 1
-    print(" ".join(atom_types), poscar) #Line 1: Atom type
-    print(1.0, poscar) #Line 2: scaling
+    poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
+    poscar.write("1.0\n") #Line 2: scaling
     for i in range(3):
-        print(" ".join(['%20.14f' % s for s in p.box[i]]), poscar)  #lines 3-5: box
-    print(" ".join(['%s' % num_each_type[key] for key in atom_types]))
-    print('Selective Dynamics', poscar) #line 6: selective dynamics
+        poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
+    poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
+    poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
+    poscar.write('Selective Dynamics\n') #line 7: selective dynamics
     if direct:
-        print('Direct', poscar)  #line 7 cartesian coordinates
+        poscar.write('Direct\n')  #line 8 cartesian coordinates
         ibox = numpy.linalg.inv(numpy.array(p.box))
         p.r = numpy.dot(p.r, ibox)
     else:
-        print('Cartesian', poscar) #line 7 cartesian coordinates
+        poscar.write('Cartesian\n') #line 8 cartesian coordinates
     for i in range(len(p)):
             posline = " ".join(['%20.14f' % s for s in p.r[i]]) + " "
             for j in range(3):
@@ -358,7 +359,7 @@ def saveposcar(fileout, p, w='w', direct = False):
                     posline+='   T'
                 else: 
                     posline+='   F'
-            print(posline, poscar)
+            poscar.write(posline+'\n')
 
 
 from configparser import ConfigParser as SCP
