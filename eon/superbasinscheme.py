@@ -194,7 +194,8 @@ class TransitionCounting(SuperbasinScheme):
             f = open(data_path, 'w')
             for end_state in self.count[start_state]:
                 #print(end_state.number, self.count[start_state][end_state], f)
-                f.write(end_state.number, self.count[start_state][end_state])
+                #f.write(end_state.number, self.count[start_state][end_state])
+                f.write("%d %d\n" % (end_state.number, self.count[start_state][end_state]))
             f.close()
 
     def read_data(self):
