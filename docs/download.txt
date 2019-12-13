@@ -5,7 +5,7 @@
 Download
 ================================
 
-EON is released under the `GNU General Public License version 2`_.
+EON is released under the `BSD License`_.
 
 The EIGEN library, which is included with EON, is released under the Mozilla Public License.
 
@@ -28,5 +28,5 @@ For more information on subversion read its `online documentation`_.
 The eon code can also be download directly at `tarfile`_.
 
 .. _online documentation: http://svnbook.red-bean.com/en/1.5/index.html
-.. _GNU General Public License version 2: http://www.gnu.org/copyleft/gpl.html
+.. _BSD License: https://opensource.org/licenses/BSD-3-Clause
 .. _tarfile: http://theory.cm.utexas.edu/code/eon.tgz
