@@ -13,9 +13,9 @@ from eon import fileio as io
 
 def insert(state, process_id):
     try:
-        from eon.kdb import aselite
-        from eon.kdb import local_db
-        from eon.kdb import local_insert
+        from kdb import aselite
+        from kdb import local_db
+        from kdb import local_insert
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
@@ -32,11 +32,9 @@ def insert(state, process_id):
 
 def query(state):
     try:
-#GH        import eon.kdb as kdb
-#        from eon import kdb
-        from eon.kdb import aselite
-        from eon.kdb import local_db
-        from eon.kdb import local_query
+        from kdb import aselite
+        from kdb import local_db
+        from kdb import local_query
     except:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
