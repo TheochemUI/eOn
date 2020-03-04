@@ -14,7 +14,7 @@ import random
 
 from eon import atoms
 from eon import communicator
-from eon import config
+from eon.config import config
 from eon import fileio as io
 from eon import locking
 from eon.version import version
