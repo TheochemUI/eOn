@@ -1,6 +1,6 @@
-OBJECTS = NewPotential.o
+OBJECTS = ExtPot.o
 CXXFLAGS += -I../..
-LIB := libnewpotential.a
+LIB := libextpot.a
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
 	$(RANLIB) $@

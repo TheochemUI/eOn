@@ -9,39 +9,39 @@
 //-----------------------------------------------------------------------------------
 
 #include <iostream>
-#include "TerminalPotential.h"
+#include "ExtPot.h"
 
-TerminalPotential::TerminalPotential(Parameters *p)
+ExtPot::ExtPot(Parameters *p)
 {
-    eon_terminal_path = p->terminalPotentialPath.c_str();
+    eon_extpot_path = p->extPotPath.c_str();
     return;
 }
 
-void TerminalPotential::cleanMemory(void)
+void ExtPot::cleanMemory(void)
 {
     return;
 }
 
-TerminalPotential::~TerminalPotential()
+ExtPot::~ExtPot()
 {
 	cleanMemory();
 }
 
 
-void TerminalPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
+void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     passToSystem(N, R, atomicNrs, box);  
-    system(eon_terminal_path);
+    system(eon_extpot_path);
     recieveFromSystem(N, F, U);
     return;
 }
 
 
-void TerminalPotential::passToSystem(long N, const double *R, const int *atomicNrs, const double *box)
+void ExtPot::passToSystem(long N, const double *R, const int *atomicNrs, const double *box)
 // 'positions' of all particles and box
 {
     FILE *out;    
-    out = fopen("from_eon_to_terminal","w");
+    out = fopen("from_eon_to_extpot","w");
 
     for(int i = 0; i < 3; i++)
     {
@@ -57,11 +57,11 @@ void TerminalPotential::passToSystem(long N, const double *R, const int *atomicN
 }
 
 
-void TerminalPotential::recieveFromSystem(long N, double *F, double *U)
+void ExtPot::recieveFromSystem(long N, double *F, double *U)
 // first line must be the total 'energy', the following lines should be the 'forces'
 {
     FILE *in;
-    in = fopen("from_terminal_to_eon", "r");
+    in = fopen("from_extpot_to_eon", "r");
 
     fscanf(in, "%lf", U);
     

@@ -1,6 +1,6 @@
-OBJECTS = TerminalPotential.o
+OBJECTS = NewPot.o
 CXXFLAGS += -I../..
-LIB := libterminalpotential.a
+LIB := libnewpot.a
 $(LIB) : $(OBJECTS)
 	$(AR) $@ $^
 	$(RANLIB) $@
