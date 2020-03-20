@@ -104,28 +104,22 @@ endif
 #------------------------------------
 #MPI settings continued
 ifdef EONMPI
-    ifdef EONMPIBGP
-        CXXFLAGS += -I/bgsys/drivers/ppcfloor/gnu-linux/include/python2.7/
-        CXXFLAGS += -DEONMPIBGP
-        LDFLAGS  += -L/bgsys/drivers/ppcfloor/gnu-linux/lib/ -Wl,-dy -lpython2.7 -lm
-    else
-        #python_include_path=$(shell python -c "import sys,os; print(os.path.join(sys.prefix, 'include', 'python'+sys.version[:3]))")
-        python_include_path=$(shell python -c "from sysconfig import get_paths as gp; print(gp()[\"include\"])")
-        #python_lib=$(shell python -c "import sys,os; print('python'+sys.version[:3])")
-        python_lib=$(shell python3-config --libs)
-        #python_lib_path=$(shell python -c "import sys,os;print(os.path.join(sys.prefix, 'lib'))")
-        python_lib_path=$(shell python3-config --prefix)
-        ## uncomment for comilation on hopper, comment above definition
-        # python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib','python'+sys.version[:3], 'config')")
-        #ifneq ($(python_lib_path),/usr/lib)
-        #    LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
-        #else
-        #    LDFLAGS += -l${python_lib} -lm
-        #endif
-		LDFLAGS += -L$(shell python3-config --prefix) $(shell python3-config --libs)
-        CXXFLAGS += -I${python_include_path}
-        #CXXFLAGS += ${python_include_path}
-    endif
+    #python_include_path=$(shell python -c "import sys,os; print(os.path.join(sys.prefix, 'include', 'python'+sys.version[:3]))")
+    python_include_path=$(shell python -c "from sysconfig import get_paths as gp; print(gp()[\"include\"])")
+    #python_lib=$(shell python -c "import sys,os; print('python'+sys.version[:3])")
+    python_lib=$(shell python3-config --libs)
+    #python_lib_path=$(shell python -c "import sys,os;print(os.path.join(sys.prefix, 'lib'))")
+    python_lib_path=$(shell python3-config --prefix)
+    ## uncomment for comilation on hopper, comment above definition
+    # python_lib_path=$(shell python -c "import sys,os;print os.path.join(sys.prefix, 'lib','python'+sys.version[:3], 'config')")
+    #ifneq ($(python_lib_path),/usr/lib)
+    #    LDFLAGS += -L${python_lib_path} -l${python_lib} -lm
+    #else
+    #    LDFLAGS += -l${python_lib} -lm
+    #endif
+	LAGS += -L$(shell python3-config --prefix) $(shell python3-config --libs)
+    CXXFLAGS += -I${python_include_path}
+    #CXXFLAGS += ${python_include_path}
 endif
 
 #------------------------------------
