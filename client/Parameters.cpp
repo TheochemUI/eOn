@@ -55,7 +55,7 @@ Parameters::Parameters(){
     LAMMPSLogging = false;
     LAMMPSThreads = 0;
     EMTRasmussen = false;
-    terminalPotentialPath = "eon_terminal";
+    extPotPath = "extPot";
     
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -307,7 +307,7 @@ int Parameters::load(FILE *file){
         LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
         LAMMPSThreads = (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
-        terminalPotentialPath = ini.GetValue("Potential", "terminal_potential_path", terminalPotentialPath);
+        extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
 
         if (potential == "mpi"    || 
             potential == "vasp"   ||
