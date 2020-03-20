@@ -27,7 +27,7 @@
     #include "potentials/MPIPot/MPIPot.h"
 #endif
 #ifdef LAMMPS_POT
-    #include "potentials/LAMMPS/LAMMPS_EON.h"
+    #include "potentials/LAMMPS/LAMMPS.h"
 #endif
 #ifdef NEW_POT
     #include "potentials/NewPot/NewPot.h"
@@ -57,7 +57,7 @@ const char Potential::POT_FEHE[] =        "fehe";
 const char Potential::POT_VASP[] =        "vasp";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
-const char Potential::POT_EXT[] =         "ext";
+const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
 
 Potential* Potential::pot = NULL;
