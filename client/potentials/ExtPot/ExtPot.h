@@ -8,17 +8,17 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef ITERMINAL_POTENTIAL
-#define ITERMINAL_POTENTIAL
+#ifndef EXT_POT
+#define EXT_POT
 
 #include "../../Potential.h"
 
-class TerminalPotential : public Potential
+class ExtPot : public Potential
 {
 
     public:
-        TerminalPotential(Parameters *p);
-		~TerminalPotential();
+        ExtPot(Parameters *p);
+		~ExtPot();
         void initialize() {};
         void cleanMemory(void);    
         void force(long N, const double *R, const int *atomicNrs, 
@@ -27,7 +27,7 @@ class TerminalPotential : public Potential
     private:
         void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
         void recieveFromSystem(long N, double *F, double *U);
-        const char *eon_terminal_path;
+        const char *eon_extpot_path;
 
 };
 

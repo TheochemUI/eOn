@@ -6,11 +6,11 @@ POTENTIALS += "+EMT "
 POTDIRS += ./potentials/Morse/
 LIBS += ./potentials/Morse/libMorse.a
 POTENTIALS += "+MORSE "
-POTDIRS += ./potentials/LennardJones/
-LIBS += ./potentials/LennardJones/libLJ.a
+POTDIRS += ./potentials/LJ/
+LIBS += ./potentials/LJ/libLJ.a
 POTENTIALS += "+LJ"
-POTDIRS += ./potentials/LennardJonesCluster/
-LIBS += ./potentials/LennardJonesCluster/libLJCluster.a
+POTDIRS += ./potentials/LJCluster/
+LIBS += ./potentials/LJCluster/libLJCluster.a
 POTENTIALS += "+LJ"
 #POTDIRS += ./potentials/EAM/
 #LIBS += ./potentials/EAM/libEAM.a
@@ -27,9 +27,9 @@ POTENTIALS += "+H2O_Pt"
 POTDIRS += ./potentials/IMD/
 LIBS += ./potentials/IMD/libIMD.a
 POTENTIALS += "+IMD"
-POTDIRS += ./potentials/TerminalPotential/
-LIBS += ./potentials/TerminalPotential/libterminalpotential.a
-POTENTIALS += "+TerminalPotential"
+POTDIRS += ./potentials/ExtPot/
+LIBS += ./potentials/ExtPot/libextpot.a
+POTENTIALS += "+EXT_POT"
 
 
 #Potentials relying on fortran
@@ -75,12 +75,12 @@ endif
 
 ifdef NEW_POT
    CXXFLAGS += -DNEW_POT
-   POTDIRS += ./potentials/NewPotential
-   LIBS += ./potentials/NewPotential/libnewpotential.a
-   POTENTIALS += "+NewPotential"
+   POTDIRS += ./potentials/New
+   LIBS += ./potentials/New/libnew.a
+   POTENTIALS += "+NEW_POT"
 else
-   OPOTDIRS += ./potentials/NewPotential
-   POTENTIALS += "-NewPotential"
+   OPOTDIRS += ./potentials/New
+   POTENTIALS += "-NEW_POT"
 endif
 
 ifndef WIN32
@@ -93,12 +93,12 @@ else
 endif
 
 ifdef EONMPI
-    POTENTIALS += "+MPIPot"
     POTDIRS += ./potentials/MPIPot
     LIBS += ./potentials/MPIPot/libMPIPot.a
+    POTENTIALS += "+MPI_POT"
 else
-    POTENTIALS += "-MPIPot"
     OPOTDIRS += ./potentials/MPIPot
+    POTENTIALS += "-MPI_POT"
 endif
 
 #------------------------------------

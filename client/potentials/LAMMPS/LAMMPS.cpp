@@ -1,4 +1,4 @@
-#include "LAMMPS_EON.h"
+#include "LAMMPS.h"
 #include <map>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,18 +9,18 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
 // General Functions
-lammps_eon::lammps_eon(Parameters *p){
+lammps::lammps(Parameters *p){
     parameters = p;
     numberOfAtoms = 0;
     LAMMPSObj=NULL;
     for (int i=0;i<9;i++) oldBox[i] = 0.0;
 }
 
-lammps_eon::~lammps_eon(){
+lammps::~lammps(){
     cleanMemory();
 }
 
-void lammps_eon::cleanMemory(void){
+void lammps::cleanMemory(void){
     if(LAMMPSObj != NULL){
         lammps_close(LAMMPSObj);
         LAMMPSObj = NULL;
@@ -28,7 +28,7 @@ void lammps_eon::cleanMemory(void){
     return;
 }
 
-void lammps_eon::force(long N, const double *R, const int *atomicNrs,
+void lammps::force(long N, const double *R, const int *atomicNrs,
                        double *F, double *U, const double *box){
 
     int i;
@@ -72,7 +72,7 @@ void lammps_eon::force(long N, const double *R, const int *atomicNrs,
     free(fz);
 }
 
-void lammps_eon::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box){
+void lammps::makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box){
     numberOfAtoms = N;
     for (int i=0;i<9;i++) oldBox[i] = box[i];
 
