@@ -9,8 +9,8 @@
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
-#include "potentials/LennardJones/LJ.h"
-#include "potentials/LennardJonesCluster/LJCluster.h"
+#include "potentials/LJ/LJ.h"
+#include "potentials/LJCluster/LJCluster.h"
 #include "potentials/SW/SW.h"
 #include "potentials/Tersoff/Tersoff.h"
 #include "potentials/Aluminum/Aluminum.h"
@@ -21,7 +21,7 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
-#include "potentials/TerminalPotential/TerminalPotential.h"
+#include "potentials/ExtPot/ExtPot.h"
 
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
@@ -30,7 +30,7 @@
     #include "potentials/LAMMPS/LAMMPS_EON.h"
 #endif
 #ifdef NEW_POT
-    #include "potentials/NewPotential/NewPotential.h"
+    #include "potentials/NewPot/NewPot.h"
 #endif
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
@@ -57,8 +57,8 @@ const char Potential::POT_FEHE[] =        "fehe";
 const char Potential::POT_VASP[] =        "vasp";
 const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
-const char Potential::POT_TERMINAL[] =    "terminalpotential";
-const char Potential::POT_NEW[] =         "new";
+const char Potential::POT_EXT[] =         "ext";
+const char Potential::POT_NEW[] =         "new_pot";
 
 Potential* Potential::pot = NULL;
 
@@ -85,8 +85,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new Tip4p_Pt();
     else if(parameters->potential == POT_SPCE)
         pot = new SpceCcl();
-    else if(parameters->potential == POT_TERMINAL)
-        pot = new TerminalPotential(parameters);
+    else if(parameters->potential == POT_EXT)
+        pot = new ExtPot(parameters);
     
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
@@ -112,12 +112,12 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 #ifdef LAMMPS_POT
     else if(parameters->potential == POT_LAMMPS)
-        pot = new lammps_eon(parameters);
+        pot = new LammpsPot(parameters);
 #endif
 
 #ifdef NEW_POT
     else if(parameters->potential == POT_NEW)
-        pot = new NewPotential(parameters);
+        pot = new NewPot(parameters);
 #endif
 
 #ifndef WIN32

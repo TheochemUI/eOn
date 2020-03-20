@@ -46,9 +46,9 @@ Potential
                  forces. More information can be found on the 
                  :ref:`MPI Potential<mpi_potential>` page.
 
-        ``terminalpotential``: Writes box size and coordinates to the file 'from_eon_to_terminal'
-			       Make a system call for the binary 'eon_terminal'
-			       Reads return energy of forces from the file 'from_terminal_to_eon'
+        ``ext_pot``: Writes box size and coordinates to the file 'from_eon_to_ext'
+			       Make a system call for the binary 'ext_pot'
+			       Reads return energy of forces from the file 'from_ext_to_eon'
 
 **log_potential**: If true write timing information about each force call to client.log
 

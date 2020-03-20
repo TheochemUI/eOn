@@ -1,12 +1,12 @@
 // serves as an interface between LAMMPS potentials maintained by SANDIA
 
-#ifndef LAMMPS_EON
-#define LAMMPS_EON
+#ifndef LAMMPS
+#define LAMMPS
 
 #include "../../Potential.h"
 #include "../../Parameters.h"
 
-class lammps_eon : public Potential {
+class lammps : public Potential {
 
 private:
 	long numberOfAtoms;
@@ -17,8 +17,8 @@ private:
     bool realunits;
 
 public:
-    lammps_eon(Parameters *p);
-    ~lammps_eon(void);
+    lammps(Parameters *p);
+    ~lammps(void);
     void cleanMemory(void);
     
     void initialize() {};

@@ -1,4 +1,4 @@
-OBJECTS = LAMMPS_EON.o
+OBJECTS = LAMMPS.o
 #CXX =		g++
 CXXFLAGS += -I../..
 #LINK =		g++
