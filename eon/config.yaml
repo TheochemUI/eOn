@@ -83,8 +83,8 @@ Potential:
                 - tip4p
                 - tip4p_h
                 - tip4p_pt
-                - terminalpotential
-                - new
+                - ext_pot
+                - new_pot
 
         mpi_poll_period:
             kind: float
