@@ -117,7 +117,7 @@ ifdef EONMPI
     #else
     #    LDFLAGS += -l${python_lib} -lm
     #endif
-	LAGS += -L$(shell python3-config --prefix) $(shell python3-config --libs)
+	LDFLAGS += -L$(shell python3-config --prefix) $(shell python3-config --libs)
     CXXFLAGS += -I${python_include_path}
     #CXXFLAGS += ${python_include_path}
 endif
