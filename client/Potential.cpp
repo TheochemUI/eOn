@@ -112,7 +112,7 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 #ifdef LAMMPS_POT
     else if(parameters->potential == POT_LAMMPS)
-        pot = new LammpsPot(parameters);
+        pot = new lammps(parameters);
 #endif
 
 #ifdef NEW_POT

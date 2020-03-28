@@ -45,8 +45,8 @@ public:
     string iniFilename;
     string conFilename;
     double finiteDifference;
-    long maxForceCalls;
-    bool removeNetForce;
+    long   maxForceCalls;
+    bool   removeNetForce;
 
     // [Potential] //
     string potential;
@@ -123,12 +123,12 @@ public:
     bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
     bool   optCGNoOvershooting; // if set it is ensured that the approximate line search in conjugate gradients never overshoot the minimum along the search line
     bool   optCGKnockOutMaxMove; // if set the old search direction is nullified when steps larger than the optMaxMove are conducted 
-    bool optCGLineSearch; // if set full line search is conducted
+    bool   optCGLineSearch; // if set full line search is conducted
     double optCGLineConverged; // convergence criteria for line search, ratio between force component along search line and the orthogonal part
-    long optCGLineSearchMaxIter; // maximal nr of iterations during line search
-    long optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no resetting is done
+    long   optCGLineSearchMaxIter; // maximal nr of iterations during line search
+    long   optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no resetting is done
     double optSDAlpha;
-    bool optSDTwoPoint;
+    bool   optSDTwoPoint;
     
     // [Dimer] //
     double dimerRotationAngle; // finite difference rotation angle
@@ -256,15 +256,15 @@ public:
     // [Global Optimization] //
     string globalOptimizationMoveMethod;
     string globalOptimizationDecisionMethod;
-    long globalOptimizationSteps;
+    long   globalOptimizationSteps;
     double globalOptimizationBeta;
     double globalOptimizationAlpha;
-    long globalOptimizationMdmin;
+    long   globalOptimizationMdmin;
     double globalOptimizationTargetEnergy;
 
     // [Monte Carlo] //
     double monteCarloStepSize;
-    int monteCarloSteps;
+    int    monteCarloSteps;
 
     // [BGSD] //
 
