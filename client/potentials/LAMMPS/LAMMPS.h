@@ -8,20 +8,19 @@
 
 class lammps : public Potential {
 
-private:
-	long numberOfAtoms;
-	double oldBox[9];
-	void *LAMMPSObj;
-	void makeNewLAMMPS(long N, const double *R,  const int *atomicNrs, const double *box);
-    Parameters *parameters;
-    bool realunits;
+    public:
+        lammps(Parameters *p);
+        ~lammps(void);
+        void initialize() {};
+        void cleanMemory(void);
+        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
 
-public:
-    lammps(Parameters *p);
-    ~lammps(void);
-    void cleanMemory(void);
-    
-    void initialize() {};
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+    private:
+        long numberOfAtoms;
+        double oldBox[9];
+        void *LAMMPSObj;
+        void makeNewLAMMPS(long N, const double *R,  const int *atomicNrs, const double *box);
+        Parameters *parameters;
+        bool realunits;
 };
 #endif
