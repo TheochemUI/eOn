@@ -8,25 +8,25 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include"NewPotential.h"
+#include"NewPot.h"
 
-NewPotential::NewPotential(Parameters *p){
+NewPot::NewPot(Parameters *p){
 }
 
-void NewPotential::initialize(void){
+void NewPot::initialize(void){
     fake1 = 0;
     fake2 = 1;
     return;
 }
 
-void NewPotential::cleanMemory(void){
+void NewPot::cleanMemory(void){
     return;
 }
 
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
-void NewPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+void NewPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
 
     for(int i=0; i<N; i++){
         F[ 3*i ] = fake1;

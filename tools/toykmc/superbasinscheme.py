@@ -27,28 +27,28 @@ class SuperbasinScheme:
                     if j not in new_sb_states:
                         new_sb_states.append(j)
                 self.superbasins.remove(sb)
-        
+
         #self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
         #However, it will likely be very slow. We should be able to do without it.
         #Also, if confidence is changed and new processes are found, the superbasin
         #will ignore these new processes.
 
         self.superbasins.append(superbasin.Superbasin(new_sb_states)) 
-        
+
         print "Created superbasin with states " #+ str([i.number for i in new_sb_states])
-    
+
     def register_transition(self, start_state, end_state):
         raise NotImplementedError()
 
     def write_data(self):
         raise NotImplementedError()
-    
+
     def read_data(self):
         raise NotImplementedError()
 
 class TransitionCounting(SuperbasinScheme):
     ''' Implements the transition counting scheme for superbasining '''
-    
+
     def __init__(self, num_transitions):
         self.num_transitions = num_transitions
         SuperbasinScheme.__init__(self)
@@ -57,15 +57,15 @@ class TransitionCounting(SuperbasinScheme):
     def register_transition(self, start_state, end_state):
         if start_state == end_state:
             return
-        
+
         start_count = self.get_count(start_state)
         if end_state not in start_count:
             start_count[end_state] = 0
         start_count[end_state] += 1
-        
+
         if start_count[end_state] >= self.num_transitions:
             self.make_basin([start_state, end_state])
-    
+
     def get_count(self, state):
         try:
             return self.count[state]

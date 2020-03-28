@@ -8,13 +8,13 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef NEWPOTENTIAL_INTERFACE
-#define NEWPOTENTIAL_INTERFACE
+#ifndef NEWPOT_INTERFACE
+#define NEWPOT_INTERFACE
 
 #include "../../Potential.h"
 
 /** Template to use if user want to provide potential. */
-class NewPotential : public Potential{
+class NewPot : public Potential{
 
 private:
 //	Variables
@@ -24,7 +24,7 @@ private:
 public:
 // Functions
 	// constructor and destructor
-    NewPotential(Parameters *p);
+    NewPot(Parameters *p);
 	
     // To satisfy interface
     void initialize(void);    
