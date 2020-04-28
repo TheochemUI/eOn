@@ -28,7 +28,6 @@ class ExtPot : public Potential
         void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
         void recieveFromSystem(long N, double *F, double *U);
         const char *eon_extpot_path;
-
 };
 
 #endif
