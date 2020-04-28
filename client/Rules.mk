@@ -67,7 +67,12 @@ ifdef LAMMPS_POT
     ifdef LAMMPS_MEAM
         LIBS += ./potentials/LAMMPS/libmeam.a
         POTENTIALS += "+LAMMPS_MEAM"
-    endif    
+    endif
+    ifdef LAMMPS_KIM
+        LIBS += /home/graeme/.local/kim-v2-mpi-4/lib64/libkim-api-v2.so
+        LDFLAGS += -lcurl
+        POTENTIALS += "+LAMMPS_KIM"
+    endif
 else
    OPOTDIRS += ./potentials/LAMMPS
    POTENTIALS += "-LAMMPS"
