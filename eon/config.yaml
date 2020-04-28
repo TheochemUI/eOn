@@ -106,9 +106,9 @@ Potential:
             kind: boolean
             default: false
             
-        terminal_potential_path:
+        external_potential_path:
             kind: string
-            default: eon_terminal
+            default: ext_pot
 
 
 ################################################################################
