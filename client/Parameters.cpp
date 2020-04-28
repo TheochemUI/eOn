@@ -55,7 +55,7 @@ Parameters::Parameters(){
     LAMMPSLogging = false;
     LAMMPSThreads = 0;
     EMTRasmussen = false;
-    extPotPath = "extPot";
+    extPotPath = "./ext_pot";
     
     // [Structure Comparison] //
     distanceDifference = 0.1;

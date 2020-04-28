@@ -8,7 +8,9 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
+#include <stdio.h>
 #include <iostream>
+#include <unistd.h>
 #include "ExtPot.h"
 
 ExtPot::ExtPot(Parameters *p)
