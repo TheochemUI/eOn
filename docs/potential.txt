@@ -42,13 +42,12 @@ Potential
 
         ``tip4p``: Point charge model for water. [#tip4p]_
 
-        ``mpi``: Communicate with a MPI process to calculate energy and
-                 forces. More information can be found on the 
-                 :ref:`MPI Potential<mpi_potential>` page.
+        ``mpi``: Communicate with a MPI process to calculate energy and forces. 
+                 More information can be found on the :ref:`MPI Potential<mpi_potential>` page.
 
         ``ext_pot``: Writes box size and coordinates to the file 'from_eon_to_ext'
-			       Make a system call for the binary 'ext_pot'
-			       Reads return energy of forces from the file 'from_ext_to_eon'
+                   Make a system call for the binary 'ext_pot', which should read
+                   the coordinates and return the energy and forces to the file 'from_ext_to_eon'
 
 **log_potential**: If true write timing information about each force call to client.log
 
