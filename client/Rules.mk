@@ -30,6 +30,9 @@ POTENTIALS += "+IMD"
 POTDIRS += ./potentials/ExtPot/
 LIBS += ./potentials/ExtPot/libextpot.a
 POTENTIALS += "+EXT_POT"
+POTDIRS += ./potentials/PyAMFF/
+LIBS += ./potentials/PyAMFF/libPyAMFF.a
+POTENTIALS += "+PYAMFF"
 
 
 #Potentials relying on fortran
@@ -73,6 +76,7 @@ ifdef LAMMPS_POT
         LDFLAGS += -lcurl
         POTENTIALS += "+LAMMPS_KIM"
     endif
+
 else
    OPOTDIRS += ./potentials/LAMMPS
    POTENTIALS += "-LAMMPS"
