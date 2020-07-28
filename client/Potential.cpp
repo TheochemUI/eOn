@@ -22,6 +22,7 @@
 #include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/ExtPot/ExtPot.h"
+#include "potentials/PyAMFF/PyAMFF.h"
 
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
@@ -59,6 +60,7 @@ const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
 const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
+const char Potential::POT_PYAMFF[] =       "pyamff";
 
 Potential* Potential::pot = NULL;
 
@@ -87,7 +89,9 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new SpceCcl();
     else if(parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
-    
+     else if(parameters->potential == POT_PYAMFF)
+        pot = new PyAMFF();
+   
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
@@ -161,7 +165,12 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
 
     fcalls += 1;
     fcallsTotal += 1;
-    
+//    printf("nAtoms %f\n",nAtoms);
+//    printf("AtomMatrix positions %f\n",positions);
+//    printf("VectorXi atomicNmrs %f\n",atomicNrs);
+//    printf("energy %f\n",energy);
+//    printf("Matrix3d box %f\n",box);
+   
     if (params->maxForceCalls != 0) {
         if (fcallsTotal > params->maxForceCalls) {
             throw 1017;
