@@ -85,6 +85,7 @@ Potential:
                 - tip4p_pt
                 - ext_pot
                 - new_pot
+                - pyamff
 
         mpi_poll_period:
             kind: float
