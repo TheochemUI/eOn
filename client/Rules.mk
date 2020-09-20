@@ -30,26 +30,26 @@ POTENTIALS += "+IMD"
 POTDIRS += ./potentials/ExtPot/
 LIBS += ./potentials/ExtPot/libextpot.a
 POTENTIALS += "+EXT_POT"
-POTDIRS += ./potentials/PyAMFF/
-LIBS += ./potentials/PyAMFF/libPyAMFF.a
-POTENTIALS += "+PYAMFF"
-
+#POTDIRS += ./potentials/PyAMFF/
+#LIBS += ./potentials/PyAMFF/libPyAMFF.a
+#POTENTIALS += "+PYAMFF"
 
 #Potentials relying on fortran
 ifdef NO_FORTRAN
-    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H -FeHe"
+    POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H -FeHe -PyAMFF"
     OPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/
+                ./potentials/FeHe/ ./potentials/PyAMFF 
 else
-    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H +FeHe"
+    POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H +FeHe +PyAMFF"
     FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/
+                ./potentials/FeHe/ ./potentials/PyAMFF 
     LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a \
             ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a \
             ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a \
-            ./potentials/FeHe/libFeHe.a
+            ./potentials/FeHe/libFeHe.a ./potentials/PyAMFF/libPyAMFF.a ./potentials/PyAMFF/libAMFF.a 
+            
 endif
 
 #Optional potentials

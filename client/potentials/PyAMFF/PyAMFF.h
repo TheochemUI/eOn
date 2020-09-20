@@ -12,25 +12,22 @@
 #define PYAMFF_POTENTIAL
 
 #include "../../Potential.h"
-#include <string>
+
+//extern "C" void calc_eon(long *nAtoms, const double [], const double [], const int [], double *F, double *U);
+//extern "C" {
+//    void calceon_(const long int *nAtoms, const double *R, const double *box, const int *atomicNrs, double *F, double *U);
+//}
 
 class PyAMFF : public Potential
 {
 
     public:
         PyAMFF(void);
-		~PyAMFF();
+//		~FAMFF();
 		void initialize() {};
 		void cleanMemory(void);
         void force(long N, const double *R, const int *atomicNrs, 
                    double *F, double *U, const double *box);
-        std::string num2sym(int Z);
-
-    private:
-        void writePOSCAR(long N, const double *R, const int *atomicNrs,
-                         const double *box);
-        void readFU(long N, double *F, double *U);
 };
-
 #endif
 
