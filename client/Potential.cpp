@@ -36,6 +36,9 @@
 #ifndef WIN32
     #include "potentials/VASP/VASP.h"
 #endif
+#ifdef PYAMFF_POT
+    #include "potentials/PyAMFF/PyAMFF.h"
+#endif
 
 #include <cstdlib>
 
@@ -89,9 +92,7 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new SpceCcl();
     else if(parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
-     else if(parameters->potential == POT_PYAMFF)
-        pot = new PyAMFF();
-   
+ 
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
@@ -107,6 +108,12 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new Tip4p_H();
     else if(parameters->potential == POT_FEHE)
         pot = new FeHe();
+ 
+#endif
+
+#ifdef PYAMFF_POT
+    else if(parameters->potential == POT_PYAMFF)
+        pot = new PyAMFF();
 #endif
 
 #ifdef EONMPI
