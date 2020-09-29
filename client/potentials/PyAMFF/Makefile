@@ -20,4 +20,5 @@ $(LIB) : $(OBJECTS)
 
 clean :
 	rm -f $(OBJECTS) $(LIB)
+	rm -f libAMFF.a
 

@@ -39,20 +39,29 @@ ifdef NO_FORTRAN
     POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H -FeHe -PyAMFF"
     OPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/ ./potentials/PyAMFF 
+                ./potentials/FeHe/ 
 else
     POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H +FeHe +PyAMFF"
     FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/ ./potentials/PyAMFF 
+                ./potentials/FeHe/ 
     LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a \
             ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a \
             ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a \
-            ./potentials/FeHe/libFeHe.a ./potentials/PyAMFF/libPyAMFF.a ./potentials/PyAMFF/libAMFF.a 
+            ./potentials/FeHe/libFeHe.a 
             
 endif
 
 #Optional potentials
+ifdef PYAMFF_POT
+   CXXFLAGS += -DPYAMFF_POT
+   POTDIRS += ./potentials/PyAMFF
+   LIBS += ./potentials/PyAMFF/libPyAMFF.a ./potentials/PyAMFF/libAMFF.a
+   POTENTIALS += "+PyAMFF"
+else
+   OPOTDIRS += ./potentials/PyAMFF
+   POTENTIALS += "-PyAMFF"
+endif
 
 ifdef LAMMPS_POT
     CXXFLAGS += -DLAMMPS_POT
