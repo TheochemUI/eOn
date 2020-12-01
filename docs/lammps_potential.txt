@@ -7,13 +7,13 @@ LAMMPS Potential
 
 In order to use the LAMMPS potential you must first build the serial library
 version of LAMMPS. This can be done by following the instructions in the
-`lammps documentation <http://lammps.sandia.gov/doc/Section_start.html>`_ . For
+`lammps documentation <https://lammps.sandia.gov/doc/Manual.html>`_ . For
 most cases executing these commands from the LAMMPS ``src`` folder should work::
 
     $ cd STUBS
     $ make
     $ cd ..
-    $ make serial mode=lib
+    $ make yes-MANYBODY serial mode=lib
 
 Once you have compiled the library copy ``liblammps_serial.a`` and
 ``STUBS/libmpi_stubs.a`` to the client/potentials/LAMMPS directory in the Eon
