@@ -24,7 +24,7 @@ Dependencies
     * GNU Make
     * G++ (>=4.0, other C++ compilers might work)
     * (optional) gfortran or Intel Fortran Compiler
-    * (optional, for LAMMPS potentials) `LAMMPS <http://lammps.sandia.gov/doc/Section_start.html>`__
+    * (optional, for LAMMPS potentials) `LAMMPS <http://lammps.sandia.gov/doc/>`__
 
 .. highlight:: bash
 
