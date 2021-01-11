@@ -49,3 +49,4 @@
 
 # /tools/
 /tools/*.pyc
+/.ccls-cache/
