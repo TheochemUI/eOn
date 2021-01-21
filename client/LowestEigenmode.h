@@ -17,6 +17,7 @@ public:
     double statsAngle;
     long statsRotations;
     static const char MINMODE_DIMER[];
+    static const char MINMODE_GPRDIMER[];
     static const char MINMODE_LANCZOS[];
 
     virtual ~LowestEigenmode() {}

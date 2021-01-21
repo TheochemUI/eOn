@@ -791,3 +791,9 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
         //m1->matter2con("movie.con", true);
     }
 }
+
+Params helper_functions::eon_parameters_to_gpr(Parameters *parameters){
+    Params p;
+    p.actdist_fro.value = parameters->gprActiveRadius;
+    return p;
+}
