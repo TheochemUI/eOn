@@ -104,4 +104,5 @@ else
 endif
 
 #LDFLAGS += -lquadmath
-include Rules.mk
+# include Rules.mk
+include buildRules.mk
