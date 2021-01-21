@@ -4,6 +4,7 @@
 #include "Lanczos.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
+#include "AtomicGPDimer.h"
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 #include "Log.h"
@@ -164,6 +165,8 @@ MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePa
         }
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
         minModeMethod = new Lanczos(matter, parameters);
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+        minModeMethod = new AtomicGPDimer(matter, parameters);
     }
 }
 
@@ -187,6 +190,10 @@ int MinModeSaddleSearch::run()
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
         log("[Lanczos]  %9s %9s %10s %18s %9s %10s %7s %5s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change", "Angle", "Iters");
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+        log("[GPRDimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n",
+            "Step", "Step Size", "Delta E", forceLabel, "Curvature",
+            "Torque", "Angle", "Rots");
     }
 
     ostringstream climb;
@@ -290,6 +297,15 @@ int MinModeSaddleSearch::run()
                 minModeMethod->statsTorque,
                 minModeMethod->statsAngle,
                 minModeMethod->statsRotations);
+        }else if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER)
+        {
+            log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
+                        iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
+                        objf.getConvergence(),
+                        minModeMethod->getEigenvalue(),
+                        minModeMethod->statsTorque,
+                        minModeMethod->statsAngle,
+                        minModeMethod->statsRotations);
         }else{
             log("[MinModeSaddleSearch] Unknown min_mode_method: %s\n", parameters->saddleMinmodeMethod.c_str());
             exit(1);
