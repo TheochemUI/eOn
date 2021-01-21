@@ -5,6 +5,7 @@
 #include "LowestEigenmode.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
+#include "AtomicGPDimer.h"
 #include "Lanczos.h"
 
 class ObjectiveFunction

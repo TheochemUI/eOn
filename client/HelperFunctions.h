@@ -5,6 +5,9 @@
 #include "Matter.h"
 #include <vector>
 #include <string>
+
+#include "gprdimer/structures/Structures.h"
+
 // Random number generator constants
 
 #define IM 2147483647
@@ -68,5 +71,7 @@ namespace helper_functions {
     bool identical(const Matter* m1, const Matter* m2, const double distanceDifference);
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
     void pushApart(Matter *m1, double minDistance);
+
+    Params eon_parameters_to_gpr(Parameters *parameters);
 }
 #endif
