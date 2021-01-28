@@ -400,6 +400,43 @@ int Parameters::load(FILE *file){
         lanczosMaxIterations = ini.GetValueL("Lanczos", "max_iterations", lanczosMaxIterations);
         lanczosQuitEarly = ini.GetValueB("Lanczos", "quit_early", lanczosQuitEarly);
 
+        // [GPR Dimer] //
+        gprDimerRotationAngle = ini.GetValueF("GPR Dimer", "finite_angle", gprDimerRotationAngle);
+        gprDimerConvergedAngle = ini.GetValueF("GPR Dimer", "converged_angle", gprDimerConvergedAngle);
+        gprDimerRelaxConvAngle = ini.GetValueF("GPR Dimer", "relaxation_converged_angle", gprDimerRelaxConvAngle);
+        gprDimerInitRotationsMax = (int)ini.GetValueL("GPR Dimer", "max_initial_rotation_iterations", gprDimerInitRotationsMax);
+        gprDimerRelaxRotationsMax = (int)ini.GetValueL("GPR Dimer", "max_relaxation_rotation_iterations", gprDimerRelaxRotationsMax);
+        gprDimerDivisorTdimerGP = (int)ini.GetValueL("GPR Dimer", "divisor_t_dimer", gprDimerDivisorTdimerGP);
+        gprDimerMaxOuterIterations = (int)ini.GetValueL("GPR Dimer", "max_outer_iterations", gprDimerMaxOuterIterations);
+        gprDimerMaxInnerIterations = (int)ini.GetValueL("GPR Dimer", "max_inner_iterations", gprDimerMaxInnerIterations);
+        gprDimerMidpointMaxDisp = ini.GetValueF("GPR Dimer", "max_midpoint_displacement", gprDimerMidpointMaxDisp);
+        gprDimerRotOptMethod = ini.GetValue("GPR Dimer", "rotation_opt_method", gprDimerRotOptMethod);
+        gprDimerTransOptMethod = ini.GetValue("GPR Dimer", "translation_opt_method", gprDimerTransOptMethod);
+        gprActiveRadius = ini.GetValueF("GPR Dimer", "active_radius", gprActiveRadius);
+        gprDimerSep = ini.GetValueF("GPR Dimer", "dimer_separation", gprDimerSep);
+        gprDimerConvStep = ini.GetValueF("GPR Dimer", "convex_region_step_size", gprDimerConvStep);
+        gprDimerMaxStep = ini.GetValueF("GPR Dimer", "max_step_size", gprDimerMaxStep);
+        gprForceThreshold = ini.GetValueF("GPR Dimer", "force_threshold", gprForceThreshold);
+        gprDimerRatioAtLimit = ini.GetValueF("GPR Dimer", "ratio_at_limit", gprDimerRatioAtLimit);
+        gprDimerInitRotGP = ini.GetValueB("GPR Dimer", "nogp_initial_rotations", gprDimerInitRotGP);
+        gprDimerInitTransGP = ini.GetValueB("GPR Dimer", "nogp_init_translations", gprDimerInitTransGP);
+        gprDimerManyIterations = ini.GetValueB("GPR Dimer", "has_many_iterations", gprDimerManyIterations);
+        // GPR Params
+        gprDimerHyperOptMethod = ini.GetValue("GPR Dimer", "hyperparameter_opt_method", gprDimerHyperOptMethod);
+        gprDimerSigma2 = ini.GetValueF("GPR Dimer", "gpr_variance", gprDimerSigma2);
+        gprDimerJitterSigma2 = ini.GetValueF("GPR Dimer", "gpr_jitter_variance", gprDimerJitterSigma2);
+        gprDimerNoiseSigma2 = ini.GetValueF("GPR Dimer", "gpr_noise_variance", gprDimerNoiseSigma2);
+        gprDimerPriorMu = ini.GetValueF("GPR Dimer", "prior_mean", gprDimerPriorMu);
+        gprDimerPriorSigma2 = ini.GetValueF("GPR Dimer", "prior_variance", gprDimerPriorSigma2);
+        gprDimerPriorNu = ini.GetValueF("GPR Dimer", "prior_degrees_of_freedom", gprDimerPriorNu);
+        // GPR Optimization Parameters
+        gprOptCheckDerivatives = ini.GetValueB("GPR Dimer", "check_derivatives", gprOptCheckDerivatives);
+        gprOptMaxIterations = (int)ini.GetValueL("GPR Dimer", "opt_max_iterations", gprOptMaxIterations);
+        gprOptTolFunc = ini.GetValueF("GPR Dimer", "opt_tol_func", gprOptTolFunc);
+        gprOptTolSol = ini.GetValueF("GPR Dimer", "opt_tol_sol", gprOptTolSol);
+        gprOptLambdaLimit = ini.GetValueF("GPR Dimer", "opt_lambda_limit", gprOptLambdaLimit);
+        gprOptLambdaInit = ini.GetValueF("GPR Dimer", "opt_lambda_init", gprOptLambdaInit);
+
         // [Prefactor] //
 
         prefactorDefaultValue = ini.GetValueF("Prefactor", "default_value", prefactorDefaultValue);

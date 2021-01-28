@@ -446,6 +446,154 @@ Dimer:
 
 ################################################################################
 
+GPR Dimer:
+
+    options:
+
+        finite_angle:
+            kind: float
+            default: 0.005
+
+        converged_angle:
+            kind: float
+            default: 5.0
+
+        relaxation_converged_angle:
+            kind: float
+            default: 0.005
+
+        max_initial_rotation_iterations:
+          kind: int
+          default: 6
+
+        max_relaxation_rotation_iterations:
+          kind: int
+          default: 10
+
+        divisor_t_dimer:
+          kind: int
+          default: 10
+
+        max_outer_iterations:
+          kind: int
+          default: 300
+
+        max_inner_iterations:
+          kind: int
+          default: 1000
+
+        max_midpoint_displacement:
+          kind: float
+          default: 0.5
+
+        rotation_opt_method:
+          kind: string
+          default: lbfgs
+          values:
+            - lbfgs
+
+        translation_opt_method:
+          kind: string
+          default: lbfgs
+          values:
+            - lbfgs
+
+        active_radius:
+          kind: float
+          default: 5.0
+
+        dimer_separation:
+          kind: float
+          default: 0.01
+
+        convex_region_step_size:
+          kind: float
+          default: 0.1
+
+        max_step_size:
+          kind: float
+          default: 0.1
+
+        force_threshold:
+          kind: float
+          default: 0.01
+
+        ratio_at_limit:
+          kind: float
+          default: 0.6666666666667
+
+        nogp_initial_rotations:
+          kind: boolean
+          default: True
+
+        nogp_initial_translations:
+          kind: boolean
+          default: True
+
+        has_many_iterations:
+          kind: boolean
+          default: True
+
+        hyperparameter_opt_method:
+          kind: string
+          default: scg
+          values:
+              - scg
+
+        gpr_variance:
+          kind: float
+          default: 1e-8
+
+        gpr_jitter_variance:
+          kind: float
+          default: 1e-8
+
+        gpr_noise_variance:
+          kind: float
+          default: 1e-8
+
+        prior_mean:
+          kind: float
+          default: 0.0
+
+        prior_variance:
+          kind: float
+          default: 1.0
+
+        prior_degrees_of_freedom:
+          kind: int
+          default: 20
+
+        check_derivatives:
+          kind: boolean
+          default: False
+
+        opt_max_iterations:
+          kind: float
+          default: 400
+
+        opt_tol_func:
+          kind: float
+          default: 1e-4
+
+        opt_tol_sol:
+          kind: float
+          default: 1e-4
+
+        opt_lambda_limit:
+          kind: float
+          default: 1e20
+
+        opt_lambda_init:
+          kind: float
+          default: 10.0
+
+        rotations_min:
+            kind: int
+            default: 1
+
+################################################################################
+
 Basin Hopping:
 
     options:
