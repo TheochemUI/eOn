@@ -195,8 +195,8 @@ eonclient: $(TARGET) $(LIBS)
 libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 	$(AR) libeon.a $(filter-out ClientEON.o,$(OBJECTS)) potentials/*/*.o potentials/EMT/Asap/*.o
 
-ClientEON.o: version.h
-CommandLine.o: version.h
+ClientEON.cpp: version.h
+CommandLine.cpp: version.h
 
 version.h:
 	./version.sh > version.h
