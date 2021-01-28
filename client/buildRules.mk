@@ -155,14 +155,22 @@ FILES :=   ClientEON.cpp INIFile.cpp MinModeSaddleSearch.cpp Dimer.cpp EpiCenter
            DynamicsSaddleSearch.cpp PrefactorJob.cpp FIRE.cpp \
            GlobalOptimizationJob.cpp GlobalOptimization.cpp StructureComparisonJob.cpp \
            MonteCarloJob.cpp MonteCarlo.cpp SteepestDescent.cpp BasinHoppingSaddleSearch.cpp \
-           BiasedGradientSquaredDescent.cpp AtomicGPDimer.cpp \
+           BiasedGradientSquaredDescent.cpp AtomicGPDimer.cpp GPMinModeSaddleSearch.cpp \
 		   gprdimer/gpr/AtomicDimer.cpp \
+		   gprdimer/backend/DistributionFunctions.cpp \
 	       gprdimer/gpr/auxiliary/ProblemSetUp.cpp \
-	       gprdimer/gpr/auxiliary/Setup.cpp \
+	       gprdimer/gpr/auxiliary/Gradient.cpp \
+	       gprdimer/gpr/auxiliary/Distance.cpp \
+		   gprdimer/gpr/prior/PriorGaussian.cpp \
+		   gprdimer/gpr/prior/PriorLogUnif.cpp \
+		   gprdimer/gpr/prior/PriorSqrtt.cpp \
+		   gprdimer/gpr/prior/PriorT.cpp \
+		   gprdimer/gpr/dimer/LBFGS.cpp \
 	       gprdimer/gpr/covariance_functions/ConstantCF.cpp \
 	       gprdimer/gpr/covariance_functions/SexpatCF.cpp \
+	       gprdimer/gpr/observation_models/LikGaussian.cpp \
 	       gprdimer/gpr/ml/GaussianProcessRegression.cpp \
-	       gprdimer/managers/io/FileManager.cpp \
+	       gprdimer/gpr/ml/SCG.cpp
 
 SOURCES := $(patsubst %, $(SRC)/%, $(FILES))
 OBJECTS := $(patsubst %.cpp, $(TEMPDIR)/%.o, $(FILES))
@@ -228,7 +236,7 @@ check: unitTests
 	@echo "In the future, regression testing will automatically run now."
 
 clean: testsClean
-	rm -rf $(TEMPDIR)
+	rm -rf $(TEMPDIR) version.h eonclient
 
 clean-all: clean testsClobber
 	for pot in $(POTDIRS) $(FPOTDIRS) $(OPOTDIRS); do $(MAKE) -C $$pot clean ; done
