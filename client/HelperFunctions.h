@@ -72,6 +72,13 @@ namespace helper_functions {
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
     void pushApart(Matter *m1, double minDistance);
 
-    Params eon_parameters_to_gpr(Parameters *parameters);
-}
+    /**
+     * \brief Create a parameters object for gpr_dimer
+     *
+     * TODO: Get the cell size from a Matter object
+     *
+     * @param *parameters An EON parameters object
+     */
+    InputParameters eon_parameters_to_gpr(Parameters *parameters);
+    } // namespace helper_functions
 #endif
