@@ -792,8 +792,41 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     }
 }
 
-Params helper_functions::eon_parameters_to_gpr(Parameters *parameters){
-    Params p;
+InputParameters helper_functions::eon_parameters_to_gpr(Parameters *parameters){
+    InputParameters p;
+    // Problem parameters
     p.actdist_fro.value = parameters->gprActiveRadius;
+    p.dimer_sep.value = parameters->gprDimerSep;
+    p.method_rot.value = parameters->gprDimerRotOptMethod;
+    p.method_trans.value = parameters->gprDimerTransOptMethod;
+    p.param_trans.value[0] = parameters->gprDimerConvStep;
+    p.param_trans.value[1] = parameters->gprDimerMaxStep;
+    p.T_dimer.value = parameters->optConvergedForce;
+    p.initrot_nogp.value = parameters->gprDimerInitRotGP;
+    p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
+    p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
+    p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
+    p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
+    p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
+    p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
+    p.disp_max.value = parameters->gprDimerMidpointMaxDisp;
+    p.ratio_at_limit.value = parameters->gprDimerRatioAtLimit;
+    p.num_bigiter.value = parameters->gprDimerMaxOuterIterations;
+    p.num_iter.value = parameters->gprDimerMaxInnerIterations;
+    p.islarge_num_iter.value = parameters->gprDimerManyIterations;
+    // GPR Parameters
+    p.gp_sigma2.value = parameters->gprDimerSigma2;
+    p.jitter_sigma2.value = parameters->gprDimerJitterSigma2;
+    p.sigma2.value = parameters->gprDimerNoiseSigma2;
+    p.prior_mu.value = parameters->gprDimerPriorMu;
+    p.prior_nu.value = parameters->gprDimerPriorNu;
+    p.prior_s2.value = parameters->gprDimerPriorSigma2;
+    p.check_derivative.value = parameters->gprOptCheckDerivatives;
+    p.max_iter.value = parameters->gprOptMaxIterations;
+    p.tolerance_func.value = parameters->gprOptTolFunc;
+    p.tolerance_sol.value = parameters->gprOptTolSol;
+    p.lambda_limit.value = parameters->gprOptLambdaLimit;
+    p.lambda.value = parameters->gprOptLambdaInit;
+    p.report_level.value = 1;
     return p;
 }
