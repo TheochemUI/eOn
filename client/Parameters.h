@@ -145,11 +145,12 @@ public:
     // [GPR Dimer] //
     double gprDimerRotationAngle; // finite difference rotation angle
     double gprDimerConvergedAngle; // stop rotating when angle drops below this value {T_anglerot_init}
+    double gprDimerRelaxConvAngle; // stop rotating when angle drops below this value during relaxation {T_anglerot_gp}
     long   gprDimerInitRotationsMax; // {num_inter_initrot}
     long   gprDimerRelaxRotationsMax; // {num_inter_rot_gp}
     long   gprDimerDivisorTdimerGP; // {divisor_T_dimer_gp}
     long   gprDimerMaxOuterIterations; // maximum number of outer iterations or new sets of observations {num_bigiter}
-    long   gprDimerMaxInnerIterations; // maximum number of steps during the relaxation phase
+    long   gprDimerMaxInnerIterations; // maximum number of steps during the relaxation phase {num_iter}
     double gprDimerMidpointMaxDisp; // {disp_max}
     string gprDimerRotOptMethod; // method to determine the next rotation direction
     string gprDimerTransOptMethod; // method to determine the next rotation direction
@@ -160,14 +161,23 @@ public:
     double gprForceThreshold; // maximum component of the force acting on the middle point of the dimer (stops when accurate force components are below this value) {T_dimer}
     double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the ratio of inter-atomic distances between the image and its "nearest observed data point"
     bool   gprDimerInitRotGP; // initial rotations without GP (1) or with GP (0) {initrot_nogp}
+    bool   gprDimerInitTransGP; // initial translations without GP (1) or with GP (0) {inittrans_nogp}
     bool   gprDimerManyIterations; // indicates of the number of iterations is larger than required for dimer convergence on the accurate energy surface (1), otherwise (0) the relaxation phase is continued from the current dimer if the maximum iterations in the relaxation phase is reached {islarge_num_iter}
     // GPR Params
     string gprDimerHyperOptMethod; // method to optimize hyperparameters {optimization_alg}
     double gprDimerSigma2; // GPR variance {gp_sigma2}
+    double gprDimerJitterSigma2; // GPR jitter variance {jitter_sigma2}
     double gprDimerNoiseSigma2; // noise Variance {sigma2}
     double gprDimerPriorMu; // prior mean {prior_mu}
     double gprDimerPriorSigma2; // prior variance {prior_s2}
     long gprDimerPriorNu; // prior degrees of freedom {prior_nu}
+    // GPR Optimization Parameters
+    bool gprOptCheckDerivatives; // {check_derivative}
+    int gprOptMaxIterations; // {max_iter}
+    long gprOptTolFunc; // {tolerance_func}
+    long gprOptTolSol; // {tolerance_sol}
+    long gprOptLambdaLimit; // {lambda_limit}
+    long gprOptLambdaInit; // {lambda}
 
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
