@@ -181,8 +181,13 @@ int MinModeSaddleSearch::run()
 
     int optStatus;
     int firstIteration = 1;
+    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
 
-    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str(); 
+    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+        log("================= Using the GP Dimer Library =================\n");
+        minModeMethod->compute(matter, mode);
+    } else {
+
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", 
@@ -337,6 +342,7 @@ int MinModeSaddleSearch::run()
     }
 
     delete optimizer;
+    }
 
     return status;
 }
