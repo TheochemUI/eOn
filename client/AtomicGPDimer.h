@@ -30,35 +30,21 @@ class AtomicGPDimer : public LowestEigenmode
     AtomicGPDimer(Matter *matter, Parameters *parameters);
     ~AtomicGPDimer();
 
-    void compute();
+    void compute(Matter *matter, AtomMatrix initialDirection);
     double getEigenvalue();
     AtomMatrix getEigenvector();
 
+private:
+
+    Matter *matterCenter; // center of the dimer
+    Matter *matterDimer; //one configuration of the dimer
+    AtomMatrix direction; // direction along the dimer
+    AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
     Parameters *parameters;
 
-    atmd::AtomicDimer *atomic_dimer;
-
-    Matter *x0;          // Center image
-    Matter *x1;          // Forward image
-    VectorXd tau;      // Dimer direction
-    VectorXd theta;    // Dimer rotation direction
-    VectorXd F_R;      // Dimer rotational force
-    double C_tau;        // Curvature along tau
-
-    // parameters used for conjugate gradients
-    VectorXd F_R_Old;
-    VectorXd thetaOld;
-    double a, b, gamma;
-    bool init_cg;
-
-    // variables for LBFGS
-    std::vector<VectorXd> s,y;
-    std::vector<double> rho;
-    bool init_lbfgs;
-    VectorXd rPrev;
-
-    std::vector<VectorXd> gradients;
-    std::vector<VectorXd> positions;
+    InputParameters p;
+    atmd::AtomicDimer atomic_dimer;
+    aux::ProblemSetUp problem_setup;
 };
 
 #endif
