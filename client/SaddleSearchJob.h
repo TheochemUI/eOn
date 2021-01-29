@@ -19,6 +19,7 @@
  * at the minimum of the current state. It can either be run using the ref Dimer or the 
  * ref Lanczos min-mode method.
  *
+ * The saddle seach job also optionally generates and works with a GP approximated potential energy system with the GPR Dimer minimum mode method
  */
 
 /**
@@ -52,7 +53,7 @@ class SaddleSearchJob : public Job {
 	//! Initializes a ref MinModeSaddleSearch
         MinModeSaddleSearch *saddleSearch;
         //! Initial configuration.
-	Matter *initial;
+        Matter *initial;
 	//! Configuration used during the saddle point search.
         Matter *saddle;  
 	//! Configuration used during the saddle point search.
