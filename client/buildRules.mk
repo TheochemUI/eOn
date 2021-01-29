@@ -155,7 +155,7 @@ FILES :=   ClientEON.cpp INIFile.cpp MinModeSaddleSearch.cpp Dimer.cpp EpiCenter
            DynamicsSaddleSearch.cpp PrefactorJob.cpp FIRE.cpp \
            GlobalOptimizationJob.cpp GlobalOptimization.cpp StructureComparisonJob.cpp \
            MonteCarloJob.cpp MonteCarlo.cpp SteepestDescent.cpp BasinHoppingSaddleSearch.cpp \
-           BiasedGradientSquaredDescent.cpp AtomicGPDimer.cpp GPMinModeSaddleSearch.cpp \
+           BiasedGradientSquaredDescent.cpp AtomicGPDimer.cpp \
 		   gprdimer/gpr/AtomicDimer.cpp \
 		   gprdimer/backend/DistributionFunctions.cpp \
 	       gprdimer/gpr/auxiliary/ProblemSetUp.cpp \
