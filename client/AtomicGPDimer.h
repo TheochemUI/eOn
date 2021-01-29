@@ -12,7 +12,6 @@
 
 #include "gprdimer/gpr/Enums.h"
 #include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "gprdimer/gpr/auxiliary/Setup.h"
 #include "gprdimer/gpr/covariance_functions/ConstantCF.h"
 #include "gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "gprdimer/gpr/ml/GaussianProcessRegression.h"
@@ -31,7 +30,7 @@ class AtomicGPDimer : public LowestEigenmode
     AtomicGPDimer(Matter *matter, Parameters *parameters);
     ~AtomicGPDimer();
 
-    void compute(Matter *matter, AtomMatrix initialDirection);
+    void compute();
     double getEigenvalue();
     AtomMatrix getEigenvector();
 
