@@ -47,7 +47,7 @@ void PyAMFF::cleanMemory(void)
 
 
 void PyAMFF::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box)
+                 double *U, const double *box, int nImages=1)
 {
 //    int i;
 //    const char *atomicSymbols[N];
