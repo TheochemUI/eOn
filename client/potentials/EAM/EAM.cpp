@@ -179,7 +179,7 @@ EAM::element_parameters EAM::get_element_parameters(int atomic_number)
 }
 
 
-void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box)
+void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
 {
     double *drho_dr = new double[3*N]; 
     for (long i=0;i<3*N;i++) 

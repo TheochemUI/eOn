@@ -16,7 +16,7 @@ class EAM
         void initialize();
         void cleanMemory();
         void force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *fullbox);
+                   double *U, const double *fullbox, int nImages);
     private:
         struct element_parameters {
             const int Z;                // Atomic Number

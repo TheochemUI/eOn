@@ -150,7 +150,7 @@ int Potential::fcallsTotal = 0;
 double Potential::totalUserTime=0;
 
 AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
-                            VectorXi atomicNrs, double *energy, Matrix3d box)
+                            VectorXi atomicNrs, double *energy, Matrix3d box, int nImages)
 {
     AtomMatrix forces(nAtoms,3);
 
@@ -158,8 +158,9 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     if (params->LogPotential) {
         helper_functions::getTime(&start, &userStart, &sysStart);
     }
+    // TODO: Be better with the number of images
     force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy,
-          box.data());
+          box.data(),1);
 
     double finish, userFinish, sysFinish;
     if (params->LogPotential) {
