@@ -1,5 +1,8 @@
 #------------------------------------
 #Potentials
+POTDIRS += ./potentials/GPRPotential/
+LIBS += ./potentials/GPRPotential/libGPRPot.a
+POTENTIALS += "+GPRPot "
 POTDIRS += ./potentials/EMT/
 LIBS += ./potentials/EMT/libEMT.a
 POTENTIALS += "+EMT "

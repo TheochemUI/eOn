@@ -16,7 +16,7 @@ GPRPotential::GPRPotential(Parameters *p){
     gpr_model = nullptr;
 }
 
-void GPRPotential::registerGPRObject(GaussianProcessRegression *_gpr_model){
+void GPRPotential::registerGPRObject(gpr::GaussianProcessRegression *_gpr_model){
     gpr_model = _gpr_model;
 }
 
@@ -29,7 +29,7 @@ void GPRPotential::cleanMemory(void){
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
-void GPRPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+void GPRPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages){
     Observation observation;
 
     // Copy R points. Note, R should correspond to the moving atoms only.
@@ -50,5 +50,6 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs, double *
         F[3*i+2] = observation.G[3*i+2];
     }
     
-    *U = observation.E;
+    // FIXME: Test conversion, E should only have one element here
+    *U = observation.E[0];
 }
