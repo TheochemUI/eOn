@@ -263,3 +263,5 @@ dmypy.json
 .ccls-cache/
 bin/
 client/version.h
+/.idea/
+/client/.gdb_history
