@@ -30,7 +30,7 @@ void Tip4p_H::cleanMemory(void){
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-void Tip4p_H::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+void Tip4p_H::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1){
     
     double diffR[3], force[3];
     double energy;
@@ -59,7 +59,8 @@ void Tip4p_H::force(long N, const double *R, const int *atomicNrs, double *F, do
 
     // remember that there is an additional H atom
     // water - water interaction
-    tip4p_pot->force(N-1, R, atomicNrs, F, U, box);
+    // TODO: Handle multiple system images
+    tip4p_pot->force(N-1, R, atomicNrs, F, U, box, 1);
         
     for(int i=0; i<nMolecules; i++){
         // hydrogen atoms are located together in pairs of 2 (6 coordinates)

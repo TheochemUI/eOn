@@ -24,7 +24,7 @@ public:
       Morse();
       Morse(double re, double De, double a, double cutoff);
       void cleanMemory(void);// required by PotentialsInterface
-      void force(long N, const double *R, const int *, double *F, double *U, const double *box);
+      void force(long N, const double *R, const int *, double *F, double *U, const double *box, int nImages);
       void initialize() {};// required by PotentialsInterface
       void setParameters(double De, double a, double re, double cutoff);
 private:
