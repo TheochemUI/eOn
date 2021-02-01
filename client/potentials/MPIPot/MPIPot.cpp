@@ -32,7 +32,7 @@ MPIPot::~MPIPot()
 }
 
 void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box)
+                 double *U, const double *box, int nImages=1)
 {
     //Send data to potential
     int pbc=1;

@@ -191,7 +191,7 @@ void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
 }
 
 void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
-                double *U, const double *box)
+                double *U, const double *box, int nImages=1)
 {
     if (init==false) {
         initialize(N, R, atomicNrs, box);

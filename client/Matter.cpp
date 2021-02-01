@@ -933,7 +933,8 @@ void Matter::computePotential()
             potential = Potential::getPotential(parameters);
         }
 
-        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cell);
+        // TODO: Handle the number of system images better
+        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cell, 1);
         forceCalls = forceCalls+1;
         recomputePotential = false;
 

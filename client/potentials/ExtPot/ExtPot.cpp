@@ -30,7 +30,7 @@ ExtPot::~ExtPot()
 }
 
 
-void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
+void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
 {
     passToSystem(N, R, atomicNrs, box);  
     system(eon_extpot_path);
