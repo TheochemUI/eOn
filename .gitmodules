@@ -1,4 +1,3 @@
-[submodule "client/gprdimer"]
-	path = client/gprdimer
-	url = git@github.com:maxim-masterov/gpr_dimer
-	branch = eonInter
+[submodule "gpr_dimer"]
+	path = gpr_dimer
+	url = https://github.com/maxim-masterov/gpr_dimer.git
