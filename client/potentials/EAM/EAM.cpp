@@ -142,7 +142,7 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double
         }
     }
 	//does force calculations for all atoms
-    calc_force(N, Rnew, atomicNrs, F, U, box);
+    calc_force(N, Rnew, atomicNrs, F, U, box, 1);
 
     for (long i=0;i<num_cells*(N+1);i++)
     {
