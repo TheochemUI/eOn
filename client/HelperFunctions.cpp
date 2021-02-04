@@ -86,8 +86,8 @@ double helper_functions::gaussRandom(double avg,double std){
 }
 
 // Vector functions.
-// All functions 'returning' an array 
-// the first argument should be a pointer to the array 
+// All functions 'returning' an array
+// the first argument should be a pointer to the array
 // where the result should be stored.
 double helper_functions::dot(const double *v1, const double *v2, long size){
     double result=0;
@@ -140,7 +140,7 @@ void helper_functions::normalize(double *v1, long size){
     return;
 }
 
-// Make v1 orthogonal to v2 
+// Make v1 orthogonal to v2
 AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2){
     return v1 - (v1.cwise()*v2).sum() * v2.normalized();
 }
@@ -166,7 +166,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     //Determine optimal rotation
     //Horn, J. Opt. Soc. Am. A, 1987
     Eigen::Matrix3d m = r1.transpose() * r2;
-    
+
     double sxx = m(0,0);
     double sxy = m(0,1);
     double sxz = m(0,2);
@@ -176,25 +176,25 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     double szx = m(2,0);
     double szy = m(2,1);
     double szz = m(2,2);
-    
+
     Eigen::Matrix4d n;
     n.setZero();
     n(0,1) = syz-szy;
     n(0,2) = szx-sxz;
     n(0,3) = sxy-syx;
-    
+
     n(1,2) = sxy+syx;
     n(1,3) = szx+sxz;
-    
+
     n(2,3) = syz+szy;
-    
+
     n += n.transpose().eval();
-    
+
     n(0,0) = sxx + syy + szz;
     n(1,1) = sxx-syy-szz;
     n(2,2) = -sxx + syy -szz;
     n(3,3) = -sxx -syy + szz;
-    
+
     Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
     Eigen::Vector4d maxv = es.eigenvectors().col(3);
 
@@ -208,7 +208,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     double bc = maxv[1]*maxv[2];
     double bd = maxv[1]*maxv[3];
     double cd = maxv[2]*maxv[3];
-    
+
     R(0,0) = aa + bb - cc - dd;
     R(0,1) = 2*(bc-ad);
     R(0,2) = 2*(bd+ac);
@@ -218,9 +218,9 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     R(2,0) = 2*(bd-ac);
     R(2,1) = 2*(cd+ab);
     R(2,2) = aa - bb - cc + dd;
-    
+
     //std::cout<<R<<"\n\n";
-    
+
     return R;
 }
 
@@ -274,11 +274,11 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
 {
     AtomMatrix r1 = r1_passed;
     AtomMatrix r2 = m2->getPositions();
-    
+
     // Align centroids
     Eigen::VectorXd c1(3);
     Eigen::VectorXd c2(3);
-    
+
     c1[0] = r1.col(0).sum();
     c1[1] = r1.col(1).sum();
     c1[2] = r1.col(2).sum();
@@ -287,23 +287,23 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
     c2[2] = r2.col(2).sum();
     c1/=r1.rows();
     c2/=r2.rows();
-    
+
     for(int i = 0; i < r1.rows(); i++)
     {
         r1(i,0) -= c1[0];
         r1(i,1) -= c1[1];
         r1(i,2) -= c1[2];
-        
+
         r2(i,0) -= c2[0];
         r2(i,1) -= c2[1];
         r2(i,2) -= c2[2];
     }
-    
+
     RotationMatrix R = rotationExtract(r1, r2);
-    
+
     //Eigen is transposed relative to numpy
     r2 = r2 * R;
-    
+
     // Move centroid back to initial position
     for(int i = 0; i < r2.rows(); i++)
     {
@@ -311,7 +311,7 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
         r2(i,1) += c2[1];
         r2(i,2) += c2[2];
     }
-    
+
     m2->setPositions(r2);
     return;
 }
@@ -365,7 +365,7 @@ double helper_functions::maxAtomMotion(const AtomMatrix v1) {
         if(max < norm) {
             max = norm;
         }
-    }    
+    }
     return max;
 }
 
@@ -376,7 +376,7 @@ double helper_functions::maxAtomMotionV(const VectorXd v1) {
         if(max < norm) {
             max = norm;
         }
-    }    
+    }
     return max;
 }
 
@@ -387,7 +387,7 @@ long helper_functions::numAtomsMoved(const AtomMatrix v1, double cutoff) {
         if(norm >= cutoff) {
             num += 1;
         }
-    }    
+    }
     return num;
 }
 
@@ -397,7 +397,7 @@ AtomMatrix helper_functions::maxAtomMotionApplied(const AtomMatrix v1, double ma
     Function ensures (by scaling) that there is no single element of the AtomMatrix which is larger than maxMotion.
     */
     AtomMatrix v2(v1);
-    
+
     double max = maxAtomMotion(v1);
     //double max = v1.norm();
     if(max > maxMotion)
@@ -426,7 +426,7 @@ AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1, double maxMot
      Function ensures (by scaling) that the norm of the AtomMatrix is not larger than maxMotion.
      */
     AtomMatrix v2(v1);
-    
+
     double max = v1.norm();
     if(max > maxMotion)
     {
@@ -438,7 +438,7 @@ AtomMatrix helper_functions::maxMotionApplied(const AtomMatrix v1, double maxMot
 VectorXd helper_functions::maxMotionAppliedV(const VectorXd v1, double maxMotion)
 {
     VectorXd v2(v1);
-    
+
     double max = v1.norm();
     if (max > maxMotion)
     {
@@ -464,7 +464,7 @@ void helper_functions::getTime(double *real, double *user, double *sys)
         gettimeofday(&time, NULL);
         *real = (double)time.tv_sec + (double)time.tv_usec/1000000.0;
         struct rusage r_usage;
-        if (getrusage(RUSAGE_SELF, &r_usage)!=0) 
+        if (getrusage(RUSAGE_SELF, &r_usage)!=0)
         {
             fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
         }
@@ -592,7 +592,7 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
 
     while (pch != NULL) {
         char *endptr;
-        int value = (int)strtol(pch, &endptr, 10); 
+        int value = (int)strtol(pch, &endptr, 10);
         if (strcmp(pch, endptr) == 0) {
             //Error reading
             std::vector<int> emptylist;
@@ -615,20 +615,20 @@ struct atom {
 struct by_atom {
   bool operator()(atom const &a, atom const &b) {
     if (a.z != b.z) {
-        return a.z < b.z;                                                   
+        return a.z < b.z;
     }else{
         return a.r < b.r;
     }
   }
-}; 
+};
 }
- 
+
  double roundUp(double x, double f) {
 	return ceil(x / f);
     }
 
 bool helper_functions::identical(const Matter* m1, const Matter* m2, const double distanceDifference)
-{  
+{
 
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
@@ -642,7 +642,7 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
     int N = r1.rows();
 
     for(int i=0; i<=N; i++){
-        if(fabs((m1->pbc(r1.row(i)-r2.row(i))).norm())<tolerance && 
+        if(fabs((m1->pbc(r1.row(i)-r2.row(i))).norm())<tolerance &&
            m1->getAtomicNr(i)==m2->getAtomicNr(i)) {
             matched.insert(i);
         }
@@ -655,7 +655,7 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
         for(int k=0; k<N; k++){
             if(matched.count(j)==1) break;
 
-            if(fabs((m1->pbc(r1.row(j)-r2.row(k))).norm())<tolerance && 
+            if(fabs((m1->pbc(r1.row(j)-r2.row(k))).norm())<tolerance &&
                m1->getAtomicNr(j)==m2->getAtomicNr(k)) {
                 matched.insert(j);
             }
@@ -672,7 +672,7 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
     }
 }
 
-bool helper_functions::sortedR(const Matter *m1, const Matter *m2, 
+bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
                                const double distanceDifference)
 {
     cout << "into sortedR\n";
@@ -686,7 +686,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     set<atom,by_atom> *rdf1 = new set<atom,by_atom>[r1.rows()];
     set<atom,by_atom> *rdf2 = new set<atom,by_atom>[r2.rows()];
     if(r1.rows()!=r2.rows()) return false;
-    for(int i2=0; i2<r2.rows(); i2++){    
+    for(int i2=0; i2<r2.rows(); i2++){
         rdf2[i2].clear();
         for(int j2=0; j2<r2.rows(); j2++){
             if(j2==i2) continue;
@@ -714,7 +714,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
             rdf1[i1].insert(a);
             rdf1[j1].insert(a);
         }
-        for(int x=0; x<r2.rows(); x++){    
+        for(int x=0; x<r2.rows(); x++){
             it2=rdf2[x].begin();
 	    it=rdf1[i1].begin();
             int c=0;
@@ -756,7 +756,7 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     if (minDistance <= 0) return;
 
     AtomMatrix r1 = m1->getPositions();
-    MatrixXd Force(r1.rows(), 3);    
+    MatrixXd Force(r1.rows(), 3);
     double f=0.025;
     double cut=minDistance;
     double pushAparts=500;
@@ -772,7 +772,7 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
                 double d=m1->distance(i,j);
                 if(d < cut){
                     moved++;
-                    for(int axis=0; axis<=2; axis++){	
+                    for(int axis=0; axis<=2; axis++){
                         double componant=f*(r1(i,axis)-r1(j,axis))/d;
                         Force(i,axis)+=componant;
                         Force(j,axis)-=componant;
@@ -792,58 +792,60 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     }
 }
 
-InputParameters helper_functions::eon_parameters_to_gpr(Parameters *parameters){
-    InputParameters p;
-    // Problem parameters
-    p.actdist_fro.value = parameters->gprActiveRadius;
-    p.dimer_sep.value = parameters->gprDimerSep;
-    p.method_rot.value = parameters->gprDimerRotOptMethod;
-    p.method_trans.value = parameters->gprDimerTransOptMethod;
-    p.param_trans.value[0] = parameters->gprDimerConvStep;
-    p.param_trans.value[1] = parameters->gprDimerMaxStep;
-    p.T_dimer.value = parameters->optConvergedForce;
-    p.initrot_nogp.value = parameters->gprDimerInitRotGP;
-    p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
-    p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
-    p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
-    p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
-    p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
-    p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
-    p.disp_max.value = parameters->gprDimerMidpointMaxDisp;
-    p.ratio_at_limit.value = parameters->gprDimerRatioAtLimit;
-    p.num_bigiter.value = parameters->gprDimerMaxOuterIterations;
-    p.num_iter.value = parameters->gprDimerMaxInnerIterations;
-    p.islarge_num_iter.value = parameters->gprDimerManyIterations;
-    // GPR Parameters
-    p.gp_sigma2.value = parameters->gprDimerSigma2;
-    p.jitter_sigma2.value = parameters->gprDimerJitterSigma2;
-    p.sigma2.value = parameters->gprDimerNoiseSigma2;
-    p.prior_mu.value = parameters->gprDimerPriorMu;
-    p.prior_nu.value = parameters->gprDimerPriorNu;
-    p.prior_s2.value = parameters->gprDimerPriorSigma2;
-    p.check_derivative.value = parameters->gprOptCheckDerivatives;
-    p.max_iter.value = parameters->gprOptMaxIterations;
-    p.tolerance_func.value = parameters->gprOptTolFunc;
-    p.tolerance_sol.value = parameters->gprOptTolSol;
-    p.lambda_limit.value = parameters->gprOptLambdaLimit;
-    p.lambda.value = parameters->gprOptLambdaInit;
-    p.report_level.value = 1;
-    return p;
+InputParameters
+helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
+  InputParameters p;
+  // Problem parameters
+  p.actdist_fro.value = parameters->gprActiveRadius;
+  p.dimer_sep.value = parameters->gprDimerSep;
+  p.method_rot.value = parameters->gprDimerRotOptMethod;
+  p.method_trans.value = parameters->gprDimerTransOptMethod;
+  p.param_trans.value[0] = parameters->gprDimerConvStep;
+  p.param_trans.value[1] = parameters->gprDimerMaxStep;
+  p.T_dimer.value = parameters->optConvergedForce;
+  p.initrot_nogp.value = parameters->gprDimerInitRotGP;
+  p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
+  p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
+  p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
+  p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
+  p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
+  p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
+  p.disp_max.value = parameters->gprDimerMidpointMaxDisp;
+  p.ratio_at_limit.value = parameters->gprDimerRatioAtLimit;
+  p.num_bigiter.value = parameters->gprDimerMaxOuterIterations;
+  p.num_iter.value = parameters->gprDimerMaxInnerIterations;
+  p.islarge_num_iter.value = parameters->gprDimerManyIterations;
+  // GPR Parameters
+  p.gp_sigma2.value = parameters->gprDimerSigma2;
+  p.jitter_sigma2.value = parameters->gprDimerJitterSigma2;
+  p.sigma2.value = parameters->gprDimerNoiseSigma2;
+  p.prior_mu.value = parameters->gprDimerPriorMu;
+  p.prior_nu.value = parameters->gprDimerPriorNu;
+  p.prior_s2.value = parameters->gprDimerPriorSigma2;
+  p.check_derivative.value = parameters->gprOptCheckDerivatives;
+  p.max_iter.value = parameters->gprOptMaxIterations;
+  p.tolerance_func.value = parameters->gprOptTolFunc;
+  p.tolerance_sol.value = parameters->gprOptTolSol;
+  p.lambda_limit.value = parameters->gprOptLambdaLimit;
+  p.lambda.value = parameters->gprOptLambdaInit;
+  p.report_level.value = 1;
+  return p;
 }
 
-AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter){
-    AtomsConfiguration a;
-    gpr::Field<double> g;
-    std::vector<double> t;
-    a.positions.resize(3*matter->numberOfAtoms());
-    a.is_frozen.resize(matter->numberOfAtoms());
-    a.id.resize(matter->numberOfAtoms());
-    for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-      a.positions[i]= matter->getPosition(i, 0);
-      a.positions[i+1]=matter->getPosition(i, 1);
-      a.positions[i+2]=matter->getPosition(i, 2);
-      a.is_frozen[i] = matter->getFixed(i);
-      a.id[i] = i+1;
-    }
-    return a;
+AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
+  AtomsConfiguration a;
+  a.positions.resize(3 * matter->numberOfAtoms());
+  a.is_frozen.resize(matter->numberOfAtoms());
+  a.id.resize(matter->numberOfAtoms());
+  int posindex=0;
+  for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+      for (auto dim = 0; dim < 3; dim++){
+          a.positions[posindex+dim] = matter->getPosition(i, dim);
+      }
+    posindex=posindex+3;
+    a.is_frozen[i] = matter->getFixed(i);
+    a.id[i] = i + 1;
+    cout << " " << a.positions[i] << " "<< a.positions[i+1] << " " << a.positions[i+2] << "\n";
+  }
+  return a;
 }
