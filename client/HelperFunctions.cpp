@@ -830,3 +830,20 @@ InputParameters helper_functions::eon_parameters_to_gpr(Parameters *parameters){
     p.report_level.value = 1;
     return p;
 }
+
+AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter){
+    AtomsConfiguration a;
+    gpr::Field<double> g;
+    std::vector<double> t;
+    a.positions.resize(3*matter->numberOfAtoms());
+    a.is_frozen.resize(matter->numberOfAtoms());
+    a.id.resize(matter->numberOfAtoms());
+    for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+      a.positions[i]= matter->getPosition(i, 0);
+      a.positions[i+1]=matter->getPosition(i, 1);
+      a.positions[i+2]=matter->getPosition(i, 2);
+      a.is_frozen[i] = matter->getFixed(i);
+      a.id[i] = i+1;
+    }
+    return a;
+}
