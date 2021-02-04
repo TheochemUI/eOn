@@ -5,7 +5,9 @@
 #include "Log.h"
 #include "HelperFunctions.h"
 
-#include "potentials/IMD/IMD.h"
+#ifdef IMD_POT
+    #include "potentials/IMD/IMD.h"
+#endif
 #include "potentials/EDIP/EDIP.h"
 #include "potentials/EMT/EffectiveMediumTheory.h"
 #include "potentials/Morse/Morse.h"
@@ -76,8 +78,10 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new LJ();
     else if(parameters->potential == POT_LJCLUSTER)
         pot = new LJCluster();
+#ifdef IMD_POT
     else if(parameters->potential == POT_IMD)
         pot = new IMD();
+#endif
     else if(parameters->potential == POT_MORSE_PT)
         pot = new Morse();
     else if(parameters->potential == POT_EMT)
