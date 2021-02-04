@@ -36,7 +36,7 @@ class EAM
 	    bool initialized;
 	    double *rc;
         void calc_force(long N, double *R, const int *atomicNrs, double *F,
-                        double *U, const double *box);
+                        double *U, const double *box, int nImages);
         void new_celllist(long N, const double *box, long *num_axis,
                           long *cell_length, long *celllist_new, 
                           long num_cells, double *Rnew);
