@@ -39,7 +39,7 @@ void EAM::cleanMemory()
 
 
 // Calculate here long num_cells, long *num_axis, long *cell_length, //become global variables -long *celllist_old, long *celllist_new, long *neigh_list, long fcalled)
-void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *fullbox)
+void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *fullbox, int nImages=1)
 {
     double box[3];
     box[0] = fullbox[0];
