@@ -1,6 +1,8 @@
 #include "HelperFunctions.h"
 #include "Log.h"
 
+#include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
+
 #include <math.h>
 #include <cassert>
 #include <iostream>
@@ -848,4 +850,40 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
     cout << " " << a.positions[i] << " "<< a.positions[i+1] << " " << a.positions[i+2] << "\n";
   }
   return a;
+}
+
+ConfInfo helper_functions::eon_matter_to_init_confinfo(Matter *matter) {
+  ConfInfo c;
+  aux::ProblemSetUp problem_setup;
+  std::vector<int> fro, mov, allnmbr;
+  int nfix = 0;
+  vector3_reg v;
+  c.conf_fro.clear();
+  c.atomtype_mov.resize(1, matter->numberOfFreeAtoms());
+  c.atomtype_fro.resize(1, matter->numberOfFixedAtoms());
+  c.conf_fro.resize(1, 3 * matter->numberOfFixedAtoms());
+  for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+    allnmbr.push_back(matter->getAtomicNr(i));
+    if (matter->getFixed(i) == 1) {
+      v.x = matter->getPosition(i, 0);
+      v.y = matter->getPosition(i, 1);
+      v.z = matter->getPosition(i, 2);
+      c.conf_fro.set(0, nfix, v);
+      nfix++;
+      fro.push_back(matter->getAtomicNr(i));
+    } else {
+      mov.push_back(matter->getAtomicNr(i));
+    }
+  }
+  for (auto n = 0; n < fro.size(); n++) {
+    c.atomtype_fro[n] = fro[n];
+  }
+  for (auto n = 0; n < mov.size(); n++) {
+    c.atomtype_mov[n] = mov[n];
+  }
+  Index_t n_at = std::set<Index_t>(allnmbr.begin(), allnmbr.end()).size();
+  c.pairtype.resize(n_at, n_at);
+  c.pairtype.set(EMPTY);
+  c.n_pt = 0;
+  return c;
 }

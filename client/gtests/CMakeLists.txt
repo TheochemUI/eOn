@@ -52,3 +52,4 @@ add_custom_target(check COMMAND env CTEST_OUTPUT_ON_FAILURE=1 GTEST_COLOR=1
 
 # Test I
 package_add_test(atomconfgpr AtomsConfigurationTest.cpp)
+package_add_test(confinfogpr ConfInfoTest.cpp)
