@@ -87,5 +87,16 @@ namespace helper_functions {
      * @param *Matter An EON Matter object
      */
     AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
+
+    /**
+     * \brief Create an initial ConfInfo object for gpr_dimer
+     *
+     * Note that this is essentially only for the setup, and it does not
+     * actually append or handle the ConfInfo structure other than for
+     * initialization of atomic gp dimer
+     *
+     * @param *Matter An EON Matter object
+     */
+    ConfInfo eon_matter_to_init_confinfo(Matter *matter);
     } // namespace helper_functions
 #endif
