@@ -38,6 +38,22 @@ AtomicGPDimer::~AtomicGPDimer()
 
 void AtomicGPDimer::compute(Matter *matter, AtomMatrix initialDirection)
 {
+    AtomsConfiguration a;
+    Observation o, init_middle_point;
+    gpr::Coord orient_init;
+    ConfInfo c,co;
+    o = eon_matter_to_init_obs(matter);
+    c = eon_matter_to_init_confinfo(matter);
+    co = eon_matter_to_init_confinfo(matter);
+    a = eon_matter_to_atmconf(matter);
+    init_middle_point.clear();
+    initialDirection.normalize();
+    direction = initialDirection;
+
+    atomic_dimer.initialize(p, o, init_middle_point,
+                            orient_init, c, co, a);
+    atomic_dimer.execute();
+    return;
 }
 
 double AtomicGPDimer::getEigenvalue()
