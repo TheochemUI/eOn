@@ -854,16 +854,12 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
 
 Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   Observation o;
-  vector3_reg v;
-  o.R.resize(1, 3 * matter->numberOfAtoms());
-  o.G.resize(1, 9 * matter->numberOfAtoms());
-  for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-      v.x = matter->getPosition(i, 0);
-      v.y = matter->getPosition(i, 1);
-      v.z = matter->getPosition(i, 2);
-      o.R.set(0, i, v);
-  }
-  o.E = matter->getPotentialEnergy();
+  o.clear();
+  o.R.resize(matter->getPositions().rows(),matter->getPositions().cols());
+  o.G.resize(matter->getForces().rows(),matter->getForces().cols());
+  o.E.resize(1);
+  o.E.set(matter->getPotentialEnergy());
+  o.R.assignFromEigenMatrix(matter->getPositions());
   o.G.assignFromEigenMatrix(matter->getForces());
   return o;
 }
