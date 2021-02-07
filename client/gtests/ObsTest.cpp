@@ -24,11 +24,20 @@ ObsTest::~ObsTest() {
 }
 
 TEST_F(ObsTest, TestMatter) {
-  Parameters *parameters;
+  string confile("./data/pos.con");
+  Parameters *parameters = new Parameters;
+  parameters->potential = "morse_pt";
   Matter *matter = new Matter(parameters);
-  matter->con2matter("./data/pos.con");
+  matter->con2matter(confile);
   Observation o = helper_functions::eon_matter_to_init_obs(matter);
+  EXPECT_EQ(o.R.extractEigenMatrix(), matter->getPositions())
+      << "Positions do not match";
+  EXPECT_EQ(o.G.extractEigenMatrix(), matter->getForces())
+      << "Forces do not match";
+  EXPECT_EQ(o.E(0), matter->getPotentialEnergy())
+      << "Potential energy does not match";
   delete matter;
+  delete parameters;
 }
 
 } /* namespace tests */
