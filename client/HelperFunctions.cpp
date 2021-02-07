@@ -834,21 +834,41 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   return p;
 }
 
+// FIXME: Take in the active / inactive pairs / atomtypes
 AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
   AtomsConfiguration a;
-  a.positions.resize(3 * matter->numberOfAtoms());
+  aux::ProblemSetUp problem_setup;
+  std::vector<int> atomnrs;
+  a.positions.resize(matter->getPositions().rows(),
+                     matter->getPositions().cols());
   a.is_frozen.resize(matter->numberOfAtoms());
   a.id.resize(matter->numberOfAtoms());
-  int posindex=0;
+  a.positions.assignFromEigenMatrix(matter->getPositions());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-      for (auto dim = 0; dim < 3; dim++){
-          a.positions[posindex+dim] = matter->getPosition(i, dim);
-      }
-    posindex=posindex+3;
+    atomnrs.push_back(matter->getAtomicNr(i));
     a.is_frozen[i] = matter->getFixed(i);
     a.id[i] = i + 1;
-    cout << " " << a.positions[i] << " "<< a.positions[i+1] << " " << a.positions[i+2] << "\n";
   }
+  a.atoms_froz_active.clear();
+  a.atomtype_mov.resize(1, matter->numberOfFreeAtoms());
+  // FIXME: Might have more than one kind of freely moving atom
+  a.atomtype_mov.set(0); // Corresponds to H in the CuH example, 0 for Pt
+  a.atoms_froz_active.clear();
+  // Atomtypes
+  Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
+  a.pairtype.resize(n_at, n_at);
+  a.n_pt = 0;
+  problem_setup.setPairtypeForMovingAtoms(a.atomtype_mov, a.n_pt, a.pairtype);
+  a.atoms_froz_inactive.resize(1, 3 * matter->numberOfFixedAtoms());
+  for (auto i = 0; i < matter->numberOfFixedAtoms(); ++i) {
+    a.atoms_froz_inactive.set(0, i,
+                              {matter->getPosition(i, 0),
+                               matter->getPosition(i, 1),
+                               matter->getPosition(i, 2)});
+  }
+  a.atoms_froz_inactive.resize(1, a.atoms_froz_inactive.getNumPoints());
+  // FIXME: Might have more than one kind OR the SAME KIND (Pt)
+  a.atomtype_froz_inactive.set(0); // 1 for Cu in the example, 0 for Pt
   return a;
 }
 
