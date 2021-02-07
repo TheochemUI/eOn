@@ -24,6 +24,13 @@ set(CMAKE_Fortran_FLAGS_DEBUG
     "-O0 -Warray-bounds  -std=legacy -Wall -Wno-unused ")
 set(DOUBLE "-r8")
 
+if(NO_WARN)
+set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -w")
+set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} -w")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -w")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -w")
+endif()
+
 add_compile_options(# "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
                     "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>")
 
