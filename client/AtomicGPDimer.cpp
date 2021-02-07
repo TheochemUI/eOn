@@ -38,18 +38,27 @@ AtomicGPDimer::~AtomicGPDimer()
 
 void AtomicGPDimer::compute(Matter *matter, AtomMatrix initialDirection)
 {
-    AtomsConfiguration a;
+    AtomsConfiguration atoms_config;
     Observation o, init_middle_point;
-    gpr::Coord orient_init;
+    gpr::Coord orient_init, R_init;
+    aux::ProblemSetUp problem_setup;
     o = eon_matter_to_init_obs(matter);
-    a = eon_matter_to_atmconf(matter);
+    atoms_config = eon_matter_to_atmconf(matter);
     init_middle_point.clear();
     initialDirection.normalize();
     direction = initialDirection;
-
+    Potential *potential = Potential::getPotential(parameters);
+    // FIXME: Initialize R_init correctly
+    // R_init.resize(1, R_sp.getNj());
+    // double dist_sp = parameters.dist_sp.value[parameters.i_dist.value];
+    // for(Index_t n = 0; n < R_sp.getNj(); ++n) {
+    //     R_init[n] = R_sp[n] + dist_sp * orient_start(parameters.i_run.value, n);
+    // }
+    problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
+                                      atoms_config);
     atomic_dimer.initialize(p, o, init_middle_point,
-                            orient_init, a);
-    // atomic_dimer.execute();
+                            orient_init, atoms_config);
+    atomic_dimer.execute(potential);
     return;
 }
 
