@@ -1,6 +1,17 @@
 * About
 - A modern, elegant approach to working with EON
 ** Build
+*** Nix (Preferred)
+This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
+#+begin_src bash
+nix-shell --pure --run bash --show-trace --verbose
+#+end_src
+Now goto the [[Cmake][CMake instructions]].
+*** TODO Simplify
+- [ ] Make a ~default.nix~
+  - [ ] Build ~tsase~
+  - [ ] Build ~eon~
+  - [ ] Build ~eonclient~
 *** Cmake
 The following will suffice:
 #+begin_src bash
