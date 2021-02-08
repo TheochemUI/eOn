@@ -1,14 +1,14 @@
 // An interface to the GPDimer library
 
-#include "HelperFunctions.h"
 #include "AtomicGPDimer.h"
+#include "HelperFunctions.h"
 #include "Log.h"
-#include <cmath>
 #include <cassert>
+#include <cmath>
 
+#include "gprdimer/gpr/AtomicDimer.h"
 #include "gprdimer/gpr/Enums.h"
 #include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "gprdimer/gpr/AtomicDimer.h"
 #include "gprdimer/gpr/covariance_functions/ConstantCF.h"
 #include "gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "gprdimer/gpr/ml/GaussianProcessRegression.h"
@@ -18,56 +18,63 @@ using namespace helper_functions;
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
 
-AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params)
-{
-    parameters    = params;
-    matterCenter  = new Matter(parameters);
-    matterDimer   = new Matter(parameters);
-    *matterCenter = *matter;
-    *matterDimer  = *matter;
-    InputParameters p = eon_parameters_to_gpr(params);
-    atmd::AtomicDimer atomic_dimer;
-    aux::ProblemSetUp problem_setup;
+AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
+  parameters = params;
+  matterCenter = new Matter(parameters);
+  matterDimer = new Matter(parameters);
+  *matterCenter = *matter;
+  *matterDimer = *matter;
+  InputParameters p = eon_parameters_to_gpr(params);
+  atmd::AtomicDimer atomic_dimer;
+  aux::ProblemSetUp problem_setup;
 }
 
-AtomicGPDimer::~AtomicGPDimer()
-{
-    delete matterCenter;
-    delete matterDimer;
+AtomicGPDimer::~AtomicGPDimer() {
+  delete matterCenter;
+  delete matterDimer;
 }
 
-void AtomicGPDimer::compute(Matter *matter, AtomMatrix initialDirection)
-{
-    AtomsConfiguration atoms_config;
-    Observation o, init_middle_point;
-    gpr::Coord orient_init, R_init;
-    aux::ProblemSetUp problem_setup;
-    o = eon_matter_to_init_obs(matter);
-    atoms_config = eon_matter_to_atmconf(matter);
-    init_middle_point.clear();
-    initialDirection.normalize();
-    direction = initialDirection;
-    Potential *potential = Potential::getPotential(parameters);
-    // FIXME: Initialize R_init correctly
-    // R_init.resize(1, R_sp.getNj());
-    // double dist_sp = parameters.dist_sp.value[parameters.i_dist.value];
-    // for(Index_t n = 0; n < R_sp.getNj(); ++n) {
-    //     R_init[n] = R_sp[n] + dist_sp * orient_start(parameters.i_run.value, n);
-    // }
-    problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
-                                      atoms_config);
-    atomic_dimer.initialize(p, o, init_middle_point,
-                            orient_init, atoms_config);
-    atomic_dimer.execute(potential);
-    return;
+void AtomicGPDimer::compute(Matter *matter,
+                            AtomMatrix initialDirectionAtomMatrix) {
+  AtomsConfiguration atoms_config;
+  Observation init_observations, init_middle_point;
+  gpr::Coord orient_init, R_init;
+  aux::ProblemSetUp problem_setup;
+  atoms_config = eon_matter_to_atmconf(matter);
+  VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
+                                            3 * matter->numberOfAtoms());
+  VectorXd tau = initialDirection.array() * matter->getFreeV().array();
+  tau = initialDirection;
+  tau.normalize();
+  *matterCenter = *matter;
+  *matterDimer = *matter;
+  VectorXd x0_r = matterCenter->getPositionsV();
+  matterDimer->setPositionsV(x0_r + parameters->finiteDifference * tau);
+  R_init.resize(matterDimer->getPositionsV().rows(),
+                matterDimer->getPositionsV().cols());
+  R_init.assignFromEigenMatrix(matterDimer->getPositionsV());
+  init_middle_point.clear();
+  init_middle_point.R = R_init;
+  init_observations.clear();
+  problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
+                                    atoms_config);
+  // FIXME: orient_init needs to be created
+  orient_init.clear();
+  orient_init.resize(1, 3 * matter->numberOfFreeAtoms());
+  vector<double> vec(initialDirection.data(),
+                     initialDirection.data() + initialDirection.size());
+  orient_init.assignToSlice(0, vec);
+  atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
+                          atoms_config);
+  // FIXME: Broken call
+  // atomic_dimer.execute(potential);
+  return;
 }
 
-double AtomicGPDimer::getEigenvalue()
-{
-    return atomic_dimer.getFinalCurvature();
+double AtomicGPDimer::getEigenvalue() {
+  return atomic_dimer.getFinalCurvature();
 }
 
-AtomMatrix AtomicGPDimer::getEigenvector()
-{
-    return atomic_dimer.getFinalOrientation()->extractEigenMatrix();
+AtomMatrix AtomicGPDimer::getEigenvector() {
+  return atomic_dimer.getFinalOrientation()->extractEigenMatrix();
 }
