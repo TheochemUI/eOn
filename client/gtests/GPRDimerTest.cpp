@@ -46,7 +46,6 @@ TEST_F(GPRDimerTest, TestMatter) {
   parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_GPRDIMER;
   log_init(parameters, (char *)"test.log");
   Matter *initial = new Matter(parameters);
-  Matter *displacement = new Matter(parameters);
   Matter *saddle = new Matter(parameters);
   initial->con2matter(reactantFilename);
   saddle->con2matter(displacementFilename);
@@ -58,7 +57,6 @@ TEST_F(GPRDimerTest, TestMatter) {
   cout << minModeMethod->getEigenvalue();
   delete minModeMethod;
   delete initial;
-  delete displacement;
   delete saddle;
   delete parameters;
 }
