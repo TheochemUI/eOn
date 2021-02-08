@@ -1,5 +1,5 @@
 * About
-- A modern, elegant approach to working with EON
+- A modern, elegant approach to working with [[https://theory.cm.utexas.edu/eon/][EON]]
 ** Build
 *** Nix (Preferred)
 This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
