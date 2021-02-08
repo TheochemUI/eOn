@@ -17,3 +17,13 @@ Will have this automated soon.
 cd client/gtests/data/saddle_search/
 eonclient
 #+end_src
+*** Make
+Old style, ugly.
+#+begin_src bash
+cd client
+make -j$(nproc) # Will break
+make # Will not break now
+export PATH=$(pwd):$PATH
+#+end_src
+
+Use the same manual test method [[Manual Tests][described above]].
