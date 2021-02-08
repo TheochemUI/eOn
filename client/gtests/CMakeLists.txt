@@ -51,5 +51,7 @@ add_custom_target(check COMMAND env CTEST_OUTPUT_ON_FAILURE=1 GTEST_COLOR=1
                                 ${CMAKE_CTEST_COMMAND})
 
 # Test I
-package_add_test(atomconfgpr AtomsConfigurationTest.cpp)
-package_add_test(obsgpr ObsTest.cpp)
+# package_add_test(atomconfgpr AtomsConfigurationTest.cpp)
+# package_add_test(obsgpr ObsTest.cpp)
+# package_add_test(impdimereon "data/saddleSearch" ImpDimerTest.cpp) # pos.con and others are hard-coded
+# package_add_test(gprdimereon "data/process_search" GPRDimerTest.cpp) # pos.con and others are hard-coded
