@@ -6,7 +6,7 @@ This is preferred since it is reproducible. You will need [[https://nixos.org/gu
 #+begin_src bash
 nix-shell --pure --run bash --show-trace --verbose
 #+end_src
-Now goto the [[Cmake][CMake instructions]].
+Now goto the CMake instructions.
 *** TODO Simplify
 - [ ] Make a ~default.nix~
   - [ ] Build ~tsase~
@@ -18,16 +18,12 @@ The following will suffice:
 cd client
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE
-make -j$(nproc) && make check
+# cmake --build . -- VERBOSE=1
+make -j$(nproc) VERBOSE=1 && make check
 export PATH=$(pwd):$PATH
 #+end_src
-**** Manual Tests
-Will have this automated soon.
-#+begin_src bash
-# From root repo directory
-cd client/gtests/data/saddle_search/
-eonclient
-#+end_src
+**** Tests
+~make check~ is typically all that is needed. However, the manual testing methods of the next section work as well.
 *** Make
 Old style, ugly.
 #+begin_src bash
@@ -36,5 +32,9 @@ make -j$(nproc) # Will break
 make # Will not break now
 export PATH=$(pwd):$PATH
 #+end_src
-
-Use the same manual test method [[Manual Tests][described above]].
+**** Manual Tests
+#+begin_src bash
+# From root repo directory
+cd client/gtests/data/saddle_search/
+eonclient
+#+end_src
