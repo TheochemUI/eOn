@@ -1,0 +1,19 @@
+* About
+- A modern, elegant approach to working with EON
+** Build
+*** Cmake
+The following will suffice:
+#+begin_src bash
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE
+make -j$(nproc) && make check
+export PATH=$(pwd):$PATH
+#+end_src
+**** Manual Tests
+Will have this automated soon.
+#+begin_src bash
+# From root repo directory
+cd client/gtests/data/saddle_search/
+eonclient
+#+end_src
