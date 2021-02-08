@@ -29,7 +29,7 @@ set_target_properties(gmock PROPERTIES FOLDER extern)
 set_target_properties(gmock_main PROPERTIES FOLDER extern)
 
 # Test Macros
-macro(package_add_test TESTNAME)
+macro(package_add_test TESTNAME WORKDIR)
   add_executable(${TESTNAME} ${ARGN})
   target_link_libraries(
     ${TESTNAME}
@@ -41,8 +41,8 @@ macro(package_add_test TESTNAME)
     gprdimer)
   gtest_discover_tests(
     ${TESTNAME}
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/gtests"
-    PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/gtests")
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/gtests/${WORKDIR}"
+    PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/gtests/${WORKDIR}")
   set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()
 
