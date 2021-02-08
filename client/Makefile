@@ -16,6 +16,7 @@ DEPFLAGS=-MMD
 #LDFLAGS += potentials/LAMMPS/libreax.a
 LDFLAGS += -lcurl -lpython3
 CXXFLAGS += -g -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors -lpython3 $(OPT) #-I flags depend on location of Python.h library
+CXXFLAGS +=-w
 DEBUG=yes
 
 #CXXFLAGS += -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors -lpython3 -I/export/tarpit/Python-3.7.4/ -I/export/tarpit/Python-3.7.4/Include/ $(OPT) #-I flags depend on location of Python.h library

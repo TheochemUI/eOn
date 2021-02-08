@@ -160,6 +160,7 @@ FILES :=   ClientEON.cpp INIFile.cpp MinModeSaddleSearch.cpp Dimer.cpp EpiCenter
            MonteCarloJob.cpp MonteCarlo.cpp SteepestDescent.cpp BasinHoppingSaddleSearch.cpp \
            BiasedGradientSquaredDescent.cpp AtomicGPDimer.cpp \
 		   gprdimer/gpr/AtomicDimer.cpp \
+		   gprdimer/gpr/AtomicDimerInit.cpp \
 		   gprdimer/backend/DistributionFunctions.cpp \
 	       gprdimer/gpr/auxiliary/ProblemSetUp.cpp \
 	       gprdimer/gpr/auxiliary/Gradient.cpp \
