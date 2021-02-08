@@ -30,7 +30,7 @@ class AtomicGPDimer : public LowestEigenmode
     AtomicGPDimer(Matter *matter, Parameters *parameters);
     ~AtomicGPDimer();
 
-    void compute(Matter *matter, AtomMatrix initialDirection);
+    void compute(Matter *matter, AtomMatrix initialDirectionMatrix);
     double getEigenvalue();
     AtomMatrix getEigenvector();
 
