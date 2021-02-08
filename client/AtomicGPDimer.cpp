@@ -2,6 +2,7 @@
 
 #include "AtomicGPDimer.h"
 #include "HelperFunctions.h"
+#include "potentials/Morse/Morse.h"
 #include "Log.h"
 #include <cassert>
 #include <cmath>
@@ -67,8 +68,9 @@ void AtomicGPDimer::compute(Matter *matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
   Potential *potential = Potential::getPotential(parameters);
+  Morse *mot;
   // FIXME: Broken call
-  atomic_dimer.execute(potential);
+  atomic_dimer.execute(*mot);
   return;
 }
 
