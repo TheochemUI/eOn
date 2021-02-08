@@ -2,7 +2,6 @@
 
 #include "AtomicGPDimer.h"
 #include "HelperFunctions.h"
-#include "potentials/Morse/Morse.h"
 #include "Log.h"
 #include <cassert>
 #include <cmath>
@@ -51,9 +50,9 @@ void AtomicGPDimer::compute(Matter *matter,
   *matterDimer = *matter;
   VectorXd x0_r = matterCenter->getPositionsV();
   matterDimer->setPositionsV(x0_r + parameters->finiteDifference * tau);
-  R_init.resize(matterDimer->getPositionsV().rows(),
-                matterDimer->getPositionsV().cols());
-  R_init.assignFromEigenMatrix(matterDimer->getPositionsV());
+  R_init.resize(matterDimer->getPositions().rows(),
+                matterDimer->getPositions().cols());
+  R_init.assignFromEigenMatrix(matterDimer->getPositions());
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
@@ -68,9 +67,7 @@ void AtomicGPDimer::compute(Matter *matter,
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
   Potential *potential = Potential::getPotential(parameters);
-  Morse *mot;
-  // FIXME: Broken call
-  atomic_dimer.execute(*mot);
+  atomic_dimer.execute(*potential);
   return;
 }
 
