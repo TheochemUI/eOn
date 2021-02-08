@@ -48,3 +48,5 @@ cd gtests
 cp ../../gtests/data/gpr_dimer/client.log ../../gtests/data/gpr_dimer/config.ini ../../gtests/data/gpr_dimer/direction.dat ../../gtests/data/gpr_dimer/displacement.con ../../gtests/data/gpr_dimer/mode.dat ../../gtests/data/gpr_dimer/pos.con ../../gtests/data/gpr_dimer/results.dat .
 gdb gprdimereon
 #+end_src
+* License
+[[https://opensource.org/licenses/BSD-3-Clause][BSD-3 clause]].
