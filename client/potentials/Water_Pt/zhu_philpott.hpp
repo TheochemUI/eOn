@@ -57,6 +57,8 @@ private:
         int nPlatinum_;
         double * positions_, * forces_;
     };
+template class ZhuPhilpott<zhu_philpott_parameters::Standard>;
+template class ZhuPhilpott<zhu_philpott_parameters::Iceland>;
 }
 
 #endif
