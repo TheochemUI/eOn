@@ -58,7 +58,7 @@ void AtomicGPDimer::compute(Matter *matter,
   init_observations.clear();
   problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
                                     atoms_config);
-  // FIXME: orient_init needs to be created
+  // FIXME: does this work?
   orient_init.clear();
   orient_init.resize(1, 3 * matter->numberOfFreeAtoms());
   vector<double> vec(initialDirection.data(),
@@ -66,8 +66,9 @@ void AtomicGPDimer::compute(Matter *matter,
   orient_init.assignToSlice(0, vec);
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
+  Potential *potential = Potential::getPotential(parameters);
   // FIXME: Broken call
-  // atomic_dimer.execute(potential);
+  atomic_dimer.execute(potential);
   return;
 }
 
