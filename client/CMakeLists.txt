@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11...3.19)
 
 project(
   eonclient
@@ -6,7 +6,7 @@ project(
   DESCRIPTION "EON client"
   LANGUAGES C CXX Fortran)
 
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -18,24 +18,33 @@ endif()
 
 set(CMAKE_COLOR_MAKEFILE ON)
 
-# Compiler Flags
-set(CMAKE_Fortran_FLAGS "-fbounds-check -ffpe-trap=invalid,zero,overflow"
-)# -qopenmp
-set(CMAKE_Fortran_FLAGS_RELEASE
-    "-O3 -march=native -ffast-math -funroll-loops -std=legacy -fopenmp")
-set(CMAKE_Fortran_FLAGS_DEBUG
-    "-O0 -Warray-bounds  -std=legacy -Wall -Wno-unused ")
+# CXX Compiler Flags
+string(APPEND CMAKE_CXX_FLAGS
+       " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE
+       " -O3 -march=native -ffast-math -funroll-loops ")
+string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O1 -Warray-bounds -Wall -Wno-unused ")
+
+# Fortran Compiler Flags
+string(APPEND CMAKE_Fortran_FLAGS
+       " -fbounds-check -ffpe-trap=invalid,zero,overflow ")
+string(APPEND CMAKE_Fortran_FLAGS_RELEASE
+       " -O3 -march=native -ffast-math -funroll-loops -std=legacy ")
+string(APPEND CMAKE_Fortran_FLAGS_DEBUG
+       " -O1 -Warray-bounds -std=legacy -Wall -Wno-unused ")
+
+# Other flags
 set(DOUBLE "-r8")
 
 if(NO_WARN)
-set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -w")
-set(CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_RELEASE} -w")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -w")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -w")
+  string(APPEND CMAKE_CXX_FLAGS " -w ")
+  string(APPEND CMAKE_Fortran_FLAGS " -w ")
 endif()
 
-add_compile_options(# "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
-                    "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>")
+# add_compile_options(# "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
+# "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>")
+# -g -Wall -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors
+# -lpython3 -O0  -w -DLINUX
 
 # Messages
 message(STATUS "Build type: " ${CMAKE_BUILD_TYPE})
@@ -45,17 +54,26 @@ message(STATUS "CXX compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "Python: " ${Python_EXECUTABLE})
 message(STATUS "EIGEN: " ${EIGEN3_INCLUDE_DIR})
 
-
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
-  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS_RELEASE})
-  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS_RELEASE})
+  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
+                 ${CMAKE_Fortran_FLAGS_RELEASE} ${COMPILE_OPTIONS})
+  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS}
+                 ${CMAKE_CXX_FLAGS_RELEASE} ${COMPILE_OPTIONS})
 elseif(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS_DEBUG})
-  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS_DEBUG})
+  message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
+                 ${CMAKE_Fortran_FLAGS_DEBUG} ${COMPILE_OPTIONS})
+  message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS}
+                 ${CMAKE_CXX_FLAGS_DEBUG} ${COMPILE_OPTIONS})
 endif()
 
 # Build
 add_executable(eonclient ClientEON.cpp CommandLine.cpp)
+
+set_target_properties(
+  eonclient
+  PROPERTIES CXX_STANDARD 11
+             CXX_STANDARD_REQUIRED YES
+             CXX_EXTENSIONS NO)
 
 # Versioning
 add_custom_target(
