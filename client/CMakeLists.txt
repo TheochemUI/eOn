@@ -6,9 +6,6 @@ project(
   DESCRIPTION "EON client"
   LANGUAGES C CXX Fortran)
 
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-include_directories(${EIGEN3_INCLUDE_DIR})
-
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(
     FATAL_ERROR
@@ -52,7 +49,6 @@ message(STATUS "Fortran compiler: " ${CMAKE_Fortran_COMPILER})
 message(STATUS "C compiler: " ${CMAKE_C_COMPILER})
 message(STATUS "CXX compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "Python: " ${Python_EXECUTABLE})
-message(STATUS "EIGEN: " ${EIGEN3_INCLUDE_DIR})
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
   message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
@@ -86,7 +82,7 @@ add_custom_target(
 add_dependencies(eonclient potentials eonlib version gprdimer)
 
 # Libraries
-target_link_libraries(eonclient gprdimer potentials eonlib Eigen3::Eigen)
+target_link_libraries(eonclient gprdimer potentials eonlib)
 
 # Sub-directories
 add_subdirectory(gprdimer)
