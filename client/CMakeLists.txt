@@ -69,6 +69,8 @@ endif()
 # Build
 add_executable(eonclient ClientEON.cpp CommandLine.cpp)
 
+# Set version
+target_compile_features(eonclient PUBLIC cxx_std_11)
 set_target_properties(
   eonclient
   PROPERTIES CXX_STANDARD 11
