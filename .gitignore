@@ -271,3 +271,4 @@ results.dat
 saddle.con
 *.o
 *.a
+/tools/ext/
