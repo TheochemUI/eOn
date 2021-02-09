@@ -24,7 +24,8 @@ let
       ase
     '';
   };
-in pkgs.mkShell {
+  mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc9Stdenv; };
+in mkShellNewEnv {
   nativeBuildInputs = [ pkgs.cmake ];
   buildInputs = with pkgs; [
     customPython
@@ -32,7 +33,7 @@ in pkgs.mkShell {
     gtest
     bashInteractive
     which
-    stdenv
+    # gcc9Stdenv
     gfortran
     eigen
   ];
