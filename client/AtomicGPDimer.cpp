@@ -53,14 +53,14 @@ void AtomicGPDimer::compute(Matter *matter,
   *matterDimer = *matter;
   VectorXd x0_r = matterCenter->getPositionsV();
   matterDimer->setPositionsV(x0_r + parameters->finiteDifference * tau);
-  R_init.resize(matterDimer->getPositions().rows(),
-                matterDimer->getPositions().cols());
-  R_init.assignFromEigenMatrix(matterDimer->getPositions());
+  R_init.resize(matterDimer->getPositionsFree().rows(),
+                matterDimer->getPositionsFree().cols());
+  R_init.assignFromEigenMatrix(matterDimer->getPositionsFree());
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
-  // problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
-  //                                   atoms_config);
+  problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
+                                    atoms_config);
   // FIXME: does this work?
   orient_init.clear();
   orient_init.resize(matterDimer->getPositions().rows(),
