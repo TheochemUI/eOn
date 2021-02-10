@@ -92,7 +92,7 @@ add_custom_target(
 add_dependencies(eonclient potentials eonlib version gprdimer)
 
 # Libraries
-target_link_libraries(eonclient eonlib potentials gprdimer)
+target_link_libraries(eonclient potentials eonlib gprdimer)
 
 # Sub-directories
 add_subdirectory(gprdimer)
