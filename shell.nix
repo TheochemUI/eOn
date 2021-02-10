@@ -36,6 +36,7 @@ in mkShellNewEnv {
     gtest
     bashInteractive
     which
+    stdenv
     gfortran
     valgrind
     gdb
