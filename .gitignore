@@ -265,3 +265,10 @@ bin/
 client/version.h
 /.idea/
 /client/.gdb_history
+.gdb_history
+mode.dat
+results.dat
+saddle.con
+*.o
+*.a
+/tools/ext/

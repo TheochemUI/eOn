@@ -186,6 +186,7 @@ int MinModeSaddleSearch::run()
     if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         log("================= Using the GP Dimer Library =================\n");
         minModeMethod->compute(matter, mode);
+        status = STATUS_GOOD;
     } else {
 
     if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {

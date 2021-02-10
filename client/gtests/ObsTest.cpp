@@ -24,7 +24,7 @@ ObsTest::~ObsTest() {
 }
 
 TEST_F(ObsTest, TestMatter) {
-  string confile("./data/pos.con");
+  string confile("pos.con");
   Parameters *parameters = new Parameters;
   parameters->potential = "morse_pt";
   Matter *matter = new Matter(parameters);
