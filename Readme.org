@@ -6,7 +6,14 @@ This is preferred since it is reproducible. You will need [[https://nixos.org/gu
 #+begin_src bash
 nix-shell --pure --run bash --show-trace --verbose
 #+end_src
-Now goto the CMake instructions.
+In the new sub-shell:
+#+begin_src bash
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE
+make -j$(nproc) VERBOSE=1 && make check
+export PATH=$(pwd):$PATH
+#+end_src
 *** TODO Simplify
 - [ ] Make a ~default.nix~
   - [ ] Build ~tsase~
