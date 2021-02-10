@@ -25,6 +25,9 @@ AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
   *matterCenter = *matter;
   *matterDimer = *matter;
   InputParameters p = eon_parameters_to_gpr(params);
+  for (int i = 0; i < 9; i++){
+  p.cell_dimensions.value[i]=matter->getCell()[i];
+  }
   atmd::AtomicDimer atomic_dimer;
   aux::ProblemSetUp problem_setup;
 }
@@ -43,16 +46,19 @@ void AtomicGPDimer::compute(Matter *matter,
   atoms_config = eon_matter_to_atmconf(matter);
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
                                             3 * matter->numberOfAtoms());
-  VectorXd tau = initialDirection.array() * matter->getFreeV().array();
+  VectorXd tau;
+  tau.resize(3 * matter->numberOfAtoms());
+  tau.setZero();
+  tau = initialDirection.array() * matter->getFreeV().array();
   tau = initialDirection;
   tau.normalize();
   *matterCenter = *matter;
   *matterDimer = *matter;
   VectorXd x0_r = matterCenter->getPositionsV();
   matterDimer->setPositionsV(x0_r + parameters->finiteDifference * tau);
-  R_init.resize(matterDimer->getPositions().rows(),
-                matterDimer->getPositions().cols());
-  R_init.assignFromEigenMatrix(matterDimer->getPositions());
+  R_init.resize(matterDimer->getPositionsFree().rows(),
+                matterDimer->getPositionsFree().cols());
+  R_init.assignFromEigenMatrix(matterDimer->getPositionsFree());
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
@@ -60,10 +66,19 @@ void AtomicGPDimer::compute(Matter *matter,
                                     atoms_config);
   // FIXME: does this work?
   orient_init.clear();
-  orient_init.resize(1, 3 * matter->numberOfFreeAtoms());
-  vector<double> vec(initialDirection.data(),
-                     initialDirection.data() + initialDirection.size());
-  orient_init.assignToSlice(0, vec);
+  orient_init.resize(matterDimer->getPositions().rows(),
+                     matterDimer->getPositions().cols());
+  orient_init.assignFromEigenMatrix(initialDirectionAtomMatrix);
+  // orient_init.resize(1, 3 * matter->numberOfFreeAtoms());
+  // for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+  //   if (matter->getFixed(i)==0) {
+  //     orient_init.set(0,)=initialDirectionAtomMatrix[i];
+  //   }
+
+  // }
+  // vector<double> vec(initialDirection.data(),
+  //                    initialDirection.data() + initialDirection.size());
+  // orient_init.assignToSlice(0, vec);
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
   Potential *potential = Potential::getPotential(parameters);

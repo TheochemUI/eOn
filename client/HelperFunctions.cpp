@@ -866,8 +866,8 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
                                matter->getPosition(i, 1),
                                matter->getPosition(i, 2)});
   }
-  a.atoms_froz_inactive.resize(1, a.atoms_froz_inactive.getNumPoints());
   // FIXME: Might have more than one kind OR the SAME KIND (Pt)
+  a.atomtype_froz_inactive.resize(1, a.atoms_froz_inactive.getNumPoints());
   a.atomtype_froz_inactive.set(0); // 1 for Cu in the example, 0 for Pt
   return a;
 }

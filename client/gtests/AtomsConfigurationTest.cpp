@@ -26,7 +26,7 @@ AtomsConfigurationTest::~AtomsConfigurationTest() {
 TEST_F(AtomsConfigurationTest, TestMatter) {
   Parameters *parameters;
   Matter *matter = new Matter(parameters);
-  matter->con2matter("./data/pos.con");
+  matter->con2matter("pos.con");
   AtomsConfiguration a = helper_functions::eon_matter_to_atmconf(matter);
   int getFixed = count_if(a.is_frozen.getInternalVector().begin(),
                           a.is_frozen.getInternalVector().end(),
