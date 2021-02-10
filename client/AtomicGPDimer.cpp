@@ -25,6 +25,9 @@ AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
   *matterCenter = *matter;
   *matterDimer = *matter;
   InputParameters p = eon_parameters_to_gpr(params);
+  for (int i = 0; i < 9; i++){
+  p.cell_dimensions.value[i]=matter->getCell()[i];
+  }
   atmd::AtomicDimer atomic_dimer;
   aux::ProblemSetUp problem_setup;
 }
