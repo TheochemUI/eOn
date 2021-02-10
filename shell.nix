@@ -38,7 +38,6 @@ in mkShellNewEnv {
     which
     gfortran
     valgrind
-    nproc
     gdb
     eigen
   ];
