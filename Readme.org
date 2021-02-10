@@ -1,0 +1,59 @@
+* About
+- A modern, elegant approach to working with [[https://theory.cm.utexas.edu/eon/][EON]]
+** Build
+*** Nix (Preferred)
+This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
+#+begin_src bash
+nix-shell --pure --run bash --show-trace --verbose
+#+end_src
+In the new sub-shell:
+#+begin_src bash
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE
+make -j$(nproc) VERBOSE=1 && make check
+export PATH=$(pwd):$PATH
+#+end_src
+*** TODO Simplify
+- [ ] Make a ~default.nix~
+  - [ ] Build ~tsase~
+  - [ ] Build ~eon~
+  - [ ] Build ~eonclient~
+*** Cmake
+The following will suffice:
+#+begin_src bash
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE
+# cmake --build . -- VERBOSE=1
+make -j$(nproc) VERBOSE=1 && make check
+export PATH=$(pwd):$PATH
+#+end_src
+**** Tests
+~make check~ is typically all that is needed. However, the manual testing methods of the next section work as well.
+*** Make
+Old style, ugly.
+#+begin_src bash
+cd client
+make -j$(nproc) # Will break
+make # Will not break now
+export PATH=$(pwd):$PATH
+#+end_src
+**** Manual Tests
+#+begin_src bash
+# From root repo directory
+cd client/gtests/data/saddle_search/
+eonclient
+#+end_src
+** GPR Dimer Tests
+One of ~make check~ tests will break, and this is the GPR dimer call. The tests run in the appropriate test directory; however, debugging ~make check~ is a bit annoying.
+*** Debugging
+Not the best method, but still cleaner than keeping a whole temporary run folder; we can copy the data into the ~build/gtests~ folder and then debug the test target:
+#+begin_src bash
+make -j$(nproc) && make check
+cd gtests
+cp ../../gtests/data/gpr_dimer/client.log ../../gtests/data/gpr_dimer/config.ini ../../gtests/data/gpr_dimer/direction.dat ../../gtests/data/gpr_dimer/displacement.con ../../gtests/data/gpr_dimer/mode.dat ../../gtests/data/gpr_dimer/pos.con ../../gtests/data/gpr_dimer/results.dat .
+gdb gprdimereon
+#+end_src
+* License
+[[https://opensource.org/licenses/BSD-3-Clause][BSD-3 clause]].
