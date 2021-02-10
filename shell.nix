@@ -25,6 +25,9 @@ let
     '';
   };
   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc9Stdenv; };
+  eigenClang = pkgs.eigen.overrideAttrs(old: rec {
+    stdenv = pkgs.clangStdenv;
+  });
 in mkShellNewEnv {
   nativeBuildInputs = [ pkgs.cmake ];
   buildInputs = with pkgs; [
@@ -33,8 +36,10 @@ in mkShellNewEnv {
     gtest
     bashInteractive
     which
-    # gcc9Stdenv
     gfortran
+    valgrind
+    nproc
+    gdb
     eigen
   ];
 }
