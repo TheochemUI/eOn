@@ -20,7 +20,7 @@ string(APPEND CMAKE_CXX_FLAGS
        " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
 string(APPEND CMAKE_CXX_FLAGS_RELEASE
        " -O3 -march=native -ffast-math -funroll-loops ")
-string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O1 -Warray-bounds -Wall -Wno-unused ")
+string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O1 -Warray-bounds -Wall -Wno-unused -g3 -ggdb ")
 
 # Fortran Compiler Flags
 string(APPEND CMAKE_Fortran_FLAGS
@@ -64,6 +64,14 @@ endif()
 
 # Build
 add_executable(eonclient ClientEON.cpp CommandLine.cpp)
+
+# Optional, for nix
+if(FIND_EIGEN)
+  find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+  include_directories(${EIGEN3_INCLUDE_DIR})
+  message(STATUS "EIGEN: " ${EIGEN3_INCLUDE_DIR})
+  target_link_libraries(eonclient Eigen3::Eigen)
+endif()
 
 # Set version
 target_compile_features(eonclient PUBLIC cxx_std_11)
