@@ -51,8 +51,11 @@ void AtomicGPDimer::compute(Matter *matter,
     {
         if(!matterCenter->getFixed(i))
         {
-            initialDirectionAtomMatrix.row(j) = freeOrient.row(i);
+           freeOrient.row(j) = initialDirectionAtomMatrix.row(i);
             j++;
+            if (j==matterCenter->numberOfFixedAtoms()){
+              break;
+            }
         }
     }
   orient_init.assignFromEigenMatrix(freeOrient);
