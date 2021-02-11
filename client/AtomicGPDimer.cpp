@@ -42,7 +42,6 @@ void AtomicGPDimer::compute(Matter *matter,
   init_observations.clear();
   problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
                                     atoms_config);
-  // FIXME: does this work?
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
                      matterCenter->getPositionsFree().cols());
@@ -57,16 +56,6 @@ void AtomicGPDimer::compute(Matter *matter,
         }
     }
   orient_init.assignFromEigenMatrix(freeOrient);
-  // orient_init.resize(1, 3 * matter->numberOfFreeAtoms());
-  // for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-  //   if (matter->getFixed(i)==0) {
-  //     orient_init.set(0,)=initialDirectionAtomMatrix[i];
-  //   }
-
-  // }
-  // vector<double> vec(initialDirection.data(),
-  //                    initialDirection.data() + initialDirection.size());
-  // orient_init.assignToSlice(0, vec);
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
