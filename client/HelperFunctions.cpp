@@ -857,6 +857,7 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
   // Atomtypes
   Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
   a.pairtype.resize(n_at, n_at);
+  a.pairtype.set(-1);
   a.n_pt = 0;
   problem_setup.setPairtypeForMovingAtoms(a.atomtype_mov, a.n_pt, a.pairtype);
   a.atoms_froz_inactive.resize(1, 3 * matter->numberOfFixedAtoms());
