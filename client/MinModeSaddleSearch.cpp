@@ -187,16 +187,21 @@ int MinModeSaddleSearch::run()
         log("================= Using the GP Dimer Library =================\n");
         minModeMethod->compute(matter, mode);
         if (minModeMethod->getEigenvalue() > 0) {
-            printf("%f\n", minModeMethod->getEigenvalue());
-            return STATUS_NONNEGATIVE_ABORT;
+          printf("%f\n", minModeMethod->getEigenvalue());
+          return STATUS_NONNEGATIVE_ABORT;
         }
-    if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-        log("[MinModeSaddleSearch] eigenvalue not negative\n");
-        status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
-    }
+        if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
+          log("[MinModeSaddleSearch] eigenvalue not negative\n");
+          status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
+        }
+        if (fabs(minModeMethod->getEigenvalue()) <
+            parameters->saddleZeroModeAbortCurvature) {
+          printf("%f\n", minModeMethod->getEigenvalue());
+          status = STATUS_ZEROMODE_ABORT;
+        }
     } else {
 
-    if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+      if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", 
             "Torque", "Angle", "Rots");
