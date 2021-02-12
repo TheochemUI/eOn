@@ -9,6 +9,7 @@
 #include <time.h>
 #include <string.h>
 #include <set>
+#include <unordered_map>
 
 #ifndef WIN32
     #include <sys/time.h>
@@ -836,40 +837,107 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
 
 // FIXME: Take in the active / inactive pairs / atomtypes
 AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
-  AtomsConfiguration a;
-  aux::ProblemSetUp problem_setup;
-  std::vector<int> atomnrs;
-  a.positions.resize(matter->getPositions().rows(),
-                     matter->getPositions().cols());
-  a.is_frozen.resize(matter->numberOfAtoms());
-  a.id.resize(matter->numberOfAtoms());
-  a.positions.assignFromEigenMatrix(matter->getPositions());
-  for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-    atomnrs.push_back(matter->getAtomicNr(i));
-    a.is_frozen[i] = matter->getFixed(i);
-    a.id[i] = i + 1;
-  }
-  a.atoms_froz_active.clear();
-  a.atomtype_mov.resize(1, matter->numberOfFreeAtoms());
-  // FIXME: Might have more than one kind of freely moving atom
-  a.atomtype_mov.set(0); // Corresponds to H in the CuH example, 0 for Pt
-  a.atoms_froz_active.clear();
-  // Atomtypes
-  Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
-  a.pairtype.resize(n_at, n_at);
-  a.n_pt = 0;
-  problem_setup.setPairtypeForMovingAtoms(a.atomtype_mov, a.n_pt, a.pairtype);
-  a.atoms_froz_inactive.resize(1, 3 * matter->numberOfFixedAtoms());
-  for (auto i = 0; i < matter->numberOfFixedAtoms(); ++i) {
-    a.atoms_froz_inactive.set(0, i,
-                              {matter->getPosition(i, 0),
-                               matter->getPosition(i, 1),
-                               matter->getPosition(i, 2)});
-  }
-  // FIXME: Might have more than one kind OR the SAME KIND (Pt)
-  a.atomtype_froz_inactive.resize(1, a.atoms_froz_inactive.getNumPoints());
-  a.atomtype_froz_inactive.set(0); // 1 for Cu in the example, 0 for Pt
-  return a;
+//   AtomsConfiguration a;
+//   aux::ProblemSetUp problem_setup;
+//   std::vector<int> atomnrs;
+//   a.positions.resize(matter->getPositions().rows(),
+//                      matter->getPositions().cols());
+//   a.is_frozen.resize(matter->numberOfAtoms());
+//   a.id.resize(matter->numberOfAtoms());
+//   a.positions.assignFromEigenMatrix(matter->getPositions());
+//   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+//     atomnrs.push_back(matter->getAtomicNr(i));
+//     a.is_frozen[i] = matter->getFixed(i);
+//     a.id[i] = i + 1;
+//   }
+//   a.atoms_froz_active.clear();
+//   a.atoms_mov.resize(matter->numberOfFreeAtoms());
+//   // FIXME: Might have more than one kind of freely moving atom
+//   a.atoms_mov.type.set(0); // Corresponds to H in the CuH example, 0 for Pt
+//   a.atoms_froz_active.clear();
+//   // Atomtypes
+//   Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
+//   a.pairtype.resize(n_at, n_at);
+//   std::cout << "n_at: " << n_at << "\n";
+//   a.pairtype.set(EMPTY);
+//   a.n_pt = 0;
+//   problem_setup.setPairtypeForMovingAtoms(a.atoms_mov.type, a.n_pt, a.pairtype);
+//   a.atoms_froz_inactive.resize(3 * matter->numberOfFixedAtoms());
+//   for (auto i = 0; i < matter->numberOfFixedAtoms(); ++i) {
+//     a.atoms_froz_inactive.positions.set(0, i,
+//                               {matter->getPosition(i, 0),
+//                                matter->getPosition(i, 1),
+//                                matter->getPosition(i, 2)});
+//   }
+//   // FIXME: Might have more than one kind OR the SAME KIND (Pt)
+//   a.atoms_froz_inactive.type.set(0); // 1 for Cu in the example, 0 for Pt
+//   return a;
+
+
+    AtomsConfiguration atoms_config;
+    aux::ProblemSetUp problem_setup;
+    Index_t number_of_mov_atoms;
+    Index_t number_of_fro_atoms;
+    std::set<int> unique_atomtypes;
+    Index_t n_at;
+    std::unordered_map<std::string, Index_t> atomtypes;
+    std::vector<int> atomnrs;
+
+    atoms_config.clear();
+    atoms_config.positions.resize(matter->getPositions().rows(),
+                        matter->getPositions().cols());
+    atoms_config.is_frozen.resize(matter->numberOfAtoms());
+    atoms_config.id.resize(matter->numberOfAtoms());
+    atoms_config.positions.assignFromEigenMatrix(matter->getPositions());
+    for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+        atomnrs.push_back(matter->getAtomicNr(i));
+        atoms_config.is_frozen[i] = matter->getFixed(i);
+        atoms_config.id[i] = i + 1;
+    }
+    
+    unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
+    n_at = unique_atomtypes.size();
+    // we know that we have only 1 atomtype for now
+    atomtypes["Pt"] = 0;
+
+    number_of_mov_atoms = atoms_config.countMovingAtoms();
+    number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
+
+    // Resize structures for moving and frozen atoms
+    atoms_config.atoms_mov.resize(number_of_mov_atoms);
+    atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
+
+    atoms_config.atoms_mov.type.set(atomtypes.at("Pt"));
+    atoms_config.atoms_froz_inactive.type.set(atomtypes.at("Pt"));
+
+    // Assign moving and frozen atoms and list all frozen atoms as inactive
+    Index_t counter_f = 0, counter_m = 0;
+    for(Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
+        if (atoms_config.is_frozen[n] == MOVING_ATOM)
+            atoms_config.atoms_mov.positions.set(0, counter_m++,
+                                                atoms_config.positions.at(n));
+        else
+            atoms_config.atoms_froz_inactive.positions.set(0, counter_f++,
+                                                        atoms_config.positions.at(n));
+    }
+
+    // Pairtype indices for pairs of atomtypes (n_at x n_at)
+    // Active pairtypes are indexed as 0,1,...,n_pt-1. Inactive pairtypes are
+    // given index EMPTY.
+    atoms_config.pairtype.resize(n_at, n_at);
+    atoms_config.pairtype.set(EMPTY);
+
+    // Set pairtype indices for moving+moving atom pairs (and update number of
+    // active pairtypes)
+    problem_setup.setPairtypeForMovingAtoms(atoms_config.atoms_mov.type,
+                                            atoms_config.n_pt,
+                                            atoms_config.pairtype);
+
+    // // Activate frozen atoms within activation distance
+    // problem_setup.activateFrozenAtoms(R_init, parameters.actdist_fro.value,
+    //                                 atoms_config);
+
+    return atoms_config;
 }
 
 Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
