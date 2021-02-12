@@ -51,6 +51,9 @@ message(STATUS "CXX compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS "Python: " ${Python_EXECUTABLE})
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
+  find_package(BLAS)
+  find_package(LAPACK)
+  find_package(OpenMP)
   message(STATUS "Fortran compiler flags:" ${CMAKE_Fortran_FLAGS}
                  ${CMAKE_Fortran_FLAGS_RELEASE} ${COMPILE_OPTIONS})
   message(STATUS "CXX compiler flags:" ${CMAKE_CXX_FLAGS}
