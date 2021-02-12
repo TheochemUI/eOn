@@ -34,9 +34,16 @@ void AtomicGPDimer::compute(Matter *matter,
                             AtomMatrix initialDirectionAtomMatrix) {
   atoms_config = eon_matter_to_atmconf(matter);
   *matterCenter = *matter;
-  R_init.resize(matterCenter->getPositionsFree().rows(),
+  // R_init.resize(1, matterCenter->getPositionsFree().size());
+  // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
+R_init.resize(1, matterCenter->getPositionsFree().rows() *
                 matterCenter->getPositionsFree().cols());
-  R_init.assignFromEigenMatrix(matterCenter->getPositionsFree());
+  int counter = 0;
+  for(int i = 0; i < matterCenter->getPositionsFree().rows(); ++i) {
+    for(int j = 0; j < matterCenter->getPositionsFree().cols(); ++j) {
+      R_init[counter++] = matterCenter->getPositionsFree()(i, j);
+    }
+  }
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
@@ -51,11 +58,22 @@ void AtomicGPDimer::compute(Matter *matter,
     {
         if(!matterCenter->getFixed(i))
         {
-            initialDirectionAtomMatrix.row(j) = freeOrient.row(i);
+           freeOrient.row(j) = initialDirectionAtomMatrix.row(i);
             j++;
+            if (j==matterCenter->numberOfFixedAtoms()){
+              break;
+            }
         }
     }
-  orient_init.assignFromEigenMatrix(freeOrient);
+  // orient_init.assignFromEigenMatrix(freeOrient);
+orient_init.resize(1, freeOrient.rows() *
+                freeOrient.cols());
+  counter = 0;
+  for(int i = 0; i < freeOrient.rows(); ++i) {
+    for(int j = 0; j < freeOrient.cols(); ++j) {
+      orient_init[counter++] = freeOrient(i, j);
+    }
+  }
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
