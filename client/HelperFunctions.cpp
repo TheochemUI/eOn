@@ -827,8 +827,8 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.prior_s2.value = parameters->gprDimerPriorSigma2;
   p.check_derivative.value = parameters->gprOptCheckDerivatives;
   p.max_iter.value = parameters->gprOptMaxIterations;
-  p.tolerance_func.value = parameters->gprOptTolFunc;
-  p.tolerance_sol.value = parameters->gprOptTolSol;
+  p.tolerance_func.value = 0.0001;
+  p.tolerance_sol.value = 0.0001;
   p.lambda_limit.value = parameters->gprOptLambdaLimit;
   p.lambda.value = parameters->gprOptLambdaInit;
   p.report_level.value = 1;
