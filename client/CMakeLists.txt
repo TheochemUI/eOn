@@ -15,28 +15,30 @@ endif()
 
 set(CMAKE_COLOR_MAKEFILE ON)
 
-# CXX Compiler Flags
-string(APPEND CMAKE_CXX_FLAGS
-       " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
-string(APPEND CMAKE_CXX_FLAGS_RELEASE
-       " -O3 -march=native -ffast-math -funroll-loops ")
-string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O1 -Warray-bounds -Wall -Wno-unused -g3 -ggdb ")
+# # CXX Compiler Flags
+# string(APPEND CMAKE_CXX_FLAGS
+#        " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
+# string(APPEND CMAKE_CXX_FLAGS_RELEASE
+#        " -O3 -march=native -ffast-math -funroll-loops ")
+# # string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -Warray-bounds -Wall -Wno-unused -g3 -ggdb ")
 
-# Fortran Compiler Flags
-string(APPEND CMAKE_Fortran_FLAGS
-       " -fbounds-check -ffpe-trap=invalid,zero,overflow ")
-string(APPEND CMAKE_Fortran_FLAGS_RELEASE
-       " -O3 -march=native -ffast-math -funroll-loops -std=legacy ")
-string(APPEND CMAKE_Fortran_FLAGS_DEBUG
-       " -O1 -Warray-bounds -std=legacy -Wall -Wno-unused ")
+# # Fortran Compiler Flags
+# string(APPEND CMAKE_Fortran_FLAGS
+#        " -fbounds-check -ffpe-trap=invalid,zero,overflow ")
+# string(APPEND CMAKE_Fortran_FLAGS_RELEASE
+#        " -O3 -march=native -ffast-math -funroll-loops -std=legacy ")
+# string(APPEND CMAKE_Fortran_FLAGS_DEBUG
+#        " -O0 -Warray-bounds -std=legacy -Wall -Wno-unused ")
 
 # Other flags
-set(DOUBLE "-r8")
+# set(DOUBLE "-r8")
 
 if(NO_WARN)
   string(APPEND CMAKE_CXX_FLAGS " -w ")
   string(APPEND CMAKE_Fortran_FLAGS " -w ")
 endif()
+
+# add_compile_options("$<$<CONFIG:Debug>:-O0;-g3;-ggdb;-Warray-bounds;-Wall;-Wno-unused>")
 
 # add_compile_options(# "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
 # "$<$<CONFIG:Debug>:-O0;-g3;-ggdb>")
