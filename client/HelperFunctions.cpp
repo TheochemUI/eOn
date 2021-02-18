@@ -805,12 +805,12 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.method_trans.value = parameters->gprDimerTransOptMethod;
   p.param_trans.value[0] = parameters->gprDimerConvStep;
   p.param_trans.value[1] = parameters->gprDimerMaxStep;
-  p.T_dimer.value = 0.1;
+  p.T_dimer.value = parameters->gprForceThreshold;
   p.initrot_nogp.value = parameters->gprDimerInitRotGP;
-  p.T_anglerot_init.value = 0.08730;
+  p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
   p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
   p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
-  p.T_anglerot_gp.value = 0.001;
+  p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
   p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
   p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
   p.disp_max.value = parameters->gprDimerMidpointMaxDisp;
@@ -827,8 +827,8 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.prior_s2.value = parameters->gprDimerPriorSigma2;
   p.check_derivative.value = parameters->gprOptCheckDerivatives;
   p.max_iter.value = parameters->gprOptMaxIterations;
-  p.tolerance_func.value = 0.0001;
-  p.tolerance_sol.value = 0.0001;
+  p.tolerance_func.value = parameters->gprOptTolFunc;
+  p.tolerance_sol.value = parameters->gprOptTolSol;
   p.lambda_limit.value = parameters->gprOptLambdaLimit;
   p.lambda.value = parameters->gprOptLambdaInit;
   p.report_level.value = 1;

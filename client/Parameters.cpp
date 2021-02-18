@@ -143,6 +143,43 @@ Parameters::Parameters(){
     lanczosMaxIterations = 20;
     lanczosQuitEarly = true;
 
+    // [GPR Dimer] //
+    gprDimerRotationAngle = 0.005;
+    gprDimerConvergedAngle = 0.08; // T_anglerot_init
+    gprDimerRelaxConvAngle = 0.001; // T_anglerot_gp
+    gprDimerInitRotationsMax = 6; // num_iter_initrot; should be DoF
+    gprDimerRelaxRotationsMax = 10; // num_iter_rot_gp
+    gprDimerDivisorTdimerGP = 10; // divisor_T_dimer_gp
+    gprDimerMaxOuterIterations = 300; // num_bigiter
+    gprDimerMaxInnerIterations = 1000; // num_iter
+    gprDimerMidpointMaxDisp = 0.5; // disp_max
+    gprDimerRotOptMethod = "lbfgs"; // method_rot
+    gprDimerTransOptMethod = "lbfgs"; // method_trans
+    gprActiveRadius = 5.0; // actidst_fro
+    gprDimerSep = 0.01; // dimer_sep
+    gprDimerConvStep = 0.1; // param_trans[0]
+    gprDimerMaxStep = 0.1; // param_trans[1]
+    gprForceThreshold = 0.01; // T_dimer
+    gprDimerRatioAtLimit = 0.66667; // ratio_at_limit
+    gprDimerInitRotGP = 0; // initrot_nogp
+    gprDimerInitTransGP = 0; // inittrans_nogp
+    gprDimerManyIterations = true; // islarge_num_iter
+    // GPR Params
+    gprDimerHyperOptMethod = "scg"; // optimization_alg
+    gprDimerSigma2 = 1e-8; // gp_sigma2
+    gprDimerJitterSigma2 = 0; // jitter_sigma2
+    gprDimerNoiseSigma2 = 1e-8; // sigma2
+    gprDimerPriorMu = 0; // prior_mu
+    gprDimerPriorSigma2 = 1; //prior_s2
+    gprDimerPriorNu = 20; // prior_nu
+    // GPR Optimization Parameters
+    gprOptCheckDerivatives = false; // check_derivative
+    gprOptMaxIterations = 400; // max_iter
+    gprOptTolFunc = 1e-4; // tolerance_func
+    gprOptTolSol = 1e-4; // tolerance_sol
+    gprOptLambdaLimit = 1e17; // lambda_limit
+    gprOptLambdaInit = 10.0; // lambda
+
     // [Hessian] //
     hessianAtomList = string("All");
     hessianZeroFreqValue = 1e-6;
