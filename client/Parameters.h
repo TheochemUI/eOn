@@ -146,14 +146,14 @@ public:
     double gprDimerRotationAngle; // finite difference rotation angle
     double gprDimerConvergedAngle; // stop rotating when angle drops below this value {T_anglerot_init}
     double gprDimerRelaxConvAngle; // stop rotating when angle drops below this value during relaxation {T_anglerot_gp}
-    long   gprDimerInitRotationsMax; // {num_inter_initrot}
-    long   gprDimerRelaxRotationsMax; // {num_inter_rot_gp}
+    long   gprDimerInitRotationsMax; // {num_iter_initrot}
+    long   gprDimerRelaxRotationsMax; // {num_iter_rot_gp}
     long   gprDimerDivisorTdimerGP; // {divisor_T_dimer_gp}
     long   gprDimerMaxOuterIterations; // maximum number of outer iterations or new sets of observations {num_bigiter}
     long   gprDimerMaxInnerIterations; // maximum number of steps during the relaxation phase {num_iter}
     double gprDimerMidpointMaxDisp; // {disp_max}
-    string gprDimerRotOptMethod; // method to determine the next rotation direction
-    string gprDimerTransOptMethod; // method to determine the next rotation direction
+    string gprDimerRotOptMethod; // method to determine the next rotation direction {method_rot}
+    string gprDimerTransOptMethod; // method to determine the next rotation direction {method_trans}
     double gprActiveRadius; // activation radius for inclusion in covariance matrix {actdist_fro}
     double gprDimerSep; // distance from the middle point of the dimer to the two images {dimer_sep}
     double gprDimerConvStep; // step length for convex regions {param_trans[0]}
@@ -174,8 +174,8 @@ public:
     // GPR Optimization Parameters
     bool gprOptCheckDerivatives; // {check_derivative}
     int gprOptMaxIterations; // {max_iter}
-    long gprOptTolFunc; // {tolerance_func}
-    long gprOptTolSol; // {tolerance_sol}
+    double gprOptTolFunc; // {tolerance_func}
+    double gprOptTolSol; // {tolerance_sol}
     long gprOptLambdaLimit; // {lambda_limit}
     long gprOptLambdaInit; // {lambda}
 
