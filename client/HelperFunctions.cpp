@@ -805,12 +805,12 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.method_trans.value = parameters->gprDimerTransOptMethod;
   p.param_trans.value[0] = parameters->gprDimerConvStep;
   p.param_trans.value[1] = parameters->gprDimerMaxStep;
-  p.T_dimer.value = parameters->optConvergedForce;
+  p.T_dimer.value = 0.1;
   p.initrot_nogp.value = parameters->gprDimerInitRotGP;
-  p.T_anglerot_init.value = parameters->gprDimerConvergedAngle;
+  p.T_anglerot_init.value = 0.08730;
   p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
   p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
-  p.T_anglerot_gp.value = parameters->gprDimerRelaxConvAngle;
+  p.T_anglerot_gp.value = 0.001;
   p.num_iter_rot_gp.value = parameters->gprDimerRelaxRotationsMax;
   p.divisor_T_dimer_gp.value = parameters->gprDimerDivisorTdimerGP;
   p.disp_max.value = parameters->gprDimerMidpointMaxDisp;
