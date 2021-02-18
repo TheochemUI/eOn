@@ -805,9 +805,9 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.method_trans.value = parameters->gprDimerTransOptMethod;
   p.param_trans.value[0] = parameters->gprDimerConvStep;
   p.param_trans.value[1] = parameters->gprDimerMaxStep;
-  p.T_dimer.value = 0.001;
+  p.T_dimer.value = 0.6;
   p.initrot_nogp.value = parameters->gprDimerInitRotGP;
-  p.T_anglerot_init.value = 0.08730;
+  p.T_anglerot_init.value = 0.0008730;
   p.num_iter_initrot.value = parameters->gprDimerInitRotationsMax;
   p.inittrans_nogp.value = parameters->gprDimerInitTransGP;
   p.T_anglerot_gp.value = 0.01;
