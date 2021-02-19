@@ -266,7 +266,7 @@ class ConfigClass:
             if self.disp_listed_atoms == ['None']:
                 self.disp_listed_atoms = []
         if self.displace_listed_type_weight != 0.0:
-            self.disp_listed_types = [ (string.strip(c)) for c in parser.get('Saddle Search', 'displace_type_list').split(',') ]
+            self.disp_listed_types = [ (c.lstrip()) for c in parser.get('Saddle Search', 'displace_type_list').split(',') ]
             if self.disp_listed_types == ['None']:
                 self.disp_listed_types = []
         self.displace_1d = parser.getboolean('Saddle Search', 'displace_1d')
@@ -301,7 +301,7 @@ class ConfigClass:
 
         # Coarse Graining
         self.sb_on = parser.getboolean('Coarse Graining', 'use_mcamc')
-        self.sb_state_file = parser.get('Coarse Graining', 'state_file')
+        self.sb_state_file = parser.get('Coarse Graining', 'state_file') 
         self.sb_path = None
         self.sb_path = parser.get('Paths', 'superbasins')
         self.sb_scheme = parser.get('Coarse Graining', 'superbasin_scheme')
