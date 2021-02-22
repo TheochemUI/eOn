@@ -79,6 +79,8 @@ orient_init.resize(1, freeOrient.rows() *
 
   Potential *potential= Potential::getPotential(parameters);
   atomic_dimer.execute(*potential);
+  // Forcefully set the right positions
+  matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   return;
 }
 
