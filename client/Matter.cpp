@@ -425,6 +425,7 @@ void Matter::setPositionsV(const VectorXd pos)
 
 void Matter::setPositionsFree(const AtomMatrix pos)
 {
+    // FIXME: Ensure pos and existing data are in the same form with atom ids
     int i,j = 0;
     for(i=0; i<nAtoms; i++)
     {
