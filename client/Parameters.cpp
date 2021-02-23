@@ -179,6 +179,17 @@ Parameters::Parameters(){
     gprOptTolSol = 1e-4; // tolerance_sol
     gprOptLambdaLimit = 1e17; // lambda_limit
     gprOptLambdaInit = 10.0; // lambda
+    // GPR Debugging Parameters
+    gprReportLevel = 1; // report_level
+    gprDebugLevel = 2; // debug_level
+    gprDebugOutDir = "output"; // debug_output_dir
+    gprDebugPosFile = "position"; // debug_output_file_R
+    gprDebugEnergyFile = "energy"; // debug_output_file_E
+    gprDebugGradFile = "gradient"; // debug_output_file_G
+    gprDebugOutExt = "dat"; // debug_output_file_extension
+    gprDebugOffsetMidPoint = 3.; // debug_offset_from_mid_point
+    gprDebugDy = 0.1; // debug_dy
+    gprDebugDz = 0.1; // debug_dz
 
     // [Hessian] //
     hessianAtomList = string("All");
@@ -473,6 +484,16 @@ int Parameters::load(FILE *file){
         gprOptTolSol = ini.GetValueF("GPR Dimer", "opt_tol_sol", gprOptTolSol);
         gprOptLambdaLimit = ini.GetValueF("GPR Dimer", "opt_lambda_limit", gprOptLambdaLimit);
         gprOptLambdaInit = ini.GetValueF("GPR Dimer", "opt_lambda_init", gprOptLambdaInit);
+        // GPR Debugging Parameters
+        gprReportLevel = (int)ini.GetValueL("GPR Dimer", "report_level", gprReportLevel);
+        gprDebugLevel = (int)ini.GetValueL("GPR Dimer", "debug_level", gprDebugLevel);
+        gprDebugOutDir=ini.GetValue("GPR Dimer", "debug_output_directory", gprDebugOutDir);;
+        gprDebugPosFile=ini.GetValue("GPR Dimer", "debug_position_basename", gprDebugPosFile);;
+        gprDebugEnergyFile=ini.GetValue("GPR Dimer", "debug_energy_basename", gprDebugEnergyFile);;
+        gprDebugGradFile=ini.GetValue("GPR Dimer", "debug_gradient_basename", gprDebugGradFile);;
+        gprDebugOffsetMidPoint = ini.GetValueF("GPR Dimer", "debug_midpoint_offset", gprDebugOffsetMidPoint);
+        gprDebugDy = ini.GetValueF("GPR Dimer", "debug_y_step", gprDebugDy);
+        gprDebugDz = ini.GetValueF("GPR Dimer", "debug_z_step", gprDebugDz);
 
         // [Prefactor] //
 
