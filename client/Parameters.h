@@ -178,6 +178,18 @@ public:
     double gprOptTolSol; // {tolerance_sol}
     long gprOptLambdaLimit; // {lambda_limit}
     long gprOptLambdaInit; // {lambda}
+    // GPR Debugging Parameters
+    int gprReportLevel; // {report_level}
+    int gprDebugLevel; // {debug_level}
+    string gprDebugOutDir; // {debug_output_dir}
+    string gprDebugPosFile; // {debug_output_file_R}
+    string gprDebugEnergyFile; // {debug_output_file_E}
+    string gprDebugGradFile; // {debug_output_file_G}
+    string gprDebugOutExt; // {debug_output_file_extension}
+    double gprDebugOffsetMidPoint; // {debug_offset_from_mid_point}
+    double gprDebugDy; // {debug_dy}
+    double gprDebugDz; // {debug_dz}
+
 
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations

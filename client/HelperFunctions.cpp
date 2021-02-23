@@ -831,7 +831,17 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.tolerance_sol.value = parameters->gprOptTolSol;
   p.lambda_limit.value = parameters->gprOptLambdaLimit;
   p.lambda.value = parameters->gprOptLambdaInit;
-  p.report_level.value = 1;
+  // Debugging
+  p.report_level.value = parameters->gprReportLevel;
+  p.debug_level.value = parameters->gprDebugLevel;
+  p.debug_output_dir.value = parameters->gprDebugOutDir;
+  p.debug_output_file_R.value = parameters->gprDebugPosFile;
+  p.debug_output_file_E.value = parameters->gprDebugEnergyFile;
+  p.debug_output_file_G.value = parameters->gprDebugGradFile;
+  p.debug_output_file_extension.value = parameters->gprDebugOutExt;
+  p.debug_offset_from_mid_point.value = parameters->gprDebugOffsetMidPoint;
+  p.debug_dy.value = parameters->gprDebugDy;
+  p.debug_dz.value = parameters->gprDebugDz;
   return p;
 }
 
