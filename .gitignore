@@ -272,3 +272,5 @@ saddle.con
 *.o
 *.a
 /tools/ext/
+*.rkf
+run_AMS
