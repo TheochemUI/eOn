@@ -25,6 +25,7 @@
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/ExtPot/ExtPot.h"
 #include "potentials/PyAMFF/PyAMFF.h"
+#include "potentials/AMS/AMS.h"
 
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
@@ -40,6 +41,9 @@
 #endif
 #ifdef PYAMFF_POT
     #include "potentials/PyAMFF/PyAMFF.h"
+#endif
+#ifdef AMS_POT
+    #include "potentials/AMS/AMS.h"
 #endif
 
 #include <cstdlib>
@@ -66,6 +70,7 @@ const char Potential::POT_MPI[] =         "mpi";
 const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
 const char Potential::POT_PYAMFF[] =       "pyamff";
+const char Potential::POT_AMS[] =       "ams";
 
 Potential* Potential::pot = NULL;
 
@@ -96,6 +101,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new SpceCcl();
     else if(parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
+    else if(parameters->potential == POT_AMS)
+        pot = new AMS();
  
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
@@ -114,6 +121,7 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new FeHe();
  
 #endif
+
 
 #ifdef PYAMFF_POT
     else if(parameters->potential == POT_PYAMFF)

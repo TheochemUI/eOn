@@ -36,6 +36,7 @@ class Potential
         static const char POT_EXT[];
         static const char POT_NEW[];
         static const char POT_PYAMFF[];
+        static const char POT_AMS[];
 
         static Potential* getPotential(Parameters *parameters);
 
