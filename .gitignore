@@ -274,3 +274,4 @@ saddle.con
 /tools/ext/
 *.rkf
 run_AMS
+ams_output
