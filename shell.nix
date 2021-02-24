@@ -24,9 +24,12 @@ let
       ase
     '';
   };
-  mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc9Stdenv; };
-  eigenClang = pkgs.eigen.overrideAttrs(old: rec {
+  mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
+  eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
     stdenv = pkgs.clangStdenv;
+  });
+  eigen339 = pkgs.eigen.overrideAttrs(old: rec {
+    version = "3.3.9";
   });
 in mkShellNewEnv {
   nativeBuildInputs = [ pkgs.cmake ];
@@ -36,10 +39,10 @@ in mkShellNewEnv {
     gtest
     bashInteractive
     which
-    gcc9Stdenv
+    gcc10Stdenv
     gfortran
     valgrind
     gdb
-    eigen
+    eigen339
   ];
 }
