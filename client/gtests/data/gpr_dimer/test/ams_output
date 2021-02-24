@@ -1,0 +1,1080 @@
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:24:58  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 1930033280
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.1930033280/
+
+ RNG seed: -1826739909 1681136156 -1048840640 1473829755 1948110613 -178265129 -2028892579 255351146
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1      O     8.91839200     9.90397900    14.58450100
+      2      O     8.91839200    11.90397900    14.58450100
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+SCF iteration #     1  DeltaE:    0.0E+00
+SCF iteration #     2  DeltaE:    0.4E+04
+SCF iteration #     3  DeltaE:   -0.4E+04
+SCF iteration #     4  DeltaE:   -0.9E-01
+SCF iteration #     5  DeltaE:   -0.6E-01
+SCF iteration #     6  DeltaE:   -0.4E-01
+SCF iteration #     7  DeltaE:   -0.3E-01
+SCF iteration #     8  DeltaE:   -0.5E+00
+SCF iteration #     9  DeltaE:    0.4E+00
+SCF iteration #    10  DeltaE:   -0.1E-02
+SCF iteration #    11  DeltaE:   -0.1E-01
+SCF iteration #    12  DeltaE:    0.9E-02
+SCF iteration #    13  DeltaE:   -0.5E-06
+ 
+ SCF convergence achieved in 13 iterations
+
+
+                  EIGENVALUES  
+ -30.29000 -30.01916 -13.83317 -13.31897 -13.26294 -11.75107  -4.82766  -3.27310
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.000000        6.0000     1.99834     4.00166
+    2          O           0.000000        6.0000     1.99834     4.00166
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.99834   1.96163   1.00166   1.03837
+    2  O   1.99834   1.96163   1.00166   1.03837
+ End of MOPAC writmo
+
+
+          MOPAC Job: "mopac" ended normally on Feb 24, 2021, at 16:24.
+
+
+
+    =====================
+     CALCULATION RESULTS
+    =====================
+
+Energy (hartree)             0.34624902
+
+Gradients (hartree/bohr)
+  Index   Atom            d/dx            d/dy            d/dz
+      1      O   -0.0000000000   -0.2203154776    0.0000000000
+      2      O   -0.0000000000    0.2203154776    0.0000000000
+
+
+--------------
+Atomic charges
+--------------
+  Index   Atom    Charge
+      1      O   -0.0000
+      2      O    0.0000
+
+
+AMS application finished. Exiting.
+ NORMAL TERMINATION
+     Total cpu time:       0.04
+  Total system time:       0.01
+ Total elapsed time:       0.05
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:27:36  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 539963615
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.539963615/
+
+ RNG seed: 2032467958 2040032028 541539522 1732388580 1885745722 383390827 -973426353 347730971
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1      O     8.91839200     9.90397900    14.58450100
+      2      O     8.91839200    11.90397900    14.58450100
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+SCF iteration #     1  DeltaE:    0.0E+00
+SCF iteration #     2  DeltaE:    0.4E+04
+SCF iteration #     3  DeltaE:   -0.4E+04
+SCF iteration #     4  DeltaE:   -0.9E-01
+SCF iteration #     5  DeltaE:   -0.6E-01
+SCF iteration #     6  DeltaE:   -0.4E-01
+SCF iteration #     7  DeltaE:   -0.3E-01
+SCF iteration #     8  DeltaE:   -0.5E+00
+SCF iteration #     9  DeltaE:    0.4E+00
+SCF iteration #    10  DeltaE:   -0.1E-02
+SCF iteration #    11  DeltaE:   -0.1E-01
+SCF iteration #    12  DeltaE:    0.9E-02
+SCF iteration #    13  DeltaE:   -0.5E-06
+ 
+ SCF convergence achieved in 13 iterations
+
+
+                  EIGENVALUES  
+ -30.29000 -30.01916 -13.83317 -13.31897 -13.26294 -11.75107  -4.82766  -3.27310
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.000000        6.0000     1.99834     4.00166
+    2          O           0.000000        6.0000     1.99834     4.00166
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.99834   1.96163   1.00166   1.03837
+    2  O   1.99834   1.96163   1.00166   1.03837
+ End of MOPAC writmo
+
+
+          MOPAC Job: "mopac" ended normally on Feb 24, 2021, at 16:27.
+
+
+
+    =====================
+     CALCULATION RESULTS
+    =====================
+
+Energy (hartree)             0.34624902
+
+Gradients (hartree/bohr)
+  Index   Atom            d/dx            d/dy            d/dz
+      1      O   -0.0000000000   -0.2203154776    0.0000000000
+      2      O   -0.0000000000    0.2203154776    0.0000000000
+
+
+--------------
+Atomic charges
+--------------
+  Index   Atom    Charge
+      1      O   -0.0000
+      2      O    0.0000
+
+
+AMS application finished. Exiting.
+ NORMAL TERMINATION
+     Total cpu time:       0.03
+  Total system time:       0.01
+ Total elapsed time:       0.04
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:28:21  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 563521500
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.563521500/
+
+ RNG seed: -943182573 830322549 -1077389574 -786015872 2091928970 -1764455480 1564340906 -834890518
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1      O     8.91839200     9.90397900    14.58450100
+      2      O     8.91839200    11.90397900    14.58450100
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+SCF iteration #     1  DeltaE:    0.0E+00
+SCF iteration #     2  DeltaE:    0.4E+04
+SCF iteration #     3  DeltaE:   -0.4E+04
+SCF iteration #     4  DeltaE:   -0.9E-01
+SCF iteration #     5  DeltaE:   -0.6E-01
+SCF iteration #     6  DeltaE:   -0.4E-01
+SCF iteration #     7  DeltaE:   -0.3E-01
+SCF iteration #     8  DeltaE:   -0.5E+00
+SCF iteration #     9  DeltaE:    0.4E+00
+SCF iteration #    10  DeltaE:   -0.1E-02
+SCF iteration #    11  DeltaE:   -0.1E-01
+SCF iteration #    12  DeltaE:    0.9E-02
+SCF iteration #    13  DeltaE:   -0.5E-06
+ 
+ SCF convergence achieved in 13 iterations
+
+
+                  EIGENVALUES  
+ -30.29000 -30.01916 -13.83317 -13.31897 -13.26294 -11.75107  -4.82766  -3.27310
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.000000        6.0000     1.99834     4.00166
+    2          O           0.000000        6.0000     1.99834     4.00166
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.99834   1.96163   1.00166   1.03837
+    2  O   1.99834   1.96163   1.00166   1.03837
+ End of MOPAC writmo
+
+
+          MOPAC Job: "mopac" ended normally on Feb 24, 2021, at 16:28.
+
+
+
+    =====================
+     CALCULATION RESULTS
+    =====================
+
+Energy (hartree)             0.34624902
+
+Gradients (hartree/bohr)
+  Index   Atom            d/dx            d/dy            d/dz
+      1      O   -0.0000000000   -0.2203154776    0.0000000000
+      2      O   -0.0000000000    0.2203154776    0.0000000000
+
+
+--------------
+Atomic charges
+--------------
+  Index   Atom    Charge
+      1      O   -0.0000
+      2      O    0.0000
+
+
+AMS application finished. Exiting.
+ NORMAL TERMINATION
+     Total cpu time:       0.04
+  Total system time:       0.00
+ Total elapsed time:       0.05
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:29:39  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 1194990657
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.1194990657/
+
+ RNG seed: 113854646 1886431754 1256808547 -1037717763 919134240 1623951185 -865652593 1302848100
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1      O     8.91839200     9.90397900    14.58450100
+      2      O     8.91839200    11.90397900    14.58450100
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+SCF iteration #     1  DeltaE:    0.0E+00
+SCF iteration #     2  DeltaE:    0.4E+04
+SCF iteration #     3  DeltaE:   -0.4E+04
+SCF iteration #     4  DeltaE:   -0.9E-01
+SCF iteration #     5  DeltaE:   -0.6E-01
+SCF iteration #     6  DeltaE:   -0.4E-01
+SCF iteration #     7  DeltaE:   -0.3E-01
+SCF iteration #     8  DeltaE:   -0.5E+00
+SCF iteration #     9  DeltaE:    0.4E+00
+SCF iteration #    10  DeltaE:   -0.1E-02
+SCF iteration #    11  DeltaE:   -0.1E-01
+SCF iteration #    12  DeltaE:    0.9E-02
+SCF iteration #    13  DeltaE:   -0.5E-06
+ 
+ SCF convergence achieved in 13 iterations
+
+
+                  EIGENVALUES  
+ -30.29000 -30.01916 -13.83317 -13.31897 -13.26294 -11.75107  -4.82766  -3.27310
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.000000        6.0000     1.99834     4.00166
+    2          O           0.000000        6.0000     1.99834     4.00166
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.99834   1.96163   1.00166   1.03837
+    2  O   1.99834   1.96163   1.00166   1.03837
+ End of MOPAC writmo
+
+
+          MOPAC Job: "mopac" ended normally on Feb 24, 2021, at 16:29.
+
+
+
+    =====================
+     CALCULATION RESULTS
+    =====================
+
+Energy (hartree)             0.34624902
+
+Gradients (hartree/bohr)
+  Index   Atom            d/dx            d/dy            d/dz
+      1      O   -0.0000000000   -0.2203154776    0.0000000000
+      2      O   -0.0000000000    0.2203154776    0.0000000000
+
+
+--------------
+Atomic charges
+--------------
+  Index   Atom    Charge
+      1      O   -0.0000
+      2      O    0.0000
+
+
+AMS application finished. Exiting.
+ NORMAL TERMINATION
+     Total cpu time:       0.04
+  Total system time:       0.01
+ Total elapsed time:       0.05
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:33:31  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 1956927755
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.1956927755/
+
+ RNG seed: -2025700792 -397385847 272097687 -993152672 1477641782 -1044655047 -938109603 -265126037
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1      O     8.91839200     9.90397900    14.58450100
+      2      O     8.91839200    11.90397900    14.58450100
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+
+      RHF CALCULATION, NO. OF DOUBLY OCCUPIED LEVELS = 6
+
+SCF iteration #     1  DeltaE:    0.0E+00
+SCF iteration #     2  DeltaE:    0.4E+04
+SCF iteration #     3  DeltaE:   -0.4E+04
+SCF iteration #     4  DeltaE:   -0.9E-01
+SCF iteration #     5  DeltaE:   -0.6E-01
+SCF iteration #     6  DeltaE:   -0.4E-01
+SCF iteration #     7  DeltaE:   -0.3E-01
+SCF iteration #     8  DeltaE:   -0.5E+00
+SCF iteration #     9  DeltaE:    0.4E+00
+SCF iteration #    10  DeltaE:   -0.1E-02
+SCF iteration #    11  DeltaE:   -0.1E-01
+SCF iteration #    12  DeltaE:    0.9E-02
+SCF iteration #    13  DeltaE:   -0.5E-06
+ 
+ SCF convergence achieved in 13 iterations
+
+
+                  EIGENVALUES  
+ -30.29000 -30.01916 -13.83317 -13.31897 -13.26294 -11.75107  -4.82766  -3.27310
+
+
+              NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+
+  ATOM NO.   TYPE          CHARGE      No. of ELECS.   s-Pop       p-Pop       
+    1          O          -0.000000        6.0000     1.99834     4.00166
+    2          O           0.000000        6.0000     1.99834     4.00166
+
+
+          ATOMIC ORBITAL ELECTRON POPULATIONS
+
+     Atom    s        px        py        pz   
+    1  O   1.99834   1.96163   1.00166   1.03837
+    2  O   1.99834   1.96163   1.00166   1.03837
+ End of MOPAC writmo
+
+
+          MOPAC Job: "mopac" ended normally on Feb 24, 2021, at 16:33.
+
+
+
+    =====================
+     CALCULATION RESULTS
+    =====================
+
+Energy (hartree)             0.34624902
+
+Gradients (hartree/bohr)
+  Index   Atom            d/dx            d/dy            d/dz
+      1      O   -0.0000000000   -0.2203154776    0.0000000000
+      2      O   -0.0000000000    0.2203154776    0.0000000000
+
+
+--------------
+Atomic charges
+--------------
+  Index   Atom    Charge
+      1      O   -0.0000
+      2      O    0.0000
+
+
+AMS application finished. Exiting.
+ NORMAL TERMINATION
+     Total cpu time:       0.04
+  Total system time:       0.01
+ Total elapsed time:       0.05
+
+ *******************************************************************************
+ *                                                                             *
+ *  --------------------------------                                           *
+ *   Amsterdam Modeling Suite (AMS)              2020.202                      *
+ *  --------------------------------                                           *
+ *                                               r89634 2020-11-11             *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A M S     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  https://www.scm.com/support/       *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using AMS results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of AMS, https://www.scm.com/license-terms/                        *
+ *                                                                             *
+ ***********************  x86_64_linux_gnu7 / openmpi  *************************
+ 
+ Licensed to: Prof. Hannes Jonsson / University of Iceland, Haskoli Islands, Physical Sciences / REYKJAVIK / ICELAND
+ SCM User ID: u19508
+  
+ AMS 2020.202  RunTime: Feb24-2021 16:33:31  Nodes: 1  Procs: 1
+
+ AMS jobname: ams
+ AMS jobid  : 1522203992
+
+ Start   directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/
+ Results directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/ams.results/
+ Scratch directory: /home/aptorres/EONgit/client/gtests/data/gpr_dimer/test/amstmp_ams_kid0.1522203992/
+
+ RNG seed: 1406762616 -378336628 -651640380 -1221074341 -1477930126 -736441856 -1698276096 1036280631
+       ****************************
+       * SINGLE POINT CALCULATION *
+       ****************************
+
+--------
+Geometry
+--------
+Atoms
+  Index Symbol   x (angstrom)   y (angstrom)   z (angstrom)
+      1     Pt     8.91234100     9.77008900    14.71703200
+      2     Pt     0.68603000     1.39608000     1.12028200
+      3     Pt     2.05809000     2.77255700     1.12028200
+      4     Pt     0.68603000     3.56471600     3.36084700
+      5     Pt     2.05809000     1.18823900     3.36084700
+      6     Pt     0.68603000     1.98039800     5.60141100
+      7     Pt     2.05809000     4.35687600     5.60141100
+      8     Pt     0.68729200     1.39421800     7.84431500
+      9     Pt     2.05942800     2.77011200     7.84505900
+     10     Pt     0.68664000     3.56097700    10.08916100
+     11     Pt     2.06181200     1.18424700    10.09120100
+     12     Pt     0.68763400     1.97363200    12.37063200
+     13     Pt     2.05912200     4.35576500    12.37285500
+     14     Pt     0.68603000     5.14903500     1.12028200
+     15     Pt     2.05809000     7.52551200     1.12028200
+     16     Pt     0.68603000     8.31767200     3.36084700
+     17     Pt     2.05809000     5.94119400     3.36084700
+     18     Pt     0.68603000     6.73335300     5.60141100
+     19     Pt     2.05809000     9.10983100     5.60141100
+     20     Pt     0.68432900     5.14681300     7.84425500
+     21     Pt     2.05298200     7.52287000     7.84241300
+     22     Pt     0.68616400     8.32147600    10.09539100
+     23     Pt     2.05442000     5.93916100    10.09267100
+     24     Pt     0.68652600     6.73424800    12.37389400
+     25     Pt     2.07108300     9.10727200    12.38410200
+     26     Pt     0.68603000     9.90199000     1.12028200
+     27     Pt     2.05809000    12.27846800     1.12028200
+     28     Pt     0.68603000    13.07062700     3.36084700
+     29     Pt     2.05809000    10.69414900     3.36084700
+     30     Pt     0.68603000    11.48630900     5.60141100
+     31     Pt     2.05809000    13.86278600     5.60141100
+     32     Pt     0.68681900     9.90505000     7.85068300
+     33     Pt     2.06139900    12.27900400     7.85397900
+     34     Pt     0.69067200    13.07070900    10.09538900
+     35     Pt     2.06839100    10.69545200    10.10887400
+     36     Pt     0.69961800    11.48211300    12.38126800
+     37     Pt     2.08168700    13.84542100    12.38393900
+     38     Pt     0.68603000    14.65494500     1.12028200
+     39     Pt     2.05809000    17.03142300     1.12028200
+     40     Pt     0.68603000    17.82358200     3.36084700
+     41     Pt     2.05809000    15.44710500     3.36084700
+     42     Pt     0.68603000    16.23926400     5.60141100
+     43     Pt     2.05809000    18.61574100     5.60141100
+     44     Pt     0.68726500    14.65483200     7.84494200
+     45     Pt     2.06003300    17.02938100     7.84531800
+     46     Pt     0.68825000    17.81873500    10.08982700
+     47     Pt     2.06327900    15.44102800    10.09437500
+     48     Pt     0.69210500    16.22523900    12.37179000
+     49     Pt     2.06371900    18.60615700    12.37264700
+     50     Pt     3.43015000     1.39608000     1.12028200
+     51     Pt     4.80221000     2.77255700     1.12028200
+     52     Pt     3.43015000     3.56471600     3.36084700
+     53     Pt     4.80221000     1.18823900     3.36084700
+     54     Pt     3.43015000     1.98039800     5.60141100
+     55     Pt     4.80221000     4.35687600     5.60141100
+     56     Pt     3.43298700     1.39444100     7.84624500
+     57     Pt     4.80503900     2.77350900     7.84944600
+     58     Pt     3.43291100     3.56414300    10.09368300
+     59     Pt     4.80773400     1.19013300    10.09455900
+     60     Pt     3.43528700     1.98168000    12.37472900
+     61     Pt     4.80633200     4.37237400    12.38283300
+     62     Pt     3.43015000     5.14903500     1.12028200
+     63     Pt     4.80221000     7.52551200     1.12028200
+     64     Pt     3.43015000     8.31767200     3.36084700
+     65     Pt     4.80221000     5.94119400     3.36084700
+     66     Pt     3.43015000     6.73335300     5.60141100
+     67     Pt     4.80221000     9.10983100     5.60141100
+     68     Pt     3.42515100     5.14650800     7.84195100
+     69     Pt     4.79729500     7.52351100     7.83429500
+     70     Pt     3.42345400     8.30968400    10.07754800
+     71     Pt     4.79120300     5.94148500    10.07701300
+     72     Pt     3.43199600     6.73544400    12.38384100
+     73     Pt     4.81168800     9.08918000    12.29731200
+     74     Pt     3.43015000     9.90199000     1.12028200
+     75     Pt     4.80221000    12.27846800     1.12028200
+     76     Pt     3.43015000    13.07062700     3.36084700
+     77     Pt     4.80221000    10.69414900     3.36084700
+     78     Pt     3.43015000    11.48630900     5.60141100
+     79     Pt     4.80221000    13.86278600     5.60141100
+     80     Pt     3.42547700     9.90041700     7.84150700
+     81     Pt     4.79941300    12.28014000     7.84136100
+     82     Pt     3.44435800    13.06294100    10.11955900
+     83     Pt     4.79986400    10.69149100    10.07012200
+     84     Pt     3.47852700    11.46128600    12.42882400
+     85     Pt     4.84985000    13.83358200    12.42831000
+     86     Pt     3.43015000    14.65494500     1.12028200
+     87     Pt     4.80221000    17.03142300     1.12028200
+     88     Pt     3.43015000    17.82358200     3.36084700
+     89     Pt     4.80221000    15.44710500     3.36084700
+     90     Pt     3.43015000    16.23926400     5.60141100
+     91     Pt     4.80221000    18.61574100     5.60141100
+     92     Pt     3.43306400    14.65179300     7.85343800
+     93     Pt     4.80394900    17.02857500     7.84906200
+     94     Pt     3.43498200    17.81768000    10.09373200
+     95     Pt     4.81061400    15.43685100    10.10729300
+     96     Pt     3.44508200    16.22255300    12.37921500
+     97     Pt     4.80912100    18.61594400    12.37526500
+     98     Pt     6.17427000     1.39608000     1.12028200
+     99     Pt     7.54633000     2.77255700     1.12028200
+    100     Pt     6.17427000     3.56471600     3.36084700
+    101     Pt     7.54633000     1.18823900     3.36084700
+    102     Pt     6.17427000     1.98039800     5.60141100
+    103     Pt     7.54633000     4.35687600     5.60141100
+    104     Pt     6.17573400     1.39747600     7.84619900
+    105     Pt     7.54790200     2.77723200     7.85347500
+    106     Pt     6.18018100     3.57643600    10.10765500
+    107     Pt     7.54887200     1.19610200    10.09490200
+    108     Pt     6.18175500     2.00097800    12.37997500
+    109     Pt     7.54902500     4.41514900    12.42837500
+    110     Pt     6.17427000     5.14903500     1.12028200
+    111     Pt     7.54633000     7.52551200     1.12028200
+    112     Pt     6.17427000     8.31767200     3.36084700
+    113     Pt     7.54633000     5.94119400     3.36084700
+    114     Pt     6.17427000     6.73335300     5.60141100
+    115     Pt     7.54633000     9.10983100     5.60141100
+    116     Pt     6.17032500     5.14756100     7.84107900
+    117     Pt     7.54518800     7.52268700     7.82731200
+    118     Pt     6.17812600     8.32107200    10.04905100
+    119     Pt     7.54249300     5.94266300    10.06987200
+    120     Pt     6.16010300     6.75461900    12.29694600
+    121     Pt     7.55545100     9.11683200    12.29671100
+    122     Pt     6.17427000     9.90199000     1.12028200
+    123     Pt     7.54633000    12.27846800     1.12028200
+    124     Pt     6.17427000    13.07062700     3.36084700
+    125     Pt     7.54633000    10.69414900     3.36084700
+    126     Pt     6.17427000    11.48630900     5.60141100
+    127     Pt     7.54633000    13.86278600     5.60141100
+    128     Pt     6.17040400     9.90322200     7.82733700
+    129     Pt     7.54383800    12.28089000     7.82711700
+    130     Pt     6.17677600    13.07402000    10.06971200
+    131     Pt     7.54989700    10.69253600    10.04625300
+    132     Pt     6.20311600    11.47100300    12.28055400
+    133     Pt     7.57075300    13.86819100    12.29660800
+    134     Pt     6.17427000    14.65494500     1.12028200
+    135     Pt     7.54633000    17.03142300     1.12028200
+    136     Pt     6.17427000    17.82358200     3.36084700
+    137     Pt     7.54633000    15.44710500     3.36084700
+    138     Pt     6.17427000    16.23926400     5.60141100
+    139     Pt     7.54633000    18.61574100     5.60141100
+    140     Pt     6.17491300    14.65898600     7.84068600
+    141     Pt     7.54753700    17.03709700     7.84133300
+    142     Pt     6.17678900    17.82365100    10.09375100
+    143     Pt     7.55211600    15.45742100    10.07608800
+    144     Pt     6.18717700    16.23315400    12.38219300
+    145     Pt     7.54930900    18.62858800    12.37425700
+    146     Pt     8.91839000     1.39608000     1.12028200
+    147     Pt    10.29045000     2.77255700     1.12028200
+    148     Pt     8.91839000     3.56471600     3.36084700
+    149     Pt    10.29045000     1.18823900     3.36084700
+    150     Pt     8.91839000     1.98039800     5.60141100
+    151     Pt    10.29045000     4.35687600     5.60141100
+    152     Pt     8.91839100     1.40057700     7.84515200
+    153     Pt    10.28887900     2.77723200     7.85347500
+    154     Pt     8.91839100     3.58266700    10.11910300
+    155     Pt    10.28791100     1.19610200    10.09490200
+    156     Pt     8.91839100     2.01351800    12.38369100
+    157     Pt    10.28775700     4.41514900    12.42837500
+    158     Pt     8.91839000     5.14903500     1.12028200
+    159     Pt    10.29045000     7.52551200     1.12028200
+    160     Pt     8.91839000     8.31767200     3.36084700
+    161     Pt    10.29045000     5.94119400     3.36084700
+    162     Pt     8.91839000     6.73335300     5.60141100
+    163     Pt    10.29045000     9.10983100     5.60141100
+    164     Pt     8.91839100     5.14688200     7.84127100
+    165     Pt    10.29159400     7.52268600     7.82731200
+    166     Pt     8.91839100     8.32287700    10.04630700
+    167     Pt    10.29429000     5.94266300    10.06987200
+    168     Pt     8.91839100     6.76887700    12.28066200
+    169     Pt    10.28133200     9.11683100    12.29671100
+    170     Pt     8.91839000     9.90199000     1.12028200
+    171     Pt    10.29045000    12.27846800     1.12028200
+    172     Pt     8.91839000    13.07062700     3.36084700
+    173     Pt    10.29045000    10.69414900     3.36084700
+    174     Pt     8.91839000    11.48630900     5.60141100
+    175     Pt    10.29045000    13.86278600     5.60141100
+    176     Pt     8.91839100     9.90224100     7.82165700
+    177     Pt    10.29294300    12.28089000     7.82711700
+    178     Pt     8.91839100    13.06609700    10.04865500
+    179     Pt    10.28688500    10.69253600    10.04625300
+    180     Pt     8.91839100    11.47765200    12.29638500
+    181     Pt    10.26603000    13.86819100    12.29660800
+    182     Pt     8.91839000    14.65494500     1.12028200
+    183     Pt    10.29045000    17.03142300     1.12028200
+    184     Pt     8.91839000    17.82358200     3.36084700
+    185     Pt    10.29045000    15.44710500     3.36084700
+    186     Pt     8.91839000    16.23926400     5.60141100
+    187     Pt    10.29045000    18.61574100     5.60141100
+    188     Pt     8.91839100    14.65968200     7.83358900
+    189     Pt    10.28924500    17.03709700     7.84133300
+    190     Pt     8.91839100    17.83054200    10.09215600
+    191     Pt    10.28466600    15.45742100    10.07608700
+    192     Pt     8.91839100    16.24365000    12.38231700
+    193     Pt    10.28747400    18.62858800    12.37425700
+    194     Pt    11.66251000     1.39608000     1.12028200
+    195     Pt    13.03457000     2.77255700     1.12028200
+    196     Pt    11.66251000     3.56471600     3.36084700
+    197     Pt    13.03457000     1.18823900     3.36084700
+    198     Pt    11.66251000     1.98039800     5.60141100
+    199     Pt    13.03457000     4.35687600     5.60141100
+    200     Pt    11.66104800     1.39747500     7.84619900
+    201     Pt    13.03174300     2.77350800     7.84944600
+    202     Pt    11.65660200     3.57643600    10.10765500
+    203     Pt    13.02904900     1.19013300    10.09455800
+    204     Pt    11.65502800     2.00097800    12.37997500
+    205     Pt    13.03045100     4.37237400    12.38283300
+    206     Pt    11.66251000     5.14903500     1.12028200
+    207     Pt    13.03457000     7.52551200     1.12028200
+    208     Pt    11.66251000     8.31767200     3.36084700
+    209     Pt    13.03457000     5.94119400     3.36084700
+    210     Pt    11.66251000     6.73335300     5.60141100
+    211     Pt    13.03457000     9.10983100     5.60141100
+    212     Pt    11.66645700     5.14756000     7.84107900
+    213     Pt    13.03948700     7.52351100     7.83429500
+    214     Pt    11.65865700     8.32107200    10.04905100
+    215     Pt    13.04558000     5.94148500    10.07701300
+    216     Pt    11.67668000     6.75461900    12.29694600
+    217     Pt    13.02509400     9.08917900    12.29731200
+    218     Pt    11.66251000     9.90199000     1.12028200
+    219     Pt    13.03457000    12.27846800     1.12028200
+    220     Pt    11.66251000    13.07062700     3.36084700
+    221     Pt    13.03457000    10.69414900     3.36084700
+    222     Pt    11.66251000    11.48630900     5.60141100
+    223     Pt    13.03457000    13.86278600     5.60141100
+    224     Pt    11.66637700     9.90322200     7.82733700
+    225     Pt    13.03736800    12.28013900     7.84136100
+    226     Pt    11.66000700    13.07401900    10.06971200
+    227     Pt    13.03691900    10.69149000    10.07012200
+    228     Pt    11.63366700    11.47100300    12.28055400
+    229     Pt    12.98693300    13.83358200    12.42831000
+    230     Pt    11.66251000    14.65494500     1.12028200
+    231     Pt    13.03457000    17.03142300     1.12028200
+    232     Pt    11.66251000    17.82358200     3.36084700
+    233     Pt    13.03457000    15.44710500     3.36084700
+    234     Pt    11.66251000    16.23926400     5.60141100
+    235     Pt    13.03457000    18.61574100     5.60141100
+    236     Pt    11.66186900    14.65898600     7.84068600
+    237     Pt    13.03283300    17.02857500     7.84906200
+    238     Pt    11.65999300    17.82365100    10.09375100
+    239     Pt    13.02616900    15.43685000    10.10729300
+    240     Pt    11.64960500    16.23315400    12.38219200
+    241     Pt    13.02766100    18.61594300    12.37526400
+    242     Pt    14.40663000     1.39608000     1.12028200
+    243     Pt    15.77869000     2.77255700     1.12028200
+    244     Pt    14.40663000     3.56471600     3.36084700
+    245     Pt    15.77869000     1.18823900     3.36084700
+    246     Pt    14.40663000     1.98039800     5.60141100
+    247     Pt    15.77869000     4.35687600     5.60141100
+    248     Pt    14.40379600     1.39444000     7.84624500
+    249     Pt    15.77735400     2.77011100     7.84506000
+    250     Pt    14.40387200     3.56414200    10.09368300
+    251     Pt    15.77497200     1.18424600    10.09119900
+    252     Pt    14.40149600     1.98167900    12.37472800
+    253     Pt    15.77766000     4.35576500    12.37285400
+    254     Pt    14.40663000     5.14903500     1.12028200
+    255     Pt    15.77869000     7.52551200     1.12028200
+    256     Pt    14.40663000     8.31767200     3.36084700
+    257     Pt    15.77869000     5.94119400     3.36084700
+    258     Pt    14.40663000     6.73335300     5.60141100
+    259     Pt    15.77869000     9.10983100     5.60141100
+    260     Pt    14.41163200     5.14650700     7.84195000
+    261     Pt    15.78380000     7.52286900     7.84241300
+    262     Pt    14.41332800     8.30968300    10.07754800
+    263     Pt    15.78236400     5.93916000    10.09266800
+    264     Pt    14.40478700     6.73544300    12.38383900
+    265     Pt    15.76570000     9.10727100    12.38410100
+    266     Pt    14.40663000     9.90199000     1.12028200
+    267     Pt    15.77869000    12.27846800     1.12028200
+    268     Pt    14.40663000    13.07062700     3.36084700
+    269     Pt    15.77869000    10.69414900     3.36084700
+    270     Pt    14.40663000    11.48630900     5.60141100
+    271     Pt    15.77869000    13.86278600     5.60141100
+    272     Pt    14.41130500     9.90041600     7.84150700
+    273     Pt    15.77538300    12.27900300     7.85397900
+    274     Pt    14.39242400    13.06294000    10.11955800
+    275     Pt    15.76839300    10.69545100    10.10887200
+    276     Pt    14.35825600    11.46128600    12.42882300
+    277     Pt    15.75509600    13.84542100    12.38393800
+    278     Pt    14.40663000    14.65494500     1.12028200
+    279     Pt    15.77869000    17.03142300     1.12028200
+    280     Pt    14.40663000    17.82358200     3.36084700
+    281     Pt    15.77869000    15.44710500     3.36084700
+    282     Pt    14.40663000    16.23926400     5.60141100
+    283     Pt    15.77869000    18.61574100     5.60141100
+    284     Pt    14.40371800    14.65179200     7.85343700
+    285     Pt    15.77675000    17.02937900     7.84531800
+    286     Pt    14.40180100    17.81767900    10.09373100
+    287     Pt    15.77350400    15.44102700    10.09437200
+    288     Pt    14.39170100    16.22255300    12.37921400
+    289     Pt    15.77306300    18.60615700    12.37264600
+    290     Pt    17.15075000     1.39608000     1.12028200
+    291     Pt    18.52281000     2.77255700     1.12028200
+    292     Pt    17.15075000     3.56471600     3.36084700
+    293     Pt    18.52281000     1.18823900     3.36084700
+    294     Pt    17.15075000     1.98039800     5.60141100
+    295     Pt    18.52281000     4.35687600     5.60141100
+    296     Pt    17.14949400     1.39421500     7.84430900
+    297     Pt    18.52279200     2.76980100     7.84364100
+    298     Pt    17.15014300     3.56097800    10.08916000
+    299     Pt    18.52279100     1.18334500    10.08912500
+    300     Pt    17.14914900     1.97363200    12.37063100
+    301     Pt    18.52279100     4.35383200    12.36952400
+    302     Pt    17.15075000     5.14903500     1.12028200
+    303     Pt    18.52281000     7.52551200     1.12028200
+    304     Pt    17.15075000     8.31767200     3.36084700
+    305     Pt    18.52281000     5.94119400     3.36084700
+    306     Pt    17.15075000     6.73335300     5.60141100
+    307     Pt    18.52281000     9.10983100     5.60141100
+    308     Pt    17.15245800     5.14681100     7.84424900
+    309     Pt    18.52279200     7.52719100     7.84628500
+    310     Pt    17.15061900     8.32147600    10.09539000
+    311     Pt    18.52279100     5.94151700    10.09014800
+    312     Pt    17.15025600     6.73424800    12.37389300
+    313     Pt    18.52279100     9.11230400    12.37790200
+    314     Pt    17.15075000     9.90199000     1.12028200
+    315     Pt    18.52281000    12.27846800     1.12028200
+    316     Pt    17.15075000    13.07062700     3.36084700
+    317     Pt    18.52281000    10.69414900     3.36084700
+    318     Pt    17.15075000    11.48630900     5.60141100
+    319     Pt    18.52281000    13.86278600     5.60141100
+    320     Pt    17.14996800     9.90504700     7.85067700
+    321     Pt    18.52279200    12.28059700     7.84685600
+    322     Pt    17.14611100    13.07070900    10.09538800
+    323     Pt    18.52279100    10.69926800    10.09765100
+    324     Pt    17.13716400    11.48211300    12.38126700
+    325     Pt    18.52279100    13.85253700    12.37353600
+    326     Pt    17.15075000    14.65494500     1.12028200
+    327     Pt    18.52281000    17.03142300     1.12028200
+    328     Pt    17.15075000    17.82358200     3.36084700
+    329     Pt    18.52281000    15.44710500     3.36084700
+    330     Pt    17.15075000    16.23926400     5.60141100
+    331     Pt    18.52281000    18.61574100     5.60141100
+    332     Pt    17.14952200    14.65483000     7.84493700
+    333     Pt    18.52279200    17.03072800     7.84382700
+    334     Pt    17.14853300    17.81873600    10.08982600
+    335     Pt    18.52279100    15.44431000    10.08958800
+    336     Pt    17.14467800    16.22523900    12.37178900
+
+Lattice vectors (angstrom)
+      1    19.20880000     0.00000000     0.00000000
+      2     0.00000000    19.01180000     0.00000000
+      3     0.00000000     0.00000000    30.00000000
+
+Unit cell volume (angstrom^3)     10955.81592
+
+Total System Charge             0.00000
+
+
+------------
+Mopac Engine
+------------
+ keywords:  PM3
+
+ ============
+ Timer stack:
+ ------------
+  1614184411.64  AMS                                                             
+  1614184411.69  MopacEngine%Solve                                               
+  1614184411.69  RunMopacViaAms                                                  
+  1614184411.69  Initialize                                                      
+ ============
+
+ Parameters for some elements are missing
