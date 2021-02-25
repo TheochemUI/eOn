@@ -899,12 +899,14 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
     atoms_config.is_frozen.resize(matter->numberOfAtoms());
     atoms_config.id.resize(matter->numberOfAtoms());
     atoms_config.positions.assignFromEigenMatrix(matter->getPositions());
+    atoms_config.atomicNrs.resize(matter->numberOfAtoms());
     for (auto i = 0; i < matter->numberOfAtoms(); i++) {
         atomnrs.push_back(matter->getAtomicNr(i));
+        atoms_config.atomicNrs[i]=matter->getAtomicNr(i);
         atoms_config.is_frozen[i] = matter->getFixed(i);
         atoms_config.id[i] = i + 1;
     }
-    
+
     unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
     n_at = unique_atomtypes.size();
     // we know that we have only 1 atomtype for now

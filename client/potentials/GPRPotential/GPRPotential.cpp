@@ -12,6 +12,43 @@
 #include"../../gprdimer/structures/Structures.h"
 #include"../../gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
 
+namespace {
+
+    const char *elementArray[] = {"Unknown", "H","He","Li","Be","B","C","N","O",
+           "F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc",
+           "Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se",
+           "Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag",
+           "Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
+           "Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta",
+           "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
+           "Fr","Ra","Ac","Th","Pa","U", NULL};
+
+    // guess the atom type from the atomic mass,
+    std::string mass2atom(double atomicmass) {
+        return elementArray[int(atomicmass+.5)];
+    }
+
+
+    int symbol2atomicNumber(char const * symbol)
+    {
+        int i=0;
+
+        while (elementArray[i] != NULL) {
+            if (strcmp(symbol, elementArray[i]) == 0) {
+                return i;
+            }
+            i++;
+        }
+        // invalid symbol
+        return -1;
+    }
+
+    char const *atomicNumber2symbol(int n)
+    {
+        return elementArray[n];
+    }
+}
+
 GPRPotential::GPRPotential(Parameters *p){
     gpr_model = nullptr;
 }
