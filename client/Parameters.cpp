@@ -705,23 +705,23 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-//        if (potential == "ams") {
-//          if (forcefield.empty() && model.empty()) {
-//            char msg[] =
-//                "error:  [AMS] Must provide atleast forcefield or model\n";
-//            fprintf(stderr, "%s", msg);
-//            log(msg);
-//            exit(1);
-//          }
+       if (potential == "ams") {
+         if (forcefield.empty() && model.empty() && xc.empty()) {
+           char msg[] =
+               "error:  [AMS] Must provide atleast forcefield or model or xc\n";
+           fprintf(stderr, "%s", msg);
+           log(msg);
+           exit(1);
+         }
 
-//          if (!forcefield.empty() && !model.empty()) {
-//            char msg[] =
-//                "error:  [AMS] Must provide either forcefield or model\n";
-//            fprintf(stderr, "%s", msg);
-//            log(msg);
-//            exit(1);
-//          }
-//        }
+         if (!forcefield.empty() && !model.empty() && !xc.empty()) {
+           char msg[] =
+               "error:  [AMS] Must provide either forcefield or model\n";
+           fprintf(stderr, "%s", msg);
+           log(msg);
+           exit(1);
+         }
+       }
 
     }else{
         fprintf(stderr, "Couldn't parse the ini file.\n");
