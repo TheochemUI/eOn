@@ -13,6 +13,15 @@
 #include <string>
 #include <unistd.h>
 
+
+AMS::AMS(Parameters *p)
+{
+    engine = p->engine.c_str();
+    forcefield = p->forcefield.c_str();
+    model = p->model.c_str();
+    return;
+}
+
 void AMS::cleanMemory(void)
 {
     return;
@@ -97,8 +106,13 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs, const doub
     } 
    fprintf(out, " End\n");  
    fprintf(out, "End\n");  
-   fprintf(out, "Engine %s\n", "MOPAC");
-   fprintf(out, "     Model PM3\n");
+   fprintf(out, "Engine %s\n", engine);
+   if (strlen(forcefield) > 0) {
+     fprintf(out, "     Forcefield %s\n", forcefield);
+   }
+   if (strlen(model) > 0) {
+     fprintf(out, "     Model %s\n", model);
+   }
    fprintf(out, "EndEngine\n");
    fprintf(out, "Properties\n");
    fprintf(out, " Gradients\n");

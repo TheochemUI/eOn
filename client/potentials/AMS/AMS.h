@@ -18,6 +18,7 @@ class AMS : public Potential
 {
 
     public:
+        AMS(Parameters *p);
             ~AMS();
         void initialize() {};
         void cleanMemory(void);    
@@ -27,6 +28,9 @@ class AMS : public Potential
     private:
         void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
         void recieveFromSystem(long N, double *F, double *U);
+        const char *engine;
+        const char *model;
+        const char *forcefield;
 
 };
 

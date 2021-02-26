@@ -57,6 +57,11 @@ public:
     bool   LogPotential;
     string extPotPath;
 
+    // [AMS] //
+    string engine;
+    string forcefield;
+    string model;
+
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
