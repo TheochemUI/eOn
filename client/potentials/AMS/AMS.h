@@ -31,6 +31,7 @@ class AMS : public Potential
         const char *engine;
         const char *model;
         const char *forcefield;
+        const char *xc;
 
 };
 
