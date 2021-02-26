@@ -61,6 +61,7 @@ public:
     string engine;
     string forcefield;
     string model;
+    string xc;
 
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries

@@ -19,6 +19,7 @@ AMS::AMS(Parameters *p)
     engine = p->engine.c_str();
     forcefield = p->forcefield.c_str();
     model = p->model.c_str();
+    xc = p->xc.c_str();
     return;
 }
 
@@ -98,13 +99,15 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs, const doub
     {
         fprintf(out, "  %s\t%.19f\t%.19f\t%.19f\n", atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0], R[i * 3 + 1],  R[i * 3 + 2]);
     }
-   fprintf(out, " End\n");  
-   fprintf(out, " Lattice\n");
-        for(int i = 0; i < 3; i++)
+   fprintf(out, " End\n"); 
+   if (strlen(model) > 0 || strlen(forcefield)) {
+       fprintf(out, " Lattice\n");
+       for(int i = 0; i < 3; i++)
     {
         fprintf(out, "  %.19f\t%.19f\t%.19f\n",  box[i * 3 + 0], box[i * 3 + 1],  box[i * 3 + 2]);
     } 
    fprintf(out, " End\n");  
+   }   
    fprintf(out, "End\n");  
    fprintf(out, "Engine %s\n", engine);
    if (strlen(forcefield) > 0) {
@@ -112,6 +115,11 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs, const doub
    }
    if (strlen(model) > 0) {
      fprintf(out, "     Model %s\n", model);
+   }
+   if (strlen(xc) > 0) {
+     fprintf(out, "xc %s\n");
+     fprintf(out, "     hybrid %s\n", xc); // basis set not specified (default = DZ)
+     fprintf(out, "end\n");
    }
    fprintf(out, "EndEngine\n");
    fprintf(out, "Properties\n");

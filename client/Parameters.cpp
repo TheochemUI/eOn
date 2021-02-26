@@ -61,6 +61,7 @@ Parameters::Parameters(){
     engine = "REAXFF"; // One of REAXFF MOPAC
     forcefield = ""; // OPt.ff or something else
     model = ""; // PM7 PM3 or something
+    xc = ""; // exchange-correlation functional 
 
     
     // [Structure Comparison] //
@@ -378,6 +379,7 @@ int Parameters::load(FILE *file){
             engine = ini.GetValue("AMS", "engine", engine);
             forcefield = ini.GetValue("AMS", "forcefield", forcefield);
             model = ini.GetValue("AMS", "model", model);
+            xc = ini.GetValue("AMS", "xc", xc);
         }
 
 
@@ -703,23 +705,23 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-        if (potential == "ams") {
-          if (forcefield.empty() && model.empty()) {
-            char msg[] =
-                "error:  [AMS] Must provide atleast forcefield or model\n";
-            fprintf(stderr, "%s", msg);
-            log(msg);
-            exit(1);
-          }
+//        if (potential == "ams") {
+//          if (forcefield.empty() && model.empty()) {
+//            char msg[] =
+//                "error:  [AMS] Must provide atleast forcefield or model\n";
+//            fprintf(stderr, "%s", msg);
+//            log(msg);
+//            exit(1);
+//          }
 
-          if (!forcefield.empty() && !model.empty()) {
-            char msg[] =
-                "error:  [AMS] Must provide either forcefield or model\n";
-            fprintf(stderr, "%s", msg);
-            log(msg);
-            exit(1);
-          }
-        }
+//          if (!forcefield.empty() && !model.empty()) {
+//            char msg[] =
+//                "error:  [AMS] Must provide either forcefield or model\n";
+//            fprintf(stderr, "%s", msg);
+//            log(msg);
+//            exit(1);
+//          }
+//        }
 
     }else{
         fprintf(stderr, "Couldn't parse the ini file.\n");
