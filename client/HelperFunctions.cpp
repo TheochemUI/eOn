@@ -890,8 +890,12 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
     Index_t number_of_fro_atoms;
     std::set<int> unique_atomtypes;
     Index_t n_at;
-    std::unordered_map<std::string, Index_t> atomtypes;
     std::vector<int> atomnrs;
+    std::unordered_map<int, int>
+        atype_to_gprd_atype; //!> Remember that the atom type in EON is the real
+                             //!atomic number, while in GPR Dimer it is a set of
+                             //!values from 0 to n-1 so this is EON
+    int fake_atype; //!> False "atomtype" for GPR Dimer
 
     atoms_config.clear();
     atoms_config.positions.resize(matter->getPositions().rows(),
@@ -906,23 +910,60 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
         atoms_config.is_frozen[i] = matter->getFixed(i);
         atoms_config.id[i] = i + 1;
     }
-  a.atoms_froz_active.clear();
-  a.atomtype_mov.resize(1, matter->numberOfFreeAtoms());
-  // FIXME: Might have more than one kind of freely moving atom
-  a.atomtype_mov.set(0); // Corresponds to H in the CuH example, 0 for Pt
-  a.atoms_froz_active.clear();
-  // Atomtypes
-  Index_t n_at = std::set<int>(atomnrs.begin(), atomnrs.end()).size();
-  a.pairtype.resize(n_at, n_at);
-  a.pairtype.set(-1);
-  a.n_pt = 0;
-  problem_setup.setPairtypeForMovingAtoms(a.atomtype_mov, a.n_pt, a.pairtype);
-  a.atoms_froz_inactive.resize(1, 3 * matter->numberOfFixedAtoms());
-  for (auto i = 0; i < matter->numberOfFixedAtoms(); ++i) {
-    a.atoms_froz_inactive.set(0, i,
-                              {matter->getPosition(i, 0),
-                               matter->getPosition(i, 1),
-                               matter->getPosition(i, 2)});
+
+    unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
+    n_at = unique_atomtypes.size();
+    fake_atype=0;
+    for (auto uatom:unique_atomtypes){
+        atype_to_gprd_atype.insert(pair<int, int>(static_cast<int>(uatom), fake_atype));
+        fake_atype++;
+    }
+
+    number_of_mov_atoms = atoms_config.countMovingAtoms();
+    number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
+
+    if (number_of_fro_atoms > 0 && number_of_mov_atoms > 0){
+    // Resize structures for moving and frozen atoms
+    atoms_config.atoms_mov.resize(number_of_mov_atoms);
+    atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
+
+    //!> Does a horrible to ensure that this is filled correctly. Essentially we
+    //! use the Map of <EON atomtype, GPR faketype> to generate the fully filled
+    //! vectors for moving and frozen_inactive
+    //! FIXME: We should really just use the EON atomtype everywhere
+    if (atype_to_gprd_atype.size() > 1) {
+      int mov_counter = 0;
+      int froz_inactive_counter = 0;
+      for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+        if (matter->getFixed(i)) {
+          //!> Is a fixed atom
+          //!> Use EON's atomtype as a key for the GPR's fake atomtype
+          atoms_config.atoms_mov.type[mov_counter] =
+              atype_to_gprd_atype.at(atomnrs[i]);
+          mov_counter++;
+        } else {
+          atoms_config.atoms_froz_inactive.type[froz_inactive_counter] =
+              atype_to_gprd_atype.at(atomnrs[i]);
+          froz_inactive_counter++;
+        }
+      }
+    }
+    //!> Special case when there's only one atom type, we can now just use the
+    //!`set` function of the `Field`. Essentially now we only have one atom type
+    else if (atype_to_gprd_atype.size() == 1) {
+      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_froz_inactive.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+    }
+}
+    // Assign moving and frozen atoms and list all frozen atoms as inactive
+    Index_t counter_f = 0, counter_m = 0;
+    for(Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
+        if (atoms_config.is_frozen[n] == MOVING_ATOM)
+            atoms_config.atoms_mov.positions.set(0, counter_m++,
+                                                atoms_config.positions.at(n));
+        else
+            atoms_config.atoms_froz_inactive.positions.set(0, counter_f++,
+                                                        atoms_config.positions.at(n));
     }
 
     // Pairtype indices for pairs of atomtypes (n_at x n_at)
