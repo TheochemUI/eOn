@@ -193,12 +193,21 @@ In particular, we present results on several systems of varying size.
 *** One Platinum AdaAtom on a Pt Surface
 * TODO Literature Reproductions
 ** Oxadiazole from N2O and Ethylene
-Described in cite:koistinenMinimumModeSaddle2020.
-** Allyl Vinly Ether Rearrangement
-Also in cite:koistinenMinimumModeSaddle2020.
+Described in textcite:koistinenMinimumModeSaddle2020.
 
+#+DOWNLOADED: screenshot @ 2021-02-26 21:57:49
+[[file:images/Oxadiazole_from_N2O_and_Ethylene/2021-02-26_21-57-49_screenshot.png]]
+
+** Allyl Vinly Ether Rearrangement
+Also in textcite:koistinenMinimumModeSaddle2020.
 #+DOWNLOADED: screenshot @ 2021-02-26 04:07:40
 [[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_04-07-40_screenshot.png]]
+
+*** Sulfolene from Butadiene and sulfur dioxide
+Also in textcite:koistinenMinimumModeSaddle2020.
+
+#+DOWNLOADED: screenshot @ 2021-02-26 21:56:36
+[[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_21-56-36_screenshot.png]]
 
 * References
 
