@@ -558,3 +558,4 @@ TSWLatexianTemp*
 *.con.txt
 saddle.xyz
 .envrc
+ams.results/
