@@ -555,3 +555,6 @@ TSWLatexianTemp*
 *.lpz
 
 *.tex
+*.con.txt
+saddle.xyz
+.envrc
