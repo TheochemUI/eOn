@@ -69,8 +69,8 @@ const char Potential::POT_LAMMPS[] =      "lammps";
 const char Potential::POT_MPI[] =         "mpi";
 const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
-const char Potential::POT_PYAMFF[] =       "pyamff";
-const char Potential::POT_AMS[] =       "ams";
+const char Potential::POT_PYAMFF[] =      "pyamff";
+const char Potential::POT_AMS[] =         "ams";
 
 Potential* Potential::pot = NULL;
 
@@ -102,8 +102,8 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
     else if(parameters->potential == POT_AMS)
-        pot = new AMS();
- 
+        pot = new AMS(parameters);
+
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
@@ -190,14 +190,12 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
 //    printf("VectorXi atomicNmrs %f\n",atomicNrs);
 //    printf("energy %f\n",energy);
 //    printf("Matrix3d box %f\n",box);
-   
+
     if (params->maxForceCalls != 0) {
         if (fcallsTotal > params->maxForceCalls) {
             throw 1017;
         }
     }
-    
+
     return forces;
 };
-
-

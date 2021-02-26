@@ -56,6 +56,12 @@ Parameters::Parameters(){
     LAMMPSThreads = 0;
     EMTRasmussen = false;
     extPotPath = "./ext_pot";
+
+    // [AMS] //
+    engine = "REAXFF"; // One of REAXFF MOPAC
+    forcefield = ""; // OPt.ff or something else
+    model = ""; // PM7 PM3 or something
+
     
     // [Structure Comparison] //
     distanceDifference = 0.1;
@@ -356,8 +362,7 @@ int Parameters::load(FILE *file){
         LAMMPSThreads = (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
         extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
-
-        if (potential == "mpi"    || 
+        if (potential == "mpi"    ||
             potential == "vasp"   ||
             potential == "bopfox" ||
             potential == "bop")
@@ -367,6 +372,14 @@ int Parameters::load(FILE *file){
             LogPotential = false;
         }
         LogPotential = ini.GetValueB("Potential", "log_potential", LogPotential);
+
+        // [AMS]
+        if (potential=="ams") {
+            engine = ini.GetValue("AMS", "engine", engine);
+            forcefield = ini.GetValue("AMS", "forcefield", forcefield);
+            model = ini.GetValue("AMS", "model", model);
+        }
+
 
         // [Debug] //
 
@@ -690,6 +703,23 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
+        if (potential == "ams") {
+          if (forcefield.empty() && model.empty()) {
+            char msg[] =
+                "error:  [AMS] Must provide atleast forcefield or model\n";
+            fprintf(stderr, "%s", msg);
+            log(msg);
+            exit(1);
+          }
+
+          if (!forcefield.empty() && !model.empty()) {
+            char msg[] =
+                "error:  [AMS] Must provide either forcefield or model\n";
+            fprintf(stderr, "%s", msg);
+            log(msg);
+            exit(1);
+          }
+        }
 
     }else{
         fprintf(stderr, "Couldn't parse the ini file.\n");
