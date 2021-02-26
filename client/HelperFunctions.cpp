@@ -890,8 +890,12 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
     Index_t number_of_fro_atoms;
     std::set<int> unique_atomtypes;
     Index_t n_at;
-    std::unordered_map<std::string, Index_t> atomtypes;
     std::vector<int> atomnrs;
+    std::unordered_map<int, int>
+        atype_to_gprd_atype; //!> Remember that the atom type in EON is the real
+                             //!atomic number, while in GPR Dimer it is a set of
+                             //!values from 0 to n-1 so this is EON
+    int fake_atype; //!> False "atomtype" for GPR Dimer
 
     atoms_config.clear();
     atoms_config.positions.resize(matter->getPositions().rows(),
@@ -909,19 +913,48 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
 
     unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
     n_at = unique_atomtypes.size();
-    // we know that we have only 1 atomtype for now
-    atomtypes["Pt"] = 0;
+    fake_atype=0;
+    for (auto uatom:unique_atomtypes){
+        atype_to_gprd_atype.insert(pair<int, int>(static_cast<int>(uatom), fake_atype));
+        fake_atype++;
+    }
 
     number_of_mov_atoms = atoms_config.countMovingAtoms();
     number_of_fro_atoms = atoms_config.is_frozen.getSize() - number_of_mov_atoms;
 
+    if (number_of_fro_atoms > 0 && number_of_mov_atoms > 0){
     // Resize structures for moving and frozen atoms
     atoms_config.atoms_mov.resize(number_of_mov_atoms);
     atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
 
-    atoms_config.atoms_mov.type.set(atomtypes.at("Pt"));
-    atoms_config.atoms_froz_inactive.type.set(atomtypes.at("Pt"));
-
+    //!> Does a horrible to ensure that this is filled correctly. Essentially we
+    //! use the Map of <EON atomtype, GPR faketype> to generate the fully filled
+    //! vectors for moving and frozen_inactive
+    //! FIXME: We should really just use the EON atomtype everywhere
+    if (atype_to_gprd_atype.size() > 1) {
+      int mov_counter = 0;
+      int froz_inactive_counter = 0;
+      for (auto i = 0; i < matter->numberOfAtoms(); i++) {
+        if (matter->getFixed(i)) {
+          //!> Is a fixed atom
+          //!> Use EON's atomtype as a key for the GPR's fake atomtype
+          atoms_config.atoms_mov.type[mov_counter] =
+              atype_to_gprd_atype.at(atomnrs[i]);
+          mov_counter++;
+        } else {
+          atoms_config.atoms_froz_inactive.type[froz_inactive_counter] =
+              atype_to_gprd_atype.at(atomnrs[i]);
+          froz_inactive_counter++;
+        }
+      }
+    }
+    //!> Special case when there's only one atom type, we can now just use the
+    //!`set` function of the `Field`. Essentially now we only have one atom type
+    else if (atype_to_gprd_atype.size() == 1) {
+      atoms_config.atoms_mov.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+      atoms_config.atoms_froz_inactive.type.set(atype_to_gprd_atype.at(atomnrs[0]));
+    }
+}
     // Assign moving and frozen atoms and list all frozen atoms as inactive
     Index_t counter_f = 0, counter_m = 0;
     for(Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
