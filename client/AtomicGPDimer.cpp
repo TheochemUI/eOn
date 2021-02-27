@@ -81,6 +81,8 @@ orient_init.resize(1, freeOrient.rows() *
   atomic_dimer.execute(*potential);
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
+  this->totalIterations=atomic_dimer.getIterations();
+  this->totalForceCalls=atomic_dimer.getTotalForceCalls();
   return;
 }
 
