@@ -184,6 +184,11 @@ public:
     double gprOptTolSol; // {tolerance_sol}
     long gprOptLambdaLimit; // {lambda_limit}
     long gprOptLambdaInit; // {lambda}
+    bool gprUseDropout; // {use_dropout}
+    int gprDropoutBegin; // {start_dropout_at}
+    int gprDropoutNVals; // {ndropout_vals}
+    double gprDropoutThreshold; // {dropout_threshold}
+
     // GPR Debugging Parameters
     int gprReportLevel; // {report_level}
     int gprDebugLevel; // {debug_level}
