@@ -41,14 +41,13 @@ public:
     MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
                  double reactantEnergy, Parameters *parametersPassed);
     ~MinModeSaddleSearch();
-    AtomMatrix getEigenvector();
-    double getEigenvalue();
+    AtomMatrix getEigenvector(); // lowest eigenmode
+    double getEigenvalue(); // estimate for the lowest eigenvalue
 
     int run();
 
+    int forcecalls;
     int iteration;
-//    double eigenValue; // estimate for the lowest eigenvalue
-//    AtomMatrix eigenMode; // lowest eigenmode
     int status;
 
 private:

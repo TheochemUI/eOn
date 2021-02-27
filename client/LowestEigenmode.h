@@ -16,6 +16,7 @@ public:
     double statsCurvature;
     double statsAngle;
     long statsRotations;
+    long totalIterations; // Only set by the gpr dimer
     static const char MINMODE_DIMER[];
     static const char MINMODE_GPRDIMER[];
     static const char MINMODE_LANCZOS[];

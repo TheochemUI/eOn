@@ -199,6 +199,9 @@ int MinModeSaddleSearch::run()
           printf("%f\n", minModeMethod->getEigenvalue());
           status = STATUS_ZEROMODE_ABORT;
         }
+        // These exist only for the gprdimer
+        iteration = minModeMethod->totalIterations;
+        forcecalls = minModeMethod->totalForceCalls;
     } else {
 
       if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
