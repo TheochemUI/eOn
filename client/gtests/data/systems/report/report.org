@@ -1,7 +1,7 @@
 #+TITLE: EON GPR Test Systems
 #+SUBTITLE: Under the Auspices of REAXPRO
 #+AUTHOR: Alejandro, Hannes, Rohit, Satish, Maxim
-#+OPTIONS: toc:nil
+#+OPTIONS: toc:nil tasks:nill
 # I need the footnotes to be inlined
 #+STARTUP: fninline
 #+EXCLUDE_TAGS: noexport
@@ -29,6 +29,7 @@
 #+LATEX_HEADER: \usepackage{unicode-math}
 #+LATEX_HEADER: \usepackage{mathtools}
 #+LATEX_HEADER: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{booktabs}
 #+LATEX_HEADER: \usepackage{float,subcaption}
 #+LATEX_HEADER: % \usepackage{mathspec} Either this or mathtools
 #+LATEX_HEADER: \defaultfontfeatures{Mapping=tex-text}
@@ -190,7 +191,8 @@ Additionally, we have implemented debugging levels in the code for ease of visua
 The basis.
 * TODO Toy Systems
 These include standard benchmarks for the minimum mode saddle search problems in general.
-** TODO Hydrogen Adatom on Copper
+** DONE Hydrogen Adatom on Copper
+CLOSED: [2021-02-28 Sun 07:32]
 This system was used for porting the code from MATLAB. The C++ code runs ~10x~ faster than the MATLAB code.
 ** DONE Platinum Adatom on Platinum
 CLOSED: [2021-02-28 Sun 04:30]
@@ -261,7 +263,8 @@ In this instance, the GPRD can converge to the saddle point with a lower active 
 \label{fig:optgpr}
 \end{figure}
 #+end_export
-* TODO Literature Extensions
+* DONE Literature Extensions
+CLOSED: [2021-02-28 Sun 07:32]
 ** DONE Pruning Rationale
 CLOSED: [2021-02-28 Sun 05:06]
 *** Hyperparameters and Expectations
@@ -349,23 +352,67 @@ Described in textcite:koistinenMinimumModeSaddle2020.
 #+DOWNLOADED: screenshot @ 2021-02-26 21:57:49
 [[file:images/Oxadiazole_from_N2O_and_Ethylene/2021-02-26_21-57-49_screenshot.png]]
 
-#+caption: B3LYP-DZ HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+#+caption: B3LYP-DZ for the Oxadiazole from N2O and Ethylene. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
 | Algorithm | Overhead | HyOpt (HyT) |  Total T | PES avgT | PES TotT | PES Calls |    Cost |
 | Dimer     |  6512.39 | N/A         | 16449.93 |   44.966 |  9937.54 |       221 | 144.554 |
 | GPR-Dimer |  242.266 | 15 (53.867) | 1055.516 |   45.181 |   813.25 |        18 |   5.456 |
 | GPRD-P    |  209.041 | 16 (44.875) | 1065.221 |   45.062 |   856.18 |    19 (8) |   4.672 |
 
 Clearly, the dimer algorithm is sub-optimal for larger systems, while both the GPRD and the GPRD-P perform well. The GPR-P parameters can be tweaked from the defaults to give better performance. The difference in the GPRD and GPRD-P reflects the relative number of LBFGS rotations taken. Note that the $O(N³)$ scaling term (HyT) is effectively bound by the GPRD-P algorithm, implying that for larger systems the GPRD-P will outperform the GPRD.
+The pruning was set to remove a maximum of 4 elements larger than 0.5 every 10 steps.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Oxadiazole from N2O and Ethylene. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm | Overhead | HyOpt (HyT) | Total T | PES avgT | PES TotT | PES Calls |    Cost |
+| Dimer     |   52.414 | N/A         |  62.394 |    0.067 |     9.98 |       150 | 787.786 |
+| GPR-Dimer |   64.379 | 14 (48.71)  |  65.599 |    0.068 |     1.22 |        18 | 949.854 |
+| GPRD-P    |    65.84 | 15 (48.037) |  67.132 |    0.068 |    1.292 |    19 (6) | 968.235 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
 ** Allyl Vinly Ether Rearrangement
 Also in textcite:koistinenMinimumModeSaddle2020.
 #+DOWNLOADED: screenshot @ 2021-02-26 04:07:40
 [[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_04-07-40_screenshot.png]]
 
+The dimer calculation failed to converge after 10 hours and 30 minutes on the cluster; only finding a maximum force of $0.05$.
+
+#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm  |  Overhead | HyOpt (HyT)    |   Total T | PES avgT | PES TotT | PES Calls |    Cost |
+| GPRD-Dimer |   209.041 | 16 (44.875)    |  1065.221 |       94 |   856.18 | 19        |   4.672 |
+| GPR-P      | 10484.867 | 132 (2604.188) | 23268.867 |       94 |  12784.0 | 136 (117) | 111.541 |
+
+In this case, clearly, the pruning caused instabilities; given the complexity of the system; clearly too many values were dropped. The number of samples and the resolution on the GPR surface are important. The pruning was set to remove a maximum of 4 elements larger than 0.5 every 10 steps.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Allyl Vinly Ether Rearrangement. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm  | Overhead | HyOpt (HyT)  | Total T | PES avgT | PES TotT | PES Calls |     Cost |
+| Dimer      |  159.713 | N/A          | 174.993 |    0.065 |    15.28 |       234 | 2445.867 |
+| GPRD-Dimer |  348.472 | 19 (251.507) | 349.947 |    0.065 |    1.495 |        23 | 5361.108 |
+| GPR-P      |  319.302 | 22 (238.327) | 320.992 |    0.065 |     1.69 |   26 (14) | 4912.338 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
 ** Sulfolene from Butadiene and sulfur dioxide
 Also in textcite:koistinenMinimumModeSaddle2020.
 
 #+DOWNLOADED: screenshot @ 2021-02-26 21:56:36
 [[file:images/Allyl_Vinly_Ether_Rearrangement/2021-02-26_21-56-36_screenshot.png]]
+
+All calculations fail to converge at the B3LYP level in 10 hours and thirty minutes, but the GPR models reach around $0.02$ while the dimer reaches around $0.5$.
+
+*** PM3
+To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
+
+#+caption: PM3 for the Sulfolene from Butadiene and sulfur dioxide. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+| Algorithm  | Overhead | HyOpt (HyT)  | Total T | PES avgT | PES TotT | PES Calls |     Cost |
+| Dimer      |   47.619 | N/A          |  59.419 |    0.068 |     11.8 |       174 |  702.178 |
+| GPRD-Dimer |  189.046 | 14 (152.753) | 190.316 |    0.071 |     1.27 |        18 | 2679.392 |
+| GPR-P      |  198.702 | 16 (153.707) | 200.082 |    0.069 |     1.38 |    20 (8) | 2879.739 |
+
+Note that now the pruning was set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
 * Analysis
 ** Scaling
 The training of the hyperparameters using the methods of textcite:rasmussenGaussianProcessesMachine2006 involves the Cholesky decomposition for the calculation of the inverse of a dense covariance matrix. This operation scales as $O(N^{3})$. However, we show that there are more considerations, including the time taken by the LBFGS on the GPR dimer; which has a fixed scaling in cost per step (like the EON dimer) for a given system, but is unbound in that the time taken to convergence cannot be estimated.
