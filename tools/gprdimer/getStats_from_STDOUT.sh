@@ -28,7 +28,11 @@ def print_stats(fname, ams=None):
             allOpt.append(float(line.split()[-1]))
         if (ams=="ams"):
             pSTime = np.array(ams_stats(fname))
-            mSampleT = np.mean(pSTime)
+            mSampleT = np.around(np.mean(pSTime)) # Rounded to ensure equality
+            if mSampleT == 0:
+                mSampleT = np.mean(pSTime) # No crashes
+            overhead = totTime-(mSampleT*totEcalls)
+            cost = (totTime-(mSampleT*totEcalls))/mSampleT
             outstring = f'''
             Average Single PES Sample: {np.round(mSampleT,3)}
             True PES Samples: {totEcalls}
