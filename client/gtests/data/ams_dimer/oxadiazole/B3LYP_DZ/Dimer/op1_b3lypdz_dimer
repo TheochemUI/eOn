@@ -1,0 +1,352 @@
+EON Client
+VERSION: rUnversioned directory
+BUILD DATE: Sat Feb 27 03:50:43 AM GMT 2021
+
+Hostname: hzx380arch
+OS: Linux
+Arch: x86_64
+PID: 658022
+DIR: /home/haozeke/Git/Github/EONgit/client/gtests/data/ams_dimer/oxadiazole/B3LYP_DZ/Dimer
+
+Loading parameter file config.ini
+* [Main] job: saddle_search
+* [Main] temperature: 300
+* [Main] random_seed: 706253457
+* [Potential] potential: ams
+* [AMS] engine: ADF
+* [AMS] xc: B3LYP
+* [Optimizer] converged_force: 0.01
+* [Optimizer] max_iterations: 1000
+* [GPR Dimer] finite_angle: 0.05
+* [GPR Dimer] converged_angle: 0.0873
+* [GPR Dimer] relaxation_converged_angle: 0.01
+* [GPR Dimer] max_initial_rotation_iterations: 6
+* [GPR Dimer] max_relaxation_rotation_iterations: 10
+* [GPR Dimer] divisor_t_dimer: 10
+* [GPR Dimer] max_outer_iterations: 300
+* [GPR Dimer] max_inner_iterations: 1000
+* [GPR Dimer] max_midpoint_displacement: 0.5
+* [GPR Dimer] rotation_opt_method: "lbfgs"
+* [GPR Dimer] translation_opt_method: "lbfgs"
+* [GPR Dimer] active_radius: 20.0
+* [GPR Dimer] dimer_separation: 0.01
+* [GPR Dimer] convex_region_step_size: 0.1
+* [GPR Dimer] max_step_size: 0.1
+* [GPR Dimer] force_threshold: 0.01
+* [GPR Dimer] ratio_at_limit: 0.666666666667
+* [GPR Dimer] nogp_initial_rotations: true
+* [GPR Dimer] has_many_iterations: true
+* [GPR Dimer] hyperparameter_opt_method: "scg"
+* [GPR Dimer] gpr_variance: 1e-7
+* [GPR Dimer] gpr_jitter_variance: 0
+* [GPR Dimer] gpr_noise_variance: 1e-5
+* [GPR Dimer] prior_mean: 0.0
+* [GPR Dimer] prior_variance: 1.0
+* [GPR Dimer] prior_degrees_of_freedom: 66
+* [GPR Dimer] opt_max_iterations: 400
+* [GPR Dimer] opt_tol_sol: 0.01
+* [GPR Dimer] opt_lambda_limit: 1e17
+* [GPR Dimer] opt_lambda_init: 100
+* [GPR Dimer] report_level: 0
+* [GPR Dimer] debug_level: 0
+* [GPR Dimer] debug_output_directory: output
+* [GPR Dimer] debug_position_basename: position
+* [GPR Dimer] debug_energy_basename: energy
+* [GPR Dimer] debug_gradient_basename: gradient
+* [GPR Dimer] debug_midpoint_offset: 3.
+* [GPR Dimer] debug_y_step: 0.1
+* [GPR Dimer] debug_z_step: 0.1
+* [Saddle Search] min_mode_method: dimer
+* [Saddle Search] displace_magnitude: 0.01 # Actually from the displacement.con DO NOT CHANGE
+* [Saddle Search] displace_radius: 3.3
+* [Saddle Search] max_energy: 10.0
+NORMAL TERMINATION
+Saddle point search started from reactant with energy -56.981591 eV.
+[Dimer]       Step   Step Size      Delta E            ||Force||   Curvature    Torque    Angle   Rots
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          1   0.1494766       2.0326          1.38200e+01     -8.8325     5.670    5.181     10
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          2   0.2630723       0.2347          7.39176e+00     -4.1750    10.659    4.750      2
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          3   0.0673363      -0.0144          2.67769e+00     -6.4417     4.208    4.552      8
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          4   0.1160404      -0.1622          3.37495e+00     -7.0405     5.508    4.652      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          5   0.0650307      -0.2268          1.53185e+00     -7.2248     9.266    0.745      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          6   0.0361618      -0.2507          1.29068e+00     -6.7091     6.417    4.019      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          7   0.0507104      -0.2749          1.22485e+00     -6.6548     3.032    4.333      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          8   0.0679297      -0.3015          9.12067e-01     -6.8544     2.290    2.974      2
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]          9   0.0364511      -0.3112          7.95558e-01     -6.3942     2.662    2.919      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         10   0.0412739      -0.3181          5.31592e-01     -6.4141     1.662    1.403      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         11   0.0135164      -0.3195          4.49319e-01     -6.4497     1.582    4.556      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         12   0.0200345      -0.3215          5.28454e-01     -6.5103     2.249    0.925      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         13   0.0206663      -0.3240          2.73490e-01     -6.5721     1.256    4.076      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         14   0.0109405      -0.3248          2.83028e-01     -6.8972     1.450    1.377      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         15   0.0140421      -0.3257          1.72906e-01     -6.8553     1.155    3.831      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         16   0.0067975      -0.3260          1.23399e-01     -6.9460     1.197    4.888      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         17   0.0042601      -0.3262          1.59417e-01     -6.9768     1.235    1.288      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         18   0.0157260      -0.3270          2.06597e-01     -6.9664     1.077    3.467      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         19   0.0098490      -0.3276          1.11673e-01     -6.8734     1.195    4.931      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         20   0.0073123      -0.3277          1.25393e-01     -6.8991     1.159    4.767      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         21   0.0097238      -0.3279          1.02127e-01     -6.8202     1.086    4.524      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         22   0.0121765      -0.3282          1.87370e-01     -6.7746     1.013    4.253      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         23   0.0186868      -0.3287          1.49837e-01     -6.7858     1.157    4.838      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         24   0.0080877      -0.3289          1.05362e-01     -6.7807     1.134    4.746      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         25   0.0062472      -0.3291          8.92483e-02     -6.7702     1.273    0.925      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         26   0.0113737      -0.3292          1.30384e-01     -6.8139     1.003    3.414      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         27   0.0100136      -0.3294          8.32327e-02     -6.8177     0.984    4.108      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         28   0.0060128      -0.3295          1.00610e-01     -6.8700     0.978    4.052      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         29   0.0049119      -0.3296          4.09038e-02     -6.8750     0.946    3.916      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         30   0.0011674      -0.3296          3.19288e-02     -6.8780     0.995    4.117      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         31   0.0020209      -0.3296          3.76604e-02     -6.8591     0.986    4.090      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         32   0.0017775      -0.3296          2.64374e-02     -6.8541     0.988    4.099      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         33   0.0010154      -0.3296          2.56965e-02     -6.8291     0.978    4.076      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         34   0.0010536      -0.3296          2.34399e-02     -6.8263     0.985    4.105      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         35   0.0018187      -0.3297          1.95785e-02     -6.8211     0.971    4.052      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         36   0.0009422      -0.3297          2.15605e-02     -6.8186     0.965    4.027      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         37   0.0022583      -0.3296          2.01609e-02     -6.8068     0.964    4.031      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         38   0.0008468      -0.3296          1.94757e-02     -6.8129     0.976    4.076      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         39   0.0022124      -0.3296          2.63530e-02     -6.8122     0.970    4.051      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         40   0.0020287      -0.3296          1.74995e-02     -6.8262     0.965    4.024      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         41   0.0020257      -0.3296          2.44002e-02     -6.8388     0.946    3.939      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         42   0.0045663      -0.3296          3.92077e-02     -6.8531     0.942    3.912      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         43   0.0066608      -0.3295          4.17477e-02     -6.8558     0.923    3.832      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         44   0.0059122      -0.3295          4.06828e-02     -6.8812     0.907    3.756      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         45   0.0110990      -0.3295          5.62119e-02     -6.8902     0.877    3.627      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         46   0.0119027      -0.3295          3.53119e-02     -6.8897     0.875    3.618      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         47   0.0126855      -0.3295          7.83196e-02     -6.8900     0.916    3.788      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         48   0.0219494      -0.3295          7.11064e-02     -6.8893     0.989    4.086      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         49   0.0248662      -0.3297          8.42231e-02     -6.8378     1.275    0.845      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         50   0.0326443      -0.3299          7.83279e-02     -6.7973     0.811    3.334      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         51   0.0339557      -0.3301          7.17059e-02     -6.7845     0.915    3.842      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         52   0.0183683      -0.3301          8.27352e-02     -6.8072     1.213    0.964      1
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         53   0.0341993      -0.3301          1.02382e-01     -6.8218     0.645    2.690      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         54   0.0257260      -0.3301          3.65870e-02     -6.9007     0.728    3.012      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         55   0.0037879      -0.3301          2.90341e-02     -6.9193     1.001    4.114      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         56   0.0045082      -0.3302          3.11105e-02     -6.9274     1.043    4.281      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         57   0.0020675      -0.3302          1.96621e-02     -6.9463     1.132    4.629      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         58   0.0022654      -0.3302          2.36637e-02     -6.9600     1.143    4.662      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         59   0.0020025      -0.3302          1.55524e-02     -6.9622     1.174    4.785      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         60   0.0012296      -0.3302          1.33900e-02     -6.9736     1.189    4.840      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         61   0.0007862      -0.3302          1.50002e-02     -6.9708     1.217    4.953      0
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+[Dimer]         62   0.0010160      -0.3302          7.57316e-03     -6.9709     1.220    4.962      0
+[Saddle Search] Final status: Success
+timing information:
+real  13371.366 seconds
+user     13.955 seconds
+sys       2.379 seconds

@@ -1,0 +1,10 @@
+0 termination_reason
+saddle_search job_type
+706253457 random_seed
+morse_pt potential_type
+9 total_force_calls
+8 force_calls_saddle
+6 iterations
+-1462.008706 potential_energy_saddle
+-1.095938 final_eigenvalue
+-1462.166782 potential_energy_reactant
