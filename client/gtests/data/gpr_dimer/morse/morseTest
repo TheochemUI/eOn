@@ -1,0 +1,594 @@
+Outer rotational iteration: 0
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ SCG iteration: 20
+ SCG iteration: 21
+ SCG iteration: 22
+ SCG iteration: 23
+ SCG iteration: 24
+ SCG iteration: 25
+ SCG iteration: 26
+ SCG iteration: 27
+ SCG iteration: 28
+ SCG iteration: 29
+ SCG iteration: 30
+ SCG iteration: 31
+ SCG iteration: 32
+ SCG iteration: 33
+ SCG iteration: 34
+ SCG iteration: 35
+ SCG iteration: 36
+ SCG iteration: 37
+ SCG iteration: 38
+ SCG iteration: 39
+ SCG iteration: 40
+ SCG iteration: 41
+ SCG iteration: 42
+ SCG iteration: 43
+ SCG iteration: 44
+
+optimize time: 0.0033677s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+Outer rotational iteration: 1
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ SCG iteration: 20
+ SCG iteration: 21
+ SCG iteration: 22
+ SCG iteration: 23
+ SCG iteration: 24
+ SCG iteration: 25
+ SCG iteration: 26
+ SCG iteration: 27
+ SCG iteration: 28
+ SCG iteration: 29
+ SCG iteration: 30
+ SCG iteration: 31
+ SCG iteration: 32
+ SCG iteration: 33
+ SCG iteration: 34
+ SCG iteration: 35
+ SCG iteration: 36
+ SCG iteration: 37
+ SCG iteration: 38
+ SCG iteration: 39
+ SCG iteration: 40
+ SCG iteration: 41
+ SCG iteration: 42
+ SCG iteration: 43
+ SCG iteration: 44
+ SCG iteration: 45
+ SCG iteration: 46
+ SCG iteration: 47
+
+optimize time: 0.00523785s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+Rotated the initial dimer in 2 outer iterations (total number of image evaluations: 3.
+Outer relaxation iteration: 0
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ SCG iteration: 20
+ SCG iteration: 21
+ SCG iteration: 22
+ SCG iteration: 23
+ SCG iteration: 24
+ SCG iteration: 25
+ SCG iteration: 26
+ SCG iteration: 27
+ SCG iteration: 28
+ SCG iteration: 29
+ SCG iteration: 30
+ SCG iteration: 31
+ SCG iteration: 32
+ SCG iteration: 33
+ SCG iteration: 34
+ SCG iteration: 35
+ SCG iteration: 36
+ SCG iteration: 37
+ SCG iteration: 38
+ SCG iteration: 39
+ SCG iteration: 40
+ SCG iteration: 41
+ SCG iteration: 42
+ SCG iteration: 43
+ SCG iteration: 44
+ SCG iteration: 45
+ SCG iteration: 46
+ SCG iteration: 47
+
+optimize time: 0.00486193s
+Started relaxation phase from the initial location.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 11
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 12
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 13
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 14
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 15
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 16
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 17
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 18
+Stopped relaxation phase: converged after 19 inner iterations.
+Outer relaxation iteration: 1
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+
+optimize time: 0.000950319s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 8
+Stopped relaxation phase: converged after 9 inner iterations.
+Outer relaxation iteration: 2
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ Warning: Optimization stopped because lambda parameter reached limit. Check that the analytic gradients are correct!
+
+optimize time: 0.00306103s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+Stopped relaxation phase: converged after 4 inner iterations.
+Outer relaxation iteration: 3
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ Warning: Optimization stopped because lambda parameter reached limit. Check that the analytic gradients are correct!
+
+optimize time: 0.00466842s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 5
+Stopped relaxation phase: converged after 6 inner iterations.
+Outer relaxation iteration: 4
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ Warning: Optimization stopped because lambda parameter reached limit. Check that the analytic gradients are correct!
+
+optimize time: 0.00532284s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 4
+Stopped relaxation phase: converged after 5 inner iterations.
+Outer relaxation iteration: 5
+
+ SCG iteration: 0
+ SCG iteration: 1
+ SCG iteration: 2
+ SCG iteration: 3
+ SCG iteration: 4
+ SCG iteration: 5
+ SCG iteration: 6
+ SCG iteration: 7
+ SCG iteration: 8
+ SCG iteration: 9
+ SCG iteration: 10
+ SCG iteration: 11
+ SCG iteration: 12
+ SCG iteration: 13
+ SCG iteration: 14
+ SCG iteration: 15
+ SCG iteration: 16
+ SCG iteration: 17
+ SCG iteration: 18
+ SCG iteration: 19
+ Warning: Optimization stopped because lambda parameter reached limit. Check that the analytic gradients are correct!
+
+optimize time: 0.00669477s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+Frozen:: 9 active, 996 inactive
+Moving:: 3 Total:: 1008
+ Inner relaxation iteration: 5
+Stopped relaxation phase: converged after 6 inner iterations.
+Final convergence obtained after 6 relaxation phases (total number of image evaluations: 9).
+Elapsed time: 0.0556548s
+
+8.91851 9.11848 14.6366 
+
+
+0.0606162 
+
+
+0.000393167 -0.000551341 0.000130832 
+
+EON Client
+VERSION: rUnversioned directory
+BUILD DATE: Sat Feb 27 10:00:29 PM GMT 2021
+
+Hostname: hzx380arch
+OS: Linux
+Arch: x86_64
+PID: 3942745
+DIR: /home/haozeke/Git/Github/EONgit/client/gtests/data/gpr_dimer/morse
+
+Loading parameter file config.ini
+* [Main] job: saddle_search
+* [Main] temperature: 300
+* [Main] random_seed: 706253457
+* [Potential] potential: morse_pt
+* [Optimizer] converged_force: 0.001
+* [Optimizer] max_iterations: 1000
+* [GPR Dimer] finite_angle: 0.05
+* [GPR Dimer] converged_angle: 0.0873
+* [GPR Dimer] relaxation_converged_angle: 0.1
+* [GPR Dimer] max_initial_rotation_iterations: 6
+* [GPR Dimer] max_relaxation_rotation_iterations: 10
+* [GPR Dimer] divisor_t_dimer: 10
+* [GPR Dimer] max_outer_iterations: 300
+* [GPR Dimer] max_inner_iterations: 1000
+* [GPR Dimer] max_midpoint_displacement: 0.5
+* [GPR Dimer] rotation_opt_method: "lbfgs"
+* [GPR Dimer] translation_opt_method: "lbfgs"
+* [GPR Dimer] active_radius: 3.3
+* [GPR Dimer] dimer_separation: 0.01
+* [GPR Dimer] convex_region_step_size: 0.1
+* [GPR Dimer] max_step_size: 0.1
+* [GPR Dimer] force_threshold: 0.001
+* [GPR Dimer] ratio_at_limit: 0.666666666667
+* [GPR Dimer] nogp_initial_rotations: true
+* [GPR Dimer] has_many_iterations: true
+* [GPR Dimer] hyperparameter_opt_method: "scg"
+* [GPR Dimer] gpr_variance: 1e-7
+* [GPR Dimer] gpr_jitter_variance: 0
+* [GPR Dimer] gpr_noise_variance: 1e-5
+* [GPR Dimer] prior_mean: 0.0
+* [GPR Dimer] prior_variance: 1.0
+* [GPR Dimer] prior_degrees_of_freedom: 20
+* [GPR Dimer] opt_max_iterations: 400
+* [GPR Dimer] opt_tol_sol: 0.01
+* [GPR Dimer] opt_lambda_limit: 1e16
+* [GPR Dimer] opt_lambda_init: 100
+* [GPR Dimer] report_level: 1
+* [GPR Dimer] debug_level: 1
+* [GPR Dimer] debug_output_directory: output
+* [GPR Dimer] debug_position_basename: position
+* [GPR Dimer] debug_energy_basename: energy
+* [GPR Dimer] debug_gradient_basename: gradient
+* [GPR Dimer] debug_midpoint_offset: 3.
+* [GPR Dimer] debug_y_step: 0.1
+* [GPR Dimer] debug_z_step: 0.1
+* [GPR Dimer] use_dropout: false
+* [GPR Dimer] start_dropout_at: 2
+* [GPR Dimer] ndropout_vals: 1
+* [GPR Dimer] dropout_threshold: 0.5
+* [Saddle Search] min_mode_method: gprdimer
+* [Saddle Search] displace_magnitude: 0.01 # Actually from the displacement.con DO NOT CHANGE
+* [Saddle Search] displace_radius: 3.3
+* [Saddle Search] max_energy: 10.0
+Saddle point search started from reactant with energy -1462.166782 eV.
+================= Using the GP Dimer Library =================
+
+ Now we have 3 total active atoms
+Current Max is 1.19502
+Current Max is 1.69119
+Current Max is 0.322899
+Current Max is 0.0263134
+Current Max is 0.0301921
+Current Max is 0.00175678
+[Saddle Search] Final status: Success
+timing information:
+real      0.063 seconds
+user      0.064 seconds
+sys       0.003 seconds
