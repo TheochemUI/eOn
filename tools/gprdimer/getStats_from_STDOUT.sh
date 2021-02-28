@@ -29,6 +29,8 @@ def print_stats(fname, ams=None):
         if (ams=="ams"):
             pSTime = np.array(ams_stats(fname))
             mSampleT = np.around(np.mean(pSTime)) # Rounded to ensure equality
+            if mSampleT == 0:
+                mSampleT = np.mean(pSTime) # No crashes
             overhead = totTime-(mSampleT*totEcalls)
             cost = (totTime-(mSampleT*totEcalls))/mSampleT
             outstring = f'''
