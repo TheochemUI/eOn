@@ -28,9 +28,7 @@ def print_stats(fname, ams=None):
             allOpt.append(float(line.split()[-1]))
         if (ams=="ams"):
             pSTime = np.array(ams_stats(fname))
-            mSampleT = np.around(np.mean(pSTime)) # Rounded to ensure equality
-            overhead = totTime-(mSampleT*totEcalls)
-            cost = (totTime-(mSampleT*totEcalls))/mSampleT
+            mSampleT = np.mean(pSTime)
             outstring = f'''
             Average Single PES Sample: {np.round(mSampleT,3)}
             True PES Samples: {totEcalls}
@@ -40,8 +38,7 @@ def print_stats(fname, ams=None):
             Total Time (wall time): {totTime}
             Total PES Sample Time: {np.round(mSampleT*totEcalls, 3)}
             Wasted PES Sample Time: {np.round(mSampleT*totDrops, 3)}
-            Overhead: {np.round(overhead, 3)}
-            Cost: {np.round(cost,3)}
+            Overhead: {np.round(totTime-(mSampleT*totEcalls), 3)}
             '''
         else:
             outstring = f'''
