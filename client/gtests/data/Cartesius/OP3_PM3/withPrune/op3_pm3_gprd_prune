@@ -1,0 +1,725 @@
+NORMAL TERMINATION
+NORMAL TERMINATION
+NORMAL TERMINATION
+Outer rotational iteration: 0
+optimize time: 2.33839s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+ Inner rotational iteration: 4
+ Inner rotational iteration: 5
+ Inner rotational iteration: 6
+ Inner rotational iteration: 7
+ Inner rotational iteration: 8
+ Inner rotational iteration: 9
+ Inner rotational iteration: 10
+ Inner rotational iteration: 11
+ Inner rotational iteration: 12
+ Inner rotational iteration: 13
+NORMAL TERMINATION
+Outer rotational iteration: 1
+optimize time: 4.42184s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+ Inner rotational iteration: 4
+ Inner rotational iteration: 5
+ Inner rotational iteration: 6
+ Inner rotational iteration: 7
+ Inner rotational iteration: 8
+ Inner rotational iteration: 9
+ Inner rotational iteration: 10
+ Inner rotational iteration: 11
+ Inner rotational iteration: 12
+ Inner rotational iteration: 13
+ Inner rotational iteration: 14
+ Inner rotational iteration: 15
+ Inner rotational iteration: 16
+NORMAL TERMINATION
+Outer rotational iteration: 2
+optimize time: 7.87597s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+ Inner rotational iteration: 4
+ Inner rotational iteration: 5
+ Inner rotational iteration: 6
+ Inner rotational iteration: 7
+ Inner rotational iteration: 8
+ Inner rotational iteration: 9
+ Inner rotational iteration: 10
+ Inner rotational iteration: 11
+ Inner rotational iteration: 12
+ Inner rotational iteration: 13
+NORMAL TERMINATION
+Outer rotational iteration: 3
+optimize time: 9.85457s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+ Inner rotational iteration: 4
+ Inner rotational iteration: 5
+ Inner rotational iteration: 6
+ Inner rotational iteration: 7
+ Inner rotational iteration: 8
+ Inner rotational iteration: 9
+ Inner rotational iteration: 10
+ Inner rotational iteration: 11
+ Inner rotational iteration: 12
+ Inner rotational iteration: 13
+NORMAL TERMINATION
+Outer rotational iteration: 4
+optimize time: 14.19s
+ Inner rotational iteration: 0
+ Inner rotational iteration: 1
+ Inner rotational iteration: 2
+ Inner rotational iteration: 3
+ Inner rotational iteration: 4
+ Inner rotational iteration: 5
+ Inner rotational iteration: 6
+ Inner rotational iteration: 7
+ Inner rotational iteration: 8
+ Inner rotational iteration: 9
+ Inner rotational iteration: 10
+ Inner rotational iteration: 11
+ Inner rotational iteration: 12
+ Inner rotational iteration: 13
+NORMAL TERMINATION
+Outer rotational iteration: 5
+Rotated the initial dimer in 6 outer iterations (total number of image evaluations: 7).
+WARNING: Maximum number of iterations 5 was reached during the initial rotations.
+Outer relaxation iteration: 0
+optimize time: 20.5565s
+Started relaxation phase from the initial location.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+  Inner rotational iteration: 9
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+Stopped relaxation phase: converged after 5 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 1
+optimize time: 9.58696s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+  Inner rotational iteration: 9
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+Stopped relaxation phase: converged after 12 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 2
+optimize time: 12.004s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+  Inner rotational iteration: 9
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+  Inner rotational iteration: 9
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+  Inner rotational iteration: 7
+  Inner rotational iteration: 8
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+Stopped relaxation phase: converged after 5 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 3
+optimize time: 12.3475s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+Stopped relaxation phase: converged after 11 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 4
+optimize time: 8.83448s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+  Inner rotational iteration: 5
+  Inner rotational iteration: 6
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+Stopped relaxation phase: converged after 11 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 5
+optimize time: 11.072s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 12
+Stopped relaxation phase: converged after 13 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 6
+optimize time: 9.87619s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 12
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 13
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 14
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 15
+Stopped relaxation phase: converged after 16 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 7
+optimize time: 7.16283s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 12
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 13
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 14
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 15
+Stopped relaxation phase: converged after 16 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 8
+optimize time: 5.72866s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+Stopped relaxation phase: converged after 12 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 9
+optimize time: 5.86092s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+Stopped relaxation phase: converged after 8 inner iterations.
+NORMAL TERMINATION
+Outer relaxation iteration: 10
+optimize time: 11.996s
+Started relaxation phase from the latest converged dimer.
+ Inner relaxation iteration: 0
+  Inner rotational iteration: 0
+  Inner rotational iteration: 1
+  Inner rotational iteration: 2
+  Inner rotational iteration: 3
+  Inner rotational iteration: 4
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 1
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 2
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 3
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 4
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 5
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 6
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 7
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 8
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 9
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 10
+  Inner rotational iteration: 0
+Terminated due to R_obs is empty
+ Inner relaxation iteration: 11
+Stopped relaxation phase: converged after 12 inner iterations.
+NORMAL TERMINATION
+Final convergence obtained after 11 relaxation phases (total number of image evaluations: 10).
+Elapsed time: 199.468s
+
+10.4892 12.458 12.9003 9.75787 12.1599 10.6501 13.5878 12.9732 11.5688 12.5266 13.4461 10.8122 13.7832 11.5814 11.7044 12.9435 10.6969 11.0842 14.1449 13.6473 12.23 12.2622 14.5028 10.8926 12.3633 13.0669 9.79373 12.9105 9.65485 11.3956 14.4918 11.2318 12.4654 12.5091 10.8627 10.0973 10.9251 12.1674 11.5349 
+
+
+-8.53396 
+
+
+-0.00263127 0.00362448 0.0131821 -0.00501717 0.00152793 0.00431038 -0.00859298 0.013426 -0.000992457 0.00156952 0.00150105 0.00454432 -0.00217745 -0.00106932 0.0012713 -0.00227809 -0.0127151 -0.0114678 0.00130992 0.000406106 -0.000750217 0.0024056 -0.00337533 0.00306149 -0.000229378 -0.000320519 -0.0042271 -0.00218704 -0.000538148 0.00239649 0.00815332 -0.000905975 0.00628449 0.00217958 -0.0027788 0.0016379 0.00749544 0.0012176 -0.019251 
+
+NORMAL TERMINATION
+EON Client
+VERSION: rUnversioned directory
+BUILD DATE: Sun Feb 28 00:04:12 CET 2021
+
+Hostname: int1.bullx
+OS: Linux
+Arch: x86_64
+PID: 26790
+DIR: /scratch/nodespecific/int1/rgoswami/myRuns/OP3_PM3/withPrune
+
+Loading parameter file config.ini
+* [Main] job: saddle_search
+* [Main] temperature: 300
+* [Main] random_seed: 706253457
+* [Potential] potential: ams
+* [AMS] engine: MOPAC
+* [AMS] model: PM3
+* [Optimizer] converged_force: 0.02
+* [Optimizer] max_iterations: 1000
+* [GPR Dimer] finite_angle: 0.05
+* [GPR Dimer] converged_angle: 0.0873
+* [GPR Dimer] relaxation_converged_angle: 0.02
+* [GPR Dimer] max_initial_rotation_iterations: 6
+* [GPR Dimer] max_relaxation_rotation_iterations: 10
+* [GPR Dimer] divisor_t_dimer: 10
+* [GPR Dimer] max_outer_iterations: 300
+* [GPR Dimer] max_inner_iterations: 1000
+* [GPR Dimer] max_midpoint_displacement: 0.5
+* [GPR Dimer] rotation_opt_method: "lbfgs"
+* [GPR Dimer] translation_opt_method: "lbfgs"
+* [GPR Dimer] active_radius: 20.0
+* [GPR Dimer] dimer_separation: 0.01
+* [GPR Dimer] convex_region_step_size: 0.1
+* [GPR Dimer] max_step_size: 0.1
+* [GPR Dimer] force_threshold: 0.02
+* [GPR Dimer] ratio_at_limit: 0.666666666667
+* [GPR Dimer] nogp_initial_rotations: true
+* [GPR Dimer] has_many_iterations: true
+* [GPR Dimer] hyperparameter_opt_method: "scg"
+* [GPR Dimer] gpr_variance: 1e-7
+* [GPR Dimer] gpr_jitter_variance: 0
+* [GPR Dimer] gpr_noise_variance: 1e-5
+* [GPR Dimer] prior_mean: 0.0
+* [GPR Dimer] prior_variance: 1.0
+* [GPR Dimer] prior_degrees_of_freedom: 66
+* [GPR Dimer] opt_max_iterations: 400
+* [GPR Dimer] opt_tol_sol: 0.01
+* [GPR Dimer] opt_lambda_limit: 1e17
+* [GPR Dimer] opt_lambda_init: 100
+* [GPR Dimer] report_level: 0
+* [GPR Dimer] debug_level: 0
+* [GPR Dimer] debug_output_directory: output
+* [GPR Dimer] debug_position_basename: position
+* [GPR Dimer] debug_energy_basename: energy
+* [GPR Dimer] debug_gradient_basename: gradient
+* [GPR Dimer] debug_midpoint_offset: 3.
+* [GPR Dimer] debug_y_step: 0.1
+* [GPR Dimer] debug_z_step: 0.1
+* [GPR Dimer] use_dropout: true
+* [GPR Dimer] start_dropout_at: 10
+* [GPR Dimer] ndropout_vals: 2
+* [GPR Dimer] dropout_threshold: 0.5
+* [Saddle Search] min_mode_method: gprdimer
+* [Saddle Search] displace_magnitude: 0.01 # Actually from the displacement.con DO NOT CHANGE
+* [Saddle Search] displace_radius: 3.3
+* [Saddle Search] max_energy: 10.0
+Saddle point search started from reactant with energy 0.247694 eV.
+================= Using the GP Dimer Library =================
+Current Max is 24.7652
+Current Max is 5.897
+Current Max is 9.31562
+Current Max is 2.62735
+Current Max is 1.21437
+Dropping values (max 2)
+Size is 11
+25.064 at 1 is bad; dropping
+Size is 10
+24.7652 at 0 is bad; dropping
+Current Max is 0.505706
+Current Max is 0.147188
+Dropping values (max 2)
+Size is 11
+24.7496 at 3 is bad; dropping
+Size is 10
+24.7449 at 0 is bad; dropping
+Current Max is 0.0899764
+Current Max is 0.182773
+Dropping values (max 2)
+Size is 11
+24.7417 at 2 is bad; dropping
+Size is 10
+24.7411 at 0 is bad; dropping
+Current Max is 0.151875
+Current Max is 0.0383783
+Dropping values (max 2)
+Size is 11
+24.7365 at 0 is bad; dropping
+Size is 10
+9.31562 at 1 is bad; dropping
+[Saddle Search] Final status: Success
+timing information:
+real    200.082 seconds
+user    181.274 seconds
+sys       1.771 seconds
