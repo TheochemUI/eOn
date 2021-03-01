@@ -186,14 +186,28 @@ opt_lambda_limit = 1e16
 opt_lambda_init = 100
 gpr_jitter_variance = 0
 #+end_src
-Additionally, we have implemented debugging levels in the code for ease of visualization; which are able to generate snapshots of the GPR surface after each call to the true energy and forces (by exhaustively calculating energies over a user defined grid of points around moving atoms) for one dimensional systems.
+Additionally, we have implemented debugging levels in the code for ease of visualization; which are able to generate snapshots of the GPR surface after each call to the true energy and forces (by exhaustively calculating energies over a user defined grid of points around moving atoms) for one dimensional systems.  
 * GPR Model
 The basis.
 * TODO Toy Systems
 These include standard benchmarks for the minimum mode saddle search problems in general.
 ** DONE Hydrogen Adatom on Copper
 CLOSED: [2021-02-28 Sun 07:32]
-This system was used for porting the code from MATLAB. The C++ code runs ~10x~ faster than the MATLAB code.
+This system was used for porting the code from MATLAB. The C++ code runs ~10x~ faster than the MATLAB code as can be seen in Table [[tbl:cuh]]
+
+#+DOWNLOADED: screenshot @ 2021-03-01 13:05:45
+#+caption: Hydrogen atoms on a Copper surface
+[[file:images/Hydrogen_Adatom_on_Copper/2021-03-01_13-05-45_screenshot.png]]
+
+#+name: tbl:cuh
+#+caption: Hydrogen on Copper. EAM based potential. HyT is the time taken for hyperparameter optimizations. T indicates time.
+| Algorithm     | Overhead |    HyT | Total T |   Cost |
+| MATLAB GPRD   |  230.646 | 81.176 |  230.66 |  32.95 |
+| CPP GPRD (O3) |  21.4993 |  20.99 | 21.5133 | 3.0713 |
+| CPP GPRD (O0) |   52.165 |  50.74 | 52.1797 |  7.452 |
+
+For both systems, the results are the same, 5 hyperparameter optimizations, and the number of calls to the true energy and forces (7) is also the same. Each EAM call takes $0.002$ seconds so the total PES time is $0.014$. (-O3) refers to the compiler optimization level.
+
 ** DONE Platinum Adatom on Platinum
 CLOSED: [2021-02-28 Sun 04:30]
 Chronologically the first system tested with EON. The system has some pleasant qualities which make it easy to work and test:
@@ -204,8 +218,7 @@ Chronologically the first system tested with EON. The system has some pleasant q
 
 #+DOWNLOADED: screenshot @ 2021-02-28 00:56:03
 #+caption: Platinum adatom on a platinum island
-#+DOWNLOADED: screenshot @ 2021-02-28 04:28:46
-[[file:images/Platinum_Adatom_on_Platinum/2021-02-28_04-28-46_screenshot.png]]
+[[file:images/Platinum_Adatom_on_Platinum/2021-03-01_13-06-24_screenshot.png]]
 
 This system takes *0.069s* with the dimer, and *0.109s* with the GPRD in 5 cycles.
 
@@ -213,7 +226,7 @@ This system takes *0.069s* with the dimer, and *0.109s* with the GPRD in 5 cycle
 |                 48 |        1008 |             5 |    0.109 |      0.069 |
 |                 12 |        1008 |           3.3 |    0.063 |      0.069 |
 
-45 degrees of freedom arise from having a cut off radius of 5, which means the surface atoms enter the covariance matrix, and 3 degrees of freedom are from the movement of the adatom itself. For this system the GPR PES has been mapped out as a function of the planar coordinates in Fig. \ref{optgpr}.
+45 degrees of freedom arise from having a cut off radius of 5, which means the surface atoms enter the covariance matrix, and 3 degrees of freedom are from the movement of the adatom itself. For this system the GPR PES has been mapped out as a function of the planar coordinates in Fig. \ref{fig:optgpr}.
 
 #+begin_export latex
 \begin{figure}[h]
@@ -233,11 +246,11 @@ This system takes *0.069s* with the dimer, and *0.109s* with the GPRD in 5 cycle
 \includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f8.png}
 \end{subfigure}
 \caption{Contour plots representing the GPR PES surfaces predicted for a single Pt adatom on a Pt island with an active radius of 5}
-\label{fig:optgpr}
+\label{fig:poorsurf}
 \end{figure}
 #+end_export
 
-In this instance, the GPRD can converge to the saddle point with a lower active radius of 3.3, however, this takes 9 image evaluations; and the potential energy surface suffers, as can be seen in \ref{poorsurf}.
+In this instance, the GPRD can converge to the saddle point with a lower active radius of 3.3, however, this takes 9 image evaluations; and the potential energy surface suffers, as can be seen in \ref{fig:poorsurf}.
 
 #+begin_export latex
 \begin{figure}[h]
@@ -331,7 +344,7 @@ $$
 O_{\mathrm{method}}=T_{elapsed}-(\overbar{t_{DFT}}×N_{\mathrm{samples}})
 $$
 #+end_export
-Note that this measure does not account for the time taken by the LBFGS on the GPR surface. We can apply the same formula to the dimer method as well; in order to get an estimate of the normal EON dimer overhead. This means that we can also define a cost function (lower is better) as:
+Note that this measure includes the time taken by the LBFGS on the GPR surface. We can apply the same formula to the dimer method as well; in order to get an estimate of the normal EON dimer overhead. This means that we can also define a cost function (lower is better) as:
 #+begin_export latex
 $$
 C_{\mathrm{method}}=\frac{O_{\mathrm{method}}}{N_{\mathrm{samples}}}
@@ -345,6 +358,8 @@ The toy systems above were studied with resources provided by the Icelandic High
 All the systems described below were run on individual thin nodes of the Cartesius supercomputing cluster with resources provided by SURFsara. Each node for a run consists of 2 × 16-core 2.6 GHz Intel Xeon E5-2697A v4 (Broadwell) CPUs with 64 GB. All calculations were accelerated with the Intel Math Kernel Library (2020) which provides architecture optimized multi-threaded math functions. The GPR dimer algorithm consists of dense matrix inversions and so distributed memory (MPI) parallelism has not yet been considered for it; however the Amsterdam Modeling Suite was used for the potential energy calculations; which does utilize both the MKL and MPI.
 
 The B3LYP cite:beckeNewMixingHartree1993 hybrid functional was used which involves a DFT correlation with a combined DFT and Hartree-Fock exchange and is known to reproduce geometries and binding energies of molecular systems with accuracy comparable to Moller-Plesset calculations at lower costs cite:kohanoffElectronicStructureCalculations2006.
+
+For the tables, HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
 ** DONE Oxadiazole from N2O and Ethylene
 CLOSED: [2021-02-28 Sun 05:06]
 Described in textcite:koistinenMinimumModeSaddle2020.
@@ -378,12 +393,15 @@ Also in textcite:koistinenMinimumModeSaddle2020.
 
 The dimer calculation failed to converge after 10 hours and 30 minutes on the cluster; only finding a maximum force of $0.05$.
 
-#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement. HyOpt is the number of hyperparameter optimizations and HyT is the time taken for hyperparameter optimizations. T indicates time. For the GPRDP the brackets indicated wastage.
+#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement. 
 | Algorithm  |  Overhead | HyOpt (HyT)    |   Total T | PES avgT | PES TotT | PES Calls |    Cost |
-| GPRD-Dimer |   209.041 | 16 (44.875)    |  1065.221 |       94 |   856.18 | 19        |   4.672 |
+| GPRD-Dimer |    2324.9 | 29 (642.244)   |    5050.9 |       94 |   2726.0 | 29        |  24.733 |
 | GPR-P      | 10484.867 | 132 (2604.188) | 23268.867 |       94 |  12784.0 | 136 (117) | 111.541 |
+| GPR-P_opt  |   895.722 | 37 (390.772)   |  4749.772 |       94 |   3854.0 | 41 (24)   |   9.529 |
 
 In this case, clearly, the pruning caused instabilities; given the complexity of the system; clearly too many values were dropped. The number of samples and the resolution on the GPR surface are important. The pruning was set to remove a maximum of 4 elements larger than 0.5 every 10 steps.
+
+This was re-run with the pruning set to remove a maximum of 2 elements larger than 0.5 every 10 steps.
 
 *** PM3
 To check against the reported values, we also calculated the systems with PM3 cite:leachMolecularModellingPrinciples2001.
