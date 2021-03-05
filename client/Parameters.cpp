@@ -186,11 +186,11 @@ Parameters::Parameters(){
     gprOptTolSol = 1e-4; // tolerance_sol
     gprOptLambdaLimit = 1e17; // lambda_limit
     gprOptLambdaInit = 10.0; // lambda
-    // GPR Dropout Parameters
-    gprUseDropout = false; // use_dropout
-    gprDropoutBegin = 8; // start_dropout_at
-    gprDropoutNVals = 3; // ndropout_vals
-    gprDropoutThreshold = 0.5; // dropout_threshold
+    // GPR Prune Parameters
+    gprUsePrune = false; // use_prune
+    gprPruneBegin = 8; // start_prune_at
+    gprPruneNVals = 3; // nprune_vals
+    gprPruneThreshold = 0.5; // prune_threshold
     // GPR Debugging Parameters
     gprReportLevel = 1; // report_level
     gprDebugLevel = 2; // debug_level
@@ -514,11 +514,11 @@ int Parameters::load(FILE *file){
         gprDebugOffsetMidPoint = ini.GetValueF("GPR Dimer", "debug_midpoint_offset", gprDebugOffsetMidPoint);
         gprDebugDy = ini.GetValueF("GPR Dimer", "debug_y_step", gprDebugDy);
         gprDebugDz = ini.GetValueF("GPR Dimer", "debug_z_step", gprDebugDz);
-        // GPR Dropout
-        gprUseDropout = ini.GetValueB("GPR Dimer", "use_dropout", gprUseDropout);
-        gprDropoutBegin = (int)ini.GetValueL("GPR Dimer", "start_dropout_at", gprDropoutBegin);
-        gprDropoutNVals = (int)ini.GetValueL("GPR Dimer", "ndropout_vals", gprDropoutNVals);
-        gprDropoutThreshold = ini.GetValueF("GPR Dimer", "dropout_threshold", gprDropoutThreshold);
+        // GPR Prune
+        gprUsePrune = ini.GetValueB("GPR Dimer", "use_prune", gprUsePrune);
+        gprPruneBegin = (int)ini.GetValueL("GPR Dimer", "start_prune_at", gprPruneBegin);
+        gprPruneNVals = (int)ini.GetValueL("GPR Dimer", "nprune_vals", gprPruneNVals);
+        gprPruneThreshold = ini.GetValueF("GPR Dimer", "prune_threshold", gprPruneThreshold);
 
         // [Prefactor] //
 

@@ -831,11 +831,11 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   p.tolerance_sol.value = parameters->gprOptTolSol;
   p.lambda_limit.value = parameters->gprOptLambdaLimit;
   p.lambda.value = parameters->gprOptLambdaInit;
-  // Dropout
-  p.use_dropout.value = parameters->gprUseDropout;
-  p.start_dropout_at.value = parameters->gprDropoutBegin;
-  p.ndropout_vals.value = parameters->gprDropoutNVals;
-  p.dropout_threshold.value = parameters->gprDropoutThreshold;
+  // Prune
+  p.use_prune.value = parameters->gprUsePrune;
+  p.start_prune_at.value = parameters->gprPruneBegin;
+  p.nprune_vals.value = parameters->gprPruneNVals;
+  p.prune_threshold.value = parameters->gprPruneThreshold;
   // Debugging
   p.report_level.value = parameters->gprReportLevel;
   p.debug_level.value = parameters->gprDebugLevel;
