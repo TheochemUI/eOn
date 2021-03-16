@@ -11,29 +11,50 @@
 #ifndef AMS_POT
 #define AMS_POT
 
-#include "../../Potential.h"
 #include "../../Matter.h"
+#include "../../Potential.h"
 
-class AMS : public Potential
-{
+#include <absl/strings/str_cat.h>
+#include <absl/strings/numbers.h>
+#include <absl/strings/str_join.h>
+#include <absl/strings/str_split.h>
+#include <absl/strings/string_view.h>
+#include <boost/asio.hpp>
+#include <boost/process.hpp>
 
-    public:
-        AMS(Parameters *p);
-            ~AMS();
-        void initialize() {};
-        void cleanMemory(void);    
-        void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box, int nImages);
+#include <fstream>
+#include <string>
+#include<algorithm>
 
-    private:
-        void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
-        void recieveFromSystem(long N, double *F, double *U);
-        const char *engine;
-        const char *model;
-        const char *forcefield;
-        const char *xc;
+class AMS : public Potential {
 
+public:
+  AMS(Parameters *p);
+  ~AMS();
+  void initialize(){};
+  void cleanMemory(void);
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box, int nImages);
+
+private:
+  //!< Creates a script to run AMS
+  void passToSystem(long N, const double *R, const int *atomicNrs,
+                    const double *box);
+  void recieveFromSystem(long N, double *F, double *U);
+  const char *engine;
+  const char *model;
+  const char *forcefield;
+  const char *xc;
+  int counter;
+  bool first_run, job_one;
+  boost::asio::io_context ams_run, ams_rkf;
+  std::future<std::string> err, errg, erre, errc, errec, ecdump, edump, gdump,
+      cdump;
+  std::string jname, restartj, coordDump;
+  std::ofstream updCoord, restartFrom;
+  double x, energy;
+  std::vector<double> gradients;
+  std::vector<std::string> tmp, energ, grad;
 };
 
 #endif
-
