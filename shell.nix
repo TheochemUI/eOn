@@ -44,5 +44,14 @@ in mkShellNewEnv {
     valgrind
     gdb
     eigen339
+
+    zstd
+    zlib
+    lzma
+    bzip2
+
+    fmt
+    abseil-cpp
+    boost175
   ];
 }

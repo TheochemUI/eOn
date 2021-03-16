@@ -79,10 +79,10 @@ if(FIND_EIGEN)
 endif()
 
 # Set version
-target_compile_features(eonclient PUBLIC cxx_std_11)
+target_compile_features(eonclient PUBLIC cxx_std_17)
 set_target_properties(
   eonclient
-  PROPERTIES CXX_STANDARD 11
+  PROPERTIES CXX_STANDARD 17
              CXX_STANDARD_REQUIRED YES
              CXX_EXTENSIONS NO)
 
