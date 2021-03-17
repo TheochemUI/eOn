@@ -44,6 +44,7 @@
 #endif
 #ifdef AMS_POT
     #include "potentials/AMS/AMS.h"
+    #include "potentials/AMS_IO/AMS_IO.h"
 #endif
 
 #include <cstdlib>
@@ -71,6 +72,7 @@ const char Potential::POT_EXT[] =         "ext_pot";
 const char Potential::POT_NEW[] =         "new_pot";
 const char Potential::POT_PYAMFF[] =      "pyamff";
 const char Potential::POT_AMS[] =         "ams";
+const char Potential::POT_AMS_IO[] =      "ams_io";
 
 Potential* Potential::pot = NULL;
 
@@ -103,6 +105,8 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new ExtPot(parameters);
     else if(parameters->potential == POT_AMS)
         pot = new AMS(parameters);
+    else if(parameters->potential == POT_AMS_IO)
+        pot = new AMS_IO(parameters);
 
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)

@@ -61,7 +61,7 @@ Parameters::Parameters(){
     engine = "REAXFF"; // One of REAXFF MOPAC
     forcefield = ""; // OPt.ff or something else
     model = ""; // PM7 PM3 or something
-    xc = ""; // exchange-correlation functional 
+    xc = ""; // exchange-correlation functional
 
     
     // [Structure Comparison] //
@@ -385,6 +385,13 @@ int Parameters::load(FILE *file){
             forcefield = ini.GetValue("AMS", "forcefield", forcefield);
             model = ini.GetValue("AMS", "model", model);
             xc = ini.GetValue("AMS", "xc", xc);
+        }
+        // [AMS_IO]
+        if (potential=="ams_io") {
+            engine = ini.GetValue("AMS_IO", "engine", engine);
+            forcefield = ini.GetValue("AMS_IO", "forcefield", forcefield);
+            model = ini.GetValue("AMS_IO", "model", model);
+            xc = ini.GetValue("AMS_IO", "xc", xc);
         }
 
 
