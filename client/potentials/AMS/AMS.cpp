@@ -64,11 +64,145 @@ int symbol2atomicNumber(char const *symbol) {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
+void AMS::runAMS() {
+  boost::asio::io_context amsRun;
+  std::future<std::string> err;
+  bp::spawn("chmod +x run_AMS.sh");
+  bp::child c("run_AMS.sh", // set the input
+              bp::env["AMS_JOBNAME"] = jname, bp::std_in.close(),
+              bp::std_out > bp::null, // so it can be written without anything
+              bp::std_err > err, amsRun);
+  amsRun.run();
+  auto erro = err.get();
+  try {
+    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
+      throw std::runtime_error("AMS STDERR:\n");
+    } else {
+      // std::cout << "\nAMS exited with " << erro;
+    }
+  } catch (const std::exception &e) {
+    std::cout << e.what();
+    std::cout << erro;
+  }
+}
+
+void AMS::extract_rkf(long N, std::string key) {
+  std::string execString, strEngine(engine);
+  std::vector<std::string> execDat, innerDat;
+  boost::asio::io_context rkf;
+  std::future<std::string> err, rdump;
+  int counter;
+  double x;
+  std::vector<double> extracted;
+  std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(), ::tolower);
+  absl::StrAppend(&execString, "dmpkf ", jname, ".results/", strEngine,
+                  ".rkf AMSResults%", key);
+  // std::cout << execString << "\n";
+  // Extract
+  bp::child eprog(execString, bp::std_in.close(), bp::std_out > rdump,
+                  bp::std_err > err, rkf);
+
+  rkf.run();
+  auto erro = err.get();
+  try {
+    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
+      throw std::runtime_error("AMS STDERR:\n");
+    } else {
+      // std::cout << "Extract " << key << ": " << erro;
+    }
+  } catch (const std::exception &e) {
+    std::cout << e.what();
+    std::cout << erro;
+  }
+  execDat = absl::StrSplit(rdump.get(), '\n');
+
+  if (N == 1) {
+    // Is energy or some other scalar property
+    counter = 0;
+    for (auto i : execDat) {
+      if (counter >= 3) {
+        if (absl::SimpleAtod(i, &x)) {
+          // std::cout << x << "\n";
+          x = x * energyConversion;
+          energy = x;
+        }
+      }
+      counter++;
+    }
+  } else {
+    // Assume gradients or some other x y z property
+    counter = 0;
+    for (auto j : execDat) {
+      if (counter >= 3) {
+        innerDat = absl::StrSplit(j, ' ');
+        for (auto k : innerDat) {
+          if (absl::SimpleAtod(k, &x)) {
+            x = x * forceConversion;
+            // std::cout << x << " ";
+            extracted.push_back(x);
+          }
+        }
+        // std::cout << "\n";
+      }
+      counter++;
+    }
+    forces = extracted;
+  }
+  return;
+}
+
+void AMS::updateCoord(long N, const double *R) {
+  // TODO: Probably don't need to read in just for the first three lines
+  std::ofstream updCoord;
+  std::string execString, coordDump, newCoord;
+  std::vector<std::string> execDat;
+  boost::asio::io_context coordio;
+  std::future<std::string> err, rdump;
+  int counter;
+  std::vector<double> gradients;
+  // Prep new run
+  absl::StrAppend(&execString, "dmpkf ", jname,
+                  ".results/ams.rkf Molecule%Coords");
+  // std::cout << execString << "\n";
+  // Store Coordinates
+  bp::child cprog(execString, bp::std_in.close(), bp::std_out > rdump,
+                  bp::std_err > err, coordio);
+  coordio.run();
+  execDat = absl::StrSplit(rdump.get(), '\n');
+  // Get the first three lines
+  counter = 0;
+  for (auto j : execDat) {
+    if (counter >= 3) {
+      break;
+    } else {
+      absl::StrAppend(&newCoord, j, "\n");
+    }
+    counter++;
+  }
+  // Put the rest of the coordinates
+  counter = 0;
+  for (int a = 0; a < N * 3; a++) {
+    absl::StrAppend(&newCoord, R[a], "  ");
+    counter++;
+    if (counter % 3 == 0) {
+      absl::StrAppend(&newCoord, "\n");
+    }
+  }
+  coordDump = "#!/bin/sh\n udmpkf ";
+  absl::StrAppend(&coordDump, jname, ".results/ams.rkf <<EOF\n", newCoord,
+                  "EOF");
+  // std::cout << coordDump;
+  updCoord.open("updCoord.sh");
+  updCoord << coordDump;
+  updCoord.close();
+  bp::spawn("chmod +x updCoord.sh");
+  bp::child cuprog("updCoord.sh", bp::std_err > bp::null);
+  cuprog.wait();
+  return;
+}
+
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box, int nImages = 1) {
-  std::string tmpString, tmpExec;
-  passToSystem(N, R, atomicNrs, box);
-  bp::spawn("chmod +x run_AMS.sh");
   if (job_one) {
     // True, create first directory
     jname = "firstRun";
@@ -83,182 +217,28 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     restartFrom << "\n";
     restartFrom.close();
     restartj.clear();
+    passToSystem(N, R, atomicNrs, box);
+  } else {
+    updateCoord(N,R);
   }
-
-  bp::child c("run_AMS.sh", // set the input
-              bp::env["AMS_JOBNAME"] = jname, bp::std_in.close(),
-              bp::std_out > bp::null, // so it can be written without anything
-              bp::std_err > err, ams_run);
-  ams_run.run();
-  auto erro = err.get();
-  try {
-    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      throw std::runtime_error("AMS STDERR:\n");
-    } else {
-      std::cout << "\nAMS exited with " << erro;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what();
-    std::cout << erro;
+  runAMS();
+  extract_rkf(1, "Energy");
+  *U = energy;
+  extract_rkf(N, "Gradients");
+  for (int i=0; i<N*3; i++){
+      F[i] = forces[i];
   }
-
-  absl::StrAppend(&tmpString, "dmpkf ", jname,
-                  ".results/reaxff.rkf AMSResults%");
-  absl::StrAppend(&tmpExec, tmpString, "Energy");
-  std::cout << tmpExec << "\n";
-  // Extract energy
-  bp::child eprog(tmpExec, bp::std_in.close(), bp::std_out > edump,
-                  bp::std_err > erre, ams_rkf);
-
-  tmpExec.clear();
-  absl::StrAppend(&tmpExec, tmpString, "Gradients");
-  std::cout << tmpExec << "\n";
-
-  // Extract gradients
-  bp::child gprog(tmpExec, bp::std_in.close(), bp::std_out > gdump,
-                  bp::std_err > errg, ams_rkf);
-  ams_rkf.run();
-  erro = erre.get();
-  try {
-    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      throw std::runtime_error("AMS STDERR:\n");
-    } else {
-      std::cout << "Extract Energy: " << erro;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what();
-    std::cout << erro;
-  }
-  erro = errg.get();
-  try {
-    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      throw std::runtime_error("AMS STDERR:\n");
-    } else {
-      std::cout << "Extract Gradients: " << erro;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what();
-    std::cout << erro;
-  }
-
-  energ = absl::StrSplit(edump.get(), '\n');
-  grad = absl::StrSplit(gdump.get(), '\n');
-
-  counter = 0;
-  for (auto i : energ) {
-    if (counter >= 3) {
-      if (absl::SimpleAtod(i, &x)) {
-        // std::cout << x << "\n";
-        energy = x;
-      }
-    }
-    counter++;
-  }
-
-  counter = 0;
-  for (auto j : grad) {
-    if (counter >= 3) {
-      tmp = absl::StrSplit(j, ' ');
-      for (auto k : tmp) {
-        if (absl::SimpleAtod(k, &x)) {
-          x = x * forceConversion;
-          // std::cout << x << " ";
-          gradients.push_back(x);
-        }
-      }
-      // std::cout << "\n";
-    }
-    counter++;
-  }
-
-  // std::cout<<"\n Now trying to print out the gradients\n";
-  //            for (auto i:  gradients) {
-  //                std::cout<<i<<" ";
-  //            }
-
-  if (gradients.size() / 3 != N) {
-    std::cout << "Got Gradients for " << gradients.size() / 3 << " entities\n";
-    std::cout << "Expected " << N << ", will die\n";
-    exit(0);
-  }
-
-  // Prep new run
-  ams_run.restart();
-  tmpExec.clear();
-  absl::StrAppend(&tmpExec, "dmpkf ", jname,
-                  ".results/ams.rkf Molecule%Coords");
-  std::cout << tmpExec << "\n";
-  // Store Coordinates
-  bp::child cprog(tmpExec, bp::std_in.close(), bp::std_out > cdump,
-                  bp::std_err > errc, ams_run);
-
-  ams_run.run();
-
-  std::vector<std::string> coord = absl::StrSplit(cdump.get(), '\n');
-  std::string newCoord;
-
-  // Get the first three lines
-  counter = 0;
-  for (auto j : coord) {
-    if (counter >= 3) {
-      break;
-    } else {
-      absl::StrAppend(&newCoord, j, "\n");
-    }
-    counter++;
-  }
-
-  // Put the rest of the coordinates
-  counter = 0;
-  for (int a = 0; a < N * 3; a++) {
-    absl::StrAppend(&newCoord, R[a], "  ");
-    counter++;
-    if (counter % 3 == 0) {
-      absl::StrAppend(&newCoord, "\n");
-    }
-  }
-
-  coordDump = "#!/bin/sh\n udmpkf ";
-  absl::StrAppend(&coordDump, jname, ".results/ams.rkf <<EOF\n", newCoord,
-                  "EOF");
-  // std::cout << coordDump;
-  updCoord.open("updCoord.sh");
-  updCoord << coordDump;
-  updCoord.close();
-  bp::spawn("chmod +x updCoord.sh");
-  bp::child cuprog("updCoord.sh");
-  cuprog.wait();
   // Toggle job name
   job_one = !job_one;
   // Falsify forever
   first_run = false;
-  // Reset the io_contexts
-  ams_run.restart();
-  ams_rkf.restart();
   // bp::spawn("cat myrestart.in");
-
   restartj = "EngineRestart ";
   absl::StrAppend(&restartj, jname, ".results/reaxff.rkf");
   restartFrom.open("myrestart.in");
   restartFrom << restartj;
   restartFrom.close();
   restartj.clear();
-  // Reset the gradients
-  gradients.clear();
-  // Reset strings
-  coordDump.clear();
-  newCoord.clear();
-  tmpString.clear();
-  tmpExec.clear();
-  // std::transform(gradients.begin(), gradients.end(), gradients.begin(),
-  //                [&forceConversion](auto &c) { return c * forceConversion;
-  //                });
-  F = gradients.data();
-  energy *= energyConversion; // Energy in hartree to eV
-  *U = energy;
-  // for (int m = 0; m < N; m++) {
-  //   std::cout << F[m] << " ";
-  // }
   return;
 }
 
@@ -270,8 +250,6 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   out = fopen("run_AMS.sh", "w");
 
   fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "export NSCM_AMSEXTERNAL=$NSCM\n");
-  fprintf(out, "export NSCM=1\n");
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
   fprintf(out, "System\n");
