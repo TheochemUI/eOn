@@ -57,7 +57,7 @@ public:
     bool   LogPotential;
     string extPotPath;
 
-    // [AMS] //
+    // [AMS] and [AMS_IO] //
     string engine;
     string forcefield;
     string model;

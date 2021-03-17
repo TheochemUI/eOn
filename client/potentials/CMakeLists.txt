@@ -18,6 +18,7 @@ set(basePotentials
     SW
     Tersoff
     AMS
+    AMS_IO
     Water
     Water_H
     Water_Pt)
