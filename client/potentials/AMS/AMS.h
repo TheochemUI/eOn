@@ -48,7 +48,7 @@ private:
   const char *xc;
   int counter;
   bool first_run, job_one;
-  std::string jname, restartj;
+  std::string jname, restartj, cjob, pjob;
   std::ofstream restartFrom;
   const double forceConversion =
       -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the gradients
