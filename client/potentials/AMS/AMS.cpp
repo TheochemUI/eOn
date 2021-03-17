@@ -94,7 +94,8 @@ void AMS::extract_rkf(long N, std::string key) {
   int counter;
   double x;
   std::vector<double> extracted;
-  std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(), ::tolower);
+  std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(),
+                 ::tolower);
   absl::StrAppend(&execString, "dmpkf ", jname, ".results/", strEngine,
                   ".rkf AMSResults%", key);
   // std::cout << execString << "\n";
@@ -219,26 +220,33 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     restartj.clear();
     passToSystem(N, R, atomicNrs, box);
   } else {
-    updateCoord(N,R);
+    updateCoord(N, R);
   }
   runAMS();
   extract_rkf(1, "Energy");
   *U = energy;
   extract_rkf(N, "Gradients");
-  for (int i=0; i<N*3; i++){
-      F[i] = forces[i];
+  counter = 0;
+  for (double f : forces) {
+    F[counter] = f;
+    counter++;
   }
   // Toggle job name
   job_one = !job_one;
-  // Falsify forever
-  first_run = false;
   // bp::spawn("cat myrestart.in");
   restartj = "EngineRestart ";
-  absl::StrAppend(&restartj, jname, ".results/reaxff.rkf");
+  absl::StrAppend(&restartj, jname, ".results/reaxff.rkf\n");
+  absl::StrAppend(&restartj, "LoadSystem\nFile ", jname,
+                  ".results/ams.rkf\nSection Molecule\nEnd");
   restartFrom.open("myrestart.in");
   restartFrom << restartj;
   restartFrom.close();
   restartj.clear();
+  if (first_run) {
+    smallSys(N, R, atomicNrs, box);
+  }
+  // Falsify forever
+  first_run = false;
   return;
 }
 
@@ -269,6 +277,39 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
     fprintf(out, " End\n");
   }
   fprintf(out, "End\n");
+  fprintf(out, "Engine %s\n", engine);
+  if (strlen(forcefield) > 0) {
+    fprintf(out, "     Forcefield %s\n", forcefield);
+  }
+  if (strlen(model) > 0) {
+    fprintf(out, "     Model %s\n", model);
+  }
+  if (strlen(xc) > 0) {
+    fprintf(out, "xc %s\n");
+    fprintf(out, "     hybrid %s\n",
+            xc); // basis set not specified (default = DZ)
+    fprintf(out, "end\n");
+  }
+  fprintf(out, "EndEngine\n");
+  fprintf(out, "Properties\n");
+  fprintf(out, " Gradients\n");
+  fprintf(out, "End\n");
+  fprintf(out, "@include myrestart.in\n");
+  fprintf(out, "eor");
+  fclose(out);
+  return;
+}
+
+void AMS::smallSys(long N, const double *R, const int *atomicNrs,
+                   const double *box)
+// Creating the truncated input file that will be read by the AMS driver
+{
+  FILE *out;
+  out = fopen("run_AMS.sh", "w");
+
+  fprintf(out, "#!/bin/sh\n");
+  fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
+  fprintf(out, "Task SinglePoint\n");
   fprintf(out, "Engine %s\n", engine);
   if (strlen(forcefield) > 0) {
     fprintf(out, "     Forcefield %s\n", forcefield);
