@@ -55,7 +55,7 @@ private:
   const double energyConversion = 27.2114; // Energy in hartree to eV
   void runAMS();
   void updateCoord(long N, const double *R);
-  void extract_rkf(long N,std::string key);
+  void extract_rkf(long N, std::string key);
   std::vector<double> forces;
   double energy;
 };
