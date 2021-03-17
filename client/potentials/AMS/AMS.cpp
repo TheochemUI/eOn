@@ -69,7 +69,7 @@ void AMS::runAMS() {
   std::future<std::string> err;
   bp::spawn("chmod +x run_AMS.sh");
   bp::child c("run_AMS.sh", // set the input
-              bp::env["AMS_JOBNAME"] = jname, bp::std_in.close(),
+              bp::env["AMS_JOBNAME"] = cjob, bp::std_in.close(),
               bp::std_out > bp::null, // so it can be written without anything
               bp::std_err > err, amsRun);
   amsRun.run();
@@ -83,6 +83,7 @@ void AMS::runAMS() {
   } catch (const std::exception &e) {
     std::cout << e.what();
     std::cout << erro;
+    exit(0);
   }
 }
 
@@ -96,7 +97,7 @@ void AMS::extract_rkf(long N, std::string key) {
   std::vector<double> extracted;
   std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(),
                  ::tolower);
-  absl::StrAppend(&execString, "dmpkf ", jname, ".results/", strEngine,
+  absl::StrAppend(&execString, "dmpkf ", cjob, ".results/", strEngine,
                   ".rkf AMSResults%", key);
   // std::cout << execString << "\n";
   // Extract
@@ -114,6 +115,7 @@ void AMS::extract_rkf(long N, std::string key) {
   } catch (const std::exception &e) {
     std::cout << e.what();
     std::cout << erro;
+    exit(0);
   }
   execDat = absl::StrSplit(rdump.get(), '\n');
 
@@ -162,7 +164,7 @@ void AMS::updateCoord(long N, const double *R) {
   int counter;
   std::vector<double> gradients;
   // Prep new run
-  absl::StrAppend(&execString, "dmpkf ", jname,
+  absl::StrAppend(&execString, "dmpkf ", cjob,
                   ".results/ams.rkf Molecule%Coords");
   // std::cout << execString << "\n";
   // Store Coordinates
@@ -190,7 +192,7 @@ void AMS::updateCoord(long N, const double *R) {
     }
   }
   coordDump = "#!/bin/sh\n udmpkf ";
-  absl::StrAppend(&coordDump, jname, ".results/ams.rkf <<EOF\n", newCoord,
+  absl::StrAppend(&coordDump, pjob, ".results/ams.rkf <<EOF\n", newCoord,
                   "EOF");
   // std::cout << coordDump;
   updCoord.open("updCoord.sh");
@@ -206,10 +208,12 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box, int nImages = 1) {
   if (job_one) {
     // True, create first directory
-    jname = "firstRun";
+    cjob = "firstRun";
+    pjob = "secondRun";
   } else {
     // False, create second directory
-    jname = "secondRun";
+    cjob = "secondRun";
+    pjob = "firstRun";
   }
 
   if (first_run) {
@@ -239,8 +243,8 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   job_one = !job_one;
   // bp::spawn("cat myrestart.in");
   restartj = "EngineRestart ";
-  absl::StrAppend(&restartj, jname, ".results/reaxff.rkf\n");
-  absl::StrAppend(&restartj, "LoadSystem\nFile ", jname,
+  absl::StrAppend(&restartj, cjob, ".results/reaxff.rkf\n");
+  absl::StrAppend(&restartj, "LoadSystem\nFile ", cjob,
                   ".results/ams.rkf\nSection Molecule\nEnd");
   restartFrom.open("myrestart.in");
   restartFrom << restartj;
