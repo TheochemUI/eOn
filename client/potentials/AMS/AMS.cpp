@@ -66,8 +66,6 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box, int nImages = 1) {
-  double forceConversion =
-      -51.4220862; // Forces from hartree/bohr to eV/Angstrom
   std::string tmpString, tmpExec;
   passToSystem(N, R, atomicNrs, box);
   bp::spawn("chmod +x run_AMS.sh");
@@ -97,30 +95,51 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
       throw std::runtime_error("AMS STDERR:\n");
     } else {
-      std::cout << "\nExited with " << erro;
+      std::cout << "\nAMS exited with " << erro;
     }
   } catch (const std::exception &e) {
     std::cout << e.what();
     std::cout << erro;
   }
 
-  absl::StrAppend(&tmpString, "dmpkf ", jname, ".results/reaxff.rkf AMSResults%");
+  absl::StrAppend(&tmpString, "dmpkf ", jname,
+                  ".results/reaxff.rkf AMSResults%");
   absl::StrAppend(&tmpExec, tmpString, "Energy");
-  std::cout<<tmpExec<<"\n";
+  std::cout << tmpExec << "\n";
   // Extract energy
-  bp::child eprog(tmpExec,
-                  bp::std_in.close(), bp::std_out > edump, bp::std_err > erre,
-                  ams_rkf);
+  bp::child eprog(tmpExec, bp::std_in.close(), bp::std_out > edump,
+                  bp::std_err > erre, ams_rkf);
 
   tmpExec.clear();
   absl::StrAppend(&tmpExec, tmpString, "Gradients");
-  std::cout<<tmpExec<<"\n";
+  std::cout << tmpExec << "\n";
 
   // Extract gradients
-  bp::child gprog(tmpExec,
-                  bp::std_in.close(), bp::std_out > gdump, bp::std_err > errg,
-                  ams_rkf);
+  bp::child gprog(tmpExec, bp::std_in.close(), bp::std_out > gdump,
+                  bp::std_err > errg, ams_rkf);
   ams_rkf.run();
+  erro = erre.get();
+  try {
+    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
+      throw std::runtime_error("AMS STDERR:\n");
+    } else {
+      std::cout << "Extract Energy: " << erro;
+    }
+  } catch (const std::exception &e) {
+    std::cout << e.what();
+    std::cout << erro;
+  }
+  erro = errg.get();
+  try {
+    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
+      throw std::runtime_error("AMS STDERR:\n");
+    } else {
+      std::cout << "Extract Gradients: " << erro;
+    }
+  } catch (const std::exception &e) {
+    std::cout << e.what();
+    std::cout << erro;
+  }
 
   energ = absl::StrSplit(edump.get(), '\n');
   grad = absl::StrSplit(gdump.get(), '\n');
@@ -142,7 +161,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
       tmp = absl::StrSplit(j, ' ');
       for (auto k : tmp) {
         if (absl::SimpleAtod(k, &x)) {
-          x = x*forceConversion;
+          x = x * forceConversion;
           // std::cout << x << " ";
           gradients.push_back(x);
         }
@@ -152,14 +171,26 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     counter++;
   }
 
+  // std::cout<<"\n Now trying to print out the gradients\n";
+  //            for (auto i:  gradients) {
+  //                std::cout<<i<<" ";
+  //            }
+
+  if (gradients.size() / 3 != N) {
+    std::cout << "Got Gradients for " << gradients.size() / 3 << " entities\n";
+    std::cout << "Expected " << N << ", will die\n";
+    exit(0);
+  }
+
   // Prep new run
   ams_run.restart();
+  tmpExec.clear();
+  absl::StrAppend(&tmpExec, "dmpkf ", jname,
+                  ".results/ams.rkf Molecule%Coords");
+  std::cout << tmpExec << "\n";
   // Store Coordinates
-  bp::child cprog(
-      "dmpkf ams.results/ams.rkf Molecule%Coords",
-      bp::std_in.close(),
-      bp::std_out > cdump,
-      bp::std_err > errc, ams_run);
+  bp::child cprog(tmpExec, bp::std_in.close(), bp::std_out > cdump,
+                  bp::std_err > errc, ams_run);
 
   ams_run.run();
 
@@ -179,7 +210,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
 
   // Put the rest of the coordinates
   counter = 0;
-  for (int a = 0; a < N; a++) {
+  for (int a = 0; a < N * 3; a++) {
     absl::StrAppend(&newCoord, R[a], "  ");
     counter++;
     if (counter % 3 == 0) {
@@ -212,12 +243,19 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   restartFrom << restartj;
   restartFrom.close();
   restartj.clear();
+  // Reset the gradients
+  gradients.clear();
+  // Reset strings
+  coordDump.clear();
+  newCoord.clear();
+  tmpString.clear();
+  tmpExec.clear();
   // std::transform(gradients.begin(), gradients.end(), gradients.begin(),
-  //                [&forceConversion](auto &c) { return c * forceConversion; });
+  //                [&forceConversion](auto &c) { return c * forceConversion;
+  //                });
   F = gradients.data();
-  energy *= 27.2114; // Energy in hartree to eV
-  U = &energy;
-  std::cout << "energy is " << *U << "\n";
+  energy *= energyConversion; // Energy in hartree to eV
+  *U = energy;
   // for (int m = 0; m < N; m++) {
   //   std::cout << F[m] << " ";
   // }

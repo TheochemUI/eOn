@@ -14,17 +14,17 @@
 #include "../../Matter.h"
 #include "../../Potential.h"
 
-#include <absl/strings/str_cat.h>
 #include <absl/strings/numbers.h>
+#include <absl/strings/str_cat.h>
 #include <absl/strings/str_join.h>
 #include <absl/strings/str_split.h>
 #include <absl/strings/string_view.h>
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
 
+#include <algorithm>
 #include <fstream>
 #include <string>
-#include<algorithm>
 
 class AMS : public Potential {
 
@@ -55,6 +55,9 @@ private:
   double x, energy;
   std::vector<double> gradients;
   std::vector<std::string> tmp, energ, grad;
+  const double forceConversion =
+      -51.4220862; // Forces from hartree/bohr to eV/Angstrom
+  const double energyConversion = 27.2114; // Energy in hartree to eV
 };
 
 #endif
