@@ -196,7 +196,9 @@ void AMS::updateCoord(long N, const double *R) {
   updCoord.open("updCoord.sh");
   updCoord << coordDump;
   updCoord.close();
-  bp::spawn("chmod +x updCoord.sh");
+  if (first_run){
+    bp::spawn("chmod +x updCoord.sh");
+  }
   bp::child cuprog("updCoord.sh", bp::std_err > bp::null);
   cuprog.wait();
   return;
@@ -223,9 +225,11 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     updateCoord(N, R);
   }
   runAMS();
-  extract_rkf(1, "Energy");
+  energy = 0;
+  extract_rkf(1, "Energy"); // Sets energy
   *U = energy;
-  extract_rkf(N, "Gradients");
+  forces.clear(); // TODO: Slow!
+  extract_rkf(N, "Gradients"); // Sets forces
   counter = 0;
   for (double f : forces) {
     F[counter] = f;
