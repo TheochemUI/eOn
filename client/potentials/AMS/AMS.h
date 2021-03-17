@@ -47,17 +47,16 @@ private:
   const char *xc;
   int counter;
   bool first_run, job_one;
-  boost::asio::io_context ams_run, ams_rkf;
-  std::future<std::string> err, errg, erre, errc, errec, ecdump, edump, gdump,
-      cdump;
-  std::string jname, restartj, coordDump;
-  std::ofstream updCoord, restartFrom;
-  double x, energy;
-  std::vector<double> gradients;
-  std::vector<std::string> tmp, energ, grad;
+  std::string jname, restartj;
+  std::ofstream restartFrom;
   const double forceConversion =
-      -51.4220862; // Forces from hartree/bohr to eV/Angstrom
+      -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the gradients
   const double energyConversion = 27.2114; // Energy in hartree to eV
+  void runAMS();
+  void updateCoord(long N, const double *R);
+  void extract_rkf(long N,std::string key);
+  std::vector<double> forces;
+  double energy;
 };
 
 #endif
