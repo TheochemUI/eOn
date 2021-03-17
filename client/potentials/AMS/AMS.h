@@ -40,7 +40,8 @@ private:
   //!< Creates a script to run AMS
   void passToSystem(long N, const double *R, const int *atomicNrs,
                     const double *box);
-  void recieveFromSystem(long N, double *F, double *U);
+  void smallSys(long N, const double *R, const int *atomicNrs,
+                    const double *box);
   const char *engine;
   const char *model;
   const char *forcefield;
