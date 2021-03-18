@@ -25,7 +25,6 @@
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/ExtPot/ExtPot.h"
 #include "potentials/PyAMFF/PyAMFF.h"
-#include "potentials/AMS/AMS.h"
 
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
