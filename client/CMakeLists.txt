@@ -170,6 +170,10 @@ if(MPI)
   target_link_libraries(eonclient ${Python_LIBRARIES} MPI::MPI_CXX)
 endif()
 
+if(WITH_AMS)
+  target_compile_definitions(eonclient PUBLIC -DAMS_POT)
+endif()
+
 if(UNIX)
   target_compile_definitions(eonclient PUBLIC -DLINUX)
 endif()
