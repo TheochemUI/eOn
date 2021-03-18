@@ -33,6 +33,11 @@ if(${MPI})
   string(APPEND basePotentials ";MPIPot")
 endif()
 
+if(WITH_AMS)
+  # Add when AMS is avaliable, ; is important
+  string(APPEND basePotentials ";AMS;AMS_IO")
+endif()
+
 if(${NO_FORTRAN})
   # Kill all Fortran based potentials
   string(REPLACE "Aluminum" "" basePotentials "${basePotentials}")
