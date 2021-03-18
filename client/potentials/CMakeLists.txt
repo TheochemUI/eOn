@@ -17,8 +17,6 @@ set(basePotentials
     QSC
     SW
     Tersoff
-    AMS
-    AMS_IO
     Water
     Water_H
     Water_Pt)
@@ -33,7 +31,7 @@ if(${MPI})
   string(APPEND basePotentials ";MPIPot")
 endif()
 
-if(WITH_AMS)
+if(${WITH_AMS})
   # Add when AMS is avaliable, ; is important
   string(APPEND basePotentials ";AMS;AMS_IO")
 endif()
