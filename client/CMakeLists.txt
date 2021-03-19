@@ -170,10 +170,6 @@ if(MPI)
   target_link_libraries(eonclient ${Python_LIBRARIES} MPI::MPI_CXX)
 endif()
 
-if(WITH_AMS)
-  target_compile_definitions(eonclient PUBLIC -DAMS_POT)
-endif()
-
 if(UNIX)
   target_compile_definitions(eonclient PUBLIC -DLINUX)
 endif()
@@ -185,6 +181,10 @@ endif()
 if(WIN32)
   target_compile_definitions(eonlib PUBLIC -DWIN32) # No VASP
   target_compile_definitions(eonclient PUBLIC -DWIN32)
+endif()
+
+if(WITH_AMS)
+  target_compile_definitions(eonlib PUBLIC -DWITH_AMS)
 endif()
 
 if(NO_FORTRAN)

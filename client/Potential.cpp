@@ -41,7 +41,7 @@
 #ifdef PYAMFF_POT
     #include "potentials/PyAMFF/PyAMFF.h"
 #endif
-#ifdef AMS_POT
+#ifdef WITH_AMS
     #include "potentials/AMS/AMS.h"
     #include "potentials/AMS_IO/AMS_IO.h"
 #endif
@@ -102,13 +102,12 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new SpceCcl();
     else if(parameters->potential == POT_EXT)
         pot = new ExtPot(parameters);
-#ifdef AMS_POT
+#ifdef WITH_AMS
     else if(parameters->potential == POT_AMS)
         pot = new AMS(parameters);
     else if(parameters->potential == POT_AMS_IO)
         pot = new AMS_IO(parameters);
 #endif
-
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
         pot = new Aluminum();
