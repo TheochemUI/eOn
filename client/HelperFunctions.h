@@ -79,14 +79,14 @@ namespace helper_functions {
      *
      * @param *parameters An EON parameters object
      */
-    InputParameters eon_parameters_to_gpr(Parameters *parameters);
+    gpr::InputParameters eon_parameters_to_gpr(Parameters *parameters);
 
     /**
      * \brief Create a configuration of atoms for gpr_dimer
      *
      * @param *Matter An EON Matter object
      */
-    AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
+    gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
 
     /**
      * \brief Create an initial Observation object for gpr_dimer
@@ -97,6 +97,6 @@ namespace helper_functions {
      *
      * @param *Matter An EON Matter object
      */
-    Observation eon_matter_to_init_obs(Matter *matter);
+    gpr::Observation eon_matter_to_init_obs(Matter *matter);
     } // namespace helper_functions
 #endif

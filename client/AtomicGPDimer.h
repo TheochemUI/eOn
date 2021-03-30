@@ -37,11 +37,11 @@ private:
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
   Parameters *parameters;
 
-  InputParameters p;
+  gpr::InputParameters p;
   atmd::AtomicDimer atomic_dimer;
   aux::ProblemSetUp problem_setup;
-  AtomsConfiguration atoms_config;
-  Observation init_observations, init_middle_point;
+  gpr::AtomsConfiguration atoms_config;
+  gpr::Observation init_observations, init_middle_point;
   gpr::Coord orient_init, R_init;
 };
 
