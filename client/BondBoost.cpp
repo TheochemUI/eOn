@@ -294,7 +294,7 @@ double BondBoost::Booststeps()
     //printf("boost_fact= %lf, totE= %lf\n",Boost_Fact,Boost_Fact+matter->getKineticEnergy()+matter->getPotentialEnergy());
     BiasForces = TADF;
     Free = matter->getFree();
-    BiasForces = BiasForces.cwise() * Free;
+    BiasForces = BiasForces.array() * Free.array();
     matter->setBiasForces(BiasForces);
     return Boost_Fact;
 }
