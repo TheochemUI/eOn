@@ -3,25 +3,19 @@ let
   pkgs = import sources.nixpkgs { };
   mach-nix = import (builtins.fetchGit {
     url = "https://github.com/DavHau/mach-nix/";
-    ref = "refs/tags/3.1.1";
+    ref = "refs/tags/3.2.0";
   }) {
     pkgs = pkgs;
-
-    # optionally specify the python version
-    # python = "python27";
-
-    # optionally update pypi data revision from https://github.com/DavHau/pypi-deps-db
-    # pypiDataRev = "some_revision";
-    # pypiDataSha256 = "some_sha256";
-  };
-  tsase = mach-nix.buildPythonPackage {
-    src = "http://theory.cm.utexas.edu/code/tsase.tgz";
-    extras = "ase";
-    packagesExtra = "perl";
+    python = "python38";
   };
   customPython = mach-nix.mkPython rec {
     requirements = ''
+      numpy
       ase
+      PyYAML
+      pytest
+      pytest-datadir
+      sh
     '';
   };
   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
@@ -35,7 +29,6 @@ in mkShellNewEnv {
   nativeBuildInputs = [ pkgs.cmake ];
   buildInputs = with pkgs; [
     customPython
-    # tsase
     gtest
     bashInteractive
     which
@@ -54,4 +47,8 @@ in mkShellNewEnv {
     abseil-cpp
     boost175
   ];
+  shellHook = ''
+  export PYTHONPATH=$(pwd):$PYTHONPATH
+  export PATH=$(pwd)/bin:$PATH
+'';
 }
