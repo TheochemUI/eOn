@@ -1,0 +1,32 @@
+name: "Build EON"
+# TODO: Include master once merged
+on:
+  push:
+    branches: [docs, atomicGPR]
+  pull_request:
+    branches: [docs, atomicGPR]
+jobs:
+  build_eon:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - name: Get private submodules
+      env:
+        SSHK: ${{ secrets.SUBMODULE_PRIVATE }}
+      run: |
+        rm -rf client/gprdimer && mkdir -p $HOME/.ssh
+        echo "$SSHK" > $HOME/.ssh/ssh.key
+        chmod 600 $HOME/.ssh/ssh.key
+        export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
+        git submodule update --init --recursive
+    - name: Fix GPRD branch
+      run: |
+        cd client/gprdimer
+        git checkout eonInter
+    - uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - name: Build Client
+      run: nix-shell --run "cd client && mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TESTS=OFF -DNO_WARN=TRUE -DFIND_EIGEN=TRUE && make -j$(nproc)"
+    - name: Integration Tests
+      run: nix-shell --run " pytest tests -v"
