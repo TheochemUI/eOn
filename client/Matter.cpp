@@ -448,7 +448,7 @@ AtomMatrix Matter::getBiasForces()
     if (biasPotential != NULL) {
         biasPotential->boost();
     }
-    return biasForces.cwise() * getFree();
+    return biasForces.array() * getFree().array();
 }
 
 void Matter::setBiasPotential(BondBoost *bondBoost)
@@ -458,7 +458,7 @@ void Matter::setBiasPotential(BondBoost *bondBoost)
 
 void Matter::setBiasForces(const AtomMatrix bf)
 {
-    biasForces = bf.cwise() * getFree();
+    biasForces = bf.array() * getFree().array();
 }
 // return forces applied on all atoms in array 'force' 
 AtomMatrix Matter::getForces()
@@ -1010,29 +1010,29 @@ VectorXd Matter::getFreeV() const
 
 AtomMatrix Matter::getVelocities() const
 {
-    return velocities.cwise() * getFree();
+    return velocities.array() * getFree().array();
 }
 
 
 void Matter::setVelocities(const AtomMatrix v)
 {
-    velocities = v.cwise() * getFree();
+    velocities = v.array() * getFree().array();
 }
 
 
 void Matter::setForces(const AtomMatrix f)
 {
-    forces = f.cwise() * getFree();
+    forces = f.array() * getFree().array();
 }
 
 
 AtomMatrix Matter::getAccelerations()
 {
     AtomMatrix totF = getForces() + getBiasForces();
-    AtomMatrix ret = totF.cwise() * getFree();
-    ret.col(0).cwise() /= masses;
-    ret.col(1).cwise() /= masses;
-    ret.col(2).cwise() /= masses;
+    AtomMatrix ret = totF.array() * getFree().array();
+    ret.col(0).array() /= masses.array();
+    ret.col(1).array() /= masses.array();
+    ret.col(2).array() /= masses.array();
     return ret;
 }
 
