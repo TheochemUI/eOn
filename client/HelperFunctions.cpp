@@ -145,7 +145,7 @@ void helper_functions::normalize(double *v1, long size){
 
 // Make v1 orthogonal to v2
 AtomMatrix helper_functions::makeOrthogonal(const AtomMatrix v1, const AtomMatrix v2){
-    return v1 - (v1.cwise()*v2).sum() * v2.normalized();
+    return v1 - (v1.array()*v2.array()).sum() * v2.normalized();
 }
 
 // result contains v1 projection on v2
@@ -795,9 +795,9 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     }
 }
 
-InputParameters
+gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
-  InputParameters p;
+  gpr::InputParameters p;
   // Problem parameters
   p.actdist_fro.value = parameters->gprActiveRadius;
   p.dimer_sep.value = parameters->gprDimerSep;
@@ -851,7 +851,7 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
 }
 
 // FIXME: Take in the active / inactive pairs / atomtypes
-AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
+gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
   //   AtomsConfiguration a;
   //   aux::ProblemSetUp problem_setup;
   //   std::vector<int> atomnrs;
@@ -889,12 +889,12 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
   //   a.atoms_froz_inactive.type.set(0); // 1 for Cu in the example, 0 for Pt
   //   return a;
 
-  AtomsConfiguration atoms_config;
+  gpr::AtomsConfiguration atoms_config;
   aux::ProblemSetUp problem_setup;
-  Index_t number_of_mov_atoms;
-  Index_t number_of_fro_atoms;
+  gpr::Index_t number_of_mov_atoms;
+  gpr::Index_t number_of_fro_atoms;
   std::set<int> unique_atomtypes;
-  Index_t n_at;
+  gpr::Index_t n_at;
   std::vector<int> atomnrs;
   std::unordered_map<int, int>
       atype_to_gprd_atype; //!> Remember that the atom type in EON is the real
@@ -963,8 +963,8 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
           atype_to_gprd_atype.at(atomnrs[0]));
     }
     // Assign moving and frozen atoms and list all frozen atoms as inactive
-    Index_t counter_f = 0, counter_m = 0;
-    for (Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
+    gpr::Index_t counter_f = 0, counter_m = 0;
+    for (gpr::Index_t n = 0; n < atoms_config.is_frozen.getSize(); ++n) {
       if (atoms_config.is_frozen[n] == MOVING_ATOM)
         atoms_config.atoms_mov.positions.set(0, counter_m++,
                                              atoms_config.positions.at(n));
@@ -1017,8 +1017,8 @@ AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
   return atoms_config;
 }
 
-Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
-  Observation o;
+gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
+  gpr::Observation o;
   o.clear();
   o.R.resize(matter->getPositions().rows(),matter->getPositions().cols());
   o.G.resize(matter->getForces().rows(),matter->getForces().cols());

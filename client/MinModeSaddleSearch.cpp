@@ -48,7 +48,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
             eigenvector = minModeMethod->getEigenvector();
             double eigenvalue = minModeMethod->getEigenvalue();
 
-            proj = (force.cwise() * eigenvector).sum() * eigenvector.normalized();
+            proj = (force.array() * eigenvector.array()).sum() * eigenvector.normalized();
 
             if (0 < eigenvalue) {
                 if (parameters->saddlePerpForceRatio > 0.0) {
@@ -75,21 +75,21 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                                     i_max = i;
                                 }
                             }
-                            forceTemp[3*i_max+0] = 0;
-                            forceTemp[3*i_max+1] = 0;
-                            forceTemp[3*i_max+2] = 0;
+                            forceTemp(3*i_max+0) = 0;
+                            forceTemp(3*i_max+1) = 0;
+                            forceTemp(3*i_max+2) = 0;
                             indicies_max[j] = i_max;
                         }
                         for (int i=0; i<matter->numberOfAtoms(); i++) {
-                            forceTemp[3*i+0] = 0.0;
-                            forceTemp[3*i+1] = 0.0;
-                            forceTemp[3*i+2] = 0.0;
+                            forceTemp(3*i+0) = 0.0;
+                            forceTemp(3*i+1) = 0.0;
+                            forceTemp(3*i+2) = 0.0;
                         }
                         // only set the projected forces corresponding to the atoms subject to the largest forces
                         for (int j=0; j< parameters->saddleBowlActive; j++) {
-                            forceTemp[3*indicies_max[j]+0] = -proj[3*indicies_max[j]+0];
-                            forceTemp[3*indicies_max[j]+1] = -proj[3*indicies_max[j]+1];
-                            forceTemp[3*indicies_max[j]+2] = -proj[3*indicies_max[j]+2];
+                            forceTemp(3*indicies_max[j]+0) = -proj(3*indicies_max[j]+0);
+                            forceTemp(3*indicies_max[j]+1) = -proj(3*indicies_max[j]+1);
+                            forceTemp(3*indicies_max[j]+2) = -proj(3*indicies_max[j]+2);
                         }
                         force = forceTemp;
                         delete[] indicies_max;
@@ -101,11 +101,11 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                             sufficientForce = 0;
                             force = matter->getForces();
                             for (int i=0; i<3*matter->numberOfAtoms(); i++) {
-                                if (fabs(force[i]) < minForce)
-                                    force[i] = 0;
+                                if (fabs(force(i)) < minForce)
+                                    force(i) = 0;
                                 else{
                                     sufficientForce = sufficientForce + 1;
-                                    force[i] = -parameters->saddleConfinePositiveBoost*proj[i];
+                                    force(i) = -parameters->saddleConfinePositiveBoost*proj(i);
                                 }
                             }
                             minForce *= parameters->saddleConfinePositiveScaleRatio;
