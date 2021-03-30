@@ -1,4 +1,0 @@
-[submodule "client/gprdimer"]
-	path = client/gprdimer
-	url = git@github.com:HaoZeke/EONgit.git 
-	branch = eonInter
