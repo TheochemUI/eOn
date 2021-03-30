@@ -53,6 +53,7 @@ private:
   const double forceConversion =
       -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the gradients
   const double energyConversion = 27.2114; // Energy in hartree to eV
+  const double lengthConversion = 1.88973; // Coordinates from Angstrom to Bohr
   void runAMS();
   void updateCoord(long N, const double *R);
   void extract_rkf(long N, std::string key);
