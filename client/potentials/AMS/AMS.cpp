@@ -185,7 +185,7 @@ void AMS::updateCoord(long N, const double *R) {
   // Put the rest of the coordinates
   counter = 0;
   for (int a = 0; a < N * 3; a++) {
-    absl::StrAppend(&newCoord, R[a], "  ");
+    absl::StrAppend(&newCoord, (R[a]*lengthConversion), "  ");
     counter++;
     if (counter % 3 == 0) {
       absl::StrAppend(&newCoord, "\n");
@@ -231,7 +231,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   energy = 0;
   extract_rkf(1, "Energy"); // Sets energy
   *U = energy;
-  std::cout<<"Got an energy of "<<*U<<"\n";
+  // std::cout<<"Got an energy of "<<*U<<"\n";
   forces.clear(); // TODO: Slow!
   extract_rkf(N, "Gradients"); // Sets forces
   counter = 0;
