@@ -34,7 +34,7 @@ in mkShellNewEnv {
     which
     gcc10Stdenv
     gfortran
-    valgrind
+#   valgrind
     gdb
     eigen339
 
