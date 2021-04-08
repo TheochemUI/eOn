@@ -18,8 +18,7 @@ set(basePotentials
     SW
     Tersoff
     Water
-    Water_H
-    Water_Pt)
+    Water_H)
 
 if(${WIN32})
   # No VASP for Windows
@@ -34,6 +33,10 @@ endif()
 if(${WITH_AMS})
   # Add when AMS is avaliable, ; is important
   string(APPEND basePotentials ";AMS;AMS_IO")
+endif()
+
+if(${WITH_ZHUPHI})
+  string(APPEND basePotentials ";Water_Pt")
 endif()
 
 if(${NO_FORTRAN})
