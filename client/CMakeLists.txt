@@ -183,6 +183,10 @@ if(WIN32)
   target_compile_definitions(eonclient PUBLIC -DWIN32)
 endif()
 
+if(WITH_ZHUPHI)
+  target_compile_definitions(eonlib PUBLIC -DWITH_ZHUPHI)
+endif()
+
 if(WITH_AMS)
   target_compile_definitions(eonlib PUBLIC -DWITH_AMS)
 endif()

@@ -20,7 +20,6 @@
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
 #include "potentials/Water/Water.hpp"
-#include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/ExtPot/ExtPot.h"
@@ -44,6 +43,9 @@
 #ifdef WITH_AMS
     #include "potentials/AMS/AMS.h"
     #include "potentials/AMS_IO/AMS_IO.h"
+#endif
+#ifdef WITH_ZHUPHI
+    #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
 #include <cstdlib>
@@ -96,8 +98,6 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new QSC();
     else if(parameters->potential == POT_TIP4P)
         pot = new Tip4p();
-    else if(parameters->potential == POT_TIP4P_PT)
-        pot = new Tip4p_Pt();
     else if(parameters->potential == POT_SPCE)
         pot = new SpceCcl();
     else if(parameters->potential == POT_EXT)
@@ -107,6 +107,10 @@ Potential *Potential::getPotential(Parameters *parameters)
         pot = new AMS(parameters);
     else if(parameters->potential == POT_AMS_IO)
         pot = new AMS_IO(parameters);
+#endif
+#ifdef WITH_ZHUPHI
+    else if(parameters->potential == POT_TIP4P_PT)
+        pot = new Tip4p_Pt();
 #endif
 #ifndef NO_FORTRAN
     else if(parameters->potential == POT_EAM_AL)
