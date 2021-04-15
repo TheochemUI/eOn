@@ -16,9 +16,7 @@ set(basePotentials
     # PyAMFF # Needs external library
     QSC
     SW
-    Tersoff
-    Water
-    Water_H)
+    Tersoff)
 
 if(${WIN32})
   # No VASP for Windows
@@ -35,8 +33,8 @@ if(${WITH_AMS})
   string(APPEND basePotentials ";AMS;AMS_IO")
 endif()
 
-if(${WITH_ZHUPHI})
-  string(APPEND basePotentials ";Water_Pt")
+if(${WITH_WATER})
+  string(APPEND basePotentials ";Water;Water_H;Water_Pt")
 endif()
 
 if(${NO_FORTRAN})
