@@ -316,7 +316,7 @@ void NudgedElasticBand::updateForces(void)
         force = image[i]->getForces();
 
         // calculate the force perpendicular to the tangent
-        forcePerp = force - (force.cwise() * *tangent[i]).sum() * *tangent[i];
+        forcePerp = force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
         forceSpring = parameters->nebSpring * image[i]->pbc((posNext - pos) - (pos - posPrev));
 
         // calculate the spring force
@@ -325,8 +325,8 @@ void NudgedElasticBand::updateForces(void)
         forceSpringPar = parameters->nebSpring * (distNext-distPrev) * *tangent[i];
 
         if (parameters->nebDoublyNudged) {
-            forceSpringPerp = forceSpring - (forceSpring.cwise() * *tangent[i]).sum() * *tangent[i];
-            forceDNEB = forceSpringPerp - (forceSpringPerp.cwise() * forcePerp.normalized()).sum() * forcePerp.normalized();
+            forceSpringPerp = forceSpring - (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
+            forceDNEB = forceSpringPerp - (forceSpringPerp.array() * forcePerp.normalized().array()).sum() * forcePerp.normalized();
             if (parameters->nebDoublyNudgedSwitching) {
                 double switching;
                 switching = 2.0/M_PI * atan(pow(forcePerp.norm(),2) / pow(forceSpringPerp.norm(),2)); 
@@ -341,7 +341,7 @@ void NudgedElasticBand::updateForces(void)
         {
             // we are at the climbing image
             climbingImage = maxEnergyImage;
-            *projectedForce[i] = force - (2.0 * (force.cwise() * *tangent[i]).sum() * *tangent[i]) + forceDNEB;
+            *projectedForce[i] = force - (2.0 * (force.array() * (*tangent[i]).array()).sum() * *tangent[i]) + forceDNEB;
         }
         else  // all non-climbing images
         {
@@ -399,10 +399,10 @@ void NudgedElasticBand::printImageData(bool writeToFile)
         }
         if (fh == NULL) {
             log("%3li %12.6f %12.6f %12.6f\n",i,distTotal,
-                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
+                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().array()*tang.array()).sum());
         }else{
             fprintf(fh, "%3li %12.6f %12.6f %12.6f\n",i,distTotal,
-                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().cwise()*tang).sum());
+                image[i]->getPotentialEnergy()-image[0]->getPotentialEnergy(), (image[i]->getForces().array()*tang.array()).sum());
         }
     }
     if (writeToFile) {
@@ -425,16 +425,16 @@ void NudgedElasticBand::findExtrema(void)
         if(i==0) {
             tangentEndpoint = image[i]->pbc(image[1]->getPositions() - image[0]->getPositions());
             tangentEndpoint.normalize();
-            F1 = (image[i]->getForces().cwise()*tangentEndpoint).sum()*dist;
+            F1 = (image[i]->getForces().array()*tangentEndpoint.array()).sum()*dist;
         } else {
-            F1 = (image[i]->getForces().cwise()*(*tangent[i])).sum()*dist;
+            F1 = (image[i]->getForces().array()*(*tangent[i]).array()).sum()*dist;
         }
         if(i==images) {
             tangentEndpoint =  image[i+1]->pbc(image[images+1]->getPositions() - image[images]->getPositions());
             tangentEndpoint.normalize();
-            F2 = (image[i+1]->getForces().cwise()*tangentEndpoint).sum()*dist;
+            F2 = (image[i+1]->getForces().array()*tangentEndpoint.array()).sum()*dist;
         } else {
-            F2 = (image[i+1]->getForces().cwise()*(*tangent[i+1])).sum()*dist;
+            F2 = (image[i+1]->getForces().array()*(*tangent[i+1]).array()).sum()*dist;
         }
         U1 = image[i]->getPotentialEnergy();
         U2 = image[i+1]->getPotentialEnergy();
