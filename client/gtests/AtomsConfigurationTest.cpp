@@ -27,13 +27,14 @@ TEST_F(AtomsConfigurationTest, TestMatter) {
   Parameters *parameters;
   Matter *matter = new Matter(parameters);
   matter->con2matter("pos.con");
-  AtomsConfiguration a = helper_functions::eon_matter_to_atmconf(matter);
+  gpr::AtomsConfiguration a = helper_functions::eon_matter_to_atmconf(matter);
   int getFixed = count_if(a.is_frozen.getInternalVector().begin(),
                           a.is_frozen.getInternalVector().end(),
                           [](int i) { return i == 1; });
   int getFree = count_if(a.is_frozen.getInternalVector().begin(),
                          a.is_frozen.getInternalVector().end(),
                          [](int i) { return i == 0; });
+
   EXPECT_EQ(getFixed, matter->numberOfFixedAtoms())
       << "AtomsConf has the wrong number of fixed/frozen atoms";
   EXPECT_EQ(getFree, matter->numberOfFreeAtoms())

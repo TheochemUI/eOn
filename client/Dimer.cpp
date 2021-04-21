@@ -86,7 +86,7 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection)
         }
 
         // rotational force along the rotational planes normal
-        rotationalForce1 = (rotationalForce.cwise()*rotationalPlane).sum();
+        rotationalForce1 = (rotationalForce.array()*rotationalPlane.array()).sum();
 
         rotate(parameters->dimerRotationAngle);
         
@@ -95,7 +95,7 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection)
             // rotated dimer
             curvature = calcRotationalForceReturnCurvature(rotationalForce);
 
-            rotationalForce2 = (rotationalForce.cwise()*rotationalPlane).sum();
+            rotationalForce2 = (rotationalForce.array()*rotationalPlane.array()).sum();
 
             rotationalForceChange = ((rotationalForce1 - rotationalForce2) / 
                                      parameters->dimerRotationAngle);
@@ -123,7 +123,7 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection)
     statsTorque = torque;
     statsCurvature = curvature;
     direction.normalize();
-    statsAngle = acos((direction.cwise() * initialDirection).sum());
+    statsAngle = acos((direction.array() * initialDirection.array()).sum());
     statsAngle *= (180.0/M_PI);
     statsRotations = rotations;
 
@@ -180,8 +180,8 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce)
     forceCenter = matterCenter->getForces();
     forceB = 2.0*forceCenter - forceA;
 
-    projectedForceA = (direction.cwise() * forceA).sum();
-    projectedForceB = (direction.cwise() * forceB).sum();
+    projectedForceA = (direction.array() * forceA.array()).sum();
+    projectedForceB = (direction.array() * forceB.array()).sum();
 
     // remove force component parallel to dimer
     forceA = makeOrthogonal(forceA, direction);
@@ -201,11 +201,11 @@ void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
 {
     double a, b, gamma = 0.0;
 
-    a = fabs((rotationalForce.cwise() * rotationalForceOld).sum());
+    a = fabs((rotationalForce.array() * rotationalForceOld.array()).sum());
     b = rotationalForceOld.squaredNorm();
     if(a < 0.5*b)
     {
-        gamma = (rotationalForce.cwise() * (rotationalForce - rotationalForceOld)).sum()/b;
+        gamma = (rotationalForce.array() * (rotationalForce - rotationalForceOld).array()).sum()/b;
     }
     else
         gamma = 0.0;

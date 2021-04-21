@@ -178,8 +178,8 @@ VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *sad
     AtomMatrix diffMin1 = saddle->pbc(saddle->getPositions() - min1->getPositions());
     AtomMatrix diffMin2 = saddle->pbc(saddle->getPositions() - min2->getPositions());
 
-    diffMin1.cwise() *= saddle->getFree();
-    diffMin2.cwise() *= saddle->getFree();
+    diffMin1.array() *= saddle->getFree().array();
+    diffMin2.array() *= saddle->getFree().array();
 
     int nMoved = 0;
     for(int i=0; i<nAtoms; i++)
@@ -187,7 +187,7 @@ VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *sad
         if( (diffMin1.row(i).norm() > parameters->prefactorMinDisplacement) || 
             (diffMin2.row(i).norm() > parameters->prefactorMinDisplacement) )
         {
-            if(!(moved.cwise() == i).any())
+            if(!(moved.array() == i).any())
             {
                 moved[nMoved] = i;
                 nMoved++;
@@ -199,7 +199,7 @@ VectorXi Prefactor::movedAtoms(Parameters* parameters, Matter *min1, Matter *sad
                 if(diffRSaddle<parameters->prefactorWithinRadius
                    && (!saddle->getFixed(j)))
                 {
-                    if(!(moved.cwise() == j).any())
+                    if(!(moved.array() == j).any())
                     {
                         moved[nMoved] = j;
                         nMoved++;
@@ -222,8 +222,8 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
     AtomMatrix diffMin1 = saddle->pbc(saddle->getPositions() - min1->getPositions());
     AtomMatrix diffMin2 = saddle->pbc(saddle->getPositions() - min2->getPositions());
 
-    diffMin1.cwise() *= saddle->getFree();
-    diffMin2.cwise() *= saddle->getFree();
+    diffMin1.array() *= saddle->getFree().array();
+    diffMin2.array() *= saddle->getFree().array();
 
     VectorXd diff(nAtoms);
     diff.setConstant(0.0);
@@ -250,7 +250,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
         int maxi = mini;
         for (int i = 0; i < nAtoms; i++) {
             if (diff[i] >= diff[maxi]) {
-                if (!(moved.cwise() == i).any()) {
+                if (!(moved.array() == i).any()) {
                     maxi = i;
                 }
             }
@@ -271,7 +271,7 @@ VectorXi Prefactor::movedAtomsPct(Parameters* parameters, Matter *min1, Matter *
             if(diffRSaddle<parameters->prefactorWithinRadius
                && (!saddle->getFixed(j))) {
 
-                if(!(moved.cwise() == j).any()) {
+                if(!(moved.array() == j).any()) {
                     moved[totalAtoms++] = j;
                 }
 
