@@ -29,4 +29,4 @@ jobs:
     - name: Build Client
       run: nix-shell --run "cd client && mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TESTS=OFF -DNO_WARN=TRUE -DFIND_EIGEN=TRUE && make -j$(nproc)"
     - name: Integration Tests
-      run: nix-shell --run "pip install numpy ase PyYAML && pytest tests -v"
+      run: nix-shell --run "pytest tests -v"
