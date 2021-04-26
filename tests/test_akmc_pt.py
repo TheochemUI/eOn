@@ -9,7 +9,7 @@ eon = sh.Command(str(p).strip()+"/bin/eon")
 os.environ['PATH'] += os.pathsep + str(p).strip()+"/bin"
 
 def test_akmc_pt_morse_dimer(datadir,shared_datadir):
-    ddir=f"{shared_datadir}/server/one_Pt_oneLayer"
+    ddir=f"{shared_datadir}/server/Pt_Heptamer_oneLayer"
     sh.cp(f"{datadir}/morse_dimer.ini",f"{ddir}/config.ini")
     sh.cd(ddir)
     files = sh.ls()
@@ -18,3 +18,4 @@ def test_akmc_pt_morse_dimer(datadir,shared_datadir):
     eon() # Runs eon
     eon() # Runs eon
     eon() # Runs eon
+    # TODO: Actually parse an output
