@@ -42,6 +42,7 @@ in mkShellNewEnv {
     zlib
     lzma
     bzip2
+    openblas
 
     fmt
     abseil-cpp
