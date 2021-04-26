@@ -19,11 +19,8 @@
 #include "potentials/EAM/EAM.h"
 #include "potentials/Lenosky/Lenosky.h"
 #include "potentials/QSC/QSC.h"
-#include "potentials/Water/Water.hpp"
-#include "potentials/Water_H/Tip4p_H.h"
 #include "potentials/FeHe/FeHe.h"
 #include "potentials/ExtPot/ExtPot.h"
-#include "potentials/PyAMFF/PyAMFF.h"
 
 #ifdef EONMPI
     #include "potentials/MPIPot/MPIPot.h"
@@ -44,8 +41,10 @@
     #include "potentials/AMS/AMS.h"
     #include "potentials/AMS_IO/AMS_IO.h"
 #endif
-#ifdef WITH_ZHUPHI
-    #include "potentials/Water_Pt/Tip4p_Pt.hpp"
+#ifdef WITH_WATER
+#include "potentials/Water/Water.hpp"
+#include "potentials/Water_H/Tip4p_H.h"
+#include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
 #include <cstdlib>
@@ -87,47 +86,46 @@ Potential *Potential::getPotential(Parameters *parameters)
     else if(parameters->potential == POT_LJCLUSTER)
         pot = new LJCluster();
 #ifdef IMD_POT
-    else if(parameters->potential == POT_IMD)
-        pot = new IMD();
+  else if (parameters->potential == POT_IMD)
+    pot = new IMD();
 #endif
-    else if(parameters->potential == POT_MORSE_PT)
-        pot = new Morse();
-    else if(parameters->potential == POT_EMT)
-        pot = new EffectiveMediumTheory(parameters);
-    else if(parameters->potential == POT_QSC)
-        pot = new QSC();
-    else if(parameters->potential == POT_TIP4P)
-        pot = new Tip4p();
-    else if(parameters->potential == POT_SPCE)
-        pot = new SpceCcl();
-    else if(parameters->potential == POT_EXT)
-        pot = new ExtPot(parameters);
+  else if (parameters->potential == POT_MORSE_PT)
+    pot = new Morse();
+  else if (parameters->potential == POT_EMT)
+    pot = new EffectiveMediumTheory(parameters);
+  else if (parameters->potential == POT_QSC)
+    pot = new QSC();
+  else if (parameters->potential == POT_EXT)
+    pot = new ExtPot(parameters);
 #ifdef WITH_AMS
     else if(parameters->potential == POT_AMS)
         pot = new AMS(parameters);
     else if(parameters->potential == POT_AMS_IO)
         pot = new AMS_IO(parameters);
 #endif
-#ifdef WITH_ZHUPHI
-    else if(parameters->potential == POT_TIP4P_PT)
-        pot = new Tip4p_Pt();
+#ifdef WITH_WATER
+  else if (parameters->potential == POT_TIP4P)
+    pot = new Tip4p();
+  else if (parameters->potential == POT_SPCE)
+    pot = new SpceCcl();
+  else if (parameters->potential == POT_TIP4P_PT)
+    pot = new Tip4p_Pt();
+  else if (parameters->potential == POT_TIP4P_H)
+    pot = new Tip4p_H();
 #endif
 #ifndef NO_FORTRAN
-    else if(parameters->potential == POT_EAM_AL)
-        pot = new Aluminum();
-    else if(parameters->potential == POT_LENOSKY_SI)
-        pot = new Lenosky();
-    else if(parameters->potential == POT_SW_SI)
-        pot = new SW();
-    else if(parameters->potential == POT_TERSOFF_SI)
-        pot = new Tersoff();
-    else if(parameters->potential == POT_EDIP)
-        pot = new EDIP();
-    else if(parameters->potential == POT_TIP4P_H)
-        pot = new Tip4p_H();
-    else if(parameters->potential == POT_FEHE)
-        pot = new FeHe();
- 
+  else if (parameters->potential == POT_EAM_AL)
+    pot = new Aluminum();
+  else if (parameters->potential == POT_LENOSKY_SI)
+    pot = new Lenosky();
+  else if (parameters->potential == POT_SW_SI)
+    pot = new SW();
+  else if (parameters->potential == POT_TERSOFF_SI)
+    pot = new Tersoff();
+  else if (parameters->potential == POT_EDIP)
+    pot = new EDIP();
+  else if (parameters->potential == POT_FEHE)
+    pot = new FeHe();
 #endif
 
 
