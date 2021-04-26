@@ -1,33 +1,29 @@
 let
   sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs { };
-  mach-nix = import (builtins.fetchGit {
-    url = "https://github.com/DavHau/mach-nix/";
-    ref = "refs/tags/3.2.0";
+  mach-nix = import (pkgs.fetchFromGitHub {
+    owner  = "DavHau";
+    repo   = "mach-nix";
+    rev = "8877cdb599acd0f4aa466649fcf52964b4ae9b5c";
+    sha256 = "sha256-KWVgOZS9+v3fx/8bXQqZTkCsy09edohOhy76pUNIowI=";
   }) {
     pkgs = pkgs;
     python = "python38";
   };
-  customPython = mach-nix.mkPython rec {
+  customPython = mach-nix.mkPython {
+    requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
-      mach-nix.buildPythonPackage ./../eonGit
-    ];
-    requirements = ''
-      numpy
-      ase
-      PyYAML
-      pytest
-      pytest-datadir
-      sh
-    '';
-  };
-  mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
-  eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
-    stdenv = pkgs.clangStdenv;
-  });
-  eigen339 = pkgs.eigen.overrideAttrs(old: rec {
-    version = "3.3.9";
-  });
+      # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
+      ./../eonGit                                     # from local path
+      # mach-nix.buildPythonPackage { ... };                     # from package
+    ];  };
+    mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
+    eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
+      stdenv = pkgs.clangStdenv;
+    });
+    eigen339 = pkgs.eigen.overrideAttrs(old: rec {
+      version = "3.3.9";
+    });
 in mkShellNewEnv {
   nativeBuildInputs = [ pkgs.cmake ];
   buildInputs = with pkgs; [
