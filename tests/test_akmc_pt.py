@@ -14,7 +14,7 @@ def test_akmc_pt_morse_dimer(datadir,shared_datadir):
     sh.cp(f"{datadir}/morse_dimer.ini",f"{ddir}/config.ini")
     sh.cd(ddir)
     files = sh.ls()
-    diff = set(files.split()) ^ {'config.ini', 'displacement.con', 'direction.dat', 'pos.con'}
+    diff = set(files.split()) ^ {'config.ini', 'pos.con'}
     assert not diff
     eon(_env=new_env) # Runs eon
     eon(_env=new_env) # Runs eon
