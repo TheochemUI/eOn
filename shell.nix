@@ -9,6 +9,9 @@ let
     python = "python38";
   };
   customPython = mach-nix.mkPython rec {
+    packagesExtra = [
+      mach-nix.buildPythonPackage ./../eonGit
+    ];
     requirements = ''
       numpy
       ase
@@ -34,7 +37,7 @@ in mkShellNewEnv {
     which
     gcc10Stdenv
     gfortran
-#   valgrind
+    #   valgrind
     gdb
     eigen339
 
@@ -49,7 +52,7 @@ in mkShellNewEnv {
     boost175
   ];
   shellHook = ''
-  export PYTHONPATH=$(pwd):$PYTHONPATH
-  export PATH=$(pwd)/bin:$PATH
-'';
+    export PYTHONPATH=$(pwd):$PYTHONPATH
+    export PATH=$(pwd)/bin:$PATH
+  '';
 }
