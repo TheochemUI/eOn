@@ -4,9 +4,10 @@ import pytest
 from pathlib import Path
 
 p = Path(str(sh.pwd())) # Hacky way to get project root
-eonclient = sh.Command(str(p).strip()+"/client/build/eonclient")
-eon = sh.Command(str(p).strip()+"/bin/eon")
-os.environ['PATH'] += os.pathsep + str(p).strip()+"/bin"
+new_env = os.environ.copy()
+new_env["PATH"] += os.pathsep + str(p).strip()+"/bin"
+eonclient = sh.Command(str(p).strip()+"/client/build/eonclient", _env=new_env)
+eon = sh.Command(str(p).strip()+"/bin/eon", _env=new_env)
 
 def test_akmc_pt_morse_dimer(datadir,shared_datadir):
     ddir=f"{shared_datadir}/server/Pt_Heptamer_oneLayer"
