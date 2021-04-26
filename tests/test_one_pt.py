@@ -6,7 +6,7 @@ p = Path(str(sh.pwd())) # Hacky way to get project root
 eonclient = sh.Command(str(p).strip()+"/client/build/eonclient")
 
 def test_one_pt_morse_dimer(datadir,shared_datadir):
-    ddir=f"{shared_datadir}/one_Pt_on_frozenSurface"
+    ddir=f"{shared_datadir}/client/one_Pt_on_frozenSurface"
     sh.cp(f"{datadir}/morse_dimer.ini",f"{ddir}/config.ini")
     sh.cd(ddir)
     files = sh.ls()
@@ -19,8 +19,8 @@ def test_one_pt_morse_dimer(datadir,shared_datadir):
         assert resText[3].split()[0] == "morse_pt"
 
 def test_one_pt_morse_gprdimer(datadir,shared_datadir):
-    ddir=f"{shared_datadir}/one_Pt_on_frozenSurface"
-    sh.cp(f"{datadir}/morse_dimer.ini",f"{ddir}/config.ini")
+    ddir=f"{shared_datadir}/client/one_Pt_on_frozenSurface"
+    sh.cp(f"{datadir}/morse_gprdimer.ini",f"{ddir}/config.ini")
     sh.cd(ddir)
     files = sh.ls()
     diff = set(files.split()) ^ {'config.ini', 'displacement.con', 'direction.dat', 'pos.con'}
