@@ -14,6 +14,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 set(CMAKE_COLOR_MAKEFILE ON)
+cmake_policy(set CMP0079 NEW)
 
 # # CXX Compiler Flags
 # string(APPEND CMAKE_CXX_FLAGS
