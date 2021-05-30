@@ -3,3 +3,6 @@ add_library(
   FeHe.cpp
   feforce.f
   )
+
+# Install
+install(TARGETS FeHe)
