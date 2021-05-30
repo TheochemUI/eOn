@@ -204,3 +204,7 @@ if(PACKAGE_TESTS)
   include(GoogleTest)
   add_subdirectory(gtests)
 endif()
+
+# Install
+install(TARGETS eonclient)
+install(TARGETS eonlib)

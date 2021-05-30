@@ -25,11 +25,6 @@ in  pkgs.stdenv.mkDerivation rec {
     ./version.sh > version.h
   '';
 
-  installPhase = ''
-    mkdir -p $out/bin
-    cp eonclient $out/bin/
-  '';
-
     meta = with pkgs.lib; {
     description = "EON C++ client";
     homepage = "https://github.com/HaoZeke/eongit";
