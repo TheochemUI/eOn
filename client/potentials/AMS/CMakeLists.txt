@@ -14,3 +14,6 @@ add_library(
   )
 
 target_link_libraries(AMS INTERFACE ${DEPS})
+
+# Install
+install(TARGETS AMS)

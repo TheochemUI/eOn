@@ -54,3 +54,6 @@ endforeach()
 
 add_library(potentials INTERFACE)
 target_link_libraries(potentials INTERFACE ${basePotentials})
+
+# Install
+install(TARGETS potentials)

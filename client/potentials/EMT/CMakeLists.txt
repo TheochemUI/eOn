@@ -11,3 +11,6 @@ add_library(
   Asap/Exception.cpp
   Asap/GhostAtoms.cpp
   Asap/EMTRasmussenParameterProvider.cpp)
+
+# Install
+install(TARGETS EMT)

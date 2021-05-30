@@ -3,3 +3,6 @@ add_library(
   potH_H2O.f90
   Tip4p_H.cpp
   )
+
+# Install
+install(TARGETS Water_H)
