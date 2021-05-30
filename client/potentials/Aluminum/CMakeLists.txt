@@ -9,3 +9,6 @@ add_library(
   sumembforce.f
   Aluminum.cpp
   )
+
+# Install
+install(TARGETS Aluminum)

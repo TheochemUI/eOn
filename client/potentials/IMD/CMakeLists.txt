@@ -4,3 +4,6 @@ add_library(
   IMD.h
   filesForIMD/imd_cg.c
   )
+
+# Install
+install(TARGETS IMD)

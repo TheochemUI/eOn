@@ -3,3 +3,6 @@ add_library(
   Lenosky.cpp
   lenoskyFortran.f90
   )
+
+# Install
+install(TARGETS Lenosky)

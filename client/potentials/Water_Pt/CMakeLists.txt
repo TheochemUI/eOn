@@ -4,3 +4,6 @@ add_library(
   zhu_philpott.cpp
   zhu_philpott_parameters.cpp
   )
+
+# Install
+install(TARGETS Water_Pt)
