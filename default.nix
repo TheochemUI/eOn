@@ -7,7 +7,9 @@ let
 in  pkgs.stdenv.mkDerivation rec {
   name = "eonclient";
   src = ./client;
+
   stdenv = pkgs.gcc10Stdenv;
+  buildInputs = with pkgs; [ cmake gfortran eigen339 gtest ];
 
   cmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
@@ -23,7 +25,10 @@ in  pkgs.stdenv.mkDerivation rec {
     ./version.sh > version.h
   '';
 
-  buildInputs = with pkgs; [ cmake gfortran eigen339 gtest ];
+  installPhase = ''
+    mkdir -p $out/bin
+    cp eonclient $out/bin/
+  '';
 
     meta = with pkgs.lib; {
     description = "EON C++ client";
