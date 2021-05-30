@@ -3,7 +3,8 @@ import pytest
 from pathlib import Path
 
 p = Path(str(sh.pwd())) # Hacky way to get project root
-eonclient = sh.Command(str(p).strip()+"/client/build/eonclient")
+# eonclient = sh.Command(str(p).strip()+"/client/build/eonclient")
+eonclient = sh.eonclient
 
 def test_one_pt_morse_dimer(datadir,shared_datadir):
     ddir=f"{shared_datadir}/client/one_Pt_on_frozenSurface"
