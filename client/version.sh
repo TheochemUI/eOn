@@ -1,5 +1,3 @@
-#!/bin/bash
-
 VERSION=$(svnversion 2> /dev/null)
 
 if [ -z "$VERSION" ]; then
