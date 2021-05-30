@@ -22,11 +22,13 @@ jobs:
     - name: Fix GPRD branch
       run: |
         cd client/gprdimer
-        git checkout 0597152f2ab88ef11f3311b6473542032e0c6243
+        git checkout 52d20d12386c4c18f71229123bf73b244f513a63
     - uses: cachix/install-nix-action@v12
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - name: Build Client
       run: nix-env -if . # debug with nix-build -K to keep temp directory
     - name: Integration Tests
-      run: nix-shell --run "pytest tests -v"
+      run: |
+        cd client/gtests/data/saddle_search/
+        eonclient
