@@ -4,6 +4,14 @@
 *** Nix (Preferred)
 This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
 #+begin_src bash
+# Debug errors
+nix-build -K .
+# Add to path
+nix-env -if .
+#+end_src
+**** Development
+To get a new shell to work on the packages, use the following:
+#+begin_src bash
 nix-shell --pure --run bash --show-trace --verbose
 #+end_src
 In the new sub-shell:
@@ -18,7 +26,7 @@ export PATH=$(pwd):$PATH
 - [ ] Make a ~default.nix~
   - [ ] Build ~tsase~
   - [ ] Build ~eon~
-  - [ ] Build ~eonclient~
+  - [x] Build ~eonclient~
 *** Cmake
 The following will suffice:
 #+begin_src bash
