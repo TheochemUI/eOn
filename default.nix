@@ -14,6 +14,7 @@ in  pkgs.stdenv.mkDerivation rec {
     "-DPACKAGE_TESTS=OFF"
     "-DNO_WARN=TRUE"
     "-DFIND_EIGEN=TRUE"
+    "-DUSE_SYSTEM_GTEST=ON"
     ];
 
   preConfigure = ''
@@ -22,7 +23,7 @@ in  pkgs.stdenv.mkDerivation rec {
     ./version.sh > version.h
   '';
 
-  buildInputs = with pkgs; [ cmake gfortran eigen339 ];
+  buildInputs = with pkgs; [ cmake gfortran eigen339 gtest ];
 
     meta = with pkgs.lib; {
     description = "EON C++ client";
