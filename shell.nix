@@ -1,10 +1,12 @@
 let
   sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs { };
-  mach-nix = import (builtins.fetchGit {
-    url = "https://github.com/DavHau/mach-nix/";
-    ref = "refs/tags/3.3.0";
-  }){
+  mach-nix = import (pkgs.fetchFromGitHub {
+    owner  = "DavHau";
+    repo   = "mach-nix";
+    rev = "8877cdb599acd0f4aa466649fcf52964b4ae9b5c";
+    sha256 = "sha256-KWVgOZS9+v3fx/8bXQqZTkCsy09edohOhy76pUNIowI=";
+  }) {
     pkgs = pkgs;
     python = "python38";
   };
