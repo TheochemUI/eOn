@@ -3,3 +3,6 @@ add_library(
   EDIP.cpp
   edipFortran.f90
   )
+
+# Install
+install(TARGETS EDIP)

@@ -3,3 +3,6 @@ add_library(
   Tersoff.cpp
   tersoffFortran.f90
   )
+
+# Install
+install(TARGETS Tersoff)

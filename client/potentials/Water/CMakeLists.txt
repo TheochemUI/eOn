@@ -6,3 +6,6 @@ add_library(
   spce_ccl.cpp
   tip4p_ccl.cpp
   )
+
+# Install
+install(TARGETS Water)
