@@ -192,6 +192,11 @@ if(WITH_AMS)
   target_compile_definitions(eonlib PUBLIC -DWITH_AMS)
 endif()
 
+if(WITH_LAMMPS)
+  target_compile_definitions(eonlib PUBLIC -DLAMMPS_POT)
+  target_compile_definitions(eonclient PUBLIC -DLAMMPS_POT)
+endif()
+
 if(NO_FORTRAN)
   target_compile_definitions(eonlib PUBLIC -DNO_FORTRAN)
 endif()
