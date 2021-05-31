@@ -11,6 +11,10 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
+#ifndef EONMPI
+#include "fakempi.h"
+#endif
+
 #ifndef LAMMPS_LIBRARY_H
 #define LAMMPS_LIBRARY_H
 
