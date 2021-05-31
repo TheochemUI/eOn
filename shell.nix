@@ -29,7 +29,7 @@ let
     langCC = true;
     langC = true;
     enableShared = true;
-    enableMultilib = true;
+    enableMultilib = false;
     staticCompiler = false;
     profiledCompiler = false;
   });
