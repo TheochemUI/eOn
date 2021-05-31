@@ -17,25 +17,39 @@ let
       ./../EONgit                                     # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
     ];  };
-    mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
+ #   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
     eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
       stdenv = pkgs.clangStdenv;
     });
     eigen339 = pkgs.eigen.overrideAttrs(old: rec {
       version = "3.3.9";
     });
-in mkShellNewEnv {
-  nativeBuildInputs = [ pkgs.cmake ];
+  myCmop = pkgs.wrapCC (pkgs.gcc10.cc.override {
+    langFortran = true;
+    langCC = true;
+    langC = true;
+    enableShared = true;
+    enableMultilib = false;
+    staticCompiler = false;
+    profiledCompiler = false;
+  });
+  mycompiler = myCmop.overrideAttrs(old: rec {
+  hardeningEnable = ["pic"];
+  });
+in pkgs.mkShell {
+  nativeBuildInputs = with pkgs; [ cmake mycompiler ];
   buildInputs = with pkgs; [
-    customPython
     gtest
     bashInteractive
     which
-    gcc10Stdenv
-    gfortran
+  #  gcc10Stdenv
+  #  gfortran
     #   valgrind
     gdb
     eigen339
+   # gfortran
+   # gfortran.cc
+   mycompiler.cc
 
     zstd
     zlib
