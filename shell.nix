@@ -29,7 +29,7 @@ let
     langCC = true;
     langC = true;
     enableShared = true;
-    enableMultilib = false;
+    enableMultilib = true;
     staticCompiler = false;
     profiledCompiler = false;
   });
@@ -37,7 +37,7 @@ let
   hardeningEnable = ["pic"];
   });
 in pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [ cmake mycompiler ];
+  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
@@ -49,7 +49,7 @@ in pkgs.mkShell {
     eigen339
    # gfortran
    # gfortran.cc
-   mycompiler.cc
+   # mycompiler.cc
 
     zstd
     zlib
