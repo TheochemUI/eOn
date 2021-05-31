@@ -37,6 +37,10 @@ if(${WITH_WATER})
   string(APPEND basePotentials ";Water;Water_H;Water_Pt")
 endif()
 
+if(${WITH_LAMMPS})
+  string(APPEND basePotentials ";LAMMPS")
+endif()
+
 if(${NO_FORTRAN})
   # Kill all Fortran based potentials
   string(REPLACE "Aluminum" "" basePotentials "${basePotentials}")
