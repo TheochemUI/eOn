@@ -182,19 +182,19 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     n(0,1) = syz-szy;
     n(0,2) = szx-sxz;
     n(0,3) = sxy-syx;
-    
+
     n(1,2) = sxy+syx;
     n(1,3) = szx+sxz;
-    
+
     n(2,3) = syz+szy;
-    
+
     n += n.transpose().eval();
-    
+
     n(0,0) = sxx + syy + szz;
     n(1,1) = sxx-syy-szz;
     n(2,2) = -sxx + syy -szz;
     n(3,3) = -sxx -syy + szz;
-    
+
     Eigen::SelfAdjointEigenSolver<Matrix4d> es(n);
     Eigen::Vector4d maxv = es.eigenvectors().col(3);
 
@@ -208,7 +208,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1, const Atom
     double bc = maxv[1]*maxv[2];
     double bd = maxv[1]*maxv[3];
     double cd = maxv[2]*maxv[3];
-    
+
     R(0,0) = aa + bb - cc - dd;
     R(0,1) = 2*(bc-ad);
     R(0,2) = 2*(bd+ac);
@@ -274,11 +274,11 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
 {
     AtomMatrix r1 = r1_passed;
     AtomMatrix r2 = m2->getPositions();
-    
+
     // Align centroids
     Eigen::VectorXd c1(3);
     Eigen::VectorXd c2(3);
-    
+
     c1[0] = r1.col(0).sum();
     c1[1] = r1.col(1).sum();
     c1[2] = r1.col(2).sum();
@@ -287,23 +287,23 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
     c2[2] = r2.col(2).sum();
     c1/=r1.rows();
     c2/=r2.rows();
-    
+
     for(int i = 0; i < r1.rows(); i++)
     {
         r1(i,0) -= c1[0];
         r1(i,1) -= c1[1];
         r1(i,2) -= c1[2];
-        
+
         r2(i,0) -= c2[0];
         r2(i,1) -= c2[1];
         r2(i,2) -= c2[2];
     }
-    
+
     RotationMatrix R = rotationExtract(r1, r2);
-    
+
     //Eigen is transposed relative to numpy
     r2 = r2 * R;
-    
+
     // Move centroid back to initial position
     for(int i = 0; i < r2.rows(); i++)
     {
@@ -311,7 +311,7 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2)
         r2(i,1) += c2[1];
         r2(i,2) += c2[2];
     }
-    
+
     m2->setPositions(r2);
     return;
 }
@@ -376,7 +376,7 @@ double helper_functions::maxAtomMotionV(const VectorXd v1) {
         if(max < norm) {
             max = norm;
         }
-    }    
+    }
     return max;
 }
 
@@ -589,7 +589,6 @@ std::vector<int> helper_functions::split_string_int(std::string s, std::string d
     str[s.length()] = '\0';
     pch = strtok(str, delim.c_str());
 
-
     while (pch != NULL) {
         char *endptr;
         int value = (int)strtol(pch, &endptr, 10); 
@@ -613,18 +612,18 @@ struct atom {
 };
 
 struct by_atom {
-  bool operator()(atom const &a, atom const &b) {
+  bool operator()(atom const &a, atom const &b) const {
     if (a.z != b.z) {
-        return a.z < b.z;                                                   
+        return a.z < b.z;
     }else{
         return a.r < b.r;
     }
   }
 }; 
 }
- 
+
  double roundUp(double x, double f) {
-	return ceil(x / f);
+    return ceil(x / f);
     }
 
 bool helper_functions::identical(const Matter* m1, const Matter* m2, const double distanceDifference)
@@ -675,13 +674,12 @@ bool helper_functions::identical(const Matter* m1, const Matter* m2, const doubl
 bool helper_functions::sortedR(const Matter *m1, const Matter *m2, 
                                const double distanceDifference)
 {
-    cout << "into sortedR\n";
     AtomMatrix r1 = m1->getPositions();
     AtomMatrix r2 = m2->getPositions();
-    double tolerance=distanceDifference;
+    double tolerance = distanceDifference;
     int matches=0;
 //   std::set<atom,by_atom> rdf1[r1.rows()];
-//    std::set<atom,by_atom> rdf2[r2.rows()];
+//   std::set<atom,by_atom> rdf2[r2.rows()];
 // GH clang workaround for non-POD allocation
     set<atom,by_atom> *rdf1 = new set<atom,by_atom>[r1.rows()];
     set<atom,by_atom> *rdf2 = new set<atom,by_atom>[r2.rows()];
@@ -702,10 +700,10 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
     for(int i1=0; i1<r1.rows(); i1++){
         if(matches==i1-2){
 // GH clang workaround for non-POD allocation
-        delete [] rdf1;
-        delete [] rdf2;
-	    return false;
-	}
+            delete [] rdf1;
+            delete [] rdf2;
+            return false;
+        }
         for(int j1=0; j1<r1.rows(); j1++){
             if(j1==i1) continue;
             atom a;
@@ -716,7 +714,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
         }
         for(int x=0; x<r2.rows(); x++){    
             it2=rdf2[x].begin();
-	    it=rdf1[i1].begin();
+            it=rdf1[i1].begin();
             int c=0;
             int counter=0;
             for(; c<r1.rows(); c++){
@@ -730,16 +728,16 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
                     //printf("no match\n");
                     break;
                 }
-		//          it++;
+//              it++;
             }
             if (counter==r1.rows()) {
                 matches++;
             }else{
                 //printf("no match\n");
             }
-	    it2++;
+            it2++;
         }
-	it++;
+        it++;
     }
 // GH clang workaround for non-POD allocation
     delete [] rdf1;
