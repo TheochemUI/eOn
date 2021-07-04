@@ -22,10 +22,18 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN
 make -j$(nproc) VERBOSE=1 && make check
 export PATH=$(pwd):$PATH
 #+end_src
+** Testing
+Once ~eonclient~ has been built following the instructions above, we can run integration tests (AKMC) in the development environment.
+#+begin_src bash
+nix-shell
+# In the root directory
+pytest
+#+end_src
 *** TODO Simplify
 - [ ] Make a ~default.nix~
   - [ ] Build ~tsase~
-  - [ ] Build ~eon~
+  - [x] Build ~eon~
+    + Currently works from ~nix-shell~ invocations
   - [x] Build ~eonclient~
 *** Cmake
 The following will suffice:
