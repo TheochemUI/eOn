@@ -588,4 +588,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+# Generated data
+**/output/*.dat
+\#*
