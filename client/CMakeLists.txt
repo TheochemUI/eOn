@@ -16,9 +16,6 @@ endif()
 set(CMAKE_COLOR_MAKEFILE ON)
 cmake_policy(SET CMP0079 NEW)
 
-# Extra Scripts
-include(cmake/dependency-graph.cmake)
-
 # # CXX Compiler Flags
 # string(APPEND CMAKE_CXX_FLAGS
 #        " -Wno-unused-local-typedefs -Wno-unused-function -Wfatal-errors ")
