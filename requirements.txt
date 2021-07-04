@@ -4,3 +4,4 @@ PyYAML
 pytest
 pytest-datadir
 sh
+sphinx
