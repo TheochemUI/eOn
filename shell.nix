@@ -45,7 +45,7 @@ in pkgs.mkShell {
   #  gfortran
     #   valgrind
     lldb
-    eigen339
+    graphviz
    # gfortran
    # gfortran.cc
    # mycompiler.cc
@@ -59,6 +59,7 @@ in pkgs.mkShell {
     fmt
     abseil-cpp
     boost175
+    eigen339
   ];
   shellHook = ''
     # For eonclient
