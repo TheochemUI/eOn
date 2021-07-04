@@ -1,11 +1,9 @@
 let
   sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs { };
-  mach-nix = import (pkgs.fetchFromGitHub {
-    owner  = "DavHau";
-    repo   = "mach-nix";
-    rev = "8877cdb599acd0f4aa466649fcf52964b4ae9b5c";
-    sha256 = "sha256-KWVgOZS9+v3fx/8bXQqZTkCsy09edohOhy76pUNIowI=";
+  mach-nix = import (builtins.fetchGit {
+    url = "https://github.com/DavHau/mach-nix.git";
+    ref = "refs/tags/3.3.0";
   }) {
     pkgs = pkgs;
     python = "python38";
@@ -42,10 +40,11 @@ in pkgs.mkShell {
     gtest
     bashInteractive
     which
+    customPython
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
-    gdb
+    lldb
     eigen339
    # gfortran
    # gfortran.cc
@@ -62,7 +61,7 @@ in pkgs.mkShell {
     boost175
   ];
   shellHook = ''
-    export PYTHONPATH=$(pwd):$PYTHONPATH
-    export PATH=$(pwd)/bin:$PATH
+    # For eonclient
+    export PATH=$(pwd)/client/build:$PATH
   '';
 }
