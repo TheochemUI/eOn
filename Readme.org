@@ -18,9 +18,9 @@ In the new sub-shell:
 #+begin_src bash
 cd client
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE
-make -j$(nproc) VERBOSE=1 && make check
-export PATH=$(pwd):$PATH
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja"
+VERBOSE=1 ninja
+ctest
 #+end_src
 ** Testing
 Once ~eonclient~ has been built following the instructions above, we can run integration tests (AKMC) in the development environment.
