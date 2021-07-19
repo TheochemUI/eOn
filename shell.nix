@@ -35,12 +35,13 @@ let
   hardeningEnable = ["pic"];
   });
 in pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ];
+  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack glibcLocales ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
     which
     customPython
+    ninja
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
@@ -64,5 +65,7 @@ in pkgs.mkShell {
   shellHook = ''
     # For eonclient
     export PATH=$(pwd)/client/build:$PATH
+    # Locale
+    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
   '';
 }
