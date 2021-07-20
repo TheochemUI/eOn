@@ -34,8 +34,9 @@ let
   mycompiler = myCmop.overrideAttrs(old: rec {
   hardeningEnable = ["pic"];
   });
+  eonclient = pkgs.callPackage ./default.nix { };
 in pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ];
+  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ninja ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
@@ -60,10 +61,11 @@ in pkgs.mkShell {
     abseil-cpp
     boost175
     eigen339
+    eonclient
   ];
   shellHook = ''
     # For eonclient
-    export PATH=$(pwd)/client/build:$PATH
+    # export PATH=$(pwd)/client/build:$PATH
     # Locale
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
   '';
