@@ -64,5 +64,7 @@ in pkgs.mkShell {
   shellHook = ''
     # For eonclient
     export PATH=$(pwd)/client/build:$PATH
+    # Locale
+    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
   '';
 }
