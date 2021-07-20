@@ -1,5 +1,5 @@
+{ sources ? import ./nix/sources.nix }:
 let
-  sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs { };
     eigen339 = pkgs.eigen.overrideAttrs(old: rec {
       version = "3.3.9";
@@ -9,7 +9,8 @@ in  pkgs.stdenv.mkDerivation rec {
   src = ./client;
 
   stdenv = pkgs.gcc10Stdenv;
-  buildInputs = with pkgs; [ cmake gfortran eigen339 gtest ];
+  nativeBuildInputs = with pkgs; [ cmake gfortran ninja ];
+  buildInputs = with pkgs; [ eigen339 gtest ];
 
   cmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
@@ -17,12 +18,18 @@ in  pkgs.stdenv.mkDerivation rec {
     "-DNO_WARN=TRUE"
     "-DFIND_EIGEN=TRUE"
     "-DUSE_SYSTEM_GTEST=ON"
+    "-GNinja"
     ];
 
+  # cmakeDir = "${src}/client";
+  dontUseCmakeBuildDir="";
+  buildPhase = ''
+    ninjaBuildPhase
+  '';
+
   preConfigure = ''
-    pwd
-    ls -R
     ./version.sh > version.h
+    mkdir build
   '';
 
     meta = with pkgs.lib; {
