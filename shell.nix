@@ -22,6 +22,16 @@ let
     eigen339 = pkgs.eigen.overrideAttrs(old: rec {
       version = "3.3.9";
     });
+    macHook = ''
+    # eonclient
+    export PATH=$(pwd)/client/build:$PATH
+       '';
+    linuxHook = ''
+    # eonclient
+    export PATH=$(pwd)/client/build:$PATH
+    # Locale
+    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+    '';
   myCmop = pkgs.wrapCC (pkgs.gcc10.cc.override {
     langFortran = true;
     langCC = true;
@@ -62,10 +72,5 @@ in pkgs.mkShell {
     boost175
     eigen339
   ];
-  shellHook = ''
-    # For eonclient
-    export PATH=$(pwd)/client/build:$PATH
-    # Locale
-    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-  '';
+  shellHook = if pkgs.stdenv.isDarwin then macHook else linuxHook;
 }
