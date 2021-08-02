@@ -18,10 +18,13 @@ In the new sub-shell:
 #+begin_src bash
 cd client
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja"
-VERBOSE=1 ninja
-ctest
+# cmake .. -DCMAKE_BUILD_TYPE=Debug -DUNIX=TRUE -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja"
+meson ../
+# If you have access to the GPRD
+meson configure -Dwith_gprd=TRUE
+VERBOSE=1 ninja # or meson compile
 #+end_src
+Unfortunately, though this runs on ~mac~ machines, this setup does not work ~ctest~. ~CMakeLists~ are still provided.
 ** Testing
 Once ~eonclient~ has been built following the instructions above, we can run integration tests (AKMC) in the development environment.
 #+begin_src bash
@@ -69,7 +72,7 @@ Not the best method, but still cleaner than keeping a whole temporary run folder
 make -j$(nproc) && make check
 cd gtests
 cp ../../gtests/data/gpr_dimer/client.log ../../gtests/data/gpr_dimer/config.ini ../../gtests/data/gpr_dimer/direction.dat ../../gtests/data/gpr_dimer/displacement.con ../../gtests/data/gpr_dimer/mode.dat ../../gtests/data/gpr_dimer/pos.con ../../gtests/data/gpr_dimer/results.dat .
-gdb gprdimereon
+gdb gprdimereon # or lldb
 #+end_src
 * TODO Development Rosetta
 ** Machine Learning Concepts
