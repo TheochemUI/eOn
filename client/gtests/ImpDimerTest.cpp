@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "../HelperFunctions.h"
+#include "../GPRHelpers.h"
 #include "../ImprovedDimer.h"
 #include "../Job.h"
 #include "../Log.h"
