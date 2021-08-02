@@ -44,6 +44,11 @@ eon_pot = declare_dependency(link_with : potentials)
   # include_directories : my_inc)
 
 eonclient_sources = [
+           'ClientEON.cpp',
+           'CommandLine.cpp',
+]
+
+eonlib_sources = [
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
@@ -86,9 +91,7 @@ eonclient_sources = [
            'Quickmin.cpp',
            'ParallelReplicaJob.cpp',
            'Potential.cpp',
-           'ClientEON.cpp',
            'BasinHoppingJob.cpp',
-           'CommandLine.cpp',
            'FIRE.cpp',
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
@@ -167,9 +170,16 @@ endif
 
 # ---------------------- Executable
 
+elib = shared_library('elib',
+                      eonlib_sources,
+                      dependencies : eon_deps,
+                      link_with : potentials,
+                      c_args : eon_extra_args,
+                      install : true)
+
 ec = executable('eonclient',
                 eonclient_sources,
                 dependencies : eon_deps,
-                link_with : potentials,
+                link_with : [ potentials, elib ],
                 c_args : eon_extra_args,
                 install : true)
