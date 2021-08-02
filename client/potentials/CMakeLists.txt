@@ -1,22 +1,13 @@
 set(basePotentials
-    Aluminum
     EAM
-    EDIP
     EMT
     ExtPot
-    FeHe
-    # GPRPotential
-    # LAMMPS # Needs external library
-    Lenosky
     LJ
     LJCluster
     Morse
     NewPot
     VASP
-    # PyAMFF # Needs external library
-    QSC
-    SW
-    Tersoff)
+    )
 
 if(${WIN32})
   # No VASP for Windows
@@ -41,15 +32,16 @@ if(${WITH_LAMMPS})
   string(APPEND basePotentials ";LAMMPS")
 endif()
 
-if(${NO_FORTRAN})
-  # Kill all Fortran based potentials
-  string(REPLACE "Aluminum" "" basePotentials "${basePotentials}")
-  string(REPLACE "Lenosky" "" basePotentials "${basePotentials}")
-  string(REPLACE "SW" "" basePotentials "${basePotentials}")
-  string(REPLACE "Tersoff" "" basePotentials "${basePotentials}")
-  string(REPLACE "EDIP" "" basePotentials "${basePotentials}")
-  string(REPLACE "Water_H" "" basePotentials "${basePotentials}")
-  string(REPLACE "FeHe" "" basePotentials "${basePotentials}")
+if(${WITH_FORTRAN})
+  string(APPEND basePotentials ";Aluminum;Water_H;Lenosky;SW;Tersoff;EDIP;FeHe;SW")
+endif()
+
+if(${WITH_PYTHON})
+  string(APPEND basePotentials ";PyAMFF;QSC")
+endif()
+
+if(${WITH_GPRD})
+  string(APPEND basePotentials ";GPRPotential")
 endif()
 
 foreach(pot ${basePotentials})
