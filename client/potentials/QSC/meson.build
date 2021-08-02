@@ -1,5 +1,5 @@
 qsc=shared_library('qsc',
            '_qsc.cpp',
            'QSC.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)

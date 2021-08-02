@@ -1,4 +1,4 @@
 ams = shared_library('ams',
            'AMS.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)

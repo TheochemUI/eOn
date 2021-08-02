@@ -1,4 +1,4 @@
 mpipot=shared_library('mpipot',
            'MPIPot.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)

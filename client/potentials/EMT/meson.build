@@ -2,6 +2,6 @@ subdir('Asap')
 
 emt = shared_library('emt',
            'EffectiveMediumTheory.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            link_with : asap,
            install : true)

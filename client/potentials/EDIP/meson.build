@@ -1,5 +1,5 @@
 edip = shared_library('edip',
            'EDIP.cpp',
            'edipFortran.f90',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)
