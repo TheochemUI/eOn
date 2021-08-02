@@ -12,7 +12,7 @@ let
     requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
       # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
-      ./.                                     # from local path
+      ./.                                    # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
     ];  };
  #   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
@@ -52,10 +52,11 @@ in pkgs.mkShell {
     which
     customPython
     ninja
+    mycompiler
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
-    lldb
+    (if pkgs.stdenv.isDarwin then null else lldb)
     graphviz
    # gfortran
    # gfortran.cc

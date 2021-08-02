@@ -2,18 +2,18 @@
 
 #include "AtomicGPDimer.h"
 #include "HelperFunctions.h"
+#include "GPRHelpers.h"
 #include "Log.h"
 #include <cassert>
 #include <cmath>
 
 #include "gprdimer/gpr/AtomicDimer.h"
 #include "gprdimer/gpr/Enums.h"
+#include "gprdimer/structures/Structures.h"
 #include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
 #include "gprdimer/gpr/covariance_functions/ConstantCF.h"
 #include "gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "gprdimer/gpr/ml/GaussianProcessRegression.h"
-
-using namespace helper_functions;
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
@@ -22,7 +22,7 @@ AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
   parameters = params;
   matterCenter = new Matter(parameters);
   *matterCenter = *matter;
-  p = eon_parameters_to_gpr(params);
+  p = helper_functions::eon_parameters_to_gpr(params);
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
@@ -32,7 +32,7 @@ AtomicGPDimer::~AtomicGPDimer() { delete matterCenter; }
 
 void AtomicGPDimer::compute(Matter *matter,
                             AtomMatrix initialDirectionAtomMatrix) {
-  atoms_config = eon_matter_to_atmconf(matter);
+  atoms_config = helper_functions::eon_matter_to_atmconf(matter);
   *matterCenter = *matter;
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
