@@ -12,7 +12,7 @@ let
     requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
       # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
-      ./.                                     # from local path
+      ./.                                    # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
     ];  };
  #   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
@@ -22,6 +22,16 @@ let
     eigen339 = pkgs.eigen.overrideAttrs(old: rec {
       version = "3.3.9";
     });
+    macHook = ''
+    # eonclient
+    export PATH=$(pwd)/client/build:$PATH
+       '';
+    linuxHook = ''
+    # eonclient
+    export PATH=$(pwd)/client/build:$PATH
+    # Locale
+    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+    '';
   myCmop = pkgs.wrapCC (pkgs.gcc10.cc.override {
     langFortran = true;
     langCC = true;
@@ -42,10 +52,12 @@ in pkgs.mkShell {
     bashInteractive
     which
     customPython
+    ninja
+    mycompiler
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
-    lldb
+    (if pkgs.stdenv.isDarwin then null else lldb)
     graphviz
    # gfortran
    # gfortran.cc
@@ -63,10 +75,5 @@ in pkgs.mkShell {
     eigen339
     eonclient
   ];
-  shellHook = ''
-    # For eonclient
-    # export PATH=$(pwd)/client/build:$PATH
-    # Locale
-    export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-  '';
+  shellHook = if pkgs.stdenv.isDarwin then macHook else linuxHook;
 }
