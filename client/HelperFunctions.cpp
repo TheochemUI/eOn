@@ -1,7 +1,9 @@
 #include "HelperFunctions.h"
 #include "Log.h"
 
-#include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
+#ifdef WITH_GPRD
+  #include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
+#endif
 
 #include <math.h>
 #include <cassert>
@@ -795,6 +797,8 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     }
 }
 
+#ifdef WITH_GPRD
+
 gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
   gpr::InputParameters p;
@@ -1028,3 +1032,5 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   o.G.assignFromEigenMatrix(matter->getForces());
   return o;
 }
+
+#endif
