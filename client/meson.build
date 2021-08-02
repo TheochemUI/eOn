@@ -16,7 +16,7 @@ if host_system == 'darwin'
 endif
 
 # Dependencies
-eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'])
+eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
 eon_deps = [ eigen_dep ]
 
 # Potentials
