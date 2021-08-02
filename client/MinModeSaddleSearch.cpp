@@ -4,7 +4,9 @@
 #include "Lanczos.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
-#include "AtomicGPDimer.h"
+#ifdef WITH_GPRD
+  #include "AtomicGPDimer.h"
+#endif
 #include "EpiCenters.h"
 #include "ObjectiveFunction.h"
 #include "Log.h"
@@ -165,9 +167,12 @@ MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePa
         }
     }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
         minModeMethod = new Lanczos(matter, parameters);
-    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    }
+#ifdef WITH_GPRD
+    else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         minModeMethod = new AtomicGPDimer(matter, parameters);
     }
+#endif
 }
 
 MinModeSaddleSearch::~MinModeSaddleSearch()
