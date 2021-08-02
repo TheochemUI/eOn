@@ -56,7 +56,7 @@ in pkgs.mkShell {
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
-    lldb
+    (if pkgs.stdenv.isDarwin then null else lldb)
     graphviz
    # gfortran
    # gfortran.cc
