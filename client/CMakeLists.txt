@@ -130,7 +130,8 @@ add_library(
   BondBoost.cpp
   FiniteDifferenceJob.cpp
   NudgedElasticBandJob.cpp
-  TestJob.cpp
+  # TestJob.cpp
+  GPRHelpers.cpp
   BasinHoppingJob.cpp
   SaddleSearchJob.cpp
   ImprovedDimer.cpp
