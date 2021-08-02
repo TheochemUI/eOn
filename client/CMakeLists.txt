@@ -162,7 +162,7 @@ add_library(
 # Options
 if(MPI)
   target_compile_definitions(eonclient PUBLIC -DEONMPI)
-  # Python is only used with MPI
+  # Python is used with MPI
   find_package(Python COMPONENTS Interpreter Development)
   include_directories(${Python_INCLUDE_DIRS})
   # Need the MPI libraries
@@ -192,13 +192,24 @@ if(WITH_AMS)
   target_compile_definitions(eonlib PUBLIC -DWITH_AMS)
 endif()
 
+if(WITH_GPRD)
+  target_compile_definitions(eonlib PUBLIC -DWITH_GPRD)
+endif()
+
 if(WITH_LAMMPS)
   target_compile_definitions(eonlib PUBLIC -DLAMMPS_POT)
   target_compile_definitions(eonclient PUBLIC -DLAMMPS_POT)
 endif()
 
-if(NO_FORTRAN)
-  target_compile_definitions(eonlib PUBLIC -DNO_FORTRAN)
+if(WITH_FORTRAN)
+  target_compile_definitions(eonlib PUBLIC -DWITH_FORTRAN)
+endif()
+
+if(WITH_PYTHON)
+  # Python is used for potentials
+  find_package(Python COMPONENTS Interpreter Development)
+  include_directories(${Python_INCLUDE_DIRS})
+  target_link_libraries(eonclient ${Python_LIBRARIES})
 endif()
 
 # Tests
