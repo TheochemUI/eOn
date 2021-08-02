@@ -1,0 +1,11 @@
+aluminum = shared_library('aluminum',
+           'fofrhoDblexp.f',
+           'dfrhoDblexp.f',
+           'potinit.f',
+           'forces.f',
+           'Aluminum.cpp',
+           'gagafeDblexp.f',
+           'embedenergy.f',
+           'sumembforce.f',
+           dependencies : eigen_dep,
+           install : true)
