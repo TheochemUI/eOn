@@ -14,11 +14,21 @@ To get a new shell to work on the packages, use the following:
 #+begin_src bash
 nix-shell --pure --run bash --show-trace --verbose
 #+end_src
+***** Linux
+In a new sub-shell:
+#+begin_src bash
+# On Linux machines:
+cd client
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DUNIX=TRUE -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DWITH_GPRD=TRUE -DWITH_FORTRAN=FALSE -G "Ninja"
+VERBOSE=1 ninja
+ctest
+#+end_src
+***** MacOS
 In the new sub-shell:
 #+begin_src bash
 cd client
 mkdir build && cd build
-# cmake .. -DCMAKE_BUILD_TYPE=Debug -DUNIX=TRUE -DPACKAGE_TESTS=ON -DNO_WARN=TRUE -DFIND_EIGEN=TRUE -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -G "Ninja"
 meson ../
 # If you have access to the GPRD
 meson configure -Dwith_gprd=TRUE
