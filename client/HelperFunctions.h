@@ -6,8 +6,6 @@
 #include <vector>
 #include <string>
 
-#include "gprdimer/structures/Structures.h"
-
 // Random number generator constants
 
 #define IM 2147483647
@@ -72,31 +70,5 @@ namespace helper_functions {
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
     void pushApart(Matter *m1, double minDistance);
 
-    /**
-     * \brief Create a parameters object for gpr_dimer
-     *
-     * TODO: Get the cell size from a Matter object
-     *
-     * @param *parameters An EON parameters object
-     */
-    gpr::InputParameters eon_parameters_to_gpr(Parameters *parameters);
-
-    /**
-     * \brief Create a configuration of atoms for gpr_dimer
-     *
-     * @param *Matter An EON Matter object
-     */
-    gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
-
-    /**
-     * \brief Create an initial Observation object for gpr_dimer
-     *
-     * Note that this is essentially only for the setup, and it does not
-     * actually append or handle the Observation structure other than for
-     * initialization of atomic gp dimer
-     *
-     * @param *Matter An EON Matter object
-     */
-    gpr::Observation eon_matter_to_init_obs(Matter *matter);
     } // namespace helper_functions
 #endif
