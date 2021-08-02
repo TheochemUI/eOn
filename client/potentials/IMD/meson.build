@@ -1,4 +1,4 @@
 imd = shared_library('imd',
            'IMD.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)

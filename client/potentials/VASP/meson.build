@@ -1,4 +1,4 @@
 vasp=shared_library('vasp',
            'VASP.cpp',
-           include_directories : eigen_inc,
+           dependencies : eigen_dep,
            install : true)

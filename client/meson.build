@@ -15,10 +15,9 @@ if host_system == 'darwin'
   eon_extra_args += ['-DOSX=TRUE']
 endif
 
-# nix path-info --all | grep eigen
-eigen_inc = include_directories('/nix/store/ppk77yx8jk4szzfkbj5jkzrqgqcis8f1-eigen-3.3.9/include/eigen3/')
-
-eon_incs = [ eigen_inc ]
+# Dependencies
+eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'])
+eon_deps = [ eigen_dep ]
 
 # Potentials
 subdir('potentials/EAM')
@@ -103,7 +102,7 @@ if get_option('with_gprd')
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
   eon_extra_args += ['-DWITH_GPRD']
-  eon_sources += [ 'AtomicGPDimer.cpp' ]
+  eonclient_sources += [ 'AtomicGPDimer.cpp' ]
 endif
 
 if get_option('with_vasp')
@@ -168,7 +167,7 @@ endif
 
 ec = executable('eonclient',
                 eonclient_sources,
-                include_directories : eon_incs,
+                dependencies : eon_deps,
                 link_with : potentials,
                 c_args : eon_extra_args,
                 install : true)
