@@ -148,7 +148,7 @@ if get_option('with_mpi')
   potentials += [ mpipot ]
   eon_extra_args += ['-DEONMPI']
   mpi_dep = dependency('mpi')
-  eon_incs.append(mpi_dep)
+  eon_deps += [ mpi_dep ]
 endif
 
 if get_option('with_fortran')
