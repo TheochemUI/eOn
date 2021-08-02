@@ -5,7 +5,7 @@ set(basePotentials
     EMT
     ExtPot
     FeHe
-    GPRPotential
+    # GPRPotential
     # LAMMPS # Needs external library
     Lenosky
     LJ
