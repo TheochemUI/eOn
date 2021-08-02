@@ -603,6 +603,7 @@ Temporary Items
 # Meson Directories
 meson-logs
 meson-private
+meson-info
 
 # Meson Files
 meson_benchmark_setup.dat

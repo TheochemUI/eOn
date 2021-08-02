@@ -36,7 +36,7 @@ const char Job::PREFACTOR[] =                "prefactor";
 const char Job::GLOBAL_OPTIMIZATION[] =      "global_optimization";
 const char Job::STRUCTURE_COMPARISON[] =     "structure_comparison";
 const char Job::MONTE_CARLO[] =              "monte_carlo";
-const char Job::TEST[] =                     "test";
+// const char Job::TEST[] =                     "test";
 
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;
@@ -72,8 +72,8 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new GlobalOptimizationJob(parameters);
     }else if (parameters->job == Job::STRUCTURE_COMPARISON) {
         job =  new StructureComparisonJob(parameters);
-    }else if (parameters->job == Job::TEST) {
-        job =  new TestJob(parameters);
+    // }else if (parameters->job == Job::TEST) {
+    //     job =  new TestJob(parameters);
     }else if (parameters->job == Job::MONTE_CARLO) {
         job = new MonteCarloJob(parameters);
     }
