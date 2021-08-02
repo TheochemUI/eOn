@@ -8,8 +8,8 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef NEWPOT_INTERFACE
-#define NEWPOT_INTERFACE
+#ifndef GPRPOT_INTERFACE
+#define GPRPOT_INTERFACE
 
 #include "../../Potential.h"
 #include "../../../gpr_dimer/gpr/ml/GaussianProcessRegression.h"

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "../HelperFunctions.h"
+#include "../GPRHelpers.h"
 #include "../Matter.h"
 #include "../Parameters.h"
 #include "ObsTest.h"
