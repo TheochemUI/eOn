@@ -53,11 +53,13 @@ in pkgs.mkShell {
     which
     customPython
     ninja
+    meson
     mycompiler
   #  gcc10Stdenv
   #  gfortran
     #   valgrind
     (if pkgs.stdenv.isDarwin then null else lldb)
+    (if pkgs.stdenv.isDarwin then null else eonclient)
     graphviz
    # gfortran
    # gfortran.cc
