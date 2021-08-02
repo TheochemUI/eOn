@@ -5,8 +5,11 @@
 #include "LowestEigenmode.h"
 #include "Dimer.h"
 #include "ImprovedDimer.h"
-#include "AtomicGPDimer.h"
 #include "Lanczos.h"
+
+#ifdef WITH_GPRD
+  #include "AtomicGPDimer.h"
+#endif
 
 class ObjectiveFunction
 {

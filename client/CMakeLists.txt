@@ -171,17 +171,16 @@ if(MPI)
   target_link_libraries(eonclient ${Python_LIBRARIES} MPI::MPI_CXX)
 endif()
 
-if(UNIX)
-  target_compile_definitions(eonclient PUBLIC -DLINUX)
-endif()
-
-if(OSX)
+# https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/How-To-Write-Platform-Checks
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  target_compile_definitions(eonlib PUBLIC -DOSX)
   target_compile_definitions(eonclient PUBLIC -DOSX)
-endif()
-
-if(WIN32)
-  target_compile_definitions(eonlib PUBLIC -DWIN32) # No VASP
-  target_compile_definitions(eonclient PUBLIC -DWIN32)
+  elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  target_compile_definitions(eonlib PUBLIC -DLINUX)
+    target_compile_definitions(eonclient PUBLIC -DLINUX)
+  elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    target_compile_definitions(eonlib PUBLIC -DWIN32) # No VASP
+    target_compile_definitions(eonclient PUBLIC -DWIN32)
 endif()
 
 if(WITH_WATER)
