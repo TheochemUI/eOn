@@ -99,10 +99,12 @@ eonclient_sources = [
 
 if get_option('with_gprd')
   subdir('gprdimer')
+  libgprd_dep = declare_dependency(link_with : gprdlib)
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
   eon_extra_args += ['-DWITH_GPRD']
-  eonclient_sources += [ 'AtomicGPDimer.cpp' ]
+  eonclient_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+  eon_deps += [ libgprd_dep ]
 endif
 
 if get_option('with_vasp')
