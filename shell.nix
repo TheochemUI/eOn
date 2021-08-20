@@ -75,7 +75,6 @@ in pkgs.mkShell {
     abseil-cpp
     boost175
     eigen339
-    eonclient
   ];
   shellHook = if pkgs.stdenv.isDarwin then macHook else linuxHook;
 }
