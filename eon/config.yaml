@@ -69,6 +69,7 @@ Potential:
                 - lj
                 - lj_cluster
                 - edip
+                - gprpot
                 - morse_pt
                 - zpice
                 - bopfox
