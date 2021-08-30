@@ -238,7 +238,7 @@ def neighbor_list_vectors(p, cutoff, brute=False):
     '''Points from center to neighbor'''
     nl = neighbor_list(p, cutoff, brute=brute)
     nl_vec = []
-
+    
     ibox = numpy.linalg.inv(p.box)
     for center_index in range(len(p)):
         nl_vec.append([])
@@ -308,6 +308,20 @@ def rot_match(a, b):
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
 
+    # SVD algorithm ("Least-Squares Fitting of Two 3-D Point Sets" by Arun, Huang, and Blostein)
+    ta_r = ta.r - acm
+    tb_r = tb.r - bcm
+    H = numpy.dot(ta_r.transpose() , tb_r)
+    U, S, V = numpy.linalg.svd(H)
+    R = numpy.dot(U, V)
+    if numpy.linalg.det(R) < 0:
+        V[2] *= -1
+        R = numpy.dot(U, V)
+    ta_r = numpy.dot(ta_r, R)
+    dist = max(numpy.linalg.norm(ta_r - tb_r, axis=1))
+    return dist < config.comp_eps_r
+
+    ''' Quaternion algorithm
     ta = a.copy()
     tb = b.copy()
     ta.r -= acm
@@ -376,6 +390,7 @@ def rot_match(a, b):
 
     dist = max(per_atom_norm(ta.r - tb.r, ta.box))
     return dist < config.comp_eps_r
+    '''
 
     ### This gives the RMSD faster, but does not give the optimial rotation
     ### this could be amended by solving for the eigenvector corresponding to the largest eigenvalue
