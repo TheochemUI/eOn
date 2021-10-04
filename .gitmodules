@@ -1,3 +1,3 @@
 [submodule "gpr_dimer"]
-	path = client/gprdimer
+	path = client/subprojects/gprdimer
 	url = git@github.com:maxim-masterov/gpr_dimer.git 

@@ -101,7 +101,7 @@ add_dependencies(eonclient potentials eonlib version gprdimer)
 target_link_libraries(eonclient potentials eonlib gprdimer)
 
 # Sub-directories
-add_subdirectory(gprdimer)
+add_subdirectory(subprojects/gprdimer)
 add_subdirectory(potentials)
 
 # Dependencies
