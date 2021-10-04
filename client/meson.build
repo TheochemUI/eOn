@@ -19,6 +19,29 @@ endif
 eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
 eon_deps = [ eigen_dep ]
 
+# Optional, only for AMS
+absl_dep = dependency('absl', method : 'cmake',
+  modules : [
+    'absl::base',
+    'absl::strings',
+    'absl::numeric',
+    'absl::utility',
+  ],
+  required : false,
+)
+
+boost_ams_dep = dependency('boost',
+  modules : [
+    'headers',
+    'iostreams',
+  ],
+  required : false,
+)
+
+fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : false)
+
+ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
+
 # Potentials
 subdir('potentials/EAM')
 subdir('potentials/EMT')
