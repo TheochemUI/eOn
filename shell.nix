@@ -19,9 +19,18 @@ let
     eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
       stdenv = pkgs.clangStdenv;
     });
-    eigen339 = pkgs.eigen.overrideAttrs(old: rec {
-      version = "3.3.9";
-    });
+    eigen339 = pkgs.eigen.overrideAttrs (old: rec {
+    version = "3.3.9";
+    stdenv = pkgs.gcc10Stdenv;
+    src = pkgs.fetchFromGitLab {
+      owner = "libeigen";
+      repo = "eigen";
+      rev    = "${version}";
+      sha256 = "0m4h9fd5s1pzpncy17r3w0b5a6ywqjajmnr720ndb7fc4bn0dhi4";
+    };
+    # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
+    patches = [ ./eigen_include_dir.patch ];
+  });
     macHook = ''
     # eonclient
     export PATH=$(pwd)/client/build:$PATH
