@@ -12,7 +12,7 @@
 #define GPRPOT_INTERFACE
 
 #include "../../Potential.h"
-#include "../../../gpr_dimer/gpr/ml/GaussianProcessRegression.h"
+#include "../../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 
 /** Template to use if user want to provide potential. */
 class GPRPotential : public Potential{

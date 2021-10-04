@@ -7,14 +7,14 @@
 #include "Parameters.h"
 #include <vector>
 
-#include "gprdimer/gpr/AtomicDimer.h"
-
-#include "gprdimer/gpr/Enums.h"
-#include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
-#include "gprdimer/gpr/covariance_functions/ConstantCF.h"
-#include "gprdimer/gpr/covariance_functions/SexpatCF.h"
-#include "gprdimer/gpr/ml/GaussianProcessRegression.h"
-#include "gprdimer/managers/io/FileManager.h"
+// Defined in the gprdimer target
+#include "subprojects/gprdimer/gpr/AtomicDimer.h"
+#include "subprojects/gprdimer/gpr/Enums.h"
+#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gprdimer/gpr/covariance_functions/ConstantCF.h"
+#include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
+#include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
+#include "subprojects/gprdimer/managers/io/FileManager.h"
 
 // dimer method to find the lowest curvature mode
 class AtomicGPDimer : public LowestEigenmode {
