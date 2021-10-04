@@ -13,6 +13,10 @@ cppc = meson.get_compiler('cpp')
 # Add conditionals
 if host_system == 'darwin'
   eon_extra_args += ['-DOSX=TRUE']
+  # Workaround for
+  # ../MinModeSaddleSearch.cpp:173:25: error: aligned allocation function of
+  # type 'void *(unsigned long, enum std::align_val_t)' is only available on macOS 10.13 or newer
+  add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
 
 # Dependencies
@@ -121,13 +125,13 @@ eonclient_sources = [
 # ------------------- Options
 
 if get_option('with_gprd')
-  subdir('gprdimer')
-  libgprd_dep = declare_dependency(link_with : gprdlib)
+  libgprd_proj = subproject('gprdimer')
+  gprd_dep = libgprd_proj.get_variable('libgprd_dep')
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
   eon_extra_args += ['-DWITH_GPRD']
   eonclient_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-  eon_deps += [ libgprd_dep ]
+  eon_deps += [ gprd_dep ]
 endif
 
 if get_option('with_vasp')
