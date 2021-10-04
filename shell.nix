@@ -24,11 +24,11 @@ let
     });
     macHook = ''
     # eonclient
-    export PATH=$(pwd)/client/build:$PATH
+    export PATH=$(pwd)/client/builddir:$PATH
        '';
     linuxHook = ''
     # eonclient
-    export PATH=$(pwd)/client/build:$PATH
+    export PATH=$(pwd)/client/builddir:$PATH
     # Locale
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
     '';
