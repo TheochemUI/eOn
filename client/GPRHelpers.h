@@ -5,8 +5,8 @@
 #include "Parameters.h"
 #include "Log.h"
 
-#include "gprdimer/structures/Structures.h"
-#include "gprdimer/gpr/auxiliary/ProblemSetUp.h"
+#include "subprojects/gprdimer/structures/Structures.h"
+#include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
 
 namespace helper_functions {
     /**
