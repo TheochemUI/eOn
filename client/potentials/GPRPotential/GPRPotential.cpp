@@ -9,8 +9,8 @@
 //-----------------------------------------------------------------------------------
 
 #include"GPRPotential.h"
-#include"../../../gpr_dimer/structures/Structures.h"
-#include"../../../gpr_dimer/gpr/auxiliary/AdditionalFunctionality.h"
+#include"../../subprojects/gprdimer/structures/Structures.h"
+#include"../../subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
 
 namespace {
 
