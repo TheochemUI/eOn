@@ -194,5 +194,5 @@ ec = executable('eonclient',
                 eonclient_sources,
                 dependencies : eon_deps,
                 link_with : potentials,
-                c_args : eon_extra_args,
+                cpp_args : eon_extra_args,
                 install : true)
