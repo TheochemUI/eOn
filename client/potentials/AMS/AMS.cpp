@@ -10,6 +10,7 @@
 
 #include "AMS.h"
 #include <unistd.h>
+#include <sys/stat.h>
 
 namespace bp = boost::process;
 
@@ -67,7 +68,7 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 void AMS::runAMS() {
   boost::asio::io_context amsRun;
   std::future<std::string> err;
-  bp::spawn("chmod +x run_AMS.sh");
+  chmod("run_AMS.sh", S_IRWXU);
   bp::child c("run_AMS.sh", // set the input
               bp::env["AMS_JOBNAME"] = cjob, bp::std_in.close(),
               bp::std_out > bp::null, // so it can be written without anything
@@ -78,7 +79,7 @@ void AMS::runAMS() {
     if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
       throw std::runtime_error("AMS STDERR:\n");
     } else {
-      // std::cout << "\nAMS exited with " << erro;
+      std::cout << "\nAMS exited with " << erro;
     }
   } catch (const std::exception &e) {
     std::cout << e.what();
@@ -110,7 +111,7 @@ void AMS::extract_rkf(long N, std::string key) {
     if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
       throw std::runtime_error("AMS STDERR:\n");
     } else {
-      // std::cout << "Extract " << key << ": " << erro;
+      std::cout << "Extract " << key << ": " << erro;
     }
   } catch (const std::exception &e) {
     std::cout << e.what();
@@ -198,7 +199,8 @@ void AMS::updateCoord(long N, const double *R) {
   updCoord.open("updCoord.sh");
   updCoord << coordDump;
   updCoord.close();
-  bp::spawn("chmod +x updCoord.sh");
+  // bp::spawn("chmod +x updCoord.sh");
+  chmod("updCoord.sh", S_IRWXU);
   bp::child cuprog("updCoord.sh", bp::std_err > bp::null);
   cuprog.wait();
   return;
@@ -305,6 +307,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   fprintf(out, "@include myrestart.in\n");
   fprintf(out, "eor");
   fclose(out);
+  chmod("run_AMS.sh", S_IRWXU);
   return;
 }
 
@@ -338,5 +341,6 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   fprintf(out, "@include myrestart.in\n");
   fprintf(out, "eor");
   fclose(out);
+  chmod("run_AMS.sh", S_IRWXU);
   return;
 }
