@@ -57,19 +57,29 @@ Parameters::Parameters(){
     EMTRasmussen = false;
     extPotPath = "./ext_pot";
 
+
     // [AMS] //
     engine = "REAXFF"; // One of REAXFF MOPAC
     forcefield = ""; // OPt.ff or something else
     model = ""; // PM7 PM3 or something
     xc = ""; // exchange-correlation functional
 
-    
+    // [AMS_ENV] //
+    // Horrid little section to mimic amsrc.sh
+    amshome = "/some/path/to/amshome/";
+    scm_tmpdir = "/tmp";
+    scm_pythondir = "/.scm/python";
+    amsbin = amshome.append("/bin");
+    scmlicense = amshome.append("license.txt");
+    amsresources = amshome.append("/atomicdata");
+
+
     // [Structure Comparison] //
     distanceDifference = 0.1;
     neighborCutoff = 3.3;
     checkRotation = false;
     indistinguishableAtoms = true;
-	energyDifference = 0.01;
+    energyDifference = 0.01;
     removeTranslation = true;
 
     // [Debug] //
@@ -392,6 +402,17 @@ int Parameters::load(FILE *file){
             forcefield = ini.GetValue("AMS_IO", "forcefield", forcefield);
             model = ini.GetValue("AMS_IO", "model", model);
             xc = ini.GetValue("AMS_IO", "xc", xc);
+        }
+        // [AMS_ENV]
+        // This is only needed if the regular calls do not work
+        // e.g. on a MacOS machine
+        if (potential=="ams_io" || potential=="ams"){
+            amshome = ini.GetValue("AMS_ENV", "amshome", amshome);
+            scm_tmpdir = ini.GetValue("AMS_ENV", "scm_tmpdir", scm_tmpdir);
+            scmlicense = ini.GetValue("AMS_ENV", "scmlicense", scmlicense);
+            scm_pythondir = ini.GetValue("AMS_ENV", "scm_pythondir", scm_pythondir);
+            amsbin = ini.GetValue("AMS_ENV", "amsbin", amsbin);
+            amsresources = ini.GetValue("AMS_ENV", "amsresources", amsresources);
         }
 
 
@@ -722,7 +743,7 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-       if (potential == "ams") {
+       if (potential == "ams" || potential == "ams_io") {
          if (forcefield.empty() && model.empty() && xc.empty()) {
            char msg[] =
                "error:  [AMS] Must provide atleast forcefield or model or xc\n";
