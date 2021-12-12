@@ -21,6 +21,7 @@
 #include <absl/strings/string_view.h>
 #include <boost/asio.hpp>
 #include <boost/process.hpp>
+#include <boost/process/environment.hpp>
 
 #include <algorithm>
 #include <fstream>
@@ -46,6 +47,8 @@ private:
   const char *model;
   const char *forcefield;
   const char *xc;
+  // Environment
+  boost::process::native_environment nativenv;
   int counter;
   bool first_run, job_one;
   std::string jname, restartj, cjob, pjob;

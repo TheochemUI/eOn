@@ -63,12 +63,20 @@ public:
     string model;
     string xc;
 
+    // [AMS_ENV] //
+    string amshome;
+    string scm_tmpdir;
+    string scmlicense;
+    string scm_pythondir;
+    string amsbin;
+    string amsresources;
+
     // [Structure Comparison] //
     double distanceDifference; // The distance criterion for comparing geometries
     double neighborCutoff; // radius used in the local atomic structure analysis
     bool   checkRotation;
     bool   indistinguishableAtoms;
-	double energyDifference;
+    double energyDifference;
     bool   removeTranslation;
 
     // [Process Search] //
