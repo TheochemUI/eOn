@@ -19,6 +19,17 @@ AMS::AMS(Parameters *p) {
   forcefield = p->forcefield.c_str();
   model = p->model.c_str();
   xc = p->xc.c_str();
+  // Environment
+  nativenv = boost::this_process::environment();
+  nativenv["AMSHOME"] = p->amshome;
+  nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
+  nativenv["SCMLICENSE"] = p->scmlicense;
+  nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
+  nativenv["AMSBIN"] = p->amsbin;
+  nativenv["AMSRESOURCES"] = p->amsresources;
+  nativenv["PATH"] += p->amsbin;
+  // Do not pass "" in the config files
+  // std::cout<<nativenv["PATH"].to_string()<<std::endl;
   counter = 0;
   // TODO: Optimize and reuse existing files Currently each Matter will
   // recreate the folders It should instead figure out if results exist and
@@ -69,23 +80,25 @@ void AMS::runAMS() {
   boost::asio::io_context amsRun;
   std::future<std::string> err;
   chmod("run_AMS.sh", S_IRWXU);
+  nativenv["AMS_JOBNAME"] = cjob;
   bp::child c("run_AMS.sh", // set the input
-              bp::env["AMS_JOBNAME"] = cjob, bp::std_in.close(),
+              nativenv, bp::std_in.close(),
               bp::std_out > bp::null, // so it can be written without anything
               bp::std_err > err, amsRun);
   amsRun.run();
-  auto erro = err.get();
-  try {
-    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      throw std::runtime_error("AMS STDERR:\n");
-    } else {
-      std::cout << "\nAMS exited with " << erro;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what();
-    std::cout << erro;
-    exit(0);
-  }
+  // TODO: Rework
+  // auto erro = err.get();
+  // try {
+  //   if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
+  //     // throw std::runtime_error("AMS STDERR:\n");
+  //   } else {
+  //     std::cout << "\nAMS exited with " << erro;
+  //   }
+  // } catch (const std::exception &e) {
+  //   std::cout << e.what();
+  //   std::cout << erro;
+  //   exit(0);
+  // }
 }
 
 void AMS::extract_rkf(long N, std::string key) {
@@ -102,14 +115,14 @@ void AMS::extract_rkf(long N, std::string key) {
                   ".rkf AMSResults%", key);
   // std::cout << execString << "\n";
   // Extract
-  bp::child eprog(execString, bp::std_in.close(), bp::std_out > rdump,
+  bp::child eprog(execString, nativenv, bp::std_in.close(), bp::std_out > rdump,
                   bp::std_err > err, rkf);
 
   rkf.run();
   auto erro = err.get();
   try {
     if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      throw std::runtime_error("AMS STDERR:\n");
+      // throw std::runtime_error("AMS STDERR:\n");
     } else {
       std::cout << "Extract " << key << ": " << erro;
     }
@@ -169,7 +182,7 @@ void AMS::updateCoord(long N, const double *R) {
                   ".results/ams.rkf Molecule%Coords");
   // std::cout << execString << "\n";
   // Store Coordinates
-  bp::child cprog(execString, bp::std_in.close(), bp::std_out > rdump,
+  bp::child cprog(execString, nativenv, bp::std_in.close(), bp::std_out > rdump,
                   bp::std_err > err, coordio);
   coordio.run();
   execDat = absl::StrSplit(rdump.get(), '\n');
@@ -201,7 +214,7 @@ void AMS::updateCoord(long N, const double *R) {
   updCoord.close();
   // bp::spawn("chmod +x updCoord.sh");
   chmod("updCoord.sh", S_IRWXU);
-  bp::child cuprog("updCoord.sh", bp::std_err > bp::null);
+  bp::child cuprog("updCoord.sh", nativenv, bp::std_err > bp::null);
   cuprog.wait();
   return;
 }
