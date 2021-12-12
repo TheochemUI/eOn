@@ -28,11 +28,9 @@ ctest
 In the new sub-shell:
 #+begin_src bash
 cd client
-mkdir build && cd build
-meson ../
-# If you have access to the GPRD
-meson configure -Dwith_gprd=TRUE
-VERBOSE=1 ninja # or meson compile
+./version.sh > version.h
+meson setup builddir -Dwith_ams=true -Dwith_gprd=true --buildtype=release
+VERBOSE=1 meson compile -C builddir
 #+end_src
 Unfortunately, though this runs on ~mac~ machines, this setup does not work ~ctest~. ~CMakeLists~ are still provided.
 ** Testing
