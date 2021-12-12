@@ -9,7 +9,7 @@
 # Partially derived from
 # https://cliutils.gitlab.io/modern-cmake/chapters/testing/googletest.html
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/gprdimer/googletest"
+add_subdirectory("${PROJECT_SOURCE_DIR}/subprojects/gprdimer/googletest"
                  "extern/googletest")
 
 mark_as_advanced(
