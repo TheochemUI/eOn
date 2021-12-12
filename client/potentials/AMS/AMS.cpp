@@ -20,14 +20,25 @@ AMS::AMS(Parameters *p) {
   model = p->model.c_str();
   xc = p->xc.c_str();
   // Environment
-  nativenv = boost::this_process::environment();
-  nativenv["AMSHOME"] = p->amshome;
-  nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
-  nativenv["SCMLICENSE"] = p->scmlicense;
-  nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
-  nativenv["AMSBIN"] = p->amsbin;
-  nativenv["AMSRESOURCES"] = p->amsresources;
-  nativenv["PATH"] += p->amsbin;
+  // TODO: Add more checks for how this can be set
+  if (p->amshome.empty() &&
+      p->scm_tmpdir.empty() &&
+      p->scmlicense.empty() &&
+      p->scm_pythondir.empty() &&
+      p->amsbin.empty() &&
+      p->amsresources.empty()) {
+    nativenv = boost::this_process::environment();
+  } else {
+    nativenv = boost::this_process::environment();
+    // Some of these can be derived from the others
+    nativenv["AMSHOME"] = p->amshome;
+    nativenv["SCM_TMPDIR"] = p->scm_tmpdir;
+    nativenv["SCMLICENSE"] = p->scmlicense;
+    nativenv["SCM_PYTHONDIR"] = p->scm_pythondir;
+    nativenv["AMSBIN"] = p->amsbin;
+    nativenv["AMSRESOURCES"] = p->amsresources;
+    nativenv["PATH"] += p->amsbin;
+  }
   // Do not pass "" in the config files
   // std::cout<<nativenv["PATH"].to_string()<<std::endl;
   counter = 0;
