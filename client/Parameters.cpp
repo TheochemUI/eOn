@@ -66,12 +66,13 @@ Parameters::Parameters(){
 
     // [AMS_ENV] //
     // Horrid little section to mimic amsrc.sh
-    amshome = "/some/path/to/amshome/";
-    scm_tmpdir = "/tmp";
-    scm_pythondir = "/.scm/python";
-    amsbin = amshome.append("/bin");
-    scmlicense = amshome.append("license.txt");
-    amsresources = amshome.append("/atomicdata");
+    // Assumes the entire thing is going to be set
+    amshome = ""; // "/some/path/to/amshome/";
+    scm_tmpdir = ""; // "/tmp";
+    scm_pythondir = ""; // "/.scm/python";
+    amsbin = ""; // amshome.append("/bin");
+    scmlicense = ""; // amshome.append("license.txt");
+    amsresources = ""; // amshome.append("/atomicdata");
 
 
     // [Structure Comparison] //
