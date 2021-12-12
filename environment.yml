@@ -12,9 +12,21 @@ dependencies:
   - cmake
   - gfortran
   - pkg-config
+  - openblas
   # Pinned
   - eigen==3.3.9
   # AMS
   - boost-cpp
   - fmt
   - abseil-cpp
+  # Testing
+  - pytest
+  - pytest-datadir
+  # Extras
+  - numpy
+  - ase
+  - PyYAML
+  - pytest
+  - pytest-datadir
+  - sh
+  - sphinx
