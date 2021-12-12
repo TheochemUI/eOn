@@ -257,8 +257,17 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   // Toggle job name
   job_one = !job_one;
   // bp::spawn("cat myrestart.in");
-  restartj = "EngineRestart ";
-  absl::StrAppend(&restartj, cjob, ".results/reaxff.rkf\n");
+  std::string strEngine(engine);
+  std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(),
+                 ::tolower);
+  // TODO: This is a hacky workaround, if there is mopac or an unsupported
+  // potential, do not include the restart information
+  if (strEngine=="mopac") {
+    restartj = "\n";
+    } else {
+    restartj = "EngineRestart ";
+    absl::StrAppend(&restartj, cjob, ".results/", strEngine,".rkf\n");
+  }
   absl::StrAppend(&restartj, "LoadSystem\nFile ", cjob,
                   ".results/ams.rkf\nSection Molecule\nEnd");
   restartFrom.open("myrestart.in");
