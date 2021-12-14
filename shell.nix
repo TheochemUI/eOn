@@ -73,21 +73,20 @@ let
           staticCompiler = false;
           profiledCompiler = false;
         }
+      ).overrideAttrs (
+        old: rec {
+          hardeningEnable = [ "pic" ];
+        }
       )
     )
     else if compiler == "clang" then (
       compilerEnv
     ) else pkgs.stdEnv
   );
-  mycompiler = myCmop.overrideAttrs (
-    old: rec {
-      hardeningEnable = [ "pic" ];
-    }
-  );
   eonclient = pkgs.callPackage ./default.nix {};
 in
 mkShellNewEnv {
-  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ninja ];
+  nativeBuildInputs = with pkgs; [ cmake blas myCmop myCmop.cc.lib lapack ninja ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
@@ -95,7 +94,7 @@ mkShellNewEnv {
     customPython
     ninja
     meson
-    mycompiler
+    myCmop
     #  gcc10Stdenv
     #  gfortran
     #   valgrind
@@ -104,7 +103,7 @@ mkShellNewEnv {
     graphviz
     # gfortran
     # gfortran.cc
-    # mycompiler.cc
+    # myCmop.cc
 
     zstd
     zlib
