@@ -91,7 +91,7 @@ let
   eonclient = pkgs.callPackage ./default.nix {};
 in
 mkShellNewEnv {
-  nativeBuildInputs = with pkgs; [ cmake blas (if compiler == "gcc" then mycompiler mycompiler.cc.lib else mycompiler) openblas ninja ];
+  nativeBuildInputs = with pkgs; [ cmake blas mycompiler (if compiler == "gcc" then mycompiler.cc.lib else null) openblas ninja ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
