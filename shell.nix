@@ -1,10 +1,25 @@
+# Generates a development environment for eonclient
+#
+# Usage examples:
+#
+# To create a dev environment:
+#
+#   nix-shell
+#
+# With clang:
+#
+#   nix-shell --argstr doomdir clang
+#
+{ withEonclient ? false, compiler ? "gcc" }:
 let
   sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs { };
-  mach-nix = import (builtins.fetchGit {
+  pkgs = import sources.nixpkgs {};
+  mach-nix = import (
+    builtins.fetchGit {
     url = "https://github.com/DavHau/mach-nix.git";
     ref = "refs/tags/3.3.0";
-  }) {
+    }
+  ) {
     pkgs = pkgs;
     python = "python38";
   };
@@ -14,14 +29,18 @@ let
       # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
       ./.                                     # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
-    ];  };
- #   mkShellNewEnv = pkgs.mkShell.override { stdenv = pkgs.gcc10Stdenv; };
-    eigenClang337 = pkgs.eigen.overrideAttrs(old: rec {
-      stdenv = pkgs.clangStdenv;
-    });
-    eigen339 = pkgs.eigen.overrideAttrs (old: rec {
+    ];
+  };
+  compilerEnv = (
+    if compiler == "gcc" then pkgs.gcc10Stdenv
+    else if compiler == "clang" then pkgs.clangStdenv
+    else pkgs.stdenv
+  );
+  mkShellNewEnv = pkgs.mkShell.override { stdenv = compilerEnv; };
+  eigen339 = pkgs.eigen.overrideAttrs (
+    old: rec {
       version = "3.3.9";
-    stdenv = pkgs.gcc10Stdenv;
+      stdenv = compilerEnv;
     src = pkgs.fetchFromGitLab {
       owner = "libeigen";
       repo = "eigen";
@@ -30,7 +49,8 @@ let
     };
     # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
     patches = [ ./eigen_include_dir.patch ];
-    });
+    }
+  );
     macHook = ''
     # eonclient
     export PATH=$(pwd)/client/builddir:$PATH
@@ -41,7 +61,10 @@ let
     # Locale
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
     '';
-  myCmop = pkgs.wrapCC (pkgs.gcc10.cc.override {
+  myCmop = (
+    if compiler == "gcc" then (
+      pkgs.wrapCC (
+        pkgs.gcc10.cc.override {
     langFortran = true;
     langCC = true;
     langC = true;
@@ -49,13 +72,33 @@ let
     enableMultilib = false;
     staticCompiler = false;
     profiledCompiler = false;
-  });
-  mycompiler = myCmop.overrideAttrs(old: rec {
-  hardeningEnable = ["pic"];
-  });
-  eonclient = pkgs.callPackage ./default.nix { };
-in pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack glibcLocales ];
+        }
+      )
+    )
+    else if compiler == "clang" then (
+      pkgs.wrapCC (
+        pkgs.clang.cc.override {
+          langFortran = true;
+          langCC = true;
+          langC = true;
+          enableShared = true;
+          enableMultilib = false;
+          staticCompiler = false;
+          profiledCompiler = false;
+        }
+      )
+
+    ) else pkgs.stdEnv
+  );
+  mycompiler = myCmop.overrideAttrs (
+    old: rec {
+      hardeningEnable = [ "pic" ];
+    }
+  );
+  eonclient = pkgs.callPackage ./default.nix {};
+in
+mkShellNewEnv {
+  nativeBuildInputs = with pkgs; [ cmake blas mycompiler mycompiler.cc.lib lapack ninja ];
   buildInputs = with pkgs; [
     gtest
     bashInteractive
@@ -68,7 +111,7 @@ in pkgs.mkShell {
   #  gfortran
     #   valgrind
     (if pkgs.stdenv.isDarwin then null else lldb)
-    # (if pkgs.stdenv.isDarwin then null else eonclient)
+    (if withEonclient then (if pkgs.stdenv.isDarwin then null else eonclient) else null)
     graphviz
    # gfortran
    # gfortran.cc
