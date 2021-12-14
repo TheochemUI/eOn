@@ -33,7 +33,7 @@ let
   };
   compilerEnv = (
     if compiler == "gcc" then pkgs.gcc10Stdenv
-    else if compiler == "clang" then pkgs.clangStdenv
+    else if compiler == "clang" then pkgs.clang10Stdenv
     else pkgs.stdenv
   );
   mkShellNewEnv = pkgs.mkShell.override { stdenv = compilerEnv; };
@@ -76,18 +76,7 @@ let
       )
     )
     else if compiler == "clang" then (
-      pkgs.wrapCC (
-        pkgs.clang.cc.override {
-          langFortran = true;
-          langCC = true;
-          langC = true;
-          enableShared = true;
-          enableMultilib = false;
-          staticCompiler = false;
-          profiledCompiler = false;
-        }
-      )
-
+      compilerEnv
     ) else pkgs.stdEnv
   );
   mycompiler = myCmop.overrideAttrs (
