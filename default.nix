@@ -26,7 +26,8 @@ in  pkgs.stdenv.mkDerivation rec {
     "-DPACKAGE_TESTS=OFF"
     "-DNO_WARN=TRUE"
     "-DFIND_EIGEN=TRUE"
-    "-DWITH_GPRD=TRUE"
+    # "-DWITH_GPRD=TRUE"
+    # "-DWITH_AMS=TRUE"
     "-DUSE_SYSTEM_GTEST=ON"
     "-GNinja"
     ];
