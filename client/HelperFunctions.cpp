@@ -614,7 +614,7 @@ struct atom {
 };
 
 struct by_atom {
-  bool operator()(atom const &a, atom const &b) {
+  bool operator()(atom const &a, atom const &b) const {
     if (a.z != b.z) {
         return a.z < b.z;
     }else{
