@@ -89,8 +89,6 @@ void AMS_IO::passToSystem(long N, const double *R, const int *atomicNrs, const d
     out = fopen("run_AMS_IO.sh","w");
 
     fprintf(out, "#!/bin/sh\n");
-    fprintf(out, "export NSCM_AMS_EXTERNAL=$NSCM\n");
-    fprintf(out, "export NSCM=1\n");
     fprintf(out, "ams --delete-old-results <<eor\n");
     fprintf(out, "Task SinglePoint\n");
     fprintf(out, "System\n"); 
