@@ -16,8 +16,8 @@ let
   pkgs = import sources.nixpkgs {};
   mach-nix = import (
     builtins.fetchGit {
-    url = "https://github.com/DavHau/mach-nix.git";
-    ref = "refs/tags/3.3.0";
+      url = "https://github.com/DavHau/mach-nix.git";
+      ref = "refs/tags/3.3.0";
     }
   ) {
     pkgs = pkgs;
@@ -27,13 +27,13 @@ let
     requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
       # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
-      ./.                                     # from local path
+      ./. # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
     ];
   };
   compilerEnv = (
     if compiler == "gcc" then pkgs.gcc10Stdenv
-    else if compiler == "clang" then pkgs.clangStdenv
+    else if compiler == "clang" then pkgs.clang10Stdenv
     else pkgs.stdenv
   );
   mkShellNewEnv = pkgs.mkShell.override { stdenv = compilerEnv; };
@@ -41,43 +41,30 @@ let
     old: rec {
       version = "3.3.9";
       stdenv = compilerEnv;
-    src = pkgs.fetchFromGitLab {
-      owner = "libeigen";
-      repo = "eigen";
-      rev    = "${version}";
-      sha256 = "0m4h9fd5s1pzpncy17r3w0b5a6ywqjajmnr720ndb7fc4bn0dhi4";
-    };
-    # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
-    patches = [ ./eigen_include_dir.patch ];
+      src = pkgs.fetchFromGitLab {
+        owner = "libeigen";
+        repo = "eigen";
+        rev = "${version}";
+        sha256 = "0m4h9fd5s1pzpncy17r3w0b5a6ywqjajmnr720ndb7fc4bn0dhi4";
+      };
+      # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
+      patches = [ ./eigen_include_dir.patch ];
     }
   );
-    macHook = ''
+  macHook = ''
     # eonclient
     export PATH=$(pwd)/client/builddir:$PATH
-       '';
-    linuxHook = ''
+  '';
+  linuxHook = ''
     # eonclient
     export PATH=$(pwd)/client/builddir:$PATH
     # Locale
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-    '';
+  '';
   myCmop = (
     if compiler == "gcc" then (
       pkgs.wrapCC (
         pkgs.gcc10.cc.override {
-    langFortran = true;
-    langCC = true;
-    langC = true;
-    enableShared = true;
-    enableMultilib = false;
-    staticCompiler = false;
-    profiledCompiler = false;
-        }
-      )
-    )
-    else if compiler == "clang" then (
-      pkgs.wrapCC (
-        pkgs.clang.cc.override {
           langFortran = true;
           langCC = true;
           langC = true;
@@ -87,7 +74,9 @@ let
           profiledCompiler = false;
         }
       )
-
+    )
+    else if compiler == "clang" then (
+      compilerEnv
     ) else pkgs.stdEnv
   );
   mycompiler = myCmop.overrideAttrs (
@@ -107,15 +96,15 @@ mkShellNewEnv {
     ninja
     meson
     mycompiler
-  #  gcc10Stdenv
-  #  gfortran
+    #  gcc10Stdenv
+    #  gfortran
     #   valgrind
     (if pkgs.stdenv.isDarwin then null else lldb)
     (if withEonclient then (if pkgs.stdenv.isDarwin then null else eonclient) else null)
     graphviz
-   # gfortran
-   # gfortran.cc
-   # mycompiler.cc
+    # gfortran
+    # gfortran.cc
+    # mycompiler.cc
 
     zstd
     zlib
