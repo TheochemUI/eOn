@@ -68,7 +68,7 @@ in pkgs.mkShell {
   #  gfortran
     #   valgrind
     (if pkgs.stdenv.isDarwin then null else lldb)
-    (if pkgs.stdenv.isDarwin then null else eonclient)
+    # (if pkgs.stdenv.isDarwin then null else eonclient)
     graphviz
    # gfortran
    # gfortran.cc
