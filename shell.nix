@@ -23,6 +23,11 @@ let
     pkgs = pkgs;
     python = "python38";
   };
+  myGems = pkgs.bundlerEnv {
+    name = "eonc-gems";
+    # Kinda fragile
+    gemdir = builtins.path { path = ./.; name = "EONgit"; };
+  };
   customPython = mach-nix.mkPython {
     requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
@@ -100,16 +105,11 @@ mkShellNewEnv {
     ninja
     meson
     mycompiler
-    #  gcc10Stdenv
-    #  gfortran
-    #   valgrind
+    (if pkgs.stdenv.isDarwin then null else valgrind)
     (if pkgs.stdenv.isDarwin then null else lldb)
     (if withEonclient then (if pkgs.stdenv.isDarwin then null else eonclient) else null)
     (if compiler == "clang" then gfortran else null)
     graphviz
-    # gfortran
-    # gfortran.cc
-    # mycompiler.cc
 
     zstd
     zlib
@@ -121,6 +121,10 @@ mkShellNewEnv {
     abseil-cpp
     boost175
     eigen339
+
+    # For eonc.rb
+    myGems
+    (lowPrio myGems.wrappedRuby)
   ];
   shellHook = if pkgs.stdenv.isDarwin then macHook else linuxHook;
 }
