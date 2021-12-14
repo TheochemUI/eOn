@@ -301,8 +301,6 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   out = fopen("run_AMS.sh", "w");
 
   fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "export NSCM_AMS_EXTERNAL=$NSCM\n");
-  fprintf(out, "export NSCM=1\n");
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
   fprintf(out, "System\n");
@@ -354,8 +352,6 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   out = fopen("run_AMS.sh", "w");
 
   fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "export NSCM_AMS_EXTERNAL=$NSCM\n");
-  fprintf(out, "export NSCM=1\n");
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
   fprintf(out, "Engine %s\n", engine);
