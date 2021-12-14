@@ -72,9 +72,6 @@ let
           enableMultilib = false;
           staticCompiler = false;
           profiledCompiler = false;
-        }
-      ).overrideAttrs (
-        old: rec {
           hardeningEnable = [ "pic" ];
         }
       )
