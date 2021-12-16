@@ -17,10 +17,10 @@
 #
 # The "fat" configuration file essentially must be called config.ini
 # Furthermore, the following must be present **as written**!!
-# - use_dropout = false
-# - start_dropout_at
-# - ndropout_vals
-# - dropout_threshold
+# - use_prune = false
+# - start_prune_at
+# - nprune_vals
+# - prune_threshold
 #
 # This is because regular expressions are used to ensure the correct configuration is set up.
 #
