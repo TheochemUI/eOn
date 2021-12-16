@@ -27,6 +27,8 @@
 # TODO: Add a config reader, replace regexps
 # TODO: Add templates to remove the requirement for the config
 # TODO: Add a classic CLI with option parsing as well
+# TODO: Generate a README within the directory
+# TODO: Add more logging
 
 require 'tty-command' # For the Command
 require 'tty-prompt' # For the minmodemethod choice
@@ -99,6 +101,10 @@ if run_eonclient == false
     puts line
   end
   cmd.run('eonclient')
+  # Revert directories
+  puts "Deleting directories"
+  Dir.chdir(orig_dir)
+  FileUtils.remove_dir(lowered_dir)
 else
   cmd = TTY::Command.new(printer: :pretty)
   out, err = cmd.run('eonclient')
