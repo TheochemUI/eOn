@@ -97,9 +97,7 @@ prune_sched.each { |key, value| replace_value_conf(key, value) } if prune_status
 if run_eonclient == false
   puts "Writing to #{out_root}_stdout and #{out_root}_stderr"
   cmd = TTY::Command.new(printer: :pretty, dry_run: true)
-  TTY::File.tail_file('config.ini') do |line|
-    puts line
-  end
+  print TTY::File.diff_files("#{orig_dir}/config.ini", "#{lowered_dir}/config.ini")
   cmd.run('eonclient')
   # Revert directories
   puts "Deleting directories"
