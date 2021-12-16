@@ -55,12 +55,12 @@ if minmodemethod.downcase == 'gprdimer'
       "Use the defaults?\n This is the removal of 4 elements greater than 0.5 starting from size 10", default: true
     )
     prune_sched = if prune_defaults == true
-                    { 'start_dropout_at' => 10, 'ndropout_vals' => 4, 'dropout_threshold' => 0.5 }
+                    { 'start_prune_at' => 10, 'nprune_vals' => 4, 'prune_threshold' => 0.5 }
                   else # User needs to provide the values
                     prompt.collect do
-                      key('start_dropout_at').ask('Initial dropout size at?', convert: :int)
-                      key('ndropout_vals').ask('How many values are to be dropped per thinning round?', convert: :int)
-                      key('dropout_threshold').ask('Initial highest allowed force value?', convert: :float)
+                      key('start_prune_at').ask('Initial dropout size at?', convert: :int)
+                      key('nprune_vals').ask('How many values are to be dropped per thinning round?', convert: :int)
+                      key('prune_threshold').ask('Initial highest allowed force value?', convert: :float)
                     end
                   end
   end
