@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w
+#!/usr/bin/env -S ruby -w
 # frozen_string_literal: true
 
 # Wraps eonclient in a friendly helper. Generates timestamped output folders,
@@ -29,6 +29,7 @@
 # TODO: Add a classic CLI with option parsing as well
 # TODO: Generate a README within the directory
 # TODO: Add more logging
+# TODO: Support potentials
 
 require 'tty-command' # For the Command
 require 'tty-prompt' # For the minmodemethod choice
@@ -37,6 +38,8 @@ require 'solid_assert' # Need assert
 
 def replace_value_conf(input_key, new_value)
   # TODO: Super fragile, update
+  # This expects that the named but discarded capture group is present, and in
+  # particular will break if spaces are not present around the = symbol
   re = TTY::File.replace_in_file 'config.ini', /(?<=#{input_key} = ).*$/, new_value.to_s
   assert re == true # Can't fail
 end
@@ -52,12 +55,12 @@ if minmodemethod.downcase == 'gprdimer'
       "Use the defaults?\n This is the removal of 4 elements greater than 0.5 starting from size 10", default: true
     )
     prune_sched = if prune_defaults == true
-                    { 'start_dropout_at' => 10, 'ndropout_vals' => 4, 'dropout_threshold' => 0.5 }
+                    { 'start_prune_at' => 10, 'nprune_vals' => 4, 'prune_threshold' => 0.5 }
                   else # User needs to provide the values
                     prompt.collect do
-                      key('start_dropout_at').ask('Initial dropout size at?', convert: :int)
-                      key('ndropout_vals').ask('How many values are to be dropped per thinning round?', convert: :int)
-                      key('dropout_threshold').ask('Initial highest allowed force value?', convert: :float)
+                      key('start_prune_at').ask('Initial dropout size at?', convert: :int)
+                      key('nprune_vals').ask('How many values are to be dropped per thinning round?', convert: :int)
+                      key('prune_threshold').ask('Initial highest allowed force value?', convert: :float)
                     end
                   end
   end
@@ -97,9 +100,7 @@ prune_sched.each { |key, value| replace_value_conf(key, value) } if prune_status
 if run_eonclient == false
   puts "Writing to #{out_root}_stdout and #{out_root}_stderr"
   cmd = TTY::Command.new(printer: :pretty, dry_run: true)
-  TTY::File.tail_file('config.ini') do |line|
-    puts line
-  end
+  print TTY::File.diff_files("#{orig_dir}/config.ini", "#{lowered_dir}/config.ini")
   cmd.run('eonclient')
   # Revert directories
   puts "Deleting directories"
