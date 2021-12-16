@@ -20,6 +20,16 @@
     };
     version = "0.8.0";
   };
+  solid_assert = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "1pkjmmy4hh7l54crv4q77rh8m7iriazl3cdn43agmw67n9dx659z";
+      type = "gem";
+    };
+    version = "1.1.0";
+  };
   tty-color = {
     groups = ["default"];
     platforms = [];
