@@ -12,7 +12,10 @@ nix-env -if .
 **** Development
 To get a new shell to work on the packages, use the following:
 #+begin_src bash
+# With gcc
 nix-shell --pure --run bash --show-trace --verbose
+# With clang
+nix-shell --argstr clang --pure --run bash --show-trace --verbose
 #+end_src
 ***** Linux
 In a new sub-shell:
@@ -72,6 +75,8 @@ export PATH=$(pwd):$PATH
 cd client/gtests/data/saddle_search/
 eonclient
 #+end_src
+** Usage
+Included is the ~eonc.rb~ helper in ~tools/gprdimer/~, which can be used with any of the ~gtests/data/systems~ and a suitable configuration file.
 ** GPR Dimer Tests
 One of ~make check~ tests will break, and this is the GPR dimer call. The tests run in the appropriate test directory; however, debugging ~make check~ is a bit annoying.
 *** Debugging
