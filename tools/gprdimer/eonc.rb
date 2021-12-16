@@ -103,7 +103,7 @@ if run_eonclient == false
   print TTY::File.diff_files("#{orig_dir}/config.ini", "#{lowered_dir}/config.ini")
   cmd.run('eonclient')
   # Revert directories
-  puts "Deleting directories"
+  puts 'Deleting directories'
   Dir.chdir(orig_dir)
   FileUtils.remove_dir(lowered_dir)
 else
