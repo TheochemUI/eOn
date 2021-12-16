@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w
+#!/usr/bin/env -S ruby -w
 # frozen_string_literal: true
 
 # Wraps eonclient in a friendly helper. Generates timestamped output folders,
