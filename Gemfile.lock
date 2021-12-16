@@ -4,6 +4,7 @@ GEM
     diff-lcs (1.4.4)
     pastel (0.8.0)
       tty-color (~> 0.5)
+    solid_assert (1.1.0)
     tty-color (0.6.0)
     tty-command (0.10.1)
       pastel (~> 0.8)
@@ -24,11 +25,13 @@ GEM
 
 PLATFORMS
   x86_64-darwin-17
+  x86_64-darwin-20
 
 DEPENDENCIES
+  solid_assert
   tty-command
   tty-file
   tty-prompt
 
 BUNDLED WITH
-   2.2.20
+   2.2.22
