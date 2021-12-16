@@ -29,6 +29,7 @@
 # TODO: Add a classic CLI with option parsing as well
 # TODO: Generate a README within the directory
 # TODO: Add more logging
+# TODO: Support potentials
 
 require 'tty-command' # For the Command
 require 'tty-prompt' # For the minmodemethod choice
@@ -37,6 +38,8 @@ require 'solid_assert' # Need assert
 
 def replace_value_conf(input_key, new_value)
   # TODO: Super fragile, update
+  # This expects that the named but discarded capture group is present, and in
+  # particular will break if spaces are not present around the = symbol
   re = TTY::File.replace_in_file 'config.ini', /(?<=#{input_key} = ).*$/, new_value.to_s
   assert re == true # Can't fail
 end
