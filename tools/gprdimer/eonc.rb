@@ -58,7 +58,7 @@ if minmodemethod.downcase == 'gprdimer'
                     { 'start_prune_at' => 10, 'nprune_vals' => 4, 'prune_threshold' => 0.5 }
                   else # User needs to provide the values
                     prompt.collect do
-                      key('start_prune_at').ask('Initial dropout size at?', convert: :int)
+                      key('start_prune_at').ask('Size to start pruning at?', convert: :int)
                       key('nprune_vals').ask('How many values are to be dropped per thinning round?', convert: :int)
                       key('prune_threshold').ask('Initial highest allowed force value?', convert: :float)
                     end
@@ -81,9 +81,9 @@ out_root = if minmodemethod.downcase == 'gprdimer'
 # HACK: Might not be the most elegant approach. Consider when multiple of these
 # are started concurrently
 puts 'Moving one level down'
-mytime = Time.now.to_f
+mytime = Time.now.to_i
 orig_dir = Dir.pwd
-lowered_dir = "#{orig_dir}/#{mytime}_#{out_root}"
+lowered_dir = "#{orig_dir}/#{out_root}_#{mytime}"
 Dir.mkdir(lowered_dir)
 FileUtils.cp %w[direction.dat displacement.con pos.con config.ini], lowered_dir.to_s
 
@@ -93,7 +93,7 @@ puts Dir.pwd
 
 # Unconditional
 replace_value_conf('min_mode_method', minmodemethod.downcase)
-replace_value_conf('use_dropout', prune_status)
+replace_value_conf('use_prune', prune_status)
 prune_sched.each { |key, value| replace_value_conf(key, value) } if prune_status == true
 
 # Run
