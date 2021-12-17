@@ -9,6 +9,16 @@
     };
     version = "1.4.4";
   };
+  inifile = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "1c5zmk7ia63yw5l2k14qhfdydxwi1sah1ppjdiicr4zcalvfn0xi";
+      type = "gem";
+    };
+    version = "3.0.0";
+  };
   pastel = {
     dependencies = ["tty-color"];
     groups = ["default"];
