@@ -51,6 +51,9 @@ fconf = IniFile.load("#{Dir.pwd}/full.sample.ini")
 ldir = lower_dir("exp1", Dir.pwd)
 Dir.chdir(ldir)
 
+# Make a "bash" executor
+bashfsc = File.new("exec.sh", "w+")
+
 for method in ["gprdimer", "dimer"]
   mdir = lower_dir(method, Dir.pwd) # LOWERING!
   rconf = IniFile.new
@@ -59,6 +62,9 @@ for method in ["gprdimer", "dimer"]
   rconf.filename = "#{mdir}/config.ini"
   rconf.write()
   relative_diff(ldir, mdir) # Now is in the lowered directory
+  # Write path for eonclient
+  bashfsc.write("\n cd #{mdir}/\n eonclient 2> error.txt 1> output.txt &")
+  # End
   # Now do the potentials
   {"B3LYP" => "ADF", "PM3" => "MOPAC"}.each do |model, engine|
   pdir = lower_dir(model, mdir) # LOWERING!
@@ -78,6 +84,9 @@ for method in ["gprdimer", "dimer"]
     rconf.filename = "#{pdir}/config.ini"
     rconf.write()
     relative_diff(ldir, pdir)
+    # Write path for eonclient
+    bashfsc.write("\n cd #{pdir}/\n eonclient 2> error.txt 1> output.txt &")
+    # End
     # Parameter scans
     if method == "gprdimer"
       # Divisor T Dimer ==> 10 default
@@ -87,6 +96,9 @@ for method in ["gprdimer", "dimer"]
         rconf.filename = "#{dtddir}/config.ini"
         rconf.write()
         relative_diff(ldir, dtddir)
+        # Write path for eonclient
+        bashfsc.write("\n cd #{dtddir}/\n eonclient 2> error.txt 1> output.txt &")
+        # End
         # Max step
         [0.1, 0.05, 0.2, 0.001].each do |maxstep|
           mxssdir = lower_dir("dmxss_#{maxstep}", dtddir) # LOWERING
@@ -94,6 +106,9 @@ for method in ["gprdimer", "dimer"]
           rconf.filename = "#{mxssdir}/config.ini"
           rconf.write()
           relative_diff(ldir, mxssdir)
+          # Write path for eonclient
+          bashfsc.write("\n cd #{mxssdir}/\n eonclient 2> error.txt 1> output.txt &")
+          # End
           Dir.chdir(mxssdir) # max_step
         end
         Dir.chdir(dtddir) # divisor_t_dimer
@@ -109,6 +124,7 @@ end
 ["direction.dat", "displacement.con", "pos.con", "full.sample.ini", "rel.diff", "config.ini"].each do |item|
   condel(item)
 end
+bashfsc.close
 
 # # Need the following inputs
 # reqInp = Set['config.ini', 'displacement.con', 'direction.dat', 'pos.con']
