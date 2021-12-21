@@ -9,8 +9,8 @@
 //-----------------------------------------------------------------------------------
 
 #include "AMS.h"
-#include <sys/stat.h>
-#include <unistd.h>
+#include <fstream>
+#include <iostream>
 
 namespace bp = boost::process;
 
@@ -111,73 +111,98 @@ void AMS::runAMS() {
 }
 
 void AMS::extract_rkf(long N, std::string key) {
+  // The logic here is that the extraction must be asynchronous, as we are not
+  // interested in processing this the output line by line, and would prefer to
+  // have it all in one place
   std::string execString, strEngine(engine);
   std::vector<std::string> execDat, innerDat;
   boost::asio::io_context rkf;
-  std::future<std::string> err, rdump;
+  std::future<std::string> rkf_out_future, rkf_err_future;
+  std::string rkfout, rkferr;
   int counter;
   double x;
   std::vector<double> extracted;
   std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(),
                  ::tolower);
-  absl::StrAppend(&execString, "dmpkf ", cjob, ".results/", strEngine,
-                  ".rkf AMSResults%", key);
-  // std::cout << execString << "\n";
-  // Extract
-  bp::child eprog(execString, nativenv, bp::std_in.close(), bp::std_out > rdump,
-                  bp::std_err > err, rkf);
+  execString =
+      fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
+                  fmt::arg("jobid", cjob), fmt::arg("engine", strEngine),
+                  fmt::arg("key", key));
+  std::cout << execString << "\n";
 
-  rkf.run();
-  auto erro = err.get();
-  try {
-if (erro.find("NORMAL TERMINATION") != std::string::npos) {
-    std::cout << "found!" << '\n';
-}
-    if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
-      // throw std::runtime_error("AMS STDERR:\n");
-    } else {
-      std::cout << "Extract " << key << ": " << erro;
-    }
-  } catch (const std::exception &e) {
-    std::cout << e.what();
-    std::cout << erro;
-    exit(0);
+  // Extract
+  bp::child c(execString, nativenv,         // execute with the environment
+              bp::std_in.close(),           // no input
+              bp::std_out > rkf_out_future, // STDOUT
+              bp::std_err > rkf_err_future, // STDERR
+              rkf);
+
+  rkf.run(); // this blocks until the end of the command
+  // Populate the strings
+  rkfout = rkf_out_future.get();
+  rkferr = rkf_err_future.get();
+
+  if (rkferr.find("ERROR") != std::string::npos) {
+    throw std::runtime_error(fmt::format(
+        "\n AMS error while extracting {}, got:\n {}", key, rkferr));
+  } else {
+    std::cout << "Extracting " << key << std::endl;
   }
-  execDat = absl::StrSplit(rdump.get(), '\n');
+
+  execDat = absl::StrSplit(rkfout, '\n');
 
   if (N == 1) {
     // Is energy or some other scalar property
-    counter = 0;
-    for (auto i : execDat) {
-      if (counter >= 3) {
-        if (absl::SimpleAtod(i, &x)) {
-          // std::cout << x << "\n";
-          x = x * energyConversion;
-          energy = x;
-        }
-      }
-      counter++;
+    // First 3 lines are the headers
+    // [0] = "AMSResults                      "
+    // [1] = "Energy                          "
+    // [2] = "         1         1         2"
+    // [3] = "   0.135012547958282714E+000"
+    // [4] = ""
+    if (absl::SimpleAtod(execDat[3], &x)) {
+      this->energy = x * energyConversion;
+      std::cout << fmt::format(
+          "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x,
+          energy);
+      return; // Early return
+    } else {
+      throw std::runtime_error(
+          fmt::format("\n Expected energy, got {} instead", execDat[3]));
     }
   } else {
     // Assume gradients or some other x y z property
-    counter = 0;
-    for (auto j : execDat) {
-      if (counter >= 3) {
-        innerDat = absl::StrSplit(j, ' ');
-        for (auto k : innerDat) {
-          if (absl::SimpleAtod(k, &x)) {
-            x = x * forceConversion;
-            // std::cout << x << " ";
-            extracted.push_back(x);
-          }
+    // There is one per atom, the number of which is N
+    // The first three lines are the header files as before
+    for (int i = 3; i < N; i++) {
+      std::vector<std::string> strrow = absl::StrSplit(execDat[i], ' ');
+      // This loop uses an auto variable since some of the elements of strrow
+      // are often ' '
+      // TODO: Optimize, perhaps with a regex
+      // [0] = ""
+      // [1] = ""
+      // [2] = ""
+      // [3] = "0.798885933949825835E-004"
+      // [4] = ""
+      // [5] = "-0.755400038198822616E-004"
+      // [6] = ""
+      // [7] = ""
+      // [8] = "0.457005740252359742E-004"
+      for (auto elem : strrow) {
+        if (absl::SimpleAtod(elem, &x)) {
+          double force = x * forceConversion;
+          std::cout << fmt::format(
+              "\n Gradient element={grad:.4f} Hartree/Bohr from AMS\n Force "
+              "element={force:.4f} eV/Angstrom\n",
+              fmt::arg("grad", x), fmt::arg("force", force));
+          extracted.emplace_back(x);
         }
-        // std::cout << "\n";
       }
-      counter++;
     }
-    forces = extracted;
+    this->forces = extracted;
+    return; // Early return
   }
-  return;
+  // Never reach here
+  throw std::runtime_error("Generic AMS dmpkf error \n");
 }
 
 void AMS::updateCoord(long N, const double *R) {
@@ -261,10 +286,10 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   // std::cout<<"Got an energy of "<<*U<<"\n";
   forces.clear();              // TODO: Slow!
   extract_rkf(N, "Gradients"); // Sets forces
-  counter = 0;
-  for (double f : forces) {
-    F[counter] = f;
-    counter++;
+  for (int i = 0; i < N; i++) {
+    F[3 * i] = forces[3 * i];
+    F[3 * i + 1] = forces[3 * i + 1];
+    F[3 * i + 2] = forces[3 * i + 2];
   }
   // Toggle job name
   job_one = !job_one;
