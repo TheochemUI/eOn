@@ -9,23 +9,21 @@
 //-----------------------------------------------------------------------------------
 
 #include "AMS.h"
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace bp = boost::process;
 
 AMS::AMS(Parameters *p) {
+  engine_setup = generate_run(p);
   engine = p->engine.c_str();
   forcefield = p->forcefield.c_str();
   model = p->model.c_str();
   xc = p->xc.c_str();
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p->amshome.empty() &&
-      p->scm_tmpdir.empty() &&
-      p->scmlicense.empty() &&
-      p->scm_pythondir.empty() &&
-      p->amsbin.empty() &&
+  if (p->amshome.empty() && p->scm_tmpdir.empty() && p->scmlicense.empty() &&
+      p->scm_pythondir.empty() && p->amsbin.empty() &&
       p->amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {
@@ -210,7 +208,7 @@ void AMS::updateCoord(long N, const double *R) {
   // Put the rest of the coordinates
   counter = 0;
   for (int a = 0; a < N * 3; a++) {
-    absl::StrAppend(&newCoord, (R[a]*lengthConversion), "  ");
+    absl::StrAppend(&newCoord, (R[a] * lengthConversion), "  ");
     counter++;
     if (counter % 3 == 0) {
       absl::StrAppend(&newCoord, "\n");
@@ -258,7 +256,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
   extract_rkf(1, "Energy"); // Sets energy
   *U = energy;
   // std::cout<<"Got an energy of "<<*U<<"\n";
-  forces.clear(); // TODO: Slow!
+  forces.clear();              // TODO: Slow!
   extract_rkf(N, "Gradients"); // Sets forces
   counter = 0;
   for (double f : forces) {
@@ -273,11 +271,11 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                  ::tolower);
   // TODO: This is a hacky workaround, if there is mopac or an unsupported
   // potential, do not include the restart information
-  if (strEngine=="mopac") {
+  if (strEngine == "mopac") {
     restartj = "\n";
-    } else {
+  } else {
     restartj = "EngineRestart ";
-    absl::StrAppend(&restartj, cjob, ".results/", strEngine,".rkf\n");
+    absl::StrAppend(&restartj, cjob, ".results/", strEngine, ".rkf\n");
   }
   absl::StrAppend(&restartj, "LoadSystem\nFile ", cjob,
                   ".results/ams.rkf\nSection Molecule\nEnd");
@@ -320,20 +318,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
     fprintf(out, " End\n");
   }
   fprintf(out, "End\n");
-  fprintf(out, "Engine %s\n", engine);
-  if (strlen(forcefield) > 0) {
-    fprintf(out, "     Forcefield %s\n", forcefield);
-  }
-  if (strlen(model) > 0) {
-    fprintf(out, "     Model %s\n", model);
-  }
-  if (strlen(xc) > 0) {
-    fprintf(out, "xc %s\n");
-    fprintf(out, "     hybrid %s\n",
-            xc); // basis set not specified (default = DZ)
-    fprintf(out, "end\n");
-  }
-  fprintf(out, "EndEngine\n");
+  fmt::print(out, engine_setup);
   fprintf(out, "Properties\n");
   fprintf(out, " Gradients\n");
   fprintf(out, "End\n");
@@ -354,20 +339,7 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   fprintf(out, "#!/bin/sh\n");
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
-  fprintf(out, "Engine %s\n", engine);
-  if (strlen(forcefield) > 0) {
-    fprintf(out, "     Forcefield %s\n", forcefield);
-  }
-  if (strlen(model) > 0) {
-    fprintf(out, "     Model %s\n", model);
-  }
-  if (strlen(xc) > 0) {
-    fprintf(out, "xc %s\n");
-    fprintf(out, "     hybrid %s\n",
-            xc); // basis set not specified (default = DZ)
-    fprintf(out, "end\n");
-  }
-  fprintf(out, "EndEngine\n");
+  fmt::print(out, engine_setup);
   fprintf(out, "Properties\n");
   fprintf(out, " Gradients\n");
   fprintf(out, "End\n");
@@ -376,4 +348,83 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   fclose(out);
   chmod("run_AMS.sh", S_IRWXU);
   return;
+}
+
+std::string AMS::generate_run(Parameters *p) {
+  // TODO: Use args everywhere, cleaner logic
+  std::string engine_block;
+  // Get the values from the configuration
+  std::string engine(p->engine), forcefield(p->forcefield), model(p->model),
+      xc(p->xc), resources(p->resources), basis(p->basis);
+  // Ensure capitals and existence
+  engine.empty()
+      ? throw std::runtime_error("AMS Engine is required \n")
+      : std::transform(engine.begin(), engine.end(), engine.begin(), ::toupper);
+
+  // Prepare the block
+  if (engine == "MOPAC") {
+    model.empty()
+        ? throw std::runtime_error("MOPAC needs a model\n")
+        : std::transform(model.begin(), model.end(), model.begin(), ::toupper);
+    std::string engine_formatter = R"(
+ Engine {engine:}
+   Model {model:}
+ EndEngine
+)";
+    engine_block = fmt::format(engine_formatter, fmt::arg("engine", engine),
+                               fmt::arg("model", model));
+    return engine_block;
+  } else if (engine == "ADF" || engine == "BAND") {
+    basis.empty()
+        ? throw std::runtime_error("ADF/BAND need a basis\n")
+        : std::transform(basis.begin(), basis.end(), basis.begin(), ::toupper);
+    xc.empty() ? throw std::runtime_error("ADF/BAND need a functional\n")
+               : std::transform(xc.begin(), xc.end(), xc.begin(), ::toupper);
+    std::string engine_formatter = R"(
+   Engine {}
+     Basis
+       Type {}
+     End
+
+     XC
+       {}
+     End
+   EndEngine
+  )";
+    engine_block = fmt::format(engine_formatter, engine, basis, xc);
+    return engine_block;
+  } else if (engine == "DFTB") {
+    resources.empty() ? throw std::runtime_error("DFTB need resources\n")
+                      : std::transform(resources.begin(), resources.end(),
+                                       resources.begin(), ::toupper);
+    std::string engine_formatter = R"(
+   Engine {}
+     ResourcesDir {}
+   EndEngine
+  )";
+    engine_block = fmt::format(engine_formatter, engine, resources);
+    return engine_block;
+  } else if (engine == "REAXFF") {
+    forcefield.empty() ? throw std::runtime_error("REAXFF needs a forcefield\n")
+                       : std::transform(forcefield.begin(), forcefield.end(),
+                                        forcefield.begin(), ::toupper);
+
+    std::string engine_formatter = R"(
+   Engine {}
+     ForceField {}
+   EndEngine
+  )";
+    engine_block = fmt::format(engine_formatter, engine, forcefield);
+    return engine_block;
+  } else if (engine == "FORCEFIELD") {
+    std::string engine_formatter = R"(
+   Engine {}
+   EndEngine
+  )";
+    engine_block = fmt::format(engine_formatter, engine);
+    return engine_block;
+  }
+
+  // Never reach here
+  throw std::runtime_error("Generic AMS engine error \n");
 }
