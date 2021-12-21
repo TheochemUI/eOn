@@ -65,7 +65,7 @@ bashfsc = File.new('exec.sh', 'w+')
   { 'Hybrid B3LYP' => 'ADF', 'PM3' => 'MOPAC' }.each do |model, engine|
     pdir = lower_dir(model, mdir) # LOWERING!
     if model == 'PM3'
-      rconf['Potential']['potential'] = 'ams_io'
+      rconf['Potential']['potential'] = 'ams'
       rconf['AMS'] = {
         'engine' => engine,
         'model' => model
