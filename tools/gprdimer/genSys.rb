@@ -94,7 +94,7 @@ bashfsc = File.new('exec.sh', 'w+')
         rconf.write
         relative_diff(ldir, dtddir)
         # Write path for eonclient
-        bashfsc.write("\n cd #{dtddir}/\n eonclient 2> error.txt 1> output.txt &")
+        bashfsc.write("\n cd \"#{dtddir}/\"\n eonclient 2> error.txt 1> output.txt &")
         # End
         # Max step
         [0.1, 0.05, 0.2, 0.001].each do |maxstep|
@@ -104,7 +104,7 @@ bashfsc = File.new('exec.sh', 'w+')
           rconf.write
           relative_diff(ldir, mxssdir)
           # Write path for eonclient
-          bashfsc.write("\n cd #{mxssdir}/\n eonclient 2> error.txt 1> output.txt &")
+          bashfsc.write("\n cd \"#{mxssdir}/\"\n eonclient 2> error.txt 1> output.txt &")
           # End
           Dir.chdir(mxssdir) # max_step
         end
