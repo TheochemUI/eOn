@@ -105,6 +105,7 @@ void AMS::runAMS() {
   std::string runout, runerr;
   chmod("run_AMS.sh", S_IRWXU);
   nativenv["AMS_JOBNAME"] = cjob;
+  // std::cout<<"Running with "<<cjob<<std::endl;
   bp::child c("run_AMS.sh", nativenv,       // set the input
               bp::std_in.close(),           // no input
               bp::std_out > run_out_future, // STDOUT
@@ -307,12 +308,12 @@ void AMS::updateCoord(long N, const double *R) {
 
 void AMS::switchjob() {
   std::string tmp;
-  // std::cout << fmt::format("\nCurrent:{}, Previous:{}\n", cjob, pjob);
+  // std::cout << fmt::format("\nEntered Switch:\nCurrent:{}, Previous:{}\n", cjob, pjob);
   tmp = this->cjob;
   this->cjob = this->pjob;
   this->pjob = tmp;
-  // std::cout << fmt::format("\nSwitched to\n Current:{}, Previous:{}\n", cjob,
-  // pjob);
+  // std::cout << fmt::format("\nSwitched\n Current:{}, Previous:{}\n", cjob,
+  pjob);
 }
 
 void AMS::write_restart() {
@@ -344,6 +345,7 @@ void AMS::write_restart() {
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box, int nImages = 1) {
   if (not can_restart or first_run) {
+    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
     // This is true for all engines with no restart
     // Also if an engine supports being restarted, the first run needs this
     passToSystem(N, R, atomicNrs, box);
@@ -360,7 +362,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     first_run = false;
     return;
   } else {
-    std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
+    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
     updateCoord(N, R);
     runAMS();
     std::vector<double> frc = extract_cartesian_rkf("Gradients");
