@@ -26,6 +26,8 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 class AMS : public Potential {
 
@@ -42,11 +44,11 @@ private:
   void passToSystem(long N, const double *R, const int *atomicNrs,
                     const double *box);
   void smallSys(long N, const double *R, const int *atomicNrs,
-                    const double *box);
-  const char *engine;
-  const char *model;
-  const char *forcefield;
-  const char *xc;
+                const double *box);
+  const char *engine, *forcefield, *model, *xc; // TODO: These are const char* for fprintf
+  std::string engine_setup;
+  // Generate run configuration
+  std::string generate_run(Parameters *p);
   // Environment
   boost::process::native_environment nativenv;
   int counter;
@@ -54,7 +56,8 @@ private:
   std::string jname, restartj, cjob, pjob;
   std::ofstream restartFrom;
   const double forceConversion =
-      -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the gradients
+      -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the
+                   // gradients
   const double energyConversion = 27.2114; // Energy in hartree to eV
   const double lengthConversion = 1.88973; // Coordinates from Angstrom to Bohr
   void runAMS();
