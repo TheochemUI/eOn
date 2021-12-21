@@ -58,10 +58,12 @@ public:
     string extPotPath;
 
     // [AMS] and [AMS_IO] //
-    string engine;
-    string forcefield;
-    string model;
-    string xc;
+    string engine; // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
+    string forcefield; // OPt.ff etc. (REAXFF)
+    string model; // Model hamiltonian (MOPAC)
+    string resources; // DFTB
+    string xc; // Exchange (BAND, ADF)
+    string basis; // Basis (BAND, ADF)
 
     // [AMS_ENV] //
     string amshome;
