@@ -16,11 +16,15 @@
 namespace bp = boost::process;
 
 AMS::AMS(Parameters *p) {
+  // Get the values from the configuration
+  // All the parameter values are converted to lowercase in generate_run
+  this->engine = p->engine;
+  this->forcefield = p->forcefield;
+  this->model = p->model;
+  this->xc = p->xc;
+  this->resources = p->resources;
+  this->basis = p->basis;
   this->engine_setup = generate_run(p);
-  engine = p->engine.c_str();
-  forcefield = p->forcefield.c_str();
-  model = p->model.c_str();
-  xc = p->xc.c_str();
   // Environment
   // TODO: Add more checks for how this can be set
   if (p->amshome.empty() && p->scm_tmpdir.empty() && p->scmlicense.empty() &&
@@ -46,9 +50,7 @@ AMS::AMS(Parameters *p) {
   // use them
   this->first_run = true;
   // Determine if the engine supports restarts
-  std::string eng(engine);
-  std::transform(eng.begin(), eng.end(), eng.begin(), ::toupper);
-  if (eng == "MOPAC") {
+  if (engine == "mopac") {
     this->can_restart = false;
     this->cjob = "amsResults";
     this->pjob = "amsResults";
@@ -122,24 +124,74 @@ void AMS::runAMS() {
   }
 }
 
-void AMS::extract_rkf(long N, std::string key) {
+double AMS::extract_scalar_rkf(std::string key) {
   // The logic here is that the extraction must be asynchronous, as we are not
   // interested in processing this the output line by line, and would prefer to
   // have it all in one place
-  std::string execString, strEngine(engine);
+  std::string execString;
+  std::vector<std::string> execDat;
+  boost::asio::io_context rkf;
+  std::future<std::string> rkf_out_future, rkf_err_future;
+  std::string rkfout, rkferr;
+  double xval, x;
+  std::vector<double> extracted;
+  execString =
+      fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
+                  fmt::arg("jobid", this->cjob),
+                  fmt::arg("engine", this->engine), fmt::arg("key", key));
+  std::cout << execString << "\n";
+  // Extract
+  bp::child c(execString, nativenv,         // execute with the environment
+              bp::std_in.close(),           // no input
+              bp::std_out > rkf_out_future, // STDOUT
+              bp::std_err > rkf_err_future, // STDERR
+              rkf);
+
+  rkf.run(); // this blocks until the end of the command
+  // Populate the strings
+  rkfout = rkf_out_future.get();
+  rkferr = rkf_err_future.get();
+  if (rkferr.find("ERROR") != std::string::npos) {
+    throw std::runtime_error(fmt::format(
+        "\n AMS error while extracting {}, got:\n {}", key, rkferr));
+  } else {
+    std::cout << "Extracting " << key << std::endl;
+  }
+
+  execDat = absl::StrSplit(rkfout, '\n');
+  // Is energy or some other scalar property
+  // First 3 lines are the headers
+  // [0] = "AMSResults                      "
+  // [1] = "Energy                          "
+  // [2] = "         1         1         2"
+  // [3] = "   0.135012547958282714E+000"
+  // [4] = ""
+  if (absl::SimpleAtod(execDat[3], &x)) {
+    xval = x * this->energyConversion;
+    std::cout << fmt::format(
+        "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x, xval);
+    return xval;
+  } else {
+    throw std::runtime_error(
+        fmt::format("\n Expected {}, got {} instead", key, execDat[3]));
+  }
+  // Never reach here
+  throw std::runtime_error("Generic AMS dmpkf scalar error \n");
+}
+
+std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
+  std::string execString;
   std::vector<std::string> execDat, innerDat;
   boost::asio::io_context rkf;
   std::future<std::string> rkf_out_future, rkf_err_future;
   std::string rkfout, rkferr;
-  double x, felem;
+  double felem, x;
   std::vector<double> extracted;
-  std::transform(strEngine.begin(), strEngine.end(), strEngine.begin(),
-                 ::tolower);
   execString =
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
-                  fmt::arg("jobid", cjob), fmt::arg("engine", strEngine),
+                  fmt::arg("jobid", cjob), fmt::arg("engine", engine),
                   fmt::arg("key", key));
-  // std::cout << execString << "\n";
+  std::cout << execString << "\n";
 
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
@@ -157,72 +209,48 @@ void AMS::extract_rkf(long N, std::string key) {
     throw std::runtime_error(fmt::format(
         "\n AMS error while extracting {}, got:\n {}", key, rkferr));
   } else {
-    // std::cout << "Extracting " << key << std::endl;
+    std::cout << "Extracting " << key << std::endl;
   }
 
   execDat = absl::StrSplit(rkfout, '\n');
-
-  if (N == 1) {
-    // Is energy or some other scalar property
-    // First 3 lines are the headers
-    // [0] = "AMSResults                      "
-    // [1] = "Energy                          "
-    // [2] = "         1         1         2"
-    // [3] = "   0.135012547958282714E+000"
-    // [4] = ""
-    if (absl::SimpleAtod(execDat[3], &x)) {
-      this->energy = x * this->energyConversion;
-      // std::cout << fmt::format(
-      //     "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x,
-      //     energy);
-      return; // Early return
-    } else {
-      throw std::runtime_error(
-          fmt::format("\n Expected energy, got {} instead", execDat[3]));
-    }
-  } else {
-    // Assume gradients or some other x y z property
-    for (int i = 3; i < execDat.size(); i++) {
-      // There is one per atom, the number of which is N
-      // The first three lines are the header files as before
-      std::vector<std::string> strrow = absl::StrSplit(execDat[i], ' ');
-      for (auto elem : strrow) {
-        // This loop uses an auto variable since some of the elements of strrow
-        // are often ' '
-        // TODO: Optimize, perhaps with a regex
-        // [0] = ""
-        // [1] = ""
-        // [2] = ""
-        // [3] = "0.798885933949825835E-004"
-        // [4] = ""
-        // [5] = "-0.755400038198822616E-004"
-        // [6] = ""
-        // [7] = ""
-        // [8] = "0.457005740252359742E-004"
-        if (!elem.empty() && absl::SimpleAtod(elem, &x)) {
-          felem = x * this->forceConversion;
-          // std::cout << fmt::format(
-          //     "\n Gradient element={grad:.4f} Hartree/Bohr from AMS\n Force "
-          //     "element={force:.4f} eV/Angstrom\n",
-          //     fmt::arg("grad", x), fmt::arg("force", force));
-          extracted.emplace_back(felem);
-        }
+  // Assume gradients or some other x y z property
+  for (int i = 3; i < execDat.size(); i++) {
+    // There is one per atom, the number of which is N
+    // The first three lines are the header files as before
+    std::vector<std::string> strrow = absl::StrSplit(execDat[i], ' ');
+    for (auto elem : strrow) {
+      // This loop uses an auto variable since some of the elements of strrow
+      // are often ' '
+      // TODO: Optimize, perhaps with a regex
+      // [0] = ""
+      // [1] = ""
+      // [2] = ""
+      // [3] = "0.798885933949825835E-004"
+      // [4] = ""
+      // [5] = "-0.755400038198822616E-004"
+      // [6] = ""
+      // [7] = ""
+      // [8] = "0.457005740252359742E-004"
+      if (!elem.empty() && absl::SimpleAtod(elem, &x)) {
+        felem = x * this->forceConversion;
+        // std::cout << fmt::format(
+        //     "\n Gradient element={grad:.4f} Hartree/Bohr from AMS\n Force "
+        //     "element={force:.4f} eV/Angstrom\n",
+        //     fmt::arg("grad", x), fmt::arg("force", force));
+        extracted.emplace_back(felem);
       }
     }
-    this->forces = extracted;
-    // // Debug
-    // int counter = 0;
-    // for (int a = 0; a < N * 3; a++) {
-    //   std::cout << fmt::format("{:.25e} ", forces[a]);
-    //   counter++;
-    //   if (counter % 3 == 0) {
-    //     std::cout << std::endl;
-    //   }
-    // }
-    return; // Early return
   }
-  // Never reach here
-  throw std::runtime_error("Generic AMS dmpkf error \n");
+  // // Debug
+  // int counter = 0;
+  // for (int a = 0; a < N * 3; a++) {
+  //   std::cout << fmt::format("{:.25e} ", forces[a]);
+  //   counter++;
+  //   if (counter % 3 == 0) {
+  //     std::cout << std::endl;
+  //   }
+  // }
+  return extracted;
 }
 
 void AMS::updateCoord(long N, const double *R) {
@@ -287,8 +315,7 @@ void AMS::switchjob() {
 }
 
 void AMS::write_restart() {
-  std::string eng(engine), restart_formatter;
-  std::transform(eng.begin(), eng.end(), eng.begin(), ::toupper);
+  std::string restart_formatter;
   if (can_restart) {
     restart_formatter = R"(
    EngineRestart {prev:}.results/{engine:}.rkf
@@ -313,45 +340,32 @@ void AMS::write_restart() {
   return;
 }
 
-void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
-double *U, const double *box, int nImages=1)
-{
-  // Somehow broken, even though this is the same as before
-    passToSystem(N, R, atomicNrs, box);
-    runAMS();
-    extract_rkf(1, "Energy"); // Sets energy
-    this->forces.clear();              // TODO: Slow!
-    extract_rkf(N, "Gradients"); // Sets forces
-    double *ftest = this->forces.data();
-    *U=this->energy;
-    F = ftest;
-    return;
-}
+// void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
+//                 double *U, const double *box, int nImages = 1) {
+//   // Somehow broken, even though this is the same as before
+//   passToSystem(N, R, atomicNrs, box);
+//   runAMS();
+//   *U = extract_scalar_rkf("Energy");                           // Sets energy
+//   double *ftest = (extract_cartesian_rkf("Gradients")).data(); // Sets forces
+//   return;
+// }
 
 // void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
 //                 double *U, const double *box, int nImages = 1) {
 //   if (not can_restart or first_run) {
 //     // This is true for all engines with no restart
 //     // Also if an engine supports being restarted, the first run needs this
-//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
-//     passToSystem(N, R, atomicNrs, box);
-//     runAMS();
-//     extract_rkf(1, "Energy"); // Sets energy
-//     *U = this->energy;
-//     this->forces.clear();        // TODO: Slow!
-//     extract_rkf(N, "Gradients"); // Sets forces
-//     F = forces.data();
-//     return;
+//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
+//     first_run); passToSystem(N, R, atomicNrs, box); runAMS(); extract_rkf(1,
+//     "Energy"); // Sets energy *U = this->energy; this->forces.clear(); //
+//     TODO: Slow! extract_rkf(N, "Gradients"); // Sets forces F =
+//     forces.data(); return;
 //   } else {
-//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
-//     updateCoord(N, R);
-//     runAMS();
-//     extract_rkf(1, "Energy"); // Sets energy
-//     *U = this->energy;
-//     this->forces.clear();        // TODO: Slow!
-//     extract_rkf(N, "Gradients"); // Sets forces
-//     F = forces.data();
-//     if (first_run) {
+//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
+//     first_run); updateCoord(N, R); runAMS(); extract_rkf(1, "Energy"); //
+//     Sets energy *U = this->energy; this->forces.clear();        // TODO:
+//     Slow! extract_rkf(N, "Gradients"); // Sets forces F = forces.data(); if
+//     (first_run) {
 //       first_run = false;
 //       smallSys(N, R, atomicNrs, box);
 //     }
@@ -381,7 +395,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
             R[i * 3 + 2]);
   }
   fprintf(out, " End\n");
-  if (strlen(model) > 0 || strlen(forcefield)) {
+  if (not model.empty() || not forcefield.empty()) {
     fprintf(out, " Lattice\n");
     for (int i = 0; i < 3; i++) {
       fprintf(out, "  %.19f\t%.19f\t%.19f\n", box[i * 3 + 0], box[i * 3 + 1],
@@ -425,21 +439,18 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
 }
 
 std::string AMS::generate_run(Parameters *p) {
+  std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
-  std::string engine_block;
-  // Get the values from the configuration
-  std::string engine(p->engine), forcefield(p->forcefield), model(p->model),
-      xc(p->xc), resources(p->resources), basis(p->basis);
   // Ensure capitals and existence
   engine.empty()
       ? throw std::runtime_error("AMS Engine is required \n")
-      : std::transform(engine.begin(), engine.end(), engine.begin(), ::toupper);
+      : std::transform(engine.begin(), engine.end(), engine.begin(), ::tolower);
 
   // Prepare the block
-  if (engine == "MOPAC") {
+  if (engine == "mopac") {
     model.empty()
         ? throw std::runtime_error("MOPAC needs a model\n")
-        : std::transform(model.begin(), model.end(), model.begin(), ::toupper);
+        : std::transform(model.begin(), model.end(), model.begin(), ::tolower);
     std::string engine_formatter = R"(
  Engine {engine:}
    Model {model:}
@@ -448,12 +459,12 @@ std::string AMS::generate_run(Parameters *p) {
     engine_block = fmt::format(engine_formatter, fmt::arg("engine", engine),
                                fmt::arg("model", model));
     return engine_block;
-  } else if (engine == "ADF" || engine == "BAND") {
+  } else if (engine == "adf" || engine == "band") {
     basis.empty()
         ? throw std::runtime_error("ADF/BAND need a basis\n")
-        : std::transform(basis.begin(), basis.end(), basis.begin(), ::toupper);
+        : std::transform(basis.begin(), basis.end(), basis.begin(), ::tolower);
     xc.empty() ? throw std::runtime_error("ADF/BAND need a functional\n")
-               : std::transform(xc.begin(), xc.end(), xc.begin(), ::toupper);
+               : std::transform(xc.begin(), xc.end(), xc.begin(), ::tolower);
     std::string engine_formatter = R"(
    Engine {}
      Basis
@@ -467,10 +478,10 @@ std::string AMS::generate_run(Parameters *p) {
   )";
     engine_block = fmt::format(engine_formatter, engine, basis, xc);
     return engine_block;
-  } else if (engine == "DFTB") {
+  } else if (engine == "dftb") {
     resources.empty() ? throw std::runtime_error("DFTB need resources\n")
                       : std::transform(resources.begin(), resources.end(),
-                                       resources.begin(), ::toupper);
+                                       resources.begin(), ::tolower);
     std::string engine_formatter = R"(
    Engine {}
      ResourcesDir {}
@@ -478,10 +489,10 @@ std::string AMS::generate_run(Parameters *p) {
   )";
     engine_block = fmt::format(engine_formatter, engine, resources);
     return engine_block;
-  } else if (engine == "REAXFF") {
+  } else if (engine == "reaxff") {
     forcefield.empty() ? throw std::runtime_error("REAXFF needs a forcefield\n")
                        : std::transform(forcefield.begin(), forcefield.end(),
-                                        forcefield.begin(), ::toupper);
+                                        forcefield.begin(), ::tolower);
 
     std::string engine_formatter = R"(
    Engine {}
@@ -490,7 +501,7 @@ std::string AMS::generate_run(Parameters *p) {
   )";
     engine_block = fmt::format(engine_formatter, engine, forcefield);
     return engine_block;
-  } else if (engine == "FORCEFIELD") {
+  } else if (engine == "forcefield") {
     std::string engine_formatter = R"(
    Engine {}
    EndEngine
@@ -509,74 +520,74 @@ std::string AMS::generate_run(Parameters *p) {
 **
 ** The set of functions below, when activated, include asserts to ensure
 *equality with AMS_IO
+* These work.
 */
 
-// void AMS::recieveFromSystem(long N, double *F, double *U)
-// {
+// clang-format off
 
-//     FILE *in;
-//     double junkF;
-//     char junkChar[256];
-//     double forceX;
-//     double forceY;
-//     double forceZ;
-//     double index;
-//     char line[256];
+// void AMS::recieveFromSystem(long N, double *F, double *U) {
 
-//     in = fopen("ams_output", "r");
+//   FILE *in;
+//   double junkF;
+//   char junkChar[256];
+//   double forceX;
+//   double forceY;
+//   double forceZ;
+//   double index;
+//   char line[256];
 
-//     while (fgets(line, sizeof(line), in)) {
+//   in = fopen("ams_output", "r");
 
-//       if (strcmp(line, "     CALCULATION RESULTS\n") == 0){ //Finding the Energy in the output file
+//   while (fgets(line, sizeof(line), in)) {
+
+//     if (strcmp(line, "     CALCULATION RESULTS\n") ==
+//         0) { // Finding the Energy in the output file
 
 //       fscanf(in, "%s %s %s %lf", junkChar, junkChar, junkChar, U);
-//       *U = *U*27.2114; // Energy in hartree to eV
-//       }
-//     if (strcmp(line, "  Index   Atom            d/dx            d/dy            d/dz\n") == 0){ // Finding the forces
-//       for(int i = 0; i < N; i++) {
-//       fscanf(in, "%lf %s %lf %lf %lf", &index, &junkChar, &forceX, &forceY, &forceZ);
+//       *U = *U * 27.2114; // Energy in hartree to eV
+//     }
+//     if (strcmp(line, "  Index   Atom            d/dx            d/dy           "
+//                      " d/dz\n") == 0) { // Finding the forces
+//       for (int i = 0; i < N; i++) {
+//         fscanf(in, "%lf %s %lf %lf %lf", &index, &junkChar, &forceX, &forceY,
+//                &forceZ);
 //         F[int(i) * 3 + 0] = -forceX;
 //         F[int(i) * 3 + 1] = -forceY;
-//         F[int(i) * 3 + 2] = -forceZ; // AMS gives gradients, not forces, hence the change.
-//       }
-//      }
-//     }
-//         for (int i = 0; i < 3*N ; i++) {
-//             F[i] = F[i]*51.4220862; // Forces from hartree/bohr to eV/Angstrom
-//         }
-
-//     fclose(in);
-
-//     int counter = 0;
-//     for (int a = 0; a < N * 3; a++) {
-//       std::cerr << F[a] << " ";
-//       counter++;
-//       if (counter % 3 == 0) {
-//         std::cerr << std::endl;
+//         F[int(i) * 3 + 2] = -forceZ;
+//         // AMS gives gradients, not forces, hence the change.
 //       }
 //     }
-//     return;
+//   }
+//   for (int i = 0; i < 3 * N; i++) {
+//     F[i] = F[i] * 51.4220862; // Forces from hartree/bohr to eV/Angstrom
+//   }
+
+//   fclose(in);
+//   return;
 // }
 
 // void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
-// double *U, const double *box, int nImages=1)
-// {
-//     passToSystem(N, R, atomicNrs, box);
-//     system("chmod +x run_AMS.sh");
-//     system("./run_AMS.sh >> ams_output"); // Run a single point AMS calculation and write the results into ams_output
-//     recieveFromSystem(N, F,U);
-//     runAMS();
-//     extract_rkf(1, "Energy"); // Sets energy
-//     // assert(fabs(*U-this->energy)<DBL_EPSILON); // Equality == doesn't work    well for floats
-//     assert(fabs(*U-this->energy)<1e-5); // Equality ==    doesn't work well for floats
-//     // *U = this->energy;
-//     this->forces.clear();              // TODO: Slow!
-//     extract_rkf(N, "Gradients"); // Sets forces
-//     double *ftest = this->forces.data();
-//     for (int i=0; i<forces.size(); i++){
-//       assert(fabs( F[i]-ftest[i] )<1e-5);
-//     }
-//     *U=this->energy;
-//     F = ftest;
-//     return;
+//                 double *U, const double *box, int nImages = 1) {
+//   passToSystem(N, R, atomicNrs, box);
+//   system("chmod +x run_AMS.sh");
+//   system("./run_AMS.sh >> ams_output"); // Run a single point AMS calculation
+//                                         // and write the results into ams_output
+//   recieveFromSystem(N, F, U);
+//   runAMS();
+//   double energ = extract_scalar_rkf("Energy"); // Sets energy
+//   // assert(fabs(*U-this->energy)<DBL_EPSILON); // Equality == doesn't work well
+//   // for floats
+//   assert(fabs(*U - energ) < 1e-5); // Equality == doesn't work well for floats
+//   // *U = this->energy;
+//   // this->forces.clear();        // TODO: Slow!
+//   std::vector<double> frc = extract_cartesian_rkf("Gradients"); // Sets forces
+//   double *ftest = frc.data();
+//   for (int i = 0; i < forces.size(); i++) {
+//     assert(fabs(F[i] - ftest[i]) < 1e-5);
+//   }
+//   *U = energ;
+//   F = ftest;
+//   return;
 // }
+
+// clang-format on
