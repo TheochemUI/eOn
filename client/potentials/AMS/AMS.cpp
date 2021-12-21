@@ -356,10 +356,11 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
       F[3 * i + 2] = ftest[3 * i + 2];
     }
     *U = extract_scalar_rkf("Energy");
+    // Update, will still not matter for those without restarts
+    first_run = false;
     return;
   } else {
-    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-    // first_run);
+    std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
     updateCoord(N, R);
     runAMS();
     std::vector<double> frc = extract_cartesian_rkf("Gradients");
@@ -371,7 +372,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     }
     *U = extract_scalar_rkf("Energy");
     if (first_run) {
-      first_run = false;
+      this->first_run = false;
       smallSys(N, R, atomicNrs, box);
     }
     switchjob();
