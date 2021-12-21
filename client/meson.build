@@ -37,6 +37,7 @@ absl_dep = dependency('absl', method : 'cmake',
 boost_ams_dep = dependency('boost',
   modules : [
     'headers',
+    'asio',
     'iostreams',
   ],
   required : false,
