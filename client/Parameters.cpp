@@ -59,10 +59,12 @@ Parameters::Parameters(){
 
 
     // [AMS] //
-    engine = "REAXFF"; // One of REAXFF MOPAC
+    engine = ""; // One of REAXFF MOPAC
     forcefield = ""; // OPt.ff or something else
     model = ""; // PM7 PM3 or something
     xc = ""; // exchange-correlation functional
+    basis = ""; // with xc
+    resources = ""; // For DFTB
 
     // [AMS_ENV] //
     // Horrid little section to mimic amsrc.sh
@@ -394,8 +396,10 @@ int Parameters::load(FILE *file){
         if (potential=="ams") {
             engine = ini.GetValue("AMS", "engine", engine);
             forcefield = ini.GetValue("AMS", "forcefield", forcefield);
+            resources = ini.GetValue("AMS", "resources", resources);
             model = ini.GetValue("AMS", "model", model);
             xc = ini.GetValue("AMS", "xc", xc);
+            basis = ini.GetValue("AMS", "basis", basis);
         }
         // [AMS_IO]
         if (potential=="ams_io") {
