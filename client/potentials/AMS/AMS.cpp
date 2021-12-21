@@ -316,6 +316,7 @@ void AMS::write_restart() {
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
 double *U, const double *box, int nImages=1)
 {
+  // Somehow broken, even though this is the same as before
     passToSystem(N, R, atomicNrs, box);
     runAMS();
     extract_rkf(1, "Energy"); // Sets energy

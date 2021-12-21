@@ -45,15 +45,19 @@ private:
                     const double *box);
   void smallSys(long N, const double *R, const int *atomicNrs,
                 const double *box);
+  // Switch between jobs
+  void switchjob();
+  // Write restart files
+  void write_restart();
   const char *engine, *forcefield, *model, *xc; // TODO: These are const char* for fprintf
   std::string engine_setup;
   // Generate run configuration
   std::string generate_run(Parameters *p);
   // Environment
   boost::process::native_environment nativenv;
-  int counter;
-  bool first_run, job_one;
-  std::string jname, restartj, cjob, pjob;
+  int amsevals;
+  bool first_run, can_restart;
+  std::string cjob, pjob;
   std::ofstream restartFrom;
   const double forceConversion =
       -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the
@@ -63,6 +67,7 @@ private:
   void runAMS();
   void updateCoord(long N, const double *R);
   void extract_rkf(long N, std::string key);
+        void recieveFromSystem(long N, double *F, double *U);
   std::vector<double> forces;
   double energy;
 };
