@@ -62,19 +62,20 @@ bashfsc = File.new('exec.sh', 'w+')
   bashfsc.write("\n cd #{mdir}/\n eonclient 2> error.txt 1> output.txt &")
   # End
   # Now do the potentials
-  { 'B3LYP' => 'ADF', 'PM3' => 'MOPAC' }.each do |model, engine|
+  { 'Hybrid B3LYP' => 'ADF', 'PM3' => 'MOPAC' }.each do |model, engine|
     pdir = lower_dir(model, mdir) # LOWERING!
     if model == 'PM3'
       rconf['Potential']['potential'] = 'ams_io'
-      rconf['AMS_IO'] = {
-        'engine' => engine,
-        'model' => model
-      }
-    else
-      rconf['Potential']['potential'] = 'ams'
       rconf['AMS'] = {
         'engine' => engine,
         'model' => model
+      }
+    else # ADF
+      rconf['Potential']['potential'] = 'ams'
+      rconf['AMS'] = {
+        'engine' => engine,
+        'xc' => model,
+        'basis' => "DZ" # Default
       }
     end
     rconf.filename = "#{pdir}/config.ini"
