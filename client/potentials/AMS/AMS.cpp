@@ -120,7 +120,7 @@ void AMS::runAMS() {
   } else {
     this->amsevals = amsevals + 1;
     // std::cout << "Run completed normally" << std::endl;
-    std::cerr << "NORMAL TERMINATION\n";
+    // std::cerr << "NORMAL TERMINATION\n";
   }
 }
 
@@ -139,7 +139,7 @@ double AMS::extract_scalar_rkf(std::string key) {
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
                   fmt::arg("jobid", this->cjob),
                   fmt::arg("engine", this->engine), fmt::arg("key", key));
-  std::cout << execString << "\n";
+  // std::cout << execString << "\n";
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
               bp::std_in.close(),           // no input
@@ -155,7 +155,7 @@ double AMS::extract_scalar_rkf(std::string key) {
     throw std::runtime_error(fmt::format(
         "\n AMS error while extracting {}, got:\n {}", key, rkferr));
   } else {
-    std::cout << "Extracting " << key << std::endl;
+    // std::cout << "Extracting " << key << std::endl;
   }
 
   execDat = absl::StrSplit(rkfout, '\n');
@@ -168,8 +168,8 @@ double AMS::extract_scalar_rkf(std::string key) {
   // [4] = ""
   if (absl::SimpleAtod(execDat[3], &x)) {
     xval = x * this->energyConversion;
-    std::cout << fmt::format(
-        "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x, xval);
+    // std::cout << fmt::format(
+    //     "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x, xval);
     return xval;
   } else {
     throw std::runtime_error(
@@ -191,7 +191,7 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
                   fmt::arg("jobid", cjob), fmt::arg("engine", engine),
                   fmt::arg("key", key));
-  std::cout << execString << "\n";
+  // std::cout << execString << "\n";
 
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
@@ -209,7 +209,7 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
     throw std::runtime_error(fmt::format(
         "\n AMS error while extracting {}, got:\n {}", key, rkferr));
   } else {
-    std::cout << "Extracting " << key << std::endl;
+    // std::cout << "Extracting " << key << std::endl;
   }
 
   execDat = absl::StrSplit(rkfout, '\n');
@@ -340,42 +340,46 @@ void AMS::write_restart() {
   return;
 }
 
-// void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
-//                 double *U, const double *box, int nImages = 1) {
-//   // Somehow broken, even though this is the same as before
-//   passToSystem(N, R, atomicNrs, box);
-//   runAMS();
-//   *U = extract_scalar_rkf("Energy");                           // Sets energy
-//   double *ftest = (extract_cartesian_rkf("Gradients")).data(); // Sets forces
-//   return;
-// }
-
-// void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
-//                 double *U, const double *box, int nImages = 1) {
-//   if (not can_restart or first_run) {
-//     // This is true for all engines with no restart
-//     // Also if an engine supports being restarted, the first run needs this
-//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-//     first_run); passToSystem(N, R, atomicNrs, box); runAMS(); extract_rkf(1,
-//     "Energy"); // Sets energy *U = this->energy; this->forces.clear(); //
-//     TODO: Slow! extract_rkf(N, "Gradients"); // Sets forces F =
-//     forces.data(); return;
-//   } else {
-//     std::cout<<fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-//     first_run); updateCoord(N, R); runAMS(); extract_rkf(1, "Energy"); //
-//     Sets energy *U = this->energy; this->forces.clear();        // TODO:
-//     Slow! extract_rkf(N, "Gradients"); // Sets forces F = forces.data(); if
-//     (first_run) {
-//       first_run = false;
-//       smallSys(N, R, atomicNrs, box);
-//     }
-//     switchjob();
-//     write_restart();
-//     return;
-//   }
-//   // Never reach here
-//   throw std::runtime_error("Generic AMS force error \n");
-// }
+void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
+                double *U, const double *box, int nImages = 1) {
+  if (not can_restart or first_run) {
+    // This is true for all engines with no restart
+    // Also if an engine supports being restarted, the first run needs this
+    passToSystem(N, R, atomicNrs, box);
+    runAMS();
+    std::vector<double> frc = extract_cartesian_rkf("Gradients");
+    double *ftest = frc.data();
+    for (int i = 0; i < N; i++) {
+      F[3 * i] = ftest[3 * i];
+      F[3 * i + 1] = ftest[3 * i + 1];
+      F[3 * i + 2] = ftest[3 * i + 2];
+    }
+    *U = extract_scalar_rkf("Energy");
+    return;
+  } else {
+    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
+                             // first_run);
+    updateCoord(N, R);
+    runAMS();
+    std::vector<double> frc = extract_cartesian_rkf("Gradients");
+    double *ftest = frc.data();
+    for (int i = 0; i < N; i++) {
+      F[3 * i] = ftest[3 * i];
+      F[3 * i + 1] = ftest[3 * i + 1];
+      F[3 * i + 2] = ftest[3 * i + 2];
+    }
+    *U = extract_scalar_rkf("Energy");
+    if (first_run) {
+      first_run = false;
+      smallSys(N, R, atomicNrs, box);
+    }
+    switchjob();
+    write_restart();
+    return;
+  }
+  // Never reach here
+  throw std::runtime_error("Generic AMS force error \n");
+}
 
 void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
                        const double *box)
@@ -587,6 +591,23 @@ std::string AMS::generate_run(Parameters *p) {
 //   }
 //   *U = energ;
 //   F = ftest;
+//   return;
+// }
+
+// Ordering which works, scopes are correct
+// void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
+//                 double *U, const double *box, int nImages = 1) {
+//   // Somehow broken, even though this is the same as before
+//   passToSystem(N, R, atomicNrs, box);
+//   runAMS();
+//   std::vector<double> frc = extract_cartesian_rkf("Gradients");
+//   double *ftest = frc.data();
+//   for (int i = 0; i < N; i++) {
+//     F[3 * i] = ftest[3 * i];
+//     F[3 * i + 1] = ftest[3 * i + 1];
+//     F[3 * i + 2] = ftest[3 * i + 2];
+//   }
+//   *U = extract_scalar_rkf("Energy");
 //   return;
 // }
 
