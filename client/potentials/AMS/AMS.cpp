@@ -171,10 +171,11 @@ void AMS::extract_rkf(long N, std::string key) {
     }
   } else {
     // Assume gradients or some other x y z property
+    for (int i = 3; i < execDat.size(); i++) {
     // There is one per atom, the number of which is N
     // The first three lines are the header files as before
-    for (int i = 3; i < N; i++) {
       std::vector<std::string> strrow = absl::StrSplit(execDat[i], ' ');
+      for (auto elem : strrow) {
       // This loop uses an auto variable since some of the elements of strrow
       // are often ' '
       // TODO: Optimize, perhaps with a regex
@@ -187,18 +188,25 @@ void AMS::extract_rkf(long N, std::string key) {
       // [6] = ""
       // [7] = ""
       // [8] = "0.457005740252359742E-004"
-      for (auto elem : strrow) {
-        if (absl::SimpleAtod(elem, &x)) {
+        if (elem != "" && absl::SimpleAtod(elem, &x)) {
           double force = x * forceConversion;
-          std::cout << fmt::format(
-              "\n Gradient element={grad:.4f} Hartree/Bohr from AMS\n Force "
-              "element={force:.4f} eV/Angstrom\n",
-              fmt::arg("grad", x), fmt::arg("force", force));
+          // std::cout << fmt::format(
+          //     "\n Gradient element={grad:.4f} Hartree/Bohr from AMS\n Force "
+          //     "element={force:.4f} eV/Angstrom\n",
+          //     fmt::arg("grad", x), fmt::arg("force", force));
           extracted.emplace_back(x);
         }
       }
     }
     this->forces = extracted;
+    int counter = 0;
+    for (int a = 0; a < N * 3; a++) {
+      std::cout<<fmt::format("{:.25e} ", forces[a]);
+      counter++;
+      if (counter % 3 == 0) {
+        std::cout << std::endl;
+      }
+    }
     return; // Early return
   }
   // Never reach here
