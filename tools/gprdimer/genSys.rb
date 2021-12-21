@@ -82,7 +82,7 @@ bashfsc = File.new('exec.sh', 'w+')
     rconf.write
     relative_diff(ldir, pdir)
     # Write path for eonclient
-    bashfsc.write("\n cd #{pdir}/\n eonclient 2> error.txt 1> output.txt &")
+    bashfsc.write("\n cd \"#{pdir}/\"\n eonclient 2> error.txt 1> output.txt &")
     # End
     # Parameter scans
     if method == 'gprdimer'
