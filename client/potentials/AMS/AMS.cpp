@@ -15,7 +15,7 @@
 namespace bp = boost::process;
 
 AMS::AMS(Parameters *p) {
-  engine_setup = generate_run(p);
+  this->engine_setup = generate_run(p);
   engine = p->engine.c_str();
   forcefield = p->forcefield.c_str();
   model = p->model.c_str();
@@ -43,8 +43,8 @@ AMS::AMS(Parameters *p) {
   // TODO: Optimize and reuse existing files Currently each Matter will
   // recreate the folders It should instead figure out if results exist and
   // use them
-  first_run = true;
-  job_one = true;
+  this->first_run = true;
+  this->job_one = true;
   return;
 }
 
@@ -130,6 +130,9 @@ void AMS::extract_rkf(long N, std::string key) {
   rkf.run();
   auto erro = err.get();
   try {
+if (erro.find("NORMAL TERMINATION") != std::string::npos) {
+    std::cout << "found!" << '\n';
+}
     if (!absl::StrContains(erro, "NORMAL TERMINATION")) {
       // throw std::runtime_error("AMS STDERR:\n");
     } else {
