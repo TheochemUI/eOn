@@ -464,3 +464,79 @@ std::string AMS::generate_run(Parameters *p) {
   // Never reach here
   throw std::runtime_error("Generic AMS engine error \n");
 }
+
+/*
+**
+** DEBUGGER
+**
+** The set of functions below, when activated, include asserts to ensure equality with AMS_IO
+ */
+
+// void AMS::recieveFromSystem(long N, double *F, double *U)
+// {
+
+//     FILE *in;
+//     double junkF;
+//     char junkChar[256];
+//     double forceX;
+//     double forceY;
+//     double forceZ;
+//     double index;
+//     char line[256];
+
+//     in = fopen("ams_output", "r");
+
+//     while (fgets(line, sizeof(line), in)) {
+
+//       if (strcmp(line, "     CALCULATION RESULTS\n") == 0){ //Finding the Energy in the output file
+
+//       fscanf(in, "%s %s %s %lf", junkChar, junkChar, junkChar, U);
+//       *U = *U*27.2114; // Energy in hartree to eV
+//       }
+//     if (strcmp(line, "  Index   Atom            d/dx            d/dy            d/dz\n") == 0){ // Finding the forces
+//       for(int i = 0; i < N; i++) {
+//       fscanf(in, "%lf %s %lf %lf %lf", &index, &junkChar, &forceX, &forceY, &forceZ);
+//         F[int(i) * 3 + 0] = -forceX;
+//         F[int(i) * 3 + 1] = -forceY;
+//         F[int(i) * 3 + 2] = -forceZ; // AMS gives gradients, not forces, hence the change.
+//       }
+//      }
+//     }
+//         for (int i = 0; i < 3*N ; i++) {
+//             F[i] = F[i]*51.4220862; // Forces from hartree/bohr to eV/Angstrom
+//         }
+
+//     fclose(in);
+
+//     int counter = 0;
+//     for (int a = 0; a < N * 3; a++) {
+//       std::cerr << F[a] << " ";
+//       counter++;
+//       if (counter % 3 == 0) {
+//         std::cerr << std::endl;
+//       }
+//     }
+//     return;
+// }
+
+
+// void AMS::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
+// {
+//     passToSystem(N, R, atomicNrs, box);
+//     system("chmod +x run_AMS.sh");
+//     system("./run_AMS.sh >> ams_output"); // Run a single point AMS calculation and write the results into ams_output
+//     recieveFromSystem(N, F, U);
+//     runAMS();
+//     extract_rkf(1, "Energy"); // Sets energy
+//     // assert(fabs(*U-this->energy)<DBL_EPSILON); // Equality == doesn't work well for floats
+//     assert(fabs(*U-this->energy)<1e-5); // Equality == doesn't work well for floats
+//     // *U = this->energy;
+//     this->forces.clear();              // TODO: Slow!
+//     extract_rkf(N, "Gradients"); // Sets forces
+//     auto ftest = forces.data();
+//     for (int i=0; i<forces.size(); i++){
+//       assert(fabs( F[i]-ftest[i] )<1e-5);
+//     }
+//     // F = forces.data();
+//     return;
+// }
