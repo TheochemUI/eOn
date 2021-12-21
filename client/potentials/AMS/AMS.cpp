@@ -138,7 +138,7 @@ double AMS::extract_scalar_rkf(std::string key) {
   execString =
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
                   fmt::arg("jobid", this->cjob),
-                  fmt::arg("engine", this->engine), fmt::arg("key", key));
+                  fmt::arg("engine", this->engine_lower), fmt::arg("key", key));
   // std::cout << execString << "\n";
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
@@ -169,7 +169,8 @@ double AMS::extract_scalar_rkf(std::string key) {
   if (absl::SimpleAtod(execDat[3], &x)) {
     xval = x * this->energyConversion;
     // std::cout << fmt::format(
-    //     "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x, xval);
+    //     "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x,
+    //     xval);
     return xval;
   } else {
     throw std::runtime_error(
@@ -189,7 +190,7 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
   std::vector<double> extracted;
   execString =
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
-                  fmt::arg("jobid", cjob), fmt::arg("engine", engine),
+                  fmt::arg("jobid", this->cjob), fmt::arg("engine", this->engine_lower),
                   fmt::arg("key", key));
   // std::cout << execString << "\n";
 
@@ -333,7 +334,7 @@ void AMS::write_restart() {
   )";
   }
   std::string restart_data = fmt::format(
-      restart_formatter, fmt::arg("prev", pjob), fmt::arg("engine", engine));
+      restart_formatter, fmt::arg("prev", pjob), fmt::arg("engine", engine_lower));
   restartFrom.open("myrestart.in");
   restartFrom << restart_data;
   restartFrom.close();
@@ -358,7 +359,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     return;
   } else {
     // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-                             // first_run);
+    // first_run);
     updateCoord(N, R);
     runAMS();
     std::vector<double> frc = extract_cartesian_rkf("Gradients");
@@ -412,7 +413,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   fprintf(out, "Properties\n");
   fprintf(out, " Gradients\n");
   fprintf(out, "End\n");
-  if (can_restart) {
+  if (can_restart and not first_run) {
     fprintf(out, "@include myrestart.in\n");
   }
   fprintf(out, "eor");
@@ -448,13 +449,16 @@ std::string AMS::generate_run(Parameters *p) {
   // Ensure capitals and existence
   engine.empty()
       ? throw std::runtime_error("AMS Engine is required \n")
-      : std::transform(engine.begin(), engine.end(), engine.begin(), ::tolower);
-
+      : std::transform(engine.begin(), engine.end(), engine.begin(), ::toupper);
+  // engine is special, it is used as a filename, so we store engine_lower as a
+  // lowercase version too
+  engine_lower = engine;
+  std::transform(engine.begin(), engine.end(), engine_lower.begin(), ::tolower);
   // Prepare the block
-  if (engine == "mopac") {
+  if (engine == "MOPAC") {
     model.empty()
         ? throw std::runtime_error("MOPAC needs a model\n")
-        : std::transform(model.begin(), model.end(), model.begin(), ::tolower);
+        : std::transform(model.begin(), model.end(), model.begin(), ::toupper);
     std::string engine_formatter = R"(
  Engine {engine:}
    Model {model:}
@@ -463,12 +467,12 @@ std::string AMS::generate_run(Parameters *p) {
     engine_block = fmt::format(engine_formatter, fmt::arg("engine", engine),
                                fmt::arg("model", model));
     return engine_block;
-  } else if (engine == "adf" || engine == "band") {
+  } else if (engine == "ADF" || engine == "BAND") {
     basis.empty()
         ? throw std::runtime_error("ADF/BAND need a basis\n")
-        : std::transform(basis.begin(), basis.end(), basis.begin(), ::tolower);
+        : std::transform(basis.begin(), basis.end(), basis.begin(), ::toupper);
     xc.empty() ? throw std::runtime_error("ADF/BAND need a functional\n")
-               : std::transform(xc.begin(), xc.end(), xc.begin(), ::tolower);
+               : std::transform(xc.begin(), xc.end(), xc.begin(), ::toupper);
     std::string engine_formatter = R"(
    Engine {}
      Basis
@@ -482,10 +486,10 @@ std::string AMS::generate_run(Parameters *p) {
   )";
     engine_block = fmt::format(engine_formatter, engine, basis, xc);
     return engine_block;
-  } else if (engine == "dftb") {
+  } else if (engine == "DFTB") {
     resources.empty() ? throw std::runtime_error("DFTB need resources\n")
                       : std::transform(resources.begin(), resources.end(),
-                                       resources.begin(), ::tolower);
+                                       resources.begin(), ::toupper);
     std::string engine_formatter = R"(
    Engine {}
      ResourcesDir {}
@@ -496,7 +500,7 @@ std::string AMS::generate_run(Parameters *p) {
   } else if (engine == "reaxff") {
     forcefield.empty() ? throw std::runtime_error("REAXFF needs a forcefield\n")
                        : std::transform(forcefield.begin(), forcefield.end(),
-                                        forcefield.begin(), ::tolower);
+                                        forcefield.begin(), ::toupper);
 
     std::string engine_formatter = R"(
    Engine {}
@@ -505,7 +509,7 @@ std::string AMS::generate_run(Parameters *p) {
   )";
     engine_block = fmt::format(engine_formatter, engine, forcefield);
     return engine_block;
-  } else if (engine == "forcefield") {
+  } else if (engine == "FORCEFIELD") {
     std::string engine_formatter = R"(
    Engine {}
    EndEngine
