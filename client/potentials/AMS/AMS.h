@@ -50,7 +50,7 @@ private:
   // Write restart files
   void write_restart();
   std::string engine, forcefield, model, xc, resources, basis;
-  std::string engine_setup;
+  std::string engine_setup, engine_lower;
   // Generate run configuration
   std::string generate_run(Parameters *p);
   // Environment
@@ -70,8 +70,6 @@ private:
   double extract_scalar_rkf(std::string key); // single quantity
   std::vector<double> extract_cartesian_rkf(std::string key); // 3 x N quantities
   void recieveFromSystem(long N, double *F, double *U);
-  std::vector<double> forces;
-  double energy;
 };
 
 #endif
