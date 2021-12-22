@@ -24,10 +24,11 @@
 #include <boost/process/environment.hpp>
 
 #include <algorithm>
-#include <fstream>
-#include <string>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fstream>
+#include <string>
+#include <filesystem>
 
 class AMS : public Potential {
 
@@ -68,7 +69,11 @@ private:
   void updateCoord(long N, const double *R);
   void extract_rkf(long N, std::string key);
   double extract_scalar_rkf(std::string key); // single quantity
-  std::vector<double> extract_cartesian_rkf(std::string key); // 3 x N quantities
+  std::vector<double>
+  extract_cartesian_rkf(std::string key); // 3 x N quantities
+  // Debugging utilities
+  bool validate_order();
+  std::string readFile(std::filesystem::path path);
   void recieveFromSystem(long N, double *F, double *U);
 };
 
