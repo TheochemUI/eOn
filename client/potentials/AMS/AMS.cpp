@@ -49,7 +49,7 @@ AMS::AMS(Parameters *p) {
   // use them
   this->first_run = true;
   // Determine if the engine supports restarts
-  if (engine == "mopac") {
+  if (engine == "MOPAC") {
     this->can_restart = false;
     this->cjob = "amsResults";
     this->pjob = "amsResults";
