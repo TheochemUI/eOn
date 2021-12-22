@@ -9,9 +9,8 @@
 //-----------------------------------------------------------------------------------
 
 #include "AMS.h"
-#include <cfloat>
-#include <fstream>
 #include <iostream>
+#include <iterator>
 
 namespace bp = boost::process;
 
@@ -105,7 +104,7 @@ void AMS::runAMS() {
   std::string runout, runerr;
   chmod("run_AMS.sh", S_IRWXU);
   nativenv["AMS_JOBNAME"] = cjob;
-  // std::cout<<"Running with "<<cjob<<std::endl;
+  assert(validate_order() == true);         // TODO: Debug only
   bp::child c("run_AMS.sh", nativenv,       // set the input
               bp::std_in.close(),           // no input
               bp::std_out > run_out_future, // STDOUT
@@ -191,8 +190,8 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
   std::vector<double> extracted;
   execString =
       fmt::format("dmpkf {jobid:}.results/{engine:}.rkf AMSResults%{key:}",
-                  fmt::arg("jobid", this->cjob), fmt::arg("engine", this->engine_lower),
-                  fmt::arg("key", key));
+                  fmt::arg("jobid", this->cjob),
+                  fmt::arg("engine", this->engine_lower), fmt::arg("key", key));
   // std::cout << execString << "\n";
 
   // Extract
@@ -256,7 +255,10 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
 }
 
 void AMS::updateCoord(long N, const double *R) {
-  // TODO: Probably don't need to read in just for the first three lines
+  // The logic used here is that we need to update the PREVIOUS job, since that
+  // is the one from which the calculation is to be restarted
+  // Only the third line is vaguely complex
+  // https://www.scm.com/doc/Scripting/Commandline_Tools/KF_command_line_utilities.html
   std::ofstream updCoord;
   std::string execString, coordDump, newCoord;
   std::vector<std::string> execDat;
@@ -269,6 +271,7 @@ void AMS::updateCoord(long N, const double *R) {
                            fmt::arg("jobid", pjob));
   // std::cout << execString << "\n";
   // Store Coordinates
+  // TODO: Simplify this, we only need the first few lines
   bp::child cprog(execString, nativenv, bp::std_in.close(), bp::std_out > rdump,
                   bp::std_err > err, coordio);
   coordio.run();
@@ -293,7 +296,7 @@ void AMS::updateCoord(long N, const double *R) {
     }
   }
   coordDump = "#!/bin/sh\n udmpkf ";
-  absl::StrAppend(&coordDump, cjob, ".results/ams.rkf <<EOF\n", newCoord,
+  absl::StrAppend(&coordDump, pjob, ".results/ams.rkf <<EOF\n", newCoord,
                   "EOF");
   // std::cout << coordDump;
   updCoord.open("updCoord.sh");
@@ -308,12 +311,13 @@ void AMS::updateCoord(long N, const double *R) {
 
 void AMS::switchjob() {
   std::string tmp;
-  // std::cout << fmt::format("\nEntered Switch:\nCurrent:{}, Previous:{}\n", cjob, pjob);
+  // std::cout << fmt::format("\nEntered Switch:\nCurrent:{}, Previous:{}\n",
+  // cjob, pjob);
   tmp = this->cjob;
   this->cjob = this->pjob;
   this->pjob = tmp;
   // std::cout << fmt::format("\nSwitched\n Current:{}, Previous:{}\n", cjob,
-  pjob);
+  // pjob);
 }
 
 void AMS::write_restart() {
@@ -334,8 +338,9 @@ void AMS::write_restart() {
    End
   )";
   }
-  std::string restart_data = fmt::format(
-      restart_formatter, fmt::arg("prev", pjob), fmt::arg("engine", engine_lower));
+  std::string restart_data =
+      fmt::format(restart_formatter, fmt::arg("prev", pjob),
+                  fmt::arg("engine", engine_lower));
   restartFrom.open("myrestart.in");
   restartFrom << restart_data;
   restartFrom.close();
@@ -345,9 +350,9 @@ void AMS::write_restart() {
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, const double *box, int nImages = 1) {
   if (not can_restart or first_run) {
-    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
-    // This is true for all engines with no restart
-    // Also if an engine supports being restarted, the first run needs this
+    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
+    // first_run); This is true for all engines with no restart Also if an
+    // engine supports being restarted, the first run needs this
     passToSystem(N, R, atomicNrs, box);
     runAMS();
     std::vector<double> frc = extract_cartesian_rkf("Gradients");
@@ -359,11 +364,25 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     }
     *U = extract_scalar_rkf("Energy");
     // Update, will still not matter for those without restarts
-    first_run = false;
+    if (can_restart) {
+      first_run = false;
+      // Unfortunately we need the "previous" to be pre-populated
+      // clang-format off
+      std::cout<<fmt::format("\nMoving {} to {} before switching during the first job\n", cjob, pjob);
+      const auto copyOptions = std::filesystem::copy_options::overwrite_existing
+                             | std::filesystem::copy_options::recursive
+                             ;
+      // clang-format on
+      std::filesystem::copy(fmt::format("./{}.results/", cjob),
+                            fmt::format("./{}.results/", pjob), copyOptions);
+    }
     return;
   } else {
-    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart, first_run);
-    updateCoord(N, R);
+    // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
+    // first_run);
+    smallSys(N, R, atomicNrs, box); // writes run_AMS.sh
+    updateCoord(N, R);              // updates coordinates in previous job
+    write_restart();                // writes restart file using previous job
     runAMS();
     std::vector<double> frc = extract_cartesian_rkf("Gradients");
     double *ftest = frc.data();
@@ -373,12 +392,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
       F[3 * i + 2] = ftest[3 * i + 2];
     }
     *U = extract_scalar_rkf("Energy");
-    if (first_run) {
-      this->first_run = false;
-      smallSys(N, R, atomicNrs, box);
-    }
-    switchjob();
-    write_restart();
+    switchjob(); // toggles the jobs
     return;
   }
   // Never reach here
@@ -393,6 +407,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   out = fopen("run_AMS.sh", "w");
 
   fprintf(out, "#!/bin/sh\n");
+  fmt::print(out, fmt::format("export AMS_JOBNAME={}\n", cjob));
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
   fprintf(out, "System\n");
@@ -433,6 +448,7 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   out = fopen("run_AMS.sh", "w");
 
   fprintf(out, "#!/bin/sh\n");
+  fmt::print(out, fmt::format("export AMS_JOBNAME={}\n", cjob));
   fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
   fprintf(out, "Task SinglePoint\n");
   fmt::print(out, engine_setup);
@@ -619,3 +635,42 @@ std::string AMS::generate_run(Parameters *p) {
 // }
 
 // clang-format on
+
+/*
+** Debugging Toggles
+** These functions can be used to validate the job ordering, by being added to
+*runAMS()
+*/
+
+// TODO: Only in debug
+std::string AMS::readFile(std::filesystem::path path) {
+  // Kanged: https://stackoverflow.com/a/40903508/1895378
+  std::ifstream f(path, std::ios::in | std::ios::binary);
+  const auto sz = std::filesystem::file_size(path);
+  std::string stres(sz, '\0');
+  f.read(stres.data(), sz);
+  return stres;
+}
+
+bool AMS::validate_order() {
+  // Validate all inputs
+  if (not first_run) {
+    std::string rfile = readFile("run_AMS.sh");
+    std::string resfile = readFile("myrestart.in");
+    std::string updcoord = readFile("updCoord.sh");
+    // ifstream runfile("run_AMS.sh"), restartfile("myrestart.in"),
+    // updcoord("updCoord.sh"); istream_iterator<string> rfiter(runfile),
+    // refiter(restartfile), uciter(updcoord), eof; vector<string>
+    // rfstore(rfiter, eof), refstore(refiter, eof), ucstore(uciter, eof);
+    // (?<=AMS_JOBNAME=).*$
+    // (?<=udmpkf ).*(?=\.results)
+    // (?<=File ).*(?=\.results)
+    // The logic here is that the current job restarts from the previous one, so
+    // the coordinates of the previous job are updated, the restart references
+    // the previous job, and then finally the current job executes with cjob
+    assert(absl::StrContains(rfile, cjob));
+    assert(absl::StrContains(resfile, pjob));
+    assert(absl::StrContains(updcoord, pjob));
+  }
+  return true;
+}
