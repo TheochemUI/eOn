@@ -58,8 +58,8 @@ bashfsc = File.new('exec.sh', 'w+')
   rconf.filename = "#{mdir}/config.ini"
   rconf.write
   relative_diff(ldir, mdir) # Now is in the lowered directory
-  # Write path for eonclient
-  bashfsc.write("\n cd #{mdir}/\n eonclient 2> error.txt 1> output.txt &")
+  # Not needed
+  # bashfsc.write("\n cd #{mdir}/\n eonclient 2> error.txt 1> output.txt &")
   # End
   # Now do the potentials
   { 'Hybrid B3LYP' => 'ADF', 'PM3' => 'MOPAC' }.each do |model, engine|
@@ -75,7 +75,7 @@ bashfsc = File.new('exec.sh', 'w+')
       rconf['AMS'] = {
         'engine' => engine,
         'xc' => model,
-        'basis' => "DZ" # Default
+        'basis' => "DZ"
       }
     end
     rconf.filename = "#{pdir}/config.ini"
