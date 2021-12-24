@@ -105,8 +105,6 @@ mkShellNewEnv {
     ninja
     meson
     mycompiler
-    (if pkgs.stdenv.isDarwin then null else valgrind)
-    (if pkgs.stdenv.isDarwin then null else lldb)
     (if withEonclient then (if pkgs.stdenv.isDarwin then null else eonclient) else null)
     (if compiler == "clang" then gfortran else null)
     graphviz
