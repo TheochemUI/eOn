@@ -24,10 +24,11 @@
 #include <boost/process/environment.hpp>
 
 #include <algorithm>
-#include <fstream>
-#include <string>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fstream>
+#include <string>
+#include <filesystem>
 
 class AMS : public Potential {
 
@@ -45,15 +46,19 @@ private:
                     const double *box);
   void smallSys(long N, const double *R, const int *atomicNrs,
                 const double *box);
-  const char *engine, *forcefield, *model, *xc; // TODO: These are const char* for fprintf
-  std::string engine_setup;
+  // Switch between jobs
+  void switchjob();
+  // Write restart files
+  void write_restart();
+  std::string engine, forcefield, model, xc, resources, basis;
+  std::string engine_setup, engine_lower;
   // Generate run configuration
   std::string generate_run(Parameters *p);
   // Environment
   boost::process::native_environment nativenv;
-  int counter;
-  bool first_run, job_one;
-  std::string jname, restartj, cjob, pjob;
+  int amsevals;
+  bool first_run, can_restart;
+  std::string cjob, pjob;
   std::ofstream restartFrom;
   const double forceConversion =
       -51.4220862; // Forces from hartree/bohr to eV/Angstrom, -1 for the
@@ -63,8 +68,13 @@ private:
   void runAMS();
   void updateCoord(long N, const double *R);
   void extract_rkf(long N, std::string key);
-  std::vector<double> forces;
-  double energy;
+  double extract_scalar_rkf(std::string key); // single quantity
+  std::vector<double>
+  extract_cartesian_rkf(std::string key); // 3 x N quantities
+  // Debugging utilities
+  bool validate_order();
+  std::string readFile(std::filesystem::path path);
+  void recieveFromSystem(long N, double *F, double *U);
 };
 
 #endif
