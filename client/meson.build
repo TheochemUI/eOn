@@ -16,7 +16,7 @@ if host_system == 'darwin'
   # Workaround for
   # ../MinModeSaddleSearch.cpp:173:25: error: aligned allocation function of
   # type 'void *(unsigned long, enum std::align_val_t)' is only available on macOS 10.13 or newer
-  add_global_arguments(['-faligned-allocation'], language: 'cpp')
+  # add_global_arguments(['-faligned-allocation'], language: 'cpp')
 endif
 
 # Dependencies
@@ -222,3 +222,22 @@ ec1 = executable('testPot',
                 dependencies : eon_deps,
                 link_with : eclib,
                 )
+# ---------------------- Bindings
+py = import('python').find_installation()
+python_dep = py.dependency()
+pyb11f_deps = [ python_dep ]
+
+
+pyb11f_deps = [eon_deps,
+               dependency('python3'),
+               dependency('pybind11'),
+               declare_dependency(link_args: '-lstdc++') ]
+
+pyb11f = py.extension_module('eonclient',
+          sources : eonclient_sources + [
+            'pybinds/py_wrapper.cc',
+            'pybinds/py_parameters.cc',
+            ],
+          dependencies : pyb11f_deps,
+          link_with : potentials,
+          install : true)
