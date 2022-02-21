@@ -5,3 +5,4 @@ pytest
 pytest-datadir
 sh
 sphinx
+ipython

@@ -8,9 +8,9 @@
 #
 # With clang:
 #
-#   nix-shell --argstr compiler clang
+#   nix-shell --argstr compilerUsed clang
 #
-{ withEonclient ? false, compiler ? "gcc" }:
+{ withEonclient ? false, compilerUsed ? "gcc" }:
 let
   sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs {};
@@ -37,8 +37,8 @@ let
     ];
   };
   compilerEnv = (
-    if compiler == "gcc" then pkgs.gcc10Stdenv
-    else if compiler == "clang" then pkgs.clang10Stdenv
+    if compilerUsed == "gcc" then pkgs.gcc10Stdenv
+    else if compilerUsed == "clang" then pkgs.clang12Stdenv
     else pkgs.stdenv
   );
   mkShellNewEnv = pkgs.mkShell.override { stdenv = compilerEnv; };
@@ -67,7 +67,7 @@ let
     export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
   '';
   myCmop = (
-    if compiler == "gcc" then (
+    if compilerUsed == "gcc" then (
       pkgs.wrapCC (
         pkgs.gcc10.cc.override {
           langFortran = true;
@@ -80,12 +80,12 @@ let
         }
       )
     )
-    else if compiler == "clang" then (
+    else if compilerUsed == "clang" then (
       compilerEnv
     ) else pkgs.stdEnv
   );
   mycompiler = (
-    if compiler == "gcc" then (
+    if compilerUsed == "gcc" then (
       myCmop.overrideAttrs (
         old: rec {
           hardeningEnable = [ "pic" ];
@@ -93,27 +93,33 @@ let
       )
     ) else myCmop
   );
+  # Can't use nix lldb on macos, must use native
+  notDarwin = pkgs.lib.optionals (! pkgs.stdenv.isDarwin ) [ pkgs.lldb pkgs.mold ];
+  isDarwin = pkgs.lib.optionals (pkgs.stdenv.isDarwin) (with pkgs.darwin; [ cctools ]);
+ # CoreFoundation CoreServices Foundation
+  compilerpkg = (if compilerUsed == "clang" then pkgs.clang_12 else pkgs.gcc10);
   eonclient = pkgs.callPackage ./default.nix {};
 in
 mkShellNewEnv {
-  nativeBuildInputs = with pkgs; [ cmake blas mycompiler (if compiler == "gcc" then mycompiler.cc.lib else null) openblas ninja ];
+  # nativeBuildInputs = with pkgs; [ cmake blas mycompiler (if compiler == "gcc" then mycompiler.cc.lib else null) openblas ninja ];
   buildInputs = with pkgs; [
+    notDarwin
+    isDarwin
+    compilerpkg
     gtest
     bashInteractive
     which
     customPython
-    ninja
-    meson
-    mycompiler
+    meson ninja pkg-config cmake
+    # mycompiler
     (if withEonclient then (if pkgs.stdenv.isDarwin then null else eonclient) else null)
-    (if compiler == "clang" then gfortran else null)
     graphviz
 
     zstd
     zlib
     lzma
     bzip2
-    openblas
+    openblas blas
 
     fmt
     abseil-cpp
