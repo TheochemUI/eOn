@@ -8,7 +8,7 @@
 #
 # With clang:
 #
-#   nix-shell --argstr doomdir clang
+#   nix-shell --argstr compiler clang
 #
 { withEonclient ? false, compiler ? "gcc" }:
 let
