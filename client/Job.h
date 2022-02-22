@@ -40,41 +40,41 @@ class Job {
 	//! Virtual run; used solely for dynamic dispatch 
 	virtual std::vector<std::string> run()=0;
 	//! Runs a \ref ProcessSearchJob "Process Search" job 
-        static const char PROCESS_SEARCH[];
+        static const std::string PROCESS_SEARCH;
 	//! Runs a \ref SaddleSearchJob "Saddle Search" job
-        static const char SADDLE_SEARCH[];
+        static const std::string SADDLE_SEARCH;
 	//! ref MinimizationJob
-        static const char MINIMIZATION[];
+        static const std::string MINIMIZATION;
         //! ref PointJob
-	static const char POINT[];
+	static const std::string POINT;
         //! ref ParallelReplicaJob
-	static const char PARALLEL_REPLICA[];
+	static const std::string PARALLEL_REPLICA;
         //! ref SafeHyperdynamicsJob
-	static const char SAFE_HYPER[];
+	static const std::string SAFE_HYPER;
 	//! ref TADJob
-        static const char TAD[];
+        static const std::string TAD;
 	//! ref ReplicaExchangeJob
-        static const char REPLICA_EXCHANGE[];
+        static const std::string REPLICA_EXCHANGE;
 	//! ref BasinHopingJob
-        static const char BASIN_HOPPING[];
+        static const std::string BASIN_HOPPING;
 	//! ref HessianJob
-        static const char HESSIAN[];
+        static const std::string HESSIAN;
 	//! ref FiniteDifferenceJob
-        static const char FINITE_DIFFERENCE[];
+        static const std::string FINITE_DIFFERENCE;
 	//! ref NudgedElasticBandJob
-        static const char NUDGED_ELASTIC_BAND[];
+        static const std::string NUDGED_ELASTIC_BAND;
 	//! ref DynamicsJob
-        static const char DYNAMICS[];
+        static const std::string DYNAMICS;
 	//! ref PrefactorJob
-        static const char PREFACTOR[];
+        static const std::string PREFACTOR;
 	//! ref GlobalOptimizationJob
-	static const char GLOBAL_OPTIMIZATION[];
+	static const std::string GLOBAL_OPTIMIZATION;
 	//! ref StructureComparisonJob
-	static const char STRUCTURE_COMPARISON[];
+	static const std::string STRUCTURE_COMPARISON;
 	//! ref MonteCarloJob
-        static const char MONTE_CARLO[];
+        static const std::string MONTE_CARLO;
 	//! ref TestJob
-        static const char TEST[];
+        static const std::string TEST;
 	//! Grabs the correct job as specified by the parameters
 	/*!
  	  \param *parameters defined by the config.init file

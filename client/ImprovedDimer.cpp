@@ -9,9 +9,9 @@
 
 using namespace helper_functions;
 
-const char ImprovedDimer::OPT_SD[] = "sd";
-const char ImprovedDimer::OPT_CG[] = "cg";
-const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
+const std::string ImprovedDimer::OPT_SD = "sd"s;
+const std::string ImprovedDimer::OPT_CG = "cg"s;
+const std::string ImprovedDimer::OPT_LBFGS = "lbfgs"s;
 
 ImprovedDimer::ImprovedDimer(Matter *matter, Parameters *params)
 {

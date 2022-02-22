@@ -1,5 +1,5 @@
 #include "LowestEigenmode.h"
 
-const char LowestEigenmode::MINMODE_DIMER[] =   "dimer";
-const char LowestEigenmode::MINMODE_GPRDIMER[] =   "gprdimer";
-const char LowestEigenmode::MINMODE_LANCZOS[] = "lanczos";
+const std::string LowestEigenmode::MINMODE_DIMER =   "dimer"s;
+const std::string LowestEigenmode::MINMODE_GPRDIMER =   "gprdimer"s;
+const std::string LowestEigenmode::MINMODE_LANCZOS = "lanczos"s;

@@ -10,6 +10,7 @@
 #include <vector>
 
 using namespace std;
+using namespace std::string_literals; // For ""s
 
 #ifdef EONMPI
     #include "mpi.h"

@@ -2,8 +2,9 @@
 #include "BondBoost.h"
 #include <math.h>
 #include "HelperFunctions.h"
-const char Hyperdynamics::NONE[] = "none";
-const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
+
+const std::string Hyperdynamics::NONE = "none"s;
+const std::string Hyperdynamics::BOND_BOOST = "bond_boost"s;
 
 
 BondBoost::BondBoost(Matter *matt,Parameters *params)

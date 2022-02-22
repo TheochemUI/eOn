@@ -17,9 +17,9 @@ class ImprovedDimer : public LowestEigenmode
 //    static const string OPT_SD;
 //    static const string OPT_CG;
 //    static const string OPT_LBFGS;
-    static const char OPT_SD[];
-    static const char OPT_CG[];
-    static const char OPT_LBFGS[];
+    static const std::string OPT_SD;
+    static const std::string OPT_CG;
+    static const std::string OPT_LBFGS;
 
     ImprovedDimer(Matter *matter, Parameters *parameters);
     ~ImprovedDimer();

@@ -74,65 +74,65 @@
 
 #include <cstdlib>
 
-const char Potential::POT_EMT[] =         "emt";
-const char Potential::POT_EXT[] =         "ext_pot";
-const char Potential::POT_LJ[] =          "lj";
-const char Potential::POT_LJCLUSTER[] =   "lj_cluster";
-const char Potential::POT_MORSE_PT[] =    "morse_pt";
-const char Potential::POT_NEW[] =         "new_pot";
+const std::string Potential::POT_EMT =         "emt"s;
+const std::string Potential::POT_EXT =         "ext_pot"s;
+const std::string Potential::POT_LJ =          "lj"s;
+const std::string Potential::POT_LJCLUSTER =   "lj_cluster"s;
+const std::string Potential::POT_MORSE_PT =    "morse_pt"s;
+const std::string Potential::POT_NEW =         "new_pot"s;
 
 #ifdef CUH2_POT
 const char Potential::POT_CUH2[] =        "cuh2_pot";
 #endif
 
 #ifdef IMD_POT
-const char Potential::POT_IMD[] =         "imd";
+const std::string Potential::POT_IMD =         "imd"s;
 #endif
 
 #ifdef WITH_GPRD
-const char Potential::POT_GPR[] =         "gpr_pot";
+const std::string Potential::POT_GPR =         "gpr_pot"s;
 #endif
 
 #ifdef WITH_WATER
-const char Potential::POT_TIP4P[] =       "tip4p";
-const char Potential::POT_TIP4P_PT[] =    "tip4p_pt";
+const std::string Potential::POT_TIP4P =       "tip4p"s;
+const std::string Potential::POT_TIP4P_PT =    "tip4p_pt"s;
 #ifdef WITH_FORTRAN
-const char Potential::POT_TIP4P_H[] =     "tip4p_h";
+const std::string Potential::POT_TIP4P_H =     "tip4p_h"s;
 #endif
-const char Potential::POT_SPCE[] =        "spce";
+const std::string Potential::POT_SPCE =        "spce"s;
 #endif
 
 #ifdef WITH_FORTRAN
-const char Potential::POT_EAM_AL[] =      "eam_al";
-const char Potential::POT_EDIP[] =        "edip";
-const char Potential::POT_FEHE[] =        "fehe";
-const char Potential::POT_LENOSKY_SI[] =  "lenosky_si";
-const char Potential::POT_SW_SI[] =       "sw_si";
-const char Potential::POT_TERSOFF_SI[] =  "tersoff_si";
+const std::string Potential::POT_EAM_AL =      "eam_al"s;
+const std::string Potential::POT_EDIP =        "edip"s;
+const std::string Potential::POT_FEHE =        "fehe"s;
+const std::string Potential::POT_LENOSKY_SI =  "lenosky_si"s;
+const std::string Potential::POT_SW_SI =       "sw_si"s;
+const std::string Potential::POT_TERSOFF_SI =  "tersoff_si"s;
 #endif
 
 #ifdef LAMMPS_POT
-const char Potential::POT_LAMMPS[] =      "lammps";
+const std::string Potential::POT_LAMMPS =      "lammps"s;
 #endif
 
 #ifdef EONMPI
-const char Potential::POT_MPI[] =         "mpi";
+const std::string Potential::POT_MPI =         "mpi"s;
 #endif
 
 #ifdef WITH_PYTHON
  #ifdef PYAMFF_POT
-const char Potential::POT_PYAMFF[] =      "pyamff";
+const std::string Potential::POT_PYAMFF =      "pyamff"s;
  #endif
-const char Potential::POT_QSC[] =         "qsc";
+const std::string Potential::POT_QSC =         "qsc"s;
 #endif
 
 #ifdef WITH_AMS
-const char Potential::POT_AMS[] =         "ams";
-const char Potential::POT_AMS_IO[] =      "ams_io";
+const std::string Potential::POT_AMS =         "ams"s;
+const std::string Potential::POT_AMS_IO =      "ams_io"s;
 #endif
 
 #ifdef WITH_VASP
-const char Potential::POT_VASP[] =        "vasp";
+const std::string Potential::POT_VASP =        "vasp"s;
 #endif
 
 Potential* Potential::pot = NULL;
@@ -277,4 +277,4 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     }
 
     return forces;
-};
+}

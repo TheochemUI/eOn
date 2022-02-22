@@ -19,24 +19,24 @@
 #include "StructureComparisonJob.h"
 #include "MonteCarloJob.h"
 
-const char Job::PROCESS_SEARCH[] =           "process_search";
-const char Job::SADDLE_SEARCH[] =            "saddle_search";
-const char Job::MINIMIZATION[] =             "minimization";
-const char Job::POINT[] =                    "point";
-const char Job::PARALLEL_REPLICA[] =         "parallel_replica";
-const char Job::REPLICA_EXCHANGE[] =         "replica_exchange";
-const char Job::BASIN_HOPPING[] =            "basin_hopping";
-const char Job::HESSIAN[] =                  "hessian";
-const char Job::FINITE_DIFFERENCE[] =        "finite_difference";
-const char Job::NUDGED_ELASTIC_BAND[] =      "nudged_elastic_band";
-const char Job::DYNAMICS[] =                 "molecular_dynamics";
-const char Job::SAFE_HYPER[] =               "safe_hyper";
-const char Job::TAD[] =                      "tad";
-const char Job::PREFACTOR[] =                "prefactor";
-const char Job::GLOBAL_OPTIMIZATION[] =      "global_optimization";
-const char Job::STRUCTURE_COMPARISON[] =     "structure_comparison";
-const char Job::MONTE_CARLO[] =              "monte_carlo";
-// const char Job::TEST[] =                     "test";
+const std::string Job::PROCESS_SEARCH =           "process_search"s;
+const std::string Job::SADDLE_SEARCH =            "saddle_search"s;
+const std::string Job::MINIMIZATION =             "minimization"s;
+const std::string Job::POINT =                    "point"s;
+const std::string Job::PARALLEL_REPLICA =         "parallel_replica"s;
+const std::string Job::REPLICA_EXCHANGE =         "replica_exchange"s;
+const std::string Job::BASIN_HOPPING =            "basin_hopping"s;
+const std::string Job::HESSIAN =                  "hessian"s;
+const std::string Job::FINITE_DIFFERENCE =        "finite_difference"s;
+const std::string Job::NUDGED_ELASTIC_BAND =      "nudged_elastic_band"s;
+const std::string Job::DYNAMICS =                 "molecular_dynamics"s;
+const std::string Job::SAFE_HYPER =               "safe_hyper"s;
+const std::string Job::TAD =                      "tad"s;
+const std::string Job::PREFACTOR =                "prefactor"s;
+const std::string Job::GLOBAL_OPTIMIZATION =      "global_optimization"s;
+const std::string Job::STRUCTURE_COMPARISON =     "structure_comparison"s;
+const std::string Job::MONTE_CARLO =              "monte_carlo"s;
+// const std::string Job::TEST =                     "test"s;
 
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;

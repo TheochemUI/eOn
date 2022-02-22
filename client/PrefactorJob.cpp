@@ -5,9 +5,9 @@
 #include "Hessian.h"
 #include "Potential.h"
 
-const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
-const char PrefactorJob::PREFACTOR_SADDLE[]   = "saddle";
-const char PrefactorJob::PREFACTOR_PRODUCT[]  = "product";
+const std::string PrefactorJob::PREFACTOR_REACTANT = "reactant"s;
+const std::string PrefactorJob::PREFACTOR_SADDLE  = "saddle"s;
+const std::string PrefactorJob::PREFACTOR_PRODUCT  = "product"s;
 
 PrefactorJob::PrefactorJob(Parameters *params)
 {

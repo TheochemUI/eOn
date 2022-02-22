@@ -12,71 +12,71 @@ class Potential
         Potential(){}
         virtual ~Potential(){}
 
-        static const char POT_EMT[];
-        static const char POT_EXT[];
-        static const char POT_LJ[];
-        static const char POT_LJCLUSTER[];
-        static const char POT_MORSE_PT[];
-        static const char POT_NEW[];
+        static const std::string POT_EMT;
+        static const std::string POT_EXT;
+        static const std::string POT_LJ;
+        static const std::string POT_LJCLUSTER;
+        static const std::string POT_MORSE_PT;
+        static const std::string POT_NEW;
 
 #ifdef CUH2_POT
         static const char POT_CUH2[];
 #endif
 
 #ifdef IMD_POT
-        static const char POT_IMD[];
+        static const std::string POT_IMD;
 #endif
 
 #ifdef WITH_GPRD
-        static const char POT_GPR[];
+        static const std::string POT_GPR;
 #endif
 
 #ifdef WITH_WATER
-        static const char POT_TIP4P[];
-        static const char POT_TIP4P_PT[];
+        static const std::string POT_TIP4P;
+        static const std::string POT_TIP4P_PT;
  #ifdef WITH_FORTRAN
-        static const char POT_TIP4P_H[];
+        static const std::string POT_TIP4P_H;
  #endif
-        static const char POT_SPCE[];
+        static const std::string POT_SPCE;
 #endif
 
 #ifdef WITH_FORTRAN
-        static const char POT_EAM_AL[];
-        static const char POT_EDIP[];
-        static const char POT_FEHE[];
-        static const char POT_LENOSKY_SI[];
-        static const char POT_SW_SI[];
-        static const char POT_TERSOFF_SI[];
+        static const std::string POT_EAM_AL;
+        static const std::string POT_EDIP;
+        static const std::string POT_FEHE;
+        static const std::string POT_LENOSKY_SI;
+        static const std::string POT_SW_SI;
+        static const std::string POT_TERSOFF_SI;
 #endif
 
 #ifndef WIN32
 #ifdef WITH_VASP
-        static const char POT_VASP[];
+        static const std::string POT_VASP;
 #endif
 #endif
 
         // ??? Unused
-        static const char POT_BOPFOX[];
-        static const char POT_BOP[];
+        static const std::string POT_BOPFOX;
+        static const std::string POT_BOP;
 
 #ifdef LAMMPS_POT
-        static const char POT_LAMMPS[];
+        static const std::string POT_LAMMPS;
 #endif
 
 #ifdef EONMPI
-        static const char POT_MPI[];
+        static const std::string POT_MPI;
 #endif
 
 #ifdef WITH_PYTHON
  #ifdef PYAMFF_POT
-        static const char POT_PYAMFF[];
+        static const std::string POT_PYAMFF;
  #endif
-        static const char POT_QSC[];
+        static const std::string POT_QSC;
 #endif
 
 #ifdef WITH_AMS
-        static const char POT_AMS[];
-        static const char POT_AMS_IO[];
+        static const std::string POT_AMS;
+        static const std::string POT_AMS_IO;
 #endif
 
         static Potential* getPotential(Parameters *parameters);

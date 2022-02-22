@@ -29,8 +29,8 @@ Parameters::Parameters(){
     checkpoint = false;
     quiet = false;
     writeLog = true;
-    iniFilename = "config.ini";
-    conFilename = "pos.con";
+    iniFilename = "config.ini"s;
+    conFilename = "pos.con"s;
     finiteDifference = 0.01;
     maxForceCalls = 0;
     removeNetForce = true;
@@ -55,26 +55,26 @@ Parameters::Parameters(){
     LAMMPSLogging = false;
     LAMMPSThreads = 0;
     EMTRasmussen = false;
-    extPotPath = "./ext_pot";
+    extPotPath = "./ext_pot"s;
 
 
     // [AMS] //
-    engine = ""; // One of REAXFF MOPAC
-    forcefield = ""; // OPt.ff or something else
-    model = ""; // PM7 PM3 or something
-    xc = ""; // exchange-correlation functional
-    basis = ""; // with xc
-    resources = ""; // For DFTB
+    engine = ""s; // One of REAXFF MOPAC
+    forcefield = ""s; // OPt.ff or something else
+    model = ""s; // PM7 PM3 or something
+    xc = ""s; // exchange-correlation functional
+    basis = ""s; // with xc
+    resources = ""s; // For DFTB
 
     // [AMS_ENV] //
     // Horrid little section to mimic amsrc.sh
     // Assumes the entire thing is going to be set
-    amshome = ""; // "/some/path/to/amshome/";
-    scm_tmpdir = ""; // "/tmp";
-    scm_pythondir = ""; // "/.scm/python";
-    amsbin = ""; // amshome.append("/bin");
-    scmlicense = ""; // amshome.append("license.txt");
-    amsresources = ""; // amshome.append("/atomicdata");
+    amshome = ""s; // "/some/path/to/amshome/"s;
+    scm_tmpdir = ""s; // "/tmp"s;
+    scm_pythondir = ""s; // "/.scm/python"s;
+    amsbin = ""s; // amshome.append("/bin");
+    scmlicense = ""s; // amshome.append("license.txt");
+    amsresources = ""s; // amshome.append("/atomicdata");
 
 
     // [Structure Comparison] //
@@ -91,7 +91,7 @@ Parameters::Parameters(){
 
     // [Saddle Search] //
     saddleDisplaceType = EpiCenters::DISP_LOAD;
-    saddleMethod = "min_mode";
+    saddleMethod = "min_mode"s;
     saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
     saddleMaxEnergy = 20.0;
     saddleMaxIterations = 1000;
@@ -119,8 +119,8 @@ Parameters::Parameters(){
     saddleZeroModeAbortCurvature = 0.0; // eV/Ang^2
 
     // [Optimizers] //
-    optMethod = "cg";
-    optConvergenceMetric = "norm";
+    optMethod = "cg"s;
+    optConvergenceMetric = "norm"s;
     optMaxIterations = 1000;
     optConvergedForce = 0.01;
     optMaxMove = 0.2;
@@ -173,8 +173,8 @@ Parameters::Parameters(){
     gprDimerMaxOuterIterations = 300; // num_bigiter
     gprDimerMaxInnerIterations = 1000; // num_iter
     gprDimerMidpointMaxDisp = 0.5; // disp_max
-    gprDimerRotOptMethod = "lbfgs"; // method_rot
-    gprDimerTransOptMethod = "lbfgs"; // method_trans
+    gprDimerRotOptMethod = "lbfgs"s; // method_rot
+    gprDimerTransOptMethod = "lbfgs"s; // method_trans
     gprActiveRadius = 5.0; // actidst_fro
     gprDimerSep = 0.01; // dimer_sep
     gprDimerConvStep = 0.1; // param_trans[0]
@@ -185,7 +185,7 @@ Parameters::Parameters(){
     gprDimerInitTransGP = 0; // inittrans_nogp
     gprDimerManyIterations = true; // islarge_num_iter
     // GPR Params
-    gprDimerHyperOptMethod = "scg"; // optimization_alg
+    gprDimerHyperOptMethod = "scg"s; // optimization_alg
     gprDimerSigma2 = 1e-8; // gp_sigma2
     gprDimerJitterSigma2 = 0; // jitter_sigma2
     gprDimerNoiseSigma2 = 1e-8; // sigma2
@@ -207,11 +207,11 @@ Parameters::Parameters(){
     // GPR Debugging Parameters
     gprReportLevel = 1; // report_level
     gprDebugLevel = 2; // debug_level
-    gprDebugOutDir = "output"; // debug_output_dir
-    gprDebugPosFile = "position"; // debug_output_file_R
-    gprDebugEnergyFile = "energy"; // debug_output_file_E
-    gprDebugGradFile = "gradient"; // debug_output_file_G
-    gprDebugOutExt = "dat"; // debug_output_file_extension
+    gprDebugOutDir = "output"s; // debug_output_dir
+    gprDebugPosFile = "position"s; // debug_output_file_R
+    gprDebugEnergyFile = "energy"s; // debug_output_file_E
+    gprDebugGradFile = "gradient"s; // debug_output_file_G
+    gprDebugOutExt = "dat"s; // debug_output_file_extension
     gprDebugOffsetMidPoint = 3.; // debug_offset_from_mid_point
     gprDebugDy = 0.1; // debug_dy
     gprDebugDz = 0.1; // debug_dz
@@ -259,7 +259,7 @@ Parameters::Parameters(){
     tadConfidence = 0.001;
 
     // [Replica Exchange] //
-    repexcTemperatureDistribution = "exponential";
+    repexcTemperatureDistribution = "exponential"s;
     repexcReplicas = 10;
     repexcExchangeTrials = repexcReplicas;
     repexcSamplingTimeInput = 1000.0;
@@ -284,8 +284,8 @@ Parameters::Parameters(){
     basinHoppingQuenchingSteps = 0;
     basinHoppingSingleAtomDisplace = false;
     basinHoppingSignificantStructure = true;
-    basinHoppingDisplacementAlgorithm = "standard";
-    basinHoppingDisplacementDistribution = "uniform";
+    basinHoppingDisplacementAlgorithm = "standard"s;
+    basinHoppingDisplacementDistribution = "uniform"s;
     basinHoppingSwapProbability = 0.0;
     basinHoppingJumpMax = 10;
     basinHoppingJumpSteps = 0;
@@ -297,8 +297,8 @@ Parameters::Parameters(){
     basinHoppingStopEnergy = -DBL_MAX;
 
     // [Global Optimization] //
-    globalOptimizationMoveMethod = "md";
-    globalOptimizationDecisionMethod = "npew";
+    globalOptimizationMoveMethod = "md"s;
+    globalOptimizationDecisionMethod = "npew"s;
     globalOptimizationSteps = 10000;
     globalOptimizationBeta = 1.05;
     globalOptimizationAlpha = 1.02;
@@ -446,12 +446,12 @@ int Parameters::load(FILE *file){
         optConvergenceMetric = toLowerCase(ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
 
         if (optConvergenceMetric == "max_atom") {
-            optConvergenceMetricLabel = "Max atom force";
+            optConvergenceMetricLabel = "Max atom force"s;
         }else if (optConvergenceMetric == "max_component") {
-            optConvergenceMetricLabel = "Max force comp";
+            optConvergenceMetricLabel = "Max force comp"s;
         }else if (optConvergenceMetric == "norm") {
-            //optConvergenceMetricLabel = "\u2016Force\u2016";
-            optConvergenceMetricLabel = "||Force||";
+            //optConvergenceMetricLabel = "\u2016Force\u2016"s;
+            optConvergenceMetricLabel = "||Force||"s;
         }else{
             fprintf(stderr, "unknown convergence_metric %s\n", optConvergenceMetric.c_str());
             exit(1);
@@ -748,7 +748,7 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-       if (potential == "ams" || potential == "ams_io") {
+       if (potential == "ams"s || potential == "ams_io"s) {
          if (forcefield.empty() && model.empty() && xc.empty()) {
            char msg[] =
                "error:  [AMS] Must provide atleast forcefield or model or xc\n";
