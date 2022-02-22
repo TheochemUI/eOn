@@ -8,11 +8,13 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
-#include <string.h>
-#include <string_view>
+#include <fstream>
+#include <filesystem>
+#include <fmt/core.h>
+#include <fmt/printf.h>
 
 using namespace std;
-using namespace std::literals;
+namespace fs = std::filesystem;
 
 static const std::string LOG_PREFIX = "[Matter]"s;
 
@@ -78,7 +80,7 @@ class MatterObjectiveFunction : public ObjectiveFunction
             } else if (parameters->optConvergenceMetric == "max_component") {
                 return matter->getForces().maxCoeff(); 
             } else {
-                log("%s Unknown opt_convergence_metric: %s\n", LOG_PREFIX,
+                log("%s Unknown opt_convergence_metric: %s\n", LOG_PREFIX.c_str(),
                     parameters->optConvergenceMetric.c_str());
                 exit(1);
             }
@@ -356,9 +358,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     int iteration=0;
     const std::string_view forceLabel{parameters->optConvergenceMetricLabel};
     if (!quiet) {
-        log("%s %10s  %14s  %18s  %13s\n", LOG_PREFIX,
+        log("%s %10s  %14s  %18s  %13s\n", LOG_PREFIX.c_str(),
             "Iter", "Step size", forceLabel, "Energy");
-        log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX,
+        log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX.c_str(),
             iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
     }
 
@@ -374,7 +376,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
         double stepSize = helper_functions::maxAtomMotion(pbc(getPositions()-pos));
 
         if (!quiet) {
-            log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX,
+            log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX.c_str(),
                 iteration, stepSize, objf.getConvergence(), getPotentialEnergy());
         }
 
@@ -391,7 +393,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint, string prefixMo
     
     if (iteration == 0) {
         if (!quiet) {
-            log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX,
+            log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX.c_str(),
                 iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
         }
     }
@@ -509,14 +511,14 @@ VectorXd Matter::getForcesFreeV()
 
 
 // return distance between the atoms with index1 and index2
-double Matter::distance(long index1, long index2) const
+double Matter::distance(long int index1, long int index2) const
 {
     return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
 
 // return projected distance between the atoms with index1 and index2 on asix (0-x,1-y,2-z)
-double Matter::pdistance(long index1, long index2,int axis) const
+double Matter::pdistance(long int index1, long int index2,int axis) const
 {
     Matrix<double, 1, 3> ret;
     ret.setZero();
@@ -527,7 +529,7 @@ double Matter::pdistance(long index1, long index2,int axis) const
 
 
 // return the distance atom with index has moved between the current Matter object and the Matter object passed as argument
-double Matter::distance(const Matter& matter, long index) const
+double Matter::distance(const Matter& matter, long int index) const
 {
     return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
@@ -553,7 +555,7 @@ void Matter::setMasses(VectorXd massesIn)
 
 
 
-long Matter::getAtomicNr(long int indexAtom) const
+long int Matter::getAtomicNr(long int indexAtom) const
 {
     return(atomicNrs[indexAtom]);
 }
@@ -621,7 +623,7 @@ long int Matter::numberOfFixedAtoms() const
 }
 
 
-long Matter::getForceCalls() const
+long int Matter::getForceCalls() const
 {
     return(forceCalls);
 }
@@ -666,23 +668,23 @@ void Matter::matter2xyz(std::string filename, bool append /*Append if file alrea
 bool Matter::matter2con(std::string filename, bool append) 
 {
     bool state;
-    FILE *file;
-    int pos = filename.find_last_of('.');
-    if(filename.compare(pos+1, 3, "con")){
-        filename += ".con";
+    fs::path filePath = filename;
+    if(not (filePath.extension() == ".con")){
+        filePath.replace_extension(".con");
     };
+    std::ofstream file;
     if (append) {
-        file = fopen(filename.c_str(), "ab");
+        file.open(filePath, std::ios::app);
     }else{
-        file = fopen(filename.c_str(),"wb");
+        file.open(filePath);
     }
     state = matter2con(file);
-    fclose(file);
+    file.close();
     return(state);
 }
 
 
-bool Matter::matter2con(FILE *file) 
+bool Matter::matter2con(std::ofstream& file)
 {
     long int i;
     int j;
@@ -720,35 +722,35 @@ bool Matter::matter2con(FILE *file)
     first[j+1] = numberOfAtoms();
     Ncomponent = j+1;
 
-    fputs(headerCon1, file);
-    fputs(headerCon2, file);
+    file << headerCon1;
+    file << headerCon2;
     double lengths[3];
     lengths[0] = cell.row(0).norm();
     lengths[1] = cell.row(1).norm();
     lengths[2] = cell.row(2).norm();
-    fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
+    file << fmt::sprintf("%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
     double angles[3];
     angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
     angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
     angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
-    fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-    fputs(headerCon5, file);
-    fputs(headerCon6, file);
+    file << fmt::sprintf("%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
+    file << headerCon5;
+    file << headerCon6;
+    file << fmt::sprintf("%d\n", Ncomponent);
 
-    fprintf(file, "%d\n", Ncomponent);
     for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%d ", first[j+1]-first[j]);
+        file << fmt::sprintf("%d ", first[j+1]-first[j]);
     }
-    fprintf(file, "\n");
+    file << "\n";
     for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%f ", mass[j]);
+        file << fmt::format("{} ", mass[j]);
     }
-    fprintf(file, "\n");
+    file << "\n";
     for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
-        fprintf(file, "Coordinates of Component %d\n", j+1);
+        file << fmt::sprintf("%s\n", atomicNumber2symbol(atomicNrs[j]));
+        file << fmt::sprintf("Coordinates of Component %d\n", j+1);
         for(i=first[j]; i<first[j+1]; i++) {
-            fprintf(file,"%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
+            file << fmt::sprintf("%22.17f %22.17f %22.17f %d %4ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i+1);
         }
     }
     return true;

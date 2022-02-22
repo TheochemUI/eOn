@@ -82,7 +82,7 @@ public:
     double getMass(long int atom) const; // return the mass of the atom specified
     void setMass(long int atom, double mass); // set the mass of an atom
     void setMasses(VectorXd massesIn); // set the mass of an atom
-    long getAtomicNr(long int atom) const; // return the atomic number of the atom specified
+    long int getAtomicNr(long int atom) const; // return the atomic number of the atom specified
     void setAtomicNr(long int atom, long atomicNr); // set the atomic number of an atom
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
@@ -92,14 +92,14 @@ public:
     double getKineticEnergy() const;
     double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic plus potential energy)
 
-    double distance(long index1, long index2) const; // return the distance between two atoms in same configuration
-    double pdistance(long index1, long index2, int axis) const;
-    double distance(const Matter& matter, long index) const; // the distance between the same atom in two configurations
+    double distance(long int index1, long int index2) const; // return the distance between two atoms in same configuration
+    double pdistance(long int index1, long int index2, int axis) const;
+    double distance(const Matter& matter, long int index) const; // the distance between the same atom in two configurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
     long int numberOfFixedAtoms() const; // return the number of fixed atoms
 
-    long getForceCalls() const; // return how many force calls that have been performed
+    long int getForceCalls() const; // return how many force calls that have been performed
     void resetForceCalls(); // zeroing the value of force calls
 
     double maxForce(void);
@@ -109,7 +109,7 @@ public:
     bool convel2matter(std::string filename); // read con file with both coordinates and velocities into Matter
     bool convel2matter(FILE *file); // read con file with both coordinates and velocities and load data into Matter
     bool matter2con(std::string filename, bool append=false); // print con file from data in Class Matter
-    bool matter2con(FILE *file); // print con file from data in Class Matter
+    bool matter2con(std::ofstream& file); // print con file from data in Class Matter
     bool matter2convel(std::string filename); // print con file with both coordinates and velocities  in Class Matter
     bool matter2convel(FILE *file); // print con file with both coordinates and velocities from data in Class Matter
     void matter2xyz(std::string filename, bool append=false); // print xyz file from data in Matter
