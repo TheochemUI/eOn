@@ -94,7 +94,7 @@ public:
 
     double distance(long index1, long index2) const; // return the distance between two atoms in same configuration
     double pdistance(long index1, long index2, int axis) const;
-    double distance(const Matter& matter, long index) const; // the distance between the same atom in two cofigurations
+    double distance(const Matter& matter, long index) const; // the distance between the same atom in two configurations
 
     long int numberOfFreeAtoms() const; // return the number of free (or movable) atoms
     long int numberOfFixedAtoms() const; // return the number of fixed atoms
