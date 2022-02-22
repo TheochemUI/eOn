@@ -105,7 +105,7 @@ public:
     double maxForce(void);
 
     bool con2matter(std::string filename); // read con file into Matter, return true if successful
-    bool con2matter(FILE *file); // read con file and load data into Matter, return true if successful
+    bool con2matter(std::ifstream& file); // read con file and load data into Matter, return true if successful
     bool convel2matter(std::string filename); // read con file with both coordinates and velocities into Matter
     bool convel2matter(FILE *file); // read con file with both coordinates and velocities and load data into Matter
     bool matter2con(std::string filename, bool append=false); // print con file from data in Class Matter
@@ -125,11 +125,11 @@ private:
     mutable long forceCalls; // keep track of how many force calls have been performed
 
     // CON file header information, which is not used in the eon code
-    char headerCon1[512];
-    char headerCon2[512];
-    char headerCon4[512];
-    char headerCon5[512];
-    char headerCon6[512];
+    std::string headerCon1;
+    std::string headerCon2;
+    std::string headerCon4;
+    std::string headerCon5;
+    std::string headerCon6;
 
     void computePotential();
     void initializeDataMembers(Parameters *parameters);

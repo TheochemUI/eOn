@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <fmt/core.h>
 #include <fmt/printf.h>
+#include <utility>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -159,11 +160,11 @@ const Matter& Matter::operator=(const Matter& matter)
     potentialEnergy = matter.potentialEnergy;
     recomputePotential = matter.recomputePotential;
 
-    strcpy(headerCon1,matter.headerCon1);
-    strcpy(headerCon2,matter.headerCon2);
-    strcpy(headerCon4,matter.headerCon4);
-    strcpy(headerCon5,matter.headerCon5);
-    strcpy(headerCon6,matter.headerCon6);
+    headerCon1 = matter.headerCon1;
+    headerCon2 = matter.headerCon2;
+    headerCon4 = matter.headerCon4;
+    headerCon5 = matter.headerCon5;
+    headerCon6 = matter.headerCon6;
 
     return *this;
 }
@@ -669,13 +670,13 @@ bool Matter::matter2con(std::string filename, bool append)
 {
     bool state;
     fs::path filePath = filename;
+    std::ofstream file;
     if(not (filePath.extension() == ".con")){
         filePath.replace_extension(".con");
-    };
-    std::ofstream file;
+    }
     if (append) {
         file.open(filePath, std::ios::app);
-    }else{
+    } else {
         file.open(filePath);
     }
     state = matter2con(file);
@@ -760,28 +761,28 @@ bool Matter::matter2con(std::ofstream& file)
 // Load atomic coordinates from a .con file
 bool Matter::con2matter(std::string filename)
 {
-    bool state;
-    FILE *file;
-    // Add the .con extension to filename if it is not already there.
-    int pos = filename.find_last_of('.');
-    if(filename.compare(pos+1, 3, "con")){
-        filename += ".con";
+    bool state{false};
+    fs::path filePath = filename;
+    std::ifstream file{filePath};
+    if(not (filePath.extension() == ".con")){
+        filePath.replace_extension(".con");
     }
-    file = fopen(filename.c_str(), "rb");
-    if (!file) {
-        cerr << "File " << filename << " was not found.\n";
-        return(false);
+    if (not file.is_open()){
+        std::cerr << fmt::format("File {} was not found.\n", filePath.string());
+    } else {
+        state = con2matter(file);
+        file.close();
     }
-    state = con2matter(file);
-    fclose(file);
     return(state);
 }
 
 
-bool Matter::con2matter(FILE *file)
+bool Matter::con2matter(std::ifstream &file)
 {
-    char line[255]; // Temporary string of character to read from the file.
-    fgets(headerCon1,sizeof(line),file);
+    std::string line; // Temporary string
+    std::istringstream ss; // Temporary helper
+    std::getline(file, headerCon1);
+    std::cout<<fmt::format("headerCon1: {}\n", headerCon1);
 
 //    if (strchr(headerCon1,'\r')) {
 //        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
@@ -792,17 +793,24 @@ bool Matter::con2matter(FILE *file)
 
     long int i; int j;
 
-    fgets(headerCon2,sizeof(line),file);
+    std::getline(file, headerCon2);
+    std::cout<<fmt::format("headerCon2: {}\n", headerCon2);
 
-    double lengths[3];
     // The third line contains the length of the periodic cell
-    fgets(line,sizeof(line),file);
-    sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
+    double lengths[3];
+    std::getline(file, line);
+    ss.str(line);
+    ss >> lengths[0] >> lengths[1] >> lengths[2];
+    ss.clear();
+    std::cout<<fmt::format("Lengths {} {} {}\n", lengths[0], lengths[1], lengths[2]);
 
     double angles[3];
-    fgets(headerCon4,sizeof(line),file);
     // The fourth line contains the angles of the cell vectors
-    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
+    std::getline(file, line);
+    ss.str(line);
+    ss >> angles[0] >> angles[1] >> angles[2];
+    ss.clear();
+    std::cout<<fmt::format("Angles {} {} {}\n", angles[0], angles[1], angles[2]);
 
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
         cell(0,0) = lengths[0];
@@ -829,99 +837,124 @@ bool Matter::con2matter(FILE *file)
     }
     cellInverse = cell.inverse();
 
-    fgets(headerCon5,sizeof(line),file);
-    fgets(headerCon6,sizeof(line),file);
+    std::getline(file, headerCon5);
+    std::cout<<fmt::format("headerCon5: {}\n", headerCon5);
+    std::getline(file, headerCon6);
+    std::cout<<fmt::format("headerCon6: {}\n", headerCon6);
 
-    fgets(line,sizeof(line),file);
-    int Ncomponent; // Number of components or different types of atoms  (eg water: two components H and O)
-    if(sscanf(line,"%d",&Ncomponent) == 0) {
-        std::cout << "The number of components cannot be read. One component is assumed instead\n";
+    // Number of components or different types of atoms  (eg water: two components H and O)
+    size_t Ncomponent{0};
+    std::getline(file, line);
+    ss.str(line);
+    ss >> Ncomponent;
+    ss.clear();
+    std::cout<<fmt::format("Number of components {}\n", Ncomponent);
+
+    if(Ncomponent < 1) {
+        std::cerr << "con2atoms does not support more than negative counts for the atoms.\n";
+        return false;
+    } else if (Ncomponent == 0) {
+        std::cout << "The number of components cannot be read. One component is assumed instead\n"s;
         Ncomponent = 1;
     }
-    if((Ncomponent>MAXC)||(Ncomponent<1)) {
-        cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
+
+    // Use a vector of pairs to keep track of the components and their count
+    std::vector<std::pair<size_t, size_t>> ncomp_count;
+
+    // Now we want to know the number of atom of each type.
+    // e.g with H2O, two Hydrogen atoms and one Oxygen atom
+    std::getline(file, line);
+    std::cout<<line<<"\n";
+    // Better parsing: https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
+    ss.str(line);
+    std::vector<std::string> split_strings{std::istream_iterator<std::string>{ss},
+                                 std::istream_iterator<std::string>()};
+    ss.clear();
+    if(not(Ncomponent == split_strings.size())){
+        std::cerr << "input con file does not list the number of each component\n";
         return false;
     }
-
-    // stores the position of the first atom of each element
-    // 'MAXC+1': the last element is used to store the total number of atom
-    long int first[MAXC+1];
-    long int Natoms = 0;
-    first[0] = 0;
-
-    // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
-    fgets(line, sizeof(line), file);
-    // split at either space or tab
-    char * split = strtok(line, " \t");
-    for(j=0; j<Ncomponent; j++) {
-        if(split == NULL)
-        {
-            cerr << "input con file does not list the number of each component" <<endl;
-            return false;
-        }
-        if(sscanf(split, "%ld", &Natoms)!=1)
-        {
-            cerr << "input con file does not list the number of each component" <<endl;
-            return false;
-        }
-        first[j+1] = Natoms+first[j];
-        // split at either space or tab
-        split = strtok(NULL, " \t");
+    for (size_t idx{1}, tmp{0}; auto i : split_strings){ // Additional initializations C++20
+        ss.str(i);
+        ss >> tmp;
+        ncomp_count.push_back(std::make_pair(idx, tmp));
+        ss.clear();
+        ++idx;
     }
+    // for(auto i : ncomp_count){ std::cout<<fmt::format("id:{} num:{}\n", i.first, i.second); }
 
-    resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
+    // std::cout<<split_strings.size()<<"\n";
+    // std::cout<<split_strings[0]<<"\n";
+    // // split at either space or tab
+    // char * split = strtok(line, " \t");
+    // for(j=0; j<Ncomponent; j++) {
+    //     if(split == NULL)
+    //     {
+    //         cerr << "input con file does not list the number of each component" <<endl;
+    //         return false;
+    //     }
+    //     if(sscanf(split, "%ld", &Natoms)!=1)
+    //     {
+    //         cerr << "input con file does not list the number of each component" <<endl;
+    //         return false;
+    //     }
+    //     first[j+1] = Natoms+first[j];
+    //     // split at either space or tab
+    //     split = strtok(NULL, " \t");
+    // }
 
-    double mass[MAXC];
-    fgets(line, sizeof(line), file);
-    // split at either space or tab
-    split = strtok(line, " \t");
 
-    for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
-        if(split == NULL)
-        {
-            cerr << "input con file does not list enough masses" <<endl;
-            return false;
-        }
-// *1* seems like a bug as a result of copying and pasting from above
-// *1*       if(sscanf(split, "%ld", &Natoms)!=1)
-        if(sscanf(split, "%lf", &mass[j])!=1)
-        {
-            cerr << "input con file does not list enough masses" <<endl;
-            return false;
-        }
-// *1*       sscanf(line, "%lf", &mass[j]);
-        // split at either space or tab
-        split = strtok(NULL, " \t");
-    }
+//     double mass[MAXC];
+//     fgets(line, sizeof(line), file);
+//     // split at either space or tab
+//     split = strtok(line, " \t");
 
-    int atomicNr;
-    int fixed;
-    double x,y,z;
-    for (j=0; j<Ncomponent; j++) {
-        char symbol[3];
-        fgets(line,sizeof(line),file);
-        sscanf(line, "%2s\n", symbol);
-        atomicNr = symbol2atomicNumber(symbol);
-        fgets(line,sizeof(line),file); // skip one line
-        for (i=first[j]; i<first[j+1]; i++){
-            setMass(i, mass[j]);
+//     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
+//         if(split == NULL)
+//         {
+//             cerr << "input con file does not list enough masses" <<endl;
+//             return false;
+//         }
+// // *1* seems like a bug as a result of copying and pasting from above
+// // *1*       if(sscanf(split, "%ld", &Natoms)!=1)
+//         if(sscanf(split, "%lf", &mass[j])!=1)
+//         {
+//             cerr << "input con file does not list enough masses" <<endl;
+//             return false;
+//         }
+// // *1*       sscanf(line, "%lf", &mass[j]);
+//         // split at either space or tab
+//         split = strtok(NULL, " \t");
+//     }
 
-            setAtomicNr(i, atomicNr);
-            fgets(line, sizeof(line), file);
-            if (strlen(line) < 6) {
-                cerr << "error parsing position in con file" << endl;
-                return false;
-            }
+//     int atomicNr;
+//     int fixed;
+//     double x,y,z;
+//     for (j=0; j<Ncomponent; j++) {
+//         char symbol[3];
+//         fgets(line,sizeof(line),file);
+//         sscanf(line, "%2s\n", symbol);
+//         atomicNr = symbol2atomicNumber(symbol);
+//         fgets(line,sizeof(line),file); // skip one line
+//         for (i=first[j]; i<first[j+1]; i++){
+//             setMass(i, mass[j]);
 
-            sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-            positions(i,0) = x;
-            positions(i,1) = y;
-            positions(i,2) = z;
-            setFixed(i, static_cast<bool>(fixed));
-        }
-    }
+//             setAtomicNr(i, atomicNr);
+//             fgets(line, sizeof(line), file);
+//             if (strlen(line) < 6) {
+//                 cerr << "error parsing position in con file" << endl;
+//                 return false;
+//             }
+
+//             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
+//             positions(i,0) = x;
+//             positions(i,1) = y;
+//             positions(i,2) = z;
+//             setFixed(i, static_cast<bool>(fixed));
+//         }
+//     }
     if(usePeriodicBoundaries)
-    { 
+    {
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
     // potential_ = new Potential(parameters_);
@@ -1062,231 +1095,241 @@ bool Matter::matter2convel(std::string filename)
 }
 
 
-bool Matter::matter2convel(FILE *file)
-{
-    long int i;
-    int j;
-    long int Nfix = 0; // Nfix to store the number of fixed atoms
-    int Ncomponent = 0; // used to store the number of components (eg water: two components H and O)
-    int first[MAXC]; // to store the position of the first atom of each component plus at the end the total number of atoms
-    double mass[MAXC];
-    long atomicNrs[MAXC];
-    first[0] = 0;
-    
-    if(usePeriodicBoundaries)
-    { 
-        applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
-    }
-    
-    if(numberOfAtoms() > 0) {
-        if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
-        mass[0] = getMass(0);
-        atomicNrs[0] = getAtomicNr(0);
-    }
-    j=0;
-    for(i=1; i<numberOfAtoms(); i++) {
-        if(getFixed(i)) Nfix++; // count the number of fixed atoms
-        if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
-            j++;
-            if(j>=MAXC) {
-                std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
-                return false;
-            }
-            mass[j] = getMass(i);
-            atomicNrs[j] = getAtomicNr(i);
-            first[j] = i;
-        }
-    }
-    first[j+1] = numberOfAtoms();
-    Ncomponent = j+1;
-
-    fputs(headerCon1, file);
-    fputs(headerCon2, file);
-    double lengths[3];
-    lengths[0] = cell.row(0).norm();
-    lengths[1] = cell.row(1).norm();
-    lengths[2] = cell.row(2).norm();
-    fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
-    double angles[3];
-    angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
-    angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
-    angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
-    fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-    fputs(headerCon5, file);
-    fputs(headerCon6, file);
-
-    fprintf(file, "%d\n", Ncomponent);
-    for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%d ", first[j+1]-first[j]);
-    }
-    fprintf(file, "\n");
-    for(j=0; j<Ncomponent; j++) {
-        // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
-        fprintf(file, "%f ", mass[j]);
-    }
-    fprintf(file, "\n");
-    for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
-        fprintf(file, "Coordinates of Component %d\n", j+1);
-        for(i=first[j]; i<first[j+1]; i++) {
-            fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
-        }
-    }
-    fprintf(file, "\n");
-    for(j=0; j<Ncomponent; j++) {
-        fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
-        fprintf(file, "Velocities of Component %d\n", j+1);
-        for(i=first[j]; i<first[j+1]; i++) {
-            fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0), velocities(i, 1), velocities(i, 2), getFixed(i), i);
-        }
-    }
-    return true;
+// TODO: Fix
+bool Matter::matter2convel(FILE *file){
+    return false;
 }
+// bool Matter::matter2convel(FILE *file)
+// {
+//     long int i;
+//     int j;
+//     long int Nfix = 0; // Nfix to store the number of fixed atoms
+//     int Ncomponent = 0; // used to store the number of components (eg water: two components H and O)
+//     int first[MAXC]; // to store the position of the first atom of each component plus at the end the total number of atoms
+//     double mass[MAXC];
+//     long atomicNrs[MAXC];
+//     first[0] = 0;
+
+//     if(usePeriodicBoundaries)
+//     {
+//         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
+//     }
+
+//     if(numberOfAtoms() > 0) {
+//         if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
+//         mass[0] = getMass(0);
+//         atomicNrs[0] = getAtomicNr(0);
+//     }
+//     j=0;
+//     for(i=1; i<numberOfAtoms(); i++) {
+//         if(getFixed(i)) Nfix++; // count the number of fixed atoms
+//         if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
+//             j++;
+//             if(j>=MAXC) {
+//                 std::cerr << "Does not support more than " << MAXC << " components and the atoms must be ordered by component.\n";
+//                 return false;
+//             }
+//             mass[j] = getMass(i);
+//             atomicNrs[j] = getAtomicNr(i);
+//             first[j] = i;
+//         }
+//     }
+//     first[j+1] = numberOfAtoms();
+//     Ncomponent = j+1;
+
+//     fputs(headerCon1, file);
+//     fputs(headerCon2, file);
+//     double lengths[3];
+//     lengths[0] = cell.row(0).norm();
+//     lengths[1] = cell.row(1).norm();
+//     lengths[2] = cell.row(2).norm();
+//     fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
+//     double angles[3];
+//     angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
+//     angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
+//     angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
+//     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
+//     fputs(headerCon5, file);
+//     fputs(headerCon6, file);
+
+//     fprintf(file, "%d\n", Ncomponent);
+//     for(j=0; j<Ncomponent; j++) {
+//         fprintf(file, "%d ", first[j+1]-first[j]);
+//     }
+//     fprintf(file, "\n");
+//     for(j=0; j<Ncomponent; j++) {
+//         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
+//         fprintf(file, "%f ", mass[j]);
+//     }
+//     fprintf(file, "\n");
+//     for(j=0; j<Ncomponent; j++) {
+//         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
+//         fprintf(file, "Coordinates of Component %d\n", j+1);
+//         for(i=first[j]; i<first[j+1]; i++) {
+//             fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0), getPosition(i, 1), getPosition(i, 2), getFixed(i), i);
+//         }
+//     }
+//     fprintf(file, "\n");
+//     for(j=0; j<Ncomponent; j++) {
+//         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
+//         fprintf(file, "Velocities of Component %d\n", j+1);
+//         for(i=first[j]; i<first[j+1]; i++) {
+//             fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0), velocities(i, 1), velocities(i, 2), getFixed(i), i);
+//         }
+//     }
+//     return true;
+// }
 
 
-bool Matter::convel2matter(std::string filename)
-{
-    bool state;
-    FILE *file;
-    // Add the .con extension to filename if it is not already there.
-    int pos=filename.find_last_of('.');
-    if(filename.compare(pos+1, 3, "con")){
-        filename += ".con";
-    }
-    file=fopen(filename.c_str(), "rb");
-    if (!file) {
-        cerr << "File " << filename << " was not found.\n";
-        return(false);
-    }
-    state = convel2matter(file);
-    fclose(file);
-    return(state);
+bool Matter::convel2matter(std::string filename){
+    return false;
 }
+// bool Matter::convel2matter(std::string filename)
+// {
+//     bool state;
+//     FILE *file;
+//     // Add the .con extension to filename if it is not already there.
+//     int pos=filename.find_last_of('.');
+//     if(filename.compare(pos+1, 3, "con")){
+//         filename += ".con";
+//     }
+//     file=fopen(filename.c_str(), "rb");
+//     if (!file) {
+//         cerr << "File " << filename << " was not found.\n";
+//         return(false);
+//     }
+//     state = convel2matter(file);
+//     fclose(file);
+//     return(state);
+// }
 
 
-bool Matter::convel2matter(FILE *file)
-{
-    char line[255]; // Temporary string of character to read from the file.
-    fgets(headerCon1,sizeof(line),file);
-
-//    if (strchr(headerCon1,'\r')) {
-//        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
-//        with the new line charater (\n). C recognises only the \n as the end of line. */
-//        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
-//        return false; // return false for error
-//    }
-
-    long int i; int j;
-
-    fgets(headerCon2,sizeof(line),file);
-
-    double lengths[3];
-    // The third line contains the length of the periodic cell
-    fgets(line,sizeof(line),file);
-    sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
-
-    double angles[3];
-    fgets(headerCon4,sizeof(line),file);
-    // The fourth line contains the angles of the cell vectors
-    sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
-
-    if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-        cell(0,0) = lengths[0];
-        cell(1,1) = lengths[1];
-        cell(2,2) = lengths[2];
-    }else{
-        angles[0] *= M_PI/180.0;
-        angles[1] *= M_PI/180.0;
-        angles[2] *= M_PI/180.0;
-
-        cell(0,0) = 1.0;
-        cell(1,0) = cos(angles[0]);
-        cell(1,1) = sin(angles[0]);
-        cell(2,0) = cos(angles[1]);
-        cell(2,1) = (cos(angles[2])-cell(1,0)*cell(2,0))/cell(1,1);
-        cell(2,2) = sqrt(1.0-pow(cell(2,0),2)-pow(cell(2,1),2));
-
-        cell(0,0) *= lengths[0];
-        cell(1,0) *= lengths[1];
-        cell(1,1) *= lengths[1];
-        cell(2,0) *= lengths[2];
-        cell(2,1) *= lengths[2];
-        cell(2,2) *= lengths[2];
-    }
-    cellInverse = cell.inverse();
-
-    fgets(headerCon5,sizeof(line),file);
-    fgets(headerCon6,sizeof(line),file);
-
-    fgets(line,sizeof(line),file);
-    int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
-    if(sscanf(line,"%d",&Ncomponent) == 0) {
-        std::cout << "The number of components cannot be read. One component is assumed instead\n";
-        Ncomponent = 1;
-    }
-    if((Ncomponent>MAXC)||(Ncomponent<1)) {
-        cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
-        return false;
-    }
-    /* to store the position of the 
-        first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/ 
-    long int first[MAXC+1];
-    long int Natoms = 0;
-    first[0] = 0;
-
-    // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
-    for(j=0; j<Ncomponent; j++) {
-        fscanf(file, "%ld", &Natoms);
-        first[j+1] = Natoms+first[j];
-    }
-
-    fgets(line, sizeof(line), file); // Discard the rest of the line
-    resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
-    double mass[MAXC];
-    for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
-        fscanf(file, "%lf", &mass[j]);
-        // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
-    }
-
-    fgets(line,sizeof(line),file); // discard rest of the line
-    int atomicNr;
-    int fixed;
-    double x,y,z;
-    for (j=0; j<Ncomponent; j++) {
-        char symbol[3];
-        fgets(line,sizeof(line),file);
-        sscanf(line, "%2s\n", symbol);
-        atomicNr=symbol2atomicNumber(symbol);
-        fgets(line,sizeof(line),file); // skip one line
-        for (i=first[j]; i<first[j+1]; i++){
-            setMass(i, mass[j]);
-            setAtomicNr(i, atomicNr);
-            fgets(line, sizeof(line), file);
-            sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-            setPosition(i, 0, x);
-            setPosition(i, 1, y);
-            setPosition(i, 2, z);
-            setFixed(i, static_cast<bool>(fixed));
-        }
-    }
-
-    fgets(line,sizeof(line),file);
-    for (j=0; j<Ncomponent; j++) {
-        fgets(line,sizeof(line),file);
-        fgets(line,sizeof(line),file); // skip one line
-        for (i=first[j]; i<first[j+1]; i++){
-            fgets(line, sizeof(line), file);
-            sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-            setVelocity(i, 0, x);
-            setVelocity(i, 1, y);
-            setVelocity(i, 2, z);
-        }
-    }
-
-    if(usePeriodicBoundaries)
-    {
-        applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
-    }
-    //    potential_ = new Potential(parameters_);
-    return(true);
+bool Matter::convel2matter(FILE *file){
+    return false;
 }
+// bool Matter::convel2matter(FILE *file)
+// {
+//     char line[255]; // Temporary string of character to read from the file.
+//     fgets(headerCon1,sizeof(line),file);
+
+// //    if (strchr(headerCon1,'\r')) {
+// //        /* Files created on Windows or on Mac with Excell have carriage returns (\r) instead of or along
+// //        with the new line charater (\n). C recognises only the \n as the end of line. */
+// //        cerr << "A carriage return ('\\r') has been detected. To work correctly, new lines should be indicated by the new line character (\\n).";
+// //        return false; // return false for error
+// //    }
+
+//     long int i; int j;
+
+//     fgets(headerCon2,sizeof(line),file);
+
+//     double lengths[3];
+//     // The third line contains the length of the periodic cell
+//     fgets(line,sizeof(line),file);
+//     sscanf(line,"%lf %lf %lf", &lengths[0], &lengths[1], &lengths[2]);
+
+//     double angles[3];
+//     fgets(headerCon4,sizeof(line),file);
+//     // The fourth line contains the angles of the cell vectors
+//     sscanf(headerCon4,"%lf %lf %lf", &angles[0], &angles[1], &angles[2]);
+
+//     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+//         cell(0,0) = lengths[0];
+//         cell(1,1) = lengths[1];
+//         cell(2,2) = lengths[2];
+//     }else{
+//         angles[0] *= M_PI/180.0;
+//         angles[1] *= M_PI/180.0;
+//         angles[2] *= M_PI/180.0;
+
+//         cell(0,0) = 1.0;
+//         cell(1,0) = cos(angles[0]);
+//         cell(1,1) = sin(angles[0]);
+//         cell(2,0) = cos(angles[1]);
+//         cell(2,1) = (cos(angles[2])-cell(1,0)*cell(2,0))/cell(1,1);
+//         cell(2,2) = sqrt(1.0-pow(cell(2,0),2)-pow(cell(2,1),2));
+
+//         cell(0,0) *= lengths[0];
+//         cell(1,0) *= lengths[1];
+//         cell(1,1) *= lengths[1];
+//         cell(2,0) *= lengths[2];
+//         cell(2,1) *= lengths[2];
+//         cell(2,2) *= lengths[2];
+//     }
+//     cellInverse = cell.inverse();
+
+//     fgets(headerCon5,sizeof(line),file);
+//     fgets(headerCon6,sizeof(line),file);
+
+//     fgets(line,sizeof(line),file);
+//     int Ncomponent; // Number of components or different types of atoms. For instance H2O has two components (H and O).
+//     if(sscanf(line,"%d",&Ncomponent) == 0) {
+//         std::cout << "The number of components cannot be read. One component is assumed instead\n";
+//         Ncomponent = 1;
+//     }
+//     if((Ncomponent>MAXC)||(Ncomponent<1)) {
+//         cerr << "con2atoms does not support more than " << MAXC << " components (or less than 1).\n";
+//         return false;
+//     }
+//     /* to store the position of the
+//         first atom of each element 'MAXC+1': the last element is used to store the total number of atom.*/
+//     long int first[MAXC+1];
+//     long int Natoms = 0;
+//     first[0] = 0;
+
+//     // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
+//     for(j=0; j<Ncomponent; j++) {
+//         fscanf(file, "%ld", &Natoms);
+//         first[j+1] = Natoms+first[j];
+//     }
+
+//     fgets(line, sizeof(line), file); // Discard the rest of the line
+//     resize(first[Ncomponent]); // Set the total number of atoms, and allocates memory
+//     double mass[MAXC];
+//     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex with H2O, two hydrogens and one oxygen
+//         fscanf(file, "%lf", &mass[j]);
+//         // mass[j]*=G_PER_MOL; // conversion of g/mol to local units. (see su.h)
+//     }
+
+//     fgets(line,sizeof(line),file); // discard rest of the line
+//     int atomicNr;
+//     int fixed;
+//     double x,y,z;
+//     for (j=0; j<Ncomponent; j++) {
+//         char symbol[3];
+//         fgets(line,sizeof(line),file);
+//         sscanf(line, "%2s\n", symbol);
+//         atomicNr=symbol2atomicNumber(symbol);
+//         fgets(line,sizeof(line),file); // skip one line
+//         for (i=first[j]; i<first[j+1]; i++){
+//             setMass(i, mass[j]);
+//             setAtomicNr(i, atomicNr);
+//             fgets(line, sizeof(line), file);
+//             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
+//             setPosition(i, 0, x);
+//             setPosition(i, 1, y);
+//             setPosition(i, 2, z);
+//             setFixed(i, static_cast<bool>(fixed));
+//         }
+//     }
+
+//     fgets(line,sizeof(line),file);
+//     for (j=0; j<Ncomponent; j++) {
+//         fgets(line,sizeof(line),file);
+//         fgets(line,sizeof(line),file); // skip one line
+//         for (i=first[j]; i<first[j+1]; i++){
+//             fgets(line, sizeof(line), file);
+//             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
+//             setVelocity(i, 0, x);
+//             setVelocity(i, 1, y);
+//             setVelocity(i, 2, z);
+//         }
+//     }
+
+//     if(usePeriodicBoundaries)
+//     {
+//         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
+//     }
+//     //    potential_ = new Potential(parameters_);
+//     return(true);
+// }
