@@ -55,6 +55,18 @@ let
       patches = [ ./eigen_include_dir.patch ];
     }
   );
+  fmt881 = (pkgs.fmt.override{stdenv = compilerEnv; }).overrideAttrs (
+    old: rec {
+      version = "8.1.1";
+      src = pkgs.fetchFromGitHub {
+        owner = "fmtlib";
+        repo = "fmt";
+        rev = "${version}";
+        sha256 = "sha256-leb2800CwdZMJRWF5b1Y9ocK0jXpOX/nwo95icDf308=";
+      };
+      doCheck = false;
+    }
+  );
   macHook = ''
     # eonclient
     export PATH=$(pwd)/client/builddir:$PATH
@@ -120,7 +132,7 @@ mkShellNewEnv {
     bzip2
     openblas blas
 
-    fmt
+    fmt881
     abseil-cpp
     boost175
     eigen339
