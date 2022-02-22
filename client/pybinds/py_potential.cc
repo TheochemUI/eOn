@@ -1,8 +1,6 @@
 #include "py_wrapper.hpp"
 #include "../Potential.h"
 
-// See -->
-
 class PyPotential: public Potential {
 public:
     /* Inherit the constructors */
@@ -160,14 +158,6 @@ void py_potential(py::module_ &m){
                            )
 #endif
 #endif
-      .def_property_readonly_static("POT_BOPFOX",
-                           [](py::object /*self*/){return Potential::POT_BOPFOX;},
-                           "BOPFOX potential string"
-                           )
-      .def_property_readonly_static("POT_BOP",
-                           [](py::object /*self*/){return Potential::POT_BOP;},
-                           "BOP potential string"
-                           )
 #ifdef LAMMPS_POT
       .def_property_readonly_static("POT_LAMMPS",
                            [](py::object /*self*/){return Potential::POT_LAMMPS;},
