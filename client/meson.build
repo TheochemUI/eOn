@@ -237,6 +237,7 @@ pyb11f = py.extension_module('eonclient',
           sources : eonclient_sources + [
             'pybinds/py_wrapper.cc',
             'pybinds/py_parameters.cc',
+            'pybinds/py_potential.cc',
             ],
           dependencies : pyb11f_deps,
           link_with : potentials,
