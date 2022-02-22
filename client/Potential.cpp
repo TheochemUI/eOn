@@ -234,7 +234,7 @@ Potential *Potential::getPotential(Parameters *parameters)
     pot->initialize();
     pot->params = parameters;
     return pot;
-};
+}
 
 int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;

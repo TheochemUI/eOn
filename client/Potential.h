@@ -83,7 +83,6 @@ class Potential
 
         static int fcalls;
         static int fcallsTotal;
-        static int wu_fcallsTotal;
         static double totalUserTime;
         
         Parameters *params;
