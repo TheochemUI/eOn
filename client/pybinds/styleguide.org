@@ -1,0 +1,79 @@
+* Conventions
+- Always use ~clang-format~.
+- All strings must be explicitly identified ~""s~
+** General
+- Always use ~namespace py = pybind11;~
+- For ~Blah.cpp~ the binding will be ~pybinds/py_blah.cc~
+- All header content must be in ~pybinds/py_wrapper.hpp~
+- Every method must have:
+  + arguments defined
+  + documentation string
+Example:
+#+begin_src c++
+.def("setCell", &Matter::setCell, "Sets the cell dimensions"s, py::arg("AtomMatrix newCell"))
+#+end_src
+** Class boilerplate
+
+#+begin_src c++
+void py_objectName(py::module_ &m) {
+    py::class_<ObjectName>(m, "ObjectName", py::dynamic_attr()) // dynamic incurs a penalty
+    /*
+    ,** Constructors
+    ,*/
+
+    /*
+    ,** Operators
+    ,*/
+
+    /*
+    ,** Methods
+    ,*/
+
+    /*
+    ,** Parameters
+    ,*/
+
+    /*
+    ,** Python helpers
+    ,*/
+
+    .def("__repr__", [](const ObjectName &a) { return "<ObjectName object>"; });
+}
+#+end_src
+
+** Function arguments
+- First one must be ~py::arg()~
+- Subsequent arguments may be ~""_a~
+- When there is a non-obvious type used in the arguments, document it
+  - e.g. ~AtomMatrix~ and ~VectorXd~
+  - Use ~_~ for spaces, e.g. ~AtomMatrix_pos~ for arguments ~(AtomMatrix pos)~
+- When using overloads, always note the actual arguments as comments
+#+begin_src cpp
+             py::overload_cast<long /*nAtoms*/,
+                               AtomMatrix /*positions*/,
+                               VectorXi /*atomicNrs*/,
+                               double * /*energy*/,
+                               Matrix3d /*box*/,
+                               int /*nImages*/
+                               >(&Potential::force),
+#+end_src
+* Adding new bindings
+- Add to ~py_wrapper.hpp~
+#+begin_src c++
+PYBIND11_MODULE(eonclient, m) {
+    ...
+    py_newthing(m);
+}
+#+end_src
+- Make ~py_newthing.cc~
+#+begin_src c++
+#include <pybind11/eigen.h> // If needed
+#include <pybind11/operators.h> // If needed
+
+#include "../Matter.h" // File being bound
+#include "py_wrapper.hpp" // Always
+
+void py_newthing(py::module_ &m) {
+    /* Wrapping details here */
+    }
+#+end_src
