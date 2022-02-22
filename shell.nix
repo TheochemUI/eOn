@@ -42,10 +42,9 @@ let
     else pkgs.stdenv
   );
   mkShellNewEnv = pkgs.mkShell.override { stdenv = compilerEnv; };
-  eigen339 = pkgs.eigen.overrideAttrs (
+  eigen339 = (pkgs.eigen.override{stdenv = compilerEnv; }).overrideAttrs (
     old: rec {
       version = "3.3.9";
-      stdenv = compilerEnv;
       src = pkgs.fetchFromGitLab {
         owner = "libeigen";
         repo = "eigen";
