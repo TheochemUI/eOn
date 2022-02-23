@@ -7,8 +7,8 @@ namespace helper_functions {
 template <typename T>
 std::vector<T> get_val_from_string(const std::string &line, std::optional<size_t> nelements) {
     assert(not line.empty());
-    std::istringstream ss;
     std::vector<T> retval;
+    const bool b_isunsigned{std::is_unsigned<T>::value};
     auto elements{get_split_strings(line)};
     if (nelements.has_value()) {
         // Used to truncate if the number of elements is given
@@ -16,14 +16,15 @@ std::vector<T> get_val_from_string(const std::string &line, std::optional<size_t
         elements.resize(nelements.value());
     }
     // If it is unsigned then use long double else T
-    for (typename std::conditional<std::is_unsigned<T>::value, long double, T>::type tmp; auto elem : elements) {
-        ss.str(elem); // elem is a string
+    for (typename std::conditional<b_isunsigned, long double, T>::type tmp; auto elem : elements) {
+        std::istringstream ss{elem}; // instead of {ss.str(elem); ss >> tmp; ss.clear();}
         ss >> tmp;
-        if (std::is_unsigned<T>::value) {
+        if (b_isunsigned and tmp < 0) {
+            std::cerr << "Can't represent negative numbers with an unsigned type, bailing on "s
+                      << tmp << "\n";
             assert(tmp > 0);
         }
         retval.push_back(tmp);
-        ss.clear();
     }
     return retval;
 }
