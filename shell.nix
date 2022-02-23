@@ -67,6 +67,20 @@ let
       doCheck = false;
     }
   );
+  # Needed to recompile to fix errors, the update is optional
+  myGoogleTest = (pkgs.gtest.override{stdenv = compilerEnv;}).overrideAttrs(
+    old: rec {
+      version = "head_23-02-2022";
+      src = pkgs.fetchFromGitHub {
+        owner = "google";
+        repo = "googletest";
+        rev = "c9461a9b55ba954df0489bab6420eb297bed846b"; # 23-02-2022
+        sha256 = "sha256-ulNckeHTorPDvnSd22Dqm2iADpveIyKcxlLduYbxxss=";
+      };
+      patches = [ ]; # Not needed anymore
+      doCheck = false;
+    }
+  );
   macHook = ''
     # eonclient
     export PATH=$(pwd)/client/builddir:$PATH
@@ -117,7 +131,7 @@ mkShellNewEnv {
     notDarwin
     isDarwin
     compilerpkg
-    gtest
+    myGoogleTest
     bashInteractive
     which
     customPython
