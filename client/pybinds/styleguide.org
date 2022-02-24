@@ -1,6 +1,7 @@
 * Conventions
 - Always use ~clang-format~.
 - All strings must be explicitly identified ~""s~
+  + **not for doc-strings** in ~pybind11~
 ** General
 - Always use ~namespace py = pybind11;~
 - For ~Blah.cpp~ the binding will be ~pybinds/py_blah.cc~
@@ -67,11 +68,15 @@ PYBIND11_MODULE(eonclient, m) {
 #+end_src
 - Make ~py_newthing.cc~
 #+begin_src c++
-#include <pybind11/eigen.h> // If needed
-#include <pybind11/operators.h> // If needed
-
-#include "../Matter.h" // File being bound
-#include "py_wrapper.hpp" // Always
+// clang-format off
+#include "py_wrapper.hpp"
+// Binding code
+#include "../Matter.h"
+// Additional
+#include <pybind11/eigen.h>
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+// clang-format on
 
 void py_newthing(py::module_ &m) {
     /* Wrapping details here */
