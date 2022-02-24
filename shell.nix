@@ -32,7 +32,7 @@ let
     requirements = builtins.readFile ./requirements.txt;
     packagesExtra = [
       # "https://github.com/psf/requests/tarball/2a7832b5b06d"   # from tarball url
-      ./. # from local path
+      # ./. # from local path
       # mach-nix.buildPythonPackage { ... };                     # from package
     ];
   };
@@ -52,9 +52,23 @@ let
         sha256 = "0m4h9fd5s1pzpncy17r3w0b5a6ywqjajmnr720ndb7fc4bn0dhi4";
       };
       # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
-      patches = [ ./eigen_include_dir.patch ];
+      patches = [ ./eigen339_include_dir.patch ];
     }
   );
+  # TODO: Fix this.
+  # eigen340 = (pkgs.eigen.override{stdenv = compilerEnv; }).overrideAttrs (
+  #   old: rec {
+  #     version = "3.4.0";
+  #     src = pkgs.fetchFromGitLab {
+  #       owner = "libeigen";
+  #       repo = "eigen";
+  #       rev = "${version}";
+  #       sha256 = "sha256-1/4xMetKMDOgZgzz3WMxfHUEpmdAm52RqZvz6i0mLEw=";
+  #     };
+  #     # From https://github.com/foolnotion/aoc2020/blob/master/eigen_include_dir.patch
+  #     patches = [ ./eigen340_include_dir.patch ];
+  #   }
+  # );
   fmt881 = (pkgs.fmt.override{stdenv = compilerEnv; }).overrideAttrs (
     old: rec {
       version = "8.1.1";
