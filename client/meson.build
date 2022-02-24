@@ -24,6 +24,7 @@ eon_deps = [ eigen_dep ]
 
 # Testing only
 gtest_dep = dependency('gtest', main : true, required : false)
+gmock_dep = dependency('gmock', required : false)
 
 # Optional, only for AMS
 absl_dep = dependency('absl', method : 'cmake',
@@ -260,12 +261,16 @@ pyb11f = py.extension_module('pyeonclient',
 if get_option('build_tests')
   eon_extra_args += ['-DEONTEST'] # Unused
   eon_deps += [ gtest_dep ]
-test_array = [['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search']]
+test_array = [#
+  # ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
+  ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
+  ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
+             ]
 foreach test : test_array
   test(test.get(0),
        executable(test.get(1),
-          sources : 'gtests/'+test.get(2),
-          dependencies : [ eon_deps, gtest_dep ],
+          sources : ['gtests/'+test.get(2)],
+          dependencies : [ eon_deps, gtest_dep, gmock_dep ],
           link_with : eclib,
           cpp_args : eon_extra_args
                  ),
