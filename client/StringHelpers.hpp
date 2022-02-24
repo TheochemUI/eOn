@@ -2,6 +2,7 @@
 #define PARSEHELPERS_H
 
 #include <optional>
+#include <regex>
 
 #include "Matter.h"
 #include "Parameters.h"
@@ -23,5 +24,12 @@ namespace helper_functions {
      * @param std::string A thing to be parsed
      */
      std::vector<std::string> get_split_strings(const std::string &line);
+    /**
+     * \brief Figure out if a string has a number in it
+     *
+     * Based on
+     *
+     */
+    bool isNumber (const std::string& token);
     } // namespace helper_functions
 #endif /* PARSEHELPERS_H */

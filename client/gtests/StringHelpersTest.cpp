@@ -4,6 +4,12 @@
  *  Created on: 23 Feb 2022
  *      Author: Rohit Goswami
  *     Company: University of Iceland
+ *
+ *
+ *
+ *   Since the functions here are only called on to extract doubles or size_t,
+ *   we need to decompose the domain { negative 0 positive empty } and test each
+ *   of these.
  */
 
 #include "../StringHelpers.hpp"
@@ -21,6 +27,24 @@ StringHelpersTest::StringHelpersTest() {
 
 StringHelpersTest::~StringHelpersTest() {
     // TODO Auto-generated destructor stub
+}
+
+TEST_F(StringHelpersTest, TestIsNotNum) {
+    std::string tester{"Coordinates of component   blah"s};
+    auto split_strings = helper_functions::get_split_strings(tester);
+    EXPECT_EQ(split_strings.size(), 4);
+    for ( auto substring : split_strings ){
+        EXPECT_EQ(helper_functions::isNumber(substring), false);
+    }
+}
+
+TEST_F(StringHelpersTest, TestIsNum) {
+    auto split_strings = helper_functions::get_split_strings(number_string);
+    EXPECT_EQ(split_strings.size(), 4);
+    for ( auto substring : split_strings ){
+        EXPECT_EQ(helper_functions::isNumber(substring), true);
+    }
+    EXPECT_EQ(helper_functions::isNumber("2.6"s), true);
 }
 
 TEST_F(StringHelpersTest, TestSplitStrings) {
@@ -85,6 +109,21 @@ TEST_F(StringHelpersTest, TestNeg) {
     // Fine otherwise
     std::vector<double> exp_vals = {1.0, -1.0};
     EXPECT_EQ(helper_functions::get_val_from_string<double>(tester), exp_vals);
+}
+
+
+TEST_F(StringHelpersTest, TestMixedString) {
+    std::string tester{"Coordinates of component   2"s};
+    auto split_strings = helper_functions::get_split_strings(tester);
+    EXPECT_EQ(split_strings.size(), 4);
+    EXPECT_EQ(split_strings[0], "Coordinates"s);
+    EXPECT_EQ(split_strings[1], "of"s);
+    EXPECT_EQ(split_strings[2], "component"s);
+    EXPECT_EQ(split_strings[3], "2"s);
+    // Now we only expect one numeric value
+    auto tval = helper_functions::get_val_from_string<double>(tester);
+    EXPECT_EQ(tval.size(), 1);
+    EXPECT_EQ(tval[0], 2);
 }
 
 } /* namespace tests */

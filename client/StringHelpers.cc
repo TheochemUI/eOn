@@ -17,6 +17,7 @@ std::vector<T> get_val_from_string(const std::string &line, std::optional<size_t
     }
     // If it is unsigned then use long double else T
     for (typename std::conditional<b_isunsigned, long double, T>::type tmp; auto elem : elements) {
+        if ( not isNumber(elem) ) { continue; }
         std::istringstream ss{elem}; // instead of {ss.str(elem); ss >> tmp; ss.clear();}
         ss >> tmp;
         if (b_isunsigned and tmp < 0) {
@@ -38,5 +39,9 @@ std::vector<std::string> get_split_strings(const std::string &line) {
     std::vector<std::string> split_strings{std::istream_iterator<std::string>{ss},
                                            std::istream_iterator<std::string>()};
     return split_strings;
+}
+
+bool isNumber (const std::string& token){
+    return std::regex_match( token, std::regex( ( "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?" ) ) );
 }
 } // namespace helper_functions
