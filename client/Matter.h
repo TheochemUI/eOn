@@ -139,7 +139,7 @@ public:
     bool matter2con(std::ofstream &file);     // print con file from data in Class Matter
     bool matter2convel(std::string filename); // print con file with both coordinates and
                                               // velocities  in Class Matter
-    bool matter2convel(FILE *file); // print con file with both coordinates and velocities from
+    bool matter2convel(std::ofstream &file); // print con file with both coordinates and velocities from
                                     // data in Class Matter
     void matter2xyz(std::string filename,
                     bool append = false); // print xyz file from data in Matter

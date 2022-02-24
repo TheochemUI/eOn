@@ -909,101 +909,112 @@ Matrix<double, Eigen::Dynamic, 1> Matter::getMasses() const { return masses; }
 
 bool Matter::matter2convel(std::string filename) {
     bool state;
-    FILE *file;
-    int pos = filename.find_last_of('.');
-    if (filename.compare(pos + 1, 6, "convel")) {
-        filename += ".convel";
+    fs::path filePath = filename;
+    std::ofstream file;
+    if (not(filePath.extension() == ".convel")) {
+        filePath.replace_extension(".convel");
     }
-    file = fopen(filename.c_str(), "w");
+    file.open(filePath);
     state = matter2convel(file);
-    fclose(file);
+    file.close();
     return (state);
 }
 
+bool Matter::matter2convel(std::ofstream &file) {
+    long int i;
+    int j;
+    long int Nfix = 0; // Nfix to store the number of fixed atoms
+    int Ncomponent
+        = 0;         // used to store the number of components (eg water: two components H and O)
+    int first[MAXC]; // to store the position of the first atom of each component plus at the end
+                     // the total number of atoms
+    double mass[MAXC];
+    long atomicNrs[MAXC];
+    first[0] = 0;
+
+    if (usePeriodicBoundaries) {
+        applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
+    }
+
+    if (numberOfAtoms() > 0) {
+        if (getFixed(0))
+            Nfix = 1; // count the number of fixed atoms
+        mass[0] = getMass(0);
+        atomicNrs[0] = getAtomicNr(0);
+    }
+    j = 0;
+    for (i = 1; i < numberOfAtoms(); i++) {
+        if (getFixed(i))
+            Nfix++;                           // count the number of fixed atoms
+        if (getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
+            j++;
+            if (j >= MAXC) {
+                std::cerr << "Does not support more than " << MAXC
+                          << " components and the atoms must be ordered by component.\n";
+                return false;
+            }
+            mass[j] = getMass(i);
+            atomicNrs[j] = getAtomicNr(i);
+            first[j] = i;
+        }
+    }
+    first[j + 1] = numberOfAtoms();
+    Ncomponent = j + 1;
+
+    file << headerCon1;
+    file << headerCon2;
+    double lengths[3];
+    lengths[0] = cell.row(0).norm();
+    lengths[1] = cell.row(1).norm();
+    lengths[2] = cell.row(2).norm();
+    file << fmt::sprintf("%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
+    double angles[3];
+    angles[0] = acos(cell.row(0).dot(cell.row(1)) / lengths[0] / lengths[1]) * 180 / M_PI;
+    angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
+    angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
+    file << fmt::sprintf("%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
+    file << headerCon5;
+    file << headerCon6;
+
+    file << fmt::sprintf("%d\n", Ncomponent);
+    for (j = 0; j < Ncomponent; j++) {
+        file << fmt::sprintf("%d ", first[j + 1] - first[j]);
+    }
+    file << fmt::sprintf("\n");
+    for (j = 0; j < Ncomponent; j++) {
+        // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
+        file << fmt::sprintf("%f ", mass[j]);
+    }
+    file << fmt::sprintf("\n");
+    for (j = 0; j < Ncomponent; j++) {
+        file << fmt::sprintf("%s\n", atomicNumber2symbol(atomicNrs[j]).data());
+        file << fmt::sprintf("Coordinates of Component %d\n", j + 1);
+        for (i = first[j]; i < first[j + 1]; i++) {
+            file << fmt::sprintf("%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n",
+                                 getPosition(i, 0),
+                                 getPosition(i, 1),
+                                 getPosition(i, 2),
+                                 getFixed(i),
+                                 i);
+        }
+    }
+    file << fmt::sprintf("\n");
+    for (j = 0; j < Ncomponent; j++) {
+        file << fmt::sprintf("%s\n", atomicNumber2symbol(atomicNrs[j]).data());
+        file << fmt::sprintf("Velocities of Component %d\n", j + 1);
+        for (i = first[j]; i < first[j + 1]; i++) {
+            file << fmt::sprintf("%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n",
+                                 velocities(i, 0),
+                                 velocities(i, 1),
+                                 velocities(i, 2),
+                                 getFixed(i),
+                                 i);
+        }
+    }
+    return true;
+}
+
 // TODO: Fix
-bool Matter::matter2convel(FILE *file) { return false; }
-// bool Matter::matter2convel(FILE *file)
-// {
-//     long int i;
-//     int j;
-//     long int Nfix = 0; // Nfix to store the number of fixed atoms
-//     int Ncomponent = 0; // used to store the number of components (eg water: two components H
-//     and O) int first[MAXC]; // to store the position of the first atom of each component plus at
-//     the end the total number of atoms double mass[MAXC]; long atomicNrs[MAXC]; first[0] = 0;
-
-//     if(usePeriodicBoundaries)
-//     {
-//         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image
-//         convention.
-//     }
-
-//     if(numberOfAtoms() > 0) {
-//         if(getFixed(0)) Nfix = 1; // count the number of fixed atoms
-//         mass[0] = getMass(0);
-//         atomicNrs[0] = getAtomicNr(0);
-//     }
-//     j=0;
-//     for(i=1; i<numberOfAtoms(); i++) {
-//         if(getFixed(i)) Nfix++; // count the number of fixed atoms
-//         if(getAtomicNr(i) != atomicNrs[j]) { // check if there is a second component
-//             j++;
-//             if(j>=MAXC) {
-//                 std::cerr << "Does not support more than " << MAXC << " components and the atoms
-//                 must be ordered by component.\n"; return false;
-//             }
-//             mass[j] = getMass(i);
-//             atomicNrs[j] = getAtomicNr(i);
-//             first[j] = i;
-//         }
-//     }
-//     first[j+1] = numberOfAtoms();
-//     Ncomponent = j+1;
-
-//     fputs(headerCon1, file);
-//     fputs(headerCon2, file);
-//     double lengths[3];
-//     lengths[0] = cell.row(0).norm();
-//     lengths[1] = cell.row(1).norm();
-//     lengths[2] = cell.row(2).norm();
-//     fprintf(file, "%f\t%f\t%f\n", lengths[0], lengths[1], lengths[2]);
-//     double angles[3];
-//     angles[0] = acos(cell.row(0).dot(cell.row(1))/lengths[0]/lengths[1])*180/M_PI;
-//     angles[1] = acos(cell.row(0).dot(cell.row(2))/lengths[0]/lengths[2])*180/M_PI;
-//     angles[2] = acos(cell.row(1).dot(cell.row(2))/lengths[1]/lengths[2])*180/M_PI;
-//     fprintf(file, "%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-//     fputs(headerCon5, file);
-//     fputs(headerCon6, file);
-
-//     fprintf(file, "%d\n", Ncomponent);
-//     for(j=0; j<Ncomponent; j++) {
-//         fprintf(file, "%d ", first[j+1]-first[j]);
-//     }
-//     fprintf(file, "\n");
-//     for(j=0; j<Ncomponent; j++) {
-//         // mass[j]/=G_PER_MOL; // GH: I don't understand why we need to convert the mass units
-//         fprintf(file, "%f ", mass[j]);
-//     }
-//     fprintf(file, "\n");
-//     for(j=0; j<Ncomponent; j++) {
-//         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
-//         fprintf(file, "Coordinates of Component %d\n", j+1);
-//         for(i=first[j]; i<first[j+1]; i++) {
-//             fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", getPosition(i, 0), getPosition(i,
-//             1), getPosition(i, 2), getFixed(i), i);
-//         }
-//     }
-//     fprintf(file, "\n");
-//     for(j=0; j<Ncomponent; j++) {
-//         fprintf(file, "%s\n", atomicNumber2symbol(atomicNrs[j]).data());
-//         fprintf(file, "Velocities of Component %d\n", j+1);
-//         for(i=first[j]; i<first[j+1]; i++) {
-//             fprintf(file,"%11.6f\t%11.6f\t%11.6f\t%d\t%ld\n", velocities(i, 0), velocities(i,
-//             1), velocities(i, 2), getFixed(i), i);
-//         }
-//     }
-//     return true;
-// }
-
 bool Matter::convel2matter(std::string filename) { return false; }
 // bool Matter::convel2matter(std::string filename)
 // {
