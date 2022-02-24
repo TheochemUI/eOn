@@ -301,7 +301,7 @@ bool Matter::relax(
     }
 
     int iteration = 0;
-    const std::string_view forceLabel{parameters->optConvergenceMetricLabel};
+    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
     if (!quiet) {
         log("%s %10s  %14s  %18s  %13s\n",
             LOG_PREFIX.c_str(),

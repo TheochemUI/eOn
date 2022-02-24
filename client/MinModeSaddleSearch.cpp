@@ -187,7 +187,7 @@ int MinModeSaddleSearch::run()
 
     int optStatus;
     int firstIteration = 1;
-    const std::string_view forceLabel{parameters->optConvergenceMetricLabel};
+    const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
 
     if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         log("================= Using the GP Dimer Library =================\n");
