@@ -5,12 +5,14 @@
 #include "Log.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "StringHelpers.hpp"
 
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <numeric>
 #include <utility>
 
 #include <fmt/core.h>
@@ -660,8 +662,8 @@ bool Matter::con2matter(std::string filename) {
 }
 
 bool Matter::con2matter(std::ifstream &file) {
-    std::string line;      // Temporary string
-    std::istringstream ss; // Temporary helper
+    std::string line; // Temporary string
+    size_t Ncomponent{0};
     std::getline(file, headerCon1);
     std::cout << fmt::format("headerCon1: {}\n", headerCon1);
 
@@ -673,28 +675,22 @@ bool Matter::con2matter(std::ifstream &file) {
     //        false for error
     //    }
 
-    long int i;
-    int j;
-
     std::getline(file, headerCon2);
     std::cout << fmt::format("headerCon2: {}\n", headerCon2);
 
     // The third line contains the length of the periodic cell
-    double lengths[3];
+    // double lengths[3];
     std::getline(file, line);
-    ss.str(line);
-    ss >> lengths[0] >> lengths[1] >> lengths[2];
-    ss.clear();
+    std::vector<double> lengths = helper_functions::get_val_from_string<double>(line, 3);
     std::cout << fmt::format("Lengths {} {} {}\n", lengths[0], lengths[1], lengths[2]);
 
-    double angles[3];
     // The fourth line contains the angles of the cell vectors
     std::getline(file, line);
-    ss.str(line);
-    ss >> angles[0] >> angles[1] >> angles[2];
-    ss.clear();
+    std::vector<double> angles = helper_functions::get_val_from_string<double>(line, 3);
     std::cout << fmt::format("Angles {} {} {}\n", angles[0], angles[1], angles[2]);
+    // TODO: Raise if nelements is provided but does not match the return.
 
+    // Matter::cell assignment
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
         cell(0, 0) = lengths[0];
         cell(1, 1) = lengths[1];
@@ -718,29 +714,34 @@ bool Matter::con2matter(std::ifstream &file) {
         cell(2, 1) *= lengths[2];
         cell(2, 2) *= lengths[2];
     }
-    cellInverse = cell.inverse();
+    /*Matter::*/ cellInverse = cell.inverse();
 
     std::getline(file, headerCon5);
     std::cout << fmt::format("headerCon5: {}\n", headerCon5);
     std::getline(file, headerCon6);
     std::cout << fmt::format("headerCon6: {}\n", headerCon6);
 
-    // Number of components or different types of atoms  (eg water: two components H and O)
-    size_t Ncomponent{0};
+    // Number of components or different types of atoms  (e.g. water: two components H and O)
     std::getline(file, line);
-    ss.str(line);
-    ss >> Ncomponent;
-    ss.clear();
-    std::cout << fmt::format("Number of components {}\n", Ncomponent);
-
-    if (Ncomponent < 1) {
-        std::cerr << "con2atoms does not support more than negative counts for the atoms.\n";
-        return false;
-    } else if (Ncomponent == 0) {
+    if (line.empty()) {
         std::cout
-            << "The number of components cannot be read. One component is assumed instead\n"s;
+            << "The number of components seems to be missing. One component is assumed instead\n"s;
         Ncomponent = 1;
+    } else {
+        // Guaranteed to be 1 element, so this is fine
+        auto vtest = helper_functions::get_val_from_string<double>(line, 1)[0];
+        if (vtest < 0) {
+            std::cerr << "con2atoms does not support negative counts for the atoms.\n";
+            return false;
+        } else if (vtest == 0) {
+            std::cout
+                << "The number of components cannot be read. One component is assumed instead\n"s;
+            Ncomponent = 1;
+        } else {
+            Ncomponent = static_cast<size_t>(vtest);
+        }
     }
+    std::cout << fmt::format("Number of components {}\n", Ncomponent);
 
     // Use a vector of pairs to keep track of the components and their count
     std::vector<std::pair<size_t, size_t>> ncomp_count;
@@ -748,101 +749,82 @@ bool Matter::con2matter(std::ifstream &file) {
     // Now we want to know the number of atom of each type.
     // e.g with H2O, two Hydrogen atoms and one Oxygen atom
     std::getline(file, line);
-    std::cout << line << "\n";
-    // Better parsing: https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
-    ss.str(line);
-    std::vector<std::string> split_strings{std::istream_iterator<std::string>{ss},
-                                           std::istream_iterator<std::string>()};
-    ss.clear();
-    if (not(Ncomponent == split_strings.size())) {
-        std::cerr << "input con file does not list the number of each component\n";
+    auto ncomps = helper_functions::get_val_from_string<size_t>(line);
+    if (not(ncomps.size() == Ncomponent)) {
+        std::cerr << "input con file does not list the number of each component";
+        std::cerr << fmt::format("found {} components, {} types\n", Ncomponent, ncomps.size());
         return false;
     }
-    for (size_t idx{1}, tmp{0}; auto i : split_strings) { // Additional initializations C++20
-        ss.str(i);
-        ss >> tmp;
-        ncomp_count.push_back(std::make_pair(idx, tmp));
-        ss.clear();
+    for (size_t idx{1}; auto compnum : ncomps) { // Additional initializations C++20
+        ncomp_count.push_back(std::make_pair(idx, compnum));
         ++idx;
     }
-    // for(auto i : ncomp_count){ std::cout<<fmt::format("id:{} num:{}\n", i.first, i.second); }
+    // Asign nAtoms
+    /*Matter::*/ nAtoms = std::accumulate(ncomps.begin(), ncomps.end(), 0);
 
-    // std::cout<<split_strings.size()<<"\n";
-    // std::cout<<split_strings[0]<<"\n";
-    // // split at either space or tab
-    // char * split = strtok(line, " \t");
-    // for(j=0; j<Ncomponent; j++) {
-    //     if(split == NULL)
-    //     {
-    //         cerr << "input con file does not list the number of each component" <<endl;
-    //         return false;
-    //     }
-    //     if(sscanf(split, "%ld", &Natoms)!=1)
-    //     {
-    //         cerr << "input con file does not list the number of each component" <<endl;
-    //         return false;
-    //     }
-    //     first[j+1] = Natoms+first[j];
-    //     // split at either space or tab
-    //     split = strtok(NULL, " \t");
-    // }
+    // Now we can initialize the fields in Matter
+    positions = AtomMatrix::Constant(nAtoms, 3, 0);  // TEMP
+    velocities = AtomMatrix::Constant(nAtoms, 3, 0); // TEMP
+    forces = AtomMatrix::Constant(nAtoms, 3, 0);     // TEMP
+    masses = VectorXd::Constant(nAtoms, 0);          // TEMP
+    atomicNrs = VectorXi::Constant(nAtoms, 0);       // TEMP
+    isFixed = VectorXi::Constant(nAtoms, false);     // TEMP
 
-    //     double mass[MAXC];
-    //     fgets(line, sizeof(line), file);
-    //     // split at either space or tab
-    //     split = strtok(line, " \t");
+    // Get unique masses
+    // These will be used to eventually populate the total masses
+    std::getline(file, line);
+    auto masses_unique = helper_functions::get_val_from_string<double>(line);
+    if (not(masses_unique.size() == Ncomponent)) {
+        std::cerr << "input con file does not list the masses of each component";
+        std::cerr << fmt::format(
+            "found {} components, {} types\n", Ncomponent, masses_unique.size());
+        return false;
+    }
 
-    //     for(j=0; j<Ncomponent; j++) { // Now we want to know the number of atom of each type. Ex
-    //     with H2O, two hydrogens and one oxygen
-    //         if(split == NULL)
-    //         {
-    //             cerr << "input con file does not list enough masses" <<endl;
-    //             return false;
-    //         }
-    // // *1* seems like a bug as a result of copying and pasting from above
-    // // *1*       if(sscanf(split, "%ld", &Natoms)!=1)
-    //         if(sscanf(split, "%lf", &mass[j])!=1)
-    //         {
-    //             cerr << "input con file does not list enough masses" <<endl;
-    //             return false;
-    //         }
-    // // *1*       sscanf(line, "%lf", &mass[j]);
-    //         // split at either space or tab
-    //         split = strtok(NULL, " \t");
-    //     }
+    // Get atomic number and continue
+    // The idea is we have both the number of components and the component index
+    // in ncomp_count so we can use this information to validate
+    std::vector<double> atomic_nrs;
+    AtomMatrix _pos = AtomMatrix::Constant(nAtoms, 3, 0); // TEMP
+    std::vector<double> masses_std;                       // Will be mapped to masses
+    for (size_t idx{0}, compid{0}; auto comp : ncomp_count) {
+        compid = comp.first - 1;
+        // Element {BLAH}
+        std::getline(file, line);
+        auto sym = symbol2atomicNumber(line);
+        // Coordinates of component BLAH
+        std::getline(file, line); // Skip line with component number
+        for (size_t a{0}; a < comp.second; a++) {
+            // Now parse:
+            // x y z is_fixed atom_index
+            std::getline(file, line);
+            auto tmp = helper_functions::get_val_from_string<double>(line, 5);
+            for (size_t b{0}; b < 3; b++) {
+                _pos(idx, b) = tmp[b]; // x y z
+            }
+            /*Matter::*/ setFixed(idx, static_cast<bool>(tmp[3])); // is_fixed
+            if (tmp[4] != idx + 1) {
+                std::cerr << fmt::format(
+                    "Atoms in con file are not numbered from 1...N:\n expected:\t{} got:\t{}",
+                    idx + 1,
+                    tmp[4]);
+                return false;
+            } else {
+                /*Matter::*/ setMass(idx, masses_unique[compid]);
+                /*Matter::*/ setAtomicNr(idx, sym);
+            }
+            ++idx;
+        }
+    }
+    /*Matter::*/ setPositions(_pos); // Finalize
 
-    //     int atomicNr;
-    //     int fixed;
-    //     double x,y,z;
-    //     for (j=0; j<Ncomponent; j++) {
-    //         char symbol[3];
-    //         fgets(line,sizeof(line),file);
-    //         sscanf(line, "%2s\n", symbol);
-    //         atomicNr = symbol2atomicNumber(symbol);
-    //         fgets(line,sizeof(line),file); // skip one line
-    //         for (i=first[j]; i<first[j+1]; i++){
-    //             setMass(i, mass[j]);
-
-    //             setAtomicNr(i, atomicNr);
-    //             fgets(line, sizeof(line), file);
-    //             if (strlen(line) < 6) {
-    //                 cerr << "error parsing position in con file" << endl;
-    //                 return false;
-    //             }
-
-    //             sscanf(line,"%lf %lf %lf %d\n", &x, &y, &z, &fixed);
-    //             positions(i,0) = x;
-    //             positions(i,1) = y;
-    //             positions(i,2) = z;
-    //             setFixed(i, static_cast<bool>(fixed));
-    //         }
-    //     }
     if (usePeriodicBoundaries) {
         applyPeriodicBoundary(); // Transform the coordinate to use the minimum image convention.
     }
+
     // potential_ = new Potential(parameters_);
-    recomputePotential = true;
-    return (true);
+    /*Matter::*/ recomputePotential = true;
+    return true;
 }
 
 void Matter::computePotential() {
