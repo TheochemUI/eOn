@@ -132,7 +132,7 @@ public:
         std::ifstream &file); // read con file and load data into Matter, return true if successful
     bool convel2matter(
         std::string filename); // read con file with both coordinates and velocities into Matter
-    bool convel2matter(FILE *file); // read con file with both coordinates and velocities and load
+    bool convel2matter(std::ifstream &file); // read con file with both coordinates and velocities and load
                                     // data into Matter
     bool matter2con(std::string filename,
                     bool append = false);     // print con file from data in Class Matter

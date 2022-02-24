@@ -2,6 +2,7 @@
 #include "py_wrapper.hpp"
 // Binding code
 #include "../Matter.h"
+#include <fstream>
 // Additional
 #include <pybind11/eigen.h>
 #include <pybind11/operators.h>
@@ -208,7 +209,7 @@ void py_matter(py::module_ &m) {
              "Read con file into Matter, return true if successful",
              py::arg("filename"))
         .def("con2matter",
-             py::overload_cast<FILE * /*file*/>(&Matter::con2matter),
+             py::overload_cast<std::ifstream & /*file*/>(&Matter::con2matter),
              "Read con file and load data into Matter, return true if successful",
              py::arg("file"))
         .def("convel2matter",
@@ -216,7 +217,7 @@ void py_matter(py::module_ &m) {
              "Read con file with both coordinates and velocities into Matter",
              py::arg("filename"))
         .def("convel2matter",
-             py::overload_cast<FILE * /*file*/>(&Matter::convel2matter),
+             py::overload_cast<std::ifstream & /*file*/>(&Matter::convel2matter),
              "Read con file with both coordinates and velocities into Matter",
              py::arg("file"))
         // BUG: These raise segfaults
@@ -234,7 +235,7 @@ void py_matter(py::module_ &m) {
              "Write con file with both coordinates and velocities in Matter",
              py::arg("filename"))
         .def("matter2convel",
-             py::overload_cast<FILE * /*file*/>(&Matter::matter2convel),
+             py::overload_cast<std::ofstream & /*file*/>(&Matter::matter2convel),
              "Write con file with both coordinates and velocities in Matter",
              py::arg("file"))
         .def("matter2xyz",
