@@ -1,18 +1,16 @@
 #include "../Potential.h"
 #include "py_wrapper.hpp"
 
-class PyPotential : public Potential {
+template <class PotentialBase = Potential>
+class PyPotential : public PotentialBase {
 public:
     /* Inherit the constructors */
     using Potential::Potential;
-
-    /* Trampoline (need one for each virtual function) */
-    void initialize() override {
-        PYBIND11_OVERRIDE_PURE(void,      /* Return type */
-                               Potential, /* Parent class */
-                               initialize /* Name of function in C++ (must match Python name) */
-        );
-    }
+    void initialize() override{
+        PYBIND11_OVERRIDE_PURE(void,          /* Return type */
+                               PotentialBase, /* Parent class */
+                               initialize); /* Name of function in C++ (must match Python name) */
+    };
     void force(long nAtoms,
                const double *positions,
                const int *atomicNrs,
@@ -30,11 +28,11 @@ public:
                                energy,
                                box,
                                nImages);
-    }
+    };
 };
 
 void py_potential(py::module_ &m) {
-    py::class_<Potential, PyPotential>(m, "Potential")
+    py::class_<Potential, PyPotential<>>(m, "Potential")
         .def(py::init())
         /*
         ** Functions
@@ -121,12 +119,12 @@ void py_potential(py::module_ &m) {
             "POT_TIP4P_PT",
             [](py::object /*self*/) { return Potential::POT_TIP4P_PT; },
             "TIP4P_PT potential string")
-#ifdef WITH_FORTRAN
+#    ifdef WITH_FORTRAN
         .def_property_readonly_static(
             "POT_TIP4P_H",
             [](py::object /*self*/) { return Potential::POT_TIP4P_H; },
             "TIP4P_H potential string")
-#endif
+#    endif
         .def_property_readonly_static(
             "POT_SPCE",
             [](py::object /*self*/) { return Potential::POT_SPCE; },
@@ -159,12 +157,12 @@ void py_potential(py::module_ &m) {
             "TERSOFF SI potential string")
 #endif
 #ifndef WIN32
-#ifdef WITH_VASP
+#    ifdef WITH_VASP
         .def_property_readonly_static(
             "POT_VASP",
             [](py::object /*self*/) { return Potential::POT_VASP; },
             "VASP potential string")
-#endif
+#    endif
 #endif
 #ifdef LAMMPS_POT
         .def_property_readonly_static(
@@ -179,12 +177,12 @@ void py_potential(py::module_ &m) {
             "MPI potential string")
 #endif
 #ifdef WITH_PYTHON
-#ifdef PYAMFF_POT
+#    ifdef PYAMFF_POT
         .def_property_readonly_static(
             "POT_PYAMFF",
             [](py::object /*self*/) { return Potential::POT_PYAMFF; },
             "PYAMFF potential string")
-#endif
+#    endif
         .def_property_readonly_static(
             "POT_QSC",
             [](py::object /*self*/) { return Potential::POT_QSC; },
