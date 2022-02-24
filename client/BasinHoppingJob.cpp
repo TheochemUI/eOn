@@ -257,7 +257,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     /* Save Results */
 
-    FILE *fileResults, *fileProduct;
+    FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -284,9 +284,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     std::string productFilename("min.con");
     returnFiles.push_back(productFilename);
-    fileProduct = fopen(productFilename.c_str(), "wb");
-    minimumEnergyStructure->matter2con(fileProduct);
-    fclose(fileProduct);
+    minimumEnergyStructure->matter2con(productFilename);
 
     std::string bhFilename("bh.dat");
     returnFiles.push_back(bhFilename);

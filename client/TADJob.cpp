@@ -260,7 +260,7 @@ int TADJob::dynamics()
 
 void TADJob::saveData(int status)
 {
-    FILE *fileResults, *fileReactant;
+    FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -296,29 +296,19 @@ void TADJob::saveData(int status)
 
     std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
-    fileReactant = fopen(reactantFilename.c_str(), "wb");
-    reactant->matter2con(fileReactant);
-    fclose(fileReactant);
+    reactant->matter2con(reactantFilename);
 
     if(newStateFlag)
     {
-        FILE *fileProduct;
         std::string productFilename("product.con");
         returnFiles.push_back(productFilename);
-
-        fileProduct = fopen(productFilename.c_str(), "wb");
-        product->matter2con(fileProduct);
-        fclose(fileProduct);
+        product->matter2con(productFilename);
 
         if(parameters->parrepRefineTransition)
         {
-            FILE *fileSaddle;
             std::string saddleFilename("saddle.con");
             returnFiles.push_back(saddleFilename);
-
-            fileSaddle = fopen(saddleFilename.c_str(), "wb");
-            saddle->matter2con(fileSaddle);
-            fclose(fileSaddle);
+            saddle->matter2con(saddleFilename);
         }
     }
     return;

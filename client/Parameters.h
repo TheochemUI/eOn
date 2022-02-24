@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <string_view>
 #include <stdio.h>
 #include <ctype.h>
 #include <vector>

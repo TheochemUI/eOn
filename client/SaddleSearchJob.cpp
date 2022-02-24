@@ -137,9 +137,7 @@ void SaddleSearchJob::saveData(int status){
 
     std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
-    fileSaddle = fopen(saddleFilename.c_str(), "wb");
-    saddle->matter2con(fileSaddle);
-    fclose(fileSaddle);
+    saddle->matter2con(saddleFilename);
 }
 
 void SaddleSearchJob::printEndState(int status)

@@ -108,11 +108,9 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
 
     std::string nebFilename("neb.con");
     returnFiles.push_back(nebFilename);
-    fileNEB = fopen(nebFilename.c_str(), "wb");
     for(long i=0; i<=neb->images+1; i++) {
-        neb->image[i]->matter2con(fileNEB);
+        neb->image[i]->matter2con(nebFilename);
     }
-    fclose(fileNEB);
 
     returnFiles.push_back("neb.dat");
     neb->printImageData(true);

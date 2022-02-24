@@ -234,7 +234,7 @@ int ProcessSearchJob::doProcessSearch(void)
 
 void ProcessSearchJob::saveData(int status)
 {
-    FILE *fileResults, *fileReactant, *fileSaddle, *fileProduct, *fileMode;
+    FILE *fileResults, *fileMode;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -273,27 +273,21 @@ void ProcessSearchJob::saveData(int status)
 
     std::string reactantFilename("reactant.con");
     returnFiles.push_back(reactantFilename);
-    fileReactant = fopen(reactantFilename.c_str(), "wb");
-    min1->matter2con(fileReactant);
+    min1->matter2con(reactantFilename);
 
     std::string modeFilename("mode.dat");
     returnFiles.push_back(modeFilename);
     fileMode = fopen(modeFilename.c_str(), "wb");
     helper_functions::saveMode(fileMode, saddle, saddleSearch->getEigenvector());
     fclose(fileMode);
-    fclose(fileReactant);
 
     std::string saddleFilename("saddle.con");
     returnFiles.push_back(saddleFilename);
-    fileSaddle = fopen(saddleFilename.c_str(), "wb");
-    saddle->matter2con(fileSaddle);
-    fclose(fileSaddle);
+    saddle->matter2con(saddleFilename);
 
     std::string productFilename("product.con");
     returnFiles.push_back(productFilename);
-    fileProduct = fopen(productFilename.c_str(), "wb");
-    min2->matter2con(fileProduct);
-    fclose(fileProduct);
+    min2->matter2con(productFilename);
 
     return;
 }

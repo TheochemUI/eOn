@@ -28,13 +28,9 @@ std::vector<std::string> DynamicsJob::run(void)
     d->run();
 
     *F = *R;
-    FILE *fileProduct;
     std::string productFilename("final.con");
     returnFiles.push_back(productFilename);
-
-    fileProduct = fopen(productFilename.c_str(), "wb");
-    F->matter2con(fileProduct);
-    fclose(fileProduct);
+    F->matter2con(productFilename);
 
     delete R;
     delete F;
