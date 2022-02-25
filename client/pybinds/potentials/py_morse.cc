@@ -37,7 +37,7 @@ public:
 
 
 void py_morse(py::module_ &m) {
-    py::class_<Morse, Potential>(m, "Morse")
+    py::class_<Morse, Potential, PyMorse<> >(m, "Morse")
         /*
         ** Constructors
         */
