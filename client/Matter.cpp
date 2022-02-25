@@ -760,10 +760,10 @@ bool Matter::con2matter(std::ifstream &file) {
                 _pos(idx, b) = tmp[b]; // x y z
             }
             /*Matter::*/ setFixed(idx, static_cast<bool>(tmp[3])); // is_fixed
-            if (tmp[4] != idx + 1) {
+            if (( tmp[4] != idx + 1 ) and (tmp[4] != idx)) {
                 std::cerr << fmt::format(
-                    "Atoms in con file are not numbered from 1...N:\n expected:\t{} got:\t{}",
-                    idx + 1,
+                    "Atoms in con file are not numbered from 1...N:\n expected:\t{} or {} got:\t{}",
+                    idx + 1, idx,
                     tmp[4]);
                 return false;
             } else {
@@ -1112,10 +1112,10 @@ bool Matter::convel2matter(std::ifstream &file) {
                 _pos(idx, b) = tmp[b]; // x y z
             }
             /*Matter::*/ setFixed(idx, static_cast<bool>(tmp[3])); // is_fixed
-            if (tmp[4] != idx + 1) {
+            if (( tmp[4] != idx + 1 ) and (tmp[4] != idx)) {
                 std::cerr << fmt::format(
-                    "Atoms in con file are not numbered from 1...N:\n expected:\t{} got:\t{}",
-                    idx + 1,
+                    "Atoms in con file are not numbered from 1...N:\n expected:\t{} or {} got:\t{}",
+                    idx + 1, idx,
                     tmp[4]);
                 return false;
             } else {
