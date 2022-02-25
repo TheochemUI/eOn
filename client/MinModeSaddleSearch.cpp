@@ -160,17 +160,17 @@ MinModeSaddleSearch::MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePa
     status = STATUS_GOOD;
     iteration = 0;
     
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+    if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_DIMER) {
         if (parameters->dimerImproved) {
             minModeMethod = new ImprovedDimer(matter, parameters);
         }else{
             minModeMethod = new Dimer(matter, parameters);
         }
-    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_LANCZOS) {
         minModeMethod = new Lanczos(matter, parameters);
     }
 #ifdef WITH_GPRD
-    else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER) {
         minModeMethod = new AtomicGPDimer(matter, parameters);
     }
 #endif
@@ -189,7 +189,7 @@ int MinModeSaddleSearch::run()
     int firstIteration = 1;
     const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
 
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER) {
         log("================= Using the GP Dimer Library =================\n");
         minModeMethod->compute(matter, mode);
         if (minModeMethod->getEigenvalue() > 0) {
@@ -210,14 +210,14 @@ int MinModeSaddleSearch::run()
         forcecalls = minModeMethod->totalForceCalls;
     } else {
 
-      if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+      if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_DIMER) {
         log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", 
             "Torque", "Angle", "Rots");
-    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_LANCZOS) {
         log("[Lanczos]  %9s %9s %10s %18s %9s %10s %7s %5s\n", 
             "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change", "Angle", "Iters");
-    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    }else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER) {
         log("[GPRDimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n",
             "Step", "Step Size", "Delta E", forceLabel, "Curvature",
             "Torque", "Angle", "Rots");
@@ -307,7 +307,7 @@ int MinModeSaddleSearch::run()
   
         iteration++;
 
-        if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER)
+        if(parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_DIMER)
         {
             log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
                         iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
@@ -316,7 +316,7 @@ int MinModeSaddleSearch::run()
                         minModeMethod->statsTorque,
                         minModeMethod->statsAngle,
                         minModeMethod->statsRotations);
-        }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+        }else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_LANCZOS) {
             log("[Lanczos]  %9i %9.6f %10.4f %18.5e %9.4f %10.6f %7.3f %5i\n", 
                 iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,
                 objf.getConvergence(),
@@ -324,7 +324,7 @@ int MinModeSaddleSearch::run()
                 minModeMethod->statsTorque,
                 minModeMethod->statsAngle,
                 minModeMethod->statsRotations);
-        }else if(parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER)
+        }else if(parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER)
         {
             log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   %4ld\n",
                         iteration, stepSize, matter->getPotentialEnergy()-reactantEnergy,

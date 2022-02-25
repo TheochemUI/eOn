@@ -43,7 +43,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
 
     initial->con2matter(reactantFilename);
 
-    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+    if (parameters->saddleDisplaceType == EpiCentersStrings::DISP_LOAD) {
         // displacement was passed from the server
         saddle->con2matter(displacementFilename);
     }
@@ -53,7 +53,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
         *saddle = *initial;
     }
     AtomMatrix mode;
-    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+    if (parameters->saddleDisplaceType == EpiCentersStrings::DISP_LOAD) {
         // mode was passed from the server
         mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
@@ -90,7 +90,7 @@ int SaddleSearchJob::doSaddleSearch()
         }
     }
 
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER) {
         fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this works
     } else {
         fCallsSaddle += Potential::fcalls - f1;
@@ -111,9 +111,9 @@ void SaddleSearchJob::saveData(int status){
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "saddle_search job_type\n");
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_GPRDIMER) {
         fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
         fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
         fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);

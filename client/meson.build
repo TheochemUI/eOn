@@ -83,7 +83,6 @@ eonclib_sources = [
            'LBFGS.cpp',
            'Parameters.cpp',
            'ReplicaExchangeJob.cpp',
-           'LowestEigenmode.cpp',
            'BondBoost.cpp',
            'Job.cpp',
            'INIFile.cpp',

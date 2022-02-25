@@ -31,16 +31,16 @@ class CIniFile
 {
 private:
   bool   caseInsensitive;
-  string path;
+  std::string path;
   struct key {
-    vector<string> names;
-    vector<string> values; 
-    vector<string> comments;
+    vector<std::string> names;
+    vector<std::string> values;
+    vector<std::string> comments;
   };
   vector<key>    keys; 
-  vector<string> names; 
-  vector<string> comments;
-  string CheckCase( string s) const;
+  vector<std::string> names;
+  vector<std::string> comments;
+  std::string CheckCase( std::string s) const;
 
 public:
   enum errors{ noID = -1};
@@ -53,9 +53,9 @@ public:
   void CaseInsensitive()                         {caseInsensitive = true;}
 
   // Sets path of ini file to read and write from.
-  void Path(string const newPath)                {path = newPath;}
-  string Path() const                            {return path;}
-  void SetPath(string const newPath)             {Path( newPath);}
+  void Path(std::string const newPath)                {path = newPath;}
+  std::string Path() const                            {return path;}
+  void SetPath(std::string const newPath)             {Path( newPath);}
 
   // Reads ini file specified using path.
   // Returns true if successful, false otherwise.
@@ -70,52 +70,52 @@ public:
   void Reset()                                   {Erase();}
 
   // Returns index of specified key, or noID if not found.
-  long FindKey( string const keyname) const;
+  long FindKey( std::string const keyname) const;
 
   // Returns index of specified value, in the specified key, or noID if not found.
-  long FindValue( unsigned const keyID, string const valuename) const;
+  long FindValue( unsigned const keyID, std::string const valuename) const;
 
   // Returns number of keys currently in the ini.
   unsigned NumKeys() const                       {return names.size();}
   unsigned GetNumKeys() const                    {return NumKeys();}
 
   // Add a key name.
-  unsigned AddKeyName( string const keyname);
+  unsigned AddKeyName( std::string const keyname);
 
   // Returns key names by index.
-  string KeyName( unsigned const keyID) const;
-  string GetKeyName( unsigned const keyID) const {return KeyName(keyID);}
+  std::string KeyName( unsigned const keyID) const;
+  std::string GetKeyName( unsigned const keyID) const {return KeyName(keyID);}
 
   // Returns number of values stored for specified key.
   unsigned NumValues( unsigned const keyID);
   unsigned GetNumValues( unsigned const keyID)   {return NumValues( keyID);}
-  unsigned NumValues( string const keyname);
-  unsigned GetNumValues( string const keyname)   {return NumValues( keyname);}
+  unsigned NumValues( std::string const keyname);
+  unsigned GetNumValues( std::string const keyname)   {return NumValues( keyname);}
 
   // Returns value name by index for a given keyname or keyID.
-  string ValueName( unsigned const keyID, unsigned const valueID) const;
-  string GetValueName( unsigned const keyID, unsigned const valueID) const {
+  std::string ValueName( unsigned const keyID, unsigned const valueID) const;
+  std::string GetValueName( unsigned const keyID, unsigned const valueID) const {
     return ValueName( keyID, valueID);
   }
-  string ValueName( string const keyname, unsigned const valueID) const;
-  string GetValueName( string const keyname, unsigned const valueID) const {
+  std::string ValueName( std::string const keyname, unsigned const valueID) const;
+  std::string GetValueName( std::string const keyname, unsigned const valueID) const {
     return ValueName( keyname, valueID);
   }
 
   // Gets value of [keyname] valuename =.
   // Overloaded to return string, int, and double.
   // Returns defValue if key/value not found.
-  string GetValue( unsigned const keyID, unsigned const valueID, string const defValue = "") const;
-  string GetValue(string const keyname, string const valuename, string const defValue = "") const; 
-  string GetValue(string const keyname, string const valuename, bool &found) const; 
-  int    GetValueI(string const keyname, string const valuename, int const defValue = 0) const;
-  long    GetValueL(string const keyname, string const valuename, long const defValue = 0) const;
-  bool   GetValueB(string const keyname, string const valuename, bool const defValue = false) const;
-  double   GetValueF(string const keyname, string const valuename, double const defValue = 0.0) const;
+  std::string GetValue( unsigned const keyID, unsigned const valueID, std::string const defValue = "") const;
+  std::string GetValue(std::string const keyname, std::string const valuename, std::string const defValue = "") const;
+  std::string GetValue(std::string const keyname, std::string const valuename, bool &found) const;
+  int    GetValueI(std::string const keyname, std::string const valuename, int const defValue = 0) const;
+  size_t GetValueL(std::string const keyname, std::string const valuename, long const defValue = 0) const;
+  bool   GetValueB(std::string const keyname, std::string const valuename, bool const defValue = false) const;
+  double   GetValueF(std::string const keyname, std::string const valuename, double const defValue = 0.0) const;
   // This is a variable length formatted GetValue routine. All these voids
   // are required because there is no vsscanf() like there is a vsprintf().
   // Only a maximum of 8 variable can be read.
-  unsigned GetValueV( string const keyname, string const valuename, char *format,
+  unsigned GetValueV( std::string const keyname, std::string const valuename, char *format,
                       void *v1 = 0, void *v2 = 0, void *v3 = 0, void *v4 = 0,
                       void *v5 = 0, void *v6 = 0, void *v7 = 0, void *v8 = 0,
                       void *v9 = 0, void *v10 = 0, void *v11 = 0, void *v12 = 0,
@@ -124,23 +124,23 @@ public:
   // Sets value of [keyname] valuename =.
   // Specify the optional paramter as false (0) if you do not want it to create
   // the key if it doesn't exist. Returns true if data entered, false otherwise.
-  // Overloaded to accept string, int, and double.
-  bool SetValue( unsigned const keyID, unsigned const valueID, string const value);
-  bool SetValue( string const keyname, string const valuename, string const value, bool const create = true);
-  bool SetValueI( string const keyname, string const valuename, int const value, bool const create = true);
-  bool SetValueB( string const keyname, string const valuename, bool const value, bool const create = true) {
+  // Overloaded to accept std::string, int, and double.
+  bool SetValue( unsigned const keyID, unsigned const valueID, std::string const value);
+  bool SetValue( std::string const keyname, std::string const valuename, std::string const value, bool const create = true);
+  bool SetValueI( std::string const keyname, std::string const valuename, int const value, bool const create = true);
+  bool SetValueB( std::string const keyname, std::string const valuename, bool const value, bool const create = true) {
     return SetValueI( keyname, valuename, int(value), create);
   }
-  bool SetValueF( string const keyname, string const valuename, double const value, bool const create = true);
-  bool SetValueV( string const keyname, string const valuename, char *format, ...);
+  bool SetValueF( std::string const keyname, std::string const valuename, double const value, bool const create = true);
+  bool SetValueV( std::string const keyname, std::string const valuename, char *format, ...);
 
   // Deletes specified value.
   // Returns true if value existed and deleted, false otherwise.
-  bool DeleteValue( string const keyname, string const valuename);
+  bool DeleteValue( std::string const keyname, std::string const valuename);
 
   // Deletes specified key and all values contained within.
   // Returns true if key existed and deleted, false otherwise.
-  bool DeleteKey(string keyname);
+  bool DeleteKey(std::string keyname);
 
   // Header comment functions.
   // Header comments are those comments before the first key.
@@ -148,9 +148,9 @@ public:
   // Number of header comments.
   unsigned NumHeaderComments()                  {return comments.size();}
   // Add a header comment.
-  void     HeaderComment( string const comment);
+  void     HeaderComment( std::string const comment);
   // Return a header comment.
-  string   HeaderComment( unsigned const commentID) const;
+  std::string   HeaderComment( unsigned const commentID) const;
   // Delete a header comment.
   bool     DeleteHeaderComment( unsigned commentID);
   // Delete all header comments.
@@ -164,19 +164,19 @@ public:
   //
   // Number of key comments.
   unsigned NumKeyComments( unsigned const keyID) const;
-  unsigned NumKeyComments( string const keyname) const;
+  unsigned NumKeyComments( std::string const keyname) const;
   // Add a key comment.
-  bool     KeyComment( unsigned const keyID, string const comment);
-  bool     KeyComment( string const keyname, string const comment);
+  bool     KeyComment( unsigned const keyID, std::string const comment);
+  bool     KeyComment( std::string const keyname, std::string const comment);
   // Return a key comment.
-  string   KeyComment( unsigned const keyID, unsigned const commentID) const;
-  string   KeyComment( string const keyname, unsigned const commentID) const;
+  std::string   KeyComment( unsigned const keyID, unsigned const commentID) const;
+  std::string   KeyComment( std::string const keyname, unsigned const commentID) const;
   // Delete a key comment.
   bool     DeleteKeyComment( unsigned const keyID, unsigned const commentID);
-  bool     DeleteKeyComment( string const keyname, unsigned const commentID);
+  bool     DeleteKeyComment( std::string const keyname, unsigned const commentID);
   // Delete all comments for a key.
   bool     DeleteKeyComments( unsigned const keyID);
-  bool     DeleteKeyComments( string const keyname);
+  bool     DeleteKeyComments( std::string const keyname);
 };
 
 #endif

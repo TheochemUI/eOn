@@ -175,7 +175,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%f potential_energy_reactant\n", reactant->getPotentialEnergy());
     fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);

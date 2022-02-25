@@ -11,9 +11,6 @@ public:
     PrefactorJob(Parameters *params);
     ~PrefactorJob();
     std::vector<std::string> run(void);
-    static const std::string PREFACTOR_REACTANT;
-    static const std::string PREFACTOR_SADDLE;
-    static const std::string PREFACTOR_PRODUCT;
 private:
     Parameters *parameters;
 };

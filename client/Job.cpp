@@ -19,62 +19,45 @@
 #include "StructureComparisonJob.h"
 #include "MonteCarloJob.h"
 
-const std::string Job::PROCESS_SEARCH =           "process_search"s;
-const std::string Job::SADDLE_SEARCH =            "saddle_search"s;
-const std::string Job::MINIMIZATION =             "minimization"s;
-const std::string Job::POINT =                    "point"s;
-const std::string Job::PARALLEL_REPLICA =         "parallel_replica"s;
-const std::string Job::REPLICA_EXCHANGE =         "replica_exchange"s;
-const std::string Job::BASIN_HOPPING =            "basin_hopping"s;
-const std::string Job::HESSIAN =                  "hessian"s;
-const std::string Job::FINITE_DIFFERENCE =        "finite_difference"s;
-const std::string Job::NUDGED_ELASTIC_BAND =      "nudged_elastic_band"s;
-const std::string Job::DYNAMICS =                 "molecular_dynamics"s;
-const std::string Job::SAFE_HYPER =               "safe_hyper"s;
-const std::string Job::TAD =                      "tad"s;
-const std::string Job::PREFACTOR =                "prefactor"s;
-const std::string Job::GLOBAL_OPTIMIZATION =      "global_optimization"s;
-const std::string Job::STRUCTURE_COMPARISON =     "structure_comparison"s;
-const std::string Job::MONTE_CARLO =              "monte_carlo"s;
 // const std::string Job::TEST =                     "test"s;
 
 Job *Job::getJob(Parameters *parameters) {
     Job *job=NULL;
-    if (parameters->job == Job::PROCESS_SEARCH) {
+    if (parameters->job == JobStrings::PROCESS_SEARCH) {
         job = new ProcessSearchJob(parameters);
-    }else if (parameters->job == Job::SADDLE_SEARCH) {
+    }else if (parameters->job == JobStrings::SADDLE_SEARCH) {
         job = new SaddleSearchJob(parameters);
-    }else if (parameters->job == Job::MINIMIZATION) {
+    }else if (parameters->job == JobStrings::MINIMIZATION) {
         job = new MinimizationJob(parameters);
-    }else if (parameters->job == Job::POINT) {
+    }else if (parameters->job == JobStrings::POINT) {
         job = new PointJob(parameters);
-    }else if (parameters->job == Job::HESSIAN) {
+    }else if (parameters->job == JobStrings::HESSIAN) {
         job = new HessianJob(parameters);
-    }else if (parameters->job == Job::PARALLEL_REPLICA) {
+    }else if (parameters->job == JobStrings::PARALLEL_REPLICA) {
         job =  new ParallelReplicaJob(parameters);
-    }else if (parameters->job == Job::REPLICA_EXCHANGE) {
+    }else if (parameters->job == JobStrings::REPLICA_EXCHANGE) {
         job =  new ReplicaExchangeJob(parameters);
-    }else if (parameters->job == Job::TAD){
+    }else if (parameters->job == JobStrings::TAD){
         job = new TADJob(parameters);
-    }else if (parameters->job == Job::SAFE_HYPER){
+    }else if (parameters->job == JobStrings::SAFE_HYPER){
         job = new SafeHyperJob(parameters);
-    }else if (parameters->job == Job::BASIN_HOPPING) {
+    }else if (parameters->job == JobStrings::BASIN_HOPPING) {
         job =  new BasinHoppingJob(parameters);
-    }else if (parameters->job == Job::FINITE_DIFFERENCE) {
+    }else if (parameters->job == JobStrings::FINITE_DIFFERENCE) {
         job =  new FiniteDifferenceJob(parameters);
-    }else if (parameters->job == Job::NUDGED_ELASTIC_BAND) {
+    }else if (parameters->job == JobStrings::NUDGED_ELASTIC_BAND) {
         job =  new NudgedElasticBandJob(parameters);
-    }else if (parameters->job == Job::DYNAMICS) {
+    }else if (parameters->job == JobStrings::DYNAMICS) {
         job =  new DynamicsJob(parameters);
-    }else if (parameters->job == Job::PREFACTOR) {
+    }else if (parameters->job == JobStrings::PREFACTOR) {
         job =  new PrefactorJob(parameters);
-    }else if (parameters->job == Job::GLOBAL_OPTIMIZATION) {
+    }else if (parameters->job == JobStrings::GLOBAL_OPTIMIZATION) {
         job =  new GlobalOptimizationJob(parameters);
-    }else if (parameters->job == Job::STRUCTURE_COMPARISON) {
+    }else if (parameters->job == JobStrings::STRUCTURE_COMPARISON) {
         job =  new StructureComparisonJob(parameters);
-    // }else if (parameters->job == Job::TEST) {
+    // }else if (parameters->job == JobStrings::TEST) {
     //     job =  new TestJob(parameters);
-    }else if (parameters->job == Job::MONTE_CARLO) {
+    }else if (parameters->job == JobStrings::MONTE_CARLO) {
         job = new MonteCarloJob(parameters);
     }
 

@@ -5,10 +5,6 @@
 #include "Hessian.h"
 #include "Potential.h"
 
-const std::string PrefactorJob::PREFACTOR_REACTANT = "reactant"s;
-const std::string PrefactorJob::PREFACTOR_SADDLE  = "saddle"s;
-const std::string PrefactorJob::PREFACTOR_PRODUCT  = "product"s;
-
 PrefactorJob::PrefactorJob(Parameters *params)
 {
     parameters = params;
@@ -23,9 +19,9 @@ std::vector<std::string> PrefactorJob::run(void)
     std::vector<std::string> returnFiles;
     VectorXd freqs;
 
-    string reactantFilename("reactant.con");
-    string saddleFilename("saddle.con");
-    string productFilename("product.con");
+    std::string reactantFilename("reactant.con");
+    std::string saddleFilename("saddle.con");
+    std::string productFilename("product.con");
 
     Matter *reactant = new Matter(parameters);
     Matter *saddle = new Matter(parameters);
@@ -45,17 +41,17 @@ std::vector<std::string> PrefactorJob::run(void)
         // for which the frequencies should be determined
         string matterFilename;
         if (parameters->prefactorConfiguration == 
-            PrefactorJob::PREFACTOR_REACTANT)
+            PrefactorJobStrings::PREFACTOR_REACTANT)
         {
             matterFilename = reactantFilename;
         }
         else if (parameters->prefactorConfiguration == 
-                 PrefactorJob::PREFACTOR_SADDLE)
+                 PrefactorJobStrings::PREFACTOR_SADDLE)
         {
             matterFilename = saddleFilename;
         }
         else if (parameters->prefactorConfiguration == 
-                 PrefactorJob::PREFACTOR_PRODUCT)
+                 PrefactorJobStrings::PREFACTOR_PRODUCT)
         {
             matterFilename = productFilename;
         }
@@ -79,19 +75,19 @@ std::vector<std::string> PrefactorJob::run(void)
     
     // calculate frequencies
     if (parameters->prefactorConfiguration == 
-        PrefactorJob::PREFACTOR_REACTANT)
+        PrefactorJobStrings::PREFACTOR_REACTANT)
     {
         Hessian hessian(parameters, reactant);    
         freqs = hessian.getFreqs(reactant, atoms);
     }
     else if (parameters->prefactorConfiguration == 
-             PrefactorJob::PREFACTOR_SADDLE)
+             PrefactorJobStrings::PREFACTOR_SADDLE)
     {
         Hessian hessian(parameters, saddle);    
         freqs = hessian.getFreqs(saddle, atoms);
     }    
     else if (parameters->prefactorConfiguration == 
-             PrefactorJob::PREFACTOR_PRODUCT)
+             PrefactorJobStrings::PREFACTOR_PRODUCT)
     {
         Hessian hessian(parameters, product);    
         freqs = hessian.getFreqs(product, atoms);

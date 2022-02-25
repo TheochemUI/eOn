@@ -222,7 +222,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         if(consecutive_rejected_trials == parameters->basinHoppingJumpMax && step<parameters->basinHoppingSteps){
             consecutive_rejected_trials = 0;
             AtomMatrix jump;
-            for(int j=0; j<parameters->basinHoppingJumpSteps; j++){
+            for(size_t j=0; j<parameters->basinHoppingJumpSteps; j++){
                 jump_count++;
                 jump = displaceRandom(curDisplacement);
                 current->setPositions(current->getPositions() + jump);
@@ -238,8 +238,8 @@ std::vector<std::string> BasinHoppingJob::run(void)
             }
         }
 
-        int nadjust = parameters->basinHoppingAdjustPeriod;
-        double adjustFraction = parameters->basinHoppingAdjustFraction;
+        auto nadjust = parameters->basinHoppingAdjustPeriod;
+        auto adjustFraction = parameters->basinHoppingAdjustFraction;
         if ((step+1)%nadjust == 0 && parameters->basinHoppingAdjustDisplacement == true) {
             double recentRatio = ((double)recentAccept)/((double)nadjust);
             if (recentRatio > parameters->basinHoppingTargetRatio) {
@@ -270,7 +270,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
 
     fprintf(fileResults, "%d termination_reason\n", 0);
     fprintf(fileResults, "%.6f minimum_energy\n", minimumEnergy);
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%.3f acceptance_ratio\n", totalAccept/parameters->basinHoppingSteps);
     if(parameters->basinHoppingSwapProbability>0){
         fprintf(fileResults, "%.3f swap_acceptance_ratio\n", swap_accept/double(swap_count));

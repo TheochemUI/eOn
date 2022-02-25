@@ -158,13 +158,13 @@ int DynamicsSaddleSearch::run(void)
                 AtomMatrix mode;
                 if (parameters->nebMaxIterations > 0) {
                     LowestEigenmode *minModeMethod;
-                    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+                    if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_DIMER) {
                         if (parameters->dimerImproved) {
                             minModeMethod = new ImprovedDimer(saddle, parameters);
                         }else{
                             minModeMethod = new Dimer(saddle, parameters);
                         }
-                    }else if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
+                    }else if (parameters->saddleMinmodeMethod == LowestEigenmodeStrings::MINMODE_LANCZOS) {
                         minModeMethod = new Lanczos(saddle, parameters);
                     }
 

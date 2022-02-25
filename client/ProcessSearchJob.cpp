@@ -55,7 +55,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     prefactorsValues[0] = prefactorsValues[1] = 0;
 
     if (parameters->saddleMethod == "min_mode" || parameters->saddleMethod == "basin_hopping" || parameters->saddleMethod == "bgsd") {
-        if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+        if (parameters->saddleDisplaceType == EpiCentersStrings::DISP_LOAD) {
             // displacement was passed from the server
             if(!saddle->con2matter(displacementFilename)) {
                 printf("Stop\n");
@@ -74,7 +74,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
     AtomMatrix mode;
 
     if (parameters->saddleMethod == "min_mode") {
-        if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+        if (parameters->saddleDisplaceType == EpiCentersStrings::DISP_LOAD) {
             // mode was passed from the server
             mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
@@ -244,7 +244,7 @@ void ProcessSearchJob::saveData(int status)
     //      the SaddleSearch object. They will be taken out eventually.
 
     fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);

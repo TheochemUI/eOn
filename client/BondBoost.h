@@ -43,12 +43,4 @@ private:
     long  nBBs;
 };
 
-class Hyperdynamics {
-        public:
-//            static const string NONE;
-//            static const string BOND_BOOST;
-            static const std::string NONE;
-            static const std::string BOND_BOOST;
-};
-
 #endif

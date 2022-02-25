@@ -322,7 +322,7 @@ int CIniFile::GetValueI(string const keyname, string const valuename, int const 
     return defValue;
 }
 
-long CIniFile::GetValueL(string const keyname, string const valuename, long const defValue) const
+size_t CIniFile::GetValueL(string const keyname, string const valuename, long const defValue) const
 {
   bool found;
   string value = GetValue(keyname, valuename, found);

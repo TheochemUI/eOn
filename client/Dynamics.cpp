@@ -4,11 +4,6 @@
 
 using namespace helper_functions;
 
-const char Dynamics::ANDERSEN[] = "andersen";
-const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
-const char Dynamics::LANGEVIN[] = "langevin";
-const char Dynamics::NONE[] = "none";
-
 static const char LOG_PREFIX[] = "[Dynamics]";
 
 Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in)
@@ -35,17 +30,17 @@ void Dynamics::setTemperature(double temperature_in)
 
 void Dynamics::oneStep(int stepNumber)
 {
-    if(parameters->thermostat == ANDERSEN){
+    if(parameters->thermostat == DynamicsStrings::ANDERSEN){
        andersenCollision();
        velocityVerlet();
     }
-    else if(parameters->thermostat == NOSE_HOOVER){
+    else if(parameters->thermostat == DynamicsStrings::NOSE_HOOVER){
        noseHooverVerlet();
     }
-    else if(parameters->thermostat == LANGEVIN){
+    else if(parameters->thermostat == DynamicsStrings::LANGEVIN){
        langevinVerlet();
     }
-    else if(parameters->thermostat == NONE){
+    else if(parameters->thermostat == DynamicsStrings::NONE){
        velocityVerlet();
     }
 
@@ -92,7 +87,7 @@ void Dynamics::run()
 
     setThermalVelocity();
 
-    if(parameters->thermostat != NONE) {
+    if(parameters->thermostat != DynamicsStrings::NONE) {
         log("%s Running NVT molecular dynamics: %8.2lf K for %ld steps (%.4e s)\n", LOG_PREFIX,
             temperature, parameters->mdSteps, 1e-15*parameters->mdTimeStep*parameters->timeUnit*parameters->mdSteps);
     }else{

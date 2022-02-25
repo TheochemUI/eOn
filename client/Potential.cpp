@@ -142,76 +142,76 @@ Potential *Potential::getPotential(Parameters *parameters)
     if(pot) {
         return pot;
     }
-    if(parameters->potential == POT_LJ)
+    if(parameters->potential == PotentialStrings::POT_LJ)
         pot = new LJ();
-    else if(parameters->potential == POT_LJCLUSTER)
+    else if(parameters->potential == PotentialStrings::POT_LJCLUSTER)
         pot = new LJCluster();
-    else if (parameters->potential == POT_EXT)
+    else if (parameters->potential == PotentialStrings::POT_EXT)
         pot = new ExtPot(parameters);
-    else if (parameters->potential == POT_MORSE_PT)
+    else if (parameters->potential == PotentialStrings::POT_MORSE_PT)
         pot = new Morse();
-    else if (parameters->potential == POT_EMT)
+    else if (parameters->potential == PotentialStrings::POT_EMT)
         pot = new EffectiveMediumTheory(parameters);
 
 #ifdef IMD_POT
-  else if (parameters->potential == POT_IMD)
+  else if (parameters->potential == PotentialStrings::POT_IMD)
     pot = new IMD();
 #endif
 
 #ifdef WITH_PYTHON
 #ifdef PYAMFF_POT
-    else if(parameters->potential == POT_PYAMFF)
+    else if(parameters->potential == PotentialStrings::POT_PYAMFF)
         pot = new PyAMFF();
 #endif
-  else if (parameters->potential == POT_QSC)
+  else if (parameters->potential == PotentialStrings::POT_QSC)
     pot = new QSC();
 #endif
 
 #ifdef WITH_AMS
-    else if(parameters->potential == POT_AMS)
+    else if(parameters->potential == PotentialStrings::POT_AMS)
         pot = new AMS(parameters);
-    else if(parameters->potential == POT_AMS_IO)
+    else if(parameters->potential == PotentialStrings::POT_AMS_IO)
         pot = new AMS_IO(parameters);
 #endif
 
 #ifdef WITH_WATER
-  else if (parameters->potential == POT_TIP4P)
+  else if (parameters->potential == PotentialStrings::POT_TIP4P)
     pot = new Tip4p();
-  else if (parameters->potential == POT_SPCE)
+  else if (parameters->potential == PotentialStrings::POT_SPCE)
     pot = new SpceCcl();
-  else if (parameters->potential == POT_TIP4P_PT)
+  else if (parameters->potential == PotentialStrings::POT_TIP4P_PT)
     pot = new Tip4p_Pt();
-  else if (parameters->potential == POT_TIP4P_H)
+  else if (parameters->potential == PotentialStrings::POT_TIP4P_H)
     pot = new Tip4p_H();
 #endif
 
 #ifdef WITH_FORTRAN
-  else if (parameters->potential == POT_EAM_AL)
+  else if (parameters->potential == PotentialStrings::POT_EAM_AL)
     pot = new Aluminum();
-  else if (parameters->potential == POT_LENOSKY_SI)
+  else if (parameters->potential == PotentialStrings::POT_LENOSKY_SI)
     pot = new Lenosky();
-  else if (parameters->potential == POT_SW_SI)
+  else if (parameters->potential == PotentialStrings::POT_SW_SI)
     pot = new SW();
-  else if (parameters->potential == POT_TERSOFF_SI)
+  else if (parameters->potential == PotentialStrings::POT_TERSOFF_SI)
     pot = new Tersoff();
-  else if (parameters->potential == POT_EDIP)
+  else if (parameters->potential == PotentialStrings::POT_EDIP)
     pot = new EDIP();
-  else if (parameters->potential == POT_FEHE)
+  else if (parameters->potential == PotentialStrings::POT_FEHE)
     pot = new FeHe();
 #endif
 
 #ifdef EONMPI
-    else if(parameters->potential == POT_MPI)
+    else if(parameters->potential == PotentialStrings::POT_MPI)
         pot = new MPIPot(parameters);
 #endif
 
 #ifdef LAMMPS_POT
-    else if(parameters->potential == POT_LAMMPS)
+    else if(parameters->potential == PotentialStrings::POT_LAMMPS)
         pot = new lammps(parameters);
 #endif
 
 #ifdef NEW_POT
-    else if(parameters->potential == POT_NEW)
+    else if(parameters->potential == PotentialStrings::POT_NEW)
         pot = new NewPot(parameters);
 #endif
 
@@ -222,7 +222,7 @@ Potential *Potential::getPotential(Parameters *parameters)
 
 #ifndef WIN32
 #ifdef WITH_VASP
-    else if(parameters->potential == POT_VASP)
+    else if(parameters->potential == PotentialStrings::POT_VASP)
         pot = new VASP();
 #endif
 #endif

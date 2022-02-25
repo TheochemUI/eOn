@@ -9,10 +9,6 @@
 
 using namespace helper_functions;
 
-const std::string ImprovedDimer::OPT_SD = "sd"s;
-const std::string ImprovedDimer::OPT_CG = "cg"s;
-const std::string ImprovedDimer::OPT_LBFGS = "lbfgs"s;
-
 ImprovedDimer::ImprovedDimer(Matter *matter, Parameters *params)
 {
     parameters    = params;
@@ -24,7 +20,7 @@ ImprovedDimer::ImprovedDimer(Matter *matter, Parameters *params)
     tau.setZero();
     totalForceCalls = 0;
 
-    if(parameters->dimerOptMethod == OPT_CG){
+    if(parameters->dimerOptMethod == ImprovedDimerStrings::OPT_CG){
         init_cg = true;
     }
 
@@ -49,7 +45,7 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
     
     x1->setPositionsV(x0_r + parameters->finiteDifference * tau);
 
-    if(parameters->dimerOptMethod == OPT_LBFGS) {
+    if(parameters->dimerOptMethod == ImprovedDimerStrings::OPT_LBFGS) {
         s.clear();
         y.clear();
         rho.clear();
@@ -103,11 +99,11 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
         statsTorque = F_R.norm() / (parameters->finiteDifference * 2.0);
         
         // Determine the step direction, theta
-        if(parameters->dimerOptMethod == OPT_SD) // steepest descent
+        if(parameters->dimerOptMethod == ImprovedDimerStrings::OPT_SD) // steepest descent
         {
             theta = F_R / F_R.norm();
         }
-        else if(parameters->dimerOptMethod == OPT_CG) // conjugate gradients
+        else if(parameters->dimerOptMethod == ImprovedDimerStrings::OPT_CG) // conjugate gradients
         {
             if(init_cg){
                 init_cg = false;
@@ -137,7 +133,7 @@ void ImprovedDimer::compute(Matter *matter, AtomMatrix initialDirectionAtomMatri
 
             F_R_Old = F_R;
         }
-        else if(parameters->dimerOptMethod == OPT_LBFGS) // quasi-newton
+        else if(parameters->dimerOptMethod == ImprovedDimerStrings::OPT_LBFGS) // quasi-newton
         {
             if (init_lbfgs == false) {
                 // xph: s0 should the difference between tau and tau_Old, which are normalized vectors. 

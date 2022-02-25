@@ -29,7 +29,7 @@
  */
 
 /**
- * Decleration of job class
+ * Declaration of job class
  */
 
 class Job { 
@@ -39,42 +39,6 @@ class Job {
 	virtual ~Job() {};
 	//! Virtual run; used solely for dynamic dispatch 
 	virtual std::vector<std::string> run()=0;
-	//! Runs a \ref ProcessSearchJob "Process Search" job 
-        static const std::string PROCESS_SEARCH;
-	//! Runs a \ref SaddleSearchJob "Saddle Search" job
-        static const std::string SADDLE_SEARCH;
-	//! ref MinimizationJob
-        static const std::string MINIMIZATION;
-        //! ref PointJob
-	static const std::string POINT;
-        //! ref ParallelReplicaJob
-	static const std::string PARALLEL_REPLICA;
-        //! ref SafeHyperdynamicsJob
-	static const std::string SAFE_HYPER;
-	//! ref TADJob
-        static const std::string TAD;
-	//! ref ReplicaExchangeJob
-        static const std::string REPLICA_EXCHANGE;
-	//! ref BasinHopingJob
-        static const std::string BASIN_HOPPING;
-	//! ref HessianJob
-        static const std::string HESSIAN;
-	//! ref FiniteDifferenceJob
-        static const std::string FINITE_DIFFERENCE;
-	//! ref NudgedElasticBandJob
-        static const std::string NUDGED_ELASTIC_BAND;
-	//! ref DynamicsJob
-        static const std::string DYNAMICS;
-	//! ref PrefactorJob
-        static const std::string PREFACTOR;
-	//! ref GlobalOptimizationJob
-	static const std::string GLOBAL_OPTIMIZATION;
-	//! ref StructureComparisonJob
-	static const std::string STRUCTURE_COMPARISON;
-	//! ref MonteCarloJob
-        static const std::string MONTE_CARLO;
-	//! ref TestJob
-        static const std::string TEST;
 	//! Grabs the correct job as specified by the parameters
 	/*!
  	  \param *parameters defined by the config.init file

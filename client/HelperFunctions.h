@@ -3,6 +3,7 @@
 
 #include "Eigen.h"
 #include "Matter.h"
+#include "Parameters.h"
 #include <vector>
 #include <string>
 

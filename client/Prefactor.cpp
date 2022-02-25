@@ -12,7 +12,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     // determine which atoms moved in the process
     VectorXi atoms;
     
-    if (parameters->prefactorFilterScheme == Prefactor::FILTER_FRACTION) {
+    if (parameters->prefactorFilterScheme == PrefactorStrings::FILTER_FRACTION) {
         atoms = movedAtomsPct(parameters, min1, saddle, min2);
     }else{
         atoms = movedAtoms(parameters, min1, saddle, min2);
@@ -114,7 +114,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
     pref1 = 1.0;
     pref2 = 1.0;
     
-    if (parameters->prefactorRate == Prefactor::RATE_HTST){
+    if (parameters->prefactorRate == PrefactorStrings::RATE_HTST){
 
         // products are calculated this way in order to avoid overflow
         for(int i=0; i<saddleFreqs.size(); i++)
@@ -130,7 +130,7 @@ int Prefactor::getPrefactors(Parameters* parameters, Matter *min1, Matter *saddl
         pref1 = sqrt(pref1)/(2*M_PI*10.18e-15);
         pref2 = sqrt(pref2)/(2*M_PI*10.18e-15);
     }
-    else if (parameters->prefactorRate == Prefactor::RATE_QQHTST){
+    else if (parameters->prefactorRate == PrefactorStrings::RATE_QQHTST){
         float kB_T = parameters->temperature * 8.617332e-5; // eV
         float h_bar = 6.582119e-16; // eV*s
         float h = 4.135667e-15; // eV*s

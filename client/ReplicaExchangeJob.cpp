@@ -18,8 +18,8 @@ ReplicaExchangeJob::~ReplicaExchangeJob()
 
 std::vector<std::string> ReplicaExchangeJob::run(void)
 {
-    long i, step, samplingSteps = long(parameters->repexcSamplingTime/parameters->mdTimeStep+0.5);
-    long exchangePeriodSteps = long(parameters->repexcExchangePeriod/parameters->mdTimeStep+0.5);
+    size_t i, step, samplingSteps = size_t(parameters->repexcSamplingTime/parameters->mdTimeStep+0.5);
+    size_t exchangePeriodSteps = size_t(parameters->repexcExchangePeriod/parameters->mdTimeStep+0.5);
     double energyLow, energyHigh;
     double kbTLow, kbTHigh;
     double kB = parameters->kB;
@@ -32,7 +32,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
 
     log("\nRunning Replica Exchange\n\n");
 
-    long refForceCalls = Potential::fcalls;
+    size_t refForceCalls = Potential::fcalls;
 
     // allocate a Matter and Dynamics object for each replica
     Matter *replica[parameters->repexcReplicas];
@@ -77,7 +77,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
         }
         if( (step % exchangePeriodSteps) == 0 )
         {
-            for(long trial=0; trial<parameters->repexcExchangeTrials; trial++)
+            for(size_t trial=0; trial<parameters->repexcExchangeTrials; trial++)
             {
                 i = helper_functions::randomInt(0, parameters->repexcReplicas-2);
                 energyLow = replica[i]->getPotentialEnergy();
@@ -122,7 +122,7 @@ void ReplicaExchangeJob::saveData(void)
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
 
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
     fclose(fileResults);

@@ -271,7 +271,7 @@ void SafeHyperJob::saveData(int status)
     long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
 
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%f random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
     fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
     fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);

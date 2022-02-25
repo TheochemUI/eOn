@@ -17,15 +17,11 @@ public:
     double statsAngle;
     long statsRotations;
     long totalIterations; // Only set by the gpr dimer
-    static const std::string MINMODE_DIMER;
-    static const std::string MINMODE_GPRDIMER;
-    static const std::string MINMODE_LANCZOS;
 
     virtual ~LowestEigenmode() {}
 
     //void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
     virtual void compute(Matter *matter, AtomMatrix direction) = 0;
-
     virtual double getEigenvalue() = 0;
     virtual AtomMatrix getEigenvector() = 0;
 };

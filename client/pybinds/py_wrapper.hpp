@@ -26,6 +26,7 @@ using namespace pybind11::literals;   // For ""_a
 namespace py = pybind11;              // Convention
 
 // Forward declarations
+// void py_staticdata(py::module_ &m);
 void py_parameters(py::module_ &m);
 void py_matter(py::module_ &m);
 void py_log(py::module_ &m);

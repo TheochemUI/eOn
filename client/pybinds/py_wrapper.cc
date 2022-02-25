@@ -1,6 +1,7 @@
 #include "py_wrapper.hpp"
 
 PYBIND11_MODULE(pyeonclient, m) {
+    // py_staticdata(m);
     py_parameters(m);
     py_matter(m);
     py_log(m);
