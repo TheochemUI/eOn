@@ -5,7 +5,8 @@
 ** General
 - Always use ~namespace py = pybind11;~
 - For ~Blah.cpp~ the binding will be ~pybinds/py_blah.cc~
-- All header content must be in ~pybinds/py_wrapper.hpp~
+- Most header content must be in ~pybinds/py_wrapper.hpp~
+  + The exceptions are base classes like ~py_potential.hpp~ since these need to be imported by child files like ~potentials/py_morse.cc~
 - Every method must have:
   + arguments defined
   + documentation string
