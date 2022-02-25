@@ -37,14 +37,13 @@ public:
         }
         log("\nNEB: initialize\n");
         neb_images[nimages + 1] = (*finalPassed);
-        AtomMatrix posInitial = (*initialPassed).getPositions();
-        AtomMatrix posFinal = (*finalPassed).getPositions();
-        AtomMatrix imgSep = (*initialPassed).pbc(posFinal - posInitial) / (nimages + 1);
+        AtomMatrix posInitial = neb_images.front().getPositions();
+        AtomMatrix posFinal = neb_images.back().getPositions();
+        AtomMatrix imgSep = neb_images.front().pbc(posFinal - posInitial) / (nimages + 1);
         for (long double idx{0}; auto &&img : neb_images) {
             if ((idx == 0) /*initial*/ || (idx == nimages + 1) /*final*/) {
                 continue;
             }
-            std::cout << idx << " ";
             img.setPositions(posInitial + imgSep * idx);
             ++idx;
         }
@@ -52,8 +51,8 @@ public:
         movedAfterForceCall = true;
 
         // Make sure that the endpoints know their energy
-        neb_images[0].getPotentialEnergy();
-        neb_images[nimages + 1].getPotentialEnergy();
+        neb_images.front().getPotentialEnergy();
+        neb_images.back().getPotentialEnergy();
     }
 
     ~NudgedElasticBand(){};
