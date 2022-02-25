@@ -1,8 +1,5 @@
 // clang-format off
 #include "py_wrapper.hpp"
-// Binding code
-#include "../Matter.h"
-#include <fstream>
 // Additional
 #include <pybind11/eigen.h>
 #include <pybind11/operators.h>

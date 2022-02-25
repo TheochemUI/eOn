@@ -1,4 +1,3 @@
-#include "../Parameters.h"
 #include "py_wrapper.hpp"
 
 void py_parameters(py::module_ &m) {

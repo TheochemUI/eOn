@@ -1,38 +1,7 @@
-#include "../Potential.h"
 #include "py_wrapper.hpp"
 
-template <class PotentialBase = Potential>
-class PyPotential : public PotentialBase {
-public:
-    /* Inherit the constructors */
-    using Potential::Potential;
-    void initialize() override{
-        PYBIND11_OVERRIDE_PURE(void,          /* Return type */
-                               PotentialBase, /* Parent class */
-                               initialize); /* Name of function in C++ (must match Python name) */
-    };
-    void force(long nAtoms,
-               const double *positions,
-               const int *atomicNrs,
-               double *forces,
-               double *energy,
-               const double *box,
-               int nImages) override {
-        PYBIND11_OVERRIDE_PURE(void,      /* Return type */
-                               Potential, /* Parent class */
-                               force,     /* Name of function in C++ (must match Python name) */
-                               nAtoms,    /* Argument(s) */
-                               positions,
-                               atomicNrs,
-                               forces,
-                               energy,
-                               box,
-                               nImages);
-    };
-};
-
 void py_potential(py::module_ &m) {
-    py::class_<Potential, PyPotential<>>(m, "Potential")
+    py::class_<Potential, PyPotential<> >(m, "Potential")
         .def(py::init())
         /*
         ** Functions
