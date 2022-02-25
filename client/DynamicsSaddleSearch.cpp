@@ -132,26 +132,26 @@ int DynamicsSaddleSearch::run(void)
                     AtomMatrix reactantToSaddle = saddle->pbc(saddle->getPositions()  - reactant->getPositions());
                     AtomMatrix saddleToProduct  = saddle->pbc(product->getPositions() - saddle->getPositions());
                     log("Initial band saved to neb_initial_band.con\n");
-                    neb.image[0]->matter2con("neb_initial_band.con", false);
-                    for (int image=1;image<=neb.images;image++) {
-                        int mid = neb.images/2 + 1;
+                    neb.neb_images[0].matter2con("neb_initial_band.con", false);
+                    for (int image=1;image<=neb.nimages;image++) {
+                        int mid = neb.nimages/2 + 1;
                         if (image < mid) {
-                            double frac = ((double)image) / ((double)mid);
-                            neb.image[image]->setPositions(reactant->getPositions() + frac * reactantToSaddle);
+                            double frac = (static_cast<double>(image)) / (static_cast<double>(mid));
+                            neb.neb_images[image].setPositions(reactant->getPositions() + frac * reactantToSaddle);
                         }else if (image > mid) {
-                            double frac = (double)(image-mid) / (double)(neb.images - mid + 1);
-                            neb.image[image]->setPositions(saddle->getPositions() + frac * saddleToProduct);
+                            double frac = static_cast<double>((image-mid)) / static_cast<double>((neb.nimages - mid + 1));
+                            neb.neb_images[image].setPositions(saddle->getPositions() + frac * saddleToProduct);
                         }else if (image == mid) {
-                            neb.image[image]->setPositions(saddle->getPositions());
+                            neb.neb_images[image].setPositions(saddle->getPositions());
                         }
-                        neb.image[image]->matter2con("neb_initial_band.con",true);
+                        neb.neb_images[image].matter2con("neb_initial_band.con",true);
                     }
-                    neb.image[neb.images+1]->matter2con("neb_initial_band.con",true);
+                    neb.neb_images[neb.nimages+1].matter2con("neb_initial_band.con",true);
                 }else{
                     log("Linear interpolation between minima used for initial band\n");
-                    neb.image[0]->matter2con("neb_initial_band.con", false);
-                    for(int j=1; j<=neb.images+1; j++){
-                        neb.image[j]->matter2con("neb_initial_band.con", true);
+                    neb.neb_images[0].matter2con("neb_initial_band.con", false);
+                    for(size_t j=1; j<=neb.nimages+1; j++){
+                        neb.neb_images[j].matter2con("neb_initial_band.con", true);
                     }
                 }
 
@@ -170,18 +170,18 @@ int DynamicsSaddleSearch::run(void)
 
                     neb.compute();
                     neb.printImageData(true);
-                    int extremumImage = -1; 
+                    int extremumImage = -1;
                     int j;
                     for (j=0;j<neb.numExtrema;j++) {
 //                        if (neb.extremumCurvature[j] < 0.0) { 
                         if (neb.extremumCurvature[j] < parameters->saddleDynamicsMaxInitCurvature) { 
                             extremumImage = (int)floor(neb.extremumPosition[j]);
-                            *saddle = *neb.image[extremumImage];
-                            double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
-                            AtomMatrix bandDirection = saddle->pbc(neb.image[extremumImage+1]->getPositions() - 
-                                                                   neb.image[extremumImage]->getPositions());
+                            *saddle = neb.neb_images[extremumImage];
+                            double interpDistance = (double)neb.extremumPosition[j] - (double)extremumImage;
+                            AtomMatrix bandDirection = saddle->pbc(neb.neb_images[extremumImage+1].getPositions() -
+                                                                   neb.neb_images[extremumImage].getPositions());
                             saddle->setPositions(interpDistance * bandDirection + saddle->getPositions());
-                            mode = saddle->pbc( neb.image[extremumImage+1]->getPositions() - saddle->getPositions());
+                            mode = saddle->pbc( neb.neb_images[extremumImage+1].getPositions() - saddle->getPositions());
                             mode.normalize();
                             minModeMethod->compute(saddle, mode);
                             double eigenvalue = minModeMethod->getEigenvalue();
@@ -199,23 +199,23 @@ int DynamicsSaddleSearch::run(void)
                     delete minModeMethod;
 
                     if (extremumImage != -1) {
-                        *saddle = *neb.image[extremumImage];
-                        double interpDistance = neb.extremumPosition[j] - (double)extremumImage;
+                        *saddle = neb.neb_images[extremumImage];
+                        double interpDistance = neb.extremumPosition[j] - static_cast<double>(extremumImage);
                         log("interpDistance %f\n", interpDistance);
-                        AtomMatrix bandDirection = saddle->pbc(neb.image[extremumImage+1]->getPositions() - 
-                                                               neb.image[extremumImage]->getPositions());
+                        AtomMatrix bandDirection = saddle->pbc(neb.neb_images[extremumImage+1].getPositions() -
+                                                               neb.neb_images[extremumImage].getPositions());
                         saddle->setPositions(interpDistance * bandDirection + saddle->getPositions());
-                        mode = saddle->pbc( neb.image[extremumImage+1]->getPositions() - saddle->getPositions());
+                        mode = saddle->pbc( neb.neb_images[extremumImage+1].getPositions() - saddle->getPositions());
                         mode.normalize();
                     }else{
                         log("no maxima found, using max energy non-endpoint image\n");
                         double maxEnergy = -INFINITY;
-                        for (int image=1;image<=neb.images;image++) {
-                            double U = neb.image[image]->getPotentialEnergy();
+                        for (size_t image=1;image<=neb.nimages;image++) {
+                            double U = neb.neb_images[image].getPotentialEnergy();
                             if (U > maxEnergy) {
                                 maxEnergy = U;
-                                *saddle = *neb.image[image];
-                                mode = saddle->pbc(neb.image[image+1]->getPositions() - saddle->getPositions());
+                                *saddle = neb.neb_images[image];
+                                mode = saddle->pbc(neb.neb_images[image+1].getPositions() - saddle->getPositions());
                                 mode.normalize();
                             }
                         }
@@ -225,7 +225,7 @@ int DynamicsSaddleSearch::run(void)
                         }
                     }
                 }else{
-                    neb.maxEnergyImage = neb.images/2 + 1;
+                    neb.maxEnergyImage = neb.nimages/2. + 1.;
                 }
 
                 log("Initial saddle guess saved to saddle_initial_guess.con\n");

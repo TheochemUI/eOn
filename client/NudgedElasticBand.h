@@ -2,6 +2,7 @@
 #define NudgedElasticBand_H
 
 #include "HelperFunctions.h"
+#include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -14,6 +15,9 @@ class Parameters;
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
 
+private:
+    Parameters *parameters;
+
 public:
     enum class nebStatus {
         STATUS_GOOD = 0,              // 0
@@ -21,30 +25,55 @@ public:
         STATUS_BAD_MAX_ITERATIONS = 2 // 2
     };
 
-    NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
-    ~NudgedElasticBand();
+    NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
+        : // INITIALIZED by DECLARATION ORDER
+          atoms{initialPassed->numberOfAtoms()}, climbingImage{0}, numExtrema{0} {
+        parameters = parametersPassed;
+        nimages = parameters->nebImages; // readin
+        for ([[maybe_unused]] size_t i{0}; i < nimages + 2; i++) {
+            neb_images.push_back(*initialPassed);
+            neb_tangents.push_back(AtomMatrix::Constant(atoms, 3, 0));
+            projectedForce.push_back(AtomMatrix::Constant(atoms, 3, 0));
+        }
+        log("\nNEB: initialize\n");
+        neb_images[nimages + 1] = (*finalPassed);
+        AtomMatrix posInitial = (*initialPassed).getPositions();
+        AtomMatrix posFinal = (*finalPassed).getPositions();
+        AtomMatrix imgSep = (*initialPassed).pbc(posFinal - posInitial) / (nimages + 1);
+        for (long double idx{0}; auto &&img : neb_images) {
+            if ((idx == 0) /*initial*/ || (idx == nimages + 1) /*final*/) {
+                continue;
+            }
+            std::cout << idx << " ";
+            img.setPositions(posInitial + imgSep * idx);
+            ++idx;
+        }
 
-    void clean(void);
+        movedAfterForceCall = true;
+
+        // Make sure that the endpoints know their energy
+        neb_images[0].getPotentialEnergy();
+        neb_images[nimages + 1].getPotentialEnergy();
+    }
+
+    ~NudgedElasticBand(){};
+
     int compute(void);
     void updateForces(void);
     double convergenceForce(void);
     void findExtrema(void);
     void printImageData(bool writeToFile = false);
 
-    int atoms;
-    long images, climbingImage, numExtrema;
-    Matter **image; // NEB images
-    AtomMatrix **tangent;
-    AtomMatrix **projectedForce;
+    size_t atoms, nimages, climbingImage, numExtrema;
+    std::vector<Matter> neb_images; // NEB images
+    std::vector<AtomMatrix> neb_tangents;
+    std::vector<AtomMatrix> projectedForce;
     bool movedAfterForceCall;
-    double *extremumEnergy;
-    double *extremumPosition;
-    double *extremumCurvature;
+    std::vector<double> extremumEnergy;
+    std::vector<double> extremumPosition;
+    std::vector<double> extremumCurvature;
 
     long maxEnergyImage;
-
-private:
-    Parameters *parameters;
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {

@@ -50,18 +50,18 @@ int BasinHoppingSaddleSearch::run(void)
     }
                                                      // NEB reactant to minimized "saddle"
     NudgedElasticBand neb(reactant, product, parameters);
-    neb.image[0] -> matter2con("neb_initial_band.con", false);
-    for(int j=1; j<neb.images; j++){
-	neb.image[j] ->matter2con("neb_initial_band", true);
+    neb.neb_images[0].matter2con("neb_initial_band.con", false);
+    for(size_t j{1}; j<neb.nimages; j++){
+	neb.neb_images[j].matter2con("neb_initial_band", true);
     }
     neb.compute();
                                                      // pick the maximum energy image along the band
     double Emax = -1e100;
     int HighestImage = 0;
     
-    for (int i=1; i<neb.images; i++) {
-	double Etest = neb.image[i]->getPotentialEnergy();
-	printf ("i: %i Etest: %f \n",i, Etest); 
+    for (size_t i{1}; i<neb.nimages; i++) {
+	double Etest = neb.neb_images[i].getPotentialEnergy();
+	printf ("i: %li Etest: %f \n", i, Etest);
 	if(Etest>Emax){
 	    Emax = Etest;
 	    HighestImage = i;
@@ -69,13 +69,13 @@ int BasinHoppingSaddleSearch::run(void)
     }
                                                       //do dimer
     //Calculate initial direction
-    AtomMatrix r_1 = neb.image[HighestImage-1]->getPositions();
-    AtomMatrix r_2 = neb.image[HighestImage]->getPositions();
-    AtomMatrix r_3 = neb.image[HighestImage+1]->getPositions();
+    AtomMatrix r_1 = neb.neb_images[HighestImage-1].getPositions();
+    AtomMatrix r_2 = neb.neb_images[HighestImage].getPositions();
+    AtomMatrix r_3 = neb.neb_images[HighestImage+1].getPositions();
     AtomMatrix direction = (r_3-r_1)/2;
-    MinModeSaddleSearch dim(neb.image[HighestImage],direction.normalized(),ereactant, parameters);
+    MinModeSaddleSearch dim(&neb.neb_images[HighestImage],direction.normalized(),ereactant, parameters);
     dim.run();
-    *saddle = *neb.image[HighestImage];
+    *saddle = neb.neb_images[HighestImage];
     eigenvalue = dim.getEigenvalue();
     eigenvector = dim.getEigenvector();
     return 0;

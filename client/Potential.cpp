@@ -249,9 +249,13 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     if (params->LogPotential) {
         helper_functions::getTime(&start, &userStart, &sysStart);
     }
+      int *atnrs = atomicNrs.data();
+      double *pos = positions.data();
+      double *frcs = forces.data();
+      double *bx = box.data();
     // TODO: Be better with the number of images
-    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy,
-          box.data(),1);
+    force(nAtoms, pos, atnrs, frcs, energy,
+          bx,1);
 
     double finish, userFinish, sysFinish;
     if (params->LogPotential) {
