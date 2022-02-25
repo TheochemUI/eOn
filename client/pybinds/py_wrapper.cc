@@ -7,6 +7,8 @@ PYBIND11_MODULE(pyeonclient, m) {
     // Jobs
     py_job(m);
     py_saddlesearchjob(m);
+    // Optimizer
+    py_optimizer(m);
     // Potentials
     py_potential(m);
     py_morse(m);
