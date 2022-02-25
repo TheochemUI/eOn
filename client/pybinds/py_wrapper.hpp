@@ -21,6 +21,9 @@ namespace py = pybind11;              // Convention
 // Forward declarations
 void py_parameters(py::module_ &m);
 void py_matter(py::module_ &m);
+// Jobs
+void py_job(py::module_ &m);
+// Potentials
 void py_potential(py::module_ &m);
 void py_morse(py::module_ &m);
 
