@@ -1,10 +1,38 @@
 // clang-format off
 #include "../py_wrapper.hpp"
+#include "../py_potential.hpp"
 // Additional
 #include <pybind11/eigen.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 // clang-format on
+
+template <class MorseBase = Morse>
+class PyMorse : public PyPotential<MorseBase> {
+public:
+    using PyPotential<MorseBase>::PyPotential; // Inherit constructor
+    // Override pure virtual with non-pure
+    void initialize() override { PYBIND11_OVERRIDE(void, MorseBase, initialize, ); }
+    void force(long nAtoms,
+               const double *positions,
+               const int *atomicNrs,
+               double *forces,
+               double *energy,
+               const double *box,
+               int nImages) override {
+        PYBIND11_OVERRIDE(void,      /* Return type */
+                          MorseBase, /* Parent class */
+                          force,     /* Name of function in C++ (must match Python name) */
+                          nAtoms,    /* Argument(s) */
+                          positions,
+                          atomicNrs,
+                          forces,
+                          energy,
+                          box,
+                          nImages);
+    };
+};
+
 
 void py_morse(py::module_ &m) {
     py::class_<Morse, Potential>(m, "Morse")
