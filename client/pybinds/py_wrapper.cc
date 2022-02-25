@@ -3,6 +3,7 @@
 PYBIND11_MODULE(pyeonclient, m) {
     py_parameters(m);
     py_matter(m);
+    py_log(m);
     // Jobs
     py_job(m);
     py_saddlesearchjob(m);
