@@ -257,6 +257,7 @@ pyb11f = py.extension_module('pyeonclient',
             'pybinds/py_optimizer.cc',
             # Objective Functions
             'pybinds/py_objectivefunction.cc',
+            'pybinds/objectivefunctions/py_matterobjfunc.cc',
             # Potentials
             'pybinds/py_potential.cc',
             'pybinds/potentials/py_morse.cc',

@@ -6,13 +6,19 @@
 #include <iostream>
 #include <string>
 
-// Bindings
-#include <pybind11/pybind11.h>
-// TODO: Setup bindings for this
-PYBIND11_MAKE_OPAQUE(std::vector<std::string>)
 // Basics
 #include "../Matter.h"
 #include "../Parameters.h"
+
+// Bindings
+#include <pybind11/pybind11.h>
+// Additional
+#include <pybind11/eigen.h>
+#include <pybind11/operators.h>
+#include <pybind11/stl.h>
+// TODO: Setup bindings for these
+PYBIND11_MAKE_OPAQUE(std::vector<std::string>) // For runs
+// PYBIND11_MAKE_OPAQUE(VectorXd) // For ObjectiveFunctions
 
 // Namespaces
 using namespace std::string_literals; // For ""s
@@ -30,6 +36,7 @@ void py_saddlesearchjob(py::module_ &m);
 void py_optimizer(py::module_ &m);
 // Objective Functions
 void py_objectivefunction(py::module_ &m);
+void py_matterobjfunc(py::module_ &m);
 // Potentials
 void py_potential(py::module_ &m);
 void py_morse(py::module_ &m);
