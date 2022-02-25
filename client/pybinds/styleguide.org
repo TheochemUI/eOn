@@ -90,16 +90,16 @@ python -c 'import bbdir.pyeonclient as ec; p=ec.Parameters(); p.potential="morse
 Or more interactively:
 #+begin_src python
 import bbdir.pyeonclient as ec
- p=ec.Parameters()
- p.potential="morse_pt"
- m1=ec.Matter(p)
- m1.con2matter("pos.con")
- a = ec.Morse()
- forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell())
- m1.getForces()
- m1.getPotentialEnergy()
- print(forces)
- print(energy)
+p=ec.Parameters()
+p.potential="morse_pt"
+m1=ec.Matter(p)
+m1.con2matter("gtests/data/systems/Pt_Heptamer_3LayersMove/pos.con")
+a = ec.Morse()
+forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell())
+m1.getForces()
+m1.getPotentialEnergy()
+print(forces)
+print(energy)
 #+end_src
 The helper class is meant *only* to interface easily with Python.
 #+begin_src cpp
