@@ -179,6 +179,24 @@ m1.relax()
 # again
 m1.relax
 #+end_src
+** Nudged Elastic Band
+*** NEB class
+First we will consider the object, not the job or the objective function.
+#+begin_src python
+import bbdir.pyeonclient as ec
+p = ec.Parameters()
+p.load("../examples/neb-al/config.ini") # NEB-Al
+ec.log_init(p, "blah.log") # Just in case
+product = ec.Matter(p)
+product.con2matter("../examples/neb-al/product.con")
+reactant = ec.Matter(p)
+reactant.con2matter("../examples/neb-al/reactant.con")
+neb = ec.NudgedElasticBand(reactant, product, p)
+neb.compute()
+neb.extremumCurvature
+neb.printImageData(False)
+#+end_src
+This works extremely well.
 * Miscellaneous
 The main independent components are:
 - Parameters :: These have a ~load~ method and consist of static members for the most part
