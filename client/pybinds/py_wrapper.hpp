@@ -34,6 +34,7 @@ void py_job(py::module_ &m);
 void py_saddlesearchjob(py::module_ &m);
 // Optimizers
 void py_optimizer(py::module_ &m);
+void py_lbfgs(py::module_ &m);
 // Objective Functions
 void py_objectivefunction(py::module_ &m);
 void py_matterobjfunc(py::module_ &m);

@@ -9,6 +9,7 @@ PYBIND11_MODULE(pyeonclient, m) {
     py_saddlesearchjob(m);
     // Optimizer
     py_optimizer(m);
+    py_lbfgs(m);
     // Objective Functions
     py_objectivefunction(m);
     py_matterobjfunc(m);

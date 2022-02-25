@@ -255,6 +255,7 @@ pyb11f = py.extension_module('pyeonclient',
             'pybinds/jobs/py_saddlesearchjob.cc',
             # Optimizers
             'pybinds/py_optimizer.cc',
+            'pybinds/optimizers/py_lbfgs.cc',
             # Objective Functions
             'pybinds/py_objectivefunction.cc',
             'pybinds/objectivefunctions/py_matterobjfunc.cc',
