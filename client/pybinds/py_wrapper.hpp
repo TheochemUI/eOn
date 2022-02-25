@@ -8,7 +8,8 @@
 
 // Bindings
 #include <pybind11/pybind11.h>
-
+// TODO: Setup bindings for this
+PYBIND11_MAKE_OPAQUE(std::vector<std::string>);
 // Basics
 #include "../Matter.h"
 #include "../Parameters.h"
@@ -23,6 +24,7 @@ void py_parameters(py::module_ &m);
 void py_matter(py::module_ &m);
 // Jobs
 void py_job(py::module_ &m);
+void py_saddlesearchjob(py::module_ &m);
 // Potentials
 void py_potential(py::module_ &m);
 void py_morse(py::module_ &m);

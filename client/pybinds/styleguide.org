@@ -121,3 +121,11 @@ For testing:
 #+begin_src bash
 python -c 'import bbdir.pyeonclient as ec; job = ec.Job(); print(dir(job)); print(job.BASIN_HOPPING)'
 #+end_src
+*** Saddle Search Jobs
+#+begin_src python
+import bbdir.pyeonclient as ec
+p = ec.Parameters()
+p.potential = "morse_pt"
+ssj = ec.SaddleSearchJob(p)
+ssj.run() # Breaks due to log
+#+end_src

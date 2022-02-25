@@ -251,6 +251,7 @@ pyb11f = py.extension_module('pyeonclient',
             'pybinds/py_matter.cc',
             # Jobs
             'pybinds/py_job.cc',
+            'pybinds/jobs/py_saddlesearchjob.cc',
             # Potentials
             'pybinds/py_potential.cc',
             'pybinds/potentials/py_morse.cc',
