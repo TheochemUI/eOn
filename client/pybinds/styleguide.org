@@ -138,7 +138,7 @@ To test this, an interactive job is nice.
 #+begin_src python
 import bbdir.pyeonclient as ec
 p = ec.Parameters()
-p.load("config.ini")
+p.load("config.ini") # Platinum heptamer, all moving
 ec.log_init(p, "blah.log") # Just in case
 m1 = ec.Matter(p)
 m1.con2matter("pos.con")
@@ -151,12 +151,34 @@ mobjf.getConvergence()
 mobjf.isConverged()
 mobjf.degreesOfFreedom()
 mobjf.getGradient()
-mobjf.difference(m1.getPositionsFreeV(), mobjf.getPositions()) # Objective functions use free atoms
+mobjf.difference(m1.getPositionsFreeV(), mobjf.getPositions()) # TODO: check results?
 m1.setPositions(m1.getPositions()+3)
 m1.relax(False, False, False, "nope", "00") # TODO: make the last two optional
 m1.relax()
 #+end_src
 
+** Optimizers
+*** LBFGS
+These don't seem to be that useful... ~relax~ does the job better.
+#+begin_src python
+import bbdir.pyeonclient as ec
+p = ec.Parameters()
+p.load("config.ini") # Platinum heptamer, all moving
+ec.log_init(p, "blah.log") # Just in case
+m1 = ec.Matter(p)
+m1.con2matter("pos.con")
+mobjf = ec.MatterObjectiveFunction(m1, p) # Make a new objective function
+lbfgsobj = ec.LBFGS(mobjf, p)
+mobjf.setPositions(m1.getPositions().ravel()*3+1.5) # high
+mobjf.isConverged() # False, needed for the LBFGS to run
+lbfgsobj.step(3) # 0 indicates not converged
+for i in range(50):
+     print(lbfgsobj.run(100, 5))
+# Better visuals with relax
+m1.relax()
+# again
+m1.relax
+#+end_src
 * Miscellaneous
 The main independent components are:
 - Parameters :: These have a ~load~ method and consist of static members for the most part
