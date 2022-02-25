@@ -1,13 +1,10 @@
 #ifndef LBFGS_H
 #define LBFGS_H
 
-#include "Eigen.h"
 #include "Matter.h"
 #include "Optimizer.h"
-#include "ObjectiveFunction.h"
 #include "Parameters.h"
 #include "HelperFunctions.h"
-#include <vector>
 
 #define LBFGS_EPS 1e-30
 

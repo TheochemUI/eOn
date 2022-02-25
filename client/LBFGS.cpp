@@ -2,8 +2,6 @@
 
 #include "LBFGS.h"
 #include "Log.h"
-#include <cassert>
-#include <cmath>
 
 LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
