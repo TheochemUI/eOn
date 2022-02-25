@@ -1,4 +1,3 @@
-#include "py_wrapper.hpp"
 #include "py_optimizer.hpp"
 
 void py_optimizer(py::module_ &m) {

@@ -7,6 +7,7 @@
 - For ~Blah.cpp~ the binding will be ~pybinds/py_blah.cc~
 - Most header content must be in ~pybinds/py_wrapper.hpp~
   + The exceptions are base classes like ~py_potential.hpp~ since these need to be imported by child files like ~potentials/py_morse.cc~
+  + If a header is supplied, then the corresponding ~.cc~ should *only* reference the header, which in turn should declare other dependencies.
 - Every method must have:
   + arguments defined
   + documentation string

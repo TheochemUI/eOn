@@ -1,4 +1,3 @@
-#include "py_wrapper.hpp"
 #include "py_potential.hpp"
 
 void py_potential(py::module_ &m) {
