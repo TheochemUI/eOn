@@ -116,3 +116,8 @@ std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix p
       return std::make_pair(forces, energy);
 }
 #+end_src
+** Jobs
+For testing:
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; job = ec.Job(); print(dir(job)); print(job.BASIN_HOPPING)'
+#+end_src
