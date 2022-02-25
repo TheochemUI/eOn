@@ -197,6 +197,9 @@ neb.extremumCurvature
 neb.printImageData(False)
 #+end_src
 This works extremely well.
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; p = ec.Parameters(); p.load("../examples/neb-al/config.ini") ; ec.log_init(p, "blah.log"); product = ec.Matter(p); product.con2matter("../examples/neb-al/product.con"); reactant = ec.Matter(p); reactant.con2matter("../examples/neb-al/reactant.con"); neb = ec.NudgedElasticBand(reactant, product, p); neb.compute(); neb.extremumCurvature; neb.printImageData(False)'
+#+end_src
 * Miscellaneous
 The main independent components are:
 - Parameters :: These have a ~load~ method and consist of static members for the most part
