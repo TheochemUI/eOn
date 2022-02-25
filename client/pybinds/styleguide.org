@@ -82,3 +82,36 @@ void py_newthing(py::module_ &m) {
     /* Wrapping details here */
     }
 #+end_src
+** Potentials
+These need to have a helper class defined. They can be tested with:
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; p=ec.Parameters(); p.potential="morse_pt"; m1=ec.Matter(p); m1.con2matter("pos.con"); a = ec.Morse(); forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell()); print(forces); print(energy)'
+#+end_src
+Or more interactively:
+#+begin_src python
+import bbdir.pyeonclient as ec
+ p=ec.Parameters()
+ p.potential="morse_pt"
+ m1=ec.Matter(p)
+ m1.con2matter("pos.con")
+ a = ec.Morse()
+ forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell())
+ m1.getForces()
+ m1.getPotentialEnergy()
+ print(forces)
+ print(energy)
+#+end_src
+The helper class is meant *only* to interface easily with Python.
+#+begin_src cpp
+std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix positions, Matrix3d box){
+      AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
+      VectorXi atomicNrs = VectorXi::Constant(nAtoms, 0);
+      int *atnrs = atomicNrs.data();
+      double *pos = positions.data();
+      double *frcs = forces.data();
+      double *bx = box.data();
+      double energy{0};
+      Morse::force(nAtoms, pos, atnrs, frcs, &energy, bx, 1);
+      return std::make_pair(forces, energy);
+}
+#+end_src
