@@ -2,10 +2,8 @@
 #define PY_POTENTIAL_H
 
 #include "../Potential.h"
-#include "../potentials/Morse/Morse.h"
 #include "py_wrapper.hpp"
 
-// Potentials
 template <class PotentialBase = Potential>
 class PyPotential : public PotentialBase {
 public:

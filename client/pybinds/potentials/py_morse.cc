@@ -1,6 +1,8 @@
 // clang-format off
 #include "../py_wrapper.hpp"
 #include "../py_potential.hpp"
+// Binding
+#include "../../potentials/Morse/Morse.h"
 // Additional
 #include <pybind11/eigen.h>
 #include <pybind11/operators.h>
