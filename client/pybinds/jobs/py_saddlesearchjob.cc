@@ -3,10 +3,6 @@
 #include "../py_job.hpp"
 // Binding
 #include "../../SaddleSearchJob.h"
-// Additional
-#include <pybind11/eigen.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
 // clang-format on
 
 template <class SaddleSearchJobBase = SaddleSearchJob>

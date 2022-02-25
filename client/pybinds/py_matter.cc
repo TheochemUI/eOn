@@ -1,9 +1,5 @@
 // clang-format off
 #include "py_wrapper.hpp"
-// Additional
-#include <pybind11/eigen.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
 // clang-format on
 
 void py_matter(py::module_ &m) {

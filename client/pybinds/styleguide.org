@@ -77,12 +77,8 @@ PYBIND11_MODULE(eonclient, m) {
 #+begin_src c++
 // clang-format off
 #include "py_wrapper.hpp"
-// Binding code
-#include "../Matter.h"
-// Additional
-#include <pybind11/eigen.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+// Binding code (unless in py_wrapper)
+#include "../Log.h"
 // clang-format on
 
 void py_newthing(py::module_ &m) {
