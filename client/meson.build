@@ -256,9 +256,12 @@ pyb11f = py.extension_module('pyeonclient',
             # Optimizers
             'pybinds/py_optimizer.cc',
             'pybinds/optimizers/py_lbfgs.cc',
+            # Nudged Elastic Band
+            'pybinds/py_nudgedelasticband.cc',
             # Objective Functions
             'pybinds/py_objectivefunction.cc',
             'pybinds/objectivefunctions/py_matterobjfunc.cc',
+            'pybinds/objectivefunctions/py_nebobjfunc.cc',
             # Potentials
             'pybinds/py_potential.cc',
             'pybinds/potentials/py_morse.cc',

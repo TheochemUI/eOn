@@ -18,7 +18,7 @@
 #include <pybind11/stl.h>
 // TODO: Setup bindings for these
 PYBIND11_MAKE_OPAQUE(std::vector<std::string>) // For runs
-// PYBIND11_MAKE_OPAQUE(VectorXd) // For ObjectiveFunctions
+// PYBIND11_MAKE_OPAQUE(Matter**) // For NEB
 
 // Namespaces
 using namespace std::string_literals; // For ""s
@@ -38,6 +38,9 @@ void py_lbfgs(py::module_ &m);
 // Objective Functions
 void py_objectivefunction(py::module_ &m);
 void py_matterobjfunc(py::module_ &m);
+void py_nebobjfunc(py::module_ &m);
+// Nudged Elastic Band
+void py_nudgedelasticband(py::module_ &m);
 // Potentials
 void py_potential(py::module_ &m);
 void py_morse(py::module_ &m);
