@@ -7,6 +7,8 @@ void py_job(py::module_ &m) {
         /*
         ** Functions
         */
+        .def_static("getJob", &Job::getJob)
+        .def("run", &Job::run)
 
         /*
         ** Parameters
@@ -65,8 +67,6 @@ void py_job(py::module_ &m) {
         // .def_property_readonly_static(
         //     "TEST",
         //     [](py::object /*self*/) { return Job::TEST; })
-        // Book-keeping
-        .def_static("getJob", &Job::getJob)
 
         /*
         ** Python helpers
