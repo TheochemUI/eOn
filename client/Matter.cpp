@@ -3,7 +3,6 @@
 #include "BondBoost.h"
 #include "HelperFunctions.h"
 #include "Log.h"
-#include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "StringHelpers.hpp"
 
@@ -53,40 +52,6 @@ size_t symbol2atomicNumber(std::string_view const symbol) {
 
 const std::string_view atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
-
-class MatterObjectiveFunction : public ObjectiveFunction {
-public:
-    MatterObjectiveFunction(Matter *matterPassed, Parameters *parametersPassed) {
-        matter = matterPassed;
-        parameters = parametersPassed;
-    }
-    ~MatterObjectiveFunction(void){};
-    double getEnergy() { return matter->getPotentialEnergy(); }
-    VectorXd getGradient(bool fdstep = false) { return -matter->getForcesFreeV(); }
-    void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-    VectorXd getPositions() { return matter->getPositionsFreeV(); }
-    int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-    bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
-    double getConvergence() {
-        if (parameters->optConvergenceMetric == "norm") {
-            return matter->getForcesFreeV().norm();
-        } else if (parameters->optConvergenceMetric == "max_atom") {
-            return matter->maxForce();
-        } else if (parameters->optConvergenceMetric == "max_component") {
-            return matter->getForces().maxCoeff();
-        } else {
-            log("%s Unknown opt_convergence_metric: %s\n",
-                LOG_PREFIX.c_str(),
-                parameters->optConvergenceMetric.c_str());
-            exit(1);
-        }
-    }
-    VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
-
-private:
-    Matter *matter;
-    Parameters *parameters;
-};
 
 Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
 
@@ -1006,7 +971,7 @@ bool Matter::matter2convel(std::ofstream &file) {
     return true;
 }
 
-// TODO: Fix
+// TODO: Test
 bool Matter::convel2matter(std::string filename) {
     bool state{false};
     fs::path filePath = filename;
@@ -1022,8 +987,7 @@ bool Matter::convel2matter(std::string filename) {
     }
     return (state);
 }
-bool Matter::convel2matter(std::ifstream &file)
-{
+bool Matter::convel2matter(std::ifstream &file) {
     std::string line; // Temporary string
     size_t Ncomponent{0};
     std::getline(file, headerCon1);
@@ -1040,27 +1004,27 @@ bool Matter::convel2matter(std::ifstream &file)
 
     // Matter::cell assignment
     if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-        cell(0,0) = lengths[0];
-        cell(1,1) = lengths[1];
-        cell(2,2) = lengths[2];
-    }else{
-        angles[0] *= M_PI/180.0;
-        angles[1] *= M_PI/180.0;
-        angles[2] *= M_PI/180.0;
+        cell(0, 0) = lengths[0];
+        cell(1, 1) = lengths[1];
+        cell(2, 2) = lengths[2];
+    } else {
+        angles[0] *= M_PI / 180.0;
+        angles[1] *= M_PI / 180.0;
+        angles[2] *= M_PI / 180.0;
 
-        cell(0,0) = 1.0;
-        cell(1,0) = cos(angles[0]);
-        cell(1,1) = sin(angles[0]);
-        cell(2,0) = cos(angles[1]);
-        cell(2,1) = (cos(angles[2])-cell(1,0)*cell(2,0))/cell(1,1);
-        cell(2,2) = sqrt(1.0-pow(cell(2,0),2)-pow(cell(2,1),2));
+        cell(0, 0) = 1.0;
+        cell(1, 0) = cos(angles[0]);
+        cell(1, 1) = sin(angles[0]);
+        cell(2, 0) = cos(angles[1]);
+        cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+        cell(2, 2) = sqrt(1.0 - pow(cell(2, 0), 2) - pow(cell(2, 1), 2));
 
-        cell(0,0) *= lengths[0];
-        cell(1,0) *= lengths[1];
-        cell(1,1) *= lengths[1];
-        cell(2,0) *= lengths[2];
-        cell(2,1) *= lengths[2];
-        cell(2,2) *= lengths[2];
+        cell(0, 0) *= lengths[0];
+        cell(1, 0) *= lengths[1];
+        cell(1, 1) *= lengths[1];
+        cell(2, 0) *= lengths[2];
+        cell(2, 1) *= lengths[2];
+        cell(2, 2) *= lengths[2];
     }
     /*Matter::*/ cellInverse = cell.inverse();
 
@@ -1179,10 +1143,39 @@ bool Matter::convel2matter(std::ifstream &file)
         }
     }
 
-    if(usePeriodicBoundaries)
-    {
-        /*Matter::*/applyPeriodicBoundary(); // Transform the coordinate to use the minimum image  convention.
+    if (usePeriodicBoundaries) {
+        /*Matter::*/ applyPeriodicBoundary(); // Transform the coordinate to use the minimum image
+                                              // convention.
     }
     //    potential_ = new Potential(parameters_);
     return true;
 }
+
+// MatterObjective
+double MatterObjectiveFunction::getEnergy() { return matter->getPotentialEnergy(); }
+double MatterObjectiveFunction::getConvergence() {
+    if (parameters->optConvergenceMetric == "norm") {
+        return matter->getForcesFreeV().norm();
+    } else if (parameters->optConvergenceMetric == "max_atom") {
+        return matter->maxForce();
+    } else if (parameters->optConvergenceMetric == "max_component") {
+        return matter->getForces().maxCoeff();
+    } else {
+        log("%s Unknown opt_convergence_metric: %s\n",
+            LOG_PREFIX.c_str(),
+            parameters->optConvergenceMetric.c_str());
+        exit(1);
+    }
+}
+bool MatterObjectiveFunction::isConverged() {
+    return getConvergence() < parameters->optConvergedForce;
+}
+int MatterObjectiveFunction::degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
+VectorXd MatterObjectiveFunction::getPositions() { return matter->getPositionsFreeV(); }
+VectorXd MatterObjectiveFunction::getGradient(bool fdstep) {
+    return -matter->getForcesFreeV();
+}
+VectorXd MatterObjectiveFunction::difference(VectorXd a, VectorXd b) {
+    return matter->pbcV(a - b);
+}
+void MatterObjectiveFunction::setPositions(VectorXd x) { matter->setPositionsFreeV(x); }

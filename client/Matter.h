@@ -4,6 +4,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 #include "Potential.h"
+#include "ObjectiveFunction.h"
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -132,15 +133,15 @@ public:
         std::ifstream &file); // read con file and load data into Matter, return true if successful
     bool convel2matter(
         std::string filename); // read con file with both coordinates and velocities into Matter
-    bool convel2matter(std::ifstream &file); // read con file with both coordinates and velocities and load
-                                    // data into Matter
+    bool convel2matter(std::ifstream &file); // read con file with both coordinates and velocities
+                                             // and load data into Matter
     bool matter2con(std::string filename,
                     bool append = false);     // print con file from data in Class Matter
     bool matter2con(std::ofstream &file);     // print con file from data in Class Matter
     bool matter2convel(std::string filename); // print con file with both coordinates and
                                               // velocities  in Class Matter
-    bool matter2convel(std::ofstream &file); // print con file with both coordinates and velocities from
-                                    // data in Class Matter
+    bool matter2convel(std::ofstream &file); // print con file with both coordinates and velocities
+                                             // from data in Class Matter
     void matter2xyz(std::string filename,
                     bool append = false); // print xyz file from data in Matter
     AtomMatrix getFree() const;
@@ -166,6 +167,25 @@ private:
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double &component, int axis);
     void applyPeriodicBoundary(AtomMatrix &diff);
+};
+
+class MatterObjectiveFunction : public ObjectiveFunction {
+public:
+    MatterObjectiveFunction(Matter *matterPassed, Parameters *parametersPassed)
+        : matter{matterPassed}, parameters{parametersPassed} {}
+    ~MatterObjectiveFunction(){};
+    double getEnergy();
+    double getConvergence();
+    bool isConverged();
+    int degreesOfFreedom();
+    VectorXd getPositions();
+    VectorXd getGradient(bool fdstep = false);
+    VectorXd difference(VectorXd a, VectorXd b);
+    void setPositions(VectorXd x);
+
+private:
+    Matter *matter;
+    Parameters *parameters;
 };
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef JOB_H
 #define JOB_H
+
 #include "Parameters.h"
-#include <vector>
-#include <string>
+#include "HelperFunctions.h"
 
 /** @defgroup Jobs
 *
