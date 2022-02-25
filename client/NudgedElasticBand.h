@@ -15,10 +15,10 @@ class Parameters;
 class NudgedElasticBand {
 
 public:
-    enum {
-        STATUS_GOOD,               // 0
-        STATUS_INIT,               // 1
-        STATUS_BAD_MAX_ITERATIONS, // 2
+    enum class nebStatus {
+        STATUS_GOOD = 0,              // 0
+        STATUS_INIT = 1,              // 1
+        STATUS_BAD_MAX_ITERATIONS = 2 // 2
     };
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);

@@ -67,9 +67,9 @@ void NudgedElasticBand::clean(void) {
     return;
 }
 
-int NudgedElasticBand::compute(void) {
-    int status = 0;
-    long iteration = 0;
+int NudgedElasticBand::compute() {
+    nebStatus status { nebStatus::STATUS_INIT };
+    size_t iteration = 0;
 
     log("Nudged elastic band calculation started.\n");
 
@@ -101,7 +101,7 @@ int NudgedElasticBand::compute(void) {
         VectorXd pos = objf.getPositions();
         if (iteration) { // so that we print forces before taking an optimizer step
             if (iteration >= parameters->nebMaxIterations) {
-                status = STATUS_BAD_MAX_ITERATIONS;
+                status = nebStatus::STATUS_BAD_MAX_ITERATIONS;
                 break;
             }
             optimizer->step(parameters->optMaxMove);
@@ -119,7 +119,7 @@ int NudgedElasticBand::compute(void) {
     }
 
     if (objf.isConverged()) {
-        status = STATUS_GOOD;
+        status = nebStatus::STATUS_GOOD;
         log("NEB converged\n");
     }
 
@@ -127,7 +127,7 @@ int NudgedElasticBand::compute(void) {
     findExtrema();
 
     delete optimizer;
-    return status;
+    return static_cast<int>(status);
 }
 
 // generate the force value that is compared to the convergence criterion

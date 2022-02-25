@@ -19,7 +19,7 @@ NudgedElasticBandJob::~NudgedElasticBandJob()
 
 std::vector<std::string> NudgedElasticBandJob::run(void)
 {
-    long status;
+    NudgedElasticBand::nebStatus status { NudgedElasticBand::nebStatus::STATUS_INIT };
     int f1;
 
     string reactantFilename = helper_functions::getRelevantFile("reactant.con");
@@ -62,15 +62,15 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     }
 
     f1 = Potential::fcalls;
-    status = neb->compute();
+    status = NudgedElasticBand::nebStatus{neb->compute()};
     fCallsNEB += Potential::fcalls - f1;
 
-    if (status == NudgedElasticBand::STATUS_INIT) {
-        status = NudgedElasticBand::STATUS_GOOD;
+    if (status == NudgedElasticBand::nebStatus::STATUS_INIT) {
+        status = NudgedElasticBand::nebStatus::STATUS_GOOD;
     }
 
     printEndState(status);
-    saveData(status, neb);
+    saveData(static_cast<int>(status), neb);
 
     delete neb;
     delete initial;
@@ -81,7 +81,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
 
 void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
 {
-    FILE *fileResults, *fileNEB;
+    FILE *fileResults;
 
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
@@ -116,12 +116,12 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
     neb->printImageData(true);
 }
 
-void NudgedElasticBandJob::printEndState(int status)
+void NudgedElasticBandJob::printEndState(NudgedElasticBand::nebStatus status)
 {
     log("\nFinal state: ");
-    if(status == NudgedElasticBand::STATUS_GOOD)
+    if(status == NudgedElasticBand::nebStatus::STATUS_GOOD)
         log("Nudged elastic band, successful.\n");
-    else if(status == NudgedElasticBand::STATUS_BAD_MAX_ITERATIONS)
+    else if(status == NudgedElasticBand::nebStatus::STATUS_BAD_MAX_ITERATIONS)
         log("Nudged elastic band, too many iterations.\n");
     else
         log("Unknown status: %i!\n", status);

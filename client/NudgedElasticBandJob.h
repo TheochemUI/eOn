@@ -17,7 +17,7 @@ class NudgedElasticBandJob : public Job {
     private:
 
         // functions
-        void printEndState(int status);
+        void printEndState(NudgedElasticBand::nebStatus status);
         void saveData(int status, NudgedElasticBand *neb);
 
         // variables
