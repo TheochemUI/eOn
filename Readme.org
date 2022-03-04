@@ -52,6 +52,23 @@ Dependencies can be obtained via:
 micromamba env create -f environment.yml
 micromamba activate eongit
 #+end_src
+Unfortunately, though this runs on ~mac~ machines, this setup does not work ~ctest~. ~CMakeLists~ are still provided.
+*** Conda
+Start by setting up the environment.
+#+begin_src bash
+micromamba create -f environment.yml
+# or
+conda env create -f environment.yml
+#+end_src
+Now we can start building the client.
+#+begin_src bash
+cd client
+meson setup bbdir --prefix=$CONDA_PREFIX \ # Set to correct writable path
+     --default-library=static \ # Default to static
+     -Dfortran_link_args=-static # Fortran needs a bit more information
+meson compile -C bbdir
+meson install -C bbdir
+#+end_src
 ** Testing
 Once ~eonclient~ has been built following the instructions above, we can run integration tests (AKMC) in the development environment.
 #+begin_src bash
