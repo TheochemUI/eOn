@@ -13,6 +13,8 @@ dependencies:
   - gfortran
   - pkg-config
   - openblas
+  - pybind11
+  - ninja
   # Pinned
   - eigen==3.4.0
   # AMS
@@ -30,3 +32,4 @@ dependencies:
   - pytest-datadir
   - sh
   - sphinx
+  - ipython
