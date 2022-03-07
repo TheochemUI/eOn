@@ -35,6 +35,8 @@ cd client
 ./version.sh > version.h
 meson setup builddir -Dwith_ams=true -Dwith_gprd=true --buildtype=release
 VERBOSE=1 meson compile -C builddir
+meson setup builddir --wipe -Dbuild_tests=True
+VERBOSE=1 meson compile -C builddir
 #+end_src
 All the options are documented in ~meson_options.txt~. Occasionally, when the
 installation is not done, there may be some linking errors. These can be fixed
