@@ -1,5 +1,4 @@
 // clang-format off
-#include "../py_wrapper.hpp"
 #include "../py_optimizer.hpp"
 // Binding
 #include "../../LBFGS.h"
@@ -18,6 +17,7 @@ public:
     };
 };
 
+// TODO: Generalize, see Prior in gprd
 void py_lbfgs(py::module_ &m) {
     py::class_<LBFGS, Optimizer, PyLBFGS<>>(
         m, "LBFGS")

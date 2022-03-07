@@ -238,7 +238,7 @@ python_dep = py.dependency()
 pyb11f_deps = [ python_dep ]
 
 
-pyb11f_deps = [eon_deps,
+pyb11f_deps += [eon_deps,
                dependency('python3'),
                dependency('pybind11'),
                declare_dependency(link_args: '-lstdc++') ]
