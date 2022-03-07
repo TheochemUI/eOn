@@ -22,26 +22,16 @@ namespace fs = std::filesystem;
 
 static const std::string LOG_PREFIX = "[Matter]"s;
 
+// This is anonymous to only allow access from within this file
 namespace {
 
-// These are all null terminated strings so each element can be used as char* with blah.data()
-const std::vector<std::string_view> elementArray
-    = {"Unknown"s, "H"s,  "He"s, "Li"s, "Be"s, "B"s,  "C"s,  "N"s,  "O"s,  "F"s,  "Ne"s, "Na"s,
-       "Mg"s,      "Al"s, "Si"s, "P"s,  "S"s,  "Cl"s, "Ar"s, "K"s,  "Ca"s, "Sc"s, "Ti"s, "V"s,
-       "Cr"s,      "Mn"s, "Fe"s, "Co"s, "Ni"s, "Cu"s, "Zn"s, "Ga"s, "Ge"s, "As"s, "Se"s, "Br"s,
-       "Kr"s,      "Rb"s, "Sr"s, "Y"s,  "Zr"s, "Nb"s, "Mo"s, "Tc"s, "Ru"s, "Rh"s, "Pd"s, "Ag"s,
-       "Cd"s,      "In"s, "Sn"s, "Sb"s, "Te"s, "I"s,  "Xe"s, "Cs"s, "Ba"s, "La"s, "Ce"s, "Pr"s,
-       "Nd"s,      "Pm"s, "Sm"s, "Eu"s, "Gd"s, "Tb"s, "Dy"s, "Ho"s, "Er"s, "Tm"s, "Yb"s, "Lu"s,
-       "Hf"s,      "Ta"s, "W"s,  "Re"s, "Os"s, "Ir"s, "Pt"s, "Au"s, "Hg"s, "Tl"s, "Pb"s, "Bi"s,
-       "Po"s,      "At"s, "Rn"s, "Fr"s, "Ra"s, "Ac"s, "Th"s, "Pa"s, "U"s};
-
 // guess the atom type from the atomic mass,
-std::string_view mass2atom(double atomicmass) { return elementArray[int(atomicmass + .5)]; }
+std::string_view mass2atom(double atomicmass) { return elements::symbols[int(atomicmass + .5)]; }
 
 const int MAXC = 100; // maximum number of components for functions matter2con and con2matter
 
 size_t symbol2atomicNumber(std::string_view const symbol) {
-    for (size_t idx = 0; auto elem : elementArray) {
+    for (size_t idx = 0; auto elem : elements::symbols) {
         if (symbol.compare(elem) == 0) {
             return idx;
         }
@@ -50,7 +40,7 @@ size_t symbol2atomicNumber(std::string_view const symbol) {
     return -1;
 }
 
-const std::string_view atomicNumber2symbol(int n) { return elementArray[n]; }
+const std::string_view atomicNumber2symbol(int n) { return elements::symbols[n]; }
 } // namespace
 
 Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
@@ -570,8 +560,8 @@ bool Matter::matter2con(std::ofstream &file) {
     first[j + 1] = numberOfAtoms();
     Ncomponent = j + 1;
 
-    file << headerCon1;
-    file << headerCon2;
+    file << headerCon1 << std::endl;
+    file << headerCon2 << std::endl;
     double lengths[3];
     lengths[0] = cell.row(0).norm();
     lengths[1] = cell.row(1).norm();
@@ -582,18 +572,18 @@ bool Matter::matter2con(std::ofstream &file) {
     angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
     angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
     file << fmt::sprintf("%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-    file << headerCon5;
-    file << headerCon6;
+    file << headerCon5 << std::endl;
+    file << headerCon6 << std::endl;
     file << fmt::sprintf("%d\n", Ncomponent);
 
     for (j = 0; j < Ncomponent; j++) {
         file << fmt::sprintf("%d ", first[j + 1] - first[j]);
     }
-    file << "\n";
+    file << std::endl;
     for (j = 0; j < Ncomponent; j++) {
         file << fmt::format("{} ", mass[j]);
     }
-    file << "\n";
+    file << std::endl;
     for (j = 0; j < Ncomponent; j++) {
         file << fmt::sprintf("%s\n", atomicNumber2symbol(atomicNrs[j]));
         file << fmt::sprintf("Coordinates of Component %d\n", j + 1);
@@ -918,8 +908,8 @@ bool Matter::matter2convel(std::ofstream &file) {
     first[j + 1] = numberOfAtoms();
     Ncomponent = j + 1;
 
-    file << headerCon1;
-    file << headerCon2;
+    file << headerCon1 << std::endl;
+    file << headerCon2 << std::endl;
     double lengths[3];
     lengths[0] = cell.row(0).norm();
     lengths[1] = cell.row(1).norm();
@@ -930,8 +920,8 @@ bool Matter::matter2convel(std::ofstream &file) {
     angles[1] = acos(cell.row(0).dot(cell.row(2)) / lengths[0] / lengths[2]) * 180 / M_PI;
     angles[2] = acos(cell.row(1).dot(cell.row(2)) / lengths[1] / lengths[2]) * 180 / M_PI;
     file << fmt::sprintf("%f\t%f\t%f\n", angles[0], angles[1], angles[2]);
-    file << headerCon5;
-    file << headerCon6;
+    file << headerCon5 << std::endl;
+    file << headerCon6 << std::endl;
 
     file << fmt::sprintf("%d\n", Ncomponent);
     for (j = 0; j < Ncomponent; j++) {

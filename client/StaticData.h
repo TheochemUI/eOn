@@ -4,7 +4,20 @@
 #pragma once
 
 #include <string>
+#include <vector>
 using namespace std::string_literals; // For ""s
+
+namespace elements {
+// These are all null terminated strings so each element can be used as char* with blah.data()
+    static const std::vector<std::string> symbols {"Unknown"s, "H"s,  "He"s, "Li"s, "Be"s, "B"s,  "C"s,  "N"s,  "O"s,  "F"s,  "Ne"s, "Na"s,
+       "Mg"s,      "Al"s, "Si"s, "P"s,  "S"s,  "Cl"s, "Ar"s, "K"s,  "Ca"s, "Sc"s, "Ti"s, "V"s,
+       "Cr"s,      "Mn"s, "Fe"s, "Co"s, "Ni"s, "Cu"s, "Zn"s, "Ga"s, "Ge"s, "As"s, "Se"s, "Br"s,
+       "Kr"s,      "Rb"s, "Sr"s, "Y"s,  "Zr"s, "Nb"s, "Mo"s, "Tc"s, "Ru"s, "Rh"s, "Pd"s, "Ag"s,
+       "Cd"s,      "In"s, "Sn"s, "Sb"s, "Te"s, "I"s,  "Xe"s, "Cs"s, "Ba"s, "La"s, "Ce"s, "Pr"s,
+       "Nd"s,      "Pm"s, "Sm"s, "Eu"s, "Gd"s, "Tb"s, "Dy"s, "Ho"s, "Er"s, "Tm"s, "Yb"s, "Lu"s,
+       "Hf"s,      "Ta"s, "W"s,  "Re"s, "Os"s, "Ir"s, "Pt"s, "Au"s, "Hg"s, "Tl"s, "Pb"s, "Bi"s,
+       "Po"s,      "At"s, "Rn"s, "Fr"s, "Ra"s, "Ac"s, "Th"s, "Pa"s, "U"s};
+}
 
 namespace StatCode{
 }

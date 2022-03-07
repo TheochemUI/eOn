@@ -157,6 +157,13 @@ m1.relax(False, False, False, "nope", "00") # TODO: make the last two optional
 m1.relax()
 #+end_src
 
+** Matter
+To test the writeout.
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; m1 = ec.Matter(ec.Parameters()); m1.con2matter("pos.con"); m1.matter2con("blah.con")'
+bat blah.con
+#+end_src
+
 ** Optimizers
 *** LBFGS
 These don't seem to be that useful... ~relax~ does the job better.

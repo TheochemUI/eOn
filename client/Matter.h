@@ -9,8 +9,6 @@
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
 
-#include <string>
-
 /* This structure is used as a inherited by Matter. It contains data about an atomic structure. It
  * is used when a fast and direct access to the private data members is required in Matter. It
  * should not be used alone.  Use carefully. Avoid it and use Matter instead if possible. */
