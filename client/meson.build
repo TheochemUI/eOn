@@ -71,7 +71,7 @@ potentials = [
 eon_pot = declare_dependency(link_with : potentials)
   # include_directories : my_inc)
 
-eonclient_sources = [
+eonlib_sources = [
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
@@ -114,9 +114,7 @@ eonclient_sources = [
            'Quickmin.cpp',
            'ParallelReplicaJob.cpp',
            'Potential.cpp',
-           'ClientEON.cpp',
            'BasinHoppingJob.cpp',
-           'CommandLine.cpp',
            'FIRE.cpp',
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
@@ -131,7 +129,7 @@ if get_option('with_gprd')
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
   eon_extra_args += ['-DWITH_GPRD']
-  eonclient_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+  eonlib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
   eon_deps += [ gprd_dep ]
 endif
 
@@ -195,9 +193,30 @@ endif
 
 # ---------------------- Executable
 
+eclib = library('eonlib',
+                eonlib_sources,
+                dependencies: eon_deps,
+                link_with: potentials,
+                cpp_args: eon_extra_args,
+                install: true
+               )
+
 ec = executable('eonclient',
-                eonclient_sources,
-                dependencies : eon_deps,
-                link_with : potentials,
+                ['CommandLine.cpp', 'ClientEON.cpp'],
+                link_with : eclib,
+                dependencies: eon_deps,
                 cpp_args : eon_extra_args,
                 install : true)
+
+# ----------------------- Tests
+
+gtest = dependency('gtest', main : true, required : false)
+gtest_dep = gtest
+
+t1 = executable('prog',
+                'gtests/ObsTest.cpp',
+                link_with : eclib,
+                dependencies: [eon_deps, gtest],
+                cpp_args : eon_extra_args,
+               )
+test('observation test', t1)
