@@ -213,10 +213,20 @@ ec = executable('eonclient',
 gtest = dependency('gtest', main : true, required : false)
 gtest_dep = gtest
 
-t1 = executable('prog',
-                'gtests/ObsTest.cpp',
+t1 = executable('t2_morse',
+                'gtests/MorsePotTest.cpp',
                 link_with : eclib,
                 dependencies: [eon_deps, gtest],
                 cpp_args : eon_extra_args,
                )
-test('observation test', t1)
+  test('MorsePot test', t1)
+if get_option('with_gprd')
+  t1g = executable('t1g_obs',
+                  'gtests/ObsTest.cpp',
+                  link_with : eclib,
+                  dependencies: [eon_deps, gtest],
+                  cpp_args : eon_extra_args,
+                 )
+  test('observation test', t1g)
+
+endif
