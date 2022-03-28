@@ -237,3 +237,12 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   o.G.assignFromEigenMatrix(matter->getForces());
   return o;
 }
+
+std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
+  auto oldpot = matter->getPotential();
+  matter->setPotential(pot);
+  AtomMatrix forces = matter->getForces();
+  double energy{matter->getPotentialEnergy()};
+  matter->setPotential(oldpot); // Reset
+  return std::make_pair(energy, forces);
+}

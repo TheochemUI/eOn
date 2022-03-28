@@ -36,5 +36,13 @@ namespace helper_functions {
      */
     gpr::Observation eon_matter_to_init_obs(Matter *matter);
 
+    /**
+     * \brief Call an EON potential from a matter object
+     *
+     *  \param matter The object with coordinates
+     *  \param pot The potential energy to use
+     * */
+    std::pair<double, AtomMatrix> energy_and_forces(Matter *matter, Potential *pot);
+
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
