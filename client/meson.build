@@ -229,4 +229,20 @@ if get_option('with_gprd')
                  )
   test('observation test', t1g)
 
+  t2g = executable('t2g_gprpot',
+                   'gtests/GPRPotTest.cpp',
+                  link_with : eclib,
+                  dependencies: [eon_deps, gtest],
+                  cpp_args : eon_extra_args,
+                 )
+  test('GPR potential test', t2g)
+
+  t3g = executable('t3g_gprhelpers',
+                   'gtests/GPRHelpersTest.cpp',
+                  link_with : eclib,
+                  dependencies: [eon_deps, gtest],
+                  cpp_args : eon_extra_args,
+                 )
+  test('GPR helpers test', t3g)
+
 endif
