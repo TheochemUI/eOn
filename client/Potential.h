@@ -83,6 +83,8 @@ class Potential
         static double totalUserTime;
         
         Parameters *params;
+        void setParams(Parameters *params);
+        std::string getName();
 
         AtomMatrix force(long nAtoms, AtomMatrix positions,
                          VectorXi atomicNrs, double *energy, Matrix3d box, int nImages);

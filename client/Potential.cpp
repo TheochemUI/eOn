@@ -263,4 +263,12 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
     }
 
     return forces;
-};
+}
+
+void Potential::setParams(Parameters *params){
+  this->params = params;
+}
+
+std::string Potential::getName(){
+  return std::string{this->params->potential};
+}
