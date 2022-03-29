@@ -3,6 +3,7 @@
 #include <map>
 #include <unordered_map>
 #include <set>
+#include <cassert>
 
 gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
@@ -239,10 +240,20 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
 }
 
 std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
-  auto oldpot = matter->getPotential();
-  matter->setPotential(pot);
-  AtomMatrix forces = matter->getForces();
-  double energy{matter->getPotentialEnergy()};
-  matter->setPotential(oldpot); // Reset
-  return std::make_pair(energy, forces);
+  int nAtoms = matter->numberOfAtoms();
+  auto posdata = matter->getPositions();
+  auto celldat = matter->getCell();
+  AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
+  double *pos = posdata.data();
+  double *frcs = forces.data();
+  double *bx = celldat.data();
+  double energy{0};
+  pot->force(nAtoms, pos, nullptr, frcs, &energy, bx, 1);
+  AtomMatrix finForces{forces};
+  for (int i = 0; i <nAtoms; i++){
+    if(matter->getFixed(i)){
+      finForces.row(i).setZero();
+    }
+  }
+  return std::make_pair(energy, finForces);
 }
