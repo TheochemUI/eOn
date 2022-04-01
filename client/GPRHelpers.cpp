@@ -257,3 +257,21 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter
   }
   return std::make_pair(energy, finForces);
 }
+
+std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_frozen_conf_info(Matter *matter, double activeRadius){
+  gpr::Coord R_init;
+  aux::ProblemSetUp problem_setup;
+  auto retconf = helper_functions::eon_matter_to_atmconf(matter);
+  R_init.resize(1, matter->getPositionsFree().rows() *
+                matter->getPositionsFree().cols());
+  int counter = 0;
+  for(int i = 0; i < matter->getPositionsFree().rows(); ++i) {
+    for(int j = 0; j < matter->getPositionsFree().cols(); ++j) {
+      R_init[counter++] = matter->getPositionsFree()(i, j);
+    }
+  }
+  problem_setup.activateFrozenAtoms(R_init, activeRadius,
+                                    retconf);
+
+  return std::make_pair(retconf, R_init);
+}

@@ -44,5 +44,14 @@ namespace helper_functions {
      * */
     std::pair<double, AtomMatrix> energy_and_forces(Matter *matter, Potential *pot);
 
+    /**
+     * \brief Generate a conf_info object from a matter object
+     *
+     * This actually calls eon_matter_to_atmconf under the hood
+     * The difference being that this function sets the frozen atoms
+     *  \param matter The object to use as a constructor
+     * */
+    std::pair<gpr::AtomsConfiguration, gpr::Coord> eon_matter_to_frozen_conf_info(Matter *matter, double activeRadius);
+
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
