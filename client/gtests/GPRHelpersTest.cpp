@@ -25,7 +25,20 @@
 namespace tests {
 
 GPRHelpersTest::GPRHelpersTest() {
-  // TODO Auto-generated constructor stub
+    reactantFilename = helper_functions::getRelevantFile("reactant.con");
+    productFilename = helper_functions::getRelevantFile("product.con");
+
+    parameters = std::make_unique<Parameters>();
+    parameters->potential = "morse_pt";
+    parameters->nebImages = 7;
+    parameters->LogPotential = false;
+    log_init(parameters.get(), (char *)"test.log");
+
+    initmatter = std::make_unique<Matter>(parameters.get());
+    finalmatter = std::make_unique<Matter>(parameters.get());
+
+    initmatter->con2matter(reactantFilename);
+    finalmatter->con2matter(productFilename);
 }
 
 GPRHelpersTest::~GPRHelpersTest() {
@@ -80,4 +93,19 @@ TEST_F(GPRHelpersTest, TestMatter) {
   delete pmorse;
 }
 
+TEST_F(GPRHelpersTest, TestNEBInitPath) {
+  // Setup the run
+  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
+  auto imgArray = std::get<std::vector<Matter> >(initPath);
+  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
+  auto projForceArray = tangentArray; // Initially the same
+  // Setup counters
+  const int nimages = this->parameters->nebImages;
+  auto extremumPosition = std::vector<double>(2*nimages+1, 0);
+  auto extremumEnergy = std::vector<double>(2*nimages+1, 0);
+  auto extremumCurvature = std::vector<double>(2*nimages+1, 0);
+  int numExtrema = 0;
+  EXPECT_EQ(imgArray.back().getForces(), this->finalmatter->getForces())
+      << "Forces do not match";
+}
 } /* namespace tests */
