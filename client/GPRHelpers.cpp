@@ -304,6 +304,8 @@ std::pair<std::vector<Matter>,
   auto finalmatter = std::make_unique<Matter>(params);
   initmatter->con2matter(reactantFilename);
   finalmatter->con2matter(productFilename);
+  initmatter->getPotentialEnergy();
+  finalmatter->getPotentialEnergy();
   // Setup path
   const int natoms = initmatter->numberOfAtoms();
   const int nimages = params->nebImages;
@@ -323,7 +325,5 @@ std::pair<std::vector<Matter>,
       image.setPositions(posInit + imageSep * idx);
       ++idx;
     }
-    imageArray.front().getPotentialEnergy();
-    imageArray.back().getPotentialEnergy();
     return std::make_pair(imageArray, tangentArray);
 }
