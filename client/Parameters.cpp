@@ -216,6 +216,8 @@ Parameters::Parameters(){
     gprDebugDy = 0.1; // debug_dy
     gprDebugDz = 0.1; // debug_dz
 
+    // [GPR Potential] //
+
     // [Hessian] //
     hessianAtomList = string("All");
     hessianZeroFreqValue = 1e-6;
