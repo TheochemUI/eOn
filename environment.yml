@@ -22,6 +22,8 @@ dependencies:
   # Testing
   - pytest
   - pytest-datadir
+  - gtest
+  - gmock
   # Extras
   - numpy
   - ase
