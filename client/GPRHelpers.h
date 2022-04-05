@@ -53,5 +53,24 @@ namespace helper_functions {
      * */
     std::pair<gpr::AtomsConfiguration, gpr::Coord> eon_matter_to_frozen_conf_info(Matter *matter, double activeRadius);
 
+    // SCG Helpers
+    struct MatterHolder {
+            // TODO: Make private
+            Matter* mrr;
+            void getEnergyGradient(const Eigen::VectorXd& w,
+                                   const gpr::EigenMatrix& x,
+                                   const Eigen::VectorXd& x_ind,
+                                   const Eigen::VectorXd& y,
+                                   gpr::EnergyAndGradient& energy_and_gradient);
+    };
+
+    /**
+     * \brief Generate a conf_info object from a matter object
+     *
+     * This actually calls eon_matter_to_atmconf under the hood
+     * The difference being that this function sets the frozen atoms
+     *  \param matter The object to use as a constructor
+     * */
+
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */

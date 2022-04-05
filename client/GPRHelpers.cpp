@@ -275,3 +275,19 @@ std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_f
 
   return std::make_pair(retconf, R_init);
 }
+
+void helper_functions::MatterHolder::getEnergyGradient(const Eigen::VectorXd& w,
+                                   const gpr::EigenMatrix& x,
+                                   const Eigen::VectorXd& x_ind,
+                                   const Eigen::VectorXd& y,
+                                   gpr::EnergyAndGradient& energy_and_gradient){
+  if (this->mrr == nullptr){
+    throw("Can't handle incorrectly initialized MatterHolder");
+    // return false;
+  }
+  double erg{mrr->getPotentialEnergy()};
+  Eigen::VectorXd grd = mrr->getForcesV();
+  energy_and_gradient.energy = &erg;
+  energy_and_gradient.gradient = &grd;
+  // return true;
+  }
