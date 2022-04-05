@@ -235,7 +235,7 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   o.E.resize(1);
   o.E.set(matter->getPotentialEnergy());
   o.R.assignFromEigenMatrix(matter->getPositions());
-  o.G.assignFromEigenMatrix(matter->getForces());
+  o.G.assignFromEigenMatrix(-1 * matter->getForces());
   return o;
 }
 
