@@ -143,7 +143,7 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
     atoms_config.atoms_mov.resize(number_of_mov_atoms);
     atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
 
-    //!> Does a horrible to ensure that this is filled correctly. Essentially we
+    //!> Does a horrible hack to ensure that this is filled correctly. Essentially we
     //! use the Map of <EON atomtype, GPR faketype> to generate the fully filled
     //! vectors for moving and frozen_inactive
     //! FIXME: We should really just use the EON atomtype everywhere
@@ -291,3 +291,39 @@ void helper_functions::MatterHolder::getEnergyGradient(const Eigen::VectorXd& w,
   energy_and_gradient.gradient = &grd;
   // return true;
   }
+
+std::pair<std::vector<Matter>,
+           std::vector<AtomMatrix> > helper_functions::prepInitialPath(
+           Parameters *params,
+           std::string fname_reactant,
+           std::string fname_product){
+  // Prep final, initial images
+  auto reactantFilename = helper_functions::getRelevantFile(fname_reactant);
+  auto productFilename = helper_functions::getRelevantFile(fname_product);
+  auto initmatter = std::make_unique<Matter>(params);
+  auto finalmatter = std::make_unique<Matter>(params);
+  initmatter->con2matter(reactantFilename);
+  finalmatter->con2matter(productFilename);
+  // Setup path
+  const int natoms = initmatter->numberOfAtoms();
+  const int nimages = params->nebImages;
+  const int totImages = nimages + 2; // Final and end
+  auto imageArray = std::vector<Matter>(totImages, params);
+  auto tangentArray = std::vector<AtomMatrix>(totImages);
+  for (size_t idx{0}; auto &image: imageArray){
+    image = *initmatter;
+    tangentArray[idx].resize(natoms, 3);
+    ++idx;
+  }
+    imageArray.back() = *finalmatter;
+    auto posInit = imageArray.front().getPositions();
+    auto posFinal = imageArray.back().getPositions();
+    auto imageSep = imageArray.front().pbc(posFinal-posInit)/(imageArray.size());
+    for (double idx=1; auto image : imageArray){
+      image.setPositions(posInit + imageSep * idx);
+      ++idx;
+    }
+    imageArray.front().getPotentialEnergy();
+    imageArray.back().getPotentialEnergy();
+    return std::make_pair(imageArray, tangentArray);
+}

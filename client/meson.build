@@ -3,7 +3,7 @@ project('eonclient', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
 host_system = host_machine.system()
-eon_extra_args = []
+eon_extra_args = ['-ggdb', '-O0']
 
 add_languages('c', required: true)
 
@@ -213,44 +213,61 @@ ec = executable('eonclient',
 gtest = dependency('gtest', main : true, required : false)
 gtest_dep = gtest
 
-t1 = executable('t2_morse',
+t1 = executable('t1_morse',
                 'gtests/MorsePotTest.cpp',
                 link_with : eclib,
                 dependencies: [eon_deps, gtest],
                 cpp_args : eon_extra_args,
                )
   test('MorsePot test', t1)
-if get_option('with_gprd')
-  t1g = executable('t1g_obs',
-                  'gtests/ObsTest.cpp',
-                  link_with : eclib,
-                  dependencies: [eon_deps, gtest],
-                  cpp_args : eon_extra_args,
-                 )
-  test('observation test', t1g)
 
-  # t2g = executable('t2g_gprpot',
-  #                  'gtests/GPRPotTest.cpp',
+# t2 = executable('t2_neb',
+#                 'gtests/NEBTest.cpp',
+#                 link_with : eclib,
+#                 dependencies: [eon_deps, gtest],
+#                 cpp_args : eon_extra_args,
+#                )
+#   test('Nudged Elastic Band Test', t2)
+
+if get_option('with_gprd')
+  # t1g = executable('t1g_obs',
+  #                 'gtests/ObsTest.cpp',
   #                 link_with : eclib,
   #                 dependencies: [eon_deps, gtest],
   #                 cpp_args : eon_extra_args,
   #                )
-  # test('GPR potential test', t2g)
+  # test('observation test', t1g)
 
-  t3g = executable('t3g_gprhelpers',
-                   'gtests/GPRHelpersTest.cpp',
-                  link_with : eclib,
-                  dependencies: [eon_deps, gtest],
-                  cpp_args : eon_extra_args,
-                 )
-  test('GPR helpers test', t3g)
+  # # t2g = executable('t2g_gprpot',
+  # #                  'gtests/GPRPotTest.cpp',
+  # #                 link_with : eclib,
+  # #                 dependencies: [eon_deps, gtest],
+  # #                 cpp_args : eon_extra_args,
+  # #                )
+  # # test('GPR potential test', t2g)
 
-  t4g = executable('t4g_gprtrain',
-                   'gtests/GPRTrainTest.cpp',
-                  link_with : eclib,
-                  dependencies: [eon_deps, gtest],
-                  cpp_args : eon_extra_args,
-                 )
-  test('GPR Regression test', t4g)
+  # t3g = executable('t3g_gprhelpers',
+  #                  'gtests/GPRHelpersTest.cpp',
+  #                 link_with : eclib,
+  #                 dependencies: [eon_deps, gtest],
+  #                 cpp_args : eon_extra_args,
+  #                )
+  # test('GPR helpers test', t3g)
+
+  # t4g = executable('t4g_gprtrain',
+  #                  'gtests/GPRTrainTest.cpp',
+  #                 link_with : eclib,
+  #                 dependencies: [eon_deps, gtest],
+  #                 cpp_args : eon_extra_args,
+  #                )
+  # test('GPR Regression test', t4g)
+
+  # t5g = executable('t5g_gprtrain',
+  #                  'gtests/SCGMatterTest.cpp',
+  #                 link_with : eclib,
+  #                 dependencies: [eon_deps, gtest],
+  #                 cpp_args : eon_extra_args,
+  #                )
+  # test('SCG Matter test', t5g)
 
 endif

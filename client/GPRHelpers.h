@@ -4,6 +4,9 @@
 #include "Matter.h"
 #include "Parameters.h"
 #include "Log.h"
+#include "HelperFunctions.h"
+#include<memory>
+#include<utility>
 
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
@@ -72,5 +75,16 @@ namespace helper_functions {
      *  \param matter The object to use as a constructor
      * */
 
+    /**
+     * \brief Setup initial path
+     *
+     * This is essentially what the NEB initialization does, however, we need
+     * this here to prepare the initial observations for the GPR surface
+     * */
+    std::pair<std::vector<Matter>,
+               std::vector<AtomMatrix> > prepInitialPath(
+                   Parameters *params,
+                   std::string fname_reactant="reactant.con"s,
+                   std::string fname_product="product.con"s);
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
