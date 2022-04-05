@@ -327,3 +327,11 @@ std::pair<std::vector<Matter>,
     }
     return std::make_pair(imageArray, tangentArray);
 }
+
+gpr::Observation helper_functions::prepInitialObs(std::vector<Matter> &vecmat) {
+  gpr::Observation resObs;
+  for (auto &mat : vecmat){
+    resObs.append(helper_functions::eon_matter_to_init_obs(&mat));
+  }
+  return resObs;
+}

@@ -46,6 +46,7 @@ GPRHelpersTest::~GPRHelpersTest() {
 }
 
 TEST_F(GPRHelpersTest, TestMatter) {
+  // TODO: Clean up
   string confile("pos.con");
   double energy_morse_ref{-1775.79}; // matter->getPotentialEnergy()
   Parameters *pmorse = new Parameters;
@@ -107,5 +108,25 @@ TEST_F(GPRHelpersTest, TestNEBInitPath) {
   int numExtrema = 0;
   EXPECT_EQ(imgArray.back().getForces(), this->finalmatter->getForces())
       << "Forces do not match";
+}
+
+TEST_F(GPRHelpersTest, TestNEBInitObs) {
+  // Setup the observations
+  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
+  auto imgArray = std::get<std::vector<Matter> >(initPath);
+  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
+  auto projForceArray = tangentArray; // Initially the same
+  auto obspath = helper_functions::prepInitialObs(imgArray);
+  // Assertions
+  const int nimages = this->parameters->nebImages;
+  const int totImages = nimages + 2; // Final and end
+  const int totAtoms = totImages * this->initmatter->numberOfAtoms();
+  EXPECT_EQ(obspath.E.getSize(), totImages)
+      << "Number of elements of energies do not match";
+  EXPECT_EQ(obspath.R.getNumPoints(), totAtoms)
+      << "Number of elements of R matrices do not match";
+  EXPECT_EQ(obspath.G.getNumPoints(), totAtoms)
+      << "Number of elements of G matrices do not match";
+  // obspath.printSizes();
 }
 } /* namespace tests */

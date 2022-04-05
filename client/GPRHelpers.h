@@ -86,5 +86,13 @@ namespace helper_functions {
                    Parameters *params,
                    std::string fname_reactant="reactant.con"s,
                    std::string fname_product="product.con"s);
+    /**
+     * \brief Setup initial observations from path
+     *
+     * This starts with the construction of an observation object and then uses
+     * the linearly interpolated NEB path from prepInitialPath to populate the
+     * observation object
+     * */
+    gpr::Observation prepInitialObs(std::vector<Matter> &vecmat);
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
