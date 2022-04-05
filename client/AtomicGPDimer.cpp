@@ -1,4 +1,4 @@
-// An interface to the GPDimer library
+// an interface to the gpdimer library
 
 #include "AtomicGPDimer.h"
 #include "HelperFunctions.h"
@@ -32,23 +32,16 @@ AtomicGPDimer::~AtomicGPDimer() { delete matterCenter; }
 
 void AtomicGPDimer::compute(Matter *matter,
                             AtomMatrix initialDirectionAtomMatrix) {
-  atoms_config = helper_functions::eon_matter_to_atmconf(matter);
   *matterCenter = *matter;
+  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(matterCenter,
+                                                             parameters->gprActiveRadius);
+  auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
+  auto R_init = std::get<gpr::Coord>(config_data);
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
-R_init.resize(1, matterCenter->getPositionsFree().rows() *
-                matterCenter->getPositionsFree().cols());
-  int counter = 0;
-  for(int i = 0; i < matterCenter->getPositionsFree().rows(); ++i) {
-    for(int j = 0; j < matterCenter->getPositionsFree().cols(); ++j) {
-      R_init[counter++] = matterCenter->getPositionsFree()(i, j);
-    }
-  }
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
-  problem_setup.activateFrozenAtoms(R_init, parameters->gprActiveRadius,
-                                    atoms_config);
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
                      matterCenter->getPositionsFree().cols());
@@ -68,8 +61,7 @@ R_init.resize(1, matterCenter->getPositionsFree().rows() *
   // orient_init.assignFromEigenMatrix(freeOrient);
 orient_init.resize(1, freeOrient.rows() *
                 freeOrient.cols());
-  counter = 0;
-  for(int i = 0; i < freeOrient.rows(); ++i) {
+  for(int i,counter = 0; i < freeOrient.rows(); ++i) {
     for(int j = 0; j < freeOrient.cols(); ++j) {
       orient_init[counter++] = freeOrient(i, j);
     }
