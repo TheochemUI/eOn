@@ -7,6 +7,7 @@
  */
 
 #include <algorithm>
+#include <memory>
 
 #include "../Potential.h"
 #include "../potentials/Morse/Morse.h"
