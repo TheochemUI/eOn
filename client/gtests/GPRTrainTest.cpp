@@ -44,7 +44,7 @@ GPRTrainTest::~GPRTrainTest() {
 
 TEST_F(GPRTrainTest, TestMatter) {
   aux::ProblemSetUp problem_setup;
-  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  0.5);
+  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   auto R_init = std::get<gpr::Coord>(config_data);
   // Setup the observations
