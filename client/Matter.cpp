@@ -934,6 +934,7 @@ void Matter::setPotential(Potential *pot){
     if(pot != nullptr){
         this->potential = pot;
     }
+    recomputePotential = true;
 }
 
 Potential* Matter::getPotential(){
