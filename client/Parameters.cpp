@@ -219,6 +219,7 @@ Parameters::Parameters(){
     // [GPR Potential] //
     truePotential = "morse_pt"; // reasonable default
     // GPR Params
+    gprPotActiveRadius = 5.0; // actidst_fro
     gprPotHyperOptMethod = "scg"; // optimization_alg
     gprPotSigma2 = 1e-8; // gp_sigma2
     gprPotJitterSigma2 = 0; // jitter_sigma2
@@ -575,6 +576,7 @@ int Parameters::load(FILE *file){
 
         // GPR Params
         truePotential = toLowerCase(ini.GetValue("GPR Potential", "true_potential"));
+        gprPotActiveRadius = ini.GetValueF("GPR Potential", "active_radius", gprActiveRadius);
         gprPotHyperOptMethod = ini.GetValue("GPR Potential", "hyperparameter_opt_method", gprPotHyperOptMethod);
         gprPotSigma2 = ini.GetValueF("GPR Potential", "gpr_variance", gprPotSigma2);
         gprPotJitterSigma2 = ini.GetValueF("GPR Potential", "gpr_jitter_variance", gprPotJitterSigma2);

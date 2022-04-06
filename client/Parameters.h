@@ -214,6 +214,7 @@ public:
 
     // [GPR Potential] //
     string truePotential;
+    double gprPotActiveRadius; // activation radius for inclusion in covariance matrix {actdist_fro}
     string gprPotHyperOptMethod; // method to optimize hyperparameters {optimization_alg}
     double gprPotSigma2; // GPR variance {gp_sigma2}
     double gprPotJitterSigma2; // GPR jitter variance {jitter_sigma2}
