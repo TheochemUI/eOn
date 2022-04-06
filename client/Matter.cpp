@@ -5,6 +5,10 @@
 #include "ObjectiveFunction.h"
 #include "BondBoost.h"
 
+#ifdef WITH_GPRD
+#include "GPRHelpers.h"
+#endif
+
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
@@ -945,7 +949,12 @@ void Matter::computePotential()
         }
 
         // TODO: Handle the number of system images better
+#ifdef WITH_GPRD
+        auto calcEF = helper_functions::energy_and_forces(this, potential);
+#endif
+#ifndef WITH_GPRD
         auto calcEF = potential->force(positions, atomicNrs, cell, 1);
+#endif
         potentialEnergy = std::get<double>(calcEF);
         forces = std::get<AtomMatrix>(calcEF);
         forceCalls = forceCalls+1;
