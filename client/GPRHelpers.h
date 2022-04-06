@@ -24,6 +24,15 @@ namespace helper_functions {
     gpr::InputParameters eon_parameters_to_gprd(Parameters *parameters);
 
     /**
+     * \brief Create a parameters object for gpr_pot
+     *
+     * TODO: Get the cell size from a Matter object
+     *
+     * @param *parameters An EON parameters object
+     */
+    gpr::InputParameters eon_parameters_to_gprpot(Parameters *parameters);
+
+    /**
      * \brief Create a configuration of atoms for gpr_dimer
      *
      * @param *Matter An EON Matter object
