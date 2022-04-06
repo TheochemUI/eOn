@@ -242,6 +242,11 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
 }
 
 std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
+  if (pot->getName()=="gpr_pot"s) {
+    // Sanity checks
+    auto gppot = static_cast<GPRPotential*>(pot);
+    return helper_functions::gpr_energy_and_forces(matter, gppot);
+  }
   int nAtoms = matter->numberOfAtoms();
   auto posdata = matter->getPositions();
   auto celldat = matter->getCell();
