@@ -68,8 +68,14 @@ void GPRPotential::cleanMemory(void){
 // adress to supercell size
 void GPRPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages){
     gpr::Observation observation;
+    // Initialize and resize
+    observation.clear();
+    observation.E.resize(1);
+    observation.R.resize(1, N * 3);
+    observation.G.resize(1, N * 3);
+    observation.G.resize(1, observation.R.getNumCols());
 
-    // Copy R points. Note, R should correspond to the moving atoms only.
+    // Copy R points
     observation.R.resize(1, N * 3);
     for(int i=0; i<N; i++){
         observation.R.set(i, {R[ 3*i ], R[3*i+1], R[3*i+2]});
