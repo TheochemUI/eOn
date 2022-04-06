@@ -63,6 +63,8 @@ public:
     VectorXd getPositionsV() const;
     AtomMatrix getPositionsFree() const; // return coordinates of free atoms in array pos
     VectorXd getPositionsFreeV() const;
+    VectorXi getAtomicNrs() const;
+    VectorXi getAtomicNrsFree() const;
     void setPositions(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos
     void setPositionsV(const VectorXd pos);
     void setPositionsFree(const AtomMatrix pos); // update Matter with the new positions of the free atoms given in array pos

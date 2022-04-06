@@ -999,6 +999,15 @@ double Matter::maxForce(void)
     return maxForce;
 }
 
+VectorXi Matter::getAtomicNrs() const
+{
+    return this->atomicNrs;
+}
+
+VectorXi Matter::getAtomicNrsFree() const
+{
+    return this->atomicNrs.array() * getFreeV().cast<int>().array();
+}
 
 AtomMatrix Matter::getFree() const
 {
@@ -1018,7 +1027,6 @@ VectorXd Matter::getFreeV() const
 {
     return VectorXd::Map(getFree().data(),3*numberOfAtoms());
 }
-
 
 AtomMatrix Matter::getVelocities() const
 {
