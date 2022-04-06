@@ -6,7 +6,7 @@
 #include <cassert>
 
 gpr::InputParameters
-helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
+helper_functions::eon_parameters_to_gprd(Parameters *parameters) {
   gpr::InputParameters p;
   // Problem parameters
   p.actdist_fro.value = parameters->gprActiveRadius;

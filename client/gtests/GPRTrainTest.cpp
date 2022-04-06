@@ -73,7 +73,7 @@ TEST_F(GPRTrainTest, TestMatter) {
 
   this->gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
 
-  auto  p = helper_functions::eon_parameters_to_gpr(this->parameters.get());
+  auto  p = helper_functions::eon_parameters_to_gprd(this->parameters.get());
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = this->initmatter->getCell()(i);
   }
