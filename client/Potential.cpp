@@ -226,18 +226,20 @@ int Potential::fcalls = 0;
 int Potential::fcallsTotal = 0;
 double Potential::totalUserTime=0;
 
-AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
-                            VectorXi atomicNrs, double *energy, Matrix3d box, int nImages)
+std::pair<double, AtomMatrix> Potential::force(AtomMatrix positions, Eigen::VectorXi atomicNrs,
+                                               Matrix3d box, int nImages)
 {
-    AtomMatrix forces(nAtoms,3);
+    int nAtoms = positions.rows();
+    AtomMatrix forces(nAtoms, 3);
+    double tenergy {0};
 
     double start, userStart, sysStart;
     if (params->LogPotential) {
         helper_functions::getTime(&start, &userStart, &sysStart);
     }
     // TODO: Be better with the number of images
-    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), energy,
-          box.data(),1);
+    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), &tenergy,
+          box.data(), 1);
 
     double finish, userFinish, sysFinish;
     if (params->LogPotential) {
@@ -262,7 +264,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
         }
     }
 
-    return forces;
+    return std::make_pair(tenergy, forces);
 }
 
 void Potential::setParams(Parameters *params){

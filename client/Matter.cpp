@@ -945,7 +945,9 @@ void Matter::computePotential()
         }
 
         // TODO: Handle the number of system images better
-        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cell, 1);
+        auto calcEF = potential->force(positions, atomicNrs, cell, 1);
+        potentialEnergy = std::get<double>(calcEF);
+        forces = std::get<AtomMatrix>(calcEF);
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
