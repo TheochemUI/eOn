@@ -239,7 +239,7 @@ if get_option('with_gprd')
   test('GPR helpers test', t2g)
 
   t3g = executable('t3g_neb',
-                   'gtests/NEBTest.cpp',
+                   'gtests/NEBSetupTest.cpp',
                    link_with : [potentials, eclib],
                    dependencies: [eon_deps, gtest],
                    cpp_args : eon_extra_args,

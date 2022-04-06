@@ -1,13 +1,13 @@
-#ifndef NEBTEST_H_
-#define NEBTEST_H_
+#ifndef NEBSETUPTEST_H_
+#define NEBSETUPTEST_H_
 
 #include <gtest/gtest.h>
 
 namespace tests {
-    class NEBTest : public ::testing::Test {
+    class NEBSetupTest : public ::testing::Test {
         public:
-            NEBTest();
-            virtual ~NEBTest();
+            NEBSetupTest();
+            virtual ~NEBSetupTest();
 
     string reactantFilename;
     string productFilename;
@@ -18,4 +18,4 @@ namespace tests {
     };
 } /* namespace tests */
 
-#endif // NEBTEST_H_
+#endif // NEBSETUPTEST_H_

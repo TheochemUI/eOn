@@ -1,5 +1,5 @@
 /*
- * SCGMatterTest.cpp
+ * NEBSetupTest.cpp
  *
  *  Created on: 1 April 2022
  *      Author: Rohit Goswami
@@ -16,11 +16,11 @@
 #include "../Log.h"
 #include "../Matter.h"
 #include "../Parameters.h"
-#include "NEBTest.h"
+#include "NEBSetupTest.h"
 
 namespace tests {
 
-NEBTest::NEBTest() {
+NEBSetupTest::NEBSetupTest() {
     reactantFilename = helper_functions::getRelevantFile("reactant.con");
     productFilename = helper_functions::getRelevantFile("product.con");
 
@@ -37,10 +37,10 @@ NEBTest::NEBTest() {
     finalmatter->con2matter(productFilename);
 }
 
-NEBTest::~NEBTest() {
+NEBSetupTest::~NEBSetupTest() {
 }
 
-TEST_F(NEBTest, TestMatter) {
+TEST_F(NEBSetupTest, TestMatter) {
   // Setup the run
   auto initPath = helper_functions::prepInitialPath(this->parameters.get());
   auto imgArray = std::get<std::vector<Matter> >(initPath);
