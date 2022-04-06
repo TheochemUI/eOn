@@ -260,6 +260,22 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter
   return std::make_pair(energy, finForces);
 }
 
+std::pair<double, AtomMatrix> helper_functions::gpr_energy_and_forces(Matter *matter, GPRPotential *gprpot){
+  int nAtoms = matter->numberOfAtoms();
+  auto posdat = matter->getPositions();
+  auto celldat = matter->getCell();
+  AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
+  auto calcEF = gprpot->force(posdat, matter->getAtomicNrs(), celldat, 1);
+  double potentialEnergy = std::get<double>(calcEF);
+  auto finForces = std::get<AtomMatrix>(calcEF);
+  for (int i = 0; i < nAtoms; i++){
+    if(matter->getFixed(i)){
+      finForces.row(i).setZero();
+    }
+  }
+  return std::make_pair(potentialEnergy, finForces);
+}
+
 std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_frozen_conf_info(Matter *matter, double activeRadius){
   gpr::Coord R_init;
   aux::ProblemSetUp problem_setup;

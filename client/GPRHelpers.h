@@ -1,12 +1,14 @@
 #ifndef GPRHELPERS_H
 #define GPRHELPERS_H
 
+#include<memory>
+#include<utility>
+
 #include "Matter.h"
 #include "Parameters.h"
 #include "Log.h"
 #include "HelperFunctions.h"
-#include<memory>
-#include<utility>
+#include "potentials/GPRPotential/GPRPotential.h"
 
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
@@ -46,6 +48,14 @@ namespace helper_functions {
      *  \param pot The potential energy to use
      * */
     std::pair<double, AtomMatrix> energy_and_forces(Matter *matter, Potential *pot);
+
+    /**
+     * \brief Call a GPR-EON potential from a matter object
+     *
+     *  \param matter The object with coordinates
+     *  \param pot The trained GPR to use
+     * */
+    std::pair<double, AtomMatrix> gpr_energy_and_forces(Matter* matter, GPRPotential* gprpot);
 
     /**
      * \brief Generate a conf_info object from a matter object
