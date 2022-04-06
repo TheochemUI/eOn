@@ -235,7 +235,9 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   o.E.resize(1);
   o.E.set(matter->getPotentialEnergy());
   o.R.assignFromEigenMatrix(matter->getPositionsFree());
-  o.G.assignFromEigenMatrix(-1 * matter->getForcesFree());
+  AtomMatrix gradEig = matter->getForcesFree();
+  gradEig = gradEig * -1;
+  o.G.assignFromEigenMatrix(gradEig);
   return o;
 }
 
