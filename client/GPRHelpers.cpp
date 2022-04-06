@@ -230,12 +230,12 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(matter->getPositions().rows(),matter->getPositions().cols());
-  o.G.resize(matter->getForces().rows(),matter->getForces().cols());
+  o.R.resize(matter->getPositionsFree().rows(),matter->getPositionsFree().cols());
+  o.G.resize(matter->getForcesFree().rows(),matter->getForcesFree().cols());
   o.E.resize(1);
   o.E.set(matter->getPotentialEnergy());
-  o.R.assignFromEigenMatrix(matter->getPositions());
-  o.G.assignFromEigenMatrix(-1 * matter->getForces());
+  o.R.assignFromEigenMatrix(matter->getPositionsFree());
+  o.G.assignFromEigenMatrix(-1 * matter->getForcesFree());
   return o;
 }
 
@@ -262,8 +262,7 @@ std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_f
   gpr::Coord R_init;
   aux::ProblemSetUp problem_setup;
   auto retconf = helper_functions::eon_matter_to_atmconf(matter);
-  R_init.resize(1, matter->getPositionsFree().rows() *
-                matter->getPositionsFree().cols());
+  R_init.resize(1, 3 * matter->numberOfAtoms());
   int counter = 0;
   for(int i = 0; i < matter->getPositionsFree().rows(); ++i) {
     for(int j = 0; j < matter->getPositionsFree().cols(); ++j) {
