@@ -43,6 +43,7 @@ GPRTrainTest::~GPRTrainTest() {
 }
 
 TEST_F(GPRTrainTest, TestMatter) {
+  threshold = 1e-6;
   aux::ProblemSetUp problem_setup;
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
@@ -78,12 +79,13 @@ TEST_F(GPRTrainTest, TestMatter) {
   gprfunc->initialize(p, atoms_config);
   gprfunc->setHyperparameters(obspath, atoms_config);
   gprfunc->optimize(obspath);
-  // TODO: Gradients are not being calculated
+  // Multiple observations
   // auto oo = obspath;
   // gprfunc->calculatePotential(oo);
   // std::cout<<"Energy: "<<oo.E.extractEigenMatrix()<<std::endl;
   // std::cout<<"Correct Energy: "<<obspath.E.extractEigenMatrix()<<std::endl;
 
+  // Single observation
   gpr::Observation o;
   o.clear();
   o.R.resize(this->initmatter.get()->getPositionsFree().rows(),this->initmatter.get()->getPositionsFree().cols());
@@ -91,10 +93,14 @@ TEST_F(GPRTrainTest, TestMatter) {
   o.R.assignFromEigenMatrix(this->initmatter.get()->getPositionsFree());
   o.E.resize(1);
   gprfunc->calculatePotential(o);
-  std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
-  std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
-  std::cout<<"Gradient: \n"<<o.G.extractEigenMatrix()<<std::endl;
-  std::cout<<"Correct Gradient: \n"<<this->initmatter.get()->getForcesFree()<<std::endl;
+  ASSERT_NEAR(o.E.extractEigenMatrix()(0), this->initmatter.get()->getPotentialEnergy(), this->threshold*1e3)
+      << "Energy does not match";
+  EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(this->initmatter.get()->getForcesFree(), this->threshold))
+      << "Gradients do not match";
+  // std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
+  // std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
+  // std::cout<<"Forces : \n"<<o.G.extractEigenMatrix()*-1<<std::endl;
+  // std::cout<<"Correct Forces: \n"<<this->initmatter.get()->getForcesFree()<<std::endl;
 
   // GPRPotential pot{this->parameters.get()};
   // pot.registerGPRObject(gprfunc);
