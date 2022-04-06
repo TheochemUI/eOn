@@ -17,11 +17,32 @@
 #include "../Matter.h"
 #include "../Parameters.h"
 #include "GPRPotTest.h"
+#include "../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 
 namespace tests {
 
 GPRPotTest::GPRPotTest() {
-  // TODO Auto-generated constructor stub
+    reactantFilename = helper_functions::getRelevantFile("reactant.con");
+    productFilename = helper_functions::getRelevantFile("product.con");
+
+    parameters = std::make_unique<Parameters>();
+    parameters->potential = "morse_pt";
+    parameters->nebImages = 7;
+    parameters->LogPotential = false;
+    log_init(parameters.get(), (char *)"test.log");
+
+    gprparameon = std::make_unique<Parameters>();
+    gprparameon->potential = "gpr_pot";
+    gprparameon->nebImages = 7;
+    gprparameon->LogPotential = false;
+
+    initmatter = std::make_unique<Matter>(parameters.get());
+    finalmatter = std::make_unique<Matter>(parameters.get());
+
+    initmatter->con2matter(reactantFilename);
+    finalmatter->con2matter(productFilename);
+
+    gprfunc = std::make_unique<gpr::GaussianProcessRegression>();
 }
 
 GPRPotTest::~GPRPotTest() {
@@ -29,78 +50,55 @@ GPRPotTest::~GPRPotTest() {
 }
 
 TEST_F(GPRPotTest, TestMatter) {
-  string confile{"pos.con"};
-  Parameters *parameters = new Parameters;
-  parameters->potential = "morse_pt";
-  Matter *matter = new Matter(parameters);
+  // Constants
+  const auto init_eref = this->initmatter.get()->getPotentialEnergy();
+  const auto init_frcsref = this->initmatter.get()->getForcesFree();
+  aux::ProblemSetUp problem_setup;
+  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
+  auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
+  auto R_init = std::get<gpr::Coord>(config_data);
+  // Setup the observations
+  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
+  auto imgArray = std::get<std::vector<Matter> >(initPath);
+  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
+  auto projForceArray = tangentArray; // Initially the same
+  auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
-  GPRPotential pot{parameters};
+  // GPRPotential pot{parameters};
   gpr::GPRSetup gpr_parameters;
-  gpr::GaussianProcessRegression gprfunc;
-  gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-  gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-  gpr_parameters.jitter_sigma2 = 0.;
-  gprfunc.setParameters(gpr_parameters);
-  
-  gprfunc.getSexpAtCovarianceFunction()->setMagnSigma2(6.93874748072254e-009);
-  gprfunc.getSexpAtCovarianceFunction()->setLengthScale(888.953211438594e-006);
-  gprfunc.getSexpAtCovarianceFunction()->setConfInfo(conf_info);
-
-  gprfunc.getConstantCovarianceFunction()->setConstSigma2(1.);
-  // gprfunc.evaluateTrainingCovarianceMatrix(x1, x1_ind, K);
-
-  // Prepare GPR inputs
-  Morse trupot;
-  int nAtoms = matter->numberOfAtoms();
-  auto posdata = matter->getPositions();
-  auto celldat = matter->getCell();
-  AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
-  double energy{0};
-  trupot.force(nAtoms, pos, nullptr, frcs, &energy, bx, 1);
-  // TODO: Find a less hacky way
-  AtomMatrix finForces{forces};
-  for (int i = 0; i <nAtoms; i++){
-    if(matter->getFixed(i)){
-      finForces.row(i).setZero();
-    }
-  }
-  // Indices
   aux::AuxiliaryFunctionality aux_func;
-  gpr::Observation observation_all;
-  auto R_indices = posdata;
-  VectorXd vec_joined(sizeof(double) + finForces.size());
-  vec_joined << energy, finForces;
-  observation_all.R.assignFromEigenMatrix(posdata);
-  // aux_func.assembleMatrixOfRepetitiveCoordinates(
-  //   observation_all.R, posdata, R_indices);
-  // Setup potential
-  // gprfunc.decomposeCovarianceMatrix(posdata, R_indices); // - takes covariance matrix and vector of repetitive indices
-  gprfunc.calculateMeanPrediction(vec_joined); // - takes a vector of combined energy and force
-  gprfunc.calculatePosteriorMeanPrediction(); // - no arguments
-  gpr::Observation o = helper_functions::eon_matter_to_init_obs(matter);
-  gprfunc.calculatePotential(o);
-  for (int i = 0; i < o.E.getNumRows(); i++){
-    std::cout<<std::endl;
-    for (int j=0; j < o.E.getNumCols(); j++){
-      std::cout<<o.E(i,j);
-    }
+  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+  gpr_parameters.jitter_sigma2 = 0.;
+  this->gprfunc->setParameters(gpr_parameters);
+
+  this->gprfunc->getSexpAtCovarianceFunction()->setMagnSigma2(6.93874748072254e-009);
+  this->gprfunc->getSexpAtCovarianceFunction()->setLengthScale(888.953211438594e-006);
+  this->gprfunc->getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
+
+  this->gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
+
+  auto  p = helper_functions::eon_parameters_to_gpr(this->parameters.get());
+  for (int i = 0; i < 9; i++) {
+    p.cell_dimensions.value[i] = this->initmatter->getCell()(i);
   }
-  pot.registerGPRObject(&gprfunc);
-  // Call potential
-  double energy_gpro{10};
-  AtomMatrix forces_gpro = AtomMatrix::Constant(matter->numberOfAtoms(), 3, 0);
-  auto egf_gpro = helper_functions::energy_and_forces(matter, &pot);
-  energy_gpro = std::get<double>(egf_gpro);
-  forces_gpro = std::get<AtomMatrix>(egf_gpro);
-  EXPECT_EQ(forces_gpro, matter->getForces())
+
+  this->gprfunc->initialize(p, atoms_config);
+  this->gprfunc->setHyperparameters(obspath, atoms_config);
+  this->gprfunc->optimize(obspath);
+  // Matter calls
+  GPRPotential pot{this->parameters.get()};
+  pot.registerGPRObject(this->gprfunc.get());
+  auto matterClone = std::make_unique<Matter>(gprparameon.get());
+  matterClone->setPotential(&pot); // This does not work, need to setup properly via parameters
+  ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, this->threshold*1e2)
+      << "Energy does not match";
+  EXPECT_TRUE(matterClone->getForces().isApprox(init_frcsref, this->threshold))
       << "Forces do not match";
-  EXPECT_EQ(energy_gpro, 3)
-      << "Potential energy does not match";
-  delete matter;
-  delete parameters;
+  std::cout<<"Energy: "<<matterClone->getPotentialEnergy()<<std::endl;
+  std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
+  std::cout<<"Forces : \n"<<matterClone->getForcesFree()<<std::endl;
+  std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
 }
 
 } /* namespace tests */
