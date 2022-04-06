@@ -77,14 +77,30 @@ TEST_F(GPRTrainTest, TestMatter) {
 
   gprfunc->initialize(p, atoms_config);
   gprfunc->setHyperparameters(obspath, atoms_config);
-  gprfunc->calculatePotential(obspath);
   gprfunc->optimize(obspath);
-  // gprfunc->calculatePosteriorMeanPrediction();
-  GPRPotential pot{this->parameters.get()};
-  pot.registerGPRObject(gprfunc);
-  auto egf_gpro = helper_functions::energy_and_forces(this->initmatter.get(), &pot);
-  auto energy_gpro = std::get<double>(egf_gpro);
-  auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
+  // TODO: Gradients are not being calculated
+  // auto oo = obspath;
+  // gprfunc->calculatePotential(oo);
+  // std::cout<<"Energy: "<<oo.E.extractEigenMatrix()<<std::endl;
+  // std::cout<<"Correct Energy: "<<obspath.E.extractEigenMatrix()<<std::endl;
+
+  gpr::Observation o;
+  o.clear();
+  o.R.resize(this->initmatter.get()->getPositionsFree().rows(),this->initmatter.get()->getPositionsFree().cols());
+  o.G.resize(this->initmatter.get()->getForcesFree().rows(),this->initmatter.get()->getForcesFree().cols());
+  o.R.assignFromEigenMatrix(this->initmatter.get()->getPositionsFree());
+  o.E.resize(1);
+  gprfunc->calculatePotential(o);
+  std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
+  std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
+  std::cout<<"Gradient: \n"<<o.G.extractEigenMatrix()<<std::endl;
+  std::cout<<"Correct Gradient: \n"<<this->initmatter.get()->getForcesFree()<<std::endl;
+
+  // GPRPotential pot{this->parameters.get()};
+  // pot.registerGPRObject(gprfunc);
+  // auto egf_gpro = helper_functions::energy_and_forces(this->initmatter.get(), &pot);
+  // auto energy_gpro = std::get<double>(egf_gpro);
+  // auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
   // // gprfunc->evaluateEnergyAndGradient();
   // EXPECT_EQ(energy_gpro, 3)
   //     << "Energy does not match";
