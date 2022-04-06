@@ -212,6 +212,22 @@ public:
     double gprDebugDy; // {debug_dy}
     double gprDebugDz; // {debug_dz}
 
+    // [GPR Potential] //
+    string truePotential;
+    string gprPotHyperOptMethod; // method to optimize hyperparameters {optimization_alg}
+    double gprPotSigma2; // GPR variance {gp_sigma2}
+    double gprPotJitterSigma2; // GPR jitter variance {jitter_sigma2}
+    double gprPotNoiseSigma2; // noise Variance {sigma2}
+    double gprPotPriorMu; // prior mean {prior_mu}
+    double gprPotPriorSigma2; // prior variance {prior_s2}
+    long gprPotPriorNu; // prior degrees of freedom {prior_nu}
+    bool gprPotOptCheckDerivatives; // {check_derivative}
+    int gprPotOptMaxIterations; // {max_iter}
+    double gprPotOptTolFunc; // {tolerance_func}
+    double gprPotOptTolSol; // {tolerance_sol}
+    long gprPotOptLambdaLimit; // {lambda_limit}
+    long gprPotOptLambdaInit; // {lambda}
+
 
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations

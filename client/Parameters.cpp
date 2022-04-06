@@ -217,6 +217,22 @@ Parameters::Parameters(){
     gprDebugDz = 0.1; // debug_dz
 
     // [GPR Potential] //
+    truePotential = "morse_pt"; // reasonable default
+    // GPR Params
+    gprPotHyperOptMethod = "scg"; // optimization_alg
+    gprPotSigma2 = 1e-8; // gp_sigma2
+    gprPotJitterSigma2 = 0; // jitter_sigma2
+    gprPotNoiseSigma2 = 1e-8; // sigma2
+    gprPotPriorMu = 0; // prior_mu
+    gprPotPriorSigma2 = 1; //prior_s2
+    gprPotPriorNu = 20; // prior_nu
+    // GPR Optimization Parameters
+    gprPotOptCheckDerivatives = false; // check_derivative
+    gprPotOptMaxIterations = 400; // max_iter
+    gprPotOptTolFunc = 1e-4; // tolerance_func
+    gprPotOptTolSol = 1e-4; // tolerance_sol
+    gprPotOptLambdaLimit = 1e17; // lambda_limit
+    gprPotOptLambdaInit = 10.0; // lambda
 
     // [Hessian] //
     hessianAtomList = string("All");
@@ -554,6 +570,25 @@ int Parameters::load(FILE *file){
         gprPruneBegin = (int)ini.GetValueL("GPR Dimer", "start_prune_at", gprPruneBegin);
         gprPruneNVals = (int)ini.GetValueL("GPR Dimer", "nprune_vals", gprPruneNVals);
         gprPruneThreshold = ini.GetValueF("GPR Dimer", "prune_threshold", gprPruneThreshold);
+
+        // [GPR Potential] //
+
+        // GPR Params
+        truePotential = toLowerCase(ini.GetValue("GPR Potential", "true_potential"));
+        gprPotHyperOptMethod = ini.GetValue("GPR Potential", "hyperparameter_opt_method", gprPotHyperOptMethod);
+        gprPotSigma2 = ini.GetValueF("GPR Potential", "gpr_variance", gprPotSigma2);
+        gprPotJitterSigma2 = ini.GetValueF("GPR Potential", "gpr_jitter_variance", gprPotJitterSigma2);
+        gprPotNoiseSigma2 = ini.GetValueF("GPR Potential", "gpr_noise_variance", gprPotNoiseSigma2);
+        gprPotPriorMu = ini.GetValueF("GPR Potential", "prior_mean", gprPotPriorMu);
+        gprPotPriorSigma2 = ini.GetValueF("GPR Potential", "prior_variance", gprPotPriorSigma2);
+        gprPotPriorNu = ini.GetValueF("GPR Potential", "prior_degrees_of_freedom", gprPotPriorNu);
+        // GPR Optimization Parameters
+        gprPotOptCheckDerivatives = ini.GetValueB("GPR Potenntial", "check_derivatives", gprPotOptCheckDerivatives);
+        gprPotOptMaxIterations = (int)ini.GetValueL("GPR Potenntial", "opt_max_iterations", gprPotOptMaxIterations);
+        gprPotOptTolFunc = ini.GetValueF("GPR Potenntial", "opt_tol_func", gprPotOptTolFunc);
+        gprPotOptTolSol = ini.GetValueF("GPR Potenntial", "opt_tol_sol", gprPotOptTolSol);
+        gprPotOptLambdaLimit = ini.GetValueF("GPR Potenntial", "opt_lambda_limit", gprPotOptLambdaLimit);
+        gprPotOptLambdaInit = ini.GetValueF("GPR Potenntial", "opt_lambda_init", gprPotOptLambdaInit);
 
         // [Prefactor] //
 
