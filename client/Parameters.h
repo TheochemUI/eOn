@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <vector>
+#include<stdexcept>
 
 using namespace std;
 

@@ -31,6 +31,10 @@ public:
     void initialize(void);    
     void cleanMemory(void);    
 
+    // The GPR Potential overrides this Potential::force call
+    std::pair<double, AtomMatrix> force(AtomMatrix positions, Eigen::VectorXi atomicNrs,
+                                        Matrix3d box, int nImages);
+    // Note that we must provide this function as it is marked virtual but we never call into it
     void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages);
 };
 #endif
