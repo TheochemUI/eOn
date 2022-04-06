@@ -15,6 +15,7 @@ namespace tests {
     std::unique_ptr<Parameters> parameters;
     std::unique_ptr<Matter> initmatter;
     std::unique_ptr<Matter> finalmatter;
+    std::unique_ptr<gpr::GaussianProcessRegression> gprfunc;
     };
 } /* namespace tests */
 

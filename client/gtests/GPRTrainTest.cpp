@@ -36,6 +36,8 @@ GPRTrainTest::GPRTrainTest() {
 
     initmatter->con2matter(reactantFilename);
     finalmatter->con2matter(productFilename);
+
+    gprfunc = std::make_unique<gpr::GaussianProcessRegression>();
 }
 
 GPRTrainTest::~GPRTrainTest() {
@@ -60,30 +62,28 @@ TEST_F(GPRTrainTest, TestMatter) {
   // GPRPotential pot{parameters};
   gpr::GPRSetup gpr_parameters;
   aux::AuxiliaryFunctionality aux_func;
-  gpr::GaussianProcessRegression *gprfunc = new gpr::GaussianProcessRegression();
-
-  gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-  gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   gpr_parameters.jitter_sigma2 = 0.;
-  gprfunc->setParameters(gpr_parameters);
+  this->gprfunc->setParameters(gpr_parameters);
 
-  gprfunc->getSexpAtCovarianceFunction()->setMagnSigma2(6.93874748072254e-009);
-  gprfunc->getSexpAtCovarianceFunction()->setLengthScale(888.953211438594e-006);
-  gprfunc->getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
+  this->gprfunc->getSexpAtCovarianceFunction()->setMagnSigma2(6.93874748072254e-009);
+  this->gprfunc->getSexpAtCovarianceFunction()->setLengthScale(888.953211438594e-006);
+  this->gprfunc->getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
 
-  gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
+  this->gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
 
   auto  p = helper_functions::eon_parameters_to_gpr(this->parameters.get());
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = this->initmatter->getCell()(i);
   }
 
-  gprfunc->initialize(p, atoms_config);
-  gprfunc->setHyperparameters(obspath, atoms_config);
-  gprfunc->optimize(obspath);
+  this->gprfunc->initialize(p, atoms_config);
+  this->gprfunc->setHyperparameters(obspath, atoms_config);
+  this->gprfunc->optimize(obspath);
   // Multiple observations
   // auto oo = obspath;
-  // gprfunc->calculatePotential(oo);
+  // this->gprfunc->calculatePotential(oo);
   // std::cout<<"Energy: "<<oo.E.extractEigenMatrix()<<std::endl;
   // std::cout<<"Correct Energy: "<<obspath.E.extractEigenMatrix()<<std::endl;
 
@@ -94,7 +94,7 @@ TEST_F(GPRTrainTest, TestMatter) {
   o.G.resize(init_frcsref.rows(), init_frcsref.cols());
   o.R.assignFromEigenMatrix(this->initmatter.get()->getPositionsFree());
   o.E.resize(1);
-  gprfunc->calculatePotential(o);
+  this->gprfunc->calculatePotential(o);
   ASSERT_NEAR(o.E.extractEigenMatrix()(0), init_eref, this->threshold*1e3)
       << "Energy does not match";
   EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(init_frcsref, this->threshold))
@@ -106,7 +106,7 @@ TEST_F(GPRTrainTest, TestMatter) {
 
   // Function calls
   GPRPotential pot{this->parameters.get()};
-  pot.registerGPRObject(gprfunc);
+  pot.registerGPRObject(this->gprfunc.get());
   auto egf_gpro = helper_functions::gpr_energy_and_forces(this->initmatter.get(), &pot);
   auto energy_gpro = std::get<double>(egf_gpro);
   auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
@@ -114,15 +114,6 @@ TEST_F(GPRTrainTest, TestMatter) {
       << "Energy does not match";
   EXPECT_TRUE(forces_gpro.isApprox(init_frcsref, this->threshold))
       << "Forces do not match";
-
-  // double energ = gprfunc->evaluateEnergy(gprfunc->R_matrix, gprfunc->R_indices, matter->getPositionsV());
-  // gprfunc->calculateMeanPrediction();
-  // gprfunc->calculatePosteriorMeanPrediction();
-  // EXPECT_EQ(energ, 3)
-  //     << "Covariance does not match";
-  // EXPECT_EQ(gprfunc->energy_and_gradient[0], 3)
-  //     << "Potential energy does not match";
-  delete gprfunc;
 }
 
 } /* namespace tests */
