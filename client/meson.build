@@ -221,14 +221,6 @@ t1 = executable('t1_morse',
                )
   test('MorsePot test', t1)
 
-t2 = executable('t2_neb',
-                'gtests/NEBTest.cpp',
-                link_with : [potentials, eclib],
-                dependencies: [eon_deps, gtest],
-                cpp_args : eon_extra_args,
-               )
-  test('Nudged Elastic Band Test', t2)
-
 if get_option('with_gprd')
   t1g = executable('t1g_obs',
                   'gtests/ObsTest.cpp',
@@ -246,28 +238,36 @@ if get_option('with_gprd')
                  )
   test('GPR helpers test', t2g)
 
-  t3g = executable('t3g_gprtrain',
+  t3g = executable('t3g_neb',
+                   'gtests/NEBTest.cpp',
+                   link_with : [potentials, eclib],
+                   dependencies: [eon_deps, gtest],
+                   cpp_args : eon_extra_args,
+                  )
+  test('Nudged Elastic Band Setup Test', t3g)
+
+  t4g = executable('t4g_gprtrain',
                    'gtests/GPRTrainTest.cpp',
                   link_with : [potentials, eclib],
                   dependencies: [eon_deps, gtest],
                   cpp_args : eon_extra_args,
                  )
-  test('GPR Regression test', t3g)
+  test('GPR Regression test', t4g)
 
-  t4g = executable('t4g_gprpot',
+  t5g = executable('t5g_gprpot',
                    'gtests/GPRPotTest.cpp',
                   link_with : [potentials, eclib],
                   dependencies: [eon_deps, gtest],
                   cpp_args : eon_extra_args,
                  )
-  test('GPR potential test', t4g)
+  test('GPR potential test', t5g)
 
-  t5g = executable('t5g_gprtrain',
+  t6g = executable('t6g_gprtrain',
                    'gtests/SCGMatterTest.cpp',
                   link_with : [potentials, eclib],
                   dependencies: [eon_deps, gtest],
                   cpp_args : eon_extra_args,
                  )
-  test('SCG Matter test', t5g)
+  test('SCG Matter test', t6g)
 
 endif
