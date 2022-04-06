@@ -87,10 +87,11 @@ TEST_F(GPRPotTest, TestMatter) {
   this->gprfunc->setHyperparameters(obspath, atoms_config);
   this->gprfunc->optimize(obspath);
   // Matter calls
-  GPRPotential pot{this->parameters.get()};
-  pot.registerGPRObject(this->gprfunc.get());
+  GPRPotential gprpot{this->gprparameon.get()};
+  gprpot.registerGPRObject(this->gprfunc.get());
   auto matterClone = std::make_unique<Matter>(gprparameon.get());
-  matterClone->setPotential(&pot); // This does not work, need to setup properly via parameters
+  matterClone->con2matter(this->reactantFilename);
+  matterClone->setPotential(&gprpot); // This does not work, need to setup properly via parameters
   ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, this->threshold*1e2)
       << "Energy does not match";
   EXPECT_TRUE(matterClone->getForces().isApprox(init_frcsref, this->threshold))
