@@ -120,12 +120,11 @@ TEST_F(GPRHelpersTest, TestNEBInitObs) {
   // Assertions
   const int nimages = this->parameters->nebImages;
   const int totImages = nimages + 2; // Final and end
-  const int totAtoms = totImages * this->initmatter->numberOfAtoms();
   EXPECT_EQ(obspath.E.getSize(), totImages)
       << "Number of elements of energies do not match";
-  EXPECT_EQ(obspath.R.getNumPoints(), totAtoms)
+  EXPECT_EQ(obspath.R.getNumPoints(), totImages)
       << "Number of elements of R matrices do not match";
-  EXPECT_EQ(obspath.G.getNumPoints(), totAtoms)
+  EXPECT_EQ(obspath.G.getNumPoints(), totImages)
       << "Number of elements of G matrices do not match";
   // obspath.printSizes();
 }
