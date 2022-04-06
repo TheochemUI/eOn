@@ -8,6 +8,12 @@ namespace tests {
         public:
             GPRTrainTest();
             virtual ~GPRTrainTest();
+    string reactantFilename;
+    string productFilename;
+
+    std::unique_ptr<Parameters> parameters;
+    std::unique_ptr<Matter> initmatter;
+    std::unique_ptr<Matter> finalmatter;
     };
 } /* namespace tests */
 

@@ -22,7 +22,20 @@
 namespace tests {
 
 GPRTrainTest::GPRTrainTest() {
-  // TODO Auto-generated constructor stub
+    reactantFilename = helper_functions::getRelevantFile("reactant.con");
+    productFilename = helper_functions::getRelevantFile("product.con");
+
+    parameters = std::make_unique<Parameters>();
+    parameters->potential = "morse_pt";
+    parameters->nebImages = 7;
+    parameters->LogPotential = false;
+    log_init(parameters.get(), (char *)"test.log");
+
+    initmatter = std::make_unique<Matter>(parameters.get());
+    finalmatter = std::make_unique<Matter>(parameters.get());
+
+    initmatter->con2matter(reactantFilename);
+    finalmatter->con2matter(productFilename);
 }
 
 GPRTrainTest::~GPRTrainTest() {
@@ -31,22 +44,20 @@ GPRTrainTest::~GPRTrainTest() {
 
 TEST_F(GPRTrainTest, TestMatter) {
   aux::ProblemSetUp problem_setup;
-  string confile{"pos.con"};
-  Parameters *parameters = new Parameters;
-  parameters->potential = "morse_pt";
-  parameters->potential = "morse_pt";
-  log_init(parameters, (char *)"test.log");
-  Matter *matter = new Matter(parameters);
-  matter->con2matter("pos.con");
-  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(matter,  1);
+  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  0.5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   auto R_init = std::get<gpr::Coord>(config_data);
+  // Setup the observations
+  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
+  auto imgArray = std::get<std::vector<Matter> >(initPath);
+  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
+  auto projForceArray = tangentArray; // Initially the same
+  auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
   // GPRPotential pot{parameters};
   gpr::GPRSetup gpr_parameters;
   aux::AuxiliaryFunctionality aux_func;
   gpr::GaussianProcessRegression *gprfunc = new gpr::GaussianProcessRegression();
-  auto all_obs = helper_functions::eon_matter_to_init_obs(matter);
 
   gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
@@ -59,18 +70,24 @@ TEST_F(GPRTrainTest, TestMatter) {
 
   gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
 
-  auto  p = helper_functions::eon_parameters_to_gpr(parameters);
+  auto  p = helper_functions::eon_parameters_to_gpr(this->parameters.get());
   for (int i = 0; i < 9; i++) {
-    p.cell_dimensions.value[i] = matter->getCell()(i);
+    p.cell_dimensions.value[i] = this->initmatter->getCell()(i);
   }
 
   gprfunc->initialize(p, atoms_config);
-  gprfunc->setHyperparameters(all_obs, atoms_config);
-  gprfunc->calculatePotential(all_obs);
-  gprfunc->optimize(all_obs);
-  // gprfunc->evaluateEnergyAndGradient();
-  EXPECT_EQ(gprfunc->energy_and_gradient[0], 3)
-      << "Energy does not match";
+  gprfunc->setHyperparameters(obspath, atoms_config);
+  gprfunc->calculatePotential(obspath);
+  gprfunc->optimize(obspath);
+  // gprfunc->calculatePosteriorMeanPrediction();
+  GPRPotential pot{this->parameters.get()};
+  pot.registerGPRObject(gprfunc);
+  auto egf_gpro = helper_functions::energy_and_forces(this->initmatter.get(), &pot);
+  auto energy_gpro = std::get<double>(egf_gpro);
+  auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
+  // // gprfunc->evaluateEnergyAndGradient();
+  // EXPECT_EQ(energy_gpro, 3)
+  //     << "Energy does not match";
 
   // double energ = gprfunc->evaluateEnergy(gprfunc->R_matrix, gprfunc->R_indices, matter->getPositionsV());
   // gprfunc->calculateMeanPrediction();
@@ -79,8 +96,6 @@ TEST_F(GPRTrainTest, TestMatter) {
   //     << "Covariance does not match";
   // EXPECT_EQ(gprfunc->energy_and_gradient[0], 3)
   //     << "Potential energy does not match";
-  delete matter;
-  delete parameters;
   delete gprfunc;
 }
 

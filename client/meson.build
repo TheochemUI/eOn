@@ -3,7 +3,7 @@ project('eonclient', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
 host_system = host_machine.system()
-eon_extra_args = ['-ggdb', '-O0']
+eon_extra_args = ['-ggdb', '-O0', '-fno-inline-functions']
 
 add_languages('c', required: true)
 
@@ -254,13 +254,13 @@ if get_option('with_gprd')
                  )
   test('GPR helpers test', t3g)
 
-  # t4g = executable('t4g_gprtrain',
-  #                  'gtests/GPRTrainTest.cpp',
-  #                 link_with : [potentials, eclib],
-  #                 dependencies: [eon_deps, gtest],
-  #                 cpp_args : eon_extra_args,
-  #                )
-  # test('GPR Regression test', t4g)
+  t4g = executable('t4g_gprtrain',
+                   'gtests/GPRTrainTest.cpp',
+                  link_with : [potentials, eclib],
+                  dependencies: [eon_deps, gtest],
+                  cpp_args : eon_extra_args,
+                 )
+  test('GPR Regression test', t4g)
 
   t5g = executable('t5g_gprtrain',
                    'gtests/SCGMatterTest.cpp',
