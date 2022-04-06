@@ -36,6 +36,13 @@ cd client
 meson setup builddir -Dwith_ams=true -Dwith_gprd=true --buildtype=release
 VERBOSE=1 meson compile -C builddir
 #+end_src
+***** Meson
+Currently for all machines ~meson~ is recommended.
+#+begin_src bash
+meson setup bbdir -Dwith_gprd=true --buildtype=debug --default-library=static
+meson test -C bbdir
+#+end_src
+The static libraries help ensure all dependencies are present during testing.
 All the options are documented in ~meson_options.txt~. Occasionally, when the
 installation is not done, there may be some linking errors. These can be fixed
 by:
