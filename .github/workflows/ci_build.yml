@@ -3,8 +3,8 @@ name: "Build EON"
 on:
   push:
     branches: [docs, atomicGPR]
-  pull_request:
-    branches: [docs, atomicGPR]
+  # pull_request:
+  #   branches: [docs, atomicGPR]
 jobs:
   build_eon:
     runs-on: ubuntu-latest
