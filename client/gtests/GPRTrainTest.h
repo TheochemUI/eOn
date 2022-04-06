@@ -8,7 +8,7 @@ namespace tests {
         public:
             GPRTrainTest();
             virtual ~GPRTrainTest();
-    long double threshold;
+    const long double threshold{1e-6};
     string reactantFilename;
     string productFilename;
 
