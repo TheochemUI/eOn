@@ -43,7 +43,9 @@ GPRTrainTest::~GPRTrainTest() {
 }
 
 TEST_F(GPRTrainTest, TestMatter) {
-  threshold = 1e-6;
+  // Constants
+  const auto init_eref = this->initmatter.get()->getPotentialEnergy();
+  const auto init_frcsref = this->initmatter.get()->getForcesFree();
   aux::ProblemSetUp problem_setup;
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
@@ -88,20 +90,21 @@ TEST_F(GPRTrainTest, TestMatter) {
   // Single observation
   gpr::Observation o;
   o.clear();
-  o.R.resize(this->initmatter.get()->getPositionsFree().rows(),this->initmatter.get()->getPositionsFree().cols());
-  o.G.resize(this->initmatter.get()->getForcesFree().rows(),this->initmatter.get()->getForcesFree().cols());
+  o.R.resize(init_frcsref.rows(), init_frcsref.cols());
+  o.G.resize(init_frcsref.rows(), init_frcsref.cols());
   o.R.assignFromEigenMatrix(this->initmatter.get()->getPositionsFree());
   o.E.resize(1);
   gprfunc->calculatePotential(o);
-  ASSERT_NEAR(o.E.extractEigenMatrix()(0), this->initmatter.get()->getPotentialEnergy(), this->threshold*1e3)
+  ASSERT_NEAR(o.E.extractEigenMatrix()(0), init_eref, this->threshold*1e3)
       << "Energy does not match";
-  EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(this->initmatter.get()->getForcesFree(), this->threshold))
+  EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(init_frcsref, this->threshold))
       << "Gradients do not match";
   // std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
   // std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
   // std::cout<<"Forces : \n"<<o.G.extractEigenMatrix()*-1<<std::endl;
-  // std::cout<<"Correct Forces: \n"<<this->initmatter.get()->getForcesFree()<<std::endl;
+  // std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
 
+  // Function calls
   // GPRPotential pot{this->parameters.get()};
   // pot.registerGPRObject(gprfunc);
   // auto egf_gpro = helper_functions::energy_and_forces(this->initmatter.get(), &pot);
@@ -110,6 +113,10 @@ TEST_F(GPRTrainTest, TestMatter) {
   // // gprfunc->evaluateEnergyAndGradient();
   // EXPECT_EQ(energy_gpro, 3)
   //     << "Energy does not match";
+  // ASSERT_NEAR(energy_gpro, init_eref, this->threshold*1e3)
+  //     << "Energy does not match";
+  // EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(init_frcsref, this->threshold))
+  //     << "Gradients do not match";
 
   // double energ = gprfunc->evaluateEnergy(gprfunc->R_matrix, gprfunc->R_indices, matter->getPositionsV());
   // gprfunc->calculateMeanPrediction();
