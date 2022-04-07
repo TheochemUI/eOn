@@ -264,6 +264,10 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
 std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
   // TODO: Sanity checks, if the dynamic_cast fails it is a nullptr and so is
   // not evaluated
+  // if (!pot->getName().compare("gpr_pot"s)){
+  //   return helper_functions::gpr_energy_and_forces(matter, static_cast<GPRPotential*>(pot));
+  // }
+  // std::cout<<"Calling "<<pot->getName()<<std::endl;
   if (auto* gppot = dynamic_cast<GPRPotential*>(pot)){
     return helper_functions::gpr_energy_and_forces(matter, gppot);
   }
