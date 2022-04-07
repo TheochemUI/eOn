@@ -53,10 +53,8 @@ TEST_F(GPRPotTest, TestMatter) {
   // Constants
   const auto init_eref = this->initmatter.get()->getPotentialEnergy();
   const auto init_frcsref = this->initmatter.get()->getForcesFree();
-  aux::ProblemSetUp problem_setup;
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
-  auto R_init = std::get<gpr::Coord>(config_data);
   // Setup the observations
   auto initPath = helper_functions::prepInitialPath(this->parameters.get());
   auto imgArray = std::get<std::vector<Matter> >(initPath);
@@ -64,9 +62,7 @@ TEST_F(GPRPotTest, TestMatter) {
   auto projForceArray = tangentArray; // Initially the same
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
-  // GPRPotential pot{parameters};
   gpr::GPRSetup gpr_parameters;
-  aux::AuxiliaryFunctionality aux_func;
   this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   gpr_parameters.jitter_sigma2 = 0.;
@@ -91,7 +87,7 @@ TEST_F(GPRPotTest, TestMatter) {
   gprpot.registerGPRObject(this->gprfunc.get());
   auto matterClone = std::make_unique<Matter>(gprparameon.get());
   matterClone->con2matter(this->reactantFilename);
-  matterClone->setPotential(&gprpot); // This does not work, need to setup properly via parameters
+  matterClone->setPotential(&gprpot);
   ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, this->threshold*1e2)
       << "Energy does not match";
   EXPECT_TRUE(matterClone->getForces().isApprox(init_frcsref, this->threshold))
