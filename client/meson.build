@@ -240,15 +240,30 @@ t1 = executable('t1_morse',
 
 if get_option('with_gprd')
 
-  gpdat = custom_target('copy data for gpr-neb',
-                        input : ['gtests/data/gpr_neb/morse_one_pt/config.ini',
-                                 'gtests/data/gpr_neb/morse_one_pt/product.con',
-                                 'gtests/data/gpr_neb/morse_one_pt/reactant.con'],
-                        output : ['config.ini', 'product.con', 'reactant.con'],
-                        command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
-                        install : false,
-                        build_by_default : true,
-                       )
+  # GPR Data
+  custom_target('copy config.ini for gpr-neb',
+                input : ['gtests/data/gpr_neb/morse_one_pt/config.ini'],
+                output : ['config.ini'],
+                command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
+                install : false,
+                build_by_default : true,
+               )
+
+  custom_target('copy product.con for gpr-neb',
+                input : ['gtests/data/gpr_neb/morse_one_pt/product.con'],
+                output : ['product.con'],
+                command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
+                install : false,
+                build_by_default : true,
+               )
+
+  custom_target('copy reactant.con for gpr-neb',
+                input : ['gtests/data/gpr_neb/morse_one_pt/reactant.con'],
+                output : ['reactant.con'],
+                command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
+                install : false,
+                build_by_default : true,
+               )
 
   gptest_dets = [eontest_dep]
 
