@@ -192,6 +192,12 @@ if get_option('with_fortran')
 endif
 
 # ---------------------- Executable
+versioning = custom_target('create version.h',
+                        output : ['version.h'],
+                        command : [ 'version.sh', '>', '@OUTPUT@' ],
+                        install : false,
+                        build_by_default : true,
+                       )
 
 eclib = library('eonlib',
                 eonlib_sources,
@@ -201,9 +207,11 @@ eclib = library('eonlib',
                 install: true
                )
 
+eonlib = [potentials, eclib]
+
 ec = executable('eonclient',
                 ['CommandLine.cpp', 'ClientEON.cpp'],
-                link_with : [potentials, eclib],
+                link_with : eonlib,
                 dependencies: eon_deps,
                 cpp_args : eon_extra_args,
                 install : true)
@@ -224,8 +232,8 @@ potdat = custom_target('copy data for morse test',
 
 t1 = executable('t1_morse',
                 'gtests/MorsePotTest.cpp',
-                link_with : [potentials, eclib],
-                dependencies: [eontest_dep, potdat],
+                link_with : eonlib,
+                dependencies: eontest_dep,
                 cpp_args : eon_extra_args,
                )
   test('MorsePot test', t1)
@@ -233,18 +241,20 @@ t1 = executable('t1_morse',
 if get_option('with_gprd')
 
   gpdat = custom_target('copy data for gpr-neb',
-                        input : ['gtests/data/gpr_neb/morse_one_pt/*'],
-                        output : ['config.ini', 'pos.con', 'product.con', 'reactant.con'],
+                        input : ['gtests/data/gpr_neb/morse_one_pt/config.ini',
+                                 'gtests/data/gpr_neb/morse_one_pt/product.con',
+                                 'gtests/data/gpr_neb/morse_one_pt/reactant.con'],
+                        output : ['config.ini', 'product.con', 'reactant.con'],
                         command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
                         install : false,
                         build_by_default : true,
                        )
 
-  gptest_dets = [eontest_dep, gpdat, potdat]
+  gptest_dets = [eontest_dep]
 
   t1g = executable('t1g_obs',
                   'gtests/ObsTest.cpp',
-                  link_with : [potentials, eclib],
+                  link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
@@ -252,7 +262,7 @@ if get_option('with_gprd')
 
   t2g = executable('t2g_gprhelpers',
                    'gtests/GPRHelpersTest.cpp',
-                  link_with : [potentials, eclib],
+                  link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
@@ -260,7 +270,7 @@ if get_option('with_gprd')
 
   t3g = executable('t3g_neb',
                    'gtests/NEBSetupTest.cpp',
-                   link_with : [potentials, eclib],
+                   link_with : eonlib,
                    dependencies: gptest_dets,
                    cpp_args : eon_extra_args,
                   )
@@ -268,7 +278,7 @@ if get_option('with_gprd')
 
   t4g = executable('t4g_gprtrain',
                    'gtests/GPRTrainTest.cpp',
-                  link_with : [potentials, eclib],
+                  link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
@@ -276,7 +286,7 @@ if get_option('with_gprd')
 
   t5g = executable('t5g_gprpot',
                    'gtests/GPRPotTest.cpp',
-                  link_with : [potentials, eclib],
+                  link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
@@ -284,7 +294,7 @@ if get_option('with_gprd')
 
   t6g = executable('t6g_nebjobgpr',
                    'gtests/NEBJobGPRTest.cpp',
-                  link_with : [potentials, eclib],
+                  link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
@@ -292,7 +302,7 @@ if get_option('with_gprd')
 
   # t6g = executable('t6g_gprtrain',
   #                  'gtests/SCGMatterTest.cpp',
-  #                 link_with : [potentials, eclib],
+  #                 link_with : eonlib,
   #                 dependencies: gptest_dets,
   #                 cpp_args : eon_extra_args,
   #                )
