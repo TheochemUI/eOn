@@ -212,20 +212,40 @@ ec = executable('eonclient',
 
 gtest = dependency('gtest', main : true, required : false)
 gtest_dep = gtest
+eontest_dep = [eon_deps, gtest]
+
+potdat = custom_target('copy data for morse test',
+                        input : ['gtests/data/gpr_neb/morse_one_pt/pos.con'],
+                        output : ['pos.con'],
+                        command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
+                        install : false,
+                        build_by_default : true,
+                       )
 
 t1 = executable('t1_morse',
                 'gtests/MorsePotTest.cpp',
                 link_with : [potentials, eclib],
-                dependencies: [eon_deps, gtest],
+                dependencies: [eontest_dep, potdat],
                 cpp_args : eon_extra_args,
                )
   test('MorsePot test', t1)
 
 if get_option('with_gprd')
+
+  gpdat = custom_target('copy data for gpr-neb',
+                        input : ['gtests/data/gpr_neb/morse_one_pt/*'],
+                        output : ['config.ini', 'pos.con', 'product.con', 'reactant.con'],
+                        command : [ 'cp', '@INPUT@', '@OUTPUT@' ],
+                        install : false,
+                        build_by_default : true,
+                       )
+
+  gptest_dets = [eontest_dep, gpdat, potdat]
+
   t1g = executable('t1g_obs',
                   'gtests/ObsTest.cpp',
                   link_with : [potentials, eclib],
-                  dependencies: [eon_deps, gtest],
+                  dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
   test('observation test', t1g)
@@ -233,7 +253,7 @@ if get_option('with_gprd')
   t2g = executable('t2g_gprhelpers',
                    'gtests/GPRHelpersTest.cpp',
                   link_with : [potentials, eclib],
-                  dependencies: [eon_deps, gtest],
+                  dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
   test('GPR helpers test', t2g)
@@ -241,7 +261,7 @@ if get_option('with_gprd')
   t3g = executable('t3g_neb',
                    'gtests/NEBSetupTest.cpp',
                    link_with : [potentials, eclib],
-                   dependencies: [eon_deps, gtest],
+                   dependencies: gptest_dets,
                    cpp_args : eon_extra_args,
                   )
   test('Nudged Elastic Band Setup Test', t3g)
@@ -249,7 +269,7 @@ if get_option('with_gprd')
   t4g = executable('t4g_gprtrain',
                    'gtests/GPRTrainTest.cpp',
                   link_with : [potentials, eclib],
-                  dependencies: [eon_deps, gtest],
+                  dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
   test('GPR Regression test', t4g)
@@ -257,7 +277,7 @@ if get_option('with_gprd')
   t5g = executable('t5g_gprpot',
                    'gtests/GPRPotTest.cpp',
                   link_with : [potentials, eclib],
-                  dependencies: [eon_deps, gtest],
+                  dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
   test('GPR potential test', t5g)
@@ -265,7 +285,7 @@ if get_option('with_gprd')
   t6g = executable('t6g_nebjobgpr',
                    'gtests/NEBJobGPRTest.cpp',
                   link_with : [potentials, eclib],
-                  dependencies: [eon_deps, gtest],
+                  dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
   test('Run the NEB with GPR-Pot objects', t6g)
@@ -273,7 +293,7 @@ if get_option('with_gprd')
   # t6g = executable('t6g_gprtrain',
   #                  'gtests/SCGMatterTest.cpp',
   #                 link_with : [potentials, eclib],
-  #                 dependencies: [eon_deps, gtest],
+  #                 dependencies: gptest_dets,
   #                 cpp_args : eon_extra_args,
   #                )
   # test('SCG Matter test', t6g)
