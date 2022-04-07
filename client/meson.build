@@ -203,7 +203,7 @@ eclib = library('eonlib',
 
 ec = executable('eonclient',
                 ['CommandLine.cpp', 'ClientEON.cpp'],
-                link_with : eclib,
+                link_with : [potentials, eclib],
                 dependencies: eon_deps,
                 cpp_args : eon_extra_args,
                 install : true)
@@ -262,12 +262,20 @@ if get_option('with_gprd')
                  )
   test('GPR potential test', t5g)
 
-  t6g = executable('t6g_gprtrain',
-                   'gtests/SCGMatterTest.cpp',
+  t6g = executable('t6g_nebjobgpr',
+                   'gtests/NEBJobGPRTest.cpp',
                   link_with : [potentials, eclib],
                   dependencies: [eon_deps, gtest],
                   cpp_args : eon_extra_args,
                  )
-  test('SCG Matter test', t6g)
+  test('Run the NEB with GPR-Pot objects', t6g)
+
+  # t6g = executable('t6g_gprtrain',
+  #                  'gtests/SCGMatterTest.cpp',
+  #                 link_with : [potentials, eclib],
+  #                 dependencies: [eon_deps, gtest],
+  #                 cpp_args : eon_extra_args,
+  #                )
+  # test('SCG Matter test', t6g)
 
 endif
