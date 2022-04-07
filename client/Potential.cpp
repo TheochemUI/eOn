@@ -272,5 +272,5 @@ void Potential::setParams(Parameters *params){
 }
 
 std::string Potential::getName(){
-  return std::string{this->params->potential};
+  return this->params->potential;
 }
