@@ -81,7 +81,7 @@ class Potential
         static int fcallsTotal;
         static int wu_fcallsTotal;
         static double totalUserTime;
-        
+
         Parameters *params;
         void setParams(Parameters *params);
         std::string getName();

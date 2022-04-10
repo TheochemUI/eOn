@@ -121,6 +121,10 @@ public:
     VectorXd getFreeV() const;
     Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
+    //   The cachable mechanism is meant to facilitate appending converting matter
+    //   objects for the GPR without additional calls
+    bool useCache; // Meant to determine if the object's energy and forces can be read from cached_energy_forces
+    std::pair<double, AtomMatrix> maybe_cached_energy_forces(); // This is inherently unreliable, use with great caution, returns existing energy and forces
 
 private:
     Potential *potential; // pointer to function calculating the energy and forces

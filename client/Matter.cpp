@@ -94,6 +94,14 @@ class MatterObjectiveFunction : public ObjectiveFunction
 };
 
 
+std::pair<double, AtomMatrix> Matter::maybe_cached_energy_forces(){
+    if (this->useCache){
+        useCache = false;
+        return std::make_pair(this->potentialEnergy, this->forces);
+    } else {
+        return std::make_pair(this->potentialEnergy, this->forces);
+    }
+}
 
 Matter::Matter(Parameters *parameters)
 {
@@ -120,7 +128,8 @@ void Matter::initializeDataMembers(Parameters *params)
     recomputePotential = true;
     forceCalls = 0;
     parameters = params;
-    potential = NULL; 
+    potential = NULL;
+    useCache = false;
 }
 
 

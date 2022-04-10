@@ -8,6 +8,7 @@
 #include "Parameters.h"
 #include "Log.h"
 #include "HelperFunctions.h"
+#include "NudgedElasticBand.h"
 #include "potentials/GPRPotential/GPRPotential.h"
 
 #include "subprojects/gprdimer/structures/Structures.h"
@@ -113,5 +114,26 @@ namespace helper_functions {
      * observation object
      * */
     gpr::Observation prepInitialObs(std::vector<Matter> &vecmat);
+
+    /**
+     *  \brief Checks the NEB object and returns a new observation for the GPR if required
+     *
+     *  This function is meant to determine if additional rounds of the GPR are
+     *  required and if so, to update the observations for the same.
+     *
+     *  \param neb
+     *  \return bool
+     */
+    bool maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& prevObs);
+
+    /**
+     * \brief Returns a single trained instance of a NEB
+     *
+     * This uses the MATLAB code logic of restarting each round with a linear interpolation
+     *
+     * \param
+     */
+     std::unique_ptr<NudgedElasticBand> runNEBround(GPRPotential trainedGPR, Parameters* pReactFin);
+
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
