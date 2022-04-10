@@ -249,13 +249,19 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
 
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
+  // TODO: Moving is Free, but also needs to have Frozen Active
+  // Resizing can be only on free positions at the moment,
+  // They are the same
   o.clear();
-  o.R.resize(matter->getPositionsFree().rows(),matter->getPositionsFree().cols());
-  o.G.resize(matter->getForcesFree().rows(),matter->getForcesFree().cols());
+  auto free_rows{matter->getPositionsFree().rows()}, free_cols{matter->getPositionsFree().cols()};
+  o.R.resize(free_rows, free_cols);
+  o.G.resize(free_rows, free_cols);
   o.E.resize(1);
-  o.E.set(matter->getPotentialEnergy());
+  auto pe_forces{matter->maybe_cached_energy_forces()};
+  o.E.set(std::get<double>(pe_forces));
+  std::cout<<o.E.extractEigenMatrix()<<" ";
   o.R.assignFromEigenMatrix(matter->getPositionsFree());
-  AtomMatrix gradEig = matter->getForcesFree();
+  AtomMatrix gradEig = std::get<AtomMatrix>(pe_forces);
   gradEig = gradEig * -1;
   o.G.assignFromEigenMatrix(gradEig);
   return o;
