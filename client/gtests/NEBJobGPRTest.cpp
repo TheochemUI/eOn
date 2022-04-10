@@ -51,7 +51,7 @@ NEBJobGPRTest::~NEBJobGPRTest() {
 TEST_F(NEBJobGPRTest, TestMatter) {
   const auto init_eref = this->initmatter.get()->getPotentialEnergy(); // Surprisingly still needed, buggy?
   const auto init_frcsref = this->initmatter.get()->getForcesFree();
-  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
+  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  2);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   // Setup the run
   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
@@ -87,9 +87,53 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   auto matterFin = std::make_unique<Matter>(this->gprparameon.get());
   matterFin->con2matter(this->productFilename);
   matterFin->setPotential(&gprpot);
+  auto matterTest = std::make_unique<Matter>(this->gprparameon.get());
+  matterTest->con2matter(this->productFilename);
+  matterTest->setPositions((matterOne->getPositions()*1.01+matterFin->getPositions()*0.03) / 2);
+  matterTest->setPotential(&gprpot);
+  double blah = matterTest->getPotentialEnergy();
+  std::cout<<matterTest->getPotentialEnergy()<<" Matter at Test point\n";
   // RUN NEB!!!
   NudgedElasticBand *neb = new NudgedElasticBand(matterOne.get(), matterFin.get(), this->gprparameon.get());
-  auto status = neb->compute();
+  neb->compute();
+  bool mustUpdate = helper_functions::maybeUpdateObs(*neb, obspath);
+  this->gprfunc->setHyperparameters(obspath, atoms_config, false);
+  this->gprfunc->optimize(obspath);
+  gprpot.registerGPRObject(this->gprfunc.get());
+  matterTest->setPotential(&gprpot);
+  ASSERT_NE(blah, matterTest->getPotentialEnergy())<<"Energy not changed after updating gpr";
+  while(mustUpdate){
+    this->gprfunc->setHyperparameters(obspath, atoms_config, false);
+    this->gprfunc->optimize(obspath);
+    gprpot.registerGPRObject(this->gprfunc.get());
+    auto matterThree = std::make_unique<Matter>(this->gprparameon.get());
+    matterThree->con2matter(this->reactantFilename);
+    matterThree->setPotential(&gprpot);
+    matterTest->setPotential(&gprpot);
+    std::cout<<matterTest->getPotentialEnergy()<<" Matter 3\n";
+    ASSERT_NE(blah, matterTest->getPotentialEnergy())<<"Energy not changed after updating gpr";
+    auto matterFour = std::make_unique<Matter>(this->gprparameon.get());
+    matterFour->con2matter(this->productFilename);
+    matterFour->setPotential(&gprpot);
+    NudgedElasticBand *nebTwo = new NudgedElasticBand(matterThree.get(), matterFour.get(), this->gprparameon.get());
+    nebTwo->compute();
+    mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath);
+    delete nebTwo;
+  };
+    gprpot.registerGPRObject(this->gprfunc.get());
+    auto matterThree = std::make_unique<Matter>(this->gprparameon.get());
+    matterThree->con2matter(this->reactantFilename);
+    matterThree->setPotential(&gprpot);
+    matterTest->setPotential(&gprpot);
+    std::cout<<matterTest->getPotentialEnergy()<<" Matter 3\n";
+    ASSERT_NE(blah, matterTest->getPotentialEnergy())<<"Energy not changed after updating gpr";
+    auto matterFour = std::make_unique<Matter>(this->gprparameon.get());
+    matterFour->con2matter(this->productFilename);
+    matterFour->setPotential(&gprpot);
+    NudgedElasticBand *nebTwo = new NudgedElasticBand(matterThree.get(), matterFour.get(), this->gprparameon.get());
+    nebTwo->compute();
+    delete nebTwo;
+  delete neb;
 }
 
 } /* namespace tests */
