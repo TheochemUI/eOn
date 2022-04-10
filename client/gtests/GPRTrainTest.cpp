@@ -53,15 +53,11 @@ TEST_F(GPRTrainTest, TestMatter) {
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   auto R_init = std::get<gpr::Coord>(config_data);
   // Setup the observations
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
-  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
-  auto projForceArray = tangentArray; // Initially the same
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
   // GPRPotential pot{parameters};
   gpr::GPRSetup gpr_parameters;
-  aux::AuxiliaryFunctionality aux_func;
   this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
   gpr_parameters.jitter_sigma2 = 0.;
@@ -97,12 +93,14 @@ TEST_F(GPRTrainTest, TestMatter) {
   this->gprfunc->calculatePotential(o);
   ASSERT_NEAR(o.E.extractEigenMatrix()(0), init_eref, this->threshold*1e3)
       << "Energy does not match";
-  EXPECT_TRUE((o.G.extractEigenMatrix() * -1).isApprox(init_frcsref, this->threshold))
+  double testForces = ((o.G.extractEigenMatrix() * -1) - init_frcsref).norm();
+  ASSERT_NEAR(testForces, 0, 1e-3)
       << "Forces do not match";
   // std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
-  // std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
+  // std::cout<<"Correct Energy: "<<init_eref<<std::endl;
   // std::cout<<"Forces : \n"<<o.G.extractEigenMatrix()*-1<<std::endl;
   // std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
+  // std::cout<<"Test metric: \n"<<testForces<<std::endl;
 
   // Function calls
   GPRPotential pot{this->parameters.get()};
@@ -112,7 +110,8 @@ TEST_F(GPRTrainTest, TestMatter) {
   auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
   ASSERT_NEAR(energy_gpro, init_eref, this->threshold*1e3)
       << "Energy does not match";
-  EXPECT_TRUE(forces_gpro.isApprox(init_frcsref, this->threshold))
+  double testForcesNew = (forces_gpro - init_frcsref).norm();
+  ASSERT_NEAR(testForces, 0, 1e-3)
       << "Forces do not match";
 }
 

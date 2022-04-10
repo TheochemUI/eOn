@@ -49,7 +49,7 @@ namespace helper_functions {
      *
      * @param *Matter An EON Matter object
      */
-    gpr::Observation eon_matter_to_init_obs(Matter *matter);
+    gpr::Observation eon_matter_to_init_obs(Matter& matter);
 
     /**
      * \brief Call an EON potential from a matter object
@@ -101,8 +101,7 @@ namespace helper_functions {
      * This is essentially what the NEB initialization does, however, we need
      * this here to prepare the initial observations for the GPR surface
      * */
-    std::pair<std::vector<Matter>,
-               std::vector<AtomMatrix> > prepInitialPath(
+    std::vector<Matter> prepInitialPath(
                    Parameters *params,
                    std::string fname_reactant="reactant.con"s,
                    std::string fname_product="product.con"s);

@@ -247,20 +247,19 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   return atoms_config;
 }
 
-gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
+gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
   gpr::Observation o;
   // TODO: Moving is Free, but also needs to have Frozen Active
   // Resizing can be only on free positions at the moment,
   // They are the same
   o.clear();
-  auto free_rows{matter->getPositionsFree().rows()}, free_cols{matter->getPositionsFree().cols()};
+  auto free_rows{matter.getPositionsFree().rows()}, free_cols{matter.getPositionsFree().cols()};
   o.R.resize(free_rows, free_cols);
   o.G.resize(free_rows, free_cols);
   o.E.resize(1);
-  auto pe_forces{matter->maybe_cached_energy_forces()};
+  auto pe_forces{matter.maybe_cached_energy_forces_free()};
   o.E.set(std::get<double>(pe_forces));
-  std::cout<<o.E.extractEigenMatrix()<<" ";
-  o.R.assignFromEigenMatrix(matter->getPositionsFree());
+  o.R.assignFromEigenMatrix(matter.getPositionsFree());
   AtomMatrix gradEig = std::get<AtomMatrix>(pe_forces);
   gradEig = gradEig * -1;
   o.G.assignFromEigenMatrix(gradEig);
@@ -315,7 +314,7 @@ std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_f
   gpr::Coord R_init;
   aux::ProblemSetUp problem_setup;
   auto retconf = helper_functions::eon_matter_to_atmconf(matter);
-  R_init.resize(1, 3 * matter->numberOfAtoms());
+  R_init.resize(1, 3 * matter->numberOfFreeAtoms());
   int counter = 0;
   for(int i = 0; i < matter->getPositionsFree().rows(); ++i) {
     for(int j = 0; j < matter->getPositionsFree().cols(); ++j) {
@@ -344,8 +343,7 @@ void helper_functions::MatterHolder::getEnergyGradient(const Eigen::VectorXd& w,
   // return true;
   }
 
-std::pair<std::vector<Matter>,
-           std::vector<AtomMatrix> > helper_functions::prepInitialPath(
+std::vector<Matter> helper_functions::prepInitialPath(
            Parameters *params,
            std::string fname_reactant,
            std::string fname_product){
@@ -355,36 +353,39 @@ std::pair<std::vector<Matter>,
   Matter initmatter(params), finalmatter(params);
   initmatter.con2matter(reactantFilename);
   finalmatter.con2matter(productFilename);
+  initmatter.getPotentialEnergy();
+  finalmatter.getPotentialEnergy();
   // Setup path
   const int natoms = initmatter.numberOfAtoms();
   const int nimages = params->nebImages;
   const int totImages = nimages + 2; // Final and end
   std::vector<Matter> imageArray;
-  auto tangentArray = std::vector<AtomMatrix>(totImages);
-  for (size_t idx{0}; idx < nimages; idx++){
+  for (size_t idx{0}; idx < totImages; idx++){
     imageArray.emplace_back(initmatter);
-    tangentArray[idx].resize(natoms, 3);
   }
     imageArray.back() = finalmatter;
     auto posInit = imageArray.front().getPositionsFree();
     auto posFinal = imageArray.back().getPositionsFree();
     const AtomMatrix imageSep = imageArray.front().pbc(posFinal-posInit)/(imageArray.size());
     for (double idx{0}; auto &image: imageArray){
+      if (idx == imageArray.size()-1 or (idx == 0)) { // Don't change the final and first image
+        ++idx;
+        continue;
+      }
       image.setPositionsFree(posInit + imageSep * idx);
+      image.setPotential(initmatter.getPotential());
       image.getPotentialEnergy();
       image.getForcesFree();
       image.useCache = true;
-      std::cout<<image.getPotentialEnergy()<<" ";
       ++idx;
     }
-      std::cout<<std::endl;
-    return std::make_pair(imageArray, tangentArray);
+    return imageArray;
 }
 
 gpr::Observation helper_functions::prepInitialObs(std::vector<Matter> &vecmat) {
   gpr::Observation resObs;
   for (auto &mat : vecmat){
-    resObs.append(helper_functions::eon_matter_to_init_obs(&mat));
+    resObs.append(helper_functions::eon_matter_to_init_obs(mat));
   }
   return resObs;
 }
@@ -412,7 +413,7 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   if (updated){
     for (long idx {1}; idx <= neb.images; idx++){// prepare observation
       std::cout<<"Appending to image "<<idx<<"\n";
-      prevObs.append(helper_functions::eon_matter_to_init_obs(neb.image[idx]));
+      prevObs.append(helper_functions::eon_matter_to_init_obs(*neb.image[idx]));
       prevObs.printSizes();
     }
   }

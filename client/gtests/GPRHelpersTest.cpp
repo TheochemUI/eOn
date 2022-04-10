@@ -96,26 +96,14 @@ TEST_F(GPRHelpersTest, TestMatter) {
 
 TEST_F(GPRHelpersTest, TestNEBInitPath) {
   // Setup the run
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
-  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
-  auto projForceArray = tangentArray; // Initially the same
-  // Setup counters
-  const int nimages = this->parameters->nebImages;
-  auto extremumPosition = std::vector<double>(2*nimages+1, 0);
-  auto extremumEnergy = std::vector<double>(2*nimages+1, 0);
-  auto extremumCurvature = std::vector<double>(2*nimages+1, 0);
-  int numExtrema = 0;
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   EXPECT_EQ(imgArray.back().getForces(), this->finalmatter->getForces())
       << "Forces do not match";
 }
 
 TEST_F(GPRHelpersTest, TestNEBInitObs) {
   // Setup the observations
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
-  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
-  auto projForceArray = tangentArray; // Initially the same
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Assertions
   const int nimages = this->parameters->nebImages;

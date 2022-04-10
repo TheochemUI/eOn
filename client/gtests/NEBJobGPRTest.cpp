@@ -54,8 +54,7 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   // Setup the run
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
   gpr::GPRSetup gpr_parameters;
@@ -91,7 +90,6 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   // RUN NEB!!!
   NudgedElasticBand *neb = new NudgedElasticBand(matterOne.get(), matterFin.get(), this->gprparameon.get());
   auto status = neb->compute();
-  // printEndState(status);
 }
 
 } /* namespace tests */

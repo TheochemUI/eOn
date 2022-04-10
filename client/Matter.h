@@ -125,6 +125,7 @@ public:
     //   objects for the GPR without additional calls
     bool useCache; // Meant to determine if the object's energy and forces can be read from cached_energy_forces
     std::pair<double, AtomMatrix> maybe_cached_energy_forces(); // This is inherently unreliable, use with great caution, returns existing energy and forces
+    std::pair<double, AtomMatrix> maybe_cached_energy_forces_free(); // This is inherently unreliable, use with great caution, returns existing energy and forces
 
 private:
     Potential *potential; // pointer to function calculating the energy and forces

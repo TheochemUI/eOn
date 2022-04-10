@@ -42,16 +42,8 @@ NEBSetupTest::~NEBSetupTest() {
 
 TEST_F(NEBSetupTest, TestMatter) {
   // Setup the run
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
-  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
-  auto projForceArray = tangentArray; // Initially the same
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   // Setup counters
-  const int nimages = this->parameters->nebImages;
-  auto extremumPosition = std::vector<double>(2*nimages+1, 0);
-  auto extremumEnergy = std::vector<double>(2*nimages+1, 0);
-  auto extremumCurvature = std::vector<double>(2*nimages+1, 0);
-  int numExtrema = 0;
   EXPECT_EQ(imgArray.back().getForces(), this->finalmatter->getForces())
       << "Forces do not match";
 }

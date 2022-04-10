@@ -56,10 +56,7 @@ TEST_F(GPRPotTest, TestMatter) {
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   // Setup the observations
-  auto initPath = helper_functions::prepInitialPath(this->parameters.get());
-  auto imgArray = std::get<std::vector<Matter> >(initPath);
-  auto tangentArray = std::get<std::vector<AtomMatrix> >(initPath);
-  auto projForceArray = tangentArray; // Initially the same
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
   gpr::GPRSetup gpr_parameters;
@@ -90,12 +87,13 @@ TEST_F(GPRPotTest, TestMatter) {
   matterClone->setPotential(&gprpot);
   ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, this->threshold*1e2)
       << "Energy does not match";
-  EXPECT_TRUE(matterClone->getForces().isApprox(init_frcsref, this->threshold))
+  double testForces = (matterClone->getForces() - init_frcsref).norm();
+  ASSERT_NEAR(testForces, 0, 1e-3)
       << "Forces do not match";
-  std::cout<<"Energy: "<<matterClone->getPotentialEnergy()<<std::endl;
-  std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
-  std::cout<<"Forces : \n"<<matterClone->getForcesFree()<<std::endl;
-  std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
+  // std::cout<<"Energy: "<<matterClone->getPotentialEnergy()<<std::endl;
+  // std::cout<<"Correct Energy: "<<this->initmatter.get()->getPotentialEnergy()<<std::endl;
+  // std::cout<<"Forces : \n"<<matterClone->getForcesFree()<<std::endl;
+  // std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
 }
 
 } /* namespace tests */

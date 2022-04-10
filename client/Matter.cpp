@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <string.h>
+#include <typeinfo>
 
 using namespace std;
 
@@ -99,7 +100,24 @@ std::pair<double, AtomMatrix> Matter::maybe_cached_energy_forces(){
         useCache = false;
         return std::make_pair(this->potentialEnergy, this->forces);
     } else {
-        return std::make_pair(this->potentialEnergy, this->forces);
+        return std::make_pair(this->getPotentialEnergy(), this->getForces());
+    }
+}
+
+std::pair<double, AtomMatrix> Matter::maybe_cached_energy_forces_free(){
+    if (this->useCache){
+        useCache = false;
+        AtomMatrix retforces(numberOfFreeAtoms(),3);
+        for(size_t i{0}, j{0}; i<nAtoms; i++)
+        {
+            if (!isFixed(i)) {
+                retforces.row(j) = this->forces.row(i);
+                j++;
+            }
+        }
+        return std::make_pair(this->potentialEnergy, retforces);
+    } else {
+        return std::make_pair(this->getPotentialEnergy(), this->getForcesFree());
     }
 }
 
