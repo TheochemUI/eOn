@@ -400,9 +400,12 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   // TODO: Handle climbingImage
   // TODO: Handle different convergence measures
   // TODO: Don't hardcode convergence
-  double nebConvergedForce {0.0001}, trupotdiff{0.0};
-  for (long idx {1}; idx <= neb.images; idx++){// indices from convergenceForce
-    trupotdiff = (neb.image[idx]->getForces() - *neb.projectedForce[idx]).norm();
+  double nebConvergedForce {1e-5}, trupotdiff{0.0};
+  Morse pot_morse;
+  // pot_morse.setParams(pmorse); // *mostly* pointless
+  for (long idx {1}; idx < neb.images; idx++){// indices from convergenceForce, basically excludes final, initial
+    auto true_energy_forces = helper_functions::energy_and_forces(neb.image[idx], &pot_morse);
+    trupotdiff = (neb.image[idx]->getForces() - std::get<AtomMatrix>(true_energy_forces)).norm();
     std::cout<<trupotdiff<<std::endl;
     if (trupotdiff > nebConvergedForce){
       updated = true;

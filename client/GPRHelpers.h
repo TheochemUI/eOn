@@ -10,6 +10,8 @@
 #include "HelperFunctions.h"
 #include "NudgedElasticBand.h"
 #include "potentials/GPRPotential/GPRPotential.h"
+#include "Potential.h"
+#include "potentials/Morse/Morse.h"
 
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
