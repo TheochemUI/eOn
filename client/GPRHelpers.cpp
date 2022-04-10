@@ -352,31 +352,32 @@ std::pair<std::vector<Matter>,
   // Prep final, initial images
   auto reactantFilename = helper_functions::getRelevantFile(fname_reactant);
   auto productFilename = helper_functions::getRelevantFile(fname_product);
-  auto initmatter = std::make_unique<Matter>(params);
-  auto finalmatter = std::make_unique<Matter>(params);
-  initmatter->con2matter(reactantFilename);
-  finalmatter->con2matter(productFilename);
-  initmatter->getPotentialEnergy();
-  finalmatter->getPotentialEnergy();
+  Matter initmatter(params), finalmatter(params);
+  initmatter.con2matter(reactantFilename);
+  finalmatter.con2matter(productFilename);
   // Setup path
-  const int natoms = initmatter->numberOfAtoms();
+  const int natoms = initmatter.numberOfAtoms();
   const int nimages = params->nebImages;
   const int totImages = nimages + 2; // Final and end
-  auto imageArray = std::vector<Matter>(totImages, params);
+  std::vector<Matter> imageArray;
   auto tangentArray = std::vector<AtomMatrix>(totImages);
-  for (size_t idx{0}; auto &image: imageArray){
-    image = *initmatter;
+  for (size_t idx{0}; idx < nimages; idx++){
+    imageArray.emplace_back(initmatter);
     tangentArray[idx].resize(natoms, 3);
-    ++idx;
   }
-    imageArray.back() = *finalmatter;
-    auto posInit = imageArray.front().getPositions();
-    auto posFinal = imageArray.back().getPositions();
-    auto imageSep = imageArray.front().pbc(posFinal-posInit)/(imageArray.size());
-    for (double idx=1; auto image : imageArray){
-      image.setPositions(posInit + imageSep * idx);
+    imageArray.back() = finalmatter;
+    auto posInit = imageArray.front().getPositionsFree();
+    auto posFinal = imageArray.back().getPositionsFree();
+    const AtomMatrix imageSep = imageArray.front().pbc(posFinal-posInit)/(imageArray.size());
+    for (double idx{0}; auto &image: imageArray){
+      image.setPositionsFree(posInit + imageSep * idx);
+      image.getPotentialEnergy();
+      image.getForcesFree();
+      image.useCache = true;
+      std::cout<<image.getPotentialEnergy()<<" ";
       ++idx;
     }
+      std::cout<<std::endl;
     return std::make_pair(imageArray, tangentArray);
 }
 
@@ -387,3 +388,45 @@ gpr::Observation helper_functions::prepInitialObs(std::vector<Matter> &vecmat) {
   }
   return resObs;
 }
+
+bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& prevObs){
+  // To prevent double calculations, we track the indices being compared
+  // If all forces are within the convergence --> no update
+  // If some images are within the convergence --> mark them as cachable (1)
+  //   Then append the rest (2)
+  bool updated{false};
+  double fmax{0};
+  // TODO: Handle climbingImage
+  // TODO: Handle different convergence measures
+  // TODO: Don't hardcode convergence
+  double nebConvergedForce {0.0001}, trupotdiff{0.0};
+  for (long idx {1}; idx <= neb.images; idx++){// indices from convergenceForce
+    trupotdiff = (neb.image[idx]->getForces() - *neb.projectedForce[idx]).norm();
+    std::cout<<trupotdiff<<std::endl;
+    if (trupotdiff > nebConvergedForce){
+      updated = true;
+      neb.image[idx]->getPotential(); // Make sure energy is present
+      neb.image[idx]->useCache = true; // For later
+    };
+  }
+  if (updated){
+    for (long idx {1}; idx <= neb.images; idx++){// prepare observation
+      std::cout<<"Appending to image "<<idx<<"\n";
+      prevObs.append(helper_functions::eon_matter_to_init_obs(neb.image[idx]));
+      prevObs.printSizes();
+    }
+  }
+  return updated;
+}
+
+// std::unique_ptr<NudgedElasticBand> helper_functions::runNEBround(GPRPotential trainedGPR, Parameters* pReactFin){
+//   auto reactantFilename = helper_functions::getRelevantFile("reactant.con");
+//   auto productFilename = helper_functions::getRelevantFile("product.con");
+//   auto matterOne = std::make_unique<Matter>(pReactFin);
+//   matterOne->con2matter(reactantFilename);
+//   matterOne->setPotential(&trainedGPR);
+//   auto matterFin = std::make_unique<Matter>(pReactFin);
+//   matterFin->con2matter(productFilename);
+//   matterFin->setPotential(&trainedGPR);
+//   return std::make_unique<NudgedElasticBand>(NudgedElasticBand(matterOne.get(), matterFin.get(), pReactFin);
+// }
