@@ -18,6 +18,10 @@
 #include "GlobalOptimizationJob.h"
 #include "StructureComparisonJob.h"
 #include "MonteCarloJob.h"
+#ifdef WITH_GPRD
+#include "GPR_AIE_NEBJob.h"
+const char Job::GPR_AIE_NEB[] =      "gpr_aie_neb";
+#endif
 
 const char Job::PROCESS_SEARCH[] =           "process_search";
 const char Job::SADDLE_SEARCH[] =            "saddle_search";
@@ -74,9 +78,12 @@ Job *Job::getJob(Parameters *parameters) {
         job =  new StructureComparisonJob(parameters);
     // }else if (parameters->job == Job::TEST) {
     //     job =  new TestJob(parameters);
+#ifdef WITH_GPRD
+    }else if (parameters->job == Job::GPR_AIE_NEB) {
+        job = new GPR_AIE_NEBJob(parameters);
+#endif
     }else if (parameters->job == Job::MONTE_CARLO) {
         job = new MonteCarloJob(parameters);
     }
-
     return job;
 }

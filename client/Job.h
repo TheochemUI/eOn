@@ -75,6 +75,10 @@ class Job {
         static const char MONTE_CARLO[];
 	//! ref TestJob
         static const char TEST[];
+#ifdef WITH_GPRD
+	//! ref GPR AIE NEB job
+        static const char GPR_AIE_NEB[];
+#endif
 	//! Grabs the correct job as specified by the parameters
 	/*!
  	  \param *parameters defined by the config.init file

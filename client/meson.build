@@ -3,7 +3,7 @@ project('eonclient', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
 host_system = host_machine.system()
-eon_extra_args = ['-ggdb', '-O0', '-fno-inline-functions']
+eon_extra_args = [] #['-ggdb', '-O0', '-fno-inline-functions']
 
 add_languages('c', required: true)
 
@@ -129,7 +129,8 @@ if get_option('with_gprd')
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
   eon_extra_args += ['-DWITH_GPRD']
-  eonlib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
+  eonlib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp',
+                      'GPR_AIE_NEBJob.cpp']
   eon_deps += [ gprd_dep ]
 endif
 
