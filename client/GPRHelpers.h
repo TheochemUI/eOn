@@ -134,7 +134,7 @@ namespace helper_functions {
      *
      * \param
      */
-     std::unique_ptr<NudgedElasticBand> runNEBround(GPRPotential trainedGPR, Parameters* pReactFin);
+     std::unique_ptr<NudgedElasticBand> prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params);
 
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */

@@ -105,35 +105,18 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   while(mustUpdate){
     this->gprfunc->setHyperparameters(obspath, atoms_config, false);
     this->gprfunc->optimize(obspath);
-    gprpot.registerGPRObject(this->gprfunc.get());
-    auto matterThree = std::make_unique<Matter>(this->gprparameon.get());
-    matterThree->con2matter(this->reactantFilename);
-    matterThree->setPotential(&gprpot);
-    matterTest->setPotential(&gprpot);
-    std::cout<<matterTest->getPotentialEnergy()<<" Matter 3\n";
-    ASSERT_NE(blah, matterTest->getPotentialEnergy())<<"Energy not changed after updating gpr";
-    auto matterFour = std::make_unique<Matter>(this->gprparameon.get());
-    matterFour->con2matter(this->productFilename);
-    matterFour->setPotential(&gprpot);
-    NudgedElasticBand *nebTwo = new NudgedElasticBand(matterThree.get(), matterFour.get(), this->gprparameon.get());
+    auto nebTwo = helper_functions::prepGPRNEBround(*this->gprfunc,
+                                                *matterOne, *matterFin,
+                                                *this->gprparameon);
     nebTwo->compute();
     mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath);
-    delete nebTwo;
   };
-    gprpot.registerGPRObject(this->gprfunc.get());
-    auto matterThree = std::make_unique<Matter>(this->gprparameon.get());
-    matterThree->con2matter(this->reactantFilename);
-    matterThree->setPotential(&gprpot);
-    matterTest->setPotential(&gprpot);
-    std::cout<<matterTest->getPotentialEnergy()<<" Matter 3\n";
-    ASSERT_NE(blah, matterTest->getPotentialEnergy())<<"Energy not changed after updating gpr";
-    auto matterFour = std::make_unique<Matter>(this->gprparameon.get());
-    matterFour->con2matter(this->productFilename);
-    matterFour->setPotential(&gprpot);
-    NudgedElasticBand *nebTwo = new NudgedElasticBand(matterThree.get(), matterFour.get(), this->gprparameon.get());
-    nebTwo->compute();
-    delete nebTwo;
-  delete neb;
+  // Final round
+    auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
+                                                *matterOne, *matterFin,
+                                                *this->gprparameon);
+    nebFin->compute();
+    delete neb;
 }
 
 } /* namespace tests */

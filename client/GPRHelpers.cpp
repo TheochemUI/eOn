@@ -423,14 +423,11 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   return updated;
 }
 
-// std::unique_ptr<NudgedElasticBand> helper_functions::runNEBround(GPRPotential trainedGPR, Parameters* pReactFin){
-//   auto reactantFilename = helper_functions::getRelevantFile("reactant.con");
-//   auto productFilename = helper_functions::getRelevantFile("product.con");
-//   auto matterOne = std::make_unique<Matter>(pReactFin);
-//   matterOne->con2matter(reactantFilename);
-//   matterOne->setPotential(&trainedGPR);
-//   auto matterFin = std::make_unique<Matter>(pReactFin);
-//   matterFin->con2matter(productFilename);
-//   matterFin->setPotential(&trainedGPR);
-//   return std::make_unique<NudgedElasticBand>(NudgedElasticBand(matterOne.get(), matterFin.get(), pReactFin);
-// }
+// The unique pointer ensures in a loop, the NEB objects are destroyed
+std::unique_ptr<NudgedElasticBand> helper_functions::prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params){
+  GPRPotential gprPotential{&params};
+  gprPotential.registerGPRObject(&trainedGPR);
+  reactant.setPotential(&gprPotential);
+  product.setPotential(&gprPotential);
+  return std::make_unique<NudgedElasticBand>(dynamic_cast<Matter*>(&reactant), dynamic_cast<Matter*>(&product), dynamic_cast<Parameters*>(&params));
+}
