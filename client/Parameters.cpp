@@ -227,6 +227,8 @@ Parameters::Parameters(){
     gprPotPriorMu = 0; // prior_mu
     gprPotPriorSigma2 = 1; //prior_s2
     gprPotPriorNu = 20; // prior_nu
+    gprPotconstSigma2 = 0.0; // constSigma2
+    gprPotmagnSigma2 = 6.93874748072254e-009; // magnSigma2
     // GPR Optimization Parameters
     gprPotOptCheckDerivatives = false; // check_derivative
     gprPotOptMaxIterations = 400; // max_iter
@@ -584,6 +586,8 @@ int Parameters::load(FILE *file){
         gprPotPriorMu = ini.GetValueF("GPR Potential", "prior_mean", gprPotPriorMu);
         gprPotPriorSigma2 = ini.GetValueF("GPR Potential", "prior_variance", gprPotPriorSigma2);
         gprPotPriorNu = ini.GetValueF("GPR Potential", "prior_degrees_of_freedom", gprPotPriorNu);
+        gprPotmagnSigma2 = ini.GetValueF("GPR Potential", "gpr_magnvariance", gprPotmagnSigma2);
+        gprPotconstSigma2 = ini.GetValueF("GPR Potential", "gpr_constvariance", gprPotconstSigma2);
         // GPR Optimization Parameters
         gprPotOptCheckDerivatives = ini.GetValueB("GPR Potenntial", "check_derivatives", gprPotOptCheckDerivatives);
         gprPotOptMaxIterations = (int)ini.GetValueL("GPR Potenntial", "opt_max_iterations", gprPotOptMaxIterations);

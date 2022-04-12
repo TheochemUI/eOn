@@ -228,6 +228,8 @@ public:
     double gprPotOptTolSol; // {tolerance_sol}
     long gprPotOptLambdaLimit; // {lambda_limit}
     long gprPotOptLambdaInit; // {lambda}
+    double gprPotmagnSigma2; // {magnSigma2}
+    double gprPotconstSigma2; // {constSigma2}
 
 
     // [Lanczos] //

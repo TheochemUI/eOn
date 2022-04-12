@@ -78,6 +78,8 @@ helper_functions::eon_parameters_to_gprpot(Parameters *parameters) {
   p.tolerance_sol.value = parameters->gprPotOptTolSol;
   p.lambda_limit.value = parameters->gprPotOptLambdaLimit;
   p.lambda.value = parameters->gprPotOptLambdaInit;
+  p.magnSigma2.value = parameters->gprPotmagnSigma2;
+  p.constSigma2.value = parameters->gprPotconstSigma2;
   return p;
 }
 // FIXME: Take in the active / inactive pairs / atomtypes
@@ -440,9 +442,9 @@ gpr::GaussianProcessRegression& helper_functions::initializeGPR(gpr::GaussianPro
     gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
     gpr_parameters.jitter_sigma2 = eonp.gprPotJitterSigma2;
     gprfunc.setParameters(gpr_parameters);
-    gprfunc.getSexpAtCovarianceFunction()->setMagnSigma2(eonp.gprPotSigma2);
+    gprfunc.getSexpAtCovarianceFunction()->setMagnSigma2(eonp.gprPotmagnSigma2);
     gprfunc.getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
-    gprfunc.getConstantCovarianceFunction()->setConstSigma2(eonp.gprPotPriorSigma2);
+    gprfunc.getConstantCovarianceFunction()->setConstSigma2(eonp.gprPotconstSigma2);
 
     auto  potparams = helper_functions::eon_parameters_to_gprpot(&eonp);
     for (int i = 0; i < 9; i++) {
