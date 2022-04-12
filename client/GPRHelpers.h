@@ -128,10 +128,11 @@ namespace helper_functions {
     bool maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& prevObs);
 
     /**
-     * \brief Returns a single trained instance of a NEB
+     * \brief Returns a unique pointer to an NEB for the GPR-NEB
      *
      * This uses the MATLAB code logic of restarting each round with a linear interpolation
-     *
+     * Effectively this ensures that the NEB is constructed on the GPR surface.
+     * The unique pointer ensures in a loop, the NEB objects are destroyed
      * \param
      */
      std::unique_ptr<NudgedElasticBand> prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params);
