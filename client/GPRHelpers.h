@@ -137,5 +137,19 @@ namespace helper_functions {
      */
      std::unique_ptr<NudgedElasticBand> prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params);
 
+    /**
+     * \brief Initializes a GPR potential
+     *
+     * The logic here is to simply prepare the GPR for training, it is a
+     * super-set of EON parameter conversions
+     *
+     * Note that it is **initialized** but NOT trained.
+     * To train this run setHyperParameters and optimize on the returned object
+     * */
+    gpr::GaussianProcessRegression& initializeGPR(gpr::GaussianProcessRegression& gprfunc,
+                                                  gpr::AtomsConfiguration& atoms_config,
+                                                  gpr::Observation& obsPath,
+                                                  std::pair<Parameters, Matter>& eon_matter_params);
+
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */

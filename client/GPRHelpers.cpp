@@ -423,11 +423,33 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   return updated;
 }
 
-// The unique pointer ensures in a loop, the NEB objects are destroyed
 std::unique_ptr<NudgedElasticBand> helper_functions::prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params){
   GPRPotential gprPotential{&params};
   gprPotential.registerGPRObject(&trainedGPR);
   reactant.setPotential(&gprPotential);
   product.setPotential(&gprPotential);
   return std::make_unique<NudgedElasticBand>(dynamic_cast<Matter*>(&reactant), dynamic_cast<Matter*>(&product), dynamic_cast<Parameters*>(&params));
+}
+
+gpr::GaussianProcessRegression& helper_functions::initializeGPR(gpr::GaussianProcessRegression& gprfunc,
+                                                                gpr::AtomsConfiguration& atoms_config,
+                                                                gpr::Observation& obsPath,
+                                                                std::pair<Parameters, Matter>& eon_matter_params){
+    auto initmatter = std::get<Matter>(eon_matter_params);
+    auto eonp = std::get<Parameters>(eon_matter_params);
+    gpr::GPRSetup gpr_parameters;
+    gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+    gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
+    gpr_parameters.jitter_sigma2 = eonp.gprPotJitterSigma2;
+    gprfunc.setParameters(gpr_parameters);
+    gprfunc.getSexpAtCovarianceFunction()->setMagnSigma2(eonp.gprPotSigma2);
+    gprfunc.getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
+    gprfunc.getConstantCovarianceFunction()->setConstSigma2(eonp.gprPotPriorSigma2);
+
+    auto  potparams = helper_functions::eon_parameters_to_gprpot(&eonp);
+    for (int i = 0; i < 9; i++) {
+        potparams.cell_dimensions.value[i] = initmatter.getCell()(i);
+    }
+    gprfunc.initialize(potparams, atoms_config);
+    return gprfunc;
 }
