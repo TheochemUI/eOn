@@ -316,6 +316,14 @@ if get_option('with_gprd')
                  )
   test('Run the NEB with GPR-Pot objects', t6g)
 
+  t7g = executable('t7g_gpraienebjob',
+                   'gtests/GPR_AIE_NEBJobTest.cpp',
+                  link_with : eonlib,
+                  dependencies: gptest_dets,
+                  cpp_args : eon_extra_args,
+                 )
+  test('Run the GPR_AIE_NEB job', t7g)
+
   # t6g = executable('t6g_gprtrain',
   #                  'gtests/SCGMatterTest.cpp',
   #                 link_with : eonlib,
