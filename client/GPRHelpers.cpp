@@ -401,12 +401,12 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   double fmax{0};
   // TODO: Handle climbingImage
   // TODO: Handle different convergence measures
-  double nebConvergedForce {params.nebConvergedForce}, trupotdiff{0.0};
+  double nebConvergedForce {params.nebConvergedForce/10}, trupotdiff{0.0};
   auto potential = Potential::getPotential(&params);
   for (long idx {1}; idx < neb.images; idx++){// excludes final, initial
     auto true_energy_forces = helper_functions::energy_and_forces(neb.image[idx], potential);
     trupotdiff = (neb.image[idx]->getForces() - std::get<AtomMatrix>(true_energy_forces)).norm();
-    std::cout<<trupotdiff<<std::endl;
+    // std::cout<<trupotdiff<<std::endl;
     if (trupotdiff > nebConvergedForce){
       updated = true;
       neb.image[idx]->getPotential(); // Make sure energy is present
@@ -415,9 +415,9 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   }
   if (updated){
     for (long idx {1}; idx <= neb.images; idx++){// prepare observation
-      std::cout<<"Appending to image "<<idx<<"\n";
+      // std::cout<<"Appending to image "<<idx<<"\n";
       prevObs.append(helper_functions::eon_matter_to_init_obs(*neb.image[idx]));
-      prevObs.printSizes();
+      // prevObs.printSizes();
     }
   }
   return updated;
