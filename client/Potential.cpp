@@ -1,5 +1,6 @@
 #include <time.h>
 
+#include <stdexcept>
 #include "Potential.h"
 #include "Parameters.h"
 #include "Log.h"
@@ -204,6 +205,11 @@ Potential *Potential::getPotential(Parameters *parameters)
 #ifdef NEW_POT
     else if(parameters->potential == POT_NEW)
         pot = new NewPot(parameters);
+#endif
+
+#ifdef WITH_GPRD
+    else if(parameters->potential == POT_GPR)
+      throw std::invalid_argument("Cannot use GPR potential directly"s);
 #endif
 
 #ifndef WIN32
