@@ -438,14 +438,9 @@ gpr::GaussianProcessRegression& helper_functions::initializeGPR(gpr::GaussianPro
     auto initmatter = std::get<Matter>(eon_matter_params);
     auto eonp = std::get<Parameters>(eon_matter_params);
     gpr::GPRSetup gpr_parameters;
-    gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-    gprfunc.getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
     gpr_parameters.jitter_sigma2 = eonp.gprPotJitterSigma2;
+    gpr_parameters.sigma2 = eonp.gprPotSigma2;
     gprfunc.setParameters(gpr_parameters);
-    gprfunc.getSexpAtCovarianceFunction()->setMagnSigma2(eonp.gprPotmagnSigma2);
-    gprfunc.getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
-    gprfunc.getConstantCovarianceFunction()->setConstSigma2(eonp.gprPotconstSigma2);
-
     auto  potparams = helper_functions::eon_parameters_to_gprpot(&eonp);
     for (int i = 0; i < 9; i++) {
         potparams.cell_dimensions.value[i] = initmatter.getCell()(i);
