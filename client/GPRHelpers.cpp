@@ -255,16 +255,19 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
   // Resizing can be only on free positions at the moment,
   // They are the same
   o.clear();
-  auto free_rows{matter.getPositionsFree().rows()}, free_cols{matter.getPositionsFree().cols()};
-  o.R.resize(free_rows, free_cols);
-  o.G.resize(free_rows, free_cols);
+  size_t free_rows{matter.numberOfFreeAtoms()}, free_cols{3};
+  o.R.resize(1, free_rows * free_cols);
+  o.G.resize(1, free_rows * free_cols);
   o.E.resize(1);
   auto pe_forces{matter.maybe_cached_energy_forces_free()};
   o.E.set(std::get<double>(pe_forces));
-  o.R.assignFromEigenMatrix(matter.getPositionsFree());
+  AtomMatrix freePos = matter.getPositionsFree();
   AtomMatrix gradEig = std::get<AtomMatrix>(pe_forces);
   gradEig = gradEig * -1;
-  o.G.assignFromEigenMatrix(gradEig);
+  for (size_t idx{0}; idx < free_rows * free_cols; ++idx){
+      o.R[idx] = freePos.data()[idx];
+      o.G[idx] = gradEig.data()[idx];
+  }
   return o;
 }
 
@@ -386,7 +389,7 @@ std::vector<Matter> helper_functions::prepInitialPath(
 
 gpr::Observation helper_functions::prepInitialObs(std::vector<Matter> &vecmat) {
   gpr::Observation resObs;
-  for (auto &mat : vecmat){
+  for (auto& mat : vecmat){
     resObs.append(helper_functions::eon_matter_to_init_obs(mat));
   }
   return resObs;
