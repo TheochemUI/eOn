@@ -30,6 +30,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     matterInit->con2matter(reactantFilename);
     matterFinal->con2matter(productFilename);
+    Parameters eonp = *this->parameters;
 
     // Prepare data for GPR
     auto config_data = helper_functions::eon_matter_to_frozen_conf_info(matterInit.get(),
@@ -39,7 +40,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     auto imgArray = helper_functions::prepInitialPath(this->parameters);
     auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
-    auto eondat = std::make_pair(*this->parameters, *matterInit);
+    auto eondat = std::make_pair(eonp, *matterInit);
     *this->gprfunc = helper_functions::initializeGPR(*this->gprfunc, atoms_config, obspath, eondat);
     this->gprfunc->setHyperparameters(obspath, atoms_config);
     this->gprfunc->optimize(obspath);
@@ -52,10 +53,10 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     auto nebInit = helper_functions::prepGPRNEBround(*this->gprfunc,
                                                 *matterInit, *matterFinal,
-                                                *this->parameters);
+                                                eonp);
     nebInit->compute();
 
-    bool mustUpdate = helper_functions::maybeUpdateObs(*nebInit, obspath);
+    bool mustUpdate = helper_functions::maybeUpdateObs(*nebInit, obspath, eonp);
 
     f1 = Potential::fcalls;
 
@@ -64,14 +65,14 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         this->gprfunc->optimize(obspath);
         auto nebTwo = helper_functions::prepGPRNEBround(*this->gprfunc,
                                                         *matterInit, *matterFinal,
-                                                        *this->parameters);
+                                                        eonp);
         nebTwo->compute();
-        mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath);
+        mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath, eonp);
     };
     // Final round
     auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
                                                     *matterInit, *matterFinal,
-                                                    *this->parameters);
+                                                    eonp);
     status = nebFin->compute();
 
     fCallsNEB += Potential::fcalls - f1;

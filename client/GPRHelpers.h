@@ -125,7 +125,7 @@ namespace helper_functions {
      *  \param neb
      *  \return bool
      */
-    bool maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& prevObs);
+    bool maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& prevObs, Parameters& params);
 
     /**
      * \brief Returns a unique pointer to an NEB for the GPR-NEB

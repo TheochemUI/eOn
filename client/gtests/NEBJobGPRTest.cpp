@@ -53,11 +53,12 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   const auto init_frcsref = this->initmatter.get()->getForcesFree();
   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  2);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
+  Parameters eonp = *this->parameters;
   // Setup the run
   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
-  auto eondat = std::make_pair(*this->parameters,*this->initmatter);
+  auto eondat = std::make_pair(eonp, *this->initmatter);
   *this->gprfunc = helper_functions::initializeGPR(*this->gprfunc, atoms_config, obspath, eondat);
   this->gprfunc->setHyperparameters(obspath, atoms_config);
   this->gprfunc->optimize(obspath);
@@ -80,7 +81,7 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   // RUN NEB!!!
   NudgedElasticBand *neb = new NudgedElasticBand(matterOne.get(), matterFin.get(), this->gprparameon.get());
   neb->compute();
-  bool mustUpdate = helper_functions::maybeUpdateObs(*neb, obspath);
+  bool mustUpdate = helper_functions::maybeUpdateObs(*neb, obspath, eonp);
   this->gprfunc->setHyperparameters(obspath, atoms_config, false);
   this->gprfunc->optimize(obspath);
   gprpot.registerGPRObject(this->gprfunc.get());
@@ -93,7 +94,7 @@ TEST_F(NEBJobGPRTest, TestMatter) {
                                                 *matterOne, *matterFin,
                                                 *this->gprparameon);
     nebTwo->compute();
-    mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath);
+    mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath, eonp);
   };
   // Final round
     auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
