@@ -57,24 +57,8 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
   auto obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
-  gpr::GPRSetup gpr_parameters;
-  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-  this->gprfunc->getSexpAtCovarianceFunction()->getLengthScaleRef().resize(1, 2);
-  gpr_parameters.jitter_sigma2 = 0.;
-  this->gprfunc->setParameters(gpr_parameters);
-
-  this->gprfunc->getSexpAtCovarianceFunction()->setMagnSigma2(6.93874748072254e-009);
-  this->gprfunc->getSexpAtCovarianceFunction()->setLengthScale(888.953211438594e-006);
-  this->gprfunc->getSexpAtCovarianceFunction()->setConfInfo(atoms_config);
-
-  this->gprfunc->getConstantCovarianceFunction()->setConstSigma2(1.);
-
-  auto  p = helper_functions::eon_parameters_to_gprpot(this->parameters.get());
-  for (int i = 0; i < 9; i++) {
-    p.cell_dimensions.value[i] = this->initmatter->getCell()(i);
-  }
-
-  this->gprfunc->initialize(p, atoms_config);
+  auto eondat = std::make_pair(*this->parameters,*this->initmatter);
+  *this->gprfunc = helper_functions::initializeGPR(*this->gprfunc, atoms_config, obspath, eondat);
   this->gprfunc->setHyperparameters(obspath, atoms_config);
   this->gprfunc->optimize(obspath);
   // Prepare GPR potential
