@@ -70,22 +70,38 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         this->fCallsGPR += 1;
         mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath, eonp);
     };
-    // Final round
-    auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
-                                                    *matterInit, *matterFinal,
-                                                    eonp);
-    status = nebFin->compute();
+    // If there is only one round and no updates, do not redo NEB
+    if (this->fCallsGPR > 1){
+        // Final round
+        auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
+                                                        *matterInit, *matterFinal,
+                                                        eonp);
+        status = nebFin->compute();
+        this->fCallsGPR += 1;
 
-    fCallsNEB += Potential::fcalls - f1;
+        fCallsNEB += Potential::fcalls - f1;
 
-    if (status == NudgedElasticBand::STATUS_INIT) {
-        status = NudgedElasticBand::STATUS_GOOD;
+        if (status == NudgedElasticBand::STATUS_INIT) {
+            status = NudgedElasticBand::STATUS_GOOD;
+        }
+
+        printEndState(status);
+        saveData(status, nebFin.get());
+
+        return returnFiles;
+    } else {
+        // TODO: Be more elegant when one round has occurred
+        fCallsNEB += Potential::fcalls - f1;
+
+        if (status == NudgedElasticBand::STATUS_INIT) {
+            status = NudgedElasticBand::STATUS_GOOD;
+        }
+
+        printEndState(status);
+        saveData(status, nebInit.get());
+
+        return returnFiles;
     }
-
-    printEndState(status);
-    saveData(status, nebFin.get());
-
-    return returnFiles;
 }
 
 void GPR_AIE_NEBJob::saveData(int status, NudgedElasticBand *neb)
