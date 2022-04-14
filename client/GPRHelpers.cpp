@@ -406,7 +406,7 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   // TODO: Handle different convergence measures
   double nebConvergedForce {params.nebConvergedForce/10}, trupotdiff{0.0};
   auto potential = Potential::getPotential(&params);
-  for (long idx {1}; idx < neb.images; idx++){// excludes final, initial
+  for (long idx {0}; idx <= neb.images+1; idx++){// excludes final, initial
     auto true_energy_forces = helper_functions::energy_and_forces(neb.image[idx], potential);
     trupotdiff = (neb.image[idx]->getForces() - std::get<AtomMatrix>(true_energy_forces)).norm();
     // std::cout<<trupotdiff<<std::endl;
@@ -417,7 +417,7 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
     };
   }
   if (updated){
-    for (long idx {1}; idx <= neb.images; idx++){// prepare observation
+    for (long idx {0}; idx <= neb.images+1; idx++){// prepare observation
       // std::cout<<"Appending to image "<<idx<<"\n";
       prevObs.append(helper_functions::eon_matter_to_init_obs(*neb.image[idx]));
       // prevObs.printSizes();
@@ -432,7 +432,7 @@ std::unique_ptr<NudgedElasticBand> helper_functions::prepGPRNEBround(gpr::Gaussi
   reactant.setPotential(&gprPotential);
   product.setPotential(&gprPotential);
   auto neb = std::make_unique<NudgedElasticBand>(dynamic_cast<Matter*>(&reactant), dynamic_cast<Matter*>(&product), dynamic_cast<Parameters*>(&params));
-  for (long idx {1}; idx < neb->images; idx++){// excludes final, initial
+  for (long idx {0}; idx <= neb->images+1; idx++){// includes final, initial
     neb->image[idx]->setPotential(&gprPotential);
   }
   return neb;
