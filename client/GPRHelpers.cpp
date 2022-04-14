@@ -255,7 +255,7 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
   // Resizing can be only on free positions at the moment,
   // They are the same
   o.clear();
-  size_t free_rows{matter.numberOfFreeAtoms()}, free_cols{3};
+  size_t free_rows{static_cast<size_t>(matter.numberOfFreeAtoms())}, free_cols{3};
   o.R.resize(1, free_rows * free_cols);
   o.G.resize(1, free_rows * free_cols);
   o.E.resize(1);
