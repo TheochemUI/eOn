@@ -6,10 +6,9 @@
 #include <stdio.h>
 #include <string>
 
-GPR_AIE_NEBJob::GPR_AIE_NEBJob(Parameters *parametersPassed)
+GPR_AIE_NEBJob::GPR_AIE_NEBJob(Parameters *parametersPassed) : parameters{parametersPassed},
+    fCallsNEB{0}, fCallsGPR{0}
 {
-    parameters = parametersPassed;
-    fCallsNEB = 0;
     gprfunc = std::make_unique<gpr::GaussianProcessRegression>();
 }
 
@@ -55,6 +54,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
                                                 *matterInit, *matterFinal,
                                                 eonp);
     nebInit->compute();
+    this->fCallsGPR += 1;
 
     bool mustUpdate = helper_functions::maybeUpdateObs(*nebInit, obspath, eonp);
 
@@ -67,6 +67,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
                                                         *matterInit, *matterFinal,
                                                         eonp);
         nebTwo->compute();
+        this->fCallsGPR += 1;
         mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath, eonp);
     };
     // Final round
@@ -99,6 +100,7 @@ void GPR_AIE_NEBJob::saveData(int status, NudgedElasticBand *neb)
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
+    fprintf(fileResults, "%d gpr_created\n", fCallsGPR);
     fprintf(fileResults, "%f energy_reference\n", neb->image[0]->getPotentialEnergy());
     fprintf(fileResults, "%li number_of_images\n", neb->images);
     for(long i=0; i<=neb->images+1; i++) {

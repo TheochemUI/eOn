@@ -25,7 +25,8 @@ class GPR_AIE_NEBJob : public Job {
         std::vector<std::string> returnFiles;
         Parameters *parameters;
         std::unique_ptr<gpr::GaussianProcessRegression> gprfunc;
-        int fCallsNEB;
+        size_t fCallsNEB;
+        size_t fCallsGPR;
 
 };
 
