@@ -65,6 +65,7 @@ void GPRPotential::cleanMemory(void){
 
 std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions, Eigen::VectorXi atomicNrs,
                                     Matrix3d box, int nImages){
+    // std::cout<<"Hello from GPRPot\n";
     const int nAtoms = positions.rows();
     gpr::Observation obs;
     // TODO: Be better with the number of images

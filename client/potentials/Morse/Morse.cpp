@@ -54,6 +54,7 @@ void Morse::setParameters(double De, double a, double re, double cutoff)
 // adress to supercell size
 void Morse::force(long N, const double *R, const int *, double *F, double *U, const double *box, int nImages=1)
 {
+      // std::cout<<"Hello from Morse\n";
       assert((box[0] > 0) and (box[4] > 0) and (box[8] > 0));
       double diffR=0, diffRX, diffRY, diffRZ;
       *U = 0;
