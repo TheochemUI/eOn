@@ -88,5 +88,26 @@ std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions, Eigen::V
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void GPRPotential::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages){
-    throw std::runtime_error("whoops, you called into the wrong force call");
+    gpr::Observation observation;
+
+     // Copy R points. Note, R should correspond to the moving atoms only.
+    observation.R.resize(1, N * 3);
+    // The rest are resized inside
+    for(int i=0; i<N; i++){
+        observation.R.set(i, {R[ 3*i ], R[3*i+1], R[3*i+2]});
+    }
+    // Note, the following functions should be called before calling for gpr_model->calculatePotential()
+    // gpr_model->decomposeCovarianceMatrix(R, ind) - takes covariance matrix and vector of repetitive indices
+    // gpr_model->calculateMeanPrediction() - takes a vector of combined energy and force
+    // gpr_model->calculatePosteriorMeanPrediction() - no arguments
+    gpr_model->calculatePotential(observation);
+
+    for(int i=0; i<N; i++){
+        F[ 3*i ] = -1 * observation.G[ 3*i ];
+        F[3*i+1] = -1 * observation.G[3*i+1];
+        F[3*i+2] = -1 * observation.G[3*i+2];
+    }
+
+    // FIXME: Test conversion, E should only have one element here
+    *U = observation.E[0];
 }
