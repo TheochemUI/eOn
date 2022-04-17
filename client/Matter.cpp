@@ -121,7 +121,7 @@ std::pair<double, AtomMatrix> Matter::maybe_cached_energy_forces_free(){
     }
 }
 
-Matter::Matter(Parameters *parameters)
+Matter::Matter(Parameters *parameters) : useCache{false}
 {
     initializeDataMembers(parameters);
 }
@@ -147,11 +147,10 @@ void Matter::initializeDataMembers(Parameters *params)
     forceCalls = 0;
     parameters = params;
     potential = NULL;
-    useCache = false;
 }
 
 
-Matter::Matter(const Matter& matter)
+Matter::Matter(const Matter& matter)  : useCache{false}
 {
     operator=(matter);
 }
@@ -226,6 +225,9 @@ bool Matter::compare(const Matter *matter, bool indistinguishable) {
 //    return !operator==(matter);
 //}
 
+Parameters* Matter::getParameters() const {
+    return this->parameters;
+}
 
 // Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter& matter) 

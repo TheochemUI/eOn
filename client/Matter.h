@@ -82,6 +82,7 @@ public:
     VectorXd   getForcesV();
     AtomMatrix getForcesFree();
     VectorXd   getForcesFreeV();
+    Parameters* getParameters() const;
 
     double getMass(long int atom) const; // return the mass of the atom specified
     void setMass(long int atom, double mass); // set the mass of an atom
