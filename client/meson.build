@@ -90,6 +90,7 @@ eonlib_sources = [
            'PointJob.cpp',
            'Prefactor.cpp',
            'ConjugateGradients.cpp',
+           'GPRMatter.cpp',
            'Matter.cpp',
            'FiniteDifferenceJob.cpp',
            'Lanczos.cpp',
@@ -193,12 +194,12 @@ if get_option('with_fortran')
 endif
 
 # ---------------------- Executable
-versioning = custom_target('create version.h',
-                        output : ['version.h'],
-                        command : [ 'version.sh', '>', '@OUTPUT@' ],
-                        install : false,
-                        build_by_default : true,
-                       )
+# versioning = custom_target('create version.h',
+#                         output : ['version.h'],
+#                         command : [ 'version.sh', '>', '@OUTPUT@' ],
+#                         install : false,
+#                         build_by_default : true,
+#                        )
 
 eclib = library('eonlib',
                 eonlib_sources,
@@ -323,6 +324,14 @@ if get_option('with_gprd')
                   cpp_args : eon_extra_args,
                  )
   test('Run the GPR_AIE_NEB job', t7g)
+
+  gprMatter1 = executable('gprMatter1',
+                   'gtests/matterGPRTest.cpp',
+                   link_with : eonlib,
+                   dependencies: gptest_dets,
+                   cpp_args : eon_extra_args,
+                 )
+  test('Run GPR Matter tests', gprMatter1)
 
   # t6g = executable('t6g_gprtrain',
   #                  'gtests/SCGMatterTest.cpp',
