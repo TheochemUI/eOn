@@ -3,15 +3,14 @@
 
 #include<memory>
 #include<utility>
+#include <functional>
 
-#include "Matter.h"
 #include "Parameters.h"
 #include "Log.h"
 #include "HelperFunctions.h"
 #include "NudgedElasticBand.h"
-#include "potentials/GPRPotential/GPRPotential.h"
-#include "Potential.h"
 #include "potentials/Morse/Morse.h"
+#include"potentials/GPRPotential/GPRPotential.h"
 
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
@@ -60,6 +59,7 @@ namespace helper_functions {
      *  \param pot The potential energy to use
      * */
     std::pair<double, AtomMatrix> energy_and_forces(Matter *matter, Potential *pot);
+    std::pair<double, AtomMatrix> energy_and_forces_free(Matter *matter, Potential *pot);
 
     /**
      * \brief Call a GPR-EON potential from a matter object
@@ -135,7 +135,7 @@ namespace helper_functions {
      * The unique pointer ensures in a loop, the NEB objects are destroyed
      * \param
      */
-     std::unique_ptr<NudgedElasticBand> prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params);
+    std::unique_ptr<NudgedElasticBand> prepGPRNEBround(GPRPotential& trainedGPR, Matter& reactant, Matter& product, Parameters& params);
 
     /**
      * \brief Initializes a GPR potential
@@ -150,6 +150,5 @@ namespace helper_functions {
                                                   gpr::AtomsConfiguration& atoms_config,
                                                   gpr::Observation& obsPath,
                                                   std::pair<Parameters, Matter>& eon_matter_params);
-
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */

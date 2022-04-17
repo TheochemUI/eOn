@@ -437,14 +437,12 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   return updated;
 }
 
-std::unique_ptr<NudgedElasticBand> helper_functions::prepGPRNEBround(gpr::GaussianProcessRegression& trainedGPR, Matter& reactant, Matter& product, Parameters& params){
-  GPRPotential gprPotential{&params};
-  gprPotential.registerGPRObject(&trainedGPR);
-  reactant.setPotential(&gprPotential);
-  product.setPotential(&gprPotential);
+std::unique_ptr<NudgedElasticBand> helper_functions::prepGPRNEBround(GPRPotential& trainedGPR, Matter& reactant, Matter& product, Parameters& params){
+  reactant.setPotential(&trainedGPR);
+  product.setPotential(&trainedGPR);
   auto neb = std::make_unique<NudgedElasticBand>(dynamic_cast<Matter*>(&reactant), dynamic_cast<Matter*>(&product), dynamic_cast<Parameters*>(&params));
   for (long idx {0}; idx <= neb->images+1; idx++){// includes final, initial
-    neb->image[idx]->setPotential(&gprPotential);
+    neb->image[idx]->setPotential(&trainedGPR);
   }
   return neb;
 }
