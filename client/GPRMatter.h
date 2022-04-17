@@ -21,8 +21,8 @@ class GPRobj {
         gpr::Observation curpath;
         GPRobj(Matter initMatter, Parameters eonp);
         ~GPRobj(); // Destructor
-        void trainGPR(std::vector<Matter>& initialPoints, Potential* pot);
-        void retrainGPR(std::vector<Matter>& newPoints, Potential* pot);
+        void trainGPR(std::vector<Matter>& initialPoints);
+        void retrainGPR(std::vector<Matter>& newPoints);
         GPRPotential yieldGPRPot();
 };
 

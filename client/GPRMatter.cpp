@@ -80,15 +80,17 @@ GPRobj::GPRobj(Matter initMatter, Parameters eonp): eonp{eonp}, trainedGPR{&eonp
     // TODO: Figure out if the first point should be added to curpath
 }
 
-void GPRobj::trainGPR(std::vector<Matter>& initialPoints, Potential* pot){
+void GPRobj::trainGPR(std::vector<Matter>& initialPoints){
+    Potential* potter = Potential::getPotential(&this->eonp);
     this->curpath.clear();
-    this->curpath = GPRobj::prepobs(initialPoints, pot);
+    this->curpath = GPRobj::prepobs(initialPoints, potter);
     this->gprfunc.setHyperparameters(this->curpath, this->atmconf);
     this->gprfunc.optimize(this->curpath);
 }
 
-void GPRobj::retrainGPR(std::vector<Matter>& newPoints, Potential* pot){
-    this->curpath = GPRobj::prepobs(newPoints, pot);
+void GPRobj::retrainGPR(std::vector<Matter>& newPoints){
+    Potential* potter = Potential::getPotential(&this->eonp);
+    this->curpath = GPRobj::prepobs(newPoints, potter);
     this->gprfunc.setHyperparameters(this->curpath, this->atmconf, false);
     this->gprfunc.optimize(this->curpath);
 }

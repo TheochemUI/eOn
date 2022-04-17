@@ -45,13 +45,12 @@ matterGPRTest::~matterGPRTest() {
     reactant.con2matter(reactantFilename);
     product.con2matter(productFilename);
     testp.setPositions((reactant.getPositions()*10.01) / 2);
-    Morse pot_morse;
     // Setup the observations
     auto imgArray = helper_functions::prepInitialPath(&params);
     auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
     GPRobj gprob(reactant, params);
-    gprob.trainGPR(imgArray, &pot_morse);
+    gprob.trainGPR(imgArray);
     // gprob.curpath.printSizes();
     EXPECT_EQ(gprob.curpath.R.getSize(), 27) << "Position vector has wrong size.";
     EXPECT_EQ(gprob.curpath.G.getSize(), 27) << "Gradient vector has wrong size.";
@@ -71,15 +70,14 @@ matterGPRTest::~matterGPRTest() {
     product.con2matter(productFilename);
     testp.con2matter(productFilename);
     testp.setPositions((reactant.getPositions()*10.01) / 2);
-    Morse pot_morse;
     // Setup the observations
     auto imgArray = helper_functions::prepInitialPath(&params);
     auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
     GPRobj gprob(reactant, params);
-    gprob.trainGPR(imgArray, &pot_morse);
+    gprob.trainGPR(imgArray);
     std::vector<Matter> ia2{testp};
-    gprob.retrainGPR(ia2, &pot_morse);
+    gprob.retrainGPR(ia2);
     EXPECT_EQ(gprob.curpath.R.getSize(), 30) << "Position vector has wrong size.";
     EXPECT_EQ(gprob.curpath.G.getSize(), 30) << "Gradient vector has wrong size.";
     EXPECT_EQ(gprob.curpath.E.getSize(), 10) << "Energy vector has wrong size.";
