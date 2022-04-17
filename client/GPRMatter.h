@@ -29,18 +29,12 @@ class GPRobj {
 class GPRMatter {
     private:
         Matter truePotMatter;
-        Parameters eonp;
-        gpr::AtomsConfiguration atmconf;
-        gpr::GPRSetup gpr_parameters;
-        gpr::GaussianProcessRegression gprfunc;
-        std::unique_ptr<GPRPotential> trainedGPR;
-        gpr::Observation curpath;
+        std::shared_ptr<GPRobj> gprfunc;
     public:
-        GPRMatter(Matter initMatter);
+        GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf);
         ~GPRMatter(); // Destructor
-        void trainGPR(gpr::Observation obspath);
-        void retrainGPR(gpr::Observation& newpath);
-        std::pair<double, AtomMatrix> gpr_energy_forces(Matter& getat);
-        std::pair<double, AtomMatrix> true_free_energy_forces(Matter& getat);
-        bool isCloseTo(Matter& testat, double eps = 1e-6);
+        std::pair<double, AtomMatrix> gpr_energy_forces();
+        std::pair<double, AtomMatrix> true_free_energy_forces();
+        bool isCloseToTrue(double eps = 1e-6);
+        void updateMatter(const Matter otherMatter);
 };
