@@ -142,6 +142,19 @@ matterGPRTest::~matterGPRTest() {
     energy = std::get<double>(testp_pe_forces);
     EXPECT_NE(energy, testp.getPotentialEnergy())<<"GPR testp energies should not match";
     EXPECT_FALSE((trueForces-forces).isMuchSmallerThan(this->threshold))<<"GPR testp forces should not match";
+    gp_testp.updateMatter(reactant);
+    reactant_pe_forces = gp_testp.gpr_energy_forces();
+    trueForces = reactant.getForcesFree();
+    forces = std::get<AtomMatrix>(reactant_pe_forces);
+    energy = std::get<double>(reactant_pe_forces);
+    EXPECT_NEAR(energy, reactant.getPotentialEnergy(), this->threshold)<<"GPR reactant energies don't match";
+    EXPECT_NEAR((trueForces-forces).norm(), 0, this->threshold)<<"GPR reactant forces don't match";
+    reactant_pe_forces = gp_testp.true_free_energy_forces();
+    trueForces = reactant.getForcesFree();
+    forces = std::get<AtomMatrix>(reactant_pe_forces);
+    energy = std::get<double>(reactant_pe_forces);
+    EXPECT_NEAR(energy, reactant.getPotentialEnergy(), this->threshold)<<"GPR reactant energies don't match";
+    EXPECT_NEAR((trueForces-forces).norm(), 0, this->threshold)<<"GPR reactant forces don't match";
     }
 
 } /* namespace tests */
