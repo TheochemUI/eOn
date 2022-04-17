@@ -47,7 +47,6 @@ matterGPRTest::~matterGPRTest() {
     testp.setPositions((reactant.getPositions()*10.01) / 2);
     // Setup the observations
     auto imgArray = helper_functions::prepInitialPath(&params);
-    auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
     GPRobj gprob(reactant, params);
     gprob.trainGPR(imgArray);
@@ -72,7 +71,6 @@ matterGPRTest::~matterGPRTest() {
     testp.setPositions((reactant.getPositions()*10.01) / 2);
     // Setup the observations
     auto imgArray = helper_functions::prepInitialPath(&params);
-    auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
     GPRobj gprob(reactant, params);
     gprob.trainGPR(imgArray);
@@ -98,7 +96,6 @@ matterGPRTest::~matterGPRTest() {
     testp.setPositions((reactant.getPositions()*10.01) / 2);
     // Setup the observations
     auto imgArray = helper_functions::prepInitialPath(&params);
-    auto obspath = helper_functions::prepInitialObs(imgArray);
     // Setup GPR
     auto gpf = std::make_shared<GPRobj>(reactant, params);
     gpf->trainGPR(imgArray);
