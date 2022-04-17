@@ -5,7 +5,7 @@ GPRMatter::~GPRMatter(){
 
 };
 
-GPRMatter::GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf) :
+GPRMatter::GPRMatter(Matter& initMatter, std::shared_ptr<GPRobj> gpf) :
    truePotMatter{initMatter},
    trueForcesFree{initMatter.getForcesFree()},
    truePotEnergy{initMatter.getPotentialEnergy()},
@@ -51,7 +51,7 @@ bool GPRMatter::areEnergiesCloseToTrue(double eps){
     return (convval < eps);
 }
 
-void GPRMatter::updateMatter(Matter otherMatter){
+void GPRMatter::updateMatter(Matter& otherMatter){
     this->truePotMatter = otherMatter;
     this->trueForcesFree = otherMatter.getForcesFree();
     this->truePotEnergy = otherMatter.getPotentialEnergy();

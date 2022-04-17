@@ -32,11 +32,11 @@ class GPRMatter {
         double truePotEnergy;
         std::shared_ptr<GPRobj> gprobj;
     public:
-        GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf);
+        GPRMatter(Matter& initMatter, std::shared_ptr<GPRobj> gpf);
         ~GPRMatter(); // Destructor
         std::pair<double, AtomMatrix> gpr_energy_forces();
         std::pair<double, AtomMatrix> true_free_energy_forces();
         bool areEnergiesCloseToTrue(double eps = 1e-6);
         bool areForcesCloseToTrue(double eps = 1e-6);
-        void updateMatter(const Matter otherMatter);
+        void updateMatter(Matter& otherMatter);
 };
