@@ -4,7 +4,7 @@ GPRMatter::~GPRMatter(){
 
 };
 
-GPRMatter::GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf) : truePotMatter{initMatter}, gprfunc{gpf}  {
+GPRMatter::GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf) : truePotMatter{initMatter}, gprobj{gpf}  {
 }
 
 std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
@@ -17,7 +17,8 @@ std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
   double *bx = celldat.data();
   double energy{0};
   double *erg = &energy;
-  this->trainedGPR->force(nFreeAtoms, pos, nullptr, frcs, erg, bx, 1);
+  auto trainedGPR = this->gprobj->yieldGPRPot();
+  trainedGPR.force(nFreeAtoms, pos, nullptr, frcs, erg, bx, 1);
   return std::make_pair(energy, forces);
 }
 
@@ -28,7 +29,7 @@ std::pair<double, AtomMatrix> GPRMatter::true_free_energy_forces(){
 
 bool GPRMatter::isCloseToTrue(double eps){
     // TODO: Use more convergence methods
-    double convval {((gpr_energy_forces(truePotMatter)).second
+    double convval {((gpr_energy_forces()).second
     - truePotMatter.getForcesFree()).norm()};
     return (convval < eps);
 }
@@ -92,4 +93,10 @@ gpr::Observation GPRobj::prepobs(std::vector<Matter>& matvec, Potential* pot){
         obspath.append(obs);
     }
     return obspath;
+}
+
+GPRPotential GPRobj::yieldGPRPot(){
+    GPRPotential gppot{&eonp};
+    gppot.registerGPRObject(&gprfunc);
+    return gppot;
 }

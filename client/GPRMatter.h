@@ -14,10 +14,10 @@ class GPRobj {
         Parameters eonp;
         gpr::AtomsConfiguration atmconf;
         gpr::GPRSetup gpr_parameters;
-        gpr::GaussianProcessRegression gprfunc;
         GPRPotential trainedGPR;
         gpr::Observation prepobs(std::vector<Matter>& matvec, Potential* pot);
     public:
+        gpr::GaussianProcessRegression gprfunc; // TODO: fix yieldGPRPot to make this private
         gpr::Observation curpath;
         GPRobj(Matter initMatter, Parameters eonp);
         ~GPRobj(); // Destructor
@@ -29,7 +29,7 @@ class GPRobj {
 class GPRMatter {
     private:
         Matter truePotMatter;
-        std::shared_ptr<GPRobj> gprfunc;
+        std::shared_ptr<GPRobj> gprobj;
     public:
         GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf);
         ~GPRMatter(); // Destructor
