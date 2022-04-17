@@ -10,8 +10,9 @@ namespace tests {
             virtual ~matterGPRTest();
     string reactantFilename;
     string productFilename;
+    const long double threshold{1e-3};
 
-    std::unique_ptr<GPRMatter> ptrGPRM;
+    Parameters params;
     };
 } /* namespace tests */
 
