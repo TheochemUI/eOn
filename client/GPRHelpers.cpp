@@ -250,25 +250,23 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
 }
 
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
-  gpr::Observation o;
+  gpr::Observation obs;
   // TODO: Moving is Free, but also needs to have Frozen Active
   // Resizing can be only on free positions at the moment,
   // They are the same
-  o.clear();
-  size_t free_rows{static_cast<size_t>(matter.numberOfFreeAtoms())}, free_cols{3};
-  o.R.resize(1, free_rows * free_cols);
-  o.G.resize(1, free_rows * free_cols);
-  o.E.resize(1);
+  size_t nfree(matter.numberOfFreeAtoms()), dimens{3};
+  obs.R.resize(1, nfree * dimens);
+  obs.G.resize(1, nfree * dimens);
+  obs.E.resize(1);
   auto pe_forces{matter.maybe_cached_energy_forces_free()};
-  o.E.set(std::get<double>(pe_forces));
+  obs.E.set(std::get<double>(pe_forces));
   AtomMatrix freePos = matter.getPositionsFree();
-  AtomMatrix gradEig = std::get<AtomMatrix>(pe_forces);
-  gradEig = gradEig * -1;
-  for (size_t idx{0}; idx < free_rows * free_cols; ++idx){
-      o.R[idx] = freePos.data()[idx];
-      o.G[idx] = gradEig.data()[idx];
+  AtomMatrix freeForces = std::get<AtomMatrix>(pe_forces);
+  for (size_t idx{0}; idx < nfree * dimens; ++idx){
+      obs.R[idx] = freePos.data()[idx];
+      obs.G[idx] = -1 * freeForces.data()[idx];
   }
-  return o;
+  return obs;
 }
 
 std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
