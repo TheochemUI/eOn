@@ -1,10 +1,15 @@
 #include "GPRMatter.h"
+#include <cmath>
 
 GPRMatter::~GPRMatter(){
 
 };
 
-GPRMatter::GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf) : truePotMatter{initMatter}, gprobj{gpf}  {
+GPRMatter::GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf) :
+   truePotMatter{initMatter},
+   trueForcesFree{initMatter.getForcesFree()},
+   truePotEnergy{initMatter.getPotentialEnergy()},
+   gprobj{gpf} {
 }
 
 std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
@@ -23,26 +28,40 @@ std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
 }
 
 std::pair<double, AtomMatrix> GPRMatter::true_free_energy_forces(){
-  return std::make_pair(truePotMatter.getPotentialEnergy(),
-                        truePotMatter.getForcesFree());
+  return std::make_pair(truePotEnergy, trueForcesFree);
 }
 
-bool GPRMatter::isCloseToTrue(double eps){
+bool GPRMatter::areForcesCloseToTrue(double eps){
     // TODO: Use more convergence methods
-    double convval {((gpr_energy_forces()).second
-    - truePotMatter.getForcesFree()).norm()};
+    auto gprforces = (gpr_energy_forces()).second;
+    auto trueforces = (true_free_energy_forces()).second;
+    double convval {(gprforces - trueforces).norm()};
+    // std::cout<<"Force norm diff "<<convval<<std::endl;
     return (convval < eps);
 }
 
-void GPRMatter::updateMatter(const Matter otherMatter){
+bool GPRMatter::areEnergiesCloseToTrue(double eps){
+    // TODO: Use more convergence methods
+    double gpr_energy = std::abs((gpr_energy_forces()).first);
+    // std::cout<<"GPR Energy "<<gpr_energy<<std::endl;
+    double true_energy = std::abs((true_free_energy_forces()).first);
+    // std::cout<<"True Energy "<<true_energy<<std::endl;
+    double convval {std::abs(true_energy-gpr_energy)};
+    // std::cout<<"Energy diff "<<convval<<std::endl;
+    return (convval < eps);
+}
+
+void GPRMatter::updateMatter(Matter otherMatter){
     this->truePotMatter = otherMatter;
+    this->trueForcesFree = otherMatter.getForcesFree();
+    this->truePotEnergy = otherMatter.getPotentialEnergy();
 }
 
 GPRobj::~GPRobj(){
 
 };
 
-GPRobj::GPRobj(Matter initMatter, Parameters eonp): eonp{eonp}, trainedGPR{&eonp} {
+GPRobj::GPRobj(Matter initMatter, Parameters eonp): eonp{eonp} {
     // Setup AtomsConf
     auto conf_data = helper_functions::eon_matter_to_frozen_conf_info(&initMatter,
                                                                       eonp.gprPotActiveRadius);

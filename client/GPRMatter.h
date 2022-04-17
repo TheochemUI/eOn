@@ -14,7 +14,6 @@ class GPRobj {
         Parameters eonp;
         gpr::AtomsConfiguration atmconf;
         gpr::GPRSetup gpr_parameters;
-        GPRPotential trainedGPR;
         gpr::Observation prepobs(std::vector<Matter>& matvec, Potential* pot);
     public:
         gpr::GaussianProcessRegression gprfunc; // TODO: fix yieldGPRPot to make this private
@@ -29,12 +28,15 @@ class GPRobj {
 class GPRMatter {
     private:
         Matter truePotMatter;
+        AtomMatrix trueForcesFree;
+        double truePotEnergy;
         std::shared_ptr<GPRobj> gprobj;
     public:
         GPRMatter(Matter initMatter, std::shared_ptr<GPRobj> gpf);
         ~GPRMatter(); // Destructor
         std::pair<double, AtomMatrix> gpr_energy_forces();
         std::pair<double, AtomMatrix> true_free_energy_forces();
-        bool isCloseToTrue(double eps = 1e-6);
+        bool areEnergiesCloseToTrue(double eps = 1e-6);
+        bool areForcesCloseToTrue(double eps = 1e-6);
         void updateMatter(const Matter otherMatter);
 };
