@@ -1,6 +1,8 @@
 #include "GPRMatter.h"
 #include <cmath>
 
+#include "NudgedElasticBand.h"
+
 GPRMatter::~GPRMatter(){
 
 };
@@ -118,4 +120,26 @@ GPRPotential GPRobj::yieldGPRPot(){
     GPRPotential gppot{&eonp};
     gppot.registerGPRObject(&gprfunc);
     return gppot;
+}
+
+bool helper_functions::maybeUpdateGPRobj(NudgedElasticBand& neb, std::shared_ptr<GPRobj>& gpf){
+  size_t totalImages(neb.images+2);
+  bool result{false};
+  for (size_t idx{0}; idx < totalImages; idx++){
+    GPRMatter gp_testp(*neb.image[idx], gpf);
+    if (gp_testp.areEnergiesCloseToTrue() && gp_testp.areForcesCloseToTrue()){
+      result = true;
+    } else{
+      result = false;
+    }
+  }
+  if (result){
+    std::vector<Matter> ia2;
+    for (size_t idx{1}; idx < totalImages - 1; idx++){
+      ia2.push_back(*neb.image[idx]);
+    }
+    std::cout<<"Retraining";
+    gpf->retrainGPR(ia2);
+  }
+  return result;
 }

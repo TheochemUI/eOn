@@ -40,3 +40,7 @@ class GPRMatter {
         bool areForcesCloseToTrue(double eps = 1e-6);
         void updateMatter(Matter& otherMatter);
 };
+
+namespace helper_functions {
+    bool maybeUpdateGPRobj(NudgedElasticBand& neb, std::shared_ptr<GPRobj>& gpf);
+} // namespace helper_functions
