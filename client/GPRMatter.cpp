@@ -154,10 +154,16 @@ bool helper_functions::maybeUpdateGPRobj(NudgedElasticBand& neb, std::shared_ptr
   return result;
 }
 
-bool helper_functions::max_gpr_energy(GPRMatter matOne, GPRMatter matTwo){
+bool helper_functions::max_gpr_energy(GPRMatter& matOne, GPRMatter& matTwo){
       auto pef_one = matOne.gpr_energy_forces();
       auto pef_two = matTwo.gpr_energy_forces();
       auto eOne = std::get<double>(pef_one);
       auto eTwo = std::get<double>(pef_two);
       return (eOne < eTwo);
+}
+bool helper_functions::true_force_norm_converged(GPRMatter& mat, double eps){
+  auto pef = mat.true_free_energy_forces();
+  auto force_norm = std::get<AtomMatrix>(pef).norm();
+  std::cout<<"\n truenorm: "<<force_norm<<" vs eps: "<<eps<<std::endl;
+  return (force_norm < eps);
 }

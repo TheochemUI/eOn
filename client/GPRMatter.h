@@ -50,5 +50,11 @@ namespace helper_functions {
          *
          * This is one of a few comparison functions to use with <algorithm>
          */
-        bool max_gpr_energy(GPRMatter matOne, GPRMatter matTwo);
+        bool max_gpr_energy(GPRMatter& matOne, GPRMatter& matTwo);
+        /**
+         * \brief Compares energy of GPRMatter to a precision
+         *
+         * This is one of a few comparison functions to use with <algorithm>
+         */
+        bool true_force_norm_converged(GPRMatter& mat, double eps = 1e-3);
 } // namespace helper_functions
