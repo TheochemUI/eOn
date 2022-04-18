@@ -481,7 +481,8 @@ void GPRNEB::findExtrema()
 bool GPRNEB::needsRetraining(){
     bool retval{false};
     for (auto& img : imageArray){
-        if (img.areEnergiesCloseToTrue() && img.areForcesCloseToTrue()){
+        // NOTE: used to also use img.areEnergiesCloseToTrue()
+        if (img.areForcesCloseToTrue()){
             retval = false;
             return retval;
         } else {
