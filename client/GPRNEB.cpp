@@ -402,7 +402,11 @@ void GPRNEB::findExtrema()
     // calculate the cubic this->params for each interval (a,b,c,d)
 
     AtomMatrix tangentEndpoint;
-    double a[nimages+1], b[nimages+1], c[nimages+1], d[nimages+1];
+    std::vector<double> a, b, c, d;
+    a.resize(nimages+1);
+    b.resize(nimages+1);
+    c.resize(nimages+1);
+    d.resize(nimages+1);
     double F1, F2, U1, U2, dist;
 
     for(size_t idx{0}; idx<=nimages; idx++)
@@ -411,7 +415,8 @@ void GPRNEB::findExtrema()
         auto pef_f1 = this->imageArray[idx].gpr_energy_forces();
         auto pef_f2 = this->imageArray[idx+1].gpr_energy_forces();
         if(idx==0) {
-            tangentEndpoint = imageArray[idx].truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray[0].truePotMatter.getPositionsFree());
+            tangentEndpoint = imageArray[idx].truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() -
+                                                                imageArray.front().truePotMatter.getPositionsFree());
             tangentEndpoint.normalize();
             F1 = (std::get<AtomMatrix>(pef_f1).array()*tangentEndpoint.array()).sum()*dist;
         } else {
