@@ -89,7 +89,7 @@ GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     nebImages{initPath.begin()+1, initPath.end()-1},
     nimages{params.nebImages},
     threshold{params.nebConvergedForce},
-    natoms{initPath.front().truePotMatter.numberOfAtoms()}, // TODO: Use nfree instead
+    natoms{initPath.front().truePotMatter.numberOfAtoms()},
     nfree{initPath.front().truePotMatter.numberOfFreeAtoms()},
     totImages{nimages+2}
 {
@@ -499,7 +499,7 @@ bool GPRNEB::needsRetraining(double eps){
 
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
-    // NOTE: Assumes that the final and end points are relaxed
+    // NOTE: Does not assume that the final and end points are relaxed
     for (size_t idx{0}; idx < imageArray.size(); idx++){
         matvec.push_back(imageArray[idx].truePotMatter);
     }
