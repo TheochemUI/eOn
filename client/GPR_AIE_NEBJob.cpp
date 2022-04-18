@@ -53,7 +53,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     while(mustUpdate){
         gpf->retrainGPR(matvec);
-        auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(matvec, gpf), eonp);
+        auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         gpnebTwo.compute();
         this->fCallsGPR += 1;
         mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
@@ -65,7 +65,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     if (this->fCallsGPR > 1){
         // Final round
         gpf->retrainGPR(matvec);
-        auto gpnebFin = GPRNEB(helper_functions::prepGPRMatterVec(matvec, gpf), eonp);
+        auto gpnebFin = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         gpnebFin.compute();
         this->fCallsGPR += 1;
 
