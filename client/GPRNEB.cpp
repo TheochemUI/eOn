@@ -7,8 +7,8 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
 {
     public:
 
-        GPRNEBObjectiveFunction(GPRNEB *nebPassed, Parameters *parametersPassed):
-            neb{nebPassed},
+        GPRNEBObjectiveFunction(GPRNEB *gpnebPassed, Parameters *parametersPassed):
+            gpneb{gpnebPassed},
             params{parametersPassed},
             threshold{parametersPassed->nebConvergedForce}
         {
@@ -19,13 +19,13 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         VectorXd getGradient(bool fdstep=false)
         {
             VectorXd forceV;
-            forceV.resize(3*neb->natoms*neb->nimages);
-            if(neb->movedAfterForceCall){
-                neb->updateForces();
+            forceV.resize(3*gpneb->nfree*gpneb->nimages);
+            if(gpneb->movedAfterForceCall){
+                gpneb->updateForces();
             }
-            for(size_t idx{1}; idx<=neb->nimages; idx++){
-                forceV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) =
-                    VectorXd::Map(neb->projectedForceArray.at(idx).data(), 3*neb->natoms);
+            for(size_t idx{1}; idx<=gpneb->nimages; idx++){
+                forceV.segment(3*gpneb->nfree*(idx-1), 3*gpneb->nfree) =
+                    VectorXd::Map(gpneb->projectedForceArray.at(idx).data(), 3*gpneb->nfree);
             }
             return -forceV;
         }
@@ -33,8 +33,8 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         double getEnergy()
         {
             double Energy=0;
-            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
-                auto pe_forces = neb->imageArray[idx].gpr_energy_forces();
+            for (size_t idx{1}; idx < gpneb->imageArray.size()-1; idx++){
+                auto pe_forces = gpneb->imageArray[idx].gpr_energy_forces();
                 Energy += std::get<double>(pe_forces);
             }
             return Energy;
@@ -43,42 +43,42 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         VectorXd getPositions()
         {
             VectorXd posV;
-            posV.resize(3 * neb->natoms * neb->nimages);
-            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
-                auto image = neb->imageArray[idx];
+            posV.resize(3 * gpneb->nfree * gpneb->nimages);
+            for (size_t idx{1}; idx < gpneb->imageArray.size()-1; idx++){
+                auto image = gpneb->imageArray[idx];
                 auto pe_forces = image.gpr_energy_forces();
                 // NOTE: Free positions ONLY?
-                posV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*neb->natoms);
+                posV.segment(3*gpneb->nfree*(idx-1), 3*gpneb->nfree) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*gpneb->nfree);
             }
             return posV;
         }
 
         void setPositions(VectorXd x){
-            neb->movedAfterForceCall = true;
-            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
+            gpneb->movedAfterForceCall = true;
+            for (size_t idx{1}; idx < gpneb->imageArray.size()-1; idx++){
                 // NOTE: Free positions ONLY?
-                neb->imageArray[idx].truePotMatter.setPositionsFree(MatrixXd::Map(x.segment(3*neb->natoms*(idx-1),3*neb->natoms).data(),neb->natoms,3));
+                gpneb->imageArray[idx].truePotMatter.setPositionsFree(MatrixXd::Map(x.segment(3*gpneb->nfree*(idx-1),3*gpneb->nfree).data(),gpneb->nfree,3));
             }
         }
 
-        int degreesOfFreedom() { return 3*neb->nimages*neb->natoms; }
+        int degreesOfFreedom() { return 3*gpneb->nimages*gpneb->nfree; }
 
         bool isConverged() { return getConvergence() < this->threshold; }
 
-        double getConvergence() { return neb->convergenceForce(); }
+        double getConvergence() { return gpneb->convergenceForce(); }
 
         VectorXd difference(VectorXd a, VectorXd b){
-            VectorXd pbcDiff(3*neb->nimages*neb->natoms);
-            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
-                int n = (idx-1)*3*neb->natoms;
-                int m = 3*neb->natoms;
-                pbcDiff.segment(n, m) = neb->imageArray[idx].truePotMatter.pbcV(a.segment(n,m)-b.segment(n,m));
+            VectorXd pbcDiff(3*gpneb->nimages*gpneb->nfree);
+            for (size_t idx{1}; idx < gpneb->imageArray.size()-1; idx++){
+                int n = (idx-1)*3*gpneb->nfree;
+                int m = 3*gpneb->nfree;
+                pbcDiff.segment(n, m) = gpneb->imageArray[idx].truePotMatter.pbcV(a.segment(n,m)-b.segment(n,m));
             }
             return pbcDiff;
         }
 
     private:
-        GPRNEB *neb;
+        GPRNEB *gpneb;
         double threshold; // for converged forces
         Parameters* params;
 };
@@ -89,7 +89,7 @@ GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     nebImages{initPath.begin()+1, initPath.end()-1},
     nimages{params.nebImages},
     threshold{params.nebConvergedForce},
-    natoms{initPath.front().truePotMatter.numberOfFreeAtoms()}, // TODO: Use nfree instead
+    natoms{initPath.front().truePotMatter.numberOfAtoms()}, // TODO: Use nfree instead
     nfree{initPath.front().truePotMatter.numberOfFreeAtoms()},
     totImages{nimages+2}
 {
@@ -228,10 +228,10 @@ void GPRNEB::updateForces()
     double maxEnergy;
 
     // variables for force projections
-    AtomMatrix force(natoms,3), forcePerp(natoms,3), forcePar(natoms,3);
-    AtomMatrix forceSpringPar(natoms,3), forceSpring(natoms,3), forceSpringPerp(natoms,3);
-    AtomMatrix forceDNEB(natoms, 3);
-    AtomMatrix pos(natoms,3), posNext(natoms,3), posPrev(natoms,3);
+    AtomMatrix force(nfree,3), forcePerp(nfree,3), forcePar(nfree,3);
+    AtomMatrix forceSpringPar(nfree,3), forceSpring(nfree,3), forceSpringPerp(nfree,3);
+    AtomMatrix forceDNEB(nfree, 3);
+    AtomMatrix pos(nfree,3), posNext(nfree,3), posPrev(nfree,3);
     double distNext, distPrev;
 
     // update the forces on the images and find the highest energy image
@@ -341,8 +341,8 @@ void GPRNEB::updateForces()
         if (image.truePotMatter.numberOfAtoms() == image.truePotMatter.numberOfFreeAtoms()) {
             for (size_t jdx{0};jdx <= 2; jdx++) {
                 double translationMag = projectedForceArray[idx].col(jdx).sum();
-                int natoms = projectedForceArray[idx].col(jdx).size();
-                this->projectedForceArray[idx].col(jdx).array() -= translationMag/(static_cast<double>(natoms));
+                int num_atoms = projectedForceArray[idx].col(jdx).size();
+                this->projectedForceArray[idx].col(jdx).array() -= translationMag/(static_cast<double>(num_atoms));
                 // std::cout<<"Final Projc "<<this->projectedForceArray[idx].col(jdx).array()<<"\n";
             }
         }
@@ -499,8 +499,9 @@ bool GPRNEB::needsRetraining(double eps){
 
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
-    for (auto& img : imageArray){
-        matvec.push_back(img.truePotMatter);
+    // NOTE: Assumes that the final and end points are relaxed
+    for (size_t idx{0}; idx < imageArray.size(); idx++){
+        matvec.push_back(imageArray[idx].truePotMatter);
     }
     return matvec;
 }
