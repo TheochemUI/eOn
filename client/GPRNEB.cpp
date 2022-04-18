@@ -473,3 +473,24 @@ void GPRNEB::findExtrema()
         log("extrema #%li at image position %f with energy %f and curvature %f\n",idx+1,extremumPositions[idx],extremumEnergies[idx]-std::get<double>(pef_init), extremumCurvatures[idx]);
     }
 }
+
+bool GPRNEB::needsRetraining(){
+    bool retval{false};
+    for (auto& img : imageArray){
+        if (img.areEnergiesCloseToTrue() && img.areForcesCloseToTrue()){
+            retval = false;
+            return retval;
+        } else {
+            retval = true;
+        }
+    }
+    return retval;
+}
+
+std::vector<Matter> GPRNEB::getCurPath(){
+    std::vector<Matter> matvec;
+    for (auto& img : imageArray){
+        matvec.push_back(img.truePotMatter);
+    }
+    return matvec;
+}

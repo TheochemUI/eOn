@@ -25,15 +25,18 @@ class GPRNEB{
 
     size_t natoms, nimages, totImages;
     size_t maxEnergyImage, climbingImage, numExtrema;
+    bool movedAfterForceCall;
+    double threshold;
+    Parameters params;
     std::vector<GPRMatter> imageArray;
     std::vector<AtomMatrix> tangentArray;
     std::vector<AtomMatrix> projectedForceArray;
-    bool movedAfterForceCall;
     std::vector<double> extremumEnergies;
     std::vector<double> extremumPositions;
     std::vector<double> extremumCurvatures;
-    double threshold;
-    Parameters params;
+    bool needsRetraining();
+    // This returns a Matter vector for retraining
+    std::vector<Matter> getCurPath();
 };
 
 #endif // GPRNEB_H_
