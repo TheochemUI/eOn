@@ -23,11 +23,12 @@ class GPRNEB{
     void findExtrema();
     void printImageData(bool writeToFile = false);
 
-    size_t natoms, nimages, totImages;
+    size_t natoms, nimages, totImages, nfree;
     size_t maxEnergyImage, climbingImage, numExtrema;
     bool movedAfterForceCall;
     double threshold;
     Parameters params;
+    std::vector<std::reference_wrapper<GPRMatter> > nebImages;
     std::vector<GPRMatter> imageArray;
     std::vector<AtomMatrix> tangentArray;
     std::vector<AtomMatrix> projectedForceArray;
