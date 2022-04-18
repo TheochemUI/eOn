@@ -183,7 +183,8 @@ const Matter& Matter::operator=(const Matter& matter)
     usePeriodicBoundaries = matter.usePeriodicBoundaries;
 
     potentialEnergy = matter.potentialEnergy;
-    recomputePotential = matter.recomputePotential;
+    recomputePotential = true;
+    potential = nullptr;
 
     strcpy(headerCon1,matter.headerCon1);
     strcpy(headerCon2,matter.headerCon2);
