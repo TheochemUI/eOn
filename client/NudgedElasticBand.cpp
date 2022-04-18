@@ -206,7 +206,9 @@ int NudgedElasticBand::compute(void)
 // generate the force value that is compared to the convergence criterion
 double NudgedElasticBand::convergenceForce(void)
 {
-    if(movedAfterForceCall) updateForces();
+    if(movedAfterForceCall){
+        updateForces();
+    }
     double fmax = 0;
 
     for(long i=1; i<=images; i++) {

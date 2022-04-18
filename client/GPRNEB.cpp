@@ -319,31 +319,33 @@ void GPRNEB::updateForces()
         {
             // we are at the climbing image
             climbingImage = maxEnergyImage;
-            projectedForceArray[idx] = force - (2.0 * (force.array() * (tangentArray[idx]).array()).sum() * tangentArray[idx]) + forceDNEB;
+            this->projectedForceArray[idx] = force - (2.0 * (force.array() * (tangentArray[idx]).array()).sum() * tangentArray[idx]) + forceDNEB;
         }
         else  // all non-climbing images
         {
             // sum the spring and potential forces for the neb force
             if (this->params.nebElasticBand) {
-                projectedForceArray[idx] = forceSpring + force;
+                this->projectedForceArray[idx] = forceSpring + force;
+                // std::cout<<"Spring forces "<<forceSpring+force<<"\n";
             }else{
-                projectedForceArray[idx] = forceSpringPar + forcePerp + forceDNEB;
+                this->projectedForceArray[idx] = forceSpringPar + forcePerp + forceDNEB;
+                // std::cout<<"Spring forces "<<forceSpring+force+forceDNEB<<"\n";
             }
+                // std::cout<<"\n Projected forces "<<projectedForceArray[idx]<<"\n";
             //*projectedForce[i] = forceSpring + forcePerp;
             //if (this->params.nebFullSpring) {
             movedAfterForceCall = false;  // so that we don't repeat a force call
         }
 
         //zero net translational force
-        // TODO: Always true on GPR?
-        if (image.truePotMatter.numberOfFreeAtoms() == image.truePotMatter.numberOfFreeAtoms()) {
+        if (image.truePotMatter.numberOfAtoms() == image.truePotMatter.numberOfFreeAtoms()) {
             for (size_t jdx{0};jdx <= 2; jdx++) {
                 double translationMag = projectedForceArray[idx].col(jdx).sum();
                 int natoms = projectedForceArray[idx].col(jdx).size();
-                projectedForceArray[idx].col(jdx).array() -= translationMag/(static_cast<double>(natoms));
+                this->projectedForceArray[idx].col(jdx).array() -= translationMag/(static_cast<double>(natoms));
+                // std::cout<<"Final Projc "<<this->projectedForceArray[idx].col(jdx).array()<<"\n";
             }
         }
-        idx++;
     }
     return;
 }
@@ -363,7 +365,7 @@ void GPRNEB::printImageData(bool writeToFile)
         fh = fopen("neb.dat", "w");
     }
 
-    for(size_t idx{0}; idx<= nimages+1; idx++)
+    for(size_t idx{0}; idx <= nimages+1; idx++)
     {
         if(idx==0){ tang = tangentStart; }
         else if (idx==nimages+1) { tang = tangentEnd; }
