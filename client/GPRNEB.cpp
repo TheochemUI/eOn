@@ -478,13 +478,18 @@ void GPRNEB::findExtrema()
     }
 }
 
+// TODO: Not here, but can be used to train PES
+// NOTE: used to also use img.areEnergiesCloseToTrue()
+// if (img.areForcesCloseToTrue(eps)){
 bool GPRNEB::needsRetraining(double eps){
     bool retval{false};
-    for (auto& img : imageArray){
-        // NOTE: used to also use img.areEnergiesCloseToTrue()
-        if (img.areForcesCloseToTrue(eps)){
+    // NOTE: Assumes that the final and end points are relaxed
+    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
+        // TODO: Use other convergence criteria
+        auto trueforcenorm = ((imageArray[idx].true_free_energy_forces()).second).norm();
+        // std::cout<<"\n truenorm: "<<trueforcenorm<<" vs eps: "<<eps<<std::endl;
+        if (trueforcenorm < eps){
             retval = false;
-            return retval;
         } else {
             retval = true;
         }
