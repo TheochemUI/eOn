@@ -57,4 +57,9 @@ namespace helper_functions {
          * This is one of a few comparison functions to use with <algorithm>
          */
         bool true_force_norm_converged(GPRMatter& mat, double eps = 1e-3);
+        /**
+         * \brief Constructs inputs for a GP-NEB round
+         */
+        std::vector<GPRMatter> prepGPRMatterVec(std::vector<Matter>& newPath, std::shared_ptr<GPRobj>& gpf);
+
 } // namespace helper_functions

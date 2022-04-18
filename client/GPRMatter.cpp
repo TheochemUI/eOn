@@ -167,3 +167,12 @@ bool helper_functions::true_force_norm_converged(GPRMatter& mat, double eps){
   std::cout<<"\n truenorm: "<<force_norm<<" vs eps: "<<eps<<std::endl;
   return (force_norm < eps);
 }
+
+std::vector<GPRMatter> helper_functions::prepGPRMatterVec(std::vector<Matter>& newPath, std::shared_ptr<GPRobj>& gpf){
+  std::vector<GPRMatter> gpmvec;
+  for (auto& image : newPath){
+    GPRMatter tmpmatter(image, gpf);
+    gpmvec.push_back(tmpmatter);
+  }
+  return gpmvec;
+}
