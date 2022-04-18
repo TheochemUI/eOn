@@ -35,7 +35,7 @@ class GPRNEB{
     std::vector<double> extremumEnergies;
     std::vector<double> extremumPositions;
     std::vector<double> extremumCurvatures;
-    bool needsRetraining();
+    bool needsRetraining(double eps = 1e-3);
     // This returns a Matter vector for retraining
     std::vector<Matter> getCurPath();
 };

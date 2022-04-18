@@ -49,7 +49,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         // saveData(status, &gpnebInit);
 
         // return returnFiles;
-    bool mustUpdate = gpnebInit.needsRetraining();
+    bool mustUpdate = gpnebInit.needsRetraining(eonp.gprPotTol);
 
     f1 = Potential::fcalls;
     std::vector<Matter> matvec;
@@ -68,7 +68,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         auto gpnebTwo = GPRNEB(gpmvec, eonp);
         gpnebTwo.compute();
         this->fCallsGPR += 1;
-        mustUpdate = gpnebTwo.needsRetraining();
+        mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
         matvec = gpnebTwo.getCurPath();
     };
     // If there is only one round and no updates, do not redo NEB

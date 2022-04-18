@@ -224,6 +224,7 @@ public:
     long gprPotPriorNu; // prior degrees of freedom {prior_nu}
     bool gprPotOptCheckDerivatives; // {check_derivative}
     int gprPotOptMaxIterations; // {max_iter}
+    double gprPotTol; // {tolerance_func}
     double gprPotOptTolFunc; // {tolerance_func}
     double gprPotOptTolSol; // {tolerance_sol}
     long gprPotOptLambdaLimit; // {lambda_limit}

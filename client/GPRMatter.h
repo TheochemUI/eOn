@@ -36,8 +36,8 @@ class GPRMatter {
         ~GPRMatter(); // Destructor
         std::pair<double, AtomMatrix> gpr_energy_forces();
         std::pair<double, AtomMatrix> true_free_energy_forces();
-        bool areEnergiesCloseToTrue(double eps = 1e-6);
-        bool areForcesCloseToTrue(double eps = 1e-6);
+        bool areEnergiesCloseToTrue(double eps = 1e-3);
+        bool areForcesCloseToTrue(double eps = 1e-3);
         void updateMatter(Matter& otherMatter);
 };
 
