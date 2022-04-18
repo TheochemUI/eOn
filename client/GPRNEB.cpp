@@ -235,7 +235,7 @@ void GPRNEB::updateForces()
     double distNext, distPrev;
 
     // update the forces on the images and find the highest energy image
-    auto maxelemResult = std::max_element(imageArray.begin()+1, imageArray.end()-1,
+    auto maxelemResult = std::max_element(imageArray.begin(), imageArray.end(),
                                         helper_functions::max_gpr_energy);
     maxEnergyImage = std::distance(imageArray.begin(), maxelemResult);
     maxEnergy = std::get<double>(imageArray[maxEnergyImage].gpr_energy_forces());
