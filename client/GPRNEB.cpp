@@ -33,14 +33,9 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         double getEnergy()
         {
             double Energy=0;
-            for (size_t idx{1}; auto &image: neb->imageArray){
-                if (idx == neb->imageArray.size()-1) { // Don't change the final and first image
-                    ++idx;
-                    break;
-                }
-                auto pe_forces = image.gpr_energy_forces();
+            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
+                auto pe_forces = neb->imageArray[idx].gpr_energy_forces();
                 Energy += std::get<double>(pe_forces);
-                idx++;
             }
             return Energy;
         }
@@ -49,22 +44,18 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         {
             VectorXd posV;
             posV.resize(3 * neb->natoms * neb->nimages);
-            for (size_t idx{1}; auto &image: neb->imageArray){
-                if (idx == neb->nimages) { // Don't change the final and first image
-                    ++idx;
-                    break;
-                }
+            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
+                auto image = neb->imageArray[idx];
                 auto pe_forces = image.gpr_energy_forces();
                 // NOTE: Free positions ONLY?
                 posV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*neb->natoms);
-                idx++;
             }
             return posV;
         }
 
         void setPositions(VectorXd x){
             neb->movedAfterForceCall = true;
-            for(long idx{1}; idx<=neb->nimages; idx++) {
+            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
                 // NOTE: Free positions ONLY?
                 neb->imageArray[idx].truePotMatter.setPositionsFree(MatrixXd::Map(x.segment(3*neb->natoms*(idx-1),3*neb->natoms).data(),neb->natoms,3));
             }
@@ -78,7 +69,7 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
 
         VectorXd difference(VectorXd a, VectorXd b){
             VectorXd pbcDiff(3*neb->nimages*neb->natoms);
-            for (size_t idx=1; idx <= neb->nimages; idx++) {
+            for (size_t idx{1}; idx < neb->imageArray.size()-1; idx++){
                 int n = (idx-1)*3*neb->natoms;
                 int m = 3*neb->natoms;
                 pbcDiff.segment(n, m) = neb->imageArray[idx].truePotMatter.pbcV(a.segment(n,m)-b.segment(n,m));
@@ -191,10 +182,12 @@ int GPRNEB::compute()
 // generate the force value that is compared to the convergence criterion
 double GPRNEB::convergenceForce()
 {
-    if(movedAfterForceCall) updateForces();
+    if(movedAfterForceCall) {
+        updateForces();
+    }
     double fmax = 0;
 
-    for(size_t idx=1; idx<=nimages; idx++) {
+    for(size_t idx{1}; idx < imageArray.size()-1; idx++) {
 
             if( this->params.nebClimbingImageConvergedOnly == true &&
                 this->params.nebClimbingImageMethod &&
