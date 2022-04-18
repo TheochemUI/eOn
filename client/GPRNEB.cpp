@@ -65,7 +65,8 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         void setPositions(VectorXd x){
             neb->movedAfterForceCall = true;
             for(long idx{1}; idx<=neb->nimages; idx++) {
-                neb->imageArray[idx].truePotMatter.setPositions(MatrixXd::Map(x.segment(3*neb->natoms*(idx-1),3*neb->natoms).data(),neb->natoms,3));
+                // NOTE: Free positions ONLY?
+                neb->imageArray[idx].truePotMatter.setPositionsFree(MatrixXd::Map(x.segment(3*neb->natoms*(idx-1),3*neb->natoms).data(),neb->natoms,3));
             }
         }
 
@@ -76,20 +77,29 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         double getConvergence() { return neb->convergenceForce(); }
 
         VectorXd difference(VectorXd a, VectorXd b){
-            throw std::runtime_error("whoops, this is never used for NEB algorithms");
+            VectorXd pbcDiff(3*neb->nimages*neb->natoms);
+            for (size_t idx=1; idx <= neb->nimages; idx++) {
+                int n = (idx-1)*3*neb->natoms;
+                int m = 3*neb->natoms;
+                pbcDiff.segment(n, m) = neb->imageArray[idx].truePotMatter.pbcV(a.segment(n,m)-b.segment(n,m));
+            }
+            return pbcDiff;
         }
 
     private:
         GPRNEB *neb;
         double threshold; // for converged forces
+        Parameters* params;
 };
 
 GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     params{params},
     imageArray{initPath},
+    nebImages{initPath.begin()+1, initPath.end()-1},
     nimages{params.nebImages},
     threshold{params.nebConvergedForce},
-    natoms{initPath.front().truePotMatter.numberOfFreeAtoms()},
+    natoms{initPath.front().truePotMatter.numberOfFreeAtoms()}, // TODO: Use nfree instead
+    nfree{initPath.front().truePotMatter.numberOfFreeAtoms()},
     totImages{nimages+2}
 {
     log("\nNEB: initialize\n");
