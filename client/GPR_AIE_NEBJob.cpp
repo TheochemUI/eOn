@@ -34,13 +34,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     auto gpf = std::make_shared<GPRobj>(reactant, eonp);
     gpf->trainGPR(imgArray);
 
-   std::vector<GPRMatter> vecgpr;
-    for (auto& image : imgArray){
-        GPRMatter tmpmatter(image, gpf);
-        vecgpr.push_back(tmpmatter);
-    }
-
-    auto gpnebInit = GPRNEB(vecgpr, eonp);
+    auto gpnebInit = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
 
     status = gpnebInit.compute();
     this->fCallsGPR += 1;
@@ -53,34 +47,25 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     f1 = Potential::fcalls;
     std::vector<Matter> matvec;
-    std::vector<GPRMatter> gpmvec;
     if(mustUpdate){
         matvec = gpnebInit.getCurPath();
     }
 
     while(mustUpdate){
         gpf->retrainGPR(matvec);
-        gpmvec.clear();
-        for (auto& image : imgArray){
-            GPRMatter tmpmatter(image, gpf);
-            gpmvec.push_back(tmpmatter);
-        }
-        auto gpnebTwo = GPRNEB(gpmvec, eonp);
+        auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(matvec, gpf), eonp);
         gpnebTwo.compute();
         this->fCallsGPR += 1;
         mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
-        matvec = gpnebTwo.getCurPath();
+        if (mustUpdate){
+            matvec = gpnebTwo.getCurPath();
+        }
     };
     // If there is only one round and no updates, do not redo NEB
     if (this->fCallsGPR > 1){
         // Final round
         gpf->retrainGPR(matvec);
-        gpmvec.clear();
-        for (auto& image : imgArray){
-            GPRMatter tmpmatter(image, gpf);
-            gpmvec.push_back(tmpmatter);
-        }
-        auto gpnebFin = GPRNEB(gpmvec, eonp);
+        auto gpnebFin = GPRNEB(helper_functions::prepGPRMatterVec(matvec, gpf), eonp);
         gpnebFin.compute();
         this->fCallsGPR += 1;
 
