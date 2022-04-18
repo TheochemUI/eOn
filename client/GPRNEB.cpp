@@ -232,31 +232,16 @@ void GPRNEB::updateForces()
     double distNext, distPrev;
 
     // update the forces on the images and find the highest energy image
-    auto pef_maxei = this->imageArray.front().gpr_energy_forces();
-    maxEnergy = std::get<double>(pef_maxei);
-    maxEnergyImage = 0;
-    for (size_t idx{1}; auto &image: imageArray){
-      if (idx == imageArray.size()-1) {
-        ++idx;
-        break;
-      }
-      auto pef_tmp = image.gpr_energy_forces();
-      double tmp_energ = std::get<double>(pef_tmp);
-      std::cout<<"\nOld max Energy "<<maxEnergy<< " and new candidate "<< tmp_energ<<"\n";
-        if(tmp_energ > maxEnergy) {
-            maxEnergy = tmp_energ;
-            maxEnergyImage = idx;
-        std::cout<<"\n Got a new max image "<<idx<<std::endl;
-        }
-        idx++;
-    }
+    auto maxelemResult = std::max_element(imageArray.begin()+1, imageArray.end()-1,
+                                        helper_functions::max_gpr_energy);
+    maxEnergyImage = std::distance(imageArray.begin(), maxelemResult);
+    maxEnergy = std::get<double>(imageArray[maxEnergyImage].gpr_energy_forces());
+    // std::cout<<"\n Got max image "<<maxEnergyImage<<std::endl;
+    // std::cout<<"\n Got max energy "<<maxEnergy<<std::endl;
 
-    for (size_t idx{1}; auto &image: imageArray){
-        if (idx == imageArray.size()-1) {
-            ++idx;
-            break;
-        }
+    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
         // set local variables
+        auto image = imageArray[idx]; // TODO: Maybe remove
         auto pef_cur = image.gpr_energy_forces();
         auto pef_prev = this->imageArray[idx-1].gpr_energy_forces();
         auto pef_next = this->imageArray[idx+1].gpr_energy_forces();
