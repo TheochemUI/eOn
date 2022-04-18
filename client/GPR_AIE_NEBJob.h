@@ -6,6 +6,7 @@
 #include "NudgedElasticBand.h"
 #include "Job.h"
 #include "GPRHelpers.h"
+#include "GPRNEB.h"
 
 class GPR_AIE_NEBJob : public Job {
 
@@ -19,12 +20,11 @@ class GPR_AIE_NEBJob : public Job {
 
         // functions
         void printEndState(int status);
-        void saveData(int status, NudgedElasticBand *neb);
+        void saveData(int status, GPRNEB *gpneb);
 
         // variables
         std::vector<std::string> returnFiles;
         Parameters *parameters;
-        std::unique_ptr<gpr::GaussianProcessRegression> gprfunc;
         size_t fCallsNEB;
         size_t fCallsGPR;
 
