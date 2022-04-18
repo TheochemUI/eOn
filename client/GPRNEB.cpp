@@ -7,7 +7,10 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
 {
     public:
 
-        GPRNEBObjectiveFunction(GPRNEB *nebPassed, double threshold): neb{nebPassed}, threshold{threshold}
+        GPRNEBObjectiveFunction(GPRNEB *nebPassed, Parameters *parametersPassed):
+            neb{nebPassed},
+            params{parametersPassed},
+            threshold{parametersPassed->nebConvergedForce}
         {
         }
 
@@ -121,7 +124,7 @@ int GPRNEB::compute()
 
     updateForces();
 
-    GPRNEBObjectiveFunction objf(this, this->threshold);
+    GPRNEBObjectiveFunction objf(this, &this->params);
 
     Optimizer *optimizer = Optimizer::getOptimizer(&objf, &this->params);
 
