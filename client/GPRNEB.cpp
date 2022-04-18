@@ -30,13 +30,14 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         double getEnergy()
         {
             double Energy=0;
-            for (size_t idx{0}; auto &image: neb->imageArray){
-                if (idx == neb->imageArray.size()-1 or (idx == 0)) { // Don't change the final and first image
+            for (size_t idx{1}; auto &image: neb->imageArray){
+                if (idx == neb->imageArray.size()-1) { // Don't change the final and first image
                     ++idx;
-                    continue;
+                    break;
                 }
                 auto pe_forces = image.gpr_energy_forces();
                 Energy += std::get<double>(pe_forces);
+                idx++;
             }
             return Energy;
         }
@@ -45,14 +46,15 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         {
             VectorXd posV;
             posV.resize(3 * neb->natoms * neb->nimages);
-            for (size_t idx{0}; auto &image: neb->imageArray){
-                if (idx == neb->imageArray.size()-1 or (idx == 0)) { // Don't change the final and first image
+            for (size_t idx{1}; auto &image: neb->imageArray){
+                if (idx == neb->nimages) { // Don't change the final and first image
                     ++idx;
-                    continue;
+                    break;
                 }
                 auto pe_forces = image.gpr_energy_forces();
                 // NOTE: Free positions ONLY?
                 posV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*neb->natoms);
+                idx++;
             }
             return posV;
         }
@@ -233,20 +235,23 @@ void GPRNEB::updateForces()
     for (size_t idx{1}; auto &image: imageArray){
       if (idx == imageArray.size()-1) {
         ++idx;
-        continue;
+        break;
       }
       auto pef_tmp = image.gpr_energy_forces();
       double tmp_energ = std::get<double>(pef_tmp);
+      std::cout<<"\nOld max Energy "<<maxEnergy<< " and new candidate "<< tmp_energ<<"\n";
         if(tmp_energ > maxEnergy) {
             maxEnergy = tmp_energ;
             maxEnergyImage = idx;
+        std::cout<<"\n Got a new max image "<<idx<<std::endl;
         }
+        idx++;
     }
 
     for (size_t idx{1}; auto &image: imageArray){
         if (idx == imageArray.size()-1) {
             ++idx;
-            continue;
+            break;
         }
         // set local variables
         auto pef_cur = image.gpr_energy_forces();
@@ -347,8 +352,8 @@ void GPRNEB::updateForces()
                 projectedForceArray[idx].col(jdx).array() -= translationMag/(static_cast<double>(natoms));
             }
         }
+        idx++;
     }
-
     return;
 }
 
@@ -376,14 +381,12 @@ void GPRNEB::printImageData(bool writeToFile)
             dist = imageArray[idx].truePotMatter.distanceTo(imageArray[idx-1].truePotMatter);
             distTotal += dist;
         }
+        auto pef_cur = this->imageArray[idx].gpr_energy_forces();
+        auto pef_init = this->imageArray.front().gpr_energy_forces();
         if (fh == NULL) {
-            auto pef_cur = this->imageArray[idx].gpr_energy_forces();
-            auto pef_init = this->imageArray.front().gpr_energy_forces();
             log("%3li %12.6f %12.6f %12.6f\n", idx, distTotal,
                 std::get<double>(pef_cur)-std::get<double>(pef_init), (std::get<AtomMatrix>(pef_cur).array()*tang.array()).sum());
         }else{
-            auto pef_cur = this->imageArray[idx].gpr_energy_forces();
-            auto pef_init = this->imageArray.front().gpr_energy_forces();
             fprintf(fh, "%3li %12.6f %12.6f %12.6f\n",idx,distTotal,
                 std::get<double>(pef_cur)-std::get<double>(pef_init), (std::get<AtomMatrix>(pef_cur).array()*tang.array()).sum());
         }
