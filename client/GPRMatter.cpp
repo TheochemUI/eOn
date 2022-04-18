@@ -11,6 +11,7 @@ GPRMatter::GPRMatter(Matter& initMatter, std::shared_ptr<GPRobj> gpf) :
    truePotMatter{initMatter},
    trueForcesFree{initMatter.getForcesFree()},
    truePotEnergy{initMatter.getPotentialEnergy()},
+   trueForces{initMatter.getForces()},
    gprobj{gpf} {
 }
 
@@ -31,6 +32,10 @@ std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
 
 std::pair<double, AtomMatrix> GPRMatter::true_free_energy_forces(){
   return std::make_pair(truePotEnergy, trueForcesFree);
+}
+
+std::pair<double, AtomMatrix> GPRMatter::true_energy_forces(){
+  return std::make_pair(truePotEnergy, trueForces);
 }
 
 bool GPRMatter::areForcesCloseToTrue(double eps){
@@ -56,6 +61,7 @@ bool GPRMatter::areEnergiesCloseToTrue(double eps){
 void GPRMatter::updateMatter(Matter& otherMatter){
     this->truePotMatter = otherMatter;
     this->trueForcesFree = otherMatter.getForcesFree();
+    this->trueForces = otherMatter.getForces();
     this->truePotEnergy = otherMatter.getPotentialEnergy();
 }
 
