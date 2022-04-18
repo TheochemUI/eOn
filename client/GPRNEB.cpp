@@ -52,13 +52,16 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
                 }
                 auto pe_forces = image.gpr_energy_forces();
                 // NOTE: Free positions ONLY?
-                posV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) = VectorXd::Map(image.truePotMatter.getPositions().data(), 3*neb->natoms);
+                posV.segment(3*neb->natoms*(idx-1), 3*neb->natoms) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*neb->natoms);
             }
             return posV;
         }
 
         void setPositions(VectorXd x){
-            throw std::runtime_error("whoops, this is never used for NEB algorithms");
+            neb->movedAfterForceCall = true;
+            for(long idx{1}; idx<=neb->nimages; idx++) {
+                neb->imageArray[idx].truePotMatter.setPositions(MatrixXd::Map(x.segment(3*neb->natoms*(idx-1),3*neb->natoms).data(),neb->natoms,3));
+            }
         }
 
         int degreesOfFreedom() { return 3*neb->nimages*neb->natoms; }
