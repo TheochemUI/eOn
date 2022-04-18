@@ -91,6 +91,7 @@ eonlib_sources = [
            'Prefactor.cpp',
            'ConjugateGradients.cpp',
            'GPRMatter.cpp',
+           'GPRNEB.cpp',
            'Matter.cpp',
            'FiniteDifferenceJob.cpp',
            'Lanczos.cpp',
