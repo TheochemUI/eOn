@@ -27,11 +27,11 @@ class GPRobj {
 
 class GPRMatter {
     private:
-        Matter truePotMatter;
         AtomMatrix trueForcesFree;
         double truePotEnergy;
         std::shared_ptr<GPRobj> gprobj;
     public:
+        Matter truePotMatter; // TODO: Make private
         GPRMatter(Matter& initMatter, std::shared_ptr<GPRobj> gpf);
         ~GPRMatter(); // Destructor
         std::pair<double, AtomMatrix> gpr_energy_forces();
