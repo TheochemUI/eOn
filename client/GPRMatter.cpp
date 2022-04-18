@@ -149,5 +149,5 @@ bool helper_functions::max_gpr_energy(GPRMatter matOne, GPRMatter matTwo){
       auto pef_two = matTwo.gpr_energy_forces();
       auto eOne = std::get<double>(pef_one);
       auto eTwo = std::get<double>(pef_two);
-      return (eOne > eTwo);
+      return (eOne < eTwo);
 }
