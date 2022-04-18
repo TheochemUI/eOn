@@ -42,5 +42,11 @@ class GPRMatter {
 };
 
 namespace helper_functions {
-    bool maybeUpdateGPRobj(NudgedElasticBand& neb, std::shared_ptr<GPRobj>& gpf);
+        bool maybeUpdateGPRobj(NudgedElasticBand& neb, std::shared_ptr<GPRobj>& gpf);
+        /**
+         * \brief Compares energies of GPRMatter objects
+         *
+         * This is one of a few comparison functions to use with <algorithm>
+         */
+        bool max_gpr_energy(GPRMatter matOne, GPRMatter matTwo);
 } // namespace helper_functions
