@@ -31,11 +31,15 @@ std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
 }
 
 std::pair<double, AtomMatrix> GPRMatter::true_free_energy_forces(){
-  return std::make_pair(truePotEnergy, trueForcesFree);
+  // TODO: Caching
+  return std::make_pair(truePotMatter.getPotentialEnergy(),
+                        truePotMatter.getForcesFree());
 }
 
 std::pair<double, AtomMatrix> GPRMatter::true_energy_forces(){
-  return std::make_pair(truePotEnergy, trueForces);
+  // TODO: Caching
+  return std::make_pair(truePotMatter.getPotentialEnergy(),
+                        truePotMatter.getForces());
 }
 
 bool GPRMatter::areForcesCloseToTrue(double eps){
