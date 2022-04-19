@@ -686,8 +686,8 @@ bool GPRNEB::notStoppedEarly(double max_dist_factor){
 
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
-    // NOTE: Does not assume that the final and end points are relaxed
-    for (size_t idx{0}; idx < this->imageArray.size(); idx++){
+    // NOTE: Intermediates only, assumes relaxed final, end points
+    for (size_t idx{1}; idx < this->imageArray.size()-1; idx++){
         matvec.push_back(imageArray[idx].truePotMatter);
     }
     return matvec;
