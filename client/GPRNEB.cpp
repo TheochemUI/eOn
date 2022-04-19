@@ -658,10 +658,11 @@ bool GPRNEB::needsRetraining(double eps){
 }
 
 bool GPRNEB::stoppedEarly(double max_dist_factor){
-    bool retval{false};
+    bool noEarlyStopping{false};
     double max_dist = max_dist_factor * this->init_path_length;
     auto curpath = this->getCurPath();
-    for (auto& img : this->imageArray){
+    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
+    auto img = imageArray[idx];
     std::vector<double> distances;
     std::transform(curpath.begin(),
                    curpath.end(),
@@ -669,17 +670,18 @@ bool GPRNEB::stoppedEarly(double max_dist_factor){
                    [&](Matter mat)->double{
                        return mat.distanceTo(img.truePotMatter);
                    });
-    retval = std::any_of(distances.begin(),
+    // Remove distance to self
+    distances.erase(std::remove(distances.begin(), distances.end(), 0), distances.end());
+    noEarlyStopping = std::any_of(distances.begin(),
                          distances.end(),
-                         // The condition here is to set the value to false if 0
-                         // so as to discount distance from self in any_of
                          [&](const double dist)->bool{
-                             return dist == 0 ? false : std::abs(dist) < max_dist; });
-    }
-    if (retval){
+                             return (std::abs(dist) < max_dist); });
+    if (!noEarlyStopping){
         std::cout<<"\n EARLY STOPPING\n";
+        return !noEarlyStopping;
     }
-    return retval;
+    }
+    return noEarlyStopping;
 }
 
 bool GPRNEB::notStoppedEarly(double max_dist_factor){
