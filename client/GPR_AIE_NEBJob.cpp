@@ -40,20 +40,22 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     this->fCallsGPR += 1;
 
     bool mustUpdate = gpnebInit.needsRetraining(eonp.gprPotTol);
+    bool notStoppedEarly = gpnebInit.notStoppedEarly();
 
     f1 = Potential::fcalls;
     std::vector<Matter> matvec;
-    if(mustUpdate){
+    if(mustUpdate && notStoppedEarly){
         matvec = gpnebInit.getCurPath();
     }
 
-    while(mustUpdate){
+    while(mustUpdate && notStoppedEarly){
         gpf->retrainGPR(matvec);
         auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         gpnebTwo.compute();
         this->fCallsGPR += 1;
         mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
-        if (mustUpdate){
+        notStoppedEarly = gpnebTwo.stoppedEarly();
+        if (mustUpdate && notStoppedEarly){
             matvec = gpnebTwo.getCurPath();
         }
     };
