@@ -9,8 +9,9 @@
 
 class GPRNEB{
     private:
-        double getTrueNEBForces();
+        void getTrueNEBForces();
         void updateForces();
+        friend class GPRNEBObjectiveFunction;
     public:
     enum{
         STATUS_GOOD, //0
