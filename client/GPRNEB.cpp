@@ -508,10 +508,13 @@ bool GPRNEB::stoppedEarly(double max_dist_factor){
                    [&](Matter mat)->double{
                        return mat.distanceTo(img.truePotMatter);
                    });
-    retval = std::all_of(distances.begin(),
+    retval = std::any_of(distances.begin(),
                          distances.end(),
                          [&](const double dist)->bool{
-                             return std::abs(dist) < max_dist; });
+                             return std::abs(dist) > max_dist; });
+    }
+    if (retval){
+        std::cout<<"\n EARLY STOPPING\n";
     }
     return retval;
 }
