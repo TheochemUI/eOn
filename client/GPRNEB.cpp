@@ -480,16 +480,11 @@ void GPRNEB::findExtrema()
 
 // TODO: Not here, but can be used to train PES
 // NOTE: used to also use img.areEnergiesCloseToTrue()
-// if (img.areForcesCloseToTrue(eps)){
 bool GPRNEB::needsRetraining(double eps){
     bool retval{false};
     // NOTE: Assumes that the final and end points are relaxed
-    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
+    for (size_t idx{1}; idx < this->imageArray.size()-1; idx++){
         // TODO: Use other convergence criteria
-        // auto trueforcenorm = ((imageArray[idx].true_free_energy_forces()).second).norm();
-        // std::cout<<"\n truenorm: "<<trueforcenorm<<" vs eps: "<<eps<<std::endl;
-        // std::cout<<"\n areForcesCloseToTrue "<<imageArray[idx].areForcesCloseToTrue(eps)<<std::endl;
-        // std::cout<<"\n areEnergiesCloseToTrue "<<imageArray[idx].areEnergiesCloseToTrue(eps)<<std::endl;
         if (imageArray[idx].isForceMaxElementLow(eps)){
             retval = false;
         } else {
@@ -502,7 +497,7 @@ bool GPRNEB::needsRetraining(double eps){
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
     // NOTE: Does not assume that the final and end points are relaxed
-    for (size_t idx{0}; idx < imageArray.size(); idx++){
+    for (size_t idx{0}; idx < this->imageArray.size(); idx++){
         matvec.push_back(imageArray[idx].truePotMatter);
     }
     return matvec;

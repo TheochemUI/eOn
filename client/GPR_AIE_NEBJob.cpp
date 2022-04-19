@@ -39,10 +39,6 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     status = gpnebInit.compute();
     this->fCallsGPR += 1;
 
-        // printEndState(status);
-        // saveData(status, &gpnebInit);
-
-        // return returnFiles;
     bool mustUpdate = gpnebInit.needsRetraining(eonp.gprPotTol);
 
     f1 = Potential::fcalls;
@@ -64,7 +60,6 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     // If there is only one round and no updates, do not redo NEB
     if (this->fCallsGPR > 1){
         // Final round
-        gpf->retrainGPR(matvec);
         auto gpnebFin = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         gpnebFin.compute();
         this->fCallsGPR += 1;
