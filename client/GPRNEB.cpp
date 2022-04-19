@@ -486,9 +486,11 @@ bool GPRNEB::needsRetraining(double eps){
     // NOTE: Assumes that the final and end points are relaxed
     for (size_t idx{1}; idx < imageArray.size()-1; idx++){
         // TODO: Use other convergence criteria
-        auto trueforcenorm = ((imageArray[idx].true_free_energy_forces()).second).norm();
+        // auto trueforcenorm = ((imageArray[idx].true_free_energy_forces()).second).norm();
         // std::cout<<"\n truenorm: "<<trueforcenorm<<" vs eps: "<<eps<<std::endl;
-        if (trueforcenorm < eps){
+        // std::cout<<"\n areForcesCloseToTrue "<<imageArray[idx].areForcesCloseToTrue(eps)<<std::endl;
+        // std::cout<<"\n areEnergiesCloseToTrue "<<imageArray[idx].areEnergiesCloseToTrue(eps)<<std::endl;
+        if (imageArray[idx].isForceMaxElementLow(eps)){
             retval = false;
         } else {
             retval = true;
