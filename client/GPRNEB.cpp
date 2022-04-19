@@ -494,6 +494,25 @@ bool GPRNEB::needsRetraining(double eps){
     return retval;
 }
 
+bool GPRNEB::stoppedEarly(double max_dist){
+    bool retval{false};
+    auto curpath = this->getCurPath();
+    for (auto& img : this->imageArray){
+    std::vector<double> distances;
+    std::transform(curpath.begin(),
+                   curpath.end(),
+                   std::back_inserter(distances),
+                   [&](Matter mat)->double{
+                       return mat.distanceTo(img.truePotMatter);
+                   });
+    retval = std::all_of(distances.begin(),
+                         distances.end(),
+                         [&](const double dist)->bool{
+                             return std::abs(dist) < max_dist; });
+    }
+    return retval;
+}
+
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
     // NOTE: Does not assume that the final and end points are relaxed
