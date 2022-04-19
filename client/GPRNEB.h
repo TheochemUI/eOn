@@ -32,6 +32,8 @@ class GPRNEB{
     std::vector<GPRMatter> imageArray;
     std::vector<AtomMatrix> tangentArray;
     std::vector<AtomMatrix> projectedForceArray;
+    std::vector<AtomMatrix> projectedForceArrayTrue;
+    std::vector<AtomMatrix> tangentArrayTrue;
     std::vector<double> extremumEnergies;
     std::vector<double> extremumPositions;
     std::vector<double> extremumCurvatures;
@@ -40,6 +42,9 @@ class GPRNEB{
     bool notStoppedEarly(double max_dist_factor = 0.5);
     // This returns a Matter vector for retraining
     std::vector<Matter> getCurPath();
+    // These are outer loop helpers
+    double getTrueNEBForces();
+    double getTrueConvForce();
 };
 
 #endif // GPRNEB_H_

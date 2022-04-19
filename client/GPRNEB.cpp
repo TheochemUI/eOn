@@ -98,6 +98,8 @@ GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     log("\nNEB: initialize\n");
     tangentArray.resize(totImages);
     projectedForceArray.resize(totImages);
+    tangentArrayTrue.resize(totImages);
+    projectedForceArrayTrue.resize(totImages);
     extremumEnergies.resize(2*(nimages+1));
     extremumPositions.resize(2*(nimages+1));
     extremumCurvatures.resize(2*(nimages+1));
@@ -292,8 +294,6 @@ void GPRNEB::updateForces()
         tangentArray[idx].normalize();
 
         // project the forces and add springs
-        // NOTE: Maybe?
-        // force = image[i]->getForces();
 
         // calculate the force perpendicular to the tangent
         forcePerp = force - (force.array() * (tangentArray.at(idx)).array()).sum() * tangentArray.at(idx);
@@ -350,6 +350,167 @@ void GPRNEB::updateForces()
         }
     }
     return;
+}
+
+void GPRNEB::getTrueNEBForces()
+{
+    // variables for tangent
+    double maxDiffEnergy, minDiffEnergy;
+    double energyDiffPrev, energyDiffNext;
+    double energy, energyPrev, energyNext;
+    //bool higherEnergyPrev, higherEnergyNext;
+
+    // variables for climbing image
+    double maxEnergy;
+
+    // variables for force projections
+    AtomMatrix force(natoms,3), forcePerp(natoms,3), forcePar(natoms,3);
+    AtomMatrix forceSpringPar(natoms,3), forceSpring(natoms,3), forceSpringPerp(natoms,3);
+    AtomMatrix forceDNEB(natoms, 3);
+    AtomMatrix pos(natoms,3), posNext(natoms,3), posPrev(natoms,3);
+    double distNext, distPrev;
+
+    // update the forces on the images and find the highest energy image
+    auto maxelemResult = std::max_element(imageArray.begin(), imageArray.end(),
+                                        helper_functions::max_true_energy);
+    maxEnergyImage = std::distance(imageArray.begin(), maxelemResult);
+    maxEnergy = std::get<double>(imageArray[maxEnergyImage].true_energy_forces());
+
+    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
+        // set local variables
+        auto image = imageArray[idx]; // TODO: Maybe remove
+        auto pef_cur = image.true_energy_forces();
+        auto pef_prev = this->imageArray[idx-1].true_energy_forces();
+        auto pef_next = this->imageArray[idx+1].true_energy_forces();
+        force = std::get<AtomMatrix>(pef_cur);
+        pos = this->imageArray[idx].truePotMatter.getPositions();
+        posPrev = this->imageArray[idx-1].truePotMatter.getPositions();
+        posNext = this->imageArray[idx+1].truePotMatter.getPositions();
+        energy = std::get<double>(pef_cur);
+        energyPrev = std::get<double>(pef_prev);
+        energyNext = std::get<double>(pef_next);
+
+        // determine the tangent
+        if(this->params.nebOldTangent) {
+            // old tangent
+            tangentArrayTrue[idx] = image.truePotMatter.pbc(posNext - posPrev);
+        } else {
+          // new improved tangent
+	  //higherEnergyPrev = energyPrev > energyNext;
+	  //higherEnergyNext = energyNext > energyPrev;
+	  if(energyNext > energy && energy > energyPrev) {
+	    tangentArrayTrue[idx] = image.truePotMatter.pbc(posNext - pos);
+	  }else if(energy > energyNext && energyPrev > energy){
+	    tangentArrayTrue[idx] = image.truePotMatter.pbc(pos - posPrev);
+	  }else{
+	    // we are at an extremum
+	    energyDiffPrev = energyPrev - energy;
+	    energyDiffNext = energyNext - energy;
+
+	    // calculate the energy difference to neighboring images
+	    minDiffEnergy = std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+	    maxDiffEnergy = std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+
+	    // use these energy differences to weight the tangent
+	    if(energyDiffPrev > energyDiffNext) {
+            tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * minDiffEnergy;
+            tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * maxDiffEnergy;
+	    }else{
+            tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * maxDiffEnergy;
+            tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * minDiffEnergy;
+	    }
+	  }
+	}
+        tangentArrayTrue[idx].normalize();
+
+        // project the forces and add springs
+
+        // calculate the force perpendicular to the tangent
+        forcePerp = force - (force.array() * (tangentArrayTrue.at(idx)).array()).sum() * tangentArrayTrue.at(idx);
+        forceSpring = this->params.nebSpring * image.truePotMatter.pbc((posNext - pos) - (pos - posPrev));
+
+        // calculate the spring force
+        distPrev = image.truePotMatter.pbc(posPrev - pos).squaredNorm();
+        distNext = image.truePotMatter.pbc(posNext - pos).squaredNorm();
+        forceSpringPar = this->params.nebSpring * (distNext-distPrev) * tangentArrayTrue[idx];
+
+        if (this->params.nebDoublyNudged) {
+            forceSpringPerp = forceSpring - (forceSpring.array() * (tangentArrayTrue[idx]).array()).sum() * tangentArrayTrue[idx];
+            forceDNEB = forceSpringPerp - (forceSpringPerp.array() * forcePerp.normalized().array()).sum() * forcePerp.normalized();
+            if (this->params.nebDoublyNudgedSwitching) {
+                double switching;
+                switching = 2.0/M_PI * std::atan(std::pow(forcePerp.norm(),2) / std::pow(forceSpringPerp.norm(),2));
+                forceDNEB *= switching;
+            }
+        }else{
+            forceDNEB.setZero();
+        }
+
+
+        if(this->params.nebClimbingImageMethod && idx==maxEnergyImage)
+        {
+            // we are at the climbing image
+            climbingImage = maxEnergyImage;
+            this->projectedForceArrayTrue[idx] = force - (2.0 * (force.array() * (tangentArrayTrue[idx]).array()).sum() * tangentArrayTrue[idx]) + forceDNEB;
+        }
+        else  // all non-climbing images
+        {
+            // sum the spring and potential forces for the neb force
+            if (this->params.nebElasticBand) {
+                this->projectedForceArrayTrue[idx] = forceSpring + force;
+                // std::cout<<"Spring forces "<<forceSpring+force<<"\n";
+            }else{
+                this->projectedForceArrayTrue[idx] = forceSpringPar + forcePerp + forceDNEB;
+                // std::cout<<"Spring forces "<<forceSpring+force+forceDNEB<<"\n";
+            }
+                // std::cout<<"\n Projected forces "<<projectedForceArrayTrue[idx]<<"\n";
+            //*projectedForce[i] = forceSpring + forcePerp;
+            //if (this->params.nebFullSpring) {
+            movedAfterForceCall = false;  // so that we don't repeat a force call
+        }
+
+        //zero net translational force
+        if (image.truePotMatter.numberOfAtoms() == image.truePotMatter.numberOfFreeAtoms()) {
+            for (size_t jdx{0};jdx <= 2; jdx++) {
+                double translationMag = projectedForceArrayTrue[idx].col(jdx).sum();
+                int num_atoms = projectedForceArrayTrue[idx].col(jdx).size();
+                this->projectedForceArrayTrue[idx].col(jdx).array() -= translationMag/(static_cast<double>(num_atoms));
+            }
+        }
+    }
+    return;
+}
+double GPRNEB::getTrueConvForce()
+{
+    getTrueNEBForces();
+    double fmax = 0;
+
+    for(size_t idx{1}; idx < imageArray.size()-1; idx++) {
+
+            if( this->params.nebClimbingImageConvergedOnly == true &&
+                this->params.nebClimbingImageMethod &&
+                climbingImage!=0 ) {
+                idx = climbingImage;
+            }
+            if (this->params.optConvergenceMetric == "norm") {
+                fmax = std::max(fmax, projectedForceArrayTrue[idx].norm());
+            } else if (this->params.optConvergenceMetric == "max_atom") {
+                for (size_t jdx{0}; jdx < imageArray.front().truePotMatter.numberOfFreeAtoms(); jdx++) {
+                    fmax = std::max(fmax, this->projectedForceArrayTrue[idx].row(jdx).norm());
+                }
+            } else if (this->params.optConvergenceMetric == "max_component") {
+                fmax = max(fmax, this->projectedForceArrayTrue[idx].maxCoeff());
+            } else {
+                log("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n", this->params.optConvergenceMetric.c_str());
+                exit(1);
+            }
+            if( this->params.nebClimbingImageConvergedOnly == true &&
+                this->params.nebClimbingImageMethod &&
+                climbingImage!=0 ) {
+                break;
+            }
+    }
+    return fmax;
 }
 
 // Print NEB image data
