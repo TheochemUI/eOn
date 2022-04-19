@@ -671,8 +671,10 @@ bool GPRNEB::stoppedEarly(double max_dist_factor){
                    });
     retval = std::any_of(distances.begin(),
                          distances.end(),
+                         // The condition here is to set the value to false if 0
+                         // so as to discount distance from self in any_of
                          [&](const double dist)->bool{
-                             return std::abs(dist) < max_dist; });
+                             return dist == 0 ? false : std::abs(dist) < max_dist; });
     }
     if (retval){
         std::cout<<"\n EARLY STOPPING\n";
