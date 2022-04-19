@@ -104,14 +104,8 @@ GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     extremumPositions.resize(2*(nimages+1));
     extremumCurvatures.resize(2*(nimages+1));
     numExtrema = 0;
-
     movedAfterForceCall = true;
-
-    // Make sure that the endpoints know their energy
-    // image[0]->getPotentialEnergy();
-    // image[images+1]->getPotentialEnergy();
     climbingImage = 0;
-
     return;
 }
 
