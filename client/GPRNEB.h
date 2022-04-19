@@ -8,6 +8,9 @@
 #include "Optimizer.h"
 
 class GPRNEB{
+    private:
+        double getTrueNEBForces();
+        void updateForces();
     public:
     enum{
         STATUS_GOOD, //0
@@ -18,7 +21,6 @@ class GPRNEB{
     ~GPRNEB();
     void clean();
     int compute();
-    void updateForces();
     double convergenceForce();
     void findExtrema();
     void printImageData(bool writeToFile = false);
@@ -43,7 +45,6 @@ class GPRNEB{
     // This returns a Matter vector for retraining
     std::vector<Matter> getCurPath();
     // These are outer loop helpers
-    double getTrueNEBForces();
     double getTrueConvForce();
 };
 
