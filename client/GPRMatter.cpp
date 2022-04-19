@@ -51,6 +51,20 @@ bool GPRMatter::areForcesCloseToTrue(double eps){
     return (convval < eps);
 }
 
+bool GPRMatter::isForceMaxElementLow(double eps){
+  auto gprforces = (gpr_energy_forces()).second;
+  std::vector<double> gpfvec(gprforces.size());
+  Eigen::Map<AtomMatrix>(gpfvec.data(),
+                         gprforces.rows(),
+                         gprforces.cols()) = gprforces;
+  auto itr_res = std::max_element(gpfvec.begin(),
+                                  gpfvec.end(),
+                                  helper_functions::abs_compare<double>);
+  auto max_force_elem = std::abs(*itr_res);
+  // std::cout<<"Max force element is "<<max_force_elem<<"\n";
+  return (max_force_elem < eps);
+}
+
 bool GPRMatter::areEnergiesCloseToTrue(double eps){
     // TODO: Use more convergence methods
     double gpr_energy = std::abs((gpr_energy_forces()).first);
@@ -161,6 +175,7 @@ bool helper_functions::max_gpr_energy(GPRMatter& matOne, GPRMatter& matTwo){
       auto eTwo = std::get<double>(pef_two);
       return (eOne < eTwo);
 }
+
 bool helper_functions::true_force_norm_converged(GPRMatter& mat, double eps){
   auto pef = mat.true_free_energy_forces();
   auto force_norm = std::get<AtomMatrix>(pef).norm();

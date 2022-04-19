@@ -40,6 +40,7 @@ class GPRMatter {
         std::pair<double, AtomMatrix> true_energy_forces();
         bool areEnergiesCloseToTrue(double eps = 1e-3);
         bool areForcesCloseToTrue(double eps = 1e-3);
+        bool isForceMaxElementLow(double eps = 1e-3);
         void updateMatter(Matter& otherMatter);
 };
 
@@ -61,5 +62,13 @@ namespace helper_functions {
          * \brief Constructs inputs for a GP-NEB round
          */
         std::vector<GPRMatter> prepGPRMatterVec(std::vector<Matter>& newPath, std::shared_ptr<GPRobj>& gpf);
+
+        /**
+         * \brief Helper to use as a comparator
+         */
+        template <typename T>
+        bool abs_compare(const T& a, const T& b){
+                return std::abs(a) < std::abs(b);
+        }
 
 } // namespace helper_functions
