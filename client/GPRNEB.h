@@ -41,10 +41,11 @@ class GPRNEB{
     std::vector<double> extremumPositions;
     std::vector<double> extremumCurvatures;
     bool needsRetraining(double eps = 1e-3);
-    bool stoppedEarly(double max_dist_factor = 0.5);
-    bool notStoppedEarly(double max_dist_factor = 0.5);
+    bool stoppedEarly(std::vector<Matter> prevPath, double max_dist_factor = 0.5);
+    bool notStoppedEarly(std::vector<Matter> prevPath, double max_dist_factor = 0.5);
     // This returns a Matter vector for retraining
     std::vector<Matter> getCurPath();
+    std::vector<Matter> getCurPathFull();
     // These are outer loop helpers
     double getTrueConvForce();
 };

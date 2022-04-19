@@ -657,18 +657,18 @@ bool GPRNEB::needsRetraining(double eps){
     return retval;
 }
 
-bool GPRNEB::stoppedEarly(double max_dist_factor){
+bool GPRNEB::stoppedEarly(std::vector<Matter> prevPath, double max_dist_factor){
     bool noEarlyStopping{false};
     double max_dist = max_dist_factor * this->init_path_length;
     auto curpath = this->getCurPath();
-    for (size_t idx{1}; idx < imageArray.size()-1; idx++){
-    auto img = imageArray[idx];
+    for (size_t idx{1}; idx < prevPath.size()-1; idx++){
+    auto img = prevPath[idx];
     std::vector<double> distances;
     std::transform(curpath.begin(),
                    curpath.end(),
                    std::back_inserter(distances),
                    [&](Matter mat)->double{
-                       return mat.distanceTo(img.truePotMatter);
+                       return mat.distanceTo(img);
                    });
     // Remove distance to self
     distances.erase(std::remove(distances.begin(), distances.end(), 0), distances.end());
@@ -684,8 +684,16 @@ bool GPRNEB::stoppedEarly(double max_dist_factor){
     return noEarlyStopping;
 }
 
-bool GPRNEB::notStoppedEarly(double max_dist_factor){
-    return not stoppedEarly(max_dist_factor);
+bool GPRNEB::notStoppedEarly(std::vector<Matter> prevPath, double max_dist_factor){
+    return not stoppedEarly(prevPath, max_dist_factor);
+}
+
+std::vector<Matter> GPRNEB::getCurPathFull(){
+    std::vector<Matter> matvec;
+    for (size_t idx{0}; idx < this->imageArray.size(); idx++){
+        matvec.push_back(imageArray[idx].truePotMatter);
+    }
+    return matvec;
 }
 
 std::vector<Matter> GPRNEB::getCurPath(){
