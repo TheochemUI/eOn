@@ -675,7 +675,7 @@ bool GPRNEB::stoppedEarly(std::vector<Matter> prevPath, double max_dist_factor){
         return !noEarlyStopping;
     }
     }
-    return noEarlyStopping;
+    return !noEarlyStopping;
 }
 
 bool GPRNEB::notStoppedEarly(std::vector<Matter> prevPath, double max_dist_factor){
