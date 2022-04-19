@@ -26,7 +26,7 @@ class GPRNEB{
     size_t natoms, nimages, totImages, nfree;
     size_t maxEnergyImage, climbingImage, numExtrema;
     bool movedAfterForceCall;
-    double threshold;
+    double threshold, init_path_length;
     Parameters params;
     std::vector<std::reference_wrapper<GPRMatter> > nebImages;
     std::vector<GPRMatter> imageArray;
@@ -36,7 +36,7 @@ class GPRNEB{
     std::vector<double> extremumPositions;
     std::vector<double> extremumCurvatures;
     bool needsRetraining(double eps = 1e-3);
-    bool stoppedEarly(double max_dist = 0.5);
+    bool stoppedEarly(double max_dist_factor = 0.5);
     // This returns a Matter vector for retraining
     std::vector<Matter> getCurPath();
 };

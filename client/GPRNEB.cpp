@@ -87,6 +87,8 @@ GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
     params{params},
     imageArray{initPath},
     nebImages{initPath.begin()+1, initPath.end()-1},
+    init_path_length{initPath.front().truePotMatter.distanceTo(
+        initPath.back().truePotMatter)},
     nimages{params.nebImages},
     threshold{params.nebConvergedForce},
     natoms{initPath.front().truePotMatter.numberOfAtoms()},
@@ -494,8 +496,9 @@ bool GPRNEB::needsRetraining(double eps){
     return retval;
 }
 
-bool GPRNEB::stoppedEarly(double max_dist){
+bool GPRNEB::stoppedEarly(double max_dist_factor){
     bool retval{false};
+    double max_dist = max_dist_factor * this->init_path_length;
     auto curpath = this->getCurPath();
     for (auto& img : this->imageArray){
     std::vector<double> distances;
