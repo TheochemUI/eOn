@@ -519,6 +519,10 @@ bool GPRNEB::stoppedEarly(double max_dist_factor){
     return retval;
 }
 
+bool GPRNEB::notStoppedEarly(double max_dist_factor){
+    return not stoppedEarly(max_dist_factor);
+}
+
 std::vector<Matter> GPRNEB::getCurPath(){
     std::vector<Matter> matvec;
     // NOTE: Does not assume that the final and end points are relaxed
