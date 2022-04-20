@@ -72,7 +72,6 @@ class NEBObjectiveFunction : public ObjectiveFunction
         }
 
     private:
-
         NudgedElasticBand *neb;
         Parameters *parameters;
 };
@@ -101,8 +100,8 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
         projectedForce[i] = new AtomMatrix;
         projectedForce[i]->resize(atoms,3);
     }
-    image[0] = initialPassed;
-    image[images+1] = finalPassed;  // final image
+    *image[0] = *initialPassed;
+    *image[images+1] = *finalPassed;  // final image
 
     AtomMatrix posInitial = image[0]->getPositions();
     AtomMatrix posFinal = image[images+1]->getPositions();
