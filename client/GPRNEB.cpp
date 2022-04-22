@@ -634,6 +634,133 @@ void GPRNEB::findExtrema()
     }
 }
 
+// Print NEB image data with True forces
+void GPRNEB::printImageData(bool writeToFile)
+{
+    double dist, distTotal=0;
+    AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray.front().truePotMatter.getPositionsFree());
+    AtomMatrix tangentEnd = imageArray[nimages].truePotMatter.pbc(imageArray.back().truePotMatter.getPositionsFree() - imageArray[nimages].truePotMatter.getPositionsFree());
+    AtomMatrix tang;
+
+    log("Image data (as in neb.dat)\n");
+
+    FILE *fh=NULL;
+    if (writeToFile) {
+        fh = fopen("neb.dat", "w");
+    }
+
+    for(size_t idx{0}; idx <= nimages+1; idx++)
+    {
+        if(idx==0){ tang = tangentStart; }
+        else if (idx==nimages+1) { tang = tangentEnd; }
+        else { tang = tangentArray[idx]; }
+        if(idx>0) {
+            dist = imageArray[idx].truePotMatter.distanceTo(imageArray[idx-1].truePotMatter);
+            distTotal += dist;
+        }
+        auto pef_cur = this->imageArray[idx].true_energy_forces();
+        auto pef_init = this->imageArray.front().true_energy_forces();
+        if (fh == NULL) {
+            log("%3li %12.6f %12.6f %12.6f\n", idx, distTotal,
+                std::get<double>(pef_cur)-std::get<double>(pef_init), (std::get<AtomMatrix>(pef_cur).array()*tang.array()).sum());
+        }else{
+            fprintf(fh, "%3li %12.6f %12.6f %12.6f\n",idx,distTotal,
+                std::get<double>(pef_cur)-std::get<double>(pef_init), (std::get<AtomMatrix>(pef_cur).array()*tang.array()).sum());
+        }
+    }
+    if (writeToFile) {
+        fclose(fh);
+    }
+}
+
+// Estimate the barrier using a cubic spline on True surface
+void GPRNEB::findExtrema()
+{
+    // calculate the cubic parameters for each interval (a,b,c,d)
+
+    AtomMatrix tangentEndpoint;
+    std::vector<double> a, b, c, d;
+    a.resize(nimages+1);
+    b.resize(nimages+1);
+    c.resize(nimages+1);
+    d.resize(nimages+1);
+    double F1, F2, U1, U2, dist;
+
+    for(size_t idx{0}; idx<=nimages; idx++)
+    {
+        dist = imageArray[idx].truePotMatter.distanceTo(imageArray[idx+1].truePotMatter);
+        auto pef_f1 = this->imageArray[idx].true_energy_forces();
+        auto pef_f2 = this->imageArray[idx+1].true_energy_forces();
+        if(idx==0) {
+            tangentEndpoint = imageArray[idx].truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() -
+                                                                imageArray.front().truePotMatter.getPositionsFree());
+            tangentEndpoint.normalize();
+            F1 = (std::get<AtomMatrix>(pef_f1).array()*tangentEndpoint.array()).sum()*dist;
+        } else {
+            F1 = (std::get<AtomMatrix>(pef_f1).array()*(tangentArray[idx]).array()).sum()*dist;
+        }
+        if(idx==nimages) {
+            tangentEndpoint =  imageArray[idx+1].truePotMatter.pbc(imageArray[nimages+1].truePotMatter.getPositionsFree() - imageArray[nimages].truePotMatter.getPositionsFree());
+            tangentEndpoint.normalize();
+            F2 = (std::get<AtomMatrix>(pef_f2).array()*tangentEndpoint.array()).sum()*dist;
+        } else {
+            F2 = (std::get<AtomMatrix>(pef_f2).array()*(tangentArray[idx+1]).array()).sum()*dist;
+        }
+        U1 = std::get<double>(pef_f1);
+        U2 = std::get<double>(pef_f2);
+        a[idx] = U1;
+        b[idx] = -F1;
+        c[idx] = 3.*(U2 - U1) + 2.*F1 + F2;
+        d[idx] = -2.*(U2 - U1) - (F1 + F2);
+    }
+
+    // finding extrema along the MEP
+
+//    long numExtrema = 0;
+//    double extremaEnergy[2*(images+1)]; // the maximum number of extrema
+//    double extremaPosition[2*(images+1)];
+    double discriminant, f;
+
+    for(size_t idx{0}; idx<=nimages; idx++)
+    {
+        discriminant = std::pow(c[idx],2) - 3.*b[idx]*d[idx];
+        if(discriminant >= 0) {
+            f = -1;
+
+            // quadratic case
+            if( (d[idx] == 0) && (c[idx] != 0) ) {
+                f = ( -b[idx]/(2.*c[idx]) );
+            }
+            // cubic case 1
+            else if( d[idx] != 0 ) {
+                f = -(c[idx] + std::sqrt(discriminant))/(3.*d[idx]);
+            }
+            if( (f >= 0) && (f <= 1) ) {
+                extremumPositions[numExtrema] = idx + f;
+                extremumEnergies[numExtrema] = d[idx]*std::pow(f,3) + c[idx]*std::pow(f,2) + b[idx]*f + a[idx];
+                extremumCurvatures[numExtrema] = 6.0*d[idx]*f + 2*c[idx];
+                numExtrema++;
+            }
+            // cubic case 2
+            if( d[idx] != 0 ) {
+                f = ( -(c[idx] - std::sqrt(discriminant))/(3.*d[idx]) );
+            }
+            if( (f >= 0) && (f <= 1) ) {
+                extremumPositions[numExtrema] = idx + f;
+                extremumEnergies[numExtrema] = d[idx]*std::pow(f,3) + c[idx]*std::pow(f,2) + b[idx]*f + a[idx];
+                extremumCurvatures[numExtrema] = 6*d[idx]*f + 2*c[idx];
+                numExtrema++;
+            }
+        }
+    }
+
+    auto pef_init = this->imageArray.front().true_energy_forces();
+    log("\nFound %li extrema\n",numExtrema);
+    log("Energy reference: %f\n", std::get<double>(pef_init));
+    for(size_t idx{0}; idx<numExtrema; idx++) {
+        log("extrema #%li at image position %f with energy %f and curvature %f\n",idx+1,extremumPositions[idx],extremumEnergies[idx]-std::get<double>(pef_init), extremumCurvatures[idx]);
+    }
+}
 // TODO: Not here, but can be used to train PES
 // NOTE: used to also use img.areEnergiesCloseToTrue()
 bool GPRNEB::needsRetraining(double eps){

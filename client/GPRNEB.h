@@ -25,6 +25,8 @@ class GPRNEB{
     double convergenceForce();
     void findExtrema();
     void printImageData(bool writeToFile = false);
+    void findExtremaTrue();
+    void printImageDataTrue(bool writeToFile = false);
 
     size_t natoms, nimages, totImages, nfree;
     size_t maxEnergyImage, climbingImage, numExtrema;
