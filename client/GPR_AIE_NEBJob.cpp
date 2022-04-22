@@ -38,30 +38,20 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     gpf->trainGPR(imgArray);
     while(!converged){
         // We are in the outer loop
-        if (stoppedEarly){
-            // matvec contains the partially evaluated NEB path
-            gpf->retrainGPR(matvec);
-        }
         auto gpnebInit = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         status = gpnebInit.compute();
         this->fCallsGPR += 1;
         trueConvForce = gpnebInit.getTrueConvForce();
         std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
         converged = (trueConvForce<eonp.gprPotTol);
-        if (converged){
-            std::cout<<"\nConverged within outer loop\n";
-            if (status == GPRNEB::STATUS_INIT) {
-                status = GPRNEB::STATUS_GOOD;
-            }
-            printEndState(status);
-            saveData(status, &gpnebInit);
-            return returnFiles;
-        }
         mustUpdate = gpnebInit.needsRetraining(eonp.gprPotTol);
         f1 = Potential::fcalls;
+        if(mustUpdate){
+            matvec = gpnebInit.getCurPath();
+            prevpath = gpnebInit.getCurPathFull();
+        }
         while(mustUpdate){
             // Relaxation loop
-            matvec = gpnebInit.getCurPath();
             gpf->retrainGPR(matvec);
             auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
             gpnebTwo.compute();
@@ -71,6 +61,12 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
             std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
             converged = (trueConvForce<eonp.gprPotTol);
             // TODO: Use the discount factor in parameters instead of 0.5
+            stoppedEarly = gpnebTwo.stoppedEarly(prevpath, 0.5);
+            if (stoppedEarly){
+                std::cout<<"\nStopping relaxation phase due to early stopping\n";
+                std::cout<<"Not using current path\n";
+                break;
+            }
             if (converged){
                 std::cout<<"\nConverged within relaxation phase\n";
                 if (status == GPRNEB::STATUS_INIT) {
@@ -80,12 +76,11 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
                 saveData(status, &gpnebTwo);
                 return returnFiles;
             }
-            stoppedEarly = gpnebTwo.stoppedEarly(matvec, 0.5);
-            if (stoppedEarly){
-                std::cout<<"\nStopping relaxation phase due to early stopping\n";
-                std::cout<<"Using partially evaluated path and returning to outer loop\n";
-                matvec = gpnebInit.getCurPath();
-                break;
+            if (mustUpdate){
+                std::cout<<"\nHaven't bailed will update\n";
+                std::cout<<"Adding current path to training data\n";
+                matvec = gpnebTwo.getCurPath();
+                prevpath = gpnebTwo.getCurPathFull();
             }
         }
         // Outer loop
