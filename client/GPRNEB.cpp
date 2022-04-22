@@ -342,10 +342,6 @@ void GPRNEB::updateForces()
             }
         }
     }
-    // Never move the first and last images
-    // NOTE: This behaviour is **different** from that of vanilla EON
-    this->projectedForceArray.front().setZero();
-    this->projectedForceArray.back().setZero();
     return;
 }
 

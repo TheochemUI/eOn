@@ -374,25 +374,18 @@ std::vector<Matter> helper_functions::prepInitialPath(
   const int nimages = params->nebImages;
   const int totImages = nimages + 2; // Final and end
   std::vector<Matter> imageArray;
-  for (size_t idx{0}; idx < totImages; idx++){
+  for (size_t idx{0}; idx < nimages+1; idx++){// Final added later
     imageArray.emplace_back(initmatter);
   }
-    imageArray.back() = finalmatter;
-    auto posInit = imageArray.front().getPositionsFree();
-    auto posFinal = imageArray.back().getPositionsFree();
-    const AtomMatrix imageSep = imageArray.front().pbc(posFinal-posInit)/(imageArray.size());
-    for (double idx{0}; auto &image: imageArray){
-      if (idx == imageArray.size()-1 or (idx == 0)) { // Don't change the final and first image
-        ++idx;
-        continue;
-      }
-      image.setPositionsFree(posInit + imageSep * idx);
-      image.setPotential(initmatter.getPotential());
-      image.getPotentialEnergy();
-      image.getForcesFree();
-      image.useCache = true;
+    auto posInit = initmatter.getPositions();
+    auto posFinal = finalmatter.getPositions();
+    const AtomMatrix imageSep = initmatter.pbc((posFinal-posInit)/(totImages-1));
+    for (size_t idx{1}; idx <= nimages; idx++){
+      imageArray[idx].setPositions(posInit + imageSep * static_cast<double>(idx));
       ++idx;
     }
+    // This must be after the loop above
+    imageArray.push_back(finalmatter);
     return imageArray;
 }
 
