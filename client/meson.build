@@ -3,7 +3,8 @@ project('eonclient', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
 host_system = host_machine.system()
-eon_extra_args = [] #['-ggdb', '-O0', '-fno-inline-functions']
+# Note that fast-math gives incorrect results, and the third set is for debugging
+eon_extra_args = ['-funroll-loops'] # ['-ffast-math', '-funroll-loops'] #['-ggdb', '-Og', '-fno-inline-functions']
 
 add_languages('c', required: true)
 
