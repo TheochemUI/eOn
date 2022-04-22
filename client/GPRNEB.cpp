@@ -635,7 +635,7 @@ void GPRNEB::findExtrema()
 }
 
 // Print NEB image data with True forces
-void GPRNEB::printImageData(bool writeToFile)
+void GPRNEB::printImageDataTrue(bool writeToFile)
 {
     double dist, distTotal=0;
     AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray.front().truePotMatter.getPositionsFree());
@@ -674,7 +674,7 @@ void GPRNEB::printImageData(bool writeToFile)
 }
 
 // Estimate the barrier using a cubic spline on True surface
-void GPRNEB::findExtrema()
+void GPRNEB::findExtremaTrue()
 {
     // calculate the cubic parameters for each interval (a,b,c,d)
 
@@ -771,7 +771,7 @@ bool GPRNEB::needsRetraining(double eps){
         if (imageArray[idx].isForceMaxElementLow(eps)){
             retval = false;
         } else {
-            retval = true;
+            return true;
         }
     }
     return retval;

@@ -380,8 +380,8 @@ std::vector<Matter> helper_functions::prepInitialPath(
     auto posInit = initmatter.getPositions();
     auto posFinal = finalmatter.getPositions();
     const AtomMatrix imageSep = initmatter.pbc((posFinal-posInit)/(totImages-1));
-    for (size_t idx{1}; idx <= nimages; idx++){
-      imageArray[idx].setPositions(posInit + imageSep * static_cast<double>(idx));
+    for (double idx{0}; auto &image: imageArray){
+      image.setPositions(posInit + imageSep * idx);
       ++idx;
     }
     // This must be after the loop above
