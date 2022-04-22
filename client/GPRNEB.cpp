@@ -259,32 +259,32 @@ void GPRNEB::updateForces()
             // old tangent
             tangentArray[idx] = image.truePotMatter.pbc(posNext - posPrev);
         } else {
-          // new improved tangent
-	  //higherEnergyPrev = energyPrev > energyNext;
-	  //higherEnergyNext = energyNext > energyPrev;
-	  if(energyNext > energy && energy > energyPrev) {
-	    tangentArray[idx] = image.truePotMatter.pbc(posNext - pos);
-	  }else if(energy > energyNext && energyPrev > energy){
-	    tangentArray[idx] = image.truePotMatter.pbc(pos - posPrev);
-	  }else{
-	    // we are at an extremum
-	    energyDiffPrev = energyPrev - energy;
-	    energyDiffNext = energyNext - energy;
+            // new improved tangent
+            //higherEnergyPrev = energyPrev > energyNext;
+            //higherEnergyNext = energyNext > energyPrev;
+            if(energyNext > energy && energy > energyPrev) {
+                tangentArray[idx] = image.truePotMatter.pbc(posNext - pos);
+            }else if(energy > energyNext && energyPrev > energy){
+                tangentArray[idx] = image.truePotMatter.pbc(pos - posPrev);
+            }else{
+                // we are at an extremum
+                energyDiffPrev = energyPrev - energy;
+                energyDiffNext = energyNext - energy;
 
-	    // calculate the energy difference to neighboring images
-	    minDiffEnergy = std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
-	    maxDiffEnergy = std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+                // calculate the energy difference to neighboring images
+                minDiffEnergy = std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+                maxDiffEnergy = std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
 
-	    // use these energy differences to weight the tangent
-	    if(energyDiffPrev > energyDiffNext) {
-            tangentArray.at(idx) = image.truePotMatter.pbc(posNext - pos) * minDiffEnergy;
-            tangentArray.at(idx) += image.truePotMatter.pbc(pos - posPrev) * maxDiffEnergy;
-	    }else{
-            tangentArray.at(idx) = image.truePotMatter.pbc(posNext - pos) * maxDiffEnergy;
-            tangentArray.at(idx) += image.truePotMatter.pbc(pos - posPrev) * minDiffEnergy;
-	    }
-	  }
-	}
+                // use these energy differences to weight the tangent
+                if(energyDiffPrev > energyDiffNext) {
+                    tangentArray.at(idx) = image.truePotMatter.pbc(posNext - pos) * minDiffEnergy;
+                    tangentArray.at(idx) += image.truePotMatter.pbc(pos - posPrev) * maxDiffEnergy;
+                }else{
+                    tangentArray.at(idx) = image.truePotMatter.pbc(posNext - pos) * maxDiffEnergy;
+                    tangentArray.at(idx) += image.truePotMatter.pbc(pos - posPrev) * minDiffEnergy;
+                }
+            }
+        }
         tangentArray[idx].normalize();
 
         // project the forces and add springs
@@ -332,7 +332,6 @@ void GPRNEB::updateForces()
             //if (this->params.nebFullSpring) {
             movedAfterForceCall = false;  // so that we don't repeat a force call
         }
-
         //zero net translational force
         if (image.truePotMatter.numberOfAtoms() == image.truePotMatter.numberOfFreeAtoms()) {
             for (size_t jdx{0};jdx <= 2; jdx++) {
@@ -389,32 +388,32 @@ void GPRNEB::getTrueNEBForces()
             // old tangent
             tangentArrayTrue[idx] = image.truePotMatter.pbc(posNext - posPrev);
         } else {
-          // new improved tangent
-	  //higherEnergyPrev = energyPrev > energyNext;
-	  //higherEnergyNext = energyNext > energyPrev;
-	  if(energyNext > energy && energy > energyPrev) {
-	    tangentArrayTrue[idx] = image.truePotMatter.pbc(posNext - pos);
-	  }else if(energy > energyNext && energyPrev > energy){
-	    tangentArrayTrue[idx] = image.truePotMatter.pbc(pos - posPrev);
-	  }else{
-	    // we are at an extremum
-	    energyDiffPrev = energyPrev - energy;
-	    energyDiffNext = energyNext - energy;
+            // new improved tangent
+            //higherEnergyPrev = energyPrev > energyNext;
+            //higherEnergyNext = energyNext > energyPrev;
+            if(energyNext > energy && energy > energyPrev) {
+                tangentArrayTrue[idx] = image.truePotMatter.pbc(posNext - pos);
+            }else if(energy > energyNext && energyPrev > energy){
+                tangentArrayTrue[idx] = image.truePotMatter.pbc(pos - posPrev);
+            }else{
+                // we are at an extremum
+                energyDiffPrev = energyPrev - energy;
+                energyDiffNext = energyNext - energy;
 
-	    // calculate the energy difference to neighboring images
-	    minDiffEnergy = std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
-	    maxDiffEnergy = std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+                // calculate the energy difference to neighboring images
+                minDiffEnergy = std::min(std::abs(energyDiffPrev), std::abs(energyDiffNext));
+                maxDiffEnergy = std::max(std::abs(energyDiffPrev), std::abs(energyDiffNext));
 
-	    // use these energy differences to weight the tangent
-	    if(energyDiffPrev > energyDiffNext) {
-            tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * minDiffEnergy;
-            tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * maxDiffEnergy;
-	    }else{
-            tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * maxDiffEnergy;
-            tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * minDiffEnergy;
-	    }
-	  }
-	}
+                // use these energy differences to weight thise tangent
+                if(energyDiffPrev > energyDiffNext) {
+                    tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * minDiffEnergy;
+                    tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * maxDiffEnergy;
+                }else{
+                    tangentArrayTrue.at(idx) = image.truePotMatter.pbc(posNext - pos) * maxDiffEnergy;
+                    tangentArrayTrue.at(idx) += image.truePotMatter.pbc(pos - posPrev) * minDiffEnergy;
+                }
+            }
+        }
         tangentArrayTrue[idx].normalize();
 
         // project the forces and add springs
@@ -549,7 +548,7 @@ void GPRNEB::printImageData(bool writeToFile)
 // Estimate the barrier using a cubic spline
 void GPRNEB::findExtrema()
 {
-    // calculate the cubic this->params for each interval (a,b,c,d)
+    // calculate the cubic parameters for each interval (a,b,c,d)
 
     AtomMatrix tangentEndpoint;
     std::vector<double> a, b, c, d;
