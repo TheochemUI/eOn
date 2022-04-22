@@ -84,6 +84,15 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
             }
         }
         // Outer loop
+        if (converged){
+            std::cout<<"\nConverged within outer loop\n";
+            if (status == GPRNEB::STATUS_INIT) {
+                status = GPRNEB::STATUS_GOOD;
+            }
+            printEndState(status);
+            saveData(status, &gpnebInit);
+            return returnFiles;
+        }
     }
     throw std::runtime_error("You shouldn't be here"s);
 }
