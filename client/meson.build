@@ -44,7 +44,7 @@ boost_ams_dep = dependency('boost',
   required : false,
 )
 
-fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : false)
+fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
 
 ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
 
@@ -134,7 +134,7 @@ if get_option('with_gprd')
   eon_extra_args += ['-DWITH_GPRD']
   eonlib_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp',
                       'GPR_AIE_NEBJob.cpp']
-  eon_deps += [ gprd_dep ]
+  eon_deps += [ gprd_dep, fmt_dep ]
 endif
 
 if get_option('with_vasp')

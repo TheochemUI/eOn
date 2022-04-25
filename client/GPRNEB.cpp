@@ -507,7 +507,7 @@ double GPRNEB::getTrueConvForce()
 }
 
 // Print NEB image data
-void GPRNEB::printImageData(bool writeToFile)
+void GPRNEB::printImageData(bool writeToFile, size_t gpr_id)
 {
     double dist, distTotal=0;
     AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray.front().truePotMatter.getPositionsFree());
@@ -518,7 +518,8 @@ void GPRNEB::printImageData(bool writeToFile)
 
     FILE *fh=NULL;
     if (writeToFile) {
-        fh = fopen("neb.dat", "w");
+        auto fname = fmt::format("neb_gpr_{}.dat", gpr_id);
+        fh = fopen(fname.c_str(), "w");
     }
 
     for(size_t idx{0}; idx <= nimages+1; idx++)

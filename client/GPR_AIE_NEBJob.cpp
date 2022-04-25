@@ -41,6 +41,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         auto gpnebInit = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
         status = gpnebInit.compute();
         this->fCallsGPR += 1;
+        saveData(0, &gpnebInit); // Force to STATUS_GOOD
         trueConvForce = gpnebInit.getTrueConvForce();
         std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
         converged = (trueConvForce<eonp.gprPotTol);
@@ -56,6 +57,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
             auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
             gpnebTwo.compute();
             this->fCallsGPR += 1;
+            saveData(0, &gpnebTwo); // Force to STATUS_GOOD
             mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
             trueConvForce = gpnebTwo.getTrueConvForce();
             std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
@@ -135,8 +137,9 @@ void GPR_AIE_NEBJob::saveData(int status, GPRNEB *gpneb)
     }
     fclose(fileNEB);
 
+    // TODO: Update return files with all names
     returnFiles.push_back("neb.dat");
-    gpneb->printImageData(true);
+    gpneb->printImageData(true, this->fCallsGPR);
 }
 
 void GPR_AIE_NEBJob::printEndState(int status)

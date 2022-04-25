@@ -6,6 +6,8 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Optimizer.h"
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 class GPRNEB{
     private:
@@ -24,7 +26,7 @@ class GPRNEB{
     int compute();
     double convergenceForce();
     void findExtrema();
-    void printImageData(bool writeToFile = false);
+    void printImageData(bool writeToFile = false, size_t gpr_id = 0);
     void findExtremaTrue();
     void printImageDataTrue(bool writeToFile = false);
 
