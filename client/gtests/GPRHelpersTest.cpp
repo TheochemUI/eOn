@@ -116,4 +116,14 @@ TEST_F(GPRHelpersTest, TestNEBInitObs) {
       << "Number of elements of G matrices do not match";
   // obspath.printSizes();
 }
+
+TEST_F(GPRHelpersTest, TestPathLength) {
+  // Setup the observations
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  double plen = helper_functions::get_path_length(imgArray);
+  double true_plen = imgArray.front().distanceTo(imgArray.back());
+  EXPECT_NEAR(plen, true_plen, this->threshold)
+      << "Path length is incorrect";
+}
+
 } /* namespace tests */

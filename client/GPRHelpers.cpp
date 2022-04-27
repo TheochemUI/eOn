@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <set>
 #include <cassert>
+#include <algorithm>
+#include <numeric>
 
 gpr::InputParameters
 helper_functions::eon_parameters_to_gprd(Parameters *parameters) {
@@ -454,4 +456,12 @@ gpr::GaussianProcessRegression& helper_functions::initializeGPR(gpr::GaussianPro
     }
     gprfunc.initialize(potparams, atoms_config);
     return gprfunc;
+}
+
+double helper_functions::get_path_length(std::vector<Matter>& path){
+  std::vector<double> distances;
+  for (size_t idx{1}; idx < path.size(); idx++){
+    distances.push_back(path[idx].distanceTo(path[idx-1]));
+  }
+  return std::accumulate(distances.begin(), distances.end(), 0.0);
 }

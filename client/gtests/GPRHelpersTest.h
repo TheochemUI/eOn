@@ -10,6 +10,7 @@ namespace tests {
             virtual ~GPRHelpersTest();
     string reactantFilename;
     string productFilename;
+    const long double threshold{1e-3};
 
     std::unique_ptr<Parameters> parameters;
     std::unique_ptr<Matter> initmatter;

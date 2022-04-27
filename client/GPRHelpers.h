@@ -150,5 +150,9 @@ namespace helper_functions {
                                                   gpr::AtomsConfiguration& atoms_config,
                                                   gpr::Observation& obsPath,
                                                   std::pair<Parameters, Matter>& eon_matter_params);
+    /**
+     * \brief Get the length of a path constructed with Matter objects
+     * */
+    double get_path_length(std::vector<Matter>& path);
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */
