@@ -237,6 +237,7 @@ Parameters::Parameters(){
     gprPotOptTolSol = 1e-4; // tolerance_sol
     gprPotOptLambdaLimit = 1e17; // lambda_limit
     gprPotOptLambdaInit = 10.0; // lambda
+    earlyStoppingFactor = 0.5; // % of path length
 
     // [Hessian] //
     hessianAtomList = string("All");
@@ -597,6 +598,8 @@ int Parameters::load(FILE *file){
         gprPotOptTolSol = ini.GetValueF("GPR Potential", "opt_tol_sol", gprPotOptTolSol);
         gprPotOptLambdaLimit = ini.GetValueF("GPR Potential", "opt_lambda_limit", gprPotOptLambdaLimit);
         gprPotOptLambdaInit = ini.GetValueF("GPR Potential", "opt_lambda_init", gprPotOptLambdaInit);
+        // TODO: Move these
+        earlyStoppingFactor = ini.GetValueF("GPR Potential", "early_stopping_factor", earlyStoppingFactor);
 
         // [Prefactor] //
 

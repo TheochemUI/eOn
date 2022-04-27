@@ -231,7 +231,10 @@ public:
     long gprPotOptLambdaInit; // {lambda}
     double gprPotmagnSigma2; // {magnSigma2}
     double gprPotconstSigma2; // {constSigma2}
+    double earlyStoppingFactor; // TODO: Move to GPR NEB, determines the % of path length
 
+    // [GPR NEB] //
+    // TODO: Refactor GPR Potential and aie_blah into gprneb job and parameters
 
     // [Lanczos] //
     double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
