@@ -246,11 +246,10 @@ void GPRNEB::updateForces()
         auto pef_cur = image.gpr_energy_forces();
         auto pef_prev = this->imageArray[idx-1].gpr_energy_forces();
         auto pef_next = this->imageArray[idx+1].gpr_energy_forces();
-        force = std::get<AtomMatrix>(pef_cur);
+        auto [energy, force] = pef_cur;
         pos = this->imageArray[idx].truePotMatter.getPositionsFree();
         posPrev = this->imageArray[idx-1].truePotMatter.getPositionsFree();
         posNext = this->imageArray[idx+1].truePotMatter.getPositionsFree();
-        energy = std::get<double>(pef_cur);
         energyPrev = std::get<double>(pef_prev);
         energyNext = std::get<double>(pef_next);
 
@@ -375,11 +374,10 @@ void GPRNEB::getTrueNEBForces()
         auto pef_cur = image.true_energy_forces();
         auto pef_prev = this->imageArray[idx-1].true_energy_forces();
         auto pef_next = this->imageArray[idx+1].true_energy_forces();
-        force = std::get<AtomMatrix>(pef_cur);
+        auto [energy, force] = pef_cur;
         pos = this->imageArray[idx].truePotMatter.getPositions();
         posPrev = this->imageArray[idx-1].truePotMatter.getPositions();
         posNext = this->imageArray[idx+1].truePotMatter.getPositions();
-        energy = std::get<double>(pef_cur);
         energyPrev = std::get<double>(pef_prev);
         energyNext = std::get<double>(pef_next);
 
