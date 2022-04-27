@@ -46,6 +46,17 @@ class Optimizer
          * \param *parameters defined by the config.init file
          */
         static Optimizer *getOptimizer(ObjectiveFunction *objf, Parameters *parameters);
+        /*! \brief Overload to avoid points explored in previous runs
+        *
+        * The logic behind this is to check if we are close to any points in
+        * prevPoints, then we modify isClose.
+        *
+        * XXX: This variant is currently ONLY usable from NEB searches
+        */
+        virtual int step(const double maxMove,
+                 const std::vector<Matter> ppoints,
+                 const double max_dist,
+                 bool& isClose)=0;
 };
 
 #endif

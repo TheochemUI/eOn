@@ -16,6 +16,11 @@ class Quickmin : public Optimizer
         ~Quickmin();
 
         int step(double maxMove);
+        // Variant for early stopping / trust region
+        int step(const double maxMove,
+                 const std::vector<Matter> ppoints,
+                 const double max_dist,
+                 bool& isClose);
         int run(int maxIterations, double maxMove);
 
     private:

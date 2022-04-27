@@ -48,6 +48,11 @@ class ConjugateGradients : public Optimizer
         int run(int maxIterations, double maxMove);
 	//! Gets the direction of the next step
         VectorXd getStep();
+    // Variant for early stopping / trust region
+        int step(const double maxMove,
+                 const std::vector<Matter> ppoints,
+                 const double max_dist,
+                 bool& isClose);
 
     private:
 	//! An objective function relating a certain job method to the conjugate gradient optimizer
