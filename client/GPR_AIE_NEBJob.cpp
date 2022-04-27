@@ -32,18 +32,20 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
     reactant.con2matter(reactantFilename);
     product.con2matter(productFilename);
     // Setup the observations
-    auto imgArray = helper_functions::prepInitialPath(&eonp);
+    std::vector<Matter> imgArray = helper_functions::prepInitialPath(&eonp);
     // Setup GPR
     auto gpf = std::make_shared<GPRobj>(reactant, eonp);
     gpf->trainGPR(imgArray);
+    ++this->fCallsGPR;
     while(!converged){
         // We are in the outer loop
         auto gpnebInit = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
-        status = gpnebInit.compute();
-        this->fCallsGPR += 1;
+        status = gpnebInit.compute(imgArray);
+        ++this->fCallsNEB;
+
         saveData(0, &gpnebInit); // Force to STATUS_GOOD
         trueConvForce = gpnebInit.getTrueConvForce();
-        std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
+        std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<" for GPR round "<<fCallsGPR<<" and NEB round "<<fCallsNEB<<std::endl;
         converged = (trueConvForce<eonp.gprPotTol);
         mustUpdate = gpnebInit.needsRetraining(eonp.gprPotTol);
         f1 = Potential::fcalls;
@@ -54,21 +56,16 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
         while(mustUpdate){
             // Relaxation loop
             gpf->retrainGPR(matvec);
+            ++this->fCallsGPR;
+
             auto gpnebTwo = GPRNEB(helper_functions::prepGPRMatterVec(imgArray, gpf), eonp);
             gpnebTwo.compute();
-            this->fCallsGPR += 1;
+            ++this->fCallsNEB;
             saveData(0, &gpnebTwo); // Force to STATUS_GOOD
             mustUpdate = gpnebTwo.needsRetraining(eonp.gprPotTol);
             trueConvForce = gpnebTwo.getTrueConvForce();
-            std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<std::endl;
+             std::cout<<"\n Current trueConvForce is "<<trueConvForce<<" and needs to be "<<eonp.gprPotTol<<" for GPR round "<<fCallsGPR<<" and NEB round "<<fCallsNEB<<std::endl;
             converged = (trueConvForce<eonp.gprPotTol);
-            // TODO: Use the discount factor in parameters instead of 0.5
-            stoppedEarly = gpnebTwo.stoppedEarly(prevpath, 0.5);
-            if (stoppedEarly){
-                std::cout<<"\nStopping relaxation phase due to early stopping\n";
-                std::cout<<"Not using current path\n";
-                break;
-            }
             if (converged){
                 std::cout<<"\nConverged within relaxation phase\n";
                 if (status == GPRNEB::STATUS_INIT) {
@@ -92,7 +89,7 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
                 status = GPRNEB::STATUS_GOOD;
             }
             printEndState(status);
-            saveData(status, &gpnebInit);
+            saveData(0, &gpnebInit);
             return returnFiles;
         }
     }
@@ -139,7 +136,7 @@ void GPR_AIE_NEBJob::saveData(int status, GPRNEB *gpneb)
 
     // TODO: Update return files with all names
     returnFiles.push_back("neb.dat");
-    gpneb->printImageData(true, this->fCallsGPR);
+    gpneb->printImageData(true, this->fCallsNEB);
 }
 
 void GPR_AIE_NEBJob::printEndState(int status)
