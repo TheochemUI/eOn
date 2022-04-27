@@ -232,6 +232,14 @@ public:
     double gprPotmagnSigma2; // {magnSigma2}
     double gprPotconstSigma2; // {constSigma2}
     double earlyStoppingFactor; // TODO: Move to GPR NEB, determines the % of path length
+    bool printSurfaces; // Enables printing out GPR and True surfaces
+    double psXmin; // x_min for the slicer
+    double psYmin; // y_min for the slicer
+    double psXmax; // x_max for the slicer
+    double psYmax; // y_max for the slicer
+    double psZlvl; // z level for the slicer
+    size_t psXnelem; // x elements for slicer
+    size_t psYnelem; // x elements for slicer
 
     // [GPR NEB] //
     // TODO: Refactor GPR Potential and aie_blah into gprneb job and parameters

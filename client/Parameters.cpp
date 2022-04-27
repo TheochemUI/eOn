@@ -238,6 +238,14 @@ Parameters::Parameters(){
     gprPotOptLambdaLimit = 1e17; // lambda_limit
     gprPotOptLambdaInit = 10.0; // lambda
     earlyStoppingFactor = 0.5; // % of path length
+    printSurfaces = false; // turning it on slows things down a lot
+    psXmin = 0.0;
+    psYmin = 0.0;
+    psXmax = 10.0;
+    psYmax = 10.0;
+    psZlvl = 0.0;
+    psXnelem = 5;
+    psYnelem = 5;
 
     // [Hessian] //
     hessianAtomList = string("All");
@@ -598,6 +606,14 @@ int Parameters::load(FILE *file){
         gprPotOptTolSol = ini.GetValueF("GPR Potential", "opt_tol_sol", gprPotOptTolSol);
         gprPotOptLambdaLimit = ini.GetValueF("GPR Potential", "opt_lambda_limit", gprPotOptLambdaLimit);
         gprPotOptLambdaInit = ini.GetValueF("GPR Potential", "opt_lambda_init", gprPotOptLambdaInit);
+        printSurfaces = ini.GetValueB("GPR Potential", "print_surfaces", printSurfaces);
+        psXmin = ini.GetValueF("GPR Potential", "ps_xmin", psXmin);
+        psXmax = ini.GetValueF("GPR Potential", "ps_xmax", psXmax);
+        psYmin = ini.GetValueF("GPR Potential", "ps_ymin", psYmin);
+        psYmax = ini.GetValueF("GPR Potential", "ps_ymax", psYmax);
+        psZlvl = ini.GetValueF("GPR Potential", "ps_zlvl", psZlvl);
+        psXnelem = static_cast<size_t>(ini.GetValueL("GPR Potential", "ps_ne_x", psXnelem));
+        psYnelem = static_cast<size_t>(ini.GetValueL("GPR Potential", "ps_ne_y", psYnelem));
         // TODO: Move these
         earlyStoppingFactor = ini.GetValueF("GPR Potential", "early_stopping_factor", earlyStoppingFactor);
 
