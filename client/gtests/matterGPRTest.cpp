@@ -162,6 +162,23 @@ matterGPRTest::~matterGPRTest() {
     EXPECT_NEAR((gp_testp.truePotMatter.getForcesFree()-testp.getForcesFree()).norm(), 0, this->threshold)<<"GPRMatter internal object forces don't match true forces";
     }
 
+    TEST_F(matterGPRTest, testWriteOut){
+        // Setup the Matter objects
+        Matter reactant{&params};
+        reactant.con2matter(reactantFilename);
+        // Setup the observations
+        auto imgArray = helper_functions::prepInitialPath(&params);
+        // Setup GPR
+        auto gpf = std::make_shared<GPRobj>(reactant, params);
+        gpf->trainGPR(imgArray);
+        // Write-out surface
+        // Kinda silly to print more here
+        helper_functions::peSliceSurface({7.545, 11.66},
+                                         {7.523, 13.074},
+                                         14.5845, {5, 5},
+                                         reactant, gpf, 0);
+    }
+
     // TEST_F(matterGPRTest, insertIntoMatter){
     // // Setup the Matter objects
     // Matter reactant{&params}, product{&params}, testp{&params};

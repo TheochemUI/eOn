@@ -199,3 +199,40 @@ std::vector<GPRMatter> helper_functions::prepGPRMatterVec(std::vector<Matter>& n
   }
   return gpmvec;
 }
+
+void helper_functions::peSliceSurface(const std::pair<double, double> xrange,
+                                      const std::pair<double, double> yrange,
+                                      const double zlvl,
+                                      const std::pair<size_t, size_t> elemXY,
+                                      const Matter baseObject,
+                                      const std::shared_ptr<GPRobj> gpf,
+                                      const size_t gpr_num){
+  auto fname = fmt::format("gpr_surface_{}.dat", gpr_num);
+  auto oname = fmt::output_file(fname);
+  std::vector<double> xvals(elemXY.first), yvals(elemXY.second);
+  xvals.front() = xrange.first;
+  xvals.back() = xrange.second;
+  yvals.front() = yrange.first;
+  yvals.back() = yrange.second;
+  double xdelta = (xrange.second - xrange.first) / elemXY.first;
+  double ydelta = (yrange.second - yrange.first) / elemXY.second;
+  double xtmp{xrange.first}, ytmp{yrange.first};
+  std::generate(xvals.begin(), xvals.end(), [&]{ xtmp = xtmp + xdelta; return xtmp; });
+  std::generate(yvals.begin(), yvals.end(), [&]{ ytmp = ytmp + ydelta; return ytmp; });
+  // Temporaries
+  Matter mtmp = baseObject;
+  oname.print(fmt::format("{:^15} {:^15} {:^15} {:^15} {:^15}\n",
+                          "xval", "yval", "zval", "gpr_energy", "true_energy"));
+  for (size_t xtick{0}; xtick < elemXY.first; xtick++){
+    for (size_t ytick{0}; ytick < elemXY.second; ytick++){
+      Vector3d pos{xvals[xtick], yvals[ytick], zlvl};
+      mtmp.setPositionsFreeV(pos);
+      GPRMatter gpmat(mtmp, gpf);
+      auto fmstring = fmt::format("{:<10.8e} {:<10.8e} {:<10.8e} {:<10.8e} {:<10.8e}\n",
+                                  pos[0], pos[1], pos[2],
+                                  std::get<double>(gpmat.gpr_energy_forces()),
+                                  mtmp.getPotentialEnergy());
+      oname.print(fmstring);
+    }
+  }
+}
