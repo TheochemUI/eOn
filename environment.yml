@@ -1,7 +1,7 @@
 # To use:
 #
 #   $ micromamba env create -f environment.yml  # `micromamba` works too for this command
-#   $ micromamba activate gprd
+#   $ micromamba activate eongit
 #
 name: eongit
 channels:

@@ -27,6 +27,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DUNIX=TRUE -DPACKAGE_TESTS=ON -DNO_WARN=TRUE 
 VERBOSE=1 ninja
 ctest
 #+end_src
+Currently the ~ctests~ are out of date, and ~meson~ is recommended.
 ***** MacOS
 In the new sub-shell:
 #+begin_src bash
@@ -35,7 +36,20 @@ cd client
 meson setup builddir -Dwith_ams=true -Dwith_gprd=true --buildtype=release
 VERBOSE=1 meson compile -C builddir
 #+end_src
-Unfortunately, though this runs on ~mac~ machines, this setup does not work ~ctest~. ~CMakeLists~ are still provided.
+All the options are documented in ~meson_options.txt~. Occasionally, when the
+installation is not done, there may be some linking errors. These can be fixed
+by:
+#+begin_src bash
+# In a conda environment
+cd builddir
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib64:$LD_LIBRARY_PATH
+export PATH=$(pwd):$PATH
+#+end_src
+Dependencies can be obtained via:
+#+begin_src bash
+micromamba env create -f environment.yml
+micromamba activate eongit
+#+end_src
 ** Testing
 Once ~eonclient~ has been built following the instructions above, we can run integration tests (AKMC) in the development environment.
 #+begin_src bash
