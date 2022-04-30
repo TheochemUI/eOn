@@ -126,4 +126,26 @@ TEST_F(GPRHelpersTest, TestPathLength) {
       << "Path length is incorrect";
 }
 
+TEST_F(GPRHelpersTest, TestUnravelFree) {
+  // Setup the observations
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  auto ufreecoords = helper_functions::unravel_free_coords(imgArray);
+  const size_t nfree = imgArray.front().numberOfFreeAtoms();
+  const size_t nimgs = imgArray.size();
+  EXPECT_EQ(ufreecoords.size(), nfree*nimgs*3)
+    << "Unraveled coordinates have the wrong number of elements!\n";
+  // for (size_t pt{0}; pt < nimgs; pt++){
+  //   auto tcoords = imgArray[pt].getPositionsFree();
+  // }
+}
+
+TEST_F(GPRHelpersTest, TestUnravel) {
+  // Setup the observations
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  auto ucoords = helper_functions::unravel_coords(imgArray);
+  const size_t npoints = imgArray.front().numberOfAtoms();
+  const size_t nimgs = imgArray.size();
+  EXPECT_EQ(ucoords.size(), npoints*nimgs*3)
+    << "Unraveled coordinates have the wrong number of elements!\n";
+}
 } /* namespace tests */

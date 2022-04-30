@@ -193,10 +193,13 @@ bool helper_functions::true_force_norm_converged(GPRMatter& mat, double eps){
 
 std::vector<GPRMatter> helper_functions::prepGPRMatterVec(std::vector<Matter>& newPath, std::shared_ptr<GPRobj>& gpf){
   std::vector<GPRMatter> gpmvec;
-  for (auto& image : newPath){
-    GPRMatter tmpmatter(image, gpf);
-    gpmvec.push_back(tmpmatter);
-  }
+  std::transform(newPath.begin(),
+                 newPath.end(),
+                 std::back_inserter(gpmvec),
+                 [&](Matter mat)->GPRMatter{
+                   GPRMatter tmpmatter(mat, gpf);
+                   return tmpmatter;
+                 });
   return gpmvec;
 }
 
@@ -235,4 +238,15 @@ void helper_functions::peSliceSurface(const std::pair<double, double> xrange,
       oname.print(fmstring);
     }
   }
+}
+
+std::vector<Matter> helper_functions::getMatterVector(const std::vector<GPRMatter>& gpmatvec){
+  std::vector<Matter> matvec;
+  std::transform(gpmatvec.begin(),
+                 gpmatvec.end(),
+                 std::back_inserter(matvec),
+                 [&](GPRMatter gpmat)->Matter{
+                   return gpmat.truePotMatter;
+                 });
+  return matvec;
 }

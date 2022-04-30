@@ -42,15 +42,8 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
 
         VectorXd getPositions()
         {
-            VectorXd posV;
-            posV.resize(3 * gpneb->nfree * gpneb->nimages);
-            for (size_t idx{1}; idx < gpneb->imageArray.size()-1; idx++){
-                auto image = gpneb->imageArray[idx];
-                auto pe_forces = image.gpr_energy_forces();
-                // NOTE: Free positions ONLY?
-                posV.segment(3*gpneb->nfree*(idx-1), 3*gpneb->nfree) = VectorXd::Map(image.truePotMatter.getPositionsFree().data(), 3*gpneb->nfree);
-            }
-            return posV;
+            auto matvec = helper_functions::getMatterVector(gpneb->imageArray);
+            return helper_functions::unravel_free_coords(matvec);
         }
 
         void setPositions(VectorXd x){

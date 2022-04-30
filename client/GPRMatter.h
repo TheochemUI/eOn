@@ -94,5 +94,9 @@ namespace helper_functions {
                             const Matter baseObject,
                             const std::shared_ptr<GPRobj> gpf,
                             const size_t gpr_num);
+        /**
+         * \brief Generates a vector of Matter objects
+         */
+         std::vector<Matter> getMatterVector(const std::vector<GPRMatter>& gpmatvec);
 
 } // namespace helper_functions

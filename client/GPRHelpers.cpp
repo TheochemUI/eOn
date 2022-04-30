@@ -465,3 +465,31 @@ double helper_functions::get_path_length(std::vector<Matter>& path){
   }
   return std::accumulate(distances.begin(), distances.end(), 0.0);
 }
+
+VectorXd helper_functions::unravel_free_coords(std::vector<Matter>& path){
+  VectorXd unravel_free;
+  const size_t nfree = path.front().numberOfFreeAtoms();
+  const size_t nimgs = path.size();
+  unravel_free.resize(3 * nfree * nimgs);
+  for (size_t idx {1}; idx < nimgs - 1; idx++){
+    auto&& imgpoint = path[idx];
+    unravel_free.segment(3 * nfree * (idx-1), 3 * nfree) =
+      VectorXd::Map(imgpoint.getPositionsFree().data(),
+                    3 * nfree);
+  }
+  return unravel_free;
+}
+
+VectorXd helper_functions::unravel_coords(std::vector<Matter>& path){
+  VectorXd unravel_all;
+  const size_t npoints = path.front().numberOfAtoms();
+  const size_t nimgs = path.size();
+  unravel_all.resize(3 * npoints * nimgs);
+  for (size_t idx {0};auto&& imgpoint : path){
+    idx++; // idx goes from [1, nimgs-1]
+    unravel_all.segment(3*npoints*(idx-1), 3*npoints) =
+      VectorXd::Map(imgpoint.getPositions().data(),
+                    3*npoints);
+  }
+  return unravel_all;
+}
