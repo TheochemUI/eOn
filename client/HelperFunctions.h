@@ -70,5 +70,18 @@ namespace helper_functions {
     bool sortedR(const Matter *m1, const Matter *m2, const double distanceDifference);
     void pushApart(Matter *m1, double minDistance);
 
+    /**
+     * \brief Unravel the free coordinates of a vector of Matter into positions
+     *
+     * This is the same transform done for the GPR-NEB path
+     * */
+    VectorXd unravel_free_coords(std::vector<Matter>& path);
+    /**
+     * \brief Unravel the coordinates of a vector of Matter into positions
+     *
+     * This is the same transform done for the NEB path
+     * */
+    VectorXd unravel_coords(std::vector<Matter>& path);
+
     } // namespace helper_functions
 #endif
