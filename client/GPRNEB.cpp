@@ -171,8 +171,8 @@ int GPRNEB::compute(const std::vector<Matter> ppoints, bool& isWithin)
         log("NEB converged\n");
     }
 
-    printImageData();
-    findExtrema();
+    printImageDataTrue();
+    findExtremaTrue();
 
     delete optimizer;
     return status;
@@ -636,18 +636,19 @@ void GPRNEB::findExtrema()
 }
 
 // Print NEB image data with True forces
-void GPRNEB::printImageDataTrue(bool writeToFile)
+void GPRNEB::printImageDataTrue(bool writeToFile, size_t neb_id)
 {
     double dist, distTotal=0;
-    AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray.front().truePotMatter.getPositionsFree());
-    AtomMatrix tangentEnd = imageArray[nimages].truePotMatter.pbc(imageArray.back().truePotMatter.getPositionsFree() - imageArray[nimages].truePotMatter.getPositionsFree());
+    AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositions() - imageArray.front().truePotMatter.getPositions());
+    AtomMatrix tangentEnd = imageArray[nimages].truePotMatter.pbc(imageArray.back().truePotMatter.getPositions() - imageArray[nimages].truePotMatter.getPositions());
     AtomMatrix tang;
 
     log("Image data (as in neb.dat)\n");
 
     FILE *fh=NULL;
     if (writeToFile) {
-        fh = fopen("neb.dat", "w");
+        auto fname = fmt::format("neb_gpr_{}.dat", neb_id);
+        fh = fopen(fname.c_str(), "w");
     }
 
     for(size_t idx{0}; idx <= nimages+1; idx++)
@@ -693,15 +694,15 @@ void GPRNEB::findExtremaTrue()
         auto pef_f1 = this->imageArray[idx].true_energy_forces();
         auto pef_f2 = this->imageArray[idx+1].true_energy_forces();
         if(idx==0) {
-            tangentEndpoint = imageArray[idx].truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() -
-                                                                imageArray.front().truePotMatter.getPositionsFree());
+            tangentEndpoint = imageArray[idx].truePotMatter.pbc(imageArray[1].truePotMatter.getPositions() -
+                                                                imageArray.front().truePotMatter.getPositions());
             tangentEndpoint.normalize();
             F1 = (std::get<AtomMatrix>(pef_f1).array()*tangentEndpoint.array()).sum()*dist;
         } else {
             F1 = (std::get<AtomMatrix>(pef_f1).array()*(tangentArray[idx]).array()).sum()*dist;
         }
         if(idx==nimages) {
-            tangentEndpoint =  imageArray[idx+1].truePotMatter.pbc(imageArray[nimages+1].truePotMatter.getPositionsFree() - imageArray[nimages].truePotMatter.getPositionsFree());
+            tangentEndpoint =  imageArray[idx+1].truePotMatter.pbc(imageArray[nimages+1].truePotMatter.getPositions() - imageArray[nimages].truePotMatter.getPositions());
             tangentEndpoint.normalize();
             F2 = (std::get<AtomMatrix>(pef_f2).array()*tangentEndpoint.array()).sum()*dist;
         } else {

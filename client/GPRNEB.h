@@ -28,7 +28,6 @@ class GPRNEB{
     void findExtrema();
     void printImageData(bool writeToFile = false, size_t neb_id = 0);
     void findExtremaTrue();
-    void printImageDataTrue(bool writeToFile = false);
     void printImageDataTrue(bool writeToFile = false, size_t neb_id = 0);
 
     size_t natoms, nimages, totImages, nfree;
