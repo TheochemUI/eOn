@@ -170,37 +170,49 @@ int LBFGS::run(int maxSteps, double maxMove)
 }
 
 int LBFGS::step(const double maxMove,
-                             const std::vector<Matter> ppoints,
-                             const double max_dist,
-                             bool& isWithin){
+                const std::vector<Matter> ppoints,
+                const double max_dist,
+                bool& isWithin){
     int stepval = step(maxMove);
     size_t nfree = ppoints.front().numberOfFreeAtoms();
     VectorXd cpath = this->objf->getPositions();
-    // We also need to calculate how many objects are present in cpath
-    // TODO: This assumes only free atoms are in getPositions
-    size_t nimg = cpath.size() / 3 * nfree;
-    // We need to construct a false Matter object to ensure distances respect PBCs
-    Matter tmpm = ppoints.front();
-    for (size_t idx{1}; idx < nimg-1; idx++){
-        tmpm.setPositionsFreeV(
-            cpath.segment(3 * nfree * (idx-1), 3 * nfree)
-            );
-        std::vector<double> distances;
-        std::transform(ppoints.begin(),
-                       ppoints.end(),
-                       std::back_inserter(distances),
-                       [&](Matter mat)->double{
-                           return mat.distanceTo(tmpm);
-                       });
-        distances.erase(std::remove(distances.begin(), distances.end(), 0), distances.end());
-        isWithin = std::any_of(distances.begin(),
-                          distances.end(),
-                          [&](const double dist)->bool{
-                              return (std::abs(dist) < max_dist); });
-        if (!isWithin){
-            std::cout<<"\nEARLY STOPPING in OPTIMIZER\n";
-            break;
+    VectorXd ppath = helper_functions::unravel_free_coords(const_cast<std::vector<Matter>& >(ppoints));
+    size_t single_path_length = (cpath.size() / 3 * nfree) - 2;
+    size_t cur_path_length = ppoints.size();
+    std::cout<<"\n We have "<<cur_path_length<<" points in the current path\n";
+    std::cout<<"We have "<<single_path_length<<" points in a single  path\n";
+    std::vector<double> distances;
+    if (single_path_length == cur_path_length){
+    std::cout<<"\nEqual length portion\n";
+    for (size_t idx{0}; idx < cur_path_length; idx++){
+        double elem = std::abs(std::abs(ppath[idx]) - std::abs(cpath[idx]));
+        if (elem != 0){
+            distances.push_back(elem);
         }
+    }
+} else {
+    size_t repntimes = cur_path_length - single_path_length;
+     VectorXd repcpath = cpath.replicate(repntimes, 1);
+     VectorXd tdiff = ((repcpath.transpose().cwiseAbs() -
+        ppath.transpose().cwiseAbs()).cwiseAbs());
+    for (size_t idx{0}; idx < tdiff.size(); idx++){
+        if (tdiff.array()[idx]!=0.){
+            distances.push_back(tdiff.array()[idx]);
+        }
+    }
+}
+    for (auto&& dist : distances){
+       std::cout<<" "<<dist;
+    }
+    std::cout<<"\n";
+    distances.erase(std::remove(distances.begin(), distances.end(), 0), distances.end());
+    double min_elem = *min_element(distances.begin(), distances.end());
+    isWithin = (min_elem < max_dist);
+    // isWithin = (max_dist < diffs.array()).any();
+    if (!isWithin){
+    std::cout<<"\nOoops,"<<min_elem <<" exceeded distance "<<max_dist<<"\n";
+    } else {
+    std::cout<<"\nGreat,"<<min_elem <<" is within distance "<<max_dist<<"\n";
     }
     return stepval;
 }
