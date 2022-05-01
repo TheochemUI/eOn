@@ -24,7 +24,7 @@ class GPR_AIE_NEBJob : public Job {
         void retrainGPR(std::vector<Matter>& newpath);
         void runGPRNEB(GPRNEB& gprneb);
         void runOuterLoop();
-        void runRelaxationLoop(std::vector<Matter>& curpath);
+        void runRelaxationLoop();
         void checkConvergence(double curTrueEnergy);
 
         // variables

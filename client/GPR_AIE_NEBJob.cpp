@@ -44,40 +44,38 @@ void GPR_AIE_NEBJob::runGPRNEB(GPRNEB& gprneb){
                             this->isWithin);
     ++this->fCallsNEB;
     saveData(0, &gprneb); // Force to STATUS_GOOD
-    this->checkConvergence(gprneb.getTrueConvForce());
-    this->mustUpdate = gprneb.needsRetraining(this->eonp->gprPotTol);
+    this->matvec = gprneb.getCurPath(); // Set current intermediates
+    this->checkConvergence(gprneb.getTrueConvForce()); // Set convergence
+    if (!this->converged){
+        this->mustUpdate = gprneb.needsRetraining(this->eonp->gprPotTol); // Set retraining
+    }
 }
 
 void GPR_AIE_NEBJob::checkConvergence(double curTrueEnergy){
+    if (fCallsGPR < 2 ) {return;}
     std::cout<<"\n Current curTrueEnergy is "<<curTrueEnergy<<
-        " and needs to be "<<this->eonp->gprPotTol<<
+        " and needs to be below "<<this->eonp->gprPotTol<<
         " for GPR round "<<fCallsGPR<<" and NEB round "<<
         fCallsNEB<<std::endl;
     this->converged = (curTrueEnergy < this->eonp->gprPotTol);
+    std::cout<<"\n got "<<this->converged<<std::endl;
+    if (this->converged){
+        std::cout<<"CONVERGED";
+    }
 }
 
 void GPR_AIE_NEBJob::runOuterLoop(){
     auto gpnebInit = GPRNEB(this->linearPath, *eonp);
     this->runGPRNEB(gpnebInit);
-    matvec = gpnebInit.getCurPath();
-    this->runRelaxationLoop(this->matvec);
 }
 
-void GPR_AIE_NEBJob::runRelaxationLoop(std::vector<Matter>& curpath){
-    this->retrainGPR(curpath);
+void GPR_AIE_NEBJob::runRelaxationLoop(){
+    this->retrainGPR(this->matvec);
     auto gpneb = GPRNEB(this->linearPath, *eonp);
     this->runGPRNEB(gpneb);
     if(!this->isWithin){
-        matvec = gpneb.getCurPath();
         this->retrainGPR(matvec);
         this->runOuterLoop();
-    }
-
-    if(this->mustUpdate){
-        std::cout<<"\nHaven't bailed will update\n";
-        std::cout<<"Adding current path to training data\n";
-        matvec = gpneb.getCurPath();
-        this->runRelaxationLoop(matvec);
     }
 }
 
@@ -90,8 +88,11 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     while(!this->converged){
         this->runOuterLoop();
+        std::cout<<"\nFinished the outer loop";
+        this->runRelaxationLoop();
+        std::cout<<"\nFinished the relaxation loop";
     }
-    throw std::runtime_error("You shouldn't be here"s);
+    return returnFiles;
 }
 
 void GPR_AIE_NEBJob::saveData(int status, GPRNEB *gpneb)
