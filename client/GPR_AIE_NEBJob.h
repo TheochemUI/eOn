@@ -21,12 +21,23 @@ class GPR_AIE_NEBJob : public Job {
         // functions
         void printEndState(int status);
         void saveData(int status, GPRNEB *gpneb);
+        void retrainGPR(std::vector<Matter>& newpath);
+        void runGPRNEB(GPRNEB& gprneb);
+        void runOuterLoop();
+        void runRelaxationLoop(std::vector<Matter>& curpath);
+        void checkConvergence(double curTrueEnergy);
 
         // variables
         std::vector<std::string> returnFiles;
-        Parameters *parameters;
+        Parameters *eonp;
         size_t fCallsNEB;
         size_t fCallsGPR;
+        std::vector<Matter> evaluatedIntermediates, linearMatter, matvec;
+        std::vector<GPRMatter> linearPath;
+        string reactantFilename, productFilename;
+        Matter reactant, product;
+        bool stoppedEarly, converged, mustUpdate, isWithin;
+        std::shared_ptr<GPRobj> gpf;
 
 };
 
