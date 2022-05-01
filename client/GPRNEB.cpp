@@ -2,6 +2,7 @@
 
 #include<algorithm>
 #include<cmath>
+#include "GPRHelpers.h"
 
 class GPRNEBObjectiveFunction : public ObjectiveFunction
 {
@@ -107,7 +108,7 @@ GPRNEB::~GPRNEB()
 }
 
 
-int GPRNEB::compute()
+int GPRNEB::compute(const std::vector<Matter> ppoints, bool& isWithin)
 {
     int status = 0;
     long iteration = 0;
@@ -141,7 +142,15 @@ int GPRNEB::compute()
                 status = STATUS_BAD_MAX_ITERATIONS;
                 break;
             }
-            optimizer->step(this->params.optMaxMove);
+            optimizer->step(this->params.optMaxMove,
+                            ppoints,
+                            this->params.earlyStoppingFactor,
+                            isWithin);
+            if (!isWithin){
+                std::cout<<"Caught early stopping\n";
+                delete optimizer;
+                return status;
+            }
         }
         iteration++;
 
@@ -498,7 +507,7 @@ double GPRNEB::getTrueConvForce()
 }
 
 // Print NEB image data
-void GPRNEB::printImageData(bool writeToFile, size_t gpr_id)
+void GPRNEB::printImageData(bool writeToFile, size_t neb_id)
 {
     double dist, distTotal=0;
     AtomMatrix tangentStart = imageArray.front().truePotMatter.pbc(imageArray[1].truePotMatter.getPositionsFree() - imageArray.front().truePotMatter.getPositionsFree());
@@ -509,7 +518,7 @@ void GPRNEB::printImageData(bool writeToFile, size_t gpr_id)
 
     FILE *fh=NULL;
     if (writeToFile) {
-        auto fname = fmt::format("neb_gpr_{}.dat", gpr_id);
+        auto fname = fmt::format("neb_gpr_{}.dat", neb_id);
         fh = fopen(fname.c_str(), "w");
     }
 

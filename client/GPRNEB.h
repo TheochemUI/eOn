@@ -23,12 +23,13 @@ class GPRNEB{
     GPRNEB(std::vector<GPRMatter> initPath, Parameters params);
     ~GPRNEB();
     void clean();
-    int compute();
+    int compute(const std::vector<Matter> ppoints, bool& isWithin);
     double convergenceForce();
     void findExtrema();
-    void printImageData(bool writeToFile = false, size_t gpr_id = 0);
+    void printImageData(bool writeToFile = false, size_t neb_id = 0);
     void findExtremaTrue();
     void printImageDataTrue(bool writeToFile = false);
+    void printImageDataTrue(bool writeToFile = false, size_t neb_id = 0);
 
     size_t natoms, nimages, totImages, nfree;
     size_t maxEnergyImage, climbingImage, numExtrema;
