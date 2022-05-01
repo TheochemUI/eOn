@@ -178,41 +178,28 @@ int LBFGS::step(const double maxMove,
     VectorXd cpath = this->objf->getPositions();
     VectorXd ppath = helper_functions::unravel_free_coords(const_cast<std::vector<Matter>& >(ppoints));
     size_t single_path_length = (cpath.size() / 3 * nfree) - 2;
-    size_t cur_path_length = ppoints.size();
+    size_t cur_path_length = ppoints.size() / 3 * (single_path_length);
     std::cout<<"\n We have "<<cur_path_length<<" points in the current path\n";
     std::cout<<"We have "<<single_path_length<<" points in a single  path\n";
-    std::vector<double> distances;
+    VectorXd tdiff;
     if (single_path_length == cur_path_length){
     std::cout<<"\nEqual length portion\n";
     for (size_t idx{0}; idx < cur_path_length; idx++){
-        double elem = std::abs(std::abs(ppath[idx]) - std::abs(cpath[idx]));
-        if (elem != 0){
-            distances.push_back(elem);
-        }
+        tdiff = (cpath.cwiseAbs2() - ppath.cwiseAbs2()).cwiseAbs().array().sqrt();
     }
 } else {
-    size_t repntimes = cur_path_length - single_path_length;
+    size_t repntimes = cur_path_length / single_path_length;
+    std::cout<<"\n We have "<<repntimes<<" replications\n";
      VectorXd repcpath = cpath.replicate(repntimes, 1);
-     VectorXd tdiff = ((repcpath.transpose().cwiseAbs() -
-        ppath.transpose().cwiseAbs()).cwiseAbs());
-    for (size_t idx{0}; idx < tdiff.size(); idx++){
-        if (tdiff.array()[idx]!=0.){
-            distances.push_back(tdiff.array()[idx]);
-        }
-    }
+     tdiff = ((repcpath.transpose().cwiseAbs2() -
+        ppath.transpose().cwiseAbs2())).cwiseAbs().array().sqrt();
 }
-    for (auto&& dist : distances){
-       std::cout<<" "<<dist;
-    }
-    std::cout<<"\n";
-    distances.erase(std::remove(distances.begin(), distances.end(), 0), distances.end());
-    double min_elem = *min_element(distances.begin(), distances.end());
-    isWithin = (min_elem < max_dist);
-    // isWithin = (max_dist < diffs.array()).any();
+    std::cout<<tdiff.transpose()<<std::endl;
+    isWithin = (tdiff.minCoeff() < max_dist);
     if (!isWithin){
-    std::cout<<"\nOoops,"<<min_elem <<" exceeded distance "<<max_dist<<"\n";
+    std::cout<<"\nOoops,"<<tdiff.minCoeff() <<" exceeded distance "<<max_dist<<"\n";
     } else {
-    std::cout<<"\nGreat,"<<min_elem <<" is within distance "<<max_dist<<"\n";
+    std::cout<<"\nGreat,"<<tdiff.minCoeff() <<" is within distance "<<max_dist<<"\n";
     }
     return stepval;
 }
