@@ -14,7 +14,7 @@ dependencies:
   - pkg-config
   - openblas
   # Pinned
-  - eigen==3.3.9
+  - eigen==3.4.0
   # AMS
   - boost-cpp
   - fmt
