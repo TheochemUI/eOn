@@ -240,6 +240,9 @@ public:
     double psZlvl; // z level for the slicer
     size_t psXnelem; // x elements for slicer
     size_t psYnelem; // x elements for slicer
+    double spConvergence; // Saddle point force convergence
+    double mepConvergence; // Minimum energy path force convergence
+
 
     // [GPR NEB] //
     // TODO: Refactor GPR Potential and aie_blah into gprneb job and parameters

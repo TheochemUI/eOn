@@ -238,6 +238,8 @@ Parameters::Parameters(){
     gprPotOptLambdaLimit = 1e17; // lambda_limit
     gprPotOptLambdaInit = 10.0; // lambda
     earlyStoppingFactor = 0.5; // % of path length
+    spConvergence = 0.01;
+    mepConvergence = 0.5;
     printSurfaces = false; // turning it on slows things down a lot
     psXmin = 0.0;
     psYmin = 0.0;
@@ -616,6 +618,8 @@ int Parameters::load(FILE *file){
         psYnelem = static_cast<size_t>(ini.GetValueL("GPR Potential", "ps_ne_y", psYnelem));
         // TODO: Move these
         earlyStoppingFactor = ini.GetValueF("GPR Potential", "early_stopping_factor", earlyStoppingFactor);
+        spConvergence = ini.GetValueF("GPR Potential", "saddle_convergence", spConvergence);
+        mepConvergence = ini.GetValueF("GPR Potential", "mep_convergence", mepConvergence);
 
         // [Prefactor] //
 
