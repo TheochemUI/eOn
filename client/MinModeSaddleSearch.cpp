@@ -89,9 +89,10 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                         }
                         // only set the projected forces corresponding to the atoms subject to the largest forces
                         for (int j=0; j< parameters->saddleBowlActive; j++) {
-                            forceTemp(3*indicies_max[j]+0) = -proj(3*indicies_max[j]+0);
-                            forceTemp(3*indicies_max[j]+1) = -proj(3*indicies_max[j]+1);
-                            forceTemp(3*indicies_max[j]+2) = -proj(3*indicies_max[j]+2);
+                            size_t tind = static_cast<size_t>(indices_max[j]);
+                            forceTemp(3*tind+0) = -proj(3*tind+0);
+                            forceTemp(3*tind+1) = -proj(3*tind+1);
+                            forceTemp(3*tind+2) = -proj(3*tind+2);
                         }
                         force = forceTemp;
                         delete[] indicies_max;
