@@ -62,8 +62,8 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                 }else if(parameters->saddleConfinePositive) {
                     if (parameters->saddleBowlBreakout){
                         AtomMatrix forceTemp = matter->getForces();
-                        double *indicies_max;
-                        indicies_max = new double[parameters->saddleBowlActive];
+                        double *indices_max;
+                        indices_max = new double[parameters->saddleBowlActive];
 
                         // determine the force for the x largest component
                         double f_max;
@@ -80,7 +80,7 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                             forceTemp(3*i_max+0) = 0;
                             forceTemp(3*i_max+1) = 0;
                             forceTemp(3*i_max+2) = 0;
-                            indicies_max[j] = i_max;
+                            indices_max[j] = i_max;
                         }
                         for (int i=0; i<matter->numberOfAtoms(); i++) {
                             forceTemp(3*i+0) = 0.0;
@@ -89,12 +89,13 @@ class MinModeObjectiveFunction : public ObjectiveFunction
                         }
                         // only set the projected forces corresponding to the atoms subject to the largest forces
                         for (int j=0; j< parameters->saddleBowlActive; j++) {
-                            forceTemp(3*indicies_max[j]+0) = -proj(3*indicies_max[j]+0);
-                            forceTemp(3*indicies_max[j]+1) = -proj(3*indicies_max[j]+1);
-                            forceTemp(3*indicies_max[j]+2) = -proj(3*indicies_max[j]+2);
+                            size_t tind = static_cast<size_t>(indices_max[j]);
+                            forceTemp(3*tind+0) = -proj(3*tind+0);
+                            forceTemp(3*tind+1) = -proj(3*tind+1);
+                            forceTemp(3*tind+2) = -proj(3*tind+2);
                         }
                         force = forceTemp;
-                        delete[] indicies_max;
+                        delete[] indices_max;
                     }
                     else{
                         int sufficientForce = 0;
