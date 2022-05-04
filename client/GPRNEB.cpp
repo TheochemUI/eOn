@@ -670,7 +670,7 @@ void GPRNEB::printImageDataTrue(bool writeToFile, size_t neb_id)
 
     FILE *fh=NULL;
     if (writeToFile) {
-        auto fname = fmt::format("neb_gpr_{}.dat", neb_id);
+        auto fname = fmt::format("neb_gpr_{:02d}.dat", neb_id);
         fh = fopen(fname.c_str(), "w");
     }
 

@@ -134,7 +134,7 @@ void GPR_AIE_NEBJob::saveData(int status, GPRNEB *gpneb)
 
     fclose(fileResults);
 
-    std::string gpnebFilename("neb.con");
+    auto gpnebFilename = fmt::format("neb_{:02d}.con", this->fCallsNEB);
     returnFiles.push_back(gpnebFilename);
     fileNEB = fopen(gpnebFilename.c_str(), "wb");
     for(size_t idx{0}; idx <= gpneb->nimages+1; idx++) {
