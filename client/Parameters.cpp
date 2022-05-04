@@ -256,7 +256,7 @@ Parameters::Parameters(){
     // [Nudged Elastic Band] //
     nebImages = 5;
     nebSpring = 5.0;
-    nebClimbingImageMethod = true;
+    nebClimbingImageMethod = false;
     nebClimbingImageConvergedOnly = true;
     nebOldTangent = false;
     nebMaxIterations = 1000;
