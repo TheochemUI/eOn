@@ -635,6 +635,29 @@ void GPRNEB::findExtrema()
     }
 }
 
+std::pair<double, double> GPRNEB::getConvergenceTrue(){
+    this->getTrueNEBForces();
+    // The idea here is that the images along the path should be judged on the
+    // basis of the projected forces (but not the spring forces!) while for the
+    // saddle point estimate, the convergence criteria is the Force itself
+    // So for the norms, we return max |F| and max|F_prj|
+    // NOTE: When CI is not turned on, the highest image need not reach the saddle
+    auto maxelemResult = std::max_element(imageArray.begin(), imageArray.end(),
+                                        helper_functions::max_true_energy);
+    maxEnergyImage = std::distance(imageArray.begin(), maxelemResult); // Saddle point!
+    // TODO: Handle other convergence metrics
+    double saddle_Fnorm {std::get<AtomMatrix>(this->imageArray[maxEnergyImage].true_energy_forces()).maxCoeff()};
+    IC(maxEnergyImage, saddle_Fnorm);
+    // For the rest..
+    // TODO: Remove the spring component? Also other convergence criteria
+    double path_Fval{0};
+    auto maxArrayElem = std::max_element(projectedForceArrayTrue.begin(), projectedForceArrayTrue.end(),
+                                          [](AtomMatrix pjaA, AtomMatrix pjaB)->bool{IC(pjaA.norm(), pjaB.norm()); return pjaA.norm() < pjaB.norm();  });
+    path_Fval =  maxArrayElem->maxCoeff();
+    IC(path_Fval);
+    return std::make_pair<double, double>(std::abs(saddle_Fnorm), std::abs(path_Fval));
+}
+
 // Print NEB image data with True forces
 void GPRNEB::printImageDataTrue(bool writeToFile, size_t neb_id)
 {

@@ -25,6 +25,8 @@ class GPRNEB{
     void clean();
     int compute(const std::vector<Matter> ppoints, bool& isWithin);
     double convergenceForce();
+    // Tuple representing convergence values for the saddlepoint and the rest of the path
+    std::pair<double, double> getConvergenceTrue();
     void findExtrema();
     void printImageData(bool writeToFile = false, size_t neb_id = 0);
     void findExtremaTrue();

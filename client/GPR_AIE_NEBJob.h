@@ -25,7 +25,8 @@ class GPR_AIE_NEBJob : public Job {
         void runGPRNEB(GPRNEB& gprneb);
         void runOuterLoop();
         void runRelaxationLoop();
-        void checkConvergence(double curTrueEnergy);
+        void checkConvergence(std::pair<double, double> curTrueEnergy);
+        void handleCI(bool comparer);
 
         // variables
         std::vector<std::string> returnFiles;

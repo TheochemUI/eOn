@@ -45,23 +45,32 @@ void GPR_AIE_NEBJob::runGPRNEB(GPRNEB& gprneb){
     ++this->fCallsNEB;
     saveData(0, &gprneb); // Force to STATUS_GOOD
     this->matvec = gprneb.getCurPath(); // Set current intermediates
-    this->checkConvergence(gprneb.getTrueConvForce()); // Set convergence
+    this->checkConvergence(gprneb.getConvergenceTrue()); // Set convergence
     if (!this->converged){
         this->mustUpdate = gprneb.needsRetraining(this->eonp->gprPotTol); // Set retraining
     }
 }
 
-void GPR_AIE_NEBJob::checkConvergence(double curTrueEnergy){
+void GPR_AIE_NEBJob::checkConvergence(std::pair<double, double> curTrueEnergy){
     if (fCallsGPR < 2 ) {return;}
-    std::cout<<"\n Current curTrueEnergy is "<<curTrueEnergy<<
-        " and needs to be below "<<this->eonp->gprPotTol<<
-        " for GPR round "<<fCallsGPR<<" and NEB round "<<
-        fCallsNEB<<std::endl;
-    this->converged = (curTrueEnergy < this->eonp->gprPotTol);
-    std::cout<<"\n got "<<this->converged<<std::endl;
-    if (this->converged){
-        std::cout<<"CONVERGED";
-    }
+    const auto [saddleConv, pathConv] = curTrueEnergy;
+    const double saddleCriteria = this->eonp->spConvergence;
+    const double pathCriteria = this->eonp->mepConvergence; // TODO: Let the path relaxation be a user parameter
+    auto fstring = fmt::format("\n For GPR round {} and NEB round {}\n Current saddle force norm is {} and needs to be below {}\n Current path force convergence is {} and needs to be below {}\n",
+                               fCallsGPR, fCallsNEB, saddleConv,
+                               saddleCriteria, pathConv, pathCriteria);
+    std::cout<<fstring;
+    this->handleCI(pathConv < pathCriteria);
+    if (saddleConv < saddleCriteria && pathConv < pathCriteria){
+        this->converged = true;
+        std::cout<<"\nCONVERGED\n";
+    } else { this->converged = false; }
+}
+
+void GPR_AIE_NEBJob::handleCI(bool comparer){
+    useCI = comparer;
+    eonp->nebClimbingImageMethod = comparer;
+    eonp->nebClimbingImageConvergedOnly = false;
 }
 
 void GPR_AIE_NEBJob::runOuterLoop(){
