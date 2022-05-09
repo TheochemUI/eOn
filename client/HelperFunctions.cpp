@@ -793,7 +793,7 @@ void helper_functions::pushApart(Matter *m1, double minDistance)
     }
 }
 
-VectorXd helper_functions::unravel_free_coords(std::vector<Matter>& path){
+VectorXd helper_functions::unravel_free_coordsV(std::vector<Matter>& path){
   VectorXd unravel_free;
   const size_t nfree = path.front().numberOfFreeAtoms();
   const size_t nimgs = path.size();
@@ -807,7 +807,7 @@ VectorXd helper_functions::unravel_free_coords(std::vector<Matter>& path){
   return unravel_free;
 }
 
-VectorXd helper_functions::unravel_coords(std::vector<Matter>& path){
+VectorXd helper_functions::unravel_coordsV(std::vector<Matter>& path){
   VectorXd unravel_all;
   const size_t npoints = path.front().numberOfAtoms();
   const size_t nimgs = path.size();

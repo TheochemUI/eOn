@@ -44,7 +44,7 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
         VectorXd getPositions()
         {
             auto matvec = helper_functions::getMatterVector(gpneb->imageArray);
-            return helper_functions::unravel_free_coords(matvec);
+            return helper_functions::unravel_free_coordsV(matvec);
         }
 
         void setPositions(VectorXd x){

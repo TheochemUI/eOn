@@ -126,26 +126,76 @@ TEST_F(GPRHelpersTest, TestPathLength) {
       << "Path length is incorrect";
 }
 
-TEST_F(GPRHelpersTest, TestUnravelFree) {
+TEST_F(GPRHelpersTest, TestUnravelFreeV) {
   // Setup the observations
   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
-  auto ufreecoords = helper_functions::unravel_free_coords(imgArray);
+  auto ufreecoords = helper_functions::unravel_free_coordsV(imgArray);
   const size_t nfree = imgArray.front().numberOfFreeAtoms();
   const size_t nimgs = imgArray.size();
   EXPECT_EQ(ufreecoords.size(), nfree*nimgs*3)
     << "Unraveled coordinates have the wrong number of elements!\n";
-  // for (size_t pt{0}; pt < nimgs; pt++){
-  //   auto tcoords = imgArray[pt].getPositionsFree();
-  // }
+  for (size_t idx{0}; idx < nimgs; idx++){
+    EXPECT_EQ(ufreecoords.segment(idx * nfree * 3, nfree * 3), imgArray[idx].getPositionsFreeV())
+      << "Point isn't the same";
+  }
 }
 
-TEST_F(GPRHelpersTest, TestUnravel) {
+TEST_F(GPRHelpersTest, TestUnravelV) {
   // Setup the observations
   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
-  auto ucoords = helper_functions::unravel_coords(imgArray);
+  auto ucoords = helper_functions::unravel_coordsV(imgArray);
   const size_t npoints = imgArray.front().numberOfAtoms();
   const size_t nimgs = imgArray.size();
   EXPECT_EQ(ucoords.size(), npoints*nimgs*3)
     << "Unraveled coordinates have the wrong number of elements!\n";
+  for (size_t idx{0}; idx < nimgs; idx++){
+    EXPECT_EQ(ucoords.segment(idx * npoints * 3, npoints * 3), imgArray[idx].getPositionsV())
+      << "Point isn't the same";
+  }
 }
+
+// TEST_F(GPRHelpersTest, TestUnravelFree) {
+//   // Setup the observations
+//   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+//   auto ufreecoords = helper_functions::unravel_free_coords(imgArray);
+//   const size_t nfree = imgArray.front().numberOfFreeAtoms();
+//   const size_t nimgs = imgArray.size();
+//   size_t nimgrows{0};
+//   for (auto img:imgArray){
+//     nimgrows += img.numberOfFreeAtoms();
+//   }
+//   // IC(ufreecoords.rows(), ufreecoords.cols(), ufreecoords.size());
+//   EXPECT_EQ(ufreecoords.rows(), nimgrows)
+//     << "Unraveled coordinates have the wrong number of elements!\n";
+//   EXPECT_EQ(ufreecoords.cols(), nfree*3)
+//     << "Unraveled coordinates have the wrong number of elements!\n";
+//   for (size_t idx{0}; idx < nimgs; idx++){
+//     EXPECT_EQ(ufreecoords.row(idx), imgArray[idx].getPositionsFree())
+//       << "Point isn't the same";
+//     // IC(ufreecoords.row(idx), imgArray[idx].getPositionsFree());
+//   }
+// }
+
+// TEST_F(GPRHelpersTest, TestUnravel) {
+//   // Setup the observations
+//   auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+//   auto ucoords = helper_functions::unravel_coords(imgArray);
+//   const size_t npositions = imgArray.front().numberOfAtoms();
+//   const size_t nimgs = imgArray.size();
+//   size_t nimgrows{0};
+//   // for (auto img:imgArray){
+//   //   nimgrows += img.numberOfAtoms();
+//   // }
+//   IC(ucoords.rows(), ucoords.cols(), ucoords.size());
+//   // EXPECT_EQ(ucoords.rows(), nimgrows)
+//   //   << "Unraveled coordinates have the wrong number of elements!\n";
+//   EXPECT_EQ(ucoords.cols(), npositions*3)
+//     << "Unraveled coordinates have the wrong number of elements!\n";
+//   for (size_t idx{0}; idx < nimgs; idx++){
+//     EXPECT_EQ(ucoords.row(idx), imgArray[idx].getPositions())
+//       << "Point isn't the same";
+//     // IC(ucoords.row(idx), imgArray[idx].getPositions());
+//   }
+// }
+
 } /* namespace tests */

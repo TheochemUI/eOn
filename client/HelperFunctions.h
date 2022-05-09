@@ -75,13 +75,15 @@ namespace helper_functions {
      *
      * This is the same transform done for the GPR-NEB path
      * */
-    VectorXd unravel_free_coords(std::vector<Matter>& path);
+    VectorXd unravel_free_coordsV(std::vector<Matter>& path);
+    // MatrixXd unravel_free_coords(std::vector<Matter>& path);
     /**
      * \brief Unravel the coordinates of a vector of Matter into positions
      *
      * This is the same transform done for the NEB path
      * */
-    VectorXd unravel_coords(std::vector<Matter>& path);
+    VectorXd unravel_coordsV(std::vector<Matter>& path);
+    // MatrixXd unravel_coords(std::vector<Matter>& path);
 
     } // namespace helper_functions
 #endif
