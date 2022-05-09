@@ -242,6 +242,7 @@ public:
     size_t psYnelem; // x elements for slicer
     double spConvergence; // Saddle point force convergence
     double mepConvergence; // Minimum energy path force convergence
+    bool toggleCI; // Toggles the CI when lower than sp
 
 
     // [GPR NEB] //

@@ -182,6 +182,7 @@ int GPRNEB::compute(const std::vector<Matter> ppoints, bool& isWithin)
 // generate the force value that is compared to the convergence criterion
 double GPRNEB::convergenceForce()
 {
+    // Do not use the projectedForceArray for the climbing image
     if(movedAfterForceCall) {
         updateForces();
     }

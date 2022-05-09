@@ -13,7 +13,8 @@ GPR_AIE_NEBJob::GPR_AIE_NEBJob(Parameters *parametersPassed) : eonp{parametersPa
                                                                stoppedEarly{false},
                                                                converged{false},
                                                                mustUpdate{true},
-                                                               isWithin{true}
+                                                               isWithin{true},
+                                                               useCI{false}
 
 {
     reactantFilename = helper_functions::getRelevantFile("reactant.con");
@@ -68,12 +69,17 @@ void GPR_AIE_NEBJob::checkConvergence(std::pair<double, double> curTrueEnergy){
 }
 
 void GPR_AIE_NEBJob::handleCI(bool comparer){
-    useCI = comparer;
-    eonp->nebClimbingImageMethod = comparer;
-    eonp->nebClimbingImageConvergedOnly = false;
+        if (eonp->toggleCI){
+            useCI = comparer;
+            eonp->nebClimbingImageMethod = comparer;
+            eonp->nebClimbingImageConvergedOnly = false;
+        }
 }
 
-void GPR_AIE_NEBJob::runOuterLoop(){
+void GPR_AIE_NEBJob::runOuterLoop(bool retrain){
+    if (retrain){
+        this->retrainGPR(this->matvec);
+    }
     auto gpnebInit = GPRNEB(this->linearPath, *eonp);
     this->runGPRNEB(gpnebInit);
 }
