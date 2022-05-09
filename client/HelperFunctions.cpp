@@ -1,5 +1,6 @@
 #include "HelperFunctions.h"
 #include "Log.h"
+#include "external/icecream.hpp"
 
 #include <math.h>
 #include <cassert>
