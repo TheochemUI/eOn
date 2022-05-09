@@ -1,9 +1,13 @@
 //Based on the LBFGS minimizer written in ASE.
 
 #include "LBFGS.h"
+#include "HelperFunctions.h"
 #include "Log.h"
 #include <cassert>
 #include <cmath>
+#include <list>
+#include <stdexcept>
+#include "external/icecream.hpp"
 
 LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
@@ -174,32 +178,44 @@ int LBFGS::step(const double maxMove,
                 const double max_dist,
                 bool& isWithin){
     int stepval = step(maxMove);
-    size_t nfree = ppoints.front().numberOfFreeAtoms();
+    const size_t nfree = ppoints.front().numberOfFreeAtoms();
+    const size_t nimgs = this->parameters->nebImages;
+    const size_t nprev = ppoints.size() / nimgs;
     VectorXd cpath = this->objf->getPositions();
-    VectorXd ppath = helper_functions::unravel_free_coords(const_cast<std::vector<Matter>& >(ppoints));
-    size_t single_path_length = (cpath.size() / 3 * nfree) - 2;
-    size_t cur_path_length = ppoints.size() / 3 * (single_path_length);
-    std::cout<<"\n We have "<<cur_path_length<<" points in the current path\n";
-    std::cout<<"We have "<<single_path_length<<" points in a single  path\n";
-    VectorXd tdiff;
-    if (single_path_length == cur_path_length){
-    std::cout<<"\nEqual length portion\n";
-    for (size_t idx{0}; idx < cur_path_length; idx++){
-        tdiff = (cpath.cwiseAbs2() - ppath.cwiseAbs2()).cwiseAbs().array().sqrt();
+    // disp_nearest(im-1,1) = sqrt(min(sum((repmat(R_new(im,:),size(R_all,1),1)-R_all).^2,2)));
+    // the sizes of relevance --> R_new is nimgs x path_coords i.e. 7 x 21 for a 7+2 image band of 7 moving atoms
+    // R_all is similarly sized, e.g. 49 x 21 for the same system
+    // Each matrix of R is essentially the band at time T
+    // After the repmat, 49 x 21 or the first row is peeled off and repeated
+    // After the summation, 1 x 21 or the "distances" the band has moved
+    // Then we take the minimum element of the distances, reducing it to a point
+    // We collect this minimum for each image point
+    // Finally we take the maximum of the "minimum movements in each system point"
+    // The minimum movements are taken to  get the distance to previously evaluated points
+
+    // The inputs to this function are the INTERMEDIATES ONLY
+    // DO NOT REMOVE the FIRST and LAST of the INPUT
+    std::vector<double> minDists;
+    // Loop over intermediates
+    for (size_t idx{0}; idx < nimgs; idx++){
+        const size_t nElem{nfree*3};
+        const size_t startElem{idx*nElem};
+        VectorXd cSysPoint{cpath.segment(startElem, nElem)};
+        std::vector<double> distances_from_point;
+        std::transform(ppoints.begin(),
+                       ppoints.end(),
+                       std::back_inserter(distances_from_point),
+                       [&](Matter mat)->double{
+                           VectorXd diffarray = (mat.getPositionsFreeV() -  cSysPoint);
+                           // Squaring
+                           for (auto&& delem : diffarray){ delem = delem*delem; }
+                           // No rowwise() here since this is a single row anyway and Eigen is column major (default)
+                           return diffarray.sum();
+                       });
+        double minDist = *std::min_element(distances_from_point.begin(), distances_from_point.end());
+        minDists.push_back(std::sqrt(minDist));
     }
-} else {
-    size_t repntimes = cur_path_length / single_path_length;
-    std::cout<<"\n We have "<<repntimes<<" replications\n";
-     VectorXd repcpath = cpath.replicate(repntimes, 1);
-     tdiff = ((repcpath.transpose().cwiseAbs2() -
-        ppath.transpose().cwiseAbs2())).cwiseAbs().array().sqrt();
-}
-    std::cout<<tdiff.transpose()<<std::endl;
-    isWithin = (tdiff.minCoeff() < max_dist);
-    if (!isWithin){
-    std::cout<<"\nOoops,"<<tdiff.minCoeff() <<" exceeded distance "<<max_dist<<"\n";
-    } else {
-    std::cout<<"\nGreat,"<<tdiff.minCoeff() <<" is within distance "<<max_dist<<"\n";
-    }
+    double maxDistTest = *std::max_element(minDists.begin(), minDists.end());
+    isWithin = maxDistTest < max_dist;
     return stepval;
 }
