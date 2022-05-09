@@ -3,6 +3,7 @@
 #include<algorithm>
 #include<cmath>
 #include "GPRHelpers.h"
+#include "external/icecream.hpp"
 
 class GPRNEBObjectiveFunction : public ObjectiveFunction
 {

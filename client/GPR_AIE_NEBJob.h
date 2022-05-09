@@ -23,7 +23,7 @@ class GPR_AIE_NEBJob : public Job {
         void saveData(int status, GPRNEB *gpneb);
         void retrainGPR(std::vector<Matter>& newpath);
         void runGPRNEB(GPRNEB& gprneb);
-        void runOuterLoop();
+        void runOuterLoop(bool retrain);
         void runRelaxationLoop();
         void checkConvergence(std::pair<double, double> curTrueEnergy);
         void handleCI(bool comparer);
@@ -37,7 +37,7 @@ class GPR_AIE_NEBJob : public Job {
         std::vector<GPRMatter> linearPath;
         string reactantFilename, productFilename;
         Matter reactant, product;
-        bool stoppedEarly, converged, mustUpdate, isWithin;
+        bool stoppedEarly, converged, mustUpdate, isWithin, useCI;
         std::shared_ptr<GPRobj> gpf;
 
 };

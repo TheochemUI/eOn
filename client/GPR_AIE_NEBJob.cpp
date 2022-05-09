@@ -5,6 +5,10 @@
 
 #include <stdio.h>
 #include <string>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <fmt/os.h>
 
 GPR_AIE_NEBJob::GPR_AIE_NEBJob(Parameters *parametersPassed) : eonp{parametersPassed},
                                                                fCallsNEB{0}, fCallsGPR{1},
@@ -89,8 +93,7 @@ void GPR_AIE_NEBJob::runRelaxationLoop(){
     auto gpneb = GPRNEB(this->linearPath, *eonp);
     this->runGPRNEB(gpneb);
     if(!this->isWithin){
-        this->retrainGPR(matvec);
-        this->runOuterLoop();
+        this->runOuterLoop(true);
     }
 }
 
@@ -101,11 +104,15 @@ std::vector<std::string> GPR_AIE_NEBJob::run(void)
 
     // TODO: Deal with tsInterpolate, see NudgedElasticBandJob
 
+    bool retrain{false};
     while(!this->converged){
-        this->runOuterLoop();
+        this->runOuterLoop(retrain);
         std::cout<<"\nFinished the outer loop";
-        this->runRelaxationLoop();
-        std::cout<<"\nFinished the relaxation loop";
+        if (!this->converged){
+            this->runRelaxationLoop();
+            std::cout<<"\nFinished the relaxation loop";
+            retrain = true;
+        }
     }
     return returnFiles;
 }

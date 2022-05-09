@@ -7,6 +7,7 @@
  */
 
 #include <algorithm>
+#include <numeric>
 #include <memory>
 
 #include "../Potential.h"
