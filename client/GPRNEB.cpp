@@ -79,16 +79,16 @@ class GPRNEBObjectiveFunction : public ObjectiveFunction
 };
 
 GPRNEB::GPRNEB(std::vector<GPRMatter> initPath, Parameters params):
+    nimages{static_cast<size_t>(params.nebImages)},
     params{params},
-    imageArray{initPath},
-    nebImages{initPath.begin()+1, initPath.end()-1},
     init_path_length{initPath.front().truePotMatter.distanceTo(
         initPath.back().truePotMatter)},
-    nimages{params.nebImages},
+    imageArray{initPath},
+    natoms{static_cast<size_t>(initPath.front().truePotMatter.numberOfAtoms())},
+    nebImages{initPath.begin()+1, initPath.end()-1},
+    totImages{nimages+2},
     threshold{params.nebConvergedForce},
-    natoms{initPath.front().truePotMatter.numberOfAtoms()},
-    nfree{initPath.front().truePotMatter.numberOfFreeAtoms()},
-    totImages{nimages+2}
+    nfree{static_cast<size_t>(initPath.front().truePotMatter.numberOfFreeAtoms())}
 {
     log("\nNEB: initialize\n");
     tangentArray.resize(totImages);
@@ -199,7 +199,7 @@ double GPRNEB::convergenceForce()
             if (this->params.optConvergenceMetric == "norm") {
                 fmax = std::max(fmax, projectedForceArray[idx].norm());
             } else if (this->params.optConvergenceMetric == "max_atom") {
-                for (size_t jdx{0}; jdx < imageArray.front().truePotMatter.numberOfFreeAtoms(); jdx++) {
+                for (size_t jdx{0}; jdx < static_cast<size_t>(imageArray.front().truePotMatter.numberOfFreeAtoms()); jdx++) {
                     fmax = std::max(fmax, this->projectedForceArray[idx].row(jdx).norm());
                 }
             } else if (this->params.optConvergenceMetric == "max_component") {
