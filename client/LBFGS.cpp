@@ -1,6 +1,7 @@
 //Based on the LBFGS minimizer written in ASE.
 
 #include "LBFGS.h"
+#include "GPRHelpers.h"
 #include "HelperFunctions.h"
 #include "Log.h"
 #include <cassert>
@@ -8,6 +9,7 @@
 #include <list>
 #include <stdexcept>
 #include "external/icecream.hpp"
+#include "subprojects/gprdimer/structures/Structures.h"
 
 LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed)
 {
@@ -216,6 +218,24 @@ int LBFGS::step(const double maxMove,
         minDists.push_back(std::sqrt(minDist));
     }
     double maxDistTest = *std::max_element(minDists.begin(), minDists.end());
-    isWithin = maxDistTest < max_dist;
+    bool isWithinGlobal {true}, hasEarlyMax1D{true};
+    isWithinGlobal = maxDistTest < max_dist;
+    Matter fakeMatter = ppoints.front();
+    gpr::AtomsConfiguration atoms_config = helper_functions::eon_matter_to_atmconf(const_cast<Matter*>(&ppoints.front()));
+    // Loop over intermediates
+    for (size_t idx{0}; idx < nimgs; idx++){
+        const size_t nElem{nfree*3};
+        const size_t startElem{idx*nElem};
+        VectorXd cSysPoint{cpath.segment(startElem, nElem)};
+        fakeMatter.setPositionsFreeV(cSysPoint);
+        // TODO: Don't hardcode ratio-at-limit
+        hasEarlyMax1D = helper_functions::hasEarly1DmaxStopping(fakeMatter, ppoints,
+                                                                atoms_config, 0.667);
+        if (hasEarlyMax1D){
+            std::cout<<"EARLY STOPPING due to 1Dmax";
+            break;
+        }
+    }
+    isWithin = isWithinGlobal && !hasEarlyMax1D;
     return stepval;
 }
