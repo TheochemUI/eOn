@@ -12,6 +12,7 @@
 #include "potentials/Morse/Morse.h"
 #include"potentials/GPRPotential/GPRPotential.h"
 
+#include "subprojects/gprdimer/data_types/Coord.h"
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
 
@@ -154,5 +155,47 @@ namespace helper_functions {
      * \brief Get the length of a path constructed with Matter objects
      * */
     double get_path_length(std::vector<Matter>& path);
+
+    /**
+     * \brief Generate a single coord object
+     *
+     * This is the conversion of one matter object to a single coordinate object
+     * \note these are *all FREE* positions only
+     */
+     gpr::Coord single_img(const Matter& spoint);
+
+    /**
+     * \brief Generate a coord object
+     *
+     * The point is to get a path into a single coordinate object. One of the
+     * helpers used to eventually pass / check the log based per-system image
+     * ball
+     * \note these are *all FREE* positions only
+     */
+     gpr::Coord prev_path(const std::vector<Matter>& ppath);
+
+    /**
+     * \brief Check early 1dMaxDist stopping
+     *
+     * Essentially a thin wrapper over the equivalent member function defined in
+     * GPR dimer.
+     *
+     * Relevant function signatures from the GPRD are:
+     *
+     * bool AtomicDimer::isInterAtomicDistanceTooBig(const gpr::Coord& R_new,
+     *                                        const gpr::Coord& R_all,
+     *                                        gpr::Index_t& num_es1)
+     *                                        ^ this one is unused
+     *
+     * Which in turn will call:
+     *
+     * void Distance::dist_max1Dlog(const gpr::Coord& x1, const gpr::Coord& x2,
+     *                       const gpr::AtomsConfiguration& conf_info,
+     *                       gpr::Field<double>& dist)
+     **/
+     bool hasEarly1DmaxStopping(const Matter& cpoint,
+                                const std::vector<Matter>& ppath,
+                                const gpr::AtomsConfiguration& atoms_config,
+                                const double ratioAtLimit);
     } // namespace helper_functions
 #endif /* GPRHELPERS_H */

@@ -1,4 +1,6 @@
 #include "GPRHelpers.h"
+#include "subprojects/gprdimer/backend/Macros.h"
+#include "subprojects/gprdimer/gpr/auxiliary/Distance.h"
 
 #include <map>
 #include <unordered_map>
@@ -464,4 +466,47 @@ double helper_functions::get_path_length(std::vector<Matter>& path){
     distances.push_back(path[idx].distanceTo(path[idx-1]));
   }
   return std::accumulate(distances.begin(), distances.end(), 0.0);
+}
+
+gpr::Coord helper_functions::single_img(const Matter& spoint){
+  gpr::Coord singleImg;
+  singleImg.resize(1, 3 * spoint.numberOfFreeAtoms());
+  size_t counter{0};
+  for(size_t row{0}; row < spoint.getPositionsFree().rows(); row++){
+    for(size_t col{0}; col < spoint.getPositionsFree().cols(); col++){
+      singleImg[counter++] = spoint.getPositionsFree()(row, col);
+    }
+  }
+  return singleImg;
+}
+
+gpr::Coord helper_functions::prev_path(const std::vector<Matter>& ppath){
+  gpr::Coord allImgs;
+  for(auto&& ppt : ppath){
+    allImgs.append(single_img(ppt));
+  }
+  return allImgs;
+}
+
+bool helper_functions::hasEarly1DmaxStopping(const Matter &cpoint,
+                                             const std::vector<Matter> &ppath,
+                                             const gpr::AtomsConfiguration &atoms_config,
+                                             const double ratioAtLimit){
+  gpr::Coord rnew, rall;
+  bool res {false};
+  aux::Distance distance;
+  gpr::Field<double> dist;
+  double disp1D_nearest;
+
+  rnew = single_img(cpoint);
+  rall = prev_path(ppath);
+
+  distance.dist_max1Dlog(rnew, rall, atoms_config, dist);
+  disp1D_nearest = dist.getMinElt();
+
+  if (disp1D_nearest > std::fabs(std::log(ratioAtLimit))) {
+    res = true;
+  }
+
+    return res;
 }
