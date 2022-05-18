@@ -3,6 +3,7 @@
 #include<algorithm>
 #include<cmath>
 #include "GPRHelpers.h"
+#include "LBFGS.h"
 #include "external/icecream.hpp"
 
 class GPRNEBObjectiveFunction : public ObjectiveFunction
@@ -143,7 +144,7 @@ int GPRNEB::compute(const std::vector<Matter> ppoints, bool& isWithin)
                 status = STATUS_BAD_MAX_ITERATIONS;
                 break;
             }
-            optimizer->step(this->params.optMaxMove,
+            dynamic_cast<LBFGS*>(optimizer)->step(this->params.optMaxMove,
                             ppoints,
                             this->params.earlyStoppingFactor,
                             isWithin);
