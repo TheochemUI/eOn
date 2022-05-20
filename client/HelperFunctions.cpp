@@ -799,11 +799,12 @@ VectorXd helper_functions::unravel_free_coordsV(std::vector<Matter>& path){
   const size_t nfree = path.front().numberOfFreeAtoms();
   const size_t nimgs = path.size();
   unravel_free.resize(3 * nfree * nimgs);
-  for (size_t idx {1}; idx < nimgs - 1; idx++){
-    auto&& imgpoint = path[idx];
-    unravel_free.segment(3 * nfree * (idx-1), 3 * nfree) =
-      VectorXd::Map(imgpoint.getPositionsFree().data(),
-                    3 * nfree);
+  size_t crdx{0};
+  for (size_t idx{0}; idx < nimgs; idx++){
+    for (auto&& coord : path[idx].getPositionsFreeV()){
+      unravel_free[crdx] = coord;
+      crdx++;
+    }
   }
   return unravel_free;
 }
