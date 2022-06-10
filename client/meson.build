@@ -21,7 +21,7 @@ if host_system == 'darwin'
 endif
 
 # Dependencies
-eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
+eigen_dep = dependency('Eigen3')
 eon_deps = [ eigen_dep ]
 
 # Optional, only for AMS
@@ -271,76 +271,87 @@ if get_option('with_gprd')
 
   gptest_dets = [eontest_dep]
 
-  t1g = executable('t1g_obs',
+  test('Observation test',
+       executable('obstest',
                   'gtests/ObsTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('observation test', t1g)
+      )
 
-  t2g = executable('t2g_gprhelpers',
-                   'gtests/GPRHelpersTest.cpp',
+  test('GPR helpers test',
+       executable('gprhelpers',
+                  'gtests/GPRHelpersTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('GPR helpers test', t2g)
+      )
 
-  t3g = executable('t3g_neb',
-                   'gtests/NEBSetupTest.cpp',
-                   link_with : eonlib,
-                   dependencies: gptest_dets,
-                   cpp_args : eon_extra_args,
-                  )
-  test('Nudged Elastic Band Setup Test', t3g)
-
-  t4g = executable('t4g_gprtrain',
-                   'gtests/GPRTrainTest.cpp',
+  test('Nudged Elastic Band Setup Test',
+       executable('neb',
+                  'gtests/NEBSetupTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('GPR Regression test', t4g)
+      )
 
-  t5g = executable('t5g_gprpot',
-                   'gtests/GPRPotTest.cpp',
+  test('GPR Regression test',
+       executable('gprtrain',
+                  'gtests/GPRTrainTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('GPR potential test', t5g)
+      )
 
-  t6g = executable('t6g_nebjobgpr',
+
+  test('GPR potential test',
+       executable('gprpot',
+                  'gtests/GPRPotTest.cpp',
+                  link_with : eonlib,
+                  dependencies: gptest_dets,
+                  cpp_args : eon_extra_args,
+                 )
+      )
+
+  test('Run the NEB with GPR-Pot objects',
+       executable('nebjobgpr',
                    'gtests/NEBJobGPRTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('Run the NEB with GPR-Pot objects', t6g)
+      )
 
-  t7g = executable('t7g_gpraienebjob',
-                   'gtests/GPR_AIE_NEBJobTest.cpp',
+
+  test('Run the GPR_AIE_NEB job',
+       executable('gpraienebjob',
+                  'gtests/GPR_AIE_NEBJobTest.cpp',
                   link_with : eonlib,
                   dependencies: gptest_dets,
                   cpp_args : eon_extra_args,
                  )
-  test('Run the GPR_AIE_NEB job', t7g)
+      )
 
-  gprMatter1 = executable('gprMatter1',
-                   'gtests/matterGPRTest.cpp',
-                   link_with : eonlib,
-                   dependencies: gptest_dets,
-                   cpp_args : eon_extra_args,
+  test('Run GPR Matter tests',
+       executable('gprMatter1',
+                  'gtests/matterGPRTest.cpp',
+                  link_with : eonlib,
+                  dependencies: gptest_dets,
+                  cpp_args : eon_extra_args,
                  )
-  test('Run GPR Matter tests', gprMatter1)
+      )
 
-  # t6g = executable('t6g_gprtrain',
-  #                  'gtests/SCGMatterTest.cpp',
-  #                 link_with : eonlib,
-  #                 dependencies: gptest_dets,
-  #                 cpp_args : eon_extra_args,
-  #                )
-  # test('SCG Matter test', t6g)
+  test('SCG Matter test',
+       executable('gprtrain',
+                  'gtests/SCGMatterTest.cpp',
+                  link_with : eonlib,
+                  dependencies: gptest_dets,
+                  cpp_args : eon_extra_args,
+                 )
+      )
 
 endif
