@@ -6,96 +6,116 @@
  *     Company: University of Iceland
  */
 
-#include <algorithm>
-
-#include "../Potential.h"
-#include "../potentials/Morse/Morse.h"
-#include "../potentials/GPRPotential/GPRPotential.h"
-
-#include "../HelperFunctions.h"
-#include "../GPRHelpers.h"
-#include "../Matter.h"
-#include "../Parameters.h"
 #include "GPRTrainTest.h"
-#include "../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
+
+#include <algorithm>
 
 namespace tests {
 
 GPRTrainTest::GPRTrainTest() {
-    reactantFilename = helper_functions::getRelevantFile("reactant.con");
-    productFilename = helper_functions::getRelevantFile("product.con");
+  this->reactantFilename = helper_functions::getRelevantFile("reactant.con");
+  this->productFilename = helper_functions::getRelevantFile("product.con");
 
-    parameters = std::make_unique<Parameters>();
-    parameters->potential = "morse_pt";
-    parameters->nebImages = 7;
-    parameters->LogPotential = false;
-    log_init(parameters.get(), (char *)"test.log");
+  this->parameters = std::make_unique<Parameters>();
+  this->parameters->potential = "morse_pt";
+  this->parameters->nebImages = 7;
+  this->parameters->LogPotential = false;
+  log_init(parameters.get(), (char *)"test.log");
 
-    initmatter = std::make_unique<Matter>(parameters.get());
-    finalmatter = std::make_unique<Matter>(parameters.get());
+  this->initmatter = std::make_unique<Matter>(parameters.get());
+  this->finalmatter = std::make_unique<Matter>(parameters.get());
 
-    initmatter->con2matter(reactantFilename);
-    finalmatter->con2matter(productFilename);
+  this->initmatter->con2matter(reactantFilename);
+  this->finalmatter->con2matter(productFilename);
 
-    gprfunc = std::make_unique<gpr::GaussianProcessRegression>();
-}
+  this->gprfunc = std::make_unique<gpr::GaussianProcessRegression>();
 
-GPRTrainTest::~GPRTrainTest() {
-  // TODO Auto-generated destructor stub
-}
-
-TEST_F(GPRTrainTest, TestMatter) {
   // Constants
-  const auto init_eref = this->initmatter.get()->getPotentialEnergy();
-  const auto init_frcsref = this->initmatter.get()->getForcesFree();
-  aux::ProblemSetUp problem_setup;
-  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(this->initmatter.get(),  5);
+  this->init_eref = this->initmatter.get()->getPotentialEnergy();
+  this->init_frcsref = this->initmatter.get()->getForcesFree();
+  this->config_data = helper_functions::eon_matter_to_frozen_conf_info(
+      this->initmatter.get(), 5);
   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
   auto R_init = std::get<gpr::Coord>(config_data);
   // Setup the observations
-  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
-  auto obspath = helper_functions::prepInitialObs(imgArray);
+  this->imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  this->obspath = helper_functions::prepInitialObs(imgArray);
   // Setup GPR
-  auto eondat = std::make_pair(*this->parameters,*this->initmatter);
-  *this->gprfunc = helper_functions::initializeGPR(*this->gprfunc, atoms_config, obspath, eondat);
+  auto eondat = std::make_pair(*this->parameters, *this->initmatter);
+  *this->gprfunc = helper_functions::initializeGPR(*this->gprfunc, atoms_config,
+                                                   obspath, eondat);
   this->gprfunc->setHyperparameters(obspath, atoms_config);
   this->gprfunc->optimize(obspath);
-  // Multiple observations
-  // auto oo = obspath;
-  // this->gprfunc->calculatePotential(oo);
-  // std::cout<<"Energy: "<<oo.E.extractEigenMatrix()<<std::endl;
-  // std::cout<<"Correct Energy: "<<obspath.E.extractEigenMatrix()<<std::endl;
+  // Comparer
+  this->comparer = [&](const gpr::EigenMatrix &lhs,
+                       const gpr::EigenMatrix &rhs) -> bool {
+    return lhs.isApprox(rhs, 1e-3); // FIXME: lowered because of the gradients
+  };
+};
 
-  // Single observation
+GPRTrainTest::~GPRTrainTest(){
+    // TODO Auto-generated destructor stub
+};
+
+TEST_F(GPRTrainTest, TestSinglePoint) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(init_frcsref.rows(), init_frcsref.cols()); // Also works with getPositionsFree()
-  o.G.resize(init_frcsref.rows(), init_frcsref.cols());
-  o.R.assignFromEigenMatrix(this->initmatter.get()->getPositionsFree());
+  o.R.resize(1, init_frcsref.rows() * init_frcsref.cols());
+  o.G.resize(1, init_frcsref.rows() * init_frcsref.cols());
+  gpr::EigenMatrix freePos = this->initmatter.get()->getPositionsFree();
+  for (size_t idx{0}; idx < init_frcsref.rows() * init_frcsref.cols(); ++idx) {
+    o.R(0, idx) = freePos.reshaped<Eigen::RowMajor>()[idx];
+  }
   o.E.resize(1);
   this->gprfunc->calculatePotential(o);
-  ASSERT_NEAR(o.E.extractEigenMatrix()(0), init_eref, this->threshold*1e3)
+  ASSERT_NEAR(o.E.extractEigenMatrix()(0), init_eref, this->threshold * 1e3)
       << "Energy does not match";
-  double testForces = ((o.G.extractEigenMatrix() * -1) - init_frcsref).norm();
-  ASSERT_NEAR(testForces, 0, 1e-3)
-      << "Forces do not match";
-  // std::cout<<"Energy: "<<o.E.extractEigenMatrix()<<std::endl;
-  // std::cout<<"Correct Energy: "<<init_eref<<std::endl;
-  // std::cout<<"Forces : \n"<<o.G.extractEigenMatrix()*-1<<std::endl;
-  // std::cout<<"Correct Forces: \n"<<init_frcsref<<std::endl;
-  // std::cout<<"Test metric: \n"<<testForces<<std::endl;
-
-  // Function calls
-  GPRPotential pot{this->parameters.get()};
-  pot.registerGPRObject(this->gprfunc.get());
-  auto egf_gpro = helper_functions::gpr_energy_and_forces(this->initmatter.get(), &pot);
-  auto energy_gpro = std::get<double>(egf_gpro);
-  auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
-  ASSERT_NEAR(energy_gpro, init_eref, this->threshold*1e3)
-      << "Energy does not match";
-  double testForcesNew = (forces_gpro - init_frcsref).norm();
-  ASSERT_NEAR(testForces, 0, 1e-3)
-      << "Forces do not match";
+  // The first element is actually almost zero but isn't comparing correctly
+  ASSERT_PRED2(comparer, o.G.extractEigenMatrix().reshaped<Eigen::RowMajor>(),
+               init_frcsref.reshaped<Eigen::RowMajor>().array()*-1)
+      << "Gradients don't match";
 }
+
+TEST_F(GPRTrainTest, TestMultiPoint) {
+  // Multiple observations
+  gpr::Observation oo = obspath;
+  this->gprfunc->calculatePotential(oo);
+  // Reshape them to the same size
+  ASSERT_PRED2(comparer, oo.E.extractEigenMatrix().reshaped<Eigen::RowMajor>(),
+               obspath.E.extractEigenMatrix().reshaped<Eigen::RowMajor>())
+      << "Energies don't match";
+  ASSERT_PRED2(comparer, oo.G.extractEigenMatrix().reshaped<Eigen::RowMajor>(),
+               obspath.G.extractEigenMatrix().reshaped<Eigen::RowMajor>())
+      << "Gradients don't match";
+};
+
+// TEST_F(GPRTrainTest, FunctionCalls) {
+//   // Constants
+//   const auto init_eref = this->initmatter.get()->getPotentialEnergy();
+//   const auto init_frcsref = this->initmatter.get()->getForcesFree();
+//   aux::ProblemSetUp problem_setup;
+//   auto config_data = helper_functions::eon_matter_to_frozen_conf_info(
+//       this->initmatter.get(), 5);
+//   auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
+//   auto R_init = std::get<gpr::Coord>(config_data);
+//   // Setup GPR
+//   auto eondat = std::make_pair(*this->parameters, *this->initmatter);
+//   *this->gprfunc = helper_functions::initializeGPR(
+//       *this->gprfunc, atoms_config, obspath, eondat);
+//   this->gprfunc->setHyperparameters(obspath, atoms_config);
+//   this->gprfunc->optimize(obspath);
+
+//   // Function calls
+//   GPRPotential pot{this->parameters.get()};
+//   pot.registerGPRObject(this->gprfunc.get());
+//   auto egf_gpro =
+//       helper_functions::gpr_energy_and_forces(this->initmatter.get(), &pot);
+//   auto energy_gpro = std::get<double>(egf_gpro);
+//   auto forces_gpro = std::get<AtomMatrix>(egf_gpro);
+//   ASSERT_NEAR(energy_gpro, init_eref, this->threshold * 1e3)
+//       << "Energy does not match";
+//   double testForcesNew = (forces_gpro - init_frcsref).norm();
+//   ASSERT_NEAR(testForces, 0, 1e-3) << "Forces do not match";
+// }
 
 } /* namespace tests */
