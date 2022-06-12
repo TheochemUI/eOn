@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "subprojects/gprdimer/gpr/AtomicDimer.h"
+#include "subprojects/gprdimer/gpr/saddle_point/AtomicDimer.h"
 #include "subprojects/gprdimer/gpr/Enums.h"
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
