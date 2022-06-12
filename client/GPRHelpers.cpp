@@ -139,11 +139,13 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   int fake_atype; //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  atoms_config.positions.resize(matter->getPositions().rows(),
-                                matter->getPositions().cols());
+  atoms_config.positions.resize(1, matter->getPositions().rows() * matter->getPositions().cols());
   atoms_config.is_frozen.resize(matter->numberOfAtoms());
   atoms_config.id.resize(matter->numberOfAtoms());
-  atoms_config.positions.assignFromEigenMatrix(matter->getPositions());
+  for (size_t idx{0}; auto pos : matter->getPositions().reshaped<Eigen::RowMajor>()){
+    atoms_config.positions(0, idx) = pos;
+        idx++;
+    }
   atoms_config.atomicNrs.resize(matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
@@ -267,8 +269,8 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
   AtomMatrix freePos = matter.getPositionsFree();
   AtomMatrix freeForces = std::get<AtomMatrix>(pe_forces);
   for (size_t idx{0}; idx < nfree * dimens; ++idx){
-      obs.R[idx] = freePos.data()[idx];
-      obs.G[idx] = -1 * freeForces.data()[idx];
+      obs.R(0, idx) = freePos.reshaped<Eigen::RowMajor>()[idx];
+      obs.G(0, idx) = -1 * freeForces.reshaped<Eigen::RowMajor>()[idx];
   }
   return obs;
 }
@@ -287,9 +289,9 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter
   auto posdata = matter->getPositions();
   auto celldat = matter->getCell();
   AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
+  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
+  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
   double energy{0};
   pot->force(nAtoms, pos, nullptr, frcs, &energy, bx, 1);
   AtomMatrix finForces{forces};
@@ -306,9 +308,9 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces_free(Matter *m
   auto posdata = matter->getPositionsFree();
   auto celldat = matter->getCell();
   AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
+  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
+  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
   double energy{0};
   pot->force(nAtoms, pos, nullptr, frcs, &energy, bx, 1);
   return std::make_pair(energy, forces);
@@ -319,9 +321,9 @@ std::pair<double, AtomMatrix> helper_functions::gpr_energy_and_forces(Matter *ma
   auto posdata = matter->getPositionsFree();
   auto celldat = matter->getCell();
   AtomMatrix forces = AtomMatrix::Constant(nFreeAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
+  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
+  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
   double energy{0};
   double *erg = &energy;
   gprpot->force(nFreeAtoms, pos, nullptr, frcs, erg, bx, 1);

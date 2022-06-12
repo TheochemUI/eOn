@@ -20,9 +20,9 @@ std::pair<double, AtomMatrix> GPRMatter::gpr_energy_forces(){
   auto posdata = truePotMatter.getPositionsFree();
   auto celldat = truePotMatter.getCell();
   AtomMatrix forces = AtomMatrix::Constant(nFreeAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
+  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
+  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
   double energy{0};
   double *erg = &energy;
   auto trainedGPR = this->gprobj->yieldGPRPot();
@@ -132,8 +132,8 @@ gpr::Observation GPRobj::prepobs(std::vector<Matter>& matvec, Potential* pot){
         auto forces = std::get<AtomMatrix>(pe_forces);
         AtomMatrix freepos = mat.getPositionsFree();
         for (size_t idx{0}; idx < nfree * 3; ++idx){
-            obs.R[idx] = freepos.data()[idx];
-            obs.G[idx] = -1 * forces.data()[idx];
+            obs.R[idx] = freepos.reshaped<Eigen::RowMajor>()[idx];
+            obs.G[idx] = -1 * forces.reshaped<Eigen::RowMajor>()[idx];
         }
         obspath.append(obs);
     }

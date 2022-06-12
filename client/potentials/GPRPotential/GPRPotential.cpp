@@ -70,10 +70,14 @@ std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions, Eigen::V
     gpr::Observation obs;
     // TODO: Be better with the number of images
     obs.clear();
-    obs.R.resize(positions.rows(), positions.cols());
-    obs.G.resize(positions.rows(), positions.cols());
+    obs.R.resize(1, positions.rows() * positions.cols());
+    obs.G.resize(1, positions.rows() * positions.cols());
     obs.E.resize(1); // should be nImages
-    obs.R.assignFromEigenMatrix(positions);
+    for (size_t idx{0}; auto pos : positions.reshaped<Eigen::RowMajor>()){
+        obs.R(0, idx) = pos;
+        idx++;
+    }
+    // obs.R.assignFromEigenMatrix(positions);
 
     // TODO: Benchmark this, see Potential.cpp
 

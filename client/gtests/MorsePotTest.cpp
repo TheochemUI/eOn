@@ -39,9 +39,9 @@ TEST_F(MorsePotTest, TestMatter) {
   auto posdata = matter->getPositions();
   auto celldat = matter->getCell();
   AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-  double *pos = posdata.data();
-  double *frcs = forces.data();
-  double *bx = celldat.data();
+  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
+  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
   double energy{0};
   pot.force(nAtoms, pos, nullptr, frcs, &energy, bx, 1);
   // TODO: Find a less hacky way
