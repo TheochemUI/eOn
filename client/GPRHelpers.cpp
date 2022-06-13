@@ -143,9 +143,11 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   atoms_config.positions.resize(1, positions.size());
   atoms_config.is_frozen.resize(matter->numberOfAtoms());
   atoms_config.id.resize(matter->numberOfAtoms());
-  for (size_t idx{0}; idx < positions.size(); ++idx) {
+
+  for (size_t idx{0}; idx < positions.size(); idx++){
     atoms_config.positions(0, idx) = positions.reshaped<Eigen::RowMajor>()[idx];
   }
+
   atoms_config.atomicNrs.resize(matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
@@ -249,6 +251,7 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
       atoms_config.atoms_mov.type, atoms_config.n_pt, atoms_config.pairtype);
 
   // // Activate frozen atoms within activation distance
+  // This is now in AtomicGPDimer.cpp
   // problem_setup.activateFrozenAtoms(R_init, parameters.actdist_fro.value,
   //                                 atoms_config);
 
