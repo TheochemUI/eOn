@@ -308,33 +308,33 @@ if get_option('with_gprd')
       )
 
 
-  test('GPR potential test',
-       executable('gprpot',
-                  'gtests/GPRPotTest.cpp',
-                  link_with : eonlib,
-                  dependencies: gptest_dets,
-                  cpp_args : eon_extra_args,
-                 )
-      )
+  # test('GPR potential test',
+  #      executable('gprpot',
+  #                 'gtests/GPRPotTest.cpp',
+  #                 link_with : eonlib,
+  #                 dependencies: gptest_dets,
+  #                 cpp_args : eon_extra_args,
+  #                )
+  #     )
 
-  test('Run the NEB with GPR-Pot objects',
-       executable('nebjobgpr',
-                   'gtests/NEBJobGPRTest.cpp',
-                  link_with : eonlib,
-                  dependencies: gptest_dets,
-                  cpp_args : eon_extra_args,
-                 )
-      )
+  # test('Run the NEB with GPR-Pot objects',
+  #      executable('nebjobgpr',
+  #                  'gtests/NEBJobGPRTest.cpp',
+  #                 link_with : eonlib,
+  #                 dependencies: gptest_dets,
+  #                 cpp_args : eon_extra_args,
+  #                )
+  #     )
 
 
-  test('Run the GPR_AIE_NEB job',
-       executable('gpraienebjob',
-                  'gtests/GPR_AIE_NEBJobTest.cpp',
-                  link_with : eonlib,
-                  dependencies: gptest_dets,
-                  cpp_args : eon_extra_args,
-                 )
-      )
+  # test('Run the GPR_AIE_NEB job',
+  #      executable('gpraienebjob',
+  #                 'gtests/GPR_AIE_NEBJobTest.cpp',
+  #                 link_with : eonlib,
+  #                 dependencies: gptest_dets,
+  #                 cpp_args : eon_extra_args,
+  #                )
+  #     )
 
   test('Run GPR Matter tests',
        executable('gprMatter1',
@@ -345,13 +345,13 @@ if get_option('with_gprd')
                  )
       )
 
-  test('SCG Matter test',
-       executable('gprtrain',
-                  'gtests/SCGMatterTest.cpp',
-                  link_with : eonlib,
-                  dependencies: gptest_dets,
-                  cpp_args : eon_extra_args,
-                 )
-      )
+  # test('SCG Matter test',
+  #      executable('scgmatter',
+  #                 'gtests/SCGMatterTest.cpp',
+  #                 link_with : eonlib,
+  #                 dependencies: gptest_dets,
+  #                 cpp_args : eon_extra_args,
+  #                )
+  #     )
 
 endif

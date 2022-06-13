@@ -13,6 +13,7 @@
 #include "../Matter.h"
 #include "../Parameters.h"
 #include "ObsTest.h"
+#include "../external/icecream.hpp"
 
 namespace tests {
 

@@ -22,6 +22,7 @@
 #include "../MinModeSaddleSearch.h"
 #include "../Parameters.h"
 #include "GPRHelpersTest.h"
+#include "../external/icecream.hpp"
 
 namespace tests {
 
@@ -153,6 +154,25 @@ TEST_F(GPRHelpersTest, TestUnravelV) {
     EXPECT_EQ(ucoords.segment(idx * npoints * 3, npoints * 3), imgArray[idx].getPositionsV())
       << "Point isn't the same";
   }
+}
+
+TEST_F(GPRHelpersTest, TestCoordGeneration) {
+  // Setup the observations
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  Matter oneThing = imgArray.front();
+  gpr::Coord oneCoord = helper_functions::single_img(oneThing);
+  for (gpr::Index_t n = 0; n < oneCoord.getSize(); ++n) {
+    EXPECT_EQ(oneCoord.getData()[n], oneThing.getPositionsFreeV().data()[n]) << "The field has wrong values.";
+  }
+}
+
+TEST_F(GPRHelpersTest, TestCoordPath) {
+  // Setup the observations
+  auto imgArray = helper_functions::prepInitialPath(this->parameters.get());
+  gpr::Coord coordPath = helper_functions::prev_path(imgArray);
+  // for (gpr::Index_t n = 0; n < oneCoord.getSize(); ++n) {
+  //   EXPECT_EQ(oneCoord.getData()[n], oneThing.getPositionsFreeV().data()[n]) << "The field has wrong values.";
+  // }
 }
 
 // TEST_F(GPRHelpersTest, TestUnravelFree) {

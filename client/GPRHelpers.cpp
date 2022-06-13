@@ -139,13 +139,13 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   int fake_atype; //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  atoms_config.positions.resize(1, matter->getPositions().rows() * matter->getPositions().cols());
+  gpr::EigenMatrix positions = matter->getPositions();
+  atoms_config.positions.resize(1, positions.size());
   atoms_config.is_frozen.resize(matter->numberOfAtoms());
   atoms_config.id.resize(matter->numberOfAtoms());
-  for (size_t idx{0}; auto pos : matter->getPositions().reshaped<Eigen::RowMajor>()){
-    atoms_config.positions(0, idx) = pos;
-        idx++;
-    }
+  for (size_t idx{0}; idx < positions.size(); ++idx) {
+    atoms_config.positions(0, idx) = positions.reshaped<Eigen::RowMajor>()[idx];
+  }
   atoms_config.atomicNrs.resize(matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
@@ -334,12 +334,10 @@ std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_f
   gpr::Coord R_init;
   aux::ProblemSetUp problem_setup;
   auto retconf = helper_functions::eon_matter_to_atmconf(matter);
-  R_init.resize(1, 3 * matter->numberOfFreeAtoms());
-  int counter = 0;
-  for(int i = 0; i < matter->getPositionsFree().rows(); ++i) {
-    for(int j = 0; j < matter->getPositionsFree().cols(); ++j) {
-      R_init[counter++] = matter->getPositionsFree()(i, j);
-    }
+  gpr::EigenMatrix freePos = matter->getPositionsFree();
+  R_init.resize(1, freePos.size());
+  for (size_t idx{0}; idx < freePos.size(); ++idx) {
+    R_init(0, idx) = freePos.reshaped<Eigen::RowMajor>()[idx];
   }
   problem_setup.activateFrozenAtoms(R_init, activeRadius,
                                     retconf);

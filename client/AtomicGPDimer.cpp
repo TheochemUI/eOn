@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "subprojects/gprdimer/gpr/saddle_point/AtomicDimer.h"
+#include "subprojects/gprdimer/gpr/AtomicDimer.h"
 #include "subprojects/gprdimer/gpr/Enums.h"
 #include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
@@ -43,8 +43,7 @@ void AtomicGPDimer::compute(Matter *matter,
   init_middle_point.R = R_init;
   init_observations.clear();
   orient_init.clear();
-  orient_init.resize(matterCenter->getPositionsFree().rows(),
-                     matterCenter->getPositionsFree().cols());
+  orient_init.resize(1, matterCenter->getPositionsFree().size());
     AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(),3);
     int i,j = 0;
     for(i=0; i<matterCenter->numberOfAtoms(); i++)
@@ -59,12 +58,9 @@ void AtomicGPDimer::compute(Matter *matter,
         }
     }
   // orient_init.assignFromEigenMatrix(freeOrient);
-orient_init.resize(1, freeOrient.rows() *
-                freeOrient.cols());
-  for(int i,counter = 0; i < freeOrient.rows(); ++i) {
-    for(int j = 0; j < freeOrient.cols(); ++j) {
-      orient_init[counter++] = freeOrient(i, j);
-    }
+orient_init.resize(1, freeOrient.size());
+  for (size_t idx{0}; idx < freeOrient.size(); ++idx) {
+    R_init(0, idx) = freeOrient.reshaped<Eigen::RowMajor>()[idx];
   }
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);

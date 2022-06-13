@@ -244,7 +244,9 @@ std::pair<double, AtomMatrix> Potential::force(AtomMatrix positions, Eigen::Vect
         helper_functions::getTime(&start, &userStart, &sysStart);
     }
     // TODO: Be better with the number of images
-    force(nAtoms, positions.data(), atomicNrs.data(), forces.data(), &tenergy,
+    double *pos = positions.reshaped<Eigen::RowMajor>().data();
+    double *frcs = forces.reshaped<Eigen::RowMajor>().data();
+    force(nAtoms, pos, atomicNrs.data(), frcs, &tenergy,
           box.data(), 1);
 
     double finish, userFinish, sysFinish;
