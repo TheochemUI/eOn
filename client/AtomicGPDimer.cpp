@@ -18,6 +18,7 @@ AtomicGPDimer::AtomicGPDimer(Matter *matter, Parameters *params) {
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = matter->getCell()(i);
   }
+  this->freeOrient.resize(matterCenter->numberOfFreeAtoms(), 3);
 }
 
 AtomicGPDimer::~AtomicGPDimer() { delete matterCenter; }
@@ -25,34 +26,27 @@ AtomicGPDimer::~AtomicGPDimer() { delete matterCenter; }
 void AtomicGPDimer::compute(Matter *matter,
                             AtomMatrix initialDirectionAtomMatrix) {
   *matterCenter = *matter;
-  auto config_data = helper_functions::eon_matter_to_frozen_conf_info(matterCenter,
+  for (size_t idx{0}, jdx{0}; idx < static_cast<size_t>(matterCenter->numberOfAtoms()); idx++)
+    {
+        if(!matterCenter->getFixed(idx))
+        {
+           freeOrient.row(jdx) = initialDirectionAtomMatrix.row(idx);
+            jdx++;
+            if (jdx==static_cast<size_t>(matterCenter->numberOfFixedAtoms())){
+              break;
+            }
+        }
+    }
+  auto [atoms_config, R_init] = helper_functions::eon_matter_to_frozen_conf_info(matterCenter,
                                                              parameters->gprActiveRadius);
-  auto atoms_config = std::get<gpr::AtomsConfiguration>(config_data);
-  auto R_init = std::get<gpr::Coord>(config_data);
-  // R_init.resize(1, matterCenter->getPositionsFree().size());
-  // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
   orient_init.clear();
   orient_init.resize(1, matterCenter->getPositionsFree().size());
-    AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(),3);
-    int i,j = 0;
-    for(i=0; i<matterCenter->numberOfAtoms(); i++)
-    {
-        if(!matterCenter->getFixed(i))
-        {
-           freeOrient.row(j) = initialDirectionAtomMatrix.row(i);
-            j++;
-            if (j==matterCenter->numberOfFixedAtoms()){
-              break;
-            }
-        }
-    }
-  // orient_init.assignFromEigenMatrix(freeOrient);
-orient_init.resize(1, freeOrient.size());
+  orient_init.resize(1, this->freeOrient.size());
   for (size_t idx{0}; idx < freeOrient.size(); ++idx) {
-    R_init(0, idx) = freeOrient.reshaped<Eigen::RowMajor>()[idx];
+    orient_init(0, idx) = freeOrient.reshaped<Eigen::RowMajor>()[idx];
   }
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);

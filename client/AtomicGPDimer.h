@@ -38,6 +38,7 @@ private:
   AtomMatrix direction;       // direction along the dimer
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
   Parameters *parameters;
+  AtomMatrix freeOrient; // Free orientation
 
   gpr::InputParameters p;
   atmd::AtomicDimer atomic_dimer;
