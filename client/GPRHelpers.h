@@ -43,6 +43,13 @@ namespace helper_functions {
     gpr::AtomsConfiguration eon_matter_to_atmconf(Matter *matter);
 
     /**
+     * \brief Recreate the fields representing a .con file
+     *
+     * @param mat An EON Matter object
+     */
+    gpr::Field<double> generateAtomsConfigField(const Matter& mat);
+
+    /**
      * \brief Create an initial Observation object for gpr_dimer
      *
      * Note that this is essentially only for the setup, and it does not

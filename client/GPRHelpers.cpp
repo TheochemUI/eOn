@@ -139,15 +139,8 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   int fake_atype; //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
-  gpr::EigenMatrix positions = matter->getPositions();
-  atoms_config.positions.resize(1, positions.size());
   atoms_config.is_frozen.resize(matter->numberOfAtoms());
   atoms_config.id.resize(matter->numberOfAtoms());
-
-  for (size_t idx{0}; idx < positions.size(); idx++){
-    atoms_config.positions(0, idx) = positions.reshaped<Eigen::RowMajor>()[idx];
-  }
-
   atoms_config.atomicNrs.resize(matter->numberOfAtoms());
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
     atomnrs.push_back(matter->getAtomicNr(i));
@@ -155,6 +148,9 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
     atoms_config.is_frozen[i] = matter->getFixed(i);
     atoms_config.id[i] = i + 1;
   }
+
+  gpr::Field<double> falseConDat =  helper_functions::generateAtomsConfigField(*matter);
+  atoms_config.assignFromField(falseConDat);
 
   unique_atomtypes = std::set<int>(atomnrs.begin(), atomnrs.end());
   n_at = unique_atomtypes.size();
@@ -242,6 +238,7 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
   // Pairtype indices for pairs of atomtypes (n_at x n_at)
   // Active pairtypes are indexed as 0,1,...,n_pt-1. Inactive pairtypes are
   // given index EMPTY.
+  atoms_config.n_pt = n_at;
   atoms_config.pairtype.resize(n_at, n_at);
   atoms_config.pairtype.set(EMPTY);
 
@@ -277,6 +274,22 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
       obs.G(0, idx) = -1 * freeForces.reshaped<Eigen::RowMajor>()[idx];
   }
   return obs;
+}
+
+gpr::Field<double> helper_functions::generateAtomsConfigField(const Matter& mat){
+  const size_t natoms = mat.numberOfAtoms();
+  gpr::Field<double> conf_prim; // always takes a 5 membered field
+  conf_prim.resize(natoms, 5);
+  gpr::EigenMatrix positions = mat.getPositions();
+  positions.conservativeResize(positions.rows(), 5);
+  for(size_t idx{0}; idx < natoms; idx++){
+    positions(idx, 3) = mat.getFixed(idx);
+    positions(idx, 4) = idx;
+  }
+  for (size_t idx{0}; idx < positions.size(); idx++){
+    conf_prim.getInternalVector()[idx] = positions.reshaped<Eigen::RowMajor>()[idx];
+  }
+  return conf_prim;
 }
 
 std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter, Potential *pot){
