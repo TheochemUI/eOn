@@ -299,9 +299,9 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces(Matter *matter
   //   return helper_functions::gpr_energy_and_forces(matter, static_cast<GPRPotential*>(pot));
   // }
   // std::cout<<"Calling "<<pot->getName()<<std::endl;
-  // if (auto* gppot = dynamic_cast<GPRPotential*>(pot)){
-  //   return helper_functions::gpr_energy_and_forces(matter, gppot);
-  // }
+  if (auto* gppot = dynamic_cast<GPRPotential*>(pot)){
+    return helper_functions::gpr_energy_and_forces(matter, gppot);
+  }
   int nAtoms = matter->numberOfAtoms();
   auto posdata = matter->getPositions();
   auto celldat = matter->getCell();
@@ -334,17 +334,11 @@ std::pair<double, AtomMatrix> helper_functions::energy_and_forces_free(Matter *m
 }
 
 std::pair<double, AtomMatrix> helper_functions::gpr_energy_and_forces(Matter *matter, GPRPotential *gprpot){
+  // Always free energies by design
   int nFreeAtoms = matter->numberOfFreeAtoms();
   auto posdata = matter->getPositionsFree();
   auto celldat = matter->getCell();
-  AtomMatrix forces = AtomMatrix::Constant(nFreeAtoms, 3, 0);
-  double *pos = posdata.reshaped<Eigen::RowMajor>().data();
-  double *frcs = forces.reshaped<Eigen::RowMajor>().data();
-  double *bx = celldat.reshaped<Eigen::RowMajor>().data();
-  double energy{0};
-  double *erg = &energy;
-  gprpot->force(nFreeAtoms, pos, nullptr, frcs, erg, bx, 1);
-  return std::make_pair(energy, forces);
+  return gprpot->force(posdata, celldat, 1);
 }
 
 std::pair<gpr::AtomsConfiguration, gpr::Coord> helper_functions::eon_matter_to_frozen_conf_info(Matter *matter, double activeRadius){
