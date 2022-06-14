@@ -260,6 +260,7 @@ gpr::Observation helper_functions::eon_matter_to_init_obs(Matter& matter) {
   // TODO: Moving is Free, but also needs to have Frozen Active
   // Resizing can be only on free positions at the moment,
   // They are the same
+  // XXX: Amazing resizing this to the "flattened" form WILL BREAK EVERYTHING
   size_t nfree(matter.numberOfFreeAtoms()), dimens{3};
   obs.R.resize(1, nfree * dimens);
   obs.G.resize(1, nfree * dimens);
