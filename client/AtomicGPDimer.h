@@ -8,8 +8,9 @@
 #include <vector>
 
 // Defined in the gprdimer target
-#include "subprojects/gprdimer/gpr/AtomicDimer.h"
+#include "subprojects/gprdimer/gpr/saddle_point/AtomicDimer.h"
 #include "subprojects/gprdimer/gpr/Enums.h"
+#include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gprdimer/gpr/covariance_functions/ConstantCF.h"
 #include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
