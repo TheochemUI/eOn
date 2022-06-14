@@ -499,12 +499,12 @@ AtomMatrix Matter::getForces()
 {
     computePotential();
     AtomMatrix ret = forces;
-    int i;
-    for(i=0; i<nAtoms; i++)
+    ret.conservativeResize(positions.rows(), positions.cols());
+    for(size_t idx{0}; idx < nAtoms; idx++)
     {
-        if(isFixed[i])
+        if(isFixed[idx])
         {
-            ret.row(i).setZero();
+            ret.row(idx).setZero();
         }
     }
     return ret;

@@ -63,21 +63,18 @@ void GPRPotential::initialize(void){
 void GPRPotential::cleanMemory(void){
 }
 
-std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions, Eigen::VectorXi atomicNrs,
+std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions,
                                     Matrix3d box, int nImages){
     // std::cout<<"Hello from GPRPot\n";
     const int nAtoms = positions.rows();
     gpr::Observation obs;
-    // TODO: Be better with the number of images
     obs.clear();
-    obs.R.resize(1, positions.rows() * positions.cols());
-    obs.G.resize(1, positions.rows() * positions.cols());
-    obs.E.resize(1); // should be nImages
-    for (size_t idx{0}; auto pos : positions.reshaped<Eigen::RowMajor>()){
-        obs.R(0, idx) = pos;
-        idx++;
+    obs.R.resize(1, positions.size());
+    obs.G.resize(1, positions.size());
+    obs.E.resize(1);
+    for (size_t idx{0}; idx < positions.size(); ++idx) {
+        obs.R(0, idx) = positions.reshaped<Eigen::RowMajor>()[idx];
     }
-    // obs.R.assignFromEigenMatrix(positions);
 
     // TODO: Benchmark this, see Potential.cpp
 
@@ -85,7 +82,7 @@ std::pair<double, AtomMatrix> GPRPotential::force(AtomMatrix positions, Eigen::V
     this->gpr_model->calculatePotential(obs);
 
     return std::make_pair(obs.E.extractEigenMatrix()(0),
-                          obs.G.extractEigenMatrix() * -1);
+                          obs.G.extractEigenMatrix().reshaped<Eigen::RowMajor>(positions.rows(), positions.cols()) * -1);
 }
 
 // pointer to number of atoms, pointer to array of positions	

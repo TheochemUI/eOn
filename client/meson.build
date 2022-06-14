@@ -308,14 +308,14 @@ if get_option('with_gprd')
       )
 
 
-  # test('GPR potential test',
-  #      executable('gprpot',
-  #                 'gtests/GPRPotTest.cpp',
-  #                 link_with : eonlib,
-  #                 dependencies: gptest_dets,
-  #                 cpp_args : eon_extra_args,
-  #                )
-  #     )
+  test('GPR potential test',
+       executable('gprpot',
+                  'gtests/GPRPotTest.cpp',
+                  link_with : eonlib,
+                  dependencies: gptest_dets,
+                  cpp_args : eon_extra_args,
+                 )
+      )
 
   # test('Run the NEB with GPR-Pot objects',
   #      executable('nebjobgpr',
