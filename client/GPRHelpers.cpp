@@ -3,6 +3,7 @@
 #include "subprojects/gprdimer/gpr/auxiliary/Distance.h"
 
 #include <map>
+#include <stdexcept>
 #include <unordered_map>
 #include <set>
 #include <cassert>
@@ -362,7 +363,7 @@ void helper_functions::MatterHolder::getEnergyGradient(const Eigen::VectorXd& w,
                                    const Eigen::VectorXd& y,
                                    gpr::EnergyAndGradient& energy_and_gradient){
   if (this->mrr == nullptr){
-    throw("Can't handle incorrectly initialized MatterHolder");
+    throw std::runtime_error("Can't handle incorrectly initialized MatterHolder");
     // return false;
   }
   double erg{mrr->getPotentialEnergy()};
@@ -521,3 +522,9 @@ bool helper_functions::hasEarly1DmaxStopping(const Matter &cpoint,
 
     return res;
 }
+
+// void setGPRPot(Matter& mat, gpr::GaussianProcessRegression* trainedGPR){
+//   GPRPotential gprpot{mat.getParameters()};
+//   gprpot.registerGPRObject(trainedGPR);
+//   mat.setPotential(&gprpot);
+// }
