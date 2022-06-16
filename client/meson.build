@@ -17,7 +17,7 @@ if host_system == 'darwin'
   # Workaround for
   # ../MinModeSaddleSearch.cpp:173:25: error: aligned allocation function of
   # type 'void *(unsigned long, enum std::align_val_t)' is only available on macOS 10.13 or newer
-  add_global_arguments(['-faligned-allocation'], language: 'cpp')
+  add_global_arguments(['-faligned-allocation', '-ggdb', '-Og', '-fno-inline-functions'], language: 'cpp')
 endif
 
 # Dependencies
