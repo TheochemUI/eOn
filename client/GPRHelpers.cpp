@@ -425,8 +425,8 @@ bool helper_functions::maybeUpdateObs(NudgedElasticBand& neb, gpr::Observation& 
   double nebConvergedForce {params.nebConvergedForce/10}, trupotdiff{0.0};
   auto potential = Potential::getPotential(&params);
   for (long idx {0}; idx <= neb.images+1; idx++){// excludes final, initial
-    auto true_energy_forces = helper_functions::energy_and_forces(neb.image[idx], potential);
-    trupotdiff = (neb.image[idx]->getForces() - std::get<AtomMatrix>(true_energy_forces)).norm();
+    auto [true_energy, true_forces] = helper_functions::energy_and_forces(neb.image[idx], potential);
+    trupotdiff = (neb.image[idx]->getForces() - true_forces).norm();
     // std::cout<<trupotdiff<<std::endl;
     if (trupotdiff > nebConvergedForce){
       updated = true;
