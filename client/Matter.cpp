@@ -961,9 +961,9 @@ bool Matter::con2matter(FILE *file)
 
 void Matter::setPotential(Potential *pot){
     // std::cout<<"Setting potential, resets calls";
-    if(pot != nullptr){
+    // if(pot != nullptr){
         this->potential = pot;
-    }
+    // }
     recomputePotential = true;
 }
 
