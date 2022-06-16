@@ -31,7 +31,6 @@ VectorXd LBFGS::getStep(double maxMove, VectorXd f)
 {
     double H0 = parameters->optLBFGSInverseCurvature;
     VectorXd r = objf->getPositions();
-    IC(f.rows(), f.cols(), r.rows(), r.cols(), maxMove);
 
     if (iteration > 0) {
         VectorXd dr = objf->difference(r,rPrev);
