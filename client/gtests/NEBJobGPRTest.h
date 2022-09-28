@@ -2,6 +2,7 @@
 #define NEBJOBGPRTEST_H_
 
 #include <gtest/gtest.h>
+#include "../external/icecream.hpp"
 
 #include <algorithm>
 
