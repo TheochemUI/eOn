@@ -20,7 +20,7 @@ If you are a developer you can checkout the code using the command:
 
 .. code-block:: sh
 
-    svn co svn+ssh://username@theory.cm.utexas.edu/svn/eon
+    svn co svn+ssh://$USER@theory.cm.utexas.edu/svn/eon
 
 This will fetch a copy of the latest code to a local directory named eon. 
 For more information on subversion read its `online documentation`_.
