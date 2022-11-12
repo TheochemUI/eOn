@@ -5,10 +5,16 @@
   contains
 
     subroutine c_force_eam (natms, ndim, box, R, F, U) bind(c)
-      integer, intent(in) :: natms(2), ndim
-      real(c_double), intent(in) :: U(1), R(ndim), F(ndim), box(3)
+      integer(c_int), intent(in) :: natms(2)
+      integer(c_int), value, intent(in) :: ndim
+      real(c_double), intent(in) :: box(3)
+      real(c_double), intent(inout) :: U(1), R(ndim), F(ndim)
 
-      call force_eam(natms,ndim,box,R,F,U)
+      ! write(*,*)"natms", natms
+      ! write(*,*)"ndim", ndim
+      ! write(*,*)"box", box
+      ! write(*,*)"R", R
+      call force_eam(natms, ndim, box, R, F, U)
 
     end subroutine c_force_eam
 
