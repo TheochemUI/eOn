@@ -478,13 +478,69 @@
 
         INCLUDE 'commonblks/comparam.cmn'
    
-        OPEN(666,FILE='pot.par',STATUS='old',ACTION='read')
-        READ(666,*) rcut,rskin
+        rcut = 6.10000
+        rskin = 6.30000
         rcut2=rcut**2
         rskin2=rskin**2
-
-        READ(666,*) (potpar(i,1),potpar(i,2),potpar(i,3) , i=1,18)
-        CLOSE(666)
+        ! I don't want to schlep around pot.par
+        ! So:
+        ! aa = np.loadtxt("pot.par", skiprows=1)
+        ! for idx, val in enumerate(aa, start=1):
+        !   print(f"potpar({idx}, 1) = {val[0]}\npotpar({idx}, 2) = {val[1]}\npotpar({idx}, 3) = {val[2]}")
+        potpar(1, 1) = 0.0
+        potpar(1, 2) = 0.0
+        potpar(1, 3) = 0.0
+        potpar(2, 1) = 2862.3
+        potpar(2, 2) = 79.5013
+        potpar(2, 3) = 86.1495
+        potpar(3, 1) = 3.51236
+        potpar(3, 2) = 2.47961
+        potpar(3, 3) = 4.21154
+        potpar(4, 1) = -109.107
+        potpar(4, 2) = -107.555
+        potpar(4, 3) = 15355.5
+        potpar(5, 1) = 1.75618
+        potpar(5, 2) = 2.99918
+        potpar(5, 3) = 6.07604
+        potpar(6, 1) = 0.273072
+        potpar(6, 2) = 2.14389
+        potpar(6, 3) = 0.0
+        potpar(7, 1) = 3.69051
+        potpar(7, 2) = 3.77701
+        potpar(7, 3) = 0.0
+        potpar(8, 1) = 7.38101
+        potpar(8, 2) = 0.0
+        potpar(8, 3) = 0.0
+        potpar(9, 1) = 6.0
+        potpar(9, 2) = 0.0
+        potpar(9, 3) = 0.0
+        potpar(10, 1) = 512.0
+        potpar(10, 2) = 0.0
+        potpar(10, 3) = 0.0
+        potpar(11, 1) = -112.945
+        potpar(11, 2) = -81.7537
+        potpar(11, 3) = 0.0
+        potpar(12, 1) = 8510.04
+        potpar(12, 2) = 838.668
+        potpar(12, 3) = 0.0
+        potpar(13, 1) = -261734.0
+        potpar(13, 2) = -3952.35
+        potpar(13, 3) = 0.0
+        potpar(14, 1) = 4780090.0
+        potpar(14, 2) = 8767.87
+        potpar(14, 3) = 0.0
+        potpar(15, 1) = -52341900.0
+        potpar(15, 2) = -6599.37
+        potpar(15, 3) = 0.0
+        potpar(16, 1) = 339124000.0
+        potpar(16, 2) = 0.0
+        potpar(16, 3) = 0.0
+        potpar(17, 1) = -1201500000.0
+        potpar(17, 2) = 0.0
+        potpar(17, 3) = 0.0
+        potpar(18, 1) = 1796190000.0
+        potpar(18, 2) = 0.0
+        potpar(18, 3) = 0.0
 
         FCu1 = potpar(11,1)
         FCu2 = potpar(12,1)
