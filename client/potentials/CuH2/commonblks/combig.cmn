@@ -1,0 +1,9 @@
+      REAL*8 PL(3),Utot,ra,fa
+      INTEGER maxatoms,maxcoo,ncoo,nim,nimrp,nimpo,natoms,iatclass
+
+      PARAMETER (maxatoms = 500)         ! Maximum # of atoms
+      PARAMETER (maxcoo = maxatoms*3)    ! Maximum # of coordinates
+
+      COMMON /EAM/ PL,Utot,ra(maxcoo),fa(maxcoo),iatclass(maxatoms),ncoo,nim,natoms,nimrp,nimpo
+
+
