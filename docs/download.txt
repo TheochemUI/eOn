@@ -25,7 +25,7 @@ If you are a developer you can checkout the code using the command:
 This will fetch a copy of the latest code to a local directory named eon. 
 For more information on subversion read its `online documentation`_.
 
-The eon code can also be download directly at `tarfile`_.
+The eon code can also be download directly at `tarfile`_..
 
 .. _online documentation: http://svnbook.red-bean.com/en/1.5/index.html
 .. _BSD License: https://opensource.org/licenses/BSD-3-Clause
