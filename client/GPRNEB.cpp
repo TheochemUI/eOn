@@ -4,7 +4,6 @@
 #include<cmath>
 #include "GPRHelpers.h"
 #include "LBFGS.h"
-#include "external/icecream.hpp"
 
 class GPRNEBObjectiveFunction : public ObjectiveFunction
 {
@@ -650,14 +649,14 @@ std::pair<double, double> GPRNEB::getConvergenceTrue(){
     maxEnergyImage = std::distance(imageArray.begin(), maxelemResult); // Saddle point!
     // TODO: Handle other convergence metrics
     double saddle_Fnorm {std::get<AtomMatrix>(this->imageArray[maxEnergyImage].true_energy_forces()).maxCoeff()};
-    IC(maxEnergyImage, saddle_Fnorm);
+    // IC(maxEnergyImage, saddle_Fnorm);
     // For the rest..
     // TODO: Remove the spring component? Also other convergence criteria
     double path_Fval{0};
     auto maxArrayElem = std::max_element(projectedForceArrayTrue.begin(), projectedForceArrayTrue.end(),
-                                          [](AtomMatrix pjaA, AtomMatrix pjaB)->bool{IC(pjaA.norm(), pjaB.norm()); return pjaA.norm() < pjaB.norm();  });
+                                          [](AtomMatrix pjaA, AtomMatrix pjaB)->bool{/*IC(pjaA.norm(), pjaB.norm())*/; return pjaA.norm() < pjaB.norm();  });
     path_Fval =  maxArrayElem->maxCoeff();
-    IC(path_Fval);
+    // IC(path_Fval);
     return std::make_pair<double, double>(std::abs(saddle_Fnorm), std::abs(path_Fval));
 }
 

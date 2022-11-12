@@ -8,7 +8,6 @@
 #include <cmath>
 #include <list>
 #include <stdexcept>
-#include "external/icecream.hpp"
 #include "subprojects/gprdimer/structures/Structures.h"
 
 LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed)

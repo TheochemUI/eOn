@@ -22,7 +22,6 @@
 #include "../MinModeSaddleSearch.h"
 #include "../Parameters.h"
 #include "GPRHelpersTest.h"
-#include "../external/icecream.hpp"
 
 namespace tests {
 

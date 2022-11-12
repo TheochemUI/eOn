@@ -86,7 +86,7 @@ TEST_F(NEBJobGPRTest, TestMatter) {
   this->gprfunc->optimize(obspath);
   gprpot->registerGPRObject(this->gprfunc.get());
   matterTest->setPotential(gprpot);
-  IC(mustUpdate, blah, matterTest->getPotentialEnergy());
+//  IC(mustUpdate, blah, matterTest->getPotentialEnergy());
   ASSERT_NE(blah, matterTest->getPotentialEnergy())
       << "Energy not changed after updating gpr";
   while(mustUpdate){
@@ -99,7 +99,7 @@ TEST_F(NEBJobGPRTest, TestMatter) {
     mustUpdate = helper_functions::maybeUpdateObs(*nebTwo, obspath, *this->parameters);
     gprpot->registerGPRObject(this->gprfunc.get());
     matterTest->setPotential(gprpot);
-    IC(mustUpdate, blah, matterTest->getPotentialEnergy());
+//    IC(mustUpdate, blah, matterTest->getPotentialEnergy());
   };
   // // Final round
   //   auto nebFin = helper_functions::prepGPRNEBround(*this->gprfunc,
