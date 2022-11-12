@@ -1,6 +1,7 @@
 
       program readcon
 ! This program has been edited for matlab
+        use eam_wrap
 
       implicit none
       
@@ -59,7 +60,7 @@
       box(2) = ay
       box(3) = az
       
-      call force_eam(natms,ndim,box,R,F,U)
+      call c_force_eam(natms,ndim,box,R,F,U)
 
       ind = 1
       write(104,*) U(1)
