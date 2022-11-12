@@ -6,7 +6,7 @@ Potential
 =========
 
 
-**potential**: the type of potential to execute
+**potential**: the type of potential to execute.
 
     default: ``lj``
 

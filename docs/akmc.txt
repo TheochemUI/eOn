@@ -13,7 +13,7 @@ states.  The fast vibrational motion within a stable state is considered to be
 in equilibrium and described statisitcally.  A transition between states is
 assumed to be first order, since it is a rare events, and the rate of the
 transition is calculated from the harmonic approximation to transition state
-theory (hTST).
+theory (hTST)..
 
 The hTST approximation of a transition rate is calculated from the energy
 difference between the saddle point along the minimum energy path for the

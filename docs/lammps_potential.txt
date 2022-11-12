@@ -28,7 +28,7 @@ Here is an example in.lammps file that uses the morse potential::
 
     pair_style morse 9.5 #morse potential with 9.5 Angstrom cutoff
     pair_coeff * * 0.7102 1.6047 2.797 #specify parameters
-    pair_modify shift yes #shift the potential to be zero at the cutoff
+    pair_modify shift yes #shift the potential to be zero at the cutoff.
 
 
 MEAM
