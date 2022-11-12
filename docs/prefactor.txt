@@ -9,7 +9,7 @@ Prefactor
 [Prefactor] Options
 -------------------
 
-**all_free_atoms**: Account for all free atoms when determining the prefactor.
+**all_free_atoms**: Account for all free atoms when determining the prefactor..
 
     default: ``false``
     
