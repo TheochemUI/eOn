@@ -8,36 +8,36 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include"CuH2.h"
+#include "CuH2.h"
+#include <set>
 
-CuH2::CuH2(Parameters *p){
-}
+CuH2::CuH2(Parameters *p) {}
 
-void CuH2::initialize(void){
-    return;
-}
+void CuH2::initialize(void) { return; }
 
-void CuH2::cleanMemory(void){
-    return;
-}
+void CuH2::cleanMemory(void) { return; }
 
-// pointer to number of atoms, pointer to array of positions	
+// pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-void CuH2::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1){
-    int natms[] {216, 2};
-    int ndim {3*218};
-    // The box only takes the diagonal (assumes cubic)
-    double box_eam[] {box[0], box[4], box[8]};
+void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
+                 double *U, const double *box, int nImages = 1) {
+  std::multiset<double> natmc;
+  int natms[2]{0, 0}; // Always Cu, then H
+  int ndim{3 * static_cast<int>(N)};
+  for (auto idx{0}; idx < N; idx++) {
+    natmc.insert(atomicNrs[idx]);
+  }
+  natms[0] = natmc.count(29); // Cu
+  natms[1] = natmc.count(1);  // H
 
-    c_force_eam(natms, ndim, box_eam, const_cast<double*>(R), F, U);
+  // The box only takes the diagonal (assumes cubic)
+  double box_eam[]{box[0], box[4], box[8]};
 
-    // for(int i=0; i<N; i++){
-    //     F[ 3*i ] = fake1;
-    //     F[3*i+1] = fake1;
-    //     F[3*i+2] = fake1;
-    // }
+  c_force_eam(natms, ndim, box_eam, const_cast<double *>(R), F, U);
 
-    // *U = fake2;
-    return;
+  // for(int i=0; i<N; i++){
+  //     std::cout<<F[ 3*i ]<<" "<<F[3*i+1]<<" "<<F[3*i+2]<<"\n";
+  // }
+  return;
 }
