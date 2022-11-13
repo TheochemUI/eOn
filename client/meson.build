@@ -1,4 +1,4 @@
-project('eonclient', 'cpp',
+project('eonclient', 'cpp', 'fortran',
   version : '0.1',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
@@ -71,7 +71,7 @@ potentials = [
 eon_pot = declare_dependency(link_with : potentials)
   # include_directories : my_inc)
 
-eonclient_sources = [
+eonlib_sources = [
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
@@ -114,7 +114,6 @@ eonclient_sources = [
            'Quickmin.cpp',
            'ParallelReplicaJob.cpp',
            'Potential.cpp',
-           'ClientEON.cpp',
            'BasinHoppingJob.cpp',
            'CommandLine.cpp',
            'FIRE.cpp',
@@ -193,11 +192,22 @@ if get_option('with_fortran')
   eon_extra_args += ['-DWITH_FORTRAN']
 endif
 
-# ---------------------- Executable
+subdir('potentials/CuH2')
+potentials += [cuh2]
+eon_extra_args += ['-DCUH2_POT']
 
-ec = executable('eonclient',
-                eonclient_sources,
+# --------------------- Library
+eclib = shared_library('eonlib',
+                eonlib_sources,
                 dependencies : eon_deps,
                 link_with : potentials,
                 cpp_args : eon_extra_args,
+                install : true)
+
+# ---------------------- Executable
+
+ec = executable('eonclient',
+                'ClientEON.cpp',
+                link_with: eclib,
+                dependencies : eon_deps,
                 install : true)
