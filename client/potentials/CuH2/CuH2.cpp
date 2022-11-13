@@ -28,8 +28,16 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
   for (auto idx{0}; idx < N; idx++) {
     natmc.insert(atomicNrs[idx]);
   }
+  if (natmc.count(29) <= 0 || natmc.count(1) <= 0) {
+    throw std::runtime_error(
+        "The system does not have Copper or Hydrogen, but the CuH2 potential was requested");
+  }
   natms[0] = natmc.count(29); // Cu
   natms[1] = natmc.count(1);  // H
+  if (natms[0]+natms[1] != N) {
+    throw std::runtime_error(
+        "The system has other atom types, but the CuH2 potential was requested");
+  }
 
   // The box only takes the diagonal (assumes cubic)
   double box_eam[]{box[0], box[4], box[8]};
