@@ -48,6 +48,11 @@
     #include "potentials/NewPot/NewPot.h"
 #endif
 
+// TODO: This should be guarded by WITH_FORTRAN as well
+#ifdef CUH2_POT
+    #include "potentials/CuH2/CuH2.h"
+#endif
+
 #ifndef WIN32
 #ifdef WITH_VASP
     #include "potentials/VASP/VASP.h"
@@ -75,6 +80,10 @@ const char Potential::POT_LJ[] =          "lj";
 const char Potential::POT_LJCLUSTER[] =   "lj_cluster";
 const char Potential::POT_MORSE_PT[] =    "morse_pt";
 const char Potential::POT_NEW[] =         "new_pot";
+
+#ifdef CUH2_POT
+const char Potential::POT_CUH2[] =        "cuh2_pot";
+#endif
 
 #ifdef IMD_POT
 const char Potential::POT_IMD[] =         "imd";
@@ -204,6 +213,11 @@ Potential *Potential::getPotential(Parameters *parameters)
 #ifdef NEW_POT
     else if(parameters->potential == POT_NEW)
         pot = new NewPot(parameters);
+#endif
+
+#ifdef CUH2_POT
+    else if(parameters->potential == POT_CUH2)
+        pot = new CuH2(parameters);
 #endif
 
 #ifndef WIN32
