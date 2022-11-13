@@ -211,3 +211,9 @@ ec = executable('eonclient',
                 link_with: eclib,
                 dependencies : eon_deps,
                 install : true)
+
+ec1 = executable('testPot',
+                'testpot.cpp',
+                dependencies : eon_deps,
+                link_with : eclib,
+                )
