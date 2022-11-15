@@ -115,7 +115,6 @@ eonlib_sources = [
            'ParallelReplicaJob.cpp',
            'Potential.cpp',
            'BasinHoppingJob.cpp',
-           'CommandLine.cpp',
            'FIRE.cpp',
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
@@ -208,6 +207,7 @@ eclib = shared_library('eonlib',
 
 ec = executable('eonclient',
                 'ClientEON.cpp',
+                'CommandLine.cpp',
                 link_with: eclib,
                 dependencies : eon_deps,
                 install : true)
