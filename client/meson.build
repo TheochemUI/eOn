@@ -1,4 +1,4 @@
-project('eonclient', 'cpp', 'fortran',
+project('eonclient', 'cpp',
   version : '0.1',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
@@ -191,9 +191,14 @@ if get_option('with_fortran')
   eon_extra_args += ['-DWITH_FORTRAN']
 endif
 
-subdir('potentials/CuH2')
-potentials += [cuh2]
-eon_extra_args += ['-DCUH2_POT']
+if get_option('with_cuh2')
+  # Implicitly needs Fortran
+  add_languages('fortran', required: true)
+  fc = meson.get_compiler('fortran')
+  subdir('potentials/CuH2')
+  potentials += [cuh2]
+  eon_extra_args += ['-DCUH2_POT']
+endif
 
 # --------------------- Library
 eclib = shared_library('eonlib',
