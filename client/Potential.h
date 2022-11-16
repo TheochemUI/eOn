@@ -19,6 +19,10 @@ class Potential
         static const char POT_MORSE_PT[];
         static const char POT_NEW[];
 
+#ifdef CUH2_POT
+        static const char POT_CUH2[];
+#endif
+
 #ifdef IMD_POT
         static const char POT_IMD[];
 #endif
