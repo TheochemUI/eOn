@@ -1301,8 +1301,9 @@ void Matter::writeTibble(std::string fname){
         out.print("{x} {y} {z} {fx} {fy} {fz} {energy} {mass} {symbol} {idx} {fixed}\n",
                   "x"_a=pos.row(idx)[0], "y"_a=pos.row(idx)[1], "z"_a=pos.row(idx)[2],
                   "fx"_a=fSys.row(idx)[0], "fy"_a=fSys.row(idx)[1], "fz"_a=fSys.row(idx)[2],
-                  "energy"_a=eSys, "fixed"_a=this->getFixed(idx), "mass"_a=this->getMass(idx),
-                  "symbol"_a=atomicNumber2symbol(this->getAtomicNr(idx)), "idx"_a=idx); // NOTE: idx MAY not be the same id as before
+                  "energy"_a=eSys, "mass"_a=this->getMass(idx),
+                  "symbol"_a=atomicNumber2symbol(this->getAtomicNr(idx)),
+                  "idx"_a=(idx+1), "fixed"_a=this->getFixed(idx)); // NOTE: idx MAY not be the same id as before
     }
     return;
 }
