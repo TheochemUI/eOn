@@ -49,19 +49,6 @@ void Morse::setParameters(double De, double a, double re, double cutoff)
       morse(cutoff, energyCutoff_, f);
 }
 
-// For bindings
-std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix positions, Matrix3d box){
-      AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-      VectorXi atomicNrs = VectorXi::Constant(nAtoms, 0);
-      int *atnrs = atomicNrs.data();
-      double *pos = positions.data();
-      double *frcs = forces.data();
-      double *bx = box.data();
-      double energy{0};
-      Morse::force(nAtoms, pos, atnrs, frcs, &energy, bx, 1);
-      return std::make_pair(forces, energy);
-}
-
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size

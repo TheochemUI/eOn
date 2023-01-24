@@ -98,13 +98,13 @@ p.potential="morse_pt"
 m1=ec.Matter(p)
 m1.con2matter("gtests/data/systems/Pt_Heptamer_3LayersMove/pos.con")
 a = ec.Morse()
-forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell())
+forces, energy = a.energy_and_forces(m1)
 m1.getForces()
 m1.getPotentialEnergy()
 print(forces)
 print(energy)
 #+end_src
-The helper class is meant *only* to interface easily with Python.
+The helper class is meant *only* to interface easily with Python, and so is only created in the bindings section.
 #+begin_src cpp
 std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix positions, Matrix3d box){
       AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);

@@ -25,7 +25,6 @@ public:
       Morse(double re, double De, double a, double cutoff);
       void cleanMemory(void);// required by PotentialsInterface
       void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages);
-      std::pair<AtomMatrix, double> energy_and_forces(long nAtoms, AtomMatrix positions, Matrix3d box);
       void initialize() {};// required by PotentialsInterface
       void setParameters(double De, double a, double re, double cutoff);
 private:
