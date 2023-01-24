@@ -90,6 +90,7 @@ class Potential
         AtomMatrix force(long nAtoms, AtomMatrix positions,
                          VectorXi atomicNrs, double *energy, Matrix3d box, int nImages);
 
+        void setParams(Parameters *params);
         void virtual initialize() = 0;
         void virtual force(long nAtoms, const double *positions,
                            const int *atomicNrs, double *forces, double *energy,

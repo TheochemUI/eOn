@@ -822,8 +822,8 @@ void Matter::applyPeriodicBoundary() {
 }
 
 // Return parameters
-Parameters* Matter::getParameters() const {
-    return this->parameters;
+Parameters Matter::getParameters() const {
+    return *this->parameters;
 }
 
 double Matter::maxForce(void) {
