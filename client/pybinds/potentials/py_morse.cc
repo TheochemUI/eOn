@@ -61,7 +61,10 @@ void py_morse(py::module_ &m) {
         },
             py::arg("nAtoms"), "positions"_a, "box"_a)
         .def("ef_matter", [](Morse &mpot, Matter mat){
-            mat.setPotential(mpot.getPotential(mat.getParameters()));
+            Parameters params{mat.getParameters()};
+            params.potential = "morse_pt";
+            mpot.setParams(&params);
+            mat.setPotential(&mpot);
             return std::make_pair(mat.getPotentialEnergy(), mat.getForces());
         }, py::arg("matter"))
         .def("force",
