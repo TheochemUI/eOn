@@ -233,42 +233,45 @@ ec1 = executable('testPot',
                 link_with : eclib,
                 )
 # ---------------------- Bindings
-py = import('python').find_installation()
-python_dep = py.dependency()
-pyb11f_deps = [ python_dep ]
+if get_option('with_pybindings')
+  # Implicitly needs Fortran
+  py = import('python').find_installation()
+  python_dep = py.dependency()
+  pyb11f_deps = [ python_dep ]
 
 
-pyb11f_deps += [eon_deps,
-               dependency('python3'),
-               dependency('pybind11'),
-               declare_dependency(link_args: '-lstdc++') ]
+  pyb11f_deps += [eon_deps,
+                  dependency('python3'),
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
 
-pyb11f = py.extension_module('pyeonclient',
-          sources : [
-            'pybinds/py_wrapper.cc',
-            'pybinds/py_parameters.cc',
-            'pybinds/py_matter.cc',
-            'pybinds/py_log.cc',
-            # Jobs
-            'pybinds/py_job.cc',
-            'pybinds/jobs/py_saddlesearchjob.cc',
-            # Optimizers
-            'pybinds/py_optimizer.cc',
-            'pybinds/optimizers/py_lbfgs.cc',
-            # Nudged Elastic Band
-            'pybinds/py_nudgedelasticband.cc',
-            # Objective Functions
-            'pybinds/py_objectivefunction.cc',
-            'pybinds/objectivefunctions/py_matterobjfunc.cc',
-            'pybinds/objectivefunctions/py_nebobjfunc.cc',
-            # Potentials
-            'pybinds/py_potential.cc',
-            'pybinds/potentials/py_morse.cc',
-            ],
-          dependencies : pyb11f_deps,
-          link_with : eclib,
-          cpp_args : eon_extra_args,
-          install : true)
+  pyb11f = py.extension_module('pyeonclient',
+                               sources : [
+                                 'pybinds/py_wrapper.cc',
+                                 'pybinds/py_parameters.cc',
+                                 'pybinds/py_matter.cc',
+                                 'pybinds/py_log.cc',
+                                 # Jobs
+                                 'pybinds/py_job.cc',
+                                 'pybinds/jobs/py_saddlesearchjob.cc',
+                                 # Optimizers
+                                 'pybinds/py_optimizer.cc',
+                                 'pybinds/optimizers/py_lbfgs.cc',
+                                 # Nudged Elastic Band
+                                 'pybinds/py_nudgedelasticband.cc',
+                                 # Objective Functions
+                                 'pybinds/py_objectivefunction.cc',
+                                 'pybinds/objectivefunctions/py_matterobjfunc.cc',
+                                 'pybinds/objectivefunctions/py_nebobjfunc.cc',
+                                 # Potentials
+                                 'pybinds/py_potential.cc',
+                                 'pybinds/potentials/py_morse.cc',
+                               ],
+                               dependencies : pyb11f_deps,
+                               link_with : eclib,
+                               cpp_args : eon_extra_args,
+                               install : true)
+endif
 
 # ------------------------ Tests
 
