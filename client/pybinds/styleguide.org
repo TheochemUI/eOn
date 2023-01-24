@@ -120,11 +120,16 @@ std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix p
 #+end_src
 One issue with this approach is that the force matrix is fully populated, and therefore technically incorrect. The corrected variant is accessed when called through a Matter object, which sets the atomic forces for fixed atoms to zero. This is why we have a second variant, ~ef_matter~.
 #+begin_src cpp
-        .def("ef_matter", [](Morse &mpot, const Matter mat){
-            mat.setPotential(mpot);
+        .def("ef_matter", [](Morse &mpot, Matter mat){
+            Parameters params{mat.getParameters()};
+            params.potential = "morse_pt";
+            mpot.setParams(&params);
+            mat.setPotential(&mpot);
             return std::make_pair(mat.getPotentialEnergy(), mat.getForces());
         }, py::arg("matter"))
 #+end_src
+*** TODO Use pythonic potentials
+*** TODO Do not write each by hand
 ** Jobs
 For testing:
 #+begin_src bash
