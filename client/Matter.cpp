@@ -774,6 +774,18 @@ bool Matter::con2matter(std::ifstream &file) {
     return true;
 }
 
+void Matter::setPotential(Potential *pot){
+    // std::cout<<"Setting potential, resets calls";
+    // if(pot != nullptr){
+        this->potential = pot;
+    // }
+    recomputePotential = true;
+}
+
+Potential* Matter::getPotential(){
+    return this->potential;
+}
+
 void Matter::computePotential() {
     if (recomputePotential) {
         if (!potential) {
