@@ -173,16 +173,15 @@ void py_matter(py::module_ &m) {
         .def("getMechanicalEnergy",
              &Matter::getMechanicalEnergy,
              "Return the mechanical energy (i.e. kinetic plus potential energy)")
-        // TODO: Look into this
-        // .def("distance",
-        //      py::overload_cast<long int /*index1*/, long int /*index2*/>(&Matter::distance),
-        //      "Return the distance between two atoms in same configuration",
-        //      py::arg("index1"),
-        //      "index2"_a)
-        // .def("distance",
-        //      py::overload_cast<const Matter &, long int>(&Matter::distance),
-        //      "Returns the distance between instances of the same atom in different
-        //      configurations", py::arg("matter"), "index"_a)
+        .def("distance",
+             py::overload_cast<long int /*index1*/, long int /*index2*/>(&Matter::distance,
+                                                                         py::const_),
+             "Return the distance between two atoms in same configuration")
+        .def("distance",
+             py::overload_cast<const Matter &, long int>(&Matter::distance, py::const_),
+             "Returns the distance between instances of the same atom in different configurations",
+             py::arg("matter"),
+             "index"_a)
         .def("pdistance",
              &Matter::pdistance,
              "Returns the distance between two atoms along an axis",
