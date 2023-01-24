@@ -33,3 +33,5 @@ dependencies:
   - sh
   - sphinx
   - ipython
+  - quarto
+  - r-reticulate
