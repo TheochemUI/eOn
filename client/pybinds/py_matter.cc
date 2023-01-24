@@ -97,58 +97,29 @@ void py_matter(py::module_ &m) {
              "prefixCheckpoint"_a)
         .def("pbc", &Matter::pbc, "Periodic boundary conditions", py::arg("diff"))
         .def("pbcV", &Matter::pbcV, "PBC as vector", py::arg("diff"))
+        // Properties
+        // The V variants are just ravel() variants
+        .def_property("positions", &Matter::getPositions, &Matter::setPositions)
+        .def_property("free_positions", &Matter::getPositionsFree, &Matter::setPositionsFree)
+        .def_property("velocities",
+                      &Matter::getVelocities,
+                      &Matter::setVelocities) // Always sets free velocities
+        .def_property(
+            "forces",
+            &Matter::getForces,
+            &Matter::setForces) // Always sets free forces, that is with 0's in the right places
+                                // free_forces are basically ndarray[~np.all(m1.forces==0, axis=1)]
+        // Optional additional read only properties
+        .def_property_readonly("free_forces", &Matter::getForcesFree)
+        .def_property_readonly("pot_energy", &Matter::getPotentialEnergy)
         // Getters and Setters
-        .def("getPositions", &Matter::getPositions, "Return coordinates of atoms in array")
-        .def("getPositionsV",
-             &Matter::getPositionsV,
-             "Return coordinates of atoms in array (as vector)")
-        .def("getPositionsFree",
-             &Matter::getPositionsFree,
-             "Return coordinates of free atoms in array")
-        .def("getPositionsFreeV",
-             &Matter::getPositionsFreeV,
-             "Return coordinates of free atoms in array (as vector)")
-        .def("setPositions",
-             &Matter::setPositions,
-             "Update Matter with the new positions of the atoms in the array",
-             py::arg("AtomMatrix_pos"))
-        .def("setPositionsV",
-             &Matter::setPositionsV,
-             "Update Matter with the new positions of the atoms in the array (as vector)",
-             py::arg("VectorXd_pos"))
-        .def("setPositionsFree",
-             &Matter::setPositionsFree,
-             "Update Matter with the new positions of the free atoms given in array",
-             py::arg("AtomMatrix_pos"))
-        .def("setPositionsFreeV",
-             &Matter::setPositionsFreeV,
-             "Update Matter with the new positions of the free atoms given in array (as vector)",
-             py::arg("VectorXd_pos"))
-        .def("getVelocities", &Matter::getVelocities, "Returns velocities")
-        .def("setVelocities", &Matter::setVelocities, "Sets velocities", py::arg("AtomMatrix_v"))
-        .def("setBiasForces",
-             &Matter::setBiasForces,
-             "Sets the bias forces",
-             py::arg("AtomMatrix_bf"))
-        // TODO: BondBoost isn't implemented yet
-        // .def("setBiasPotential",
-        //      &Matter::setBiasPotential,
-        //      "Sets a BondBoost potential",
-        //      py::arg("BondBoost"))
-        .def("setForces", &Matter::setForces, "Sets the forces", py::arg("AtomMatrix_f"))
-        .def("getAccelerations", &Matter::getAccelerations, "Returns accelerations")
-        .def("getForces", &Matter::getForces, "Returns forces applied on all atoms")
+        .def("getAccelerations", &Matter::getAccelerations, "Returns accelerations") // no setter
         .def("getBiasForces", &Matter::getBiasForces, "Returns bias forces applied on all atoms")
-        .def("getForcesV", &Matter::getForcesV, "Returns forces applied on all atoms (as vector)")
-        .def("getForcesFree", &Matter::getForcesFree, "Returns free forces applied on all atoms")
-        .def("getForcesFreeV",
-             &Matter::getForcesFreeV,
-             "Returns free forces applied on all atoms (as vector)")
         .def("getMass", &Matter::getMass, "Return the mass of the atom specified", py::arg("atom"))
         .def("setMass", &Matter::setMass, "Set the mass of an atom", py::arg("atom"), "mass"_a)
         .def("setMasses",
              &Matter::setMasses,
-             "Set the mass of an atom",
+             "Set the masses of all atoms",
              py::arg("VectorXd_massesIn"))
         .def("getAtomicNr",
              &Matter::getAtomicNr,
@@ -188,11 +159,9 @@ void py_matter(py::module_ &m) {
              py::arg("index1"),
              "index2"_a,
              "axis"_a)
-        .def("numberOfFreeAtoms",
-             &Matter::numberOfFreeAtoms,
-             "Return the number of free (or movable) atoms")
-        .def("numberOfFixedAtoms", &Matter::numberOfFixedAtoms, "Return the number of fixed atoms")
-        .def("getForceCalls", &Matter::getForceCalls, "Return the number of force calls so far")
+        .def_property_readonly("numberOfFreeAtoms", &Matter::numberOfFreeAtoms)
+        .def_property_readonly("numberOfFixedAtoms", &Matter::numberOfFixedAtoms)
+        .def_property_readonly("force_calls", &Matter::getForceCalls)
         .def("resetForceCalls", &Matter::resetForceCalls, "Zeros the value of force calls")
         .def("maxForce", &Matter::maxForce, "Returns the maximum force")
         // I/O functions
@@ -239,6 +208,11 @@ void py_matter(py::module_ &m) {
         .def("getFree", &Matter::getFree, "Get free")
         .def("getFreeV", &Matter::getFreeV, "Get free (as vector)")
         .def("getMasses", &Matter::getMasses, "Get masses")
+        .def("setBiasForces",
+             &Matter::setBiasForces,
+             "Sets the bias forces",
+             py::arg("AtomMatrix_bf"))
+        // TODO: BondBoost isn't implemented yet
 
         /*
         ** Parameters
