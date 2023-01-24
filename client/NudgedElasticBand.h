@@ -27,7 +27,7 @@ public:
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
         : // INITIALIZED by DECLARATION ORDER
-          atoms{initialPassed->numberOfAtoms()}, climbingImage{0}, numExtrema{0} {
+          atoms{static_cast<size_t>(initialPassed->numberOfAtoms())}, climbingImage{0}, numExtrema{0} {
         parameters = parametersPassed;
         nimages = parameters->nebImages; // readin
         for ([[maybe_unused]] size_t i{0}; i < nimages + 2; i++) {
