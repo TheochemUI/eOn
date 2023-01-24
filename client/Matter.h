@@ -83,6 +83,7 @@ public:
     void setPositionsFree(const AtomMatrix pos); // update Matter with the new positions of the
                                                  // free atoms given in array pos
     void setPositionsFreeV(const VectorXd pos);
+    Parameters* getParameters() const;
 
     AtomMatrix getVelocities() const;
     void setVelocities(const AtomMatrix v);

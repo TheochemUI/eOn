@@ -821,6 +821,11 @@ void Matter::applyPeriodicBoundary() {
     positions = ddiff * cell;
 }
 
+// Return parameters
+Parameters* Matter::getParameters() const {
+    return this->parameters;
+}
+
 double Matter::maxForce(void) {
     // Ensures that the forces are up to date
     computePotential();
