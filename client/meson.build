@@ -6,7 +6,6 @@ host_system = host_machine.system()
 eon_extra_args = []
 
 add_languages('c', required: true)
-
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
@@ -22,6 +21,13 @@ endif
 # Dependencies
 eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
 eon_deps = [ eigen_dep ]
+
+fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
+eon_deps += fmt_dep
+
+# Testing only
+gtest_dep = dependency('gtest', main : true, required : false)
+gmock_dep = dependency('gmock', required : false)
 
 # Optional, only for AMS
 absl_dep = dependency('absl', method : 'cmake',
@@ -43,11 +49,9 @@ boost_ams_dep = dependency('boost',
   required : false,
 )
 
-fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
-
-eon_deps += fmt_dep
-
 ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
+
+# End AMS
 
 # Potentials
 subdir('potentials/EAM')
@@ -71,20 +75,19 @@ potentials = [
              ]
 
 eon_pot = declare_dependency(link_with : potentials)
-  # include_directories : my_inc)
 
-eonlib_sources = [
+eonclib_sources = [
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
            'Parameters.cpp',
            'ReplicaExchangeJob.cpp',
-           'LowestEigenmode.cpp',
            'BondBoost.cpp',
            'Job.cpp',
            'INIFile.cpp',
            'GlobalOptimization.cpp',
            'Log.cpp',
+           'LowestEigenmode.cpp',
            'MinModeSaddleSearch.cpp',
            'StructureComparisonJob.cpp',
            'SteepestDescent.cpp',
@@ -107,6 +110,7 @@ eonlib_sources = [
            'NudgedElasticBandJob.cpp',
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
+           'StringHelpers.cc', # Template
            'Dimer.cpp',
            'Dynamics.cpp',
            'GlobalOptimizationJob.cpp',
@@ -121,6 +125,11 @@ eonlib_sources = [
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
            'BasinHoppingSaddleSearch.cpp',
+]
+
+eonclient_sources = [
+           'ClientEON.cpp',
+           'CommandLine.cpp',
 ]
 
 # ------------------- Options
@@ -203,8 +212,9 @@ if get_option('with_cuh2')
 endif
 
 # --------------------- Library
-eclib = shared_library('eonlib',
-                eonlib_sources,
+
+eclib = library('eonclib',
+                sources : eonclib_sources,
                 dependencies : eon_deps,
                 link_with : potentials,
                 cpp_args : eon_extra_args,
@@ -213,10 +223,10 @@ eclib = shared_library('eonlib',
 # ---------------------- Executable
 
 ec = executable('eonclient',
-                'ClientEON.cpp',
-                'CommandLine.cpp',
-                link_with: eclib,
+                sources : eonclient_sources,
                 dependencies : eon_deps,
+                link_with : eclib,
+                cpp_args : eon_extra_args,
                 install : true)
 
 ec1 = executable('testPot',
@@ -230,3 +240,26 @@ ec2 = executable('testWriteR',
                 dependencies : eon_deps,
                 link_with : eclib,
                 )
+
+# ------------------------ Tests
+
+if get_option('build_tests')
+  eon_extra_args += ['-DEONTEST'] # Unused
+  eon_deps += [ gtest_dep ]
+test_array = [#
+  ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
+  ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
+  ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
+             ]
+foreach test : test_array
+  test(test.get(0),
+       executable(test.get(1),
+          sources : ['gtests/'+test.get(2)],
+          dependencies : [ eon_deps, gtest_dep, gmock_dep ],
+          link_with : eclib,
+          cpp_args : eon_extra_args
+                 ),
+        workdir : meson.source_root() + test.get(3)
+      )
+endforeach
+endif
