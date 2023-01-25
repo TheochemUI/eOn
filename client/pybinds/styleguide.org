@@ -150,10 +150,11 @@ To test this, an interactive job is nice.
 #+begin_src python
 import bbdir.pyeonclient as ec
 p = ec.Parameters()
+p.potential = "morse_pt"
 p.load("config.ini") # Platinum heptamer, all moving
 ec.log_init(p, "blah.log") # Just in case
 m1 = ec.Matter(p)
-m1.con2matter("pos.con")
+m1.con2matter("bbdir/pos.con")
 mobjf = ec.MatterObjectiveFunction(m1, p) # Make a new objective function
 mobjf.getPositions() # returns a vector
 mobjf.getPositions().reshape(-1, 3) # atom matrix
@@ -163,8 +164,8 @@ mobjf.getConvergence()
 mobjf.isConverged()
 mobjf.degreesOfFreedom()
 mobjf.getGradient()
-mobjf.difference(m1.getPositionsFreeV(), mobjf.getPositions()) # TODO: check results?
-m1.setPositions(m1.getPositions()+3)
+# mobjf.difference(m1.getPositionsFreeV(), mobjf.getPositions()) # TODO: check results?
+m1.positions=m1.positions+3
 m1.relax(False, False, False, "nope", "00") # TODO: make the last two optional
 m1.relax()
 #+end_src
