@@ -56,16 +56,6 @@ void py_morse(py::module_ &m) {
             mat.setPotential(&mpot);
             return std::make_pair(mat.getPotentialEnergy(), mat.getForces());
         }, py::arg("matter"))
-        .def("force",
-             py::overload_cast<long /*N*/,
-                               const double* /*R*/,
-                               const int* /*atomicNrs*/,
-                               double* /*F*/,
-                               double* /*U*/,
-                               const double* /*box*/,
-                               int /*nImages*/
-                               >(&Morse::force),
-             py::arg("N"), "R"_a, "atomicNrs"_a, "F"_a, "U"_a, "box"_a, "nImages"_a)
         .def("setParameters", &Morse::setParameters)
         .def("initialze", &Morse::initialize)
         /*

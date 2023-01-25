@@ -1,44 +1,33 @@
 #include "py_potential.hpp"
 
 void py_potential(py::module_ &m) {
-    py::class_<Potential, PyPotential<> >(m, "Potential")
+    py::class_<Potential, PyPotential<>>(m, "Potential")
         .def(py::init())
         /*
         ** Functions
         */
         .def_static("getPotential", &Potential::getPotential)
         .def("initialize", &Potential::initialize)
-        .def("force",
-             py::overload_cast<long /*nAtoms*/,
-                               AtomMatrix /*positions*/,
-                               VectorXi /*atomicNrs*/,
-                               double * /*energy*/,
-                               Matrix3d /*box*/,
-                               int /*nImages*/
-                               >(&Potential::force),
-             "Get forces",
-             py::arg("nAtoms"),
-             py::arg("positions"),
-             py::arg("atomicNrs"),
-             py::arg("energy"),
-             py::arg("box"),
-             py::arg("nImages"))
-        .def("force",
-             py::overload_cast<long /*nAtoms*/,
-                               const double * /*positions*/,
-                               const int * /*atomicNrs*/,
-                               double * /*forces*/,
-                               double * /*energy*/,
-                               const double * /*box*/,
-                               int /*nImages*/>(&Potential::force),
-             "Get forces",
-             py::arg("nAtoms"),
-             py::arg("positions"),
-             py::arg("atomicNrs"),
-             py::arg("forces"),
-             py::arg("energy"),
-             py::arg("box"),
-             py::arg("nImages"))
+        .def(
+            "force",
+            [](Potential &pot,
+               long natms,
+               AtomMatrix pos,
+               VectorXi atmnrs,
+               Matrix3d box,
+               int nimgs) {
+                AtomMatrix forces{AtomMatrix::Zero(natms, 3)};
+                double energy = 0;
+                pot.force(
+                    natms, pos.data(), atmnrs.data(), forces.data(), &energy, box.data(), nimgs);
+                return std::make_pair(energy, forces);
+            },
+            "Get forces",
+            py::arg("nAtoms"),
+            "positions"_a,
+            "atomicNrs"_a,
+            "box"_a,
+            "nImages"_a)
 
         /*
         ** Parameters
@@ -54,7 +43,9 @@ void py_potential(py::module_ &m) {
             [](py::object /*self*/) { return PotentialStrings::POT_EXT; },
             "EXT potential string")
         .def_property_readonly_static(
-            "POT_LJ", [](py::object /*self*/) { return PotentialStrings::POT_LJ; }, "LJ potential string")
+            "POT_LJ",
+            [](py::object /*self*/) { return PotentialStrings::POT_LJ; },
+            "LJ potential string")
         .def_property_readonly_static(
             "POT_LJCLUSTER",
             [](py::object /*self*/) { return PotentialStrings::POT_LJCLUSTER; },
