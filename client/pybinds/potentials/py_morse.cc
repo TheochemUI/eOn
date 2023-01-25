@@ -48,18 +48,7 @@ void py_morse(py::module_ &m) {
         ** Methods
         */
         .def("cleanMemory", &Morse::cleanMemory)
-        .def("energy_and_forces", [](Morse &mpot, long nAtoms, AtomMatrix positions, Matrix3d box) {
-            AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
-            VectorXi atomicNrs = VectorXi::Constant(nAtoms, 0);
-            int *atnrs = atomicNrs.data();
-            double *pos = positions.data();
-            double *frcs = forces.data();
-            double *bx = box.data();
-            double energy{0};
-            mpot.force(nAtoms, pos, atnrs, frcs, &energy, bx, 1);
-            return std::make_pair(energy, forces);
-        },
-            py::arg("nAtoms"), "positions"_a, "box"_a)
+        /** TODO: This should also be part of Potential, no need to make separate bindings **/
         .def("ef_matter", [](Morse &mpot, Matter mat){
             Parameters params{mat.getParameters()};
             params.potential = "morse_pt";
