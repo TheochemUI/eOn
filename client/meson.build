@@ -6,7 +6,6 @@ host_system = host_machine.system()
 eon_extra_args = []
 
 add_languages('c', required: true)
-
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
@@ -22,6 +21,9 @@ endif
 # Dependencies
 eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
 eon_deps = [ eigen_dep ]
+
+fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
+eon_deps += fmt_dep
 
 # Testing only
 gtest_dep = dependency('gtest', main : true, required : false)
@@ -47,11 +49,9 @@ boost_ams_dep = dependency('boost',
   required : false,
 )
 
-fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
-
-eon_deps += fmt_dep
-
 ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
+
+# End AMS
 
 # Potentials
 subdir('potentials/EAM')
@@ -75,15 +75,13 @@ potentials = [
              ]
 
 eon_pot = declare_dependency(link_with : potentials)
-  # include_directories : my_inc)
 
-eonlib_sources = [
+eonclib_sources = [
            'Optimizer.cpp',
            'PrefactorJob.cpp',
            'LBFGS.cpp',
            'Parameters.cpp',
            'ReplicaExchangeJob.cpp',
-           'LowestEigenmode.cpp',
            'BondBoost.cpp',
            'Job.cpp',
            'INIFile.cpp',
@@ -111,6 +109,7 @@ eonlib_sources = [
            'NudgedElasticBandJob.cpp',
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
+           'StringHelpers.cc', # Template
            'Dimer.cpp',
            'Dynamics.cpp',
            'GlobalOptimizationJob.cpp',
@@ -125,6 +124,11 @@ eonlib_sources = [
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
            'BasinHoppingSaddleSearch.cpp',
+]
+
+eonclient_sources = [
+           'ClientEON.cpp',
+           'CommandLine.cpp',
 ]
 
 # ------------------- Options
@@ -207,8 +211,9 @@ if get_option('with_cuh2')
 endif
 
 # --------------------- Library
-eclib = shared_library('eonlib',
-                eonlib_sources,
+
+eclib = library('eonclib',
+                sources : eonclib_sources,
                 dependencies : eon_deps,
                 link_with : potentials,
                 cpp_args : eon_extra_args,
@@ -217,10 +222,10 @@ eclib = shared_library('eonlib',
 # ---------------------- Executable
 
 ec = executable('eonclient',
-                'ClientEON.cpp',
-                'CommandLine.cpp',
-                link_with: eclib,
+                sources : eonclient_sources,
                 dependencies : eon_deps,
+                link_with : eclib,
+                cpp_args : eon_extra_args,
                 install : true)
 
 ec1 = executable('testPot',
