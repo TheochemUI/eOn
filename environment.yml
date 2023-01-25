@@ -34,4 +34,12 @@ dependencies:
   - sphinx
   - ipython
   - quarto
+  - pandas
+  - rpy2
+  - radian
   - r-reticulate
+  - r-languageserver
+  - r-httpgd
+  - r-tidyverse
+  - r-devtools
+  - r-irkernel
