@@ -247,7 +247,7 @@ if get_option('build_tests')
   eon_extra_args += ['-DEONTEST'] # Unused
   eon_deps += [ gtest_dep ]
 test_array = [#
-  # ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
+  ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
   ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
   ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
              ]
