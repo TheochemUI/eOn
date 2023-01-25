@@ -1,0 +1,104 @@
+---
+title: "Interfacing to R through Python"
+engine: jupyter
+---
+
+We can interface with `R` as long as we are being consistent about things.
+
+```{r}
+library("reticulate")
+library("tidyverse")
+library("nloptr")
+
+use_condaenv("eongit", conda="/Users/rgoswami/micromamba/condabin/conda")
+```
+
+We will start by initializing the system.
+
+```{r}
+# Weirdly this is from the git_root
+ecr <- import("client.bbdir.pyeonclient")
+```
+
+Everything more or less works exactly as expected.
+
+```{r}
+params = ecr$Parameters()
+params$potential <- "morse_pt"
+m1 = ecr$Matter(params)
+m1$con2matter("client/gtests/data/gpr_dimer/morse/pos.con")
+```
+
+## Optimizations
+
+We can go a bit further, and actually use something from `R`, namely the `nloptr` wrappers.
+
+```{r}
+fixedAtomPos = m1$positions %>% tail(-m1$numberOfFreeAtoms)
+# Initial data
+x0 = (matrix(rnorm(7*3), ncol=3) + m1$free_positions) %>% rbind(fixedAtomPos)
+```
+
+We will also need to setup the evaluation list of functions, we prefer the contracted one, since there is only one update. Note that we keep the same size as is expected by our function.
+
+```{r}
+eval_f_list <- function(x) { m1$positions <- x %>% matrix(ncol=3); return(list("objective" = m1$getPotentialEnergy(), "gradient" = -1*m1$forces) ) }
+```
+
+Now we just need to pick the optimization parameters, and we're off to the races.
+
+```{r}
+opts <- list("algorithm"="NLOPT_LD_LBFGS", "ftol_rel"=1.0e-4, "xtol_rel"=1.0e-8)
+```
+
+Note that `xtol_rel` is set rather arbitrarily, we only intend to stop on `ftol_rel` anyway. Finally:
+
+```{r}
+res <- nloptr(x0=x0, eval_f=eval_f_list, opts=opts)
+```
+
+This worked!
+
+```{r}
+print(res)
+```
+
+### Comparison
+
+To compare what we got to the standard version..
+
+```{python}
+from pathlib import Path
+print(Path.cwd())
+
+import importlib.util
+
+# Ugly but necessary
+mod_path = [x for x in (Path.cwd().parent/"bbdir").glob("*.so")][0]
+
+mod_spec = importlib.util.spec_from_file_location("pyeonclient", mod_path)
+ec = importlib.util.module_from_spec(mod_spec)
+mod_spec.loader.exec_module(ec)
+```
+
+Now we can move on..
+
+```{python}
+p = ec.Parameters()
+p.potential = "morse_pt"
+p.load("config.ini") # Platinum heptamer, all moving
+ec.log_init(p, "blah.log") # Just in case
+m1 = ec.Matter(p)
+m1.con2matter("../bbdir/pos.con")
+mobjf = ec.MatterObjectiveFunction(m1, p) # Make a new objective function
+mobjf.getPositions() # returns a vector
+mobjf.getPositions().reshape(-1, 3) # atom matrix
+mobjf.setPositions((mobjf.getPositions().reshape(-1, 3) + 3).ravel()) # Odd way, but works
+mobjf.getEnergy()
+mobjf.getConvergence()
+mobjf.isConverged()
+mobjf.degreesOfFreedom()
+mobjf.getGradient()
+m1.positions=m1.positions+3
+m1.relax(False, False, False, "nope", "00")
+```
