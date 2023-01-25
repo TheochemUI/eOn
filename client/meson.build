@@ -43,7 +43,9 @@ boost_ams_dep = dependency('boost',
   required : false,
 )
 
-fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : false)
+fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
+
+eon_deps += fmt_dep
 
 ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
 
@@ -219,6 +221,12 @@ ec = executable('eonclient',
 
 ec1 = executable('testPot',
                 'testpot.cpp',
+                dependencies : eon_deps,
+                link_with : eclib,
+                )
+
+ec2 = executable('testWriteR',
+                'testWriteR.cpp',
                 dependencies : eon_deps,
                 link_with : eclib,
                 )
