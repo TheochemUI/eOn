@@ -1,7 +1,13 @@
 * About
 - A modern, elegant approach to working with [[https://theory.cm.utexas.edu/eon/][EON]]
 ** Build
-*** Nix (Preferred)
+*** Conda
+We provide a ~conda~ environment, which is only partially supported for reproducible usage, since it depends on local compilers.
+#+begin_src bash
+micromamba create -f environment.yml
+micromamba activate eongit
+#+end_src
+*** Nix
 This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
 #+begin_src bash
 # Debug errors
@@ -63,6 +69,14 @@ pytest
   - [x] Build ~eon~
     + Currently works from ~nix-shell~ invocations
   - [x] Build ~eonclient~
+*** Meson
+This is the preferred method.
+#+begin_src bash
+cd client
+# in conda, add  --prefix=$CONDA_PREFIX
+meson setup bbdir --buildtype=debug -Dbuild_tests=true
+meson test -C bbdir
+#+end_src
 *** Cmake
 The following will suffice:
 #+begin_src bash
