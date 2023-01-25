@@ -65,7 +65,7 @@ void py_matter(py::module_ &m) {
              "The maximum distance between two atoms in the Matter objects",
              py::arg("matter"))
         // TODO: See why this is unresolved
-        // .def("setPotential", &Matter::setPotential, "Sets the potential function")
+        .def("setPotential", &Matter::setPotential, "Sets the potential function")
         .def("resize", &Matter::resize, "Set or reset the number of atoms", py::arg("nAtoms"))
         .def("numberOfAtoms", &Matter::numberOfAtoms, "Return the number of atoms")
         .def("getCell", &Matter::getCell, "Returns the cell dimensions")
