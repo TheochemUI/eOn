@@ -104,6 +104,7 @@ public:
 
     double maxForce(void);
 
+    void writeTibble(std::string filename);
     bool con2matter(std::string filename); // read con file into Matter, return true if successful
     bool con2matter(FILE *file); // read con file and load data into Matter, return true if successful
     bool convel2matter(std::string filename); // read con file with both coordinates and velocities into Matter
@@ -115,7 +116,7 @@ public:
     void matter2xyz(std::string filename, bool append=false); // print xyz file from data in Matter
     AtomMatrix getFree() const;
     VectorXd getFreeV() const;
-    Matrix<double, Eigen::Dynamic, 1> getMasses() const;
+    Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 
 private:
