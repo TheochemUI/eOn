@@ -1,0 +1,59 @@
+---
+title: "API Design for EON_Client"
+engine: jupyter
+---
+
+Gotta figure out which interpreter to use. This is basically:
+- `SHIFT+P` (get the command palette) and choose the Python interpreter
+
+```{r}
+import sys
+from pathlib import Path
+print(f"Hi!\n We are in {Path.cwd()}")
+```
+
+Alright then, moving on. We need to use `importlib` because otherwise relative imports above the current file directory can be quite painful. Partially kanged [from here](https://www.delftstack.com/howto/python/import-python-file-from-path/).
+
+```{r}
+import importlib.util
+
+# Ugly but necessary
+mod_path = [x for x in (Path.cwd().parent/"bbdir").glob("*.so")][0]
+
+mod_spec = importlib.util.spec_from_file_location("pyeonclient", mod_path)
+ec = importlib.util.module_from_spec(mod_spec)
+mod_spec.loader.exec_module(ec)
+```
+
+# Parameters
+This is pretty straightforward. Everything is exposed as a `read_write` property basically.
+
+```{r}
+params = ec.Parameters()
+```
+
+So we can change what we need.
+
+```{r}
+params.potential = "lj"
+```
+
+# Working with Matter
+
+This is equally trivial to construct.
+
+```{r}
+m1 = ec.Matter(params)
+```
+
+Recall that these need an actual instance of `Parameters` to construct, and that we can set the positions from a `con` file.
+
+```{r}
+m1.con2matter("../gtests/data/gpr_dimer/morse/pos.con")
+```
+
+From here on out, the rest is to be designed.
+
+```{r}
+m1.pot_energy
+```
