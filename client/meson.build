@@ -245,6 +245,7 @@ if get_option('with_pybindings')
                                  'bindings/python/py_wrapper.cc',
                                  'bindings/python/py_parameters.cc',
                                  'bindings/python/py_log.cc',
+                                 'bindings/python/py_matter.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,

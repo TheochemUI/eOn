@@ -28,5 +28,6 @@ namespace py = pybind11;              // Convention
 // Forward declarations
 void py_parameters(py::module_ &m);
 void py_log(py::module_ &m);
+void py_matter(py::module_ &m);
 
 #endif /* PY_WRAPPER_H */
