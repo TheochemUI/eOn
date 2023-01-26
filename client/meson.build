@@ -225,6 +225,31 @@ eclib = library('eonclib',
                 cpp_args : eon_extra_args,
                 install : true)
 
+# ---------------------- Bindings
+
+if get_option('with_pybindings')
+  # Implicitly needs Fortran
+  py = import('python').find_installation()
+  python_dep = py.dependency()
+  pyb11f_deps = [ python_dep ]
+
+
+  pyb11f_deps += [eon_deps,
+                  dependency('python3'),
+                  dependency('pybind11'),
+                  declare_dependency(link_args: '-lstdc++') ]
+
+  pyb11f = py.extension_module('pyeonclient',
+                               sources : [
+                                 'pybinds/py_wrapper.cc',
+                                 'pybinds/py_parameters.cc',
+                               ],
+                               dependencies : pyb11f_deps,
+                               link_with : eclib,
+                               cpp_args : eon_extra_args,
+                               install : true)
+endif
+
 # ---------------------- Executable
 
 ec = executable('eonclient',
