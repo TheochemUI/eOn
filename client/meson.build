@@ -242,8 +242,8 @@ if get_option('with_pybindings')
 
   pyb11f = py.extension_module('pyeonclient',
                                sources : [
-                                 'pybinds/py_wrapper.cc',
-                                 'pybinds/py_parameters.cc',
+                                 'bindings/python/py_wrapper.cc',
+                                 'bindings/python/py_parameters.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,
