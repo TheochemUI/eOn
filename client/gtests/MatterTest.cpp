@@ -20,18 +20,20 @@ MatterTest::~MatterTest() {
     // TODO Auto-generated destructor stub
 }
 
-TEST_F(MatterTest, TestCell) {
-    Matter *m1 = new Matter(&p);
-    m1->con2matter(fname);
-    long _nAtoms{2+4+6+1};
-    AtomMatrix _positions;
-    AtomMatrix _velocities;
-    AtomMatrix _forces;
-    AtomMatrix _biasForces;
-    // VectorXd _masses{{15.99, 12.011, 1.008, 32.065}}; 3.4.0
-    VectorXd _masses(4);
-    VectorXi _atomicNrs;
-    VectorXi _isFixed;
+// Kanged from https://stackoverflow.com/a/39238772/1895378
+bool MatrixEquality(const MatrixXd &lhs, const MatrixXd &rhs) {
+  return lhs.isApprox(rhs, 1e-4);
+}
+
+bool VectorEquality(const VectorXd &lhs, const VectorXd &rhs) {
+  return lhs.isApprox(rhs, 1e-4);
+}
+
+TEST(MatterTest, TestCell) {
+    std::string confile("pos.con");
+    Parameters *parameters = new Parameters;
+    Matter *m1 = new Matter(parameters);
+    m1->con2matter(confile);
     Matrix3d _cell;
     Matrix3d _cellInverse;
     // clang-format off
@@ -43,14 +45,11 @@ TEST_F(MatterTest, TestCell) {
         0.04, 0.0, 0.0,
         0.0, 0.04, 0.0,
         0.0, 0.0, 0.04;
-    _masses << 15.99, 12.011, 1.008, 32.065;
     // clang-format on
-    ASSERT_EQ(m1->numberOfAtoms(), _nAtoms);
-    // ASSERT_EQ(m1->getPositions(), _positions);
-    // ASSERT_EQ(m1->getPositionsV(), VectorXd::Map(_positions.data(), 3 * _nAtoms));
-    // ASSERT_EQ(m1->getCell(), _cell);
-    // ASSERT_EQ(m1->getMasses(), _masses);
+    ASSERT_PRED2(MatrixEquality, _cell, m1->getCell());
+    ASSERT_PRED2(MatrixEquality, _cellInverse, m1->getCell().inverse());
     delete m1;
+    delete parameters;
 }
 
 } /* namespace tests */
