@@ -278,3 +278,7 @@ AtomMatrix Potential::force(long nAtoms, AtomMatrix positions,
 
     return forces;
 };
+
+std::string Potential::getName() const {
+  return this->params->potential;
+}
