@@ -1,5 +1,5 @@
 /*
- * AdditionalHelpersTest.cpp
+ * StringHelpersTest.cpp
  *
  *  Created on: 23 Feb 2022
  *      Author: Rohit Goswami
@@ -12,24 +12,24 @@
  *   of these.
  */
 
-#include "../AdditionalHelpers.hpp"
+#include "../StringHelpers.hpp"
 
-#include "AdditionalHelpersTest.h"
+#include "StringHelpersTest.h"
 #include <vector>
 
 using namespace std::string_literals; // For ""s
 
 namespace tests {
 
-AdditionalHelpersTest::AdditionalHelpersTest() {
+StringHelpersTest::StringHelpersTest() {
     // TODO Auto-generated constructor stub
 }
 
-AdditionalHelpersTest::~AdditionalHelpersTest() {
+StringHelpersTest::~StringHelpersTest() {
     // TODO Auto-generated destructor stub
 }
 
-TEST_F(AdditionalHelpersTest, TestIsNotNum) {
+TEST_F(StringHelpersTest, TestIsNotNum) {
     std::string tester{"Coordinates of component   blah"s};
     auto split_strings = helper_functions::get_split_strings(tester);
     EXPECT_EQ(split_strings.size(), 4);
@@ -38,7 +38,7 @@ TEST_F(AdditionalHelpersTest, TestIsNotNum) {
     }
 }
 
-TEST_F(AdditionalHelpersTest, TestIsNum) {
+TEST_F(StringHelpersTest, TestIsNum) {
     auto split_strings = helper_functions::get_split_strings(number_string);
     EXPECT_EQ(split_strings.size(), 4);
     for ( auto substring : split_strings ){
@@ -47,7 +47,7 @@ TEST_F(AdditionalHelpersTest, TestIsNum) {
     EXPECT_EQ(helper_functions::isNumber("2.6"s), true);
 }
 
-TEST_F(AdditionalHelpersTest, TestSplitStrings) {
+TEST_F(StringHelpersTest, TestSplitStrings) {
     auto split_strings = helper_functions::get_split_strings(number_string);
     ASSERT_EQ(split_strings.size(), 4) << "Size mismatch after split"s;
     EXPECT_EQ(split_strings[0], "1"s);
@@ -56,7 +56,7 @@ TEST_F(AdditionalHelpersTest, TestSplitStrings) {
     EXPECT_EQ(split_strings[3], "5"s);
 }
 
-TEST_F(AdditionalHelpersTest, TestValsBasic) {
+TEST_F(StringHelpersTest, TestValsBasic) {
     // Convert to doubles
     auto split_strings = helper_functions::get_val_from_string<double>(number_string);
     ASSERT_EQ(split_strings.size(), 4) << "Size mismatch after split"s;
@@ -73,7 +73,7 @@ TEST_F(AdditionalHelpersTest, TestValsBasic) {
     EXPECT_EQ(split_strings_size_t[3], 5);
 }
 
-TEST_F(AdditionalHelpersTest, TestValsTrunc) {
+TEST_F(StringHelpersTest, TestValsTrunc) {
     // Convert to doubles
     auto split_strings = helper_functions::get_val_from_string<double>(number_string, 2);
     ASSERT_EQ(split_strings.size(), 2);
@@ -87,7 +87,7 @@ TEST_F(AdditionalHelpersTest, TestValsTrunc) {
     EXPECT_EQ(split_strings_size_t[2], 4);
 }
 
-TEST_F(AdditionalHelpersTest, TestEmpty) {
+TEST_F(StringHelpersTest, TestEmpty) {
     std::string number_string{""s};
     auto split_strings = helper_functions::get_split_strings(number_string);
     ASSERT_EQ(split_strings.size(), 0);
@@ -97,7 +97,7 @@ TEST_F(AdditionalHelpersTest, TestEmpty) {
                  "(not line.empty())"s);
 }
 
-TEST_F(AdditionalHelpersTest, TestNeg) {
+TEST_F(StringHelpersTest, TestNeg) {
     std::string tester{"1 -1"s};
     auto split_strings = helper_functions::get_split_strings(tester);
     ASSERT_EQ(split_strings.size(), 2);
@@ -112,7 +112,7 @@ TEST_F(AdditionalHelpersTest, TestNeg) {
 }
 
 
-TEST_F(AdditionalHelpersTest, TestMixedString) {
+TEST_F(StringHelpersTest, TestMixedString) {
     std::string tester{"Coordinates of component   2"s};
     auto split_strings = helper_functions::get_split_strings(tester);
     EXPECT_EQ(split_strings.size(), 4);
