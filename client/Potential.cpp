@@ -139,9 +139,9 @@ Potential* Potential::pot = NULL;
 
 Potential *Potential::getPotential(Parameters *parameters)
 {
-    if(pot) {
-        return pot;
-    }
+    // if(pot) {
+    //     return pot;
+    // }
     if(parameters->potential == POT_LJ)
         pot = new LJ();
     else if(parameters->potential == POT_LJCLUSTER)
