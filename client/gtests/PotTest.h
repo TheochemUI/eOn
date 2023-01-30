@@ -1,17 +1,17 @@
-#ifndef MATTERTEST_H
-#define MATTERTEST_H
+#ifndef POTTEST_H
+#define POTTEST_H
 
 #include <gtest/gtest.h>
 #include <string>
 
+#include "../MatrixHelpers.hpp"
 #include "../Matter.h"
 #include "../Parameters.h"
-#include "../MatrixHelpers.hpp"
 
 using namespace std::string_literals; // For ""s
 
 namespace tests {
-class MatterTest : public ::testing::Test {
+class PotTest : public ::testing::Test {
 protected:
   Parameters *params;
   Matter *m1;
@@ -20,9 +20,9 @@ protected:
   void TearDown() override;
 
 public:
-  MatterTest();
-  virtual ~MatterTest();
+  PotTest();
+  virtual ~PotTest();
 };
 } /* namespace tests */
 
-#endif /* MATTERTEST_H */
+#endif /* POTTEST_H */

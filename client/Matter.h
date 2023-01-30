@@ -43,7 +43,8 @@ public:
 
     double distanceTo(const Matter& matter); // the distance to the given matter object
     double perAtomNorm(const Matter& matter); // the maximum distance between two atoms in the Matter objects
-    void setPotential(); // set potential function to use
+    void setPotential(Potential *pot); // set potential function to use
+    Potential* getPotential() const; // set potential function to use
     void resize(long int nAtoms); // set or reset the number of atoms
     long int numberOfAtoms() const; // return the number of atoms
     Matrix3d getCell() const;
@@ -84,6 +85,8 @@ public:
     void setMasses(VectorXd massesIn); // set the mass of an atom
     long getAtomicNr(long int atom) const; // return the atomic number of the atom specified
     void setAtomicNr(long int atom, long atomicNr); // set the atomic number of an atom
+    VectorXi getAtomicNrs() const; // Get the vector of atomic numbers
+    void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
     void setFixed(long int atom, int isFixed); // set the atom to fixed (true) or movable (false)
