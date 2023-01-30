@@ -111,6 +111,7 @@ eonclib_sources = [
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
            'StringHelpers.cc', # Template
+           'MatrixHelpers.hpp', # Template
            'Dimer.cpp',
            'Dynamics.cpp',
            'GlobalOptimizationJob.cpp',
