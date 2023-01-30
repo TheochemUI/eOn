@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
+#include <stdexcept>
 #include <string.h>
 
 // To write the R style data frame
@@ -990,6 +991,19 @@ double Matter::maxForce(void)
     return maxForce;
 }
 
+VectorXi Matter::getAtomicNrs() const
+{
+    return this->atomicNrs;
+}
+
+void Matter::setAtomicNrs(const VectorXi atmnrs)
+{
+    if (atmnrs.size() != this->nAtoms){
+        throw std::invalid_argument("Vector of atomic numbers not equal to the number of atoms");
+    } else {
+        this->atomicNrs = atmnrs;
+    }
+}
 
 AtomMatrix Matter::getFree() const
 {
@@ -1306,4 +1320,13 @@ void Matter::writeTibble(std::string fname){
                   "idx"_a=(idx+1), "fixed"_a=this->getFixed(idx)); // NOTE: idx MAY not be the same id as before
     }
     return;
+}
+
+void Matter::setPotential(Potential* pot){
+    this->potential = pot;
+    recomputePotential = true;
+}
+
+Potential* Matter::getPotential() const{
+    return this->potential;
 }
