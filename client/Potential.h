@@ -98,6 +98,8 @@ class Potential
 
         static Potential* pot;
 
+        std::string getName() const;
+
 };
 
 #endif
