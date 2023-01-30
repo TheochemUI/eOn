@@ -32,7 +32,7 @@ bool MatrixEquality(const MatrixXd &lhs, const MatrixXd &rhs) {
   return lhs.isApprox(rhs, 1e-4);
 }
 
-bool VectorEquality(const VectorXd &lhs, const VectorXd &rhs) {
+bool VectorEquality(const VectorXi &lhs, const VectorXi &rhs) {
   return lhs.isApprox(rhs, 1e-4);
 }
 
@@ -51,6 +51,17 @@ TEST_F(MatterTest, TestCell) {
   // clang-format on
   ASSERT_PRED2(MatrixEquality, _cell, m1->getCell());
   ASSERT_PRED2(MatrixEquality, _cellInverse, m1->getCell().inverse());
+}
+
+TEST_F(MatterTest, SetGetAtomicNrs) {
+  VectorXi _atmnrs {{ 8, 8, 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 16}};
+  VectorXi _atmnrs2 {{ 16, 16, 12, 12, 12, 12, 2, 2, 2, 2, 2, 2, 32 }};
+  ASSERT_PRED2(VectorEquality, _atmnrs, m1->getAtomicNrs());
+  for (auto& atmnr : _atmnrs){
+    atmnr *= 2;
+  }
+  m1->setAtomicNrs(_atmnrs);
+  ASSERT_PRED2(VectorEquality, _atmnrs2, m1->getAtomicNrs());
 }
 
 } /* namespace tests */
