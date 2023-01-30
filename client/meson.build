@@ -250,6 +250,7 @@ test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
   ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
   ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
+  ['Potential tests', 'test_pot', 'PotTest.cpp', '/gtests/data/saddle_search'],
              ]
 foreach test : test_array
   test(test.get(0),
