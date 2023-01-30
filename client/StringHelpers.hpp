@@ -1,5 +1,5 @@
-#ifndef PARSEHELPERS_H
-#define PARSEHELPERS_H
+#ifndef STRINGHELPERS_H
+#define STRINGHELPERS_H
 
 #include <optional>
 #include <regex>
@@ -32,4 +32,4 @@ namespace helper_functions {
      */
     bool isNumber (const std::string& token);
     } // namespace helper_functions
-#endif /* PARSEHELPERS_H */
+#endif /* STRINGHELPERS_H */
