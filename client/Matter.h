@@ -84,6 +84,8 @@ public:
     void setMasses(VectorXd massesIn); // set the mass of an atom
     long getAtomicNr(long int atom) const; // return the atomic number of the atom specified
     void setAtomicNr(long int atom, long atomicNr); // set the atomic number of an atom
+    VectorXi getAtomicNrs() const; // Get the vector of atomic numbers
+    void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
 
     int getFixed(long int atom) const; // return true if the atom is fixed, false if it is movable
     void setFixed(long int atom, int isFixed); // set the atom to fixed (true) or movable (false)
