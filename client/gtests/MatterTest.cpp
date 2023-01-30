@@ -54,4 +54,17 @@ TEST_F(MatterTest, SetGetAtomicNrs) {
   ASSERT_PRED2(vecEq, _atmnrs2, m1->getAtomicNrs());
 }
 
+TEST_F(MatterTest, SetPotential){
+    params->potential = "lj";
+    double m1_ipot = m1->getPotentialEnergy();
+    params->potential = "morse_pt";
+    Potential* pot {Potential::getPotential(params)};
+    ASSERT_NE(m1->getPotential(), pot);
+    m1->setPotential(pot);
+    ASSERT_EQ(pot->getName(), "morse_pt");
+    ASSERT_EQ(m1->getPotential(), pot);
+    double m1_fpot = m1->getPotentialEnergy();
+    ASSERT_NE(m1_ipot, m1_fpot);
+}
+
 } /* namespace tests */
