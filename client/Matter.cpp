@@ -1321,3 +1321,12 @@ void Matter::writeTibble(std::string fname){
     }
     return;
 }
+
+void Matter::setPotential(Potential* pot){
+    this->potential = pot;
+    recomputePotential = true;
+}
+
+Potential* Matter::getPotential() const{
+    return this->potential;
+}
