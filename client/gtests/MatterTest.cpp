@@ -13,13 +13,19 @@
 
 namespace tests {
 
-MatterTest::MatterTest() {
-  // TODO Auto-generated constructor stub
-}
+MatterTest::MatterTest() : params{new Parameters}, m1{new Matter(params)} {}
 
 MatterTest::~MatterTest() {
-  // TODO Auto-generated destructor stub
+  delete params;
+  delete m1;
 }
+
+void MatterTest::SetUp() {
+  std::string confile("pos.con");
+  m1->con2matter(confile);
+}
+
+void MatterTest::TearDown() {}
 
 // Kanged from https://stackoverflow.com/a/39238772/1895378
 bool MatrixEquality(const MatrixXd &lhs, const MatrixXd &rhs) {
@@ -30,11 +36,7 @@ bool VectorEquality(const VectorXd &lhs, const VectorXd &rhs) {
   return lhs.isApprox(rhs, 1e-4);
 }
 
-TEST(MatterTest, TestCell) {
-  std::string confile("pos.con");
-  Parameters *parameters = new Parameters;
-  Matter *m1 = new Matter(parameters);
-  m1->con2matter(confile);
+TEST_F(MatterTest, TestCell) {
   Matrix3d _cell;
   Matrix3d _cellInverse;
   // clang-format off
@@ -49,8 +51,6 @@ TEST(MatterTest, TestCell) {
   // clang-format on
   ASSERT_PRED2(MatrixEquality, _cell, m1->getCell());
   ASSERT_PRED2(MatrixEquality, _cellInverse, m1->getCell().inverse());
-  delete m1;
-  delete parameters;
 }
 
 } /* namespace tests */
