@@ -650,3 +650,4 @@ compile_commands.json
 !/.vscode/launch.json
 !/.vscode/extensions.json
 !/.vscode/*.code-snippets
+!/client/gtests
