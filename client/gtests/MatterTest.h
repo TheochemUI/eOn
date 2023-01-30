@@ -11,11 +11,15 @@ using namespace std::string_literals; // For ""s
 
 namespace tests {
 class MatterTest : public ::testing::Test {
+protected:
+  Parameters *params;
+  Matter *m1;
+  void SetUp() override;
+  void TearDown() override;
+
 public:
-    MatterTest();
-    virtual ~MatterTest();
-    std::string fname {"pos.con"s};
-    Parameters p;
+  MatterTest();
+  virtual ~MatterTest();
 };
 } /* namespace tests */
 
