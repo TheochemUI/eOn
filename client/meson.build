@@ -110,7 +110,7 @@ eonclib_sources = [
            'NudgedElasticBandJob.cpp',
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
-           'StringHelpers.cc', # Template
+           'AdditionalHelpers.cc', # Template
            'Dimer.cpp',
            'Dynamics.cpp',
            'GlobalOptimizationJob.cpp',
@@ -248,7 +248,7 @@ if get_option('build_tests')
   eon_deps += [ gtest_dep ]
 test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-  ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
+  ['Additional helpers', 'addhelp_run', 'AdditionalHelpersTest.cpp', ''],
   ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
   ['Potential tests', 'test_pot', 'PotTest.cpp', '/gtests/data/saddle_search'],
              ]
