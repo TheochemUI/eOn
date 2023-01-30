@@ -6,6 +6,7 @@
 
 #include "../Matter.h"
 #include "../Parameters.h"
+#include "../MatrixHelpers.hpp"
 
 using namespace std::string_literals; // For ""s
 
@@ -14,6 +15,7 @@ class MatterTest : public ::testing::Test {
 protected:
   Parameters *params;
   Matter *m1;
+  double threshold;
   void SetUp() override;
   void TearDown() override;
 
