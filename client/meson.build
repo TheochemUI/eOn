@@ -242,13 +242,13 @@ if get_option('with_pybindings')
 
   pyb11f = py.extension_module('pyeonclient',
                                sources : [
-                                 'bindings/python/py_wrapper.cc',
-                                 'bindings/python/py_parameters.cc',
-                                 'bindings/python/py_log.cc',
-                                 'bindings/python/py_matter.cc',
+                                 'bindings/py_srcs/py_wrapper.cc',
+                                 'bindings/py_srcs/py_parameters.cc',
+                                 'bindings/py_srcs/py_log.cc',
+                                 'bindings/py_srcs/py_matter.cc',
                                  # Jobs
-                                 'bindings/python/py_job.cc',
-                                 'bindings/python/jobs/py_saddlesearchjob.cc',
+                                 'bindings/py_srcs/py_job.cc',
+                                 'bindings/py_srcs/jobs/py_saddlesearchjob.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,
