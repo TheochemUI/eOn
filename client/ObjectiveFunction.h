@@ -1,11 +1,7 @@
 #ifndef OBJECTIVE_FUNCTION_H
 #define OBJECTIVE_FUNCTION_H
 
-#include "Matter.h"
-#include "LowestEigenmode.h"
-#include "Dimer.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
+#include "Eigen.h"
 
 #ifdef WITH_GPRD
   #include "AtomicGPDimer.h"
