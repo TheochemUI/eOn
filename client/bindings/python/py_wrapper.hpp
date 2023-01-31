@@ -17,7 +17,6 @@
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 // TODO: Setup bindings for these
-PYBIND11_MAKE_OPAQUE(std::vector<std::string>) // For runs
 // PYBIND11_MAKE_OPAQUE(Matter**) // For NEB
 
 // Namespaces
@@ -29,5 +28,8 @@ namespace py = pybind11;              // Convention
 void py_parameters(py::module_ &m);
 void py_log(py::module_ &m);
 void py_matter(py::module_ &m);
+// Jobs
+void py_job(py::module_ &m);
+void py_saddlesearchjob(py::module_ &m);
 
 #endif /* PY_WRAPPER_H */

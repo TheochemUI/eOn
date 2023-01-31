@@ -246,6 +246,9 @@ if get_option('with_pybindings')
                                  'bindings/python/py_parameters.cc',
                                  'bindings/python/py_log.cc',
                                  'bindings/python/py_matter.cc',
+                                 # Jobs
+                                 'bindings/python/py_job.cc',
+                                 'bindings/python/jobs/py_saddlesearchjob.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,
