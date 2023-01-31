@@ -2,7 +2,6 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Optimizer.h"
-#include "ObjectiveFunction.h"
 #include "BondBoost.h"
 
 #include <cmath>
@@ -55,45 +54,6 @@ namespace {
         return elementArray[n];
     }
 }
-
-class MatterObjectiveFunction : public ObjectiveFunction
-{
-    public:
-        MatterObjectiveFunction(Matter *matterPassed,
-                                Parameters *parametersPassed)
-        {
-            matter = matterPassed;
-            parameters = parametersPassed;
-        }
-        ~MatterObjectiveFunction(void){};
-        double getEnergy() { return matter->getPotentialEnergy(); }
-        VectorXd getGradient(bool fdstep=false) { return -matter->getForcesFreeV(); }
-        void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
-        VectorXd getPositions() { return matter->getPositionsFreeV(); }
-        int degreesOfFreedom() { return 3*matter->numberOfFreeAtoms(); }
-        bool isConverged() { return getConvergence() < parameters->optConvergedForce; }
-        double getConvergence() {
-            if (parameters->optConvergenceMetric == "norm") {
-                return matter->getForcesFreeV().norm(); 
-            } else if (parameters->optConvergenceMetric == "max_atom") {
-                return matter->maxForce(); 
-            } else if (parameters->optConvergenceMetric == "max_component") {
-                return matter->getForces().maxCoeff(); 
-            } else {
-                log("%s Unknown opt_convergence_metric: %s\n", LOG_PREFIX,
-                    parameters->optConvergenceMetric.c_str());
-                exit(1);
-            }
-        }
-        VectorXd difference(VectorXd a, VectorXd b) {
-            return matter->pbcV(a-b);
-        }
-    private:
-        Matter *matter;
-        Parameters *parameters;
-};
-
-
 
 Matter::Matter(Parameters *parameters)
 {
@@ -1329,3 +1289,32 @@ void Matter::setPotential(Potential* pot){
 Potential* Matter::getPotential() const{
     return this->potential;
 }
+
+// MatterObjective
+double MatterObjectiveFunction::getEnergy() { return matter->getPotentialEnergy(); }
+double MatterObjectiveFunction::getConvergence() {
+    if (parameters->optConvergenceMetric == "norm") {
+        return matter->getForcesFreeV().norm();
+    } else if (parameters->optConvergenceMetric == "max_atom") {
+        return matter->maxForce();
+    } else if (parameters->optConvergenceMetric == "max_component") {
+        return matter->getForces().maxCoeff();
+    } else {
+        log("%s Unknown opt_convergence_metric: %s\n",
+            LOG_PREFIX,
+            parameters->optConvergenceMetric.c_str());
+        exit(1);
+    }
+}
+bool MatterObjectiveFunction::isConverged() {
+    return getConvergence() < parameters->optConvergedForce;
+}
+int MatterObjectiveFunction::degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
+VectorXd MatterObjectiveFunction::getPositions() { return matter->getPositionsFreeV(); }
+VectorXd MatterObjectiveFunction::getGradient(bool fdstep) {
+    return -matter->getForcesFreeV();
+}
+VectorXd MatterObjectiveFunction::difference(VectorXd a, VectorXd b) {
+    return matter->pbcV(a - b);
+}
+void MatterObjectiveFunction::setPositions(VectorXd x) { matter->setPositionsFreeV(x); }

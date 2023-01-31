@@ -5,6 +5,7 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include <memory>
+#include "ObjectiveFunction.h"
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -141,6 +142,26 @@ private:
     void applyPeriodicBoundary();
     void applyPeriodicBoundary(double & component, int axis);
     void applyPeriodicBoundary(AtomMatrix & diff);
+};
+
+
+class MatterObjectiveFunction : public ObjectiveFunction {
+public:
+    MatterObjectiveFunction(Matter *matterPassed, Parameters *parametersPassed)
+        : matter{matterPassed}, parameters{parametersPassed} {}
+    ~MatterObjectiveFunction(){};
+    double getEnergy();
+    double getConvergence();
+    bool isConverged();
+    int degreesOfFreedom();
+    VectorXd getPositions();
+    VectorXd getGradient(bool fdstep = false);
+    VectorXd difference(VectorXd a, VectorXd b);
+    void setPositions(VectorXd x);
+
+private:
+    Matter *matter;
+    Parameters *parameters;
 };
 
 #endif
