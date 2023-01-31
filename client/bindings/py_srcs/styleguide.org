@@ -85,3 +85,117 @@ void py_newthing(py::module_ &m) {
     /* Wrapping details here */
     }
 #+end_src
+** Potentials
+These need to have a helper class defined. They can be tested with:
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; p=ec.Parameters(); p.potential="morse_pt"; m1=ec.Matter(p); m1.con2matter("pos.con"); a = ec.Morse(); forces, energy = a.energy_and_forces(m1.numberOfAtoms(), m1.getPositions(), m1.getCell()); print(forces); print(energy)'
+#+end_src
+Or more interactively, after ~meson install -C bbdir~:
+#+begin_src python
+import pyeonclient as ec
+params=ec.Parameters()
+params.potential="morse_pt"
+m1=ec.Matter(params)
+m1.con2matter("gtests/data/systems/Pt_Heptamer_3LayersMove/pos.con")
+a = ec.Morse()
+forces, energy = a.energy_and_forces(m1)
+m1.getForces()
+m1.getPotentialEnergy()
+print(forces)
+print(energy)
+#+end_src
+The helper class is meant *only* to interface easily with Python, and so is only created in the bindings section.
+#+begin_src cpp
+std::pair<AtomMatrix, double> Morse::energy_and_forces(long nAtoms, AtomMatrix positions, Matrix3d box){
+      AtomMatrix forces = AtomMatrix::Constant(nAtoms, 3, 0);
+      VectorXi atomicNrs = VectorXi::Constant(nAtoms, 0);
+      int *atnrs = atomicNrs.data();
+      double *pos = positions.data();
+      double *frcs = forces.data();
+      double *bx = box.data();
+      double energy{0};
+      Morse::force(nAtoms, pos, atnrs, frcs, &energy, bx, 1);
+      return std::make_pair(forces, energy);
+}
+#+end_src
+One issue with this approach is that the force matrix is fully populated, and therefore technically incorrect. The corrected variant is accessed when called through a Matter object, which sets the atomic forces for fixed atoms to zero. This is why we have a second variant, ~ef_matter~.
+#+begin_src cpp
+        .def("ef_matter", [](Morse &mpot, Matter mat){
+            Parameters params{mat.getParameters()};
+            params.potential = "morse_pt";
+            mpot.setParams(&params);
+            mat.setPotential(&mpot);
+            return std::make_pair(mat.getPotentialEnergy(), mat.getForces());
+        }, py::arg("matter"))
+#+end_src
+*** TODO Use pythonic potentials
+*** TODO Do not write each by hand
+** Jobs
+For testing:
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; job = ec.Job(); print(dir(job)); print(job.BASIN_HOPPING)'
+#+end_src
+*** Saddle Search Jobs
+At this point a working example can be run in ~python~.
+#+begin_src python
+import pyeonclient as ec
+params = ec.Parameters()
+params.load("config.ini")
+ec.log_init(params, "blah.log")
+ssj = ec.SaddleSearchJob(params)
+ssj.run() # Breaks due to log
+#+end_src
+** Objective Functions
+To test this, an interactive job is nice.
+#+begin_src python
+import pyeonclient as ec
+params = ec.Parameters()
+params.potential = "morse_pt"
+params.load("config.ini") # Platinum heptamer, all moving
+ec.log_init(params, "blah.log") # Just in case
+m1 = ec.Matter(params)
+m1.con2matter("pos.con")
+mobjf = ec.MatterObjectiveFunction(m1, params) # Make a new objective function
+mobjf.getPositions() # returns a vector
+mobjf.getPositions().reshape(-1, 3) # atom matrix
+mobjf.setPositions((mobjf.getPositions().reshape(-1, 3) + 3).ravel()) # Odd way, but works
+mobjf.getEnergy()
+mobjf.getConvergence()
+mobjf.isConverged()
+mobjf.degreesOfFreedom()
+mobjf.getGradient()
+# mobjf.difference(m1.getPositionsFreeV(), mobjf.getPositions()) # TODO: check results?
+m1.positions=m1.positions+3
+m1.relax(False, False, False, "nope", "00") # TODO: make the last two optional
+m1.relax()
+#+end_src
+
+** Matter
+To test the writeout.
+#+begin_src bash
+python -c 'import bbdir.pyeonclient as ec; m1 = ec.Matter(ec.Parameters()); m1.con2matter("pos.con"); m1.matter2con("blah.con")'
+bat blah.con
+#+end_src
+
+** Optimizers
+*** LBFGS
+These don't seem to be that useful... ~relax~ does the job better.
+#+begin_src python
+import bbdir.pyeonclient as ec
+p = ec.Parameters()
+p.load("config.ini") # Platinum heptamer, all moving
+ec.log_init(p, "blah.log") # Just in case
+m1 = ec.Matter(p)
+m1.con2matter("pos.con")
+mobjf = ec.MatterObjectiveFunction(m1, p) # Make a new objective function
+lbfgsobj = ec.LBFGS(mobjf, p)
+mobjf.setPositions(m1.getPositions().ravel()*3+1.5) # high
+mobjf.isConverged() # False, needed for the LBFGS to run
+lbfgsobj.step(3) # 0 indicates not converged
+for i in range(50):
+     print(lbfgsobj.run(100, 5))
+# Better visuals with relax
+m1.relax()
+# again
+m1.relax
+#+end_src
