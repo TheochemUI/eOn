@@ -9,6 +9,7 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Parameters.h"
+#include "ObjectiveFunction.h"
 
 class Matter;
 class Parameters;
@@ -50,6 +51,28 @@ private:
 
     Parameters *parameters;
 
+};
+
+class NEBObjectiveFunction : public ObjectiveFunction {
+  public:
+    NEBObjectiveFunction(NudgedElasticBand *nebPassed,
+                         Parameters *parametersPassed)
+        : neb{nebPassed}, parameters{parametersPassed} {}
+
+    ~NEBObjectiveFunction(void){};
+
+    VectorXd getGradient(bool fdstep = false);
+    double getEnergy();
+    void setPositions(VectorXd x);
+    VectorXd getPositions();
+    int degreesOfFreedom();
+    bool isConverged();
+    double getConvergence();
+    VectorXd difference(VectorXd a, VectorXd b);
+
+  private:
+    NudgedElasticBand *neb;
+    Parameters *parameters;
 };
 
 #endif
