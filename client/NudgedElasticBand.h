@@ -9,6 +9,7 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 #include "Parameters.h"
+#include "ObjectiveFunction.h"
 
 class Matter;
 class Parameters;
@@ -18,17 +19,17 @@ class NudgedElasticBand {
 
 public:
 
-    enum{
-        STATUS_GOOD, //0
-        STATUS_INIT, //1
-        STATUS_BAD_MAX_ITERATIONS, //2
+    enum class NEBStatus {
+        STATUS_GOOD = 0,
+        STATUS_INIT = 1,
+        STATUS_BAD_MAX_ITERATIONS = 2
     };
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
     ~NudgedElasticBand();
 
     void clean(void);
-    int compute(void);
+    NudgedElasticBand::NEBStatus compute(void);
     void updateForces(void);
     double convergenceForce(void);
     void findExtrema(void);
@@ -50,6 +51,28 @@ private:
 
     Parameters *parameters;
 
+};
+
+class NEBObjectiveFunction : public ObjectiveFunction {
+  public:
+    NEBObjectiveFunction(NudgedElasticBand *nebPassed,
+                         Parameters *parametersPassed)
+        : neb{nebPassed}, parameters{parametersPassed} {}
+
+    ~NEBObjectiveFunction(void){};
+
+    VectorXd getGradient(bool fdstep = false);
+    double getEnergy();
+    void setPositions(VectorXd x);
+    VectorXd getPositions();
+    int degreesOfFreedom();
+    bool isConverged();
+    double getConvergence();
+    VectorXd difference(VectorXd a, VectorXd b);
+
+  private:
+    NudgedElasticBand *neb;
+    Parameters *parameters;
 };
 
 #endif
