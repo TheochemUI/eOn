@@ -132,9 +132,9 @@ void NudgedElasticBand::clean(void)
     return;
 }
 
-int NudgedElasticBand::compute(void)
+NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void)
 {
-    int status = 0;
+    NudgedElasticBand::NEBStatus status = NEBStatus::STATUS_INIT;
     long iteration = 0;
 
     log("Nudged elastic band calculation started.\n");
@@ -162,7 +162,7 @@ int NudgedElasticBand::compute(void)
         VectorXd pos = objf.getPositions();
         if(iteration) { // so that we print forces before taking an optimizer step
             if (iteration >= parameters->nebMaxIterations) {
-                status = STATUS_BAD_MAX_ITERATIONS;
+                status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
                 break;
             }
             optimizer->step(parameters->optMaxMove);
@@ -180,7 +180,7 @@ int NudgedElasticBand::compute(void)
     }
 
     if(objf.isConverged()) {
-        status = STATUS_GOOD;
+        status = NEBStatus::STATUS_GOOD;
         log("NEB converged\n");
     }
 

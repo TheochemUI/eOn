@@ -19,17 +19,17 @@ class NudgedElasticBand {
 
 public:
 
-    enum{
-        STATUS_GOOD, //0
-        STATUS_INIT, //1
-        STATUS_BAD_MAX_ITERATIONS, //2
+    enum class NEBStatus {
+        STATUS_GOOD = 0,
+        STATUS_INIT = 1,
+        STATUS_BAD_MAX_ITERATIONS = 2
     };
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
     ~NudgedElasticBand();
 
     void clean(void);
-    int compute(void);
+    NudgedElasticBand::NEBStatus compute(void);
     void updateForces(void);
     double convergenceForce(void);
     void findExtrema(void);
