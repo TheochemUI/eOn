@@ -7,4 +7,10 @@ PYBIND11_MODULE(pyeonclient, m) {
     // Jobs
     py_job(m);
     py_saddlesearchjob(m);
+    // Objective Functions
+    py_objectivefunction(m);
+    py_matterobjfunc(m);
+    // Optimizer
+    py_optimizer(m);
+    py_lbfgs(m);
 }
