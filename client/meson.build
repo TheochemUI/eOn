@@ -26,7 +26,7 @@ fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required
 eon_deps += fmt_dep
 
 # Testing only
-gtest_dep = dependency('gtest', main : true, required : false)
+gtest_dep = dependency('gtest', main : true, required : true)
 gmock_dep = dependency('gmock', required : false)
 
 # Optional, only for AMS
@@ -246,7 +246,7 @@ ec2 = executable('testWriteR',
 
 if get_option('build_tests')
   eon_extra_args += ['-DEONTEST'] # Unused
-  eon_deps += [ gtest_dep ]
+  eon_deps += [ gtest_dep, gmock_dep ]
 test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
   ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
