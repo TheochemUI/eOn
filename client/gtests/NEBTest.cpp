@@ -40,8 +40,8 @@ void NEBTest::TearDown() {}
 
 TEST_F(NEBTest, TestCreation) {
   NudgedElasticBand *neb = new NudgedElasticBand(m1, m2, params);
-  int status = neb->compute();
-  ASSERT_EQ(status, 0);
+  NudgedElasticBand::NEBStatus status = neb->compute();
+  ASSERT_EQ(status, NudgedElasticBand::NEBStatus::STATUS_GOOD);
   ASSERT_EQ(neb->atoms, m1->numberOfAtoms());
   ASSERT_EQ(neb->images, 5);
   ASSERT_EQ(neb->climbingImage, 0);
