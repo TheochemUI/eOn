@@ -1,83 +1,73 @@
 #include "NudgedElasticBand.h"
-#include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Log.h"
 
 using namespace helper_functions;
 
-class NEBObjectiveFunction : public ObjectiveFunction
-{
-    public:
+// NEBObjectiveFunction definitions
+VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
+  VectorXd forceV;
+  forceV.resize(3 * neb->atoms * neb->images);
+  if (neb->movedAfterForceCall)
+    neb->updateForces();
+  for (long i = 1; i <= neb->images; i++) {
+    forceV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
+        VectorXd::Map(neb->projectedForce[i]->data(), 3 * neb->atoms);
+  }
+  return -forceV;
+}
 
-        NEBObjectiveFunction(NudgedElasticBand *nebPassed, Parameters *parametersPassed)
-        {
-            neb = nebPassed;
-            parameters = parametersPassed;
-        }
+double NEBObjectiveFunction::getEnergy() {
+  double Energy = 0;
+  for (long i = 1; i <= neb->images; i++) {
+    Energy += neb->image[i]->getPotentialEnergy();
+  }
+  return Energy;
+}
 
-        ~NEBObjectiveFunction(void){};
+void NEBObjectiveFunction::setPositions(VectorXd x) {
+  neb->movedAfterForceCall = true;
+  for (long i = 1; i <= neb->images; i++) {
+    neb->image[i]->setPositions(MatrixXd::Map(
+        x.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms).data(), neb->atoms,
+        3));
+  }
+}
 
-        VectorXd getGradient(bool fdstep=false)
-        {
-            VectorXd forceV;
-            forceV.resize(3*neb->atoms*neb->images);
-            if(neb->movedAfterForceCall) neb->updateForces();
-            for(long i=1; i<=neb->images; i++){
-                forceV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->projectedForce[i]->data(), 3*neb->atoms);
-            }
-            return -forceV;
-        }
+VectorXd NEBObjectiveFunction::getPositions() {
+  VectorXd posV;
+  posV.resize(3 * neb->atoms * neb->images);
+  for (long i = 1; i <= neb->images; i++) {
+    posV.segment(3 * neb->atoms * (i - 1), 3 * neb->atoms) =
+        VectorXd::Map(neb->image[i]->getPositions().data(), 3 * neb->atoms);
+  }
+  return posV;
+}
 
-        double getEnergy()
-        {
-            double Energy=0;
-            for(long i=1; i<=neb->images; i++) {
-                Energy += neb->image[i]->getPotentialEnergy();
-            }
-            return Energy;
-        }
+int NEBObjectiveFunction::degreesOfFreedom() {
+  return 3 * neb->images * neb->atoms;
+}
 
-        void setPositions(VectorXd x)
-        {
-            neb->movedAfterForceCall = true;
-            for(long i=1; i<=neb->images; i++) {
-                neb->image[i]->setPositions(MatrixXd::Map(x.segment(3*neb->atoms*(i-1),3*neb->atoms).data(),neb->atoms,3));
-            }
-        }
+bool NEBObjectiveFunction::isConverged() {
+  return getConvergence() < parameters->nebConvergedForce;
+}
 
-        VectorXd getPositions()
-        {
-            VectorXd posV;
-            posV.resize(3*neb->atoms*neb->images);
-            for(long i=1; i<=neb->images; i++){
-                posV.segment(3*neb->atoms*(i-1),3*neb->atoms) = VectorXd::Map(neb->image[i]->getPositions().data(), 3*neb->atoms);
-            }
-            return posV;
-        }
+double NEBObjectiveFunction::getConvergence() {
+  return neb->convergenceForce();
+}
 
-        int degreesOfFreedom() { return 3*neb->images*neb->atoms; }
+VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
+  VectorXd pbcDiff(3 * neb->images * neb->atoms);
+  for (int i = 1; i <= neb->images; i++) {
+    int n = (i - 1) * 3 * neb->atoms;
+    int m = 3 * neb->atoms;
+    pbcDiff.segment(n, m) =
+        neb->image[i]->pbcV(a.segment(n, m) - b.segment(n, m));
+  }
+  return pbcDiff;
+}
 
-        bool isConverged() { return getConvergence() < parameters->nebConvergedForce; }
-
-        double getConvergence() { return neb->convergenceForce(); }
-
-        VectorXd difference(VectorXd a, VectorXd b) {
-            VectorXd pbcDiff(3*neb->images*neb->atoms);
-            for (int i=1;i<=neb->images;i++) {
-                int n = (i-1)*3*neb->atoms;
-                int m = 3*neb->atoms;
-                pbcDiff.segment(n,m) = neb->image[i]->pbcV(a.segment(n,m)-b.segment(n,m));
-            }
-            return pbcDiff;
-        }
-
-    private:
-
-        NudgedElasticBand *neb;
-        Parameters *parameters;
-};
-
-
+// Nudged Elastic Band definitions
 NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
 {
     parameters = parametersPassed;
