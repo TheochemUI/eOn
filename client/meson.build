@@ -249,6 +249,12 @@ if get_option('with_pybindings')
                                  # Jobs
                                  'bindings/py_srcs/py_job.cc',
                                  'bindings/py_srcs/jobs/py_saddlesearchjob.cc',
+                                 # Objective Functions
+                                 'bindings/py_srcs/py_objectivefunction.cc',
+                                 'bindings/py_srcs/objectivefunctions/py_matterobjfunc.cc',
+                                 # Optimizers
+                                 'bindings/py_srcs/py_optimizer.cc',
+                                 'bindings/py_srcs/optimizers/py_lbfgs.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,
