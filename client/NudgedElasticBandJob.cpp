@@ -19,7 +19,7 @@ NudgedElasticBandJob::~NudgedElasticBandJob()
 
 std::vector<std::string> NudgedElasticBandJob::run(void)
 {
-    long status;
+    NudgedElasticBand::NEBStatus status;
     int f1;
 
     string reactantFilename = helper_functions::getRelevantFile("reactant.con");
@@ -65,8 +65,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     status = neb->compute();
     fCallsNEB += Potential::fcalls - f1;
 
-    if (status == NudgedElasticBand::STATUS_INIT) {
-        status = NudgedElasticBand::STATUS_GOOD;
+    if (status == NudgedElasticBand::NEBStatus::STATUS_INIT) {
+        status = NudgedElasticBand::NEBStatus::STATUS_GOOD;
     }
 
     printEndState(status);
@@ -79,7 +79,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     return returnFiles;
 }
 
-void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
+void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb)
 {
     FILE *fileResults, *fileNEB;
 
@@ -87,7 +87,7 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
     
-    fprintf(fileResults, "%d termination_reason\n", status);
+    fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
     fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
     fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
     fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
@@ -118,12 +118,12 @@ void NudgedElasticBandJob::saveData(int status, NudgedElasticBand *neb)
     neb->printImageData(true);
 }
 
-void NudgedElasticBandJob::printEndState(int status)
+void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status)
 {
     log("\nFinal state: ");
-    if(status == NudgedElasticBand::STATUS_GOOD)
+    if(status == NudgedElasticBand::NEBStatus::STATUS_GOOD)
         log("Nudged elastic band, successful.\n");
-    else if(status == NudgedElasticBand::STATUS_BAD_MAX_ITERATIONS)
+    else if(status == NudgedElasticBand::NEBStatus::STATUS_BAD_MAX_ITERATIONS)
         log("Nudged elastic band, too many iterations.\n");
     else
         log("Unknown status: %i!\n", status);
