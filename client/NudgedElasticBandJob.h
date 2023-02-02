@@ -17,8 +17,8 @@ class NudgedElasticBandJob : public Job {
     private:
 
         // functions
-        void printEndState(int status);
-        void saveData(int status, NudgedElasticBand *neb);
+        void printEndState(NudgedElasticBand::NEBStatus status);
+        void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb);
 
         // variables
         std::vector<std::string> returnFiles;
