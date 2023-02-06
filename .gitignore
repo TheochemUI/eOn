@@ -1,4 +1,8 @@
 # Custom, other things are auto-ignored
+*.ipynb
+.nb/*.log
+.nb/*.dat
+
 subprojects
 # /
 /*.tmp
