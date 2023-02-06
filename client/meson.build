@@ -157,10 +157,6 @@ endif
 
 if get_option('with_water')
   subdir('potentials/Water')
-  if get_option('with_fortran')
-    subdir('potentials/Water_H')
-    potentials += [water_h]
-  endif
   subdir('potentials/Water_Pt')
   potentials += [ water, water_pt ]
   eon_extra_args += ['-DWITH_WATER']
@@ -203,6 +199,10 @@ if get_option('with_fortran')
   subdir('potentials/Lenosky')
   subdir('potentials/SW')
   subdir('potentials/Tersoff')
+  if get_option('with_water')
+    subdir('potentials/Water_H')
+    potentials += [water_h]
+  endif
   potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
   eon_extra_args += ['-DWITH_FORTRAN']
 endif
