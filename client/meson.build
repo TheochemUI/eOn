@@ -1,6 +1,8 @@
 project('eonclient', 'cpp',
   version : '0.1',
-  default_options : ['warning_level=3', 'cpp_std=c++17'])
+  default_options : ['warning_level=2', 'cpp_std=c++17'])
+# IMPORTANT!! warning_level=3 passes -fimplicit-none
+# EON needs implicit typing!!
 
 host_system = host_machine.system()
 eon_extra_args = []
