@@ -69,6 +69,8 @@ VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
 
 // Nudged Elastic Band definitions
 NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed)
+        : // INITIALIZED by DECLARATION ORDER
+          atoms{static_cast<int>(initialPassed->numberOfAtoms())}, climbingImage{0}, numExtrema{0}
 {
     parameters = parametersPassed;
     images = parameters->nebImages;
