@@ -10,6 +10,9 @@ PYBIND11_MODULE(pyeonclient, m) {
     // Objective Functions
     py_objectivefunction(m);
     py_matterobjfunc(m);
+    py_nebobjfunc(m);
+    // Nudged Elastic Band
+    py_nudgedelasticband(m);
     // Optimizer
     py_optimizer(m);
     py_lbfgs(m);

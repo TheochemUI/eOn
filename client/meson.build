@@ -252,6 +252,9 @@ if get_option('with_pybindings')
                                  # Objective Functions
                                  'bindings/py_srcs/py_objectivefunction.cc',
                                  'bindings/py_srcs/objectivefunctions/py_matterobjfunc.cc',
+                                 'bindings/py_srcs/objectivefunctions/py_nebobjfunc.cc',
+                                 # NEB
+                                 'bindings/py_srcs/py_nudgedelasticband.cc',
                                  # Optimizers
                                  'bindings/py_srcs/py_optimizer.cc',
                                  'bindings/py_srcs/optimizers/py_lbfgs.cc',
