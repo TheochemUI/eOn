@@ -248,7 +248,7 @@ ec2 = executable('testWriteR',
 
 # ------------------------ Tests
 
-if get_option('build_tests')
+if get_option('with_tests')
   eon_extra_args += ['-DEONTEST'] # Unused
   eon_deps += [ gtest_dep, gmock_dep ]
 test_array = [#
