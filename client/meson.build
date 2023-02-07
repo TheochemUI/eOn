@@ -257,6 +257,9 @@ if get_option('with_pybindings')
                                  # Optimizers
                                  'bindings/py_srcs/py_optimizer.cc',
                                  'bindings/py_srcs/optimizers/py_lbfgs.cc',
+                                 # Potentials
+                                 'bindings/py_srcs/py_potential.cc',
+                                 'bindings/py_srcs/potentials/py_morse.cc',
                                ],
                                dependencies : pyb11f_deps,
                                link_with : eclib,
