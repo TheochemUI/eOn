@@ -16,4 +16,7 @@ PYBIND11_MODULE(pyeonclient, m) {
     // Optimizer
     py_optimizer(m);
     py_lbfgs(m);
+    // Potentials
+    py_potential(m);
+    py_morse(m);
 }

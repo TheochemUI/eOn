@@ -40,5 +40,8 @@ void py_nudgedelasticband(py::module_ &m);
 // Optimizers
 void py_optimizer(py::module_ &m);
 void py_lbfgs(py::module_ &m);
+// Potentials
+void py_potential(py::module_ &m);
+void py_morse(py::module_ &m);
 
 #endif /* PY_WRAPPER_H */
