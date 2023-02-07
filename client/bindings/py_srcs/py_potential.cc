@@ -13,8 +13,8 @@ void py_potential(py::module &m) {
         .def_readwrite_static("totalUserTime", &Potential::fcalls, "Time taken")
         /* Objects */
         /* TODO: This is likely to be broken, params is a pointer */
-        .def_readwrite("params", &Potential::params, "Parameters")
-        .def_readwrite_static("pot", &Potential::pot, "Potential object")
+        // .def_readwrite("params", &Potential::params, "Parameters")
+        // .def_readwrite_static("pot", &Potential::pot, "Potential object")
         /* Helpers */
         .def("__repr__", [](const Potential &pot) { return pot.getName(); });
 };

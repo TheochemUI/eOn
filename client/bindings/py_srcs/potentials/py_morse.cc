@@ -52,10 +52,10 @@ void py_morse(py::module_ &m) {
         // /** TODO: These force calls should be part of Potential, no need to make separate bindings **/
         .def(
             "force",
-            [](Morse *pot, Matter &mat) {
+            [](Morse &pot, Matter &mat) {
                 // Store and restore
                 Potential* oldPot = mat.getPotential();
-                mat.setPotential(pot);
+                mat.setPotential(&pot);
                 double e_pot{mat.getPotentialEnergy()};
                 AtomMatrix f_pot {mat.getForces()};
                 mat.setPotential(oldPot);
