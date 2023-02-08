@@ -22,8 +22,7 @@ public:
                const int *atomicNrs,
                double *forces,
                double *energy,
-               const double *box,
-               int nImages) override {
+               const double *box) override {
         PYBIND11_OVERRIDE_PURE(void,
                                PotentialBase,
                                force,
@@ -32,8 +31,7 @@ public:
                                atomicNrs,
                                forces,
                                energy,
-                               box,
-                               nImages);
+                               box);
     }
 };
 
