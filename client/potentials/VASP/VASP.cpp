@@ -126,7 +126,7 @@ bool VASP::vaspRunning()
 
 
 void VASP::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box, int nImages=1)
+                 double *U, const double *box)
 {
     writePOSCAR(N, R, atomicNrs, box);
 
