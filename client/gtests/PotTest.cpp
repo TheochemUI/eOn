@@ -87,7 +87,7 @@ TEST_F(PotTest, callForce) {
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_lj.data(), &e_lj,
-             m1->getCell().data(), 1);
+             m1->getCell().data());
   ASSERT_NEAR(e_lj, energy_lj, threshold);
   ASSERT_PRED2(matEq, forces_lj, f_lj);
   // Switching
@@ -99,7 +99,7 @@ TEST_F(PotTest, callForce) {
   ASSERT_EQ(pot2->getName(), "morse_pt");
   pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),
               m1->getAtomicNrs().data(), f_morse.data(), &e_morse,
-              m1->getCell().data(), 1);
+              m1->getCell().data());
   ASSERT_NEAR(e_morse, energy_morse, threshold);
   ASSERT_PRED2(matEq, forces_morse, f_morse);
 }

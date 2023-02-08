@@ -34,7 +34,7 @@ IMD::~IMD()
 }
 
 void IMD::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box, int nImages)
+                 double *U, const double *box)
 {
     writeConfIMD(N, R, atomicNrs, box);
     system("imd_eon -p imd_eon.in.param > /dev/null");
