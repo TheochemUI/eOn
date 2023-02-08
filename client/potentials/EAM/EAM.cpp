@@ -39,7 +39,7 @@ void EAM::cleanMemory()
 
 
 // Calculate here long num_cells, long *num_axis, long *cell_length, //become global variables -long *celllist_old, long *celllist_new, long *neigh_list, long fcalled)
-void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *fullbox, int nImages=1)
+void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *fullbox)
 {
     double box[3];
     box[0] = fullbox[0];
@@ -142,7 +142,7 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double
         }
     }
 	//does force calculations for all atoms
-    calc_force(N, Rnew, atomicNrs, F, U, box, 1);
+    calc_force(N, Rnew, atomicNrs, F, U, box);
 
     for (long i=0;i<num_cells*(N+1);i++)
     {
@@ -179,7 +179,7 @@ EAM::element_parameters EAM::get_element_parameters(int atomic_number)
 }
 
 
-void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
+void EAM::calc_force(long N, double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     double *drho_dr = new double[3*N]; 
     for (long i=0;i<3*N;i++) 

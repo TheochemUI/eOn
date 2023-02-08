@@ -53,7 +53,7 @@ void EffectiveMediumTheory::cleanMemory(void){
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
-                                  double *F, double *U, const double *box, int nImages=1)
+                                  double *F, double *U, const double *box)
 {
     int i, j;
     double *pos;

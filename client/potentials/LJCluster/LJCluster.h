@@ -40,7 +40,7 @@ class LJCluster : public Potential
         void initialize() {};
         void cleanMemory();    
         
-        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages);
+        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
         void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
 #endif

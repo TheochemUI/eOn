@@ -16,7 +16,7 @@ class EAM
         void initialize();
         void cleanMemory();
         void force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *fullbox, int nImages);
+                   double *U, const double *fullbox);
     private:
         struct element_parameters {
             const int Z;                // Atomic Number
@@ -36,7 +36,7 @@ class EAM
 	    bool initialized;
 	    double *rc;
         void calc_force(long N, double *R, const int *atomicNrs, double *F,
-                        double *U, const double *box, int nImages);
+                        double *U, const double *box);
         void new_celllist(long N, const double *box, long *num_axis,
                           long *cell_length, long *celllist_new, 
                           long num_cells, double *Rnew);

@@ -6,7 +6,7 @@ Tip4p::Tip4p() :
     forcefields::Tip4p(8.5, 1.0)
 {}
 
-void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
+void Tip4p::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     double diagbox[3];
     diagbox[0]=box[0];
@@ -21,7 +21,7 @@ Potential(),
 forcefields::SpceCcl(8.5, 1.0)
 {}
 
-void SpceCcl::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
+void SpceCcl::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     double diagbox[3];
     diagbox[0]=box[0];
