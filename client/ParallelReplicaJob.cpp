@@ -115,10 +115,10 @@ std::vector<std::string> ParallelReplicaJob::run(void)
                 //perform the binary search for the transition structure
                 if (parameters->parrepRefineTransition) {
                     log("%s Refining transition time\n", LOG_PREFIX);
-                    int tmpFcalls = Potential::fcalls;
+                    // int tmpFcalls = Potential::fcalls;
                     int snapshotIndex = refineTransition(MDSnapshots);
 
-                    refineForceCalls += Potential::fcalls - tmpFcalls;
+                    // refineForceCalls += Potential::fcalls - tmpFcalls;
 
                     transitionTime = MDTimes[snapshotIndex];
                     transitionStructure = *MDSnapshots[snapshotIndex];
@@ -142,7 +142,7 @@ std::vector<std::string> ParallelReplicaJob::run(void)
                     log("%s Refining anyways to prevent bias...\n", LOG_PREFIX);
                     int tmpFcalls = Potential::fcalls;
                     refineTransition(MDSnapshots, true);
-                    refineForceCalls += Potential::fcalls - tmpFcalls;
+                    // refineForceCalls += Potential::fcalls - tmpFcalls;
                 }
                 transitionStructure = *trajectory;
             }
@@ -174,11 +174,11 @@ std::vector<std::string> ParallelReplicaJob::run(void)
     std::string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%f potential_energy_reactant\n", reactant->getPotentialEnergy());
-    fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+    // fprintf(fileResults, "%i force_calls_refine\n", refineForceCalls);
+    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
 
     if (transitionTime == 0) {
         fprintf(fileResults, "0 transition_found\n");
