@@ -30,3 +30,5 @@ dependencies:
   - pytest-datadir
   - sh
   - sphinx
+  - gtest
+  - clang # for pybind
