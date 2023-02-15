@@ -31,8 +31,8 @@ class LJ : public Potential
     public:
     // Functions
 	    // constructor
-        LJ(void);
-	    LJ(double r0Recieved, double u0Recieved, double psiRecieved);
+        LJ(Parameters* params) : Potential(params), u0{1.0}, cuttOffR{15.0}, psi{1.0} {};
+	    // LJ(double r0Recieved, double u0Recieved, double psiRecieved);
 
         ~LJ();
 	

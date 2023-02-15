@@ -8,44 +8,59 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-// serves as an interface between emt potentials provided by CamposASE and dynamics provided by EON
+// serves as an interface between emt potentials provided by CamposASE and
+// dynamics provided by EON
 
 #ifndef EFFECTIVE_MEDIUM_THEORY
 #define EFFECTIVE_MEDIUM_THEORY
 
 #include "Asap/Atoms.h"
 #include "Asap/EMT.h"
+#include "Asap/EMTDefaultParameterProvider.h"
+#include "Asap/EMTRasmussenParameterProvider.h"
 #include "Asap/SuperCell.h"
 #include "Asap/Vec.h"
-#include "Asap/EMTRasmussenParameterProvider.h"
-#include "Asap/EMTDefaultParameterProvider.h"
 
-#include "../../Potential.h"
 #include "../../Parameters.h"
+#include "../../Potential.h"
 
-/** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is hardcoded to describe.*/
+/** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
+ * hardcoded to describe.*/
 class EffectiveMediumTheory : public Potential {
 
 private:
-//	Variables
-	long numberOfAtoms;
-	bool periodicity[3];
-	Atoms *AtomsObj;
-	EMTDefaultParameterProvider *EMTParameterObj;
-	EMT *EMTObj;
-	SuperCell *SuperCellObj;
-    Parameters *parameters;
+  //	Variables
+  long numberOfAtoms;
+  bool periodicity[3];
+  Atoms *AtomsObj;
+  EMTDefaultParameterProvider *EMTParameterObj;
+  EMT *EMTObj;
+  SuperCell *SuperCellObj;
+  Parameters *parameters;
 
 public:
-// Functions
-	// constructor and destructor
-    EffectiveMediumTheory(Parameters *p);
-    ~EffectiveMediumTheory(void) {};
-    void cleanMemory(void);
-    
-    // To satify interface
-    void initialize() {};
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+  // Functions
+  // constructor and destructor
+  EffectiveMediumTheory(Parameters *p) : Potential(p), parameters{p}{
+    // dummy variables
+    AtomsObj = 0;
+    EMTObj = 0;
+    SuperCellObj = 0;
+    EMTParameterObj = 0;
+    numberOfAtoms = 0;
+
+    // should have periodic boundary conditions in all directions
+    periodicity[0] = true;
+    periodicity[1] = true;
+    periodicity[2] = true;
+  };
+  ~EffectiveMediumTheory(void){};
+  void cleanMemory(void);
+
+  // To satify interface
+  void initialize(){};
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box);
 };
 
 #endif
