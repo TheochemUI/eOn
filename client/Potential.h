@@ -20,7 +20,6 @@ public:
   static int wu_fcallsTotal;
   static double totalUserTime;
 
-  void virtual initialize() = 0;
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, const double *box) = 0;
   std::pair<double, AtomMatrix> get_ef(long nAtoms, const double *positions, const int *atomicNrs,
