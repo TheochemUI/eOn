@@ -7,7 +7,7 @@
 MinimizationJob::MinimizationJob(Parameters *params)
 {
     parameters = params;
-    fcalls = Potential::fcalls;
+    // fcalls = Potential::fcalls;
 }
 
 MinimizationJob::~MinimizationJob(){ }
@@ -72,8 +72,8 @@ std::vector<std::string> MinimizationJob::run(void)
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "minimization job_type\n");
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     if (status != STATUS_POTENTIAL_FAILED) {
         fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());
     }

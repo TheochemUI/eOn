@@ -6,6 +6,7 @@
 #include "TADJob.h"
 #include "Optimizer.h"
 #include "Log.h"
+#include "BaseStructures.h"
 #include <vector>
 
 TADJob::TADJob(Parameters *params)
@@ -33,10 +34,10 @@ std::vector<std::string> TADJob::run(void)
     current->con2matter(reactantFilename);
 
     log("\nMinimizing initial reactant\n");
-    long refFCalls = Potential::fcalls;
+    // long refFCalls = Potential::fcalls;
     *reactant = *current;
     reactant->relax();
-    minimizeFCalls += (Potential::fcalls - refFCalls);
+    // minimizeFCalls += (Potential::fcalls - refFCalls);
     
     log("\nTemperature Accelerated Dynamics, running\n\n");
     log("High temperature MD simulation running at %.2f K to simulate dynamics at %.2f K\n",parameters->temperature,parameters->tadLowT);
@@ -105,9 +106,9 @@ int TADJob::dynamics()
     TAD.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
-    refFCalls = Potential::fcalls;
+    // refFCalls = Potential::fcalls;
     dephase();
-    dephaseFCalls = Potential::fcalls - refFCalls;
+    // dephaseFCalls = Potential::fcalls - refFCalls;
 
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
@@ -156,9 +157,9 @@ int TADJob::dynamics()
         {
             nCheck = 0; // reinitialize check state counter
             nRecord = 0; // restart the buffer
-            refFCalls = Potential::fcalls;
+            // refFCalls = Potential::fcalls;
             transitionFlag = checkState(current, reactant);
-            minimizeFCalls += Potential::fcalls - refFCalls;
+            // minimizeFCalls += Potential::fcalls - refFCalls;
             if(transitionFlag == true){
                 nState ++;
                 log("New State %ld: ",nState);
@@ -203,7 +204,7 @@ int TADJob::dynamics()
             stopTime = factor*pow(minCorrectedTime/factor,lowT/highT);
             log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15*parameters->timeUnit,barrier,correctedTime*1e-15*parameters->timeUnit,sumSimulatedTime*1e-15*parameters->timeUnit, minCorrectedTime*1.0e-15*parameters->timeUnit, stopTime*1.0e-15*parameters->timeUnit);
 
-            refineFCalls += Potential::fcalls - refFCalls;
+            // refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
         }
     
@@ -266,13 +267,13 @@ void TADJob::saveData(int status)
     returnFiles.push_back(resultsFilename);
 
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
+    // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
 
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
-    fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
-    fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
+    // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
+    // fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
     fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
     fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
     fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
