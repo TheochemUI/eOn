@@ -29,12 +29,11 @@ class EDIP : public Potential{
 public:
 // Functions
 	// constructor 
-    EDIP(void);
+    EDIP(Parameters* params) : Potential(params) {};
 	
-    // To satify interface
-    void initialize(void);    
-    void cleanMemory(void);    
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+    // To satisfy interface
+    void cleanMemory(void);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
 };
 #endif
 
