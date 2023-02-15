@@ -56,24 +56,24 @@ ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
 # End AMS
 
 # Potentials
-# subdir('potentials/EAM')
+subdir('potentials/EAM')
 subdir('potentials/EMT')
-# subdir('potentials/ExtPot')
-# subdir('potentials/IMD')
+subdir('potentials/ExtPot')
+subdir('potentials/IMD')
 subdir('potentials/LJ')
-# subdir('potentials/LJCluster')
+subdir('potentials/LJCluster')
 subdir('potentials/Morse')
-# subdir('potentials/NewPot')
+subdir('potentials/NewPot')
 
 potentials = [
-               # eam,
+               eam,
                emt,
-               # extpot,
-               # imd,
+               extpot,
+               imd,
                lennard_jones,
-               # lennard_jones_cluster,
+               lennard_jones_cluster,
                morse,
-               # newpot
+               newpot
              ]
 
 eon_pot = declare_dependency(link_with : potentials)
