@@ -935,10 +935,10 @@ void Matter::computePotential()
     if(recomputePotential) {
         if(!potential)
         {
-            potential = Potential::getPotential(parameters);
+            potential = helper_functions::makePotential(parameters);
         }
 
-        forces = potential->force(nAtoms, positions, atomicNrs, &potentialEnergy, cell);
+       std::tie(potentialEnergy, forces) = potential->get_ef(nAtoms, positions.data(), atomicNrs.data(), cell.data());
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
