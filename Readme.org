@@ -74,7 +74,8 @@ This is the preferred method.
 #+begin_src bash
 cd client
 # in conda, add  --prefix=$CONDA_PREFIX
-meson setup bbdir --buildtype=debug -Dbuild_tests=true
+# need clang for the pybinding
+CC=$(which clang) CXX=$(which clang++) meson setup bbdir --buildtype=debug -Dbuild_tests=true
 meson test -C bbdir
 #+end_src
 **** Writing and Registering Tests

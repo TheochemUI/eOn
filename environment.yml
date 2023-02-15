@@ -31,3 +31,4 @@ dependencies:
   - sh
   - sphinx
   - gtest
+  - clang # for pybind
