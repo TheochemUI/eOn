@@ -14,23 +14,22 @@
 #include "../../Potential.h"
 
 /** Template to use if user want to provide potential. */
-class NewPot : public Potential{
+class NewPot : public Potential {
 
 private:
-//	Variables
-    double fake1;
-    double fake2;
-    
-public:
-// Functions
-	// constructor and destructor
-    NewPot(Parameters *p);
-	
-    // To satisfy interface
-    void initialize(void);    
-    void cleanMemory(void);    
+  //	Variables
+  double fake1;
+  double fake2;
 
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+public:
+  // Functions
+  // constructor and destructor
+  NewPot(Parameters *p): Potential(p), fake1{0}, fake2{0} {};
+
+  // To satisfy interface
+  void cleanMemory(void);
+
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box) override;
 };
 #endif
-

@@ -12,17 +12,6 @@
 // the add H must be the last atom
 #include"Tip4p_H.h"
 
-Tip4p_H::Tip4p_H(void){
-    return;
-}
-
-void Tip4p_H::initialize(void){
-    // initialize the fortan code
-    setup_();
-    tip4p_pot = new Tip4p();
-    return;
-}
-
 void Tip4p_H::cleanMemory(void){
     return;
 }
