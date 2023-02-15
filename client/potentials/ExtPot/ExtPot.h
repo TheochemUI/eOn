@@ -13,21 +13,20 @@
 
 #include "../../Potential.h"
 
-class ExtPot : public Potential
-{
+class ExtPot : public Potential {
 
-    public:
-        ExtPot(Parameters *p);
-		~ExtPot();
-        void initialize() {};
-        void cleanMemory(void);    
-        void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box);
+public:
+  ExtPot(Parameters *p) : Potential(p), eon_extpot_path{p->extPotPath.c_str()} {};
+  ~ExtPot();
+  void cleanMemory(void);
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box) override;
 
-    private:
-        void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
-        void recieveFromSystem(long N, double *F, double *U);
-        const char *eon_extpot_path;
+private:
+  void passToSystem(long N, const double *R, const int *atomicNrs,
+                    const double *box);
+  void recieveFromSystem(long N, double *F, double *U);
+  const char *eon_extpot_path;
 };
 
 #endif

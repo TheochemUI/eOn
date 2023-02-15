@@ -17,12 +17,11 @@ class IMD : public Potential
 {
 
     public:
-        IMD(void);
+        IMD(Parameters* params): Potential(params) {};
 	~IMD();
-        void initialize() {};
-        void cleanMemory(void);    
+        void cleanMemory(void);
         void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box);
+                   double *F, double *U, const double *box) override;
 
 
     private:
