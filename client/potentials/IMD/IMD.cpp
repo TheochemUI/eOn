@@ -16,11 +16,6 @@
 
 #include "IMD.h"
 
-IMD::IMD(void)
-{
-    return;
-}
-
 void IMD::cleanMemory(void)
 {
     system("rm -f imd_eon.out*");

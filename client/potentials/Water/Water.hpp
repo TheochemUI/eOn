@@ -14,26 +14,24 @@ University of Iceland
 
 class Tip4p : public Potential, private forcefields::Tip4p {
 public:
-    Tip4p();
-    // Functions
-    // constructor and destructor
-    
-    // To satify interface
-    void initialize(void) {}
-    void cleanMemory(void) {}
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
-};
-
-class SpceCcl : public Potential, private forcefields::SpceCcl {
-public:
-    SpceCcl();
+    Tip4p(Parameters* params) : Potential(params), forcefields::Tip4p(8.5, 1.0){};
     // Functions
     // constructor and destructor
     
     // To satisfy interface
-    void initialize(void) {}
     void cleanMemory(void) {}
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
+};
+
+class SpceCcl : public Potential, private forcefields::SpceCcl {
+public:
+    SpceCcl(Parameters* params) : Potential(params), forcefields::SpceCcl(8.5, 1.0){}
+    // Functions
+    // constructor and destructor
+    
+    // To satisfy interface
+    void cleanMemory(void) {}
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
 };
 
 #endif

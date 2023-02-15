@@ -9,24 +9,6 @@
 #include "Parameters.h"
 
 
-EAM::EAM()
-{
-    return;
-}
-
-void EAM::initialize()
-{
-    celllist_old = 0;
-    celllist_new = 0;
-    neigh_list = 0;
-    initialized = false;
-
-    rc = new double[3]; 
-    // 6 is arbitrary number. rc represents the optimal size
-    // for each cell in cell list.
-    rc[0] = rc[1] = rc[2] = 6.0;
-}
-
 void EAM::cleanMemory()
 {
     if(initialized)

@@ -10,14 +10,6 @@
 
 #include"Lenosky.h"
 
-Lenosky::Lenosky(void){
-    return;
-}
-
-void Lenosky::initialize(void){
-    return;
-}
-
 void Lenosky::cleanMemory(void){
     return;
 }
