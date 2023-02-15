@@ -10,14 +10,10 @@
 
 #include"LJ.h"
 
-LJ::LJ(){
-    this->setParameters(1.0, 15.0, 1.0);
-}
-
-LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
-    this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
-    return;
-}
+// LJ::LJ(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
+//     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
+//     return;
+// }
 
 void LJ::cleanMemory(void){
     return;
