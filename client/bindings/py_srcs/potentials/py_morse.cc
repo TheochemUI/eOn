@@ -11,7 +11,6 @@ class PyMorse : public PyPotential<MorseBase> {
 public:
     using PyPotential<MorseBase>::PyPotential; // Inherit constructor
     // Override pure virtual with non-pure
-    void initialize() override { PYBIND11_OVERRIDE(void, MorseBase, initialize, ); }
     void force(long nAtoms,
                const double *positions,
                const int *atomicNrs,
@@ -36,8 +35,7 @@ void py_morse(py::module_ &m) {
         /*
         ** Constructors
         */
-        .def(py::init<>())
-        .def(py::init<double /*re*/, double /*De*/, double /*a*/, double /*cutoff*/>())
+        .def(py::init<Parameters*>())
 
         /*
         ** Operators
@@ -47,7 +45,6 @@ void py_morse(py::module_ &m) {
         ** Methods
         */
         .def("cleanMemory", &Morse::cleanMemory)
-        .def("initialize", &Morse::initialize)
         // /** TODO: These force calls should be part of Potential, no need to make separate bindings **/
         .def(
             "force",

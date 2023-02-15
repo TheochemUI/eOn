@@ -11,12 +11,6 @@ class PyPotential : public PotentialBase {
 public:
     /* Constructors and inherited */
     using PotentialBase::PotentialBase;
-    void initialize() override {
-        PYBIND11_OVERRIDE_PURE(void,          /*  Return type */
-                               PotentialBase, /* Parent class */
-                               initialize     /* Name of cpp func */
-                               , );           /* Trailing comma for no arguments */
-    };
     void force(long nAtoms,
                const double *positions,
                const int *atomicNrs,
