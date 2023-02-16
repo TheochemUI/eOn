@@ -86,9 +86,8 @@ TEST_F(PotTest, callForce) {
   Potential *pot = helper_functions::makePotential(params);
   double e_lj{0};
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
-             m1->getAtomicNrs().data(), f_lj.data(), &e_lj,
-             m1->getCell().data());
+  std::tie(e_lj, f_lj) =  pot->get_ef(m1->getPositions(),
+             m1->getAtomicNrs(), m1->getCell());
   ASSERT_NEAR(e_lj, energy_lj, threshold);
   ASSERT_PRED2(matEq, forces_lj, f_lj);
   // Switching
@@ -98,9 +97,8 @@ TEST_F(PotTest, callForce) {
   Potential *pot2 = helper_functions::makePotential(params);
   ASSERT_NE(pot2, pot);
   // ASSERT_EQ(pot2->getName(), "morse_pt");
-  pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),
-              m1->getAtomicNrs().data(), f_morse.data(), &e_morse,
-              m1->getCell().data());
+  std::tie(e_morse, f_morse) =  pot2->get_ef(m1->getPositions(),
+             m1->getAtomicNrs(), m1->getCell());
   ASSERT_NEAR(e_morse, energy_morse, threshold);
   ASSERT_PRED2(matEq, forces_morse, f_morse);
 }

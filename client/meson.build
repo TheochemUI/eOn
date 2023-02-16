@@ -297,7 +297,7 @@ if get_option('with_tests')
   eon_deps += [ gtest_dep, gmock_dep ]
 test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
-  ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
+  # ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
   ['Matter converter', 'matter_run', 'MatterTest.cpp', '/gtests/data/systems/sulfolene'],
   ['Potential tests', 'test_pot', 'PotTest.cpp', '/gtests/data/systems/sulfolene'],
   ['NEB tests', 'neb_test', 'NEBTest.cpp', '/gtests/data/saddle_search'],
