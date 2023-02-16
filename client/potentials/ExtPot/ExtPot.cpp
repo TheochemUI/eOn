@@ -13,12 +13,6 @@
 #include <unistd.h>
 #include "ExtPot.h"
 
-ExtPot::ExtPot(Parameters *p)
-{
-    eon_extpot_path = p->extPotPath.c_str();
-    return;
-}
-
 void ExtPot::cleanMemory(void)
 {
     return;

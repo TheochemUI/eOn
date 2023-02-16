@@ -29,7 +29,6 @@ ImpDimerTest::~ImpDimerTest() {
 
 TEST_F(ImpDimerTest, TestMatter) {
   double optConvergedForce = 0.001;
-  string potential("morse_pt");
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");
   string modeFilename("direction.dat");
@@ -39,7 +38,7 @@ TEST_F(ImpDimerTest, TestMatter) {
   LowestEigenmode *minModeMethod;
   Parameters *parameters = new Parameters;
   // parameters->load("matter.ini");
-  parameters->potential = potential;
+  parameters->potential = PotType::LJ;
   parameters->optMethod = optimizer;
   parameters->optConvergedForce = optConvergedForce;
   parameters->dimerConvergedAngle = 0.001;

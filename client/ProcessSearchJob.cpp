@@ -48,7 +48,7 @@ std::vector<std::string> ProcessSearchJob::run(void)
         log("Minimizing initial structure\n");
         int fi = Potential::fcalls;
         initial->relax();
-        fCallsMin += Potential::fcalls - fi;
+        // fCallsMin += Potential::fcalls - fi;
     }
 
     barriersValues[0] = barriersValues[1] = 0;
@@ -114,11 +114,11 @@ int ProcessSearchJob::doProcessSearch(void)
     Matter matterTemp(parameters);
     long status;
     int f1;
-    f1 = Potential::fcalls;
+    // f1 = Potential::fcalls;
 
     
     status = saddleSearch->run();
-    fCallsSaddle += Potential::fcalls - f1;
+    // fCallsSaddle += Potential::fcalls - f1;
 
     if (status != MinModeSaddleSearch::STATUS_GOOD) {
         return status;
@@ -134,10 +134,10 @@ int ProcessSearchJob::doProcessSearch(void)
     displacedPos = posSaddle - saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
     min1->setPositions(displacedPos);
 
-    Potential::fcalls = 0;
+    // Potential::fcalls = 0;
     log("\nStarting Minimization 1\n");
     bool converged = min1->relax(false, parameters->writeMovies, false, "min1");
-    fCallsMin += Potential::fcalls;
+    // fCallsMin += Potential::fcalls;
 
     if (!converged) {
         return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -147,10 +147,10 @@ int ProcessSearchJob::doProcessSearch(void)
     displacedPos = posSaddle + saddleSearch->getEigenvector() * parameters->processSearchMinimizationOffset;
     min2->setPositions(displacedPos);
 
-    Potential::fcalls = 0;
+    // Potential::fcalls = 0;
     log("\nStarting Minimization 2\n");
     converged = min2->relax(false, parameters->writeMovies, false, "min2");
-    fCallsMin += Potential::fcalls;
+    // fCallsMin += Potential::fcalls;
 
     if (!converged) {
         return MinModeSaddleSearch::STATUS_BAD_MINIMA;
@@ -196,7 +196,7 @@ int ProcessSearchJob::doProcessSearch(void)
     // calculate the prefactor
     if(!parameters->prefactorDefaultValue)
     {
-        f1 = Potential::fcalls;
+        // f1 = Potential::fcalls;
 
         int prefStatus;
         double pref1, pref2;
@@ -205,7 +205,7 @@ int ProcessSearchJob::doProcessSearch(void)
             printf("Prefactor: bad calculation\n");
             return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;
         }
-        fCallsPrefactors += Potential::fcalls - f1;
+        // fCallsPrefactors += Potential::fcalls - f1;
 
         /* Check that the prefactors are in the correct range */
         if((pref1 > parameters->prefactorMaxValue) ||
@@ -245,9 +245,9 @@ void ProcessSearchJob::saveData(int status)
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
-    fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
+    // fprintf(fileResults, "%ld force_calls_minimization\n", fCallsMin);
 //    fprintf(fileResults, "%ld force_calls_minimization\n", SaddleSearch->forceCallsMinimization + fCallsMin);
     fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
     fprintf(fileResults, "%.12e potential_energy_saddle\n", saddle->getPotentialEnergy());

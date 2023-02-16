@@ -43,11 +43,10 @@ extern "C"
 class FeHe : public Potential
 {     
 public:
-    FeHe(void);
-    ~FeHe(void);
+    FeHe(Parameters* params) : Potential(params) {}
+    ~FeHe(void) {};
     // To satisfy interface
-    void initialize(void);    
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
 };
 #endif
 

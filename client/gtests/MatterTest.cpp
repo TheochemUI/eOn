@@ -8,6 +8,7 @@
 
 #include "MatterTest.h"
 #include "../potentials/Morse/Morse.cpp"
+#include "BaseStructures.h"
 
 #include <algorithm>
 
@@ -55,15 +56,16 @@ TEST_F(MatterTest, SetGetAtomicNrs) {
 }
 
 TEST_F(MatterTest, SetPotential){
-    params->potential = "lj";
+    params->potential = PotType::LJ;
     double m1_ipot = m1->getPotentialEnergy();
-    params->potential = "morse_pt";
-    Potential* pot {Potential::getPotential(params)};
+    params->potential = PotType::MORSE_PT;
+    Potential* pot {helper_functions::makePotential(params)};
     ASSERT_NE(m1->getPotential(), pot);
     m1->setPotential(pot);
-    ASSERT_EQ(pot->getName(), "morse_pt");
     ASSERT_EQ(m1->getPotential(), pot);
     double m1_fpot = m1->getPotentialEnergy();
+    ASSERT_NEAR(m1_ipot, -8.9245813315, 1e-5);
+    ASSERT_NEAR(m1_fpot, 1611.8672392832, 1e-5);
     ASSERT_NE(m1_ipot, m1_fpot);
 }
 

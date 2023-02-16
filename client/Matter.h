@@ -4,6 +4,7 @@
 #include "Eigen.h"
 #include "Parameters.h"
 #include "Potential.h"
+#include <memory>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
