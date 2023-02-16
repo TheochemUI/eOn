@@ -1,4 +1,5 @@
 #include <csignal>
+#include <limits>
 #include <time.h>
 #include <utility>
 
@@ -74,15 +75,7 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
-std::pair<double, AtomMatrix> Potential::get_ef(long nAtoms,
-                                                const double *positions,
-                                                const int *atomicNrs,
-                                                const double *box) {
-  double energy{0};
-  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
-  this->force(nAtoms, positions, atomicNrs, forces.data(), &energy, box);
-  return std::make_pair(energy, forces);
-}
+#include <limits>
 
 namespace helper_functions {
 Potential *makePotential(Parameters *params) {
@@ -235,6 +228,14 @@ Potential *makePotential(Parameters *params) {
     throw std::runtime_error("No known potential could be constructed");
     break;
   }
+}
+
+std::pair<double, AtomMatrix> efPot(Potential* pot, const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box) {
+  double energy{std::numeric_limits<double>::infinity()};
+  long nAtoms {pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+  pot ->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, box.data());
+  return std::make_pair(energy, forces);
 }
 
 } // namespace helper_functions

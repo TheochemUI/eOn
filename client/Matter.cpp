@@ -1,3 +1,4 @@
+#include "BaseStructures.h"
 #include "Log.h"
 #include "Matter.h"
 #include "HelperFunctions.h"
@@ -898,7 +899,7 @@ void Matter::computePotential()
             potential = helper_functions::makePotential(parameters);
         }
 
-       std::tie(potentialEnergy, forces) = potential->get_ef(nAtoms, positions.data(), atomicNrs.data(), cell.data());
+       std::tie(potentialEnergy, forces) = helper_functions::efPot(potential, positions, atomicNrs, cell);
         forceCalls = forceCalls+1;
         recomputePotential = false;
 

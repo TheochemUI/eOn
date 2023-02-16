@@ -8,6 +8,7 @@
 
 class Potential {
 private:
+    // should be const
   PotType ptype;
   Parameters *params;
 
@@ -22,12 +23,14 @@ public:
 
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, const double *box) = 0;
-  std::pair<double, AtomMatrix> get_ef(long nAtoms, const double *positions, const int *atomicNrs,
-                     const double *box);
+  PotType getType() { return this->ptype; };
 };
 
 namespace helper_functions {
 Potential *makePotential(Parameters *params);
+  // Does not take into account the fixed / free atoms
+  // Free function for bindings
+std::pair<double, AtomMatrix> efPot(Potential* pot, const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
 }
 
 // int Potential::fcalls = 0;
