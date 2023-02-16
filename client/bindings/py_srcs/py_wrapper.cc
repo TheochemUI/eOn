@@ -2,6 +2,7 @@
 
 PYBIND11_MODULE(pyeonclient, m) {
     py_parameters(m);
+    py_basestructures(m);
     py_log(m);
     py_matter(m);
     // Jobs

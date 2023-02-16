@@ -9,6 +9,7 @@
 // Basics
 #include "../../Matter.h"
 #include "../../Parameters.h"
+#include "../../BaseStructures.h"
 
 // Bindings
 #include <pybind11/pybind11.h>
@@ -26,6 +27,7 @@ namespace py = pybind11;              // Convention
 
 // Forward declarations
 void py_parameters(py::module_ &m);
+void py_basestructures(py::module_ &m);
 void py_log(py::module_ &m);
 void py_matter(py::module_ &m);
 // Jobs

@@ -244,6 +244,7 @@ if get_option('with_pybindings')
                                sources : [
                                  'bindings/py_srcs/py_wrapper.cc',
                                  'bindings/py_srcs/py_parameters.cc',
+                                 'bindings/py_srcs/py_basestructures.cc',
                                  'bindings/py_srcs/py_log.cc',
                                  'bindings/py_srcs/py_matter.cc',
                                  # Jobs
