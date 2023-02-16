@@ -15,6 +15,7 @@ public:
     std::pair<double, AtomMatrix> get_ef(const AtomMatrix positions,
                const VectorXi atomicNrs,
                const Matrix3d box) override {
+        // This is needed to prevent substitution errors
         using Return = std::pair<double, AtomMatrix>;
         PYBIND11_OVERRIDE_PURE(Return,
                                PotentialBase,
