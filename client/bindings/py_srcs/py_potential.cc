@@ -2,16 +2,11 @@
 
 void py_potential(py::module &m) {
     py::class_<Potential, PyPotential<>>(m, "Potential")
-        .def(py::init<Parameters*>());
-        /* Book-keeping */
-        /* TODO: This is static, so wrong when multiple potentials are used? */
-        // .def_readwrite_static("fcalls", &Potential::fcalls, "Number of force calls")
-        // .def_readwrite_static("fcallsTotal", &Potential::fcallsTotal, "Total force calls")
-        // .def_readwrite_static("totalUserTime", &Potential::fcalls, "Time taken");
-        /* Objects */
-        /* TODO: This is likely to be broken, params is a pointer */
-        // .def_readwrite("params", &Potential::params, "Parameters")
-        // .def_readwrite_static("pot", &Potential::pot, "Potential object")
+        .def(py::init<Parameters*>())
+        .def("force", &Potential::force)
+        .def("getType", &Potential::getType)
         /* Helpers */
-        // .def("__repr__", [](const Potential &pot) { return pot.getName(); });
+        .def("__repr__", [](Potential &pot) { return helper_functions::getPotentialName( pot.getType() ); });
+    m.def("callPotential", &helper_functions::efPot);
+    m.def("makePotential", &helper_functions::makePotential);
 };
