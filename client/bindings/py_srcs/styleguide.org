@@ -155,6 +155,8 @@ params.potential = ec.PotType.LJ
 ljpot = ec.makePotential(params)
 ljpot.get_ef(product.positions, np.ones(product.numberOfAtoms()), product.getCell())
 #+end_src
+*** TODO Finish adapting potentials
+~abf8c736~ kept ~force~ and wrapped them in ~get_ef~. Ideally these should all be reworked from scratch at some point.
 ** Jobs
 For testing:
 #+begin_src bash
@@ -251,3 +253,15 @@ The main independent components are:
 - Jobs :: This is the base class for every calculation
 - Optimizer :: A class which provides syntactic sugar for working with Objective Functions
 - ObjectiveFunction :: The loss definition
+* TODO Fix remaining singleton
+Jobs are currently singletons, these will cause issues while dynamically switching
+* TODO Memory safety
+At a high level, ~params~ can be shared, ~potential~ should be unique
+* TODO Add a counter
+We need to track things again
+* TODO Switch to ~spdlog~
+Also because of the ~R~ bindings
+* TODO Add tests
+Then we can refactor more aggressively
+** TODO Remove the Eigen Row macro
+Instead be consistent about using a type defined as ~Eigen::RowMajor~
