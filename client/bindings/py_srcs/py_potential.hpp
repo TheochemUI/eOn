@@ -5,26 +5,22 @@
 
 #include "../../Potential.h"
 #include "py_wrapper.hpp"
+#include <utility>
 
 template <class PotentialBase = Potential>
 class PyPotential : public PotentialBase {
 public:
     /* Constructors and inherited */
     using PotentialBase::PotentialBase;
-    void force(long nAtoms,
-               const double *positions,
-               const int *atomicNrs,
-               double *forces,
-               double *energy,
-               const double *box) override {
-        PYBIND11_OVERRIDE_PURE(void,
+    std::pair<double, AtomMatrix> get_ef(const AtomMatrix positions,
+               const VectorXi atomicNrs,
+               const Matrix3d box) override {
+        using Return = std::pair<double, AtomMatrix>;
+        PYBIND11_OVERRIDE_PURE(Return,
                                PotentialBase,
-                               force,
-                               nAtoms,
+                               get_ef,
                                positions,
                                atomicNrs,
-                               forces,
-                               energy,
                                box);
     }
 };

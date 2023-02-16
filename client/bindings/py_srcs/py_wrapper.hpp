@@ -1,5 +1,6 @@
 #ifndef PY_WRAPPER_H
 #define PY_WRAPPER_H
+#define PYBIND11_DETAILED_ERROR_MESSAGES
 
 // Standard libraries
 #include <fstream>
