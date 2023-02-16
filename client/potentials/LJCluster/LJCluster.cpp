@@ -10,14 +10,10 @@
 
 #include"LJCluster.h"
 
-LJCluster::LJCluster(){
-    this->setParameters(1.0, 15.0, 1.0);
-}
-
-LJCluster::LJCluster(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
-    this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
-    return;
-}
+// LJCluster::LJCluster(double u0Recieved, double cuttOffRRecieved, double psiRecieved){
+//     this->setParameters(u0Recieved, cuttOffRRecieved, psiRecieved);
+//     return;
+// }
 
 void LJCluster::cleanMemory(void){
     return;

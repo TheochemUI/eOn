@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <vector>
+#include "BaseStructures.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ class Parameters {
 
 public:
     Parameters();
-    ~Parameters();
+    ~Parameters()=default;
     int load(string filename);
     int load(FILE *file);
 
@@ -49,7 +50,7 @@ public:
     bool   removeNetForce;
 
     // [Potential] //
-    string potential;
+    PotType potential;
     double MPIPollPeriod;
     bool   LAMMPSLogging;
     int    LAMMPSThreads;

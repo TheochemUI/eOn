@@ -25,15 +25,10 @@
       http://en.wikipedia.org/wiki/Morse_potential .
       */
 
-Morse::Morse(){
-      // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
-      setParameters(0.7102, 1.6047, 2.8970, 9.5);
-}
-
-Morse::Morse(double De, double a, double re, double cutoff)
-{
-      setParameters(De, a, re, cutoff);
-}
+// Morse::Morse(double De, double a, double re, double cutoff)
+// {
+//       setParameters(De, a, re, cutoff);
+// }
 
 void Morse::cleanMemory(void){
       return;

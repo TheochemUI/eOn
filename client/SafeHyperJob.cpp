@@ -36,7 +36,7 @@ std::vector<std::string> SafeHyperJob::run(void)
     long refFCalls = Potential::fcalls;
     *reactant = *current;
     reactant->relax();
-    minimizeFCalls += (Potential::fcalls - refFCalls);
+    // minimizeFCalls += (Potential::fcalls - refFCalls);
 
     log("\nParallel Replica Dynamics, running\n\n");
     
@@ -101,9 +101,9 @@ int SafeHyperJob::dynamics()
     safeHyper.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
-    refFCalls = Potential::fcalls;
+    // refFCalls = Potential::fcalls;
     dephase();
-    dephaseFCalls = Potential::fcalls - refFCalls;
+    // dephaseFCalls = Potential::fcalls - refFCalls;
 
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
@@ -165,7 +165,7 @@ int SafeHyperJob::dynamics()
             nRecord = 0; // restart the buffer
             refFCalls = Potential::fcalls;
             transitionFlag = checkState(current, reactant);
-            minimizeFCalls += Potential::fcalls - refFCalls;
+            // minimizeFCalls += Potential::fcalls - refFCalls;
             if(transitionFlag == true){
                 nState ++;
                 log("New State %ld: ",nState);
@@ -208,7 +208,7 @@ int SafeHyperJob::dynamics()
             }
             log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",transitionTime*1e-15*parameters->timeUnit,transitionPot,correctedTime*1e-15*parameters->timeUnit,sumCorrectedTime*1e-15*parameters->timeUnit, minCorrectedTime*1.0e-15*parameters->timeUnit);
 
-            refineFCalls += Potential::fcalls - refFCalls;
+            // refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
         }
     
@@ -268,16 +268,16 @@ void SafeHyperJob::saveData(int status)
     returnFiles.push_back(resultsFilename);
 
     fileResults = fopen(resultsFilename.c_str(), "wb");
-    long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
+    // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
 
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
-    fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
+    // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
     fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
     fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
     fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
-    fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
+    // fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
  
 
 //    fprintf(fileResults, "%d termination_reason\n", status);

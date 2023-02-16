@@ -13,15 +13,13 @@
 
 CuH2::CuH2(Parameters *p) {}
 
-void CuH2::initialize(void) { return; }
-
 void CuH2::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, const double *box, int nImages = 1) {
+                 double *U, const double *box) {
   std::multiset<double> natmc;
   int natms[2]{0, 0}; // Always Cu, then H
   int ndim{3 * static_cast<int>(N)};

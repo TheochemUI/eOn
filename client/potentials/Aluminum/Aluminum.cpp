@@ -13,21 +13,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-Aluminum::Aluminum(void)
-{
-    return;
-}
-
-void Aluminum::initialize(void)
-{
-    potinit_();
-    return;
-}
-
-Aluminum::~Aluminum()
-{
-}
-
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size

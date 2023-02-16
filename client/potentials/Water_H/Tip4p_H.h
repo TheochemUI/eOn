@@ -32,7 +32,10 @@ class Tip4p_H : public Potential{
 public:
 // Functions
 	// constructor
-    Tip4p_H(void);
+    Tip4p_H(Parameters* params) : Potential(params){
+        setup_();
+        tip4p_pot = new Tip4p();
+    };
 	
     // To satisfy interface
     void initialize(void);    

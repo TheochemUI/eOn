@@ -11,12 +11,20 @@ class EAM
 #endif
 {    
     public:
-        EAM(void);
+        EAM(Parameters *params): Potential(params){
+    celllist_new = 0;
+    neigh_list = 0;
+    initialized = false;
+
+    rc = new double[3];
+    // 6 is arbitrary number. rc represents the optimal size
+    // for each cell in cell list.
+    rc[0] = rc[1] = rc[2] = 6.0;
+        };
         // To satify interface
-        void initialize();
         void cleanMemory();
         void force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *fullbox);
+                   double *U, const double *fullbox) override;
     private:
         struct element_parameters {
             const int Z;                // Atomic Number

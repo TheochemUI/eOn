@@ -19,7 +19,7 @@ BasinHoppingJob::BasinHoppingJob(Parameters *params)
     parameters = params;
     current = new Matter(parameters);
     trial = new Matter(parameters);
-    fcalls = Potential::fcalls;
+    // fcalls = Potential::fcalls;
 }
 
 BasinHoppingJob::~BasinHoppingJob()
@@ -119,9 +119,9 @@ std::vector<std::string> BasinHoppingJob::run(void)
             trial->matter2con("trials", true);
         }
 
-        Potential::fcalls = 0;
+        // Potential::fcalls = 0;
         minTrial->relax(true);
-        int minfcalls = Potential::fcalls;
+        // int minfcalls = Potential::fcalls;
 
         double deltaE = minTrial->getPotentialEnergy()-currentEnergy;
         double p=0.0;
@@ -201,7 +201,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
             minTrial->matter2con("movie", true);
         }
 
-        totalfc = Potential::fcallsTotal;
+        // totalfc = Potential::fcallsTotal;
         char acceptReject[2];
         acceptReject[1] = '\0';
         if (accepted) {
@@ -209,11 +209,11 @@ std::vector<std::string> BasinHoppingJob::run(void)
         }else{
             acceptReject[0] = 'R';
         }
-        log("[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
-               step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
-               minfcalls, totalAccept/((double)step+1), curDisplacement, acceptReject);
-        fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
-                minTrial->getPotentialEnergy());
+        // log("[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
+        //        step+1, currentEnergy, minTrial->getPotentialEnergy(), minimumEnergy,
+        //        minfcalls, totalAccept/((double)step+1), curDisplacement, acceptReject);
+        // fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
+                // minTrial->getPotentialEnergy());
 
         if (minimumEnergy < parameters->basinHoppingStopEnergy) {
             break;
@@ -279,7 +279,7 @@ std::vector<std::string> BasinHoppingJob::run(void)
         disp_count-jump_count-parameters->basinHoppingQuenchingSteps);
     fprintf(fileResults, "%d total_jump_steps\n", jump_count);
     fprintf(fileResults, "%d total_swap_steps\n", swap_count);
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
+    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     fclose(fileResults);
 
     std::string productFilename("min.con");

@@ -114,7 +114,7 @@ int DynamicsSaddleSearch::run(void)
             product->relax(false, false);
 
             if (!product->compare(reactant)) {
-                log("Force calls total: %i\n", Potential::fcallsTotal);
+                // log("Force calls total: %i\n", Potential::fcallsTotal);
                 log("Found new state\n");
                 int image = refineTransition(MDSnapshots, product);
                 *saddle = *MDSnapshots[image];
@@ -250,7 +250,7 @@ int DynamicsSaddleSearch::run(void)
                 }
                 MDSnapshots.clear();
                 MDTimes.clear();
-                log("Force calls total: %i\n", Potential::fcallsTotal);
+                // log("Force calls total: %i\n", Potential::fcallsTotal);
                 return MinModeSaddleSearch::STATUS_GOOD; 
             }else{
                 log("Still in original state\n");
