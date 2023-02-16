@@ -230,12 +230,4 @@ Potential *makePotential(Parameters *params) {
   }
 }
 
-std::pair<double, AtomMatrix> efPot(Potential* pot, const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box) {
-  double energy{std::numeric_limits<double>::infinity()};
-  long nAtoms {pos.rows()};
-  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
-  pot ->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, box.data());
-  return std::make_pair(energy, forces);
-}
-
 } // namespace helper_functions

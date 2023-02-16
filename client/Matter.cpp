@@ -899,7 +899,7 @@ void Matter::computePotential()
             potential = helper_functions::makePotential(parameters);
         }
 
-       std::tie(potentialEnergy, forces) = helper_functions::efPot(potential, positions, atomicNrs, cell);
+       std::tie(potentialEnergy, forces) = potential->get_ef(positions, atomicNrs, cell);
         forceCalls = forceCalls+1;
         recomputePotential = false;
 
