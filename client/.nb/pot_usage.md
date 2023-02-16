@@ -41,7 +41,13 @@ reactant.con2matter("../../examples/neb-al/reactant.con")
 ```{code-cell} ipython3
 :tags: []
 
-product.forces
+mpot = ec.Morse(params)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+product.setPotential(mpot)
 ```
 
 ```{code-cell} ipython3
@@ -51,76 +57,40 @@ product.pot_energy
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
-pot = ec.Morse()
+#mpot.get_ef(product)
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-type(pot.getPotential(params))
-```
-
-```{code-cell} ipython3
-## Broken sometimes
-pot.force(product)
+mpot.get_ef(product.positions, np.ones(product.numberOfAtoms()), product.getCell())
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-pot.force(product.numberOfAtoms(), product.positions, np.ones(product.numberOfAtoms()), product.getCell())
+m1 = ec.Matter(params); m1.con2matter("../../examples/neb-al/product.con"); #mpot.force(m1);
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
-## Works in the terminal, and ipython, but crashes here..
-#lldb python -- -c 'import pyeonclient as ec; params = ec.Parameters(); params.load("../examples/neb-al/config.ini"); ec.log_init(params, "blah.log"); m1 = ec.Matter(params); m1.con2matter("../examples/neb-al/product.con"); pot = ec.Morse(); print(m1.pot_energy); m1.setPotential(pot); print(m1.pot_energy)'
-## Kernel restart here
-#product.setPotential(pot)
-#product.pot_energy
-```
-
-```{code-cell} ipython3
-:tags: []
-
-m1 = ec.Matter(params); m1.con2matter("../../examples/neb-al/product.con"); pot.force(m1);
-```
-
-```{code-cell} ipython3
-:tags: []
-
-type(pot.getPotential(params))
-```
-
-```{code-cell} ipython3
-pot.force(m1)
-```
-
-```{code-cell} ipython3
-:tags: []
-
-## Broken
-m1.setPotential(pot.getPotential(params))
-m1.pot_energy
+#mpot.force(m1)[1].shape
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
 class FakePot(ec.Potential):
-    def force(self, a, b, c, d, e, f, g):
-        return 32
-    def initialize(self):
-        pass
+    def __init__(self, params):
+        #params.potential = ec.PotType.PYTHON
+        ec.Potential.__init__(self, params)
+    def get_ef(self, a, b, c):
+        return (33, np.ones(601*3).reshape(601, 3))
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-fp = FakePot()
+fp = FakePot(params)
 ```
 
 ```{code-cell} ipython3
@@ -132,15 +102,31 @@ m1.setPotential(fp)
 ```{code-cell} ipython3
 :tags: []
 
+fp.force(m1)
+```
+
+```{code-cell} ipython3
+:tags: []
+
 m1.pot_energy
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-m1.getPotential()
+m1.forces
 ```
 
 ```{code-cell} ipython3
+:tags: []
 
+##ec.callPotential(fp, product.positions, np.ones(product.numberOfAtoms()), product.getCell())
+```
+
+```{code-cell} ipython3
+:tags: []
+
+params.potential = ec.PotType.LJ
+ljpot = ec.makePotential(params)
+ljpot.get_ef(product.positions, np.ones(product.numberOfAtoms()), product.getCell())
 ```
