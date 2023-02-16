@@ -6,15 +6,7 @@
 #include "Dynamics.h"
 #include "ReplicaExchangeJob.h"
 #include "HelperFunctions.h"
-
-ReplicaExchangeJob::ReplicaExchangeJob(Parameters *params)
-{
-    parameters = params;
-}
-
-ReplicaExchangeJob::~ReplicaExchangeJob()
-{
-}
+#include "BaseStructures.h"
 
 std::vector<std::string> ReplicaExchangeJob::run(void)
 {
@@ -104,7 +96,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
         }
     }
 
-    forceCalls = Potential::fcalls - refForceCalls;
+    // forceCalls = Potential::fcalls - refForceCalls;
     saveData();
 
     // delete Matter and Dynamics objects
@@ -123,8 +115,8 @@ void ReplicaExchangeJob::saveData(void)
     fileResults = fopen(resultsFilename.c_str(), "wb");
 
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
     fclose(fileResults);
 
     std::string posFilename("pos_out.con");

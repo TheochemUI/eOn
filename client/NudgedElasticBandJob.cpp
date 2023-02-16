@@ -61,9 +61,9 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
         }
     }
 
-    f1 = Potential::fcalls;
+    // f1 = Potential::fcalls;
     status = neb->compute();
-    fCallsNEB += Potential::fcalls - f1;
+    // fCallsNEB += Potential::fcalls - f1;
 
     if (status == NudgedElasticBand::NEBStatus::STATUS_INIT) {
         status = NudgedElasticBand::NEBStatus::STATUS_GOOD;
@@ -88,9 +88,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status, NudgedE
     fileResults = fopen(resultsFilename.c_str(), "wb");
     
     fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
-    fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
-    fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+    // fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
     fprintf(fileResults, "%f energy_reference\n", neb->image[0]->getPotentialEnergy());
     fprintf(fileResults, "%li number_of_images\n", neb->images);
     for(long i=0; i<=neb->images+1; i++) {

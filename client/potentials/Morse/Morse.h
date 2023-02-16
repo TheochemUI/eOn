@@ -12,27 +12,32 @@
 #define MORSE
 /** @file
       @brief Morse potential for platinum
-      @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean Claude C. Berthet
+      @author Anonymous (possibly A. Pedersen or G. Henkelman), revision: Jean
+   Claude C. Berthet
       @date Unknown, revision: 2010, University of Iceland
       */
-//#include "LJBinary.h"
-#include <cmath>
+// #include "LJBinary.h"
 #include "../../Potential.h"
+#include <cmath>
 
 class Morse : public Potential {
 public:
-      Morse();
-      Morse(double re, double De, double a, double cutoff);
-      void cleanMemory(void);// required by PotentialsInterface
-      void force(long N, const double *R, const int *, double *F, double *U, const double *box);
-      void initialize() {};// required by PotentialsInterface
-      void setParameters(double De, double a, double re, double cutoff);
+  Morse(Parameters *params)
+      : Potential(params), De_{0.7102}, a_{1.6047}, re_{2.8970}, cutoff_{
+                                                                     9.5} {};
+  // Parameters De in eV, a in Angstroms, re in Angstroms, cutoff in Angstroms
+  // Morse(double re, double De, double a, double cutoff);
+  void cleanMemory(void); // required by PotentialsInterface
+  void force(long N, const double *R, const int *, double *F, double *U,
+             const double *box) override;
+  void setParameters(double De, double a, double re, double cutoff);
+
 private:
-      void morse(double r, double & energy, double & force);
-      double re_; 
-      double De_;
-      double cutoff_;
-      double a_;
-      double energyCutoff_;
+  void morse(double r, double &energy, double &force);
+  double re_;
+  double De_;
+  double a_;
+  double cutoff_;
+  double energyCutoff_;
 };
 #endif

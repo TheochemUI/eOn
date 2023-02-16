@@ -49,7 +49,7 @@ std::vector<std::string> HessianJob::run(void)
 
     fileResults = fopen(results_file.c_str(), "wb");
 
-    fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+    // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
     fclose(fileResults);
 
     delete matter;

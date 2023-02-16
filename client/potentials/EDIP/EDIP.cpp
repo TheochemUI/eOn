@@ -10,14 +10,6 @@
 
 #include"EDIP.h"
 
-EDIP::EDIP(void){
-    return;
-}
-
-void EDIP::initialize(void){
-    return;
-}
-
 void EDIP::cleanMemory(void){
     return;
 }

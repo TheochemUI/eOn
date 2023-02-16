@@ -128,6 +128,7 @@ eonclib_sources = [
            'EpiCenters.cpp',
            'SaddleSearchJob.cpp',
            'BasinHoppingSaddleSearch.cpp',
+           'BaseStructures.cpp',
 ]
 
 eonclient_sources = [
