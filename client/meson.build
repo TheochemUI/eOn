@@ -112,8 +112,8 @@ eonclib_sources = [
            'NudgedElasticBandJob.cpp',
            'DynamicsSaddleSearch.cpp',
            'HelperFunctions.cpp',
-           'StringHelpers.cc', # Template
-           'MatrixHelpers.hpp', # Template
+           # 'StringHelpers.cc', # Template
+           # 'MatrixHelpers.hpp', # Template
            'Dimer.cpp',
            'Dynamics.cpp',
            'GlobalOptimizationJob.cpp',
