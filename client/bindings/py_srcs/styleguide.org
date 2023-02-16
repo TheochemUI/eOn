@@ -128,8 +128,33 @@ One issue with this approach is that the force matrix is fully populated, and th
             return std::make_pair(mat.getPotentialEnergy(), mat.getForces());
         }, py::arg("matter"))
 #+end_src
-*** TODO Use pythonic potentials
-*** TODO Do not write each by hand
+*** DONE Use pythonic potentials
+CLOSED: [2023-02-16 Thu 02:48]
+This is now done as well, with the factory pattern.
+#+begin_src python
+class FakePot(ec.Potential):
+    def __init__(self, params):
+        #params.potential = ec.PotType.PYTHON
+        ec.Potential.__init__(self, params)
+    def get_ef(self, a, b, c):
+        return (33, np.ones(601*3).reshape(601, 3))
+
+fp = FakePot(params)
+m1.setPotential(fp)
+m1.pot_energy
+m1.forces
+#+end_src
+*** DONE Do not write each by hand
+CLOSED: [2023-02-16 Thu 02:48]
+Since the integration of the new interface and the Factory pattern instead of
+the singleton, this is done. One example is still written out by hand, the
+~PyMorse~ example, this is to demonstrate how derived classes can be further
+derived from in Python.
+#+begin_src python
+params.potential = ec.PotType.LJ
+ljpot = ec.makePotential(params)
+ljpot.get_ef(product.positions, np.ones(product.numberOfAtoms()), product.getCell())
+#+end_src
 ** Jobs
 For testing:
 #+begin_src bash
