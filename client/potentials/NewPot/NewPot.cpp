@@ -10,15 +10,6 @@
 
 #include"NewPot.h"
 
-NewPot::NewPot(Parameters *p){
-}
-
-void NewPot::initialize(void){
-    fake1 = 0;
-    fake2 = 1;
-    return;
-}
-
 void NewPot::cleanMemory(void){
     return;
 }

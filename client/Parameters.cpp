@@ -48,7 +48,7 @@ Parameters::Parameters(){
     prefactorFilterFraction = 0.90;
 
     // [Potential] //
-    potential = Potential::POT_LJ;
+    potential = PotType::LJ;
     MPIPollPeriod = 0.25; //seconds
     MPIPotentialRank = -1;
     LogPotential = false;
@@ -318,10 +318,6 @@ Parameters::Parameters(){
     grad2forceconvergence = 0.0001;
 }
 
-Parameters::~Parameters(){
-    return;
-}
-
 string Parameters::toLowerCase(string s)
 {
     for (string::size_type i = 0; i < s.length(); ++i) {
@@ -375,16 +371,16 @@ int Parameters::load(FILE *file){
 
         // [Potential] //
 
-        potential = toLowerCase(ini.GetValue("Potential", "potential"));
+        potential = helper_functions::getPotentialType(toLowerCase(ini.GetValue("Potential", "potential")));
         MPIPollPeriod = ini.GetValueF("Potential", "mpi_poll_period", MPIPollPeriod);
         LAMMPSLogging = ini.GetValueB("Potential", "lammps_logging", LAMMPSLogging);
         LAMMPSThreads = (int)ini.GetValueL("Potential", "lammps_threads", LAMMPSThreads);
         EMTRasmussen = ini.GetValueB("Potential", "emt_rasmussen", EMTRasmussen);
         extPotPath = ini.GetValue("Potential", "ext_pot_path", extPotPath);
-        if (potential == "mpi"    ||
-            potential == "vasp"   ||
-            potential == "bopfox" ||
-            potential == "bop")
+        if (potential == PotType::MPI    ||
+            potential == PotType::VASP   ||
+            potential == PotType::BOPFOX ||
+            potential == PotType::BOP)
         {
             LogPotential = true;
         }else{
@@ -393,7 +389,7 @@ int Parameters::load(FILE *file){
         LogPotential = ini.GetValueB("Potential", "log_potential", LogPotential);
 
         // [AMS]
-        if (potential=="ams") {
+        if (potential==PotType::AMS) {
             engine = ini.GetValue("AMS", "engine", engine);
             forcefield = ini.GetValue("AMS", "forcefield", forcefield);
             resources = ini.GetValue("AMS", "resources", resources);
@@ -402,7 +398,7 @@ int Parameters::load(FILE *file){
             basis = ini.GetValue("AMS", "basis", basis);
         }
         // [AMS_IO]
-        if (potential=="ams_io") {
+        if (potential==PotType::AMS_IO) {
             engine = ini.GetValue("AMS_IO", "engine", engine);
             forcefield = ini.GetValue("AMS_IO", "forcefield", forcefield);
             model = ini.GetValue("AMS_IO", "model", model);
@@ -411,7 +407,7 @@ int Parameters::load(FILE *file){
         // [AMS_ENV]
         // This is only needed if the regular calls do not work
         // e.g. on a MacOS machine
-        if (potential=="ams_io" || potential=="ams"){
+        if (potential==PotType::AMS_IO || potential==PotType::AMS){
             amshome = ini.GetValue("AMS_ENV", "amshome", amshome);
             scm_tmpdir = ini.GetValue("AMS_ENV", "scm_tmpdir", scm_tmpdir);
             scmlicense = ini.GetValue("AMS_ENV", "scmlicense", scmlicense);
@@ -748,7 +744,7 @@ int Parameters::load(FILE *file){
             exit(1);
         }
 
-       if (potential == "ams" || potential == "ams_io") {
+       if (potential == PotType::AMS || potential == PotType::AMS_IO) {
          if (forcefield.empty() && model.empty() && xc.empty()) {
            char msg[] =
                "error:  [AMS] Must provide atleast forcefield or model or xc\n";

@@ -112,7 +112,7 @@ std::vector<std::string> PrefactorJob::run(void)
     fileFreq = fopen(freq_file.c_str(), "wb");
 
     fprintf(fileResults, "%s good\n", failed ? "false" : "true");
-    fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+    // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
 
     if(!failed)
     {

@@ -12,23 +12,6 @@
 #include <string.h>
 
 // General Functions
-EffectiveMediumTheory::EffectiveMediumTheory(Parameters *p){
-
-    parameters = p;
-
-    // dummy variables 
-    AtomsObj = 0;
-    EMTObj = 0;
-    SuperCellObj = 0;
-    EMTParameterObj = 0;
-    numberOfAtoms = 0;
-
-    // should have periodic boundary conditions in all directions
-    periodicity[0] = true;      
-    periodicity[1] = true;
-    periodicity[2] = true;    
-}
-
 void EffectiveMediumTheory::cleanMemory(void){
     if(EMTObj != 0){
         delete EMTObj;

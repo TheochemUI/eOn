@@ -1,11 +1,6 @@
 #include "Tip4p_Pt.hpp"
 
 
-Tip4p_Pt::Tip4p_Pt() :
-Potential(),
-forcefields::ZhuPhilpott<>(8.5, 1.0)
-{}
-
 void Tip4p_Pt::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     double diagbox[3];

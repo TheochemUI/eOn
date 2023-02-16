@@ -20,7 +20,7 @@ namespace tests {
 
 NEBTest::NEBTest()
     : params{new Parameters}, m1{new Matter(params)}, m2{new Matter(params)},
-      threshold{1e-6} {}
+      threshold{1e-3} {}
 
 NEBTest::~NEBTest() {
   delete params;

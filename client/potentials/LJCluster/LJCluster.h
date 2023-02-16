@@ -31,16 +31,16 @@ class LJCluster : public Potential
     public:
     // Functions
 	    // constructor
-        LJCluster(void);
-	    LJCluster(double r0Recieved, double u0Recieved, double psiRecieved);
+        LJCluster(Parameters* params) : Potential(params), u0{1.0}, cuttOffR{15.0}, psi{1.0} {};
+        // TODO: Put these in parameters
+	    // LJCluster(double r0Recieved, double u0Recieved, double psiRecieved);
 
         ~LJCluster();
 	
         // Just to satisfy interface
-        void initialize() {};
-        void cleanMemory();    
+        void cleanMemory();
         
-        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
         void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
 #endif

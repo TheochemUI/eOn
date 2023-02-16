@@ -78,7 +78,7 @@ int SaddleSearchJob::doSaddleSearch()
     Matter matterTemp(parameters);
     long status;
     int f1;
-    f1 = Potential::fcalls;
+    // f1 = Potential::fcalls;
     try {
         status = saddleSearch->run();
     }catch (int e) {
@@ -91,9 +91,9 @@ int SaddleSearchJob::doSaddleSearch()
     }
 
     if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-        fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this works
+        // fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this works
     } else {
-        fCallsSaddle += Potential::fcalls - f1;
+        // fCallsSaddle += Potential::fcalls - f1;
     }
 
     return status;
@@ -112,13 +112,13 @@ void SaddleSearchJob::saveData(int status){
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "saddle_search job_type\n");
     fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", parameters->potential.c_str());
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
     if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
         fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
         fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
     } else {
-        fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
+        // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
         fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
         fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);
     }

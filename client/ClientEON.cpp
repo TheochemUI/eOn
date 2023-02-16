@@ -311,8 +311,8 @@ int main(int argc, char **argv)
     
     std::vector<std::string> bundledFilenames;
     for (int i=0;i<bundleSize;i++) {
-        Potential::fcalls = 0;
-        Potential::fcallsTotal = 0;
+        // Potential::fcalls = 0;
+        // Potential::fcallsTotal = 0;
         if(bundleSize>1) printf("Beginning Job %d of %d\n", i+1, bundleSize);
         std::vector<std::string> unbundledFilenames;
         if (bundlingEnabled) {
@@ -375,9 +375,9 @@ int main(int argc, char **argv)
     helper_functions::getTime(&rtime, &utime, &stime);
     rtime = rtime - beginTime;
 
-    if (Potential::totalUserTime > 0) {
-        printf("\ntime not in potential: %.4f%%\n", 100*(1-Potential::totalUserTime/utime));
-    }
+    // if (Potential::totalUserTime > 0) {
+    //     printf("\ntime not in potential: %.4f%%\n", 100*(1-Potential::totalUserTime/utime));
+    // }
 
     printf("timing information:\nreal %10.3f seconds\nuser %10.3f seconds\nsys  %10.3f seconds\n",
            rtime,utime,stime);
