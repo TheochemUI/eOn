@@ -72,7 +72,7 @@ namespace {
      
 
 
-void AMS_IO::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages=1)
+void AMS_IO::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
 {
     passToSystem(N, R, atomicNrs, box); 
     system("chmod +x run_AMS_IO.sh");
