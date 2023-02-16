@@ -25,7 +25,18 @@ void Tersoff::cleanMemory(void){
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-void Tersoff::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
-    tersoff_(&N, R, F, U, &box[0], &box[4], &box[8]);    
-    return;
+std::pair<double, AtomMatrix> ExtPot::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+  double energy{0};
+  long N{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+  const double *R = pos.data();
+  const double *box = m_box.data();
+  const int *atomicNrs = atmnrs.data();
+  double *F = forces.data();
+  double *U = &energy;
+
+  tersoff_(&N, R, F, U, &box[0], &box[4], &box[8]);
+  return std::make_pair(energy, forces);
 }

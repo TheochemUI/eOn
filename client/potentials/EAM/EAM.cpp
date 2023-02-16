@@ -21,12 +21,22 @@ void EAM::cleanMemory()
 
 
 // Calculate here long num_cells, long *num_axis, long *cell_length, //become global variables -long *celllist_old, long *celllist_new, long *neigh_list, long fcalled)
-void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *fullbox)
-{
+std::pair<double, AtomMatrix> EAM::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+  double energy{0};
+  long N{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+  const double *R = pos.data();
+  const double *bx = m_box.data();
+  const int *atomicNrs = atmnrs.data();
+  double *F = forces.data();
+  double *U = &energy;
+
     double box[3];
-    box[0] = fullbox[0];
-    box[1] = fullbox[4];
-    box[2] = fullbox[8];
+    box[0] = bx[0];
+    box[1] = bx[4];
+    box[2] = bx[8];
 
     /* -- Code starting here only needs to be done once. -- */
     //num_axis contains the number of cell lengths on each axis
@@ -140,6 +150,7 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F, double
     delete [] Rnew;
     delete [] Rold;
     initialized = true;
+    return std::make_pair(energy, forces);
 }
 
 EAM::element_parameters EAM::get_element_parameters(int atomic_number)

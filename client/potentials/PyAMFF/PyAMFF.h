@@ -26,9 +26,10 @@ class PyAMFF : public Potential
 		~PyAMFF();
 		void initialize() {};
 		void cleanMemory(void);
-        void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box);
-        bool new_pyamff;
+                std::pair<double, AtomMatrix>
+                get_ef(const AtomMatrix pos, const VectorXi atmnrs,
+                       const Matrix3d m_box) override;
+                bool new_pyamff;
 };     
 #endif
 

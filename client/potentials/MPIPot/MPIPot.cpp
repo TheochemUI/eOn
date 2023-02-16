@@ -31,9 +31,18 @@ MPIPot::~MPIPot()
 	cleanMemory();
 }
 
-void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box)
-{
+std::pair<double, AtomMatrix> MPIPot::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+    double energy{0};
+    long N{pos.rows()};
+    AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+    const double *R = pos.data();
+    const double *box = m_box.data();
+    const int *atomicNrs = atmnrs.data();
+    double *F = forces.data();
+    double *U = &energy;
+
     //Send data to potential
     int pbc=1;
     int failed;
@@ -68,4 +77,5 @@ void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
     //printf("energy: %12.4e\n", *U);
     //printf("forces:\n");
     //for (int i=0;i<N;i++) printf("%12.4e %12.4e %12.4e\n", F[3*i], F[3*i+1], F[3*i+2]);
+    return std::make_pair(energy, forces);
 }

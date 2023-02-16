@@ -32,14 +32,19 @@ void LJCluster::setParameters(double u0Recieved, double cuttOffRRecieved, double
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
-void LJCluster::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+std::pair<double, AtomMatrix> LJCluster::get_ef(const AtomMatrix pos,
+                                                const VectorXi atmnrs,
+                                                const Matrix3d m_box) {
+    double energy{0};
+    long N{pos.rows()};
+    AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+    const double *R = pos.data();
+    const double *box = m_box.data();
+    const int *atomicNrs = atmnrs.data();
+    double *F = forces.data();
+    double *U = &energy;
+
     double diffR=0, diffRX, diffRY, diffRZ, dU, a, b;
-    *U = 0;    
-    for(int i=0;i<N;i++){
-        F[ 3*i ] = 0;
-        F[3*i+1] = 0;
-        F[3*i+2] = 0;
-    }
     // Initializing end
     
     for(int i=0; i<N-1; i++){
@@ -71,7 +76,7 @@ void LJCluster::force(long N, const double *R, const int *atomicNrs, double *F, 
             F[3*j+2]=F[3*j+2] + dU*diffRZ/diffR;
         }
     }
-    return;
+    return std::make_pair(energy, forces);
 }
 
 LJCluster::~LJCluster()

@@ -23,15 +23,23 @@ ExtPot::~ExtPot()
 	cleanMemory();
 }
 
+std::pair<double, AtomMatrix> ExtPot::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+  double energy{0};
+  long N{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+  const double *R = pos.data();
+  const double *box = m_box.data();
+  const int *atomicNrs = atmnrs.data();
+  double *F = forces.data();
+  double *U = &energy;
 
-void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)
-{
-    passToSystem(N, R, atomicNrs, box);  
-    system(eon_extpot_path);
-    recieveFromSystem(N, F, U);
-    return;
+  passToSystem(N, R, atomicNrs, box);
+  system(eon_extpot_path);
+  recieveFromSystem(N, F, U);
+  return std::make_pair(energy, forces);
 }
-
 
 void ExtPot::passToSystem(long N, const double *R, const int *atomicNrs, const double *box)
 // 'positions' of all particles and box

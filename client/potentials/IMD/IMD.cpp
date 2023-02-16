@@ -28,13 +28,21 @@ IMD::~IMD()
 	cleanMemory();
 }
 
-void IMD::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box)
-{
+std::pair<double, AtomMatrix>
+IMD::get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d m_box) {
+    double energy{0};
+    long N{pos.rows()};
+    AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+    const double *R = pos.data();
+    const double *box = m_box.data();
+    const int *atomicNrs = atmnrs.data();
+    double *F = forces.data();
+    double *U = &energy;
+
     writeConfIMD(N, R, atomicNrs, box);
     system("imd_eon -p imd_eon.in.param > /dev/null");
     readForceIMD(N, F, U);
-    return;
+    return std::make_pair(energy, forces);
 }
 
 void IMD::writeConfIMD(long N, const double *R, const int *atomicNrs, 

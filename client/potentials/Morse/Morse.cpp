@@ -44,14 +44,20 @@ void Morse::setParameters(double De, double a, double re, double cutoff)
       morse(cutoff, energyCutoff_, f);
 }
 
-// pointer to number of atoms, pointer to array of positions	
-// pointer to array of forces, pointer to internal energy
-// adress to supercell size
-void Morse::force(long N, const double *R, const int *, double *F, double *U, const double *box)
+  std::pair<double, AtomMatrix> Morse::get_ef(const AtomMatrix pos,
+                                       const VectorXi atmnrs,
+                                       const Matrix3d m_box)
 {
+      double energy{0};
+      long N{pos.rows()};
+      AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+      const double *R = pos.data();
+      const double *box = m_box.data();
+      double *F = forces.data();
+      double *U = &energy;
+
       assert((box[0] > 0) and (box[4] > 0) and (box[8] > 0));
       double diffR=0, diffRX, diffRY, diffRZ;
-      *U = 0;
       for(int i=0;i<N;i++){
             F[ 3*i ] = 0;
             F[3*i+1] = 0;
@@ -63,7 +69,7 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U, co
                   diffRX = R[ 3*i ]-R[ 3*j ];
                   diffRY = R[3*i+1]-R[3*j+1];
                   diffRZ = R[3*i+2]-R[3*j+2];
-                  diffRX = diffRX - box[0]*floor(diffRX/box[0]+0.5); // floor = largest integer value less than argument 
+                  diffRX = diffRX - box[0]*floor(diffRX/box[0]+0.5); // floor = largest integer value less than argument
                   diffRY = diffRY - box[4]*floor(diffRY/box[4]+0.5);
                   diffRZ = diffRZ - box[8]*floor(diffRZ/box[8]+0.5);
                   diffR = sqrt(diffRX*diffRX+diffRY*diffRY+diffRZ*diffRZ);
@@ -82,7 +88,7 @@ void Morse::force(long N, const double *R, const int *, double *F, double *U, co
                   }
             }
       }
-      return;
+  return std::make_pair(energy, forces);
 }
 
 /** Calculate energy and force.

@@ -45,24 +45,18 @@ void PyAMFF::cleanMemory(void)
     return;
 }
 
+std::pair<double, AtomMatrix> ExtPot::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+    double energy{0};
+    long N{pos.rows()};
+    AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+    const double *R = pos.data();
+    const double *box = m_box.data();
+    const int *atomicNrs = atmnrs.data();
+    double *F = forces.data();
+    double *U = &energy;
 
-void PyAMFF::force(long N, const double *R, const int *atomicNrs, double *F, 
-                 double *U, const double *box)
-{
-//    int i;
-//    const char *atomicSymbols[N];
-//    int numUnique;
-
-//    for (i=0; i < N; i++)
-//    {
-//        atomicSymbols[i] = atomicNumber2symbol(atomicNrs[i]);
-//        cout << atomicNumber2symbol(atomicNrs[i]) << endl;
-//        cout << "symbols" << endl/;
-//        cout << symbols[i] << endl;
-//        cout << i << endl;
-//    }
-
-            
     int max_fps;
     max_fps = 100;
     vector<int> unique_atomicNrs;
@@ -94,8 +88,5 @@ void PyAMFF::force(long N, const double *R, const int *atomicNrs, double *F,
     calc_eon(&N, R, box, atomicNrs, F, U, &num_elements, unique);
     
 
-    return;
+    return std::make_pair(energy, forces);
 }
-
-
-

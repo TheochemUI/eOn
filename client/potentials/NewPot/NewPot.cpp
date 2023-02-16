@@ -8,23 +8,32 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include"NewPot.h"
+#include "NewPot.h"
 
-void NewPot::cleanMemory(void){
-    return;
-}
+void NewPot::cleanMemory(void) { return; }
 
-// pointer to number of atoms, pointer to array of positions	
+// pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
-void NewPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+// This is an adapter function
+std::pair<double, AtomMatrix> NewPot::get_ef(const AtomMatrix pos,
+                                             const VectorXi atmnrs,
+                                             const Matrix3d m_box) {
+  double energy{0};
+  long N{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(N, 3)};
+  const double *R = pos.data();
+  const double *box = m_box.data();
+  const int *atomicNrs = atmnrs.data();
+  double *F = forces.data();
+  double *U = &energy;
 
-    for(int i=0; i<N; i++){
-        F[ 3*i ] = fake1;
-        F[3*i+1] = fake1;
-        F[3*i+2] = fake1;
-    }
-    
-    *U = fake2;
-    return;
+  for (int i = 0; i < N; i++) {
+    F[3 * i] = fake1;
+    F[3 * i + 1] = fake1;
+    F[3 * i + 2] = fake1;
+  }
+
+  *U = fake2;
+  return std::make_pair(energy, forces);
 }
