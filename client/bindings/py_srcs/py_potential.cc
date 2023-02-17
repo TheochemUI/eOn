@@ -1,7 +1,7 @@
 #include "py_potential.hpp"
 
 void py_potential(py::module &m) {
-    py::class_<Potential, PyPotential<>>(m, "Potential")
+    py::class_<Potential, PyPotential<>,  std::shared_ptr<Potential>>(m, "Potential")
         .def(py::init<Parameters*>())
         .def("get_ef", &Potential::get_ef)
         .def("getType", &Potential::getType)

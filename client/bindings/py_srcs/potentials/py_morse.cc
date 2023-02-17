@@ -24,7 +24,7 @@ public:
 };
 
 void py_morse(py::module_ &m) {
-    py::class_<Morse, Potential, PyMorse<>>(m, "Morse")
+    py::class_<Morse, Potential, PyMorse<>,  std::shared_ptr<Morse>>(m, "Morse")
         /*
         ** Constructors
         */

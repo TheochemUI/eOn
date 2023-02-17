@@ -24,6 +24,10 @@ void py_nudgedelasticband(py::module_ &m) {
         .def(py::init<Matter * /*initialPassed*/,
                       Matter * /*finalPassed*/,
                       Parameters * /*parametersPassed*/>())
+        .def(py::init<Matter * /*initialPassed*/,
+                      Matter * /*finalPassed*/,
+                      Parameters * /*parametersPassed*/,
+                      std::shared_ptr<Potential> /*extpot */>())
 
         /*
         ** Methods
