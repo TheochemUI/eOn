@@ -83,8 +83,10 @@ class FakePot(ec.Potential):
     def __init__(self, params):
         #params.potential = ec.PotType.PYTHON
         ec.Potential.__init__(self, params)
+        self.counter = 1
     def get_ef(self, a, b, c):
-        return (33, np.ones(601*3).reshape(601, 3))
+        self.counter += 0.5
+        return (self.counter*0.33, 0.1*a*np.ones(601*3).reshape(601, 3))
 ```
 
 ```{code-cell} ipython3
@@ -97,12 +99,6 @@ fp = FakePot(params)
 :tags: []
 
 m1.setPotential(fp)
-```
-
-```{code-cell} ipython3
-:tags: []
-
-fp.force(m1)
 ```
 
 ```{code-cell} ipython3
@@ -121,6 +117,32 @@ m1.forces
 :tags: []
 
 ##ec.callPotential(fp, product.positions, np.ones(product.numberOfAtoms()), product.getCell())
+```
+
+```{code-cell} ipython3
+:tags: []
+
+reactant.setPotential(fp)
+product.setPotential(fp)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+neb = ec.NudgedElasticBand(reactant, product, params, fp)
+neb.printImageData(True)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+neb.compute()
+```
+
+```{code-cell} ipython3
+:tags: []
+
+[x.pot_energy for x in neb.neb_images]
 ```
 
 ```{code-cell} ipython3

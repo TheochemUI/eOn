@@ -38,6 +38,18 @@ reactant.con2matter("../../examples/neb-al/reactant.con")
 ```{code-cell} ipython3
 :tags: []
 
+pot = ec.makePotential(params)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+product.pot_energy
+```
+
+```{code-cell} ipython3
+:tags: []
+
 neb = ec.NudgedElasticBand(reactant, product, params)
 neb.printImageData(True)
 ```
@@ -93,5 +105,5 @@ neb.extremumCurvature
 ```
 
 ```{code-cell} ipython3
-neb.ext
+dir(neb)
 ```
