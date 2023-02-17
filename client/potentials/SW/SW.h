@@ -29,11 +29,9 @@ class SW : public Potential{
 public:
 // Functions
 	// constructor
-    SW(void);
+    SW(Parameters* params) : Potential(params){};
 	
     // To satisfy interface
-    void initialize(void);    
-    void cleanMemory(void);
     std::pair<double, AtomMatrix> get_ef(const AtomMatrix pos,
                                          const VectorXi atmnrs,
                                          const Matrix3d m_box) override;

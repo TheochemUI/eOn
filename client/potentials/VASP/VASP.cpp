@@ -28,7 +28,7 @@ bool  VASP::firstRun = true;
 long  VASP::vaspRunCount = 0;
 pid_t VASP::vaspPID = 0;
 
-VASP::VASP(void)
+VASP::VASP(Parameters *params)
 {
     vaspRunCount++;
     // deleting leftovers from previous run

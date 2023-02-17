@@ -10,22 +10,10 @@
 
 #include"Tersoff.h"
 
-Tersoff::Tersoff(void){
-    return;
-}
-
-
-void Tersoff::initialize(void){
-    return;
-}
-
-void Tersoff::cleanMemory(void){
-    return;
-}
-// pointer to number of atoms, pointer to array of positions	
+// pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-std::pair<double, AtomMatrix> ExtPot::get_ef(const AtomMatrix pos,
+std::pair<double, AtomMatrix> Tersoff::get_ef(const AtomMatrix pos,
                                              const VectorXi atmnrs,
                                              const Matrix3d m_box) {
   double energy{0};

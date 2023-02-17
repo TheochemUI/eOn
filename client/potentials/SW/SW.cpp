@@ -10,19 +10,7 @@
 
 #include"SW.h"
 
-SW::SW(void){
-    return;
-}
-
-void SW::initialize(void){
-    return;
-}
-
-void SW::cleanMemory(void){
-    return;
-}
-
-// pointer to number of atoms, pointer to array of positions	
+// pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 // adapted for bindings

@@ -17,7 +17,7 @@ class VASP : public Potential
 {
 
     public:
-        VASP(void);
+    VASP(Parameters *params): Potential(params);
 		~VASP();
         void initialize() {};
         void cleanMemory(void);    

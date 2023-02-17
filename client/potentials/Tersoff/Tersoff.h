@@ -29,11 +29,9 @@ class Tersoff : public Potential{
 public:
 // Functions
 	// constructor
-    Tersoff(void);
+    Tersoff(Parameters *params) : Potential(params){};
 	
     // Interface
-    void initialize(void);
-    void cleanMemory(void);
     std::pair<double, AtomMatrix> get_ef(const AtomMatrix pos,
                                          const VectorXi atmnrs,
                                          const Matrix3d m_box) override;
