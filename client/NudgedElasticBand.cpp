@@ -112,6 +112,52 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
     return;
 }
 
+NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed, std::shared_ptr<Potential> extpot)
+        : // INITIALIZED by DECLARATION ORDER
+          atoms{static_cast<int>(initialPassed->numberOfAtoms())}, climbingImage{0}, numExtrema{0}
+{
+    parameters = parametersPassed;
+    images = parameters->nebImages;
+    atoms = initialPassed->numberOfAtoms();
+    image = new Matter *[images+2];
+    tangent = new AtomMatrix *[images+2];
+    projectedForce = new AtomMatrix *[images+2];
+    extremumPosition = new double[2*(images+1)];
+    extremumEnergy = new double[2*(images+1)];
+    extremumCurvature = new double[2*(images+1)];
+    numExtrema = 0;
+
+    log("\nNEB: initialize\n");
+    for(long i=0; i<=images+1; i++)
+    {
+        image[i] = new Matter(parameters);
+        *image[i] = *initialPassed;
+        image[i]->setPotential(extpot.get());
+        tangent[i] = new AtomMatrix;
+        tangent[i]->resize(atoms,3);
+        projectedForce[i] = new AtomMatrix;
+        projectedForce[i]->resize(atoms,3);
+    }
+    *image[images+1] = *finalPassed;  // final image
+    image[images+1]->setPotential(extpot.get());
+
+    AtomMatrix posInitial = image[0]->getPositions();
+    AtomMatrix posFinal = image[images+1]->getPositions();
+    AtomMatrix imageSep = image[0]->pbc(posFinal-posInitial)/(images+1);
+    for(long i=1; i<=images; i++) {
+        image[i]->setPositions(posInitial+imageSep*double(i));
+    }
+
+    movedAfterForceCall = true;
+
+    // Make sure that the endpoints know their energy
+    image[0]->getPotentialEnergy();
+    image[images+1]->getPotentialEnergy();
+    climbingImage = 0;
+
+    return;
+}
+
 NudgedElasticBand::~NudgedElasticBand()
 {
     clean();

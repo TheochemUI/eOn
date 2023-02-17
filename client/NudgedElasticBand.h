@@ -26,6 +26,7 @@ public:
     };
 
     NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed);
+    NudgedElasticBand(Matter *initialPassed, Matter *finalPassed, Parameters *parametersPassed, std::shared_ptr<Potential> extpot);
     ~NudgedElasticBand();
 
     void clean(void);
