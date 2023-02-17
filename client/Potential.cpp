@@ -137,6 +137,8 @@ Potential *makePotential(Parameters *params) {
     break;
   }
 #endif
+#endif
+#ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
     return (new Aluminum(params));
     break;
@@ -154,11 +156,11 @@ Potential *makePotential(Parameters *params) {
     break;
   }
   case PotType::SW_SI: {
-    return (new SW());
+    return (new SW(params));
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (new Tersoff());
+    return (new Tersoff(params));
     break;
   }
 #endif
