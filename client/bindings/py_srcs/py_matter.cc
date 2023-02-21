@@ -101,6 +101,7 @@ void py_matter(py::module_ &m) {
         // Properties
         // The V variants are just ravel() variants
         .def_property("positions", &Matter::getPositions, &Matter::setPositions)
+        // BUG: free_positions doesn't update positions from python!
         .def_property("free_positions", &Matter::getPositionsFree, &Matter::setPositionsFree)
         .def_property("velocities",
                       &Matter::getVelocities,
