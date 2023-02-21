@@ -16,6 +16,7 @@ kernelspec:
 :tags: []
 
 import pyeonclient as ec
+import numpy as np
 ```
 
 ```{code-cell} ipython3
@@ -97,7 +98,7 @@ class CorrectedForces:
 ```{code-cell} ipython3
 :tags: []
 
-from anneal.core.components import ObjectiveFunction, NumLimit, FPair
+from anneal.core.components import ObjectiveFunction, NumLimit, FPair, MAX_LIMITS
 from anneal.viz.viz2d import Plot2dObj
 import numpy as np
 ```
@@ -107,11 +108,12 @@ import numpy as np
 
 class EONPot1Pt(ObjectiveFunction):
     """Just constrained to dealing with 1 moving atom constrained in 2D
-    It is assumed here, that the positions are only free positions"""
+    It is assumed here, that the positions are only free positions.
+    Additionally, the Z axis is constrained, so the dimensions are correct for SA"""
     def __init__(
         self, ec_pot, ec_mat, limits=NumLimit(dims=2,
-                              low=np.array([7.6273, 7.63402, 14.584501]),
-                              high=np.array([11.66, 13.074, 14.584501]))
+                              low=np.array([7.6273, 7.63402]),#, 14.584501]),
+                              high=np.array([11.66, 13.074]))#, 14.584501]))
     ):
         self.pot = ec_pot
         self.mat = ec_mat
@@ -125,7 +127,7 @@ class EONPot1Pt(ObjectiveFunction):
     def singlepoint(self, pos):
         """Here this is a 'matter style' single point"""
         cpos = self.mat.positions
-        effective_pos= np.append(pos.ravel(), 14.584501)
+        effective_pos= np.append(pos.ravel(), 3)
         cpos[self.freeMask] = effective_pos
         self.mat.positions = cpos
         return self.mat.pot_energy
@@ -162,13 +164,25 @@ eplot = Plot2dObj(epp, 30)
 ```{code-cell} ipython3
 :tags: []
 
-eplot.createContour(showGlob=False)
+epp.globmin = FPair(pos=np.array([eplot.X_glob_min, eplot.Y_glob_min]), val=eplot.Z_glob_min)
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-eplot.create3d(showGlob=False)
+epp.globmin
+```
+
+```{code-cell} ipython3
+:tags: []
+
+eplot.createContour(showGlob=True)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+eplot.create3d(showGlob=True)
 ```
 
 ```{code-cell} ipython3
@@ -181,9 +195,70 @@ from anneal.core.components import AcceptStates, Quencher
 ```{code-cell} ipython3
 :tags: []
 
-##bq = BoltzmannQuencher(epp, T_init=5)
+bq = BoltzmannQuencher(epp, np.array([7, 7]), T_init=50)#, maxiter=MAX_LIMITS(EPOCHS=2, STEPS_PER_EPOCH=100))
 ```
 
 ```{code-cell} ipython3
+:tags: []
 
+bq(trackPlot=True)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+eplot.plotQuenchContour(bq)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+np.max(eplot.X.ravel())
+```
+
+```{code-cell} ipython3
+:tags: []
+
+import pandas as pd
+```
+
+```{code-cell} ipython3
+:tags: []
+
+np.concatenate(pd.DataFrame(bq.PlotData).pos.to_list(), axis=0).reshape(-1, epp.limits.dims)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+pdat = pd.DataFrame(bq.PlotData)
+np.concatenate(pdat.pos.to_list(), axis=0).reshape(-1, 2)[:, 0] < 11.5
+```
+
+```{code-cell} ipython3
+:tags: []
+
+for pt in np.concatenate(pd.DataFrame.sample(pdat[pdat.accept == AcceptStates.IMPROVED].pos, 3).to_list(), axis=0).reshape(-1, 2):
+    print(pt[1])
+```
+
+```{code-cell} ipython3
+:tags: []
+
+epp.limits.mkpoint()
+```
+
+```{code-cell} ipython3
+bq.fCalls
+```
+
+```{code-cell} ipython3
+:tags: []
+
+p2 = ec.Parameters()
+p2.potential = ec.PotType.EAM_AL
+mp2 = ec.makePotential(p2)
+epp2 = EONPot1Pt(mp2, m1)
+eplt2 = Plot2dObj(epp2, 40)
+eplt2.createContour()
 ```
