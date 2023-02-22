@@ -22,6 +22,8 @@ from matplotlib import cm
 from matplotlib import pyplot as plt
 import numpy as np
 
+from scipy.spatial import KDTree
+
 %matplotlib inline
 %load_ext autoreload
 %autoreload 2
@@ -62,31 +64,19 @@ This is a first pass at making the standard GPR model with a squared exponential
 
 +++
 
-## Setup Data
+
 We will first setup the data for this. As a first approximation, we will train a new GPR at each stage, later we can iterate on this design. Taking all the atoms into consideration is too expensive, so only free atoms are considered.
 
 ```{code-cell} ipython3
-Xpos_init = [x.free_positions for x in neb.neb_images]
-Xfrcs_init = [x.free_forces for x in neb.neb_images]
-Yenerg_init = [x.pot_energy for x in neb.neb_images]
-# NumPy Variants
-Ye_init_np = np.array(Yenerg_init)
-```
+:tags: []
 
-```{code-cell} ipython3
-Xfrcs_init[1]
+initData = neb.neb_images
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-np.row_stack([np.append(x, y.reshape(-1, 3)) for x,y in zip(Ye_init_np, Xfrcs_init)])[0][:]
-```
-
-```{code-cell} ipython3
-:tags: []
-
-def make_data(listMatter):
+def make_data_free(listMatter):
     listPos = [x.free_positions for x in neb.neb_images]
     listForce = [x.free_forces for x in neb.neb_images]
     listEnergy = np.array([x.pot_energy for x in neb.neb_images])
@@ -94,7 +84,7 @@ def make_data(listMatter):
         np.row_stack([x.ravel() for x in listPos])
     )
     y_train = torch.from_numpy(
-        np.row_stack([np.append(x, y) for x,y in zip(Ye_init_np, Xfrcs_init)])
+        np.row_stack([np.append(x, y) for x,y in zip(listEnergy, listForce)])
     )
     return (x_train, y_train)
 ```
@@ -111,7 +101,7 @@ def make_data(listMatter):
 #     np.append(Ye_init_np[0], Xfrcs_init[0].ravel()),
 #     np.append(Ye_init_np[1], Xfrcs_init[1].ravel()),
 # ]))## should be 1, ndim+1
-x_train, y_train = make_data(Xpos_init, Xfrcs_init, Ye_init_np)
+x_train, y_train = make_data_free(initData)
 ```
 
 ```{code-cell} ipython3
@@ -176,27 +166,21 @@ for i in range(training_iter):
 ```{code-cell} ipython3
 :tags: []
 
-# Set into eval mode
-model.eval()
-likelihood.eval()
-# Predict on a new point
-with torch.no_grad(), gpytorch.settings.fast_computations(log_prob=False, covar_root_decomposition=False):
-    test_x = torch.from_numpy(Xpos_init[2].ravel()).unsqueeze(0)
-    predictions = likelihood(model(test_x))
-    mean = predictions.mean
+# # Set into eval mode
+# model.eval()
+# likelihood.eval()
+# # Predict on a new point
+# with torch.no_grad(), gpytorch.settings.fast_computations(log_prob=False, covar_root_decomposition=False):
+#     test_x = torch.from_numpy(Xpos_init[2].ravel()).unsqueeze(0)
+#     predictions = likelihood(model(test_x))
+#     mean = predictions.mean
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-frcs = mean.squeeze(0)[1::1].reshape(-1, 3)
-energy = mean.squeeze(0)[0]
-```
-
-```{code-cell} ipython3
-:tags: []
-
-frcs
+# frcs = mean.squeeze(0)[1::1].reshape(-1, 3)
+# energy = mean.squeeze(0)[0]
 ```
 
 ## Setup Single Matter <-> GPR Model
@@ -272,25 +256,13 @@ neb_gpr.compute()
 ```{code-cell} ipython3
 :tags: []
 
-[x.forces for x in neb_gpr.neb_images]
+datTwo = initData + neb_gpr.neb_images
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-##reactant.setPotential(pot)
-```
-
-```{code-cell} ipython3
-:tags: []
-
-##reactant.getPotentialEnergy()
-```
-
-```{code-cell} ipython3
-:tags: []
-
-##reactant.forces
+x_train, y_train = make_data_free(datTwo)
 ```
 
 ```{code-cell} ipython3
@@ -302,25 +274,19 @@ neb.compute()
 ```{code-cell} ipython3
 :tags: []
 
-neb.convergenceForce()
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb_gpr.convergenceForce()
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb.extremumPosition
+neb.compute()
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
 neb_gpr.extremumPosition
+```
+
+```{code-cell} ipython3
+:tags: []
+
+neb.extremumPosition
 ```
 
 ```{code-cell} ipython3
@@ -338,15 +304,27 @@ neb_gpr.extremumCurvature
 ```{code-cell} ipython3
 :tags: []
 
-neb.maxEnergyImage
+reactant.setPotential(pot)
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-neb_gpr.maxEnergyImage
+reactant.pot_energy
 ```
 
 ```{code-cell} ipython3
-Xf = [x.positions for x in neb_gpr.neb_images]
+:tags: []
+
+reactant.forces
+```
+
+```{code-cell} ipython3
+:tags: []
+
+[x.pot_energy for x in neb.neb_images]
+```
+
+```{code-cell} ipython3
+
 ```

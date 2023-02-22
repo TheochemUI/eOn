@@ -116,6 +116,43 @@ m1.forces
 ```{code-cell} ipython3
 :tags: []
 
+m1.positions[np.mean(m1.getFree(), axis=1, dtype=bool)].shape
+```
+
+```{code-cell} ipython3
+:tags: []
+
+m1.positions[~np.mean(m1.getFree(), axis=1, dtype=bool)].shape
+```
+
+```{code-cell} ipython3
+:tags: []
+
+aa=(np.zeros((4,3))+np.array([1,2,3]))
+aa[:2]=np.zeros((1,3))
+```
+
+```{code-cell} ipython3
+:tags: []
+
+aa[~np.mean(aa, axis=1, dtype=bool)]
+```
+
+```{code-cell} ipython3
+:tags: []
+
+np.mean(m1.getFree(), axis=1) = m1.positions[np.mean(m1.getFree(), axis=1, dtype=bool)]
+```
+
+```{code-cell} ipython3
+:tags: []
+
+m1.free_positions.shape
+```
+
+```{code-cell} ipython3
+:tags: []
+
 ##ec.callPotential(fp, product.positions, np.ones(product.numberOfAtoms()), product.getCell())
 ```
 

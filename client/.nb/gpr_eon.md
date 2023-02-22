@@ -60,7 +60,7 @@ neb = ec.NudgedElasticBand(reactant, product, params)
 :tags: []
 
 Xpos_init = [x.positions for x in neb.neb_images]
-Xfrcs_init = [x.positions for x in neb.neb_images]
+Xfrcs_init = [x.forces for x in neb.neb_images]
 Yenerg_init = [x.pot_energy for x in neb.neb_images]
 ```
 
@@ -426,20 +426,38 @@ energy = mean.squeeze(0)[0]
 ```{code-cell} ipython3
 :tags: []
 
-aa=np.array([1,2,3])
+mean.shape
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
 ## Average force error per atom
-np.average(np.average(np.abs(frcs) - np.abs(Xfrcs_init[0]), axis=1))
+np.average(np.average(np.abs(frcs) - np.abs(Xfrcs_init[2]), axis=1))
 ```
 
 ```{code-cell} ipython3
 :tags: []
 
-np.abs(energy) - np.abs(Ye_init_np[0])
+np.abs(energy) - np.abs(Ye_init_np[2])
+```
+
+```{code-cell} ipython3
+:tags: []
+
+energy
+```
+
+```{code-cell} ipython3
+:tags: []
+
+predictions.mode
+```
+
+```{code-cell} ipython3
+:tags: []
+
+product.fr
 ```
 
 ```{code-cell} ipython3
