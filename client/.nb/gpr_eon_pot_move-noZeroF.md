@@ -164,7 +164,7 @@ class GPModelWithDerivativesTwo(gpytorch.models.ExactGP):
     def __init__(self, train_x, train_y, likelihood): 
         super(GPModelWithDerivativesTwo, self).__init__(train_x, train_y, likelihood)
         self.mean_module = gpytorch.means.ConstantMeanGrad()
-        self.base_kernel = gpytorch.kernels.RBFKernelGrad(ard_num_dims = 57)#ard_num_dims=train_x.shape[1]) ## Important, additional dimensions
+        self.base_kernel = gpytorch.kernels.RBFKernelGrad(ard_num_dims=train_x.shape[1]) ## Important, additional dimensions
         self.covar_module = gpytorch.kernels.ScaleKernel(self.base_kernel)
 
     def forward(self, x):
@@ -272,8 +272,8 @@ class EONPot1Pt(ObjectiveFunction):
     Additionally, the Z axis is constrained, so the dimensions are correct for SA"""
     def __init__(
         self, ec_pot, ec_mat, limits=NumLimit(dims=2,
-                              low=np.array([5, 5]),#, 14.584501]),
-                              high=np.array([15, 15]))#, 14.584501]))
+                              low=np.array([-20, -20]),#, 14.584501]),
+                              high=np.array([20, 20]))#, 14.584501]))
     ):
         self.pot = ec_pot
         self.mat = ec_mat
@@ -307,7 +307,17 @@ class EONPot1Pt(ObjectiveFunction):
 :tags: []
 
 epp = EONPot1Pt(pot, m1)
+```
+
+```{code-cell} ipython3
+:tags: []
+
 eplot = Plot2dObj(epp, 30)
+```
+
+```{code-cell} ipython3
+:tags: []
+
 eplot.createContour(showGlob=True)
 ```
 
@@ -362,7 +372,7 @@ model2.train()
 likelihood2.train()
 
 # Use the adam optimizer
-optimizer2 = torch.optim.Adam(model2.parameters(), lr=0.5)  # Includes GaussianLikelihood parameters
+optimizer2 = torch.optim.Adam(model.parameters(), lr=0.05)  # Includes GaussianLikelihood parameters
 
 # "Loss" for GPs - the marginal log likelihood
 mll2 = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood2, model2)
@@ -410,119 +420,6 @@ pot2.get_ef(m1.positions, m1.numberOfAtoms, m1.getCell())
 ```
 
 The problem here is that there are too many zeros. We need to remove them, though this will mean that the X vector becomes truncated. Or, optionally, we could train and predict only the free forces, but take in the X positions of the entire set of free + moving.
-
-```{code-cell} ipython3
-:tags: []
-
-neb_gpr2.climbingImage
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb.extremumEnergy
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb.climbingImage
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb.neb_images[3].free_positions
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb_gpr2.neb_images[neb_gpr2.climbingImage].free_positions
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb_gpr.neb_images[neb_gpr.climbingImage].free_positions
-```
-
-```{code-cell} ipython3
-:tags: []
-
-neb.neb_images[3].free_forces
-```
-
-```{code-cell} ipython3
-:tags: []
-
-x_train.shape, y_train.shape
-```
-
-```{code-cell} ipython3
-:tags: []
-
-x_train2.shape, y_train2.shape
-```
-
-It would be best to separate out the making of a GPR and its usage in EON.
-
-```{code-cell} ipython3
-:tags: []
-
-class makeGPR():
-    def __init__(self, xtrain, ytrain):
-        self.xtrain = xtrain
-        self.ytrain = ytrain
-        self.likelihood = gpytorch.likelihoods.MultitaskGaussianLikelihood(num_tasks=self.ytrain.shape[1]) # Value + x-derivative + y-derivative + z-derivative
-        self.model = GPModelWithDerivativesTwo(self.xtrain, self.ytrain, self.likelihood)
-    def train(self, training_iter = 400, log=True):
-        self.model.train()
-        self.likelihood.train()
-        # Use the adam optimizer
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=0.5)  # Includes GaussianLikelihood parameters
-        # "Loss" for GPs - the marginal log likelihood
-        mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-
-        for i in range(training_iter):
-            optimizer.zero_grad()
-            output = self.model(self.xtrain)
-            loss = -mll(output, self.ytrain)
-            loss.backward()
-            if log == True:
-                print("Iter %d/%d - Loss: %.3f   lengthscales: %.3f, %.3f   noise: %.3f" % (
-                    i + 1, training_iter, loss.item(),
-                    self.model.covar_module.base_kernel.lengthscale.squeeze()[0],
-                    self.model.covar_module.base_kernel.lengthscale.squeeze()[1],
-                    self.model.likelihood.noise.item()))
-            optimizer.step()
-```
-
-```{code-cell} ipython3
-:tags: []
-
-gp1 = makeGPR(*make_data_free_move(initData))
-```
-
-```{code-cell} ipython3
-:tags: []
-
-gp1.train()
-```
-
-```{code-cell} ipython3
-:tags: []
-
-pot = GPRPotFreeMove(params, gp1.model, gp1.likelihood, copy.deepcopy(freeMoveMask), copy.deepcopy(freeMask))
-```
-
-```{code-cell} ipython3
-:tags: []
-
-epp = EONPot1Pt(pot, m1)
-eplot = Plot2dObj(epp, 30)
-eplot.createContour(showGlob=True)
-```
 
 ```{code-cell} ipython3
 

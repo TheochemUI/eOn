@@ -32,3 +32,6 @@ dependencies:
   - sphinx
   - gtest
   - clang # for pybind
+  # GP Potential
+  - torch
+  - gpytorch
