@@ -21,7 +21,7 @@ if host_system == 'darwin'
 endif
 
 # Dependencies
-eigen_dep = dependency('Eigen3')
+eigen_dep = dependency('eigen3', required : true)
 eon_deps = [ eigen_dep ]
 
 # Optional, only for AMS
