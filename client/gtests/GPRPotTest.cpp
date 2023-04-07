@@ -62,7 +62,7 @@ TEST_F(GPRPotTest, TestMatter) {
   auto matterClone = std::make_unique<Matter>(this->parameters.get());
   matterClone->con2matter(this->reactantFilename);
   matterClone->setPotential(&gprpot);
-  ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, this->threshold*10)
+  ASSERT_NEAR(matterClone->getPotentialEnergy(), init_eref, 1e-3)
       << "Energy does not match";
   ASSERT_PRED2(comparer, matterClone->getForcesFree(),
                init_frcsref)
