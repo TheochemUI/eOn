@@ -14,6 +14,12 @@
 // #define EIGEN2_SUPPORT
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
+
+#include <fmt/os.h>
+#include <fmt/ostream.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 using namespace Eigen;
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,3> AtomMatrix;
