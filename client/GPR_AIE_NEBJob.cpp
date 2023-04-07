@@ -49,7 +49,7 @@ void GPR_AIE_NEBJob::runGPRNEB(GPRNEB& gprneb){
                             this->isWithin);
     ++this->fCallsNEB;
     saveData(0, &gprneb); // Force to STATUS_GOOD
-    this->matvec = gprneb.getCurPath(); // Set current intermediates
+    this->matvec = gprneb.getCurPathFull(); // Set current intermediates
     this->checkConvergence(gprneb.getConvergenceTrue()); // Set convergence
     if (!this->converged){
         this->mustUpdate = gprneb.needsRetraining(this->eonp->gprPotTol); // Set retraining
@@ -66,7 +66,7 @@ void GPR_AIE_NEBJob::checkConvergence(std::pair<double, double> curTrueEnergy){
                                saddleCriteria, pathConv, pathCriteria);
     std::cout<<fstring;
     this->handleCI(pathConv < pathCriteria);
-    if (saddleConv < saddleCriteria && pathConv < pathCriteria){
+    if (saddleConv < saddleCriteria || pathConv < pathCriteria){
         this->converged = true;
         std::cout<<"\nCONVERGED\n";
     } else { this->converged = false; }
