@@ -11,7 +11,7 @@
 #include "CuH2.h"
 #include <set>
 
-CuH2::CuH2(Parameters *p) {}
+CuH2::CuH2(Parameters *p) : Potential(p), parameters{p} {}
 
 void CuH2::cleanMemory(void) { return; }
 
