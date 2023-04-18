@@ -10,10 +10,6 @@
 
 #include"SW.h"
 
-SW::SW(void){
-    return;
-}
-
 void SW::initialize(void){
     return;
 }
