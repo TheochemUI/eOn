@@ -26,11 +26,13 @@ extern "C" {
 
 /** Tersoff potential */
 class Tersoff : public Potential{    
+private:
+    Parameters *parameters;
 public:
 // Functions
 	// constructor
-    Tersoff(void);
-	
+    Tersoff(Parameters *p) : Potential(p), parameters{p} {}
+
     // To satisfy interface
     void initialize(void);
     void cleanMemory(void);
