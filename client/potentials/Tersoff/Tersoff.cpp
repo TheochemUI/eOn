@@ -10,11 +10,6 @@
 
 #include"Tersoff.h"
 
-Tersoff::Tersoff(void){
-    return;
-}
-
-
 void Tersoff::initialize(void){
     return;
 }
