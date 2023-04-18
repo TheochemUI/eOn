@@ -22,9 +22,18 @@ public:
   static double totalUserTime;
 
 // Does not take into account the fixed / free atoms
-  std::pair<double, AtomMatrix> virtual get_ef(const AtomMatrix pos,
-                                               const VectorXi atmnrs,
-                                               const Matrix3d box) = 0;
+    void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
+                       double *forces, double *energy, const double *box) = 0;
+    std::pair<double, AtomMatrix> get_ef(const AtomMatrix pos,
+                                         const VectorXi atmnrs,
+                                         const Matrix3d box) {
+      double energy{std::numeric_limits<double>::infinity()};
+      long nAtoms{pos.rows()};
+      AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+      this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
+                  box.data());
+      return std::make_pair(energy, forces);
+    };
   PotType getType() { return this->ptype; };
 };
 
