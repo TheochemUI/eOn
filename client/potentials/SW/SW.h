@@ -25,11 +25,13 @@ extern "C" {
 }    
 
 /** SW potential.*/
-class SW : public Potential{    
+class SW : public Potential{
+private:
+    Parameters *parameters;
 public:
 // Functions
 	// constructor
-    SW(void);
+    SW(Parameters *p) : Potential(p), parameters{p} {}
 	
     // To satisfy interface
     void initialize(void);    
