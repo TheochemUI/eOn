@@ -1,4 +1,5 @@
 #include <csignal>
+#include <limits>
 #include <time.h>
 #include <utility>
 
@@ -74,15 +75,7 @@
 #include "potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
-std::pair<double, AtomMatrix> Potential::get_ef(long nAtoms,
-                                                const double *positions,
-                                                const int *atomicNrs,
-                                                const double *box) {
-  double energy{0};
-  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
-  this->force(nAtoms, positions, atomicNrs, forces.data(), &energy, box);
-  return std::make_pair(energy, forces);
-}
+#include <limits>
 
 namespace helper_functions {
 Potential *makePotential(Parameters *params) {
@@ -144,6 +137,8 @@ Potential *makePotential(Parameters *params) {
     break;
   }
 #endif
+#endif
+#ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
     return (new Aluminum(params));
     break;
@@ -161,11 +156,11 @@ Potential *makePotential(Parameters *params) {
     break;
   }
   case PotType::SW_SI: {
-    return (new SW());
+    return (new SW(params));
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (new Tersoff());
+    return (new Tersoff(params));
     break;
   }
 #endif
