@@ -11,8 +11,6 @@
 #include "CuH2.h"
 #include <set>
 
-CuH2::CuH2(Parameters *p) {}
-
 void CuH2::cleanMemory(void) { return; }
 
 // pointer to number of atoms, pointer to array of positions
