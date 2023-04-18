@@ -46,7 +46,7 @@ void Morse::setParameters(double De, double a, double re, double cutoff)
 
 // pointer to number of atoms, pointer to array of positions	
 // pointer to array of forces, pointer to internal energy
-// adress to supercell size
+// address to supercell size
 void Morse::force(long N, const double *R, const int *, double *F, double *U, const double *box)
 {
       assert((box[0] > 0) and (box[4] > 0) and (box[8] > 0));

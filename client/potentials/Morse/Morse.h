@@ -34,9 +34,9 @@ public:
 
 private:
   void morse(double r, double &energy, double &force);
-  double re_;
   double De_;
   double a_;
+  double re_;
   double cutoff_;
   double energyCutoff_;
 };
