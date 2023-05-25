@@ -26,7 +26,7 @@
  */
 
 /**
- * Decleration of the Process Search job
+ * Declaration of the Process Search job
  */
 
 class ProcessSearchJob : public Job {
@@ -35,11 +35,11 @@ class ProcessSearchJob : public Job {
 	/*!
  	 * \param *params defined by the config.init file
  	 */	
-        ProcessSearchJob(Parameters *params);
-	//! Process Search job Deconstructor
-        ~ProcessSearchJob(void);
+        ProcessSearchJob(Parameters *params) : Job(params), parameters{params}, fCallsSaddle{0.0}, fCallsPrefactor{0.0}, fCallsMin{0};
+	//! Process Search job De-constructor
+        ~ProcessSearchJob() = default;
 	//! Kicks off the Process Search	
-	std::vector<std::string> run(void);
+	std::vector<std::string> run(void) override;
 
     private:
 	//! Runs the correct saddle search; also checks if the run was successful
