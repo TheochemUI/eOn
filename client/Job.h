@@ -29,15 +29,17 @@
  */
 
 /**
- * Decleration of job class
+ * Declaration of job class
  */
 
 class Job {
     private:
+    protected:
         // make const
         JobType jtype;
+        std::shared_ptr<Parameters> params;
     public:
-        Job(Parameters *parameters) : jtype{parameters->job} {}
+        Job(std::unique_ptr<Parameters> parameters) : jtype{parameters->job}, params{std::make_shared<Parameters>(*std::move(parameters))} {}
         virtual ~Job() = default;
         //! Virtual run; used solely for dynamic dispatch
         virtual std::vector<std::string> run() = 0;
@@ -45,6 +47,6 @@ class Job {
 };
 
 namespace helper_functions {
-    Job *makeJob(Parameters *params);
+    std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
 } // namespace helper_functions
 #endif

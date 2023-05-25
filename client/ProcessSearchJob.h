@@ -36,9 +36,9 @@ public:
   /*!
    * \param *params defined by the config.init file
    */
-  ProcessSearchJob(Parameters *params)
-      : Job(params), parameters{params}, fCallsSaddle{0.0},
-        fCallsPrefactor{0.0}, fCallsMin{0};
+  ProcessSearchJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)), fCallsSaddle{0},
+        fCallsMin{0}, fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
@@ -60,8 +60,6 @@ private:
   //! Container for the results of the run
   std::vector<std::string> returnFiles;
 
-  //! Parameters defined by the config.init file
-  Parameters *parameters;
   //! Pulled from parameters
   /*!
    * sa ref BasinHoppingSaddleSearch DynamicsSaddleSearch
@@ -87,11 +85,11 @@ private:
   double prefactorsValues[2];
 
   //! Force calls to find the saddle
-  int fCallsSaddle;
+  size_t fCallsSaddle;
   //! Force calls to minimize
-  long fCallsMin;
+  size_t fCallsMin;
   //! Force calls to find the prefactors
-  int fCallsPrefactors;
+  size_t fCallsPrefactors;
 };
 
 #endif
