@@ -32,53 +32,19 @@
  * Decleration of job class
  */
 
-class Job { 
+class Job {
+    private:
+        // make const
+        JobType jtype;
     public:
-	
-	//! job deconstructor.
-	virtual ~Job() {};
-	//! Virtual run; used solely for dynamic dispatch 
-	virtual std::vector<std::string> run()=0;
-	//! Runs a \ref ProcessSearchJob "Process Search" job 
-        static const char PROCESS_SEARCH[];
-	//! Runs a \ref SaddleSearchJob "Saddle Search" job
-        static const char SADDLE_SEARCH[];
-	//! ref MinimizationJob
-        static const char MINIMIZATION[];
-        //! ref PointJob
-	static const char POINT[];
-        //! ref ParallelReplicaJob
-	static const char PARALLEL_REPLICA[];
-        //! ref SafeHyperdynamicsJob
-	static const char SAFE_HYPER[];
-	//! ref TADJob
-        static const char TAD[];
-	//! ref ReplicaExchangeJob
-        static const char REPLICA_EXCHANGE[];
-	//! ref BasinHopingJob
-        static const char BASIN_HOPPING[];
-	//! ref HessianJob
-        static const char HESSIAN[];
-	//! ref FiniteDifferenceJob
-        static const char FINITE_DIFFERENCE[];
-	//! ref NudgedElasticBandJob
-        static const char NUDGED_ELASTIC_BAND[];
-	//! ref DynamicsJob
-        static const char DYNAMICS[];
-	//! ref PrefactorJob
-        static const char PREFACTOR[];
-	//! ref GlobalOptimizationJob
-	static const char GLOBAL_OPTIMIZATION[];
-	//! ref StructureComparisonJob
-	static const char STRUCTURE_COMPARISON[];
-	//! ref MonteCarloJob
-        static const char MONTE_CARLO[];
-	//! ref TestJob
-        static const char TEST[];
-	//! Grabs the correct job as specified by the parameters
-	/*!
- 	  \param *parameters defined by the config.init file
-	*/
-        static Job *getJob(Parameters *parameters);
+        Job(Parameters *parameters) : jtype{parameters->job} {}
+        virtual ~Job() = default;
+        //! Virtual run; used solely for dynamic dispatch
+        virtual std::vector<std::string> run() = 0;
+        JobType getType() { return this->jtype; };
 };
+
+namespace helper_functions {
+    Job *makeJob(Parameters *params);
+} // namespace helper_functions
 #endif
