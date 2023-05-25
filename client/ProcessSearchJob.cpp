@@ -12,15 +12,6 @@
 #include <string>
 //#include <cassert>
 
-ProcessSearchJob::ProcessSearchJob (Parameters *params)
-{
-    parameters = params;
-    fCallsSaddle = fCallsPrefactors = fCallsMin = 0;
-}
-
-ProcessSearchJob::~ProcessSearchJob()
-{}
-
 std::vector<std::string> ProcessSearchJob::run(void)
 {
     string reactantFilename("pos.con");
