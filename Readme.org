@@ -7,6 +7,11 @@ We provide a ~conda~ environment, which is only partially supported for reproduc
 micromamba create -f environment.yml
 micromamba activate eongit
 #+end_src
+This leads to the most robust installation approach:
+#+begin_src bash
+meson setup bbdir -Dwith_water=false -Dwith_gprd=false -Dwith_fortran=false -Dwith_cuh2=true --buildtype=debug --default-library=shared --prefix=$CONDA_PREFIX
+meson install -C bbdir
+#+end_src
 *** Nix
 This is preferred since it is reproducible. You will need [[https://nixos.org/guides/install-nix.html][nix]].
 #+begin_src bash
