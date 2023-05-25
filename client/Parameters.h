@@ -37,7 +37,7 @@ public:
 /** input parameters **/
 
     // [Main] //
-    string job;
+    JobType job;
     long   randomSeed;
     double temperature;
     bool   quiet;

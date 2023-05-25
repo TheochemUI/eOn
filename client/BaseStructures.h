@@ -41,7 +41,32 @@ enum class PotType {
   PYTHON
 };
 
+enum class JobType {
+  // Only add to the end of this!!!
+  Unknown = 0,
+  ProcessSearch,
+  SaddleSearch,
+  Minimization,
+  Point,
+  ParallelReplica,
+  SafeHyperdynamics,
+  TAD,
+  ReplicaExchange,
+  BasinHopping,
+  Hessian,
+  FiniteDifference,
+  NEB,
+  Dynamics,
+  Prefactor,
+  GlobalOptimization,
+  StructureComparison,
+  MonteCarlo,
+  Test
+};
+
 namespace helper_functions {
-PotType getPotentialType(std::string pname);
-std::string getPotentialName(PotType ptype);
+  PotType getPotentialType(std::string pname);
+  std::string getPotentialName(PotType ptype);
+  JobType getJobType(std::string jname);
+  std::string getJobName(JobType jtype);
 }

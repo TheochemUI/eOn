@@ -209,4 +209,136 @@ PotType getPotentialType(const std::string pname) {
     return PotType::UNKNOWN;
   }
 }
+
+  std::string getJobName(JobType jtype) {
+    switch (jtype) {
+      case JobType::ProcessSearch: {
+        return "process_search"s;
+        break;
+      }
+      case JobType::SaddleSearch: {
+        return "saddle_search"s;
+        break;
+      }
+      case JobType::Minimization: {
+        return "minimization"s;
+        break;
+      }
+      case JobType::Point: {
+        return "point"s;
+        break;
+      }
+      case JobType::ParallelReplica: {
+        return "parallel_replica"s;
+        break;
+      }
+      case JobType::SafeHyperdynamics: {
+        return "safe_hyperdynamics"s;
+        break;
+      }
+      case JobType::TAD: {
+        return "tad"s;
+        break;
+      }
+      case JobType::ReplicaExchange: {
+        return "replica_exchange"s;
+        break;
+      }
+      case JobType::BasinHopping: {
+        return "basin_hopping"s;
+        break;
+      }
+      case JobType::Hessian: {
+        return "hessian"s;
+        break;
+      }
+      case JobType::FiniteDifference: {
+        return "finite_difference"s;
+        break;
+      }
+      case JobType::NEB: {
+        return "nudged_elastic_band"s;
+        break;
+      }
+      case JobType::Dynamics: {
+        return "dynamics"s;
+        break;
+      }
+      case JobType::Prefactor: {
+        return "prefactor"s;
+        break;
+      }
+      case JobType::GlobalOptimization: {
+        return "global_optimization"s;
+        break;
+      }
+      case JobType::StructureComparison: {
+        return "structure_comparison"s;
+        break;
+      }
+      case JobType::MonteCarlo: {
+        return "monte_carlo"s;
+        break;
+      }
+      default:
+        return "unknown job"s;
+        break;
+    }
+  }
+  JobType getJobType(const std::string jname) {
+    if (jname == "process_search"s) {
+      return JobType::ProcessSearch;
+    }
+    else if (jname == "saddle_search"s) {
+      return JobType::SaddleSearch;
+    }
+    else if (jname == "minimization"s) {
+      return JobType::Minimization;
+    }
+    else if (jname == "point"s) {
+      return JobType::Point;
+    }
+    else if (jname == "parallel_replica"s) {
+      return JobType::ParallelReplica;
+    }
+    else if (jname == "safe_hyperdynamics"s) {
+      return JobType::SafeHyperdynamics;
+    }
+    else if (jname == "tad"s) {
+      return JobType::TAD;
+    }
+    else if (jname == "replica_exchange"s) {
+      return JobType::ReplicaExchange;
+    }
+    else if (jname == "basin_hopping"s) {
+      return JobType::BasinHopping;
+    }
+    else if (jname == "hessian"s) {
+      return JobType::Hessian;
+    }
+    else if (jname == "finite_difference"s) {
+      return JobType::FiniteDifference;
+    }
+    else if (jname == "nudged_elastic_band"s) {
+      return JobType::NEB;
+    }
+    else if (jname == "dynamics"s) {
+      return JobType::Dynamics;
+    }
+    else if (jname == "prefactor"s) {
+      return JobType::Prefactor;
+    }
+    else if (jname == "global_optimization"s) {
+      return JobType::GlobalOptimization;
+    }
+    else if (jname == "structure_comparison"s) {
+      return JobType::StructureComparison;
+    }
+    else if (jname == "monte_carlo"s) {
+      return JobType::MonteCarlo;
+    }
+    else {
+      return JobType::Unknown;
+    }
+  }
 } // namespace helper_functions
