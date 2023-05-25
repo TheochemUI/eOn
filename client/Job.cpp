@@ -20,10 +20,10 @@
 #include "MonteCarloJob.h"
 
 namespace helper_functions {
-Job *makeJob(Parameters *params) {
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
     switch (params->job) {
       case JobType::ProcessSearch: {
-          return (new ProcessSearchJob(params));
+          return (std::make_unique<ProcessSearchJob>(std::move(params)));
           break;
       }
       default:

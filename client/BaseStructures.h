@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 using namespace std::string_literals; // For ""s
 

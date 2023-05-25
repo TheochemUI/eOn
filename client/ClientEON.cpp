@@ -332,7 +332,7 @@ int main(int argc, char **argv)
         }
 
         // Determine what type of job we are running according to the parameters file. 
-        Job *job = helper_functions::makeJob(&parameters);
+        auto job = helper_functions::makeJob(std::make_unique(parameters));
         if (job == NULL) {
             printf("error: Unknown job: %s\n", parameters.job.c_str());
             return 1;
