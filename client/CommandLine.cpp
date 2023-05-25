@@ -14,7 +14,7 @@ using namespace std;
 void singlePoint(Parameters *parameters, Matter *matter)
 {
     printf("Energy:         %.10f\n", matter->getPotentialEnergy());
-    std::cout<<"Forces:         \n" << matter->getForces()<<"\n";
+    std::cout<<"(free) Forces:         \n" << matter->getForcesFree()<<"\n";
     printf("Max atom force: %.10g\n", matter->maxForce());
 }
 
