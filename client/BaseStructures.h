@@ -1,14 +1,17 @@
 #pragma once
 #include <string>
+#include <memory>
 
 using namespace std::string_literals; // For ""s
 
 // This file contains forward declarations and enum classes
 
-/* Don't guard with compiler directives anymore because that will break ABI */
+/* Don't guard with compiler directives anymore because that will break ABI for
+ * any of these */
 enum class PotType {
   // Only add to the end of this!!!
-  EMT = 0,
+  UNKNOWN = 0,
+  EMT,
   EXT,
   LJ,
   LJCLUSTER,
@@ -33,7 +36,6 @@ enum class PotType {
   QSC,
   BOPFOX, // unused?
   BOP,    // unused?
-  UNKNOWN,
   // Add newer entries here
   AMS,
   AMS_IO,
@@ -41,7 +43,39 @@ enum class PotType {
   PYTHON
 };
 
+enum class JobType {
+  // Only add to the end of this!!!
+  Unknown = 0,
+  ProcessSearch,
+  SaddleSearch,
+  Minimization,
+  Point,
+  ParallelReplica,
+  SafeHyperdynamics,
+  TAD,
+  ReplicaExchange,
+  BasinHopping,
+  Hessian,
+  FiniteDifference,
+  NEB,
+  Dynamics,
+  Prefactor,
+  GlobalOptimization,
+  StructureComparison,
+  MonteCarlo,
+  Test
+};
+
+enum class RunStatus {
+  GOOD = 0,
+  MAX_ITERATIONS,
+  POTENTIAL_FAILED
+};
+
 namespace helper_functions {
 PotType getPotentialType(std::string pname);
 std::string getPotentialName(PotType ptype);
-}
+JobType getJobType(std::string jname);
+std::string getJobName(JobType jtype);
+std::string getRunStatusName(RunStatus rstype);
+} // namespace helper_functions

@@ -6,11 +6,10 @@
 
 class PointJob: public Job {
     public:
-        PointJob(Parameters *params);
-        ~PointJob(void);
+        PointJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~PointJob(void) = default;
         std::vector<std::string> run(void);
-    private:
-        Parameters *parameters;
 };
 
 #endif

@@ -23,7 +23,7 @@ Parameters::Parameters(){
     timeUnit = 10.1805055; // fs
 
     // [Main] //
-    job = Job::PROCESS_SEARCH;
+    job = JobType::ProcessSearch;
     randomSeed = -1;
     temperature = 300.0;
     checkpoint = false;
@@ -351,7 +351,7 @@ int Parameters::load(FILE *file){
 
         // [Main] //
 
-        job = toLowerCase(ini.GetValue("Main", "job"));
+        job = helper_functions::getJobType(toLowerCase(ini.GetValue("Main", "job")));
         temperature = ini.GetValueF("Main", "temperature", temperature);
         randomSeed = ini.GetValueL("Main", "random_seed", randomSeed);
         checkpoint = ini.GetValueB("Main", "checkpoint", checkpoint);
@@ -730,7 +730,7 @@ int Parameters::load(FILE *file){
         log_init(this, (char *)"client.log");
 
         //Sanity Checks
-        if (parrepStateCheckInterval > mdTime && job == "parallel_replica") {
+        if (parrepStateCheckInterval > mdTime && helper_functions::getJobName(job) == "parallel_replica") {
             char msg[] = "error: [Parallel Replica] state_check_interval must be <= time\n";
             fprintf(stderr, "%s", msg);
             log(msg);

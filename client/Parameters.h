@@ -21,7 +21,9 @@ class Parameters {
 
 public:
     Parameters();
-    ~Parameters()=default;
+    ~Parameters() = default;
+    // TODO: Is this complete?
+    Parameters(const Parameters&) = default;
     int load(string filename);
     int load(FILE *file);
 
@@ -37,7 +39,7 @@ public:
 /** input parameters **/
 
     // [Main] //
-    string job;
+    JobType job;
     long   randomSeed;
     double temperature;
     bool   quiet;

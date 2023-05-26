@@ -7,24 +7,16 @@
 #include "Potential.h"
 #include "HelperFunctions.h"
 
-using namespace std;
 using namespace helper_functions;
-
-DynamicsJob::DynamicsJob(Parameters *params)
-{
-    parameters = params;
-}
-
-DynamicsJob::~DynamicsJob() {}
 
 std::vector<std::string> DynamicsJob::run(void)
 {
-    Matter *R = new Matter(parameters);
-    Matter *F = new Matter(parameters);
+    Matter *R = new Matter(params);
+    Matter *F = new Matter(params);
     R->con2matter("pos.con");
     *F = *R;
 
-    Dynamics *d = new Dynamics(R, parameters);
+    Dynamics *d = new Dynamics(R, params.get());
     d->run();
 
     *F = *R;

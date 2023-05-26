@@ -1,12 +1,6 @@
 #include "PointJob.h"
 #include "Matter.h"
 
-PointJob::PointJob(Parameters *params)
-{
-    parameters = params;
-}
-
-PointJob::~PointJob(){ }
 
 std::vector<std::string> PointJob::run(void)
 {
@@ -15,7 +9,7 @@ std::vector<std::string> PointJob::run(void)
     string resultsFilename("results.dat");
     returnFiles.push_back(resultsFilename);
 
-    Matter *pos = new Matter(parameters);
+    Matter *pos = new Matter(params);
     pos->con2matter(posInFilename);
 
     printf("Energy:         %f\n", pos->getPotentialEnergy());
