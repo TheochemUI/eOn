@@ -4,19 +4,12 @@
 #include "Matter.h"
 #include "HelperFunctions.h"
 
-MonteCarloJob::MonteCarloJob(Parameters *params)
-{
-    parameters = params;
-}
-
-MonteCarloJob::~MonteCarloJob(){ }
-
 std::vector<std::string> MonteCarloJob::run(void)
 {
     string posInFilename("pos.con");
     string posOutFilename("out.con");
 
-    if (parameters->checkpoint) {
+    if (params->checkpoint) {
         FILE *pos;
         pos = fopen("pos_cp.con", "r");
         if (pos != NULL) {
@@ -30,13 +23,13 @@ std::vector<std::string> MonteCarloJob::run(void)
     std::vector<std::string> returnFiles;
     returnFiles.push_back(posOutFilename);
 
-    Matter *matter = new Matter(parameters);
+    Matter *matter = new Matter(params);
     matter->con2matter(posInFilename);
 
     //code will go
-    MonteCarlo mc = MonteCarlo(matter, parameters);
-    mc.run(parameters->monteCarloSteps, parameters->temperature, 
-            parameters->monteCarloStepSize);
+    MonteCarlo mc = MonteCarlo(matter, params.get());
+    mc.run(params->monteCarloSteps, params->temperature,
+            params->monteCarloStepSize);
 
 
     //FILE *fileResults;
@@ -47,7 +40,7 @@ std::vector<std::string> MonteCarloJob::run(void)
 
     //fprintf(fileResults, "%d termination_reason\n", status);
     //fprintf(fileResults, "minimization job_type\n");
-    //fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    //fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(params->potential).c_str());
     //fprintf(fileResults, "%d total_force_calls\n", Potential::fcallsTotal);
     //if (status != STATUS_POTENTIAL_FAILED) {
     //    fprintf(fileResults, "%f potential_energy\n", pos->getPotentialEnergy());

@@ -332,9 +332,9 @@ int main(int argc, char **argv)
         }
 
         // Determine what type of job we are running according to the parameters file. 
-        auto job = helper_functions::makeJob(std::make_unique(parameters));
+        auto job = helper_functions::makeJob(std::make_unique<Parameters>(parameters));
         if (job == NULL) {
-            printf("error: Unknown job: %s\n", parameters.job.c_str());
+            printf("error: Unknown job: %s\n", helper_functions::getJobName(parameters.job).c_str());
             return 1;
         }
         
@@ -354,8 +354,6 @@ int main(int argc, char **argv)
         }else{
             bundledFilenames = filenames;
         }
-
-        delete job;
 
         log_close();
     }

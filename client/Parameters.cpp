@@ -730,7 +730,7 @@ int Parameters::load(FILE *file){
         log_init(this, (char *)"client.log");
 
         //Sanity Checks
-        if (parrepStateCheckInterval > mdTime && job == "parallel_replica") {
+        if (parrepStateCheckInterval > mdTime && helper_functions::getJobName(job) == "parallel_replica") {
             char msg[] = "error: [Parallel Replica] state_check_interval must be <= time\n";
             fprintf(stderr, "%s", msg);
             log(msg);

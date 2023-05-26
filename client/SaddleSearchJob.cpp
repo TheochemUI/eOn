@@ -9,22 +9,13 @@
 
 using namespace std;
 
-SaddleSearchJob::SaddleSearchJob(Parameters *params)
-{
-    parameters = params;
-    fCallsSaddle = 0;
-}
-
-SaddleSearchJob::~SaddleSearchJob()
-{}
-
 std::vector<std::string> SaddleSearchJob::run(void)
 {
     string reactantFilename("pos.con");
     string displacementFilename("displacement.con");
     string modeFilename("direction.dat");
 
-    if (parameters->checkpoint) {
+    if (params->checkpoint) {
         FILE *disp, *mode;
         disp = fopen("displacement_cp.con", "r");
         mode = fopen("mode_cp.dat", "r");
@@ -37,13 +28,13 @@ std::vector<std::string> SaddleSearchJob::run(void)
         }
     }
 
-    initial = new Matter(parameters);
-    displacement = new Matter(parameters);
-    saddle = new Matter(parameters);
+    initial = new Matter(params);
+    displacement = new Matter(params);
+    saddle = new Matter(params);
 
     initial->con2matter(reactantFilename);
 
-    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+    if (params->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // displacement was passed from the server
         saddle->con2matter(displacementFilename);
     }
@@ -53,12 +44,12 @@ std::vector<std::string> SaddleSearchJob::run(void)
         *saddle = *initial;
     }
     AtomMatrix mode;
-    if (parameters->saddleDisplaceType == EpiCenters::DISP_LOAD) {
+    if (params->saddleDisplaceType == EpiCenters::DISP_LOAD) {
         // mode was passed from the server
         mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
 
-    saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), parameters);
+    saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), params.get());
 
     int status;
     status = doSaddleSearch();
@@ -75,7 +66,7 @@ std::vector<std::string> SaddleSearchJob::run(void)
 
 int SaddleSearchJob::doSaddleSearch()
 {
-    Matter matterTemp(parameters);
+    Matter matterTemp(params);
     long status;
     int f1;
     // f1 = Potential::fcalls;
@@ -90,7 +81,7 @@ int SaddleSearchJob::doSaddleSearch()
         }
     }
 
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         // fCallsSaddle = saddleSearch->forcecalls - f1; // TODO: Check if this works
     } else {
         // fCallsSaddle += Potential::fcalls - f1;
@@ -111,9 +102,9 @@ void SaddleSearchJob::saveData(int status){
 
     fprintf(fileResults, "%d termination_reason\n", status);
     fprintf(fileResults, "saddle_search job_type\n");
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
-    if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
+    fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(params->potential).c_str());
+    if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
         fprintf(fileResults, "%d total_force_calls\n", saddleSearch->forcecalls);
         fprintf(fileResults, "%d force_calls_saddle\n", fCallsSaddle);
         fprintf(fileResults, "%i iterations\n", saddleSearch->iteration);

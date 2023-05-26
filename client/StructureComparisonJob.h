@@ -7,11 +7,10 @@
 
 class StructureComparisonJob: public Job {
     public:
-        StructureComparisonJob(Parameters *params);
-        ~StructureComparisonJob(void);
+        StructureComparisonJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~StructureComparisonJob(void) = default;
         std::vector<std::string> run(void);
-    private:
-        Parameters *parameters;
 };
 
 #endif
