@@ -263,6 +263,8 @@ public:
   double gprDebugDy;             // {debug_dy}
   double gprDebugDz;             // {debug_dz}
 
+  // GP Surrogate Parameters
+
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
                              // successive iterations

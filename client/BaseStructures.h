@@ -63,7 +63,8 @@ enum class JobType {
   GlobalOptimization,
   StructureComparison,
   MonteCarlo,
-  Test
+  Test,
+  GPSurrogate
 };
 
 enum class RunStatus { GOOD = 0, MAX_ITERATIONS, POTENTIAL_FAILED };

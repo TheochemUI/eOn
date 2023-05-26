@@ -254,6 +254,10 @@ std::string getJobName(JobType jtype) {
     return "monte_carlo"s;
     break;
   }
+  case JobType::GPSurrogate: {
+    return "gp_surrogate"s;
+    break;
+  }
   default:
     return "unknown job"s;
     break;
@@ -295,6 +299,8 @@ JobType getJobType(const std::string jname) {
     return JobType::StructureComparison;
   } else if (jname == "monte_carlo"s) {
     return JobType::MonteCarlo;
+  } else if (jname == "gp_surrogate"s) {
+    return JobType::GPSurrogate;
   } else {
     return JobType::Unknown;
   }

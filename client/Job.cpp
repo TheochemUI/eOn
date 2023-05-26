@@ -19,6 +19,10 @@
 #include "TADJob.h"
 #include "TestJob.h"
 
+#ifdef WITH_GP_SURROGATE
+#include "GPSurrogateJob.h"
+#endif
+
 namespace helper_functions {
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   switch (params->job) {
@@ -90,6 +94,12 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
     return (std::make_unique<MonteCarloJob>(std::move(params)));
     break;
   }
+#ifdef WITH_GP_SURROGATE
+  case JobType::GPSurrogate: {
+    return (std::make_unique<GPSurrogateJob>(std::move(params)));
+    break;
+  }
+#endif
   default:
     throw std::runtime_error("No known job could be constructed");
     break;
