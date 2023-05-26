@@ -26,15 +26,14 @@
 
 #include "EMTDefaultParameterProvider.h"
 
-class EMTRasmussenParameterProvider : public EMTDefaultParameterProvider
-{
+class EMTRasmussenParameterProvider : public EMTDefaultParameterProvider {
 public:
-  EMTRasmussenParameterProvider():EMTDefaultParameterProvider() {};
-  virtual string GetName() const {return "EMTRasmussenParameterProvider";}
-  virtual ~EMTRasmussenParameterProvider() {};
+  EMTRasmussenParameterProvider() : EMTDefaultParameterProvider(){};
+  virtual string GetName() const { return "EMTRasmussenParameterProvider"; }
+  virtual ~EMTRasmussenParameterProvider(){};
+
 protected:
   virtual emt_parameters *GetNewParameters(int element);
 };
-
 
 #endif //  _EMTRASMUSSENPARAMETERPROVIDER_H

@@ -665,8 +665,10 @@ std::string AMS::generate_run(Parameters *p) {
 //     // (?<=AMS_JOBNAME=).*$
 //     // (?<=udmpkf ).*(?=\.results)
 //     // (?<=File ).*(?=\.results)
-//     // The logic here is that the current job restarts from the previous one, so
-//     // the coordinates of the previous job are updated, the restart references
+//     // The logic here is that the current job restarts from the previous one,
+//     so
+//     // the coordinates of the previous job are updated, the restart
+//     references
 //     // the previous job, and then finally the current job executes with cjob
 //     assert(absl::StrContains(rfile, cjob));
 //     assert(absl::StrContains(resfile, pjob));

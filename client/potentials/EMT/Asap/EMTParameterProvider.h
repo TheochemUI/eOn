@@ -1,4 +1,5 @@
-// EMTParameterProvider.h  --  Abstract class for objects providing EMT parameters.
+// EMTParameterProvider.h  --  Abstract class for objects providing EMT
+// parameters.
 
 #ifndef _EMTPARAMETERPROVIDER_H
 #define _EMTPARAMETERPROVIDER_H
@@ -8,15 +9,16 @@
 using std::string;
 
 // The stucture used to for store EMT parameters.
-struct emt_parameters
-{
+struct emt_parameters {
   double e0, seq, neq, V0, eta2, kappa, lambda, mass, invmass;
   double gamma1, gamma2;
   // double pairA, pairD;
-  double lengthscale;  // Not an EMT parameter.  1/sqrt(2) of the lattice constant.
+  double
+      lengthscale; // Not an EMT parameter.  1/sqrt(2) of the lattice constant.
   int Z;
   std::string name;
-  int index;   // An index into various arrays.  Counts the elements in the simulation.
+  int index; // An index into various arrays.  Counts the elements in the
+             // simulation.
 };
 
 // A geometric constant.
@@ -34,16 +36,16 @@ static const double Beta = 1.809; // Preserve same rounding as in ARTwork.
 // known which elements are in the simulation.  The gammas and the
 // cutoff are determined by the Provider since changing the way they
 // are determined corresponds to changing the EMT potential.
-class EMTParameterProvider 
-{
+class EMTParameterProvider {
 public:
-  virtual ~EMTParameterProvider() {};
+  virtual ~EMTParameterProvider(){};
   virtual const emt_parameters *GetParameters(int element) = 0;
   virtual void CalcGammaEtc() = 0;
   virtual double GetCutoffDistance() = 0; // Can it be made element-dependent?
   virtual double GetCutoffSlope() = 0;
-  virtual double GetListCutoffDistance() = 0;   // Cutoff for neighbor list.
-  virtual double GetLengthScale() = 0;    // The potential delegates this to the provider.
+  virtual double GetListCutoffDistance() = 0; // Cutoff for neighbor list.
+  virtual double
+  GetLengthScale() = 0; // The potential delegates this to the provider.
   virtual const TinyDoubleMatrix *GetChi() = 0;
   virtual int GetNumberOfElements() = 0;
 };
