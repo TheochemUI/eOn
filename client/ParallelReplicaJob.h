@@ -8,12 +8,12 @@ class ParallelReplicaJob: public Job
 {
     public:
 
-        ParallelReplicaJob(Parameters *params);
-        ~ParallelReplicaJob(void);
+        ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~ParallelReplicaJob(void) = default;
         std::vector<std::string> run(void);
 
     private:
-        Parameters *parameters;
         std::vector<std::string> returnFiles;
         Matter *reactant;
 

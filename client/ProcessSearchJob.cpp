@@ -69,13 +69,13 @@ std::vector<std::string> ProcessSearchJob::run(void)
             // mode was passed from the server
             mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms()); 
         }
-        saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), params);
+        saddleSearch = new MinModeSaddleSearch(saddle, mode, initial->getPotentialEnergy(), params.get());
     }else if (params->saddleMethod == "basin_hopping") {
-        saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, params);
+        saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, params.get());
     }else if (params->saddleMethod == "dynamics") {
-        saddleSearch = new DynamicsSaddleSearch(saddle, params);
+        saddleSearch = new DynamicsSaddleSearch(saddle, params.get());
     }else if (params->saddleMethod == "bgsd") {
-        saddleSearch = new BiasedGradientSquaredDescent(saddle, initial->getPotentialEnergy(), params);
+        saddleSearch = new BiasedGradientSquaredDescent(saddle, initial->getPotentialEnergy(), params.get());
     }
 
     int status = doProcessSearch();
@@ -192,7 +192,7 @@ int ProcessSearchJob::doProcessSearch(void)
         int prefStatus;
         double pref1, pref2;
         // XXX: no get() calls
-        prefStatus = Prefactor::getPrefactors(params, min1, saddle, min2, pref1, pref2);
+        prefStatus = Prefactor::getPrefactors(params.get(), min1, saddle, min2, pref1, pref2);
         if(prefStatus == -1) {
             printf("Prefactor: bad calculation\n");
             return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;

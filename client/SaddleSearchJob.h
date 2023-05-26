@@ -32,9 +32,10 @@ class SaddleSearchJob : public Job {
 	/*!
  	 * \param *params defined by the config.init file
  	 */	 
-        SaddleSearchJob(Parameters *params);
+        SaddleSearchJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)), fCallsSaddle{0} {}
 	//! Saddle Search Job Deconstructor
-        ~SaddleSearchJob(void);
+        ~SaddleSearchJob(void) = default;
 	//! Kicks off the Saddle Search
         std::vector<std::string> run(void);
 
@@ -49,7 +50,6 @@ class SaddleSearchJob : public Job {
 	//! Container for the results of the run
         std::vector<std::string> returnFiles;
 
-        Parameters *parameters;
 	//! Initializes a ref MinModeSaddleSearch
         MinModeSaddleSearch *saddleSearch;
         //! Initial configuration.

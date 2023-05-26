@@ -7,16 +7,24 @@
 #include "Job.h"
 
 class BasinHoppingJob : public Job {
-    public:
-        BasinHoppingJob(Parameters *params);
-        ~BasinHoppingJob(void);
-        std::vector<std::string> run(void);
+public:
+  BasinHoppingJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)), current{new Matter(params)},
+        trial{new Matter(params)}, fcalls{0} {}
+  ~BasinHoppingJob(void) {
+    delete current;
+    delete trial;
 
+    for (unsigned int i = 0; i < uniqueStructures.size(); i++) {
+      delete uniqueStructures[i];
+    }
+  };
+
+        std::vector<std::string> run(void) override;
     private:
         VectorXd calculateDistanceFromCenter(Matter *matter);
         AtomMatrix displaceRandom(double maxDisplacement);
         void randomSwap(Matter *matter);
-        Parameters *parameters;
         Matter *current;
         Matter *trial; // initial configuration
         vector<long> getElements(Matter *matter);

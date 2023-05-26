@@ -259,6 +259,7 @@ std::string getJobName(JobType jtype) {
     break;
   }
 }
+
 JobType getJobType(const std::string jname) {
   if (jname == "process_search"s) {
     return JobType::ProcessSearch;
@@ -298,4 +299,24 @@ JobType getJobType(const std::string jname) {
     return JobType::Unknown;
   }
 }
+
+  std::string getRunStatusName(RunStatus rstype) {
+    switch (rstype) {
+      case RunStatus::GOOD: {
+        return "PASS: good"s;
+        break;
+      }
+      case RunStatus::MAX_ITERATIONS: {
+        return "FAIL: max iterations reached"s;
+        break;
+      }
+      case RunStatus::POTENTIAL_FAILED: {
+        return "FAIL: potential failed"s;
+        break;
+      }
+      default:
+        return "unknown"s;
+        break;
+    }
+  }
 } // namespace helper_functions

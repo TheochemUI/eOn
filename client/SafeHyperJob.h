@@ -9,8 +9,9 @@ class SafeHyperJob: public Job
 {
     public:
 
-        SafeHyperJob(Parameters *params);
-        ~SafeHyperJob(void);
+        SafeHyperJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~SafeHyperJob(void) = default;
         std::vector<std::string> run(void);
 
     private:
@@ -20,8 +21,6 @@ class SafeHyperJob: public Job
         bool checkState(Matter *current, Matter *reactant);
         void saveData(int status);
         void dephase();
-
-        Parameters *parameters;
 
         Matter *current;
         Matter *reactant;
