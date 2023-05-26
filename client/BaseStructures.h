@@ -66,9 +66,16 @@ enum class JobType {
   Test
 };
 
+enum class RunStatus {
+  GOOD = 0,
+  MAX_ITERATIONS,
+  POTENTIAL_FAILED
+};
+
 namespace helper_functions {
 PotType getPotentialType(std::string pname);
 std::string getPotentialName(PotType ptype);
 JobType getJobType(std::string jname);
 std::string getJobName(JobType jtype);
+std::string getRunStatusName(RunStatus rstype);
 } // namespace helper_functions

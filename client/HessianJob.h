@@ -7,11 +7,10 @@
 class HessianJob : public Job
 {
 public:
-    HessianJob(Parameters *params);
-    ~HessianJob();
+    HessianJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+    ~HessianJob(void) = default;
     std::vector<std::string> run(void);
-private:
-    Parameters *parameters;
 };
 
 #endif

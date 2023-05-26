@@ -6,17 +6,13 @@
 
 class MinimizationJob: public Job {
     public:
-        MinimizationJob(Parameters *params);
-        ~MinimizationJob(void);
+        MinimizationJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)), fcalls{0} {}
+        ~MinimizationJob(void) = default;
         std::vector<std::string> run(void);
     private:
-        Parameters *parameters;
-        int fcalls;
-        enum {
-            STATUS_GOOD,
-            STATUS_MAX_ITERATIONS,
-            STATUS_POTENTIAL_FAILED
-        };
+        size_t fcalls;
+        RunStatus status;
 };
 
 #endif
