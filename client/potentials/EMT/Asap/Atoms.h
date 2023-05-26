@@ -1,12 +1,12 @@
 #ifndef ATOMS_H
 #define ATOMS_H
 
-#include <vector>
 #include <set>
-using std::vector;
+#include <vector>
 using std::set;
-#include "Vec.h"  // Needed because we are destroying a vector<Vec> in 
-                  // Atoms::~Atoms().  (at least with the alpha compiler)
+using std::vector;
+#include "Vec.h" // Needed because we are destroying a vector<Vec> in
+                 // Atoms::~Atoms().  (at least with the alpha compiler)
 
 class SuperCell;
 // class Vec;
@@ -33,40 +33,39 @@ class AsapPotential;
 /// velocities and forces) are not stored in the C++ code but live in
 /// Python.
 
-class Atoms
-{
- public:
+class Atoms {
+public:
   /// \brief Construct Atoms from array of positions, number of elements and
   /// a SuperCell.
   Atoms(const Vec *p, int n, SuperCell *s);
 
   /// Deletes the atoms.  Does not delete Potential or SuperCell.
-  virtual ~Atoms() {};
+  virtual ~Atoms(){};
 
   /// Return a pointer to the SuperCell object.
-  virtual SuperCell *GetSuperCell() const {return superCell;}
+  virtual SuperCell *GetSuperCell() const { return superCell; }
 
   /// Return the unitcell vectors.
   virtual const Vec *GetUnitCell() const;
 
   /// Set a new unit cell, rescaling the positions unless fix is true
   virtual void SetUnitCell(const Vec newbasis[3], bool fix);
-  
+
   /// Set a Potential.  An eventual old Potential is not deallocated.
   virtual void SetCalculator(AsapPotential *potential);
 
   /// Get a pointer to the Potential.
-  AsapPotential *GetPotential() const {return potential;}
+  AsapPotential *GetPotential() const { return potential; }
 
   /// Update the change pointer.
-  
+
   /// The change counter is updated whenever the atoms are changed.  It is used
   /// to decide if e.g. forces should be recalculated.  Methods such as
   /// SetCartesianPositions() increment the counter.
-  inline void MarkChanged() {++counter;}
+  inline void MarkChanged() { ++counter; }
 
   /// Get the change counter.
-  inline int GetChangeCounter() const {return counter;}
+  inline int GetChangeCounter() const { return counter; }
 
   /// Set the Cartesian positions.
 
@@ -98,13 +97,13 @@ class Atoms
   /// \bug The difference in semantics between the two versions of
   /// GetCartesianPositions is most unfortunate: one of them should be
   /// renamed.
-  virtual const Vec *GetCartesianPositions() const {return &positions[0];}
+  virtual const Vec *GetCartesianPositions() const { return &positions[0]; }
 
   /// Return a non-const pointer to the Cartesian positions.  DANGEROUS!
 
   /// GetPositionsPtr returns a pointer allowing modification of the
   /// positions.  Be sure to call MarkChanged if this is done.
-  Vec *GetPositionsPtr() {return &positions[0];}
+  Vec *GetPositionsPtr() { return &positions[0]; }
 
   /// \brief Return the positions, hiding that they may have been
   /// wrapped due to the boundary conditions.
@@ -112,7 +111,7 @@ class Atoms
   /// This is the function used by Python when GetCartesianPositions
   /// is called.
   virtual void GetUnwrappedPositions(vector<Vec> &p) const;
-  
+
   /// \brief Set the positions from an array of positions not taking
   /// any wrapping into account.
 
@@ -120,7 +119,7 @@ class Atoms
   /// boundaries) is applied to the atoms.  This is the function used
   /// by Python when SetCartesianPositions is called.
   virtual void SetUnwrappedPositions(const Vec *p);
-  
+
   /// Apply periodic boundary conditions to differences in positions.
   virtual void NormalizeDifferences(Vec *diff) const;
 
@@ -136,7 +135,7 @@ class Atoms
   /// updated.  The actual work is done by the SuperCell.  This method
   /// should be called by the Potential, which may (should?) delegate
   /// it to the NeighborList.
-  virtual void NormalizePositions(); 
+  virtual void NormalizePositions();
 
   /// Normalize a position which is not owned by the atoms.
 
@@ -145,7 +144,7 @@ class Atoms
   /// just normalizing the position, and one also returning the scaled
   /// space correction applied.
   virtual void NormalizePosition(Vec &pos) const;
-  
+
   /// Normalize a position which is not owned by the atoms.
 
   /// This version of the call reports the translation in
@@ -154,22 +153,22 @@ class Atoms
   /// decision on whether to wrap.  This is useful if positions need
   /// to be normalized between neighborlist updates, and is currently
   /// used by the Quasicontinuum code.
-  virtual void NormalizePosition(Vec& pos, Vec &scaled_translation) const;
+  virtual void NormalizePosition(Vec &pos, Vec &scaled_translation) const;
 
   /// Repeat a normalization.  See NormalizePosition(a,b).
-  virtual void ReNormalizePosition(Vec& pos, Vec &scaled_translation) const;
+  virtual void ReNormalizePosition(Vec &pos, Vec &scaled_translation) const;
 
   /// Set the atomic numbers.  Should be done right after construction.
   virtual void SetAtomicNumbers(const int *z);
 
   /// Return a const pointer to the atomic numbers.
-  virtual const int *GetAtomicNumbers() const {return &types[0];}
+  virtual const int *GetAtomicNumbers() const { return &types[0]; }
 
   /// Return a non-const pointer to the atomic numbers.  DANGEROUS!
-  
+
   /// GetAtomicNumbersPtr returns a pointer allowing modification of the atomic
   /// numbers.  Use with care, and call MarkChanged manually!
-  int *GetAtomicNumbersPtr() {return &types[0];}
+  int *GetAtomicNumbersPtr() { return &types[0]; }
 
   /// Get a set of all elements present in the simulations.
   virtual void GetListOfElements(set<int> &elements) const;
@@ -178,36 +177,36 @@ class Atoms
   void SetNumberOfImages(int i);
 
   /// Get the number of images.  Used by the neighbor list.
-  int GetNumberOfImages() const {return nImages;}
+  int GetNumberOfImages() const { return nImages; }
 
   /// Get the number of atoms (including nodes in a QC simulation).
-  
+
   /// In a QuasiContinuum calculation we have real atoms and node atoms.
   /// GetNumberOfAtoms() is a virtual function: For a QCAtoms class it will
   /// return the number of real atoms plus the number of node atoms. This
   /// number is needed by SWIG to get the size of arrays. The method
   /// GetNumberOfRealAtoms() is needed by potentials and the Neighbor List
   /// object (they only deal with the real atoms).
-  virtual int GetNumberOfAtoms() const {return nAtoms;}
+  virtual int GetNumberOfAtoms() const { return nAtoms; }
 
   /// Get the number of atoms (excluding nodes in a QC simulation).
 
   /// See also the documentation of GetNumberOfAtoms().
   ///
-  int GetNumberOfRealAtoms() const {return nAtoms;}
+  int GetNumberOfRealAtoms() const { return nAtoms; }
 
   /// Change the number of atoms.
   virtual void SetNumberOfAtoms(int n);
-  
- protected:
-  AsapPotential *potential;  ///< A pointer to the potential.
-  SuperCell *superCell;  ///< A pointer to the supercell.
-  vector<Vec> positions; ///< Contains the Cartesian positions.
+
+protected:
+  AsapPotential *potential;     ///< A pointer to the potential.
+  SuperCell *superCell;         ///< A pointer to the supercell.
+  vector<Vec> positions;        ///< Contains the Cartesian positions.
   vector<Vec> pos_translations; ///< \brief Translations applied to the
                                 ///  positions to conform with the periodic
                                 ///  boundary conditions
-  vector<int> types;     ///< Contains the atomic numbers.
-  int nAtoms;            ///< The number of atoms in the list.
+  vector<int> types;            ///< Contains the atomic numbers.
+  int nAtoms;                   ///< The number of atoms in the list.
   int nImages; ///< The number of image atoms used by NeighborList.
   int counter; ///< Used to track changes.
 };

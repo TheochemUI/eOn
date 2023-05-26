@@ -5,7 +5,7 @@
 
 using namespace std::string_literals; // For ""s
 
-int main(void){
+int main(void) {
   // string confile("pos.con");
   // std::unique_ptr<Parameters> params = std::make_unique<Parameters>();
   // params ->potential = "cuh2_pot"s;

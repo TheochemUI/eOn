@@ -13,28 +13,25 @@
 
 #include "../../Potential.h"
 
-class VASP : public Potential
-{
+class VASP : public Potential {
 
-    public:
-        VASP(void);
-		~VASP();
-        void initialize() {};
-        void cleanMemory(void);    
-        void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box);
+public:
+  VASP(void);
+  ~VASP();
+  void initialize(){};
+  void cleanMemory(void);
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box);
 
-
-    private:
-        void writePOSCAR(long N, const double *R, const int *atomicNrs,
-                         const double *box);
-        void readFU(long N, double *F, double *U);
-        void spawnVASP();
-        bool vaspRunning();
-        static bool firstRun;
-        static long vaspRunCount;
-        static pid_t vaspPID;
+private:
+  void writePOSCAR(long N, const double *R, const int *atomicNrs,
+                   const double *box);
+  void readFU(long N, double *F, double *U);
+  void spawnVASP();
+  bool vaspRunning();
+  static bool firstRun;
+  static long vaspRunCount;
+  static pid_t vaspPID;
 };
 
 #endif
-

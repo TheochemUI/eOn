@@ -28,7 +28,7 @@ TEST_F(CuH2Test, TestMatter) {
   parameters->potential = "cuh2_pot";
   Matter *matter = new Matter(parameters);
   matter->con2matter(confile);
-  std::cout<<matter->getPotentialEnergy();
+  std::cout << matter->getPotentialEnergy();
   delete matter;
   delete parameters;
 }

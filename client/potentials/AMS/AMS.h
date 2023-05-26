@@ -24,11 +24,11 @@
 #include <boost/process/environment.hpp>
 
 #include <algorithm>
+#include <filesystem>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fstream>
 #include <string>
-#include <filesystem>
 
 class AMS : public Potential {
 

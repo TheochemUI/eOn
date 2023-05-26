@@ -9,61 +9,59 @@
 ////-----------------------------------------------------------------------------------
 
 #include "utObjectiveTest.h"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "utHelperFunctions.h"
 
 const std::string ObjectiveTest::HELPER_FUNCTIONS = "HelperFunctionTest";
 
-ObjectiveTest *ObjectiveTest::getObjectiveTest(std::string testType) 
-{
-	ObjectiveTest *objectiveTest=NULL;
-	if(testType==ObjectiveTest::HELPER_FUNCTIONS)
-	{
-		objectiveTest = new HelperFunctionsTest();
-	
-	}
-		
-	return objectiveTest;
+ObjectiveTest *ObjectiveTest::getObjectiveTest(std::string testType) {
+  ObjectiveTest *objectiveTest = NULL;
+  if (testType == ObjectiveTest::HELPER_FUNCTIONS) {
+    objectiveTest = new HelperFunctionsTest();
+  }
+
+  return objectiveTest;
 };
 
-void ObjectiveTest::pushToResults(std::string update)
-{
+void ObjectiveTest::pushToResults(std::string update) {
 
-	this->testResults.push_back(update);	
-
+  this->testResults.push_back(update);
 }
 
-void ObjectiveTest::saveTest(std::string testName){
-	
-	std::string resultsFileName(testName);
-	resultsFileName+= ".txt";
-	std::ofstream resultsFile(resultsFileName);
+void ObjectiveTest::saveTest(std::string testName) {
 
-	resultsFile << std::endl;
+  std::string resultsFileName(testName);
+  resultsFileName += ".txt";
+  std::ofstream resultsFile(resultsFileName);
 
-	if(currentStatus == 0)
-	{
+  resultsFile << std::endl;
 
-		resultsFile << "PASSED: all " << testName << "'s ended in success" << std::endl;
+  if (currentStatus == 0) {
 
-	} else {
+    resultsFile << "PASSED: all " << testName << "'s ended in success"
+                << std::endl;
 
-		resultsFile << "FAILED: some tests in " << testName << " ended in failure" << std::endl;
+  } else {
 
-	}
+    resultsFile << "FAILED: some tests in " << testName << " ended in failure"
+                << std::endl;
+  }
 
-	resultsFile <<  std::endl << "---------------------------------------------------------------------";
+  resultsFile << std::endl
+              << "-------------------------------------------------------------"
+                 "--------";
 
-	resultsFile << std::endl << std::endl << "Detailed output: " << std::endl << std::endl;
+  resultsFile << std::endl
+              << std::endl
+              << "Detailed output: " << std::endl
+              << std::endl;
 
-	for(const auto lineOut: this->testResults)
-		resultsFile << lineOut << std::endl;
+  for (const auto lineOut : this->testResults)
+    resultsFile << lineOut << std::endl;
 
-	resultsFile << std::endl;
+  resultsFile << std::endl;
 
-	resultsFile.close();
-
+  resultsFile.close();
 };
-

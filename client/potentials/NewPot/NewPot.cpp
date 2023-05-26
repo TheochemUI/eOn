@@ -8,23 +8,22 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#include"NewPot.h"
+#include "NewPot.h"
 
-void NewPot::cleanMemory(void){
-    return;
-}
+void NewPot::cleanMemory(void) { return; }
 
-// pointer to number of atoms, pointer to array of positions	
+// pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
-void NewPot::force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box){
+void NewPot::force(long N, const double *R, const int *atomicNrs, double *F,
+                   double *U, const double *box) {
 
-    for(int i=0; i<N; i++){
-        F[ 3*i ] = fake1;
-        F[3*i+1] = fake1;
-        F[3*i+2] = fake1;
-    }
-    
-    *U = fake2;
-    return;
+  for (int i = 0; i < N; i++) {
+    F[3 * i] = fake1;
+    F[3 * i + 1] = fake1;
+    F[3 * i + 2] = fake1;
+  }
+
+  *U = fake2;
+  return;
 }
