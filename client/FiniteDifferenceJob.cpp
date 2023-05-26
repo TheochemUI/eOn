@@ -6,19 +6,12 @@
 using namespace helper_functions;
 
 
-FiniteDifferenceJob::FiniteDifferenceJob(Parameters *params)
-{
-    parameters = params;
-}
-
-FiniteDifferenceJob::~FiniteDifferenceJob(){ }
-
 std::vector<std::string> FiniteDifferenceJob::run(void)
 {
     // No bundling for this job, so bundleNumber is ignored.
 
     // Load the displacement con file and get the position.
-    Matter *reactant = new Matter(parameters);
+    Matter *reactant = new Matter(params);
     reactant->con2matter("pos.con");
     AtomMatrix posA;
     posA = reactant->getPositions();
@@ -29,7 +22,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void)
     forceA = reactant->getForces();
 
     // Create a random displacement.
-    long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,parameters->neighborCutoff);
+    long epicenter = EpiCenters::minCoordinatedEpiCenter(reactant,params->neighborCutoff);
     AtomMatrix displacement;    
     displacement.resize(reactant->numberOfAtoms(), 3);
     displacement.setZero();

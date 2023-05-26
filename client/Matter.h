@@ -33,7 +33,9 @@ struct MatterPrivateData {
 
 class Matter : private MatterPrivateData {
 public:
-    Matter(Parameters *parameters); // the number of atoms shall be set later using resize()
+        Matter(Parameters *parameters); // the number of atoms shall be set later using resize()
+        // TODO: This is a placeholder, it delegates to the standard constructor
+        Matter(std::shared_ptr<Parameters> parameters) : Matter(parameters.get()) {} // the number of atoms shall be set later using resize()
     Matter(Parameters *parameters, long int nAtoms); // prepare the object for use with nAtoms atoms
     Matter(const Matter& matter); // create a copy of matter
     ~Matter(); // Destructor
