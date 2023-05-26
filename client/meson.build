@@ -148,6 +148,11 @@ if get_option('with_gprd')
   eon_deps += [ gprd_dep ]
 endif
 
+if get_option('with_gp_surrogate')
+  eon_extra_args += ['-DWITH_GP_SURROGATE']
+  eonclib_sources += ['GPSurrogateJob.cpp']
+endif
+
 if get_option('with_vasp')
   if host_system != 'windows'
     subdir('potentials/VASP')
