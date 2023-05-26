@@ -1,8 +1,8 @@
 #include "GPRHelpers.h"
 
 #include <map>
-#include <unordered_map>
 #include <set>
+#include <unordered_map>
 
 gpr::InputParameters
 helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
@@ -60,7 +60,8 @@ helper_functions::eon_parameters_to_gpr(Parameters *parameters) {
 }
 
 // FIXME: Take in the active / inactive pairs / atomtypes
-gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) {
+gpr::AtomsConfiguration
+helper_functions::eon_matter_to_atmconf(Matter *matter) {
   //   AtomsConfiguration a;
   //   aux::ProblemSetUp problem_setup;
   //   std::vector<int> atomnrs;
@@ -109,7 +110,7 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
       atype_to_gprd_atype; //!> Remember that the atom type in EON is the real
                            //! atomic number, while in GPR Dimer it is a set of
                            //! values from 0 to n-1 so this is EON
-  int fake_atype; //!> False "atomtype" for GPR Dimer
+  int fake_atype;          //!> False "atomtype" for GPR Dimer
 
   atoms_config.clear();
   atoms_config.positions.resize(matter->getPositions().rows(),
@@ -157,7 +158,7 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
               atype_to_gprd_atype.at(atomnrs[i]);
           froz_inactive_counter++;
         } else {
-            //!> Is moving
+          //!> Is moving
           atoms_config.atoms_mov.type[mov_counter] =
               atype_to_gprd_atype.at(atomnrs[i]);
           mov_counter++;
@@ -197,9 +198,9 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
     if (atype_to_gprd_atype.size() > 1) {
       int mov_counter = 0;
       for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-          atoms_config.atoms_mov.type[mov_counter] =
-              atype_to_gprd_atype.at(atomnrs[i]);
-          mov_counter++;
+        atoms_config.atoms_mov.type[mov_counter] =
+            atype_to_gprd_atype.at(atomnrs[i]);
+        mov_counter++;
       }
     }
     //!> Special case when there's only one atom type, we can now just use the
@@ -229,8 +230,8 @@ gpr::AtomsConfiguration helper_functions::eon_matter_to_atmconf(Matter *matter) 
 gpr::Observation helper_functions::eon_matter_to_init_obs(Matter *matter) {
   gpr::Observation o;
   o.clear();
-  o.R.resize(matter->getPositions().rows(),matter->getPositions().cols());
-  o.G.resize(matter->getForces().rows(),matter->getForces().cols());
+  o.R.resize(matter->getPositions().rows(), matter->getPositions().cols());
+  o.G.resize(matter->getForces().rows(), matter->getForces().cols());
   o.E.resize(1);
   o.E.set(matter->getPotentialEnergy());
   o.R.assignFromEigenMatrix(matter->getPositions());

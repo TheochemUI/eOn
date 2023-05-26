@@ -5,21 +5,23 @@
 #include "Eigen.h"
 #include "Matter.h"
 
-#include "Prefactor.h"
 #include "Parameters.h"
+#include "Prefactor.h"
 
-namespace Prefactor
-{
-    const char RATE_HTST[] =            "htst";
-    const char RATE_QQHTST[] =          "qqhtst";
-    const char FILTER_CUTOFF[] =        "cutoff";
-    const char FILTER_FRACTION[] =      "fraction";
+namespace Prefactor {
+const char RATE_HTST[] = "htst";
+const char RATE_QQHTST[] = "qqhtst";
+const char FILTER_CUTOFF[] = "cutoff";
+const char FILTER_FRACTION[] = "fraction";
 
-    int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle, Matter *min2, double &pref1, double &pref2);
-    VectorXi movedAtoms(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
-    VectorXi movedAtomsPct(Parameters* parameters, Matter *min1, Matter *saddle, Matter *min2);
-    VectorXi allFreeAtoms(Matter *matter);
-    VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
-    void logFreqs(VectorXd freqs, char *name);
-}
+int getPrefactors(Parameters *parameters, Matter *min1, Matter *saddle,
+                  Matter *min2, double &pref1, double &pref2);
+VectorXi movedAtoms(Parameters *parameters, Matter *min1, Matter *saddle,
+                    Matter *min2);
+VectorXi movedAtomsPct(Parameters *parameters, Matter *min1, Matter *saddle,
+                       Matter *min2);
+VectorXi allFreeAtoms(Matter *matter);
+VectorXd removeZeroFreqs(Parameters *parameters, VectorXd freqs);
+void logFreqs(VectorXd freqs, char *name);
+} // namespace Prefactor
 #endif

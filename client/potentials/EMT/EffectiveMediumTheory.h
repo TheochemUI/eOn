@@ -41,7 +41,7 @@ private:
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(Parameters *p) : Potential(p), parameters{p}{
+  EffectiveMediumTheory(Parameters *p) : Potential(p), parameters{p} {
     // dummy variables
     AtomsObj = 0;
     EMTObj = 0;

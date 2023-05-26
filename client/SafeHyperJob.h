@@ -5,48 +5,45 @@
 #include "Job.h"
 #include "Parameters.h"
 
-class SafeHyperJob: public Job
-{
-    public:
+class SafeHyperJob : public Job {
+public:
+  SafeHyperJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)) {}
+  ~SafeHyperJob(void) = default;
+  std::vector<std::string> run(void);
 
-        SafeHyperJob(std::unique_ptr<Parameters> parameters)
-            : Job(std::move(parameters)) {}
-        ~SafeHyperJob(void) = default;
-        std::vector<std::string> run(void);
+private:
+  int dynamics();
+  long refine(Matter *mdBuffer[], long length, Matter *reactant);
+  bool checkState(Matter *current, Matter *reactant);
+  void saveData(int status);
+  void dephase();
 
-    private:
+  Matter *current;
+  Matter *reactant;
+  Matter *saddle;
+  Matter *final;
+  Matter *final_tmp;
+  Matter *product;
 
-        int dynamics();
-        long refine(Matter *mdBuffer[], long length, Matter *reactant);
-        bool checkState(Matter *current, Matter *reactant);
-        void saveData(int status);
-        void dephase();
+  bool metaStateFlag;
+  bool newStateFlag;
 
-        Matter *current;
-        Matter *reactant;
-        Matter *saddle;
-        Matter *final;
-        Matter *final_tmp;
-        Matter *product;
+  long minimizeFCalls;
+  long mdFCalls;
+  long dephaseFCalls;
+  long refineFCalls;
 
-        bool metaStateFlag;
-        bool newStateFlag;
+  long transitionStep;
 
-        long minimizeFCalls;
-        long mdFCalls;
-        long dephaseFCalls;
-        long refineFCalls;
+  double time;
+  double minCorrectedTime;
+  double transitionTime;
+  double transitionPot;
+  double *timeBuffer;
+  double *biasBuffer;
 
-        long transitionStep;
-
-        double time;
-        double minCorrectedTime;
-        double transitionTime;
-        double transitionPot;
-        double *timeBuffer;
-        double *biasBuffer;
-
-        std::vector<std::string> returnFiles;
+  std::vector<std::string> returnFiles;
 };
 
 #endif

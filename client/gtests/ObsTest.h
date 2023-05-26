@@ -4,12 +4,11 @@
 #include <gtest/gtest.h>
 
 namespace tests {
-    class ObsTest : public ::testing::Test {
-        public:
-            ObsTest();
-            virtual ~ObsTest();
-    };
+class ObsTest : public ::testing::Test {
+public:
+  ObsTest();
+  virtual ~ObsTest();
+};
 } /* namespace tests */
-
 
 #endif /* OBSTEST_H */

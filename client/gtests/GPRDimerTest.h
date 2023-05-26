@@ -4,12 +4,11 @@
 #include <gtest/gtest.h>
 
 namespace tests {
-    class GPRDimerTest : public ::testing::Test {
-        public:
-            GPRDimerTest();
-            virtual ~GPRDimerTest();
-    };
+class GPRDimerTest : public ::testing::Test {
+public:
+  GPRDimerTest();
+  virtual ~GPRDimerTest();
+};
 } /* namespace tests */
-
 
 #endif /* GPRDIMERTEST_H */

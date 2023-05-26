@@ -20,8 +20,7 @@
 /// need to check if the Atoms are really GhostAtoms and then call a
 /// few helper functions).
 
-class GhostPotential : public AsapPotential
-{
+class GhostPotential : public AsapPotential {
 public:
   GhostPotential(AsapPotential *p) : potential(p) {}
 
@@ -54,13 +53,13 @@ public:
   virtual void UpdateGhostPositions() = 0;
 
   /// Get the cutoff of the wrapped potential.
-  double GetCutoffRadius() const {return potential->GetCutoffRadius();} 
+  double GetCutoffRadius() const { return potential->GetCutoffRadius(); }
 
   /// Get the lattice constant of the wrapped potential.
-  double GetLatticeConstant() const {return potential->GetLatticeConstant();}
+  double GetLatticeConstant() const { return potential->GetLatticeConstant(); }
 
 protected:
-  AsapPotential *potential;  ///< Pointer to the wrapped potential.
+  AsapPotential *potential; ///< Pointer to the wrapped potential.
 };
 
 #endif // GHOSTPOTENTIAL_H

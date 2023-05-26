@@ -4,10 +4,9 @@
 
 /// The Image structure is used by NeighborList to represent atoms
 /// seen through the periodic boundary conditions.
-struct Image 
-{
+struct Image {
   /// Dummy constructor needed by some STL containers.
-  Image() {};
+  Image(){};
   /// Construct an image of atom n translated by translation number nTrans.
   Image(int num, int nTrans) : number(num), nTranslation(nTrans) {}
 
@@ -17,4 +16,3 @@ struct Image
   /// The number of the translation to apply to the real atom.
   int nTranslation;
 };
-

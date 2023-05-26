@@ -15,23 +15,23 @@
 #include "../../subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
 
 /** Template to use if user want to provide potential. */
-class GPRPotential : public Potential{
+class GPRPotential : public Potential {
 
 private:
-    gpr::GaussianProcessRegression *gpr_model;
+  gpr::GaussianProcessRegression *gpr_model;
 
 public:
-// Functions
-	// constructor and destructor
-    GPRPotential(Parameters *p);
+  // Functions
+  // constructor and destructor
+  GPRPotential(Parameters *p);
 
-    void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
+  void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
 
-    // To satisfy interface
-    void initialize(void);    
-    void cleanMemory(void);    
+  // To satisfy interface
+  void initialize(void);
+  void cleanMemory(void);
 
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box, int nImages);
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box, int nImages);
 };
 #endif
-
