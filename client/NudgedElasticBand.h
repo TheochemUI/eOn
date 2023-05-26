@@ -73,4 +73,10 @@ private:
   Parameters *parameters;
 };
 
+namespace helper_functions {
+  namespace neb_paths {
+    std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs);
+  }
+}
+
 #endif
