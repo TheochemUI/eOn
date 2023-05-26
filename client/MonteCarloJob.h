@@ -6,11 +6,10 @@
 
 class MonteCarloJob: public Job {
     public:
-        MonteCarloJob(Parameters *params);
-        ~MonteCarloJob(void);
+        MonteCarloJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~MonteCarloJob(void) = default;
         std::vector<std::string> run(void);
-    private:
-        Parameters *parameters;
 };
 
 #endif
