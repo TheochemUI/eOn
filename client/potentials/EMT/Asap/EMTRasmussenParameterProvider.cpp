@@ -23,43 +23,68 @@
 
 #include "EMTRasmussenParameterProvider.h"
 #include "Exception.h"
-#include <string.h>
 #include <cmath>
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
-emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element)
-{
+emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element) {
   double E0, S0, n0, V0, eta2, kappa, lambda, mass;
   double ls;
   int Z;
   string name;
   emt_parameters *p;
-	
-  if(element == 13){
+
+  if (element == 13) {
     name = "Al";
-    E0=-3.280; S0=3.000; V0=1.725; Z=13; eta2=1.380; kappa=2.311;
-    lambda=1.591; mass=26.98 ; n0=0.007 /* CHECK n0 */ ; ls = 7.54871784;
-  } 
-  else if(element == 29){
+    E0 = -3.280;
+    S0 = 3.000;
+    V0 = 1.725;
+    Z = 13;
+    eta2 = 1.380;
+    kappa = 2.311;
+    lambda = 1.591;
+    mass = 26.98;
+    n0 = 0.007 /* CHECK n0 */;
+    ls = 7.54871784;
+  } else if (element == 29) {
     name = "Cu";
     //    E0=-3.510; S0=2.67 ; V0=3.010; Z=29; eta2=1.494; kappa=2.500;
     //    lambda=1.942; mass=63.54 ; n0=0.0091 /* CHECK n0 */ ;
-    E0=-3.510; S0=2.67 ; V0=2.643; Z=29; eta2=1.506; kappa=2.492;
-    lambda=1.942; mass=63.54 ; n0=0.0091 /* CHECK n0 */ ;
+    E0 = -3.510;
+    S0 = 2.67;
+    V0 = 2.643;
+    Z = 29;
+    eta2 = 1.506;
+    kappa = 2.492;
+    lambda = 1.942;
+    mass = 63.54;
+    n0 = 0.0091 /* CHECK n0 */;
     ls = 6.789382809;
-  }
-  else if(element == 47){
+  } else if (element == 47) {
     name = "Ag";
-    E0=-2.96 ; S0=3.01 ; V0=2.679; Z=47; eta2=1.400; kappa=2.365;
-    lambda=1.956; mass=107.87; n0=0.0059;
+    E0 = -2.96;
+    S0 = 3.01;
+    V0 = 2.679;
+    Z = 47;
+    eta2 = 1.400;
+    kappa = 2.365;
+    lambda = 1.956;
+    mass = 107.87;
+    n0 = 0.0059;
     ls = 7.6790043;
-  }
-  else if(element == 79){
+  } else if (element == 79) {
     name = "Au";
-    E0=-3.80 ; S0=3.00 ; V0=2.703; Z=79; eta2=1.310; kappa=2.221;
-    lambda=2.192; mass=196.97; n0=0.0064; 
+    E0 = -3.80;
+    S0 = 3.00;
+    V0 = 2.703;
+    Z = 79;
+    eta2 = 1.310;
+    kappa = 2.221;
+    lambda = 2.192;
+    mass = 196.97;
+    n0 = 0.0064;
     ls = 7.66504117182;
   }
 #if 0
@@ -82,28 +107,28 @@ emt_parameters *EMTRasmussenParameterProvider::GetNewParameters(int element)
     ls = 7.41119853;
   }
 #endif
-    else {
-      throw Exception("This element isn't defined in EMT.");
-    }
-//  else 
-//      throw AsapError("Unknown element Z = ") << element;
-	
+  else {
+    throw Exception("This element isn't defined in EMT.");
+  }
+  //  else
+  //      throw AsapError("Unknown element Z = ") << element;
+
   double bohr = 0.5291772; // Angstrom
 
   p = new emt_parameters;
   p->e0 = E0;
   p->seq = S0 * bohr;
-  p->neq = n0 / (bohr*bohr*bohr);
+  p->neq = n0 / (bohr * bohr * bohr);
   p->V0 = V0;
   p->eta2 = eta2 / bohr;
   p->kappa = kappa / bohr;
   p->lambda = lambda / bohr;
   p->mass = mass;
-  p->invmass = 1.0/mass;
-  p->gamma1 = 0.0;        // These are calculated later!
+  p->invmass = 1.0 / mass;
+  p->gamma1 = 0.0; // These are calculated later!
   p->gamma2 = 0.0;
   p->Z = Z;
-//  assert(element == Z);
+  //  assert(element == Z);
   p->name = name;
   p->lengthscale = ls / sqrt(2.0) * bohr;
 

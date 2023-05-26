@@ -20,7 +20,8 @@ extern "C" void c_force_eam(int *natms, int ndim, double *box, double *R,
 class CuH2 : public Potential {
 
 private:
-    Parameters *parameters;
+  Parameters *parameters;
+
 public:
   // Functions
   // constructor and destructor

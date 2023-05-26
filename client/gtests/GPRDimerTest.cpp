@@ -8,9 +8,9 @@
 
 #include <algorithm>
 
-#include "../HelperFunctions.h"
 #include "../AtomicGPDimer.h"
 #include "../GPRHelpers.h"
+#include "../HelperFunctions.h"
 #include "../Job.h"
 #include "../Log.h"
 #include "../Matter.h"

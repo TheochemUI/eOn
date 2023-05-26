@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <memory>
+#include <string>
 
 using namespace std::string_literals; // For ""s
 
@@ -66,11 +66,7 @@ enum class JobType {
   Test
 };
 
-enum class RunStatus {
-  GOOD = 0,
-  MAX_ITERATIONS,
-  POTENTIAL_FAILED
-};
+enum class RunStatus { GOOD = 0, MAX_ITERATIONS, POTENTIAL_FAILED };
 
 namespace helper_functions {
 PotType getPotentialType(std::string pname);

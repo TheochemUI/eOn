@@ -300,23 +300,23 @@ JobType getJobType(const std::string jname) {
   }
 }
 
-  std::string getRunStatusName(RunStatus rstype) {
-    switch (rstype) {
-      case RunStatus::GOOD: {
-        return "PASS: good"s;
-        break;
-      }
-      case RunStatus::MAX_ITERATIONS: {
-        return "FAIL: max iterations reached"s;
-        break;
-      }
-      case RunStatus::POTENTIAL_FAILED: {
-        return "FAIL: potential failed"s;
-        break;
-      }
-      default:
-        return "unknown"s;
-        break;
-    }
+std::string getRunStatusName(RunStatus rstype) {
+  switch (rstype) {
+  case RunStatus::GOOD: {
+    return "PASS: good"s;
+    break;
   }
+  case RunStatus::MAX_ITERATIONS: {
+    return "FAIL: max iterations reached"s;
+    break;
+  }
+  case RunStatus::POTENTIAL_FAILED: {
+    return "FAIL: potential failed"s;
+    break;
+  }
+  default:
+    return "unknown"s;
+    break;
+  }
+}
 } // namespace helper_functions
