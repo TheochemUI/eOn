@@ -10,19 +10,18 @@ using std::stringstream;
 //
 // throw Exception("Error ") << n + 7 << " while opening file: " << filename;
 
-class Exception
-{
- public:
+class Exception {
+public:
   Exception(char const *m);
-  Exception(const Exception& ex);
+  Exception(const Exception &ex);
   ~Exception();
-  template<class T> Exception& operator<<(const T& x) 
-    {
-      *message << x;
-      return *this;
-    }
+  template <class T> Exception &operator<<(const T &x) {
+    *message << x;
+    return *this;
+  }
   const char *GetMessage() const;
- private:
+
+private:
   stringstream *message;
 };
 

@@ -3,32 +3,31 @@
 
 #include "Eigen.h"
 #include "Matter.h"
-#include "SaddleSearchMethod.h"
 #include "MinModeSaddleSearch.h"
+#include "SaddleSearchMethod.h"
 #include <vector>
 
-class BasinHoppingSaddleSearch : public SaddleSearchMethod
-{
-    public:
-        BasinHoppingSaddleSearch(Matter *reactant, Matter *displacement, Parameters *parametersPassed);
-        ~BasinHoppingSaddleSearch();
+class BasinHoppingSaddleSearch : public SaddleSearchMethod {
+public:
+  BasinHoppingSaddleSearch(Matter *reactant, Matter *displacement,
+                           Parameters *parametersPassed);
+  ~BasinHoppingSaddleSearch();
 
-        int run(void);
-        double getEigenvalue();
-        AtomMatrix getEigenvector();
+  int run(void);
+  double getEigenvalue();
+  AtomMatrix getEigenvector();
 
-        double eigenvalue;
-        AtomMatrix eigenvector;
+  double eigenvalue;
+  AtomMatrix eigenvector;
 
-        Matter *reactant;
-        Matter *saddle;
-        Matter *product;
+  Matter *reactant;
+  Matter *saddle;
+  Matter *product;
 
-        int status;
+  int status;
 
-    private:
-        Parameters *parameters;
-
+private:
+  Parameters *parameters;
 };
 
 #endif

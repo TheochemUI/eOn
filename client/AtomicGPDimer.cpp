@@ -1,19 +1,19 @@
 // An interface to the GPDimer library
 
 #include "AtomicGPDimer.h"
-#include "HelperFunctions.h"
 #include "GPRHelpers.h"
+#include "HelperFunctions.h"
 #include "Log.h"
 #include <cassert>
 #include <cmath>
 
 #include "subprojects/gprdimer/gpr/AtomicDimer.h"
 #include "subprojects/gprdimer/gpr/Enums.h"
-#include "subprojects/gprdimer/structures/Structures.h"
 #include "subprojects/gprdimer/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gprdimer/gpr/covariance_functions/ConstantCF.h"
 #include "subprojects/gprdimer/gpr/covariance_functions/SexpatCF.h"
 #include "subprojects/gprdimer/gpr/ml/GaussianProcessRegression.h"
+#include "subprojects/gprdimer/structures/Structures.h"
 
 const char AtomicGPDimer::OPT_SCG[] = "scg";
 const char AtomicGPDimer::OPT_LBFGS[] = "lbfgs";
@@ -36,11 +36,11 @@ void AtomicGPDimer::compute(Matter *matter,
   *matterCenter = *matter;
   // R_init.resize(1, matterCenter->getPositionsFree().size());
   // R_init.assignFromEigenMatrix(matterCenter->getPositionsFreeV());
-R_init.resize(1, matterCenter->getPositionsFree().rows() *
-                matterCenter->getPositionsFree().cols());
+  R_init.resize(1, matterCenter->getPositionsFree().rows() *
+                       matterCenter->getPositionsFree().cols());
   int counter = 0;
-  for(int i = 0; i < matterCenter->getPositionsFree().rows(); ++i) {
-    for(int j = 0; j < matterCenter->getPositionsFree().cols(); ++j) {
+  for (int i = 0; i < matterCenter->getPositionsFree().rows(); ++i) {
+    for (int j = 0; j < matterCenter->getPositionsFree().cols(); ++j) {
       R_init[counter++] = matterCenter->getPositionsFree()(i, j);
     }
   }
@@ -52,37 +52,34 @@ R_init.resize(1, matterCenter->getPositionsFree().rows() *
   orient_init.clear();
   orient_init.resize(matterCenter->getPositionsFree().rows(),
                      matterCenter->getPositionsFree().cols());
-    AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(),3);
-    int i,j = 0;
-    for(i=0; i<matterCenter->numberOfAtoms(); i++)
-    {
-        if(!matterCenter->getFixed(i))
-        {
-           freeOrient.row(j) = initialDirectionAtomMatrix.row(i);
-            j++;
-            if (j==matterCenter->numberOfFixedAtoms()){
-              break;
-            }
-        }
+  AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(), 3);
+  int i, j = 0;
+  for (i = 0; i < matterCenter->numberOfAtoms(); i++) {
+    if (!matterCenter->getFixed(i)) {
+      freeOrient.row(j) = initialDirectionAtomMatrix.row(i);
+      j++;
+      if (j == matterCenter->numberOfFixedAtoms()) {
+        break;
+      }
     }
+  }
   // orient_init.assignFromEigenMatrix(freeOrient);
-orient_init.resize(1, freeOrient.rows() *
-                freeOrient.cols());
+  orient_init.resize(1, freeOrient.rows() * freeOrient.cols());
   counter = 0;
-  for(int i = 0; i < freeOrient.rows(); ++i) {
-    for(int j = 0; j < freeOrient.cols(); ++j) {
+  for (int i = 0; i < freeOrient.rows(); ++i) {
+    for (int j = 0; j < freeOrient.cols(); ++j) {
       orient_init[counter++] = freeOrient(i, j);
     }
   }
   atomic_dimer.initialize(p, init_observations, init_middle_point, orient_init,
                           atoms_config);
 
-  Potential *potential= Potential::getPotential(parameters);
+  Potential *potential = Potential::getPotential(parameters);
   atomic_dimer.execute(*potential);
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
-  this->totalIterations=atomic_dimer.getIterations();
-  this->totalForceCalls=atomic_dimer.getTotalForceCalls();
+  this->totalIterations = atomic_dimer.getIterations();
+  this->totalForceCalls = atomic_dimer.getTotalForceCalls();
   return;
 }
 

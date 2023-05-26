@@ -28,7 +28,8 @@
 /* We follow the behavior of regular LAMMPS compilation and assume
  * -DLAMMPS_SMALLBIG when no define is set. */
 
-#if !defined(LAMMPS_BIGBIG) && !defined(LAMMPS_SMALLBIG) && !defined(LAMMPS_SMALLSMALL)
+#if !defined(LAMMPS_BIGBIG) && !defined(LAMMPS_SMALLBIG) &&                    \
+    !defined(LAMMPS_SMALLSMALL)
 #define LAMMPS_SMALLBIG
 #endif
 
@@ -116,9 +117,10 @@ void lammps_commands_string(void *handle, const char *str);
 double lammps_get_natoms(void *handle);
 double lammps_get_thermo(void *handle, const char *keyword);
 
-void lammps_extract_box(void *handle, double *boxlo, double *boxhi, double *xy, double *yz,
-                        double *xz, int *pflags, int *boxflag);
-void lammps_reset_box(void *handle, double *boxlo, double *boxhi, double xy, double yz, double xz);
+void lammps_extract_box(void *handle, double *boxlo, double *boxhi, double *xy,
+                        double *yz, double *xz, int *pflags, int *boxflag);
+void lammps_reset_box(void *handle, double *boxlo, double *boxhi, double xy,
+                      double yz, double xz);
 
 void lammps_memory_usage(void *handle, double *meminfo);
 int lammps_get_mpi_comm(void *handle);
@@ -147,40 +149,48 @@ int lammps_set_variable(void *, char *, char *);
  * Library functions for scatter/gather operations of data
  * ---------------------------------------------------------------------- */
 
-void lammps_gather_atoms(void *handle, char *name, int type, int count, void *data);
-void lammps_gather_atoms_concat(void *handle, char *name, int type, int count, void *data);
-void lammps_gather_atoms_subset(void *handle, char *name, int type, int count, int ndata, int *ids,
+void lammps_gather_atoms(void *handle, char *name, int type, int count,
+                         void *data);
+void lammps_gather_atoms_concat(void *handle, char *name, int type, int count,
                                 void *data);
-void lammps_scatter_atoms(void *handle, char *name, int type, int count, const void *data);
-void lammps_scatter_atoms_subset(void *handle, char *name, int type, int count, int ndata, int *ids,
-                                 void *data);
+void lammps_gather_atoms_subset(void *handle, char *name, int type, int count,
+                                int ndata, int *ids, void *data);
+void lammps_scatter_atoms(void *handle, char *name, int type, int count,
+                          const void *data);
+void lammps_scatter_atoms_subset(void *handle, char *name, int type, int count,
+                                 int ndata, int *ids, void *data);
 
 void lammps_gather(void *handle, char *name, int type, int count, void *data);
-void lammps_gather_concat(void *handle, char *name, int type, int count, void *data);
-void lammps_gather_subset(void *handle, char *name, int type, int count, int ndata, int *ids,
+void lammps_gather_concat(void *handle, char *name, int type, int count,
                           void *data);
+void lammps_gather_subset(void *handle, char *name, int type, int count,
+                          int ndata, int *ids, void *data);
 void lammps_scatter(void *handle, char *name, int type, int count, void *data);
-void lammps_scatter_subset(void *handle, char *name, int type, int count, int ndata, int *ids,
-                           void *data);
+void lammps_scatter_subset(void *handle, char *name, int type, int count,
+                           int ndata, int *ids, void *data);
 
 #if !defined(LAMMPS_BIGBIG)
-int lammps_create_atoms(void *handle, int n, const int *id, const int *type, const double *x,
-                        const double *v, const int *image, int bexpand);
+int lammps_create_atoms(void *handle, int n, const int *id, const int *type,
+                        const double *x, const double *v, const int *image,
+                        int bexpand);
 #else
-int lammps_create_atoms(void *handle, int n, const int64_t *id, const int *type, const double *x,
-                        const double *v, const int64_t *image, int bexpand);
+int lammps_create_atoms(void *handle, int n, const int64_t *id, const int *type,
+                        const double *x, const double *v, const int64_t *image,
+                        int bexpand);
 #endif
 
 /* ----------------------------------------------------------------------
  * Library functions for accessing neighbor lists
  * ---------------------------------------------------------------------- */
 
-int lammps_find_pair_neighlist(void *handle, const char *style, int exact, int nsub, int request);
+int lammps_find_pair_neighlist(void *handle, const char *style, int exact,
+                               int nsub, int request);
 int lammps_find_fix_neighlist(void *handle, const char *id, int request);
 int lammps_find_compute_neighlist(void *handle, const char *id, int request);
 int lammps_neighlist_num_elements(void *handle, int idx);
-void lammps_neighlist_element_neighbors(void *handle, int idx, int element, int *iatom,
-                                        int *numneigh, int **neighbors);
+void lammps_neighlist_element_neighbors(void *handle, int idx, int element,
+                                        int *iatom, int *numneigh,
+                                        int **neighbors);
 
 /* ----------------------------------------------------------------------
  * Library functions for retrieving configuration information
@@ -228,10 +238,12 @@ void lammps_decode_image_flags(int64_t image, int *flags);
 #endif
 
 #if defined(LAMMPS_BIGBIG)
-typedef void (*FixExternalFnPtr)(void *, int64_t, int, int64_t *, double **, double **);
+typedef void (*FixExternalFnPtr)(void *, int64_t, int, int64_t *, double **,
+                                 double **);
 void lammps_set_fix_external_callback(void *, char *, FixExternalFnPtr, void *);
 #elif defined(LAMMPS_SMALLBIG)
-typedef void (*FixExternalFnPtr)(void *, int64_t, int, int *, double **, double **);
+typedef void (*FixExternalFnPtr)(void *, int64_t, int, int *, double **,
+                                 double **);
 void lammps_set_fix_external_callback(void *, char *, FixExternalFnPtr, void *);
 #else
 typedef void (*FixExternalFnPtr)(void *, int, int, int *, double **, double **);
