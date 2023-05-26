@@ -2,28 +2,25 @@
 #define LANCZOS_H
 
 #include "Eigen.h"
+#include "LowestEigenmode.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "LowestEigenmode.h"
 
 // Lanczos method to find the lowest curvature mode
-class Lanczos : public LowestEigenmode
-{
+class Lanczos : public LowestEigenmode {
 
-    public:
-        Lanczos(Matter *matter, Parameters *parameters);
-        ~Lanczos();
+public:
+  Lanczos(Matter *matter, Parameters *parameters);
+  ~Lanczos();
 
-        void compute(Matter *matter, AtomMatrix direction);
-        double getEigenvalue();
-        AtomMatrix getEigenvector();
+  void compute(Matter *matter, AtomMatrix direction);
+  double getEigenvalue();
+  AtomMatrix getEigenvector();
 
-    private:
-        Parameters *parameters;
-        AtomMatrix lowestEv;
-        double lowestEw;
+private:
+  Parameters *parameters;
+  AtomMatrix lowestEv;
+  double lowestEw;
 };
 
 #endif
-
-

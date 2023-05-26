@@ -17,18 +17,17 @@ class Atoms;
 /// boundary conditions of the simulation.  A second use is for the
 /// unit cell of the lattice in the elements of a Quasicontinuum
 /// simulation.
-class SuperCell
-{
+class SuperCell {
 public:
   /// Create a new supercell with basis vectors Vec and periodicity p.
   SuperCell(const Vec v[3], const bool p[3]);
-  
+
   /// Copy constructor.
   SuperCell(const SuperCell *original);
 
   /// Set the atoms associated with the supercell.
   void SetAtoms(Atoms *a);
-  
+
   /// In-place transformation of positions from real to scaled space.
   void TransformToScaledSpace(Vec *positions, int nAtoms) const;
 
@@ -40,12 +39,13 @@ public:
   /// When the supercell is used in a QC simulation to represent the
   /// crystal lattice of an element, this function is used to convert
   /// the position of an atom into lattice coordinates.
-  void ClosestLatticeSiteIndices(int intVector[3], Vec& diff) const;
+  void ClosestLatticeSiteIndices(int intVector[3], Vec &diff) const;
 
   /// Get the volume of the supercell.
   double GetVolume() const;
 
-  /// Change the basis.  The atoms are not moved.  Should only be called from the atoms.
+  /// Change the basis.  The atoms are not moved.  Should only be called from
+  /// the atoms.
   void SetBasis(const Vec v[3]);
 
   /// Get the basis vectors
@@ -58,16 +58,16 @@ public:
   /// atoms have been assigned a Potential.
   void SetPeriodic(const bool newperiodic[3]);
 
-public:  
+public:
   bool periodic[3];  ///< Periodic boundary conditions along the 3 axes?
   Vec vectors[3];    ///< The basis vectors
   Vec inverse[3];    ///< The inverse of the vectors matrix.
   double heights[3]; ///< The heights of the supercell.
   Vec translations[27];
-    ///< The 27 possible translations due to the periodic boundaries.
+  ///< The 27 possible translations due to the periodic boundaries.
 private:
   Atoms *atoms;
-    ///< A pointer to the atoms associated with this supercell, if any.
+  ///< A pointer to the atoms associated with this supercell, if any.
 };
 
 #endif // _SUPERCELL_H

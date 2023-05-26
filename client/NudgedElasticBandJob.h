@@ -1,31 +1,28 @@
 #ifndef NEBJOB_H
 #define NEBJOB_H
 
-#include "Matter.h"
-#include "Parameters.h"
-#include "NudgedElasticBand.h"
 #include "Job.h"
+#include "Matter.h"
+#include "NudgedElasticBand.h"
+#include "Parameters.h"
 
 class NudgedElasticBandJob : public Job {
 
-    public:
+public:
+  NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)), fCallsNEB{0} {}
+  ~NudgedElasticBandJob(void) = default;
+  std::vector<std::string> run(void);
 
-        NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
-                : Job(std::move(parameters)), fCallsNEB{0} {}
-        ~NudgedElasticBandJob(void) = default;
-        std::vector<std::string> run(void);
+private:
+  // functions
+  void printEndState(NudgedElasticBand::NEBStatus status);
+  void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb);
 
-    private:
-
-        // functions
-        void printEndState(NudgedElasticBand::NEBStatus status);
-        void saveData(NudgedElasticBand::NEBStatus status, NudgedElasticBand *neb);
-
-        // variables
-        std::vector<std::string> returnFiles;
-        Parameters *parameters;
-        size_t fCallsNEB;
-
+  // variables
+  std::vector<std::string> returnFiles;
+  Parameters *parameters;
+  size_t fCallsNEB;
 };
 
 #endif

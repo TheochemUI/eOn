@@ -6,28 +6,27 @@
 #include "Parameters.h"
 
 /* Define the interface for the lowest eigenvalue determination algorithm */
-class LowestEigenmode
-{
+class LowestEigenmode {
 
 public:
-    // stats information
-    long totalForceCalls;
-    double statsTorque;
-    double statsCurvature;
-    double statsAngle;
-    long statsRotations;
-    long totalIterations; // Only set by the gpr dimer
-    static const char MINMODE_DIMER[];
-    static const char MINMODE_GPRDIMER[];
-    static const char MINMODE_LANCZOS[];
+  // stats information
+  long totalForceCalls;
+  double statsTorque;
+  double statsCurvature;
+  double statsAngle;
+  long statsRotations;
+  long totalIterations; // Only set by the gpr dimer
+  static const char MINMODE_DIMER[];
+  static const char MINMODE_GPRDIMER[];
+  static const char MINMODE_LANCZOS[];
 
-    virtual ~LowestEigenmode() {}
+  virtual ~LowestEigenmode() {}
 
-    //void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
-    virtual void compute(Matter *matter, AtomMatrix direction) = 0;
+  // void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
+  virtual void compute(Matter *matter, AtomMatrix direction) = 0;
 
-    virtual double getEigenvalue() = 0;
-    virtual AtomMatrix getEigenvector() = 0;
+  virtual double getEigenvalue() = 0;
+  virtual AtomMatrix getEigenvector() = 0;
 };
 
 #endif

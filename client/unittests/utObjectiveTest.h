@@ -11,24 +11,23 @@
 #ifndef OBJECTIVE_TEST_H
 #define OBJECTIVE_TEST_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class ObjectiveTest {
 
-	public:
-		virtual ~ObjectiveTest() {};
-		virtual int test()=0;
-                
-		std::vector<std::string> testResults;
-		int currentStatus=0;
-		void pushToResults(std::string update);
-		void saveTest(std::string testType);
-		
-		static const std::string HELPER_FUNCTIONS;
+public:
+  virtual ~ObjectiveTest(){};
+  virtual int test() = 0;
 
-		static ObjectiveTest *getObjectiveTest(std::string testType);
+  std::vector<std::string> testResults;
+  int currentStatus = 0;
+  void pushToResults(std::string update);
+  void saveTest(std::string testType);
 
+  static const std::string HELPER_FUNCTIONS;
+
+  static ObjectiveTest *getObjectiveTest(std::string testType);
 };
 
 #endif

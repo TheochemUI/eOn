@@ -1,368 +1,428 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include <cstring>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <stdio.h>
-#include <ctype.h>
-#include <vector>
 #include "BaseStructures.h"
+#include <cstring>
+#include <ctype.h>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 
 #ifdef EONMPI
-    #include "mpi.h"
+#include "mpi.h"
 #endif
 
-/** Contains all runtime parameters and results. No functionality just bookkeeping.*/
+/** Contains all runtime parameters and results. No functionality just
+ * bookkeeping.*/
 class Parameters {
 
 public:
-    Parameters();
-    ~Parameters() = default;
-    // TODO: Is this complete?
-    Parameters(const Parameters&) = default;
-    int load(string filename);
-    int load(FILE *file);
+  Parameters();
+  ~Parameters() = default;
+  // TODO: Is this complete?
+  Parameters(const Parameters &) = default;
+  int load(string filename);
+  int load(FILE *file);
 
-/** string constants: declared here, defined in Parameters.cpp. **/
+  /** string constants: declared here, defined in Parameters.cpp. **/
 
-    // potentials //    
-    // jobs //
+  // potentials //
+  // jobs //
 
-    // Physical Constants
-    double kB;
-    double timeUnit;
+  // Physical Constants
+  double kB;
+  double timeUnit;
 
-/** input parameters **/
+  /** input parameters **/
 
-    // [Main] //
-    JobType job;
-    long   randomSeed;
-    double temperature;
-    bool   quiet;
-    bool   writeLog;
-    bool   checkpoint;
-    string iniFilename;
-    string conFilename;
-    double finiteDifference;
-    long   maxForceCalls;
-    bool   removeNetForce;
+  // [Main] //
+  JobType job;
+  long randomSeed;
+  double temperature;
+  bool quiet;
+  bool writeLog;
+  bool checkpoint;
+  string iniFilename;
+  string conFilename;
+  double finiteDifference;
+  long maxForceCalls;
+  bool removeNetForce;
 
-    // [Potential] //
-    PotType potential;
-    double MPIPollPeriod;
-    bool   LAMMPSLogging;
-    int    LAMMPSThreads;
-    bool   EMTRasmussen;
-    bool   LogPotential;
-    string extPotPath;
+  // [Potential] //
+  PotType potential;
+  double MPIPollPeriod;
+  bool LAMMPSLogging;
+  int LAMMPSThreads;
+  bool EMTRasmussen;
+  bool LogPotential;
+  string extPotPath;
 
-    // [AMS] and [AMS_IO] //
-    string engine; // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
-    string forcefield; // OPt.ff etc. (REAXFF)
-    string model; // Model hamiltonian (MOPAC)
-    string resources; // DFTB
-    string xc; // Exchange (BAND, ADF)
-    string basis; // Basis (BAND, ADF)
+  // [AMS] and [AMS_IO] //
+  string engine;     // MOPAC, ADF, BAND, REAXFF, FORCEFIELD
+  string forcefield; // OPt.ff etc. (REAXFF)
+  string model;      // Model hamiltonian (MOPAC)
+  string resources;  // DFTB
+  string xc;         // Exchange (BAND, ADF)
+  string basis;      // Basis (BAND, ADF)
 
-    // [AMS_ENV] //
-    string amshome;
-    string scm_tmpdir;
-    string scmlicense;
-    string scm_pythondir;
-    string amsbin;
-    string amsresources;
+  // [AMS_ENV] //
+  string amshome;
+  string scm_tmpdir;
+  string scmlicense;
+  string scm_pythondir;
+  string amsbin;
+  string amsresources;
 
-    // [Structure Comparison] //
-    double distanceDifference; // The distance criterion for comparing geometries
-    double neighborCutoff; // radius used in the local atomic structure analysis
-    bool   checkRotation;
-    bool   indistinguishableAtoms;
-    double energyDifference;
-    bool   removeTranslation;
+  // [Structure Comparison] //
+  double distanceDifference; // The distance criterion for comparing geometries
+  double neighborCutoff; // radius used in the local atomic structure analysis
+  bool checkRotation;
+  bool indistinguishableAtoms;
+  double energyDifference;
+  bool removeTranslation;
 
-    // [Process Search] //
-    bool   processSearchMinimizeFirst;
-    double processSearchMinimizationOffset; // how far from the saddle to displace the minimization images
+  // [Process Search] //
+  bool processSearchMinimizeFirst;
+  double processSearchMinimizationOffset; // how far from the saddle to displace
+                                          // the minimization images
 
-    // [Saddle Search] //
-    long   saddleMaxJumpAttempts; // number of displacements to reach a convex region;  if 0, a search is started after the displacement
-    long   saddleMaxIterations; // max iterations for saddle point searches and minimization
-    string saddleMethod;
-    string saddleMinmodeMethod; // algorithm to be used for lowest eigenmode determination
-    string saddleDisplaceType; // displacement type to use
-    double saddleMaxEnergy; // energy above product state that will cause termination of the saddle point search
-    double saddleDisplaceMagnitude; // norm of the displacement vector
-    double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z direction for atoms being displaced
-    double saddleDisplaceRadius; // atoms within this radius of the displacement atoms are also displaced
-    double saddleConvergedForce; // force convergence criterion required for a saddle point search
-    double saddlePerpForceRatio; // proportion to keep of the perpendicular force when the lowest eigenvalue is positive 
-    bool   saddleNonnegativeDisplacementAbort; // abort the saddle search if the displacement does not have a negative mode
-    long   saddleNonlocalCountAbort; // abort the search if this many atoms move more than NonlocalDistanceAbort
-    double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort atoms move more than this distance
-    bool   saddleRemoveRotation; // remove dominant rotational component when system is translated
+  // [Saddle Search] //
+  long saddleMaxJumpAttempts; // number of displacements to reach a convex
+                              // region;  if 0, a search is started after the
+                              // displacement
+  long saddleMaxIterations;   // max iterations for saddle point searches and
+                              // minimization
+  string saddleMethod;
+  string saddleMinmodeMethod;     // algorithm to be used for lowest eigenmode
+                                  // determination
+  string saddleDisplaceType;      // displacement type to use
+  double saddleMaxEnergy;         // energy above product state that will cause
+                                  // termination of the saddle point search
+  double saddleDisplaceMagnitude; // norm of the displacement vector
+  double saddleMaxSingleDisplace; // maximum value of displacement in x, y and z
+                                  // direction for atoms being displaced
+  double saddleDisplaceRadius; // atoms within this radius of the displacement
+                               // atoms are also displaced
+  double saddleConvergedForce; // force convergence criterion required for a
+                               // saddle point search
+  double saddlePerpForceRatio; // proportion to keep of the perpendicular force
+                               // when the lowest eigenvalue is positive
+  bool saddleNonnegativeDisplacementAbort; // abort the saddle search if the
+                                           // displacement does not have a
+                                           // negative mode
+  long saddleNonlocalCountAbort; // abort the search if this many atoms move
+                                 // more than NonlocalDistanceAbort
+  double saddleNonlocalDistanceAbort; // abort the search if NonlocalCountAbort
+                                      // atoms move more than this distance
+  bool saddleRemoveRotation; // remove dominant rotational component when system
+                             // is translated
 
-    double saddleDynamicsTemperature; //temperature for dynamics saddle search method
-    double saddleDynamicsStateCheckIntervalInput; 
-    double saddleDynamicsStateCheckInterval; //how often to minimize 
-    double saddleDynamicsRecordIntervalInput;
-    double saddleDynamicsRecordInterval;
-    bool   saddleDynamicsLinearInterpolation;
-    double saddleDynamicsMaxInitCurvature;
+  double saddleDynamicsTemperature; // temperature for dynamics saddle search
+                                    // method
+  double saddleDynamicsStateCheckIntervalInput;
+  double saddleDynamicsStateCheckInterval; // how often to minimize
+  double saddleDynamicsRecordIntervalInput;
+  double saddleDynamicsRecordInterval;
+  bool saddleDynamicsLinearInterpolation;
+  double saddleDynamicsMaxInitCurvature;
 
-    bool   saddleConfinePositive; // undocumented
-    bool   saddleBowlBreakout; // undocumented
-    long   saddleBowlActive; // undocumented
-    double saddleConfinePositiveMinForce; // undocumented
-    double saddleConfinePositiveScaleRatio; // undocumented
-    double saddleConfinePositiveBoost; // undocumented
-    long   saddleConfinePositiveMinActive; // undocumented
-    double saddleZeroModeAbortCurvature;
+  bool saddleConfinePositive;             // undocumented
+  bool saddleBowlBreakout;                // undocumented
+  long saddleBowlActive;                  // undocumented
+  double saddleConfinePositiveMinForce;   // undocumented
+  double saddleConfinePositiveScaleRatio; // undocumented
+  double saddleConfinePositiveBoost;      // undocumented
+  long saddleConfinePositiveMinActive;    // undocumented
+  double saddleZeroModeAbortCurvature;
 
-    // [Optimizer] //
-    string optMethod;
-    string optConvergenceMetric; // norm, max_atom, max_component
-    string optConvergenceMetricLabel;
-    long   optMaxIterations; // maximum iterations for saddle point searches and minimization
-    double optMaxMove; // maximum displacement vector for a step during optimization
-    double optConvergedForce; // force convergence criterion required for an optimization
-    double optTimeStepInput;
-    double optTimeStep; // time step size used in quickmin
-    double optMaxTimeStepInput; // maximum time step for FIRE.
-    double optMaxTimeStep; // maximum time step for FIRE.
-    long   optLBFGSMemory; // number of previous forces to keep in the bfgs memory
-    double optLBFGSInverseCurvature;
-    double optLBFGSMaxInverseCurvature;
-    bool   optLBFGSAutoScale;
-    bool   optLBFGSAngleReset;
-    bool   optLBFGSDistanceReset;
-    bool   optQMSteepestDecent; // if set the velocity will always be set to zero in quickmin
-    bool   optCGNoOvershooting; // if set it is ensured that the approximate line search in conjugate gradients never overshoot the minimum along the search line
-    bool   optCGKnockOutMaxMove; // if set the old search direction is nullified when steps larger than the optMaxMove are conducted 
-    bool   optCGLineSearch; // if set full line search is conducted
-    double optCGLineConverged; // convergence criteria for line search, ratio between force component along search line and the orthogonal part
-    long   optCGLineSearchMaxIter; // maximal nr of iterations during line search
-    long   optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no resetting is done
-    double optSDAlpha;
-    bool   optSDTwoPoint;
-    
-    // [Dimer] //
-    double dimerRotationAngle; // finite difference rotation angle
-    bool   dimerImproved; // turn on the improved dimer method
-    double dimerConvergedAngle; // stop rotating when angle drops below this value
-    long   dimerMaxIterations; // maximum number of rotation iterations
-    string dimerOptMethod; // method to determine the next rotation direction
-    long   dimerRotationsMax; // old
-    long   dimerRotationsMin; // old
-    double dimerTorqueMax; // old
-    double dimerTorqueMin; // old
-    bool   dimerRemoveRotation; // remove dominant rotational component when estimating the eigenmode
+  // [Optimizer] //
+  string optMethod;
+  string optConvergenceMetric; // norm, max_atom, max_component
+  string optConvergenceMetricLabel;
+  long optMaxIterations; // maximum iterations for saddle point searches and
+                         // minimization
+  double
+      optMaxMove; // maximum displacement vector for a step during optimization
+  double optConvergedForce; // force convergence criterion required for an
+                            // optimization
+  double optTimeStepInput;
+  double optTimeStep;         // time step size used in quickmin
+  double optMaxTimeStepInput; // maximum time step for FIRE.
+  double optMaxTimeStep;      // maximum time step for FIRE.
+  long optLBFGSMemory; // number of previous forces to keep in the bfgs memory
+  double optLBFGSInverseCurvature;
+  double optLBFGSMaxInverseCurvature;
+  bool optLBFGSAutoScale;
+  bool optLBFGSAngleReset;
+  bool optLBFGSDistanceReset;
+  bool optQMSteepestDecent; // if set the velocity will always be set to zero in
+                            // quickmin
+  bool optCGNoOvershooting; // if set it is ensured that the approximate line
+                            // search in conjugate gradients never overshoot the
+                            // minimum along the search line
+  bool
+      optCGKnockOutMaxMove; // if set the old search direction is nullified when
+                            // steps larger than the optMaxMove are conducted
+  bool optCGLineSearch;     // if set full line search is conducted
+  double optCGLineConverged;    // convergence criteria for line search, ratio
+                                // between force component along search line and
+                                // the orthogonal part
+  long optCGLineSearchMaxIter;  // maximal nr of iterations during line search
+  long optCGMaxIterBeforeReset; // max nr of cg steps before reset, if 0 no
+                                // resetting is done
+  double optSDAlpha;
+  bool optSDTwoPoint;
 
-    // [GPR Dimer] //
-    double gprDimerRotationAngle; // finite difference rotation angle
-    double gprDimerConvergedAngle; // stop rotating when angle drops below this value {T_anglerot_init}
-    double gprDimerRelaxConvAngle; // stop rotating when angle drops below this value during relaxation {T_anglerot_gp}
-    long   gprDimerInitRotationsMax; // {num_iter_initrot}
-    long   gprDimerRelaxRotationsMax; // {num_iter_rot_gp}
-    long   gprDimerDivisorTdimerGP; // {divisor_T_dimer_gp}
-    long   gprDimerMaxOuterIterations; // maximum number of outer iterations or new sets of observations {num_bigiter}
-    long   gprDimerMaxInnerIterations; // maximum number of steps during the relaxation phase {num_iter}
-    double gprDimerMidpointMaxDisp; // {disp_max}
-    string gprDimerRotOptMethod; // method to determine the next rotation direction {method_rot}
-    string gprDimerTransOptMethod; // method to determine the next rotation direction {method_trans}
-    double gprActiveRadius; // activation radius for inclusion in covariance matrix {actdist_fro}
-    double gprDimerSep; // distance from the middle point of the dimer to the two images {dimer_sep}
-    double gprDimerConvStep; // step length for convex regions {param_trans[0]}
-    double gprDimerMaxStep; // maximum step length {param_trans[1]}
-    double gprForceThreshold; // maximum component of the force acting on the middle point of the dimer (stops when accurate force components are below this value) {T_dimer}
-    double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the ratio of inter-atomic distances between the image and its "nearest observed data point"
-    bool   gprDimerInitRotGP; // initial rotations without GP (1) or with GP (0) {initrot_nogp}
-    bool   gprDimerInitTransGP; // initial translations without GP (1) or with GP (0) {inittrans_nogp}
-    bool   gprDimerManyIterations; // indicates of the number of iterations is larger than required for dimer convergence on the accurate energy surface (1), otherwise (0) the relaxation phase is continued from the current dimer if the maximum iterations in the relaxation phase is reached {islarge_num_iter}
-    // GPR Params
-    string gprDimerHyperOptMethod; // method to optimize hyperparameters {optimization_alg}
-    double gprDimerSigma2; // GPR variance {gp_sigma2}
-    double gprDimerJitterSigma2; // GPR jitter variance {jitter_sigma2}
-    double gprDimerNoiseSigma2; // noise Variance {sigma2}
-    double gprDimerPriorMu; // prior mean {prior_mu}
-    double gprDimerPriorSigma2; // prior variance {prior_s2}
-    long gprDimerPriorNu; // prior degrees of freedom {prior_nu}
-    // GPR Optimization Parameters
-    bool gprOptCheckDerivatives; // {check_derivative}
-    int gprOptMaxIterations; // {max_iter}
-    double gprOptTolFunc; // {tolerance_func}
-    double gprOptTolSol; // {tolerance_sol}
-    long gprOptLambdaLimit; // {lambda_limit}
-    long gprOptLambdaInit; // {lambda}
-    bool gprUsePrune; // {use_prune}
-    int gprPruneBegin; // {start_prune_at}
-    int gprPruneNVals; // {nprune_vals}
-    double gprPruneThreshold; // {prune_threshold}
+  // [Dimer] //
+  double dimerRotationAngle;  // finite difference rotation angle
+  bool dimerImproved;         // turn on the improved dimer method
+  double dimerConvergedAngle; // stop rotating when angle drops below this value
+  long dimerMaxIterations;    // maximum number of rotation iterations
+  string dimerOptMethod;      // method to determine the next rotation direction
+  long dimerRotationsMax;     // old
+  long dimerRotationsMin;     // old
+  double dimerTorqueMax;      // old
+  double dimerTorqueMin;      // old
+  bool dimerRemoveRotation;   // remove dominant rotational component when
+                              // estimating the eigenmode
 
-    // GPR Debugging Parameters
-    int gprReportLevel; // {report_level}
-    int gprDebugLevel; // {debug_level}
-    string gprDebugOutDir; // {debug_output_dir}
-    string gprDebugPosFile; // {debug_output_file_R}
-    string gprDebugEnergyFile; // {debug_output_file_E}
-    string gprDebugGradFile; // {debug_output_file_G}
-    string gprDebugOutExt; // {debug_output_file_extension}
-    double gprDebugOffsetMidPoint; // {debug_offset_from_mid_point}
-    double gprDebugDy; // {debug_dy}
-    double gprDebugDz; // {debug_dz}
+  // [GPR Dimer] //
+  double gprDimerRotationAngle;    // finite difference rotation angle
+  double gprDimerConvergedAngle;   // stop rotating when angle drops below this
+                                   // value {T_anglerot_init}
+  double gprDimerRelaxConvAngle;   // stop rotating when angle drops below this
+                                   // value during relaxation {T_anglerot_gp}
+  long gprDimerInitRotationsMax;   // {num_iter_initrot}
+  long gprDimerRelaxRotationsMax;  // {num_iter_rot_gp}
+  long gprDimerDivisorTdimerGP;    // {divisor_T_dimer_gp}
+  long gprDimerMaxOuterIterations; // maximum number of outer iterations or new
+                                   // sets of observations {num_bigiter}
+  long gprDimerMaxInnerIterations; // maximum number of steps during the
+                                   // relaxation phase {num_iter}
+  double gprDimerMidpointMaxDisp;  // {disp_max}
+  string gprDimerRotOptMethod;     // method to determine the next rotation
+                                   // direction {method_rot}
+  string gprDimerTransOptMethod;   // method to determine the next rotation
+                                   // direction {method_trans}
+  double gprActiveRadius; // activation radius for inclusion in covariance
+                          // matrix {actdist_fro}
+  double gprDimerSep; // distance from the middle point of the dimer to the two
+                      // images {dimer_sep}
+  double gprDimerConvStep;  // step length for convex regions {param_trans[0]}
+  double gprDimerMaxStep;   // maximum step length {param_trans[1]}
+  double gprForceThreshold; // maximum component of the force acting on the
+                            // middle point of the dimer (stops when accurate
+                            // force components are below this value) {T_dimer}
+  double gprDimerRatioAtLimit; // {ratio_at_limit} defines the limit for the
+                               // ratio of inter-atomic distances between the
+                               // image and its "nearest observed data point"
+  bool gprDimerInitRotGP;   // initial rotations without GP (1) or with GP (0)
+                            // {initrot_nogp}
+  bool gprDimerInitTransGP; // initial translations without GP (1) or with GP
+                            // (0) {inittrans_nogp}
+  bool gprDimerManyIterations; // indicates of the number of iterations is
+                               // larger than required for dimer convergence on
+                               // the accurate energy surface (1), otherwise (0)
+                               // the relaxation phase is continued from the
+                               // current dimer if the maximum iterations in the
+                               // relaxation phase is reached {islarge_num_iter}
+  // GPR Params
+  string gprDimerHyperOptMethod; // method to optimize hyperparameters
+                                 // {optimization_alg}
+  double gprDimerSigma2;         // GPR variance {gp_sigma2}
+  double gprDimerJitterSigma2;   // GPR jitter variance {jitter_sigma2}
+  double gprDimerNoiseSigma2;    // noise Variance {sigma2}
+  double gprDimerPriorMu;        // prior mean {prior_mu}
+  double gprDimerPriorSigma2;    // prior variance {prior_s2}
+  long gprDimerPriorNu;          // prior degrees of freedom {prior_nu}
+  // GPR Optimization Parameters
+  bool gprOptCheckDerivatives; // {check_derivative}
+  int gprOptMaxIterations;     // {max_iter}
+  double gprOptTolFunc;        // {tolerance_func}
+  double gprOptTolSol;         // {tolerance_sol}
+  long gprOptLambdaLimit;      // {lambda_limit}
+  long gprOptLambdaInit;       // {lambda}
+  bool gprUsePrune;            // {use_prune}
+  int gprPruneBegin;           // {start_prune_at}
+  int gprPruneNVals;           // {nprune_vals}
+  double gprPruneThreshold;    // {prune_threshold}
 
+  // GPR Debugging Parameters
+  int gprReportLevel;            // {report_level}
+  int gprDebugLevel;             // {debug_level}
+  string gprDebugOutDir;         // {debug_output_dir}
+  string gprDebugPosFile;        // {debug_output_file_R}
+  string gprDebugEnergyFile;     // {debug_output_file_E}
+  string gprDebugGradFile;       // {debug_output_file_G}
+  string gprDebugOutExt;         // {debug_output_file_extension}
+  double gprDebugOffsetMidPoint; // {debug_offset_from_mid_point}
+  double gprDebugDy;             // {debug_dy}
+  double gprDebugDz;             // {debug_dz}
 
-    // [Lanczos] //
-    double lanczosTolerance; // difference between the lowest eignevalues of two successive iterations
-    long   lanczosMaxIterations; // maximum number of iterations
-    bool   lanczosQuitEarly;
+  // [Lanczos] //
+  double lanczosTolerance;   // difference between the lowest eignevalues of two
+                             // successive iterations
+  long lanczosMaxIterations; // maximum number of iterations
+  bool lanczosQuitEarly;
 
-    // [Prefactor] //
-    double prefactorDefaultValue; // default prefactor; calculate explicitly if zero
-    double prefactorMaxValue; // max prefactor allowed
-    double prefactorMinValue; // min prefactor allowed
-    double prefactorWithinRadius; // atoms within this radius of the displaced atoms are put in the Hessian, unless filterMode is fraction
-    double prefactorMinDisplacement;// atoms with displacement between min1 or min2 and the saddle point are put in the Hessian
-    string prefactorRate;// method to estimate prefactor
-    string prefactorConfiguration;// configuration for which the frequencies should be determined
-    bool   prefactorAllFreeAtoms;// use all free atom when determining the prefactor
-    string prefactorFilterScheme; // "cutoff" or "fraction", which use prefactorMinDisplacement or prefactorFilterFraction, respectively.
-    double prefactorFilterFraction; // Include atoms whose summed motion comprise more than prefactorFilterFraction in the prefactor calculation. Prioritizes atoms that move more.
-      
-    // [Hessian] //
-    string hessianAtomList;
-    double hessianZeroFreqValue;
+  // [Prefactor] //
+  double
+      prefactorDefaultValue; // default prefactor; calculate explicitly if zero
+  double prefactorMaxValue;  // max prefactor allowed
+  double prefactorMinValue;  // min prefactor allowed
+  double prefactorWithinRadius; // atoms within this radius of the displaced
+                                // atoms are put in the Hessian, unless
+                                // filterMode is fraction
+  double
+      prefactorMinDisplacement;  // atoms with displacement between min1 or min2
+                                 // and the saddle point are put in the Hessian
+  string prefactorRate;          // method to estimate prefactor
+  string prefactorConfiguration; // configuration for which the frequencies
+                                 // should be determined
+  bool
+      prefactorAllFreeAtoms; // use all free atom when determining the prefactor
+  string prefactorFilterScheme;   // "cutoff" or "fraction", which use
+                                  // prefactorMinDisplacement or
+                                  // prefactorFilterFraction, respectively.
+  double prefactorFilterFraction; // Include atoms whose summed motion comprise
+                                  // more than prefactorFilterFraction in the
+                                  // prefactor calculation. Prioritizes atoms
+                                  // that move more.
 
-    // [Nudged Elastic Band] //
-    long   nebImages;
-    long   nebMaxIterations;
-    double nebSpring;
-    bool   nebClimbingImageMethod;
-    bool   nebClimbingImageConvergedOnly;
-    bool   nebOldTangent;
-    bool   nebDoublyNudged;
-    bool   nebDoublyNudgedSwitching;
-    string nebOptMethod;
-    bool   nebElasticBand;
-    double nebConvergedForce; // force convergence criterion required for an optimization
+  // [Hessian] //
+  string hessianAtomList;
+  double hessianZeroFreqValue;
 
-    // [Molecular Dynamics] //
-    double mdTimeStepInput;
-    double mdTimeStep;
-    double mdTimeInput;  
-    double mdTime;  
-    long   mdSteps;
+  // [Nudged Elastic Band] //
+  long nebImages;
+  long nebMaxIterations;
+  double nebSpring;
+  bool nebClimbingImageMethod;
+  bool nebClimbingImageConvergedOnly;
+  bool nebOldTangent;
+  bool nebDoublyNudged;
+  bool nebDoublyNudgedSwitching;
+  string nebOptMethod;
+  bool nebElasticBand;
+  double nebConvergedForce; // force convergence criterion required for an
+                            // optimization
 
-    // [Parallel Replica] //
-    bool   parrepRefineTransition;
-    bool   parrepAutoStop;
-    bool   parrepDephaseLoopStop;
-    double parrepDephaseTimeInput;
-    double parrepDephaseTime;
-    long   parrepDephaseLoopMax;
-    double parrepStateCheckIntervalInput;
-    double parrepStateCheckInterval;
-    double parrepRecordIntervalInput;
-    double parrepRecordInterval;
-    double parrepCorrTimeInput;
-    double parrepCorrTime;
+  // [Molecular Dynamics] //
+  double mdTimeStepInput;
+  double mdTimeStep;
+  double mdTimeInput;
+  double mdTime;
+  long mdSteps;
 
-    // [Temperature Accelerated Dynamics] //
-    double tadLowT;
-    double tadMinPrefactor;
-    double tadConfidence;
+  // [Parallel Replica] //
+  bool parrepRefineTransition;
+  bool parrepAutoStop;
+  bool parrepDephaseLoopStop;
+  double parrepDephaseTimeInput;
+  double parrepDephaseTime;
+  long parrepDephaseLoopMax;
+  double parrepStateCheckIntervalInput;
+  double parrepStateCheckInterval;
+  double parrepRecordIntervalInput;
+  double parrepRecordInterval;
+  double parrepCorrTimeInput;
+  double parrepCorrTime;
 
-    // [Thermostat] //
-    string thermostat;
-    double thermoAndersenAlpha;
-    double thermoAndersenTcolInput;
-    double thermoAndersenTcol;
-    double thermoNoseMass;
-    double thermoLangevinFrictionInput;
-    double thermoLangevinFriction;
-    //std::vector<int> thermoAtoms;
+  // [Temperature Accelerated Dynamics] //
+  double tadLowT;
+  double tadMinPrefactor;
+  double tadConfidence;
 
-    // [Replica Exchange] //
-    string repexcTemperatureDistribution;
-    long   repexcReplicas;
-    long   repexcExchangeTrials;
-    double repexcSamplingTimeInput;
-    double repexcSamplingTime;
-    double repexcTemperatureHigh;
-    double repexcTemperatureLow;
-    double repexcExchangePeriodInput;
-    double repexcExchangePeriod;
+  // [Thermostat] //
+  string thermostat;
+  double thermoAndersenAlpha;
+  double thermoAndersenTcolInput;
+  double thermoAndersenTcol;
+  double thermoNoseMass;
+  double thermoLangevinFrictionInput;
+  double thermoLangevinFriction;
+  // std::vector<int> thermoAtoms;
 
-    // [Bond Boost] //
-    string biasPotential;
-    string bondBoostBALS;
-    double bondBoostRMDTimeInput;
-    double bondBoostRMDTime;
-    double bondBoostDVMAX;
-    double bondBoostQRR;
-    double bondBoostPRR;
-    double bondBoostQcut;
+  // [Replica Exchange] //
+  string repexcTemperatureDistribution;
+  long repexcReplicas;
+  long repexcExchangeTrials;
+  double repexcSamplingTimeInput;
+  double repexcSamplingTime;
+  double repexcTemperatureHigh;
+  double repexcTemperatureLow;
+  double repexcExchangePeriodInput;
+  double repexcExchangePeriod;
 
-    // [Basin Hopping] //
-    double basinHoppingDisplacement;
-    double basinHoppingInitialRandomStructureProbability;
-    double basinHoppingPushApartDistance;
-    long   basinHoppingSteps;
-    long   basinHoppingQuenchingSteps;
-    bool   basinHoppingSignificantStructure;
-    bool   basinHoppingSingleAtomDisplace;
-    string basinHoppingDisplacementAlgorithm;
-    string basinHoppingDisplacementDistribution;
-    double basinHoppingSwapProbability;
-    long   basinHoppingJumpMax;
-    long   basinHoppingJumpSteps;
-    bool   basinHoppingAdjustDisplacement;
-    long   basinHoppingAdjustPeriod;
-    double basinHoppingAdjustFraction;
-    double basinHoppingTargetRatio;
-    bool   basinHoppingWriteUnique;
-    double basinHoppingStopEnergy;
+  // [Bond Boost] //
+  string biasPotential;
+  string bondBoostBALS;
+  double bondBoostRMDTimeInput;
+  double bondBoostRMDTime;
+  double bondBoostDVMAX;
+  double bondBoostQRR;
+  double bondBoostPRR;
+  double bondBoostQcut;
 
-    // [Global Optimization] //
-    string globalOptimizationMoveMethod;
-    string globalOptimizationDecisionMethod;
-    long   globalOptimizationSteps;
-    double globalOptimizationBeta;
-    double globalOptimizationAlpha;
-    long   globalOptimizationMdmin;
-    double globalOptimizationTargetEnergy;
+  // [Basin Hopping] //
+  double basinHoppingDisplacement;
+  double basinHoppingInitialRandomStructureProbability;
+  double basinHoppingPushApartDistance;
+  long basinHoppingSteps;
+  long basinHoppingQuenchingSteps;
+  bool basinHoppingSignificantStructure;
+  bool basinHoppingSingleAtomDisplace;
+  string basinHoppingDisplacementAlgorithm;
+  string basinHoppingDisplacementDistribution;
+  double basinHoppingSwapProbability;
+  long basinHoppingJumpMax;
+  long basinHoppingJumpSteps;
+  bool basinHoppingAdjustDisplacement;
+  long basinHoppingAdjustPeriod;
+  double basinHoppingAdjustFraction;
+  double basinHoppingTargetRatio;
+  bool basinHoppingWriteUnique;
+  double basinHoppingStopEnergy;
 
-    // [Monte Carlo] //
-    double monteCarloStepSize;
-    int    monteCarloSteps;
+  // [Global Optimization] //
+  string globalOptimizationMoveMethod;
+  string globalOptimizationDecisionMethod;
+  long globalOptimizationSteps;
+  double globalOptimizationBeta;
+  double globalOptimizationAlpha;
+  long globalOptimizationMdmin;
+  double globalOptimizationTargetEnergy;
 
-    // [BGSD] //
+  // [Monte Carlo] //
+  double monteCarloStepSize;
+  int monteCarloSteps;
 
-    double alpha;
-    double beta;
-    double gradientfinitedifference;
-    double Hforceconvergence;
-    double grad2energyconvergence;
-    double grad2forceconvergence;
+  // [BGSD] //
 
-    // MPI stuff, not actually specified in config file
-    // it is used to pass information to the GPAW MPI potential.
-    int MPIPotentialRank;
-    #ifdef EONMPI
-        MPI_Comm MPIClientComm;
-    #endif
+  double alpha;
+  double beta;
+  double gradientfinitedifference;
+  double Hforceconvergence;
+  double grad2energyconvergence;
+  double grad2forceconvergence;
 
-    // [Debug] //
-    bool   writeMovies;
-    long   writeMoviesInterval;
+  // MPI stuff, not actually specified in config file
+  // it is used to pass information to the GPAW MPI potential.
+  int MPIPotentialRank;
+#ifdef EONMPI
+  MPI_Comm MPIClientComm;
+#endif
+
+  // [Debug] //
+  bool writeMovies;
+  long writeMoviesInterval;
 
 private:
-
-    string toLowerCase(string s);
-
+  string toLowerCase(string s);
 };
 
 #endif

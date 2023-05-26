@@ -4,21 +4,19 @@
 #include "Job.h"
 #include "Parameters.h"
 
-class ParallelReplicaJob: public Job
-{
-    public:
+class ParallelReplicaJob : public Job {
+public:
+  ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)) {}
+  ~ParallelReplicaJob(void) = default;
+  std::vector<std::string> run(void);
 
-        ParallelReplicaJob(std::unique_ptr<Parameters> parameters)
-            : Job(std::move(parameters)) {}
-        ~ParallelReplicaJob(void) = default;
-        std::vector<std::string> run(void);
+private:
+  std::vector<std::string> returnFiles;
+  Matter *reactant;
 
-    private:
-        std::vector<std::string> returnFiles;
-        Matter *reactant;
-
-        void dephase(Matter *trajectory);
-        int refineTransition(std::vector<Matter*> MDSnapshots, bool fake=false);
+  void dephase(Matter *trajectory);
+  int refineTransition(std::vector<Matter *> MDSnapshots, bool fake = false);
 };
 
 #endif

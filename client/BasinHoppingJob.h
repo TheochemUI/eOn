@@ -2,9 +2,9 @@
 #ifndef BASINHOPPINGJOB_H
 #define BASINHOPPINGJOB_H
 
+#include "Job.h"
 #include "Matter.h"
 #include "Parameters.h"
-#include "Job.h"
 
 class BasinHoppingJob : public Job {
 public:
@@ -20,22 +20,23 @@ public:
     }
   };
 
-        std::vector<std::string> run(void) override;
-    private:
-        VectorXd calculateDistanceFromCenter(Matter *matter);
-        AtomMatrix displaceRandom(double maxDisplacement);
-        void randomSwap(Matter *matter);
-        Matter *current;
-        Matter *trial; // initial configuration
-        vector<long> getElements(Matter *matter);
-        std::vector<std::string> returnFiles;
-        int jump_count; // count of jump moves
-        int disp_count; // count of displacement moves
-        int swap_count; // count of swap moves
-        int fcalls;
+  std::vector<std::string> run(void) override;
 
-        std::vector<Matter *> uniqueStructures;
-        std::vector<double>   uniqueEnergies;
+private:
+  VectorXd calculateDistanceFromCenter(Matter *matter);
+  AtomMatrix displaceRandom(double maxDisplacement);
+  void randomSwap(Matter *matter);
+  Matter *current;
+  Matter *trial; // initial configuration
+  vector<long> getElements(Matter *matter);
+  std::vector<std::string> returnFiles;
+  int jump_count; // count of jump moves
+  int disp_count; // count of displacement moves
+  int swap_count; // count of swap moves
+  int fcalls;
+
+  std::vector<Matter *> uniqueStructures;
+  std::vector<double> uniqueEnergies;
 };
 
 #endif
