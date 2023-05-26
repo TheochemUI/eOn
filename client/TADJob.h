@@ -10,8 +10,9 @@ class TADJob: public Job
 {
     public:
 
-        TADJob(Parameters *params);
-        ~TADJob(void);
+        TADJob(std::unique_ptr<Parameters> parameters)
+                : Job(std::move(parameters)) {}
+        ~TADJob() = default;
         std::vector<std::string> run(void);
 
     private:
@@ -22,7 +23,6 @@ class TADJob: public Job
         void saveData(int status);
         void dephase();
         bool saddleSearch(Matter *tran);
-        Parameters *parameters;
 
         Matter *current;
         Matter *reactant;

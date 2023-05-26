@@ -9,16 +9,15 @@
 
 class ReplicaExchangeJob : public Job {
 public:
-  ReplicaExchangeJob(Parameters* params)
-      : parameters{params} {};
+  ReplicaExchangeJob(std::unique_ptr<Parameters> parameters)
+    : Job(std::move(parameters)), forceCalls{0} {}
   ~ReplicaExchangeJob(void) = default;
   std::vector<std::string> run(void);
 
 private:
   void saveData();
 
-  Parameters* parameters;
-  long forceCalls;
+  size_t forceCalls;
   //        Matter **replica;
   Matter *pos;
   //        Dynamics **replicaDynamics;

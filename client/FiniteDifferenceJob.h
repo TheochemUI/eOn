@@ -8,11 +8,10 @@
 
 class FiniteDifferenceJob: public Job {
     public:
-        FiniteDifferenceJob(Parameters *params);
-        ~FiniteDifferenceJob(void);
+        FiniteDifferenceJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~FiniteDifferenceJob(void) = default;
         std::vector<std::string> run(void);
-    private:
-        Parameters *parameters;
 };
 
 #endif

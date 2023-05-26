@@ -8,15 +8,6 @@
 
 using namespace std;
 
-NudgedElasticBandJob::NudgedElasticBandJob(Parameters *parametersPassed)
-{
-    parameters = parametersPassed;
-    fCallsNEB = 0;
-}
-
-NudgedElasticBandJob::~NudgedElasticBandJob()
-{}
-
 std::vector<std::string> NudgedElasticBandJob::run(void)
 {
     NudgedElasticBand::NEBStatus status;
@@ -32,17 +23,17 @@ std::vector<std::string> NudgedElasticBandJob::run(void)
     if (fhTransitionState != NULL) {
         tsInterpolate = true;
         fclose(fhTransitionState);
-        transitionState = new Matter(parameters);
+        transitionState = new Matter(params);
         transitionState->con2matter(transitionStateFilename);
     }
 
-    Matter *initial = new Matter(parameters);
-    Matter *final = new Matter(parameters);
+    Matter *initial = new Matter(params);
+    Matter *final = new Matter(params);
 
     initial->con2matter(reactantFilename);
     final->con2matter(productFilename);
 
-    NudgedElasticBand *neb = new NudgedElasticBand(initial, final, parameters);
+    NudgedElasticBand *neb = new NudgedElasticBand(initial, final, params.get());
 
     if (tsInterpolate) {
         AtomMatrix reactantToTS = transitionState->pbc(transitionState->getPositions()  - initial->getPositions());
@@ -88,9 +79,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status, NudgedE
     fileResults = fopen(resultsFilename.c_str(), "wb");
     
     fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
-    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
-    // fprintf(fileResults, "%d total_force_calls\n", Potential::fcalls);
-    // fprintf(fileResults, "%d force_calls_neb\n", fCallsNEB);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(params->potential).c_str());
+    // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
+    // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
     fprintf(fileResults, "%f energy_reference\n", neb->image[0]->getPotentialEnergy());
     fprintf(fileResults, "%li number_of_images\n", neb->images);
     for(long i=0; i<=neb->images+1; i++) {

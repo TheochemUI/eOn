@@ -3,26 +3,17 @@
 #include "Hessian.h"
 #include "Potential.h"
 
-HessianJob::HessianJob(Parameters *params)
-{
-    parameters = params;
-}
-
-HessianJob::~HessianJob()
-{
-}
-
 std::vector<std::string> HessianJob::run(void)
 {
     string matter_in("pos.con");
 
     std::vector<std::string> returnFiles;
 
-    Matter *matter = new Matter(parameters);
+    Matter *matter = new Matter(params);
 
     matter->con2matter(matter_in);
 
-    Hessian hessian(parameters, matter);
+    Hessian hessian(params.get(), matter);
     long nAtoms = matter->numberOfAtoms();
     
     VectorXi moved(nAtoms);
