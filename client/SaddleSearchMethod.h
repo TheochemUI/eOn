@@ -4,14 +4,13 @@
 #include "Eigen.h"
 
 class SaddleSearchMethod {
-    public:
+public:
+  virtual ~SaddleSearchMethod(){};
+  virtual int run() = 0;
+  virtual double getEigenvalue() = 0;
+  virtual AtomMatrix getEigenvector() = 0;
 
-        virtual ~SaddleSearchMethod() {};
-        virtual int run()=0;
-        virtual double getEigenvalue()=0;
-        virtual AtomMatrix getEigenvector()=0;
-
-        int status;
+  int status;
 };
 
 #endif

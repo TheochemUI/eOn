@@ -11,36 +11,36 @@
 #ifndef LENNARD_JONES
 #define LENNARD_JONES
 
-#include <math.h> 
 #include <iostream>
-//#include "../../system_unit.h" // unit converters
+#include <math.h>
+// #include "../../system_unit.h" // unit converters
 #include "../../Potential.h"
 
 /** Lennard Jones potential.*/
-class LJ : public Potential
-{
+class LJ : public Potential {
 
-    private:
-    //	Variables
-        double u0;
-        double cuttOffR;
-        double psi;
-        
-        double cuttOffU;
-        
-    public:
-    // Functions
-	    // constructor
-        LJ(Parameters* params) : Potential(params), u0{1.0}, cuttOffR{15.0}, psi{1.0} {};
-	    // LJ(double r0Recieved, double u0Recieved, double psiRecieved);
+private:
+  //	Variables
+  double u0;
+  double cuttOffR;
+  double psi;
 
-        ~LJ();
-	
-        // Just to satisfy interface
-        void cleanMemory();
-        
-        void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box) override;
-        void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
+  double cuttOffU;
+
+public:
+  // Functions
+  // constructor
+  LJ(Parameters *params)
+      : Potential(params), u0{1.0}, cuttOffR{15.0}, psi{1.0} {};
+  // LJ(double r0Recieved, double u0Recieved, double psiRecieved);
+
+  ~LJ();
+
+  // Just to satisfy interface
+  void cleanMemory();
+
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box) override;
+  void setParameters(double r0Recieved, double u0Recieved, double psiRecieved);
 };
 #endif
-
