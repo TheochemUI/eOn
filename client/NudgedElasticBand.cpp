@@ -4,6 +4,23 @@
 
 using namespace helper_functions;
 
+namespace helper_functions::neb_paths {
+  std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs){
+    std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
+    all_images_on_path.front() = Matter(initImg);
+    all_images_on_path.back() = Matter(finalImg);
+    AtomMatrix posInitial = all_images_on_path.front().getPositions();
+    AtomMatrix posFinal = all_images_on_path.back().getPositions();
+    AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
+    // Only the ones which are not the front and back
+    for (auto it {std::next(all_images_on_path.begin())}; it != std::prev(all_images_on_path.end()); ++it){
+      *it = Matter(initImg);
+      (*it).setPositions(posInitial + imageSep * double(std::distance(all_images_on_path.begin(), it)));
+    }
+    return all_images_on_path;
+  }
+}
+
 // NEBObjectiveFunction definitions
 VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
   VectorXd forceV;
@@ -73,6 +90,7 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
   parameters = parametersPassed;
   images = parameters->nebImages;
   atoms = initialPassed->numberOfAtoms();
+  auto linear_path = helper_functions::neb_paths::linearPath(*initialPassed, *finalPassed, parameters->nebImages);
   image = new Matter *[images + 2];
   tangent = new AtomMatrix *[images + 2];
   projectedForce = new AtomMatrix *[images + 2];
@@ -84,20 +102,13 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
   log("\nNEB: initialize\n");
   for (long i = 0; i <= images + 1; i++) {
     image[i] = new Matter(parameters);
-    *image[i] = *initialPassed;
+    *image[i] = linear_path[i];
     tangent[i] = new AtomMatrix;
     tangent[i]->resize(atoms, 3);
     projectedForce[i] = new AtomMatrix;
     projectedForce[i]->resize(atoms, 3);
   }
   *image[images + 1] = *finalPassed; // final image
-
-  AtomMatrix posInitial = image[0]->getPositions();
-  AtomMatrix posFinal = image[images + 1]->getPositions();
-  AtomMatrix imageSep = image[0]->pbc(posFinal - posInitial) / (images + 1);
-  for (long i = 1; i <= images; i++) {
-    image[i]->setPositions(posInitial + imageSep * double(i));
-  }
 
   movedAfterForceCall = true;
 
