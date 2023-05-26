@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-#include "../HelperFunctions.h"
 #include "../GPRHelpers.h"
+#include "../HelperFunctions.h"
 #include "../Matter.h"
 #include "../Parameters.h"
 #include "AtomsConfigurationTest.h"
@@ -42,11 +42,11 @@ TEST_F(AtomsConfigurationTest, TestMatter) {
       << "AtomsConf has the wrong number of free atoms";
   int posindex = 0;
   for (auto i = 0; i < matter->numberOfAtoms(); i++) {
-      for (auto dim = 0; dim < 3; dim++){
-        EXPECT_EQ(a.positions[posindex+dim],matter->getPosition(i, dim))
+    for (auto dim = 0; dim < 3; dim++) {
+      EXPECT_EQ(a.positions[posindex + dim], matter->getPosition(i, dim))
           << "AtomsConf does not match positions from Matter";
-      }
-    posindex=posindex+3;
+    }
+    posindex = posindex + 3;
   }
   delete matter;
 }

@@ -1,50 +1,46 @@
 #include "HessianJob.h"
-#include "Matter.h"
 #include "Hessian.h"
+#include "Matter.h"
 #include "Potential.h"
 
-std::vector<std::string> HessianJob::run(void)
-{
-    string matter_in("pos.con");
+std::vector<std::string> HessianJob::run(void) {
+  string matter_in("pos.con");
 
-    std::vector<std::string> returnFiles;
+  std::vector<std::string> returnFiles;
 
-    Matter *matter = new Matter(params);
+  Matter *matter = new Matter(params);
 
-    matter->con2matter(matter_in);
+  matter->con2matter(matter_in);
 
-    Hessian hessian(params.get(), matter);
-    long nAtoms = matter->numberOfAtoms();
-    
-    VectorXi moved(nAtoms);
-    moved.setConstant(-1);
-    
-    int nMoved = 0;
-    for(int i=0; i<nAtoms; i++)
-    {
-        if(!matter->getFixed(i))
-        {
-            moved[nMoved] = i;
-            nMoved++;
-        }
+  Hessian hessian(params.get(), matter);
+  long nAtoms = matter->numberOfAtoms();
+
+  VectorXi moved(nAtoms);
+  moved.setConstant(-1);
+
+  int nMoved = 0;
+  for (int i = 0; i < nAtoms; i++) {
+    if (!matter->getFixed(i)) {
+      moved[nMoved] = i;
+      nMoved++;
     }
-    moved = moved.head(nMoved);
-    hessian.getFreqs(matter, moved);
+  }
+  moved = moved.head(nMoved);
+  hessian.getFreqs(matter, moved);
 
-    FILE *fileResults;
-//    FILE *fileMode;
+  FILE *fileResults;
+  //    FILE *fileMode;
 
-    std::string results_file("results.dat");
+  std::string results_file("results.dat");
 
-    returnFiles.push_back(results_file);
+  returnFiles.push_back(results_file);
 
-    fileResults = fopen(results_file.c_str(), "wb");
+  fileResults = fopen(results_file.c_str(), "wb");
 
-    // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
-    fclose(fileResults);
+  // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
+  fclose(fileResults);
 
-    delete matter;
+  delete matter;
 
-    return returnFiles;
+  return returnFiles;
 }
-

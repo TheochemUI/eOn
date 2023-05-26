@@ -11,29 +11,27 @@
 #ifndef AMS_IO_POT
 #define AMS_IO_POT
 
-#include "../../Potential.h"
 #include "../../Matter.h"
+#include "../../Potential.h"
 
-class AMS_IO : public Potential
-{
+class AMS_IO : public Potential {
 
-    public:
-        AMS_IO(Parameters *p);
-            ~AMS_IO();
-        void initialize() {};
-        void cleanMemory(void);    
-        void force(long N, const double *R, const int *atomicNrs, 
-                   double *F, double *U, const double *box, int nImages);
+public:
+  AMS_IO(Parameters *p);
+  ~AMS_IO();
+  void initialize(){};
+  void cleanMemory(void);
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box, int nImages);
 
-    private:
-        void passToSystem(long N, const double *R, const int *atomicNrs, const double *box);
-        void recieveFromSystem(long N, double *F, double *U);
-        const char *engine;
-        const char *model;
-        const char *forcefield;
-        const char *xc;
-
+private:
+  void passToSystem(long N, const double *R, const int *atomicNrs,
+                    const double *box);
+  void recieveFromSystem(long N, double *F, double *U);
+  const char *engine;
+  const char *model;
+  const char *forcefield;
+  const char *xc;
 };
 
 #endif
-

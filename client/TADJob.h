@@ -3,53 +3,49 @@
 #define TADJOB_H
 
 #include "Job.h"
-#include "Parameters.h"
 #include "MinModeSaddleSearch.h"
+#include "Parameters.h"
 
-class TADJob: public Job
-{
-    public:
+class TADJob : public Job {
+public:
+  TADJob(std::unique_ptr<Parameters> parameters) : Job(std::move(parameters)) {}
+  ~TADJob() = default;
+  std::vector<std::string> run(void);
 
-        TADJob(std::unique_ptr<Parameters> parameters)
-                : Job(std::move(parameters)) {}
-        ~TADJob() = default;
-        std::vector<std::string> run(void);
+private:
+  int dynamics();
+  long refine(Matter *mdBuffer[], long length, Matter *reactant);
+  bool checkState(Matter *current, Matter *reactant);
+  void saveData(int status);
+  void dephase();
+  bool saddleSearch(Matter *tran);
 
-    private:
+  Matter *current;
+  Matter *reactant;
+  Matter *saddle;
+  Matter *crossing;
+  Matter *final;
+  Matter *final_tmp;
+  Matter *product;
 
-        int dynamics();
-        long refine(Matter *mdBuffer[], long length, Matter *reactant);
-        bool checkState(Matter *current, Matter *reactant);
-        void saveData(int status);
-        void dephase();
-        bool saddleSearch(Matter *tran);
+  bool metaStateFlag;
+  bool newStateFlag;
 
-        Matter *current;
-        Matter *reactant;
-        Matter *saddle;
-        Matter *crossing;
-        Matter *final;
-        Matter *final_tmp;
-        Matter *product;
+  long minimizeFCalls;
+  long mdFCalls;
+  long dephaseFCalls;
+  long refineFCalls;
 
-        bool metaStateFlag;
-        bool newStateFlag;
+  long transitionStep;
 
-        long minimizeFCalls;
-        long mdFCalls;
-        long dephaseFCalls;
-        long refineFCalls;
+  double time;
+  double minCorrectedTime;
+  double transitionTime;
+  double barrier;
+  double *timeBuffer;
+  MinModeSaddleSearch *dimerSearch;
 
-        long transitionStep;
-
-        double time;
-        double minCorrectedTime;
-        double transitionTime;
-        double barrier;
-        double *timeBuffer;
-        MinModeSaddleSearch *dimerSearch;
-
-        std::vector<std::string> returnFiles;
+  std::vector<std::string> returnFiles;
 };
 
 #endif

@@ -4,9 +4,9 @@
 #include <gtest/gtest.h>
 #include <string>
 
+#include "../MatrixHelpers.hpp"
 #include "../Matter.h"
 #include "../Parameters.h"
-#include "../MatrixHelpers.hpp"
 
 using namespace std::string_literals; // For ""s
 
