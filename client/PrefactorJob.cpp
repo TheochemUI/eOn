@@ -9,15 +9,6 @@ const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[]   = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[]  = "product";
 
-PrefactorJob::PrefactorJob(Parameters *params)
-{
-    parameters = params;
-}
-
-PrefactorJob::~PrefactorJob()
-{
-}
-
 std::vector<std::string> PrefactorJob::run(void)
 {
     std::vector<std::string> returnFiles;
@@ -27,34 +18,34 @@ std::vector<std::string> PrefactorJob::run(void)
     string saddleFilename("saddle.con");
     string productFilename("product.con");
 
-    Matter *reactant = new Matter(parameters);
-    Matter *saddle = new Matter(parameters);
-    Matter *product = new Matter(parameters);
+    Matter *reactant = new Matter(params);
+    Matter *saddle = new Matter(params);
+    Matter *product = new Matter(params);
 
     reactant->con2matter("reactant.con");
     saddle->con2matter("saddle.con");
     product->con2matter("product.con");
     double pref1, pref2;
-    Prefactor::getPrefactors(parameters, reactant, saddle, product, pref1, pref2);
+    Prefactor::getPrefactors(params.get(), reactant, saddle, product, pref1, pref2);
     //printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
     
     VectorXi atoms;
-    if (parameters->prefactorAllFreeAtoms)
+    if (params->prefactorAllFreeAtoms)
     {
         // it is sufficient to pass the configuration 
         // for which the frequencies should be determined
         string matterFilename;
-        if (parameters->prefactorConfiguration == 
+        if (params->prefactorConfiguration ==
             PrefactorJob::PREFACTOR_REACTANT)
         {
             matterFilename = reactantFilename;
         }
-        else if (parameters->prefactorConfiguration == 
+        else if (params->prefactorConfiguration ==
                  PrefactorJob::PREFACTOR_SADDLE)
         {
             matterFilename = saddleFilename;
         }
-        else if (parameters->prefactorConfiguration == 
+        else if (params->prefactorConfiguration ==
                  PrefactorJob::PREFACTOR_PRODUCT)
         {
             matterFilename = productFilename;
@@ -73,27 +64,27 @@ std::vector<std::string> PrefactorJob::run(void)
         product->con2matter(productFilename);
 
         // determine which atoms moved in the process
-        atoms = Prefactor::movedAtoms(parameters, reactant, saddle, product);
+        atoms = Prefactor::movedAtoms(params.get(), reactant, saddle, product);
     }
     assert(3*atoms.rows() > 0);
     
     // calculate frequencies
-    if (parameters->prefactorConfiguration == 
+    if (params->prefactorConfiguration ==
         PrefactorJob::PREFACTOR_REACTANT)
     {
-        Hessian hessian(parameters, reactant);    
+        Hessian hessian(params.get(), reactant);
         freqs = hessian.getFreqs(reactant, atoms);
     }
-    else if (parameters->prefactorConfiguration == 
+    else if (params->prefactorConfiguration ==
              PrefactorJob::PREFACTOR_SADDLE)
     {
-        Hessian hessian(parameters, saddle);    
+        Hessian hessian(params.get(), saddle);
         freqs = hessian.getFreqs(saddle, atoms);
     }    
-    else if (parameters->prefactorConfiguration == 
+    else if (params->prefactorConfiguration ==
              PrefactorJob::PREFACTOR_PRODUCT)
     {
-        Hessian hessian(parameters, product);    
+        Hessian hessian(params.get(), product);
         freqs = hessian.getFreqs(product, atoms);
     }
 

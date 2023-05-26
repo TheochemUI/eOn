@@ -10,10 +10,10 @@ class DynamicsJob : public Job
 
     public:
 
-        DynamicsJob(Parameters *params);
-        ~DynamicsJob(void);
+        DynamicsJob(std::unique_ptr<Parameters> parameters)
+            : Job(std::move(parameters)) {}
+        ~DynamicsJob(void) = default;
         std::vector<std::string> run(void);
-        Parameters *parameters;
         std::vector<std::string> returnFiles;
 };
 

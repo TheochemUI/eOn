@@ -10,16 +10,16 @@
 
 std::vector<std::string> ReplicaExchangeJob::run(void)
 {
-    long i, step, samplingSteps = long(parameters->repexcSamplingTime/parameters->mdTimeStep+0.5);
-    long exchangePeriodSteps = long(parameters->repexcExchangePeriod/parameters->mdTimeStep+0.5);
+    long i, step, samplingSteps = long(params->repexcSamplingTime/params->mdTimeStep+0.5);
+    long exchangePeriodSteps = long(params->repexcExchangePeriod/params->mdTimeStep+0.5);
     double energyLow, energyHigh;
     double kbTLow, kbTHigh;
-    double kB = parameters->kB;
+    double kB = params->kB;
     double pAcc;
     Matter *tmpMatter;
 
-    string posFilename = helper_functions::getRelevantFile(parameters->conFilename);
-    pos = new Matter(parameters);
+    string posFilename = helper_functions::getRelevantFile(params->conFilename);
+    pos = new Matter(params);
     pos->con2matter(posFilename);
 
     log("\nRunning Replica Exchange\n\n");
@@ -27,51 +27,51 @@ std::vector<std::string> ReplicaExchangeJob::run(void)
     long refForceCalls = Potential::fcalls;
 
     // allocate a Matter and Dynamics object for each replica
-    Matter *replica[parameters->repexcReplicas];
-    Dynamics *replicaDynamics[parameters->repexcReplicas];
-    for(i=0; i<parameters->repexcReplicas; i++) {
-        replica[i] = new Matter(parameters);
+    Matter *replica[params->repexcReplicas];
+    Dynamics *replicaDynamics[params->repexcReplicas];
+    for(i=0; i<params->repexcReplicas; i++) {
+        replica[i] = new Matter(params);
         *replica[i] = *pos;
-        replicaDynamics[i] = new Dynamics(replica[i], parameters);
+        replicaDynamics[i] = new Dynamics(replica[i], params.get());
     }
 
     // assign temperatures
-    double replicaTemperature[parameters->repexcReplicas];
+    double replicaTemperature[params->repexcReplicas];
 
     log("Temperature distribution:\n");
-    if(parameters->repexcTemperatureDistribution == "linear") {
-        for(i=0; i<parameters->repexcReplicas; i++)
+    if(params->repexcTemperatureDistribution == "linear") {
+        for(i=0; i<params->repexcReplicas; i++)
         {
-            replicaTemperature[i] = parameters->repexcTemperatureLow + double(i)/double(parameters->repexcReplicas-1.0)
-                *(parameters->repexcTemperatureHigh - parameters->repexcTemperatureLow);
+            replicaTemperature[i] = params->repexcTemperatureLow + double(i)/double(params->repexcReplicas-1.0)
+                *(params->repexcTemperatureHigh - params->repexcTemperatureLow);
             replicaDynamics[i]->setTemperature(replicaTemperature[i]);
         }
-    } else if(parameters->repexcTemperatureDistribution == "exponential") {
-        double kTemp = log(parameters->repexcTemperatureHigh / parameters->repexcTemperatureLow)/(parameters->repexcReplicas-1.0);
+    } else if(params->repexcTemperatureDistribution == "exponential") {
+        double kTemp = log(params->repexcTemperatureHigh / params->repexcTemperatureLow)/(params->repexcReplicas-1.0);
         // cout <<"kTemp: "<<kTemp<<endl;
-        for(i=0; i<parameters->repexcReplicas; i++)
+        for(i=0; i<params->repexcReplicas; i++)
         {
-            replicaTemperature[i] = parameters->repexcTemperatureLow*exp(kTemp*i);
+            replicaTemperature[i] = params->repexcTemperatureLow*exp(kTemp*i);
             replicaDynamics[i]->setTemperature(replicaTemperature[i]);
             log("replica: %ld temperature %.0f \n",i+1, replicaTemperature[i]);
         }
     }
 
     log("\nReplica Exchange sampling for %.0f fs; %ld steps; %ld replicas.\n",
-         parameters->repexcSamplingTime*10.18, samplingSteps, parameters->repexcReplicas);
+         params->repexcSamplingTime*10.18, samplingSteps, params->repexcReplicas);
 
     for(step=1; step<=samplingSteps; step++)
     {
-        for(i=0; i<parameters->repexcReplicas; i++)
+        for(i=0; i<params->repexcReplicas; i++)
         {
             replicaDynamics[i]->oneStep();
             cout <<"step: "<<step<<" i "<<i<<" energy: "<<replica[i]->getPotentialEnergy()<<endl;
         }
         if( (step % exchangePeriodSteps) == 0 )
         {
-            for(long trial=0; trial<parameters->repexcExchangeTrials; trial++)
+            for(long trial=0; trial<params->repexcExchangeTrials; trial++)
             {
-                i = helper_functions::randomInt(0, parameters->repexcReplicas-2);
+                i = helper_functions::randomInt(0, params->repexcReplicas-2);
                 energyLow = replica[i]->getPotentialEnergy();
                 energyHigh = replica[i+1]->getPotentialEnergy();
                 kbTLow = kB*replicaTemperature[i];
@@ -114,8 +114,8 @@ void ReplicaExchangeJob::saveData(void)
     returnFiles.push_back(resultsFilename);
     fileResults = fopen(resultsFilename.c_str(), "wb");
 
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
-    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
+    fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(params->potential).c_str());
     // fprintf(fileResults, "%ld force_calls_sampling\n", forceCalls);
     fclose(fileResults);
 

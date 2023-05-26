@@ -1,4 +1,3 @@
-
 #include <cstdlib>
 
 #include "Matter.h"
@@ -9,28 +8,19 @@
 #include "BaseStructures.h"
 #include <vector>
 
-TADJob::TADJob(Parameters *params)
-{
-    parameters = params;
-}
-
-TADJob::~TADJob()
-{
-}
-
 std::vector<std::string> TADJob::run(void)
 {
-    current = new Matter(parameters);
-    reactant = new Matter(parameters);
-    saddle = new Matter(parameters);
-    crossing = new Matter(parameters);
-    product = new Matter(parameters);
-    final = new Matter(parameters);
-    final_tmp = new Matter(parameters);
+    current = new Matter(params);
+    reactant = new Matter(params);
+    saddle = new Matter(params);
+    crossing = new Matter(params);
+    product = new Matter(params);
+    final = new Matter(params);
+    final_tmp = new Matter(params);
 
     minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
     time = 0.0;
-    string reactantFilename = helper_functions::getRelevantFile(parameters->conFilename);
+    string reactantFilename = helper_functions::getRelevantFile(params->conFilename);
     current->con2matter(reactantFilename);
 
     log("\nMinimizing initial reactant\n");
@@ -40,17 +30,17 @@ std::vector<std::string> TADJob::run(void)
     // minimizeFCalls += (Potential::fcalls - refFCalls);
     
     log("\nTemperature Accelerated Dynamics, running\n\n");
-    log("High temperature MD simulation running at %.2f K to simulate dynamics at %.2f K\n",parameters->temperature,parameters->tadLowT);
+    log("High temperature MD simulation running at %.2f K to simulate dynamics at %.2f K\n",params->temperature,params->tadLowT);
     
     int status = dynamics();
 
     saveData(status);
 
     if(newStateFlag){
-        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
+        log("Transition time: %.2e s\n", minCorrectedTime*1.0e-15*params->timeUnit);
     }else{
        log("No new state was found in %ld dynamics steps (%.3e s)\n",
-           parameters->mdSteps, time*1.0e-15*parameters->timeUnit);
+           params->mdSteps, time*1.0e-15*params->timeUnit);
     }
 
     delete current;
@@ -73,7 +63,7 @@ int TADJob::dynamics()
     long nCheck = 0, nRecord = 0, nState = 0;
     long StateCheckInterval, RecordInterval;
     double kinE, kinT, avgT, varT;
-    double kB = parameters->kB;
+    double kB = params->kB;
     double correctedTime = 0.0;
     double stopTime = 0.0, sumSimulatedTime = 0.0;
     double Temp = 0.0, sumT = 0.0, sumT2 = 0.0; 
@@ -85,24 +75,24 @@ int TADJob::dynamics()
     AtomMatrix reducedForces;
 
     minCorrectedTime = 1.0e200;
-    lowT=parameters->tadLowT;
-    highT=parameters->temperature;
-    delta = parameters->tadConfidence;
-    minmu = parameters->tadMinPrefactor;
+    lowT=params->tadLowT;
+    highT=params->temperature;
+    delta = params->tadConfidence;
+    minmu = params->tadMinPrefactor;
     factor = log(1.0/delta)/minmu;
-    StateCheckInterval = int(parameters->parrepStateCheckInterval/parameters->mdTimeStep);
-    RecordInterval = int(parameters->parrepRecordInterval/parameters->mdTimeStep);
-    Temp = parameters->temperature;
+    StateCheckInterval = int(params->parrepStateCheckInterval/params->mdTimeStep);
+    RecordInterval = int(params->parrepRecordInterval/params->mdTimeStep);
+    Temp = params->temperature;
     newStateFlag = metaStateFlag = false;
 
     mdBufferLength = long(StateCheckInterval/RecordInterval);
     Matter *mdBuffer[mdBufferLength];
     for(long i=0; i<mdBufferLength; i++) {
-        mdBuffer[i] = new Matter(parameters);
+        mdBuffer[i] = new Matter(params);
     }
     timeBuffer = new double[mdBufferLength];
 
-    Dynamics TAD(current, parameters);
+    Dynamics TAD(current, params.get());
     TAD.setThermalVelocity();
 
     // dephase the trajectory so that it is thermal and independent of others
@@ -113,15 +103,15 @@ int TADJob::dynamics()
     log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
         "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: %ld\n\n", 
         Temp, 
-        parameters->mdSteps*parameters->mdTimeStep*parameters->timeUnit,
-        parameters->mdTimeStep*parameters->timeUnit,
-        parameters->mdSteps);
+        params->mdSteps*params->mdTimeStep*params->timeUnit,
+        params->mdTimeStep*params->timeUnit,
+        params->mdSteps);
     log("MD buffer length: %ld\n", mdBufferLength);
 
-    long tenthSteps = parameters->mdSteps/10;
+    long tenthSteps = params->mdSteps/10;
     //This prevents and edge case division by zero if mdSteps is < 10
     if (tenthSteps == 0) {
-        tenthSteps = parameters->mdSteps;
+        tenthSteps = params->mdSteps;
     }
 
     // loop dynamics iterations until some condition tells us to stop
@@ -137,12 +127,12 @@ int TADJob::dynamics()
         TAD.oneStep();
         mdFCalls++;
         
-        time += parameters->mdTimeStep;
-        nCheck++; // count up to parameters->parrepStateCheckInterval before checking for a transition
+        time += params->mdTimeStep;
+        nCheck++; // count up to params->parrepStateCheckInterval before checking for a transition
         step++;
         //log("step = %4d, time= %10.4f\n",step,time);
         // standard conditions; record mater object in the transition buffer
-        if( parameters->parrepRefineTransition && recordFlag && !newStateFlag )
+        if( params->parrepRefineTransition && recordFlag && !newStateFlag )
         {
             if( nCheck % RecordInterval == 0 )
             {
@@ -202,7 +192,7 @@ int TADJob::dynamics()
                 *final = *final_tmp;
             }
             stopTime = factor*pow(minCorrectedTime/factor,lowT/highT);
-            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15*parameters->timeUnit,barrier,correctedTime*1e-15*parameters->timeUnit,sumSimulatedTime*1e-15*parameters->timeUnit, minCorrectedTime*1.0e-15*parameters->timeUnit, stopTime*1.0e-15*parameters->timeUnit);
+            log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",transitionTime*1e-15*params->timeUnit,barrier,correctedTime*1e-15*params->timeUnit,sumSimulatedTime*1e-15*params->timeUnit, minCorrectedTime*1.0e-15*params->timeUnit, stopTime*1.0e-15*params->timeUnit);
 
             // refineFCalls += Potential::fcalls - refFCalls;
             transitionFlag = false;
@@ -217,13 +207,13 @@ int TADJob::dynamics()
         }
 
         //stdout Progress
-        if ( (step % tenthSteps == 0) || (step == parameters->mdSteps) ) {
+        if ( (step % tenthSteps == 0) || (step == params->mdSteps) ) {
             double maxAtomDistance = current->perAtomNorm(*reactant);
             log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
-                (double)100.0*step/parameters->mdSteps, maxAtomDistance, step, parameters->mdSteps);
+                (double)100.0*step/params->mdSteps, maxAtomDistance, step, params->mdSteps);
         }
 
-        if (step == parameters->mdSteps){
+        if (step == params->mdSteps){
             stopFlag = true;
             if(firstTransitFlag){
                 log("Detected one transition\n");
@@ -238,7 +228,7 @@ int TADJob::dynamics()
     varT = sumT2/step - avgT*avgT;
    
     log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Average_Boost = %lf\n\n",
-            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, minCorrectedTime/step/parameters->mdTimeStep);
+            avgT, sqrt(varT), varT/avgT/avgT*nFreeCoord/2, minCorrectedTime/step/params->mdTimeStep);
     if (isfinite(avgT)==0)
     {
         log("Infinite average temperature, something went wrong!\n");
@@ -269,8 +259,8 @@ void TADJob::saveData(int status)
     fileResults = fopen(resultsFilename.c_str(), "wb");
     // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls + refineFCalls;
 
-    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(parameters->potential).c_str());
-    fprintf(fileResults, "%ld random_seed\n", parameters->randomSeed);
+    fprintf(fileResults, "%s potential_type\n", helper_functions::getPotentialName(params->potential).c_str());
+    fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
     fprintf(fileResults, "%lf potential_energy_reactant\n", reactant->getPotentialEnergy());
     // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
     // fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
@@ -284,14 +274,14 @@ void TADJob::saveData(int status)
 
     if(newStateFlag)
     {
-        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15*parameters->timeUnit);
+        fprintf(fileResults, "%e transition_time_s\n", minCorrectedTime*1.0e-15*params->timeUnit);
         fprintf(fileResults, "%lf potential_energy_product\n", product->getPotentialEnergy());
         fprintf(fileResults, "%lf moved_distance\n",product->distanceTo(*reactant));
     }
 
      
-    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*parameters->timeUnit);
-    fprintf(fileResults, "%lf speedup\n", time/parameters->mdSteps/parameters->mdTimeStep);
+    fprintf(fileResults, "%e simulation_time_s\n", time*1.0e-15*params->timeUnit);
+    fprintf(fileResults, "%lf speedup\n", time/params->mdSteps/params->mdTimeStep);
     
     fclose(fileResults);
 
@@ -311,7 +301,7 @@ void TADJob::saveData(int status)
         product->matter2con(fileProduct);
         fclose(fileProduct);
 
-        if(parameters->parrepRefineTransition)
+        if(params->parrepRefineTransition)
         {
             FILE *fileSaddle;
             std::string saddleFilename("saddle.con");
@@ -334,9 +324,9 @@ void TADJob::dephase()
     long dephaseBufferLength, dephaseRefineStep;
     AtomMatrix velocity;
 
-    DephaseSteps = int(parameters->parrepDephaseTime/parameters->mdTimeStep);
-    Dynamics dephaseDynamics(current, parameters);
-    log("Dephasing for %.2f fs\n",parameters->parrepDephaseTime*parameters->timeUnit);
+    DephaseSteps = int(params->parrepDephaseTime/params->mdTimeStep);
+    Dynamics dephaseDynamics(current, params.get());
+    log("Dephasing for %.2f fs\n",params->parrepDephaseTime*params->timeUnit);
 
     step = stepNew = loop = 0;
 
@@ -349,7 +339,7 @@ void TADJob::dephase()
 
         for(long i=0; i<dephaseBufferLength; i++)
         {
-            dephaseBuffer[i] = new Matter(parameters);
+            dephaseBuffer[i] = new Matter(params);
             dephaseDynamics.oneStep();
             *dephaseBuffer[i] = *current;
         }
@@ -380,11 +370,11 @@ void TADJob::dephase()
            delete dephaseBuffer[i];
         }
 
-        if( (parameters->parrepDephaseLoopStop) && (loop > parameters->parrepDephaseLoopMax) ) {
+        if( (params->parrepDephaseLoopStop) && (loop > params->parrepDephaseLoopMax) ) {
             log("Reach dephase loop maximum, stop dephasing! Dephased for %ld steps\n ", step);
             break;
         }
-        log("Successfully Dephased for %.2f fs", step*parameters->mdTimeStep*parameters->timeUnit);
+        log("Successfully Dephased for %.2f fs", step*params->mdTimeStep*params->timeUnit);
 
     }
 }
@@ -392,7 +382,7 @@ void TADJob::dephase()
 
 bool TADJob::checkState(Matter *current, Matter *reactant)
 {
-    Matter tmp(parameters);
+    Matter tmp(params);
     tmp = *current;
     tmp.relax(true);
     if (tmp.compare(reactant)) {
@@ -407,7 +397,8 @@ bool TADJob::saddleSearch(Matter *cross){
     mode = cross->getPositions() - reactant->getPositions();
     mode.normalize();
     dimerSearch = NULL;
-    dimerSearch = new MinModeSaddleSearch(cross,mode,reactant->getPotentialEnergy(),parameters);
+    // TODO: Unhandled .get()
+    dimerSearch = new MinModeSaddleSearch(cross,mode,reactant->getPotentialEnergy(), params.get());
     status = dimerSearch->run();
     log("dimer search status %ld\n",status);
     if(status != MinModeSaddleSearch::STATUS_GOOD){
