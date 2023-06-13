@@ -40,6 +40,8 @@ TEST_F(PotTest, getName) {
   Potential *pot2 = helper_functions::makePotential(parameters);
   // ASSERT_EQ(pot2->getName(), "morse_pt");
   delete parameters;
+  delete pot;
+  delete pot2;
 }
 
 TEST_F(PotTest, callForce) {
@@ -104,6 +106,8 @@ TEST_F(PotTest, callForce) {
               m1->getCell().data());
   ASSERT_NEAR(e_morse, energy_morse, threshold);
   ASSERT_PRED2(matEq, forces_morse, f_morse);
+  delete pot;
+  delete pot2;
 }
 
 } /* namespace tests */

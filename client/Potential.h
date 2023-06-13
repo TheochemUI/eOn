@@ -14,7 +14,7 @@ private:
 
 public:
   Potential(Parameters *parameters) : ptype{parameters->potential} {}
-  ~Potential() = default;
+  virtual ~Potential() = default;
 
   static int fcalls;
   static int fcallsTotal;
