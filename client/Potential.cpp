@@ -7,6 +7,9 @@
 #include "Log.h"
 #include "Parameters.h"
 #include "Potential.h"
+#ifdef WITH_PYSURROGATE
+#include "potentials/PySurrogate/PySurrogate.h"
+#endif
 
 #ifdef IMD_POT
 #include "potentials/IMD/IMD.h"
@@ -220,16 +223,22 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifdef WITH_GPRD
-  case PotType::GPR: {
-    return "gpr"s;
-    break;
-  }
+  // case PotType::GPR: {
+  //   return "gpr"s;
+  //   break;
+  // }
 #endif
   // case PotType::PYTHON: {
   //   TODO: Implement
   //   return "python"s;
   //   break;
   // }
+#ifdef WITH_PYSURROGATE
+  case PotType::PYSURROGATE: {
+    return (new PySurrogate(params));
+    break;
+  }
+#endif
   default:
     throw std::runtime_error("No known potential could be constructed");
     break;
