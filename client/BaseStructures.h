@@ -40,7 +40,8 @@ enum class PotType {
   AMS,
   AMS_IO,
   GPR,
-  PYTHON
+  PYTHON,
+  PYSURROGATE
 };
 
 enum class JobType {

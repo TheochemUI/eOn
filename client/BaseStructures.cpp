@@ -121,6 +121,10 @@ std::string getPotentialName(PotType ptype) {
     return "python"s;
     break;
   }
+  case PotType::PYSURROGATE: {
+    return "py_surrogate"s;
+    break;
+  }
   default:
     return "unknown potential"s;
     break;
@@ -179,6 +183,8 @@ PotType getPotentialType(const std::string pname) {
     return PotType::BOP;
   } else if (pname == "python"s) {
     return PotType::PYTHON;
+  } else if (pname == "py_surrogate"){
+    return PotType::PYSURROGATE;
   } else {
     return PotType::UNKNOWN;
   }
