@@ -95,15 +95,15 @@ TEST_F(PotTest, callForce) {
   // Switching
   double e_morse{0};
   AtomMatrix f_morse = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  // params->potential = PotType::MORSE_PT;
-  // std::unique_ptr<Potential> pot2 = helper_functions::makePotential(params);
-  // ASSERT_NE(pot2, pot);
-  // // ASSERT_EQ(pot2->getType(), "morse_pt");
-  // pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),
-  //             m1->getAtomicNrs().data(), f_morse.data(), &e_morse,
-  //             m1->getCell().data());
-  // ASSERT_NEAR(e_morse, energy_morse, threshold);
-  // ASSERT_PRED2(matEq, forces_morse, f_morse);
+  params->potential = PotType::MORSE_PT;
+  std::unique_ptr<Potential> pot2 = helper_functions::makePotential(params);
+  ASSERT_NE(pot2, pot);
+  // ASSERT_EQ(pot2->getType(), "morse_pt");
+  pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),
+              m1->getAtomicNrs().data(), f_morse.data(), &e_morse,
+              m1->getCell().data());
+  ASSERT_NEAR(e_morse, energy_morse, threshold);
+  ASSERT_PRED2(matEq, forces_morse, f_morse);
 }
 
 } /* namespace tests */
