@@ -17,7 +17,7 @@ int main(void) {
   std::unique_ptr<Parameters> params = std::make_unique<Parameters>();
   pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
   params->potential = PotType::PYSURROGATE;
-  Potential *pot = helper_functions::makePotential(params.get());
+  std::unique_ptr<Potential> pot = helper_functions::makePotential(params.get());
   std::unique_ptr<Matter> matter = std::make_unique<Matter>(params.get());
   matter->con2matter(confile);
   auto [energy, forces] = pot->get_ef(matter->getPositions(), matter->getAtomicNrs(), matter->getCell());
