@@ -39,6 +39,7 @@ TEST_F(PotTest, getName) {
   parameters->potential = PotType::MORSE_PT;
   Potential *pot2 = helper_functions::makePotential(parameters);
   // ASSERT_EQ(pot2->getName(), "morse_pt");
+  delete parameters;
 }
 
 TEST_F(PotTest, callForce) {
