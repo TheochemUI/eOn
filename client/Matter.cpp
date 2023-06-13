@@ -1211,9 +1211,11 @@ void Matter::writeTibble(std::string fname) {
   return;
 }
 
-void Matter::setPotential(Potential *pot) {
-  this->potential = pot;
+void Matter::setPotential(std::unique_ptr<Potential> pot) {
+  this->potential = std::move(pot);
   recomputePotential = true;
 }
 
-Potential *Matter::getPotential() const { return this->potential; }
+std::unique_ptr<Potential> Matter::getPotential() {
+  return std::move(this->potential);
+}
