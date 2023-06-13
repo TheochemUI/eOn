@@ -78,121 +78,121 @@
 #include <limits>
 
 namespace helper_functions {
-Potential *makePotential(Parameters *params) {
-  switch (params->potential) {
+std::unique_ptr<Potential> makePotential(Parameters *params) {
+  switch(params->potential) {
   case PotType::EMT: {
-    return (new EffectiveMediumTheory(params));
+    return (std::make_unique<EffectiveMediumTheory>(params));
     break;
   }
   case PotType::EXT: {
-    return (new ExtPot(params));
+    return (std::make_unique<ExtPot>(params));
     break;
   }
   case PotType::LJ: {
-    return (new LJ(params));
+    return (std::make_unique<LJ>(params));
     break;
   }
   case PotType::LJCLUSTER: {
-    return (new LJCluster(params));
+    return (std::make_unique<LJCluster>(params));
     break;
   }
   case PotType::MORSE_PT: {
-    return (new Morse(params));
+    return (std::make_unique<Morse>(params));
     break;
   }
 #ifdef NEW_POT
   case PotType::NEW: {
-    return (new NewPot(params));
+    return (std::make_unique<NewPot>(params));
     break;
   }
 #endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (new CuH2(params));
+    return (std::make_unique<CuH2>(params));
     break;
   }
 #endif
 #ifdef IMD_POT
   case PotType::IMD: {
-    return (new IMD(params));
+    return (std::make_unique<IMD>(params));
     break;
   }
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (new Tip4p(params));
+    return (std::make_unique<Tip4p>(params));
     break;
   }
   case PotType::SPCE: {
-    return (new SpceCcl(params));
+    return (std::make_unique<SpceCcl>(params));
     break;
   }
 #ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (new Tip4p_Pt(params));
+    return (std::make_unique<Tip4p_Pt>(params));
     break;
   }
   case PotType::TIP4P_H: {
-    return (new Tip4p_H(params));
+    return (std::make_unique<Tip4p_H>(params));
     break;
   }
 #endif
 #endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
-    return (new Aluminum(params));
+    return (std::make_unique<Aluminum>(params));
     break;
   }
   case PotType::EDIP: {
-    return (new EDIP(params));
+    return (std::make_unique<EDIP>(params));
     break;
   }
   case PotType::FEHE: {
-    return (new FeHe(params));
+    return (std::make_unique<FeHe>(params));
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (new Lenosky(params));
+    return (std::make_unique<Lenosky>(params));
     break;
   }
   case PotType::SW_SI: {
-    return (new SW(params));
+    return (std::make_unique<SW>(params));
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (new Tersoff(params));
+    return (std::make_unique<Tersoff>(params));
     break;
   }
 #endif
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (new VASP());
+    return (std::make_unique<VASP());
     break;
   }
 #endif
 #endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (new lammps(params));
+    return (std::make_unique<lammps>(params));
     break;
   }
 #endif
 #ifdef EONMPI
   case PotType::MPI: {
-    return (new MPIPot(params));
+    return (std::make_unique<MPIPot>(params));
     break;
   }
 #endif
 #ifdef WITH_PYTHON
 #ifdef PYAMFF_POT
   case PotType::PYAMFF: {
-    return (new PyAMFF());
+    return (std::make_unique<PyAMFF());
     break;
   }
 #endif
   case PotType::QSC: {
-    return (new QSC());
+    return (std::make_unique<QSC());
     break;
   }
 #endif
@@ -207,11 +207,11 @@ Potential *makePotential(Parameters *params) {
   // }
 #ifdef WITH_AMS
   case PotType::AMS: {
-    return (new AMS(params));
+    return (std::make_unique<AMS>(params));
     break;
   }
   case PotType::AMS_IO: {
-    return (new AMS_IO(params));
+    return (std::make_unique<AMS_IO>(params));
     break;
   }
 #endif

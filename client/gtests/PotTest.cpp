@@ -31,14 +31,14 @@ void PotTest::SetUp() {
 
 void PotTest::TearDown() {}
 
-TEST_F(PotTest, getName) {
+TEST_F(PotTest, getType) {
   Parameters *parameters = new Parameters;
   parameters->potential = PotType::LJ;
-  Potential *pot = helper_functions::makePotential(parameters);
-  // ASSERT_EQ(pot->getName(), "lj");
+  std::unique_ptr<Potential> pot = helper_functions::makePotential(parameters);
+  ASSERT_EQ(pot->getType(), PotType::LJ);
   parameters->potential = PotType::MORSE_PT;
-  Potential *pot2 = helper_functions::makePotential(parameters);
-  // ASSERT_EQ(pot2->getName(), "morse_pt");
+  std::unique_ptr<Potential> pot2 = helper_functions::makePotential(parameters);
+  ASSERT_EQ(pot2->getType(), PotType::MORSE_PT);
   delete parameters;
   delete pot;
   delete pot2;
@@ -86,7 +86,7 @@ TEST_F(PotTest, callForce) {
       209.073, -38.7473, -50.0734;
   // clang-format on
   params->potential = PotType::LJ;
-  Potential *pot = helper_functions::makePotential(params);
+  std::unique_ptr<Potential> pot = helper_functions::makePotential(params);
   double e_lj{0};
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
@@ -98,9 +98,9 @@ TEST_F(PotTest, callForce) {
   double e_morse{0};
   AtomMatrix f_morse = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params->potential = PotType::MORSE_PT;
-  Potential *pot2 = helper_functions::makePotential(params);
+  std::unique_ptr<Potential> pot2 = helper_functions::makePotential(params);
   ASSERT_NE(pot2, pot);
-  // ASSERT_EQ(pot2->getName(), "morse_pt");
+  // ASSERT_EQ(pot2->getType(), "morse_pt");
   pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),
               m1->getAtomicNrs().data(), f_morse.data(), &e_morse,
               m1->getCell().data());
