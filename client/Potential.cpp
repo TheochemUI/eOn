@@ -78,121 +78,121 @@
 #include <limits>
 
 namespace helper_functions {
-std::unique_ptr<Potential> makePotential(Parameters *params) {
+std::shared_ptr<Potential> makePotential(Parameters *params) {
   switch(params->potential) {
   case PotType::EMT: {
-    return (std::make_unique<EffectiveMediumTheory>(params));
+    return (std::make_shared<EffectiveMediumTheory>(params));
     break;
   }
   case PotType::EXT: {
-    return (std::make_unique<ExtPot>(params));
+    return (std::make_shared<ExtPot>(params));
     break;
   }
   case PotType::LJ: {
-    return (std::make_unique<LJ>(params));
+    return (std::make_shared<LJ>(params));
     break;
   }
   case PotType::LJCLUSTER: {
-    return (std::make_unique<LJCluster>(params));
+    return (std::make_shared<LJCluster>(params));
     break;
   }
   case PotType::MORSE_PT: {
-    return (std::make_unique<Morse>(params));
+    return (std::make_shared<Morse>(params));
     break;
   }
 #ifdef NEW_POT
   case PotType::NEW: {
-    return (std::make_unique<NewPot>(params));
+    return (std::make_shared<NewPot>(params));
     break;
   }
 #endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (std::make_unique<CuH2>(params));
+    return (std::make_shared<CuH2>(params));
     break;
   }
 #endif
 #ifdef IMD_POT
   case PotType::IMD: {
-    return (std::make_unique<IMD>(params));
+    return (std::make_shared<IMD>(params));
     break;
   }
 #endif
 #ifdef WITH_WATER
   case PotType::TIP4P: {
-    return (std::make_unique<Tip4p>(params));
+    return (std::make_shared<Tip4p>(params));
     break;
   }
   case PotType::SPCE: {
-    return (std::make_unique<SpceCcl>(params));
+    return (std::make_shared<SpceCcl>(params));
     break;
   }
 #ifdef WITH_FORTRAN
   case PotType::TIP4P_PT: {
-    return (std::make_unique<Tip4p_Pt>(params));
+    return (std::make_shared<Tip4p_Pt>(params));
     break;
   }
   case PotType::TIP4P_H: {
-    return (std::make_unique<Tip4p_H>(params));
+    return (std::make_shared<Tip4p_H>(params));
     break;
   }
 #endif
 #endif
 #ifdef WITH_FORTRAN
   case PotType::EAM_AL: {
-    return (std::make_unique<Aluminum>(params));
+    return (std::make_shared<Aluminum>(params));
     break;
   }
   case PotType::EDIP: {
-    return (std::make_unique<EDIP>(params));
+    return (std::make_shared<EDIP>(params));
     break;
   }
   case PotType::FEHE: {
-    return (std::make_unique<FeHe>(params));
+    return (std::make_shared<FeHe>(params));
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_unique<Lenosky>(params));
+    return (std::make_shared<Lenosky>(params));
     break;
   }
   case PotType::SW_SI: {
-    return (std::make_unique<SW>(params));
+    return (std::make_shared<SW>(params));
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_unique<Tersoff>(params));
+    return (std::make_shared<Tersoff>(params));
     break;
   }
 #endif
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_unique<VASP());
+    return (std::make_shared<VASP());
     break;
   }
 #endif
 #endif
 #ifdef LAMMPS_POT
   case PotType::LAMMPS: {
-    return (std::make_unique<lammps>(params));
+    return (std::make_shared<lammps>(params));
     break;
   }
 #endif
 #ifdef EONMPI
   case PotType::MPI: {
-    return (std::make_unique<MPIPot>(params));
+    return (std::make_shared<MPIPot>(params));
     break;
   }
 #endif
 #ifdef WITH_PYTHON
 #ifdef PYAMFF_POT
   case PotType::PYAMFF: {
-    return (std::make_unique<PyAMFF());
+    return (std::make_shared<PyAMFF());
     break;
   }
 #endif
   case PotType::QSC: {
-    return (std::make_unique<QSC());
+    return (std::make_shared<QSC());
     break;
   }
 #endif
@@ -207,11 +207,11 @@ std::unique_ptr<Potential> makePotential(Parameters *params) {
   // }
 #ifdef WITH_AMS
   case PotType::AMS: {
-    return (std::make_unique<AMS>(params));
+    return (std::make_shared<AMS>(params));
     break;
   }
   case PotType::AMS_IO: {
-    return (std::make_unique<AMS_IO>(params));
+    return (std::make_shared<AMS_IO>(params));
     break;
   }
 #endif
