@@ -265,6 +265,7 @@ public:
 
   // GP Surrogate Parameters
   PotType true_pot;
+  JobType sub_job;
 
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
