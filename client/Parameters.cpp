@@ -527,6 +527,9 @@ int Parameters::load(FILE *file) {
     dimerRemoveRotation =
         ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
 
+    // GP Surrogate Parameters
+    true_pot = helper_functions::getPotentialType(
+        toLowerCase(ini.GetValue("Surrogate", "true_pot")));
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
