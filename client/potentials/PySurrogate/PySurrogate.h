@@ -17,6 +17,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
+#include <pybind11/eigen.h>
 
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
@@ -27,10 +28,11 @@ private:
   // Variables
   double fake1;
   double fake2;
-  py::object hpfit;
-  py::object gpmod;
 
 public:
+  // move to private / protected
+  py::object hpfit;
+  py::object gpmod;
   // Functions
   // constructor and destructor
   PySurrogate(Parameters *p) : Potential(p), fake1{0}, fake2{0} {
