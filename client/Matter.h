@@ -122,6 +122,7 @@ public:
   void setAtomicNr(long int atom,
                    long atomicNr);          // set the atomic number of an atom
   VectorXi getAtomicNrs() const;            // Get the vector of atomic numbers
+  VectorXi getAtomicNrsFree() const;            // Get the vector of atomic numbers
   void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
