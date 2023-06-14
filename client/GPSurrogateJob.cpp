@@ -1,22 +1,27 @@
 #include "GPSurrogateJob.h"
 #include "Matter.h"
+#include <memory>
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
 
   // Start working
 
-  string reactantFilename = helper_functions::getRelevantFile("reactant.con");
-  string productFilename = helper_functions::getRelevantFile("product.con");
+  std::string reactantFilename = helper_functions::getRelevantFile("reactant.con");
+  std::string productFilename = helper_functions::getRelevantFile("product.con");
 
-  Matter *initial = new Matter(params);
-  Matter *final = new Matter(params);
+  if (params->potential == PotType::PYSURROGATE){
+    params->potential = params->true_pot;
+  }
+
+  auto initial = std::make_unique<Matter>(params);
+  auto final_state = std::make_unique<Matter>(params);
 
   initial->con2matter(reactantFilename);
-  final->con2matter(productFilename);
+  final_state->con2matter(productFilename);
 
-  string posInFilename("pos.con");
-  string resultsFilename("results.dat");
+  std::string posInFilename("pos.con");
+  std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
   Matter *pos = new Matter(params);
