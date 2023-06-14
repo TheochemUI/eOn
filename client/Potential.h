@@ -37,7 +37,7 @@ public:
 };
 
 namespace helper_functions {
-std::unique_ptr<Potential> makePotential(Parameters *params);
+std::shared_ptr<Potential> makePotential(Parameters *params);
 } // namespace helper_functions
 
 // int Potential::fcalls = 0;
