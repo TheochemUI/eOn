@@ -216,6 +216,10 @@ Parameters::Parameters() {
   gprDebugDy = 0.1;              // debug_dy
   gprDebugDz = 0.1;              // debug_dz
 
+  // GP Surrogate Parameters
+  true_pot = PotType::UNKNOWN;
+  sub_job = JobType::Unknown;
+
   // [Hessian] //
   hessianAtomList = string("All");
   hessianZeroFreqValue = 1e-6;
@@ -530,6 +534,8 @@ int Parameters::load(FILE *file) {
     // GP Surrogate Parameters
     true_pot = helper_functions::getPotentialType(
         toLowerCase(ini.GetValue("Surrogate", "true_pot")));
+    sub_job =
+        helper_functions::getJobType(toLowerCase(ini.GetValue("Surrogate", "sub_job")));
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
