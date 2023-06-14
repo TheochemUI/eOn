@@ -264,7 +264,7 @@ public:
   double gprDebugDz;             // {debug_dz}
 
   // GP Surrogate Parameters
-  std::string true_pot;
+  PotType true_pot;
 
   // [Lanczos] //
   double lanczosTolerance;   // difference between the lowest eignevalues of two
