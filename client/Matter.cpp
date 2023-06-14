@@ -1211,11 +1211,11 @@ void Matter::writeTibble(std::string fname) {
   return;
 }
 
-void Matter::setPotential(std::unique_ptr<Potential> pot) {
-  this->potential = std::move(pot);
+void Matter::setPotential(std::shared_ptr<Potential> pot) {
+  this->potential = pot;
   recomputePotential = true;
 }
 
-std::unique_ptr<Potential> Matter::getPotential() {
-  return std::move(this->potential);
+std::shared_ptr<Potential> Matter::getPotential() {
+  return this->potential;
 }
