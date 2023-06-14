@@ -840,8 +840,23 @@ void Matter::computePotential() {
           helper_functions::makePotential(parameters->potential, parameters);
     }
 
-    std::tie(potentialEnergy, forces) =
+    if (parameters->true_pot == PotType::UNKNOWN){
+      // Default value for true_pot, so not a surrogate run
+      std::tie(potentialEnergy, forces) =
         potential->get_ef(positions, atomicNrs, cell);
+    } else {
+      // For the Surrogates, only use free data
+      auto [freePE, freeForces] =
+        potential->get_ef(this->getPositionsFree(), this->getAtomicNrsFree(), cell);
+      // Now populate full structures
+      this->potentialEnergy = freePE;
+      for (long idx{0}, jdx{0}; idx < nAtoms; idx++){
+        if (!isFixed(idx)){
+          forces.row(idx) = freeForces.row(jdx);
+          jdx++;
+        }
+      }
+    }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
