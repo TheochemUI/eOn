@@ -104,8 +104,11 @@ void Matter::initializeDataMembers(std::shared_ptr<Parameters> params) {
   recomputePotential = true;
   forceCalls = 0;
   parameters = params;
-  potential = NULL;
-  no_surrogate = true;
+  if (potential->getType() == PotType::PYSURROGATE){
+    no_surrogate = false;
+  } else {
+    no_surrogate = true;
+  }
 }
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
@@ -842,14 +845,14 @@ void Matter::computePotential() {
           helper_functions::makePotential(parameters->potential, parameters);
     }
 
-    std::cout<<"\nPotential is "<<helper_functions::getPotentialName(this->potential->getType())<<"\n";
+    // std::cout<<"\nPotential is "<<helper_functions::getPotentialName(this->potential->getType())<<"\n";
     if (no_surrogate){
-      std::cout<<"\nWe aren't in Py_Surrogate\n";
+      // std::cout<<"\nWe aren't in Py_Surrogate\n";
       // Default value for true_pot, so not a surrogate run
       std::tie(potentialEnergy, forces) =
         potential->get_ef(positions, atomicNrs, cell);
     } else {
-      std::cout<<"\nIn Py_Surrogate\n";
+      // std::cout<<"\nIn Py_Surrogate\n";
       // For the Surrogates, only use free data
       auto [freePE, freeForces] =
         potential->get_ef(this->getPositionsFree(), this->getAtomicNrsFree(), cell);
