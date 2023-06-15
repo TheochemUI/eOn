@@ -56,11 +56,11 @@ AtomMatrix makeOrthogonal(
 void makeProjection(double *result, const double *v1, const double *v2,
                     long size); // result = projection of v1 on v2
 RotationMatrix rotationExtract(const AtomMatrix r1, const AtomMatrix r2);
-bool rotationMatch(const Matter *m1, const Matter *m2, const double max_diff);
-void rotationRemove(const AtomMatrix r1, Matter *m2);
-void rotationRemove(const Matter *m1, Matter *m2);
-void translationRemove(Matter *m1, const AtomMatrix r1);
-void translationRemove(Matter *m1, const Matter *m2);
+bool rotationMatch(const Matter& m1, const Matter& m2, const double max_diff);
+void rotationRemove(const AtomMatrix r1, std::shared_ptr<Matter> m2);
+void rotationRemove(const std::shared_ptr<Matter> m1, std::shared_ptr<Matter> m2);
+void translationRemove(Matter& m1, const AtomMatrix r1);
+void translationRemove(Matter& m1, const Matter& m2);
 double maxAtomMotion(const AtomMatrix v1);
 double maxAtomMotionV(const VectorXd v1);
 long numAtomsMoved(const AtomMatrix v1, double cutoff);
@@ -76,14 +76,14 @@ getRelevantFile(string filename); // return filename containing _checkpoint or
 VectorXd loadMasses(string filename, int nAtoms);
 AtomMatrix loadMode(FILE *modeFile, int nAtoms);
 AtomMatrix loadMode(string filename, int nAtoms);
-void saveMode(FILE *modeFile, Matter *matter, AtomMatrix mode);
+void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
 
-bool identical(const Matter *m1, const Matter *m2,
+bool identical(const Matter& m1, const Matter& m2,
                const double distanceDifference);
-bool sortedR(const Matter *m1, const Matter *m2,
+bool sortedR(const Matter& m1, const Matter& m2,
              const double distanceDifference);
-void pushApart(Matter *m1, double minDistance);
+void pushApart(std::shared_ptr<Matter> m1, double minDistance);
 
 } // namespace helper_functions
 #endif

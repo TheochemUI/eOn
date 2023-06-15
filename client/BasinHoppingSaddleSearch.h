@@ -9,9 +9,16 @@
 
 class BasinHoppingSaddleSearch : public SaddleSearchMethod {
 public:
-  BasinHoppingSaddleSearch(Matter *reactant, Matter *displacement,
-                           Parameters *parametersPassed);
-  ~BasinHoppingSaddleSearch();
+  BasinHoppingSaddleSearch(std::shared_ptr<Matter> reactant,
+                           std::shared_ptr<Matter> displacement,
+                           std::shared_ptr<Potential> potPassed,
+                           std::shared_ptr<Parameters> parametersPassed)
+      : SaddleSearchMethod(potPassed, parametersPassed),
+        reactant{std::make_shared<Matter>(*reactant)}, saddle{displacement} {
+    eigenvector.resize(reactant->numberOfAtoms(), 3);
+    eigenvector.setZero();
+  }
+  ~BasinHoppingSaddleSearch() = default;
 
   int run(void);
   double getEigenvalue();
@@ -20,14 +27,11 @@ public:
   double eigenvalue;
   AtomMatrix eigenvector;
 
-  Matter *reactant;
-  Matter *saddle;
-  Matter *product;
+  std::shared_ptr<Matter> reactant;
+  std::shared_ptr<Matter> saddle;
+  std::shared_ptr<Matter> product;
 
   int status;
-
-private:
-  Parameters *parameters;
 };
 
 #endif

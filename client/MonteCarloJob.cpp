@@ -22,11 +22,11 @@ std::vector<std::string> MonteCarloJob::run(void) {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
-  Matter *matter = new Matter(params);
+  auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(posInFilename);
 
   // code will go
-  MonteCarlo mc = MonteCarlo(matter, params.get());
+  MonteCarlo mc = MonteCarlo(matter, params);
   mc.run(params->monteCarloSteps, params->temperature,
          params->monteCarloStepSize);
 

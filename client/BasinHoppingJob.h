@@ -9,16 +9,9 @@
 class BasinHoppingJob : public Job {
 public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), current{new Matter(params)},
-        trial{new Matter(params)}, fcalls{0} {}
-  ~BasinHoppingJob(void) {
-    delete current;
-    delete trial;
-
-    for (unsigned int i = 0; i < uniqueStructures.size(); i++) {
-      delete uniqueStructures[i];
-    }
-  };
+      : Job(std::move(parameters)), current{std::make_shared<Matter>(pot, params)},
+        trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
+  ~BasinHoppingJob(void) = default;
 
   std::vector<std::string> run(void) override;
 
@@ -26,8 +19,8 @@ private:
   VectorXd calculateDistanceFromCenter(Matter *matter);
   AtomMatrix displaceRandom(double maxDisplacement);
   void randomSwap(Matter *matter);
-  Matter *current;
-  Matter *trial; // initial configuration
+  std::shared_ptr<Matter> current;
+  std::shared_ptr<Matter> trial; // initial configuration
   vector<long> getElements(Matter *matter);
   std::vector<std::string> returnFiles;
   int jump_count; // count of jump moves
@@ -35,7 +28,7 @@ private:
   int swap_count; // count of swap moves
   int fcalls;
 
-  std::vector<Matter *> uniqueStructures;
+  std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;
 };
 

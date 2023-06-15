@@ -18,10 +18,10 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   double kbTLow, kbTHigh;
   double kB = params->kB;
   double pAcc;
-  Matter *tmpMatter;
+  std::shared_ptr<Matter>tmpMatter;
 
   string posFilename = helper_functions::getRelevantFile(params->conFilename);
-  pos = new Matter(params);
+  pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posFilename);
 
   log("\nRunning Replica Exchange\n\n");
@@ -29,12 +29,13 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   long refForceCalls = Potential::fcalls;
 
   // allocate a Matter and Dynamics object for each replica
-  Matter *replica[params->repexcReplicas];
+  std::vector<std::shared_ptr<Matter>> replica;
+  replica.resize(params->repexcReplicas);
   Dynamics *replicaDynamics[params->repexcReplicas];
   for (i = 0; i < params->repexcReplicas; i++) {
-    replica[i] = new Matter(params);
+    replica[i] = std::make_shared<Matter>(pot, params);
     *replica[i] = *pos;
-    replicaDynamics[i] = new Dynamics(replica[i], params.get());
+    replicaDynamics[i] = new Dynamics(replica[i].get(), params.get());
   }
 
   // assign temperatures
@@ -106,7 +107,6 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
 
   // delete Matter and Dynamics objects
 
-  delete pos;
   return returnFiles;
 }
 

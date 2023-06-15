@@ -52,7 +52,7 @@ TEST_F(ImpDimerTest, TestMatter) {
   mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
   saddleSearch = new MinModeSaddleSearch(
       saddle, mode, initial->getPotentialEnergy(), parameters);
-  minModeMethod = new ImprovedDimer(saddle, parameters);
+  minModeMethod = new ImprovedDimer(saddle, parameters, saddle->getPotential());
   minModeMethod->compute(saddle, mode);
   cout << minModeMethod->getEigenvalue();
   delete minModeMethod;

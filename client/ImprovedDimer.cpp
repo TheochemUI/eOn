@@ -4,6 +4,7 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "Log.h"
+#include "LowestEigenmode.h"
 #include <cassert>
 #include <cmath>
 
@@ -13,27 +14,24 @@ const char ImprovedDimer::OPT_SD[] = "sd";
 const char ImprovedDimer::OPT_CG[] = "cg";
 const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
 
-ImprovedDimer::ImprovedDimer(Matter *matter, Parameters *params) {
-  parameters = params;
-  x0 = new Matter(parameters);
-  x1 = new Matter(parameters);
+ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
+                             std::shared_ptr<Parameters> params,
+                             std::shared_ptr<Potential> pot) :
+                             LowestEigenmode(pot, params) {
+  x0 = std::make_shared<Matter>(pot, params);
+  x1 = std::make_shared<Matter>(pot, params);
   *x0 = *matter;
   *x1 = *matter;
   tau.resize(3 * matter->numberOfAtoms());
   tau.setZero();
   totalForceCalls = 0;
 
-  if (parameters->dimerOptMethod == OPT_CG) {
+  if (params->dimerOptMethod == OPT_CG) {
     init_cg = true;
   }
 }
 
-ImprovedDimer::~ImprovedDimer() {
-  delete x0;
-  delete x1;
-}
-
-void ImprovedDimer::compute(Matter *matter,
+void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
 
   VectorXd initialDirection = VectorXd::Map(initialDirectionAtomMatrix.data(),
@@ -45,9 +43,9 @@ void ImprovedDimer::compute(Matter *matter,
   *x1 = *matter;
   VectorXd x0_r = x0->getPositionsV();
 
-  x1->setPositionsV(x0_r + parameters->finiteDifference * tau);
+  x1->setPositionsV(x0_r + params->finiteDifference * tau);
 
-  if (parameters->dimerOptMethod == OPT_LBFGS) {
+  if (params->dimerOptMethod == OPT_LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
@@ -61,18 +59,18 @@ void ImprovedDimer::compute(Matter *matter,
   VectorXd tau_Old;
   VectorXd g1_prime;
 
-  double delta = parameters->finiteDifference;
-  double phi_tol = M_PI * (parameters->dimerConvergedAngle / 180.0);
+  double delta = params->finiteDifference;
+  double phi_tol = M_PI * (params->dimerConvergedAngle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
   statsRotations = 0;
 
-  Matter *x1p = new Matter(parameters);
+  auto x1p = std::make_shared<Matter>(pot, params);
 
   // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
   // http://doi.org/10.1021/ct501155k
-  if (parameters->dimerRemoveRotation) {
+  if (params->dimerRemoveRotation) {
     rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
     tau = x1_r - x0_r;
@@ -98,13 +96,13 @@ void ImprovedDimer::compute(Matter *matter,
     // Calculate the rotational force, F_R.
     F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).dot(tau)) * tau;
 
-    statsTorque = F_R.norm() / (parameters->finiteDifference * 2.0);
+    statsTorque = F_R.norm() / (params->finiteDifference * 2.0);
 
     // Determine the step direction, theta
-    if (parameters->dimerOptMethod == OPT_SD) // steepest descent
+    if (params->dimerOptMethod == OPT_SD) // steepest descent
     {
       theta = F_R / F_R.norm();
-    } else if (parameters->dimerOptMethod == OPT_CG) // conjugate gradients
+    } else if (params->dimerOptMethod == OPT_CG) // conjugate gradients
     {
       if (init_cg) {
         init_cg = false;
@@ -133,7 +131,7 @@ void ImprovedDimer::compute(Matter *matter,
       theta.normalize();
 
       F_R_Old = F_R;
-    } else if (parameters->dimerOptMethod == OPT_LBFGS) // quasi-newton
+    } else if (params->dimerOptMethod == OPT_LBFGS) // quasi-newton
     {
       if (init_lbfgs == false) {
         // xph: s0 should the difference between tau and tau_Old, which are
@@ -255,7 +253,7 @@ void ImprovedDimer::compute(Matter *matter,
 
       // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
       // http://doi.org/10.1021/ct501155k
-      if (parameters->dimerRemoveRotation) {
+      if (params->dimerRemoveRotation) {
         x1->setPositionsV(x1_r);
         rotationRemove(MatrixXd::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
         x1_r = x1->getPositionsV();
@@ -275,7 +273,7 @@ void ImprovedDimer::compute(Matter *matter,
            g1_prime * (sin(phi_min) / sin(phi_prime)) +
            g0 * (1.0 - cos(phi_min) - sin(phi_min) * tan(phi_prime * 0.5));
 
-      statsTorque = F_R.norm() / (2.0 * parameters->finiteDifference);
+      statsTorque = F_R.norm() / (2.0 * params->finiteDifference);
       statsRotations += 1;
 
       log_file("[IDimerRot]  -----   ---------   ----------   "
@@ -288,9 +286,7 @@ void ImprovedDimer::compute(Matter *matter,
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
-           statsRotations < parameters->dimerRotationsMax);
-
-  delete x1p;
+           statsRotations < params->dimerRotationsMax);
 }
 
 double ImprovedDimer::getEigenvalue() { return C_tau; }

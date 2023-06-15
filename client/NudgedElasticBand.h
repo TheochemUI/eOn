@@ -11,9 +11,6 @@
 #include "ObjectiveFunction.h"
 #include "Parameters.h"
 
-class Matter;
-class Parameters;
-
 // NEB method for determining a minimum energy path between two matter objects
 class NudgedElasticBand {
 
@@ -24,8 +21,9 @@ public:
     STATUS_BAD_MAX_ITERATIONS = 2
   };
 
-  NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
-                    Parameters *parametersPassed);
+  NudgedElasticBand(std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
+                    std::shared_ptr<Parameters> parametersPassed,
+                    std::shared_ptr<Potential> potPassed);
   ~NudgedElasticBand();
 
   void clean(void);
@@ -37,7 +35,7 @@ public:
 
   int atoms;
   long images, climbingImage, numExtrema;
-  Matter **image; // NEB images
+  std::vector<std::shared_ptr<Matter>> image; // NEB images
   AtomMatrix **tangent;
   AtomMatrix **projectedForce;
   bool movedAfterForceCall;
@@ -48,14 +46,16 @@ public:
   long maxEnergyImage;
 
 private:
-  Parameters *parameters;
+  std::shared_ptr<Parameters> params;
+  std::shared_ptr<Potential> pot;
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {
 public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
-                       Parameters *parametersPassed)
-      : neb{nebPassed}, parameters{parametersPassed} {}
+                       std::shared_ptr<Parameters> parametersPassed)
+      : ObjectiveFunction(nullptr, parametersPassed), neb{nebPassed} {}
+    // This is the odd one out, doesn't take a Matter so we null it
 
   ~NEBObjectiveFunction(void){};
 
@@ -70,7 +70,6 @@ public:
 
 private:
   NudgedElasticBand *neb;
-  Parameters *parameters;
 };
 
 namespace helper_functions {
