@@ -56,11 +56,10 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 
 class MatterObjectiveFunction : public ObjectiveFunction {
 public:
-  MatterObjectiveFunction(Matter *matterPassed, Parameters *parametersPassed) {
-    matter = matterPassed;
-    parameters = parametersPassed;
-  }
-  ~MatterObjectiveFunction(void){};
+  MatterObjectiveFunction(std::shared_ptr<Matter> matterPassed,
+                          std::shared_ptr<Parameters> parametersPassed)
+      : ObjectiveFunction(matterPassed, parametersPassed) {}
+  ~MatterObjectiveFunction() = default;
   double getEnergy() { return matter->getPotentialEnergy(); }
   VectorXd getGradient(bool fdstep = false) {
     return -matter->getForcesFreeV();
@@ -69,36 +68,32 @@ public:
   VectorXd getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
   bool isConverged() {
-    return getConvergence() < parameters->optConvergedForce;
+    return getConvergence() < params->optConvergedForce;
   }
   double getConvergence() {
-    if (parameters->optConvergenceMetric == "norm") {
+    if (params->optConvergenceMetric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (parameters->optConvergenceMetric == "max_atom") {
+    } else if (params->optConvergenceMetric == "max_atom") {
       return matter->maxForce();
-    } else if (parameters->optConvergenceMetric == "max_component") {
+    } else if (params->optConvergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
       log("%s Unknown opt_convergence_metric: %s\n", LOG_PREFIX,
-          parameters->optConvergenceMetric.c_str());
+          params->optConvergenceMetric.c_str());
       exit(1);
     }
   }
   VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
-
-private:
-  Matter *matter;
-  Parameters *parameters;
 };
 
-Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
+// Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
 
-Matter::Matter(Parameters *parameters, const long int nAtoms) {
-  resize(nAtoms); // prepare memory for nAtoms
-  initializeDataMembers(parameters);
-}
+// Matter::Matter(std::shared_ptr<Parameters> parameters, const long int nAtoms) {
+//   resize(nAtoms); // prepare memory for nAtoms
+//   initializeDataMembers(parameters);
+// }
 
-void Matter::initializeDataMembers(Parameters *params) {
+void Matter::initializeDataMembers(std::shared_ptr<Parameters> params) {
   nAtoms = 0;
   biasPotential = NULL;
   cell.resize(3, 3);
@@ -159,24 +154,24 @@ const Matter &Matter::operator=(const Matter &matter) {
 //     }
 // }
 
-bool Matter::compare(const Matter *matter, bool indistinguishable) {
-  if (nAtoms != matter->numberOfAtoms())
+bool Matter::compare(const Matter& matter, bool indistinguishable) {
+  if (nAtoms != matter.numberOfAtoms())
     return false;
   if (parameters->checkRotation && indistinguishable) {
-    return helper_functions::sortedR(this, matter,
+    return helper_functions::sortedR(*this, matter,
                                      parameters->distanceDifference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
-      helper_functions::translationRemove(this, matter);
-    return helper_functions::identical(this, matter,
+      helper_functions::translationRemove(*this, matter);
+    return helper_functions::identical(*this, matter,
                                        parameters->distanceDifference);
   } else if (parameters->checkRotation) {
-    return helper_functions::rotationMatch(this, matter,
+    return helper_functions::rotationMatch(*this, matter,
                                            parameters->distanceDifference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and parameters->removeTranslation)
-      helper_functions::translationRemove(this, matter);
-    return (parameters->distanceDifference) > perAtomNorm(*matter);
+      helper_functions::translationRemove(*this, matter);
+    return (parameters->distanceDifference) > perAtomNorm(matter);
   }
 }
 
@@ -299,8 +294,8 @@ AtomMatrix Matter::getPositionsFree() const {
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
-  MatterObjectiveFunction objf(this, parameters);
-  Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+  MatterObjectiveFunction objf(std::make_shared<Matter>(*this), parameters);
+  Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters.get());
 
   ostringstream min;
   min << prefixMovie;
@@ -832,7 +827,7 @@ bool Matter::con2matter(FILE *file) {
 void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
-      potential = helper_functions::makePotential(parameters);
+      potential = helper_functions::makePotential(parameters->potential, parameters);
     }
 
     std::tie(potentialEnergy, forces) =
@@ -1211,11 +1206,11 @@ void Matter::writeTibble(std::string fname) {
   return;
 }
 
-void Matter::setPotential(std::unique_ptr<Potential> pot) {
-  this->potential = std::move(pot);
+void Matter::setPotential(std::shared_ptr<Potential> pot) {
+  this->potential = pot;
   recomputePotential = true;
 }
 
-std::unique_ptr<Potential> Matter::getPotential() {
-  return std::move(this->potential);
+std::shared_ptr<Potential> Matter::getPotential() {
+  return this->potential;
 }

@@ -10,9 +10,9 @@ std::vector<std::string> MinimizationJob::run(void) {
   string posOutFilename("min.con");
 
   if (params->checkpoint) {
-    FILE *pos;
-    pos = fopen("pos_cp.con", "r");
-    if (pos != NULL) {
+    FILE *pos_file;
+    pos_file = fopen("pos_cp.con", "r");
+    if (pos_file != NULL) {
       posInFilename = "pos_cp.con";
       log("[Minimization] Resuming from checkpoint\n");
     } else {
@@ -23,7 +23,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   std::vector<std::string> returnFiles;
   returnFiles.push_back(posOutFilename);
 
-  Matter *pos = new Matter(params);
+  auto pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
   printf("\nBeginning minimization of %s\n", posInFilename.c_str());

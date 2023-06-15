@@ -14,19 +14,19 @@ public:
 
 private:
   int dynamics();
-  long refine(Matter *mdBuffer[], long length, Matter *reactant);
+  long refine(std::vector<std::shared_ptr<Matter>> buff, long length, Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);
   void saveData(int status);
   void dephase();
-  bool saddleSearch(Matter *tran);
+  bool saddleSearch(std::shared_ptr<Matter> cross);
 
-  Matter *current;
-  Matter *reactant;
-  Matter *saddle;
-  Matter *crossing;
-  Matter *final;
-  Matter *final_tmp;
-  Matter *product;
+  std::shared_ptr<Matter> current;
+  std::shared_ptr<Matter> reactant;
+  std::shared_ptr<Matter> saddle;
+  std::shared_ptr<Matter> crossing;
+  std::shared_ptr<Matter> final_state;
+  std::shared_ptr<Matter> final_tmp;
+  std::shared_ptr<Matter> product;
 
   bool metaStateFlag;
   bool newStateFlag;

@@ -9,13 +9,13 @@
 #include <vector>
 
 std::vector<std::string> TADJob::run(void) {
-  current = new Matter(params);
-  reactant = new Matter(params);
-  saddle = new Matter(params);
-  crossing = new Matter(params);
-  product = new Matter(params);
-  final = new Matter(params);
-  final_tmp = new Matter(params);
+  current = std::make_shared<Matter>(pot, params);
+  reactant = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  crossing = std::make_shared<Matter>(pot, params);
+  product = std::make_shared<Matter>(pot, params);
+  final_state = std::make_shared<Matter>(pot, params);
+  final_tmp = std::make_shared<Matter>(pot, params);
 
   minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
   time = 0.0;
@@ -45,14 +45,6 @@ std::vector<std::string> TADJob::run(void) {
     log("No new state was found in %ld dynamics steps (%.3e s)\n",
         params->mdSteps, time * 1.0e-15 * params->timeUnit);
   }
-
-  delete current;
-  delete reactant;
-  delete crossing;
-  delete saddle;
-  delete product;
-  delete final_tmp;
-  delete final;
 
   return returnFiles;
 }
@@ -91,13 +83,14 @@ int TADJob::dynamics() {
   newStateFlag = metaStateFlag = false;
 
   mdBufferLength = long(StateCheckInterval / RecordInterval);
-  Matter *mdBuffer[mdBufferLength];
+  std::vector<std::shared_ptr<Matter>> mdBuffer;
+  mdBuffer.resize(mdBufferLength);
   for (long i = 0; i < mdBufferLength; i++) {
-    mdBuffer[i] = new Matter(params);
+    mdBuffer[i] = std::make_shared<Matter>(pot, params);
   }
   timeBuffer = new double[mdBufferLength];
 
-  Dynamics TAD(current, params.get());
+  Dynamics TAD(current.get(), params.get());
   TAD.setThermalVelocity();
 
   // dephase the trajectory so that it is thermal and independent of others
@@ -149,7 +142,7 @@ int TADJob::dynamics() {
       nCheck = 0;  // reinitialize check state counter
       nRecord = 0; // restart the buffer
       // refFCalls = Potential::fcalls;
-      transitionFlag = checkState(current, reactant);
+      transitionFlag = checkState(current.get(), reactant.get());
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
         nState++;
@@ -167,7 +160,7 @@ int TADJob::dynamics() {
     if (transitionFlag) {
       // log("[Parallel Replica] Refining transition time.\n");
       refFCalls = Potential::fcalls;
-      refineStep = refine(mdBuffer, mdBufferLength, reactant);
+      refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
 
       transitionStep =
           newStateStep - StateCheckInterval + refineStep * RecordInterval;
@@ -190,7 +183,7 @@ int TADJob::dynamics() {
       if (correctedTime < minCorrectedTime) {
         minCorrectedTime = correctedTime;
         *saddle = *crossing;
-        *final = *final_tmp;
+        *final_state = *final_tmp;
       }
       stopTime = factor * pow(minCorrectedTime / factor, lowT / highT);
       log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, "
@@ -242,11 +235,8 @@ int TADJob::dynamics() {
     newStateFlag = false;
   }
 
-  *product = *final;
+  *product = *final_state;
   // new state was detected; determine refined transition time
-  for (long i = 0; i < mdBufferLength; i++) {
-    delete mdBuffer[i];
-  }
   delete[] timeBuffer;
 
   if (newStateFlag) {
@@ -332,7 +322,7 @@ void TADJob::dephase() {
   AtomMatrix velocity;
 
   DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
-  Dynamics dephaseDynamics(current, params.get());
+  Dynamics dephaseDynamics(current.get(), params.get());
   log("Dephasing for %.2f fs\n", params->parrepDephaseTime * params->timeUnit);
 
   step = stepNew = loop = 0;
@@ -341,18 +331,19 @@ void TADJob::dephase() {
     // this should be allocated once, and of length DephaseSteps
     dephaseBufferLength = DephaseSteps - step;
     loop++;
-    Matter *dephaseBuffer[dephaseBufferLength];
+    std::vector<std::shared_ptr<Matter>> dephaseBuffer;
+    dephaseBuffer.reserve(dephaseBufferLength);
 
     for (long i = 0; i < dephaseBufferLength; i++) {
-      dephaseBuffer[i] = new Matter(params);
+      dephaseBuffer[i] = std::make_shared<Matter>(pot, params);
       dephaseDynamics.oneStep();
       *dephaseBuffer[i] = *current;
     }
 
-    transitionFlag = checkState(current, reactant);
+    transitionFlag = checkState(current.get(), reactant.get());
 
     if (transitionFlag) {
-      dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant);
+      dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant.get());
       log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
@@ -369,10 +360,6 @@ void TADJob::dephase() {
       // log("Successful dephasing for %.2f steps \n", step);
     }
 
-    for (long i = 0; i < dephaseBufferLength; i++) {
-      delete dephaseBuffer[i];
-    }
-
     if ((params->parrepDephaseLoopStop) &&
         (loop > params->parrepDephaseLoopMax)) {
       log("Reach dephase loop maximum, stop dephasing! Dephased for %ld "
@@ -386,16 +373,16 @@ void TADJob::dephase() {
 }
 
 bool TADJob::checkState(Matter *current, Matter *reactant) {
-  Matter tmp(params);
+  Matter tmp(pot, params);
   tmp = *current;
   tmp.relax(true);
-  if (tmp.compare(reactant)) {
+  if (tmp.compare(*reactant)) {
     return false;
   }
   return true;
 }
 
-bool TADJob::saddleSearch(Matter *cross) {
+bool TADJob::saddleSearch(std::shared_ptr<Matter> cross) {
   AtomMatrix mode;
   long status;
   mode = cross->getPositions() - reactant->getPositions();
@@ -403,7 +390,7 @@ bool TADJob::saddleSearch(Matter *cross) {
   dimerSearch = NULL;
   // TODO: Unhandled .get()
   dimerSearch = new MinModeSaddleSearch(
-      cross, mode, reactant->getPotentialEnergy(), params.get());
+      cross, mode, reactant->getPotentialEnergy(), params, pot);
   status = dimerSearch->run();
   log("dimer search status %ld\n", status);
   if (status != MinModeSaddleSearch::STATUS_GOOD) {
@@ -412,7 +399,7 @@ bool TADJob::saddleSearch(Matter *cross) {
   return false;
 }
 
-long TADJob::refine(Matter *buff[], long length, Matter *reactant) {
+long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length, Matter *reactant) {
   // log("[Parallel Replica] Refining transition time.\n");
 
   bool midTest;
@@ -424,7 +411,7 @@ long TADJob::refine(Matter *buff[], long length, Matter *reactant) {
   while ((max - min) > 1) {
 
     mid = min + (max - min) / 2;
-    midTest = checkState(buff[mid], reactant);
+    midTest = checkState(buff[mid].get(), reactant);
 
     if (midTest == false) {
       min = mid;
