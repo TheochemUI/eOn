@@ -78,8 +78,11 @@
 #include <limits>
 
 namespace helper_functions {
-std::shared_ptr<Potential> makePotential(Parameters *params) {
-  switch(params->potential) {
+std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
+  return makePotential(params->potential, params);
+}
+std::shared_ptr<Potential> makePotential(PotType ptype, std::shared_ptr<Parameters> params) {
+  switch(ptype) {
   case PotType::EMT: {
     return (std::make_shared<EffectiveMediumTheory>(params));
     break;
@@ -167,7 +170,7 @@ std::shared_ptr<Potential> makePotential(Parameters *params) {
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_shared<VASP());
+    return (std::make_shared<VASP(params));
     break;
   }
 #endif

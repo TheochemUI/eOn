@@ -17,14 +17,14 @@ using namespace std::placeholders;
 namespace tests {
 
 PotTest::PotTest()
-    : params{new Parameters}, m1{new Matter(params)}, threshold{1e-2} {}
+  : params{std::make_shared<Parameters>()}, m1{nullptr}, pot_default{nullptr}, threshold{1e-2} {}
 
-PotTest::~PotTest() {
-  delete params;
-  delete m1;
-}
+PotTest::~PotTest() {}
 
 void PotTest::SetUp() {
+  pot_default =
+    helper_functions::makePotential(PotType::LJ, params);
+  m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 }
@@ -32,14 +32,13 @@ void PotTest::SetUp() {
 void PotTest::TearDown() {}
 
 TEST_F(PotTest, getType) {
-  Parameters *parameters = new Parameters;
-  parameters->potential = PotType::LJ;
-  std::shared_ptr<Potential> pot = helper_functions::makePotential(parameters);
+  auto params = std::make_shared<Parameters>();
+  params->potential = PotType::LJ;
+  std::shared_ptr<Potential> pot = helper_functions::makePotential(PotType::LJ, params);
   ASSERT_EQ(pot->getType(), PotType::LJ);
-  parameters->potential = PotType::MORSE_PT;
-  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(parameters);
+  params->potential = PotType::MORSE_PT;
+  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(PotType::MORSE_PT, params);
   ASSERT_EQ(pot2->getType(), PotType::MORSE_PT);
-  delete parameters;
 }
 
 TEST_F(PotTest, callForce) {
@@ -84,7 +83,7 @@ TEST_F(PotTest, callForce) {
       209.073, -38.7473, -50.0734;
   // clang-format on
   params->potential = PotType::LJ;
-  std::shared_ptr<Potential> pot = helper_functions::makePotential(params);
+  std::shared_ptr<Potential> pot = helper_functions::makePotential(params->potential, params);
   double e_lj{0};
   AtomMatrix f_lj = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
@@ -96,7 +95,7 @@ TEST_F(PotTest, callForce) {
   double e_morse{0};
   AtomMatrix f_morse = Eigen::MatrixXd::Ones(m1->numberOfAtoms(), 3);
   params->potential = PotType::MORSE_PT;
-  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(params);
+  std::shared_ptr<Potential> pot2 = helper_functions::makePotential(params->potential, params);
   ASSERT_NE(pot2, pot);
   // ASSERT_EQ(pot2->getType(), "morse_pt");
   pot2->force(m1->numberOfAtoms(), m1->getPositions().data(),

@@ -17,14 +17,15 @@ using namespace std::placeholders;
 namespace tests {
 
 MatterTest::MatterTest()
-    : params{new Parameters}, m1{new Matter(params)}, threshold{1e-6} {}
+    : params{std::make_shared<Parameters>()}, m1{nullptr}, pot_default{nullptr}, threshold{1e-6} {}
 
 MatterTest::~MatterTest() {
-  delete params;
-  delete m1;
 }
 
 void MatterTest::SetUp() {
+  pot_default =
+    helper_functions::makePotential(PotType::LJ, params);
+  m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
 }
@@ -62,7 +63,7 @@ TEST_F(MatterTest, SetPotential) {
   params->potential = PotType::LJ;
   double m1_ipot = m1->getPotentialEnergy();
   params->potential = PotType::MORSE_PT;
-  auto pot{helper_functions::makePotential(params)};
+  auto pot{helper_functions::makePotential(params->potential, params)};
   ASSERT_NE(m1->getPotential(), pot);
   m1->setPotential(std::move(pot));
   // ASSERT_EQ(m1->getPotential()->getType(), pot->getType());

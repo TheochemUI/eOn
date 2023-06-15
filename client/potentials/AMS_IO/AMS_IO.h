@@ -17,7 +17,7 @@
 class AMS_IO : public Potential {
 
 public:
-  AMS_IO(Parameters *p);
+  AMS_IO(std::shared_ptr<Parameters> p);
   ~AMS_IO();
   void initialize(){};
   void cleanMemory(void);

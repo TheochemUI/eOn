@@ -26,7 +26,7 @@
  */
 
 /**
- * Decleration of the Saddle Search job
+ * Declaration of the Saddle Search job
  */
 
 class SaddleSearchJob : public Job {
@@ -56,11 +56,11 @@ private:
   //! Initializes a ref MinModeSaddleSearch
   MinModeSaddleSearch *saddleSearch;
   //! Initial configuration.
-  Matter *initial;
+  std::shared_ptr<Matter> initial;
   //! Configuration used during the saddle point search.
-  Matter *saddle;
+  std::shared_ptr<Matter> saddle;
   //! Configuration used during the saddle point search.
-  Matter *displacement;
+  std::shared_ptr<Matter> displacement;
 
   //! Force calls to find the saddle
   int fCallsSaddle;

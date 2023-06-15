@@ -7,7 +7,7 @@ std::vector<std::string> PointJob::run(void) {
   string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
 
-  Matter *pos = new Matter(params);
+  auto pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
   printf("Energy:         %f\n", pos->getPotentialEnergy());

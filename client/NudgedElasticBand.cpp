@@ -66,7 +66,7 @@ int NEBObjectiveFunction::degreesOfFreedom() {
 }
 
 bool NEBObjectiveFunction::isConverged() {
-  return getConvergence() < parameters->nebConvergedForce;
+  return getConvergence() < params->nebConvergedForce;
 }
 
 double NEBObjectiveFunction::getConvergence() {
@@ -85,13 +85,15 @@ VectorXd NEBObjectiveFunction::difference(VectorXd a, VectorXd b) {
 }
 
 // Nudged Elastic Band definitions
-NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
-                                     Parameters *parametersPassed) {
-  parameters = parametersPassed;
-  images = parameters->nebImages;
+NudgedElasticBand::NudgedElasticBand(
+    std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
+    std::shared_ptr<Parameters> parametersPassed,
+    std::shared_ptr<Potential> potPassed)
+    : params{parametersPassed}, pot{potPassed} {
+  images = params->nebImages;
   atoms = initialPassed->numberOfAtoms();
-  auto linear_path = helper_functions::neb_paths::linearPath(*initialPassed, *finalPassed, parameters->nebImages);
-  image = new Matter *[images + 2];
+  auto linear_path = helper_functions::neb_paths::linearPath(*initialPassed, *finalPassed, params->nebImages);
+  image.resize(images+2);
   tangent = new AtomMatrix *[images + 2];
   projectedForce = new AtomMatrix *[images + 2];
   extremumPosition = new double[2 * (images + 1)];
@@ -101,7 +103,7 @@ NudgedElasticBand::NudgedElasticBand(Matter *initialPassed, Matter *finalPassed,
 
   log("\nNEB: initialize\n");
   for (long i = 0; i <= images + 1; i++) {
-    image[i] = new Matter(parameters);
+    image[i] = std::make_shared<Matter>(pot, params);
     *image[i] = linear_path[i];
     tangent[i] = new AtomMatrix;
     tangent[i]->resize(atoms, 3);
@@ -127,11 +129,9 @@ NudgedElasticBand::~NudgedElasticBand() {
 
 void NudgedElasticBand::clean(void) {
   for (long i = 0; i <= images + 1; i++) {
-    delete image[i];
     delete tangent[i];
     delete projectedForce[i];
   }
-  delete[] image;
   delete[] tangent;
   delete[] projectedForce;
   delete[] extremumPosition;
@@ -148,11 +148,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   updateForces();
 
-  NEBObjectiveFunction objf(this, parameters);
+  NEBObjectiveFunction objf(this, params);
 
-  Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+  Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
 
-  const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
+  const char *forceLabel = params->optConvergenceMetricLabel.c_str();
   log("%10s %12s %14s %11s %12s\n", "iteration", "step size", forceLabel,
       "max image", "max energy");
   log("---------------------------------------------------------------\n");
@@ -161,7 +161,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   char fmtTiny[] = "%10li %12.4e %14.4e %11li %12.4e\n";
 
   while (!objf.isConverged()) {
-    if (parameters->writeMovies) {
+    if (params->writeMovies) {
       bool append = true;
       if (iteration == 0)
         append = false;
@@ -169,11 +169,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
     VectorXd pos = objf.getPositions();
     if (iteration) { // so that we print forces before taking an optimizer step
-      if (iteration >= parameters->nebMaxIterations) {
+      if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
         break;
       }
-      optimizer->step(parameters->optMaxMove);
+      optimizer->step(params->optMaxMove);
     }
     iteration++;
 
@@ -208,27 +208,27 @@ double NudgedElasticBand::convergenceForce(void) {
 
   for (long i = 1; i <= images; i++) {
 
-    if (parameters->nebClimbingImageConvergedOnly == true &&
-        parameters->nebClimbingImageMethod && climbingImage != 0) {
+    if (params->nebClimbingImageConvergedOnly == true &&
+        params->nebClimbingImageMethod && climbingImage != 0) {
       i = climbingImage;
     }
-    if (parameters->optConvergenceMetric == "norm") {
+    if (params->optConvergenceMetric == "norm") {
       fmax = max(fmax, projectedForce[i]->norm());
-    } else if (parameters->optConvergenceMetric == "max_atom") {
+    } else if (params->optConvergenceMetric == "max_atom") {
       for (int j = 0; j < image[0]->numberOfAtoms(); j++) {
         if (image[0]->getFixed(j))
           continue;
         fmax = max(fmax, projectedForce[i]->row(j).norm());
       }
-    } else if (parameters->optConvergenceMetric == "max_component") {
+    } else if (params->optConvergenceMetric == "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
       log("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
-          parameters->optConvergenceMetric.c_str());
+          params->optConvergenceMetric.c_str());
       exit(1);
     }
-    if (parameters->nebClimbingImageConvergedOnly == true &&
-        parameters->nebClimbingImageMethod && climbingImage != 0) {
+    if (params->nebClimbingImageConvergedOnly == true &&
+        params->nebClimbingImageMethod && climbingImage != 0) {
       break;
     }
   }
@@ -276,7 +276,7 @@ void NudgedElasticBand::updateForces(void) {
     energyNext = image[i + 1]->getPotentialEnergy();
 
     // determine the tangent
-    if (parameters->nebOldTangent) {
+    if (params->nebOldTangent) {
       // old tangent
       *tangent[i] = image[i]->pbc(posNext - posPrev);
     } else {
@@ -315,16 +315,16 @@ void NudgedElasticBand::updateForces(void) {
     // calculate the force perpendicular to the tangent
     forcePerp =
         force - (force.array() * (*tangent[i]).array()).sum() * *tangent[i];
-    forceSpring = parameters->nebSpring *
+    forceSpring = params->nebSpring *
                   image[i]->pbc((posNext - pos) - (pos - posPrev));
 
     // calculate the spring force
     distPrev = image[i]->pbc(posPrev - pos).squaredNorm();
     distNext = image[i]->pbc(posNext - pos).squaredNorm();
     forceSpringPar =
-        parameters->nebSpring * (distNext - distPrev) * *tangent[i];
+        params->nebSpring * (distNext - distPrev) * *tangent[i];
 
-    if (parameters->nebDoublyNudged) {
+    if (params->nebDoublyNudged) {
       forceSpringPerp =
           forceSpring -
           (forceSpring.array() * (*tangent[i]).array()).sum() * *tangent[i];
@@ -332,7 +332,7 @@ void NudgedElasticBand::updateForces(void) {
           forceSpringPerp -
           (forceSpringPerp.array() * forcePerp.normalized().array()).sum() *
               forcePerp.normalized();
-      if (parameters->nebDoublyNudgedSwitching) {
+      if (params->nebDoublyNudgedSwitching) {
         double switching;
         switching =
             2.0 / M_PI *
@@ -343,7 +343,7 @@ void NudgedElasticBand::updateForces(void) {
       forceDNEB.setZero();
     }
 
-    if (parameters->nebClimbingImageMethod && i == maxEnergyImage) {
+    if (params->nebClimbingImageMethod && i == maxEnergyImage) {
       // we are at the climbing image
       climbingImage = maxEnergyImage;
       *projectedForce[i] =
@@ -353,14 +353,14 @@ void NudgedElasticBand::updateForces(void) {
     } else // all non-climbing images
     {
       // sum the spring and potential forces for the neb force
-      if (parameters->nebElasticBand) {
+      if (params->nebElasticBand) {
         *projectedForce[i] = forceSpring + force;
       } else {
         *projectedForce[i] = forceSpringPar + forcePerp + forceDNEB;
       }
       //*projectedForce[i] = forceSpring + forcePerp;
 
-      // if (parameters->nebFullSpring) {
+      // if (params->nebFullSpring) {
 
       movedAfterForceCall = false; // so that we don't repeat a force call
     }

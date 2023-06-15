@@ -27,9 +27,9 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     }
   }
 
-  initial = new Matter(params);
-  displacement = new Matter(params);
-  saddle = new Matter(params);
+  initial = std::make_shared<Matter>(pot, params);
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
 
   initial->con2matter(reactantFilename);
 
@@ -48,7 +48,7 @@ std::vector<std::string> SaddleSearchJob::run(void) {
   }
 
   saddleSearch = new MinModeSaddleSearch(
-      saddle, mode, initial->getPotentialEnergy(), params.get());
+      saddle, mode, initial->getPotentialEnergy(), params, pot);
 
   int status;
   status = doSaddleSearch();
@@ -56,15 +56,11 @@ std::vector<std::string> SaddleSearchJob::run(void) {
   saveData(status);
 
   delete saddleSearch;
-  delete initial;
-  delete displacement;
-  delete saddle;
-
   return returnFiles;
 }
 
 int SaddleSearchJob::doSaddleSearch() {
-  Matter matterTemp(params);
+  Matter matterTemp(pot, params);
   long status;
   int f1;
   // f1 = Potential::fcalls;

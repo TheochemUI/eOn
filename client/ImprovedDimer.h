@@ -19,17 +19,17 @@ public:
   static const char OPT_CG[];
   static const char OPT_LBFGS[];
 
-  ImprovedDimer(Matter *matter, Parameters *parameters);
-  ~ImprovedDimer();
+  ImprovedDimer(std::shared_ptr<Matter> matter,
+                std::shared_ptr<Parameters> params,
+                std::shared_ptr<Potential> pot);
+  ~ImprovedDimer() = default;
 
-  void compute(Matter *matter, AtomMatrix initialDirection);
+  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
-  Parameters *parameters;
-
-  Matter *x0;     // Center image
-  Matter *x1;     // Forward image
+  std::shared_ptr<Matter> x0;     // Center image
+  std::shared_ptr<Matter> x1;     // Forward image
   VectorXd tau;   // Dimer direction
   VectorXd theta; // Dimer rotation direction
   VectorXd F_R;   // Dimer rotational force

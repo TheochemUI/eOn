@@ -1,6 +1,7 @@
 #ifndef JOB_H
 #define JOB_H
 #include "Parameters.h"
+#include "Potential.h"
 #include <string>
 #include <vector>
 
@@ -39,11 +40,17 @@ protected:
   // make const
   JobType jtype;
   std::shared_ptr<Parameters> params;
+  std::shared_ptr<Potential> pot;
 
 public:
   Job(std::unique_ptr<Parameters> parameters)
       : jtype{parameters->job}, params{std::make_shared<Parameters>(
-                                    *std::move(parameters))} {}
+                                    *std::move(parameters))},
+        pot{helper_functions::makePotential(params->potential, params)} {}
+  Job(PotType ptype, std::unique_ptr<Parameters> parameters)
+      : jtype{parameters->job}, params{std::make_shared<Parameters>(
+                                    *std::move(parameters))},
+        pot{helper_functions::makePotential(ptype, params)} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;
