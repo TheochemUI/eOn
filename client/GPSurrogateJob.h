@@ -25,6 +25,8 @@ private:
 
 namespace helper_functions::surrogate {
   Eigen::MatrixXd get_features(const std::vector<Matter>& matobjs);
+  Eigen::MatrixXd get_features(const std::vector<std::shared_ptr<Matter>>& matobjs);
+  Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs);
   Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs);
   std::vector<Matter> getMidSlice(const std::vector<Matter>& matobjs);
 }
