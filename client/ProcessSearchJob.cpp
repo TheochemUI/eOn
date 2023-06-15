@@ -17,17 +17,17 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   string displacementFilename("displacement.con");
   string modeFilename("direction.dat");
 
-  initial = new Matter(params);
+  initial = std::make_shared<Matter>(pot, params);
   if (params->saddleMethod == "min_mode" ||
       params->saddleMethod == "basin_hopping" ||
       params->saddleMethod == "bgsd") {
-    displacement = new Matter(params);
+    displacement = std::make_shared<Matter>(pot, params);
   } else if (params->saddleMethod == "dynamics") {
     displacement = NULL;
   }
-  saddle = new Matter(params);
-  min1 = new Matter(params);
-  min2 = new Matter(params);
+  saddle = std::make_shared<Matter>(pot, params);
+  min1 = std::make_shared<Matter>(pot, params);
+  min2 = std::make_shared<Matter>(pot, params);
 
   if (!initial->con2matter(reactantFilename)) {
     printf("Stop\n");
@@ -71,14 +71,14 @@ std::vector<std::string> ProcessSearchJob::run(void) {
       mode = helper_functions::loadMode(modeFilename, initial->numberOfAtoms());
     }
     saddleSearch = new MinModeSaddleSearch(
-        saddle, mode, initial->getPotentialEnergy(), params.get());
+        saddle, mode, initial->getPotentialEnergy(), params, pot);
   } else if (params->saddleMethod == "basin_hopping") {
-    saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, params.get());
+    saddleSearch = new BasinHoppingSaddleSearch(min1, saddle, pot, params);
   } else if (params->saddleMethod == "dynamics") {
-    saddleSearch = new DynamicsSaddleSearch(saddle, params.get());
+    saddleSearch = new DynamicsSaddleSearch(saddle, params);
   } else if (params->saddleMethod == "bgsd") {
     saddleSearch = new BiasedGradientSquaredDescent(
-        saddle, initial->getPotentialEnergy(), params.get());
+        saddle, initial->getPotentialEnergy(), params);
   }
 
   int status = doProcessSearch();
@@ -89,22 +89,11 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   // might have been forced to be equal if the structure passed to the client
   // when determining barrier and the prefactor
 
-  if (min1 != initial) {
-    delete initial;
-  }
-
-  delete saddleSearch;
-  //    delete initial;
-  delete displacement;
-  delete saddle;
-  delete min1;
-  delete min2;
-
   return returnFiles;
 }
 
 int ProcessSearchJob::doProcessSearch(void) {
-  Matter matterTemp(params);
+  Matter matterTemp(pot, params);
   long status;
   int f1;
   // f1 = Potential::fcalls;
@@ -151,18 +140,18 @@ int ProcessSearchJob::doProcessSearch(void) {
   }
 
   // if min2 corresponds to initial state, swap min1 && min2
-  if (!(initial->compare(min1)) && initial->compare(min2)) {
+  if (!(initial->compare(*min1)) && initial->compare(*min2)) {
     matterTemp = *min1;
     *min1 = *min2;
     *min2 = matterTemp;
   }
 
-  if ((initial->compare(min1)) == false) {
+  if ((initial->compare(*min1)) == false) {
     log("initial != min1\n");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
-  if (initial->compare(min2)) {
+  if (initial->compare(*min2)) {
     // both minima are the initial state
     log("both minima are the initial state");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
@@ -194,7 +183,7 @@ int ProcessSearchJob::doProcessSearch(void) {
     int prefStatus;
     double pref1, pref2;
     // XXX: no get() calls
-    prefStatus = Prefactor::getPrefactors(params.get(), min1, saddle, min2,
+    prefStatus = Prefactor::getPrefactors(params.get(), min1.get(), saddle.get(), min2.get(),
                                           pref1, pref2);
     if (prefStatus == -1) {
       printf("Prefactor: bad calculation\n");

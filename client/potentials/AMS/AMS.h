@@ -33,7 +33,7 @@
 class AMS : public Potential {
 
 public:
-  AMS(Parameters *p);
+  AMS(std::shared_ptr<Parameters> p);
   ~AMS();
   void initialize(){};
   void cleanMemory(void);
@@ -53,7 +53,7 @@ private:
   std::string engine, forcefield, model, xc, resources, basis;
   std::string engine_setup, engine_lower;
   // Generate run configuration
-  std::string generate_run(Parameters *p);
+  std::string generate_run(std::shared_ptr<Parameters> p);
   // Environment
   boost::process::native_environment nativenv;
   int amsevals;

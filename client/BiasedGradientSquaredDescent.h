@@ -9,10 +9,17 @@
 
 class BiasedGradientSquaredDescent : public SaddleSearchMethod {
 public:
-  BiasedGradientSquaredDescent(Matter *matterPassed,
+  BiasedGradientSquaredDescent(std::shared_ptr<Matter> matterPassed,
                                double reactantEnergyPassed,
-                               Parameters *parametersPassed);
-  ~BiasedGradientSquaredDescent();
+                               std::shared_ptr<Parameters> parametersPassed)
+      : SaddleSearchMethod(matterPassed->getPotential(), parametersPassed),
+        saddle{matterPassed} {
+    reactantEnergy = reactantEnergyPassed;
+    saddle = matterPassed;
+    eigenvector.resize(saddle->numberOfAtoms(), 3);
+    eigenvector.setZero();
+  }
+  ~BiasedGradientSquaredDescent() = default;
 
   int run(void);
   double getEigenvalue();
@@ -21,12 +28,11 @@ public:
   double eigenvalue;
   AtomMatrix eigenvector;
 
-  Matter *saddle;
+  std::shared_ptr<Matter> saddle;
 
   int status;
 
 private:
-  Parameters *parameters;
   double reactantEnergy;
   //        double bgsdAlpha;
 };

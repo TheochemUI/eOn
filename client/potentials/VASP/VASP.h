@@ -16,7 +16,7 @@
 class VASP : public Potential {
 
 public:
-  VASP(void);
+  VASP(shared_ptr<Parameters> p): Potential(p);
   ~VASP();
   void initialize(){};
   void cleanMemory(void);

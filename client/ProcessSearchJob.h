@@ -67,15 +67,15 @@ private:
    */
   SaddleSearchMethod *saddleSearch;
   //! Initial configuration
-  Matter *initial;
+  std::shared_ptr<Matter> initial;
   //! Configuration used during the saddle point search
-  Matter *saddle;
+  std::shared_ptr<Matter> saddle;
   //! Configuration used during the saddle point search
-  Matter *displacement;
+  std::shared_ptr<Matter> displacement;
   //! First minimum from the saddle
-  Matter *min1;
+  std::shared_ptr<Matter> min1;
   //! Second minimum from the saddle
-  Matter *min2;
+  std::shared_ptr<Matter> min2;
 
   //! Array containg the value of the potential barriers from reactant to
   //! product and vice versa

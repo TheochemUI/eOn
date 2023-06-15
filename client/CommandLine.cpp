@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
+#include "Potential.h"
 #include "version.h"
 
 #include <cstdlib>
@@ -11,13 +12,13 @@
 
 using namespace std;
 
-void singlePoint(Parameters *parameters, Matter *matter) {
+void singlePoint(std::unique_ptr<Matter> matter) {
   printf("Energy:         %.10f\n", matter->getPotentialEnergy());
   std::cout << "(free) Forces:         \n" << matter->getForcesFree() << "\n";
   printf("Max atom force: %.10g\n", matter->maxForce());
 }
 
-void minimize(Parameters *parameters, Matter *matter, string confileout) {
+void minimize(std::unique_ptr<Matter> matter, string confileout) {
   matter->relax(false, false);
   if (confileout.length() > 0) {
     printf("saving relaxed structure to %s\n", confileout.c_str());
@@ -57,7 +58,7 @@ void commandLine(int argc, char **argv) {
   string confile;
   string optimizer("cg");
 
-  Parameters *parameters = new Parameters;
+  auto params = std::make_shared<Parameters>();
 
   while ((c = getopt(argc, argv, "chsmp:f:o:t:v")) != -1) {
     switch (c) {
@@ -75,7 +76,7 @@ void commandLine(int argc, char **argv) {
       potential = optarg;
       break;
     case 't':
-      parameters->distanceDifference = atof(optarg);
+      params->distanceDifference = atof(optarg);
       break;
     case 'o':
       optimizer = optarg;
@@ -125,15 +126,16 @@ void commandLine(int argc, char **argv) {
   }
 
   if (!cflag) {
-    parameters->potential = helper_functions::getPotentialType(potential);
+    params->potential = helper_functions::getPotentialType(potential);
   }
-  parameters->optMethod = optimizer;
-  parameters->optConvergedForce = optConvergedForce;
+  params->optMethod = optimizer;
+  params->optConvergedForce = optConvergedForce;
 
-  log_init(parameters, (char *)"client.log");
+  log_init(params.get(), (char *)"client.log");
 
-  Matter *matter = new Matter(parameters);
-  Matter *matter2 = new Matter(parameters);
+  auto pot = helper_functions::makePotential(params);
+  auto matter = std::make_unique<Matter>(pot, params);
+  auto matter2 = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
 
   string confileout;
@@ -144,20 +146,17 @@ void commandLine(int argc, char **argv) {
   }
 
   if (sflag) {
-    singlePoint(parameters, matter);
+    singlePoint(std::move(matter));
   } else if (mflag) {
-    minimize(parameters, matter, confileout);
+    minimize(std::move(matter), confileout);
   } else if (cflag) {
-    parameters->checkRotation = true;
-    if (matter->compare(matter2, true)) {
+    params->checkRotation = true;
+    if (matter->compare(*matter2, true)) {
       printf("structures match\n");
     } else {
       printf("structures do not match\n");
     }
   }
 
-  delete parameters;
-  delete matter;
-  delete matter2;
 #endif
 }

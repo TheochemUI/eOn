@@ -4,13 +4,6 @@
 
 using namespace helper_functions;
 
-MonteCarlo::MonteCarlo(Matter const *matterIn, Parameters *params) {
-  parameters = params;
-  matter = new Matter(parameters);
-  *matter = *matterIn;
-}
-
-MonteCarlo::~MonteCarlo() {}
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
 
   matter->matter2con("movie.con");
@@ -43,7 +36,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
       continue;
     }
     double r = randomDouble();
-    double kB = parameters->kB;
+    double kB = params->kB;
     double arg = -de / (kB * T);
     printf("arg: %f\n", arg);
     if (arg < -50.0) {

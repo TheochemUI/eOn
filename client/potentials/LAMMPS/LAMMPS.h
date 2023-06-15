@@ -9,7 +9,7 @@
 class lammps : public Potential {
 
 public:
-  lammps(Parameters *p);
+  lammps(std::shared_ptr<Parameters> p);
   ~lammps(void);
   void initialize(){};
   void cleanMemory(void);
@@ -22,7 +22,6 @@ private:
   void *LAMMPSObj;
   void makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                      const double *box);
-  Parameters *parameters;
   bool realunits;
 };
 #endif

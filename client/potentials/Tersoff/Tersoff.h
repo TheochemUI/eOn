@@ -29,13 +29,11 @@ void tersoff_(const long int *N, const double *R, double *F, double *U,
 
 /** Tersoff potential */
 class Tersoff : public Potential {
-private:
-  Parameters *parameters;
 
 public:
   // Functions
   // constructor
-  Tersoff(Parameters *p) : Potential(p), parameters{p} {}
+  Tersoff(std::shared_ptr<Parameters> p) : Potential(p) {}
 
   // To satisfy interface
   void initialize(void);

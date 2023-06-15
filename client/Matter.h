@@ -17,7 +17,7 @@ class BondBoost;
  * carefully. Avoid it and use Matter instead if possible. */
 
 struct MatterPrivateData {
-  Parameters *parameters;
+  std::shared_ptr<Parameters> parameters;
   long nAtoms;
   AtomMatrix positions;
   AtomMatrix velocities;
@@ -41,28 +41,32 @@ struct MatterPrivateData {
 
 class Matter : private MatterPrivateData {
 public:
-  Matter(Parameters *parameters); // the number of atoms shall be set later
-                                  // using resize()
+  Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
+      : potential{pot} {
+    initializeDataMembers(params);
+  } // the number of atoms shall be set later
+    // using resize()
   // TODO: This is a placeholder, it delegates to the standard constructor
-  Matter(std::shared_ptr<Parameters> parameters)
-      : Matter(parameters.get()) {
-  } // the number of atoms shall be set later using resize()
-  Matter(Parameters *parameters,
-         long int nAtoms);      // prepare the object for use with nAtoms atoms
+  // Matter(std::shared_ptr<Parameters> parameters)
+  //     : Matter(parameters.get()) {
+  // } // the number of atoms shall be set later using resize()
+  // Matter(Parameters *parameters,
+  //        long int nAtoms);      // prepare the object for use with nAtoms
+  //        atoms
   Matter(const Matter &matter); // create a copy of matter
   ~Matter();                    // Destructor
   const Matter &operator=(const Matter &matter); // copy the matter object
   // bool operator==(const Matter& matter); // true if differences in positions
   // are below differenceDistance bool operator!=(const Matter& matter); //
   // inverse of ==
-  bool compare(const Matter *matter, bool indistinguishable = false);
+  bool compare(const Matter& matter, bool indistinguishable = false);
 
   double
   distanceTo(const Matter &matter); // the distance to the given matter object
   double perAtomNorm(const Matter &matter); // the maximum distance between two
                                             // atoms in the Matter objects
-  void setPotential(std::unique_ptr<Potential> pot);        // set potential function to use
-  std::unique_ptr<Potential> getPotential();          // get potential function to use
+  void setPotential(std::shared_ptr<Potential> pot);        // set potential function to use
+  std::shared_ptr<Potential> getPotential();          // get potential function to use
   void resize(long int nAtoms);             // set or reset the number of atoms
   long int numberOfAtoms() const;           // return the number of atoms
   Matrix3d getCell() const;
@@ -171,7 +175,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  std::unique_ptr<Potential> potential; // pointer to function calculating the energy and forces
+  std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
@@ -186,7 +190,7 @@ private:
   char headerCon6[512];
 
   void computePotential();
-  void initializeDataMembers(Parameters *parameters);
+  void initializeDataMembers(std::shared_ptr<Parameters> parameters);
   void applyPeriodicBoundary();
   void applyPeriodicBoundary(double &component, int axis);
   void applyPeriodicBoundary(AtomMatrix &diff);

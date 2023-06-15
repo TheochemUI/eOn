@@ -36,9 +36,11 @@ public:
     STATUS_OPTIMIZER_ERROR                 // 19
   };
 
-  MinModeSaddleSearch(Matter *matterPassed, AtomMatrix modePassed,
-                      double reactantEnergy, Parameters *parametersPassed);
-  ~MinModeSaddleSearch();
+  MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
+                      AtomMatrix modePassed, double reactantEnergyPassed,
+                      std::shared_ptr<Parameters> parametersPassed,
+                      std::shared_ptr<Potential> potPassed);
+  ~MinModeSaddleSearch() = default;
   AtomMatrix getEigenvector(); // lowest eigenmode
   double getEigenvalue();      // estimate for the lowest eigenvalue
 
@@ -50,9 +52,8 @@ public:
 
 private:
   AtomMatrix mode;
-  Matter *matter;
-  Parameters *parameters;
-  LowestEigenmode *minModeMethod;
+  std::shared_ptr<Matter> matter;
+  std::shared_ptr<LowestEigenmode> minModeMethod; // shared with the objective func
   double reactantEnergy;
 };
 
