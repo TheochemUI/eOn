@@ -34,6 +34,7 @@ public:
   py::object hpfit;
   py::object gpmod;
   // Functions
+  void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
   // constructor and destructor
   PySurrogate(shared_ptr<Parameters> p) : Potential(p), fake1{0}, fake2{0} {
     py::module_ sys = py::module_::import("sys");
