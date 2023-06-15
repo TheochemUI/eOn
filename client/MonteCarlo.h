@@ -9,14 +9,15 @@
 class MonteCarlo {
 
 public:
-  MonteCarlo(Matter const *matter, Parameters *parameters);
-  ~MonteCarlo();
+  MonteCarlo(std::shared_ptr<Matter> const matterIn, std::shared_ptr<Parameters> paramsIn)
+      : matter{matterIn}, params{paramsIn} {}
+  ~MonteCarlo()=default;
 
   void run(int numSteps, double temperature, double stepSize);
 
 private:
-  Parameters *parameters;
-  Matter *matter;
+  std::shared_ptr<Matter> matter;
+  std::shared_ptr<Parameters> params;
 };
 
 #endif

@@ -49,9 +49,7 @@ bool Hessian::calculate(void) {
   }
 
   // Build the hessian
-  Matter matterTemp(parameters);
-  matterTemp = *matter;
-
+  Matter matterTemp(*matter);
   double dr = parameters->finiteDifference;
 
   AtomMatrix pos = matter->getPositions();

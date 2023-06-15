@@ -13,7 +13,7 @@
 #include <string>
 #include <unistd.h>
 
-AMS_IO::AMS_IO(Parameters *p) {
+AMS_IO::AMS_IO(std::shared_ptr<Parameters> p) : Potential(p) {
   engine = p->engine.c_str();
   forcefield = p->forcefield.c_str();
   model = p->model.c_str();

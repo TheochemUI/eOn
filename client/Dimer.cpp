@@ -3,10 +3,9 @@
 
 using namespace helper_functions;
 
-Dimer::Dimer(Matter *matter, Parameters *params) {
-  parameters = params;
-  matterCenter = new Matter(parameters);
-  matterDimer = new Matter(parameters);
+Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params, std::shared_ptr<Potential> pot): LowestEigenmode(pot, params) {
+  matterCenter = std::make_shared<Matter>(pot, params);
+  matterDimer = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
   *matterDimer = *matter;
   nAtoms = matter->numberOfAtoms();
@@ -18,13 +17,8 @@ Dimer::Dimer(Matter *matter, Parameters *params) {
   totalForceCalls = 0;
 }
 
-Dimer::~Dimer() {
-  delete matterCenter;
-  delete matterDimer;
-}
-
 // was estimateLowestEigenmode. rename to compute
-void Dimer::compute(Matter *matter, AtomMatrix initialDirection) {
+void Dimer::compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection) {
   long rotations = 0;
   long forceCallsCenter;
   long forceCallsDimer;
@@ -68,20 +62,20 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection) {
     assert(std::isnormal(torque));
 
     // convergence scheme
-    if ((torque > parameters->dimerTorqueMax &&
-         rotations >= parameters->dimerRotationsMax) ||
-        (torque < parameters->dimerTorqueMax &&
-         torque >= parameters->dimerTorqueMin &&
-         rotations >= parameters->dimerRotationsMin) ||
-        (torque < parameters->dimerTorqueMin)) {
+    if ((torque > params->dimerTorqueMax &&
+         rotations >= params->dimerRotationsMax) ||
+        (torque < params->dimerTorqueMax &&
+         torque >= params->dimerTorqueMin &&
+         rotations >= params->dimerRotationsMin) ||
+        (torque < params->dimerTorqueMin)) {
       /*            cout << "torque: "<<torque<<endl;
-                  cout << "parameters->dimerTorqueMax:
-         "<<parameters->dimerTorqueMax<<endl; cout <<
-         "parameters->dimerTorqueMin: "<<parameters->dimerTorqueMin<<endl; cout
+                  cout << "params->dimerTorqueMax:
+         "<<params->dimerTorqueMax<<endl; cout <<
+         "params->dimerTorqueMin: "<<params->dimerTorqueMin<<endl; cout
          << "rotations: "<<rotations<<endl; cout <<
-         "parameters->dimerRotationsMax: "<<parameters->dimerRotationsMax<<endl;
-                  cout << "parameters->dimerRotationsMin:
-         "<<parameters->dimerRotationsMin<<endl; */
+         "params->dimerRotationsMax: "<<params->dimerRotationsMax<<endl;
+                  cout << "params->dimerRotationsMin:
+         "<<params->dimerRotationsMin<<endl; */
       doneRotating = true;
     }
 
@@ -89,7 +83,7 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection) {
     rotationalForce1 =
         (rotationalForce.array() * rotationalPlane.array()).sum();
 
-    rotate(parameters->dimerRotationAngle);
+    rotate(params->dimerRotationAngle);
 
     if (!doneRotating) {
       // rotated dimer
@@ -99,12 +93,12 @@ void Dimer::compute(Matter *matter, AtomMatrix initialDirection) {
           (rotationalForce.array() * rotationalPlane.array()).sum();
 
       rotationalForceChange = ((rotationalForce1 - rotationalForce2) /
-                               parameters->dimerRotationAngle);
+                               params->dimerRotationAngle);
 
       forceDimer = (rotationalForce1 + rotationalForce2) / 2.0;
 
       rotationAngle = (atan(2.0 * forceDimer / rotationalForceChange) / 2.0 -
-                       parameters->dimerRotationAngle / 2.0);
+                       params->dimerRotationAngle / 2.0);
 
       //            std::cout << "Rotation Angle: " <<rotationAngle <<endl;
       //            //debug
@@ -155,17 +149,17 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   posCenter = matterCenter->getPositions();
 
   // displace to get the dimer configuration A
-  posDimer = posCenter + direction * parameters->finiteDifference;
+  posDimer = posCenter + direction * params->finiteDifference;
 
   // Melander, Laasonen, Jonsson, JCTC, 11(3), 1055–1062, 2015
   // http://doi.org/10.1021/ct501155k
-  if (parameters->dimerRemoveRotation) {
+  if (params->dimerRemoveRotation) {
     matterDimer->setPositions(posDimer);
     rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
     direction = posDimer - posCenter;
     direction.normalize();
-    posDimer = posCenter + direction * parameters->finiteDifference;
+    posDimer = posCenter + direction * params->finiteDifference;
   }
 
   // obtain the force for the dimer configuration
@@ -184,11 +178,11 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   forceB = makeOrthogonal(forceB, direction);
 
   // determine difference in force orthogonal to dimer
-  rotationalForce = (forceA - forceB) / (2.0 * parameters->finiteDifference);
+  rotationalForce = (forceA - forceB) / (2.0 * params->finiteDifference);
 
   // curvature along the dimer
   return (projectedForceB - projectedForceA) /
-         (2.0 * parameters->finiteDifference);
+         (2.0 * params->finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(AtomMatrix rotationalForce,
