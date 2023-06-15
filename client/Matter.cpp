@@ -296,14 +296,9 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
-VectorXi Matter::getAtomicNrsFree() const {
-  std::vector<int> freenrs;
-  for (long idx{0}; idx < atomicNrs.size(); idx++) {
-    if (!isFixed(idx)) {
-      freenrs.push_back(idx);
-    }
-  }
-  return Eigen::Map<Eigen::VectorXi>(freenrs.data(), freenrs.size());;
+VectorXi Matter::getAtomicNrsFree() const
+{
+    return this->atomicNrs.array() * getFreeV().cast<int>().array();
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
