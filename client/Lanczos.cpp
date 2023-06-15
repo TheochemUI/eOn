@@ -5,23 +5,24 @@
 
 #include "Lanczos.h"
 #include "Log.h"
+#include "Potential.h"
 #include <cmath>
 
-Lanczos::Lanczos(Matter *matter, Parameters *params) {
-  parameters = params;
+Lanczos::Lanczos(std::shared_ptr<Matter> matter,
+                 std::shared_ptr<Parameters> params,
+                 std::shared_ptr<Potential> pot)
+    : LowestEigenmode(pot, params) {
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
 }
 
-Lanczos::~Lanczos() {}
-
 // The 1 character variables in this method match the variables in the
 // equations in the paper given at the top of this file.
-void Lanczos::compute(Matter *matter, AtomMatrix direction) {
+void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   int size = 3 * matter->numberOfFreeAtoms();
-  MatrixXd T(size, parameters->lanczosMaxIterations),
-      Q(size, parameters->lanczosMaxIterations);
+  MatrixXd T(size, params->lanczosMaxIterations),
+      Q(size, params->lanczosMaxIterations);
   T.setZero();
   VectorXd u(size), r(size);
 
@@ -37,11 +38,12 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction) {
 
   double alpha, beta = r.norm();
   double ew = 0, ewOld = 0, ewAbsRelErr;
-  double dr = parameters->finiteDifference;
+  double dr = params->finiteDifference;
   VectorXd evEst, evT, evOldEst;
 
   VectorXd force1, force2;
-  Matter *tmpMatter = new Matter(parameters);
+  auto pot = helper_functions::makePotential(params->potential, params);
+  auto tmpMatter =  std::make_unique<Matter>(pot, params);
   *tmpMatter = *matter;
   force1 = tmpMatter->getForcesFreeV();
 
@@ -97,9 +99,9 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction) {
       evOldEst = evEst;
       log_file("[ILanczos] %9s %9s %10s %14s %9.4f %10.6f %7.3f %5i\n", "----",
                "----", "----", "----", ew, ewAbsRelErr, statsAngle, i);
-      if (ewAbsRelErr < parameters->lanczosTolerance) {
+      if (ewAbsRelErr < params->lanczosTolerance) {
         log_file("[ILanczos] Tolerence reached: %f\n",
-                 parameters->lanczosTolerance);
+                 params->lanczosTolerance);
         break;
       }
     } else {
@@ -107,21 +109,21 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction) {
       ewOld = ew;
       evEst = Q.col(0);
       evOldEst = Q.col(0);
-      if (lowestEw != 0.0 && parameters->lanczosQuitEarly) {
+      if (lowestEw != 0.0 && params->lanczosQuitEarly) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
         ewAbsRelErr = fabs((Cnew - Cprev) / Cprev);
-        if (ewAbsRelErr <= parameters->lanczosTolerance) {
+        if (ewAbsRelErr <= params->lanczosTolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
           log_file("[ILanczos] Tolerence reached: %f\n",
-                   parameters->lanczosTolerance);
+                   params->lanczosTolerance);
           break;
         }
       }
     }
 
-    if (i >= parameters->lanczosMaxIterations - 1) {
+    if (i >= params->lanczosMaxIterations - 1) {
       log_file("[ILanczos] Max iterations\n");
       break;
     }
@@ -139,7 +141,6 @@ void Lanczos::compute(Matter *matter, AtomMatrix direction) {
     }
   }
 
-  delete tmpMatter;
 }
 
 double Lanczos::getEigenvalue() { return lowestEw; }

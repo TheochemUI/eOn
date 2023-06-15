@@ -32,7 +32,7 @@ class EDIP : public Potential {
 public:
   // Functions
   // constructor
-  EDIP(Parameters *params) : Potential(params){};
+  EDIP(std::shared_ptr<Parameters> params) : Potential(params){};
 
   // To satisfy interface
   void cleanMemory(void);

@@ -69,7 +69,7 @@ void EffectiveMediumTheory::force(long N, const double *R, const int *atomicNrs,
 
     AtomsObj->SetAtomicNumbers(atomicNrsTemp);
 
-    if (parameters->EMTRasmussen) {
+    if (params->EMTRasmussen) {
       EMTParameterObj = new EMTRasmussenParameterProvider();
       EMTObj = new EMT(EMTParameterObj);
     } else

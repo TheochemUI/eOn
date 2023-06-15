@@ -242,10 +242,10 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   return R;
 }
 
-bool helper_functions::rotationMatch(const Matter *m1, const Matter *m2,
+bool helper_functions::rotationMatch(const Matter& m1, const Matter& m2,
                                      const double max_diff) {
-  AtomMatrix r1 = m1->getPositions();
-  AtomMatrix r2 = m2->getPositions();
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
 
   // Align centroids
   Eigen::VectorXd c1(3);
@@ -284,7 +284,7 @@ bool helper_functions::rotationMatch(const Matter *m1, const Matter *m2,
   return true;
 }
 
-void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2) {
+void helper_functions::rotationRemove(const AtomMatrix r1_passed, std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = r1_passed;
   AtomMatrix r2 = m2->getPositions();
 
@@ -327,20 +327,20 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, Matter *m2) {
   return;
 }
 
-void helper_functions::rotationRemove(const Matter *m1, Matter *m2) {
+void helper_functions::rotationRemove(const std::shared_ptr<Matter> m1, std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = m1->getPositions();
   rotationRemove(r1, m2);
   return;
 }
 
-void helper_functions::translationRemove(Matter *m1,
+void helper_functions::translationRemove(Matter& m1,
                                          const AtomMatrix r2_passed) {
-  AtomMatrix r1 = m1->getPositions();
+  AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = r2_passed;
 
   // net displacement
   Eigen::VectorXd disp(3);
-  AtomMatrix r12 = m1->pbc(r2 - r1);
+  AtomMatrix r12 = m1.pbc(r2 - r1);
 
   disp[0] = r12.col(0).sum();
   disp[1] = r12.col(1).sum();
@@ -353,12 +353,12 @@ void helper_functions::translationRemove(Matter *m1,
     r1(i, 2) += disp[2];
   }
 
-  m1->setPositions(r1);
+  m1.setPositions(r1);
   return;
 }
 
-void helper_functions::translationRemove(Matter *m1, const Matter *m2) {
-  AtomMatrix r2 = m2->getPositions();
+void helper_functions::translationRemove(Matter& m1, const Matter& m2) {
+  AtomMatrix r2 = m2.getPositions();
   translationRemove(m1, r2);
   return;
 }
@@ -557,7 +557,7 @@ AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
   return mode;
 }
 
-void helper_functions::saveMode(FILE *modeFile, Matter *matter,
+void helper_functions::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
                                 AtomMatrix mode) {
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
@@ -617,11 +617,11 @@ struct by_atom {
 
 double roundUp(double x, double f) { return ceil(x / f); }
 
-bool helper_functions::identical(const Matter *m1, const Matter *m2,
+bool helper_functions::identical(const Matter& m1, const Matter& m2,
                                  const double distanceDifference) {
 
-  AtomMatrix r1 = m1->getPositions();
-  AtomMatrix r2 = m2->getPositions();
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
 
   std::set<int> matched;
   double tolerance = distanceDifference;
@@ -632,8 +632,8 @@ bool helper_functions::identical(const Matter *m1, const Matter *m2,
   int N = r1.rows();
 
   for (int i = 0; i <= N; i++) {
-    if (fabs((m1->pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
-        m1->getAtomicNr(i) == m2->getAtomicNr(i)) {
+    if (fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
+        m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
       matched.insert(i);
     }
   }
@@ -647,8 +647,8 @@ bool helper_functions::identical(const Matter *m1, const Matter *m2,
       if (matched.count(j) == 1)
         break;
 
-      if (fabs((m1->pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
-          m1->getAtomicNr(j) == m2->getAtomicNr(k)) {
+      if (fabs((m1.pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
+          m1.getAtomicNr(j) == m2.getAtomicNr(k)) {
         matched.insert(j);
       }
     }
@@ -663,11 +663,11 @@ bool helper_functions::identical(const Matter *m1, const Matter *m2,
   }
 }
 
-bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
+bool helper_functions::sortedR(const Matter& m1, const Matter& m2,
                                const double distanceDifference) {
   cout << "into sortedR\n";
-  AtomMatrix r1 = m1->getPositions();
-  AtomMatrix r2 = m2->getPositions();
+  AtomMatrix r1 = m1.getPositions();
+  AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
   int matches = 0;
   //   std::set<atom,by_atom> rdf1[r1.rows()];
@@ -683,8 +683,8 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
       if (j2 == i2)
         continue;
       atom a2;
-      a2.r = m2->distance(i2, j2);
-      a2.z = m2->getAtomicNr(j2);
+      a2.r = m2.distance(i2, j2);
+      a2.z = m2.getAtomicNr(j2);
       rdf2[i2].insert(a2);
       rdf2[j2].insert(a2);
     }
@@ -702,8 +702,8 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
       if (j1 == i1)
         continue;
       atom a;
-      a.r = m1->distance(i1, j1);
-      a.z = m1->getAtomicNr(j1);
+      a.r = m1.distance(i1, j1);
+      a.z = m1.getAtomicNr(j1);
       rdf1[i1].insert(a);
       rdf1[j1].insert(a);
     }
@@ -744,7 +744,7 @@ bool helper_functions::sortedR(const Matter *m1, const Matter *m2,
   }
 }
 
-void helper_functions::pushApart(Matter *m1, double minDistance) {
+void helper_functions::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
   if (minDistance <= 0)
     return;
 

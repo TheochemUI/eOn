@@ -16,15 +16,15 @@ std::vector<std::string> PrefactorJob::run(void) {
   string saddleFilename("saddle.con");
   string productFilename("product.con");
 
-  Matter *reactant = new Matter(params);
-  Matter *saddle = new Matter(params);
-  Matter *product = new Matter(params);
+  auto reactant = std::make_unique<Matter>(pot, params);
+  auto saddle = std::make_unique<Matter>(pot, params);
+  auto product = std::make_unique<Matter>(pot, params);
 
   reactant->con2matter("reactant.con");
   saddle->con2matter("saddle.con");
   product->con2matter("product.con");
   double pref1, pref2;
-  Prefactor::getPrefactors(params.get(), reactant, saddle, product, pref1,
+  Prefactor::getPrefactors(params.get(), reactant.get(), saddle.get(), product.get(), pref1,
                            pref2);
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
@@ -47,28 +47,28 @@ std::vector<std::string> PrefactorJob::run(void) {
     product->con2matter(matterFilename);
 
     // account for all free atoms
-    atoms = Prefactor::allFreeAtoms(reactant);
+    atoms = Prefactor::allFreeAtoms(reactant.get());
   } else {
     reactant->con2matter(reactantFilename);
     saddle->con2matter(saddleFilename);
     product->con2matter(productFilename);
 
     // determine which atoms moved in the process
-    atoms = Prefactor::movedAtoms(params.get(), reactant, saddle, product);
+    atoms = Prefactor::movedAtoms(params.get(), reactant.get(), saddle.get(), product.get());
   }
   assert(3 * atoms.rows() > 0);
 
   // calculate frequencies
   if (params->prefactorConfiguration == PrefactorJob::PREFACTOR_REACTANT) {
-    Hessian hessian(params.get(), reactant);
-    freqs = hessian.getFreqs(reactant, atoms);
+    Hessian hessian(params.get(), reactant.get());
+    freqs = hessian.getFreqs(reactant.get(), atoms);
   } else if (params->prefactorConfiguration == PrefactorJob::PREFACTOR_SADDLE) {
-    Hessian hessian(params.get(), saddle);
-    freqs = hessian.getFreqs(saddle, atoms);
+    Hessian hessian(params.get(), saddle.get());
+    freqs = hessian.getFreqs(saddle.get(), atoms);
   } else if (params->prefactorConfiguration ==
              PrefactorJob::PREFACTOR_PRODUCT) {
-    Hessian hessian(params.get(), product);
-    freqs = hessian.getFreqs(product, atoms);
+    Hessian hessian(params.get(), product.get());
+    freqs = hessian.getFreqs(product.get(), atoms);
   }
 
   bool failed = freqs.size() != 3 * atoms.rows();
@@ -97,10 +97,6 @@ std::vector<std::string> PrefactorJob::run(void) {
       }
     }
   }
-
-  delete reactant;
-  delete product;
-  delete saddle;
 
   return returnFiles;
 }

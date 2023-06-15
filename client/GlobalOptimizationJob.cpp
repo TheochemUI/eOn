@@ -14,8 +14,8 @@ std::vector<std::string> GlobalOptimizationJob::run(void) {
       helper_functions::getRelevantFile(params->conFilename);
   std::vector<std::string> returnFiles;
   // returnFiles.push_back(reactant_output);
-  Matter *matter_cur = new Matter(params);
-  Matter *matter_hop = new Matter(params);
+  Matter *matter_cur = new Matter(pot, params);
+  Matter *matter_hop = new Matter(pot, params);
   matter_cur->con2matter(reactant_passed);
   bool converged;
   long nstep = params->globalOptimizationSteps;

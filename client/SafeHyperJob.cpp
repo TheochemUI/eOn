@@ -10,12 +10,13 @@
 #include <vector>
 
 std::vector<std::string> SafeHyperJob::run(void) {
-  current = new Matter(params);
-  reactant = new Matter(params);
-  saddle = new Matter(params);
-  product = new Matter(params);
-  final = new Matter(params);
-  final_tmp = new Matter(params);
+  // TODO: Rework
+  current = new Matter(pot, params);
+  reactant = new Matter(pot, params);
+  saddle = new Matter(pot, params);
+  product = new Matter(pot, params);
+  final = new Matter(pot, params);
+  final_tmp = new Matter(pot, params);
 
   minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
   time = 0.0;
@@ -80,7 +81,7 @@ int SafeHyperJob::dynamics() {
   mdBufferLength = long(StateCheckInterval / RecordInterval);
   Matter *mdBuffer[mdBufferLength];
   for (long i = 0; i < mdBufferLength; i++) {
-    mdBuffer[i] = new Matter(params);
+    mdBuffer[i] = new Matter(pot, params);
   }
   timeBuffer = new double[mdBufferLength];
   biasBuffer = new double[mdBufferLength];
@@ -344,7 +345,7 @@ void SafeHyperJob::dephase() {
     Matter *dephaseBuffer[dephaseBufferLength];
 
     for (long i = 0; i < dephaseBufferLength; i++) {
-      dephaseBuffer[i] = new Matter(params);
+      dephaseBuffer[i] = new Matter(pot, params);
       dephaseDynamics.oneStep();
       *dephaseBuffer[i] = *current;
     }
@@ -386,10 +387,9 @@ void SafeHyperJob::dephase() {
 }
 
 bool SafeHyperJob::checkState(Matter *current, Matter *reactant) {
-  Matter tmp(params);
-  tmp = *current;
+  Matter tmp(*current);
   tmp.relax(true);
-  if (tmp.compare(reactant)) {
+  if (tmp.compare(*reactant)) {
     return false;
   }
   return true;

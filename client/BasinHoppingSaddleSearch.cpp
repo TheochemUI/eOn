@@ -8,36 +8,18 @@
 #include "NudgedElasticBand.h"
 #include <stdio.h>
 
-BasinHoppingSaddleSearch::BasinHoppingSaddleSearch(
-    Matter *reactantPassed, Matter *displacementPassed,
-    Parameters *parametersPassed) {
-  reactant = new Matter(parameters);
-  *reactant = *reactantPassed;
-  parameters = parametersPassed;
-
-  saddle = displacementPassed;
-
-  eigenvector.resize(reactant->numberOfAtoms(), 3);
-  eigenvector.setZero();
-}
-
-BasinHoppingSaddleSearch::~BasinHoppingSaddleSearch() {
-  delete reactant;
-  delete product;
-}
-
 int BasinHoppingSaddleSearch::run(void) {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
-  product = new Matter(parameters);
+  product = std::make_shared<Matter>(pot, params);
   *product = *saddle;
-  // accept or reject based on boltzman exp(-de/(kB*parameters->temperature))
+  // accept or reject based on boltzman exp(-de/(kB*params->temperature))
   double eproduct, ereactant, de;
   eproduct = product->getPotentialEnergy();
   ereactant = reactant->getPotentialEnergy();
   de = eproduct - ereactant;
-  double kB = parameters->kB;
-  double Temperature = parameters->temperature;
+  double kB = params->kB;
+  double Temperature = params->temperature;
   double arg = -de / (kB * Temperature);
   double p = exp(arg);
   double r = helper_functions::random();
@@ -47,7 +29,7 @@ int BasinHoppingSaddleSearch::run(void) {
     }
   }
   // NEB reactant to minimized "saddle"
-  NudgedElasticBand neb(reactant, product, parameters);
+  NudgedElasticBand neb(reactant, product, params, pot);
   neb.image[0]->matter2con("neb_initial_band.con", false);
   for (int j = 1; j < neb.images; j++) {
     neb.image[j]->matter2con("neb_initial_band", true);
@@ -72,7 +54,7 @@ int BasinHoppingSaddleSearch::run(void) {
   AtomMatrix r_3 = neb.image[HighestImage + 1]->getPositions();
   AtomMatrix direction = (r_3 - r_1) / 2;
   MinModeSaddleSearch dim(neb.image[HighestImage], direction.normalized(),
-                          ereactant, parameters);
+                          ereactant, params, pot);
   dim.run();
   *saddle = *neb.image[HighestImage];
   eigenvalue = dim.getEigenvalue();

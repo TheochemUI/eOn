@@ -22,15 +22,15 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   disp_count = 0; // count of displacement moves
   int consecutive_rejected_trials = 0;
   double totalAccept = 0.0;
-  Matter *minTrial = new Matter(params);
-  Matter *swapTrial = new Matter(params);
+  Matter *minTrial = new Matter(pot, params);
+  Matter *swapTrial = new Matter(pot, params);
 
   string conFilename = getRelevantFile(params->conFilename);
   current->con2matter(conFilename);
 
   // Sanity Check
   vector<long> Elements;
-  Elements = getElements(current);
+  Elements = getElements(current.get());
   if (params->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
     char msg[] = "error: [Basin Hopping] swap move probability must be zero if "
                  "there is only one element type\n";
@@ -64,7 +64,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   double currentEnergy = current->getPotentialEnergy();
   double minimumEnergy = currentEnergy;
 
-  Matter *minimumEnergyStructure = new Matter(params);
+  auto minimumEnergyStructure = std::make_shared<Matter>(pot, params);
   *minimumEnergyStructure = *current;
   int nsteps = params->basinHoppingSteps + params->basinHoppingQuenchingSteps;
   long totalfc;
@@ -152,7 +152,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
           // it is new, otherwise it is old
           if (fabs(currentEnergy - uniqueEnergies[i]) <
               params->energyDifference) {
-            if (current->compare(uniqueStructures[i],
+            if (current->compare(*uniqueStructures[i],
                                  params->indistinguishableAtoms) == true) {
               newStructure = false;
             }
@@ -161,7 +161,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
 
         if (newStructure) {
           uniqueEnergies.push_back(currentEnergy);
-          Matter *currentCopy = new Matter(params);
+          auto currentCopy = std::make_shared<Matter>(pot, params);
           *currentCopy = *current;
           uniqueStructures.push_back(currentCopy);
 
@@ -282,7 +282,6 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   returnFiles.push_back(bhFilename);
 
   delete minTrial;
-  delete minimumEnergyStructure;
   delete swapTrial;
   return returnFiles;
 }
@@ -293,7 +292,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   AtomMatrix displacement;
   displacement.resize(trial->numberOfAtoms(), 3);
   displacement.setZero();
-  VectorXd distvec = calculateDistanceFromCenter(current);
+  VectorXd distvec = calculateDistanceFromCenter(current.get());
   int num = trial->numberOfAtoms();
   int m = 0;
   if (params->basinHoppingSingleAtomDisplace) {

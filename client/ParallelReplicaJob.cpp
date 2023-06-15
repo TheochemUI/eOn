@@ -12,7 +12,7 @@ static const char LOG_PREFIX[] = "[ParallelReplica]";
 
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
-  reactant = new Matter(params);
+  reactant = new Matter(pot, params);
   reactant->con2matter(helper_functions::getRelevantFile(params->conFilename));
 
   // minimize the initial reactant
@@ -21,7 +21,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   reactant->matter2con("reactant.con");
 
   // trajectory is the matter object for the current MD configuration
-  Matter *trajectory = new Matter(params);
+  Matter *trajectory = new Matter(pot, params);
   *trajectory = *reactant;
   Dynamics dynamics(trajectory, params.get());
   BondBoost bondBoost(trajectory, params.get());
@@ -42,7 +42,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   std::vector<Matter *> MDSnapshots;
   std::vector<double> MDTimes;
   double transitionTime = 0;
-  Matter transitionStructure(params);
+  Matter transitionStructure(pot, params);
   int refineForceCalls = 0;
 
   // Main MD loop
@@ -87,7 +87,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
     // Snapshots of the trajectory used for the refinement
     if (step % recordInterval == 0 && params->parrepRefineTransition) {
-      Matter *tmp = new Matter(params);
+      Matter *tmp = new Matter(pot, params);
       *tmp = *trajectory;
       MDSnapshots.push_back(tmp);
       MDTimes.push_back(simulationTime);
@@ -98,12 +98,12 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
     if (step % stateCheckInterval == 0 || step == params->mdSteps) {
       log("%s Checking for transition\n", LOG_PREFIX);
 
-      Matter min(params);
+      Matter min(pot, params);
       min = *trajectory;
       min.relax();
 
       // only check for a transition if one has yet to occur
-      if (!min.compare(reactant) && transitionTime == 0) {
+      if (!min.compare(*reactant) && transitionTime == 0) {
         log("%s Transition occurred\n", LOG_PREFIX);
 
         // perform the binary search for the transition structure
@@ -160,7 +160,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   log("%s Decorrelation complete\n", LOG_PREFIX);
 
   // minimize the final structure
-  Matter product(params);
+  Matter product(pot, params);
   product = *trajectory;
   product.relax();
   product.matter2con("product.con");
@@ -211,7 +211,7 @@ void ParallelReplicaJob::dephase(Matter *trajectory) {
       int(floor(params->parrepDephaseTime / params->mdTimeStep + 0.5));
   log("%s Dephasing: %i steps\n", LOG_PREFIX, dephaseSteps);
 
-  Matter initial(params);
+  Matter initial(pot, params);
   initial = *trajectory;
 
   while (true) {
@@ -225,11 +225,11 @@ void ParallelReplicaJob::dephase(Matter *trajectory) {
     }
 
     // Check to see if a transition occured
-    Matter min(params);
+    Matter min(pot, params);
     min = *trajectory;
     min.relax();
 
-    if (min.compare(reactant)) {
+    if (min.compare(*reactant)) {
       log("%s Dephasing successful\n", LOG_PREFIX);
       break;
     } else {
@@ -251,7 +251,7 @@ int ParallelReplicaJob::refineTransition(std::vector<Matter *> MDSnapshots,
     snapshot->relax(true);
 
     if (fake == false) {
-      midTest = snapshot->compare(reactant);
+      midTest = snapshot->compare(*reactant);
     } else {
       // if we are faking the refinement just generate a random answer
       // for the comparison test
