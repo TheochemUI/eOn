@@ -235,7 +235,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   // }
 #ifdef WITH_PYSURROGATE
   case PotType::PYSURROGATE: {
-    return (std::make_unique<PySurrogate>(params));
+    return (std::make_shared<PySurrogate>(params));
     break;
   }
 #endif
