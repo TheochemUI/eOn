@@ -21,7 +21,6 @@ private:
 
   // variables
   std::vector<std::string> returnFiles;
-  Parameters *parameters;
   size_t fCallsNEB;
 };
 

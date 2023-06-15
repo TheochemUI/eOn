@@ -19,13 +19,10 @@ extern "C" void c_force_eam(int *natms, int ndim, double *box, double *R,
 
 class CuH2 : public Potential {
 
-private:
-  Parameters *parameters;
-
 public:
   // Functions
   // constructor and destructor
-  CuH2(Parameters *p) : Potential(p), parameters{p} {}
+  CuH2(std::shared_ptr<Parameters> p) : Potential(p) {}
 
   // To satisfy interface
   void cleanMemory(void);

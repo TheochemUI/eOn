@@ -1,4 +1,3 @@
-
 #include "TestJob.h"
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
@@ -6,13 +5,6 @@
 #include "Potential.h"
 
 #include <stdlib.h>
-
-TestJob::TestJob(Parameters *params) {
-  tolerance = 0.01;
-  parameters = params;
-}
-
-TestJob::~TestJob() {}
 
 std::vector<std::string> TestJob::run(void) {
   checkPotentials();
@@ -30,26 +22,18 @@ void TestJob::checkFullSearch(void) {
   bool ok = 1;
   double diffM1, diffM2, diffSP;
 
-  Matter *initial;
-  Matter *saddle;
-  //    Matter *displacement;
-  Matter *min1;
-  Matter *min2;
-  Matter *matterTemp;
-  //    SaddleSearch *saddleSearch;
-
   string reactantFilename("reactant_test.con");
   string displacementFilename("displacement_test.con");
   string modeFilename("mode_test.dat");
 
-  parameters->potential = "emt";
+  params->potential = "emt";
 
-  initial = new Matter(parameters);
-  //    displacement = new Matter(parameters);
-  saddle = new Matter(parameters);
-  min1 = new Matter(parameters);
-  min2 = new Matter(parameters);
-  matterTemp = new Matter(parameters);
+  auto initial = std::make_unique<Matter>(pot, params);
+  //    displacement = std::make_unique<Matter>(pot, params);
+  auto saddle = std::make_unique<Matter>(pot, params);
+  auto min1 = std::make_unique<Matter>(pot, params);
+  auto min2 = std::make_unique<Matter>(pot, params);
+  auto matterTemp = std::make_unique<Matter>(pot, params);
 
   saddle->con2matter(displacementFilename);
   initial->con2matter(reactantFilename);
@@ -57,7 +41,7 @@ void TestJob::checkFullSearch(void) {
 
   printf("\n---Output for saddle point search start---\n");
   //    saddleSearch = new SaddleSearch();
-  //    saddleSearch->initialize(initial, saddle, parameters);
+  //    saddleSearch->initialize(initial, saddle, params);
   //    saddleSearch->loadMode(mode_passed);
   //    status = saddleSearch->locate();
   printf("---Output for saddle point search end---\n\n");
@@ -72,14 +56,14 @@ void TestJob::checkFullSearch(void) {
   // XXX: the distance displaced from the saddle should be a parameter
   //    displacedPos = posSaddle - saddleSearch->getEigenMode() * 0.2;
   min1->setPositions(displacedPos);
-  //   ConjugateGradients cgMin1(min1, parameters);
+  //   ConjugateGradients cgMin1(min1, params);
   //  cgMin1.fullRelax();
   //  fCallsMin += cgMin1.totalForceCalls;
 
   *min2 = *saddle;
   //    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
   //    min2->setPositions(displacedPos);
-  //    ConjugateGradients cgMin2(min2, parameters);
+  //    ConjugateGradients cgMin2(min2, params);
   //    cgMin2.fullRelax();
   //  fCallsMin += cgMin2.totalForceCalls;
 
@@ -160,11 +144,11 @@ void TestJob::checkFullSearch(void) {
 void TestJob::checkMode(void){
 
     string reactant_passed("reactant_test.con");
-    parameters->potential = 1;  // always LJ in test
-    Matter *saddle = new Matter(parameters);
+    params->potential = 1;  // always LJ in test
+    Matter *saddle = std::make_unique<Matter>(pot, params);
     saddle->con2matter(reactant_passed);
 
-    LowestEigenmode* lowestEigenmode = new Dimer(saddle, parameters);
+    LowestEigenmode* lowestEigenmode = new Dimer(saddle, params);
 
 }
 */
@@ -287,8 +271,8 @@ void TestJob::checkPotentials(void) {
 
 double TestJob::getEnergyDiff(string pot, double refEnergy) {
   string posFilename("pos_test.con");
-  parameters->potential = pot;
-  Matter *pos = new Matter(parameters);
+  params->potential = pot;
+  Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);
   //    printf("Energy: %f\n", pos->getPotentialEnergy());
   return pos->getPotentialEnergy() - refEnergy;
@@ -296,8 +280,8 @@ double TestJob::getEnergyDiff(string pot, double refEnergy) {
 
 double TestJob::getForceDiff(string pot, double refForce) {
   string posFilename("pos_test.con");
-  parameters->potential = pot;
-  Matter *pos = new Matter(parameters);
+  params->potential = pot;
+  Matter *pos = std::make_unique<Matter>(pot, params);
   pos->con2matter(posFilename);
   //    printf("Force: %f\n", pos->maxForce());
   return pos->maxForce() - refForce;

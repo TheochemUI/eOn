@@ -14,7 +14,7 @@
 
 namespace bp = boost::process;
 
-AMS::AMS(Parameters *p) {
+AMS::AMS(std::shared_ptr<Parameters> p) : Potential(p) {
   // Get the values from the configuration
   // All the parameter values are converted to lowercase in generate_run
   this->engine = p->engine;
@@ -462,7 +462,7 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
   return;
 }
 
-std::string AMS::generate_run(Parameters *p) {
+std::string AMS::generate_run(std::shared_ptr<Parameters> p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence

@@ -36,12 +36,11 @@ private:
   EMTDefaultParameterProvider *EMTParameterObj;
   EMT *EMTObj;
   SuperCell *SuperCellObj;
-  Parameters *parameters;
 
 public:
   // Functions
   // constructor and destructor
-  EffectiveMediumTheory(Parameters *p) : Potential(p), parameters{p} {
+  EffectiveMediumTheory(std::shared_ptr<Parameters> p) : Potential(p) {
     // dummy variables
     AtomsObj = 0;
     EMTObj = 0;
