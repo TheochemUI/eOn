@@ -1,4 +1,5 @@
 #include "GPSurrogateJob.h"
+#include "NudgedElasticBandJob.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
@@ -30,10 +31,17 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
   // Setup a GPR Potential
   auto pypot = std::make_shared<PySurrogate>(pyparams);
-  pypot->gpmod.attr("optimize")(features, targets);
+  pypot->train_optimize(features, targets);
+  // Make a new matter object
+  // auto m1 = Matter(pypot, pyparams);
+  // m1.con2matter(reactantFilename);
+  // std::cout<<m1.getPotentialEnergy();
+  // Start an NEB run
+  auto nebjob = NudgedElasticBandJob(pypot, pyparams);
+  nebjob.run();
   // py::print(pypot->gpmod.attr("predict")(features));
-  initial->setPotential(pypot);
-  std::cout<<(initial->getForces());
+  // initial->setPotential(pypot);
+  // std::cout<<(initial->getForces());
   // auto [energy, forces] = pot->get_ef(initial->getPositions(), initial->getAtomicNrs(), initial->getCell());
   // auto execString =
   //   fmt::format("Energy:\n{energy:}\nForces:\n{forces:}",
