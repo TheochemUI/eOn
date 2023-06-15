@@ -66,6 +66,16 @@ namespace helper_functions::surrogate {
     // std::cout<<features;
     return features;
   }
+  Eigen::MatrixXd get_features(const std::vector<std::shared_ptr<Matter>>& matobjs){
+    // Calculate dimensions
+    Eigen::MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms()*3);
+    // fmt::print("\nrows: {}, cols:{}\n", matobjs.size(), matobjs.front().numberOfFreeAtoms()*3);
+    for (long idx{0}; idx < features.rows(); idx++){
+      features.row(idx) = matobjs[idx]->getPositionsFreeV();
+    }
+    // std::cout<<features;
+    return features;
+  }
   Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs){
     // Always with derivatives for now
     // Energy + Derivatives for each row
@@ -75,6 +85,19 @@ namespace helper_functions::surrogate {
     for (long idx{0}; idx < targets.rows(); idx++){
       targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
       targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFreeV();
+    }
+    // std::cout<<targets;
+    return targets;
+  }
+  Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs){
+    // Always with derivatives for now
+    // Energy + Derivatives for each row
+    const auto nrows = matobjs.size();
+    const auto ncols = (matobjs.front()->numberOfFreeAtoms()*3) + 1;
+    Eigen::MatrixXd targets(nrows, ncols);
+    for (long idx{0}; idx < targets.rows(); idx++){
+      targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
+      targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFreeV();
     }
     // std::cout<<targets;
     return targets;
