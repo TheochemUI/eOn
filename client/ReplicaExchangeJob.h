@@ -18,8 +18,8 @@ private:
   void saveData();
 
   size_t forceCalls;
-  //        Matter **replica;
-  Matter *pos;
+  //        std::shared_ptr<Matter>*replica;
+  std::shared_ptr<Matter> pos;
   //        Dynamics **replicaDynamics;
   //        double *replicaTemperature;
   std::vector<std::string> returnFiles;

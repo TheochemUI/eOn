@@ -8,6 +8,7 @@
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
+#include "SaddleSearchMethod.h"
 
 #include <cassert>
 #include <cmath>
@@ -19,15 +20,15 @@
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:
-  BGSDObjectiveFunction(Matter *matterPassed, double reactantEnergyPassed,
-                        double bgsdAlphaPassed, Parameters *parametersPassed) {
-    matter = matterPassed;
-    parameters = parametersPassed;
+  BGSDObjectiveFunction(std::shared_ptr<Matter> matterPassed,
+                        double reactantEnergyPassed, double bgsdAlphaPassed,
+                        std::shared_ptr<Parameters> parametersPassed)
+      : ObjectiveFunction(matterPassed, parametersPassed) {
     bgsdAlpha = bgsdAlphaPassed;
     reactantEnergy = reactantEnergyPassed;
   }
 
-  ~BGSDObjectiveFunction(void){};
+  ~BGSDObjectiveFunction(void)=default;
 
   double getEnergy() {
     VectorXd Vforce = matter->getForcesFreeV();
@@ -91,41 +92,29 @@ private:
   double bgsdAlpha;
 };
 
-BiasedGradientSquaredDescent::BiasedGradientSquaredDescent(
-    Matter *matterPassed, double reactantEnergyPassed,
-    Parameters *parametersPassed) {
-  parameters = parametersPassed;
-  reactantEnergy = reactantEnergyPassed;
-  saddle = matterPassed;
-  eigenvector.resize(saddle->numberOfAtoms(), 3);
-  eigenvector.setZero();
-}
-
-BiasedGradientSquaredDescent::~BiasedGradientSquaredDescent() {}
-
 int BiasedGradientSquaredDescent::run() {
-  BGSDObjectiveFunction objf(saddle, reactantEnergy, parameters->alpha,
-                             parameters);
-  Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters);
+  BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha,
+                             params);
+  Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
   int iteration = 0;
   printf(
-      "starting optimization of H with parameters alpha and beta: %.2f %.2f\n",
-      parameters->alpha, parameters->beta);
+      "starting optimization of H with params alpha and beta: %.2f %.2f\n",
+      params->alpha, params->beta);
   while (!objf.isConvergedH() || iteration == 0) {
-    optimizer->step(parameters->optMaxMove);
+    optimizer->step(params->optMaxMove);
     printf(
         "iteration %i Henergy, gradientHnorm, and Venergy: %.8f %.8f  %.8f\n",
         iteration, objf.getEnergy(), objf.getGradientnorm(),
         saddle->getPotentialEnergy());
     iteration++;
   }
-  BGSDObjectiveFunction objf2(saddle, reactantEnergy, 0.0, parameters);
-  Optimizer *optimizer2 = Optimizer::getOptimizer(&objf2, parameters);
+  BGSDObjectiveFunction objf2(saddle, reactantEnergy, 0.0, params);
+  Optimizer *optimizer2 = Optimizer::getOptimizer(&objf2, params.get());
   while (!objf2.isConvergedV() || iteration == 0) {
     if (objf2.isConvergedIP()) {
       break;
     };
-    optimizer2->step(parameters->optMaxMove);
+    optimizer2->step(params->optMaxMove);
     printf("gradient squared iteration %i Henergy, gradientHnorm, and Venergy: "
            "%.8f %.8f  %.8f\n",
            iteration, objf2.getEnergy(), objf2.getGradientnorm(),
@@ -134,15 +123,15 @@ int BiasedGradientSquaredDescent::run() {
   }
 
   LowestEigenmode *minModeMethod;
-  if (parameters->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-    if (parameters->dimerImproved) {
-      minModeMethod = new ImprovedDimer(saddle, parameters);
+  if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
+    if (params->dimerImproved) {
+      minModeMethod = new ImprovedDimer(saddle, params, pot);
     } else {
-      minModeMethod = new Dimer(saddle, parameters);
+      minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (parameters->saddleMinmodeMethod ==
+  } else if (params->saddleMinmodeMethod ==
              LowestEigenmode::MINMODE_LANCZOS) {
-    minModeMethod = new Lanczos(saddle, parameters);
+    minModeMethod = new Lanczos(saddle, params, pot);
   }
 
   //   eigenvector.setZero();

@@ -16,29 +16,30 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   string productFilename = helper_functions::getRelevantFile("product.con");
 
   string transitionStateFilename = helper_functions::getRelevantFile("ts.con");
-  Matter *transitionState = NULL;
   bool tsInterpolate = false;
+  auto transitionState = std::make_shared<Matter>(pot, params);
   FILE *fhTransitionState = fopen("ts.con", "r");
-  if (fhTransitionState != NULL) {
+  if (fhTransitionState != nullptr) {
     tsInterpolate = true;
     fclose(fhTransitionState);
-    transitionState = new Matter(params);
     transitionState->con2matter(transitionStateFilename);
+  } else{
+    transitionState = nullptr;
   }
 
-  Matter *initial = new Matter(params);
-  Matter *final = new Matter(params);
+  auto initial = std::make_shared<Matter>(pot, params);
+  auto final_state = std::make_shared<Matter>(pot, params);
 
   initial->con2matter(reactantFilename);
-  final->con2matter(productFilename);
+  final_state->con2matter(productFilename);
 
-  NudgedElasticBand *neb = new NudgedElasticBand(initial, final, params.get());
+  auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);
 
   if (tsInterpolate) {
     AtomMatrix reactantToTS = transitionState->pbc(
         transitionState->getPositions() - initial->getPositions());
     AtomMatrix TSToProduct = transitionState->pbc(
-        final->getPositions() - transitionState->getPositions());
+        final_state->getPositions() - transitionState->getPositions());
     for (int image = 1; image <= neb->images; image++) {
       int mid = neb->images / 2 + 1;
       if (image < mid) {
@@ -64,11 +65,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   }
 
   printEndState(status);
-  saveData(status, neb);
-
-  delete neb;
-  delete initial;
-  delete final;
+  saveData(status, neb.get());
 
   return returnFiles;
 }

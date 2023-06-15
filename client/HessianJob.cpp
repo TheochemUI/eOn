@@ -8,11 +8,11 @@ std::vector<std::string> HessianJob::run(void) {
 
   std::vector<std::string> returnFiles;
 
-  Matter *matter = new Matter(params);
+  auto matter = std::make_unique<Matter>(pot, params);
 
   matter->con2matter(matter_in);
 
-  Hessian hessian(params.get(), matter);
+  Hessian hessian(params.get(), matter.get());
   long nAtoms = matter->numberOfAtoms();
 
   VectorXi moved(nAtoms);
@@ -26,7 +26,7 @@ std::vector<std::string> HessianJob::run(void) {
     }
   }
   moved = moved.head(nMoved);
-  hessian.getFreqs(matter, moved);
+  hessian.getFreqs(matter.get(), moved);
 
   FILE *fileResults;
   //    FILE *fileMode;
@@ -39,8 +39,6 @@ std::vector<std::string> HessianJob::run(void) {
 
   // fprintf(fileResults, "%d force_calls\n", Potential::fcalls);
   fclose(fileResults);
-
-  delete matter;
 
   return returnFiles;
 }
