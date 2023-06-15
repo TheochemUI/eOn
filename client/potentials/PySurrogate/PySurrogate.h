@@ -35,7 +35,7 @@ public:
   py::object gpmod;
   // Functions
   // constructor and destructor
-  PySurrogate(Parameters *p) : Potential(p), fake1{0}, fake2{0} {
+  PySurrogate(shared_ptr<Parameters> p) : Potential(p), fake1{0}, fake2{0} {
     py::module_ sys = py::module_::import("sys");
     py::exec(
         R"(sys.path.insert(0, "/home/rgoswami/Git/Github/Python/DTU_CatLearn"))");

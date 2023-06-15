@@ -840,7 +840,7 @@ void Matter::computePotential() {
           helper_functions::makePotential(parameters->potential, parameters);
     }
 
-    if (parameters->true_pot == PotType::UNKNOWN){
+    if (potential->getType() != PotType::PYSURROGATE){
       // Default value for true_pot, so not a surrogate run
       std::tie(potentialEnergy, forces) =
         potential->get_ef(positions, atomicNrs, cell);

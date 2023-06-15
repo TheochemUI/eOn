@@ -264,7 +264,6 @@ public:
   double gprDebugDz;             // {debug_dz}
 
   // GP Surrogate Parameters
-  PotType true_pot;
   JobType sub_job;
 
   // [Lanczos] //
