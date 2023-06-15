@@ -1,4 +1,5 @@
 #include "Matter.h"
+#include "BaseStructures.h"
 #include "BondBoost.h"
 #include "HelperFunctions.h"
 #include "Log.h"
@@ -104,6 +105,7 @@ void Matter::initializeDataMembers(std::shared_ptr<Parameters> params) {
   forceCalls = 0;
   parameters = params;
   potential = NULL;
+  no_surrogate = true;
 }
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
@@ -840,11 +842,14 @@ void Matter::computePotential() {
           helper_functions::makePotential(parameters->potential, parameters);
     }
 
-    if (potential->getType() != PotType::PYSURROGATE){
+    std::cout<<"\nPotential is "<<helper_functions::getPotentialName(this->potential->getType())<<"\n";
+    if (no_surrogate){
+      std::cout<<"\nWe aren't in Py_Surrogate\n";
       // Default value for true_pot, so not a surrogate run
       std::tie(potentialEnergy, forces) =
         potential->get_ef(positions, atomicNrs, cell);
     } else {
+      std::cout<<"\nIn Py_Surrogate\n";
       // For the Surrogates, only use free data
       auto [freePE, freeForces] =
         potential->get_ef(this->getPositionsFree(), this->getAtomicNrsFree(), cell);
@@ -1234,6 +1239,9 @@ void Matter::writeTibble(std::string fname) {
 void Matter::setPotential(std::shared_ptr<Potential> pot) {
   this->potential = pot;
   recomputePotential = true;
+  if (pot->getType() == PotType::PYSURROGATE){
+    no_surrogate = false;
+  }
 }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
