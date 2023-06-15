@@ -1,5 +1,6 @@
 #include "GPSurrogateJob.h"
 #include "NudgedElasticBandJob.h"
+#include "Potential.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
@@ -25,13 +26,15 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto features = helper_functions::surrogate::get_features(init_data);
   // fmt::print("\nFeatures\n");
   // std::cout<<features;
-  auto targets = helper_functions::surrogate::get_targets(init_data);
+  auto targets = helper_functions::surrogate::get_targets(init_data, pot);
   // fmt::print("\nAnd now the targets are\n");
   // std::cout<<targets;
 
   // Setup a GPR Potential
   auto pypot = std::make_shared<PySurrogate>(pyparams);
   pypot->train_optimize(features, targets);
+  // We only really care about the max variance, .maxCoeff()
+  py::print(pypot->gpmod.attr("calculate_pred_variance")(features));
   // Make a new matter object
   // auto m1 = Matter(pypot, pyparams);
   // m1.con2matter(reactantFilename);
@@ -44,11 +47,21 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto status{neb->compute()};
   // BUG: This includes the endpoints again!!
   auto more_data = helper_functions::surrogate::get_features(neb->image);
-  auto more_targets = helper_functions::surrogate::get_targets(neb->image);
+  auto more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
   auto concatFeat = helper_functions::eigen::vertCat(more_data, features);
   auto concatTargets = helper_functions::eigen::vertCat(more_targets, targets);
-  std::cout<<(concatFeat);
-  pypot->train_optimize(concatFeat, concatTargets);
+  while (neb->numExtrema != 2){
+    auto odat = more_data;
+    auto otarg = more_targets;
+    more_data = helper_functions::surrogate::get_features(neb->image);
+    more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
+    concatFeat = helper_functions::eigen::vertCat(odat, more_data);
+    concatTargets = helper_functions::eigen::vertCat(otarg, more_targets);
+    pypot->train_optimize(concatFeat, concatTargets);
+    neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
+    neb->compute();
+    fmt::print("\n Got num_extrema {}\n", neb->numExtrema);
+  }
 
   // py::print(pypot->gpmod.attr("predict")(features));
   // initial->setPotential(pypot);
@@ -87,26 +100,28 @@ namespace helper_functions::surrogate {
     // std::cout<<features;
     return features;
   }
-  Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs){
+  Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs, std::shared_ptr<Potential> true_pot){
     // Always with derivatives for now
     // Energy + Derivatives for each row
     const auto nrows = matobjs.size();
     const auto ncols = (matobjs.front().numberOfFreeAtoms()*3) + 1;
     Eigen::MatrixXd targets(nrows, ncols);
     for (long idx{0}; idx < targets.rows(); idx++){
+      matobjs[idx].setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
       targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFreeV();
     }
     // std::cout<<targets;
     return targets;
   }
-  Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs){
+  Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs, std::shared_ptr<Potential> true_pot){
     // Always with derivatives for now
     // Energy + Derivatives for each row
     const auto nrows = matobjs.size();
     const auto ncols = (matobjs.front()->numberOfFreeAtoms()*3) + 1;
     Eigen::MatrixXd targets(nrows, ncols);
     for (long idx{0}; idx < targets.rows(); idx++){
+      matobjs[idx]->setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
       targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFreeV();
     }
