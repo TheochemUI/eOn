@@ -20,9 +20,10 @@ void PySurrogate::force(long N, const double *R, const int *atomicNrs, double *F
 
 
   MatrixXd features = Eigen::Map<MatrixXd>(const_cast<double*>(R), 1, N*3);
-  // std::cout<<features<<std::endl;
+  std::cout<<features<<std::endl;
+  std::cout<<"\nInside Force\n";
   auto ef_dat = (this->gpmod.attr("predict")(features)).cast<MatrixXd>();
-  // py::print(this->gpmod.attr("predict")(features));
+  py::print(this->gpmod.attr("predict")(features));
   auto forces = ef_dat.block(0, 1, 1, N*3);
   for (int i = 0; i < N; i++) {
     F[3 * i] = forces(0, 3*i);
@@ -30,7 +31,6 @@ void PySurrogate::force(long N, const double *R, const int *atomicNrs, double *F
     F[3 * i + 2] = forces(0, 3*i + 2);
   }
   *U = ef_dat(0, 0);
-  // std::cout<<"\nInside Force\n";
   // py::print( this->gpmod.attr("__repr__")() );
   return;
 }
