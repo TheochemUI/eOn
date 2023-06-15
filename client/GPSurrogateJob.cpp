@@ -36,9 +36,20 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   // auto m1 = Matter(pypot, pyparams);
   // m1.con2matter(reactantFilename);
   // std::cout<<m1.getPotentialEnergy();
+  // Start an NEB job
+  // auto nebjob = NudgedElasticBandJob(pypot, pyparams);
+  // nebjob.run();
   // Start an NEB run
-  auto nebjob = NudgedElasticBandJob(pypot, pyparams);
-  nebjob.run();
+  auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
+  auto status{neb->compute()};
+  // BUG: This includes the endpoints again!!
+  auto more_data = helper_functions::surrogate::get_features(neb->image);
+  auto more_targets = helper_functions::surrogate::get_targets(neb->image);
+  auto concatFeat = helper_functions::eigen::vertCat(more_data, features);
+  auto concatTargets = helper_functions::eigen::vertCat(more_targets, targets);
+  std::cout<<(concatFeat);
+  pypot->train_optimize(concatFeat, concatTargets);
+
   // py::print(pypot->gpmod.attr("predict")(features));
   // initial->setPotential(pypot);
   // std::cout<<(initial->getForces());
