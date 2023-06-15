@@ -18,14 +18,15 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   std::string productFilename = helper_functions::getRelevantFile("product.con");
 
   // Clone and setup "true" params
-  auto true_params = std::make_unique<Parameters>(*params);
-  true_params->potential = params->true_pot;
+  auto true_params = std::make_shared<Parameters>(*params);
   true_params->job = params->sub_job;
+  auto true_pot = helper_functions::makePotential(true_params);
+  auto true_job = helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
 
   // Get possible initial data source
-  auto initial = std::make_unique<Matter>(true_params.get());
+  auto initial = std::make_shared<Matter>(true_pot, true_params);
   initial->con2matter(reactantFilename);
-  auto final_state = std::make_unique<Matter>(true_params.get());
+  auto final_state = std::make_shared<Matter>(true_pot, true_params);
   final_state->con2matter(productFilename);
   auto init_path = helper_functions::neb_paths::linearPath(*initial, *final_state, params->nebImages);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
@@ -36,7 +37,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
 
   // Setup a GPR Potential
   pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
-  auto pot = std::make_shared<PySurrogate>(params.get());
+  auto pot = std::make_shared<PySurrogate>(params);
   pot->gpmod.attr("optimize")(features, targets);
   // py::print(pot->gpmod.attr("predict")(features));
   // auto [energy, forces] = pot->get_ef(initial->getPositions(), initial->getAtomicNrs(), initial->getCell());
