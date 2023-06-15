@@ -1,14 +1,4 @@
 #include "GPSurrogateJob.h"
-#include "Eigen/src/Core/Matrix.h"
-#include "Job.h"
-#include "Matter.h"
-#include "NudgedElasticBand.h"
-#include "potentials/PySurrogate/PySurrogate.h"
-#include <memory>
-#include <pybind11/embed.h>
-#include <pybind11/eigen.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
@@ -20,26 +10,30 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(*params);
   true_params->job = params->sub_job;
-  auto true_pot = helper_functions::makePotential(true_params);
   auto true_job = helper_functions::makeJob(std::make_unique<Parameters>(*true_params));
+  auto pyparams = std::make_shared<Parameters>(*params);
+  pyparams->potential = PotType::PYSURROGATE;
 
   // Get possible initial data source
-  auto initial = std::make_shared<Matter>(true_pot, true_params);
+  auto initial = std::make_shared<Matter>(pot, true_params);
   initial->con2matter(reactantFilename);
-  auto final_state = std::make_shared<Matter>(true_pot, true_params);
+  auto final_state = std::make_shared<Matter>(pot, true_params);
   final_state->con2matter(productFilename);
   auto init_path = helper_functions::neb_paths::linearPath(*initial, *final_state, params->nebImages);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
-  // fmt::print("\nFeatures\n");
   auto features = helper_functions::surrogate::get_features(init_data);
-  // fmt::print("\nAnd now the targets are\n");
+  // fmt::print("\nFeatures\n");
+  // std::cout<<features;
   auto targets = helper_functions::surrogate::get_targets(init_data);
+  // fmt::print("\nAnd now the targets are\n");
+  // std::cout<<targets;
 
   // Setup a GPR Potential
-  pybind11::scoped_interpreter guard{}; // Initialize the Python interpreter
-  auto pot = std::make_shared<PySurrogate>(params);
-  pot->gpmod.attr("optimize")(features, targets);
-  // py::print(pot->gpmod.attr("predict")(features));
+  auto pypot = std::make_shared<PySurrogate>(pyparams);
+  pypot->gpmod.attr("optimize")(features, targets);
+  // py::print(pypot->gpmod.attr("predict")(features));
+  initial->setPotential(pypot);
+  std::cout<<(initial->getForces());
   // auto [energy, forces] = pot->get_ef(initial->getPositions(), initial->getAtomicNrs(), initial->getCell());
   // auto execString =
   //   fmt::format("Energy:\n{energy:}\nForces:\n{forces:}",
