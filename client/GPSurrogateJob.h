@@ -30,3 +30,7 @@ namespace helper_functions::surrogate {
   Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs);
   std::vector<Matter> getMidSlice(const std::vector<Matter>& matobjs);
 }
+
+namespace helper_functions::eigen {
+  Eigen::MatrixXd vertCat(const Eigen::MatrixXd& m1, const Eigen::MatrixXd& m2);
+}

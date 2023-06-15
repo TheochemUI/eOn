@@ -112,3 +112,12 @@ namespace helper_functions::surrogate {
     return res;
   }
 }
+
+namespace helper_functions::eigen {
+  Eigen::MatrixXd vertCat(const Eigen::MatrixXd& m1, const Eigen::MatrixXd& m2){
+    assert (m1.cols() == m2.cols());
+    Eigen::MatrixXd res( m1.rows() + m2.rows(), m2.cols() );
+    res << m1, m2;
+    return res;
+  }
+}
