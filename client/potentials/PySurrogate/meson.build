@@ -1,4 +1,4 @@
 pysurrpot = shared_library('pysurrpot',
            'PySurrogate.cpp',
-           dependencies : [ eigen_dep, pyb11f_deps ],
+           dependencies : eon_deps,
            install : true)

@@ -2,5 +2,6 @@ water_pt=shared_library('water_pt',
            'Tip4p_Pt.cpp',
            'zhu_philpott_parameters.cpp',
            'zhu_philpott.cpp',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)
