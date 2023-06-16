@@ -834,10 +834,9 @@ void Matter::computePotential() {
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
-    SPDLOG_TRACE(fmt::format(
-        "Potential is {}",
-        helper_functions::getPotentialName(this->potential->getType())));
-    if (potential->getType() != PotType::PYSURROGATE){
+    SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
+                                        this->potential->getType()));
+    if (potential->getType() != PotType::PYSURROGATE) {
       SPDLOG_TRACE("Regular Call");
       // Default value for true_pot, so not a surrogate run
       std::tie(potentialEnergy, forces) =
