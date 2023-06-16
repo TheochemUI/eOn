@@ -28,6 +28,10 @@ public:
   // Does not take into account the fixed / free atoms
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, const double *box) = 0;
+  // Only implemented for surrogates
+  // TODO: Maybe a subclass of Potential (SurrogatePotential) and use that
+    std::tuple<double, AtomMatrix, Eigen::MatrixXd>
+    get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
   std::pair<double, AtomMatrix>
   get_ef(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box) {
     double energy{std::numeric_limits<double>::infinity()};
