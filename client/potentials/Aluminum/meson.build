@@ -7,5 +7,6 @@ aluminum = shared_library('aluminum',
            'gagafeDblexp.f',
            'embedenergy.f',
            'sumembforce.f',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)

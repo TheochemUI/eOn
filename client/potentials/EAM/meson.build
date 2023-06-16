@@ -1,4 +1,5 @@
 eam = shared_library('eam',
            'EAM.cpp',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)

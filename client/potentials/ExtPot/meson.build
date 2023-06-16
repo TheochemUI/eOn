@@ -1,4 +1,5 @@
 extpot = shared_library('extpot',
            'ExtPot.cpp',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)

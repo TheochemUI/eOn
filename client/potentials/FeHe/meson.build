@@ -1,5 +1,6 @@
 fehe = shared_library('fehe',
            'feforce.f',
            'FeHe.cpp',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)
