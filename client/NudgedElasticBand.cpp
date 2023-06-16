@@ -39,10 +39,15 @@ VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
 }
 
 double NEBObjectiveFunction::getEnergy() {
+  // double maxMaxUnc = std::numeric_limits<double>::lowest();
   double Energy = 0;
   for (long i = 1; i <= neb->numImages; i++) {
     Energy += neb->path[i]->getPotentialEnergy();
   }
+  // SPDLOG_TRACE("Current uncertainity at this point is {}", maxMaxUnc);
+  // if (maxMaxUnc > 0.05){
+  //   exit(1);
+  // }
   return Energy;
 }
 
