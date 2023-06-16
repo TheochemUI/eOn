@@ -177,7 +177,6 @@ public:
 
 private:
   std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
-  bool no_surrogate;
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
