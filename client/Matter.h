@@ -16,6 +16,7 @@ class BondBoost;
  * data members is required in Matter. It should not be used alone.  Use
  * carefully. Avoid it and use Matter instead if possible. */
 
+// TODO: Why do we even need this!?
 struct MatterPrivateData {
   std::shared_ptr<Parameters> parameters;
   long nAtoms;
@@ -29,6 +30,7 @@ struct MatterPrivateData {
   VectorXi isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3d cell;
   Matrix3d cellInverse;
+  MatrixXd variance;
   mutable double potentialEnergy;
 };
 

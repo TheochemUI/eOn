@@ -9,8 +9,63 @@
 //-----------------------------------------------------------------------------------
 
 #include "PySurrogate.h"
+#include "Eigen/src/Core/Matrix.h"
 
-void PySurrogate::train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets){
+PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
+  py::module_ sys = py::module_::import("sys");
+  // TODO: Make a parameter out of this
+  py::exec(
+      R"(sys.path.insert(0, "/home/rgoswami/Git/Github/Python/DTU_CatLearn"))");
+
+  // Import the required modules
+  py::module_ hpfitter_module =
+      py::module_::import("catlearn.regression.gaussianprocess.hpfitter");
+  py::module_ objectfunctions_module =
+      py::module_::import("catlearn.regression.gaussianprocess."
+                          "objectfunctions.factorized_likelihood");
+  py::module_ optimizers_module =
+      py::module_::import("catlearn.regression.gaussianprocess.optimizers");
+  py::module_ gp_module =
+      py::module_::import("catlearn.regression.gaussianprocess.gp.gp");
+  py::module_ prior_median_module =
+      py::module_::import("catlearn.regression.gaussianprocess.means.median");
+
+  // Get the classes from the imported modules
+  py::object hpfitter_class = hpfitter_module.attr("HyperparameterFitter");
+  py::object objectfunctions_class =
+      objectfunctions_module.attr("FactorizedLogLikelihood");
+  py::object optimizers_class = optimizers_module.attr("run_golden");
+  py::object line_search_scale_class =
+      optimizers_module.attr("line_search_scale");
+  py::object gp_class = gp_module.attr("GaussianProcess");
+  py::object prior_median_class = prior_median_module.attr("Prior_median");
+
+  // Create the objects and set the arguments
+  py::dict local_kwargs;
+  local_kwargs["tol"] = 1e-5;
+  local_kwargs["optimize"] = true;
+  local_kwargs["multiple_max"] = true;
+
+  py::dict kwargs_optimize;
+  kwargs_optimize["local_run"] = optimizers_class;
+  kwargs_optimize["maxiter"] = 5000;
+  kwargs_optimize["jac"] = false;
+  kwargs_optimize["bounds"] = py::none(); // None
+  kwargs_optimize["ngrid"] = 80;
+  kwargs_optimize["use_bounds"] = true;
+  kwargs_optimize["local_kwargs"] = local_kwargs;
+
+  this->hpfit = hpfitter_class(objectfunctions_class(), line_search_scale_class,
+                               kwargs_optimize,
+                               true); // distance_matrix = true
+
+  this->gpmod =
+      gp_class(py::arg("prior") = prior_median_class(),
+               py::arg("use_derivatives") = true, py::arg("hpfitter") = hpfit);
+};
+
+void PySurrogate::train_optimize(Eigen::MatrixXd features,
+                                 Eigen::MatrixXd targets) {
   gpmod.attr("optimize")(features, targets);
   return;
 }
@@ -19,19 +74,31 @@ void PySurrogate::cleanMemory(void) { return; }
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
-void PySurrogate::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *box) {
-
-
-  MatrixXd features = Eigen::Map<MatrixXd>(const_cast<double*>(R), 1, N*3);
-  auto ef_dat = (this->gpmod.attr("predict")(features)).cast<MatrixXd>();
-  auto forces = ef_dat.block(0, 1, 1, N*3);
+void PySurrogate::force(long N, const double *R, const int *atomicNrs,
+                        double *F, double *U, const double *box) {
+  Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), 1, N * 3);
+  py::tuple ef_and_unc = (this->gpmod.attr("predict")(features, "get_variance"_a = true));
+  py::print(ef_and_unc);
+  auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
+  this->variance = ef_and_unc[1].cast<Eigen::MatrixXd>();
+  SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat), fmt::streamed(variance));
+  auto forces = ef_dat.block(0, 1, 1, N * 3);
   for (int i = 0; i < N; i++) {
-    F[3 * i] = forces(0, 3*i);
-    F[3 * i + 1] = forces(0, 3*i + 1);
-    F[3 * i + 2] = forces(0, 3*i + 2);
+    F[3 * i] = forces(0, 3 * i);
+    F[3 * i + 1] = forces(0, 3 * i + 1);
+    F[3 * i + 2] = forces(0, 3 * i + 2);
   }
   *U = ef_dat(0, 0);
-  SPDLOG_TRACE("Energy: {} and Forces:\n {}", *U, fmt::streamed(forces));
+  SPDLOG_DEBUG("Energy: {} and Forces:\n {}", *U, fmt::streamed(forces));
   return;
 }
+
+  std::tuple<double, AtomMatrix, Eigen::MatrixXd>
+  PySurrogate::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box) {
+    double energy{std::numeric_limits<double>::infinity()};
+    long nAtoms{pos.rows()};
+    AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+    this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
+                box.data());
+    return std::make_tuple(energy, forces, this->variance);
+  };
