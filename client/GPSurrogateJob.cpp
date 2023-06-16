@@ -1,6 +1,7 @@
 #include "GPSurrogateJob.h"
 #include "NudgedElasticBandJob.h"
 #include "Potential.h"
+#include <spdlog/spdlog.h>
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
@@ -24,11 +25,9 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto init_path = helper_functions::neb_paths::linearPath(*initial, *final_state, params->nebImages);
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
-  // fmt::print("\nFeatures\n");
-  // std::cout<<features;
+  fmt::print("\nFeatures\n{}", fmt::streamed(features));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
-  // fmt::print("\nAnd now the targets are\n");
-  // std::cout<<targets;
+  fmt::print("\nAnd now the targets are\n{}", fmt::streamed(targets));
 
   // Setup a GPR Potential
   auto pypot = std::make_shared<PySurrogate>(pyparams);
