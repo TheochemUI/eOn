@@ -844,10 +844,11 @@ void Matter::computePotential() {
     } else {
       SPDLOG_TRACE("Surrogate Call");
       // For the Surrogates, only use free data
-      auto [freePE, freeForces] =
-        potential->get_ef(this->getPositionsFree(), this->getAtomicNrsFree(), cell);
+      auto [freePE, freeForces, variance] = potential->get_ef_var(
+          this->getPositionsFree(), this->getAtomicNrsFree(), cell);
       // Now populate full structures
       this->potentialEnergy = freePE;
+      this->variance = variance;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++){
         if (!isFixed(idx)){
           forces.row(idx) = freeForces.row(jdx);
