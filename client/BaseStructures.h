@@ -12,6 +12,9 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/cfg/env.h>  // support for loading levels from the environment variable
 #include <spdlog/fmt/ostr.h> // support for user defined types
+#include <spdlog/logger.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 using namespace std::string_literals; // For ""s
 
