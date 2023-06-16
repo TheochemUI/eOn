@@ -1,4 +1,5 @@
 pyamff=shared_library('pyamff',
            'PyAMFF.cpp',
-           dependencies : eigen_dep,
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)

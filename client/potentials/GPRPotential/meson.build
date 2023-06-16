@@ -1,4 +1,5 @@
 gprpot = shared_library('gprpot',
            'GPRPotential.cpp',
-           dependencies : [ eigen_dep, gprd_dep ],
+           dependencies : eon_deps,
+           cpp_args : eon_extra_args,
            install : true)
