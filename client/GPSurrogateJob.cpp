@@ -1,14 +1,9 @@
 #include "GPSurrogateJob.h"
 #include "NudgedElasticBandJob.h"
 #include "Potential.h"
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#include <spdlog/spdlog.h>
-#include <spdlog/cfg/env.h>  // support for loading levels from the environment variable
-#include <spdlog/fmt/ostr.h> // support for user defined types
 
 std::vector<std::string> GPSurrogateJob::run(void) {
   std::vector<std::string> returnFiles;
-  spdlog::set_level(spdlog::level::trace);
 
   // Start working
   std::string reactantFilename = helper_functions::getRelevantFile("reactant.con");
@@ -61,7 +56,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     pypot->train_optimize(concatFeat, concatTargets);
     neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
     neb->compute();
-    SPDLOG_TRACE("\n Got num_extrema {}\n", neb->numExtrema);
+    SPDLOG_TRACE("Got num_extrema {}\n", neb->numExtrema);
   }
 
   // py::print(pypot->gpmod.attr("predict")(features));
@@ -84,21 +79,21 @@ namespace helper_functions::surrogate {
   Eigen::MatrixXd get_features(const std::vector<Matter>& matobjs){
     // Calculate dimensions
     Eigen::MatrixXd features(matobjs.size(), matobjs.front().numberOfFreeAtoms()*3);
-    SPDLOG_TRACE("\nrows: {}, cols:{}\n", matobjs.size(), matobjs.front().numberOfFreeAtoms()*3);
+    SPDLOG_TRACE("rows: {}, cols:{}", matobjs.size(), matobjs.front().numberOfFreeAtoms()*3);
     for (long idx{0}; idx < features.rows(); idx++){
       features.row(idx) = matobjs[idx].getPositionsFreeV();
     }
-    SPDLOG_TRACE("\nFeatures\n:{}\n", fmt::streamed(features));
+    SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
     return features;
   }
   Eigen::MatrixXd get_features(const std::vector<std::shared_ptr<Matter>>& matobjs){
     // Calculate dimensions
     Eigen::MatrixXd features(matobjs.size(), matobjs.front()->numberOfFreeAtoms()*3);
-    SPDLOG_TRACE("\nrows: {}, cols:{}\n", matobjs.size(), matobjs.front()->numberOfFreeAtoms()*3);
+    SPDLOG_TRACE("rows: {}, cols:{}\n", matobjs.size(), matobjs.front()->numberOfFreeAtoms()*3);
     for (long idx{0}; idx < features.rows(); idx++){
       features.row(idx) = matobjs[idx]->getPositionsFreeV();
     }
-    SPDLOG_TRACE("\nFeatures\n:{}\n", fmt::streamed(features));
+    SPDLOG_TRACE("Features\n:{}", fmt::streamed(features));
     return features;
   }
   Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs, std::shared_ptr<Potential> true_pot){
@@ -112,7 +107,7 @@ namespace helper_functions::surrogate {
       targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
       targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFreeV();
     }
-    SPDLOG_TRACE("\nTargets\n:{}\n", fmt::streamed(targets));
+    SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
   }
   Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs, std::shared_ptr<Potential> true_pot){
@@ -124,7 +119,7 @@ namespace helper_functions::surrogate {
       targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
       targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFreeV();
     }
-    SPDLOG_TRACE("\nTargets\n:{}\n", fmt::streamed(targets));
+    SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
   }
   std::vector<Matter> getMidSlice(const std::vector<Matter>& matobjs){
