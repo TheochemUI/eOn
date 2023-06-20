@@ -105,7 +105,7 @@ namespace helper_functions::surrogate {
     for (long idx{0}; idx < targets.rows(); idx++){
       matobjs[idx].setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
-      targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFreeV();
+      targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFree().array();
     }
     SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
@@ -117,7 +117,7 @@ namespace helper_functions::surrogate {
     for (long idx{0}; idx < targets.rows(); idx++){
       matobjs[idx]->setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
-      targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFreeV();
+      targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFree().array();
     }
     SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
