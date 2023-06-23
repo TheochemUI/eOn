@@ -62,8 +62,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   status = neb->compute();
   // fCallsNEB += Potential::fcalls - f1;
 
-  if (status == NudgedElasticBand::NEBStatus::STATUS_INIT) {
-    status = NudgedElasticBand::NEBStatus::STATUS_GOOD;
+  if (status == NudgedElasticBand::NEBStatus::INIT) {
+    status = NudgedElasticBand::NEBStatus::GOOD;
   }
 
   printEndState(status);
@@ -121,9 +121,9 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
   log("\nFinal state: ");
-  if (status == NudgedElasticBand::NEBStatus::STATUS_GOOD)
+  if (status == NudgedElasticBand::NEBStatus::GOOD)
     log("Nudged elastic band, successful.\n");
-  else if (status == NudgedElasticBand::NEBStatus::STATUS_BAD_MAX_ITERATIONS)
+  else if (status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS)
     log("Nudged elastic band, too many iterations.\n");
   else
     log("Unknown status: %i!\n", status);

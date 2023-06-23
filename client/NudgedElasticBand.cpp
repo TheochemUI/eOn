@@ -5,21 +5,17 @@
 using namespace helper_functions;
 
 namespace helper_functions::neb_paths {
-std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
-                               const size_t nimgs) {
-  std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
-  all_images_on_path.front() = Matter(initImg);
-  all_images_on_path.back() = Matter(finalImg);
-  AtomMatrix posInitial = all_images_on_path.front().getPositions();
-  AtomMatrix posFinal = all_images_on_path.back().getPositions();
-  AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
-  // Only the ones which are not the front and back
-  for (auto it{std::next(all_images_on_path.begin())};
-       it != std::prev(all_images_on_path.end()); ++it) {
-    *it = Matter(initImg);
-    (*it).setPositions(
-        posInitial +
-        imageSep * double(std::distance(all_images_on_path.begin(), it)));
+  std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs){
+    std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
+    all_images_on_path.front() = Matter(initImg);
+    all_images_on_path.back() = Matter(finalImg);
+    AtomMatrix posInitial = all_images_on_path.front().getPositions();
+    AtomMatrix posFinal = all_images_on_path.back().getPositions();
+    AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
+    // Only the ones which are not the front and back
+    for (auto it {std::next(all_images_on_path.begin())}; it != std::prev(all_images_on_path.end()); ++it){
+      *it = Matter(initImg);
+      (*it).setPositions(posInitial + imageSep * int(std::distance(all_images_on_path.begin(), it)));
   }
   return all_images_on_path;
 }
@@ -39,15 +35,10 @@ VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
 }
 
 double NEBObjectiveFunction::getEnergy() {
-  // double maxMaxUnc = std::numeric_limits<double>::lowest();
-  double Energy = 0;
+  double Energy {0};
   for (long i = 1; i <= neb->numImages; i++) {
     Energy += neb->path[i]->getPotentialEnergy();
   }
-  // SPDLOG_TRACE("Current uncertainity at this point is {}", maxMaxUnc);
-  // if (maxMaxUnc > 0.05){
-  //   exit(1);
-  // }
   return Energy;
 }
 
@@ -112,6 +103,7 @@ NudgedElasticBand::NudgedElasticBand(
   numExtrema = 0;
 
   log("\nNEB: initialize\n");
+  this->status = NEBStatus::INIT;
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = linear_path[i];
@@ -133,8 +125,8 @@ NudgedElasticBand::NudgedElasticBand(
 }
 
 NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
-  NudgedElasticBand::NEBStatus status = NEBStatus::STATUS_INIT;
   long iteration = 0;
+  this->status = NEBStatus::RUNNING;
 
   log("Nudged elastic band calculation started.\n");
 
@@ -162,7 +154,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     VectorXd pos = objf.getPositions();
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
-        status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
+        status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
       }
       optimizer->step(params->optMaxMove);
@@ -180,13 +172,17 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
   }
 
-  if (objf.isConverged()) {
-    status = NEBStatus::STATUS_GOOD;
+  if (objf.isConverged() && objf.status != NEBStatus::MAX_UNCERTAINITY) {
+    status = NEBStatus::GOOD;
     log("NEB converged\n");
+    printImageData();
+    findExtrema();
   }
 
-  printImageData();
-  findExtrema();
+  if (objf.status == NEBStatus::MAX_UNCERTAINITY) {
+    status = NEBStatus::MAX_UNCERTAINITY;
+    log("NEB failed due to high uncertainity\n");
+  }
 
   delete optimizer;
   return status;
