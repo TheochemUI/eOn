@@ -3,8 +3,6 @@
 #include "Potential.h"
 
 std::vector<std::string> GPSurrogateJob::run(void) {
-  std::vector<std::string> returnFiles;
-
   // Start working
   std::string reactantFilename = helper_functions::getRelevantFile("reactant.con");
   std::string productFilename = helper_functions::getRelevantFile("product.con");
@@ -22,15 +20,21 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto final_state = std::make_shared<Matter>(pot, true_params);
   final_state->con2matter(productFilename);
   auto init_path = helper_functions::neb_paths::linearPath(*initial, *final_state, params->nebImages);
+  for (std::size_t i = 0; i < init_path.size(); ++i) {
+    auto &&mobj = init_path[i];
+    SPDLOG_TRACE("Index: {}, Positions Free:\n {}", i,
+                 fmt::streamed(mobj.getPositionsFree()));
+  }
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
+  SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(pot->getType()));
   auto targets = helper_functions::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
   auto pypot = std::make_shared<PySurrogate>(pyparams);
   pypot->train_optimize(features, targets);
   // We only really care about the max variance, .maxCoeff()
-  py::print(pypot->gpmod.attr("calculate_pred_variance")(features));
+  // py::print(pypot->gpmod.attr("calculate_pred_variance")(features));
   // Make a new matter object
   // auto m1 = Matter(pypot, pyparams);
   // m1.con2matter(reactantFilename);
@@ -41,23 +45,44 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   // Start an NEB run
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
   auto status{neb->compute()};
-  // BUG: This includes the endpoints again!!
-  auto more_data = helper_functions::surrogate::get_features(neb->image);
-  auto more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
-  auto concatFeat = helper_functions::eigen::vertCat(more_data, features);
-  auto concatTargets = helper_functions::eigen::vertCat(more_targets, targets);
-  while (neb->numExtrema != 2){
-    auto odat = more_data;
-    auto otarg = more_targets;
-    more_data = helper_functions::surrogate::get_features(neb->image);
-    more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
-    concatFeat = helper_functions::eigen::vertCat(odat, more_data);
-    concatTargets = helper_functions::eigen::vertCat(otarg, more_targets);
-    pypot->train_optimize(concatFeat, concatTargets);
-    neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
-    neb->compute();
-    SPDLOG_TRACE("Got num_extrema {}\n", neb->numExtrema);
+  size_t n_gp{0};
+  while (status != NudgedElasticBand::NEBStatus::GOOD){
+    n_gp++;
+    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+    auto [feature, target] = helper_functions::surrogate::getNewDataPoint(neb->image);
+    helper_functions::eigen::addVectorRow(features, feature);
+    // SPDLOG_TRACE("New Features:\n {}", fmt::streamed(features));
+    helper_functions::eigen::addVectorRow(targets, target);
+    // SPDLOG_TRACE("New Targets:\n {}", fmt::streamed(targets));
+    pypot->train_optimize(features, targets);
+    if ( status==NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS && n_gp > 5){
+      std::exit(1);
+      pyparams->optMaxMove += 0.05;
+      pyparams->optMaxIterations += 50;
+      status = neb->compute();
+    } else {
+      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
+      status = neb->compute();
+    }
   }
+  saveData(status, pot, std::move(neb));
+  // BUG: This includes the endpoints again!!
+  // auto more_data = helper_functions::surrogate::get_features(neb->image);
+  // auto more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
+  // auto concatFeat = helper_functions::eigen::vertCat(more_data, features);
+  // auto concatTargets = helper_functions::eigen::vertCat(more_targets, targets);
+  // while (neb->numExtrema != 2){
+  //   auto odat = more_data;
+  //   auto otarg = more_targets;
+  //   more_data = helper_functions::surrogate::get_features(neb->image);
+  //   more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
+  //   concatFeat = helper_functions::eigen::vertCat(odat, more_data);
+  //   concatTargets = helper_functions::eigen::vertCat(otarg, more_targets);
+  //   pypot->train_optimize(concatFeat, concatTargets);
+  //   neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
+  //   neb->compute();
+  //   SPDLOG_TRACE("Got num_extrema {}\n", neb->numExtrema);
+  // }
 
   // py::print(pypot->gpmod.attr("predict")(features));
   // initial->setPotential(pypot);
@@ -74,6 +99,55 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   return returnFiles;
 }
 
+void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
+                              std::shared_ptr<Potential> true_pot,
+                              std::unique_ptr<NudgedElasticBand> neb) {
+  FILE *fileResults, *fileNEB;
+
+  std::string resultsFilename("results.dat");
+  returnFiles.push_back(resultsFilename);
+  fileResults = fopen(resultsFilename.c_str(), "wb");
+  for (auto&& nebo : neb->image){
+      nebo->setPotential(true_pot);
+  }
+  fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
+  fprintf(fileResults, "%s potential_type\n",
+          helper_functions::getPotentialName(params->potential).c_str());
+  // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
+  // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
+  fprintf(fileResults, "%f energy_reference\n",
+          neb->image[0]->getPotentialEnergy());
+  fprintf(fileResults, "%li number_of_images\n", neb->images);
+  for (long i = 0; i <= neb->images + 1; i++) {
+    fprintf(fileResults, "%f image%li_energy\n",
+            neb->image[i]->getPotentialEnergy() -
+                neb->image[0]->getPotentialEnergy(),
+            i);
+    fprintf(fileResults, "%f image%li_force\n",
+            neb->image[i]->getForces().norm(), i);
+    fprintf(fileResults, "%f image%li_projected_force\n",
+            neb->projectedForce[i]->norm(), i);
+  }
+  fprintf(fileResults, "%li number_of_extrema\n", neb->numExtrema);
+  for (long i = 0; i < neb->numExtrema; i++) {
+    fprintf(fileResults, "%f extremum%li_position\n", neb->extremumPosition[i],
+            i);
+    fprintf(fileResults, "%f extremum%li_energy\n", neb->extremumEnergy[i], i);
+  }
+
+  fclose(fileResults);
+
+  std::string nebFilename("neb.con");
+  returnFiles.push_back(nebFilename);
+  fileNEB = fopen(nebFilename.c_str(), "wb");
+  for (long i = 0; i <= neb->images + 1; i++) {
+    neb->image[i]->matter2con(fileNEB);
+  }
+  fclose(fileNEB);
+
+  returnFiles.push_back("neb.dat");
+  neb->printImageData(true);
+}
 
 namespace helper_functions::surrogate {
   Eigen::MatrixXd get_features(const std::vector<Matter>& matobjs){
@@ -127,9 +201,42 @@ namespace helper_functions::surrogate {
     std::vector<Matter> res;
     res.reserve(3);
     res.push_back(matobjs.front());
-    res.push_back(matobjs[matobjs.size()/2]);
+    // BUG: THIS ISN'T THE MIDDLE!!!!
+    res.push_back(matobjs[(( matobjs.size() - 2 )*2.0/3.0)+1]);
     res.push_back(matobjs.back());
     return res;
+  }
+  Eigen::VectorXd make_target(Matter &m1) {
+    const auto ncols = (m1.numberOfFreeAtoms() * 3) + 1;
+    Eigen::VectorXd target(ncols);
+    target(0) = m1.getPotentialEnergy();
+    target.segment(1, ncols - 1) = m1.getForcesFreeV();
+    // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
+    return target;
+  }
+  std::pair<Eigen::VectorXd, Eigen::VectorXd>
+  getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs) {
+    // TODO: Refactor
+    // This function takes the path, finds the "best" new data point to be
+    // evaluated and returns the features and targets for that particular point
+    // NOTE: This assumes that the Surrogate potential is in use
+    Eigen::VectorXd pathUncertainity{Eigen::VectorXd::Zero(matobjs.size())};
+    for (auto idx {0}; idx < matobjs.size(); idx++) {
+      pathUncertainity[idx] = matobjs[idx]->getEnergyVariance();
+    }
+    int maxIndex = 0;
+    for (int idx = 0; idx < pathUncertainity.size(); idx++) {
+      if (pathUncertainity[idx] == pathUncertainity.maxCoeff()) {
+        maxIndex = idx;
+        break;
+      }
+    }
+    SPDLOG_TRACE("Max uncertainity is {}\n from {} at {}", pathUncertainity.maxCoeff(),
+                 fmt::streamed(pathUncertainity), maxIndex);
+    // SPDLOG_TRACE("Generated Feature:\n{}", fmt::streamed(matobjs[maxIndex]->getPositionsFreeV()));
+    return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
+        matobjs[maxIndex]->getPositionsFreeV(),
+        make_target(*matobjs[maxIndex]));
   }
 }
 
@@ -139,5 +246,10 @@ namespace helper_functions::eigen {
     Eigen::MatrixXd res( m1.rows() + m2.rows(), m2.cols() );
     res << m1, m2;
     return res;
+  }
+  void addVectorRow(Eigen::MatrixXd& data, const Eigen::VectorXd& newrow){
+   assert (data.cols() == newrow.size());
+   data.conservativeResize(data.rows()+1, data.cols());
+   data.row(data.rows() - 1) = newrow;
   }
 }

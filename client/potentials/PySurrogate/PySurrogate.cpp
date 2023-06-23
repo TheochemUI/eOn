@@ -75,30 +75,21 @@ void PySurrogate::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void PySurrogate::force(long N, const double *R, const int *atomicNrs,
-                        double *F, double *U, const double *box) {
+                        double *F, double *U, double *variance, const double *box) {
   Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), 1, N * 3);
   py::tuple ef_and_unc = (this->gpmod.attr("predict")(features, "get_variance"_a = true));
-  py::print(ef_and_unc);
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
-  this->variance = ef_and_unc[1].cast<Eigen::MatrixXd>();
-  SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat), fmt::streamed(variance));
+  auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
   auto forces = ef_dat.block(0, 1, 1, N * 3);
-  for (int i = 0; i < N; i++) {
-    F[3 * i] = forces(0, 3 * i);
-    F[3 * i + 1] = forces(0, 3 * i + 1);
-    F[3 * i + 2] = forces(0, 3 * i + 2);
+  for (int idx = 0; idx < N; idx++) {
+    F[3 * idx] = forces(0, 3 * idx);
+    F[3 * idx + 1] = forces(0, 3 * idx + 1);
+    F[3 * idx + 2] = forces(0, 3 * idx + 2);
+  }
+  for (int idx = 0; idx < 1+(N*3); idx++) {
+    variance[idx] = vari(0, idx);
   }
   *U = ef_dat(0, 0);
-  SPDLOG_DEBUG("Energy: {} and Forces:\n {}", *U, fmt::streamed(forces));
+  // SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat), fmt::streamed(vari));
   return;
 }
-
-  std::tuple<double, AtomMatrix, Eigen::MatrixXd>
-  PySurrogate::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box) {
-    double energy{std::numeric_limits<double>::infinity()};
-    long nAtoms{pos.rows()};
-    AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
-    this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
-                box.data());
-    return std::make_tuple(energy, forces, this->variance);
-  };
