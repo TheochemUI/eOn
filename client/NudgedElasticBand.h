@@ -16,9 +16,11 @@ class NudgedElasticBand {
 
 public:
   enum class NEBStatus {
-    STATUS_GOOD = 0,
-    STATUS_INIT = 1,
-    STATUS_BAD_MAX_ITERATIONS = 2
+    GOOD = 0,
+    INIT = 1,
+    BAD_MAX_ITERATIONS = 2,
+    RUNNING,
+    MAX_UNCERTAINITY
   };
 
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
@@ -28,6 +30,7 @@ public:
   ~NudgedElasticBand() = default;
 
   NudgedElasticBand::NEBStatus compute(void);
+  NudgedElasticBand::NEBStatus getStatus(){return this->status;};
   void updateForces(void);
   double convergenceForce(void);
   void findExtrema(void);
@@ -48,6 +51,7 @@ public:
 private:
   std::shared_ptr<Parameters> params;
   std::shared_ptr<Potential> pot;
+  NEBStatus status;
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {
@@ -65,8 +69,10 @@ public:
   VectorXd getPositions();
   int degreesOfFreedom();
   bool isConverged();
+  bool isUncertain();
   double getConvergence();
   VectorXd difference(VectorXd a, VectorXd b);
+  NudgedElasticBand::NEBStatus status;
 
 private:
   NudgedElasticBand *neb;
