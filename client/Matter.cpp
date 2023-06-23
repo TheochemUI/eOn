@@ -1240,4 +1240,18 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputePotential = true;
 }
 
-std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+double Matter::getEnergyVariance(){
+  return this->variance(0, 0);
+}
+
+Eigen::VectorXd Matter::getForceVariance(){
+  return this->variance.segment(1, numberOfFreeAtoms() * 3);
+}
+
+double Matter::getMaxVariance(){
+  return this->variance.maxCoeff();
+}
+
+std::shared_ptr<Potential> Matter::getPotential() {
+  return this->potential;
+}
