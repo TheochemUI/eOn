@@ -834,21 +834,26 @@ void Matter::computePotential() {
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
-    SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
-                                        this->potential->getType()));
+    // SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
+    //                                     this->potential->getType()));
     if (potential->getType() != PotType::PYSURROGATE) {
-      SPDLOG_TRACE("Regular Call");
+      // SPDLOG_TRACE("Regular Call");
       // Default value for true_pot, so not a surrogate run
-      std::tie(potentialEnergy, forces) =
-        potential->get_ef(positions, atomicNrs, cell);
+      auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
+        potentialEnergy = pE;
+        forces = frcs;
     } else {
-      SPDLOG_TRACE("Surrogate Call");
+      // SPDLOG_TRACE("Surrogate Call");
       // For the Surrogates, only use free data
-      auto [freePE, freeForces, variance] = potential->get_ef_var(
+      auto [freePE, freeForces, vari] = potential->get_ef(
           this->getPositionsFree(), this->getAtomicNrsFree(), cell);
       // Now populate full structures
       this->potentialEnergy = freePE;
-      this->variance = variance;
+      if (vari.has_value()) {
+        this->variance = vari.value();
+      } else {
+        throw std::runtime_error("You should have gotten a value\n");
+      }
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++){
         if (!isFixed(idx)){
           forces.row(idx) = freeForces.row(jdx);
