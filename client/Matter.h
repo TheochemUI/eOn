@@ -30,7 +30,7 @@ struct MatterPrivateData {
   VectorXi isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3d cell;
   Matrix3d cellInverse;
-  MatrixXd variance;
+  VectorXd variance;
   mutable double potentialEnergy;
 };
 
@@ -131,6 +131,9 @@ public:
   void setFixed(long int atom,
                 int isFixed); // set the atom to fixed (true) or movable (false)
   // void setPotentialEnergy(double);
+  double getEnergyVariance();
+  Eigen::VectorXd getForceVariance();
+  double getMaxVariance();
   double getPotentialEnergy();
   double getKineticEnergy() const;
   double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic
