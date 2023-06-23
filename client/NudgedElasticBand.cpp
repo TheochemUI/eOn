@@ -65,8 +65,36 @@ int NEBObjectiveFunction::degreesOfFreedom() {
   return 3 * neb->numImages * neb->atoms;
 }
 
+
+bool NEBObjectiveFunction::isUncertain(){
+  double maxMaxUnc = std::numeric_limits<double>::lowest();
+  double currentMaxUnc {0};
+  for (long i = 1; i <= neb->images; i++) {
+    currentMaxUnc = neb->image[i]->getEnergyVariance();
+    if (currentMaxUnc > maxMaxUnc) {
+      maxMaxUnc = currentMaxUnc;
+    }
+  }
+  // SPDLOG_TRACE("Current uncertainity at this point is {}", maxMaxUnc);
+  // If it is too high, bail out and then pass the whole path back up the stack
+  // The caller will then evaluate the maximum uncertainity image on the path
+  // Add that to the data-set and then retrain
+  bool unc_conv = maxMaxUnc > 0.05;
+  if (unc_conv){
+    SPDLOG_TRACE("High Uncertainity, setting status... will return {}", unc_conv );
+    this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY;
+    // TODO: unc_conv is really just a failure mode, not convergence
+  }
+  return unc_conv;
+}
+
 bool NEBObjectiveFunction::isConverged() {
-  return getConvergence() < params->nebConvergedForce;
+  bool force_conv = getConvergence() < params->nebConvergedForce;
+  if (params->job == JobType::GPSurrogate){
+    return ( force_conv || isUncertain() );
+  } else {
+    return force_conv;
+  }
 }
 
 double NEBObjectiveFunction::getConvergence() {
