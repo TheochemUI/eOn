@@ -33,12 +33,10 @@ public:
 
   // Functions
   void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
-  std::tuple<double, AtomMatrix, Eigen::MatrixXd>
-  get_ef_var(const AtomMatrix pos, const VectorXi atmnrs, const Matrix3d box);
   // To satisfy interface
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, const double *box) override;
+             double *U, double *variance, const double *box) override;
 
   // Variables [public]
   py::object gpmod;
