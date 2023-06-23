@@ -17,7 +17,8 @@ void Tip4p_H::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void Tip4p_H::force(long N, const double *R, const int *atomicNrs, double *F,
-                    double *U, const double *box) {
+                    double *U, double *variance, const double *box) {
+  variance = nullptr;
 
   double diffR[3], force[3];
   double energy;
