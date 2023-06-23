@@ -180,7 +180,8 @@ void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
 }
 
 void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
-                double *U, const double *box) {
+                double *U, double *variance, const double *box) {
+  variance = nullptr;
   if (init == false) {
     initialize(N, R, atomicNrs, box);
     new_vlist(N, R, box);

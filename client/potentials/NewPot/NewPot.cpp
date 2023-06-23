@@ -16,7 +16,8 @@ void NewPot::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void NewPot::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *box) {
+                   double *U, double *variance, const double *box) {
+  variance = nullptr;
 
   for (int i = 0; i < N; i++) {
     F[3 * i] = fake1;

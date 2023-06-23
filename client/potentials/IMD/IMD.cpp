@@ -25,7 +25,8 @@ void IMD::cleanMemory(void) {
 IMD::~IMD() { cleanMemory(); }
 
 void IMD::force(long N, const double *R, const int *atomicNrs, double *F,
-                double *U, const double *box) {
+                double *U, double *variance, const double *box) {
+  variance = nullptr;
   writeConfIMD(N, R, atomicNrs, box);
   system("imd_eon -p imd_eon.in.param > /dev/null");
   readForceIMD(N, F, U);

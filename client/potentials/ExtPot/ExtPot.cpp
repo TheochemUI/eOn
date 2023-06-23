@@ -18,7 +18,8 @@ void ExtPot::cleanMemory(void) { return; }
 ExtPot::~ExtPot() { cleanMemory(); }
 
 void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *box) {
+                   double *U, double *variance, const double *box) {
+  variance = nullptr;
   passToSystem(N, R, atomicNrs, box);
   system(eon_extpot_path);
   recieveFromSystem(N, F, U);

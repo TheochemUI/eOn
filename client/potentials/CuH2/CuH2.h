@@ -28,6 +28,6 @@ public:
   void cleanMemory(void);
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, const double *box) override;
+             double *U, double *variance, const double *box) override;
 };
 #endif

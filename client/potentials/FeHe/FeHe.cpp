@@ -17,7 +17,8 @@
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void FeHe::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, const double *box) {
+                 double *U, double *variance, const double *box) {
+  variance = nullptr;
   assert((int)N > 1);
 
   long i;
