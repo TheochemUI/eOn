@@ -1,4 +1,5 @@
 #include "GPSurrogateJob.h"
+#include "NudgedElasticBand.h"
 #include "NudgedElasticBandJob.h"
 #include "Potential.h"
 
@@ -22,8 +23,8 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto init_path = helper_functions::neb_paths::linearPath(*initial, *final_state, params->nebImages);
   for (std::size_t i = 0; i < init_path.size(); ++i) {
     auto &&mobj = init_path[i];
-    SPDLOG_TRACE("Index: {}, Positions Free:\n {}", i,
-                 fmt::streamed(mobj.getPositionsFree()));
+    // SPDLOG_TRACE("Index: {}, Positions Free:\n {}", i,
+    //              fmt::streamed(mobj.getPositionsFree()));
   }
   auto init_data = helper_functions::surrogate::getMidSlice(init_path);
   auto features = helper_functions::surrogate::get_features(init_data);
@@ -44,28 +45,39 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   // nebjob.run();
   // Start an NEB run
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
-  auto status{neb->compute()};
+  auto status_neb{neb->compute()};
+  bool job_not_finished{true};
   size_t n_gp{0};
-  while (status != NudgedElasticBand::NEBStatus::GOOD){
+  while (job_not_finished) {
     n_gp++;
-    SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
-    auto [feature, target] = helper_functions::surrogate::getNewDataPoint(neb->image);
-    helper_functions::eigen::addVectorRow(features, feature);
-    // SPDLOG_TRACE("New Features:\n {}", fmt::streamed(features));
-    helper_functions::eigen::addVectorRow(targets, target);
-    // SPDLOG_TRACE("New Targets:\n {}", fmt::streamed(targets));
-    pypot->train_optimize(features, targets);
-    if ( status==NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS && n_gp > 5){
-      std::exit(1);
-      pyparams->optMaxMove += 0.05;
-      pyparams->optMaxIterations += 50;
-      status = neb->compute();
-    } else {
-      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams, pypot);
-      status = neb->compute();
+    if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY) {
+      SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+      auto [feature, target] =
+          helper_functions::surrogate::getNewDataPoint(neb->image);
+      helper_functions::eigen::addVectorRow(features, feature);
+      // SPDLOG_TRACE("New Features:\n {}", fmt::streamed(features));
+      helper_functions::eigen::addVectorRow(targets, target);
+      // SPDLOG_TRACE("New Targets:\n {}", fmt::streamed(targets));
+      pypot->train_optimize(features, targets);
+      // if ( status==NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS && n_gp >
+      // 5){
+      //   // std::exit(1);
+      //   // pyparams->optMaxMove += 0.05;
+      //   // pyparams->optMaxIterations += 50;
+      //   // status = neb->compute();
+      // } else {
+      //   neb = std::make_unique<NudgedElasticBand>(initial, final_state,
+      //   pyparams, pypot); status = neb->compute();
+      // }
+      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
+                                                pypot);
+      status_neb = neb->compute();
+    }
+    if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
+      job_not_finished = false;
     }
   }
-  saveData(status, pot, std::move(neb));
+  saveData(status_neb, pot, std::move(neb));
   // BUG: This includes the endpoints again!!
   // auto more_data = helper_functions::surrogate::get_features(neb->image);
   // auto more_targets = helper_functions::surrogate::get_targets(neb->image, pot);
@@ -202,6 +214,9 @@ namespace helper_functions::surrogate {
     res.reserve(3);
     res.push_back(matobjs.front());
     // BUG: THIS ISN'T THE MIDDLE!!!!
+    // XXX: Why does this have to be in the same order?
+    // front mid back doesn't work
+    // front back mid works
     res.push_back(matobjs[(( matobjs.size() - 2 )*2.0/3.0)+1]);
     res.push_back(matobjs.back());
     return res;

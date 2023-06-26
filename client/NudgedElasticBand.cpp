@@ -69,12 +69,15 @@ int NEBObjectiveFunction::degreesOfFreedom() {
 bool NEBObjectiveFunction::isUncertain(){
   double maxMaxUnc = std::numeric_limits<double>::lowest();
   double currentMaxUnc {0};
+  fmt::print("\n");
   for (long i = 1; i <= neb->images; i++) {
     currentMaxUnc = neb->image[i]->getEnergyVariance();
+    fmt::print(" {} ", currentMaxUnc);
     if (currentMaxUnc > maxMaxUnc) {
       maxMaxUnc = currentMaxUnc;
     }
   }
+  fmt::print("\n");
   // SPDLOG_TRACE("Current uncertainity at this point is {}", maxMaxUnc);
   // If it is too high, bail out and then pass the whole path back up the stack
   // The caller will then evaluate the maximum uncertainity image on the path
@@ -91,7 +94,14 @@ bool NEBObjectiveFunction::isUncertain(){
 bool NEBObjectiveFunction::isConverged() {
   bool force_conv = getConvergence() < params->nebConvergedForce;
   if (params->job == JobType::GPSurrogate){
-    return ( force_conv || isUncertain() );
+    bool is_uncertain = isUncertain();
+    if (is_uncertain){
+      return true;
+    }
+    if (!(is_uncertain) && force_conv){
+      this->status=NudgedElasticBand::NEBStatus::GOOD;
+    return true;
+    }
   } else {
     return force_conv;
   }
@@ -172,7 +182,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   char fmt[] = "%10li %12.4e %14.4e %11li %12.4f\n";
   char fmtTiny[] = "%10li %12.4e %14.4e %11li %12.4e\n";
 
-  while (!objf.isConverged()) {
+  while (objf.status != NEBStatus::GOOD) {
+    if (objf.status == NEBStatus::MAX_UNCERTAINITY){
+      break;
+    }
     if (params->writeMovies) {
       bool append = true;
       if (iteration == 0)
@@ -200,16 +213,18 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     }
   }
 
-  if (objf.isConverged() && objf.status != NEBStatus::MAX_UNCERTAINITY) {
-    status = NEBStatus::GOOD;
-    log("NEB converged\n");
-    printImageData();
-    findExtrema();
-  }
-
   if (objf.status == NEBStatus::MAX_UNCERTAINITY) {
     status = NEBStatus::MAX_UNCERTAINITY;
     log("NEB failed due to high uncertainity\n");
+    delete optimizer;
+    return status;
+  }
+
+  if (objf.status == NEBStatus::GOOD) {
+    status = objf.status;
+    log("NEB converged\n");
+    printImageData();
+    findExtrema();
   }
 
   delete optimizer;
