@@ -2,7 +2,6 @@
 #include "Dimer.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
-#include "Log.h"
 #include "LowestEigenmode.h"
 #include "MinModeSaddleSearch.h"
 #include "NudgedElasticBand.h"
@@ -41,7 +40,7 @@ int BasinHoppingSaddleSearch::run(void) {
 
   for (int i = 1; i < neb.numImages; i++) {
     double Etest = neb.path[i]->getPotentialEnergy();
-    printf("i: %i Etest: %f \n", i, Etest);
+    SPDLOG_LOGGER_DEBUG(log, "i: {} Etest: {:.f}", i, Etest);
     if (Etest > Emax) {
       Emax = Etest;
       HighestImage = i;
