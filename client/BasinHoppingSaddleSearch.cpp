@@ -31,7 +31,7 @@ int BasinHoppingSaddleSearch::run(void) {
   // NEB reactant to minimized "saddle"
   NudgedElasticBand neb(reactant, product, params, pot);
   neb.image[0]->matter2con("neb_initial_band.con", false);
-  for (int j = 1; j < neb.images; j++) {
+  for (int j = 1; j < neb.numImages; j++) {
     neb.image[j]->matter2con("neb_initial_band", true);
   }
   neb.compute();
@@ -39,7 +39,7 @@ int BasinHoppingSaddleSearch::run(void) {
   double Emax = -1e100;
   int HighestImage = 0;
 
-  for (int i = 1; i < neb.images; i++) {
+  for (int i = 1; i < neb.numImages; i++) {
     double Etest = neb.image[i]->getPotentialEnergy();
     printf("i: %i Etest: %f \n", i, Etest);
     if (Etest > Emax) {
