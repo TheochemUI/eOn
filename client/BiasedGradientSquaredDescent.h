@@ -18,6 +18,7 @@ public:
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
+    log = spdlog::get("console");
   }
   ~BiasedGradientSquaredDescent() = default;
 
@@ -34,6 +35,7 @@ public:
 
 private:
   double reactantEnergy;
+  std::shared_ptr<spdlog::logger> log;
   //        double bgsdAlpha;
 };
 

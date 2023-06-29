@@ -1,5 +1,4 @@
 #include "GlobalOptimization.h"
-#include "Log.h"
 #include <stdio.h>
 
 GlobalOptimization::GlobalOptimization(Parameters *params) {
@@ -8,4 +7,4 @@ GlobalOptimization::GlobalOptimization(Parameters *params) {
 
 GlobalOptimization::~GlobalOptimization(void) {}
 
-void GlobalOptimization::run(void) { log("HELLO FROM GO\n"); }
+void GlobalOptimization::run(void) { SPDLOG_INFO("HELLO FROM GO\n"); }

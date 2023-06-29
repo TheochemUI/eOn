@@ -17,7 +17,10 @@ public:
         mdmin{params->globalOptimizationMdmin}, fcallsMove{0}, firstStep{true},
         fcallsRelax{0}, monfile{fopen("monitoring.dat", "w")}, earrfile{fopen(
                                                                    "earr.dat",
-                                                                   "w")} {}
+                                                                   "w")} {
+
+    log = spdlog::get("console");
+  }
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";
   ~GlobalOptimizationJob(void) {
@@ -61,6 +64,7 @@ private:
   string hoppingResult;
   FILE *monfile;
   FILE *earrfile;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

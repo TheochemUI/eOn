@@ -1,7 +1,6 @@
 #ifndef GPRHELPERS_H
 #define GPRHELPERS_H
 
-#include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
 

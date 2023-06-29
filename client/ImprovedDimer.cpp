@@ -3,7 +3,6 @@
 
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "LowestEigenmode.h"
 #include <cassert>
 #include <cmath>
@@ -29,6 +28,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   if (params->dimerOptMethod == OPT_CG) {
     init_cg = true;
   }
+  log = spdlog::get("console");
 }
 
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
@@ -275,14 +275,11 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       statsTorque = F_R.norm() / (2.0 * params->finiteDifference);
       statsRotations += 1;
-
-      log_file("[IDimerRot]  -----   ---------   ----------   "
-               "------------------   %9.4f   %7.3f   %6.2f   %4ld\n",
-               C_tau, statsTorque, statsAngle, statsRotations);
+      log = spdlog::basic_logger_mt("file_logger", "improvedDimer.log");
+      SPDLOG_LOGGER_INFO(log, "[IDimerRot]  -----   ---------   ----------   ------------------   {:9.4f}   {:7.3f}   {:6.2f}   {:4ld}", C_tau, statsTorque, statsAngle, statsRotations);
     } else {
-      log_file("[IDimerRot]  -----   ---------   ----------   "
-               "------------------   %9.4f   %7.3f   ------   ----\n",
-               C_tau, F_R.norm() / delta);
+      log = spdlog::basic_logger_mt("file_logger", "improvedDimer.log");
+      SPDLOG_LOGGER_INFO(log, "[IDimerRot]  -----   ---------   ----------   ------------------   {:9.4f}   {:7.3f}   ------   ----", C_tau, F_R.norm() / delta);
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and
