@@ -1,5 +1,4 @@
 #include "Dimer.h"
-#include "Log.h"
 
 using namespace helper_functions;
 
@@ -17,6 +16,7 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, std::shared_ptr<Parameters> params,
   direction.setZero();
   rotationalPlane.setZero();
   totalForceCalls = 0;
+  log = spdlog::basic_logger_mt("file_logger", "dimer.log");
 }
 
 // was estimateLowestEigenmode. rename to compute
@@ -113,10 +113,10 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       rotationalPlaneOld = rotationalPlane; // XXX: Is this copying correctly???
       rotations++;
     }
-
-    log_file("[DimerRot]   -----   ---------   ----------------   ---------  % "
-             "9.3e  % 9.3e  % 9.3e   ---------\n",
-             curvature, torque, rotationAngle * (180.0 / M_PI));
+    SPDLOG_LOGGER_DEBUG(log,
+                        "[DimerRot]   -----   ---------   ----------------   "
+                        "---------  {:9.3e}  {:9.3e}  {:9.3e}   ---------\n",
+                        curvature, torque, rotationAngle * (180.0 / M_PI));
   }
 
   statsTorque = torque;

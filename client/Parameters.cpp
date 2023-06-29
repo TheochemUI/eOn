@@ -932,9 +932,6 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
     monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
 
-    log_close();
-    log_init(this, (char *)"client.log");
-
     // Sanity Checks
     if (parrepStateCheckInterval > mdTime &&
         helper_functions::getJobName(job) == "parallel_replica") {
