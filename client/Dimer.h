@@ -1,12 +1,6 @@
 #ifndef DIMER_H
 #define DIMER_H
 
-#include <cassert>
-#include <cmath>
-#include <math.h>
-
-#include "Eigen.h"
-
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
 #include "Matter.h"
@@ -28,9 +22,10 @@ public:
   AtomMatrix getEigenvector();               // return the current eigenvector
 
 private:
-  std::shared_ptr<Matter> matterCenter; // center of the dimer
-  std::shared_ptr<Matter> matterDimer;  // one configuration of the dimer
-  AtomMatrix direction;                 // direction along the dimer
+  std::shared_ptr<spdlog::logger> log;
+  std::shared_ptr<Matter> matterCenter;       // center of the dimer
+  std::shared_ptr<Matter> matterDimer;        // one configuration of the dimer
+  AtomMatrix direction;       // direction along the dimer
   AtomMatrix rotationalPlane; // direction normal to the plane of dimer rotation
   double eigenvalue;          // current curvature along the dimer
   int nAtoms;
