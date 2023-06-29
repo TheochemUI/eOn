@@ -24,9 +24,8 @@ public:
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
-  ~NudgedElasticBand();
+  ~NudgedElasticBand() = default;
 
-  void clean(void);
   NudgedElasticBand::NEBStatus compute(void);
   void updateForces(void);
   double convergenceForce(void);
@@ -35,7 +34,7 @@ public:
 
   int atoms;
   long numImages, climbingImage, numExtrema;
-  std::vector<std::shared_ptr<Matter>> image; // NEB images
+  std::vector<std::shared_ptr<Matter>> path; // NEB images
   std::vector<std::shared_ptr<AtomMatrix>> tangent;
   std::vector<std::shared_ptr<AtomMatrix>> projectedForce;
   std::vector<double> extremumEnergy;
