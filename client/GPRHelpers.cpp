@@ -186,9 +186,9 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   } else {
     if (number_of_mov_atoms == 0) {
       //!> Sometimes, nothing happens
-      log(" You need to have atoms move!!!\nIn stillness there is only "
+      SPDLOG_CRITICAL(" You need to have atoms move!!!\nIn stillness there is only "
           "death\n");
-      exit(1);
+      std::exit(1);
     }
     //!> Now we will consider the case when everything is moving
     //! Everything is almost exactly the same, only we don't have frozen atoms
