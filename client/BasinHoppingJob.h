@@ -10,7 +10,9 @@ class BasinHoppingJob : public Job {
 public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)), current{std::make_shared<Matter>(pot, params)},
-        trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
+        trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {
+    log = spdlog::get("console");
+  }
   ~BasinHoppingJob(void) = default;
 
   std::vector<std::string> run(void) override;
@@ -30,6 +32,7 @@ private:
 
   std::vector<std::shared_ptr<Matter>> uniqueStructures;
   std::vector<double> uniqueEnergies;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif
