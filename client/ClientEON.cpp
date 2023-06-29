@@ -79,9 +79,11 @@ void printSystemInfo() {
 }
 
 int main(int argc, char **argv) {
+  auto console_traceback = spdlog::stdout_color_st("console_traceback");
   auto console = spdlog::stdout_color_st("console");
   auto err_logger = spdlog::stderr_color_st("stderr");
-  spdlog::set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
+  console->set_pattern("%v");
+  console_traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
   spdlog::set_level(spdlog::level::trace);
   spdlog::set_default_logger(console);
   Parameters parameters;
