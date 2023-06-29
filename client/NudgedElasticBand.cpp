@@ -1,7 +1,9 @@
 #include "NudgedElasticBand.h"
 #include "Optimizer.h"
+#include <filesystem>
 
 using namespace helper_functions;
+namespace fs = std::filesystem;
 
 namespace helper_functions::neb_paths {
   std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs){
@@ -415,12 +417,17 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
 
-  SPDLOG_DEBUG("Image data (as in neb.dat)\n");
-
-  FILE *fh = NULL;
+  std::shared_ptr<spdlog::logger> fileLogger;
   if (writeToFile) {
-    fh = fopen("neb.dat", "w");
+    // Remove existing log file if it exists
+    if (fs::exists("neb.dat")) {
+      SPDLOG_DEBUG("Removing the file since it exists");
+      fs::remove("neb.dat");
+    }
+    fileLogger = spdlog::basic_logger_mt("file_logger", "neb.dat");
   }
+
+  SPDLOG_DEBUG("Image data (as in neb.dat)");
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
@@ -434,18 +441,17 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
       dist = path[i]->distanceTo(*path[i - 1]);
       distTotal += dist;
     }
-    if (fh == NULL) {
-      SPDLOG_DEBUG("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
-             path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-             (path[i]->getForces().array() * tang.array()).sum());
+    if (fileLogger) {
+      SPDLOG_LOGGER_DEBUG(
+          fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
+          (path[i]->getForces().array() * tang.array()).sum());
     } else {
-      fprintf(fh, "%3li %12.6f %12.6f %12.6f\n", i, distTotal,
-              path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-              (path[i]->getForces().array() * tang.array()).sum());
+      SPDLOG_DEBUG("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+                   path[i]->getPotentialEnergy() -
+                       path[0]->getPotentialEnergy(),
+                   (path[i]->getForces().array() * tang.array()).sum());
     }
-  }
-  if (writeToFile) {
-    fclose(fh);
   }
 }
 
