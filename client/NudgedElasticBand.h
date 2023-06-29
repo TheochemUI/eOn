@@ -48,6 +48,7 @@ public:
 private:
   std::shared_ptr<Parameters> params;
   std::shared_ptr<Potential> pot;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 class NEBObjectiveFunction : public ObjectiveFunction {
