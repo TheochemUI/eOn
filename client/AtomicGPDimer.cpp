@@ -3,7 +3,6 @@
 #include "AtomicGPDimer.h"
 #include "GPRHelpers.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include <cassert>
 #include <cmath>
 
