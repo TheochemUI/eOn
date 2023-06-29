@@ -34,16 +34,16 @@ public:
   void printImageData(bool writeToFile = false);
 
   int atoms;
-  long images, climbingImage, numExtrema;
+  long numImages, climbingImage, numExtrema;
   std::vector<std::shared_ptr<Matter>> image; // NEB images
-  AtomMatrix **tangent;
-  AtomMatrix **projectedForce;
-  bool movedAfterForceCall;
-  double *extremumEnergy;
-  double *extremumPosition;
-  double *extremumCurvature;
+  std::vector<std::shared_ptr<AtomMatrix>> tangent;
+  std::vector<std::shared_ptr<AtomMatrix>> projectedForce;
+  std::vector<double> extremumEnergy;
+  std::vector<double> extremumPosition;
+  std::vector<double> extremumCurvature;
 
   long maxEnergyImage;
+  bool movedAfterForceCall;
 
 private:
   std::shared_ptr<Parameters> params;
