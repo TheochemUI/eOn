@@ -141,10 +141,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   NEBObjectiveFunction objf(this, params);
 
   Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
-
-  const char *forceLabel = params->optConvergenceMetricLabel.c_str();
-  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}",
-                 "iteration", "step size", "forceLabel", "max image", "max energy");
+  SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
+               "step size", params->optConvergenceMetricLabel, "max image",
+               "max energy");
   SPDLOG_DEBUG("---------------------------------------------------------------\n");
 
   while (!objf.isConverged()) {
@@ -211,7 +210,7 @@ double NudgedElasticBand::convergenceForce(void) {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
       SPDLOG_DEBUG("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
-          params->optConvergenceMetric.c_str());
+          params->optConvergenceMetric);
       exit(1);
     }
     if (params->nebClimbingImageConvergedOnly == true &&
@@ -377,7 +376,7 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
   if (writeToFile) {
     // Remove existing log file if it exists
     if (fs::exists("neb.dat")) {
-      SPDLOG_DEBUG("Removing the file since it exists");
+      SPDLOG_DEBUG("Previous neb.dat found, overwriting");
       fs::remove("neb.dat");
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", "neb.dat");
