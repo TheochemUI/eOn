@@ -3,7 +3,7 @@
 // #include "MinimizationJob.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
-#include "Log.h"
+#include <spdlog/spdlog.h>
 
 using namespace helper_functions;
 
@@ -23,16 +23,16 @@ std::vector<std::string> GlobalOptimizationJob::run(void) {
   // double epot_hop;
   // std::vector<double> earr;
   // std::vector<Matter> allmatter;
-  printf("\nBeginning minima hopping of %s\n", reactant_passed.c_str());
+  SPDLOG_LOGGER_DEBUG(log, "\nBeginning minima hopping of %s", reactant_passed.c_str());
   // long fcalls;
-  // printf("fcalls= %ld\n",matter_cur->getForceCalls());
-  // printf("epot= %24.15E\n",matter_cur->getPotentialEnergy());
-  // printf("fcalls= %ld\n",matter_cur->getForceCalls());
-  // printf("epot= %24.15E\n",matter_cur->getPotentialEnergy());
-  // printf("fcalls= %ld\n",matter_cur->getForceCalls());
+  // SPDLOG_LOGGER_DEBUG(log, "fcalls= {}", matter_cur->getForceCalls());
+  // SPDLOG_LOGGER_DEBUG(log, "epot= {:24.15E}", matter_cur->getPotentialEnergy());
+  // SPDLOG_LOGGER_DEBUG(log, "fcalls= {}", matter_cur->getForceCalls());
+  // SPDLOG_LOGGER_DEBUG(log, "epot= {:24.15E}", matter_cur->getPotentialEnergy());
+  // SPDLOG_LOGGER_DEBUG(log, "fcalls= {}", matter_cur->getForceCalls());
   converged = matter_cur->relax(false, params->writeMovies, params->checkpoint,
                                 "min", "matter_cur");
-  printf("converged %s \n", (converged) ? "TRUE" : "FALSE");
+  SPDLOG_LOGGER_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   // nlmin=0;
   // if(nlmin==0)
   earr.push_back(matter_cur->getPotentialEnergy());
@@ -58,7 +58,7 @@ std::vector<std::string> GlobalOptimizationJob::run(void) {
     } else {
       earrim1 = earr[i - 1];
     }
-    fprintf(earrfile, "%5lu  %15.5f  %15.5f  %15.5f  \n", i + 1, earr[i],
+    fprintf(earrfile, "%5lu  %15.5f  %15.5f  %15.5f  ", i + 1, earr[i],
             earr[i] - earr[0], earr[i] - earrim1);
   }
   // globopt.run();
@@ -73,7 +73,7 @@ void GlobalOptimizationJob::analyze(Matter *matter_cur, Matter *matter_hop) {
   }
   double epot = matter_hop->getPotentialEnergy();
   size_t jlo = hunt(epot);
-  // printf("REZA: %lu \n",jlo);
+  // SPDLOG_LOGGER_DEBUG(log, "REZA: {}", jlo);
   if (abs(epot - earr[jlo]) < params->energyDifference) {
     hoppingResult = "already_visited";
   } else {
@@ -84,25 +84,27 @@ void GlobalOptimizationJob::analyze(Matter *matter_cur, Matter *matter_hop) {
     matter_cur[0] = matter_hop[0];
     size_t jlo = hunt(matter_hop->getPotentialEnergy());
     if (hoppingResult == "new" && jlo == 0 && epot_hop < earr[0]) {
-      printf("new lowest: nlmin, epot_hop, dE %7d %15.5f %10.5f\n", 1, epot_hop,
-             epot_hop - earr[0]);
+      SPDLOG_LOGGER_DEBUG(log, "new lowest: nlmin, epot_hop, dE {:7d} {:15.5f} {:10.5f}", 1, epot_hop, epot_hop - earr[0]);
     }
-    // printf("%15.5f  %15.5f  %15.5f  \n",epot_hop, earr[0],earr[1]);
-    // exit(1);
+    // log = spdlog::get("console_traceback");
+    // SPDLOG_LOGGER_CRITICAL(log, "{:15.5f}  {:15.5f}  {:15.5f}  ", epot_hop, earr[0], earr[1]);
+    // std::exit(1);
     insert(matter_cur);
   } else if (decisionResult == "rejected") {
     // matter_hop[0]=matter_cur[0];
   } else {
-    printf(
-        "ERROR: new minimum is neither accepted nor rejected: client stops.\n");
-    exit(0);
+    log = spdlog::get("console_traceback");
+    SPDLOG_LOGGER_CRITICAL(
+        log,
+        "ERROR: new minimum is neither accepted nor rejected: client stops.");
+    std::exit(1);
   }
 }
 
 void GlobalOptimizationJob::examineEscape(Matter *matter_cur,
                                           Matter *matter_hop) {
-  // fprintf(monfile,"%15.5f  %15.5f  %15.5f
-  // \n",matter_hop->getPotentialEnergy(),
+  // fSPDLOG_LOGGER_DEBUG(log, monfile,"%15.5f  %15.5f  %15.5f
+  // ",matter_hop->getPotentialEnergy(),
   // matter_cur->getPotentialEnergy(),matter_hop->getPotentialEnergy()-matter_cur->getPotentialEnergy());
   double epot, epot_hop;
   epot = matter_cur->getPotentialEnergy();
@@ -111,7 +113,7 @@ void GlobalOptimizationJob::examineEscape(Matter *matter_cur,
     escapeResult = "failure";
   } else {
     escapeResult = "success";
-    // fprintf(monfile,"%15.5f  %15.5f  %15.5f           \n", epot_hop, ediff,
+    // fprintf(monfile,"%15.5f  %15.5f  %15.5f           ", epot_hop, ediff,
     // ekin);
   }
 }
@@ -128,9 +130,10 @@ void GlobalOptimizationJob::applyMoveFeedbackMD(void) {
   } else if (hoppingResult == "new") {
     ekin *= beta3;
   } else {
-    printf("ERROR: client does not know what to do with ekin. \n");
-    printf("ERROR: client stops in applyMoveFeedbackMD.\n");
-    exit(0);
+    log = spdlog::get("console_traceback");
+    SPDLOG_LOGGER_CRITICAL(log, "ERROR: client does not know what to do with ekin.");
+    SPDLOG_LOGGER_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
+    std::exit(1);
   }
 }
 
@@ -169,7 +172,7 @@ void GlobalOptimizationJob::report(Matter *matter_hop) {
   double epot_hop = matter_hop->getPotentialEnergy();
   double temp = (2.0 * ekin_p / params->kB);
   double dt = params->mdTimeStep;
-  fprintf(monfile, "%15.5f  %15.5f  %11lu  %12.2f         %c%c  %5ld  %5ld\n",
+  fprintf(monfile, "%15.5f  %15.5f  %11lu  %12.2f         %c%c  %5ld  %5ld",
           epot_hop, ediff, (size_t)temp, dt, C1, C2, fcallsMove, fcallsRelax);
 }
 
@@ -187,8 +190,9 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
   } else if (params->globalOptimizationDecisionMethod == "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
-    printf("ERROR: accept/reject method not specified. client stops.\n");
-    exit(0);
+    log = spdlog::get("console_traceback");
+    SPDLOG_LOGGER_CRITICAL(log, "ERROR: accept/reject method not specified. client stops.");
+    std::exit(1);
   }
   applyDecisionFeedback();
 }
@@ -241,7 +245,7 @@ void GlobalOptimizationJob::hoppingStep(long istep, Matter *matter_cur,
   hoppingResult = "unknown";
   converged = matter_hop->relax(true, params->writeMovies, params->checkpoint,
                                 "min", "matter_hop");
-  printf("converged %s \n", (converged) ? "TRUE" : "FALSE");
+  SPDLOG_LOGGER_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   long fcalls3 = matter_hop->getForceCalls();
   fcallsMove = fcalls2 - fcalls1;
   fcallsRelax = fcalls3 - fcalls2;
@@ -263,8 +267,9 @@ void GlobalOptimizationJob::randomMove(Matter *matter) {
         } else if (params->basinHoppingDisplacementDistribution == "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
-          log("Unknown displacement_distribution\n");
-          exit(1);
+          log = spdlog::get("console_traceback");
+          SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_distribution");
+          std::exit(1);
         }
       }
     }
@@ -286,8 +291,7 @@ void GlobalOptimizationJob::mdescape(Matter *matter) {
   double enmin1 = 0.0, enmin2 = 0.0, en0000 = 0.0;
   double econs_max = -1.E100, econs_min = 1.E100, devcon;
   bool md_presumably_escaped = false;
-  printf("MD  %5d  %20.10E  %15.5E  %15.5E  \n", 0, epot - epot0, ekinc,
-         etot - etot0);
+  SPDLOG_LOGGER_DEBUG(log, "MD  {:5d}  {:20.10E}  {:15.5E}  {:15.5E}  ", 0, epot - epot0, ekinc, etot - etot0);
   nmd = 1000;
   for (int imd = 1; imd <= nmd; imd++) {
     enmin2 = enmin1;
@@ -301,13 +305,12 @@ void GlobalOptimizationJob::mdescape(Matter *matter) {
       nummax += 1;
     if (enmin1 < enmin2 && enmin1 < en0000)
       nummin += 1;
-    // printf("MD  %5d  %15.5f  %15.5f  %12.2E  %4lu
-    // %4lu\n",imd,epot-epot0,ekinc,etot-etot0,nummax,nummin);
+    // SPDLOG_LOGGER_DEBUG(log, "MD  {:5d}  {:15.5f}  {:15.5f}  {:12.2E}  {:4lu}  {:4lu}", imd, epot - epot0, ekinc, etot - etot0, nummax, nummin);
     econs_max = max(econs_max, ekinc + epot);
     econs_min = min(econs_min, ekinc + epot);
     if (nummin >= (size_t)mdmin) {
       if (nummax != nummin)
-        printf("WARNING: iproc,nummin,nummax %4lu %4lu", nummin, nummax);
+        SPDLOG_LOGGER_WARN(log, "WARNING: iproc,nummin,nummax {:4lu} {:4lu}", nummin, nummax);
       md_presumably_escaped = true;
       break;
     }
@@ -321,7 +324,7 @@ void GlobalOptimizationJob::mdescape(Matter *matter) {
       params->mdTimeStep /= 1.1;
     }
   } else {
-    printf("TOO MANY MD STEPS  \n");
+    SPDLOG_LOGGER_DEBUG(log, "TOO MANY MD STEPS  ");
     params->mdTimeStep *= 2.0;
   }
 }
@@ -345,8 +348,7 @@ void GlobalOptimizationJob::velopt(Matter *matter) {
     vtot[1] += vat(iat, 1);
     vtot[2] += vat(iat, 2);
   }
-  printf("Linear momentum  %15.5E  %15.5E  %15.5E  \n", vtot[0], vtot[1],
-         vtot[2]);
+  SPDLOG_LOGGER_DEBUG(log, "Linear momentum  {:15.5E}  {:15.5E}  {:15.5E}  ", vtot[0], vtot[1], vtot[2]);
   vtot[0] /= matter->numberOfAtoms();
   vtot[1] /= matter->numberOfAtoms();
   vtot[2] /= matter->numberOfAtoms();
@@ -381,7 +383,7 @@ void GlobalOptimizationJob::insert(Matter *matter) {
   // vector<double>::iterator it;
   epot = matter->getPotentialEnergy();
   jlo = hunt(epot);
-  printf("JLO= %5lu  %10.5f  \n", jlo, abs(epot - earr[jlo]));
+  SPDLOG_LOGGER_DEBUG(log, "JLO= {:5lu}  {:10.5f}  ", jlo, std::abs(epot - earr[jlo]));
   // it=earr.begin()+jlo;
   // epot_hop.push_back(epot);
   if (!(abs(epot - earr[jlo]) < params->energyDifference)) {
