@@ -40,14 +40,14 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
         transitionState->getPositions() - initial->getPositions());
     AtomMatrix TSToProduct = transitionState->pbc(
         final_state->getPositions() - transitionState->getPositions());
-    for (int image = 1; image <= neb->images; image++) {
-      int mid = neb->images / 2 + 1;
+    for (int image = 1; image <= neb->numImages; image++) {
+      int mid = neb->numImages / 2 + 1;
       if (image < mid) {
         double frac = ((double)image) / ((double)mid);
         neb->image[image]->setPositions(initial->getPositions() +
                                         frac * reactantToTS);
       } else if (image > mid) {
-        double frac = (double)(image - mid) / (double)(neb->images - mid + 1);
+        double frac = (double)(image - mid) / (double)(neb->numImages - mid + 1);
         neb->image[image]->setPositions(transitionState->getPositions() +
                                         frac * TSToProduct);
       } else if (image == mid) {
@@ -85,8 +85,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",
           neb->image[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->images);
-  for (long i = 0; i <= neb->images + 1; i++) {
+  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
     fprintf(fileResults, "%f image%li_energy\n",
             neb->image[i]->getPotentialEnergy() -
                 neb->image[0]->getPotentialEnergy(),
@@ -108,7 +108,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
   fileNEB = fopen(nebFilename.c_str(), "wb");
-  for (long i = 0; i <= neb->images + 1; i++) {
+  for (long i = 0; i <= neb->numImages + 1; i++) {
     neb->image[i]->matter2con(fileNEB);
   }
   fclose(fileNEB);

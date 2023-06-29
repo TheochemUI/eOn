@@ -124,15 +124,15 @@ int DynamicsSaddleSearch::run(void) {
               saddle->pbc(product->getPositions() - saddle->getPositions());
           log("Initial band saved to neb_initial_band.con\n");
           neb.image[0]->matter2con("neb_initial_band.con", false);
-          for (int image = 1; image <= neb.images; image++) {
-            int mid = neb.images / 2 + 1;
+          for (int image = 1; image <= neb.numImages; image++) {
+            int mid = neb.numImages / 2 + 1;
             if (image < mid) {
               double frac = ((double)image) / ((double)mid);
               neb.image[image]->setPositions(reactant->getPositions() +
                                              frac * reactantToSaddle);
             } else if (image > mid) {
               double frac =
-                  (double)(image - mid) / (double)(neb.images - mid + 1);
+                  (double)(image - mid) / (double)(neb.numImages - mid + 1);
               neb.image[image]->setPositions(saddle->getPositions() +
                                              frac * saddleToProduct);
             } else if (image == mid) {
@@ -140,11 +140,11 @@ int DynamicsSaddleSearch::run(void) {
             }
             neb.image[image]->matter2con("neb_initial_band.con", true);
           }
-          neb.image[neb.images + 1]->matter2con("neb_initial_band.con", true);
+          neb.image[neb.numImages + 1]->matter2con("neb_initial_band.con", true);
         } else {
           log("Linear interpolation between minima used for initial band\n");
           neb.image[0]->matter2con("neb_initial_band.con", false);
-          for (int j = 1; j <= neb.images + 1; j++) {
+          for (int j = 1; j <= neb.numImages + 1; j++) {
             neb.image[j]->matter2con("neb_initial_band.con", true);
           }
         }
@@ -216,7 +216,7 @@ int DynamicsSaddleSearch::run(void) {
           } else {
             log("no maxima found, using max energy non-endpoint image\n");
             double maxEnergy = -INFINITY;
-            for (int image = 1; image <= neb.images; image++) {
+            for (int image = 1; image <= neb.numImages; image++) {
               double U = neb.image[image]->getPotentialEnergy();
               if (U > maxEnergy) {
                 maxEnergy = U;
@@ -232,7 +232,7 @@ int DynamicsSaddleSearch::run(void) {
             }
           }
         } else {
-          neb.maxEnergyImage = neb.images / 2 + 1;
+          neb.maxEnergyImage = neb.numImages / 2 + 1;
         }
 
         log("Initial saddle guess saved to saddle_initial_guess.con\n");
