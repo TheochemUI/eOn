@@ -4,5 +4,5 @@ water=shared_library('water',
            'ccl.cpp',
            'Water.cpp',
            'potential_base.cpp',
-           dependencies : eigen_dep,
+           dependencies : _deps,
            install : true)
