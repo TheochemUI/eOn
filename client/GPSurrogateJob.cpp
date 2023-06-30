@@ -221,16 +221,18 @@ namespace helper_functions::surrogate {
     res.push_back(matobjs[(( matobjs.size() - 2 )*2.0/3.0)+1]);
     return res;
   }
-  Eigen::VectorXd make_target(Matter &m1) {
+  Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
     const auto ncols = (m1.numberOfFreeAtoms() * 3) + 1;
     Eigen::VectorXd target(ncols);
+    m1.setPotential(true_pot);
     target(0) = m1.getPotentialEnergy();
-    target.segment(1, ncols - 1) = m1.getForcesFreeV();
+    target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
     // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
     return target;
   }
   std::pair<Eigen::VectorXd, Eigen::VectorXd>
-  getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs) {
+  getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
+                  std::shared_ptr<Potential> true_pot) {
     // TODO: Refactor
     // This function takes the path, finds the "best" new data point to be
     // evaluated and returns the features and targets for that particular point
@@ -251,7 +253,7 @@ namespace helper_functions::surrogate {
     // SPDLOG_TRACE("Generated Feature:\n{}", fmt::streamed(matobjs[maxIndex]->getPositionsFreeV()));
     return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
         matobjs[maxIndex]->getPositionsFreeV(),
-        make_target(*matobjs[maxIndex]));
+        make_target(*matobjs[maxIndex], true_pot));
   }
 }
 
