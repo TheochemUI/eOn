@@ -19,7 +19,7 @@ public:
                                                                    "earr.dat",
                                                                    "w")} {
 
-    log = spdlog::get("console");
+    log = spdlog::get("combi");
   }
   // etoler = parameters->globalOptimizationEtoler;
   // decisionMethod = "NPEW";

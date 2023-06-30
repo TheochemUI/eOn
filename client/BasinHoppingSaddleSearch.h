@@ -17,7 +17,7 @@ public:
         reactant{std::make_shared<Matter>(*reactant)}, saddle{displacement} {
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("console");
+    log = spdlog::get("combi");
   }
   ~BasinHoppingSaddleSearch() = default;
 
