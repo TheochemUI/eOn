@@ -191,7 +191,7 @@ namespace helper_functions::surrogate {
     for (long idx{0}; idx < targets.rows(); idx++){
       matobjs[idx].setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
-      targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFree().array();
+      targets.block(idx, 1, 1, ncols-1) = matobjs[idx].getForcesFree().array() * -1;
     }
     SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
@@ -203,7 +203,7 @@ namespace helper_functions::surrogate {
     for (long idx{0}; idx < targets.rows(); idx++){
       matobjs[idx]->setPotential(true_pot);
       targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
-      targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFree().array();
+      targets.block(idx, 1, 1, ncols-1) = matobjs[idx]->getForcesFree().array() * -1;
     }
     SPDLOG_TRACE("Targets\n:{}", fmt::streamed(targets));
     return targets;
@@ -217,8 +217,8 @@ namespace helper_functions::surrogate {
     // XXX: Why does this have to be in the same order?
     // front mid back doesn't work
     // front back mid works
-    res.push_back(matobjs[(( matobjs.size() - 2 )*2.0/3.0)+1]);
     res.push_back(matobjs.back());
+    res.push_back(matobjs[(( matobjs.size() - 2 )*2.0/3.0)+1]);
     return res;
   }
   Eigen::VectorXd make_target(Matter &m1) {
