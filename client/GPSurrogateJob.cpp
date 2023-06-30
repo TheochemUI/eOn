@@ -48,12 +48,12 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
-  while (job_not_finished) {
+  while (job_not_finished && n_gp < 10) {
     n_gp++;
     if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY) {
       SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
       auto [feature, target] =
-          helper_functions::surrogate::getNewDataPoint(neb->image);
+          helper_functions::surrogate::getNewDataPoint(neb->image, pot);
       helper_functions::eigen::addVectorRow(features, feature);
       // SPDLOG_TRACE("New Features:\n {}", fmt::streamed(features));
       helper_functions::eigen::addVectorRow(targets, target);
