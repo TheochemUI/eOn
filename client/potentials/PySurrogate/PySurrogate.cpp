@@ -18,6 +18,7 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
       R"(sys.path.insert(0, "/home/rgoswami/Git/Github/Python/DTU_CatLearn"))");
 
   // Import the required modules
+  py::module np = py::module::import("numpy");
   py::module_ hpfitter_module =
       py::module_::import("catlearn.regression.gaussianprocess.hpfitter");
   py::module_ objectfunctions_module =
@@ -31,6 +32,8 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
       py::module_::import("catlearn.regression.gaussianprocess.means.max");
   py::module_ _kernel =
     py::module_::import("catlearn.regression.gaussianprocess.kernel.se");
+  py::module_ normal_module =
+    py::module_::import("catlearn.regression.gaussianprocess.pdistributions.normal");
 
   // Get the classes from the imported modules
   py::object hpfitter_class = hpfitter_module.attr("HyperparameterFitter");
@@ -58,11 +61,21 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
   kwargs_optimize["use_bounds"] = true;
   kwargs_optimize["local_kwargs"] = local_kwargs;
 
+  // Hyperparameter Prior
+  py::object normal_class = normal_module.attr("Normal_prior");
+  py::list lenlist, noiselist;
+  lenlist.append(normal_class(0.0, 2.0));
+  noiselist.append(normal_class(-9.0, 2.0));
+  _prior["length"] = np.attr("array")(lenlist);
+  _prior["noise"] = np.attr("array")(noiselist);
+
+  // Hyperparameter Fitter
   this->hpfit = hpfitter_class(objectfunctions_class(), line_search_scale_class,
                                py::arg("opt_kwargs") = kwargs_optimize,
                                py::arg("distance_matrix") = true);
-
+  // Kernel
   this->kernel = kernel_class(py::arg("use_fingerprint") = false);
+  // GP Model
   this->gpmod =
       gp_class(py::arg("prior") = prior_max_class(), py::arg("kernel") = kernel,
                py::arg("use_derivatives") = true, py::arg("hpfitter") = hpfit);
@@ -70,7 +83,10 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
 
 void PySurrogate::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
-  gpmod.attr("optimize")(features, targets);
+
+  gpmod.attr("optimize")(features, targets,
+                         py::arg("retrain") = true,
+                         py::arg("prior") = _prior);
   return;
 }
 void PySurrogate::cleanMemory(void) { return; }
