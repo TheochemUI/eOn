@@ -27,6 +27,7 @@ class PySurrogate : public Potential {
 
 private:
   py::object hpfit;
+  py::object kernel;
 
 public:
   PySurrogate(shared_ptr<Parameters> p);
