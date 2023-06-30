@@ -86,14 +86,14 @@ void GlobalOptimizationJob::analyze(Matter *matter_cur, Matter *matter_hop) {
     if (hoppingResult == "new" && jlo == 0 && epot_hop < earr[0]) {
       SPDLOG_LOGGER_DEBUG(log, "new lowest: nlmin, epot_hop, dE {:7d} {:15.5f} {:10.5f}", 1, epot_hop, epot_hop - earr[0]);
     }
-    // log = spdlog::get("console_traceback");
+    // log = spdlog::get("_traceback");
     // SPDLOG_LOGGER_CRITICAL(log, "{:15.5f}  {:15.5f}  {:15.5f}  ", epot_hop, earr[0], earr[1]);
     // std::exit(1);
     insert(matter_cur);
   } else if (decisionResult == "rejected") {
     // matter_hop[0]=matter_cur[0];
   } else {
-    log = spdlog::get("console_traceback");
+    log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(
         log,
         "ERROR: new minimum is neither accepted nor rejected: client stops.");
@@ -130,7 +130,7 @@ void GlobalOptimizationJob::applyMoveFeedbackMD(void) {
   } else if (hoppingResult == "new") {
     ekin *= beta3;
   } else {
-    log = spdlog::get("console_traceback");
+    log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(log, "ERROR: client does not know what to do with ekin.");
     SPDLOG_LOGGER_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
     std::exit(1);
@@ -190,7 +190,7 @@ void GlobalOptimizationJob::decisionStep(Matter *matter_cur,
   } else if (params->globalOptimizationDecisionMethod == "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
-    log = spdlog::get("console_traceback");
+    log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(log, "ERROR: accept/reject method not specified. client stops.");
     std::exit(1);
   }
@@ -267,7 +267,7 @@ void GlobalOptimizationJob::randomMove(Matter *matter) {
         } else if (params->basinHoppingDisplacementDistribution == "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
-          log = spdlog::get("console_traceback");
+          log = spdlog::get("_traceback");
           SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_distribution");
           std::exit(1);
         }

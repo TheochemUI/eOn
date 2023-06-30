@@ -13,7 +13,7 @@ BondBoost::BondBoost(Matter *matt, Parameters *params) {
   RAList = nullptr;
   TABAList = nullptr;
   BBAList = nullptr;
-  log = spdlog::get("console");
+  log = spdlog::get("combi");
 }
 
 BondBoost::~BondBoost() {

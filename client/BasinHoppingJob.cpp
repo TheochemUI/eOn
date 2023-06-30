@@ -31,7 +31,7 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   vector<long> Elements;
   Elements = getElements(current.get());
   if (params->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
-    log = spdlog::get("console_traceback");
+    log = spdlog::get("_traceback");
     SPDLOG_LOGGER_CRITICAL(log,
                         "error: [Basin Hopping] swap move probability must be "
                         "zero if there is only one element type\n");
@@ -320,7 +320,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         double Cq = curDisplacement / (distvec.maxCoeff() * distvec.maxCoeff());
         disp = Cq * dist * dist;
       } else {
-        log = spdlog::get("console_traceback");
+        log = spdlog::get("_traceback");
         SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_algorithm\n");
         std::exit(1);
       }
@@ -330,7 +330,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         } else if (params->basinHoppingDisplacementDistribution == "gaussian") {
           displacement(i, j) = gaussRandom(0.0, disp);
         } else {
-          log = spdlog::get("console_traceback");
+          log = spdlog::get("_traceback");
           SPDLOG_LOGGER_CRITICAL(log, "Unknown displacement_distribution\n");
           std::exit(1);
         }
