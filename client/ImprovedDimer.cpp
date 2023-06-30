@@ -4,8 +4,6 @@
 #include "ImprovedDimer.h"
 #include "HelperFunctions.h"
 #include "LowestEigenmode.h"
-#include <cassert>
-#include <cmath>
 
 using namespace helper_functions;
 
@@ -275,11 +273,17 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
       statsTorque = F_R.norm() / (2.0 * params->finiteDifference);
       statsRotations += 1;
-      log = spdlog::basic_logger_mt("file_logger", "improvedDimer.log");
-      SPDLOG_LOGGER_INFO(log, "[IDimerRot]  -----   ---------   ----------   ------------------   {:9.4f}   {:7.3f}   {:6.2f}   {:4ld}", C_tau, statsTorque, statsAngle, statsRotations);
+      SPDLOG_LOGGER_INFO(
+          log,
+          "[IDimerRot]  -----   ---------   ----------   ------------------   "
+          "{:9.4f}   {:7.3f}   {:6.2f}   {:4ld}",
+          C_tau, statsTorque, statsAngle, statsRotations);
     } else {
-      log = spdlog::basic_logger_mt("file_logger", "improvedDimer.log");
-      SPDLOG_LOGGER_INFO(log, "[IDimerRot]  -----   ---------   ----------   ------------------   {:9.4f}   {:7.3f}   ------   ----", C_tau, F_R.norm() / delta);
+      SPDLOG_LOGGER_INFO(
+          log,
+          "[IDimerRot]  -----   ---------   ----------   ------------------   "
+          "{:9.4f}   {:7.3f}   ------   ----",
+          C_tau, F_R.norm() / delta);
     }
 
   } while (abs(phi_prime) > abs(phi_tol) and abs(phi_min) > abs(phi_tol) and

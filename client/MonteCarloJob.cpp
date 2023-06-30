@@ -1,6 +1,5 @@
 #include "MonteCarloJob.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
 #include "MonteCarlo.h"
 
@@ -13,9 +12,9 @@ std::vector<std::string> MonteCarloJob::run(void) {
     pos = fopen("pos_cp.con", "r");
     if (pos != NULL) {
       posInFilename = "pos_cp.con";
-      log("Resuming from checkpoint\n");
+      SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint\n");
     } else {
-      log("No checkpoint files found\n");
+      SPDLOG_LOGGER_DEBUG(log, "No checkpoint files found\n");
     }
   }
 
