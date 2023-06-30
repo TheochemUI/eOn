@@ -186,7 +186,8 @@ helper_functions::eon_matter_to_atmconf(Matter *matter) {
   } else {
     if (number_of_mov_atoms == 0) {
       //!> Sometimes, nothing happens
-      SPDLOG_CRITICAL(" You need to have atoms move!!!\nIn stillness there is only "
+      SPDLOG_CRITICAL(
+          " You need to have atoms move!!!\nIn stillness there is only "
           "death\n");
       std::exit(1);
     }

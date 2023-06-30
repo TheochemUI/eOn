@@ -33,6 +33,7 @@ public:
   std::shared_ptr<Matter> product;
 
   int status;
+
 private:
   std::shared_ptr<spdlog::logger> log;
 };

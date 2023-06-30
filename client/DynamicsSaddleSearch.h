@@ -39,6 +39,7 @@ public:
   std::shared_ptr<Matter> saddle;
 
   int status;
+
 private:
   std::shared_ptr<spdlog::logger> log;
 };

@@ -178,7 +178,8 @@ public:
 
 private:
   shared_ptr<spdlog::logger> log;
-  std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
+  std::shared_ptr<Potential>
+      potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated
