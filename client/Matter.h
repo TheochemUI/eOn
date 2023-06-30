@@ -44,6 +44,7 @@ public:
   Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
       : potential{pot} {
     initializeDataMembers(params);
+    log = spdlog::get("combi");
   } // the number of atoms shall be set later
     // using resize()
   // TODO: This is a placeholder, it delegates to the standard constructor
@@ -175,6 +176,7 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
+  shared_ptr<spdlog::logger> log;
   std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy

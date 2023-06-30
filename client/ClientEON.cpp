@@ -91,8 +91,9 @@ int main(int argc, char **argv) {
   spdlog::set_default_logger(logger);
   // Traceback logger
   spdlog::set_level(spdlog::level::trace);
+  auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
   auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("client_traceback.log", true); // Overwrite existing
-  auto _traceback = std::make_shared<spdlog::logger>("_traceback", spdlog::sinks_init_list({console_sink, trace_fsink}));
+  auto _traceback = std::make_shared<spdlog::logger>("_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
   _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
   spdlog::register_logger(_traceback);
   //--- End logging setup
