@@ -36,6 +36,7 @@ private:
 
   VectorXd rPrev;
   VectorXd fPrev;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif
