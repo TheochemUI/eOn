@@ -17,7 +17,7 @@ Dynamics::Dynamics(Matter *matter_in, Parameters *parameters_in) {
   temperature = parameters->temperature;
   kB = parameters->kB;
   vxi1 = vxi2 = xi1 = xi2 = 0.0; // NoseHoover variables
-  log = spdlog::get("console");
+  log = spdlog::get("combi");
 }
 
 Dynamics::~Dynamics() { return; }

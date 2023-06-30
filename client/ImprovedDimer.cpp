@@ -28,7 +28,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   if (params->dimerOptMethod == OPT_CG) {
     init_cg = true;
   }
-  log = spdlog::get("console");
+  log = spdlog::get("combi");
 }
 
 void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
