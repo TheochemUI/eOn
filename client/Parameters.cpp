@@ -941,7 +941,8 @@ int Parameters::load(FILE *file) {
 
     if (saddleDynamicsRecordIntervalInput >
         saddleDynamicsStateCheckIntervalInput) {
-      SPDLOG_ERROR("[Saddle Search] dynamics_record_interval must be <= dynamics_state_check_interval");
+      SPDLOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
+                   "dynamics_state_check_interval");
       error = 1;
     }
 

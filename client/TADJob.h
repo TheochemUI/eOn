@@ -14,7 +14,8 @@ public:
 
 private:
   int dynamics();
-  long refine(std::vector<std::shared_ptr<Matter>> buff, long length, Matter *reactant);
+  long refine(std::vector<std::shared_ptr<Matter>> buff, long length,
+              Matter *reactant);
   bool checkState(Matter *current, Matter *reactant);
   void saveData(int status);
   void dephase();

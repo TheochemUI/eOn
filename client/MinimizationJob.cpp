@@ -37,7 +37,7 @@ std::vector<std::string> MinimizationJob::run(void) {
     } else {
       status = RunStatus::MAX_ITERATIONS;
       SPDLOG_LOGGER_DEBUG(log, "Minimization did not converge to tolerence!"
-             "Maybe try to increase max_iterations?");
+                               "Maybe try to increase max_iterations?");
     }
   } catch (int e) {
     if (e == 100) {

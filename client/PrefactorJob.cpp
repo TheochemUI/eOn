@@ -24,8 +24,8 @@ std::vector<std::string> PrefactorJob::run(void) {
   saddle->con2matter("saddle.con");
   product->con2matter("product.con");
   double pref1, pref2;
-  Prefactor::getPrefactors(params.get(), reactant.get(), saddle.get(), product.get(), pref1,
-                           pref2);
+  Prefactor::getPrefactors(params.get(), reactant.get(), saddle.get(),
+                           product.get(), pref1, pref2);
   // printf("pref1: %.3e pref2: %.3e\n", pref1, pref2);
 
   VectorXi atoms;
@@ -54,7 +54,8 @@ std::vector<std::string> PrefactorJob::run(void) {
     product->con2matter(productFilename);
 
     // determine which atoms moved in the process
-    atoms = Prefactor::movedAtoms(params.get(), reactant.get(), saddle.get(), product.get());
+    atoms = Prefactor::movedAtoms(params.get(), reactant.get(), saddle.get(),
+                                  product.get());
   }
   assert(3 * atoms.rows() > 0);
 
