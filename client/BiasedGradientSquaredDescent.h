@@ -18,7 +18,7 @@ public:
     saddle = matterPassed;
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("console");
+    log = spdlog::get("combi");
   }
   ~BiasedGradientSquaredDescent() = default;
 

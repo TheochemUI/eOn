@@ -106,7 +106,7 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
-  log = spdlog::get("console");
+  log = spdlog::get("combi");
   SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialize\n");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);

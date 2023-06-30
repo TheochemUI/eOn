@@ -18,7 +18,7 @@ public:
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
-    log = spdlog::get("console");
+    log = spdlog::get("combi");
   };
   ~DynamicsSaddleSearch() = default;
 
