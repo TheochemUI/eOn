@@ -15,8 +15,6 @@ LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
   memory = min(objf->degreesOfFreedom(), (int)parameters->optLBFGSMemory);
 }
 
-LBFGS::~LBFGS() { return; }
-
 VectorXd LBFGS::getStep(double maxMove, VectorXd f) {
   double H0 = parameters->optLBFGSInverseCurvature;
   VectorXd r = objf->getPositions();
