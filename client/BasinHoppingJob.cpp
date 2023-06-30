@@ -32,15 +32,16 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   Elements = getElements(current.get());
   if (params->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
     log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(log,
-                        "error: [Basin Hopping] swap move probability must be "
-                        "zero if there is only one element type\n");
+    SPDLOG_LOGGER_CRITICAL(
+        log, "error: [Basin Hopping] swap move probability must be "
+             "zero if there is only one element type\n");
     std::exit(1);
   }
 
   double randomProb = params->basinHoppingInitialRandomStructureProbability;
   if (randomProb > 0.0) {
-    SPDLOG_LOGGER_DEBUG(log, "generating random structure with probability {:.4f}", randomProb);
+    SPDLOG_LOGGER_DEBUG(
+        log, "generating random structure with probability {:.4f}", randomProb);
   }
   double u = helper_functions::random();
   if (u < params->basinHoppingInitialRandomStructureProbability) {
@@ -197,7 +198,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
     } else {
       acceptReject[0] = 'R';
     }
-    // SPDLOG_LOGGER_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i %5.3f %5.3f %1s\n",
+    // SPDLOG_LOGGER_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i
+    // %5.3f %5.3f %1s\n",
     //        step+1, currentEnergy, minTrial->getPotentialEnergy(),
     //        minimumEnergy, minfcalls, totalAccept/((double)step+1),
     //        curDisplacement, acceptReject);
@@ -239,7 +241,8 @@ std::vector<std::string> BasinHoppingJob::run(void) {
         curDisplacement *= 1.0 - adjustFraction;
       }
 
-      // SPDLOG_LOGGER_DEBUG(log, "recentRatio %.3f md: %.3f\n", recentRatio, curDisplacement);
+      // SPDLOG_LOGGER_DEBUG(log, "recentRatio %.3f md: %.3f\n", recentRatio,
+      // curDisplacement);
       recentAccept = 0;
     }
   }
