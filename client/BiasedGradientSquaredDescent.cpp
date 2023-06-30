@@ -25,7 +25,7 @@ public:
     reactantEnergy = reactantEnergyPassed;
   }
 
-  ~BGSDObjectiveFunction(void)=default;
+  ~BGSDObjectiveFunction(void) = default;
 
   double getEnergy() {
     VectorXd Vforce = matter->getForcesFreeV();
@@ -90,14 +90,20 @@ private:
 };
 
 int BiasedGradientSquaredDescent::run() {
-  BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha,
-                             params);
+  BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha, params);
   Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
   int iteration = 0;
-  SPDLOG_LOGGER_DEBUG(log, "starting optimization of H with params alpha and beta: {:.2f} {:.2f}", params->alpha, params->beta);
+  SPDLOG_LOGGER_DEBUG(
+      log,
+      "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
+      params->alpha, params->beta);
   while (!objf.isConvergedH() || iteration == 0) {
     optimizer->step(params->optMaxMove);
-    SPDLOG_LOGGER_DEBUG(log, "iteration {} Henergy, gradientHnorm, and Venergy: {:.8f} {:.8f} {:.8f}", iteration, objf.getEnergy(), objf.getGradientnorm(), saddle->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log,
+                        "iteration {} Henergy, gradientHnorm, and Venergy: "
+                        "{:.8f} {:.8f} {:.8f}",
+                        iteration, objf.getEnergy(), objf.getGradientnorm(),
+                        saddle->getPotentialEnergy());
     iteration++;
   }
   BGSDObjectiveFunction objf2(saddle, reactantEnergy, 0.0, params);
@@ -107,7 +113,11 @@ int BiasedGradientSquaredDescent::run() {
       break;
     };
     optimizer2->step(params->optMaxMove);
-    SPDLOG_LOGGER_DEBUG(log, "gradient squared iteration {} Henergy, gradientHnorm, and Venergy: {:.8f} {:.8f} {:.8f}", iteration, objf2.getEnergy(), objf2.getGradientnorm(), saddle->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log,
+                        "gradient squared iteration {} Henergy, gradientHnorm, "
+                        "and Venergy: {:.8f} {:.8f} {:.8f}",
+                        iteration, objf2.getEnergy(), objf2.getGradientnorm(),
+                        saddle->getPotentialEnergy());
     iteration++;
   }
 
@@ -118,8 +128,7 @@ int BiasedGradientSquaredDescent::run() {
     } else {
       minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (params->saddleMinmodeMethod ==
-             LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = new Lanczos(saddle, params, pot);
   }
 

@@ -20,7 +20,7 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
     tsInterpolate = true;
     fclose(fhTransitionState);
     transitionState->con2matter(transitionStateFilename);
-  } else{
+  } else {
     transitionState = nullptr;
   }
 
@@ -30,7 +30,8 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   initial->con2matter(reactantFilename);
   final_state->con2matter(productFilename);
 
-  auto neb = std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);
+  auto neb =
+      std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);
 
   if (tsInterpolate) {
     AtomMatrix reactantToTS = transitionState->pbc(
@@ -42,11 +43,12 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
       if (image < mid) {
         double frac = ((double)image) / ((double)mid);
         neb->path[image]->setPositions(initial->getPositions() +
-                                        frac * reactantToTS);
+                                       frac * reactantToTS);
       } else if (image > mid) {
-        double frac = (double)(image - mid) / (double)(neb->numImages - mid + 1);
+        double frac =
+            (double)(image - mid) / (double)(neb->numImages - mid + 1);
         neb->path[image]->setPositions(transitionState->getPositions() +
-                                        frac * TSToProduct);
+                                       frac * TSToProduct);
       } else if (image == mid) {
         neb->path[image]->setPositions(transitionState->getPositions());
       }

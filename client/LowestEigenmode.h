@@ -25,12 +25,13 @@ public:
   static const char MINMODE_LANCZOS[];
 
   LowestEigenmode(std::shared_ptr<Potential> potPassed,
-  std::shared_ptr<Parameters> parameters) : pot{potPassed}, params{parameters}
-  {}
+                  std::shared_ptr<Parameters> parameters)
+      : pot{potPassed}, params{parameters} {}
   virtual ~LowestEigenmode() {}
 
   // void virtual initialize(Matter const *matter, AtomMatrix displacement) = 0;
-  virtual void compute(std::shared_ptr<Matter> matter, AtomMatrix direction) = 0;
+  virtual void compute(std::shared_ptr<Matter> matter,
+                       AtomMatrix direction) = 0;
 
   virtual double getEigenvalue() = 0;
   virtual AtomMatrix getEigenvector() = 0;

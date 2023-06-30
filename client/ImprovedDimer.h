@@ -11,7 +11,8 @@
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-    shared_ptr<spdlog::logger> log;
+  shared_ptr<spdlog::logger> log;
+
 public:
   // Optimization for the dimer
   //    static const string OPT_SD;
@@ -30,12 +31,12 @@ public:
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
-  std::shared_ptr<Matter> x0;     // Center image
-  std::shared_ptr<Matter> x1;     // Forward image
-  VectorXd tau;   // Dimer direction
-  VectorXd theta; // Dimer rotation direction
-  VectorXd F_R;   // Dimer rotational force
-  double C_tau;   // Curvature along tau
+  std::shared_ptr<Matter> x0; // Center image
+  std::shared_ptr<Matter> x1; // Forward image
+  VectorXd tau;               // Dimer direction
+  VectorXd theta;             // Dimer rotation direction
+  VectorXd F_R;               // Dimer rotational force
+  double C_tau;               // Curvature along tau
 
   // parameters used for conjugate gradients
   VectorXd F_R_Old;

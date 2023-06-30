@@ -13,8 +13,8 @@ const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
 
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              std::shared_ptr<Parameters> params,
-                             std::shared_ptr<Potential> pot) :
-                             LowestEigenmode(pot, params) {
+                             std::shared_ptr<Potential> pot)
+    : LowestEigenmode(pot, params) {
   x0 = std::make_shared<Matter>(pot, params);
   x1 = std::make_shared<Matter>(pot, params);
   *x0 = *matter;

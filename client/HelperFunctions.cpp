@@ -241,7 +241,7 @@ RotationMatrix helper_functions::rotationExtract(const AtomMatrix r1,
   return R;
 }
 
-bool helper_functions::rotationMatch(const Matter& m1, const Matter& m2,
+bool helper_functions::rotationMatch(const Matter &m1, const Matter &m2,
                                      const double max_diff) {
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
@@ -283,7 +283,8 @@ bool helper_functions::rotationMatch(const Matter& m1, const Matter& m2,
   return true;
 }
 
-void helper_functions::rotationRemove(const AtomMatrix r1_passed, std::shared_ptr<Matter> m2) {
+void helper_functions::rotationRemove(const AtomMatrix r1_passed,
+                                      std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = r1_passed;
   AtomMatrix r2 = m2->getPositions();
 
@@ -326,13 +327,14 @@ void helper_functions::rotationRemove(const AtomMatrix r1_passed, std::shared_pt
   return;
 }
 
-void helper_functions::rotationRemove(const std::shared_ptr<Matter> m1, std::shared_ptr<Matter> m2) {
+void helper_functions::rotationRemove(const std::shared_ptr<Matter> m1,
+                                      std::shared_ptr<Matter> m2) {
   AtomMatrix r1 = m1->getPositions();
   rotationRemove(r1, m2);
   return;
 }
 
-void helper_functions::translationRemove(Matter& m1,
+void helper_functions::translationRemove(Matter &m1,
                                          const AtomMatrix r2_passed) {
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = r2_passed;
@@ -356,7 +358,7 @@ void helper_functions::translationRemove(Matter& m1,
   return;
 }
 
-void helper_functions::translationRemove(Matter& m1, const Matter& m2) {
+void helper_functions::translationRemove(Matter &m1, const Matter &m2) {
   AtomMatrix r2 = m2.getPositions();
   translationRemove(m1, r2);
   return;
@@ -612,7 +614,7 @@ struct by_atom {
 
 double roundUp(double x, double f) { return ceil(x / f); }
 
-bool helper_functions::identical(const Matter& m1, const Matter& m2,
+bool helper_functions::identical(const Matter &m1, const Matter &m2,
                                  const double distanceDifference) {
 
   AtomMatrix r1 = m1.getPositions();
@@ -658,7 +660,7 @@ bool helper_functions::identical(const Matter& m1, const Matter& m2,
   }
 }
 
-bool helper_functions::sortedR(const Matter& m1, const Matter& m2,
+bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
                                const double distanceDifference) {
   SPDLOG_INFO("In sortedR");
   AtomMatrix r1 = m1.getPositions();
@@ -739,7 +741,8 @@ bool helper_functions::sortedR(const Matter& m1, const Matter& m2,
   }
 }
 
-void helper_functions::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
+void helper_functions::pushApart(std::shared_ptr<Matter> m1,
+                                 double minDistance) {
   if (minDistance <= 0)
     return;
 
