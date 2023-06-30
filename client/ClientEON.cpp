@@ -10,6 +10,8 @@
 #include "version.h"
 
 #include <errno.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
 
@@ -79,13 +81,19 @@ void printSystemInfo() {
 }
 
 int main(int argc, char **argv) {
-  auto console_traceback = spdlog::stdout_color_st("console_traceback");
-  auto console = spdlog::stdout_color_st("console");
-  auto err_logger = spdlog::stderr_color_st("stderr");
-  console->set_pattern("%v");
-  console_traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
+  // --- Start Logging setup
+  // Traceback logger
+  auto _traceback = spdlog::stdout_color_st("_traceback");
+  _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
+  // Sinks
+  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("client_spdlog.log", true); // Overwrite existing
+  auto logger = std::make_shared<spdlog::logger>("combi", spdlog::sinks_init_list({console_sink, file_sink}));
+  spdlog::register_logger(logger);
+  logger->set_pattern("%v");
   spdlog::set_level(spdlog::level::trace);
-  spdlog::set_default_logger(console);
+  spdlog::set_default_logger(logger);
+  //--- End logging setup
   Parameters parameters;
 
 #ifdef EONMPI
