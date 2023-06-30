@@ -31,7 +31,8 @@ int Quickmin::step(double maxMove) {
   velocity += force * dt;
   VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt,
                                                         parameters->optMaxMove);
-  // SPDLOG_LOGGER_INFO(log, "{} Velocity is {}", iteration, fmt::streamed(velocity));
+  // SPDLOG_LOGGER_INFO(log, "{} Velocity is {}", iteration,
+  // fmt::streamed(velocity));
   objf->setPositions(objf->getPositions() + dr);
   iteration++;
   return objf->isConverged();

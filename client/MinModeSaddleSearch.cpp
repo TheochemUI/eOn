@@ -174,14 +174,17 @@ MinModeSaddleSearch::MinModeSaddleSearch(
 }
 
 int MinModeSaddleSearch::run() {
-  SPDLOG_LOGGER_DEBUG(log, "Saddle point search started from reactant with energy {} eV.", reactantEnergy);
+  SPDLOG_LOGGER_DEBUG(
+      log, "Saddle point search started from reactant with energy {} eV.",
+      reactantEnergy);
 
   int optStatus;
   int firstIteration = 1;
   const char *forceLabel = params->optConvergenceMetricLabel.c_str();
 
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    SPDLOG_LOGGER_DEBUG(log, "================= Using the GP Dimer Library =================");
+    SPDLOG_LOGGER_DEBUG(
+        log, "================= Using the GP Dimer Library =================");
     minModeMethod->compute(matter, mode);
     if (minModeMethod->getEigenvalue() > 0) {
       printf("%f\n", minModeMethod->getEigenvalue());
@@ -202,13 +205,25 @@ int MinModeSaddleSearch::run() {
   } else {
 
     if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-      SPDLOG_LOGGER_INFO(log, "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   {:7s}   {:6s}   {:4s}\n", "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Torque", "Angle", "Rots");
+      SPDLOG_LOGGER_INFO(log,
+                         "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
+                         "{:7s}   {:6s}   {:4s}\n",
+                         "Step", "Step Size", "Delta E", forceLabel,
+                         "Curvature", "Torque", "Angle", "Rots");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_LANCZOS) {
-      SPDLOG_LOGGER_INFO(log, "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n", "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change", "Angle", "Iters");
+      SPDLOG_LOGGER_INFO(
+          log,
+          "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n",
+          "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
+          "Angle", "Iters");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_GPRDIMER) {
-      SPDLOG_LOGGER_INFO(log, "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   {:7s}   {:6s}   {:4s}\n", "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Torque", "Angle", "Rots");
+      SPDLOG_LOGGER_INFO(log,
+                         "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
+                         " {:7s}   {:6s}   {:4s}\n",
+                         "Step", "Step Size", "Delta E", forceLabel,
+                         "Curvature", "Torque", "Angle", "Rots");
     }
 
     ostringstream climb;
@@ -329,7 +344,9 @@ int MinModeSaddleSearch::run() {
             minModeMethod->statsRotations);
       } else {
         log = spdlog::get("_traceback");
-        SPDLOG_LOGGER_CRITICAL(log, "[MinModeSaddleSearch] Unknown min_mode_method: {}", params->saddleMinmodeMethod);
+        SPDLOG_LOGGER_CRITICAL(
+            log, "[MinModeSaddleSearch] Unknown min_mode_method: {}",
+            params->saddleMinmodeMethod);
         std::exit(1);
       }
 

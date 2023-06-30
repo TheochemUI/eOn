@@ -102,8 +102,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
                          "----", "----", "----", "----", ew, ewAbsRelErr,
                          statsAngle, i);
       if (ewAbsRelErr < params->lanczosTolerance) {
-          SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-          params->lanczosTolerance);
+        SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
+                           params->lanczosTolerance);
         break;
       }
     } else {
@@ -119,7 +119,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
           SPDLOG_LOGGER_INFO(log, "[ILanczos] Tolerance reached: {}",
-          params->lanczosTolerance);
+                             params->lanczosTolerance);
           break;
         }
       }

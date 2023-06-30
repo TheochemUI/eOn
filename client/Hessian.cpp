@@ -118,10 +118,12 @@ bool Hessian::calculate(void) {
 
   double t0, t1;
   helper_functions::getTime(&t0, NULL, NULL);
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] calculating eigen values of the hessian\n");
+  SPDLOG_LOGGER_DEBUG(log,
+                      "[Hessian] calculating eigen values of the hessian\n");
   Eigen::SelfAdjointEigenSolver<MatrixXd> es(hessian);
   helper_functions::getTime(&t1, NULL, NULL);
-  SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took %.4e seconds\n", t1 - t0);
+  SPDLOG_LOGGER_DEBUG(log, "[Hessian] eigenvalue problem took %.4e seconds\n",
+                      t1 - t0);
   freqs = es.eigenvalues();
 
   return true;
@@ -153,7 +155,9 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   }
 
   if (nremoved != 6) {
-    SPDLOG_LOGGER_DEBUG(log, "[Hessian] Error: Found {} trivial eigenmodes instead of 6", nremoved);
+    SPDLOG_LOGGER_DEBUG(
+        log, "[Hessian] Error: Found {} trivial eigenmodes instead of 6",
+        nremoved);
   }
   return newfreqs.head(size - nremoved);
 }
