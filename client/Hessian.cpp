@@ -7,7 +7,7 @@ Hessian::Hessian(Parameters *params, Matter *matter) {
   parameters = params;
   hessian.resize(0, 0);
   freqs.resize(0);
-  log = spdlog::get("console");
+  log = spdlog::get("combi");
 }
 
 Hessian::~Hessian() {}
