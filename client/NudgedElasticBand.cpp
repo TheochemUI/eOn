@@ -70,8 +70,8 @@ bool NEBObjectiveFunction::isUncertain(){
   double maxMaxUnc = std::numeric_limits<double>::lowest();
   double currentMaxUnc {0};
   fmt::print("\n");
-  for (long i = 1; i <= neb->images; i++) {
-    currentMaxUnc = neb->image[i]->getEnergyVariance();
+  for (long i = 1; i <= neb->numImages; i++) {
+    currentMaxUnc = neb->path[i]->getEnergyVariance();
     fmt::print(" {} ", currentMaxUnc);
     if (currentMaxUnc > maxMaxUnc) {
       maxMaxUnc = currentMaxUnc;

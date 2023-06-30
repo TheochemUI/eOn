@@ -53,7 +53,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY) {
       SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
       auto [feature, target] =
-          helper_functions::surrogate::getNewDataPoint(neb->image, pot);
+          helper_functions::surrogate::getNewDataPoint(neb->path, pot);
       helper_functions::eigen::addVectorRow(features, feature);
       // SPDLOG_TRACE("New Features:\n {}", fmt::streamed(features));
       helper_functions::eigen::addVectorRow(targets, target);
@@ -119,7 +119,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename);
   fileResults = fopen(resultsFilename.c_str(), "wb");
-  for (auto&& nebo : neb->image){
+  for (auto&& nebo : neb->path){
       nebo->setPotential(true_pot);
   }
   fprintf(fileResults, "%d termination_reason\n", static_cast<int>(status));
@@ -128,15 +128,15 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
   // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",
-          neb->image[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->images);
-  for (long i = 0; i <= neb->images + 1; i++) {
+          neb->path[0]->getPotentialEnergy());
+  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
     fprintf(fileResults, "%f image%li_energy\n",
-            neb->image[i]->getPotentialEnergy() -
-                neb->image[0]->getPotentialEnergy(),
+            neb->path[i]->getPotentialEnergy() -
+                neb->path[0]->getPotentialEnergy(),
             i);
     fprintf(fileResults, "%f image%li_force\n",
-            neb->image[i]->getForces().norm(), i);
+            neb->path[i]->getForces().norm(), i);
     fprintf(fileResults, "%f image%li_projected_force\n",
             neb->projectedForce[i]->norm(), i);
   }
@@ -152,8 +152,8 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
   fileNEB = fopen(nebFilename.c_str(), "wb");
-  for (long i = 0; i <= neb->images + 1; i++) {
-    neb->image[i]->matter2con(fileNEB);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
+    neb->path[i]->matter2con(fileNEB);
   }
   fclose(fileNEB);
 
