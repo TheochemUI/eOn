@@ -24,9 +24,8 @@ public:
   NudgedElasticBand(std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
-  ~NudgedElasticBand();
+  ~NudgedElasticBand() = default;
 
-  void clean(void);
   NudgedElasticBand::NEBStatus compute(void);
   void updateForces(void);
   double convergenceForce(void);
@@ -34,16 +33,16 @@ public:
   void printImageData(bool writeToFile = false);
 
   int atoms;
-  long images, climbingImage, numExtrema;
-  std::vector<std::shared_ptr<Matter>> image; // NEB images
-  AtomMatrix **tangent;
-  AtomMatrix **projectedForce;
-  bool movedAfterForceCall;
-  double *extremumEnergy;
-  double *extremumPosition;
-  double *extremumCurvature;
+  long numImages, climbingImage, numExtrema;
+  std::vector<std::shared_ptr<Matter>> path; // NEB images
+  std::vector<std::shared_ptr<AtomMatrix>> tangent;
+  std::vector<std::shared_ptr<AtomMatrix>> projectedForce;
+  std::vector<double> extremumEnergy;
+  std::vector<double> extremumPosition;
+  std::vector<double> extremumCurvature;
 
   long maxEnergyImage;
+  bool movedAfterForceCall;
 
 private:
   std::shared_ptr<Parameters> params;
