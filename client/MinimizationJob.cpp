@@ -1,7 +1,6 @@
 #include "MinimizationJob.h"
 #include "BaseStructures.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
 #include "Optimizer.h"
 
@@ -14,9 +13,9 @@ std::vector<std::string> MinimizationJob::run(void) {
     pos_file = fopen("pos_cp.con", "r");
     if (pos_file != NULL) {
       posInFilename = "pos_cp.con";
-      log("[Minimization] Resuming from checkpoint\n");
+      SPDLOG_LOGGER_DEBUG(log, "[Minimization] Resuming from checkpoint");
     } else {
-      log("[Minimization] No checkpoint files found\n");
+      SPDLOG_LOGGER_DEBUG(log, "[Minimization] No checkpoint files found");
     }
   }
 
@@ -26,7 +25,7 @@ std::vector<std::string> MinimizationJob::run(void) {
   auto pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posInFilename);
 
-  printf("\nBeginning minimization of %s\n", posInFilename.c_str());
+  SPDLOG_LOGGER_DEBUG(log, "\nBeginning minimization of {}", posInFilename);
 
   bool converged;
   try {
@@ -34,11 +33,11 @@ std::vector<std::string> MinimizationJob::run(void) {
                            "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
-      printf("Minimization converged within tolerence\n");
+      SPDLOG_LOGGER_DEBUG(log, "Minimization converged within tolerence");
     } else {
       status = RunStatus::MAX_ITERATIONS;
-      printf("Minimization did not converge to tolerence!\n"
-             "Maybe try to increase max_iterations?\n");
+      SPDLOG_LOGGER_DEBUG(log, "Minimization did not converge to tolerence!"
+             "Maybe try to increase max_iterations?");
     }
   } catch (int e) {
     if (e == 100) {
@@ -48,10 +47,10 @@ std::vector<std::string> MinimizationJob::run(void) {
     }
   }
 
-  printf("Saving result to %s\n", posOutFilename.c_str());
+  SPDLOG_LOGGER_DEBUG(log, "Saving result to {}", posOutFilename);
   pos->matter2con(posOutFilename);
   if (status != RunStatus::POTENTIAL_FAILED) {
-    printf("Final Energy: %f\n", pos->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log, "Final Energy: {}", pos->getPotentialEnergy());
   }
 
   FILE *fileResults;

@@ -1,6 +1,4 @@
 #include "MonteCarlo.h"
-#include "Log.h"
-#include <stdio.h>
 
 using namespace helper_functions;
 
@@ -29,30 +27,30 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
     matter->setPositions(trial);
     etrial = matter->getPotentialEnergy();
     double de = ecurrent - etrial;
-    cout << "de=" << de << "\n";
+    SPDLOG_LOGGER_INFO(log, "de={}", de);
     if (de <= 0.0) {
-      printf("%i: accept de <= 0.0\n", steps);
+      SPDLOG_LOGGER_INFO(log, "{}: accept de <= 0.0", steps);
       accepts++;
       continue;
     }
     double r = randomDouble();
     double kB = params->kB;
     double arg = -de / (kB * T);
-    printf("arg: %f\n", arg);
+    SPDLOG_LOGGER_DEBUG(log, "arg: {}\n", arg);
     if (arg < -50.0) {
       matter->setPositions(current);
-      printf("%i: reject small arg\n", steps);
+      SPDLOG_LOGGER_DEBUG(log, "{}: reject small arg\n", steps);
       continue;
     }
 
     double p = exp(arg);
     if (r < p) {
-      printf("%i: accept r<p\n", steps);
+      SPDLOG_LOGGER_DEBUG(log, "{}: accept r<p\n", steps);
       accepts++;
       continue;
     } else {
       matter->setPositions(current);
-      printf("%i: reject\n", steps);
+      SPDLOG_LOGGER_DEBUG(log, "{}: reject\n", steps);
     }
   }
   cout << accepts << "\n";
