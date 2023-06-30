@@ -15,7 +15,14 @@
 class GPSurrogateJob : public Job {
 public:
   GPSurrogateJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+      : Job(std::move(parameters)) {
+  // debugging
+#ifndef NDEBUG
+  py::module_ sys_mod = py::module_::import("sys");
+  py::module_ ipdb_mod = py::module_::import("ipdb");
+  sys_mod.attr("breakpointhook") = ipdb_mod.attr("set_trace");
+#endif // NDEBUG
+  }
   ~GPSurrogateJob(void) = default;
   std::vector<std::string> run(void) override;
 
