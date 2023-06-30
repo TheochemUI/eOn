@@ -11,7 +11,8 @@
 class ImprovedDimer : public LowestEigenmode {
 
 private:
-    shared_ptr<spdlog::logger> log;
+  shared_ptr<spdlog::logger> log;
+
 public:
   // Optimization for the dimer
   //    static const string OPT_SD;

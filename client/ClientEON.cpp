@@ -84,16 +84,20 @@ int main(int argc, char **argv) {
   // --- Start Logging setup
   // Sinks
   auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
-  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("client_spdlog.log", true); // Overwrite existing
-  auto logger = std::make_shared<spdlog::logger>("combi", spdlog::sinks_init_list({console_sink, file_sink}));
+  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+      "client_spdlog.log", true); // Overwrite existing
+  auto logger = std::make_shared<spdlog::logger>(
+      "combi", spdlog::sinks_init_list({console_sink, file_sink}));
   spdlog::register_logger(logger);
   logger->set_pattern("%v");
   spdlog::set_default_logger(logger);
   // Traceback logger
   spdlog::set_level(spdlog::level::trace);
   auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
-  auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("client_traceback.log", true); // Overwrite existing
-  auto _traceback = std::make_shared<spdlog::logger>("_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
+  auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+      "client_traceback.log", true); // Overwrite existing
+  auto _traceback = std::make_shared<spdlog::logger>(
+      "_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
   _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
   spdlog::register_logger(_traceback);
   //--- End logging setup

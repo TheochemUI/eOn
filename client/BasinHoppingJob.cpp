@@ -32,9 +32,9 @@ std::vector<std::string> BasinHoppingJob::run(void) {
   Elements = getElements(current.get());
   if (params->basinHoppingSwapProbability > 0 && Elements.size() == 1) {
     log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(log,
-                        "error: [Basin Hopping] swap move probability must be "
-                        "zero if there is only one element type\n");
+    SPDLOG_LOGGER_CRITICAL(
+        log, "error: [Basin Hopping] swap move probability must be "
+             "zero if there is only one element type\n");
     std::exit(1);
   }
 

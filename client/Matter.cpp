@@ -296,8 +296,11 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   int iteration = 0;
   const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
   if (!quiet) {
-    SPDLOG_LOGGER_DEBUG(log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]", "Iter", "Step size", forceLabel, "Energy");
-    SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}\n", "[Matter]", iteration, 0.0, objf.getConvergence(), getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
+                        "Iter", "Step size", forceLabel, "Energy");
+    SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+                        "[Matter]", iteration, 0.0, objf.getConvergence(),
+                        getPotentialEnergy());
   }
 
   while (!objf.isConverged() && iteration < parameters->optMaxIterations) {
@@ -329,8 +332,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   if (iteration == 0) {
     if (!quiet) {
-      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}", "[Matter]", iteration, 0.0,
-          objf.getConvergence(), getPotentialEnergy());
+      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
+                          "[Matter]", iteration, 0.0, objf.getConvergence(),
+                          getPotentialEnergy());
     }
   }
   //    bool converged = optimizer->run(parameters->optMaxIterations,
@@ -585,7 +589,10 @@ bool Matter::matter2con(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(log, "Does not support more than {} components and the atoms must be ordered by component.", MAXC);
+        SPDLOG_LOGGER_ERROR(log,
+                            "Does not support more than {} components and the "
+                            "atoms must be ordered by component.",
+                            MAXC);
         return false;
       };
       mass[j] = getMass(i);
@@ -713,11 +720,14 @@ bool Matter::con2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms  (eg
                   // water: two components H and O)
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One component is assumed instead");
+    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One "
+                            "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(log, "con2atoms doesn't support more that {} components or less than 1", MAXC);
+    SPDLOG_LOGGER_ERROR(
+        log, "con2atoms doesn't support more that {} components or less than 1",
+        MAXC);
     return false;
   }
 
@@ -734,11 +744,13 @@ bool Matter::con2matter(FILE *file) {
   char *split = strtok(line, " \t");
   for (j = 0; j < Ncomponent; j++) {
     if (split == NULL) {
-      SPDLOG_LOGGER_ERROR(log, "input con file does not list the number of each component");
+      SPDLOG_LOGGER_ERROR(
+          log, "input con file does not list the number of each component");
       return false;
     }
     if (sscanf(split, "%ld", &Natoms) != 1) {
-      SPDLOG_LOGGER_ERROR(log, "input con file does not list the number of each component");
+      SPDLOG_LOGGER_ERROR(
+          log, "input con file does not list the number of each component");
       return false;
     }
     first[j + 1] = Natoms + first[j];
@@ -951,7 +963,10 @@ bool Matter::matter2convel(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        SPDLOG_LOGGER_ERROR(log, "Does not support more than {} components and the atoms must be ordered by component.", MAXC);
+        SPDLOG_LOGGER_ERROR(log,
+                            "Does not support more than {} components and the "
+                            "atoms must be ordered by component.",
+                            MAXC);
         return false;
       }
       mass[j] = getMass(i);
@@ -1089,11 +1104,14 @@ bool Matter::convel2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms. For
                   // instance H2O has two components (H and O).
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One component is assumed instead");
+    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One "
+                            "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    SPDLOG_LOGGER_ERROR(log, "con2atoms doesn't support more that {} components or less than 1", MAXC);
+    SPDLOG_LOGGER_ERROR(
+        log, "con2atoms doesn't support more that {} components or less than 1",
+        MAXC);
     return false;
   }
   /* to store the position of the
