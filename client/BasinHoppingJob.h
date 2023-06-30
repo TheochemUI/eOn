@@ -11,7 +11,7 @@ public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)), current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {
-    log = spdlog::get("console");
+    log = spdlog::get("combi");
   }
   ~BasinHoppingJob(void) = default;
 
