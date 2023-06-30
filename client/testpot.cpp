@@ -20,7 +20,7 @@ int main(void) {
   auto pot = helper_functions::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   matter->con2matter(confile);
-  auto [energy, forces] = pot->get_ef(matter->getPositions(), matter->getAtomicNrs(), matter->getCell());
+  auto [energy, forces, vari] = pot->get_ef(matter->getPositions(), matter->getAtomicNrs(), matter->getCell());
   auto execString =
     fmt::format("Got {energy:}\n{forces:}",
                   fmt::arg("energy", energy),
