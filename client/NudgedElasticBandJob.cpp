@@ -3,9 +3,6 @@
 #include "Log.h"
 #include "Potential.h"
 
-#include <stdio.h>
-#include <string>
-
 using namespace std;
 
 std::vector<std::string> NudgedElasticBandJob::run(void) {
@@ -120,12 +117,12 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
-  log("\nFinal state: ");
+  SPDLOG_LOGGER_DEBUG(log, "\nFinal state: ");
   if (status == NudgedElasticBand::NEBStatus::STATUS_GOOD)
-    log("Nudged elastic band, successful.\n");
+    SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band, successful.");
   else if (status == NudgedElasticBand::NEBStatus::STATUS_BAD_MAX_ITERATIONS)
-    log("Nudged elastic band, too many iterations.\n");
+    SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band, too many iterations.");
   else
-    log("Unknown status: %i!\n", status);
+    SPDLOG_LOGGER_WARN(log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }
