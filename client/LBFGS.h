@@ -15,7 +15,7 @@ class LBFGS : public Optimizer {
 
 public:
   LBFGS(ObjectiveFunction *objf, Parameters *parameters);
-  ~LBFGS();
+  ~LBFGS() = default;
 
   int step(double maxMove);
   int run(int maxIterations, double maxMove);
