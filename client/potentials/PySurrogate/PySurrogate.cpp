@@ -29,6 +29,8 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
       py::module_::import("catlearn.regression.gaussianprocess.gp.gp");
   py::module_ prior_max_module =
       py::module_::import("catlearn.regression.gaussianprocess.means.max");
+  py::module_ _kernel =
+    py::module_::import("catlearn.regression.gaussianprocess.kernel.se");
 
   // Get the classes from the imported modules
   py::object hpfitter_class = hpfitter_module.attr("HyperparameterFitter");
@@ -39,6 +41,7 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
       optimizers_module.attr("line_search_scale");
   py::object gp_class = gp_module.attr("GaussianProcess");
   py::object prior_max_class = prior_max_module.attr("Prior_max");
+  py::object kernel_class = _kernel.attr("SE_Derivative");
 
   // Create the objects and set the arguments
   py::dict local_kwargs;
@@ -56,11 +59,12 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
   kwargs_optimize["local_kwargs"] = local_kwargs;
 
   this->hpfit = hpfitter_class(objectfunctions_class(), line_search_scale_class,
-                               kwargs_optimize,
-                               true); // distance_matrix = true
+                               py::arg("opt_kwargs") = kwargs_optimize,
+                               py::arg("distance_matrix") = true);
 
+  this->kernel = kernel_class(py::arg("use_fingerprint") = false);
   this->gpmod =
-      gp_class(py::arg("prior") = prior_max_class(),
+      gp_class(py::arg("prior") = prior_max_class(), py::arg("kernel") = kernel,
                py::arg("use_derivatives") = true, py::arg("hpfitter") = hpfit);
 };
 
