@@ -40,18 +40,18 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
         transitionState->getPositions() - initial->getPositions());
     AtomMatrix TSToProduct = transitionState->pbc(
         final_state->getPositions() - transitionState->getPositions());
-    for (int image = 1; image <= neb->images; image++) {
-      int mid = neb->images / 2 + 1;
+    for (int image = 1; image <= neb->numImages; image++) {
+      int mid = neb->numImages / 2 + 1;
       if (image < mid) {
         double frac = ((double)image) / ((double)mid);
-        neb->image[image]->setPositions(initial->getPositions() +
+        neb->path[image]->setPositions(initial->getPositions() +
                                         frac * reactantToTS);
       } else if (image > mid) {
-        double frac = (double)(image - mid) / (double)(neb->images - mid + 1);
-        neb->image[image]->setPositions(transitionState->getPositions() +
+        double frac = (double)(image - mid) / (double)(neb->numImages - mid + 1);
+        neb->path[image]->setPositions(transitionState->getPositions() +
                                         frac * TSToProduct);
       } else if (image == mid) {
-        neb->image[image]->setPositions(transitionState->getPositions());
+        neb->path[image]->setPositions(transitionState->getPositions());
       }
     }
   }
@@ -84,15 +84,15 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   // fprintf(fileResults, "%ld total_force_calls\n", Potential::fcalls);
   // fprintf(fileResults, "%ld force_calls_neb\n", fCallsNEB);
   fprintf(fileResults, "%f energy_reference\n",
-          neb->image[0]->getPotentialEnergy());
-  fprintf(fileResults, "%li number_of_images\n", neb->images);
-  for (long i = 0; i <= neb->images + 1; i++) {
+          neb->path[0]->getPotentialEnergy());
+  fprintf(fileResults, "%li number_of_images\n", neb->numImages);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
     fprintf(fileResults, "%f image%li_energy\n",
-            neb->image[i]->getPotentialEnergy() -
-                neb->image[0]->getPotentialEnergy(),
+            neb->path[i]->getPotentialEnergy() -
+                neb->path[0]->getPotentialEnergy(),
             i);
     fprintf(fileResults, "%f image%li_force\n",
-            neb->image[i]->getForces().norm(), i);
+            neb->path[i]->getForces().norm(), i);
     fprintf(fileResults, "%f image%li_projected_force\n",
             neb->projectedForce[i]->norm(), i);
   }
@@ -108,8 +108,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   std::string nebFilename("neb.con");
   returnFiles.push_back(nebFilename);
   fileNEB = fopen(nebFilename.c_str(), "wb");
-  for (long i = 0; i <= neb->images + 1; i++) {
-    neb->image[i]->matter2con(fileNEB);
+  for (long i = 0; i <= neb->numImages + 1; i++) {
+    neb->path[i]->matter2con(fileNEB);
   }
   fclose(fileNEB);
 
