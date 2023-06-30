@@ -32,9 +32,9 @@ namespace helper_functions::surrogate {
   Eigen::MatrixXd get_features(const std::vector<std::shared_ptr<Matter>>& matobjs);
   Eigen::MatrixXd get_targets(std::vector<std::shared_ptr<Matter>>& matobjs, std::shared_ptr<Potential> true_pot);
   Eigen::MatrixXd get_targets(std::vector<Matter>& matobjs, std::shared_ptr<Potential> true_pot);
-  Eigen::VectorXd make_target(Matter &m1);
+  Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot);
   std::pair<Eigen::VectorXd, Eigen::VectorXd>
-  getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs);
+  getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs, std::shared_ptr<Potential> true_pot);
   std::vector<Matter> getMidSlice(const std::vector<Matter>& matobjs);
 }
 
