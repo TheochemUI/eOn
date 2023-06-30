@@ -4,17 +4,17 @@
 
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <fmt/printf.h>
-#include <fmt/ostream.h>
 #include <fmt/os.h> // To write the R style data frame
+#include <fmt/ostream.h>
+#include <fmt/printf.h>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-#include <spdlog/spdlog.h>
-#include <spdlog/cfg/env.h>  // support for loading levels from the environment variable
+#include <spdlog/cfg/env.h> // support for loading levels from the environment variable
 #include <spdlog/fmt/ostr.h> // support for user defined types
 #include <spdlog/logger.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 using namespace std::string_literals; // For ""s
 

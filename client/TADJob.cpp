@@ -343,7 +343,8 @@ void TADJob::dephase() {
     transitionFlag = checkState(current.get(), reactant.get());
 
     if (transitionFlag) {
-      dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant.get());
+      dephaseRefineStep =
+          refine(dephaseBuffer, dephaseBufferLength, reactant.get());
       log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
@@ -399,7 +400,8 @@ bool TADJob::saddleSearch(std::shared_ptr<Matter> cross) {
   return false;
 }
 
-long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length, Matter *reactant) {
+long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length,
+                    Matter *reactant) {
   // log("[Parallel Replica] Refining transition time.\n");
 
   bool midTest;
