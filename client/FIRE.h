@@ -28,6 +28,7 @@ private:
   double f_a;
   double dt_max;
   int iteration;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif

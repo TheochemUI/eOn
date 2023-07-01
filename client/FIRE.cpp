@@ -1,8 +1,5 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
-#include "Log.h"
-#include <cmath>
-
 FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
   objf = objfPassed;
   parameters = parametersPassed;
@@ -18,6 +15,8 @@ FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
   v.resize(objf->degreesOfFreedom());
   v.setZero();
   iteration = 0;
+  log = spdlog::basic_logger_st("fire", "_fire.log", true);
+  log->set_pattern("%v");
 }
 
 FIRE::~FIRE() { return; }
@@ -45,13 +44,7 @@ int FIRE::step(double maxMove) {
   // FIRE
   P = f.dot(v);
   v = (1 - alpha) * v + alpha * f_unit * v.norm();
-
-  //    cout <<"FIRE, P: "<<P<<endl;
-  //    cout <<"FIRE, v: "<<v<<endl;
-  //    cout <<"FIRE, dt: "<<dt<<endl;
-  //    cout <<"FIRE, alpha: "<<alpha<<endl;
-  //    cout <<"FIRE, N: "<<N<<endl;
-
+  // SPDLOG_LOGGER_DEBUG(log, "[FIRE] P: {:.4f}, v: {:.4f}, dt: {:.4f}, alpha: {:.4f}, N: {}", P, v, dt, alpha, N);
   if (P >= 0) {
     N++;
     if (N > N_min) {
@@ -67,25 +60,17 @@ int FIRE::step(double maxMove) {
 
   // add a sanity check on dt
   if (dt < 1e-6) {
-    cout << "Error in FIRE\n";
-    log_file("[FIRE] error, dt is too small: %.4f\n", dt);
-    //        exit(1);
-    return -1;
+    SPDLOG_LOGGER_CRITICAL(log, "[FIRE] [critical] dt is too small: {:.4f}", dt);
+    std::exit(1);
   }
 
   iteration++;
-  //    return objf->isConverged();
-  if (objf->isConverged())
-    return 1;
-  return 0;
+  return objf->isConverged();
 }
 
 int FIRE::run(int maxSteps, double maxMove) {
   while (!objf->isConverged() && iteration < maxSteps) {
     step(maxMove);
   }
-  //    return objf->isConverged();
-  if (objf->isConverged())
-    return 1;
-  return 0;
+  return objf->isConverged();
 }
