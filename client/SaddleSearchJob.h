@@ -36,7 +36,9 @@ public:
    * \param *params defined by the config.init file
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fCallsSaddle{0} {}
+      : Job(std::move(parameters)), fCallsSaddle{0} {
+    log = spdlog::get("combi");
+  }
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
@@ -64,6 +66,8 @@ private:
 
   //! Force calls to find the saddle
   int fCallsSaddle;
+
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif
