@@ -62,8 +62,9 @@ std::vector<std::string> NudgedElasticBandJob::run(void) {
   status = neb->compute();
   // fCallsNEB += Potential::fcalls - f1;
 
-  if (status == NudgedElasticBand::NEBStatus::INIT) {
-    status = NudgedElasticBand::NEBStatus::GOOD;
+  if (status == NudgedElasticBand::NEBStatus::GOOD) {
+    neb->printImageData();
+    neb->findExtrema();
   }
 
   printEndState(status);
