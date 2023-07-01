@@ -38,9 +38,12 @@ std::vector<std::string> TADJob::run(void) {
   saveData(status);
 
   if (newStateFlag) {
-    SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s", minCorrectedTime * 1.0e-15 * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s",
+                        minCorrectedTime * 1.0e-15 * params->timeUnit);
   } else {
-    SPDLOG_LOGGER_DEBUG(log, "No new state was found in {} dynamics steps ({:.3e} s)", params->mdSteps, time * 1.0e-15 * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(
+        log, "No new state was found in {} dynamics steps ({:.3e} s)",
+        params->mdSteps, time * 1.0e-15 * params->timeUnit);
   }
 
   return returnFiles;
@@ -126,7 +129,7 @@ int TADJob::dynamics() {
     nCheck++; // count up to params->parrepStateCheckInterval before checking
               // for a transition
     step++;
-     // SPDLOG_LOGGER_DEBUG(log, "step = {:4d}, time= {:10.4f}", step, time);
+    // SPDLOG_LOGGER_DEBUG(log, "step = {:4d}, time= {:10.4f}", step, time);
     //  standard conditions; record mater object in the transition buffer
     if (params->parrepRefineTransition && recordFlag && !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
@@ -157,7 +160,8 @@ int TADJob::dynamics() {
     // Refine transition step
 
     if (transitionFlag) {
-      // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition time.");
+      // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
+      // time.");
       refFCalls = Potential::fcalls;
       refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
 
@@ -229,12 +233,15 @@ int TADJob::dynamics() {
   avgT = sumT / step;
   varT = sumT2 / step - avgT * avgT;
 
-  SPDLOG_LOGGER_DEBUG(log, "Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
+  SPDLOG_LOGGER_DEBUG(
+      log,
+      "Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
       "Average_Boost = %lf",
       avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
       minCorrectedTime / step / params->mdTimeStep);
   if (isfinite(avgT) == 0) {
-    SPDLOG_LOGGER_DEBUG(log, "Infinite average temperature, something went wrong!");
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Infinite average temperature, something went wrong!");
     newStateFlag = false;
   }
 
@@ -326,7 +333,8 @@ void TADJob::dephase() {
 
   DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
   Dynamics dephaseDynamics(current.get(), params.get());
-  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs", params->parrepDephaseTime * params->timeUnit);
+  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
+                      params->parrepDephaseTime * params->timeUnit);
 
   step = stepNew = loop = 0;
 
@@ -348,10 +356,13 @@ void TADJob::dephase() {
     if (transitionFlag) {
       dephaseRefineStep =
           refine(dephaseBuffer, dephaseBufferLength, reactant.get());
-      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop, dephaseRefineStep);
+      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
+                          dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
-      SPDLOG_LOGGER_DEBUG(log, "Dephasing warning: in a new state, inverse the momentum and restart "
+      SPDLOG_LOGGER_DEBUG(
+          log,
+          "Dephasing warning: in a new state, inverse the momentum and restart "
           "from step %ld",
           step + transitionStep);
       *current = *dephaseBuffer[transitionStep];
@@ -361,15 +372,20 @@ void TADJob::dephase() {
       step = step + transitionStep;
     } else {
       step = step + dephaseBufferLength;
-      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {.2f} steps ", step);
+      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {.2f} steps ",
+      // step);
     }
 
     if ((params->parrepDephaseLoopStop) &&
         (loop > params->parrepDephaseLoopMax)) {
-      SPDLOG_LOGGER_DEBUG(log, "Reach dephase loop maximum, stop dephasing! Dephased for {} steps", step);
+      SPDLOG_LOGGER_DEBUG(
+          log,
+          "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
+          step);
       break;
     }
-    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs", step * params->mdTimeStep * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
+                        step * params->mdTimeStep * params->timeUnit);
   }
 }
 
