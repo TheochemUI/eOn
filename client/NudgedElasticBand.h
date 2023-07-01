@@ -27,6 +27,9 @@ public:
                     std::shared_ptr<Matter> finalPassed,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
+  NudgedElasticBand(std::vector<std::shared_ptr<Matter>> initPath,
+                    std::shared_ptr<Parameters> parametersPassed,
+                    std::shared_ptr<Potential> potPassed);
   ~NudgedElasticBand() = default;
 
   NudgedElasticBand::NEBStatus compute(void);
