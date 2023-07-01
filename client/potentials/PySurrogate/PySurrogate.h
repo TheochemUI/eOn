@@ -42,6 +42,7 @@ public:
 
   // Variables [public]
   py::object gpmod;
-  Eigen::MatrixXd variance; // XXX: This is a hacky way to populate and use this variable
+  Eigen::MatrixXd
+      variance; // XXX: This is a hacky way to populate and use this variable
 };
 #endif

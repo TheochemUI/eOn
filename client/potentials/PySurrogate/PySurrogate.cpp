@@ -31,9 +31,9 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
   py::module_ prior_max_module =
       py::module_::import("catlearn.regression.gaussianprocess.means.max");
   py::module_ _kernel =
-    py::module_::import("catlearn.regression.gaussianprocess.kernel.se");
-  py::module_ normal_module =
-    py::module_::import("catlearn.regression.gaussianprocess.pdistributions.normal");
+      py::module_::import("catlearn.regression.gaussianprocess.kernel.se");
+  py::module_ normal_module = py::module_::import(
+      "catlearn.regression.gaussianprocess.pdistributions.normal");
 
   // Get the classes from the imported modules
   py::object hpfitter_class = hpfitter_module.attr("HyperparameterFitter");
@@ -84,8 +84,7 @@ PySurrogate::PySurrogate(shared_ptr<Parameters> p) : Potential(p) {
 void PySurrogate::train_optimize(Eigen::MatrixXd features,
                                  Eigen::MatrixXd targets) {
 
-  gpmod.attr("optimize")(features, targets,
-                         py::arg("retrain") = true,
+  gpmod.attr("optimize")(features, targets, py::arg("retrain") = true,
                          py::arg("prior") = _prior);
   return;
 }
@@ -95,9 +94,12 @@ void PySurrogate::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void PySurrogate::force(long N, const double *R, const int *atomicNrs,
-                        double *F, double *U, double *variance, const double *box) {
-  Eigen::MatrixXd features = Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), 1, N * 3);
-  py::tuple ef_and_unc = (this->gpmod.attr("predict")(features, "get_variance"_a = true));
+                        double *F, double *U, double *variance,
+                        const double *box) {
+  Eigen::MatrixXd features =
+      Eigen::Map<Eigen::MatrixXd>(const_cast<double *>(R), 1, N * 3);
+  py::tuple ef_and_unc =
+      (this->gpmod.attr("predict")(features, "get_variance"_a = true));
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
   auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
   auto gradients = ef_dat.block(0, 1, 1, N * 3);
@@ -106,10 +108,11 @@ void PySurrogate::force(long N, const double *R, const int *atomicNrs,
     F[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;
     F[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;
   }
-  for (int idx = 0; idx < 1+(N*3); idx++) {
+  for (int idx = 0; idx < 1 + (N * 3); idx++) {
     variance[idx] = vari(0, idx);
   }
   *U = ef_dat(0, 0);
-  // SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat), fmt::streamed(vari));
+  // SPDLOG_TRACE("Energy and Forces: {}\nVariance: {}", fmt::streamed(ef_dat),
+  // fmt::streamed(vari));
   return;
 }
