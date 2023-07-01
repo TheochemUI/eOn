@@ -137,21 +137,27 @@ int Prefactor::getPrefactors(Parameters *parameters, Matter *min1,
     pref1 = 2. * kB_T / (h)*pref1;
     pref2 = 2. * kB_T / (h)*pref2;
   }
-  SPDLOG_DEBUG("[Prefactor] reactant to product prefactor: %.3e", pref1);
-  SPDLOG_DEBUG("[Prefactor] product to reactant prefactor: %.3e", pref2);
+  SPDLOG_DEBUG("[Prefactor] reactant to product prefactor: {:.3e}", pref1);
+  SPDLOG_DEBUG("[Prefactor] product to reactant prefactor: {:.3e}", pref2);
   return 0;
 }
 
 void Prefactor::logFreqs(VectorXd freqs, char *name) {
-  log_file("[Prefactor] Frequencies at %s", name);
+  std::shared_ptr<spdlog::logger> fileLogger;
+  fileLogger = spdlog::basic_logger_st("prefactor", "freqs.dat", true);
+  fileLogger->set_pattern("%v");
+  fileLogger->debug("[Prefactor] Frequencies at {}", name);
   int i;
   for (i = 0; i < freqs.size(); i++) {
-    log_file("%10.6f ", freqs(i));
+    fileLogger->debug("");
+    fileLogger->debug("{:10.6f} ", freqs(i));
     if ((i + 1) % 5 == 0) {
-      log_file("");
+      fileLogger->debug("");
     }
   }
-  log_file("");
+  fileLogger->debug("");
+  spdlog::drop("prefactor");
+  fileLogger.reset();
 }
 
 VectorXi Prefactor::movedAtoms(Parameters *parameters, Matter *min1,
