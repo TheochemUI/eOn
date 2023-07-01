@@ -2,11 +2,9 @@
 
 #include "BaseStructures.h"
 #include "Dynamics.h"
-#include "Log.h"
 #include "Matter.h"
 #include "Optimizer.h"
 #include "TADJob.h"
-#include <vector>
 
 std::vector<std::string> TADJob::run(void) {
   current = std::make_shared<Matter>(pot, params);
@@ -23,27 +21,26 @@ std::vector<std::string> TADJob::run(void) {
       helper_functions::getRelevantFile(params->conFilename);
   current->con2matter(reactantFilename);
 
-  log("\nMinimizing initial reactant\n");
+  SPDLOG_LOGGER_DEBUG(log, "Minimizing initial reactant");
   // long refFCalls = Potential::fcalls;
   *reactant = *current;
   reactant->relax();
   // minimizeFCalls += (Potential::fcalls - refFCalls);
 
-  log("\nTemperature Accelerated Dynamics, running\n\n");
-  log("High temperature MD simulation running at %.2f K to simulate dynamics "
-      "at %.2f K\n",
-      params->temperature, params->tadLowT);
+  SPDLOG_LOGGER_DEBUG(log, "Temperature Accelerated Dynamics, running");
+  SPDLOG_LOGGER_DEBUG(log,
+                      "High temperature MD simulation running at {:.2f} K to "
+                      "simulate dynamics at {:.2f} K",
+                      params->temperature, params->tadLowT);
 
   int status = dynamics();
 
   saveData(status);
 
   if (newStateFlag) {
-    log("Transition time: %.2e s\n",
-        minCorrectedTime * 1.0e-15 * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s", minCorrectedTime * 1.0e-15 * params->timeUnit);
   } else {
-    log("No new state was found in %ld dynamics steps (%.3e s)\n",
-        params->mdSteps, time * 1.0e-15 * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "No new state was found in {} dynamics steps ({:.3e} s)", params->mdSteps, time * 1.0e-15 * params->timeUnit);
   }
 
   return returnFiles;
@@ -75,7 +72,7 @@ int TADJob::dynamics() {
   highT = params->temperature;
   delta = params->tadConfidence;
   minmu = params->tadMinPrefactor;
-  factor = log(1.0 / delta) / minmu;
+  factor = std::log(1.0 / delta) / minmu;
   StateCheckInterval =
       int(params->parrepStateCheckInterval / params->mdTimeStep);
   RecordInterval = int(params->parrepRecordInterval / params->mdTimeStep);
@@ -98,12 +95,14 @@ int TADJob::dynamics() {
   dephase();
   // dephaseFCalls = Potential::fcalls - refFCalls;
 
-  log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
-      "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: "
-      "%ld\n\n",
+  SPDLOG_LOGGER_DEBUG(
+      log,
+      "Starting MD run\nTemperature: {:.2f} Kelvin"
+      "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: "
+      "{}\n",
       Temp, params->mdSteps * params->mdTimeStep * params->timeUnit,
       params->mdTimeStep * params->timeUnit, params->mdSteps);
-  log("MD buffer length: %ld\n", mdBufferLength);
+  SPDLOG_LOGGER_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
   long tenthSteps = params->mdSteps / 10;
   // This prevents and edge case division by zero if mdSteps is < 10
@@ -118,7 +117,7 @@ int TADJob::dynamics() {
     kinT = (2.0 * kinE / nFreeCoord / kB);
     sumT += kinT;
     sumT2 += kinT * kinT;
-    // log("steps = %10d temp = %10.5f \n",step,kinT);
+    // SPDLOG_LOGGER_DEBUG(log, "steps = {:10d} temp = {:10.5f} ", step, kinT);
 
     TAD.oneStep();
     mdFCalls++;
@@ -127,7 +126,7 @@ int TADJob::dynamics() {
     nCheck++; // count up to params->parrepStateCheckInterval before checking
               // for a transition
     step++;
-    // log("step = %4d, time= %10.4f\n",step,time);
+     // SPDLOG_LOGGER_DEBUG(log, "step = {:4d}, time= {:10.4f}", step, time);
     //  standard conditions; record mater object in the transition buffer
     if (params->parrepRefineTransition && recordFlag && !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
@@ -146,7 +145,7 @@ int TADJob::dynamics() {
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
         nState++;
-        log("New State %ld: ", nState);
+        SPDLOG_LOGGER_DEBUG(log, "New State %ld: ", nState);
         *final_tmp = *current;
         transitionTime = time;
         newStateStep = step; // remember the step when we are in a new state
@@ -154,11 +153,11 @@ int TADJob::dynamics() {
         firstTransitFlag = 1;
       }
     }
-    // printf("step=%ld, time=%lf, biasPot=%lf\n",step,time,boostPotential);
+    // printf("step=%ld, time=%lf, biasPot=%lf",step,time,boostPotential);
     // Refine transition step
 
     if (transitionFlag) {
-      // log("[Parallel Replica] Refining transition time.\n");
+      // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition time.");
       refFCalls = Potential::fcalls;
       refineStep = refine(mdBuffer, mdBufferLength, reactant.get());
 
@@ -169,7 +168,7 @@ int TADJob::dynamics() {
       transitionTime = transitionTime_current - transitionTime_previous;
       transitionTime_previous = transitionTime_current;
       barrier = crossing->getPotentialEnergy() - reactant->getPotentialEnergy();
-      log("barrier= %.3f\n", barrier);
+      SPDLOG_LOGGER_DEBUG(log, "barrier= {:.3f}", barrier);
       correctionFactor = 1.0 * exp(barrier / kB * (1.0 / lowT - 1.0 / highT));
       correctedTime = transitionTime * correctionFactor;
       sumSimulatedTime += transitionTime;
@@ -186,8 +185,11 @@ int TADJob::dynamics() {
         *final_state = *final_tmp;
       }
       stopTime = factor * pow(minCorrectedTime / factor, lowT / highT);
-      log("tranisitonTime= %.3e s, Barrier= %.3f eV, correctedTime= %.3e s, "
-          "SimulatedTime= %.3e s, minCorTime= %.3e s, stopTime= %.3e s\n",
+      SPDLOG_LOGGER_DEBUG(
+          log,
+          "tranisitonTime= {:.3e} s, Barrier= {:.3f} eV, correctedTime= {:.3e} "
+          "s, "
+          "SimulatedTime= {:.3e} s, minCorTime= {:.3e} s, stopTime= {:.3e} s",
           transitionTime * 1e-15 * params->timeUnit, barrier,
           correctedTime * 1e-15 * params->timeUnit,
           sumSimulatedTime * 1e-15 * params->timeUnit,
@@ -207,7 +209,8 @@ int TADJob::dynamics() {
     // stdout Progress
     if ((step % tenthSteps == 0) || (step == params->mdSteps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
-      log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
+      SPDLOG_LOGGER_DEBUG(
+          log, "progress: {:.0f}%, max displacement: {:.3lf}, step {:7d}/{:d}",
           (double)100.0 * step / params->mdSteps, maxAtomDistance, step,
           params->mdSteps);
     }
@@ -215,9 +218,9 @@ int TADJob::dynamics() {
     if (step == params->mdSteps) {
       stopFlag = true;
       if (firstTransitFlag) {
-        log("Detected one transition\n");
+        SPDLOG_LOGGER_DEBUG(log, "Detected one transition");
       } else {
-        log("Failed to detect any transition\n");
+        SPDLOG_LOGGER_DEBUG(log, "Failed to detect any transition");
       }
     }
   }
@@ -226,12 +229,12 @@ int TADJob::dynamics() {
   avgT = sumT / step;
   varT = sumT2 / step - avgT * avgT;
 
-  log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
-      "Average_Boost = %lf\n\n",
+  SPDLOG_LOGGER_DEBUG(log, "Temperature : Average = %lf ; Stddev = %lf ; Factor = %lf; "
+      "Average_Boost = %lf",
       avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
       minCorrectedTime / step / params->mdTimeStep);
   if (isfinite(avgT) == 0) {
-    log("Infinite average temperature, something went wrong!\n");
+    SPDLOG_LOGGER_DEBUG(log, "Infinite average temperature, something went wrong!");
     newStateFlag = false;
   }
 
@@ -323,7 +326,7 @@ void TADJob::dephase() {
 
   DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
   Dynamics dephaseDynamics(current.get(), params.get());
-  log("Dephasing for %.2f fs\n", params->parrepDephaseTime * params->timeUnit);
+  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs", params->parrepDephaseTime * params->timeUnit);
 
   step = stepNew = loop = 0;
 
@@ -345,11 +348,11 @@ void TADJob::dephase() {
     if (transitionFlag) {
       dephaseRefineStep =
           refine(dephaseBuffer, dephaseBufferLength, reactant.get());
-      log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
+      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop, dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
-      log("Dephasing warning: in a new state, inverse the momentum and restart "
-          "from step %ld\n",
+      SPDLOG_LOGGER_DEBUG(log, "Dephasing warning: in a new state, inverse the momentum and restart "
+          "from step %ld",
           step + transitionStep);
       *current = *dephaseBuffer[transitionStep];
       velocity = current->getVelocities();
@@ -358,18 +361,15 @@ void TADJob::dephase() {
       step = step + transitionStep;
     } else {
       step = step + dephaseBufferLength;
-      // log("Successful dephasing for %.2f steps \n", step);
+      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {.2f} steps ", step);
     }
 
     if ((params->parrepDephaseLoopStop) &&
         (loop > params->parrepDephaseLoopMax)) {
-      log("Reach dephase loop maximum, stop dephasing! Dephased for %ld "
-          "steps\n ",
-          step);
+      SPDLOG_LOGGER_DEBUG(log, "Reach dephase loop maximum, stop dephasing! Dephased for {} steps", step);
       break;
     }
-    log("Successfully Dephased for %.2f fs",
-        step * params->mdTimeStep * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs", step * params->mdTimeStep * params->timeUnit);
   }
 }
 
@@ -393,7 +393,7 @@ bool TADJob::saddleSearch(std::shared_ptr<Matter> cross) {
   dimerSearch = new MinModeSaddleSearch(
       cross, mode, reactant->getPotentialEnergy(), params, pot);
   status = dimerSearch->run();
-  log("dimer search status %ld\n", status);
+  SPDLOG_LOGGER_DEBUG(log, "dimer search status %ld", status);
   if (status != MinModeSaddleSearch::STATUS_GOOD) {
     return false;
   }
@@ -402,7 +402,7 @@ bool TADJob::saddleSearch(std::shared_ptr<Matter> cross) {
 
 long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length,
                     Matter *reactant) {
-  // log("[Parallel Replica] Refining transition time.\n");
+  // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition time.");
 
   bool midTest;
   long min, max, mid;
@@ -420,7 +420,7 @@ long TADJob::refine(std::vector<std::shared_ptr<Matter>> buff, long length,
     } else if (midTest == true) {
       max = mid;
     } else {
-      log("Refine step failed! \n");
+      SPDLOG_LOGGER_DEBUG(log, "Refine step failed!");
       exit(1);
     }
   }
