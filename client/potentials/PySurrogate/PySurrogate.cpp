@@ -100,11 +100,11 @@ void PySurrogate::force(long N, const double *R, const int *atomicNrs,
   py::tuple ef_and_unc = (this->gpmod.attr("predict")(features, "get_variance"_a = true));
   auto ef_dat = ef_and_unc[0].cast<Eigen::MatrixXd>();
   auto vari = ef_and_unc[1].cast<Eigen::MatrixXd>();
-  auto forces = ef_dat.block(0, 1, 1, N * 3);
+  auto gradients = ef_dat.block(0, 1, 1, N * 3);
   for (int idx = 0; idx < N; idx++) {
-    F[3 * idx] = forces(0, 3 * idx);
-    F[3 * idx + 1] = forces(0, 3 * idx + 1);
-    F[3 * idx + 2] = forces(0, 3 * idx + 2);
+    F[3 * idx] = gradients(0, 3 * idx) * -1;
+    F[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;
+    F[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;
   }
   for (int idx = 0; idx < 1+(N*3); idx++) {
     variance[idx] = vari(0, idx);
