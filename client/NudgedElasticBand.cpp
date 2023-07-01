@@ -138,15 +138,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   NEBObjectiveFunction objf(this, params);
 
-  Optimizer *qm = nullptr;
-  Optimizer *optim = nullptr;
-  Parameters qm_param{*params};
-  if (params->optMethod == "lbfgs"){
-    SPDLOG_DEBUG("Starting out with Quickmin instead of LBFGS");
-    qm_param.optMethod = "qm";
-    qm = Optimizer::getOptimizer(&objf, &qm_param);
+  bool switched{false};
+  Optimizer *optim = Optimizer::getOptimizer(&objf, params.get());
+  Optimizer *refine_optim = nullptr;
+  if (params->refineOptMethod != "none"s){
+    refine_optim = Optimizer::getOptimizer(&objf, params.get(), true);
   }
-    optim = Optimizer::getOptimizer(&objf, params.get());
   SPDLOG_LOGGER_DEBUG(
       log, "{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration", "step size",
       params->optConvergenceMetricLabel, "max image", "max energy");
@@ -167,13 +164,17 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
         break;
       }
-      if (qm && convForce > 0.5) {
-        qm->step(params->optMaxMove);
-      } else {
-        if (qm) {
-          qm = nullptr;
-          SPDLOG_DEBUG("Switched to {}", params->optMethod);
+      if (refine_optim) {
+        if (optim && convForce > params->refineThreshold) {
+          optim->step(params->optMaxMove);
+        } else {
+          if (!switched) {
+            switched = true;
+            SPDLOG_DEBUG("Switched to {}", params->refineOptMethod);
+          }
+          refine_optim->step(params->optMaxMove);
         }
+      } else {
         optim->step(params->optMaxMove);
       }
     }
@@ -193,10 +194,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     SPDLOG_LOGGER_DEBUG(log, "\n NEB converged");
   }
 
+  delete optim;
+  if (switched){
+    delete refine_optim;
+  }
   printImageData();
   findExtrema();
 
-  delete qm;
   return status;
 }
 
