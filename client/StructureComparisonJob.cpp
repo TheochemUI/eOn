@@ -1,7 +1,5 @@
-
 #include "StructureComparisonJob.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
 #include "Optimizer.h"
 
