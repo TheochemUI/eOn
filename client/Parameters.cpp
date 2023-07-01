@@ -118,8 +118,10 @@ Parameters::Parameters() {
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
 
   // [Optimizers] //
-  optMethod = "cg";
-  optConvergenceMetric = "norm";
+  optMethod = "cg"s;
+  optConvergenceMetric = "norm"s;
+  refineOptMethod = "none"s;
+  refineThreshold = 0.5;
   optMaxIterations = 1000;
   optConvergedForce = 0.01;
   optMaxMove = 0.2;
@@ -446,8 +448,10 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-
     optMethod = toLowerCase(ini.GetValue("Optimizer", "opt_method", optMethod));
+    refineOptMethod = toLowerCase(ini.GetValue("Optimizer", "refine_opt_method", refineOptMethod));
+    refineThreshold =
+        ini.GetValueF("Optimizer", "refine_threshold", refineThreshold);
     optConvergenceMetric = toLowerCase(
         ini.GetValue("Optimizer", "convergence_metric", optConvergenceMetric));
 
@@ -470,40 +474,48 @@ int Parameters::load(FILE *file) {
         ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
     optMaxMove = ini.GetValueF("Optimizer", "max_move", optMaxMove);
     processSearchMinimizationOffset = optMaxMove;
-    optTimeStepInput =
-        ini.GetValueF("Optimizer", "time_step", optTimeStepInput);
-    optTimeStep = optTimeStepInput / timeUnit;
-    optMaxTimeStepInput =
-        ini.GetValueF("Optimizer", "time_step_max", optMaxTimeStepInput);
-    optMaxTimeStep = optMaxTimeStepInput / timeUnit;
-    optLBFGSMemory = ini.GetValueL("Optimizer", "lbfgs_memory", optLBFGSMemory);
-    optLBFGSInverseCurvature = ini.GetValueF(
-        "Optimizer", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
-    optLBFGSMaxInverseCurvature =
-        ini.GetValueF("Optimizer", "lbfgs_max_inverse_curvature",
-                      optLBFGSMaxInverseCurvature);
-    optLBFGSAutoScale =
-        ini.GetValueB("Optimizer", "lbfgs_auto_scale", optLBFGSAutoScale);
-    optLBFGSAngleReset =
-        ini.GetValueB("Optimizer", "lbfgs_angle_reset", optLBFGSAngleReset);
-    optLBFGSDistanceReset = ini.GetValueB("Optimizer", "lbfgs_distance_reset",
-                                          optLBFGSDistanceReset);
-    optQMSteepestDecent =
-        ini.GetValueB("Optimizer", "qm_steepest_descent", optQMSteepestDecent);
-    optCGNoOvershooting =
-        ini.GetValueB("Optimizer", "cg_no_overshooting", optCGNoOvershooting);
-    optCGKnockOutMaxMove = ini.GetValueB("Optimizer", "cg_knock_out_max_move",
-                                         optCGKnockOutMaxMove);
-    optCGLineSearch =
-        ini.GetValueB("Optimizer", "cg_line_search", optCGLineSearch);
-    optCGLineConverged =
-        ini.GetValueF("Optimizer", "cg_line_converged", optCGLineConverged);
-    optCGMaxIterBeforeReset = ini.GetValueL(
-        "Optimizer", "cg_max_iter_before_reset", optCGMaxIterBeforeReset);
-    optCGLineSearchMaxIter = ini.GetValueL(
-        "Optimizer", "cg_max_iter_line_search", optCGLineSearchMaxIter);
-    optSDAlpha = ini.GetValueF("Optimizer", "sd_alpha", optSDAlpha);
-    optSDTwoPoint = ini.GetValueB("Optimizer", "sd_twopoint", optSDTwoPoint);
+    // Handle each optimizer separately
+    if (ini.FindKey("QuickMin") != -1) {
+      optTimeStepInput =
+          ini.GetValueF("QuickMin", "time_step", optTimeStepInput);
+      optTimeStep = optTimeStepInput / timeUnit;
+      optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent",
+                                          optQMSteepestDecent);
+    } else if (ini.FindKey("FIRE") != -1) {
+      SPDLOG_WARN("Overwriting QuickMin timestep with Fire timestep!!");
+      optTimeStepInput = ini.GetValueF("FIRE", "time_step", optTimeStepInput);
+      optTimeStep = optTimeStepInput / timeUnit;
+      optMaxTimeStepInput =
+          ini.GetValueF("FIRE", "time_step_max", optMaxTimeStepInput);
+      optMaxTimeStep = optMaxTimeStepInput / timeUnit;
+    } else if (ini.FindKey("LBFGS") != -1){
+      optLBFGSMemory = ini.GetValueL("LBFGS", "lbfgs_memory", optLBFGSMemory);
+      optLBFGSInverseCurvature = ini.GetValueF(
+          "LBFGS", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
+      optLBFGSMaxInverseCurvature = ini.GetValueF(
+          "LBFGS", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
+      optLBFGSAutoScale =
+          ini.GetValueB("LBFGS", "lbfgs_auto_scale", optLBFGSAutoScale);
+      optLBFGSAngleReset =
+          ini.GetValueB("LBFGS", "lbfgs_angle_reset", optLBFGSAngleReset);
+      optLBFGSDistanceReset =
+          ini.GetValueB("LBFGS", "lbfgs_distance_reset", optLBFGSDistanceReset);
+    } else if (ini.FindKey("CG") != -1){
+      optCGNoOvershooting =
+          ini.GetValueB("CG", "cg_no_overshooting", optCGNoOvershooting);
+      optCGKnockOutMaxMove =
+          ini.GetValueB("CG", "cg_knock_out_max_move", optCGKnockOutMaxMove);
+      optCGLineSearch = ini.GetValueB("CG", "cg_line_search", optCGLineSearch);
+      optCGLineConverged =
+          ini.GetValueF("CG", "cg_line_converged", optCGLineConverged);
+      optCGMaxIterBeforeReset = ini.GetValueL("CG", "cg_max_iter_before_reset",
+                                              optCGMaxIterBeforeReset);
+      optCGLineSearchMaxIter = ini.GetValueL("CG", "cg_max_iter_line_search",
+                                             optCGLineSearchMaxIter);
+    } else if (ini.FindKey("SD") != -1){
+      optSDAlpha = ini.GetValueF("SD", "sd_alpha", optSDAlpha);
+      optSDTwoPoint = ini.GetValueB("SD", "sd_twopoint", optSDTwoPoint);
+    }
 
     // [Dimer] //
 
