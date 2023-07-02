@@ -141,7 +141,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   bool switched{false};
   Optimizer *optim = Optimizer::getOptimizer(&objf, params.get());
   Optimizer *refine_optim = nullptr;
-  if (params->refineOptMethod != "none"s){
+  if (params->refineOptMethod != "none"s) {
     refine_optim = Optimizer::getOptimizer(&objf, params.get(), true);
   }
   SPDLOG_LOGGER_DEBUG(
@@ -158,7 +158,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
     }
     VectorXd pos = objf.getPositions();
-    double convForce {convergenceForce()};
+    double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
@@ -185,8 +185,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf.getPositions() - pos));
     SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4f}",
-                        iteration, stepSize, convForce, maxEnergyImage,
-                        dE);
+                        iteration, stepSize, convForce, maxEnergyImage, dE);
   }
 
   if (objf.isConverged()) {
@@ -195,7 +194,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   }
 
   delete optim;
-  if (switched){
+  if (switched) {
     delete refine_optim;
   }
   printImageData();
