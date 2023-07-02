@@ -49,7 +49,8 @@ public:
     if (spdlog::get("potcalls")) {
       potcall_logger = spdlog::get("potcalls");
     } else {
-      potcall_logger = spdlog::basic_logger_st("potcalls", "_potcall.log", true);
+      potcall_logger =
+          spdlog::basic_logger_st("potcalls", "_potcall.log", true);
     }
   } // the number of atoms shall be set later
     // using resize()
