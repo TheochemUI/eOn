@@ -115,7 +115,7 @@ def processes(states, statenr, limit):
     return atoms_list
 
 def dot(path_root, states):
-    G = make_graph(states) 
+    G = make_graph(states)
     return G.dot()
 
 def dynamics(path_root, states, unique=False):
@@ -153,7 +153,7 @@ def make_graph(states):
     return G
 
 def fastest_path(path_root, states, full=False):
-    G = make_graph(states) 
+    G = make_graph(states)
 
     state_list = [states.get_state(0)]
     if full:
@@ -181,7 +181,7 @@ def fastest_path(path_root, states, full=False):
         for j in list(state_list[i].get_process_table().values()):
             ratesum += j['rate']
 
-        print(time, state_list[i].number) 
+        print(time, state_list[i].number)
         time += 1/ratesum
 
     return atoms_list

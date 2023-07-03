@@ -104,7 +104,7 @@
 
     twobodyenergy = 0.0d0
     threebodyenergy = 0.0d0
-  
+
     DO i=1, NATOMS
 !      i_id = type(i)
       i_id=1
@@ -135,7 +135,7 @@
           cos_x_ij = xij * invrij
           cos_y_ij = yij * invrij
           cos_z_ij = zij * invrij
-        
+
         ! Some useful quantities
           one_o_a_ij =1.0/(rhoij-ALPHA)
           IF (one_o_a_ij > -300.0d0) THEN
@@ -152,12 +152,12 @@
           END IF
           r_to_minusp=rhoij ** (-1*P)
 
-        ! Two body energy and force 
+        ! Two body energy and force
           term1=A_EPS*(BETA*r_to_minusp-1.0)*expo
           one_o_a2 = one_o_a_ij * one_o_a_ij
           term2=(one_o_a2*term1+A_EPS*P*BETA*r_to_minusp*expo/rhoij)*invsig
 
-        ! Contribution to the binary repulsive term 
+        ! Contribution to the binary repulsive term
           IF(rij <=  S0(i_id,j_id)) THEN
             term1=term1+A0(i_id,j_id)*(cos(PI*rij/S0(i_id,j_id))+1.0d0)
             term2=term2+A0(i_id,j_id)*PI/S0(i_id,j_id)* sin(PI*rij/S0(i_id,j_id))
@@ -168,7 +168,7 @@
           fy(i)=fy(i)-term2*cos_y_ij;
           fz(i)=fz(i)-term2*cos_z_ij;
 
-        ! Prepare for the three body term 
+        ! Prepare for the three body term
           fact3_ij=gam_o_a_ij*one_o_a_ij*invsig
 
           DO ind_k = ind_j+1, numnei(i)
@@ -176,7 +176,7 @@
             k = nei(i,ind_k)
 !            k_id = type(k)
             k_id=1
- 
+
           ! Distance, with periodic boundary conditions
             xik=x(k)-xi
             yik=y(k)-yi
@@ -187,7 +187,7 @@
 
             rik2 = xik*xik + yik*yik + zik*zik
 
-          ! Check whether the distance is too large 
+          ! Check whether the distance is too large
             IF (rik2<rcut2(i_id,k_id))  THEN
               rik=sqrt(rik2)
               invrik=1.0/rik
@@ -196,7 +196,7 @@
               cos_y_ik=yik*invrik
               cos_z_ik=zik*invrik
 
-            ! Some useful quantities 
+            ! Some useful quantities
               one_o_a_ik=1.0D0/(rhoik-ALPHA)
               gam_o_a_ik=GAMMA*one_o_a_ik
 
@@ -210,10 +210,10 @@
               cos_jik  =cos_x_ij*cos_x_ik+cos_y_ij*cos_y_ik+ cos_z_ij*cos_z_ik
               cos_p_1o3=cos_jik+ONE_THIRD
 
-            ! Energy (added only to central atom)  
+            ! Energy (added only to central atom)
               threebodyenergy=threebodyenergy+fact*cos_p_1o3*cos_p_1o3
 
-            ! Force 
+            ! Force
               term_ij=fact*fact3_ij*cos_p_1o3*cos_p_1o3;
               dhdcos_ij=2*fact*cos_p_1o3;
               term_ik=fact*gam_o_a_ik*one_o_a_ik*cos_p_1o3*cos_p_1o3/SIGMA;

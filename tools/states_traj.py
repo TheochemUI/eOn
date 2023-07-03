@@ -20,19 +20,19 @@ with open(state_main_dir+'state_table') as f:
 
 atoms = None
 parser = argparse.ArgumentParser()
-parser.add_argument('--states', type=int, nargs='+', metavar='StateNumbers', 
+parser.add_argument('--states', type=int, nargs='+', metavar='StateNumbers',
         default=None,
         help='States that used to constructe trajectories')
 
-parser.add_argument('--start', type=int, metavar='StateNumbers', 
+parser.add_argument('--start', type=int, metavar='StateNumbers',
         default=None,
         help='the start point of the trajectory')
 
-parser.add_argument('--end', type=int, metavar='StateNumbers', 
+parser.add_argument('--end', type=int, metavar='StateNumbers',
         default=None,
         help='the end point of the trajectory')
 
-parser.add_argument('--akmc_step', type=int, metavar='AKMCstepnumber', 
+parser.add_argument('--akmc_step', type=int, metavar='AKMCstepnumber',
         default=None,
         help='generate trajectories based on dynamics.txt by assigning a start akmc_step and an end point(product ID)')
 

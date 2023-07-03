@@ -18,7 +18,7 @@
   !     S. Goedecker, cond-mat/0201475 (2002)
   !     T. Lenosky, Modelling. Simul. Mater. Sci. Eng. 8, 825 (2000)
   !     Parallelized using OpenMP
- 
+
   !  Copyright (C) 2001-2002 Stefan Goedecker, CEA Grenoble
   !  This file is distributed under the terms of the
   !  GNU General Public License, see http://www.gnu.org/copyleft/gpl.txt .
@@ -87,9 +87,9 @@
           if (ll3.lt.1) stop 'alat(3) too small'
 
   ! linear scaling calculation of verlet list
- 
+
        if (npr.le.1) then !serial if too few processors to gain by parallelizing
- 
+
   ! set ncx for serial case, ncx for parallel case set below
           ncx=8
   1234    ncx=ncx*2
@@ -101,9 +101,9 @@
           rlc1i=ll1/alat(1)
           rlc2i=ll2/alat(2)
           rlc3i=ll3/alat(3)
- 
+
           do 983,iat=1,nat
- 
+
           lgl=.false.
   115     continue
           if (rxyz0(1,iat).ge.alat(1)) then
@@ -127,7 +127,7 @@
               goto 115
           endif
           l1=int(rxyz0(1,iat)*rlc1i)
- 
+
           lgl=.false.
   225    continue
           if (rxyz0(2,iat).ge.alat(2)) then
@@ -151,7 +151,7 @@
               goto 225
           endif
           l2=int(rxyz0(2,iat)*rlc2i)
- 
+
           lgl=.false.
   335    continue
           if (rxyz0(3,iat).ge.alat(3)) then
@@ -175,7 +175,7 @@
               goto 335
           endif
           l3=int(rxyz0(3,iat)*rlc3i)
- 
+
           ii=icell(0,l1,l2,l3)
           ii=ii+1
           icell(0,l1,l2,l3)=ii
@@ -186,10 +186,10 @@
           endif
           icell(ii,l1,l2,l3)=iat
   983     continue
- 
+
       endif
- 
- 
+
+
   ! duplicate all atoms within boundary layer
           laymx=ncx*(2*ll1*ll2+2*ll1*ll3+2*ll2*ll3+4*ll1+4*ll2+4*ll3+8)
           nn=nat+laymx
@@ -204,7 +204,7 @@
   ! xy plane
           do l2=0,ll2-1
           do l1=0,ll1-1
- 
+
           in=icell(0,l1,l2,0)
           icell(0,l1,l2,ll3)=in
           do ii=1,in
@@ -217,7 +217,7 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,l1,l2,ll3-1)
           icell(0,l1,l2,-1)=in
           do ii=1,in
@@ -230,15 +230,15 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           enddo
           enddo
- 
- 
+
+
   ! yz plane
           do l3=0,ll3-1
           do l2=0,ll2-1
- 
+
           in=icell(0,0,l2,l3)
           icell(0,ll1,l2,l3)=in
           do ii=1,in
@@ -251,7 +251,7 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           in=icell(0,ll1-1,l2,l3)
           icell(0,-1,l2,l3)=in
           do ii=1,in
@@ -264,15 +264,15 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           enddo
           enddo
- 
- 
+
+
   ! xz plane
           do l3=0,ll3-1
           do l1=0,ll1-1
- 
+
           in=icell(0,l1,0,l3)
           icell(0,l1,ll2,l3)=in
           do ii=1,in
@@ -285,7 +285,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           in=icell(0,l1,ll2-1,l3)
           icell(0,l1,-1,l3)=in
           do ii=1,in
@@ -298,14 +298,14 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           enddo
           enddo
- 
- 
+
+
   ! x axis
           do l1=0,ll1-1
- 
+
           in=icell(0,l1,0,0)
           icell(0,l1,ll2,ll3)=in
           do ii=1,in
@@ -318,7 +318,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,l1,0,ll3-1)
           icell(0,l1,ll2,-1)=in
           do ii=1,in
@@ -331,7 +331,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           in=icell(0,l1,ll2-1,0)
           icell(0,l1,-1,ll3)=in
           do ii=1,in
@@ -344,7 +344,7 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,l1,ll2-1,ll3-1)
           icell(0,l1,-1,-1)=in
           do ii=1,in
@@ -357,13 +357,13 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           enddo
- 
- 
+
+
   ! y axis
           do l2=0,ll2-1
- 
+
           in=icell(0,0,l2,0)
           icell(0,ll1,l2,ll3)=in
           do ii=1,in
@@ -376,7 +376,7 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,0,l2,ll3-1)
           icell(0,ll1,l2,-1)=in
           do ii=1,in
@@ -389,7 +389,7 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,l2,0)
           icell(0,-1,l2,ll3)=in
           do ii=1,in
@@ -402,7 +402,7 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,l2,ll3-1)
           icell(0,-1,l2,-1)=in
           do ii=1,in
@@ -415,13 +415,13 @@
           rxyz(2,il)=rxyz(2,i)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           enddo
- 
- 
+
+
   ! z axis
           do l3=0,ll3-1
- 
+
           in=icell(0,0,0,l3)
           icell(0,ll1,ll2,l3)=in
           do ii=1,in
@@ -434,7 +434,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           in=icell(0,ll1-1,0,l3)
           icell(0,-1,ll2,l3)=in
           do ii=1,in
@@ -447,7 +447,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           in=icell(0,0,ll2-1,l3)
           icell(0,ll1,-1,l3)=in
           do ii=1,in
@@ -460,7 +460,7 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           in=icell(0,ll1-1,ll2-1,l3)
           icell(0,-1,-1,l3)=in
           do ii=1,in
@@ -473,10 +473,10 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)
           enddo
- 
+
           enddo
- 
- 
+
+
   ! corners
           in=icell(0,0,0,0)
           icell(0,ll1,ll2,ll3)=in
@@ -490,7 +490,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,0,0)
           icell(0,-1,ll2,ll3)=in
           do ii=1,in
@@ -503,7 +503,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,0,ll2-1,0)
           icell(0,ll1,-1,ll3)=in
           do ii=1,in
@@ -516,7 +516,7 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,ll2-1,0)
           icell(0,-1,-1,ll3)=in
           do ii=1,in
@@ -529,7 +529,7 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)+alat(3)
           enddo
- 
+
           in=icell(0,0,0,ll3-1)
           icell(0,ll1,ll2,-1)=in
           do ii=1,in
@@ -542,7 +542,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,0,ll3-1)
           icell(0,-1,ll2,-1)=in
           do ii=1,in
@@ -555,7 +555,7 @@
           rxyz(2,il)=rxyz(2,i)+alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           in=icell(0,0,ll2-1,ll3-1)
           icell(0,ll1,-1,-1)=in
           do ii=1,in
@@ -568,7 +568,7 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           in=icell(0,ll1-1,ll2-1,ll3-1)
           icell(0,-1,-1,-1)=in
           do ii=1,in
@@ -581,12 +581,12 @@
           rxyz(2,il)=rxyz(2,i)-alat(2)
           rxyz(3,il)=rxyz(3,i)-alat(3)
           enddo
- 
+
           allocate(lsta(2,nat))
           nnbrx=24
   2345    nnbrx=3*nnbrx/2
           allocate(lstb(nnbrx*nat),rel(5,nnbrx*nat))
- 
+
           indlstx=0
 
   ! assign contiguous portions of the arrays lstb and rel to the threads
@@ -605,7 +605,7 @@
                            rxyz,icell,lstb(iam*myspace+1),lay,rel(1,iam*myspace+1),cut2,indlst)
             lsta(2,iat)=iam*myspace+indlst
           endif
- 
+
   6600    continue
   6000    continue
           indlstx=max(indlstx,indlst)
@@ -618,7 +618,7 @@
 
           npjx=300 ; npjkx=3000
           istopg=0
- 
+
           if (npr.le.1) then   ! SERIAL CASE
             iat1=1
             iat2=nat
@@ -638,9 +638,9 @@
             F(j:j+2)=fxyz(:,i)
             j=j+3
           END DO
- 
+
           deallocate(rxyz,icell,lay,lsta,lstb,rel)
- 
+
           end subroutine lenosky
 
 !-----------------------------------------------------------------------------------!
@@ -740,7 +740,7 @@
                          0.16589446539683d+02,  0.11083892500520d+02, &
                          0.90887216383860d+01,  0.54902279653967d+01, &
                         -0.18823313223755d+02, -0.77183416481005d+01 /)
- 
+
   ! initialize temporary private scalars for reduction sum on energies and
   ! private workarray txyz for forces forces
           tener=0.d0
@@ -752,12 +752,12 @@
           txyz(1,iat)=0.d0
           txyz(2,iat)=0.d0
   121     txyz(3,iat)=0.d0
- 
- 
+
+
   ! calculation of forces, energy
- 
+
           do 1000,iat=iat1,iat2
- 
+
           dens2=0.d0
           dens3=0.d0
           jcnt=0
@@ -771,13 +771,13 @@
               write(6,*) 'WARNING: enlarge npjx'
               istop=1
           endif
- 
+
           fxij=rel(1,jbr)
           fyij=rel(2,jbr)
           fzij=rel(3,jbr)
           rij=rel(4,jbr)
           sij=rel(5,jbr)
- 
+
   ! coordination number calculated with soft cutoff between first and
   ! second nearest neighbor
           if (rij.le.2.36d0) then
@@ -798,7 +798,7 @@
           txyz(1,jat)=txyz(1,jat)+fxij*(ep_phi*.5d0)
           txyz(2,jat)=txyz(2,jat)+fyij*(ep_phi*.5d0)
           txyz(3,jat)=txyz(3,jat)+fzij*(ep_phi*.5d0)
- 
+
   ! 2 body embedding term
           call splint(cof_rho,dof_rho,tmin_rho,tmax_rho, &
                       hsixth_rho,h2sixth_rho,hi_rho,11,rij,rho,rhop)
@@ -806,11 +806,11 @@
           f2ij(1,jcnt)=fxij*rhop
           f2ij(2,jcnt)=fyij*rhop
           f2ij(3,jcnt)=fzij*rhop
- 
+
   ! 3 body embedding term
           call splint(cof_fff,dof_fff,tmin_fff,tmax_fff, &
                       hsixth_fff,h2sixth_fff,hi_fff,10,rij,fij,fijp)
- 
+
           do 3000,kbr=lsta(1,iat),lsta(2,iat)
           kat=lstb(kbr)
           if (kat.lt.jat) then
@@ -972,16 +972,16 @@
           endif
         endif
   ! end optimized version
- 
+
         tt=fij*fik
         dens3=dens3+tt*gjik
- 
+
           t1=fijp*fik*gjik
           t2=sij*(tt*gjikp)
           f3ij(1,jkcnt)=fxij*t1 + (fxik-fxij*costheta)*t2
           f3ij(2,jkcnt)=fyij*t1 + (fyik-fyij*costheta)*t2
           f3ij(3,jkcnt)=fzij*t1 + (fzik-fzij*costheta)*t2
- 
+
           t3=fikp*fij*gjik
           t4=sik*(tt*gjikp)
           f3ik(1,jkcnt)=fxik*t3 + (fxij-fxik*costheta)*t4
@@ -994,7 +994,7 @@
           call splint(cof_uuu,dof_uuu,tmin_uuu,tmax_uuu, &
                hsixth_uuu,h2sixth_uuu,hi_uuu,8,dens,e_uuu,ep_uuu)
           ener_iat=ener_iat+e_uuu
- 
+
   ! Only now ep_uu is known and the forces can be calculated, lets loop again
           jcnt=0
           jkcnt=0
@@ -1007,13 +1007,13 @@
           txyz(1,jat)=txyz(1,jat)+ep_uuu*f2ij(1,jcnt)
           txyz(2,jat)=txyz(2,jat)+ep_uuu*f2ij(2,jcnt)
           txyz(3,jat)=txyz(3,jat)+ep_uuu*f2ij(3,jcnt)
- 
+
   ! 3 body embedding term
           do 3300,kbr=lsta(1,iat),lsta(2,iat)
           kat=lstb(kbr)
           if (kat.lt.jat) then
           jkcnt=jkcnt+1
- 
+
           txyz(1,iat)=txyz(1,iat)-ep_uuu*(f3ij(1,jkcnt)+f3ik(1,jkcnt))
           txyz(2,iat)=txyz(2,iat)-ep_uuu*(f3ij(2,jkcnt)+f3ik(2,jkcnt))
           txyz(3,iat)=txyz(3,iat)-ep_uuu*(f3ij(3,jkcnt)+f3ik(3,jkcnt))
@@ -1023,19 +1023,19 @@
           txyz(1,kat)=txyz(1,kat)+ep_uuu*f3ik(1,jkcnt)
           txyz(2,kat)=txyz(2,kat)+ep_uuu*f3ik(2,jkcnt)
           txyz(3,kat)=txyz(3,kat)+ep_uuu*f3ik(3,jkcnt)
- 
- 
+
+
           endif
   3300    continue
   2200    continue
- 
+
           tener=tener+ener_iat
           tener2=tener2+ener_iat**2
           tcoord=tcoord+coord_iat
           tcoord2=tcoord2+coord_iat**2
- 
+
   1000    continue
- 
+
           return
           end subroutine subfeniat
 
@@ -1050,7 +1050,7 @@
     implicit real*8 (a-h,o-z)
     dimension rxyz(3,nn),lay(nn),icell(0:ncx,-1:ll1,-1:ll2,-1:ll3), &
              lstb(0:myspace-1),rel(5,0:myspace-1)
- 
+
     do 63,k3=l3-1,l3+1
       do 63,k2=l2-1,l2+1
         do 63,k1=l1-1,l1+1
@@ -1074,16 +1074,16 @@
                indlst= indlst+1
              endif
 63 continue
- 
+
   return
   end subroutine sublstiat
 
 !-----------------------------------------------------------------------------------!
- 
+
   subroutine splint(ya,y2a,tmin,tmax,hsixth,h2sixth,hi,n,x,y,yp)
     implicit real*8 (a-h,o-z)
     dimension y2a(0:n-1),ya(0:n-1)
- 
+
 ! interpolate if the argument is outside the cubic spline interval [tmin,tmax]
     tt=(x-tmin)*hi
     if (x.lt.tmin) then
@@ -1127,5 +1127,3 @@
   end subroutine splint
 
 !-----------------------------------------------------------------------------------!
- 
-

@@ -82,4 +82,3 @@ void print_double_info(std::ostream &os, double x) {
   os.precision(old_prec);
   os.flags(old_flags);
 }
-

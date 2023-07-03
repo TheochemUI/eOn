@@ -211,7 +211,7 @@ class TransitionCounting(SuperbasinScheme):
                 f = open(data_path, 'r')
                 for i in f:
                     i = i.strip().split()
-                    self.count[state][self.states.get_state(int(i[0]))] = int(i[1]) 
+                    self.count[state][self.states.get_state(int(i[0]))] = int(i[1])
                 f.close()
             return self.count[state]
 
@@ -233,7 +233,7 @@ class EnergyLevel(SuperbasinScheme):
         else:
             return [ state ]
 
-    # start_state and end_state are the non-sb ids. 
+    # start_state and end_state are the non-sb ids.
     def register_transition(self, start_state, end_state):
         '''Increments the energy level of the end state or sets it equal to the energy
            of the end_state if it hasn't been visited before.'''
@@ -274,7 +274,7 @@ class EnergyLevel(SuperbasinScheme):
             return
         saddle_energy = barrier + start_state.get_energy()
 
-        # increment the level of the end_state. 
+        # increment the level of the end_state.
         for i in end_statelist:
             self.levels[i] += self.get_energy_increment(e_min, e_global_min, saddle_energy)
 
@@ -282,8 +282,8 @@ class EnergyLevel(SuperbasinScheme):
         largest_level = max(self.levels[start_state], self.levels[end_state])
 
         if largest_level > saddle_energy:
-            self.levels[start_state] = largest_level 
-            self.levels[end_state] = largest_level 
+            self.levels[start_state] = largest_level
+            self.levels[end_state] = largest_level
             for i in end_statelist: #this may also be just [ end_state ]
                 self.levels[i] = largest_level
             self.make_basin([start_state, end_state])
@@ -306,4 +306,3 @@ class EnergyLevel(SuperbasinScheme):
             #print("%f\n" % self.levels[i], f)
             f.write("%f\n" % self.levels[i])
             f.close()
-
