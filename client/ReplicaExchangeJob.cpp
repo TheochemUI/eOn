@@ -18,7 +18,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   double kbTLow, kbTHigh;
   double kB = params->kB;
   double pAcc;
-  std::shared_ptr<Matter>tmpMatter;
+  std::shared_ptr<Matter> tmpMatter;
 
   string posFilename = helper_functions::getRelevantFile(params->conFilename);
   pos = std::make_shared<Matter>(pot, params);

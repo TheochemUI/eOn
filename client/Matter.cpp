@@ -67,9 +67,7 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsFreeV(x); }
   VectorXd getPositions() { return matter->getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfFreeAtoms(); }
-  bool isConverged() {
-    return getConvergence() < params->optConvergedForce;
-  }
+  bool isConverged() { return getConvergence() < params->optConvergedForce; }
   double getConvergence() {
     if (params->optConvergenceMetric == "norm") {
       return matter->getForcesFreeV().norm();
@@ -88,7 +86,8 @@ public:
 
 // Matter::Matter(Parameters *parameters) { initializeDataMembers(parameters); }
 
-// Matter::Matter(std::shared_ptr<Parameters> parameters, const long int nAtoms) {
+// Matter::Matter(std::shared_ptr<Parameters> parameters, const long int nAtoms)
+// {
 //   resize(nAtoms); // prepare memory for nAtoms
 //   initializeDataMembers(parameters);
 // }
@@ -154,7 +153,7 @@ const Matter &Matter::operator=(const Matter &matter) {
 //     }
 // }
 
-bool Matter::compare(const Matter& matter, bool indistinguishable) {
+bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
   if (parameters->checkRotation && indistinguishable) {
@@ -827,7 +826,8 @@ bool Matter::con2matter(FILE *file) {
 void Matter::computePotential() {
   if (recomputePotential) {
     if (!potential) {
-      potential = helper_functions::makePotential(parameters->potential, parameters);
+      potential =
+          helper_functions::makePotential(parameters->potential, parameters);
     }
 
     std::tie(potentialEnergy, forces) =
@@ -1211,6 +1211,4 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputePotential = true;
 }
 
-std::shared_ptr<Potential> Matter::getPotential() {
-  return this->potential;
-}
+std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }

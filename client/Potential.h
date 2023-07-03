@@ -11,11 +11,13 @@ class Potential {
 private:
   // should be const
   PotType ptype;
+
 protected:
   std::shared_ptr<Parameters> params;
 
 public:
-  Potential(std::shared_ptr<Parameters> paramsIn) : ptype{paramsIn->potential} {}
+  Potential(std::shared_ptr<Parameters> paramsIn)
+      : ptype{paramsIn->potential} {}
   virtual ~Potential() = default;
 
   static int fcalls;
@@ -40,7 +42,8 @@ public:
 
 namespace helper_functions {
 std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params);
-std::shared_ptr<Potential> makePotential(PotType ptype, std::shared_ptr<Parameters> params);
+std::shared_ptr<Potential> makePotential(PotType ptype,
+                                         std::shared_ptr<Parameters> params);
 } // namespace helper_functions
 
 // int Potential::fcalls = 0;
