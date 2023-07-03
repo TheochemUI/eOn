@@ -1,6 +1,5 @@
 #include "NudgedElasticBandJob.h"
 #include "ConjugateGradients.h"
-#include "Log.h"
 #include "Potential.h"
 
 using namespace std;
@@ -117,7 +116,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
 }
 
 void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
-  SPDLOG_LOGGER_DEBUG(log, "\nFinal state: ");
+  SPDLOG_LOGGER_DEBUG(log, "Final state: ");
   if (status == NudgedElasticBand::NEBStatus::STATUS_GOOD)
     SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band, successful.");
   else if (status == NudgedElasticBand::NEBStatus::STATUS_BAD_MAX_ITERATIONS)

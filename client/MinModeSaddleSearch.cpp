@@ -11,7 +11,6 @@
 #include "AtomicGPDimer.h"
 #endif
 #include "EpiCenters.h"
-#include "Log.h"
 #include "ObjectiveFunction.h"
 
 using namespace helper_functions;
@@ -137,9 +136,9 @@ public:
     } else if (params->optConvergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      log("[MinModeSaddleSearch] unknown opt_convergence_metric: %s\n",
-          params->optConvergenceMetric.c_str());
-      exit(1);
+      SPDLOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
+                   params->optConvergenceMetric);
+      std::exit(1);
     }
   }
 
