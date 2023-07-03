@@ -8,7 +8,7 @@ class QSC
 #ifndef QSC_STANDALONE
 : public Potential
 #endif
-{    
+{
     public:
         QSC(void);
         ~QSC(void);
@@ -61,13 +61,13 @@ class QSC
 
         static const qsc_parameters qsc_default_params[];
         std::vector<qsc_parameters> qsc_params;
-        
+
         qsc_parameters get_qsc_parameters(int a, int b);
         double dpowi(double x, unsigned n);
         double pair_potential(double r, double a, double n);
         bool verlet_needs_update(long N, const double *R, const double *box);
         void new_vlist(long N, const double *R, const double *box);
         void update_distances(long N, const double *R, const double *box);
-        void calc_distance(const double *box, const double *R1, int i, 
+        void calc_distance(const double *box, const double *R1, int i,
                            const double *R2, int j, struct distance *d);
 };

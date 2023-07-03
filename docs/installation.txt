@@ -71,7 +71,7 @@ using the Intel Fortran Compiler (ifort) you will need to edit the Makefile to
 change ``FC`` (fortran compiler), ``FFLAGS`` (fortran compiler flags), and
 ``FAR`` (fortran archiver) variables to work for your system.
 
-If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS.  If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use. 
+If you wish to use a LAMMPS potential, you must first build the appropriate library version of LAMMPS.  If the library will be used with a serial version of EON, then build the serial version of LAMMPS--likewise for MPI use.
 Detailed documentation can be found on the :ref:`LAMMPS Potential<lammps_potential>` page. [#lammps]_
 
 If you want to use the MPI communicator, see the :ref:`MPI
@@ -84,6 +84,6 @@ during the server installation the following command will install the client::
     $ cp eonclient ../bin/eonclient
 
 Otherwise you will need to give the path to the client binary in your
-``config.ini``. 
+``config.ini``.
 
-.. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_ 
+.. [#lammps] `"Large-scale Atomic/Molecular Massively Parallel Simulator,  Sandia National Laboratories" <http://http://lammps.sandia.gov/>`_

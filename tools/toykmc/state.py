@@ -36,7 +36,7 @@ class State:
         self.grid = grid
         self.w = len(self.grid[0])
         self.h = len(self.grid)
-        
+
         if not energy:
             self.energy = self.calc_energy()
         else:

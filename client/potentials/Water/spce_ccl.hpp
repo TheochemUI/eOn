@@ -24,7 +24,7 @@ namespace forcefields {
 public:
         SpceCcl();
         SpceCcl(double cutoff, double switchingWidth);
-        
+
         /** Compute the forces and the energy.
             The order of the atoms is very important. For this function the order is H1, H1, H2, H2, etc ... , O1, O2, etc ...
             The numbers are for the molecules.
@@ -36,7 +36,7 @@ public:
             @param[in]  b      Periodic boundaries.
             @warning Be careful with the order of the atoms.*/
         void computeHH_O_(const int nAtoms, const double R[], double F[],  double& U, const double b[]);
-        
+
         /** Compute the forces and the energy (with fixed atom optimisation).
             In a simulation, some atoms may be fixed (not allowed to move). Computing the interaction between two fixed atoms is useless. When the potential knows which atoms are fixed, it can avoid these useless computations.
             @param[in]  nAtoms Number of Atoms.
@@ -45,12 +45,12 @@ public:
             @param[out] U     Potential energy.
             @param[in]  b      Periodic boundaries.
             @param[in] fixed The length of the array must be equal to @a nAtoms in compute(). True when atom is fixed, false otherwise.
-            @see Check compute() for the order of the atoms. 
+            @see Check compute() for the order of the atoms.
             */
         void computeHH_O_(const int nAtoms, const double R[], double F[],  double& U, const double b[], const bool fixed[]);
-        
+
         char const * getName() const;///< Name of the potential.
-            
+
 protected:
             /** Pointers to molecule of water.
             Pointers to coordinates and forces of a molecule of water.
@@ -78,14 +78,14 @@ protected:
                 double * const fh2_;
                 double * const fo_;
             };
-        
+
         /** Interactions within a molecules.
-            CCL interaction with @ref amira2004 "Amira's grafting rules". 
+            CCL interaction with @ref amira2004 "Amira's grafting rules".
             @param[in, out] water   Add forces.
             @param[in, out] U Add energy to @a U.
             */
-        void intramolecular(Water & water, double & U);  
-        
+        void intramolecular(Water & water, double & U);
+
         /** Interactions between two molecules.
             Lennard Jones between oxygen only with cutoff
             @param[in, out] w1 Molecule of water 1.
@@ -94,7 +94,7 @@ protected:
             @see intermolecularFull() and intermolecularSwitching().
             */
         void lennardJonesWithCutoff(Water & w1, Water & w2, double & U);
-        
+
         /** Interactions between two molecules.
             Coulomb interaction between two molecules of water with molecules-based cutoff
             @param[in, out] w1 Molecule 1.
@@ -103,7 +103,7 @@ protected:
             @see intermolecularFull() and intermolecularSwitching().
             */
         void coulombWithCutoff(Water & w1, Water & w2, double & U);
-        
+
         /** Interactions between two molecules.
             Coulomb interaction between two molecules. Full interaction (i.e. no cutoff).
             @param[in, out] w1 Molecule 1.
@@ -112,14 +112,14 @@ protected:
             @see intermolecularFull() and intermolecularSwitching().
             */
         void coulombFull(Water & w1, Water & w2, double & U);
-        
+
         /// Distance OH
         static const double roh_;
         /// Angle HOH
         static const double theta_;
         /// Distance HH
         static const double rhh_;
-        /// Charge on one hydrogen 
+        /// Charge on one hydrogen
         static const double charge_;
         /// Square of # charge_
         static const double charge2_;
@@ -134,7 +134,7 @@ protected:
         /// Polarisation correction. Energy added per molecule (see @ref berendsen1987 "original publication" for definition).
         static double const polarisationEnergy_;
 private:
-            
+
             /** Initialise Rho.
             Compute Rho coordinates according to @ref amira2004 "Amira's grafting rules":
             @f[
@@ -145,24 +145,24 @@ private:
                 @f]
             */
             void initialiseRho(Vector3 const & v, Rho & r);
-        
+
         /** Compute forces and energy.
             The function calculates and returns the energy and forces applied on each atom.
             The function has preconditions with which the user must comply before calling this function. The periodic boundaries must set with (setPeriodicity()). The content of and arrays @a fh1 , @a fh2 , @a fo must be zero for all elements. \n
             Arrays ending in @em h1 are for the hydrogen one of the molecules and those ending in @em h2 for hydrogen 2.
             @param[in] nMolecules Number of molecules.
             @param[in] "rh1, rh2, ro" Positions of hydrogens and oxygens.
-            @param[in,out] "fh1, fh2, fo" Forces on hydrogens and oxygens. 
+            @param[in,out] "fh1, fh2, fo" Forces on hydrogens and oxygens.
             @param[in,out] energy      Potential energy.
             @param[in] b      Periodic boundaries.
             @param[in] "xh1, xh2, xo" Tell which atoms are fixed and which are movable. This parameter are optional. When provided, interaction between fixed atoms are skipped. The three arrays @a xh1, @a xh2, @a xo must be provided for the optimisation to work.
             @warning Remember the preconditions.*/
         template <int H, int O>
             void computeTemplate(
-                                 const int nMolecules, 
+                                 const int nMolecules,
                                  const double (*const rh1)[H*3],
                                  const double (*const rh2)[H*3],
-                                 const double (*const ro)[O*3],    
+                                 const double (*const ro)[O*3],
                                  double (*const fh1)[H*3],
                                  double (*const fh2)[H*3],
                                  double (*const fo)[O*3],

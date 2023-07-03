@@ -33,4 +33,3 @@ if __name__ == "__main__":
             data = io.loadcons(sys.argv[1])
         q.data_set(data)
     gtk.main()
-

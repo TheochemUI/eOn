@@ -31,9 +31,5 @@ for line in lines[1:]:
     maxd = 0.0
     for i in range(len(reac)):
         d = numpy.linalg.norm(atoms.pbc(reac.r[i] - pr.r[i], reac.box))
-        maxd = max(maxd, d)    
+        maxd = max(maxd, d)
     print("%12s %12.6f %12.6f" % (pid, maxd, pu - reacenergy))
-    
-    
-
-

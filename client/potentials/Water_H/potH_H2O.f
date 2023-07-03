@@ -36,7 +36,7 @@
       COMMON/DER/C6HO6,C6HH6
 
 !C     DISPERSION
- 
+
 !      PRINT *,R(1)
 !      PRINT *,R(2)
 !      PRINT *,R(3)
@@ -77,18 +77,18 @@
          POTR1 = AHO*DEXP(-BHO*R(1))
          DERR1 = -BHO*AHO*DEXP(-BHO*R(1))
 
-         POTR2 = AHH*DEXP(-BHH*R(2)) 
+         POTR2 = AHH*DEXP(-BHH*R(2))
          DERR2 = -BHH*AHH*DEXP(-BHH*R(2))
 
          POTR3 = AHH*DEXP(-BHH*R(3))
          DERR3 = -BHH*AHH*DEXP(-BHH*R(3))
 
 !C     MORSE
-!C     In the supporting info for the paper the R and R_e have been 
+!C     In the supporting info for the paper the R and R_e have been
 !C     interchanged
 
          POTM1 = DE*(DEXP(-2.D0*BETA*(R(1)-RHOEQ)) -2.d0*DEXP(-BETA*(R(1)-RHOEQ)))
-         DERM1 = -2.d0*BETA*DE*(DEXP(-2.D0*BETA*(R(1)-RHOEQ))-DEXP(-BETA*(R(1)-RHOEQ))) 
+         DERM1 = -2.d0*BETA*DE*(DEXP(-2.D0*BETA*(R(1)-RHOEQ))-DEXP(-BETA*(R(1)-RHOEQ)))
 
          POT = POTD1 + POTD2 + POTD3 + POTR1 + POTR2 + POTR3 + POTM1
 
