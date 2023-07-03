@@ -67,10 +67,11 @@ public:
   distanceTo(const Matter &matter); // the distance to the given matter object
   double perAtomNorm(const Matter &matter); // the maximum distance between two
                                             // atoms in the Matter objects
-  void setPotential(std::shared_ptr<Potential> pot); // set potential function to use
-  std::shared_ptr<Potential> getPotential(); // get potential function to use
-  void resize(long int nAtoms);             // set or reset the number of atoms
-  long int numberOfAtoms() const;           // return the number of atoms
+  void
+  setPotential(std::shared_ptr<Potential> pot); // set potential function to use
+  std::shared_ptr<Potential> getPotential();    // get potential function to use
+  void resize(long int nAtoms);   // set or reset the number of atoms
+  long int numberOfAtoms() const; // return the number of atoms
   Matrix3d getCell() const;
   void setCell(Matrix3d newCell);
   double getPosition(long int atom, int axis)
@@ -123,7 +124,7 @@ public:
   void setAtomicNr(long int atom,
                    long atomicNr);          // set the atomic number of an atom
   VectorXi getAtomicNrs() const;            // Get the vector of atomic numbers
-  VectorXi getAtomicNrsFree() const;            // Get the vector of atomic numbers
+  VectorXi getAtomicNrsFree() const;        // Get the vector of atomic numbers
   void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
@@ -181,7 +182,8 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
+  std::shared_ptr<Potential>
+      potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated

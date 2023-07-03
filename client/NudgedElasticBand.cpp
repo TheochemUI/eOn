@@ -7,17 +7,21 @@ using namespace helper_functions;
 namespace fs = std::filesystem;
 
 namespace helper_functions::neb_paths {
-  std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs){
-    std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
-    all_images_on_path.front() = Matter(initImg);
-    all_images_on_path.back() = Matter(finalImg);
-    AtomMatrix posInitial = all_images_on_path.front().getPositions();
-    AtomMatrix posFinal = all_images_on_path.back().getPositions();
-    AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
-    // Only the ones which are not the front and back
-    for (auto it {std::next(all_images_on_path.begin())}; it != std::prev(all_images_on_path.end()); ++it){
-      *it = Matter(initImg);
-      (*it).setPositions(posInitial + imageSep * int(std::distance(all_images_on_path.begin(), it)));
+std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
+                               const size_t nimgs) {
+  std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
+  all_images_on_path.front() = Matter(initImg);
+  all_images_on_path.back() = Matter(finalImg);
+  AtomMatrix posInitial = all_images_on_path.front().getPositions();
+  AtomMatrix posFinal = all_images_on_path.back().getPositions();
+  AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
+  // Only the ones which are not the front and back
+  for (auto it{std::next(all_images_on_path.begin())};
+       it != std::prev(all_images_on_path.end()); ++it) {
+    *it = Matter(initImg);
+    (*it).setPositions(posInitial +
+                       imageSep *
+                           int(std::distance(all_images_on_path.begin(), it)));
   }
   return all_images_on_path;
 }
@@ -37,7 +41,7 @@ VectorXd NEBObjectiveFunction::getGradient(bool fdstep) {
 }
 
 double NEBObjectiveFunction::getEnergy() {
-  double Energy {0};
+  double Energy{0};
   for (long i = 1; i <= neb->numImages; i++) {
     Energy += neb->path[i]->getPotentialEnergy();
   }
@@ -67,10 +71,9 @@ int NEBObjectiveFunction::degreesOfFreedom() {
   return 3 * neb->numImages * neb->atoms;
 }
 
-
-bool NEBObjectiveFunction::isUncertain(){
+bool NEBObjectiveFunction::isUncertain() {
   double maxMaxUnc = std::numeric_limits<double>::lowest();
-  double currentMaxUnc {0};
+  double currentMaxUnc{0};
   for (long idx = 0; idx <= neb->numImages; idx++) {
     currentMaxUnc = neb->path[idx]->getEnergyVariance();
     if (currentMaxUnc > maxMaxUnc) {
@@ -78,7 +81,7 @@ bool NEBObjectiveFunction::isUncertain(){
     }
   }
   bool unc_conv{maxMaxUnc > 0.05};
-  if (unc_conv){
+  if (unc_conv) {
     this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY;
   }
   return unc_conv;
@@ -86,7 +89,7 @@ bool NEBObjectiveFunction::isUncertain(){
 
 bool NEBObjectiveFunction::isConverged() {
   bool force_conv = getConvergence() < params->nebConvergedForce;
-    return force_conv;
+  return force_conv;
 }
 
 double NEBObjectiveFunction::getConvergence() {
@@ -155,9 +158,9 @@ NudgedElasticBand::NudgedElasticBand(
   auto initialPassed = initPath.front();
   auto finalPassed = initPath.back();
   atoms = initialPassed->numberOfAtoms();
-  path.resize(numImages+2);
-  tangent.resize(numImages+2);
-  projectedForce.resize(numImages+2);
+  path.resize(numImages + 2);
+  tangent.resize(numImages + 2);
+  projectedForce.resize(numImages + 2);
   extremumPosition.resize(2 * (numImages + 1));
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
@@ -202,7 +205,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
                "step size", params->optConvergenceMetricLabel, "max image",
                "max energy");
-  SPDLOG_DEBUG("---------------------------------------------------------------\n");
+  SPDLOG_DEBUG(
+      "---------------------------------------------------------------\n");
 
   while (objf.status != NEBStatus::GOOD) {
     if (params->writeMovies) {
@@ -219,12 +223,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       fclose(fileNEBPath);
     }
     VectorXd pos = objf.getPositions();
-    // if (iteration) { // so that we print forces before taking an optimizer step
-      if (iteration >= params->nebMaxIterations) {
-        status = NEBStatus::BAD_MAX_ITERATIONS;
-        break;
-      }
-      optimizer->step(params->optMaxMove);
+    // if (iteration) { // so that we print forces before taking an optimizer
+    // step
+    if (iteration >= params->nebMaxIterations) {
+      status = NEBStatus::BAD_MAX_ITERATIONS;
+      break;
+    }
+    optimizer->step(params->optMaxMove);
     // }
     iteration++;
 
@@ -232,24 +237,24 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf.getPositions() - pos));
-    SPDLOG_DEBUG("{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}", iteration, stepSize, convergenceForce(), maxEnergyImage, dE);
-    if (convergenceForce() < 0.5){
-
+    SPDLOG_DEBUG("{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}", iteration,
+                 stepSize, convergenceForce(), maxEnergyImage, dE);
+    if (convergenceForce() < 0.5) {
     }
 
     if (pot->getType() == PotType::PYSURROGATE) {
-        if (objf.isUncertain()) {
-          SPDLOG_DEBUG("NEB failed due to high uncertainity");
-          status = NEBStatus::MAX_UNCERTAINITY;
-          break;
-        } else if (objf.isConverged()) {
-          SPDLOG_DEBUG("NEB converged\n");
-          status = NEBStatus::GOOD;
-          break;
-        }
+      if (objf.isUncertain()) {
+        SPDLOG_DEBUG("NEB failed due to high uncertainity");
+        status = NEBStatus::MAX_UNCERTAINITY;
+        break;
+      } else if (objf.isConverged()) {
+        SPDLOG_DEBUG("NEB converged\n");
+        status = NEBStatus::GOOD;
+        break;
+      }
 
     } else {
-      if (objf.isConverged()){
+      if (objf.isConverged()) {
         SPDLOG_DEBUG("NEB converged\n");
         status = NEBStatus::GOOD;
         break;
@@ -285,7 +290,7 @@ double NudgedElasticBand::convergenceForce(void) {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
       SPDLOG_DEBUG("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
-          params->optConvergenceMetric.c_str());
+                   params->optConvergenceMetric.c_str());
       exit(1);
     }
     if (params->nebClimbingImageConvergedOnly == true &&
@@ -567,9 +572,10 @@ void NudgedElasticBand::findExtrema(void) {
   SPDLOG_DEBUG("\nFound {} extrema", numExtrema);
   SPDLOG_DEBUG("Energy reference: {}", path[0]->getPotentialEnergy());
   for (long i = 0; i < numExtrema; i++) {
-    SPDLOG_DEBUG("extrema #{} at image position {} with energy {} and curvature {}",
-                 i + 1, extremumPosition[i],
-                 extremumEnergy[i] - path[0]->getPotentialEnergy(),
-                 extremumCurvature[i]);
+    SPDLOG_DEBUG(
+        "extrema #{} at image position {} with energy {} and curvature {}",
+        i + 1, extremumPosition[i],
+        extremumEnergy[i] - path[0]->getPotentialEnergy(),
+        extremumCurvature[i]);
   }
 }

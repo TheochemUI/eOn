@@ -291,9 +291,8 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
-VectorXi Matter::getAtomicNrsFree() const
-{
-    return this->atomicNrs.array() * getFreeV().cast<int>().array();
+VectorXi Matter::getAtomicNrsFree() const {
+  return this->atomicNrs.array() * getFreeV().cast<int>().array();
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
@@ -840,8 +839,8 @@ void Matter::computePotential() {
       // SPDLOG_TRACE("Regular Call");
       // Default value for true_pot, so not a surrogate run
       auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
-        potentialEnergy = pE;
-        forces = frcs;
+      potentialEnergy = pE;
+      forces = frcs;
     } else {
       // SPDLOG_TRACE("Surrogate Call");
       // For the Surrogates, only use free data
@@ -854,8 +853,8 @@ void Matter::computePotential() {
       } else {
         throw std::runtime_error("You should have gotten a value\n");
       }
-      for (long idx{0}, jdx{0}; idx < nAtoms; idx++){
-        if (!isFixed(idx)){
+      for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
+        if (!isFixed(idx)) {
           forces.row(idx) = freeForces.row(jdx);
           jdx++;
         }
@@ -1240,18 +1239,12 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   recomputePotential = true;
 }
 
-double Matter::getEnergyVariance(){
-  return this->variance(0, 0);
-}
+double Matter::getEnergyVariance() { return this->variance(0, 0); }
 
-Eigen::VectorXd Matter::getForceVariance(){
+Eigen::VectorXd Matter::getForceVariance() {
   return this->variance.segment(1, numberOfFreeAtoms() * 3);
 }
 
-double Matter::getMaxVariance(){
-  return this->variance.maxCoeff();
-}
+double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
-std::shared_ptr<Potential> Matter::getPotential() {
-  return this->potential;
-}
+std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }

@@ -87,7 +87,7 @@ Potential::get_ef(const AtomMatrix pos, const VectorXi atmnrs,
   long nAtoms{pos.rows()};
   AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
   // This can never be negative
-  Eigen::VectorXd var{Eigen::VectorXd::Zero(1+(3*nAtoms))};
+  Eigen::VectorXd var{Eigen::VectorXd::Zero(1 + (3 * nAtoms))};
   // Override and return variance where needed!!!
   this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
               var.data(), box.data());
