@@ -53,22 +53,23 @@ public:
   // Matter(Parameters *parameters,
   //        long int nAtoms);      // prepare the object for use with nAtoms
   //        atoms
-  Matter(const Matter &matter); // create a copy of matter
-  ~Matter();                    // Destructor
+  Matter(const Matter &matter);                  // create a copy of matter
+  ~Matter();                                     // Destructor
   const Matter &operator=(const Matter &matter); // copy the matter object
   // bool operator==(const Matter& matter); // true if differences in positions
   // are below differenceDistance bool operator!=(const Matter& matter); //
   // inverse of ==
-  bool compare(const Matter& matter, bool indistinguishable = false);
+  bool compare(const Matter &matter, bool indistinguishable = false);
 
   double
   distanceTo(const Matter &matter); // the distance to the given matter object
   double perAtomNorm(const Matter &matter); // the maximum distance between two
                                             // atoms in the Matter objects
-  void setPotential(std::shared_ptr<Potential> pot);        // set potential function to use
-  std::shared_ptr<Potential> getPotential();          // get potential function to use
-  void resize(long int nAtoms);             // set or reset the number of atoms
-  long int numberOfAtoms() const;           // return the number of atoms
+  void
+  setPotential(std::shared_ptr<Potential> pot); // set potential function to use
+  std::shared_ptr<Potential> getPotential();    // get potential function to use
+  void resize(long int nAtoms);   // set or reset the number of atoms
+  long int numberOfAtoms() const; // return the number of atoms
   Matrix3d getCell() const;
   void setCell(Matrix3d newCell);
   double getPosition(long int atom, int axis)
@@ -175,7 +176,8 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
-  std::shared_ptr<Potential> potential; // pointer to function calculating the energy and forces
+  std::shared_ptr<Potential>
+      potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used
   mutable bool recomputePotential; // boolean indicating if the potential energy
                                    // and forces need to be recalculated

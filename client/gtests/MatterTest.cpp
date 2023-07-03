@@ -17,14 +17,13 @@ using namespace std::placeholders;
 namespace tests {
 
 MatterTest::MatterTest()
-    : params{std::make_shared<Parameters>()}, m1{nullptr}, pot_default{nullptr}, threshold{1e-6} {}
+    : params{std::make_shared<Parameters>()}, m1{nullptr},
+      pot_default{nullptr}, threshold{1e-6} {}
 
-MatterTest::~MatterTest() {
-}
+MatterTest::~MatterTest() {}
 
 void MatterTest::SetUp() {
-  pot_default =
-    helper_functions::makePotential(PotType::LJ, params);
+  pot_default = helper_functions::makePotential(PotType::LJ, params);
   m1 = std::make_shared<Matter>(pot_default, params);
   std::string confile("pos.con");
   m1->con2matter(confile);
