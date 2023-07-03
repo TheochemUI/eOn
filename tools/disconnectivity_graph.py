@@ -19,7 +19,7 @@ max_color = blue
 check_structure = False
 check_e = -249.8
 fig_name = ./run9_40.png
-fig_width = 6.0      
+fig_width = 6.0
 fig_height = 7.0
 ytick_fontsize = 14.0
 marker_size = 50.0
@@ -146,7 +146,7 @@ def get_coord(atoms):
        if i in index_Au:
           if coord[i] < 10:
             surf_Au += 1
-    return surf_Au 
+    return surf_Au
 
 paras = readinputs('inputs.ini')
 for para in default_paras:
@@ -203,10 +203,10 @@ for dir in state_listdir:
    if dir == paras['specified_state']:
       specified_min = rs
    os.chdir(state_main_dir+str(dir))
-   
+
    atoms = read('reactant.con',index=0)
    Au_seg[get_coord(atoms)].append(rs)
- 
+
    process_table = pd.read_table('processtable', delimiter = r'\s+', skiprows=[0], names=process_names)
    #only forward process stored to avoid duplicated process
    if paras['min_state_n'] > 0:
@@ -274,7 +274,7 @@ print('Max # of surface Au:',max_key)
 
 if paras['draw_symbol']:
    for i in range(len(paras['minima_to_draw'])):
-      print(paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i]) 
+      print(paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i])
 #      try:
       dg.draw_minima(Au_seg[int(paras['minima_to_draw'][i])],marker=paras['symbol'][i],c='tab:'+paras['color'][i], s=paras['marker_size'])
 #      except:

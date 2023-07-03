@@ -12,7 +12,7 @@ CXX=CC
 LD=ld
 AR=ar cru
 RANLIB=ranlib
-LDFLAGS += -static 
+LDFLAGS += -static
 
 CXXFLAGS += -Wall -Wfatal-errors $(OPT)
 

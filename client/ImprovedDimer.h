@@ -28,12 +28,12 @@ public:
   double getEigenvalue();
   AtomMatrix getEigenvector();
 
-  std::shared_ptr<Matter> x0;     // Center image
-  std::shared_ptr<Matter> x1;     // Forward image
-  VectorXd tau;   // Dimer direction
-  VectorXd theta; // Dimer rotation direction
-  VectorXd F_R;   // Dimer rotational force
-  double C_tau;   // Curvature along tau
+  std::shared_ptr<Matter> x0; // Center image
+  std::shared_ptr<Matter> x1; // Forward image
+  VectorXd tau;               // Dimer direction
+  VectorXd theta;             // Dimer rotation direction
+  VectorXd F_R;               // Dimer rotational force
+  double C_tau;               // Curvature along tau
 
   // parameters used for conjugate gradients
   VectorXd F_R_Old;

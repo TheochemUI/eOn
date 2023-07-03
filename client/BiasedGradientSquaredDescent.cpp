@@ -28,7 +28,7 @@ public:
     reactantEnergy = reactantEnergyPassed;
   }
 
-  ~BGSDObjectiveFunction(void)=default;
+  ~BGSDObjectiveFunction(void) = default;
 
   double getEnergy() {
     VectorXd Vforce = matter->getForcesFreeV();
@@ -93,13 +93,11 @@ private:
 };
 
 int BiasedGradientSquaredDescent::run() {
-  BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha,
-                             params);
+  BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha, params);
   Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
   int iteration = 0;
-  printf(
-      "starting optimization of H with params alpha and beta: %.2f %.2f\n",
-      params->alpha, params->beta);
+  printf("starting optimization of H with params alpha and beta: %.2f %.2f\n",
+         params->alpha, params->beta);
   while (!objf.isConvergedH() || iteration == 0) {
     optimizer->step(params->optMaxMove);
     printf(
@@ -129,8 +127,7 @@ int BiasedGradientSquaredDescent::run() {
     } else {
       minModeMethod = new Dimer(saddle, params, pot);
     }
-  } else if (params->saddleMinmodeMethod ==
-             LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = new Lanczos(saddle, params, pot);
   }
 

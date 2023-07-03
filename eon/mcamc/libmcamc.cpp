@@ -25,11 +25,11 @@ double estimate_condition(int Qsize, double *Qflat, int Rcols, double *Rflat)
     for (row = 0; row < Qsize; row++) {
         qd_real total = 0;
         for (col = 0; col < Qsize; col++) {
-            Q(row, col) =  Qflat[row*Qsize + col];    
+            Q(row, col) =  Qflat[row*Qsize + col];
             total += Q(row, col);
         }
         for (col = 0; col < Rcols; col++) {
-            total +=  Rflat[row*Rcols + col];    
+            total +=  Rflat[row*Rcols + col];
         }
         Q.row(row) /= total;
     }
@@ -72,11 +72,11 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
     for (row = 0; row < Qsize; row++) {
         T total = 0;
         for (col = 0; col < Qsize; col++) {
-            Q(row, col) =  Qflat[row*Qsize + col];    
+            Q(row, col) =  Qflat[row*Qsize + col];
             total += Q(row, col);
         }
         for (col = 0; col < Rcols; col++) {
-            R(row,col) =  Rflat[row*Rcols + col];    
+            R(row,col) =  Rflat[row*Rcols + col];
             total += R(row, col);
         }
         Q.row(row) /= total;
@@ -108,17 +108,17 @@ template<class T> void solve_general(int Qsize, double *Qflat, int Rcols, double
 
 }
 
-void solve_float(int Qsize, double *Qflat, int Rcols, double *Rflat, 
+void solve_float(int Qsize, double *Qflat, int Rcols, double *Rflat,
                   double *c_in, double *B, double *t, double *residual) {
     solve_general<float>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
 
-void solve_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
+void solve_double(int Qsize, double *Qflat, int Rcols, double *Rflat,
                   double *c_in, double *B, double *t, double *residual) {
     solve_general<double>(Qsize, Qflat, Rcols, Rflat, c_in, B, t, residual);
 }
 
-void solve_double_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
+void solve_double_double(int Qsize, double *Qflat, int Rcols, double *Rflat,
                   double *c_in, double *B, double *t, double *residual) {
     //turns on round-to-double bit in FPU
     //needed for libqd to work on x86 due to the 80bit FPU registers
@@ -128,7 +128,7 @@ void solve_double_double(int Qsize, double *Qflat, int Rcols, double *Rflat,
     fpu_fix_end(&oldcw);
 }
 
-void solve_quad_double(int Qsize, double *Qflat, int Rcols, double *Rflat, 
+void solve_quad_double(int Qsize, double *Qflat, int Rcols, double *Rflat,
                   double *c_in, double *B, double *t, double *residual) {
     unsigned int oldcw;
     //turns on round-to-double bit in FPU

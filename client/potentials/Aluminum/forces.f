@@ -1,8 +1,8 @@
 c   version e93:   add gregs SPF routine for chain relaxation
-c   EAM version b91:   add FPI forces and potential by calling FPIforce                   
-c                                                                                         
-C     THIS SUBROUTINE COMPUTES THE FORCES by calling GAGAFE for each type of              
-c     interaction.                                                                        
+c   EAM version b91:   add FPI forces and potential by calling FPIforce
+c
+C     THIS SUBROUTINE COMPUTES THE FORCES by calling GAGAFE for each type of
+c     interaction.
 
       SUBROUTINE FORCE(N, R, F, U, BX, BY, BZ)
 
@@ -22,7 +22,7 @@ c     interaction.
 
 c      dimension R(MAXCOO),F(MAXCOO)
       dimension R(3 * N), F(3 * N), U(1)
-      
+
       AX = BX
       AY = BY
       AZ = BZ
@@ -33,7 +33,7 @@ c      dimension R(MAXCOO),F(MAXCOO)
 
       NATYPE = 1
       NATOMS = N
-      NATMS(1) = N 
+      NATMS(1) = N
       NATMS(2) = 0
 
       if(initflag.eq.1) then
@@ -107,7 +107,7 @@ c        write(*,*) 'NNUpdate: ',nncount
          Potenpat(i) = 0.
       enddo
 
-C  INTERACTIONS BETWEEN ATOMS OF TYPE 'ITYPE' WITH THEMSELVES:                            
+C  INTERACTIONS BETWEEN ATOMS OF TYPE 'ITYPE' WITH THEMSELVES:
       ITPTR = 1
       DO 200 ITYPE = 1,NATYPE
          iatshift1 = (ITPTR-1)/3
@@ -124,7 +124,7 @@ C  INTERACTIONS BETWEEN ATOMS OF TYPE 'ITYPE' WITH THEMSELVES:
          UTOT = UTOT + UT(I)
 c         write(*,*) UTOT
 600   continue
-      
+
       totpair = utot
 c      write(*,*) totpair
       CALL EMBED(FRHOTOT, embvir)
@@ -137,7 +137,7 @@ c      	 write (*,*) FA(i)
 c      write(*,*) UTOT
       U(1)=UTOT
 c      write(*,*) U
-	  
+
 
       RETURN
       END

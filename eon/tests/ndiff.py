@@ -71,7 +71,7 @@ def ndiff(filename1, filename2, rel_tol=0.0, quiet=True):
                         print("relative error of %.3e of record %i on line %i" % (rel_err,j+1,i+1))
                     same = False
                     reason = "maximum relative error exceeds tolerance %.3e" % rel_tol
-    
+
     return same, max_rel_err, reason
 
 def main():
@@ -86,7 +86,7 @@ def main():
     parser.add_option("-s", "--silent", action="store_true", dest="silent",
                       default=False, help="don't print anything"
                       " this is useful if you just want to use the exit status")
-    
+
     (options, args) = parser.parse_args()
 
     if len(args) != 2:
