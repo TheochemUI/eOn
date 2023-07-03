@@ -1,5 +1,4 @@
 #include "ConjugateGradients.h"
-#include "Log.h"
 #include <cassert>
 #include <cmath>
 

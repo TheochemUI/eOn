@@ -19,8 +19,9 @@ Optimizer *Optimizer::getOptimizer(ObjectiveFunction *objf,
   } else if (parameters->optMethod == "sd") {
     mizer = new SteepestDescent(objf, parameters);
   } else {
-    printf("Unknown optMethod: %s\n", parameters->optMethod.c_str());
-    exit(1);
+    auto log = spdlog::get("_traceback");
+    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod: {}", parameters->optMethod);
+    std::exit(1);
   }
   return mizer;
 }

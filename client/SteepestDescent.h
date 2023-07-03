@@ -1,4 +1,3 @@
-
 #ifndef SteepestDescent_H
 #define SteepestDescent_H
 
@@ -8,18 +7,18 @@
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
 #include "Parameters.h"
-#include <vector>
 
 class SteepestDescent : public Optimizer {
 
 public:
   SteepestDescent(ObjectiveFunction *objf, Parameters *parameters);
-  ~SteepestDescent();
+  ~SteepestDescent() = default;
 
   int step(double maxMove);
   int run(int maxIterations, double maxMove);
 
 private:
+  shared_ptr<spdlog::logger> log;
   VectorXd getStep(VectorXd f);
   Parameters *parameters;
   ObjectiveFunction *objf;

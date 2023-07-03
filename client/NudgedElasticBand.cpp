@@ -1,8 +1,9 @@
 #include "NudgedElasticBand.h"
-#include "Log.h"
 #include "Optimizer.h"
+#include <filesystem>
 
 using namespace helper_functions;
+namespace fs = std::filesystem;
 
 namespace helper_functions::neb_paths {
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
@@ -105,8 +106,8 @@ NudgedElasticBand::NudgedElasticBand(
   extremumEnergy.resize(2 * (numImages + 1));
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
-
-  log("\nNEB: initialize\n");
+  log = spdlog::get("combi");
+  SPDLOG_LOGGER_DEBUG(log, "\nNEB: initialize\n");
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
     *path[i] = linear_path[i];
@@ -131,21 +132,18 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   NudgedElasticBand::NEBStatus status = NEBStatus::STATUS_INIT;
   long iteration = 0;
 
-  log("Nudged elastic band calculation started.\n");
+  SPDLOG_LOGGER_DEBUG(log, "Nudged elastic band calculation started.\n");
 
   updateForces();
 
   NEBObjectiveFunction objf(this, params);
 
   Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
-
-  const char *forceLabel = params->optConvergenceMetricLabel.c_str();
-  log("%10s %12s %14s %11s %12s\n", "iteration", "step size", forceLabel,
-      "max image", "max energy");
-  log("---------------------------------------------------------------\n");
-
-  char fmt[] = "%10li %12.4e %14.4e %11li %12.4f\n";
-  char fmtTiny[] = "%10li %12.4e %14.4e %11li %12.4e\n";
+  SPDLOG_LOGGER_DEBUG(
+      log, "{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration", "step size",
+      params->optConvergenceMetricLabel, "max image", "max energy");
+  SPDLOG_LOGGER_DEBUG(
+      log, "---------------------------------------------------------------\n");
 
   while (!objf.isConverged()) {
     if (params->writeMovies) {
@@ -169,15 +167,19 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf.getPositions() - pos));
     if (dE > 0.01) {
-      log(fmt, iteration, stepSize, convergenceForce(), maxEnergyImage, dE);
+      SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4f}",
+                          iteration, stepSize, convergenceForce(),
+                          maxEnergyImage, dE);
     } else {
-      log(fmtTiny, iteration, stepSize, convergenceForce(), maxEnergyImage, dE);
+      SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4e}",
+                          iteration, stepSize, convergenceForce(),
+                          maxEnergyImage, dE);
     }
   }
 
   if (objf.isConverged()) {
     status = NEBStatus::STATUS_GOOD;
-    log("NEB converged\n");
+    SPDLOG_LOGGER_DEBUG(log, "\n NEB converged");
   }
 
   printImageData();
@@ -210,8 +212,9 @@ double NudgedElasticBand::convergenceForce(void) {
     } else if (params->optConvergenceMetric == "max_component") {
       fmax = max(fmax, projectedForce[i]->maxCoeff());
     } else {
-      log("[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
-          params->optConvergenceMetric.c_str());
+      SPDLOG_LOGGER_DEBUG(
+          log, "[Nudged Elastic Band] unknown opt_convergence_metric: %s\n",
+          params->optConvergenceMetric);
       exit(1);
     }
     if (params->nebClimbingImageConvergedOnly == true &&
@@ -373,12 +376,17 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
       path[numImages + 1]->getPositions() - path[numImages]->getPositions());
   AtomMatrix tang;
 
-  log("Image data (as in neb.dat)\n");
-
-  FILE *fh = NULL;
+  std::shared_ptr<spdlog::logger> fileLogger;
   if (writeToFile) {
-    fh = fopen("neb.dat", "w");
+    // Remove existing log file if it exists
+    if (fs::exists("neb.dat")) {
+      SPDLOG_LOGGER_DEBUG(log, "Previous neb.dat found, overwriting");
+    }
+    fileLogger = spdlog::basic_logger_st("neb", "neb.dat", true);
+    fileLogger->set_pattern("%v");
   }
+
+  SPDLOG_LOGGER_DEBUG(log, "Image data (as in neb.dat)");
 
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
@@ -392,19 +400,20 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
       dist = path[i]->distanceTo(*path[i - 1]);
       distTotal += dist;
     }
-    if (fh == NULL) {
-      log("%3li %12.6f %12.6f %12.6f\n", i, distTotal,
+    if (fileLogger) {
+      SPDLOG_LOGGER_DEBUG(
+          fileLogger, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
           path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
           (path[i]->getForces().array() * tang.array()).sum());
     } else {
-      fprintf(fh, "%3li %12.6f %12.6f %12.6f\n", i, distTotal,
-              path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
-              (path[i]->getForces().array() * tang.array()).sum());
+      SPDLOG_LOGGER_DEBUG(
+          log, "{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
+          path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
+          (path[i]->getForces().array() * tang.array()).sum());
     }
   }
-  if (writeToFile) {
-    fclose(fh);
-  }
+  spdlog::drop("neb");
+  fileLogger.reset();
 }
 
 // Estimate the barrier using a cubic spline
@@ -486,10 +495,12 @@ void NudgedElasticBand::findExtrema(void) {
     }
   }
 
-  log("\nFound %li extrema\n", numExtrema);
-  log("Energy reference: %f\n", path[0]->getPotentialEnergy());
+  SPDLOG_LOGGER_DEBUG(log, "\nFound {} extrema", numExtrema);
+  SPDLOG_LOGGER_DEBUG(log, "Energy reference: {}",
+                      path[0]->getPotentialEnergy());
   for (long i = 0; i < numExtrema; i++) {
-    log("extrema #%li at image position %f with energy %f and curvature %f\n",
+    SPDLOG_LOGGER_DEBUG(
+        log, "extrema #{} at image position {} with energy {} and curvature {}",
         i + 1, extremumPosition[i],
         extremumEnergy[i] - path[0]->getPotentialEnergy(),
         extremumCurvature[i]);

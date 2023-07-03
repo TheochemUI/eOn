@@ -5,7 +5,11 @@ project('eonclient', 'cpp',
 # EON needs implicit typing!!
 
 host_system = host_machine.system()
-eon_extra_args = []
+
+_args = [] # Extra arguments
+_deps = [] # Dependencies
+_linkto = [] # All the sub-libraries
+_incdirs = [] # All the includes
 
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
@@ -13,7 +17,7 @@ cppc = meson.get_compiler('cpp')
 
 # Add conditionals
 if host_system == 'darwin'
-  eon_extra_args += ['-DOSX=TRUE']
+  _args += ['-DOSX=TRUE']
   # Workaround for
   # ../MinModeSaddleSearch.cpp:173:25: error: aligned allocation function of
   # type 'void *(unsigned long, enum std::align_val_t)' is only available on macOS 10.13 or newer
@@ -22,38 +26,17 @@ endif
 
 # Dependencies
 eigen_dep = dependency('Eigen3', method : 'cmake', modules : ['Eigen3::Eigen'], required : true)
-eon_deps = [ eigen_dep ]
+_deps += [ eigen_dep ]
 
-fmt_dep = dependency('fmt', method : 'cmake',  modules : ['fmt::fmt'],  required : true)
-eon_deps += fmt_dep
+fmt_dep = dependency('fmt',
+                     version: ['<10'],
+                     required : true)
+_deps += fmt_dep
 
-# Testing only
-gtest_dep = dependency('gtest', main : true, required : true)
-gmock_dep = dependency('gmock', required : false)
+spdlog_dep = dependency('spdlog', required : true)
+_deps += spdlog_dep
+_args += ['-DSPDLOG_FMT_EXTERNAL']
 
-# Optional, only for AMS
-absl_dep = dependency('absl', method : 'cmake',
-  modules : [
-    'absl::base',
-    'absl::strings',
-    'absl::numeric',
-    'absl::utility',
-  ],
-  required : false,
-)
-
-boost_ams_dep = dependency('boost',
-  modules : [
-    'headers',
-    'asio',
-    'iostreams',
-  ],
-  required : false,
-)
-
-ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
-
-# End AMS
 
 # Potentials
 subdir('potentials/EAM')
@@ -88,7 +71,6 @@ eonclib_sources = [
            'Job.cpp',
            'INIFile.cpp',
            'GlobalOptimization.cpp',
-           'Log.cpp',
            'LowestEigenmode.cpp',
            'MinModeSaddleSearch.cpp',
            'StructureComparisonJob.cpp',
@@ -143,16 +125,16 @@ if get_option('with_gprd')
   gprd_dep = libgprd_proj.get_variable('libgprd_dep')
   subdir('potentials/GPRPotential')
   potentials += [ gprpot ]
-  eon_extra_args += ['-DWITH_GPRD']
+  _args += ['-DWITH_GPRD']
   eonclient_sources += [ 'AtomicGPDimer.cpp', 'GPRHelpers.cpp' ]
-  eon_deps += [ gprd_dep ]
+  _deps += [ gprd_dep ]
 endif
 
 if get_option('with_vasp')
   if host_system != 'windows'
     subdir('potentials/VASP')
     potentials += [ vasp ]
-    eon_extra_args += ['-DWITH_VASP']
+    _args += ['-DWITH_VASP']
   endif
 endif
 
@@ -160,35 +142,56 @@ if get_option('with_water')
   subdir('potentials/Water')
   subdir('potentials/Water_Pt')
   potentials += [ water, water_pt ]
-  eon_extra_args += ['-DWITH_WATER']
+  _args += ['-DWITH_WATER']
 endif
 
 if get_option('with_ams')
+    # Optional, only for AMS
+    absl_dep = dependency('absl', method : 'cmake',
+      modules : [
+        'absl::base',
+        'absl::strings',
+        'absl::numeric',
+        'absl::utility',
+      ],
+      required : true,
+    )
+    boost_ams_dep = dependency('boost',
+      modules : [
+        'headers',
+        'asio',
+        'iostreams',
+      ],
+      required : true,
+    )
+    ams_dep = [ boost_ams_dep, absl_dep, fmt_dep  ]
+  _deps += ams_dep
+  # End AMS
   subdir('potentials/AMS')
   subdir('potentials/AMS_IO')
   potentials += [ams, ams_io]
-  eon_extra_args += ['-DWITH_AMS']
+  _args += ['-DWITH_AMS']
 endif
 
 if get_option('with_lammps')
   subdir('potentials/LAMMPS')
   potentials += [ lammps_pot ]
-  eon_extra_args += ['-DLAMMPS_POT']
+  _args += ['-DLAMMPS_POT']
 endif
 
 if get_option('with_python')
   subdir('potentials/PyAMFF')
   subdir('potentials/QSC')
   potentials += [ pyamff, qsc ]
-  eon_extra_args += ['-DWITH_PYTHON']
+  _args += ['-DWITH_PYTHON']
 endif
 
 if get_option('with_mpi')
   subdir('potentials/MPIPot')
   potentials += [ mpipot ]
-  eon_extra_args += ['-DEONMPI']
+  _args += ['-DEONMPI']
   mpi_dep = dependency('mpi')
-  eon_deps += [ mpi_dep ]
+  _deps += [ mpi_dep ]
 endif
 
 if get_option('with_fortran')
@@ -205,7 +208,7 @@ if get_option('with_fortran')
     potentials += [water_h]
   endif
   potentials += [aluminum, edip, fehe, lenosky, sw, tersoff]
-  eon_extra_args += ['-DWITH_FORTRAN']
+  _args += ['-DWITH_FORTRAN']
 endif
 
 if get_option('with_cuh2')
@@ -214,44 +217,46 @@ if get_option('with_cuh2')
   fc = meson.get_compiler('fortran')
   subdir('potentials/CuH2')
   potentials += [cuh2]
-  eon_extra_args += ['-DCUH2_POT']
+  _args += ['-DCUH2_POT']
 endif
 
 # --------------------- Library
 
 eclib = library('eonclib',
                 sources : eonclib_sources,
-                dependencies : eon_deps,
+                dependencies : _deps,
                 link_with : potentials,
-                cpp_args : eon_extra_args,
+                cpp_args : _args,
                 install : true)
 
 # ---------------------- Executable
 
 ec = executable('eonclient',
                 sources : eonclient_sources,
-                dependencies : eon_deps,
+                dependencies : _deps,
                 link_with : eclib,
-                cpp_args : eon_extra_args,
+                cpp_args : _args,
                 install : true)
 
 ec1 = executable('testPot',
                 'testpot.cpp',
-                dependencies : eon_deps,
+                dependencies : _deps,
                 link_with : eclib,
                 )
 
 ec2 = executable('testWriteR',
                 'testWriteR.cpp',
-                dependencies : eon_deps,
+                dependencies : _deps,
                 link_with : eclib,
                 )
 
 # ------------------------ Tests
 
 if get_option('with_tests')
-  eon_extra_args += ['-DEONTEST'] # Unused
-  eon_deps += [ gtest_dep, gmock_dep ]
+  gtest_dep = dependency('gtest', main : true, required : true)
+  gmock_dep = dependency('gmock', required : false)
+  _args += ['-DEONTEST'] # Unused
+  _deps += [ gtest_dep, gmock_dep ]
 test_array = [#
   # ['Improved Dimer', 'test_impldim', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
   # ['String parser helpers', 'strparse_run', 'StringHelpersTest.cpp', ''],
@@ -263,9 +268,9 @@ foreach test : test_array
   test(test.get(0),
        executable(test.get(1),
           sources : ['gtests/'+test.get(2)],
-          dependencies : [ eon_deps, gtest_dep, gmock_dep ],
+          dependencies : _deps,
           link_with : eclib,
-          cpp_args : eon_extra_args
+          cpp_args : _args
                  ),
         workdir : meson.source_root() + test.get(3)
       )

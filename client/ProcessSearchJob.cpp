@@ -1,16 +1,10 @@
-
 #include "ProcessSearchJob.h"
 #include "BasinHoppingSaddleSearch.h"
 #include "BiasedGradientSquaredDescent.h"
 #include "DynamicsSaddleSearch.h"
 #include "EpiCenters.h"
-#include "Log.h"
 #include "Optimizer.h"
-#include "Potential.h"
 #include "Prefactor.h"
-#include <stdio.h>
-#include <string>
-// #include <cassert>
 
 std::vector<std::string> ProcessSearchJob::run(void) {
   string reactantFilename("pos.con");
@@ -35,7 +29,7 @@ std::vector<std::string> ProcessSearchJob::run(void) {
   }
 
   if (params->processSearchMinimizeFirst) {
-    log("Minimizing initial structure\n");
+    SPDLOG_LOGGER_DEBUG(log, "Minimizing initial structure\n");
     int fi = Potential::fcalls;
     initial->relax();
     // fCallsMin += Potential::fcalls - fi;
@@ -117,7 +111,7 @@ int ProcessSearchJob::doProcessSearch(void) {
   min1->setPositions(displacedPos);
 
   // Potential::fcalls = 0;
-  log("\nStarting Minimization 1\n");
+  SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 1");
   bool converged = min1->relax(false, params->writeMovies, false, "min1");
   // fCallsMin += Potential::fcalls;
 
@@ -131,7 +125,7 @@ int ProcessSearchJob::doProcessSearch(void) {
   min2->setPositions(displacedPos);
 
   // Potential::fcalls = 0;
-  log("\nStarting Minimization 2\n");
+  SPDLOG_LOGGER_DEBUG(log, "Starting Minimization 2");
   converged = min2->relax(false, params->writeMovies, false, "min2");
   // fCallsMin += Potential::fcalls;
 
@@ -147,13 +141,13 @@ int ProcessSearchJob::doProcessSearch(void) {
   }
 
   if ((initial->compare(*min1)) == false) {
-    log("initial != min1\n");
+    SPDLOG_LOGGER_DEBUG(log, "initial != min1");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
   if (initial->compare(*min2)) {
     // both minima are the initial state
-    log("both minima are the initial state");
+    SPDLOG_LOGGER_DEBUG(log, "both minima are the initial state");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
@@ -290,61 +284,46 @@ void ProcessSearchJob::saveData(int status) {
 }
 
 void ProcessSearchJob::printEndState(int status) {
-  log("[Saddle Search] Final status: ");
+  SPDLOG_LOGGER_DEBUG(log, "[Saddle Search] Final status: ");
 
   if (status == MinModeSaddleSearch::STATUS_GOOD)
-    log("Success\n");
-
+    SPDLOG_LOGGER_DEBUG(log, "Success");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-    log("Initial displacement unable to reach convex region\n");
-
+    SPDLOG_LOGGER_ERROR(log,
+                        "Initial displacement unable to reach convex region");
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-    log("Barrier too high\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Barrier too high");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-    log("Too many iterations in concave region\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Too many iterations in concave region");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-    log("Too many iterations\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Too many iterations");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-    log("Saddle is not connected to initial state\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Saddle is not connected to initial state");
   else if (status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-    log("Prefactors not within window\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Prefactors not within window");
   else if (status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-    log("Hessian calculation failed\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Hessian calculation failed");
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-    log("Energy barrier not within window\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Energy barrier not within window");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-    log("Minimizations from saddle did not converge\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Minimizations from saddle did not converge");
   else if (status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-    log("Nonnegative initial mode, aborting\n");
-
+    SPDLOG_LOGGER_CRITICAL(log, "Nonnegative initial mode, aborting");
   else if (status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
-    log("Negative barrier detected\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Negative barrier detected");
   else if (status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
-    log("No reaction found during MD trajectory\n");
-
+    SPDLOG_LOGGER_ERROR(log, "No reaction found during MD trajectory");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
-    log("Converged to stationary point with zero negative modes\n");
-
+    SPDLOG_LOGGER_ERROR(
+        log, "Converged to stationary point with zero negative modes");
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
-    log("No forward barrier was found along minimized band\n");
-
+    SPDLOG_LOGGER_ERROR(log,
+                        "No forward barrier was found along minimized band");
   else if (status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
-    log("Zero mode abort.\n");
-
+    SPDLOG_LOGGER_CRITICAL(log, "Zero mode abort.");
   else if (status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
-    log("Optimizer error.\n");
-
+    SPDLOG_LOGGER_ERROR(log, "Optimizer error.");
   else
-    log("Unknown status: %i!\n", status);
-
+    SPDLOG_LOGGER_ERROR(log, "Unknown status: %i!", status);
   return;
 }

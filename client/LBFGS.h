@@ -15,7 +15,7 @@ class LBFGS : public Optimizer {
 
 public:
   LBFGS(ObjectiveFunction *objf, Parameters *parameters);
-  ~LBFGS();
+  ~LBFGS() = default;
 
   int step(double maxMove);
   int run(int maxIterations, double maxMove);
@@ -36,6 +36,7 @@ private:
 
   VectorXd rPrev;
   VectorXd fPrev;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif
