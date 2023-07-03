@@ -34,4 +34,3 @@ def kmc(s):
     else:
         print "Failed to choose process"
         return None
-

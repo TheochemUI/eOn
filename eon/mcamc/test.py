@@ -31,8 +31,8 @@ def main():
             Q,R,c = random_chain(Ntrans,Nabs,p)
             t, B, res = mcamc(Q,R,c,prec)
             errors.append(res)
-        fmt = '%5.0e %5.0e %5.0e %5.0e %5.0e %5s' 
-        print(fmt % (p,errors[0],errors[1],errors[2],errors[3], 
+        fmt = '%5.0e %5.0e %5.0e %5.0e %5.0e %5s'
+        print(fmt % (p,errors[0],errors[1],errors[2],errors[3],
                      guess_precision(Q,R)))
 
     import sys;sys.exit(0)

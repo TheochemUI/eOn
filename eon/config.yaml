@@ -44,7 +44,7 @@ Main:
         write_log:
             kind: boolean
             default: True
-            
+
         max_force_calls:
             kind: int
             default: 0
@@ -107,7 +107,7 @@ Potential:
         log_potential:
             kind: boolean
             default: false
-            
+
         external_potential_path:
             kind: string
             default: ext_pot
@@ -280,7 +280,7 @@ Debug:
         write_movies_interval:
             kind: int
             default: 1
-            
+
         stop_criterion:
             kind: float
             default: 1e8
@@ -782,7 +782,7 @@ Hyperdynamics:
 
         bb_boost_atomlist:
             kind: string
-            default: 
+            default:
 
 ################################################################################
 
@@ -841,14 +841,14 @@ Prefactor:
                 - reactant
                 - saddle
                 - product
-                
+
         filter_scheme:
             kind: string
             default: fraction
             values:
                 - fraction
                 - cutoff
-                
+
         filter_fraction:
             kind: float
             default: 0.90
@@ -976,7 +976,7 @@ Communicator:
         queued_jobs:
             kind: string
             default: queued_jobs.sh
-            
+
         script_path:
             kind: string
             default: ./
@@ -1111,7 +1111,7 @@ Saddle Search:
         nonlocal_count_abort:
             kind: int
             default: 0
-        
+
         nonlocal_distance_abort:
             kind: float
             default: 0.0
@@ -1143,11 +1143,11 @@ Saddle Search:
         displace_min_norm:
             kind: float
             default: 0.0
-            
+
         void_bias_fraction:
             kind: float
             default: 0.0
-            
+
         random_mode:
             kind: boolean
             default: True
@@ -1337,7 +1337,7 @@ Optimizer:
         lbfgs_distance_reset:
             kind: bool
             default: true
-        
+
         qm_steepest_descent:
             kind: bool
             default: False
@@ -1353,7 +1353,7 @@ Optimizer:
         cg_line_search:
             kind: bool
             default: False
-    
+
         cg_max_iter_line_search:
             kind: int
             default: 5
@@ -1365,4 +1365,3 @@ Optimizer:
         cg_line_converged:
             kind: float
             default: 0.1
-        

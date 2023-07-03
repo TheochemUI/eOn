@@ -29,7 +29,7 @@ def parallelreplica():
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
     logger.info("Simulation time: %e s", time)
-    states = get_statelist() 
+    states = get_statelist()
     current_state = states.get_state(start_state_num)
 
     # get communicator
@@ -38,7 +38,7 @@ def parallelreplica():
     # Register all the results. There is no need to ever discard processes
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
-   
+
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total speedup: %f",avg_spdup)
@@ -47,13 +47,13 @@ def parallelreplica():
         current_state, previous_state = step(time, current_state, states, transition)
         time += transition['time']
 
-    logger.info("Time in current state: %e s", current_state.get_time()) 
+    logger.info("Time in current state: %e s", current_state.get_time())
     logger.info("Simulation time: %e s", time)
     wuid = make_searches(comm, current_state, wuid)
 
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = configparser.RawConfigParser() 
+    parser = configparser.RawConfigParser()
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
     io.save_prng_state()
@@ -183,7 +183,7 @@ def register_results(comm, current_state, states):
                 transition = {'process_id':process_id, 'time':time}
             state.zero_time()
             num_cancelled = comm.cancel_state(state_num)
-            logger.info("Cancelled %i workunits from state %i", 
+            logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, state.number)
             break
         else:

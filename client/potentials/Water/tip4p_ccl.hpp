@@ -23,10 +23,10 @@ private:
             struct Water ;
         template <int H, int O>
             void computeTemplate(
-                                 const int nMolecules, 
+                                 const int nMolecules,
                                  const double (*const rh1)[H*3],
                                  const double (*const rh2)[H*3],
-                                 const double (*const ro)[O*3],    
+                                 const double (*const ro)[O*3],
                                  double (*const fh1)[H*3],
                                  double (*const fh2)[H*3],
                                  double (*const fo)[O*3],

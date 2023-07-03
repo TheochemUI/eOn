@@ -5,5 +5,3 @@
       PARAMETER (maxcoo = maxatoms*3)    ! Maximum # of coordinates
 
       COMMON /EAM/ PL,Utot,ra(maxcoo),fa(maxcoo),iatclass(maxatoms),ncoo,nim,natoms,nimrp,nimpo
-
-

@@ -2,12 +2,12 @@ import superbasin
 
 class SuperbasinScheme:
     ''' This poorly-named class handles keeping track of which states belong
-    to which superbasins, the SuperBasin object of those superbasins, and 
+    to which superbasins, the SuperBasin object of those superbasins, and
     superbasining criteria. It also expands and merges superbasins'''
 
     def __init__(self):
         self.superbasins = []
-            
+
     def get_containing_superbasin(self, state):
         for i in self.superbasins:
             if i.contains_state(state):
@@ -33,7 +33,7 @@ class SuperbasinScheme:
         #Also, if confidence is changed and new processes are found, the superbasin
         #will ignore these new processes.
 
-        self.superbasins.append(superbasin.Superbasin(new_sb_states)) 
+        self.superbasins.append(superbasin.Superbasin(new_sb_states))
 
         print "Created superbasin with states " #+ str([i.number for i in new_sb_states])
 
@@ -72,4 +72,3 @@ class TransitionCounting(SuperbasinScheme):
         except:
             self.count[state] = {}
             return self.count[state]
-

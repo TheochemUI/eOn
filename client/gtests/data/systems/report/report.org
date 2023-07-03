@@ -186,7 +186,7 @@ opt_lambda_limit = 1e16
 opt_lambda_init = 100
 gpr_jitter_variance = 0
 #+end_src
-Additionally, we have implemented debugging levels in the code for ease of visualization; which are able to generate snapshots of the GPR surface after each call to the true energy and forces (by exhaustively calculating energies over a user defined grid of points around moving atoms) for one dimensional systems.  
+Additionally, we have implemented debugging levels in the code for ease of visualization; which are able to generate snapshots of the GPR surface after each call to the true energy and forces (by exhaustively calculating energies over a user defined grid of points around moving atoms) for one dimensional systems.
 * GPR Model
 The basis.
 * TODO Toy Systems
@@ -231,7 +231,7 @@ This system takes *0.069s* with the dimer, and *0.109s* with the GPRD in 5 cycle
 #+begin_export latex
 \begin{figure}[h]
 \begin{subfigure}{0.5\textwidth}
-\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f4.png} 
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f4.png}
 \end{subfigure}
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f5.png}
@@ -255,7 +255,7 @@ In this instance, the GPRD can converge to the saddle point with a lower active 
 #+begin_export latex
 \begin{figure}[h]
 \begin{subfigure}{0.5\textwidth}
-\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f9.png} 
+\includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f9.png}
 \end{subfigure}
 \begin{subfigure}{0.5\textwidth}
 \includegraphics[width=0.9\linewidth, height=5cm]{images/1ptContour/1pt_f10.png}
@@ -334,7 +334,7 @@ Perhaps more importantly, the local optimization of the hyperparameters scales p
 By implementing the pruning logic as shown in Fig. [[fig:pruneme]] using user parameters, we are able to achieve better convergence and in some cases, improved performance as well. Note that since we test for convergence using the maximum forces at the end of each LBFGS translation, we have the results of the fitness function for pruning at a later stage.
 
 #+name: fig:pruneme
-#+caption: Pruning logic embedded in the GPRD to form GPRD-P; N_PRUNE is the (max) number of elements to remove, PRUNE_FORCE is the force threshold, and PRUNE_START is the starting number of points;  
+#+caption: Pruning logic embedded in the GPRD to form GPRD-P; N_PRUNE is the (max) number of elements to remove, PRUNE_FORCE is the force threshold, and PRUNE_START is the starting number of points;
 [[file:images/pruneLogic.jpg]]
 
 *** Quantifying Overheads
@@ -393,7 +393,7 @@ Also in textcite:koistinenMinimumModeSaddle2020.
 
 The dimer calculation failed to converge after 10 hours and 30 minutes on the cluster; only finding a maximum force of $0.05$.
 
-#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement. 
+#+caption: B3LYP-DZ for the Allyl Vinly Ether Rearrangement.
 | Algorithm  |  Overhead | HyOpt (HyT)    |   Total T | PES avgT | PES TotT | PES Calls |    Cost |
 | GPRD-Dimer |    2324.9 | 29 (642.244)   |    5050.9 |       94 |   2726.0 | 29        |  24.733 |
 | GPR-P      | 10484.867 | 132 (2604.188) | 23268.867 |       94 |  12784.0 | 136 (117) | 111.541 |

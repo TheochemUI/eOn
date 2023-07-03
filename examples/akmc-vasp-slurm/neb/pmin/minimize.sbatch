@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #SBATCH --job-name=eon_pmin
 #SBATCH --output=min.log
 #SBATCH --qos=debug

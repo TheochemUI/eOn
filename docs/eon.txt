@@ -221,5 +221,3 @@ Location of files related to the sending and receiving data on the server.
 **write_movies**:
 
     default: ``False``
-
-

@@ -1,4 +1,4 @@
-.. _hyperdynamics: 
+.. _hyperdynamics:
 
 =============
 Hyperdynamics
@@ -23,7 +23,7 @@ It should be run with the ``parallel_replica`` job.
 [Hyperdynamics] Options
 =======================
 
-**bias_potential**: 
+**bias_potential**:
 
     default: ``none``
 
@@ -33,25 +33,25 @@ It should be run with the ``parallel_replica`` job.
 
         ``none``: with no bias potential, run regular MD
 
-**bb_dvmax**: 
+**bb_dvmax**:
 
     default: ``0.0``
 
     The magnitude of the bond-boost bias potential.
 
-**bb_rmd_time**: 
+**bb_rmd_time**:
 
     default: ``100.0``
 
     Regular MD duration used to determine the equilibrium bond length before the bias potential is added.
 
-**bb_rcut**: 
+**bb_rcut**:
 
     default: ``3.0``
 
     All bonds which belong to the tagged atoms and are shorter than a cutoff of rcut will be included in the bond-boost potential.
 
-**bb_stretch_threshold**: 
+**bb_stretch_threshold**:
 
     default: ``0.2``
 
@@ -59,7 +59,7 @@ It should be run with the ``parallel_replica`` job.
     maximum fractional nearest-neighbor bond stretch or compression at any
     transition state.
 
-**bb_ds_curvature**: 
+**bb_ds_curvature**:
 
     default: ``0.95``
 
@@ -71,4 +71,3 @@ It should be run with the ``parallel_replica`` job.
 .. [#voter97_3908] A.F. Voter "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events" *Phys. Rev. Lett.* **78**, 3908 (1997)
 
 .. [#miron03_6210]  R.A. Miron and K.A. Fichthorn "Accelerated molecular-dynamics of rare events with the bond-boost method" *J. Chem. Phys.* **119**, 6210 (2003)
-

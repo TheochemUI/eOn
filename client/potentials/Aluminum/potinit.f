@@ -1,8 +1,8 @@
 c   version e93:   add gregs SPF routine for chain relaxation
-c   EAM version b91:   add FPI forces and potential by calling FPIforce                   
-c                                                                                         
-C     THIS SUBROUTINE COMPUTES THE FORCES by calling GAGAFE for each type of              
-c     interaction.                                                                        
+c   EAM version b91:   add FPI forces and potential by calling FPIforce
+c
+C     THIS SUBROUTINE COMPUTES THE FORCES by calling GAGAFE for each type of
+c     interaction.
 
       SUBROUTINE POTINIT()
 

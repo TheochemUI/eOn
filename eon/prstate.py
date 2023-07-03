@@ -16,7 +16,7 @@ class PRState(state.State):
     search_result_header = "%8s %10s\n" % ("wuid", "result")
     search_result_header += "-" * len(search_result_header) + '\n'
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
-                 reactant_path = None):                 
+                 reactant_path = None):
         """ Creates a new state, with lazily loaded data. """
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
                     reactant_path)
@@ -59,7 +59,7 @@ class PRState(state.State):
         self.append_process_table(id =                id,
                                   product =           -1,
                                   product_energy =    resultdata["potential_energy_product"],
-                                  time =              resultdata["transition_time_s"]) 
+                                  time =              resultdata["transition_time_s"])
 
         # This was a unique process, so return the id.
         return id
@@ -113,4 +113,3 @@ class PRState(state.State):
 
     def zero_time(self):
         self.info.set("MetaData", "accumulated_time", "0.0")
-

@@ -21,9 +21,8 @@ print("set title \"Energy of Minima versus Time\"", f)
 print("set xlabel \"time(s)\"", f)
 print("set ylabel \"Energy (eV)\"", f)
 print("set nokey", f)
-print("plot \"-\" with lines", f) 
+print("plot \"-\" with lines", f)
 
 dyn = io.Dynamics('dynamics_fixed.txt')
 for i in dyn.get():
     print(i['totaltime'], e[i['reactant']], i['reactant'], f)
-

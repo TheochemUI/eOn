@@ -20,7 +20,7 @@ def getLinesInFile(fileName):
 if generateData == 1:
     os.mkdir("data")
     for i in range(sampleSize):
-        runClient = "./client" 
+        runClient = "./client"
         os.system(runClient)
         os.mkdir("data/"+str(i))
         shutil.move("results.dat","data/"+str(i))
@@ -31,4 +31,3 @@ for i in range(sampleSize):
     f_negative.append(int(data[6].rsplit()[0]))
 
 print "Average nr of force call per saddle point: " + str((sum(f_negative) + sum(f_positive)) /float(sampleSize))
-
