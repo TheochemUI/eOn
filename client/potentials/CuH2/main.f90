@@ -4,7 +4,7 @@
         use eam_wrap
 
       implicit none
-      
+
       integer :: natms(2),ndim,Nunconstr,Nconstr,Nimage
       integer :: Ncomp, natoms
       integer :: i,j,ind,jun
@@ -18,7 +18,7 @@
       OPEN(UNIT=102, file='forces.out',status='replace')
       OPEN(UNIT=104, file='energy.out',status='replace')
       OPEN(UNIT=103, file='eam.tmp',status='replace')
-      
+
       read(101,*) junk
       read(101,*) junk
       read(101,*) ax,ay,az
@@ -29,7 +29,7 @@
       read(101,*) natms(1),natms(2)
       read(101,*) matms(1),matms(2)
       natoms = natms(1)+natms(2)
-      
+
       ndim = 3*natoms
 
 
@@ -47,7 +47,7 @@
       enddo
 
 
-      
+
       ind = 1
       do i = 1,natoms
          do j=1,3
@@ -59,7 +59,7 @@
       box(1) = ax
       box(2) = ay
       box(3) = az
-      
+
       call c_force_eam(natms,ndim,box,R,F,U)
 
       ind = 1
@@ -67,8 +67,8 @@
       do i=1,ndim,3
             write(102,*) ind,F(i),F(i+1),F(i+2)
             ind = ind+1
-      enddo     
+      enddo
 
       write(103,*) '1'
-            
+
       end program readcon

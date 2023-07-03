@@ -12,4 +12,3 @@ if atoms.get_mappings(p1,p2,sys.argv[3],sys.argv[4]):
 else:
     print("Did not find mappings.")
     sys.exit(1)
-

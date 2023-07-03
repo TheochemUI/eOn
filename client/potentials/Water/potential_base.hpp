@@ -35,20 +35,20 @@ protected:
         void restrainAngle(double const r1[], double const r2[], double const r3[], double f1[], double f2[], double f3[],
                            double & u, const double k, const double aeq);
         //@}
-        //----------------------------------------coulomb--------------------------------------------------      
+        //----------------------------------------coulomb--------------------------------------------------
         /// @name Coulomb
         /// @{
         static const double ONE_OVER_4_PI_EPSILON0;
         void calculateCentre(double const r1[], double const r2[], double rc[]);
         void calculateCentre(double const r1[], double const r2[], double const r3[], double rc[]);
-        void calculateWeightedCentre(double const w1, double const w2, double const w3, 
+        void calculateWeightedCentre(double const w1, double const w2, double const w3,
                                      double const r1[], double const r2[], double const r3[], double rc[]);
         void coulombWithCutoff(const double r1[], const double r2[], double f1[], double f2[], double & u, double const qq);
         void coulomb(const double r1[], const double r2[], double f1[], double f2[], double & u, double const qq);
         void coulomb(double distance, double & force, double & energy, double const qq);
         void spreadForce(double f1[], double f2[], double const fc[]);
         void spreadForce(double f1[], double f2[], double f3[], double const fc[]);
-        void spreadWeightedForce(double const w1, double const w2, double const w3, 
+        void spreadWeightedForce(double const w1, double const w2, double const w3,
                                  double f1[], double f2[], double f3[], double const fc[]);
         template <int N, class R=double (* const)[N], class F=double (* const)[N]>
         struct ChargeGroup {
@@ -90,9 +90,9 @@ protected:
         void distance(const double x[], const double y[], Vector3 & z);
         void setPeriodicity(const double periods[]);
         static double unBreak0(double const r, double const ref, double const period);
-        static void unBreak0(double r[], double const ref[], double const periods[]);            
+        static void unBreak0(double r[], double const ref[], double const periods[]);
         double unBreak1(double const r, double const ref, int const axis);
-        void unBreak1(double r[], double const ref[]);            
+        void unBreak1(double r[], double const ref[]);
         /// @}
         //----------------------------------Common potential for platinum --------------------------------------
         void computePt(int const nAtoms, double positions[], double forces[], double & energy, double const periods[], bool const fixed[]);
@@ -137,7 +137,7 @@ void forcefields::PotentialBase::switching(ChargeGroup<N, R, F> & g1, ChargeGrou
     double dS=6*x*(x-1);
     double const u=energy;
     for (int i=0; i < N; ++i) {
-        for (int k=0; k<3; ++k) {      
+        for (int k=0; k<3; ++k) {
             g1.force_[i][k] = g1.force_[i][k]*S - u*dS/switchingWidth*z[k]/z1/N;
             g2.force_[i][k] = g2.force_[i][k]*S + u*dS/switchingWidth*z[k]/z1/N;
         }

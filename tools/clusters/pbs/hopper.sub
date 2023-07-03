@@ -1,13 +1,13 @@
 #!/bin/bash
 #PBS -q debug
-#PBS -l walltime=00:10:00 
+#PBS -l walltime=00:10:00
 #PBS -A m1247
-#PBS -j oe 
-#PBS -S /bin/bash 
+#PBS -j oe
+#PBS -S /bin/bash
 #PBS -l gres=scratch2
-#PBS -V 
+#PBS -V
 
-[ -n "$PBS_O_WORKDIR" ] && set -x 
+[ -n "$PBS_O_WORKDIR" ] && set -x
 
 export EON_NUMBER_OF_CLIENTS=71
 CORES_PER_VASP=24

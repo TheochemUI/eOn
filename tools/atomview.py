@@ -85,10 +85,10 @@ class atomview(gtk.Window):
         self.lastTime = time.time()
         self.screenatoms = []
         self.colors = []
-        
+
     def gui_key_on(self, key):
         return key in self.keys
-        
+
 #
 # EVENT -----------------------------------------------------------------------------------------
 #
@@ -96,7 +96,7 @@ class atomview(gtk.Window):
 
     def event_configure(self, *args):
         x, y, self.width, self.height = self.area.get_allocation()
-        self.pixmap = gdk.Pixmap(self.area.window, self.width, self.height)     
+        self.pixmap = gdk.Pixmap(self.area.window, self.width, self.height)
         return True
 
 
@@ -154,14 +154,14 @@ class atomview(gtk.Window):
             self.button3 = False
         self.event_exposed()
         return True
-            
+
 
     def event_scroll(self, widget, event):
-        if self.gui_key_on("r"): 
+        if self.gui_key_on("r"):
             if event.direction == gdk.SCROLL_UP:
                 self.radius *= 1.1
                 self.event_exposed()
-                
+
             elif event.direction == gdk.SCROLL_DOWN:
                 self.radius *= 0.9
                 self.event_exposed()
@@ -172,7 +172,7 @@ class atomview(gtk.Window):
                 self.scale *= 0.9
             self.event_exposed()
         return True
-                                                                                    
+
     def event_exposed(self, *args):
         self.gfx_clear()
         self.queue = []
@@ -190,7 +190,7 @@ class atomview(gtk.Window):
 
     def event_toggle_play(self, widget, play):
         self.playing = play
-            
+
     def event_timeout(self):
         if self.playing and len(self.data) > 1:
             if time.time() - self.last_draw > 1.0/self.fps.get_value():
@@ -198,13 +198,13 @@ class atomview(gtk.Window):
                 if nextframe > len(self.data) - 1:
                     nextframe = 0
                 self.moviescale.set_value(nextframe)
-                self.queue_draw()        
+                self.queue_draw()
         return True
-    
+
     def event_close(self, *args):
         gtk.main_quit()
-        
-        
+
+
 #
 # GRAPHICS --------------------------------------------------------------------------------------
 #
@@ -214,7 +214,7 @@ class atomview(gtk.Window):
         gc = self.area.window.new_gc()
         gc.set_rgb_fg_color(gdk.Color(rgb[0], rgb[1], rgb[2]))
         return gc
-        
+
     def gfx_setup_colors(self):
         for i in range(atoms.numElements):
             c = atoms.elements[i]['color']
@@ -226,7 +226,7 @@ class atomview(gtk.Window):
         self.rotation = np.identity(3)
         self.translate = np.array([0.0, 0.0, 16.0])
         self.queue_draw()
-    
+
     def gfx_queue_line(self, r1, r2, color, width = 1):
         line = queueitem("line")
         line.r1 = np.copy(r1)
@@ -235,7 +235,7 @@ class atomview(gtk.Window):
         line.depth = (r1 + r2) / 2.0
         line.width = width
         self.queue.append(line)
-        
+
     def gfx_queue_atoms(self):
         r = self.drawpoint.r
         name = self.drawpoint.names
@@ -272,21 +272,21 @@ class atomview(gtk.Window):
                 self.gfx_queue_line(r1 + (r2 - r1) * float(l) / boxsteps,
                                     r1 + (r2 - r1) * float(l + 1) /
                                     boxsteps, [0, 0, 0])
-            
+
     def gfx_center_atoms(self):
         r = self.data[0].r
-        minx = min(r[:, 0])                         
-        miny = min(r[:, 1])                         
+        minx = min(r[:, 0])
+        miny = min(r[:, 1])
         minz = min(r[:, 2])
         maxx = max(r[:, 0])
         maxy = max(r[:, 1])
         maxz = max(r[:, 2])
         midx = minx + (maxx - minx) / 2
         midy = miny + (maxy - miny) / 2
-        midz = minz + (maxz - minz) / 2            
+        midz = minz + (maxz - minz) / 2
         self.center = np.array([midx, midy, midz])
-        
-            
+
+
     def gfx_transform_queue(self):
         r = self.drawpoint.r
         for i in range(len(self.queue)):
@@ -296,7 +296,7 @@ class atomview(gtk.Window):
                 q.r = np.dot(self.rotation, q.r)
                 q.r += self.translate
                 q.depth = q.r[2]
-            else:                                   
+            else:
                 q.r1 -= self.center
                 q.r2 -= self.center
                 q.depth -= self.center
@@ -316,7 +316,7 @@ class atomview(gtk.Window):
             else:
                 return -1
         self.queue = sorted(self.queue, cmp_queue)
-        
+
 
     def gfx_draw_queue(self):
         s2 = self.scale * 2
@@ -329,7 +329,7 @@ class atomview(gtk.Window):
                 x = int(r[0] * s2 + w2)
                 y = int(-r[1] * s2 + h2)
                 self.gfx_draw_circle(x, y, rad, q.number)
-            else:   
+            else:
                 q.r1[0] = q.r1[0] * self.scale * 2 + self.width * 0.5
                 q.r1[1] = -q.r1[1] * self.scale * 2 + self.height * 0.5
                 q.r2[0] = q.r2[0] * self.scale * 2 + self.width * 0.5
@@ -342,21 +342,21 @@ class atomview(gtk.Window):
         st = math.sin(theta)
         m = np.array([[1, 0, 0], [0, ct, -st], [0, st, ct]])
         self.rotation = np.dot(m, self.rotation)
-    
-    
+
+
     def gfx_rot_y(self, theta):
         ct = math.cos(theta)
         st = math.sin(theta)
         m = np.array([[ct, 0, st], [0, 1, 0], [-st, 0, ct]])
         self.rotation = np.dot(m, self.rotation)
-    
-    
+
+
     def gfx_rot_z(self, theta):
         ct = math.cos(theta)
         st = math.sin(theta)
         m = np.array([[ct, -st, 0], [st, ct, 0], [0, 0, 1]])
         self.rotation = np.dot(m, self.rotation)
-        
+
 
     def gfx_clear(self):
         self.pixmap.draw_rectangle(self.background_gc, True, 0, 0, self.width, self.height)
@@ -367,11 +367,11 @@ class atomview(gtk.Window):
         self.pixmap.draw_arc(self.black_gc, False, x - r, y - r, r * 2, r * 2, 0, 64 * 360)
 
     def gfx_draw_line(self, x1, y1, x2, y2):
-        self.pixmap.draw_line(self.black_gc, int(x1), int(y1), int(x2), int(y2))        
+        self.pixmap.draw_line(self.black_gc, int(x1), int(y1), int(x2), int(y2))
 
 
-        
-    
+
+
 
 
 #
@@ -406,30 +406,3 @@ if __name__ == "__main__":
             data = io.loadcons(sys.argv[1])
         q.data_set(data)
     gtk.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

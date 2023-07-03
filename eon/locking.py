@@ -8,13 +8,13 @@ class LockFile:
         self.pid = None
 
     def islocked(self):
-        # check to see if the lock file is there 
+        # check to see if the lock file is there
         if os.path.isfile(self.lock_path):
             # if the lock file is there lets get the pid from it
             f = open(self.lock_path)
             self.pid = int(f.read().strip())
             f.close()
-            
+
             # check and see if process is still alive
             try:
                 os.kill(self.pid, 0)

@@ -17,7 +17,7 @@ def initialize(rads, mags, searches):
             shutil.move(thing, 'original')
     os.mkdir('samples')
     write_metadata(0, rads, 0, mags, searches)
-    
+
 def restore():
     if not os.path.exists('original'):
         print('Nothing to restore!')
@@ -32,9 +32,9 @@ def restore():
         shutil.move(thing, '.')
     os.rmdir('original')
     shutil.move('samples', 'samples-' + str(datetime.datetime.now()).replace(' ', '-'))
-    
+
 def read_metadata():
-    f = open('sample-status.txt', 'r')    
+    f = open('sample-status.txt', 'r')
     lines = f.readlines()
     f.close()
     radius_index = int(lines[0].split()[2])
@@ -58,7 +58,7 @@ def inc_params():
         radi = 0
         magi += 1
     write_metadata(radi, rads, magi, mags, s)
-        
+
 def store_sample(location):
     os.mkdir(location)
     things = glob.glob('*')
@@ -83,13 +83,13 @@ def print_table():
         good_searches = sum([int(l.split()[8])+1 for l in open('%s/states/0/processtable' % sample, 'r').readlines()[1:]])
         procs = len(open('%s/states/0/processtable' % sample, 'r').readlines()) - 1
         print('%10.5f  %10.5f  %10d  %d' % (rad, mag, procs, good_searches))
-        
-        
-    
+
+
+
 def main():
 
     parser = OptionParser()
-    parser.add_option('--restore', dest='restore', action='store_true', 
+    parser.add_option('--restore', dest='restore', action='store_true',
                       help='restore your simulation files and cache the current sampling results',
                       default=False)
     parser.add_option('--radii', dest='radii', default='0.0,4.0,8.0',
@@ -117,7 +117,7 @@ def main():
         initialize(rads, mags, searches)
         print('Initialized new akmc displacement sampling with radii %s, magnitudes %s, and performing %s searches per sample.' % (options.radii, options.magnitudes, options.searches))
         return
-        
+
     radi, rads, magi, mags, searches = read_metadata()
 
     # Make sure we're not finished sampling before continuing.
@@ -158,40 +158,10 @@ def main():
         # Increment the sample parameters
         inc_attempt = inc_params()
         return
-                
+
     print('Executing eon...')
     throwaway = subprocess.getoutput('eon')
     print('Done.')
 
 if __name__ == '__main__':
     main()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

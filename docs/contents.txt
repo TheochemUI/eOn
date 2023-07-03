@@ -50,4 +50,3 @@ Contents
    recycling
    server_config
    index
-

@@ -24,23 +24,23 @@
         do i=1,natoms
            iatclass(i)=i
         end do
-        CALL potinit()    
-      
+        CALL potinit()
+
 
         do i=1,ndim
           ra(i)=R(i)
        end do
 
-       
+
         call eamh2cu()
 
-       
-        
+
+
         U(1)=utot
         do i=1,ndim
           F(i)=fa(i)
         end do
-        
+
 
 
       end SUBROUTINE force_eam
@@ -53,7 +53,7 @@
       include 'commonblks/comparam.cmn'
 
       REAL*8 rho(maxatoms),dFdrho(maxatoms),dr(3),dummy
-      REAL*8 rhoij,f_phi,rhoji,f_rhoij,drhoji_r,time,rij 
+      REAL*8 rhoij,f_phi,rhoji,f_rhoij,drhoji_r,time,rij
       REAL*8 phiij,del,dphiijdr_r,drhoij_r,f_rhoji
       REAL*8 dfdrhoi,rhoi,embedi,embed,phi,sum2,fact
       INTEGER jcuq,im,icuq,jh,ih,ixyz,jcoo,iat,icoo,jcl,jat
@@ -65,16 +65,16 @@
       do icoo = 1,ncoo
          fa(icoo) = 0.
       enddo
-      
+
 
       fact = 1./float(nimpo*nimrp)
       phi = 0.
       embed = 0.
       do iat = 1,natoms
         rho(iat) = 0.
-      enddo 
+      enddo
 
-      
+
       do iCuCl = 1,nCuCl       ! Loop over classical Cu atoms
         icl = iCuCl
         iat = iatclass(icl)         ! Atom corresponding to classical coord icl
@@ -90,7 +90,7 @@
             sum2 = sum2 + del**2
             dr(ixyz) = del
          enddo
-         
+
           if (sum2 .le. 0.)  goto 999
           if (sum2 .lt. rcut2) then
              rij = SQRT(sum2)
@@ -154,7 +154,7 @@
       enddo    ! End loop over classical Cu atoms
 
 
-      
+
       do im = 1,nimpo*nimrp    ! Loop again over images
         do iH = 1,nH          ! Loop using H atoms as atom i
           icl = nCuCl + nCuQ + iH
@@ -358,7 +358,7 @@
 !  EAMFH.f
 !:::::::::::::
       subroutine  EAMFH (rhotot, embedE, dFdrho)
-       
+
       IMPLICIT NONE
       REAL*8 rhotot2,rhotot3,rhotot4,rhotot5,rhotot,embede,dfdrho
 
@@ -396,7 +396,7 @@
     !:::::::::::::
       subroutine EAMPhiHCu (R, phiij, dphidroverr)
 
-      IMPLICIT NONE 
+      IMPLICIT NONE
       REAL*8 term1,term2,phiij,dphidroverr,R
 
       INCLUDE 'commonblks/comparam.cmn'
@@ -431,7 +431,7 @@
       subroutine EAMRhoCu (R, rho, drhodroverr, indic)
 
       IMPLICIT NONE
-      REAL*8 R,term1,rinv,term2,term3,rho,drhodroverr     
+      REAL*8 R,term1,rinv,term2,term3,rho,drhodroverr
       INTEGER indic
 
       INCLUDE 'commonblks/comparam.cmn'
@@ -477,7 +477,7 @@
         INTEGER i
 
         INCLUDE 'commonblks/comparam.cmn'
-   
+
         rcut = 6.10000
         rskin = 6.30000
         rcut2=rcut**2
@@ -552,35 +552,35 @@
         FCu8 = potpar(18,1)
 
         FH1 = potpar(11,2)
-        FH2 = potpar(12,2) 
-        FH3 = potpar(13,2) 
-        FH4 = potpar(14,2) 
+        FH2 = potpar(12,2)
+        FH3 = potpar(13,2)
+        FH4 = potpar(14,2)
         FH5 = potpar(15,2)
 
         DACuCu = potpar(2,1)
         alphaACuCu = potpar(3,1)
         DBCuCu = potpar(4,1)
         alphaBCuCu = potpar(5,1)
-      
-        DAHH = potpar(2,2) 
+
+        DAHH = potpar(2,2)
         alphaAHH = potpar(3,2)
-        DBHH = potpar(4,2) 
+        DBHH = potpar(4,2)
         alphaBHH = potpar(5,2)
 
-        DAHCu = potpar(2,3) 
-        alphaAHCu = potpar(3,3) 
-        DBHCu = potpar(4,3) 
-        alphaBHCu = potpar(5,3) 
-      
+        DAHCu = potpar(2,3)
+        alphaAHCu = potpar(3,3)
+        DBHCu = potpar(4,3)
+        alphaBHCu = potpar(5,3)
+
         scaleCu = potpar(6,1)
-        betaACu = potpar(7,1) 
+        betaACu = potpar(7,1)
         betaBCu = potpar(8,1)
         netaCu = potpar(9,1) + 0.01d0
         gammaCu = potpar(10,1)
 
         scaleH = potpar(6,2)
         betaAH = potpar(7,2)
-        betaBH = potpar(8,2)  
+        betaBH = potpar(8,2)
         netaH = potpar(9,2) + 0.01d0
         gammaH = potpar(10,2)
 
@@ -590,10 +590,10 @@
         rhocutCu   = 0.d0
         rhocutH    = 0.d0
         CALL EAMPhiCuCu(rcut,phitemp,dphidr_r)
-        phicutCuCu = phitemp 
+        phicutCuCu = phitemp
         dphiCuCudr_r = dphidr_r
         CALL EAMPhiHCu(rcut,phitemp,dphidr_r)
-        phicutHCu = phitemp 
+        phicutHCu = phitemp
         dphiHCudr_r = dphidr_r
         CALL EAMPhiHH(rcut,phitemp,dphidr_r)
         phicutHH = phitemp
@@ -604,5 +604,5 @@
         CALL EAMRhoH(rcut,rhotemp,drhodr_r,1)
         rhocutH = rhotemp
         drhoHdr_r = drhodr_r
-      
+
       END SUBROUTINE potinit

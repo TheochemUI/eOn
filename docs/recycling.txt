@@ -5,7 +5,7 @@
 Recycling
 =========
 
-We have developed a method of saddle point recycling that can significantly 
+We have developed a method of saddle point recycling that can significantly
 reduce the computational cost of the AKMC algorithm. [#xu08_114104]_
 
 Suppose we are in reactant state :math:`R_0`, and we have discovered a series of
@@ -44,7 +44,7 @@ is local, the overall cost does not increase with the total system size.
 
     default: ``False``
 
-**active_region**: Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state.  For dynamics based saddle searches, atoms in the active region will have mass weighting applied; for min-mode following saddle searches, only these atoms will be selected for displacements.  **active_region** represents a multiple of **[Structure Comparison] neighbor_distace**. 
+**active_region**: Defines a region around the atoms that moved in the previous KMC step to target new saddle searches in the current state.  For dynamics based saddle searches, atoms in the active region will have mass weighting applied; for min-mode following saddle searches, only these atoms will be selected for displacements.  **active_region** represents a multiple of **[Structure Comparison] neighbor_distace**.
 
     default: 1.0
 
@@ -56,4 +56,3 @@ this factor.
 .. rubric:: References
 
 .. [#xu08_114104] L. Xu and G. Henkelman, "Adaptive kinetic Monte Carlo for first-principles accelerated dynamics" *J. Chem. Phys.* **129**, 114104 (2008).  doi:`10.1063/1.2976010 <http://dx.doi.org/10.1063/1.2976010>`_
-
