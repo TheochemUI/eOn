@@ -218,6 +218,7 @@ Parameters::Parameters() {
 
   // GP Surrogate Parameters
   sub_job = JobType::Unknown;
+  gp_uncertainity = 0.05;
 
   // [Hessian] //
   hessianAtomList = string("All");
@@ -533,6 +534,8 @@ int Parameters::load(FILE *file) {
     // GP Surrogate Parameters
     sub_job = helper_functions::getJobType(
         toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    gp_uncertainity =
+        ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);
