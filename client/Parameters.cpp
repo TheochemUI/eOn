@@ -531,8 +531,8 @@ int Parameters::load(FILE *file) {
         ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
 
     // GP Surrogate Parameters
-    sub_job =
-        helper_functions::getJobType(toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    sub_job = helper_functions::getJobType(
+        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);

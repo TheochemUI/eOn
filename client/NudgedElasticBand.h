@@ -33,7 +33,7 @@ public:
   ~NudgedElasticBand() = default;
 
   NudgedElasticBand::NEBStatus compute(void);
-  NudgedElasticBand::NEBStatus getStatus(){return this->status;};
+  NudgedElasticBand::NEBStatus getStatus() { return this->status; };
   void updateForces(void);
   double convergenceForce(void);
   void findExtrema(void);
