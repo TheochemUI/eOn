@@ -37,7 +37,7 @@ public:
   void updateForces(void);
   double convergenceForce(void);
   void findExtrema(void);
-  void printImageData(bool writeToFile = false);
+  void printImageData(bool writeToFile = false, size_t idx = 0);
 
   int atoms;
   long numImages, climbingImage, numExtrema;
