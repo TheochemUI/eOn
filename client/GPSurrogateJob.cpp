@@ -63,7 +63,14 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     for (auto &&obj : neb->path) {
       obj->setPotential(pypot);
     }
-    neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, pypot);
+    if (!(pyparams->gp_linear_path_always)) {
+      SPDLOG_TRACE("Using previous path");
+      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparams, pypot);
+    } else {
+      SPDLOG_TRACE("Using linear interpolation");
+      neb = std::make_unique<NudgedElasticBand>(initial, final_state, pyparams,
+                                                pypot);
+    }
     status_neb = neb->compute();
 
     std::string nebFilename(fmt::format("neb_final_gpr_{:03d}.con", n_gp));
