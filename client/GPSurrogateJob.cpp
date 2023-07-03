@@ -39,6 +39,7 @@ std::vector<std::string> GPSurrogateJob::run(void) {
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
+  double unc_conv{pyparams->gp_uncertainity};
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
