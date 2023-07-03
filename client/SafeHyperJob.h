@@ -1,8 +1,8 @@
-
 #ifndef SAFEHYPERJOB_H
 #define SAFEHYPERJOB_H
 
 #include "Job.h"
+#include "Matter.h"
 #include "Parameters.h"
 
 class SafeHyperJob : public Job {
@@ -25,8 +25,8 @@ private:
   Matter *current;
   Matter *reactant;
   Matter *saddle;
-  Matter *final;
-  Matter *final_tmp;
+  Matter *final_img;
+  Matter *final_img_tmp;
   Matter *product;
 
   bool metaStateFlag;
