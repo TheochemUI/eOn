@@ -4,7 +4,6 @@
 #include "BondBoost.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
 #include "ParallelReplicaJob.h"
 
