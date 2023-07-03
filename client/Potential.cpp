@@ -190,12 +190,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype, std::shared_ptr<Paramete
 #ifdef WITH_PYTHON
 #ifdef PYAMFF_POT
   case PotType::PYAMFF: {
-    return (std::make_shared<PyAMFF());
+    return (std::make_shared<PyAMFF>());
     break;
   }
 #endif
   case PotType::QSC: {
-    return (std::make_shared<QSC());
+    return (std::make_shared<QSC>());
     break;
   }
 #endif
