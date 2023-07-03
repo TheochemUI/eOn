@@ -49,6 +49,10 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     // if (status_neb == NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY ||
     // status_neb == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS) {
     SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
+    auto [maxUnc, maxIndex] =
+        helper_functions::surrogate::getMaxUncertainty(neb->path);
+    // pyparams->gp_uncertainity = ( maxUnc + unc_conv ) / n_gp++;
+    SPDLOG_TRACE("New allowed uncertainity is {}", pyparams->gp_uncertainity);
     auto [feature, target] =
         helper_functions::surrogate::getNewDataPoint(neb->path, pot);
     helper_functions::eigen::addVectorRow(features, feature);
@@ -224,15 +228,21 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   // SPDLOG_TRACE("Generated Target:\n{}", fmt::streamed(target));
   return target;
 }
-std::pair<Eigen::VectorXd, Eigen::VectorXd>
-getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
-                std::shared_ptr<Potential> true_pot) {
+std::pair<double, Eigen::VectorXd::Index>
+getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};
   for (auto idx{0}; idx < pathUncertainty.size(); idx++) {
     pathUncertainty[idx] = matobjs[idx + 1]->getEnergyVariance();
   }
   Eigen::VectorXd::Index maxIndex;
+  double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
+  return std::make_pair(maxUnc, maxIndex);
+}
+std::pair<Eigen::VectorXd, Eigen::VectorXd>
+getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
+                std::shared_ptr<Potential> true_pot) {
+  auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
   return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
       matobjs[maxIndex + 1]->getPositionsFreeV(),
       make_target(*matobjs[maxIndex], true_pot));
