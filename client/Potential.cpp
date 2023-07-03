@@ -170,7 +170,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype, std::shared_ptr<Paramete
 #ifndef WIN32
 #ifdef WITH_VASP
   case PotType::VASP: {
-    return (std::make_shared<VASP(params));
+    return (std::make_shared<VASP>(params));
     break;
   }
 #endif
