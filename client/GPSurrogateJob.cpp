@@ -51,8 +51,13 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     SPDLOG_TRACE("Must handle update to the GP, update number {}", n_gp);
     auto [maxUnc, maxIndex] =
         helper_functions::surrogate::getMaxUncertainty(neb->path);
-    // pyparams->gp_uncertainity = ( maxUnc + unc_conv ) / n_gp++;
-    SPDLOG_TRACE("New allowed uncertainity is {}", pyparams->gp_uncertainity);
+    // if ( pyparams->gp_uncertainity < unc_conv ){
+    //   pyparams->gp_uncertainity = unc_conv;
+    // } else {
+    //   pyparams->gp_uncertainity = ( maxUnc + unc_conv ) / n_gp++;
+    // }
+    // SPDLOG_TRACE("New allowed uncertainity is {}",
+    // pyparams->gp_uncertainity);
     auto [feature, target] =
         helper_functions::surrogate::getNewDataPoint(neb->path, pot);
     helper_functions::eigen::addVectorRow(features, feature);
@@ -246,15 +251,17 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
+  // SPDLOG_TRACE("Uncertainity along path is {}\nmax_index: {}, maxVal: {}",
+  //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
 getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
                 std::shared_ptr<Potential> true_pot) {
   auto [maxUnc, maxIndex] = getMaxUncertainty(matobjs);
+  Matter candidate{*matobjs[maxIndex + 1]};
   return std::make_pair<Eigen::VectorXd, Eigen::VectorXd>(
-      matobjs[maxIndex + 1]->getPositionsFreeV(),
-      make_target(*matobjs[maxIndex], true_pot));
+      candidate.getPositionsFreeV(), make_target(candidate, true_pot));
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot) {
@@ -265,15 +272,17 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
     predEnergies[idx] = matobjs[idx]->getPotentialEnergy();
     matobjs[idx]->setPotential(true_pot);
     trueEnergies[idx] = matobjs[idx]->getPotentialEnergy();
+
     accuracy[idx] = std::sqrt(predEnergies[idx] * predEnergies[idx] -
                               trueEnergies[idx] * trueEnergies[idx]);
   }
-  double largest_error = accuracy.maxCoeff();
-  SPDLOG_TRACE(
-      "predicted\n{}true\n{}accuracy\n{}\nlargest_error {} will return {}",
-      fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-      fmt::streamed(accuracy), largest_error, largest_error < 0.05);
-  return largest_error < 0.05;
+  Eigen::VectorXd difference = predEnergies - trueEnergies;
+  double mse = difference.squaredNorm() / predEnergies.size();
+  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\nlargest_error {} will "
+               "return {}",
+               fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
+               fmt::streamed(difference), mse, mse < 0.05);
+  return mse < 0.05;
 }
 } // namespace helper_functions::surrogate
 
