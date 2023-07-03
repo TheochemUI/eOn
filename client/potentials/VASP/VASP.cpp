@@ -28,29 +28,6 @@ bool VASP::firstRun = true;
 long VASP::vaspRunCount = 0;
 pid_t VASP::vaspPID = 0;
 
-VASP::VASP(void) {
-  vaspRunCount++;
-  // deleting leftovers from previous run
-  system("rm -f TMPCAR");
-  system("rm -f CHG");
-  system("rm -f CHGCAR");
-  system("rm -f CONTCAR");
-  system("rm -f DOSCAR");
-  system("rm -f EIGENVAL");
-  system("rm -f IBZKPT");
-  system("rm -f NEWCAR");
-  system("rm -f FU");
-  system("rm -f OSZICAR");
-  system("rm -f OUTCAR");
-  system("rm -f PCDAT");
-  system("rm -f POSCAR");
-  system("rm -f TMPCAR");
-  system("rm -f WAVECAR");
-  system("rm -f XDATCAR");
-
-  return;
-}
-
 void VASP::cleanMemory(void) {
   vaspRunCount--;
   if (vaspRunCount < 1) {
@@ -60,8 +37,6 @@ void VASP::cleanMemory(void) {
   }
   return;
 }
-
-VASP::~VASP() { cleanMemory(); }
 
 void VASP::spawnVASP() {
   if ((vaspPID = fork()) == -1) {
