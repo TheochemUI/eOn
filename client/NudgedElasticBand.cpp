@@ -461,8 +461,8 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     // Remove existing log file if it exists
     auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
     if (fs::exists(neb_dat_fs)) {
-      SPDLOG_DEBUG(
-          "Removing the file since it exists, dropping existing logger");
+      // SPDLOG_DEBUG(
+      //     "Removing the file since it exists, dropping existing logger");
       fs::remove(neb_dat_fs);
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
