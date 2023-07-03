@@ -7,21 +7,21 @@ University of Iceland
 
 #ifndef TIP4P_PT
 #define TIP4P_PT
-#include "zhu_philpott.hpp"
 #include "../../Potential.h"
-
+#include "zhu_philpott.hpp"
 
 class Tip4p_Pt : public Potential, private forcefields::ZhuPhilpott<> {
 public:
-    Tip4p_Pt(std::shared_ptr<Parameters> params) : Potential(params), forcefields::ZhuPhilpott<>(8.5, 1.0){};
-    // Functions
-    // constructor and destructor
+  Tip4p_Pt(std::shared_ptr<Parameters> params)
+      : Potential(params), forcefields::ZhuPhilpott<>(8.5, 1.0){};
+  // Functions
+  // constructor and destructor
 
-    // To satisfy interface
-    void initialize(void) {}
-    void cleanMemory(void) {}
-    void force(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box);
+  // To satisfy interface
+  void initialize(void) {}
+  void cleanMemory(void) {}
+  void force(long N, const double *R, const int *atomicNrs, double *F,
+             double *U, const double *box);
 };
-
 
 #endif
