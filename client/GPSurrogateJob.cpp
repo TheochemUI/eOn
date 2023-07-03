@@ -277,12 +277,14 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                               trueEnergies[idx] * trueEnergies[idx]);
   }
   Eigen::VectorXd difference = predEnergies - trueEnergies;
-  double mse = difference.squaredNorm() / predEnergies.size();
+  auto mae = difference.array()
+                 .abs()
+                 .maxCoeff(); //.squaredNorm() / predEnergies.size();
   SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\nlargest_error {} will "
                "return {}",
                fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mse, mse < 0.05);
-  return mse < 0.05;
+               fmt::streamed(difference), mae, mae < 0.05);
+  return mae < 0.05;
 }
 } // namespace helper_functions::surrogate
 
