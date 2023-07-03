@@ -83,22 +83,24 @@ std::vector<std::string> GPSurrogateJob::run(void) {
     // } else
     if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
       SPDLOG_TRACE("Regular NEB converged on GP surface");
-      auto pyparam_ci = std::make_shared<Parameters>(*pyparams);
-      pyparam_ci->nebClimbingImageMethod = true;
-      pyparam_ci->writeMovies = true;
-      SPDLOG_TRACE("Starting a CI NEB run");
-
-      for (auto &&obj : neb->path) {
-        obj->setPotential(pypot);
+      if (helper_functions::surrogate::accuratePES(neb->path, pot)) {
+        break;
       }
-      neb = std::make_unique<NudgedElasticBand>(neb->path, pyparam_ci, pypot);
-      status_neb = neb->compute();
-      if (status_neb == NudgedElasticBand::NEBStatus::GOOD) {
-        job_not_finished =
-            !helper_functions::surrogate::accuratePES(neb->path, pot);
-      } else {
-        pyparams->optMethod = "lbfgs";
-      }
+      // auto pyparam_ci = std::make_shared<Parameters>(*pyparams);
+      // pyparam_ci->nebClimbingImageMethod = true;
+      // pyparam_ci->writeMovies = true;
+      // SPDLOG_TRACE("Starting a CI NEB run");
+      // for (auto &&obj : neb->path) {
+      //   obj->setPotential(pypot);
+      // }
+      // neb = std::make_unique<NudgedElasticBand>(neb->path, pyparam_ci,
+      // pypot); status_neb = neb->compute(); if (status_neb ==
+      // NudgedElasticBand::NEBStatus::GOOD) {
+      //   job_not_finished =
+      //       !helper_functions::surrogate::accuratePES(neb->path, pot);
+      // } else {
+      //   pyparams->optMethod = "lbfgs";
+      // }
     }
   }
   neb->printImageData();
