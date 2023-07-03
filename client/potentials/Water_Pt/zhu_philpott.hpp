@@ -26,14 +26,14 @@ public:
         void computeHH_O_(const int nWater, const double r[], double f[], double & energy, double const b[], bool const fixed[]);
         int nPlatinum() const;
         void setPlatinum(int nPlatinum, double const positions[]);
-        static char const * getName();                  
+        static char const * getName();
 private:
         template <int H, int O, int H3, int O3>
         void computeTemplate(
-                             const int nWater, 
+                             const int nWater,
                              const double (*const rh1)[H3],
                              const double (*const rh2)[H3],
-                             const double (*const ro)[O3],    
+                             const double (*const ro)[O3],
                              double (*const fh1)[H3],
                              double (*const fh2)[H3],
                              double (*const fo)[O3],

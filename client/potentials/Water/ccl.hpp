@@ -43,10 +43,10 @@ protected:
 private:
         template <int H, int O>
         void computeTemplate(
-                             const int nMolecules, 
+                             const int nMolecules,
                              const double (*const rh1)[H*3],
                              const double (*const rh2)[H*3],
-                             const double (*const ro)[O*3],    
+                             const double (*const ro)[O*3],
                              double (*const fh1)[H*3],
                              double (*const fh2)[H*3],
                              double (*const fo)[O*3],
@@ -60,14 +60,14 @@ private:
         void ro1_ro2(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);
         void ro_theta(Rho const & s1, Rho const & s2, Dtheta const & s3, double & energy, double & d1, double & d2, double & d3);
         void theta_2(Dtheta const & s3, double & energy, double & d3);
-        
+
         void ro_3(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);
         void ro_ro1_ro2(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);
         void ro_2_theta(Rho const & s1, Rho const & s2, Dtheta const & s3, double & energy, double & d1, double & d2, double & d3);
         void ro1_ro2_theta(Rho const & s1, Rho const & s2, Dtheta const & s3, double & energy, double & d1, double & d2, double & d3);
         void ro_theta_2(Rho const & s1, Rho const & s2, Dtheta const & s3, double & energy, double & d1, double & d2, double & d3);
         void theta_3(Dtheta const & s3, double & energy, double & d3);
-        
+
         void ro_4(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);
         void ro1_ro2_ro_2(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);
         void ro1_2_ro2_2(Rho const & s1, Rho const & s2, double & energy, double & d1, double & d2);

@@ -43,8 +43,7 @@ for p in traj:
             index += 1
     filtered.append(newp)
 
-io.savecon(sys.argv[2], filtered[0], 'w')        
+io.savecon(sys.argv[2], filtered[0], 'w')
 
 for p in filtered[1:]:
-    io.savecon(sys.argv[2], p, 'a')        
-    
+    io.savecon(sys.argv[2], p, 'a')

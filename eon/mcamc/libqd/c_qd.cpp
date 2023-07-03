@@ -419,7 +419,7 @@ void c_qd_comp(const double *a, const double *b, int *result) {
     *result = -1;
   else if (aa > bb)
     *result = 1;
-  else 
+  else
     *result = 0;
 }
 
@@ -429,7 +429,7 @@ void c_qd_comp_qd_d(const double *a, double b, int *result) {
     *result = -1;
   else if (aa > b)
     *result = 1;
-  else 
+  else
     *result = 0;
 }
 
@@ -439,7 +439,7 @@ void c_qd_comp_d_qd(double a, const double *b, int *result) {
     *result = -1;
   else if (a > bb)
     *result = 1;
-  else 
+  else
     *result = 0;
 }
 

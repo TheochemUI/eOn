@@ -1,4 +1,4 @@
-  PAW Cu                                 
+  PAW Cu
  11.0000000000000000
  parameters from PSCTR are:
    VRHFIN =Cu: d10 p1
@@ -22,7 +22,7 @@
    RAUG   =    1.300    factor for augmentation sphere
    RDEP   =    2.302    core radius for depl-charge
    QCUT   =   -4.481; QGAM   =    8.963    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      2   .000     23  2.300
@@ -919,7 +919,7 @@ END of PSCTR-controll parameters
    .24653884E-01   .20673206E-01   .16085327E-01   .11491158E-01   .73116715E-02
  PAW radial sets
  319 1.00534436567441365
-(5E20.12)                                
+(5E20.12)
  augmentation charges (non sperical)
    .749106384815E+00  -.340830039714E+00  -.870062300846E-01   .565313277616E-02  -.148424655717E+00
    .610404608389E-01  -.340830039714E+00   .155415262720E+00   .293569000928E-01  -.220416668825E-02
@@ -2044,7 +2044,7 @@ END of PSCTR-controll parameters
   -.274052199524E+00  -.376289883332E+00  -.492662199542E+00  -.624323949637E+00  -.772437975272E+00
   -.938157973329E+00  -.112260779822E+01  -.132685695349E+01  -.155189201928E+01
  End of Dataset
-  PAW O_s                                
+  PAW O_s
  6.00000000000000000
  parameters from PSCTR are:
    VRHFIN =O: s2p4
@@ -2067,7 +2067,7 @@ END of PSCTR-controll parameters
    RMAX   =    2.805    core radius for proj-oper
    RDEP   =    2.002    core radius for depl-charge
    QCUT   =   -4.457; QGAM   =    8.913    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      0   .000     23  1.500
@@ -2674,7 +2674,7 @@ END of PSCTR-controll parameters
   -.11059206E+00  -.84278656E-01  -.60631608E-01  -.40354140E-01  -.23802330E-01
  PAW radial sets
  329 0.874244695577737541
-(5E20.12)                                
+(5E20.12)
  augmentation charges (non sperical)
   -.128370584241E+00   .251593226123E-04   .176781567042E+00   .292245103239E-01   .251593226123E-04
   -.127922640067E-03   .148256283496E-02   .308554377302E-03   .176781567042E+00   .148256283496E-02

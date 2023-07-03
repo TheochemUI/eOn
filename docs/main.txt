@@ -54,9 +54,7 @@ These are the options that go in **[Main]** section of the config.ini file.
 **write_log**: Enable writting log to ``client.log`` file.
 
     default: ``True``
-    
+
 **max_force_calls**: The maximum number of total force calls per job. The default, 0, means unlimited force calls. If this limit is reached, an error code 1017 is thrown and shows up in the client log.
 
     default: ``0``
-
-

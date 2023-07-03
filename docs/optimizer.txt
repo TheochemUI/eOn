@@ -7,7 +7,7 @@ Optimizer
 The eon client provides three optimizers quick-min, conjugate gradients, and L-BFGS.
 
 **[Optimizer]** parameters
---------------------------- 
+---------------------------
 
 **opt_method**: The optimization method to use.
 
@@ -80,4 +80,3 @@ estimating the curvature along the previous step direction. At the first step a 
 calculation along the force is used to estimate the curvature.
 
     default: ``True``
-

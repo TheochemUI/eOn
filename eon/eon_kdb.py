@@ -6,7 +6,7 @@ import signal
 import glob
 import numpy
 import logging
-logger = logging.getLogger('kdb')    
+logger = logging.getLogger('kdb')
 
 from eon.config import config
 from eon import fileio as io
@@ -27,7 +27,7 @@ def insert(state, process_id):
     db = local_db.LocalDB(config.kdb_name)
     params = db.get_params()
     insert_sub_class = local_insert.LocalInsert()
-    insert_sub_class.insert(reactant, saddle, product, mode=mode, nf=params['nf'], 
+    insert_sub_class.insert(reactant, saddle, product, mode=mode, nf=params['nf'],
                dc=params['dc'], mac=params['mac'], kdbname=config.kdb_name)
 
 def query(state):
@@ -49,8 +49,8 @@ def query(state):
     db = local_db.LocalDB(config.kdb_name)
     params = db.get_params()
     query_sub_class = local_query.LocalQuery()
-    query_sub_class.query(reactant, os.path.join(config.kdb_scratch_path, "kdbmatches"), 
-                          nodupes = config.kdb_nodupes, kdbname=config.kdb_name, 
+    query_sub_class.query(reactant, os.path.join(config.kdb_scratch_path, "kdbmatches"),
+                          nodupes = config.kdb_nodupes, kdbname=config.kdb_name,
                           dc=params['dc'], nf=params['nf'])
 
 def make_suggestion():
@@ -72,4 +72,3 @@ def make_suggestion():
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
             return displacement, mode
     return None, None
-

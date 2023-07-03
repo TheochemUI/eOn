@@ -16,7 +16,7 @@ c  Generalized to arbitrary order
         sum = 0.0
         do io=1,iorderf
           sum=sum+potpar(indf1+io-1,ipot)*rho1(i,ipot)**io
-        enddo 
+        enddo
         emb(i,ipot) = sum + potpar(1,ipot)*rho1(i,ipot)
       end do
       RETURN

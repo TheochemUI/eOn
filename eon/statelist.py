@@ -35,8 +35,8 @@ class StateList:
         if not os.path.isdir(os.path.join(self.path, "0")):
             if initial_state is None:
                 raise IOError("Missing zeroth state directory and no reactant provided")
-            self.StateClass(statepath = os.path.join(self.path, "0"), 
-                        statenumber = 0, 
+            self.StateClass(statepath = os.path.join(self.path, "0"),
+                        statenumber = 0,
                         statelist = self,
                         previous_state_num = -1,
                         reactant_path = initial_state)

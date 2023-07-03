@@ -24,10 +24,3 @@ while os.path.isdir(os.path.join('.', 'states', str(i))):
 	eon.fileio.savecon('movie.con', p, w='a')
 
 	i += 1
-
-
-
-
-
-
-

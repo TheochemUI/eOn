@@ -1,4 +1,4 @@
-  PAW Ir                                 
+  PAW Ir
  9.00000000000000000
  parameters from PSCTR are:
    VRHFIN =Ir: s1d8
@@ -22,7 +22,7 @@
    RAUG   =    1.300    factor for augmentation sphere
    RDEP   =    2.748    core radius for depl-charge
    QCUT   =   -3.937; QGAM   =    7.874    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      2   .000     23  2.600
@@ -919,7 +919,7 @@ END of PSCTR-controll parameters
    .22380898E-01   .18472880E-01   .14215014E-01   .10073493E-01   .63705004E-02
  PAW radial sets
  313 1.27926918242165510
-(5E20.12)                                
+(5E20.12)
  augmentation charges (non sperical)
    .374450189493E+00  -.561599197595E-01  -.162832357513E+00   .102865074287E-01  -.241895114165E+00
    .107854863579E+00  -.561599197595E-01   .782129381515E-02   .164886127666E-01  -.939472678043E-03
@@ -2027,7 +2027,7 @@ END of PSCTR-controll parameters
   -.507673807751E+00  -.643166439868E+00  -.794009131960E+00  -.960902375095E+00  -.114438362102E+01
   -.134478030428E+01  -.156215848633E+01  -.179626795111E+01
  End of Dataset
-  PAW H                                  
+  PAW H
  1.00000000000000000
  parameters from PSCTR are:
    VRHFIN =H: ultrasoft test
@@ -2050,7 +2050,7 @@ END of PSCTR-controll parameters
    RAUG   =    1.200    factor for augmentation sphere
    RDEP   =    1.112    core radius for depl-charge
    QCUT   =   -5.749; QGAM   =   11.498    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      0   .000     23  1.100
@@ -2613,7 +2613,7 @@ END of PSCTR-controll parameters
   -.23534316E-02  -.10590333E-02  -.20859892E-03   .28126435E-03   .49633914E-03
  PAW radial sets
  353 0.520134355386774216
-(5E20.12)                                
+(5E20.12)
  augmentation charges (non sperical)
    .137927996466E-01   .193991950855E-02   .167315202953E-02   .193991950855E-02   .682081162754E-04
    .106008151282E-02   .167315202953E-02   .106008151282E-02  -.303880702822E-02

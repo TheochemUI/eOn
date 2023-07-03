@@ -36,7 +36,7 @@ Molecular dynamics based upon Newton's classical equations of motion.
 Andersen thermostat.
 
    default: ``100.0``
- 
+
 **andersen_alpha**: The collision strength in the Andersen thermostat.
 
    default: ``1.0``
