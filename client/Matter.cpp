@@ -1,22 +1,13 @@
 #include "Matter.h"
 #include "BondBoost.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
-
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <stdexcept>
-#include <string.h>
 
 // To write the R style data frame
 #include <fmt/os.h>
 
 using namespace std;
-
-static const char LOG_PREFIX[] = "[Matter]";
 
 namespace {
 
@@ -76,9 +67,9 @@ public:
     } else if (params->optConvergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      log("%s Unknown opt_convergence_metric: %s\n", LOG_PREFIX,
-          params->optConvergenceMetric.c_str());
-      exit(1);
+      SPDLOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]"s,
+                      params->optConvergenceMetric);
+      std::exit(1);
     }
   }
   VectorXd difference(VectorXd a, VectorXd b) { return matter->pbcV(a - b); }
@@ -305,10 +296,11 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   int iteration = 0;
   const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
   if (!quiet) {
-    log("%s %10s  %14s  %18s  %13s\n", LOG_PREFIX, "Iter", "Step size",
-        forceLabel, "Energy");
-    log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX, iteration, 0.0,
-        objf.getConvergence(), getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
+                        "Iter", "Step size", forceLabel, "Energy");
+    SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}\n",
+                        "[Matter]", iteration, 0.0, objf.getConvergence(),
+                        getPotentialEnergy());
   }
 
   while (!objf.isConverged() && iteration < parameters->optMaxIterations) {
@@ -322,8 +314,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
         helper_functions::maxAtomMotion(pbc(getPositions() - pos));
 
     if (!quiet) {
-      log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX, iteration, stepSize,
-          objf.getConvergence(), getPotentialEnergy());
+      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
+                          "[Matter]", iteration, stepSize,
+                          objf.getConvergence(), getPotentialEnergy());
     }
 
     if (writeMovie) {
@@ -339,8 +332,9 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
 
   if (iteration == 0) {
     if (!quiet) {
-      log("%s %10i  %14.5e  %18.5e  %13.5f\n", LOG_PREFIX, iteration, 0.0,
-          objf.getConvergence(), getPotentialEnergy());
+      SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
+                          "[Matter]", iteration, 0.0, objf.getConvergence(),
+                          getPotentialEnergy());
     }
   }
   //    bool converged = optimizer->run(parameters->optMaxIterations,
@@ -595,9 +589,10 @@ bool Matter::matter2con(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        std::cerr
-            << "Does not support more than " << MAXC
-            << " components and the atoms must be ordered by component.\n";
+        SPDLOG_LOGGER_ERROR(log,
+                            "Does not support more than {} components and the "
+                            "atoms must be ordered by component.",
+                            MAXC);
         return false;
       };
       mass[j] = getMass(i);
@@ -657,7 +652,7 @@ bool Matter::con2matter(std::string filename) {
   }
   file = fopen(filename.c_str(), "rb");
   if (!file) {
-    cerr << "File " << filename << " was not found.\n";
+    SPDLOG_LOGGER_ERROR(log, "File {} was not found.", filename);
     return (false);
   }
   state = con2matter(file);
@@ -725,13 +720,14 @@ bool Matter::con2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms  (eg
                   // water: two components H and O)
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    std::cout << "The number of components cannot be read. One component is "
-                 "assumed instead\n";
+    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One "
+                            "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    cerr << "con2atoms does not support more than " << MAXC
-         << " components (or less than 1).\n";
+    SPDLOG_LOGGER_ERROR(
+        log, "con2atoms doesn't support more that {} components or less than 1",
+        MAXC);
     return false;
   }
 
@@ -748,13 +744,13 @@ bool Matter::con2matter(FILE *file) {
   char *split = strtok(line, " \t");
   for (j = 0; j < Ncomponent; j++) {
     if (split == NULL) {
-      cerr << "input con file does not list the number of each component"
-           << endl;
+      SPDLOG_LOGGER_ERROR(
+          log, "input con file does not list the number of each component");
       return false;
     }
     if (sscanf(split, "%ld", &Natoms) != 1) {
-      cerr << "input con file does not list the number of each component"
-           << endl;
+      SPDLOG_LOGGER_ERROR(
+          log, "input con file does not list the number of each component");
       return false;
     }
     first[j + 1] = Natoms + first[j];
@@ -774,13 +770,13 @@ bool Matter::con2matter(FILE *file) {
        j++) { // Now we want to know the number of atom of each type. Ex with
               // H2O, two hydrogens and one oxygen
     if (split == NULL) {
-      cerr << "input con file does not list enough masses" << endl;
+      SPDLOG_LOGGER_ERROR(log, "input con file does not list enough masses");
       return false;
     }
     // *1* seems like a bug as a result of copying and pasting from above
     // *1*       if(sscanf(split, "%ld", &Natoms)!=1)
     if (sscanf(split, "%lf", &mass[j]) != 1) {
-      cerr << "input con file does not list enough masses" << endl;
+      SPDLOG_LOGGER_ERROR(log, "input con file does not list enough masses");
       return false;
     }
     // *1*       sscanf(line, "%lf", &mass[j]);
@@ -794,7 +790,7 @@ bool Matter::con2matter(FILE *file) {
   for (j = 0; j < Ncomponent; j++) {
     char symbol[3];
     fgets(line, sizeof(line), file);
-    sscanf(line, "%2s\n", symbol);
+    sscanf(line, "%2s", symbol);
     atomicNr = symbol2atomicNumber(symbol);
     fgets(line, sizeof(line), file); // skip one line
     for (i = first[j]; i < first[j + 1]; i++) {
@@ -803,7 +799,7 @@ bool Matter::con2matter(FILE *file) {
       setAtomicNr(i, atomicNr);
       fgets(line, sizeof(line), file);
       if (strlen(line) < 6) {
-        cerr << "error parsing position in con file" << endl;
+        SPDLOG_LOGGER_ERROR(log, "error parsing position in con file");
         return false;
       }
 
@@ -967,9 +963,10 @@ bool Matter::matter2convel(FILE *file) {
         atomicNrs[j]) { // check if there is a second component
       j++;
       if (j >= MAXC) {
-        std::cerr
-            << "Does not support more than " << MAXC
-            << " components and the atoms must be ordered by component.\n";
+        SPDLOG_LOGGER_ERROR(log,
+                            "Does not support more than {} components and the "
+                            "atoms must be ordered by component.",
+                            MAXC);
         return false;
       }
       mass[j] = getMass(i);
@@ -1039,7 +1036,7 @@ bool Matter::convel2matter(std::string filename) {
   }
   file = fopen(filename.c_str(), "rb");
   if (!file) {
-    cerr << "File " << filename << " was not found.\n";
+    SPDLOG_LOGGER_ERROR(log, "File {} was not found.", filename);
     return (false);
   }
   state = convel2matter(file);
@@ -1107,13 +1104,14 @@ bool Matter::convel2matter(FILE *file) {
   int Ncomponent; // Number of components or different types of atoms. For
                   // instance H2O has two components (H and O).
   if (sscanf(line, "%d", &Ncomponent) == 0) {
-    std::cout << "The number of components cannot be read. One component is "
-                 "assumed instead\n";
+    SPDLOG_LOGGER_INFO(log, "The number of components cannot be read. One "
+                            "component is assumed instead");
     Ncomponent = 1;
   }
   if ((Ncomponent > MAXC) || (Ncomponent < 1)) {
-    cerr << "con2atoms does not support more than " << MAXC
-         << " components (or less than 1).\n";
+    SPDLOG_LOGGER_ERROR(
+        log, "con2atoms doesn't support more that {} components or less than 1",
+        MAXC);
     return false;
   }
   /* to store the position of the

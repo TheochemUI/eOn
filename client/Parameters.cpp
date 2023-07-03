@@ -7,7 +7,6 @@
 #include "INIFile.h"
 #include "ImprovedDimer.h"
 #include "Job.h"
-#include "Log.h"
 #include "NudgedElasticBand.h"
 #include "Potential.h"
 #include "Prefactor.h"
@@ -932,47 +931,34 @@ int Parameters::load(FILE *file) {
         ini.GetValueF("Monte Carlo", "step_size", monteCarloStepSize);
     monteCarloSteps = ini.GetValueI("Monte Carlo", "steps", monteCarloSteps);
 
-    log_close();
-    log_init(this, (char *)"client.log");
-
     // Sanity Checks
     if (parrepStateCheckInterval > mdTime &&
         helper_functions::getJobName(job) == "parallel_replica") {
-      char msg[] =
-          "error: [Parallel Replica] state_check_interval must be <= time\n";
-      fprintf(stderr, "%s", msg);
-      log(msg);
-      exit(1);
+      SPDLOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
+      error = 1;
     }
 
     if (saddleDynamicsRecordIntervalInput >
         saddleDynamicsStateCheckIntervalInput) {
-      char msg[] = "error:  [Saddle Search] dynamics_record_interval must be "
-                   "<= dynamics_state_check_interval\n";
-      fprintf(stderr, "%s", msg);
-      log(msg);
-      exit(1);
+      SPDLOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
+                   "dynamics_state_check_interval");
+      error = 1;
     }
 
     if (potential == PotType::AMS || potential == PotType::AMS_IO) {
       if (forcefield.empty() && model.empty() && xc.empty()) {
-        char msg[] =
-            "error:  [AMS] Must provide atleast forcefield or model or xc\n";
-        fprintf(stderr, "%s", msg);
-        log(msg);
-        exit(1);
+        SPDLOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
+        error = 1;
       }
 
       if (!forcefield.empty() && !model.empty() && !xc.empty()) {
-        char msg[] = "error:  [AMS] Must provide either forcefield or model\n";
-        fprintf(stderr, "%s", msg);
-        log(msg);
-        exit(1);
+        SPDLOG_ERROR("[AMS] Must provide either forcefield or model");
+        error = 1;
       }
     }
 
   } else {
-    fprintf(stderr, "Couldn't parse the ini file.\n");
+    SPDLOG_ERROR("Couldn't parse the ini file");
     error = 1;
   }
 

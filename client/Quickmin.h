@@ -22,6 +22,7 @@ private:
   Parameters *parameters;
   VectorXd velocity;
   int iteration;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif

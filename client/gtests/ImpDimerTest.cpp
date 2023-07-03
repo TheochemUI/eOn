@@ -11,7 +11,6 @@
 #include "../HelperFunctions.h"
 #include "../ImprovedDimer.h"
 #include "../Job.h"
-#include "../Log.h"
 #include "../Matter.h"
 #include "../MinModeSaddleSearch.h"
 #include "../Parameters.h"
@@ -43,7 +42,6 @@ TEST_F(ImpDimerTest, TestMatter) {
   parameters->optConvergedForce = optConvergedForce;
   parameters->dimerConvergedAngle = 0.001;
   parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_DIMER;
-  log_init(parameters, (char *)"test.log");
   Matter *initial = new Matter(parameters);
   Matter *displacement = new Matter(parameters);
   Matter *saddle = new Matter(parameters);

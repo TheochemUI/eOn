@@ -1,5 +1,4 @@
 #include "HelperFunctions.h"
-#include "Log.h"
 
 #include <cassert>
 #include <iostream>
@@ -514,19 +513,16 @@ string helper_functions::getRelevantFile(string filename) {
 VectorXd helper_functions::loadMasses(string filename, int nAtoms) {
   ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
-    cerr << "File " << filename << " was not found.\n";
-    log("Stop\n");
-    exit(1);
+    SPDLOG_CRITICAL("File {} was not found", filename);
+    std::exit(1);
   }
 
   VectorXd masses(nAtoms);
   for (int i = 0; i < nAtoms; i++) {
     double mass;
     if (!(massFile >> mass)) {
-      log("error reading ");
-      log(filename.c_str());
-      log("\n");
-      exit(1);
+      SPDLOG_CRITICAL("Error reading {}", filename);
+      std::exit(1);
     }
     masses(i) = mass;
   }
@@ -550,9 +546,8 @@ AtomMatrix helper_functions::loadMode(string filename, int nAtoms) {
   FILE *modeFile;
   modeFile = fopen(filename.c_str(), "rb");
   if (!modeFile) {
-    cerr << "File " << filename << " was not found.\n";
-    log("Stop\n");
-    exit(1);
+    SPDLOG_CRITICAL("File {} was not found\n Stopping", filename);
+    std::exit(1);
   }
   AtomMatrix mode = loadMode(modeFile, nAtoms);
   fclose(modeFile);
@@ -667,7 +662,7 @@ bool helper_functions::identical(const Matter &m1, const Matter &m2,
 
 bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
                                const double distanceDifference) {
-  cout << "into sortedR\n";
+  SPDLOG_INFO("In sortedR");
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
   double tolerance = distanceDifference;
@@ -722,7 +717,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
         if (fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
           counter++;
         } else {
-          // printf("no match\n");
+          SPDLOG_INFO("No match");
           break;
         }
         //          it++;
@@ -730,7 +725,7 @@ bool helper_functions::sortedR(const Matter &m1, const Matter &m2,
       if (counter == r1.rows()) {
         matches++;
       } else {
-        // printf("no match\n");
+        SPDLOG_INFO("No match");
       }
       it2++;
     }
