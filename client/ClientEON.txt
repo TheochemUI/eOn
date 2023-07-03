@@ -19,7 +19,7 @@ This document is logically divided like the EONClient code itself, and is organi
 <li>  "Support Classes"
 </ul>
 
-One can either traverse the module hiearchy, or the file system hiearchy to get function level documentation. 
+One can either traverse the module hiearchy, or the file system hiearchy to get function level documentation.
 
 \section ToDo
 

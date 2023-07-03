@@ -43,4 +43,3 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DPACKAGE_TESTS=ON -DNO_WARN=TRUE \
 
 make -j 24 VERBOSE=1 && make check
 #export PATH=$(pwd):$PATH
-

@@ -31,7 +31,7 @@ def parallelreplica():
     # load metadata
     start_state_num, time, wuid = get_pr_metadata()
     logger.info("Simulation time is %e", time)
-    states = get_statelist() 
+    states = get_statelist()
     current_state = states.get_state(start_state_num)
 
     # get communicator
@@ -40,9 +40,9 @@ def parallelreplica():
     # Register all the results. There is no need to ever discard processes
     # like we do with akmc. There is no confidence to calculate.
     num_registered, transition, sum_spdup = register_results(comm, current_state, states)
-   
+
     logger.info("Time in current state is %e", current_state.get_time())
- 
+
     if num_registered >= 1:
         avg_spdup = sum_spdup/num_registered
         logger.info("Total speedup is %f",avg_spdup)
@@ -54,7 +54,7 @@ def parallelreplica():
 
     # Write out metadata. XXX:ugly
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = configparser.RawConfigParser() 
+    parser = configparser.RawConfigParser()
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
     io.save_prng_state()
@@ -118,7 +118,7 @@ def make_searches(comm, current_state, wuid):
     logger.info("Queue contains %i searches" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("Making %i searches" % num_to_make)
-    
+
     if num_to_make == 0:
         return wuid
 
@@ -174,8 +174,8 @@ def register_results(comm, current_state, states):
         #
         # The reactant, product, and mode are passed as lines of the files because
         # the information contained in them is not needed for registering results
-        
-        
+
+
         state_num = int(result['name'].split("_")[0])
         id = int(result['name'].split("_")[1]) + result['number']
 
@@ -191,27 +191,27 @@ def register_results(comm, current_state, states):
             lines = f.readlines()
             f.close()
             proc = []
-            number_state.append(0)                                      
-            count = 0 
+            number_state.append(0)
+            count = 0
             state_match = 0
             flag = 0
-            product = io.loadcon (result['product.con'])                            
+            product = io.loadcon (result['product.con'])
 
 
-            for i in range(0, numres):                                                                        
-                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )                                 
-                if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):          
-                    if flag == 0:                                                                                
+            for i in range(0, numres):
+                product2 = io.loadcon ("states/0/procdata/product_%i.con" % i )
+                if atoms.match(product, product2,config.comp_eps_r,config.comp_neighbor_cutoff,True):
+                    if flag == 0:
                         state_match = number_state[i]
                         number_state[numres] = state_match
-                        flag = 1            
+                        flag = 1
                         break
-            count = 0 
+            count = 0
             time_to_state = 0
             time_check = 0
-            for line in lines[1:]:                                                                         
-                l = line.split()                                      
-                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})  
+            for line in lines[1:]:
+                l = line.split()
+                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})
                 if float(l[3]) > time_check:
                     time_check = float(l[3])
                 if flag == 0:
@@ -226,7 +226,7 @@ def register_results(comm, current_state, states):
 
 
             if flag == 0:
-                proc.append({'state': number_state[numres],  'views': 1, 'rate': 1/(float(time_check+result['results']['transition_time_s'])) , 'time': time_check + result['results']['transition_time_s']}) 
+                proc.append({'state': number_state[numres],  'views': 1, 'rate': 1/(float(time_check+result['results']['transition_time_s'])) , 'time': time_check + result['results']['transition_time_s']})
 
 
             g = open ("states/0/end_state_table","w")
@@ -240,7 +240,7 @@ def register_results(comm, current_state, states):
                 g.write("             ")
                 g.write(str(proc[j]['time']))
                 g.write("\n")
-            g.close() 
+            g.close()
             numres += 1
             time = result['results']['transition_time_s']
             process_id = state.add_process(result)

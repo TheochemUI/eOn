@@ -1,7 +1,7 @@
 #SRCDIR = /home/ryanciufo/pyamff/pyamff/fingerprints
 LIBS += libAMFF.a
 
-OBJECTS = PyAMFF.o  #$(SRCDIR)/fptypeF.o $(SRCDIR)/neighborlistMT.o $(SRCDIR)/behlerParrinelloMT.o $(SRCDIR)/io.o $(SRCDIR)/fingerprintsF.o $(SRCDIR)/pyamffCalcF.o 
+OBJECTS = PyAMFF.o  #$(SRCDIR)/fptypeF.o $(SRCDIR)/neighborlistMT.o $(SRCDIR)/behlerParrinelloMT.o $(SRCDIR)/io.o $(SRCDIR)/fingerprintsF.o $(SRCDIR)/pyamffCalcF.o
 #CXXFLAGS += -I../..
 FC=gfortran
 # Note that the optimization flag is overruled  with 0
@@ -21,4 +21,3 @@ $(LIB) : $(OBJECTS)
 clean :
 	rm -f $(OBJECTS) $(LIB)
 	rm -f libAMFF.a
-

@@ -71,8 +71,8 @@ class MinModeExplorer(Explorer):
         if config.recycling_on:
             self.nrecycled = 0
             self.recycler = recycling.Recycling(self.states,
-                                           self.previous_state, 
-                                           self.state, 
+                                           self.previous_state,
+                                           self.state,
                                            config.recycling_move_distance,
                                            config.recycling_save_sugg)
 
@@ -106,7 +106,7 @@ class MinModeExplorer(Explorer):
             self.make_jobs()
         else:
             num_cancelled = self.comm.cancel_state(self.state.number)
-            logger.info("Cancelled %i workunits from state %i", 
+            logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, self.state.number)
             #XXX: Do we ever call explore on a completed state twice?
             if config.kdb_on:
@@ -132,7 +132,7 @@ class MinModeExplorer(Explorer):
         if config.saddle_method == 'dynamics':
             return None, None, 'dynamics'
 
-        displacement, mode = self.displace.make_displacement() 
+        displacement, mode = self.displace.make_displacement()
         return displacement, mode, 'random'
 
 
@@ -150,7 +150,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
     def make_jobs(self):
         #XXX:what if the user changes the bundle size?
-        num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size 
+        num_in_buffer = self.comm.get_queue_size()*config.comm_job_bundle_size
         logger.info("Queue contains %i searches" % num_in_buffer)
         num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
         logger.info("Making %i process searches" % num_to_make)
@@ -194,7 +194,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             # The search dictionary contains the following key-value pairs:
             # id - CurrentState_WUID
             # displacement - an atoms object containing the point the saddle search will start at
-            # mode - an Nx3 numpy array containing the initial mode 
+            # mode - an Nx3 numpy array containing the initial mode
             search['id'] = "%d_%d" % (self.state.number, self.wuid)
             displacement, mode, disp_type = self.generate_displacement()
             self.job_table.add_row( {'state':self.state.number,
@@ -220,7 +220,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 io.save_mode(modeIO, mode)
                 search['direction.dat'] = modeIO
 
-            searches.append(search) 
+            searches.append(search)
             self.wuid += 1
             # eager write
             self.save_wuid()
@@ -231,7 +231,7 @@ class ClientMinModeExplorer(MinModeExplorer):
         try:
             self.comm.submit_jobs(searches, invariants)
             t2 = time()
-            logger.info( "Created " + str(len(searches)) + " searches") 
+            logger.info( "Created " + str(len(searches)) + " searches")
             #logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
             logger.debug( "Created %.2f searches per second", num_to_make/(t2-t1))
         except:
@@ -243,7 +243,7 @@ class ClientMinModeExplorer(MinModeExplorer):
         t1 = time()
         if os.path.isdir(config.path_jobs_in):
             try:
-                shutil.rmtree(config.path_jobs_in)  
+                shutil.rmtree(config.path_jobs_in)
             except (OSError, IOError):
                 pass
         if not os.path.isdir(config.path_jobs_in):
@@ -279,7 +279,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 # if not os.path.isdir(save_path):
                 #    os.mkdir(save_path)
                 # shutil.copytree(result_path, os.path.join(save_path, i))
-                # XXX: This is currently broken by the new result passing 
+                # XXX: This is currently broken by the new result passing
                 #      scheme. Should it be done in communicator?
                 pass
             if len(result) == 0: continue
@@ -291,12 +291,12 @@ class ClientMinModeExplorer(MinModeExplorer):
             try:
                 job_type = self.job_table.get_row('wuid', id)['type']
             except TypeError:
-                logger.warning("Could not find job type for search %s" 
+                logger.warning("Could not find job type for search %s"
                                % searchdata_id)
                 continue
             result['type'] = job_type
             if job_type is None:
-                logger.warning("Could not find search data for search %s" 
+                logger.warning("Could not find search data for search %s"
                                % searchdata_id)
             else:
                 self.job_table.delete_row('wuid', id)
@@ -413,13 +413,13 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         # Function used by communicator to determine whether to keep a result
         def keep_result(name):
-            # note that all processes are assigned to the current state 
+            # note that all processes are assigned to the current state
             state_num = int(name.split("_")[0])
             return (state_num == self.state.number and \
                     self.state.get_confidence(self.superbasin) < config.akmc_confidence)
 
         num_registered = 0
-        for result in self.comm.get_results(config.path_jobs_in, keep_result): 
+        for result in self.comm.get_results(config.path_jobs_in, keep_result):
             state_num = int(result['name'].split("_")[0])
             # XXX: doesn't this doesn't give the correct id wrt bundling
             id = int(result['name'].split("_")[1]) + result['number']
@@ -528,7 +528,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         try:
             self.comm.submit_jobs(jobs, invariants)
             t2 = time()
-            logger.info( "Created " + str(len(jobs)) + " searches") 
+            logger.info( "Created " + str(len(jobs)) + " searches")
             logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
         except:
             logger.exception("Failed to submit searches")
@@ -555,7 +555,7 @@ class ProcessSearch:
                 'saddle_search':[ "good", unknown, "no_convex", "high_energy",
                                   "max_concave_iterations",
                                   "max_iterations", unknown, unknown, unknown,
-                                  unknown, unknown, "potential_failed", 
+                                  unknown, unknown, "potential_failed",
                                   "nonnegative_abort", "nonlocal abort"],
                 'minimization':[ "good", "max_iterations", "potential_failed", ]}
 
@@ -641,7 +641,7 @@ class ProcessSearch:
             if min_number == 2:
                 self.finish_minimization(result)
 
-        done = False not in  [ s == 'complete' for s in list(self.job_statuses.values()) ] 
+        done = False not in  [ s == 'complete' for s in list(self.job_statuses.values()) ]
         if not done:
             done = True in [ s == 'error' for s in list(self.job_statuses.values()) ]
 
@@ -653,7 +653,7 @@ class ProcessSearch:
         saddle_result = self.load_result(self.finished_saddle_name)
 
         if self.finished_reactant_name and self.finished_product_name:
-            reactant_result = self.load_result(self.finished_reactant_name) 
+            reactant_result = self.load_result(self.finished_reactant_name)
             result['reactant.con'] = reactant_result['min.con']
             product_result = self.load_result(self.finished_product_name)
             result['product.con'] = product_result['min.con']
@@ -769,9 +769,9 @@ class ProcessSearch:
         self.data['potential_energy_product'] = product_results_dat['potential_energy']
 
         self.data['barrier_reactant_to_product'] = self.data['potential_energy_saddle'] - \
-                self.data['potential_energy_reactant'] 
+                self.data['potential_energy_reactant']
         self.data['barrier_product_to_reactant'] = self.data['potential_energy_saddle'] - \
-                self.data['potential_energy_product'] 
+                self.data['potential_energy_product']
 
     def start_search(self):
         job = {}

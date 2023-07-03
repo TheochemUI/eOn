@@ -27,7 +27,7 @@ class Superbasin:
        for i in range(len(self.states)):
            p += probability_vector[i]
            if p>u:
-               exit_state_index = i 
+               exit_state_index = i
                break
        else:
            print "Warning: failed to select exit state. p = " + str(p)
@@ -43,7 +43,7 @@ class Superbasin:
         time, exit_state = self.pick_exit_state(entry_state)
         assert(time >= 0.0)
 
-        # Make a rate table for all the exit state.  All processes are 
+        # Make a rate table for all the exit state.  All processes are
         # needed as the might be a discrepancy in time scale
         # and it might be dangerous to weed out low rate events
         rate_table = []
@@ -90,4 +90,3 @@ class Superbasin:
         for i in self.probability_matrix.transpose():
             if abs(1-i.sum()) > 1e-3:
                 print "WARNING: Probability vector does not add up to 1"
-

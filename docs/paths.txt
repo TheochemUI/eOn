@@ -59,5 +59,3 @@ Parameters in the **[Paths]** section of the config.ini file.
 **bh_minima**:
 
     default: ``%(main_directory)s/minima``
-
-

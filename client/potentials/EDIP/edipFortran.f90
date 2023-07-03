@@ -11,14 +11,14 @@
     subroutine edip(nat,R,F,ener,ax,ay,az)
 
 !     Evaluates the bazant silicon potential with linear scaling
-!     Any publication describing research involving this software should 
+!     Any publication describing research involving this software should
 !     contain the following citations, at once and in this order,
 !     1.  M. Z. Bazant and E. Kaxiras, Phys. Rev. Lett. 77, 4370 (1996).
 !     2.  M. Z. Bazant, E. Kaxiras, J. F. Justo, Phys. Rev. B 56, 8542 (1997).
-!     3.  J. F. Justo, M. Z. Bazant, E. Kaxiras, V. V. Bulatov, and S. Yip, 
+!     3.  J. F. Justo, M. Z. Bazant, E. Kaxiras, V. V. Bulatov, and S. Yip,
 !           Phys. Rev. B 58, 2539 (1998).
-!     4.  S. Goedecker, Comp. Phys. Commun. ??, ?? (2002) once 
-!         this article has been published or 
+!     4.  S. Goedecker, Comp. Phys. Commun. ??, ?? (2002) once
+!         this article has been published or
 !         S. Goedecker, cond-mat/0201475 (2002) before it has been published
 !
 !     Parallelized using OpenMP
@@ -35,17 +35,17 @@
 !  GNU General Public License, see http://www.gnu.org/copyleft/gpl.txt .
 !
 !     input: - "nat": number of atoms
-!            - "alat": lattice constants of the orthorombic box 
+!            - "alat": lattice constants of the orthorombic box
 !               containing the particles
-!            - "rxyz0": atomic positions in Angstroem.  
-!               If an atom is outside the box the program will bring it back 
+!            - "rxyz0": atomic positions in Angstroem.
+!               If an atom is outside the box the program will bring it back
 !               into the box by translations through alat
 !     output:- "fxyz": forces in eV/A
-!            - "ener": total energy in eV 
+!            - "ener": total energy in eV
 !            - "coord": average coordination number
 !            - "ener_var": variance of the energy/atom
 !            - "coord_var": variance of the coordination number
-!     I/Oput:- "count": is increased by one per call, has to be initialized 
+!     I/Oput:- "count": is increased by one per call, has to be initialized
 !               to 0.d0 before first call of bazant
 
         implicit real*8 (a-h,o-z)
@@ -67,7 +67,7 @@
         REAL*8,INTENT(IN) :: ax,ay,az
         INTEGER,INTENT(IN) :: nat
         REAL*8,INTENT(OUT) :: ener
-        REAL*8,SAVE :: count=1.0d0         
+        REAL*8,SAVE :: count=1.0d0
 
 ! END AA 21-12-2002
 
@@ -93,7 +93,7 @@
         DO i=1,nat
           rxyz0(:,i)=R(j:j+2)
           j=j+3
-        END DO       
+        END DO
 
 ! END AA 21-12-2002 (2)
 
@@ -116,7 +116,7 @@
 !$omp parallel private(iam)  shared (npr)
 !$       iam=omp_get_thread_num()
 !$       if (iam.eq.0) npr=omp_get_num_threads()
-!$omp end parallel 
+!$omp end parallel
 
 ! linear scaling calculation of verlet list
 
@@ -138,8 +138,8 @@
 
         lgl=.false.
 115    continue
-        if (rxyz0(1,iat).ge.alat(1)) then 
-                  if (lgl) then 
+        if (rxyz0(1,iat).ge.alat(1)) then
+                  if (lgl) then
                     write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
                     rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
                     goto 115
@@ -148,8 +148,8 @@
             lgl=.true.
             goto 115
         endif
-        if (rxyz0(1,iat).lt.0.d0) then 
-                  if (lgl) then 
+        if (rxyz0(1,iat).lt.0.d0) then
+                  if (lgl) then
                     write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
                     rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
                     goto 115
@@ -162,8 +162,8 @@
 
         lgl=.false.
 225    continue
-        if (rxyz0(2,iat).ge.alat(2)) then 
-                  if (lgl) then 
+        if (rxyz0(2,iat).ge.alat(2)) then
+                  if (lgl) then
                     write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
                     rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
                     goto 225
@@ -173,7 +173,7 @@
             goto 225
         endif
         if (rxyz0(2,iat).lt.0.d0) then
-                  if (lgl) then 
+                  if (lgl) then
                     write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
                     rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
                     goto 225
@@ -186,8 +186,8 @@
 
         lgl=.false.
 335    continue
-        if (rxyz0(3,iat).ge.alat(3)) then 
-                  if (lgl) then 
+        if (rxyz0(3,iat).ge.alat(3)) then
+                  if (lgl) then
                     write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
                     rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
                     goto 335
@@ -197,7 +197,7 @@
             goto 335
         endif
         if (rxyz0(3,iat).lt.0.d0) then
-                  if (lgl) then 
+                  if (lgl) then
                     write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
                     rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
                     goto 225
@@ -228,8 +228,8 @@
 
         lgl=.false.
 1155    continue
-        if (rxyz0(1,iat).ge.alat(1)) then 
-                  if (lgl) then 
+        if (rxyz0(1,iat).ge.alat(1)) then
+                  if (lgl) then
                     write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
                     rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
                     goto 1155
@@ -238,8 +238,8 @@
             lgl=.true.
             goto 1155
         endif
-        if (rxyz0(1,iat).lt.0.d0) then 
-                  if (lgl) then 
+        if (rxyz0(1,iat).lt.0.d0) then
+                  if (lgl) then
                     write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
                     rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
                     goto 1155
@@ -251,8 +251,8 @@
 
         lgl=.false.
 2255    continue
-        if (rxyz0(2,iat).ge.alat(2)) then 
-                  if (lgl) then 
+        if (rxyz0(2,iat).ge.alat(2)) then
+                  if (lgl) then
                     write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
                     rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
                     goto 2255
@@ -262,7 +262,7 @@
             goto 2255
         endif
         if (rxyz0(2,iat).lt.0.d0) then
-                  if (lgl) then 
+                  if (lgl) then
                     write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
                     rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
                     goto 2255
@@ -274,8 +274,8 @@
 
         lgl=.false.
 3355    continue
-        if (rxyz0(3,iat).ge.alat(3)) then 
-                  if (lgl) then 
+        if (rxyz0(3,iat).ge.alat(3)) then
+                  if (lgl) then
                     write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
                     rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
                     goto 3355
@@ -285,7 +285,7 @@
             goto 3355
         endif
         if (rxyz0(3,iat).lt.0.d0) then
-                  if (lgl) then 
+                  if (lgl) then
                     write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
                     rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
                     goto 3355
@@ -681,7 +681,7 @@
         rxyz(2,il)=rxyz(2,i)+alat(2)
         rxyz(3,il)=rxyz(3,i)-alat(3)
         enddo
-        
+
         in=icell(0,ll1-1,0,ll3-1)
         icell(0,-1,ll2,-1)=in
         do ii=1,in
@@ -730,7 +730,7 @@
 
 !$omp parallel  &
 !$omp private(iat,cut2,iam,ii,indlst,l1,l2,l3,myspace,npr) &
-!$omp shared (indlstx,nat,nn,nnbrx,ncx,ll1,ll2,ll3,icell,lsta,lstb,lay, & 
+!$omp shared (indlstx,nat,nn,nnbrx,ncx,ll1,ll2,ll3,icell,lsta,lstb,lay, &
 !$omp rel,rxyz,cut,myspaceout)
 
 
@@ -741,7 +741,7 @@
 
         cut2=cut**2
 ! assign contiguous portions of the arrays lstb and rel to the threads
-        myspace=(nat*nnbrx)/npr  
+        myspace=(nat*nnbrx)/npr
         if (iam.eq.0) myspaceout=myspace
 ! Verlet list, relative positions
         indlst=0
@@ -753,11 +753,11 @@
         if ( ((iat-1)*npr)/nat .eq. iam) then
 !     write(6,*) 'sublstiat:iam,iat',iam,iat
         lsta(1,iat)=iam*myspace+indlst+1
-        call sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, & 
+        call sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
              rxyz,icell,lstb(iam*myspace+1),lay,rel(1,iam*myspace+1),cut2,indlst)
         lsta(2,iat)=iam*myspace+indlst
-!        write(6,'(a,4(x,i3),100(x,i2))') & 
-!               'iam,iat,lsta',iam,iat,lsta(1,iat),lsta(2,iat), & 
+!        write(6,'(a,4(x,i3),100(x,i2))') &
+!               'iam,iat,lsta',iam,iat,lsta(1,iat),lsta(2,iat), &
 !                    (lstb(j),j=lsta(1,iat),lsta(2,iat))
         endif
 
@@ -766,7 +766,7 @@
 !$omp critical
         indlstx=max(indlstx,indlst)
 !$omp end critical
-!$omp end parallel  
+!$omp end parallel
 
            if (indlstx.ge.myspaceout) then
                write(10,*) count,'NNBRX too  small', nnbrx
@@ -775,7 +775,7 @@
            endif
 
 !$omp parallel  &
-!$omp private(iam,npr,iat,iat1,iat2,lot,istop,tcoord,tcoord2, & 
+!$omp private(iam,npr,iat,iat1,iat2,lot,istop,tcoord,tcoord2, &
 !$omp tener,tener2,txyz,s2,s3,sz,num2,num3,numz,max_nbrs) &
 !$omp shared (nat,nnbrx,lsta,lstb,rel,ener,ener2,fxyz,coord,coord2,istopg)
 
@@ -787,12 +787,12 @@
          max_nbrs=30
          istopg=0
 
-        if (npr.ne.1) then 
+        if (npr.ne.1) then
 ! PARALLEL CASE
-! create temporary private scalars for reduction sum on energies and 
+! create temporary private scalars for reduction sum on energies and
 !        temporary private array for reduction sum on forces
 !$omp critical
-        allocate(txyz(3,nat),s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  & 
+        allocate(txyz(3,nat),s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  &
                  num2(max_nbrs),num3(max_nbrs),numz(max_nbrs))
 !$omp end critical
         if (iam.eq.0) then
@@ -835,7 +835,7 @@
 ! SERIAL CASE
         iat1=1
         iat2=nat
-        allocate(s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  & 
+        allocate(s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  &
                  num2(max_nbrs),num3(max_nbrs),numz(max_nbrs))
         call subfeniatEDIP(iat1,iat2,nat,lsta,lstb,rel,ener,ener2,  &
           coord,coord2,nnbrx,fxyz,max_nbrs,istopg,  &
@@ -847,12 +847,12 @@
         endif
 !$omp end parallel
 
-!         write(6,*) 'ener,norm force', & 
+!         write(6,*) 'ener,norm force', &
 !                    ener,DNRM2(3*nat,fxyz,1)
-        if (istopg.gt.0) stop 'DIMENSION ERROR (see WARNING above)' 
-        ener_var=ener2/nat-(ener/nat)**2 
+        if (istopg.gt.0) stop 'DIMENSION ERROR (see WARNING above)'
+        ener_var=ener2/nat-(ener/nat)**2
         coord=coord/nat
-        coord_var=coord2/nat-coord**2 
+        coord_var=coord2/nat-coord**2
 
         j=1
         DO i=1,nat
@@ -872,12 +872,12 @@
           s2_t0,s2_t1,s2_t2,s2_t3,s2_dx,s2_dy,s2_dz,s2_r,  &
           num2,s3_g,s3_dg,s3_rinv,s3_dx,s3_dy,s3_dz,s3_r,  &
           num3,sz_df,sz_sum,sz_dx,sz_dy,sz_dz,sz_r,numz)
-! This subroutine is a modification of a subroutine that is available at 
-! http://www-math.mit.edu/~bazant/EDIP/ and for which Martin Z. Bazant 
+! This subroutine is a modification of a subroutine that is available at
+! http://www-math.mit.edu/~bazant/EDIP/ and for which Martin Z. Bazant
 ! and Harvard University have a 1997 copyright.
-! The modifications were done by S. Goedecker on April 10, 2002. 
+! The modifications were done by S. Goedecker on April 10, 2002.
 ! The routines are included with the permission of M. Bazant into this package.
-        
+
         implicit none
 !  ------------------------- VARIABLE DECLARATIONS -------------------------
           integer iat1,iat2,nat
@@ -907,7 +907,7 @@
           real*8 dEdrl,dEdrlx,dEdrly,dEdrlz
           real*8 bmc,cmbinv
           real*8 fjx,fjy,fjz,fkx,fky,fkz
-        
+
           real*8 s2_t0(max_nbrs)
           real*8 s2_t1(max_nbrs)
           real*8 s2_t2(max_nbrs)
@@ -916,11 +916,11 @@
           real*8 s2_dy(max_nbrs)
           real*8 s2_dz(max_nbrs)
           real*8 s2_r(max_nbrs)
-          integer n2                
+          integer n2
 !   size of s2[]
-          integer num2(max_nbrs)  
+          integer num2(max_nbrs)
 !   atom ID numbers for s2[]
-        
+
           real*8 s3_g(max_nbrs)
           real*8 s3_dg(max_nbrs)
           real*8 s3_rinv(max_nbrs)
@@ -928,26 +928,26 @@
           real*8 s3_dy(max_nbrs)
           real*8 s3_dz(max_nbrs)
           real*8 s3_r(max_nbrs)
-        
-          integer n3                
+
+          integer n3
 !   size of s3[]
-          integer num3(max_nbrs)  
+          integer num3(max_nbrs)
 !   atom ID numbers for s3[]
-        
+
           real*8 sz_df(max_nbrs)
           real*8 sz_sum(max_nbrs)
           real*8 sz_dx(max_nbrs)
           real*8 sz_dy(max_nbrs)
           real*8 sz_dz(max_nbrs)
           real*8 sz_r(max_nbrs)
-          integer nz                
+          integer nz
 !   size of sz[]
-          integer numz(max_nbrs)  
+          integer numz(max_nbrs)
 !   atom ID numbers for sz[]
-        
-          integer nj,nk,nl         
+
+          integer nj,nk,nl
 !   indices for the store arrays
-        
+
 !   EDIP parameters
           par_cap_A = 5.6714030d0
           par_cap_B = 2.0002804d0
@@ -978,46 +978,46 @@
             ff(2,i) = 0.0d0
             ff(3,i) = 0.0d0
           end do
-        
+
           coord=0.d0
           coord2=0.d0
           ener=0.d0
           ener2=0.d0
           istop=0
-        
-          
+
+
 !   COMBINE COEFFICIENTS
-        
+
           Qort = sqrt(par_Qo)
           muhalf = par_mu*0.5D0
           u5 = u2*u4
           bmc = par_b-par_c
           cmbinv = 1.0D0/(par_c-par_b)
-        
-        
-          
+
+
+
 !  --- LEVEL 1: OUTER LOOP OVER ATOMS ---
-        
+
           do 1000, i= iat1, iat2
-            
+
 !   RESET COORDINATION AND NEIGHBOR NUMBERS
-        
+
             coord_iat=0.d0
             ener_iat=0.d0
             Z = 0.0d0
             n2 = 1
             n3 = 1
             nz = 1
-        
-            
+
+
 !  --- LEVEL 2: LOOP PREPASS OVER PAIRS ---
-        
+
             do n=lsta(1,i),lsta(2,i)
               j=lstb(n)
-        
-                
+
+
 !   PARTS OF TWO-BODY INTERACTION r<par_a
-        
+
                 num2(n2) = j
                 dx = -rel(1,n)
                 dy = -rel(2,n)
@@ -1050,11 +1050,11 @@
         coord_iat=coord_iat+(2*xarg+1.d0)*(xarg-1.d0)**2
         endif
 
-                
+
 !   RADIAL PARTS OF THREE-BODY INTERACTION r<par_b
-        
+
                 if(r .lt. par_bg)  then
-        
+
                   num3(n3) = j
                   rmbinv = 1.d0/(r-par_bg)
                   temp1 = par_gam*rmbinv
@@ -1072,10 +1072,10 @@
                   istop=1
                   return
                   endif
-        
-                  
+
+
 !   COORDINATION AND NEIGHBOR FUNCTION par_c<r<par_b
-        
+
                   if(r .lt. par_b) then
                     if(r .lt. par_c) then
                     Z = Z + 1.d0
@@ -1087,7 +1087,7 @@
                     fZ = dexp(temp1)
                     Z = Z + fZ
                     numz(nz) = j
-                    sz_df(nz) = fZ*temp1*den*3.d0*xinv3*xinv*cmbinv   
+                    sz_df(nz) = fZ*temp1*den*3.d0*xinv3*xinv*cmbinv
 !   df/dr
                     sz_dx(nz) = dx
                     sz_dy(nz) = dy
@@ -1098,47 +1098,47 @@
                     write(6,*) 'WARNING enlarge max_nbrs'
                     istop=1
                     return
-                    endif      
-                   end if 
+                    endif
+                   end if
 !  r < par_C
-                  end if 
+                  end if
 !  r < par_b
-                  end if 
+                  end if
 !  r < par_bg
               end do
-        
-              
+
+
 !   ZERO ACCUMULATION ARRAY FOR ENVIRONMENT FORCES
-        
+
               do nl=1, nz-1
                 sz_sum(nl)=0.d0
               end do
-        
-              
+
+
 !   ENVIRONMENT-DEPENDENCE OF PAIR INTERACTION
-        
+
               temp0 = par_bet*Z
-              pZ = par_palp*dexp(-temp0*Z)         
+              pZ = par_palp*dexp(-temp0*Z)
 !   bond order
-              dp = -2.d0*temp0*pZ         
+              dp = -2.d0*temp0*pZ
 !   derivative of bond order
-        
-        
-            
+
+
+
 !  --- LEVEL 2: LOOP FOR PAIR INTERACTIONS ---
-        
+
             do nj=1, n2-1
-        
+
               temp0 = s2_t1(nj) - pZ
-        
-              
+
+
 !   two-body energy V2(rij,Z)
-        
+
               ener_iat = ener_iat + temp0*s2_t0(nj)
-              
+
 !   two-body forces
-        
-              dV2j = - s2_t0(nj) * (s2_t1(nj)*s2_t2(nj) + temp0 * s2_t3(nj))   
+
+              dV2j = - s2_t0(nj) * (s2_t1(nj)*s2_t2(nj) + temp0 * s2_t3(nj))
 !   dV2/dr
               dV2ijx = dV2j * s2_dx(nj)
               dV2ijy = dV2j * s2_dy(nj)
@@ -1150,66 +1150,66 @@
               ff(1,j) = ff(1,j) - dV2ijx
               ff(2,j) = ff(2,j) - dV2ijy
               ff(3,j) = ff(3,j) - dV2ijz
-        
-              
-              
+
+
+
 !  --- LEVEL 3: LOOP FOR PAIR COORDINATION FORCES ---
-        
+
               dV2dZ = - dp * s2_t0(nj)
               do nl=1, nz-1
                  sz_sum(nl) =  sz_sum(nl) + dV2dZ
               end do
-        
+
             end do
-        
-              
+
+
 !   COORDINATION-DEPENDENCE OF THREE-BODY INTERACTION
-        
-              winv = Qort*exp(-muhalf*Z) 
+
+              winv = Qort*exp(-muhalf*Z)
 !   inverse width of angular function
-              dwinv = -muhalf*winv       
+              dwinv = -muhalf*winv
 !   its derivative
               temp0 = exp(-u4*Z)
-              tau = u1+u2*temp0*(u3-temp0) 
+              tau = u1+u2*temp0*(u3-temp0)
 !   -cosine of angular minimum
-              dtau = u5*temp0*(2*temp0-u3) 
+              dtau = u5*temp0*(2*temp0-u3)
 !   its derivative
-        
-            
+
+
 !  --- LEVEL 2: FIRST LOOP FOR THREE-BODY INTERACTIONS ---
-        
+
             do nj=1, n3-2
-        
+
               j=num3(nj)
-        
-              
+
+
 !  --- LEVEL 3: SECOND LOOP FOR THREE-BODY INTERACTIONS ---
-        
+
               do nk=nj+1, n3-1
-        
+
                 k=num3(nk)
-        
-                
+
+
 !   angular function h(l,Z)
-        
+
                 lcos=s3_dx(nj)*s3_dx(nk)+s3_dy(nj)*s3_dy(nk)+s3_dz(nj)*s3_dz(nk)
                 x = (lcos + tau)*winv
                 temp0 = exp(-x*x)
-        
+
                 H = par_lam*(1 - temp0 + par_eta*x*x)
                 dHdx = 2*par_lam*x*(temp0 + par_eta)
-        
+
                 dhdl = dHdx*winv
-        
-                
+
+
 !   three-body energy
-        
+
                 temp1 = s3_g(nj) * s3_g(nk)
                 ener_iat = ener_iat + temp1*H
-        
-                
+
+
 !   (-) radial force on atom j
-        
+
                 dV3rij = s3_dg(nj) * s3_g(nk) * H
                 dV3rijx = dV3rij * s3_dx(nj)
                 dV3rijy = dV3rij * s3_dy(nj)
@@ -1217,10 +1217,10 @@
                 fjx = dV3rijx
                 fjy = dV3rijy
                 fjz = dV3rijz
-        
-                
+
+
 !   (-) radial force on atom k
-        
+
                 dV3rik = s3_g(nj) * s3_dg(nk) * H
                 dV3rikx = dV3rik * s3_dx(nk)
                 dV3riky = dV3rik * s3_dy(nk)
@@ -1228,10 +1228,10 @@
                 fkx = dV3rikx
                 fky = dV3riky
                 fkz = dV3rikz
-        
-                
+
+
 !   (-) angular force on j
-        
+
                 dV3l = temp1*dhdl
                 dV3ljx = dV3l * (s3_dx(nk) - lcos * s3_dx(nj)) * s3_rinv(nj)
                 dV3ljy = dV3l * (s3_dy(nk) - lcos * s3_dy(nj)) * s3_rinv(nj)
@@ -1239,20 +1239,20 @@
                 fjx = fjx + dV3ljx
                 fjy = fjy + dV3ljy
                 fjz = fjz + dV3ljz
-        
-                
+
+
 !   (-) angular force on k
-        
+
                 dV3lkx = dV3l * (s3_dx(nj) - lcos * s3_dx(nk)) * s3_rinv(nk)
                 dV3lky = dV3l * (s3_dy(nj) - lcos * s3_dy(nk)) * s3_rinv(nk)
                 dV3lkz = dV3l * (s3_dz(nj) - lcos * s3_dz(nk)) * s3_rinv(nk)
                 fkx = fkx + dV3lkx
                 fky = fky + dV3lky
                 fkz = fkz + dV3lkz
-        
-                
+
+
 !   apply radial + angular forces to i, j, k
-        
+
                 ff(1,j) = ff(1,j) - fjx
                 ff(2,j) = ff(2,j) - fjy
                 ff(3,j) = ff(3,j) - fjz
@@ -1262,27 +1262,27 @@
                 ff(1,i) = ff(1,i) + fjx + fkx
                 ff(2,i) = ff(2,i) + fjy + fky
                 ff(3,i) = ff(3,i) + fjz + fkz
-                
-        
-                
+
+
+
 !   prefactor for 4-body forces from coordination
                   dxdZ = dwinv*(lcos + tau) + winv*dtau
                   dV3dZ = temp1*dHdx*dxdZ
-        
-                
+
+
 !  --- LEVEL 4: LOOP FOR THREE-BODY COORDINATION FORCES ---
-        
+
                   do nl=1, nz-1
                     sz_sum(nl) = sz_sum(nl) + dV3dZ
                   end do
               end do
             end do
-        
-            
+
+
 !  --- LEVEL 2: LOOP TO APPLY COORDINATION FORCES ---
-        
+
             do nl=1, nz-1
-        
+
                 dEdrl = sz_sum(nl) * sz_df(nl)
                 dEdrlx = dEdrl * sz_dx(nl)
                 dEdrly = dEdrl * sz_dy(nl)
@@ -1294,24 +1294,24 @@
                 ff(1,l) = ff(1,l) - dEdrlx
                 ff(2,l) = ff(2,l) - dEdrly
                 ff(3,l) = ff(3,l) - dEdrlz
-        
-                
+
+
             end do
 
         coord=coord+coord_iat
         coord2=coord2+coord_iat**2
         ener = ener + ener_iat
         ener2 = ener2 + ener_iat**2
-        
+
 1000      continue
-        
+
 
         return
         end
 
 !---------------------------------------------------------------------------------------!
 
-        subroutine sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, & 
+        subroutine sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
                    rxyz,icell,lstb,lay,rel,cut2,indlst)
 ! finds the neighbours of atom iat (specified by lsta and lstb) and and
 ! the relative position rel of iat with respect to these neighbours
@@ -1327,7 +1327,7 @@
           if (jat.eq.iat) goto 6363
           xrel= rxyz(1,iat)-rxyz(1,jat)
           yrel= rxyz(2,iat)-rxyz(2,jat)
-          zrel= rxyz(3,iat)-rxyz(3,jat)  
+          zrel= rxyz(3,iat)-rxyz(3,jat)
           rr2=xrel**2 + yrel**2 + zrel**2
           if ( rr2 .le. cut2 ) then
            indlst=min(indlst,myspace-1)
@@ -1346,5 +1346,3 @@
 
         return
         end
-
-

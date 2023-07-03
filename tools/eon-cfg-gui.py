@@ -96,7 +96,7 @@ class cfggui():
                 #strings with values
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
-                    if name in self.changedbuttons: 
+                    if name in self.changedbuttons:
                         self.config.set('%s' %config.format[i].name, '%s' %config.format[i].keys[j].name, '%s' %self.buttons[name].get_active_text())
 
                 #string without values, ints, and floats
@@ -117,7 +117,7 @@ class cfggui():
         self.config.write(f)
         f.close()
         self.saveButton.set_sensitive(False)
-        self.closeButton.set_label("Close") 
+        self.closeButton.set_label("Close")
 
 
 #display
@@ -198,7 +198,7 @@ class cfggui():
                 if len(config.format[i].keys[j].values) != 0:
                     name = config.format[i].name + ", " + config.format[i].keys[j].name
                     self.buttons[name] = gtk.combo_box_new_text()
-                    self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name) 
+                    self.nameLabels[name] = gtk.Label("%s:" %config.format[i].keys[j].name)
                     for k in range(len(config.format[i].keys[j].values)):
                         self.buttons[name].append_text(str (config.format[i].keys[j].values[k]))
                         if config.format[i].keys[j].values[k] == config.format[i].keys[j].default:
@@ -223,7 +223,7 @@ class cfggui():
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
                     Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding = 5)
                     self.buttons[name].connect("changed", self.buttonChanged, name)
-                    self.buttons[name].connect("changed", self.saveCheck)  
+                    self.buttons[name].connect("changed", self.saveCheck)
 
 
                 #strings without values
@@ -273,10 +273,10 @@ class cfggui():
                     buttonbox.pack_start(self.buttons[name],True,True)
                     buttonbox.pack_start(refreshButton, False, True)
                     Htable.attach(hbox,0,1,j,j+1, False | gtk.FILL, False)
-                    Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5) 
+                    Htable.attach(buttonbox,1,2,j,j+1, False | gtk.FILL, False, ypadding=5)
                     self.buttons[name].connect("changed", self.buttonChanged, name)
                     self.buttons[name].connect("changed", self.saveCheck)
-                    self.buttons[name].connect("changed", self.buttonChanged, name)  
+                    self.buttons[name].connect("changed", self.buttonChanged, name)
 
 
                 #booleans
@@ -290,11 +290,11 @@ class cfggui():
                         if config.format[i].keys[j].default == True:
                             self.buttons[name].set_active(True)
                         if config.format[i].keys[j].default == False:
-                            self.RB2[name].set_active(True)      
+                            self.RB2[name].set_active(True)
                     except:
                         pass
                     self.buttons[name].connect("toggled", self.defaultchanged, [name,i,j])
-                    self.RB2[name].connect("toggled", self.defaultchanged, [name,i,j]) 
+                    self.RB2[name].connect("toggled", self.defaultchanged, [name,i,j])
                     try:
                         if self.config.get(config.format[i].name,config.format[i].keys[j].name) == 'True':
                             self.buttons[name].set_active(True)
@@ -323,7 +323,7 @@ class cfggui():
                 refreshlist = [name, config.format[i].keys[j]]
                 refreshButton.connect("button_press_event", self.refreshoption, refreshlist)
 
-        self.saveButton.set_sensitive(False) 
+        self.saveButton.set_sensitive(False)
         self.closeButton.set_label("Close")
         self.window.connect("delete_event", self.delete_event)
         self.window.show_all()

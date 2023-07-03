@@ -81,8 +81,9 @@ namespace helper_functions {
 std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
   return makePotential(params->potential, params);
 }
-std::shared_ptr<Potential> makePotential(PotType ptype, std::shared_ptr<Parameters> params) {
-  switch(ptype) {
+std::shared_ptr<Potential> makePotential(PotType ptype,
+                                         std::shared_ptr<Parameters> params) {
+  switch (ptype) {
   case PotType::EMT: {
     return (std::make_shared<EffectiveMediumTheory>(params));
     break;

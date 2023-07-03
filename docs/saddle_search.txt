@@ -23,7 +23,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
         and a dimer calculation to estimate the eigenmode at the saddle.
 
 
-**min_mode_method**: 
+**min_mode_method**:
 
     default: ``dimer``
 
@@ -44,7 +44,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 **displace_magnitude**: The standard deviation of the Gaussian displacement in each degree of freedom for the selected atoms.
 
     default: ``0.1``
-    
+
 **displace_random_weight**: Relative probability to displace with a random epicenter.
 
     default: ``1.0, if no other weights set``
@@ -53,7 +53,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
-**displace_least_coordinated_weight**:  Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration. 
+**displace_least_coordinated_weight**:  Relative probability to displace with an epicenter that has a coordination number equal to the least-coordinated atom in the configuration.
 
     default: ``0.0``
 
@@ -61,7 +61,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
-**displace_listed_atom_weight**: Relative probability to displace with an epicenter listed in displace_atomlist. 
+**displace_listed_atom_weight**: Relative probability to displace with an epicenter listed in displace_atomlist.
 
     default: ``0.0``
 
@@ -69,7 +69,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0``
 
-**displace_listed_type_weight**: Relative probability to displace with an epicenter listed in displace_typelist. 
+**displace_listed_type_weight**: Relative probability to displace with an epicenter listed in displace_typelist.
 
     default: ``0.0``
 
@@ -96,7 +96,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 **nonlocal_count_abort**: If this is not zero, the saddle search will abort when this many atoms have moved more than **nonlocal_distance_abort** from the initial displacement.
 
     default: ``0`` (off)
-    
+
 **nonlocal_distance_abort**: If **nonlocal_count_abort** is not zero, the saddle search will abort when **nonlocal_count_abort** atoms have moved more than this distance.
 
     default: ``0.0``
@@ -105,7 +105,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``0.0``
 
-**confine_positive**: Activates a confinement scheme when the search is within a positive region of the PES. 
+**confine_positive**: Activates a confinement scheme when the search is within a positive region of the PES.
 
     default: ``false``
 
@@ -113,7 +113,7 @@ A saddle search is initiated by making a local displacement of atoms from their 
 
     default: ``false``
 
-**bowl_active_atoms**: Size of the applied confinement in the bowl breakout scheme.  
+**bowl_active_atoms**: Size of the applied confinement in the bowl breakout scheme.
 
 	default: ``20``
 

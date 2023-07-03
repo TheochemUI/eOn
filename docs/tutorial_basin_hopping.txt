@@ -16,16 +16,16 @@ Here is the con file of our starting structure:
 .. literalinclude:: lj13.con
 
 Here is the config.ini file::
-    
+
     [Main]
     job=basin_hopping
     # specify the temperature used in the Monte-Carlo step acceptance
     temperature=500
-    
+
     [Potential]
     # use the lennard-jones potential, in reduced-units
     potential=lj
-    
+
     [Communicator]
     # run the client locally
     type=local
@@ -35,7 +35,7 @@ Here is the config.ini file::
     num_jobs=10
     # search $PATH for a binary named eonclient
     client_path=eonclient
-    
+
     [Basin Hopping]
     # perform 100 Monte-Carlo steps
     steps=100
@@ -43,7 +43,7 @@ Here is the config.ini file::
     displacement_distribution=gaussian
     # the standard deviation for the gaussian which is used to displace each degree of freedom
     displacement=0.3
-    
+
     [Optimizer]
     # use the lbfgs optimizer
     opt_method=lbfgs
@@ -51,11 +51,11 @@ Here is the config.ini file::
     converged_force=0.001
     # specifies the value of 1/H0 used in the lbfgs optimizer
     lbfgs_inverse_curvature=0.01
-    
+
 You should now have a directory with two files in it: ``config.ini`` and
 ``reactant.con``. To run the calculation run the ``eon`` script::
 
-   $ eon 
+   $ eon
    registering results
    0 (result) searches processed
    0 searches in the queue
@@ -76,4 +76,4 @@ You should now have a directory with two files in it: ``config.ini`` and
 Eon first looks for any completed jobs. As this is the first time you have run
 Eon, it finds no previous calculations to register. It then makes the input
 files needed for the 10 basin hopping jobs and writes them to
-``jobs/scratch/0..9``. Then eonclient is run in each of these directories. 
+``jobs/scratch/0..9``. Then eonclient is run in each of these directories.

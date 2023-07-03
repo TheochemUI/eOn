@@ -17,7 +17,7 @@ from eon import state
 class AKMCState(state.State):
     ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
     processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
-    processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor", 
+    processtable_header = processtable_head_fmt % ("proc #", "saddle energy", "prefactor",
                                                    "product", "product energy", "product prefactor",
                                                    "barrier", "rate", "repeats")
     processtable_line = "%7d %16.5f %11.5e %9d %16.5f %17.5e %8.5f %12.5e %7d\n"
@@ -42,7 +42,7 @@ class AKMCState(state.State):
         self.bad_procdata_path = os.path.join(self.path, "badprocdata")
 
         self.con_cache = {}
-        
+
 
     def find_repeat(self, saddle_file, barrier):
         self.load_process_table()
@@ -56,7 +56,7 @@ class AKMCState(state.State):
             if id in self.con_cache:
                 p2 = self.con_cache[id]
             else:
-                p2 = io.loadcon(self.proc_saddle_path(id)) 
+                p2 = io.loadcon(self.proc_saddle_path(id))
                 self.con_cache[id] = p2
 
             if atoms.match(p1, p2, config.comp_eps_r, config.comp_neighbor_cutoff, False):
@@ -175,7 +175,7 @@ class AKMCState(state.State):
             #print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
 
         # Append this barrier to the process table (in memory and on disk).
-        self.append_process_table(id =                id, 
+        self.append_process_table(id =                id,
                                   saddle_energy =     resultdata["potential_energy_saddle"],
                                   prefactor =         resultdata["prefactor_reactant_to_product"],
                                   product =           -1,
@@ -211,8 +211,8 @@ class AKMCState(state.State):
         if superbasin:
             comment += " [%i]" % superbasin.id
 
-        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column], 
-                 result["type"], 
+        f.write("%8d %10s %10.5f %10.5f %10d %10d %10d    %s\n" % (result[first_column],
+                 result["type"],
                  resultdata["barrier_reactant_to_product"],
                  resultdata["displacement_saddle_distance"],
                  resultdata["force_calls_saddle"],
@@ -224,7 +224,7 @@ class AKMCState(state.State):
         #    logger.warning("Failed to append search result.")
 
     def get_ratetable(self, superbasin=None):
-        """ Loads the process table if it has not been loaded and generates a rate table 
+        """ Loads the process table if it has not been loaded and generates a rate table
             according to kT and thermal_window. """
         self.load_process_table()
         lowest = self.get_lowest_barrier()
@@ -470,8 +470,8 @@ class AKMCState(state.State):
         if abs(kT - self.statelist.kT) > 1e-8:
             for id, proc in list(self.procs.items()):
                 proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
-            self.save_process_table()            
-                
+            self.save_process_table()
+
 
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
@@ -484,7 +484,7 @@ class AKMCState(state.State):
                                                   proc['product'], proc['product_energy'],
                                                   proc['product_prefactor'], proc['barrier'],
                                                   proc['rate'], proc['repeats']))
-            f.close() 
+            f.close()
 
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy,
@@ -609,7 +609,7 @@ class AKMCState(state.State):
                              "Nonnegative Displacement Abort",
                              "Nonlocal Abort",
                              "Negative Barrier",
-                             "MD Trajectory Too Short", 
+                             "MD Trajectory Too Short",
                              "No Negative Mode at Saddle",
                              "No Forward Barrier in Minimized Band",
                              "MinMode Zero Mode Abort",
@@ -659,7 +659,7 @@ def lambertw(z):
     if z < -em1:
         logger.error("Tried to evaluate Lambert W function @ < -1/e")
         raise ValueError()
-    if 0.0 == z: 
+    if 0.0 == z:
         return 0.0
     if z < -em1 + 1e-4:
         q = z + em1
@@ -688,7 +688,7 @@ def lambertw(z):
         p = w + 1.0
         t /= e * p - 0.5 * (p + 1.0) * t / p
         w -= t
-        if abs(t) < eps * (1.0 + abs(w)): 
+        if abs(t) < eps * (1.0 + abs(w)):
             return w
     logger.error("Failed to converge Lambert W function")
     raise ValueError()

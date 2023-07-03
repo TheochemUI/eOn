@@ -53,7 +53,8 @@ public:
 private:
   AtomMatrix mode;
   std::shared_ptr<Matter> matter;
-  std::shared_ptr<LowestEigenmode> minModeMethod; // shared with the objective func
+  std::shared_ptr<LowestEigenmode>
+      minModeMethod; // shared with the objective func
   double reactantEnergy;
 };
 

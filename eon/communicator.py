@@ -48,7 +48,7 @@ def get_communicator():
                                    config.comm_script_cancel_job_cmd,
                                    config.comm_script_submit_job_cmd)
     elif config.comm_type=='local':
-        comm = Local(config.path_scratch, config.comm_local_client, 
+        comm = Local(config.path_scratch, config.comm_local_client,
                                   config.comm_local_ncpus, config.comm_job_bundle_size)
     elif config.comm_type=='mpi':
         comm = MPI(config.path_scratch, config.comm_job_bundle_size)
@@ -121,7 +121,7 @@ class Communicator:
 
         '''
         # These are the files in the result directory that we keep.
-        jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath) 
+        jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath)
                     if os.path.isdir(os.path.join(resultpath,d)) ]
 
         regex = re.compile(r"(\w+)_(\d+)(\.\w+)")
@@ -356,7 +356,7 @@ class Local(Communicator):
             if os.path.isfile(client):
                 self.client = os.path.abspath(client)
             # is the client in the path?
-            elif sum([ os.path.isfile(os.path.join(d, client)) for d in 
+            elif sum([ os.path.isfile(os.path.join(d, client)) for d in
                        os.environ['PATH'].split(':') ]) != 0:
                 self.client = client
             else:
@@ -381,7 +381,7 @@ class Local(Communicator):
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
-        jobdirs = [ d for d in os.listdir(self.scratchpath) 
+        jobdirs = [ d for d in os.listdir(self.scratchpath)
                     if os.path.isdir(os.path.join(self.scratchpath,d)) ]
 
         for jobdir in jobdirs:
@@ -446,14 +446,14 @@ class Local(Communicator):
 
     def get_queue_size(self):
         return 0
-        
+
     def get_number_in_progress(self):
         return 0
 
 
 class Script(Communicator):
 
-    def __init__(self, scratch_path, bundle_size, name_prefix, scripts_path, 
+    def __init__(self, scratch_path, bundle_size, name_prefix, scripts_path,
                  queued_jobs_cmd, cancel_job_cmd, submit_job_cmd):
         Communicator.__init__(self, scratch_path, bundle_size)
 
@@ -484,7 +484,7 @@ class Script(Communicator):
         '''Moves work from scratchpath to results path.'''
         # queued_jobs.sh jobid1 jobid2 jobid 3
         # the inverse of the jobids returned is
-        # job dirs needs to map 
+        # job dirs needs to map
         queued_jobs = self.get_queued_jobs()
 
         finished_jobids = set(self.jobids.keys()) - set(self.get_queued_jobs())
@@ -559,7 +559,7 @@ class Script(Communicator):
                 logger.warn("Job cancel failed with error: %s" % output)
         self.jobids = {}
         self.save_jobids()
-        shutil.rmtree(config.path_scratch) 
+        shutil.rmtree(config.path_scratch)
         os.makedirs(config.path_scratch)
         return len(list(self.jobids.keys()))
 
@@ -584,5 +584,3 @@ class Script(Communicator):
 
     def get_queue_size(self):
         return len(self.get_queued_jobs())
-
-

@@ -20,4 +20,3 @@ plt.plot(all_indices, all_curvatures, 'b')
 plt.plot(translation_indices, translation_curvatures, 'ro')
 plt.ylabel('curvature')
 plt.show()
-

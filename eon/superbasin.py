@@ -36,9 +36,9 @@ class Superbasin:
 
     def step(self, entry_state, get_product_state):
         # c_i (forming vector c) is the inverse of the sum of the rates for each transient state i
-        # Q is the transient matrix of the canonical markov matrix. 
+        # Q is the transient matrix of the canonical markov matrix.
         # R is the recurrent matrix of the canonical markov matrix.
-    
+
         # Build a mapping between transient states and row/column indices. Used in Q and R.
         st2i = {}
         i2st = {}
@@ -47,8 +47,8 @@ class Superbasin:
             st2i[number] = index
             i2st[index] = number
             index += 1
-            
-        # Build a mapping between recurrent state identifiers [a (state number, process id) tuple] and 
+
+        # Build a mapping between recurrent state identifiers [a (state number, process id) tuple] and
         # column indices. Used only in R.
         st2col = {}
         col2st = {}
@@ -60,7 +60,7 @@ class Superbasin:
                     st2col[(number, id)] = index
                     col2st[index] = (number, id)
                     index += 1
-        
+
         # Build c.
         c = numpy.zeros(len(self.state_numbers))
         for number in self.state_numbers:
@@ -78,7 +78,7 @@ class Superbasin:
                     Q[st2i[number], st2i[proc['product']]] += proc['rate']
                 else:
                     R[st2i[number], st2col[(number, id)]] += proc['rate']
-        
+
         #lei debug
         print("################")
         print(str(self.id)+" c is: ")
@@ -88,10 +88,10 @@ class Superbasin:
         print(str(self.id)+" R is: ")
         print(R)
         # import pdb; pdb.set_trace()
-        
+
         t, B, residual = mcamc(Q, R, c)
         logger.debug("residual %e" % residual)
-        
+
         b = B[st2i[entry_state.number],:]
         p = 0.0
         u = numpy.random.sample()
@@ -102,9 +102,9 @@ class Superbasin:
                 break
         else:
             raise ValueError("Failed to select exit process.")
-            
+
         exit_state = self.state_dict[exit_state_number]
-        product_state = get_product_state(exit_state_number, exit_proc_id)        
+        product_state = get_product_state(exit_state_number, exit_proc_id)
         mean_time = t[st2i[entry_state.number]]
         return mean_time, exit_state, product_state, exit_proc_id, self.id
 

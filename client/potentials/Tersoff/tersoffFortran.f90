@@ -127,12 +127,12 @@
                rik2=0.0
                do 130 ii=1,3
                   drik(ii)=xyz(ii,i)-xyz(ii,k)
-                  if(abs(drik(ii)).ge.Sij) then 
+                  if(abs(drik(ii)).ge.Sij) then
                      drik(ii)=drik(ii)*(1.0-PL(ii)/abs(drik(ii)))
                      if(abs(drik(ii)).ge.Sij) goto 102
                   endif
                   rik2=rik2+drik(ii)**2
- 130           continue 
+ 130           continue
 
                rik=sqrt(rik2)
                if(rik.ge.Sij) goto 102
@@ -147,7 +147,7 @@
 
                tijk=0.0
                do 140 ii=1,3
-                  tijk=tijk+drij(ii)*drik(ii) 
+                  tijk=tijk+drij(ii)*drik(ii)
  140           continue
 
                cosijk=tijk/(rij*rik)
@@ -202,7 +202,7 @@
                FRC(l,j)=FRC(l,j)-cf2*Fcf-cf*fjk
 
  105        continue
-            
+
             ENG=ENG+fcij*(Frfn(rij)+Cf1*Fafn(rij))
 
  101        continue
@@ -230,10 +230,10 @@
 
 
 !-----------------------------------------------------------------------------------!
-!    
+!
 !  SUBROUTINE potinit()
 !     IMPLICIT NONE
-!    
+!
 !  END SUBROUTINE potinit
-!    
+!
 !-----------------------------------------------------------------------------------!

@@ -11,7 +11,7 @@
 #$ -l h_rt=12:00:00
 
 # Debug flag so that this script prints each command it runs.
-set -x 
+set -x
 
 # This is the number of jobs that run in parallel.
 export EON_NUMBER_OF_CLIENTS=2
