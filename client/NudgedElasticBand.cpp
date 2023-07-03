@@ -125,7 +125,7 @@ NudgedElasticBand::NudgedElasticBand(
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
   spdlog::set_pattern("%v");
-  spdlog::set_level(spdlog::level::debug);
+  spdlog::set_level(spdlog::level::trace);
 
   SPDLOG_DEBUG("\nNEB: initialize\n");
   this->status = NEBStatus::INIT;
@@ -166,9 +166,9 @@ NudgedElasticBand::NudgedElasticBand(
   extremumCurvature.resize(2 * (numImages + 1));
   numExtrema = 0;
   spdlog::set_pattern("%v");
-  spdlog::set_level(spdlog::level::debug);
+  spdlog::set_level(spdlog::level::trace);
 
-  SPDLOG_DEBUG("\nNEB: initialize\n");
+  SPDLOG_DEBUG("\nNEB: initialized with old path\n");
   this->status = NEBStatus::INIT;
   for (long i = 0; i <= numImages + 1; i++) {
     path[i] = std::make_shared<Matter>(pot, params);
