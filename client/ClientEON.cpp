@@ -4,7 +4,6 @@
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Job.h"
-#include "Log.h"
 #include "Parameters.h"
 #include "Potential.h"
 #include "version.h"
@@ -368,7 +367,7 @@ int main(int argc, char **argv) {
       try {
         filenames = job->run();
       } catch (int e) {
-        log("[ERROR] job exited on error %d\n", e);
+        SPDLOG_CRITICAL("[ERROR] job exited on error %d\n", e);
       }
 
       filenames.push_back(std::string("client.log"));
