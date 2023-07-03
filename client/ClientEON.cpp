@@ -378,8 +378,6 @@ int main(int argc, char **argv) {
       } else {
         bundledFilenames = filenames;
       }
-
-      log_close();
     }
 
 #ifdef EONMPI
