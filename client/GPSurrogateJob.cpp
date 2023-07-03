@@ -265,10 +265,9 @@ bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
   auto mae = difference.array()
                  .abs()
                  .maxCoeff(); //.squaredNorm() / predEnergies.size();
-  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\nlargest_error {} will "
-               "return {}",
+  SPDLOG_TRACE("predicted\n{}\ntrue\n{}\ndifference\n{}\n MAE: {}",
                fmt::streamed(predEnergies), fmt::streamed(trueEnergies),
-               fmt::streamed(difference), mae, mae < 0.05);
+               fmt::streamed(difference), mae);
   return mae < 0.05;
 }
 } // namespace helper_functions::surrogate
