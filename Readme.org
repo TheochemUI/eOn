@@ -86,8 +86,8 @@ meson test -C bbdir
 We find that, rather than build each executable by hand or even register each one by hand, we can leverage the array iteration features of the ~meson~ language.
 #+begin_src python
 if get_option('build_tests')
-  eon_extra_args += ['-DEONTEST'] # Unused
-  eon_deps += [ gtest_dep ]
+  _args += ['-DEONTEST'] # Unused
+  _deps += [ gtest_dep ]
 test_array = [#
   ['Improved Dimer', 'impldim_run', 'ImpDimerTest.cpp', '/gtests/data/saddle_search'],
              ]

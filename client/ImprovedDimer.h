@@ -10,6 +10,9 @@
 // dimer method to find the lowest curvature mode
 class ImprovedDimer : public LowestEigenmode {
 
+private:
+  shared_ptr<spdlog::logger> log;
+
 public:
   // Optimization for the dimer
   //    static const string OPT_SD;

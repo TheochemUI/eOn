@@ -17,6 +17,7 @@ public:
         reactant{std::make_shared<Matter>(*reactant)}, saddle{displacement} {
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
+    log = spdlog::get("combi");
   }
   ~BasinHoppingSaddleSearch() = default;
 
@@ -32,6 +33,9 @@ public:
   std::shared_ptr<Matter> product;
 
   int status;
+
+private:
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

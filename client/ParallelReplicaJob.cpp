@@ -4,11 +4,8 @@
 #include "BondBoost.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
 #include "ParallelReplicaJob.h"
-
-static const char LOG_PREFIX[] = "[ParallelReplica]";
 
 std::vector<std::string> ParallelReplicaJob::run(void) {
   // load pos.con
@@ -16,7 +13,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   reactant->con2matter(helper_functions::getRelevantFile(params->conFilename));
 
   // minimize the initial reactant
-  log("%s Minimizing initial position\n", LOG_PREFIX);
+  SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Minimizing initial position");
   reactant->relax();
   reactant->matter2con("reactant.con");
 
@@ -48,11 +45,14 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   // Main MD loop
   double simulationTime = 0.0;
   if (params->biasPotential == Hyperdynamics::NONE) {
-    log("%s %8s %12s %10s %12s %12s %10s\n", LOG_PREFIX, "Step", "Time (s)",
-        "KE", "PE", "TE", "KinT");
+    SPDLOG_LOGGER_DEBUG(
+        log, "[ParallelReplica] {:>8} {:>12} {:>10} {:>12} {:>12} {:>10}",
+        "Step", "Time (s)", "KE", "PE", "TE", "KinT");
   } else {
-    log("%s %8s %12s %10s %10s %12s %12s %10s\n", LOG_PREFIX, "Step",
-        "Time (s)", "Boost", "KE", "PE", "TE", "KinT");
+    SPDLOG_LOGGER_DEBUG(
+        log,
+        "[ParallelReplica] {:>8} {:>12} {:>10} {:>10} {:>12} {:>12} {:>10}",
+        "Step", "Time (s)", "Boost", "KE", "PE", "TE", "KinT");
   }
   for (int step = 1; step <= params->mdSteps; step++) {
     dynamics.oneStep();
@@ -74,14 +74,19 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
     if (step % params->writeMoviesInterval == 0) {
       if (params->biasPotential == Hyperdynamics::NONE) {
-        log("%s %8ld %12.4e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX, step,
-            simulationTime * params->timeUnit * 1e-15, kinE, potE, kinE + potE,
-            kinT);
+        SPDLOG_LOGGER_DEBUG(log,
+                            "[ParallelReplica] {:>8} {:>12.4e} {:>10.4f} "
+                            "{:>12.4f} {:>12.4f} {:>10.2f}",
+                            step, simulationTime * params->timeUnit * 1e-15,
+                            kinE, potE, kinE + potE, kinT);
       } else {
         double boostPotential = bondBoost.boost();
-        log("%s %8ld %12.4e %10.3e %10.4f %12.4f %12.4f %10.2f\n", LOG_PREFIX,
-            step, simulationTime * params->timeUnit * 1e-15, boost, kinE,
-            potE + boostPotential, kinE + potE + boostPotential, kinT);
+        SPDLOG_LOGGER_DEBUG(log,
+                            "[ParallelReplica] {:>8} {:>12.4e} {:>10.3e} "
+                            "{:>10.4f} {:>12.4f} {:>12.4f} {:>10.2f}",
+                            step, simulationTime * params->timeUnit * 1e-15,
+                            boost, kinE, potE + boostPotential,
+                            kinE + potE + boostPotential, kinT);
       }
     }
 
@@ -96,7 +101,7 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
     // check for a transition every stateCheckInterval or at the end of the
     // simulation
     if (step % stateCheckInterval == 0 || step == params->mdSteps) {
-      log("%s Checking for transition\n", LOG_PREFIX);
+      SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Checking for transition");
 
       Matter min(pot, params);
       min = *trajectory;
@@ -104,11 +109,12 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
       // only check for a transition if one has yet to occur
       if (!min.compare(*reactant) && transitionTime == 0) {
-        log("%s Transition occurred\n", LOG_PREFIX);
+        SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Transition occurred");
 
         // perform the binary search for the transition structure
         if (params->parrepRefineTransition) {
-          log("%s Refining transition time\n", LOG_PREFIX);
+          SPDLOG_LOGGER_DEBUG(log,
+                              "[ParallelReplica] Refining transition time");
           // int tmpFcalls = Potential::fcalls;
           int snapshotIndex = refineTransition(MDSnapshots);
 
@@ -123,8 +129,8 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
           transitionStructure = *trajectory;
           transitionTime = simulationTime;
         }
-        log("%s Transition time: %.3e s\n", LOG_PREFIX,
-            transitionTime * params->timeUnit * 1e-15);
+        SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
+                            transitionTime * params->timeUnit * 1e-15);
 
         // at the end of the simulation perform the refinement if it hasn't
         // happened yet this ensures that if a transition isn't seen that the
@@ -133,8 +139,11 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
 
         // fake refinement
         if (params->parrepRefineTransition) {
-          log("%s Simulation ended without seeing a transition\n", LOG_PREFIX);
-          log("%s Refining anyways to prevent bias...\n", LOG_PREFIX);
+          SPDLOG_LOGGER_DEBUG(
+              log,
+              "[ParallelReplica] Simulation ended without seeing a transition");
+          SPDLOG_LOGGER_DEBUG(
+              log, "[ParallelReplica] Refining anyways to prevent bias...");
           int tmpFcalls = Potential::fcalls;
           refineTransition(MDSnapshots, true);
           // refineForceCalls += Potential::fcalls - tmpFcalls;
@@ -153,11 +162,12 @@ std::vector<std::string> ParallelReplicaJob::run(void) {
   // start the decorrelation dynamics from the transition structure
   int decorrelationSteps =
       int(floor(params->parrepCorrTime / params->mdTimeStep + 0.5));
-  log("%s Decorrelating: %i steps\n", LOG_PREFIX, decorrelationSteps);
+  SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
+                      decorrelationSteps);
   for (int step = 1; step <= decorrelationSteps; step++) {
     dynamics.oneStep(step);
   }
-  log("%s Decorrelation complete\n", LOG_PREFIX);
+  SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Decorrelation complete");
 
   // minimize the final structure
   Matter product(pot, params);
@@ -209,7 +219,8 @@ void ParallelReplicaJob::dephase(Matter *trajectory) {
 
   int dephaseSteps =
       int(floor(params->parrepDephaseTime / params->mdTimeStep + 0.5));
-  log("%s Dephasing: %i steps\n", LOG_PREFIX, dephaseSteps);
+  SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Dephasing: {} steps",
+                      dephaseSteps);
 
   Matter initial(pot, params);
   initial = *trajectory;
@@ -230,10 +241,12 @@ void ParallelReplicaJob::dephase(Matter *trajectory) {
     min.relax();
 
     if (min.compare(*reactant)) {
-      log("%s Dephasing successful\n", LOG_PREFIX);
+      SPDLOG_LOGGER_DEBUG(log, "[ParallelReplica] Dephasing successful");
       break;
     } else {
-      log("%s Transition occured during dephasing; Restarting\n", LOG_PREFIX);
+      SPDLOG_LOGGER_DEBUG(
+          log,
+          "[ParallelReplica] Transition occured during dephasing; Restarting");
     }
   }
 }

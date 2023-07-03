@@ -20,6 +20,7 @@ public:
 private:
   AtomMatrix lowestEv;
   double lowestEw;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif

@@ -4,7 +4,6 @@
 #include <optional>
 #include <regex>
 
-#include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
 
