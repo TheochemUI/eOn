@@ -183,8 +183,8 @@ int ProcessSearchJob::doProcessSearch(void) {
     int prefStatus;
     double pref1, pref2;
     // XXX: no get() calls
-    prefStatus = Prefactor::getPrefactors(params.get(), min1.get(), saddle.get(), min2.get(),
-                                          pref1, pref2);
+    prefStatus = Prefactor::getPrefactors(
+        params.get(), min1.get(), saddle.get(), min2.get(), pref1, pref2);
     if (prefStatus == -1) {
       printf("Prefactor: bad calculation\n");
       return MinModeSaddleSearch::STATUS_FAILED_PREFACTOR;

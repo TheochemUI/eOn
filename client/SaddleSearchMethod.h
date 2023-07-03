@@ -8,6 +8,7 @@ class SaddleSearchMethod {
 protected:
   std::shared_ptr<Potential> pot;
   std::shared_ptr<Parameters> params;
+
 public:
   SaddleSearchMethod(std::shared_ptr<Potential> potPassed,
                      std::shared_ptr<Parameters> paramsPassed)

@@ -21,7 +21,8 @@ public:
     STATUS_BAD_MAX_ITERATIONS = 2
   };
 
-  NudgedElasticBand(std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
+  NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
+                    std::shared_ptr<Matter> finalPassed,
                     std::shared_ptr<Parameters> parametersPassed,
                     std::shared_ptr<Potential> potPassed);
   ~NudgedElasticBand() = default;
@@ -54,7 +55,7 @@ public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
                        std::shared_ptr<Parameters> parametersPassed)
       : ObjectiveFunction(nullptr, parametersPassed), neb{nebPassed} {}
-    // This is the odd one out, doesn't take a Matter so we null it
+  // This is the odd one out, doesn't take a Matter so we null it
 
   ~NEBObjectiveFunction(void){};
 
@@ -72,9 +73,10 @@ private:
 };
 
 namespace helper_functions {
-  namespace neb_paths {
-    std::vector<Matter> linearPath(const Matter& initImg, const Matter& finalImg, const size_t nimgs);
-  }
+namespace neb_paths {
+std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
+                               const size_t nimgs);
 }
+} // namespace helper_functions
 
 #endif
