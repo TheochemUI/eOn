@@ -289,11 +289,11 @@ class akmcgui(atomview.atomview):
         self.startup()
 
 
-    # allows use of interpolation Spin Button   
+    # allows use of interpolation Spin Button
     def interpolationCB_changed(self, widget, data=None):
         if self.interpolationCB.get_active() == True:
             self.interpolationSB.set_sensitive(True)
-        else:  
+        else:
             self.interpolationSB.set_sensitive(False)
 
 
@@ -345,11 +345,11 @@ class akmcgui(atomview.atomview):
                 if self.stateScale.get_value() >= numStates:
                     self.stateScale.set_value(0)
                 return True
-            self.timer_id = gobject.timeout_add(1000/int(self.fps.get_value()), loop) 
+            self.timer_id = gobject.timeout_add(1000/int(self.fps.get_value()), loop)
             #self.timer_id = gobject.timeout_add(1000/(int (self.fps.get_value())), loop)
 
 
-    # Displays current state's energy  
+    # Displays current state's energy
     def energy_changed(self, *args):
         energy = open("%sstate_table" %config.path_states, "r")
         energyNumber = energy.readlines()
@@ -401,4 +401,3 @@ if __name__ == "__main__":
             data = io.loadcons(sys.argv[1])
         q.data_set(data)
     gtk.main()
-

@@ -59,7 +59,7 @@ def akmc(config, steps=0):
         if not os.path.isdir(rp):
             os.mkdir(rp)
 
-    # Define constants. 
+    # Define constants.
     kT = config.main_temperature/11604.5 #in eV
 
     # Load metadata, the state list, and the current state.
@@ -83,7 +83,7 @@ def akmc(config, steps=0):
         # Keep the new temperature.
         previous_temperature = config.main_temperature
 
-    states = get_statelist(kT) 
+    states = get_statelist(kT)
     current_state = states.get_state(start_state_num)
     if previous_state_num == -1:
         previous_state = current_state
@@ -114,14 +114,14 @@ def akmc(config, steps=0):
     # Write out metadata.
     metafile = os.path.join(config.path_results, 'info.txt')
 #    parser = configparser.RawConfigParser()
-    parser = configparser.ConfigParser() 
+    parser = configparser.ConfigParser()
 
     if previous_state.number != current_state.number:
         previous_state_num = previous_state.number
 
     write_akmc_metadata(parser, current_state.number, time, previous_state_num, previous_temperature)
 
-    parser.write(open(metafile, 'w')) 
+    parser.write(open(metafile, 'w'))
 
     io.save_prng_state()
 
@@ -133,10 +133,10 @@ def get_akmc_metadata():
     # read in metadata
     # do we want custom metadata locations?
     metafile = os.path.join(config.path_results, 'info.txt')
-    parser = io.ini(metafile) 
+    parser = io.ini(metafile)
     if os.path.isfile(metafile):
         start_state_num = parser.get("Simulation Information",'current_state', 0)
-        time = parser.get("Simulation Information", 'time_simulated', 0.0) 
+        time = parser.get("Simulation Information", 'time_simulated', 0.0)
         previous_state_num = parser.get("Simulation Information", "previous_state", -1)
         previous_temperature = parser.get("Simulation Information", "previous_temperature", 0)
         first_run = parser.get("Simulation Information", "first_run", True)
@@ -455,12 +455,12 @@ def main():
         print("Good Saddles:", current_state.get_good_saddle_count())
         print("Bad Saddles:", current_state.get_bad_saddle_count())
         print("Percentage bad saddles: %.1f" % (float(current_state.get_bad_saddle_count())/float(max(current_state.get_bad_saddle_count() + current_state.get_good_saddle_count(), 1)) * 100))
-        print() 
+        print()
 
         comm = communicator.get_communicator()
         print("Saddle Searches")
-        print("---------------") 
-        print("Searches in queue:", comm.get_queue_size()) 
+        print("---------------")
+        print("Searches in queue:", comm.get_queue_size())
         print()
         if config.sb_on:
             print("Superbasins")

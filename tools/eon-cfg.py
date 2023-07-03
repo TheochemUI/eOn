@@ -22,45 +22,45 @@ class eoncfg(object):
         #creates dialog windows
         self.jobDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
         self.jobDialog.set_markup("""<b>Options:</b>
-                                           <b>akmc:</b> Run an adaptive kinetic monte 
+                                           <b>akmc:</b> Run an adaptive kinetic monte
                                                           carlo simulation.
-                   <b>parallel_replica:</b> Calculate the rare-event dynamics 
-                                                          of the system by combining 
-                                                          transitions observed from multiple 
+                   <b>parallel_replica:</b> Calculate the rare-event dynamics
+                                                          of the system by combining
+                                                          transitions observed from multiple
                                                           trajectories run in parallel.
-                    <b>process_search:</b> Combined saddle search, 
-                                                          minimizations, and prefactor 
-                                                          calculations. Used by the aKMC 
+                    <b>process_search:</b> Combined saddle search,
+                                                          minimizations, and prefactor
+                                                          calculations. Used by the aKMC
                                                           method.
-                      <b>saddle_search:</b> Do a saddle point search using a 
+                      <b>saddle_search:</b> Do a saddle point search using a
                                                           minimum mode method.
-                         <b>minimization:</b> Find the minimum from an initial 
+                         <b>minimization:</b> Find the minimum from an initial
                                                           configuration.
-                                      <b>hessian:</b> Calculate the Hessian matrix for 
-                                                          the specified configuration in a 
+                                      <b>hessian:</b> Calculate the Hessian matrix for
+                                                          the specified configuration in a
                                                           process.
                                    <b>dimer_dr:</b> Rye is changing this.
                     <b>dimer_rotation:</b> Rye is changing this.
-<b>displacement_sampling:</b> Job to sample different 
-                                                          displacement methods and 
+<b>displacement_sampling:</b> Job to sample different
+                                                          displacement methods and
                                                           parameters to see
-                                                          which are the most efficient.""") 
+                                                          which are the most efficient.""")
         self.potentialDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
         self.potentialDialog.set_markup("""<b>Options:</b>
                     <b>lj:</b> Lennard-Jones potential in reduced units ().
  <b>morse_pt:</b> Morse potential for platinum.
               <b>emt:</b> Effective medium theory, for metals.
-              <b>edip:</b> Environment-Dependent Interatomic Potential, 
+              <b>edip:</b> Environment-Dependent Interatomic Potential,
                            for carbon.
-             <b>vasp:</b> Vienna Ab-Initio Simulation Program (VASP) 
+             <b>vasp:</b> Vienna Ab-Initio Simulation Program (VASP)
                            interface.
- <b>tersoff_si:</b> Tersoff pair potential with angular terms, for 
+ <b>tersoff_si:</b> Tersoff pair potential with angular terms, for
                            silicon.
             <b>sw_si:</b> Stillinger-Weber potential, for silicon.
 <b>lenosky_si:</b> Lenosky potential, for silicon.
-        <b>eam_al:</b> Embedded atom method parameterized for 
+        <b>eam_al:</b> Embedded atom method parameterized for
                            aluminum.
-                <b>qsc:</b> Quantum Sutton-Chen potential, for FCC metals. 
+                <b>qsc:</b> Quantum Sutton-Chen potential, for FCC metals.
             <b>zpice:</b> Water on platinum.
            <b>tip4p:</b> Point charge model for water.
        <b>bopfox:</b> Bond order potential, for metals.""")
@@ -73,30 +73,30 @@ class eoncfg(object):
         self.neighborDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Atoms within this distance of each other are considered neighbors.")
         self.use_covalentDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Use the covalent radii of atoms to determine neighbors.")
         self.covalent_scaleDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Multiply covalent radii by this amount before determining neighbors.")
-        self.brute_neighborsDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Determine neighbors by brute force (use this with nonorthogonal boxes).")        
+        self.brute_neighborsDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Determine neighbors by brute force (use this with nonorthogonal boxes).")
         self.typeDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
         self.typeDialog.set_markup("""<b>Options:</b>
-     <b>local:</b> The local communicator runs the calculations on the 
+     <b>local:</b> The local communicator runs the calculations on the
                    same computer that the server is run on.
-<b>cluster:</b> A job scheduler can be used to run jobs through 
-                   user supplied shell scripts. Examples are given for 
+<b>cluster:</b> A job scheduler can be used to run jobs through
+                   user supplied shell scripts. Examples are given for
                    SGE.
    <b>boinc:</b> Jobs can be submitted to a BOINC project.
-        <b>arc:</b> Jobs can be submitted to the grid computing 
+        <b>arc:</b> Jobs can be submitted to the grid computing
                   software ARC.""")
         self.num_jobsDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
-        self.num_jobsDialog.set_markup("""     <b>local:</b> num_jobs' number of jobs will be run every time the 
+        self.num_jobsDialog.set_markup("""     <b>local:</b> num_jobs' number of jobs will be run every time the
                    program is invoked.
-<b>cluster:</b>  num_jobs is the desired sum of the queued and 
-                   running jobs. That is it should be set to the total 
-                   number of jobs that the user would like to run at once 
-                   and the script will submit jobs to the queue as 
+<b>cluster:</b>  num_jobs is the desired sum of the queued and
+                   running jobs. That is it should be set to the total
+                   number of jobs that the user would like to run at once
+                   and the script will submit jobs to the queue as
 		   needed to try to achieve the target number.
-   <b>boinc:</b>: one often wants to make enough work to keep all of 
-                   the clients busy. So instead of num_jobs being the 
-		   total number of jobs to run it sets the number of jobs 
-                   to keep in the queue. This way a buffer of 
-                   num_jobs/jobs_per_bundle 
+   <b>boinc:</b>: one often wants to make enough work to keep all of
+                   the clients busy. So instead of num_jobs being the
+		   total number of jobs to run it sets the number of jobs
+                   to keep in the queue. This way a buffer of
+                   num_jobs/jobs_per_bundle
                    workunits are always kept in the BOINC queue.""")
         self.jobs_per_bundleDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "In eon a job is defined as task that the eon client executes, such as a process search or a parallel replica run. Sometimes it makes sense to run more than one of the same type of job at a time.")
         self.client_pathDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "Either the name or path to the eon client binary. If only a name and not a path is given then eon looks for the binary in same directory as config.ini failing to find it there it will search though the directories in the $PATH environment variable.")
@@ -111,7 +111,7 @@ class eoncfg(object):
         self.re_template_pathDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "This is the path, relative from the boinc_project_dir, to the boinc result template.")
         self.appnameDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "boinc_appname Description")
         self.results_pathDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "This is the path where BOINC puts the final results. If you are using the sample_assimilator the results are stored in the project directory in a folder named sample_results.")
-        
+
 
         #adds info buttons
         self.jobInfoButton = gladetree.get_widget("jobInfoButton")
@@ -141,7 +141,7 @@ class eoncfg(object):
         self.re_template_pathInfoButton = gladetree.get_widget("re_template_pathInfoButton")
         self.appnameInfoButton = gladetree.get_widget("appnameInfoButton")
         self.results_pathInfoButton = gladetree.get_widget("results_pathInfoButton")
-        
+
 
         #function to run dialog window
         def rundialog(self, widget, dialog=None):
@@ -176,7 +176,7 @@ class eoncfg(object):
         self.re_template_pathInfoButton.connect("button_press_event", rundialog, self.re_template_pathDialog)
         self.appnameInfoButton.connect("button_press_event", rundialog, self.appnameDialog)
         self.results_pathInfoButton.connect("button_press_event", rundialog, self.appnameDialog)
-        
+
         #adds default config file if no config file exists
         self.config = ConfigParser.SafeConfigParser()
         self.config.read(os.path.join(pathfix.path, "default_config.ini"))
@@ -184,7 +184,7 @@ class eoncfg(object):
             self.config.read("./config.ini")
         except:
             print "No config.ini found in local directory, using default values."
-        
+
         #stores default data from cfg file into objects
         temperature = self.config.get("Main", "temperature")
         random_seed = self.config.get("Main", "random_seed")
@@ -195,7 +195,7 @@ class eoncfg(object):
         try:
             potential = self.config.get("Main", "potential")
         except:
-            potential = "eam_al"        
+            potential = "eam_al"
 
         commtype = self.config.get("Communicator", "type")
         num_jobs = self.config.get("Communicator", "num_jobs")
@@ -225,7 +225,7 @@ class eoncfg(object):
             results_path = self.config.get("Communicator", "boinc_results_path")
         except:
             results_path = "boinc_project_dir/sample_results"
-        
+
         energy = self.config.get("Structure Comparison" , "energy_difference")
         distance = self.config.get("Structure Comparison", "distance_difference")
         neighbor = self.config.get("Structure Comparison", "neighbor_cutoff")
@@ -234,7 +234,7 @@ class eoncfg(object):
         check_rotation = self.config.get("Structure Comparison", "check_rotation")
         use_covalent = self.config.get("Structure Comparison", "use_covalent")
         brute_neighbors = self.config.get("Structure Comparison", "brute_neighbors")
-        
+
         #stores widgets from eoncfg.glade into objects
         self.tempEntry = gladetree.get_widget("tempEntry")
         self.random_seedEntry = gladetree.get_widget("random_seedEntry")
@@ -257,7 +257,7 @@ class eoncfg(object):
         self.appnameEntry = gladetree.get_widget("appnameEntry")
         self.results_pathEntry = gladetree.get_widget("results_pathEntry")
         self.jobButton = gladetree.get_widget("jobButton")
-        self.potentialButton = gladetree.get_widget("potentialButton")        
+        self.potentialButton = gladetree.get_widget("potentialButton")
         self.typeButton = gladetree.get_widget("typeButton")
         self.ind_atomsTrue = gladetree.get_widget("ind_atomsTrue")
         self.ind_atomsFalse = gladetree.get_widget("ind_atomsFalse")
@@ -267,7 +267,7 @@ class eoncfg(object):
         self.use_covalentFalse = gladetree.get_widget("use_covalentFalse")
         self.brute_neighborsTrue = gladetree.get_widget("brute_neighborsTrue")
         self.brute_neighborsFalse = gladetree.get_widget("brute_neighborsFalse")
-        
+
 
         # sets widgets to default to data from default cfg file
         self.tempEntry.set_text(temperature)
@@ -300,7 +300,7 @@ class eoncfg(object):
             job = 7
         elif job == "displacement_sampling":
             job = 8
-        else: 
+        else:
             job = (-1)
         self.jobButton.set_active(job)
         if potential == "lj":
@@ -312,25 +312,25 @@ class eoncfg(object):
         elif potential == "epip":
             potential = 3
         elif potential == "vasp":
-            potential = 4 
+            potential = 4
         elif potential == "tersoff_si":
-            potential = 5 
+            potential = 5
         elif potential == "sw_si":
             potential = 6
         elif potential == "lenosky_si":
             potential = 7
         elif potential == "eam_al":
-            potential = 8 
+            potential = 8
         elif potential == "qsc":
-            potential = 9 
+            potential = 9
         elif potential == "zpice":
-            potential = 10 
+            potential = 10
         elif potential == "tip4p":
-            potential = 11 
+            potential = 11
         elif potential == "bopfox":
-            potential = 12 
+            potential = 12
         else:
-            potential = -1    
+            potential = -1
         self.potentialButton.set_active(potential)
         self.num_jobsEntry.set_text(num_jobs)
         self.jobs_per_bundleEntry.set_text(jobs_per_bundle)
@@ -345,7 +345,7 @@ class eoncfg(object):
         self.results_pathEntry.set_text(results_path)
         self.project_dirEntry.set_text(project_dir)
         self.wu_template_pathEntry.set_text(wu_template_path)
-        self.re_template_pathEntry.set_text(re_template_path)        
+        self.re_template_pathEntry.set_text(re_template_path)
         self.energyEntry.set_text(energy)
         self.distanceEntry.set_text(distance)
         self.neighborEntry.set_text(neighbor)
@@ -370,18 +370,18 @@ class eoncfg(object):
             self.brute_neighborsFalse.set_group(self.brute_neighborsTrue)
         else:
             self.brute_neighborsTrue.set_group(self.brute_neighborsFalse)
-        
-        
+
+
         #adds save button & label from .glade and connects it to save function
-        self.saveButton = gladetree.get_widget("saveButton") 
-        self.saveButton.connect("button_press_event", self.save)                   
+        self.saveButton = gladetree.get_widget("saveButton")
+        self.saveButton.connect("button_press_event", self.save)
         self.saveLabel = gladetree.get_widget("saveLabel")
-        
-        
-        #shows window        
+
+
+        #shows window
         self.window.show()
 
-        
+
 
     #saves options to current directories config.ini file
     def save(self, widget, data=None):
@@ -404,7 +404,7 @@ class eoncfg(object):
         self.config.set('Structure Comparison', 'energy_difference', self.energyEntry.get_text())
         self.config.set('Structure Comparison', 'distance_difference', self.distanceEntry.get_text())
         self.config.set('Structure Comparison', 'neighbor_cutoff', self.neighborEntry.get_text())
-        self.config.set('Structure Comparison', 'covalent_scale', self.covalent_scaleEntry.get_text())        
+        self.config.set('Structure Comparison', 'covalent_scale', self.covalent_scaleEntry.get_text())
         #combo buttons are stored in ints and have to being changed back to strings
         newType = self.typeButton.get_active()
         if newType == 0:
@@ -448,7 +448,7 @@ class eoncfg(object):
         elif newPotential == 4:
             newPotential = "vasp"
         elif newPotential == 5:
-            newPotential = "tersoff_si" 
+            newPotential = "tersoff_si"
         elif newPotential == 6:
             newPotential = "sw_si"
         elif newPotential == 7:
@@ -456,13 +456,13 @@ class eoncfg(object):
         elif newPotential == 8:
             newPotential = "eam_al"
         elif newPotential == 9:
-            newPotential = "qsc" 
+            newPotential = "qsc"
         elif newPotential == 10:
-            newPotential = "zpice" 
+            newPotential = "zpice"
         elif newPotential == 11:
-            newPotential = "tip4p" 
+            newPotential = "tip4p"
         elif newPotential == 12:
-            newPotential = "bopfox" 
+            newPotential = "bopfox"
         else:
             newPotential = ""
         self.config.set('Main', 'potential', newPotential)
@@ -480,32 +480,32 @@ class eoncfg(object):
         else:
             self.config.set('Structure Comparison', 'use_covalent', 'False')
         if self.brute_neighborsTrue.get_active() == True:
-            self.config.set('Structure Comparison', 'brute_neighbors', 'True')           
+            self.config.set('Structure Comparison', 'brute_neighbors', 'True')
         else:
             self.config.set('Structure Comparison', 'brute_neighbors', 'False')
         #changes save label
         self.saveLabel.set_text("Changes saved")
 
-        
+
         f = open("config.ini", 'w')
         self.config.write(f)
         f.close()
-        
-            
-        
-      
 
-        
 
-            
+
+
+
+
+
+
     #allows program to exit when exit button is pressed
     def gtk_main_quit(self, widget):
         gtk.main_quit()
-        
+
 def main():
     GUI = eoncfg()
     gtk.main()
-    
+
 if __name__ == '__main__':
     pid = os.fork()
     if pid:

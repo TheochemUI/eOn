@@ -129,9 +129,7 @@ public:
   void setPositions(VectorXd x) { matter->setPositionsV(x); }
   VectorXd getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
-  bool isConverged() {
-    return getConvergence() < params->saddleConvergedForce;
-  }
+  bool isConverged() { return getConvergence() < params->saddleConvergedForce; }
 
   double getConvergence() {
     if (params->optConvergenceMetric == "norm") {
@@ -166,13 +164,11 @@ MinModeSaddleSearch::MinModeSaddleSearch(
     } else {
       minModeMethod = std::make_shared<Dimer>(matter, params, pot);
     }
-  } else if (params->saddleMinmodeMethod ==
-             LowestEigenmode::MINMODE_LANCZOS) {
+  } else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_LANCZOS) {
     minModeMethod = std::make_shared<Lanczos>(matter, params, pot);
   }
 #ifdef WITH_GPRD
-  else if (params->saddleMinmodeMethod ==
-           LowestEigenmode::MINMODE_GPRDIMER) {
+  else if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
     minModeMethod = new AtomicGPDimer(matter, params);
   }
 #endif

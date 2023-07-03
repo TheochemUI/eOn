@@ -22,7 +22,7 @@ class SB_Recycling:
         *Finally, it is ready to begin making saddle-search suggestions, using the corresponding pairs
             of states, one from the old superbasin and its corresponding state in the new superbasin.
         *In either case, this will use "Recycling" to actually generate the suggestions for each state pair.
-        
+
         states - the StateList object
         previous_state - the state object just moved from
         current_state - the state object just moved to
@@ -123,7 +123,7 @@ class SB_Recycling:
         # If we're still in the middle of a previous superbasin recycling process,
         # use the established data and remake the list of state objects.
         elif self.in_progress:
-            self.sb_states = [[self.states.get_state(pair[0]), self.states.get_state(pair[1])] 
+            self.sb_states = [[self.states.get_state(pair[0]), self.states.get_state(pair[1])]
                                for pair in self.sb_state_nums]
 
     def get_process_id(self, current_state_procs, next_state_num):
@@ -163,7 +163,7 @@ class SB_Recycling:
         """ Read the metadata and return the superbasin state list, the "current/previous"
             states, and how far along in the superbasin recycling process we are. """
         data_path = os.path.join(self.path, "recycling_data.txt")
-        # If the metadata is not there yet, 
+        # If the metadata is not there yet,
         if not os.path.isfile(data_path):
             self.sb_state_nums = []
             return None
@@ -266,7 +266,7 @@ class SB_Recycling:
 
 class Recycling:
     """ Constructs a saddle point recycling object.
-    
+
         states - the StateList object
         suggested_ref_state - state to make suggestions from
         curr_state - state to make suggestions for
@@ -318,9 +318,9 @@ class Recycling:
 
             # Make a vector of distances between previous
             # current positions for each atom in the state.
-            diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r, 
+            diff = atoms.per_atom_norm(self.curr_reactant.r - self.ref_reactant.r,
                                        self.curr_reactant.box)
-            
+
             # The saddle will be taken as the reactant and will be modified
             # (along with the mode) for each suggested process
             # and then recommended as a search.

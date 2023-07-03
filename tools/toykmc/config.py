@@ -1,7 +1,7 @@
 use_sb = True
 
 
-#tunes barrier size 
+#tunes barrier size
 dEsaddle = .1
 
 #these are the directions that atoms are allowed to move

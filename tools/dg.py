@@ -20,7 +20,7 @@ if len(sys.argv) > 1:
         print("usage: run dg.py in an eon akmc directory with the number of energy bins as an optional argument.")
         print()
         sys.exit()
-    
+
 print('Creating a disconnectivity graph with %d energy levels.' % nlevels)
 
 
@@ -53,11 +53,11 @@ if build_database:
             prod = minima[prod]
             e = float(line[1])
             proc_id = int(line[0])
-            coords = int('%d%d' % (i+1,j))    
+            coords = int('%d%d' % (i+1,j))
             if [reac,prod] not in transitions and [prod,reac] not in transitions:
                 db.addTransitionState(e, coords, reac, prod)
                 transitions.append([reac,prod])
-        
+
 graphwrapper = Graph(db)
 graph = graphwrapper.graph
 
@@ -67,9 +67,7 @@ dg.calculate()
 print('Plotting (this can take a while)...')
 dg.plot()
 print('Saving tree.pdf...')
-plt.savefig("tree.pdf")    
+plt.savefig("tree.pdf")
 print('Displaying plot...')
 plt.show()
 print('Done.')
-
-     

@@ -69,11 +69,10 @@ int DynamicsSaddleSearch::run(void) {
     bondBoost.initialize();
   }
 
-  int checkInterval = int(params->saddleDynamicsStateCheckInterval /
-                              params->mdTimeStep +
-                          0.5);
-  int recordInterval = int(
-      params->saddleDynamicsRecordInterval / params->mdTimeStep + 0.5);
+  int checkInterval =
+      int(params->saddleDynamicsStateCheckInterval / params->mdTimeStep + 0.5);
+  int recordInterval =
+      int(params->saddleDynamicsRecordInterval / params->mdTimeStep + 0.5);
 
   if (params->writeMovies == true) {
     saddle->matter2con("dynamics", false);
@@ -129,12 +128,12 @@ int DynamicsSaddleSearch::run(void) {
             if (image < mid) {
               double frac = ((double)image) / ((double)mid);
               neb.path[image]->setPositions(reactant->getPositions() +
-                                             frac * reactantToSaddle);
+                                            frac * reactantToSaddle);
             } else if (image > mid) {
               double frac =
                   (double)(image - mid) / (double)(neb.numImages - mid + 1);
               neb.path[image]->setPositions(saddle->getPositions() +
-                                             frac * saddleToProduct);
+                                            frac * saddleToProduct);
             } else if (image == mid) {
               neb.path[image]->setPositions(saddle->getPositions());
             }
@@ -152,10 +151,9 @@ int DynamicsSaddleSearch::run(void) {
         AtomMatrix mode;
         if (params->nebMaxIterations > 0) {
           LowestEigenmode *minModeMethod;
-          if (params->saddleMinmodeMethod ==
-              LowestEigenmode::MINMODE_DIMER) {
+          if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
             if (params->dimerImproved) {
-              minModeMethod = new ImprovedDimer(saddle, params,pot);
+              minModeMethod = new ImprovedDimer(saddle, params, pot);
             } else {
               minModeMethod = new Dimer(saddle, params, pot);
             }
@@ -270,8 +268,9 @@ int DynamicsSaddleSearch::run(void) {
   return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 
-int DynamicsSaddleSearch::refineTransition(std::vector<std::shared_ptr<Matter>> MDSnapshots,
-                                           std::shared_ptr<Matter> product) {
+int DynamicsSaddleSearch::refineTransition(
+    std::vector<std::shared_ptr<Matter>> MDSnapshots,
+    std::shared_ptr<Matter> product) {
   int min, max, mid;
   bool midTest;
   min = 0;

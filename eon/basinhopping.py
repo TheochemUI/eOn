@@ -22,7 +22,7 @@ from eon.version import version
 #class RandomStructure:
 #    def __init__(self, structure):
 #        self.structure = structure
-#        self.radii = numpy.array([ atoms.elements[name]['radius'] 
+#        self.radii = numpy.array([ atoms.elements[name]['radius']
 #                                   for name in structure.names ])
 #        self.box_center = numpy.diagonal(structure.box)/2.0
 #        self.p = 0.1
@@ -33,12 +33,12 @@ from eon.version import version
 #
 #        rs = atoms.Atoms(0)
 #        first = indexes[0]
-#        rs.append(numpy.zeros(3), True, self.structure.names[first], 
+#        rs.append(numpy.zeros(3), True, self.structure.names[first],
 #                  self.structure.mass[first])
 #
 #        failures = 0
 #        for i in indexes[1:]:
-#            rs.append(numpy.zeros(3), True, 
+#            rs.append(numpy.zeros(3), True,
 #                      self.structure.names[i], self.structure.mass[i])
 #            rs.box = self.box_p(rs)
 #            valid = False
@@ -98,7 +98,7 @@ class BHStates:
             if len(energetically_close) != 0:
                 a1 = io.loadcon(result_files['min.con'])
                 for state_number in energetically_close:
-                    state_con_path = os.path.join(config.path_states, 
+                    state_con_path = os.path.join(config.path_states,
                                                   str(state_number),
                                                   'minimum.con')
                     a2 = io.loadcon(state_con_path)
@@ -133,7 +133,7 @@ class BHStates:
                 f.write(fh.getvalue())
                 f.close()
 
-        return added 
+        return added
 
 def basinhopping():
     logger.info('Eon version %s', version())
@@ -298,7 +298,7 @@ def main():
                         #XXX: ugly way to remove all empty directories containing this one
                         os.mkdir(i)
                         os.removedirs(i)
-                log_path = os.path.join(config.path_results, "bh.log") 
+                log_path = os.path.join(config.path_results, "bh.log")
                 wuid_path = os.path.join(config.path_results, "wuid.dat")
                 prng_path = os.path.join(config.path_results, "prng.pkl")
                 for i in [log_path, wuid_path, prng_path ]:

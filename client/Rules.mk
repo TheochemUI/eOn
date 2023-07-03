@@ -42,17 +42,17 @@ ifdef NO_FORTRAN
     POTENTIALS += "-Aluminum -Lenosky -SW -Tersoff -EDIP -H2O_H -FeHe"
     OPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/ 
+                ./potentials/FeHe/
 else
     POTENTIALS += "+Aluminum +Lenosky +SW +Tersoff +EDIP +H2O_H +FeHe"
     FPOTDIRS += ./potentials/Aluminum/ ./potentials/Lenosky/ ./potentials/SW/ \
                 ./potentials/Tersoff/ ./potentials/EDIP/ ./potentials/Water_H/ \
-                ./potentials/FeHe/ 
+                ./potentials/FeHe/
     LIBS += ./potentials/Aluminum/libAL.a ./potentials/Lenosky/libLenosky.a \
             ./potentials/SW/libSW.a ./potentials/Tersoff/libTersoff.a \
             ./potentials/EDIP/libEDIP.a ./potentials/Water_H/libtip4p_h.a \
-            ./potentials/FeHe/libFeHe.a 
-            
+            ./potentials/FeHe/libFeHe.a
+
 endif
 
 #Optional potentials
@@ -69,11 +69,11 @@ endif
 ifdef LAMMPS_POT
     CXXFLAGS += -DLAMMPS_POT
     POTDIRS += ./potentials/LAMMPS
-    LIBS += ./potentials/LAMMPS/liblammps.a 
+    LIBS += ./potentials/LAMMPS/liblammps.a
     ifdef EONMPI
-        LIBS += ./potentials/LAMMPS/liblammps_mpi.a 
+        LIBS += ./potentials/LAMMPS/liblammps_mpi.a
     else
-        LIBS += ./potentials/LAMMPS/liblammps_serial.a 
+        LIBS += ./potentials/LAMMPS/liblammps_serial.a
     endif
     ifndef EONMPI
         LIBS += ./potentials/LAMMPS/libmpi_stubs.a
@@ -186,7 +186,7 @@ libeon: $(filter-out ClientEON.o,$(OBJECTS)) $(POTDIRS) $(FPOTDIRS)
 ClientEON.o: version.h
 CommandLine.o: version.h
 
-version.h: 
+version.h:
 	./version.sh > version.h
 
 $(LIBS):
@@ -210,7 +210,7 @@ testsClobber:
 	cd unittests && $(MAKE) clobber
 
 unitTests: mkUnitTests
-	cd unittests && sh run_unit_tests.sh 
+	cd unittests && sh run_unit_tests.sh
 
 check: unitTests
 	@echo "In the future, regression testing will automatically run now."

@@ -53,7 +53,7 @@ def c_mcamc(Q, R, c, prec='dd'):
         solve = libmcamc.solve_quad_double
     else:
         raise ValueError('Unknown prec value "%s"' % prec)
-    # void solve(int Qsize, double *Qflat, int Rcols, double *Rflat, 
+    # void solve(int Qsize, double *Qflat, int Rcols, double *Rflat,
     #           double *c_in, double *B, double *t)
     solve(Q.shape[0], Qflat, R.shape[1], Rflat, cflat, Bflat, tflat, residual)
 
@@ -83,4 +83,3 @@ try:
 except OSError:
     logger.debug("Was unable to use libmcamc, using numpy instead.")
     mcamc = np_mcamc
-    

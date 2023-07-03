@@ -31,10 +31,8 @@ const dd_real dd_real::_inf = dd_real(qd::_d_inf, qd::_d_inf);
 
 const double dd_real::_eps = 4.93038065763132e-32;  // 2^-104
 const double dd_real::_min_normalized = 2.0041683600089728e-292;  // = 2^(-1022 + 53)
-const dd_real dd_real::_max = 
+const dd_real dd_real::_max =
     dd_real(1.79769313486231570815e+308, 9.97920154767359795037e+291);
-const dd_real dd_real::_safe_max = 
+const dd_real dd_real::_safe_max =
     dd_real(1.7976931080746007281e+308, 9.97920154767359795037e+291);
 const int dd_real::_ndigits = 31;
-
-

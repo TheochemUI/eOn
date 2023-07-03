@@ -6,7 +6,7 @@
 {%- set reldelim2 = reldelim2 is not defined and ' |' or reldelim2 %}
 {%- macro relbar() %}
     <div class="related">
-    
+
           {%- block sidebarsearch %}
           {%- if pagename != "search" %}
             <!-- <h3>[[ builder == 'web' and 'Keyword' or 'Quick' ]] search</h3> -->
@@ -84,7 +84,7 @@
           {%- block sidebarrel %}
           {%- if prev %}
       <!-- Where does one find this "prev" variable?
-      
+
             <h4>Previous topic</h4>
             <p class="topless"><a href="{{ prev.link|e }}"
             title="previous chapter">{{ prev.title }}</a></p>
@@ -201,11 +201,11 @@
       <div class="clearer"></div>
     </div>
 
-<!-- 
+<!--
 Remove footer.  Sphinx will actually parse anything with curly braces even if
 it is inside a comment.  The footer can be added by removing this comment
 and replacing [] by corresponding curly brackets
-[%- block relbar2 %][[ relbar() ]][% endblock %] 
+[%- block relbar2 %][[ relbar() ]][% endblock %]
 -->
 
 {%- block footer %}
