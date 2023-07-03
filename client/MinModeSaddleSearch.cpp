@@ -11,10 +11,7 @@
 #include "AtomicGPDimer.h"
 #endif
 #include "EpiCenters.h"
-#include "Log.h"
 #include "ObjectiveFunction.h"
-
-#include <cstdlib>
 
 using namespace helper_functions;
 
@@ -139,9 +136,9 @@ public:
     } else if (params->optConvergenceMetric == "max_component") {
       return matter->getForces().maxCoeff();
     } else {
-      log("[MinModeSaddleSearch] unknown opt_convergence_metric: %s\n",
-          params->optConvergenceMetric.c_str());
-      exit(1);
+      SPDLOG_DEBUG("[MinModeSaddleSearch] unknown opt_convergence_metric: {}",
+                   params->optConvergenceMetric);
+      std::exit(1);
     }
   }
 
@@ -157,6 +154,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(
   mode = modePassed;
   status = STATUS_GOOD;
   iteration = 0;
+  log = spdlog::get("combi");
 
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
     if (params->dimerImproved) {
@@ -175,7 +173,8 @@ MinModeSaddleSearch::MinModeSaddleSearch(
 }
 
 int MinModeSaddleSearch::run() {
-  log("Saddle point search started from reactant with energy %f eV.\n",
+  SPDLOG_LOGGER_DEBUG(
+      log, "Saddle point search started from reactant with energy {} eV.",
       reactantEnergy);
 
   int optStatus;
@@ -183,14 +182,15 @@ int MinModeSaddleSearch::run() {
   const char *forceLabel = params->optConvergenceMetricLabel.c_str();
 
   if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_GPRDIMER) {
-    log("================= Using the GP Dimer Library =================\n");
+    SPDLOG_LOGGER_DEBUG(
+        log, "================= Using the GP Dimer Library =================");
     minModeMethod->compute(matter, mode);
     if (minModeMethod->getEigenvalue() > 0) {
       printf("%f\n", minModeMethod->getEigenvalue());
       return STATUS_NONNEGATIVE_ABORT;
     }
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-      log("[MinModeSaddleSearch] eigenvalue not negative\n");
+      SPDLOG_LOGGER_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
     if (fabs(minModeMethod->getEigenvalue()) <
@@ -204,19 +204,25 @@ int MinModeSaddleSearch::run() {
   } else {
 
     if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-      log("[Dimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n", "Step",
-          "Step Size", "Delta E", forceLabel, "Curvature", "Torque", "Angle",
-          "Rots");
+      SPDLOG_LOGGER_INFO(log,
+                         "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
+                         "{:7s}   {:6s}   {:4s}\n",
+                         "Step", "Step Size", "Delta E", forceLabel,
+                         "Curvature", "Torque", "Angle", "Rots");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_LANCZOS) {
-      log("[Lanczos]  %9s %9s %10s %18s %9s %10s %7s %5s\n", "Step",
-          "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
+      SPDLOG_LOGGER_INFO(
+          log,
+          "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n",
+          "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
           "Angle", "Iters");
     } else if (params->saddleMinmodeMethod ==
                LowestEigenmode::MINMODE_GPRDIMER) {
-      log("[GPRDimer]  %9s   %9s   %10s   %18s   %9s   %7s   %6s   %4s\n",
-          "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Torque",
-          "Angle", "Rots");
+      SPDLOG_LOGGER_INFO(log,
+                         "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
+                         " {:7s}   {:6s}   {:4s}\n",
+                         "Step", "Step Size", "Delta E", forceLabel,
+                         "Curvature", "Torque", "Angle", "Rots");
     }
 
     ostringstream climb;
@@ -307,31 +313,40 @@ int MinModeSaddleSearch::run() {
       iteration++;
 
       if (params->saddleMinmodeMethod == LowestEigenmode::MINMODE_DIMER) {
-        log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   "
-            "%4ld\n",
+        SPDLOG_LOGGER_DEBUG(
+            log,
+            "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
+            "  {:6.3f}   {:4}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
             objf.getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else if (params->saddleMinmodeMethod ==
                  LowestEigenmode::MINMODE_LANCZOS) {
-        log("[Lanczos]  %9i %9.6f %10.4f %18.5e %9.4f %10.6f %7.3f %5i\n",
+        SPDLOG_LOGGER_DEBUG(
+            log,
+            "[Lanczos]  {:9} {:9.6f} {:10.4f} {:18.5e} {:9.4f} {:10.6f} "
+            "{:7.3f} {:5}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
             objf.getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else if (params->saddleMinmodeMethod ==
                  LowestEigenmode::MINMODE_GPRDIMER) {
-        log("[Dimer]  %9ld   %9.7f   %10.4f   %18.5e   %9.4f   %7.3f   %6.3f   "
-            "%4ld\n",
+        SPDLOG_LOGGER_DEBUG(
+            log,
+            "[Dimer]  {:9}   {:9.7f}   {:10.4f}   {:18.5e}   {:9.4f}   {:7.3f} "
+            "  {:6.3f}   {:4}\n",
             iteration, stepSize, matter->getPotentialEnergy() - reactantEnergy,
             objf.getConvergence(), minModeMethod->getEigenvalue(),
             minModeMethod->statsTorque, minModeMethod->statsAngle,
             minModeMethod->statsRotations);
       } else {
-        log("[MinModeSaddleSearch] Unknown min_mode_method: %s\n",
-            params->saddleMinmodeMethod.c_str());
-        exit(1);
+        log = spdlog::get("_traceback");
+        SPDLOG_LOGGER_CRITICAL(
+            log, "[MinModeSaddleSearch] Unknown min_mode_method: {}",
+            params->saddleMinmodeMethod);
+        std::exit(1);
       }
 
       if (params->writeMovies) {
@@ -356,7 +371,7 @@ int MinModeSaddleSearch::run() {
       minModeMethod->compute(matter, mode);
 
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
-      log("[MinModeSaddleSearch] eigenvalue not negative\n");
+      SPDLOG_LOGGER_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
 

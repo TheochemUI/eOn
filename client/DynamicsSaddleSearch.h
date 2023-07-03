@@ -18,6 +18,7 @@ public:
     this->pot = matterPassed->getPotential();
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
+    log = spdlog::get("combi");
   };
   ~DynamicsSaddleSearch() = default;
 
@@ -38,6 +39,9 @@ public:
   std::shared_ptr<Matter> saddle;
 
   int status;
+
+private:
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif
