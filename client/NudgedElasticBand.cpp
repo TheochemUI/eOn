@@ -221,6 +221,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         path[idx]->matter2con(fileNEBPath);
       }
       fclose(fileNEBPath);
+      printImageData(true, iteration);
     }
     VectorXd pos = objf.getPositions();
     // if (iteration) { // so that we print forces before taking an optimizer
@@ -444,7 +445,7 @@ void NudgedElasticBand::updateForces(void) {
 }
 
 // Print NEB image data
-void NudgedElasticBand::printImageData(bool writeToFile) {
+void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   double dist, distTotal = 0;
   AtomMatrix tangentStart =
       path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
@@ -453,17 +454,19 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
   AtomMatrix tang;
 
   std::shared_ptr<spdlog::logger> fileLogger;
+  if (spdlog::get("file_logger")) {
+    spdlog::drop("file_logger");
+  }
   if (writeToFile) {
     // Remove existing log file if it exists
-    if (fs::exists("neb.dat")) {
-      SPDLOG_DEBUG("Removing the file since it exists");
-      fs::remove("neb.dat");
+    auto neb_dat_fs = fmt::format("neb_{:03}.dat", idx);
+    if (fs::exists(neb_dat_fs)) {
+      SPDLOG_DEBUG(
+          "Removing the file since it exists, dropping existing logger");
+      fs::remove(neb_dat_fs);
     }
-    fileLogger = spdlog::basic_logger_mt("file_logger", "neb.dat");
+    fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
   }
-
-  SPDLOG_DEBUG("Image data (as in neb.dat)");
-
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
       tang = tangentStart;
@@ -482,6 +485,7 @@ void NudgedElasticBand::printImageData(bool writeToFile) {
           path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
           (path[i]->getForces().array() * tang.array()).sum());
     } else {
+      SPDLOG_DEBUG("Image data (as in neb.dat)");
       SPDLOG_DEBUG("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
                    path[i]->getPotentialEnergy() -
                        path[0]->getPotentialEnergy(),
