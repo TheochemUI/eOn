@@ -80,7 +80,7 @@ bool NEBObjectiveFunction::isUncertain() {
       maxMaxUnc = currentMaxUnc;
     }
   }
-  bool unc_conv{maxMaxUnc > 0.05};
+  bool unc_conv{maxMaxUnc > params->gp_uncertainity};
   if (unc_conv) {
     this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINITY;
   }
