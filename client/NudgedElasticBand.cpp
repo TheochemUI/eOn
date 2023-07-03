@@ -467,6 +467,9 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
     }
     fileLogger = spdlog::basic_logger_mt("file_logger", neb_dat_fs);
   }
+  if (idx == 0) {
+    SPDLOG_DEBUG("Image data (as in neb.dat)");
+  }
   for (long i = 0; i <= numImages + 1; i++) {
     if (i == 0) {
       tang = tangentStart;
@@ -485,7 +488,6 @@ void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
           path[i]->getPotentialEnergy() - path[0]->getPotentialEnergy(),
           (path[i]->getForces().array() * tang.array()).sum());
     } else {
-      SPDLOG_DEBUG("Image data (as in neb.dat)");
       SPDLOG_DEBUG("{:>3} {:>12.6f} {:>12.6f} {:>12.6f}", i, distTotal,
                    path[i]->getPotentialEnergy() -
                        path[0]->getPotentialEnergy(),
