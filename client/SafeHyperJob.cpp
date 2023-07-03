@@ -1,7 +1,6 @@
 #include "SafeHyperJob.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
-#include "Matter.h"
 #include "Optimizer.h"
 
 std::vector<std::string> SafeHyperJob::run(void) {
@@ -225,213 +224,213 @@ int SafeHyperJob::dynamics() {
           static_cast<double>(100.0 * step / params->mdSteps), maxAtomDistance,
           step, params->mdSteps);
     }
+  }
 
-    // calculate avearges
-    avgT = sumT / step;
-    varT = sumT2 / step - avgT * avgT;
+  // calculate averages
+  avgT = sumT / step;
+  varT = sumT2 / step - avgT * avgT;
 
-    if (nBoost > 0) {
+  if (nBoost > 0) {
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; "
+                        "Factor = {:.6f}; Boost = {:.6f}",
+                        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
+                        sumboost / nBoost);
+  } else {
+    SPDLOG_LOGGER_DEBUG(
+        log,
+        "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}",
+        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);
+  }
+  if (std::isfinite(avgT) == 0) {
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Infinite average temperature, something went wrong!");
+    newStateFlag = false;
+  }
+
+  *product = *final_img;
+  // new state was detected; determine refined transition time
+  for (long i = 0; i < mdBufferLength; i++) {
+    delete mdBuffer[i];
+  }
+  delete[] timeBuffer;
+  delete[] biasBuffer;
+
+  if (newStateFlag) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+void SafeHyperJob::saveData(int status) {
+  FILE *fileResults, *fileReactant;
+
+  std::string resultsFilename("results.dat");
+  returnFiles.push_back(resultsFilename);
+
+  fileResults = fopen(resultsFilename.c_str(), "wb");
+  // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls +
+  // refineFCalls;
+
+  fprintf(fileResults, "%s potential_type\n",
+          helper_functions::getPotentialName(params->potential).c_str());
+  fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
+  fprintf(fileResults, "%lf potential_energy_reactant\n",
+          reactant->getPotentialEnergy());
+  // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
+  fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
+  fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
+  fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
+  // fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
+
+  //    fprintf(fileResults, "%d termination_reason\n", status);
+  fprintf(fileResults, "%d transition_found\n", (newStateFlag) ? 1 : 0);
+
+  if (newStateFlag) {
+    fprintf(fileResults, "%e transition_time_s\n",
+            minCorrectedTime * 1.0e-15 * params->timeUnit);
+    fprintf(fileResults, "%lf potential_energy_product\n",
+            product->getPotentialEnergy());
+    fprintf(fileResults, "%lf moved_distance\n",
+            product->distanceTo(*reactant));
+  }
+
+  fprintf(fileResults, "%e simulation_time_s\n",
+          time * 1.0e-15 * params->timeUnit);
+  fprintf(fileResults, "%lf speedup\n",
+          time / params->mdSteps / params->mdTimeStep);
+
+  fclose(fileResults);
+
+  std::string reactantFilename("reactant.con");
+  returnFiles.push_back(reactantFilename);
+  fileReactant = fopen(reactantFilename.c_str(), "wb");
+  reactant->matter2con(fileReactant);
+  fclose(fileReactant);
+
+  if (newStateFlag) {
+    FILE *fileProduct;
+    std::string productFilename("product.con");
+    returnFiles.push_back(productFilename);
+
+    fileProduct = fopen(productFilename.c_str(), "wb");
+    product->matter2con(fileProduct);
+    fclose(fileProduct);
+
+    if (params->parrepRefineTransition) {
+      FILE *fileSaddle;
+      std::string saddleFilename("saddle.con");
+      returnFiles.push_back(saddleFilename);
+
+      fileSaddle = fopen(saddleFilename.c_str(), "wb");
+      saddle->matter2con(fileSaddle);
+      fclose(fileSaddle);
+    }
+  }
+  return;
+}
+
+void SafeHyperJob::dephase() {
+  bool transitionFlag = false;
+  long step, stepNew, loop;
+  long DephaseSteps;
+  long dephaseBufferLength, dephaseRefineStep;
+  AtomMatrix velocity;
+
+  DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
+  Dynamics dephaseDynamics(current, params.get());
+  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
+                      params->parrepDephaseTime * params->timeUnit);
+
+  step = stepNew = loop = 0;
+
+  while (step < DephaseSteps) {
+    // this should be allocated once, and of length DephaseSteps
+    dephaseBufferLength = DephaseSteps - step;
+    loop++;
+    Matter *dephaseBuffer[dephaseBufferLength];
+
+    for (long i = 0; i < dephaseBufferLength; i++) {
+      dephaseBuffer[i] = new Matter(pot, params);
+      dephaseDynamics.oneStep();
+      *dephaseBuffer[i] = *current;
+    }
+
+    transitionFlag = checkState(current, reactant);
+
+    if (transitionFlag) {
+      dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant);
+      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
+                          dephaseRefineStep);
+      transitionStep = dephaseRefineStep - 1; // check that this is correct
+      transitionStep = (transitionStep > 0) ? transitionStep : 0;
       SPDLOG_LOGGER_DEBUG(log,
-                          "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; "
-                          "Factor = {:.6f}; Boost = {:.6f}",
-                          avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-                          sumboost / nBoost);
+                          "Dephasing warning: in a new state, inverse the "
+                          "momentum and restart "
+                          "from step {}",
+                          step + transitionStep);
+      *current = *dephaseBuffer[transitionStep];
+      velocity = current->getVelocities();
+      velocity = velocity * (-1);
+      current->setVelocities(velocity);
+      step = step + transitionStep;
     } else {
+      step = step + dephaseBufferLength;
+      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {:.2f} steps",
+      // step);
+    }
+
+    for (long i = 0; i < dephaseBufferLength; i++) {
+      delete dephaseBuffer[i];
+    }
+
+    if ((params->parrepDephaseLoopStop) &&
+        (loop > params->parrepDephaseLoopMax)) {
       SPDLOG_LOGGER_DEBUG(
           log,
-          "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}",
-          avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);
+          "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
+          step);
+      break;
     }
-    if (std::isfinite(avgT) == 0) {
-      SPDLOG_LOGGER_DEBUG(
-          log, "Infinite average temperature, something went wrong!");
-      newStateFlag = false;
-    }
+    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
+                        step * params->mdTimeStep * params->timeUnit);
+  }
+}
 
-    *product = *final_img;
-    // new state was detected; determine refined transition time
-    for (long i = 0; i < mdBufferLength; i++) {
-      delete mdBuffer[i];
-    }
-    delete[] timeBuffer;
-    delete[] biasBuffer;
+bool SafeHyperJob::checkState(Matter *current, Matter *reactant) {
+  Matter tmp(*current);
+  tmp.relax(true);
+  if (tmp.compare(*reactant)) {
+    return false;
+  }
+  return true;
+}
 
-    if (newStateFlag) {
-      return 1;
+long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
+  // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
+  // time.\n");
+
+  bool midTest;
+  long min, max, mid;
+
+  min = 0;
+  max = length - 1;
+
+  while ((max - min) > 1) {
+
+    mid = min + (max - min) / 2;
+    midTest = checkState(buff[mid], reactant);
+
+    if (midTest == false) {
+      min = mid;
+    } else if (midTest == true) {
+      max = mid;
     } else {
-      return 0;
+      SPDLOG_LOGGER_CRITICAL(log, "Refine step failed!");
+      std::exit(1);
     }
   }
 
-  void SafeHyperJob::saveData(int status) {
-    FILE *fileResults, *fileReactant;
-
-    std::string resultsFilename("results.dat");
-    returnFiles.push_back(resultsFilename);
-
-    fileResults = fopen(resultsFilename.c_str(), "wb");
-    // long totalFCalls = minimizeFCalls + mdFCalls + dephaseFCalls +
-    // refineFCalls;
-
-    fprintf(fileResults, "%s potential_type\n",
-            helper_functions::getPotentialName(params->potential).c_str());
-    fprintf(fileResults, "%ld random_seed\n", params->randomSeed);
-    fprintf(fileResults, "%lf potential_energy_reactant\n",
-            reactant->getPotentialEnergy());
-    // fprintf(fileResults, "%ld total_force_calls\n", totalFCalls);
-    fprintf(fileResults, "%ld force_calls_dephase\n", dephaseFCalls);
-    fprintf(fileResults, "%ld force_calls_dynamics\n", mdFCalls);
-    fprintf(fileResults, "%ld force_calls_minimize\n", minimizeFCalls);
-    // fprintf(fileResults, "%ld force_calls_refine\n", refineFCalls);
-
-    //    fprintf(fileResults, "%d termination_reason\n", status);
-    fprintf(fileResults, "%d transition_found\n", (newStateFlag) ? 1 : 0);
-
-    if (newStateFlag) {
-      fprintf(fileResults, "%e transition_time_s\n",
-              minCorrectedTime * 1.0e-15 * params->timeUnit);
-      fprintf(fileResults, "%lf potential_energy_product\n",
-              product->getPotentialEnergy());
-      fprintf(fileResults, "%lf moved_distance\n",
-              product->distanceTo(*reactant));
-    }
-
-    fprintf(fileResults, "%e simulation_time_s\n",
-            time * 1.0e-15 * params->timeUnit);
-    fprintf(fileResults, "%lf speedup\n",
-            time / params->mdSteps / params->mdTimeStep);
-
-    fclose(fileResults);
-
-    std::string reactantFilename("reactant.con");
-    returnFiles.push_back(reactantFilename);
-    fileReactant = fopen(reactantFilename.c_str(), "wb");
-    reactant->matter2con(fileReactant);
-    fclose(fileReactant);
-
-    if (newStateFlag) {
-      FILE *fileProduct;
-      std::string productFilename("product.con");
-      returnFiles.push_back(productFilename);
-
-      fileProduct = fopen(productFilename.c_str(), "wb");
-      product->matter2con(fileProduct);
-      fclose(fileProduct);
-
-      if (params->parrepRefineTransition) {
-        FILE *fileSaddle;
-        std::string saddleFilename("saddle.con");
-        returnFiles.push_back(saddleFilename);
-
-        fileSaddle = fopen(saddleFilename.c_str(), "wb");
-        saddle->matter2con(fileSaddle);
-        fclose(fileSaddle);
-      }
-    }
-    return;
-  }
-
-  void SafeHyperJob::dephase() {
-    bool transitionFlag = false;
-    long step, stepNew, loop;
-    long DephaseSteps;
-    long dephaseBufferLength, dephaseRefineStep;
-    AtomMatrix velocity;
-
-    DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
-    Dynamics dephaseDynamics(current, params.get());
-    SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
-                        params->parrepDephaseTime * params->timeUnit);
-
-    step = stepNew = loop = 0;
-
-    while (step < DephaseSteps) {
-      // this should be allocated once, and of length DephaseSteps
-      dephaseBufferLength = DephaseSteps - step;
-      loop++;
-      Matter *dephaseBuffer[dephaseBufferLength];
-
-      for (long i = 0; i < dephaseBufferLength; i++) {
-        dephaseBuffer[i] = new Matter(pot, params);
-        dephaseDynamics.oneStep();
-        *dephaseBuffer[i] = *current;
-      }
-
-      transitionFlag = checkState(current, reactant);
-
-      if (transitionFlag) {
-        dephaseRefineStep =
-            refine(dephaseBuffer, dephaseBufferLength, reactant);
-        SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
-                            dephaseRefineStep);
-        transitionStep = dephaseRefineStep - 1; // check that this is correct
-        transitionStep = (transitionStep > 0) ? transitionStep : 0;
-        SPDLOG_LOGGER_DEBUG(log,
-                            "Dephasing warning: in a new state, inverse the "
-                            "momentum and restart "
-                            "from step {}",
-                            step + transitionStep);
-        *current = *dephaseBuffer[transitionStep];
-        velocity = current->getVelocities();
-        velocity = velocity * (-1);
-        current->setVelocities(velocity);
-        step = step + transitionStep;
-      } else {
-        step = step + dephaseBufferLength;
-        // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {:.2f} steps",
-        // step);
-      }
-
-      for (long i = 0; i < dephaseBufferLength; i++) {
-        delete dephaseBuffer[i];
-      }
-
-      if ((params->parrepDephaseLoopStop) &&
-          (loop > params->parrepDephaseLoopMax)) {
-        SPDLOG_LOGGER_DEBUG(
-            log,
-            "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
-            step);
-        break;
-      }
-      SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
-                          step * params->mdTimeStep * params->timeUnit);
-    }
-  }
-
-  bool SafeHyperJob::checkState(Matter * current, Matter * reactant) {
-    Matter tmp(*current);
-    tmp.relax(true);
-    if (tmp.compare(*reactant)) {
-      return false;
-    }
-    return true;
-  }
-
-  long SafeHyperJob::refine(Matter * buff[], long length, Matter *reactant) {
-    // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
-    // time.\n");
-
-    bool midTest;
-    long min, max, mid;
-
-    min = 0;
-    max = length - 1;
-
-    while ((max - min) > 1) {
-
-      mid = min + (max - min) / 2;
-      midTest = checkState(buff[mid], reactant);
-
-      if (midTest == false) {
-        min = mid;
-      } else if (midTest == true) {
-        max = mid;
-      } else {
-        SPDLOG_LOGGER_CRITICAL(log, "Refine step failed!");
-        std::exit(1);
-      }
-    }
-
-    return (min + max) / 2 + 1;
-  }
+  return (min + max) / 2 + 1;
+}
