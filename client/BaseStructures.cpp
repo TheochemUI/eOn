@@ -183,7 +183,7 @@ PotType getPotentialType(const std::string pname) {
     return PotType::BOP;
   } else if (pname == "python"s) {
     return PotType::PYTHON;
-  } else if (pname == "py_surrogate"){
+  } else if (pname == "py_surrogate") {
     return PotType::PYSURROGATE;
   } else {
     return PotType::UNKNOWN;

@@ -17,7 +17,7 @@ void CuH2::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box) {
+                 double *U, double *variance, const double *box) {
   variance = nullptr;
   std::multiset<double> natmc;
   int natms[2]{0, 0}; // Always Cu, then H
