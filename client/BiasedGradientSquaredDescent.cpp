@@ -4,7 +4,6 @@
 #include "HelperFunctions.h"
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
-#include "Log.h"
 #include "Matter.h"
 #include "ObjectiveFunction.h"
 #include "Optimizer.h"
@@ -15,8 +14,6 @@
 #include <cstdlib>
 #include <map>
 #include <string.h>
-
-// static const char LOG_PREFIX[] = "[BGSD]";
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
 public:
@@ -96,14 +93,17 @@ int BiasedGradientSquaredDescent::run() {
   BGSDObjectiveFunction objf(saddle, reactantEnergy, params->alpha, params);
   Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
   int iteration = 0;
-  printf("starting optimization of H with params alpha and beta: %.2f %.2f\n",
-         params->alpha, params->beta);
+  SPDLOG_LOGGER_DEBUG(
+      log,
+      "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
+      params->alpha, params->beta);
   while (!objf.isConvergedH() || iteration == 0) {
     optimizer->step(params->optMaxMove);
-    printf(
-        "iteration %i Henergy, gradientHnorm, and Venergy: %.8f %.8f  %.8f\n",
-        iteration, objf.getEnergy(), objf.getGradientnorm(),
-        saddle->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log,
+                        "iteration {} Henergy, gradientHnorm, and Venergy: "
+                        "{:.8f} {:.8f} {:.8f}",
+                        iteration, objf.getEnergy(), objf.getGradientnorm(),
+                        saddle->getPotentialEnergy());
     iteration++;
   }
   BGSDObjectiveFunction objf2(saddle, reactantEnergy, 0.0, params);
@@ -113,10 +113,11 @@ int BiasedGradientSquaredDescent::run() {
       break;
     };
     optimizer2->step(params->optMaxMove);
-    printf("gradient squared iteration %i Henergy, gradientHnorm, and Venergy: "
-           "%.8f %.8f  %.8f\n",
-           iteration, objf2.getEnergy(), objf2.getGradientnorm(),
-           saddle->getPotentialEnergy());
+    SPDLOG_LOGGER_DEBUG(log,
+                        "gradient squared iteration {} Henergy, gradientHnorm, "
+                        "and Venergy: {:.8f} {:.8f} {:.8f}",
+                        iteration, objf2.getEnergy(), objf2.getGradientnorm(),
+                        saddle->getPotentialEnergy());
     iteration++;
   }
 
@@ -145,7 +146,7 @@ int BiasedGradientSquaredDescent::run() {
   minModeMethod->compute(saddle, eigenvector);
   eigenvector = minModeMethod->getEigenvector();
   eigenvalue = minModeMethod->getEigenvalue();
-  printf("lowest eigenvalue %.8f\n", eigenvalue);
+  SPDLOG_LOGGER_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
   if (objf2.isConvergedV()) {
     return 0;
   } else if (objf2.isConvergedIP()) {

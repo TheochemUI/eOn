@@ -5,6 +5,7 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include <memory>
+#include <spdlog/sinks/basic_file_sink.h>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
@@ -46,6 +47,13 @@ public:
   Matter(std::shared_ptr<Potential> pot, std::shared_ptr<Parameters> params)
       : potential{pot} {
     initializeDataMembers(params);
+    log = spdlog::get("combi");
+    if (spdlog::get("potcalls")) {
+      potcall_logger = spdlog::get("potcalls");
+    } else {
+      potcall_logger =
+          spdlog::basic_logger_st("potcalls", "_potcall.log", true);
+    }
   } // the number of atoms shall be set later
     // using resize()
   // TODO: This is a placeholder, it delegates to the standard constructor
@@ -182,6 +190,8 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
 private:
+  shared_ptr<spdlog::logger> log;
+  shared_ptr<spdlog::logger> potcall_logger;
   std::shared_ptr<Potential>
       potential; // pointer to function calculating the energy and forces
   bool usePeriodicBoundaries; // boolean telling periodic boundaries are used

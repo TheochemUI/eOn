@@ -4,7 +4,6 @@
 #include <utility>
 
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Parameters.h"
 #include "Potential.h"
 #ifdef WITH_PYSURROGATE
