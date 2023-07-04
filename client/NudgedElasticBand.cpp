@@ -138,7 +138,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   NEBObjectiveFunction objf(this, params);
 
-  Optimizer *optimizer = Optimizer::getOptimizer(&objf, params.get());
+  bool switched{false};
+  Optimizer *optim = Optimizer::getOptimizer(&objf, params.get());
+  Optimizer *refine_optim = nullptr;
+  if (params->refineOptMethod != "none"s) {
+    refine_optim = Optimizer::getOptimizer(&objf, params.get(), true);
+  }
   SPDLOG_LOGGER_DEBUG(
       log, "{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration", "step size",
       params->optConvergenceMetricLabel, "max image", "max energy");
@@ -153,12 +158,25 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
     }
     VectorXd pos = objf.getPositions();
+    double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
         break;
       }
-      optimizer->step(params->optMaxMove);
+      if (refine_optim) {
+        if (optim && convForce > params->refineThreshold) {
+          optim->step(params->optMaxMove);
+        } else {
+          if (!switched) {
+            switched = true;
+            SPDLOG_DEBUG("Switched to {}", params->refineOptMethod);
+          }
+          refine_optim->step(params->optMaxMove);
+        }
+      } else {
+        optim->step(params->optMaxMove);
+      }
     }
     iteration++;
 
@@ -166,15 +184,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
         path[0]->pbcV(objf.getPositions() - pos));
-    if (dE > 0.01) {
-      SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4f}",
-                          iteration, stepSize, convergenceForce(),
-                          maxEnergyImage, dE);
-    } else {
-      SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4e}",
-                          iteration, stepSize, convergenceForce(),
-                          maxEnergyImage, dE);
-    }
+    SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
+                        iteration, stepSize, convForce, maxEnergyImage, dE);
   }
 
   if (objf.isConverged()) {
@@ -182,10 +193,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     SPDLOG_LOGGER_DEBUG(log, "\n NEB converged");
   }
 
+  delete optim;
+  if (switched) {
+    delete refine_optim;
+  }
   printImageData();
   findExtrema();
 
-  delete optimizer;
   return status;
 }
 

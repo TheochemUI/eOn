@@ -59,7 +59,8 @@ int FIRE::step(double maxMove) {
 
   // add a sanity check on dt
   if (dt < 1e-6) {
-    SPDLOG_LOGGER_CRITICAL(log, "dt is too small: {:.4f}", dt);
+    SPDLOG_LOGGER_CRITICAL(log, "[FIRE] [critical] dt is too small: {:.4f}",
+                           dt);
     std::exit(1);
   }
 
