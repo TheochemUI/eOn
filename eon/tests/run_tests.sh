@@ -10,9 +10,9 @@ do
     ./test.py
     if [ $? != 0 ]; then
         failed=$(($failed + 1))
-    fi 
+    fi
     cd ..
 done
-echo 
+echo
 echo "$failed tests failed"
 exit $failed

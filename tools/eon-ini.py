@@ -16,5 +16,3 @@ for section in y:
     print("[%s]" % section)
     for option in y[section]['options']:
 	    print("%s = %s" % (option, str(y[section]['options'][option]['default'])))
-
-

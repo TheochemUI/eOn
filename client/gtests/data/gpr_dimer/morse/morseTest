@@ -505,13 +505,13 @@ Stopped relaxation phase: converged after 6 inner iterations.
 Final convergence obtained after 6 relaxation phases (total number of image evaluations: 9).
 Elapsed time: 0.0556548s
 
-8.91851 9.11848 14.6366 
+8.91851 9.11848 14.6366
 
 
-0.0606162 
+0.0606162
 
 
-0.000393167 -0.000551341 0.000130832 
+0.000393167 -0.000551341 0.000130832
 
 EON Client
 VERSION: rUnversioned directory

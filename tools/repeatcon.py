@@ -44,4 +44,3 @@ t2.box[1] = p0.box[1] * yscale
 t2.box[2] = p0.box[2] * zscale
 
 io.savecon(outcon, t2)
-
