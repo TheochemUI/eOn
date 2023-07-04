@@ -6,39 +6,35 @@
 #include "Quickmin.h"
 #include "SteepestDescent.h"
 
-std::unique_ptr<Optimizer>
-Optimizer::getOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
-                        std::shared_ptr<Parameters> a_params, bool a_refine) {
-  std::unique_ptr<Optimizer> mizer = nullptr;
-  OptType meth = OptType::None;
-  if (a_refine) {
-    if (a_params->refineOptMethod == OptType::None) {
-      auto log = spdlog::get("_traceback");
-      SPDLOG_LOGGER_CRITICAL(
-          log, "refine was passed to getOptimizer when it shouldn't have been");
-      std::exit(1);
-      meth = a_params->optMethod;
-    } else {
-      meth = a_params->refineOptMethod;
-    }
-  } else {
-    meth = a_params->optMethod;
+namespace helpers::create {
+std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
+                                   OptType a_otype,
+                                   std::shared_ptr<Parameters> a_params) {
+  switch (a_otype) {
+  case OptType::FIRE: {
+    return std::make_unique<FIRE>(a_objf, a_params);
   }
-  if (meth == OptType::ConjugateGradient) {
-    mizer = std::make_unique<ConjugateGradients>(a_objf, a_params);
-  } else if (meth == OptType::QuickMin) {
-    mizer = std::make_unique<Quickmin>(a_objf, a_params);
-  } else if (meth == OptType::LBFGS) {
-    mizer = std::make_unique<LBFGS>(a_objf, a_params);
-  } else if (meth == OptType::FIRE) {
-    mizer = std::make_unique<FIRE>(a_objf, a_params);
-  } else if (meth == OptType::SteepestDescent) {
-    mizer = std::make_unique<SteepestDescent>(a_objf, a_params);
-  } else {
-    auto log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod or a_refineOptMethod: {}",
-                           meth);
-    std::exit(1);
+  case OptType::QuickMin: {
+    return std::make_unique<QuickMin>(a_objf, a_params);
   }
-  return mizer;
+  case OptType::ConjugateGradient: {
+    return std::make_unique<ConjugateGradient>(a_objf, a_params);
+  }
+  case OptType::LBFGS: {
+    return std::make_unique<LBFGS>(a_objf, a_params);
+  }
+  case OptType::SteepestDescent: {
+    return std::make_unique<SteepestDescent>(a_objf, a_params);
+  }
+  case OptType::None: {
+    throw std::runtime_error("[Optimizer] Cannot create None");
+  }
+  case OptType::Unknown: {
+    throw std::runtime_error("[Optimizer] Cannot create Unknown");
+  }
+  default: {
+    throw std::runtime_error("Unsupported optimization type");
+  }
+  }
 }
+} // namespace helpers::create
