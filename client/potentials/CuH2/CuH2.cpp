@@ -17,7 +17,8 @@ void CuH2::cleanMemory(void) { return; }
 // pointer to array of forces, pointer to internal energy
 // address to supercell size
 void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
-                 double *U, const double *box) {
+                 double *U, double *variance, const double *box) {
+  variance = nullptr;
   std::multiset<double> natmc;
   int natms[2]{0, 0}; // Always Cu, then H
   int ndim{3 * static_cast<int>(N)};
@@ -39,6 +40,7 @@ void CuH2::force(long N, const double *R, const int *atomicNrs, double *F,
   double box_eam[]{box[0], box[4], box[8]};
 
   c_force_eam(natms, ndim, box_eam, const_cast<double *>(R), F, U);
+  *U -= -697.311695;
 
   // for(int i=0; i<N; i++){
   //     std::cout<<F[ 3*i ]<<" "<<F[3*i+1]<<" "<<F[3*i+2]<<"\n";

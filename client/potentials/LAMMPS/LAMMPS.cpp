@@ -27,8 +27,8 @@ void lammps::cleanMemory(void) {
 }
 
 void lammps::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *box) {
-
+                   double *U, double *variance, const double *box) {
+  variance = nullptr;
   int i;
   bool newLammps = false;
   for (int i = 0; i < 9; i++) {

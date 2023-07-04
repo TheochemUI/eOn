@@ -8,28 +8,41 @@
 // http://www.gnu.org/licenses/
 //-----------------------------------------------------------------------------------
 
-#ifndef NEWPOT_INTERFACE
-#define NEWPOT_INTERFACE
+#ifndef PYSURROGATE_INTERFACE
+#define PYSURROGATE_INTERFACE
+
+#define PYBIND11_DETAILED_ERROR_MESSAGES
 
 #include "../../Potential.h"
 
-/** Template to use if user want to provide potential. */
-class NewPot : public Potential {
+#include <pybind11/eigen.h>
+#include <pybind11/embed.h>
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
+using namespace pybind11::literals; // to bring in the `_a` literal
+
+// TODO: Use a better name, say, CatLearnPot
+class PySurrogate : public Potential {
 
 private:
-  //	Variables
-  double fake1;
-  double fake2;
+  py::object hpfit;
+  py::object kernel;
+  py::dict _prior; //
 
 public:
-  // Functions
-  // constructor and destructor
-  NewPot(std::shared_ptr<Parameters> p) : Potential(p), fake1{0}, fake2{0} {};
+  PySurrogate(shared_ptr<Parameters> p);
 
+  // Functions
+  void train_optimize(Eigen::MatrixXd features, Eigen::MatrixXd targets);
   // To satisfy interface
   void cleanMemory(void);
-
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+
+  // Variables [public]
+  py::object gpmod;
+  Eigen::MatrixXd
+      variance; // XXX: This is a hacky way to populate and use this variable
 };
 #endif

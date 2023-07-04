@@ -348,7 +348,8 @@ void AMS::write_restart() {
 }
 
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
-                double *U, const double *box, int nImages = 1) {
+                double *U, double *variance, const double *box) {
+  variance = nullptr;
   if (not can_restart or first_run) {
     // std::cout << fmt::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
     // first_run); This is true for all engines with no restart Also if an

@@ -25,7 +25,8 @@ void MPIPot::cleanMemory(void) { return; }
 MPIPot::~MPIPot() { cleanMemory(); }
 
 void MPIPot::force(long N, const double *R, const int *atomicNrs, double *F,
-                   double *U, const double *box) {
+                   double *U, double *variance, const double *box) {
+  variance = nullptr;
   // Send data to potential
   int pbc = 1;
   int failed;

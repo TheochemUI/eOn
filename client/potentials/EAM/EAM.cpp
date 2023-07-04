@@ -20,7 +20,8 @@ void EAM::cleanMemory() {
 // global variables -long *celllist_old, long *celllist_new, long *neigh_list,
 // long fcalled)
 void EAM::force(long N, const double *R, const int *atomicNrs, double *F,
-                double *U, const double *fullbox) {
+                double *U, double *variance, const double *fullbox) {
+  variance = nullptr;
   double box[3];
   box[0] = fullbox[0];
   box[1] = fullbox[4];

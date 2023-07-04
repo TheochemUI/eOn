@@ -32,7 +32,8 @@ void LJ::setParameters(double u0Recieved, double cuttOffRRecieved,
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void LJ::force(long N, const double *R, const int *atomicNrs, double *F,
-               double *U, const double *box) {
+               double *U, double *variance, const double *box) {
+  variance = nullptr;
   double diffR = 0, diffRX, diffRY, diffRZ, dU, a, b;
   *U = 0;
   for (int i = 0; i < N; i++) {
