@@ -10,8 +10,7 @@ class FIRE : public Optimizer {
 public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf,
        std::shared_ptr<Parameters> a_params)
-      : m_objf{a_objf},
-        m_params{a_params},
+      : Optimizer(OptType::FIRE, a_params),
         m_dt{a_params->optTimeStep},
         m_dt_max{a_params->optMaxTimeStep},
         m_max_move{a_params->optMaxMove},
@@ -31,14 +30,12 @@ public:
     }
     m_log->set_pattern("[%l] [FIRE] %v");
   }
-  ~FIRE() = default;
+  virtual ~FIRE() = default;
 
-  int step(double a_maxMove);
-  int run(int a_maxIterations, double a_maxMove);
+  int step(double a_maxMove) override;
+  int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  std::shared_ptr<ObjectiveFunction> m_objf;
-  std::shared_ptr<Parameters> m_params;
   double m_dt, m_dt_max, m_max_move;
   size_t m_N_min, m_N;
   Eigen::VectorXd m_v;
