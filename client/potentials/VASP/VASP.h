@@ -40,7 +40,7 @@ public:
   void initialize(){};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, const double *box);
+             double *U, double *variance, const double *box);
 
 private:
   void writePOSCAR(long N, const double *R, const int *atomicNrs,

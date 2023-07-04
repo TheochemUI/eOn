@@ -6,6 +6,9 @@
 #include "HelperFunctions.h"
 #include "Parameters.h"
 #include "Potential.h"
+#ifdef WITH_PYSURROGATE
+#include "potentials/PySurrogate/PySurrogate.h"
+#endif
 
 #ifdef IMD_POT
 #include "potentials/IMD/IMD.h"
@@ -75,6 +78,23 @@
 #endif
 
 #include <limits>
+
+std::tuple<double, AtomMatrix, std::optional<Eigen::VectorXd>>
+Potential::get_ef(const AtomMatrix pos, const VectorXi atmnrs,
+                  const Matrix3d box) {
+  double energy{std::numeric_limits<double>::infinity()};
+  long nAtoms{pos.rows()};
+  AtomMatrix forces{Eigen::MatrixXd::Zero(nAtoms, 3)};
+  // This can never be negative
+  Eigen::VectorXd var{Eigen::VectorXd::Zero(1 + (3 * nAtoms))};
+  // Override and return variance where needed!!!
+  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy,
+              var.data(), box.data());
+  if (!var.data()) {
+    SPDLOG_TRACE("Got a nullptr");
+  }
+  return std::make_tuple(energy, forces, var);
+};
 
 namespace helper_functions {
 std::shared_ptr<Potential> makePotential(std::shared_ptr<Parameters> params) {
@@ -219,16 +239,22 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifdef WITH_GPRD
-  case PotType::GPR: {
-    return "gpr"s;
-    break;
-  }
+  // case PotType::GPR: {
+  //   return "gpr"s;
+  //   break;
+  // }
 #endif
   // case PotType::PYTHON: {
   //   TODO: Implement
   //   return "python"s;
   //   break;
   // }
+#ifdef WITH_PYSURROGATE
+  case PotType::PYSURROGATE: {
+    return (std::make_shared<PySurrogate>(params));
+    break;
+  }
+#endif
   default:
     throw std::runtime_error("No known potential could be constructed");
     break;
