@@ -10,13 +10,13 @@ class FIRE : public Optimizer {
 public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf,
        std::shared_ptr<Parameters> a_params)
-      : Optimizer(OptType::FIRE, a_params),
+      : Optimizer(a_objf, OptType::FIRE, a_params),
         m_dt{a_params->optTimeStep},
         m_dt_max{a_params->optMaxTimeStep},
         m_max_move{a_params->optMaxMove},
         m_N_min{5},
         m_N{0},
-        m_v{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_alpha_start{0.1},
         m_alpha{m_alpha_start},
         m_f_inc{1.1},
@@ -38,7 +38,7 @@ public:
 private:
   double m_dt, m_dt_max, m_max_move;
   size_t m_N_min, m_N;
-  Eigen::VectorXd m_v;
+  Eigen::VectorXd m_vel;
   double m_alpha_start;
   double m_alpha;
   double m_f_inc;
