@@ -834,17 +834,17 @@ void Matter::computePotential() {
     //                                     this->potential->getType()));
     if (potential->getType() != PotType::PYSURROGATE) {
       // Default value for true_pot, so not a surrogate run
-      potcall_logger->info(
-          "Calling potential {}",
-          helper_functions::getPotentialName(potential->getType()));
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
       auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
       potentialEnergy = pE;
       forces = frcs;
     } else {
       // For the Surrogates, only use free data
-      potcall_logger->info(
-          "Calling potential {}",
-          helper_functions::getPotentialName(potential->getType()));
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
       auto [freePE, freeForces, vari] = potential->get_ef(
           this->getPositionsFree(), this->getAtomicNrsFree(), cell);
       // Now populate full structures
