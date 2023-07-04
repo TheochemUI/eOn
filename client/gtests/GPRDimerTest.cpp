@@ -12,7 +12,6 @@
 #include "../GPRHelpers.h"
 #include "../HelperFunctions.h"
 #include "../Job.h"
-#include "../Log.h"
 #include "../Matter.h"
 #include "../MinModeSaddleSearch.h"
 #include "../Parameters.h"
@@ -45,7 +44,6 @@ TEST_F(GPRDimerTest, TestMatter) {
   // parameters->optConvergedForce = optConvergedForce;
   // parameters->dimerConvergedAngle = 0.0873;
   // parameters->saddleMinmodeMethod = LowestEigenmode::MINMODE_GPRDIMER;
-  log_init(parameters, (char *)"test.log");
   Matter *initial = new Matter(parameters);
   Matter *saddle = new Matter(parameters);
   initial->con2matter(reactantFilename);

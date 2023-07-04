@@ -1,7 +1,5 @@
-
 #include "Quickmin.h"
 #include "HelperFunctions.h"
-#include <cmath>
 
 Quickmin::Quickmin(ObjectiveFunction *objfPassed,
                    Parameters *parametersPassed) {
@@ -11,6 +9,8 @@ Quickmin::Quickmin(ObjectiveFunction *objfPassed,
   velocity.resize(objf->degreesOfFreedom());
   velocity.setZero();
   iteration = 0;
+  log = spdlog::basic_logger_st("qm", "_qm.log", true);
+  log->set_pattern("%v");
 }
 
 Quickmin::~Quickmin() { return; }
@@ -31,20 +31,16 @@ int Quickmin::step(double maxMove) {
   velocity += force * dt;
   VectorXd dr = helper_functions::maxAtomMotionAppliedV(velocity * dt,
                                                         parameters->optMaxMove);
+  // SPDLOG_LOGGER_INFO(log, "{} Velocity is {}", iteration,
+  // fmt::streamed(velocity));
   objf->setPositions(objf->getPositions() + dr);
   iteration++;
-  //    return objf->isConverged();
-  if (objf->isConverged())
-    return 1;
-  return 0;
+  return objf->isConverged();
 }
 
 int Quickmin::run(int maxSteps, double maxMove) {
   while (!objf->isConverged() && iteration < maxSteps) {
     step(maxMove);
   }
-  //    return objf->isConverged();
-  if (objf->isConverged())
-    return 1;
-  return 0;
+  return objf->isConverged();
 }

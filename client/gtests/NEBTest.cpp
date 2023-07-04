@@ -9,7 +9,6 @@
 #include "NEBTest.h"
 #include "../potentials/Morse/Morse.cpp"
 #include "Eigen/src/Core/Matrix.h"
-#include "Log.h"
 #include "NudgedElasticBand.h"
 
 #include <algorithm>
@@ -33,7 +32,6 @@ void NEBTest::SetUp() {
   m2->con2matter(confile);
   m2->setPositions(m1->getPositions() * 0.7);
   params->optMaxIterations = 100000;
-  log_init(params, "blah.log");
 }
 
 void NEBTest::TearDown() {}

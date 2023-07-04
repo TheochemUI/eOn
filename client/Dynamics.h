@@ -40,6 +40,7 @@ private:
   double kB;
   double temperature;
   double vxi1, vxi2, xi1, xi2;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 #endif

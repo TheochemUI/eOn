@@ -8,7 +8,9 @@
 
 class TADJob : public Job {
 public:
-  TADJob(std::unique_ptr<Parameters> parameters) : Job(std::move(parameters)) {}
+  TADJob(std::unique_ptr<Parameters> parameters) : Job(std::move(parameters)) {
+    log = spdlog::get("combi");
+  }
   ~TADJob() = default;
   std::vector<std::string> run(void);
 
@@ -28,6 +30,7 @@ private:
   std::shared_ptr<Matter> final_state;
   std::shared_ptr<Matter> final_tmp;
   std::shared_ptr<Matter> product;
+  std::shared_ptr<spdlog::logger> log;
 
   bool metaStateFlag;
   bool newStateFlag;
