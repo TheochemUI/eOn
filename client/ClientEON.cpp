@@ -4,12 +4,13 @@
 #include "EpiCenters.h"
 #include "HelperFunctions.h"
 #include "Job.h"
-#include "Log.h"
 #include "Parameters.h"
 #include "Potential.h"
 #include "version.h"
 
 #include <errno.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 #include <string.h>
 #include <time.h>
 
@@ -79,11 +80,26 @@ void printSystemInfo() {
 }
 
 int main(int argc, char **argv) {
-  auto console = spdlog::stdout_color_st("console");
-  auto err_logger = spdlog::stderr_color_st("stderr");
-  spdlog::set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
+  // --- Start Logging setup
+  // Sinks
+  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+      "client_spdlog.log", true); // Overwrite existing
+  auto logger = std::make_shared<spdlog::logger>(
+      "combi", spdlog::sinks_init_list({console_sink, file_sink}));
+  spdlog::register_logger(logger);
+  logger->set_pattern("%v");
+  spdlog::set_default_logger(logger);
+  // Traceback logger
   spdlog::set_level(spdlog::level::trace);
-  spdlog::set_default_logger(console);
+  auto trace_csink = std::make_shared<spdlog::sinks::stdout_color_sink_st>();
+  auto trace_fsink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+      "client_traceback.log", true); // Overwrite existing
+  auto _traceback = std::make_shared<spdlog::logger>(
+      "_traceback", spdlog::sinks_init_list({trace_csink, trace_fsink}));
+  _traceback->set_pattern("%^ [%l] [%s:%#] [%!] \n %v\n[end %l]");
+  spdlog::register_logger(_traceback);
+  //--- End logging setup
   Parameters parameters;
 
 #ifdef EONMPI
@@ -351,7 +367,7 @@ int main(int argc, char **argv) {
       try {
         filenames = job->run();
       } catch (int e) {
-        log("[ERROR] job exited on error %d\n", e);
+        SPDLOG_CRITICAL("[ERROR] job exited on error %d\n", e);
       }
 
       filenames.push_back(std::string("client.log"));
@@ -362,8 +378,6 @@ int main(int argc, char **argv) {
       } else {
         bundledFilenames = filenames;
       }
-
-      log_close();
     }
 
 #ifdef EONMPI

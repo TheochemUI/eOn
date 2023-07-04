@@ -11,7 +11,7 @@ public:
   double dt;
 
   FIRE(ObjectiveFunction *objf, Parameters *parameters);
-  ~FIRE();
+  ~FIRE() = default;
 
   int step(double maxMove);
   int run(int maxIterations, double maxMove);
@@ -28,6 +28,7 @@ private:
   double f_a;
   double dt_max;
   int iteration;
+  shared_ptr<spdlog::logger> log;
 };
 
 #endif

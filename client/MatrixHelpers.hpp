@@ -1,7 +1,6 @@
 #ifndef MATRIXHELPERS_H
 #define MATRIXHELPERS_H
 
-#include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
 

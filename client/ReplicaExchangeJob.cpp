@@ -1,12 +1,8 @@
-
-#include <cstdlib>
-
+#include "ReplicaExchangeJob.h"
 #include "BaseStructures.h"
 #include "Dynamics.h"
 #include "HelperFunctions.h"
-#include "Log.h"
 #include "Matter.h"
-#include "ReplicaExchangeJob.h"
 
 std::vector<std::string> ReplicaExchangeJob::run(void) {
   long i, step,
@@ -24,7 +20,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   pos = std::make_shared<Matter>(pot, params);
   pos->con2matter(posFilename);
 
-  log("\nRunning Replica Exchange\n\n");
+  SPDLOG_LOGGER_DEBUG(log, "Running Replica Exchange");
 
   long refForceCalls = Potential::fcalls;
 
@@ -41,7 +37,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
   // assign temperatures
   double replicaTemperature[params->repexcReplicas];
 
-  log("Temperature distribution:\n");
+  SPDLOG_LOGGER_DEBUG(log, "Temperature distribution:");
   if (params->repexcTemperatureDistribution == "linear") {
     for (i = 0; i < params->repexcReplicas; i++) {
       replicaTemperature[i] =
@@ -52,25 +48,27 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
     }
   } else if (params->repexcTemperatureDistribution == "exponential") {
     double kTemp =
-        log(params->repexcTemperatureHigh / params->repexcTemperatureLow) /
+        std::log(params->repexcTemperatureHigh / params->repexcTemperatureLow) /
         (params->repexcReplicas - 1.0);
     // cout <<"kTemp: "<<kTemp<<endl;
     for (i = 0; i < params->repexcReplicas; i++) {
       replicaTemperature[i] = params->repexcTemperatureLow * exp(kTemp * i);
       replicaDynamics[i]->setTemperature(replicaTemperature[i]);
-      log("replica: %ld temperature %.0f \n", i + 1, replicaTemperature[i]);
+      SPDLOG_LOGGER_DEBUG(log, "replica: {} temperature {:.0f}", i + 1,
+                          replicaTemperature[i]);
     }
   }
 
-  log("\nReplica Exchange sampling for %.0f fs; %ld steps; %ld replicas.\n",
+  SPDLOG_LOGGER_DEBUG(
+      log, "Replica Exchange sampling for {:.0f} fs; {} steps; {} replicas.",
       params->repexcSamplingTime * 10.18, samplingSteps,
       params->repexcReplicas);
 
   for (step = 1; step <= samplingSteps; step++) {
     for (i = 0; i < params->repexcReplicas; i++) {
       replicaDynamics[i]->oneStep();
-      cout << "step: " << step << " i " << i
-           << " energy: " << replica[i]->getPotentialEnergy() << endl;
+      SPDLOG_LOGGER_DEBUG(log, "step: {} i {} energy: {}", step, i,
+                          replica[i]->getPotentialEnergy());
     }
     if ((step % exchangePeriodSteps) == 0) {
       for (long trial = 0; trial < params->repexcExchangeTrials; trial++) {
@@ -82,12 +80,13 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
         pAcc = min(1.0, exp((energyHigh - energyLow) *
                             (1.0 / kbTHigh - 1.0 / kbTLow)));
         double tmp = helper_functions::randomDouble();
-        cout << "step: " << step << " trial swap, i " << i
-             << " elow: " << energyLow << " ehigh: " << energyHigh
-             << " pAcc: " << pAcc << " rand: " << tmp;
+        SPDLOG_LOGGER_INFO(log,
+                           "step: {} trial swap, i {}, elow: {:.5f}, ehigh: "
+                           "{:.5f}, pAcc: {:.5f}, rand: {}",
+                           step, i, energyLow, energyHigh, pAcc, tmp);
         // if(helper_functions::randomDouble()<pAcc)
         if (tmp < pAcc) {
-          cout << " swap\n";
+          SPDLOG_LOGGER_INFO(log, "swap");
           // swap configurations
           tmpMatter = replica[i];
           replica[i] = replica[i + 1];
@@ -96,7 +95,7 @@ std::vector<std::string> ReplicaExchangeJob::run(void) {
           replicaDynamics[i]->setThermalVelocity();
           replicaDynamics[i + 1]->setThermalVelocity();
         } else {
-          cout << " no_swap\n";
+          SPDLOG_LOGGER_INFO(log, "no swap");
         }
       }
     }
