@@ -10,8 +10,12 @@ LBFGS::LBFGS(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
 
   // Shouldn't have a memory longer than the number of degrees of freedom.
   memory = min(objf->degreesOfFreedom(), (int)parameters->optLBFGSMemory);
-  log = spdlog::basic_logger_st("lbfgs", "_lbfgs.log", true);
-  log->set_pattern("%v");
+  if (spdlog::get("lbfgs")) {
+    log = spdlog::get("lbfgs");
+  } else {
+    log = spdlog::basic_logger_st("lbfgs", "_lbfgs.log", true);
+  }
+  log->set_pattern("[%l] [LBFGS] %v");
 }
 
 VectorXd LBFGS::getStep(double maxMove, VectorXd f) {
