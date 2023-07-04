@@ -30,7 +30,7 @@
  */
 
 /**
- * Decleration of the optimizer class
+ * Declaration of the optimizer class
  */
 
 class Optimizer {
@@ -47,8 +47,9 @@ public:
    * \param *objf an ref ObjectiveFunction that tells the optimizer how to run
    * \param *parameters defined by the config.init file
    */
-  static Optimizer *getOptimizer(ObjectiveFunction *objf,
-                                 Parameters *parameters, bool refine = false);
+  static std::unique_ptr<Optimizer>
+  getOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
+               std::shared_ptr<Parameters> a_params, bool a_refine = false);
 };
 
 #endif
