@@ -830,12 +830,37 @@ void Matter::computePotential() {
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
-
-    potcall_logger->info(
-        "Calling potential {}",
-        helper_functions::getPotentialName(potential->getType()));
-    std::tie(potentialEnergy, forces) =
-        potential->get_ef(positions, atomicNrs, cell);
+    // SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
+    //                                     this->potential->getType()));
+    if (potential->getType() != PotType::PYSURROGATE) {
+      // Default value for true_pot, so not a surrogate run
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
+      auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
+      potentialEnergy = pE;
+      forces = frcs;
+    } else {
+      // For the Surrogates, only use free data
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
+      auto [freePE, freeForces, vari] = potential->get_ef(
+          this->getPositionsFree(), this->getAtomicNrsFree(), cell);
+      // Now populate full structures
+      this->potentialEnergy = freePE;
+      if (vari.has_value()) {
+        this->variance = vari.value();
+      } else {
+        throw std::runtime_error("You should have gotten a value\n");
+      }
+      for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
+        if (!isFixed(idx)) {
+          forces.row(idx) = freeForces.row(jdx);
+          jdx++;
+        }
+      }
+    }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
