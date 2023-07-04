@@ -1,80 +1,59 @@
 #include "FIRE.h"
 #include "HelperFunctions.h"
-FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
-  objf = objfPassed;
-  parameters = parametersPassed;
-  dt = parametersPassed->optTimeStep;
-  dt_max = parametersPassed->optMaxTimeStep;
-  N_min = 5;
-  N = 0;
-  f_inc = 1.1;
-  f_dec = 0.5;
-  alpha_start = 0.1;
-  alpha = alpha_start;
-  f_a = 0.99;
-  v.resize(objf->degreesOfFreedom());
-  v.setZero();
-  iteration = 0;
-  if (spdlog::get("fire")) {
-    log = spdlog::get("fire");
-  } else {
-    log = spdlog::basic_logger_st("fire", "_fire.log", true);
-  }
-  log->set_pattern("[%l] [FIRE] %v");
-}
 
-int FIRE::step(double maxMove) {
+int FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.
-  if (objf->isConverged()) {
+  if (m_objf->isConverged()) {
     return 1;
   }
 
   // Velocity Verlet
-  VectorXd f = -objf->getGradient();
-  VectorXd x = objf->getPositions();
+  Eigen::VectorXd f = -m_objf->getGradient();
+  Eigen::VectorXd x = m_objf->getPositions();
 
-  v += f * dt;
-  VectorXd dx = v * dt;
+  m_v += f * m_dt;
+  Eigen::VectorXd dx = m_v * m_dt;
 
-  dx = helper_functions::maxAtomMotionAppliedV(dx, parameters->optMaxMove);
-  objf->setPositions(x + dx);
+  dx = helper_functions::maxAtomMotionAppliedV(dx, m_max_move);
+  m_objf->setPositions(x + dx);
 
-  f = -objf->getGradient();
-  VectorXd f_unit = f / f.norm();
+  f = -m_objf->getGradient();
+  Eigen::VectorXd f_unit = f / f.norm();
 
   // FIRE
-  P = f.dot(v);
-  v = (1 - alpha) * v + alpha * f_unit * v.norm();
-  // SPDLOG_LOGGER_DEBUG(log, "[FIRE] P: {:.4f}, v: {:.4f}, dt: {:.4f}, alpha:
-  // {:.4f}, N: {}", P, v, dt, alpha, N);
+  P = f.dot(m_v);
+  m_v = (1 - m_alpha) * m_v + m_alpha * f_unit * m_v.norm();
+  SPDLOG_LOGGER_DEBUG(
+      m_log, "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}", P,
+      fmt::streamed(m_v), m_dt, m_alpha, m_N);
   if (P >= 0) {
-    N++;
-    if (N > N_min) {
-      dt = min(dt * f_inc, dt_max);
-      alpha = alpha * f_a;
+    m_N++;
+    if (m_N > m_N_min) {
+      m_dt = min(m_dt * m_f_inc, m_dt_max);
+      m_alpha = m_alpha * m_f_a;
     }
   } else {
-    dt = dt * f_dec;
-    v = v * 0.0;
-    alpha = alpha_start;
-    N = 0;
+    m_dt = m_dt * m_f_dec;
+    m_v = m_v * 0.0;
+    m_alpha = m_alpha_start;
+    m_N = 0;
   }
 
-  // add a sanity check on dt
-  if (dt < 1e-6) {
-    SPDLOG_LOGGER_CRITICAL(log, "[FIRE] [critical] dt is too small: {:.4f}",
-                           dt);
+  // add a sanity check on m_dt
+  if (m_dt < 1e-6) {
+    SPDLOG_LOGGER_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
+                           m_dt);
     std::exit(1);
   }
 
-  iteration++;
-  return objf->isConverged();
+  m_iteration++;
+  return m_objf->isConverged();
 }
 
-int FIRE::run(int maxSteps, double maxMove) {
-  while (!objf->isConverged() && iteration < maxSteps) {
-    step(maxMove);
+int FIRE::run(int a_maxIterations, double a_maxMove) {
+  while (!m_objf->isConverged() && m_iteration < a_maxIterations) {
+    step(a_maxMove);
   }
-  return objf->isConverged();
+  return m_objf->isConverged();
 }
