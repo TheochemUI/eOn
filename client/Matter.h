@@ -17,6 +17,7 @@ class BondBoost;
  * data members is required in Matter. It should not be used alone.  Use
  * carefully. Avoid it and use Matter instead if possible. */
 
+// TODO: Why do we even need this!?
 struct MatterPrivateData {
   std::shared_ptr<Parameters> parameters;
   long nAtoms;
@@ -30,6 +31,7 @@ struct MatterPrivateData {
   VectorXi isFixed; // array of bool, false for movable atom, true for fixed
   Matrix3d cell;
   Matrix3d cellInverse;
+  VectorXd variance;
   mutable double potentialEnergy;
 };
 
@@ -130,6 +132,7 @@ public:
   void setAtomicNr(long int atom,
                    long atomicNr);          // set the atomic number of an atom
   VectorXi getAtomicNrs() const;            // Get the vector of atomic numbers
+  VectorXi getAtomicNrsFree() const;        // Get the vector of atomic numbers
   void setAtomicNrs(const VectorXi atmnrs); // Get the vector of atomic numbers
 
   int getFixed(long int atom)
@@ -137,6 +140,9 @@ public:
   void setFixed(long int atom,
                 int isFixed); // set the atom to fixed (true) or movable (false)
   // void setPotentialEnergy(double);
+  double getEnergyVariance();
+  Eigen::VectorXd getForceVariance();
+  double getMaxVariance();
   double getPotentialEnergy();
   double getKineticEnergy() const;
   double getMechanicalEnergy(); // return the mechanical energy (i.e. kinetic

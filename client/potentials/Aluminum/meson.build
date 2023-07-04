@@ -8,4 +8,5 @@ aluminum = shared_library('aluminum',
            'embedenergy.f',
            'sumembforce.f',
            dependencies : _deps,
+           cpp_args : _args,
            install : true)

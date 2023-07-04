@@ -217,6 +217,11 @@ Parameters::Parameters() {
   gprDebugDy = 0.1;              // debug_dy
   gprDebugDz = 0.1;              // debug_dz
 
+  // GP Surrogate Parameters
+  sub_job = JobType::Unknown;
+  gp_uncertainity = 0.05;
+  gp_linear_path_always = true;
+
   // [Hessian] //
   hessianAtomList = string("All");
   hessianZeroFreqValue = 1e-6;
@@ -539,6 +544,13 @@ int Parameters::load(FILE *file) {
     dimerRemoveRotation =
         ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
 
+    // GP Surrogate Parameters
+    sub_job = helper_functions::getJobType(
+        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    gp_uncertainity =
+        ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
+                                          gp_linear_path_always);
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);

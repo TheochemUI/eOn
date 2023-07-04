@@ -3,4 +3,5 @@ water_pt=shared_library('water_pt',
            'zhu_philpott_parameters.cpp',
            'zhu_philpott.cpp',
            dependencies : _deps,
+           cpp_args : _args,
            install : true)

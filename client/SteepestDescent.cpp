@@ -9,7 +9,11 @@ SteepestDescent::SteepestDescent(ObjectiveFunction *objfPassed,
   parameters = parametersPassed;
 
   iteration = 0;
-  log = spdlog::basic_logger_st("sd", "_sd.log", true);
+  if (spdlog::get("sd")) {
+    log = spdlog::get("sd");
+  } else {
+    log = spdlog::basic_logger_st("sd", "_sd.log", true);
+  }
   log->set_pattern("[%l] [SD] %v");
 }
 

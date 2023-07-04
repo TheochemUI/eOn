@@ -15,7 +15,11 @@ FIRE::FIRE(ObjectiveFunction *objfPassed, Parameters *parametersPassed) {
   v.resize(objf->degreesOfFreedom());
   v.setZero();
   iteration = 0;
-  log = spdlog::basic_logger_st("fire", "_fire.log", true);
+  if (spdlog::get("fire")) {
+    log = spdlog::get("fire");
+  } else {
+    log = spdlog::basic_logger_st("fire", "_fire.log", true);
+  }
   log->set_pattern("[%l] [FIRE] %v");
 }
 

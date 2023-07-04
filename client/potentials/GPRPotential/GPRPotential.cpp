@@ -60,7 +60,9 @@ void GPRPotential::cleanMemory(void) {}
 // pointer to array of forces, pointer to internal energy
 // adress to supercell size
 void GPRPotential::force(long N, const double *R, const int *atomicNrs,
-                         double *F, double *U, const double *box, int nImages) {
+                         double *F, double *U, double *variance,
+                         const double *box) {
+  variance = nullptr;
   gpr::Observation observation;
 
   // Copy R points. Note, R should correspond to the moving atoms only.
