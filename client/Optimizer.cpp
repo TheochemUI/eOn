@@ -1,4 +1,5 @@
 #include "Optimizer.h"
+#include "BaseStructures.h"
 #include "ConjugateGradients.h"
 #include "FIRE.h"
 #include "LBFGS.h"
@@ -9,9 +10,9 @@ std::unique_ptr<Optimizer>
 Optimizer::getOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
                         std::shared_ptr<Parameters> a_params, bool a_refine) {
   std::unique_ptr<Optimizer> mizer = nullptr;
-  std::string meth = "NONE"s;
+  OptType meth = OptType::None;
   if (a_refine) {
-    if (a_params->refineOptMethod == "NONE"s) {
+    if (a_params->refineOptMethod == OptType::None) {
       auto log = spdlog::get("_traceback");
       SPDLOG_LOGGER_CRITICAL(
           log, "refine was passed to getOptimizer when it shouldn't have been");
@@ -23,15 +24,15 @@ Optimizer::getOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
   } else {
     meth = a_params->optMethod;
   }
-  if (meth == "cg") {
+  if (meth == OptType::ConjugateGradient) {
     mizer = std::make_unique<ConjugateGradients>(a_objf, a_params);
-  } else if (meth == "qm") {
+  } else if (meth == OptType::QuickMin) {
     mizer = std::make_unique<Quickmin>(a_objf, a_params);
-  } else if (meth == "lbfgs") {
+  } else if (meth == OptType::LBFGS) {
     mizer = std::make_unique<LBFGS>(a_objf, a_params);
-  } else if (meth == "fire") {
+  } else if (meth == OptType::FIRE) {
     mizer = std::make_unique<FIRE>(a_objf, a_params);
-  } else if (meth == "sd") {
+  } else if (meth == OptType::SteepestDescent) {
     mizer = std::make_unique<SteepestDescent>(a_objf, a_params);
   } else {
     auto log = spdlog::get("_traceback");
