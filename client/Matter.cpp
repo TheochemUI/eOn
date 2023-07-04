@@ -6,6 +6,7 @@
 
 // To write the R style data frame
 #include <fmt/os.h>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
@@ -826,6 +827,9 @@ void Matter::computePotential() {
           helper_functions::makePotential(parameters->potential, parameters);
     }
 
+    potcall_logger->info(
+        "Calling potential {}",
+        helper_functions::getPotentialName(potential->getType()));
     std::tie(potentialEnergy, forces) =
         potential->get_ef(positions, atomicNrs, cell);
     forceCalls = forceCalls + 1;
