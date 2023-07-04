@@ -71,7 +71,6 @@ eonclib_sources = [
            'Job.cpp',
            'INIFile.cpp',
            'GlobalOptimization.cpp',
-           'Log.cpp',
            'LowestEigenmode.cpp',
            'MinModeSaddleSearch.cpp',
            'StructureComparisonJob.cpp',

@@ -17,7 +17,7 @@ BUILDDATE=`date`
 BUILDHOST=`hostname -d`
 BUILDUSER=`whoami`
 
-OUTPUTDIR=`date --rfc-3339="seconds" | awk -F" " '{ print $1"_"$2 }' | cut -d"-" -f1-3` 
+OUTPUTDIR=`date --rfc-3339="seconds" | awk -F" " '{ print $1"_"$2 }' | cut -d"-" -f1-3`
 
 echo "Creating unit-testing detailed output directory"
 
@@ -47,7 +47,7 @@ fi
 
 printf "Version: $VERSION\nBuild Date: $BUILDDATE\nBuild Host: $BUILDHOST\nBuild User: BUILDUSER\n" >> $LOG
 
-echo "Begin running unit-tests" 
+echo "Begin running unit-tests"
 
 echo "Running tests on functions in file HelperFunctions.cpp"
 
@@ -96,4 +96,4 @@ echo "Look at the file $LOG in the directory ./unittests/$OUTPUTDIR for more det
 
 popd > /dev/null
 echo -e "\nexiting"
-exit 0 
+exit 0

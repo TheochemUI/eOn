@@ -205,12 +205,12 @@ class Displace:
 
         ### Mike W.
         ## this is a fraction of the total displacement magnitude so a small that
-        ## a hard coded value will not break things later. It's essentially 
+        ## a hard coded value will not break things later. It's essentially
         ## negligible at this size.
         if self.void_bias_fraction > 1e-6:
 
 
-            self.neighbor_list_vectors = atoms.neighbor_list_vectors(self.reactant, 
+            self.neighbor_list_vectors = atoms.neighbor_list_vectors(self.reactant,
                    self.radius, config.comp_brute_neighbors)
 
 #            print config.random_mode
@@ -224,18 +224,18 @@ class Displace:
 #                for vec in self.neighbor_list_vectors[atom_index]:
 #                    dist_list.append(numpy.linalg.norm(vec))
 #                print (dist_list)
-            
+
             ## treats the nearest neighbors as repulsive, since I keep finding
             ## interstitials
             pseudoelectrostatic_force = numpy.zeros(self.reactant.r.shape)
-            for atom_index in displaced_atoms:                
+            for atom_index in displaced_atoms:
                 for vec in self.neighbor_list_vectors[atom_index]:
                     mag = numpy.linalg.norm(vec) + 1e-6 # I just want to prevent NaNs in perfectly symmetric situations
                     pseudoelectrostatic_force[atom_index] += -vec/(mag**3)
             # now we norm it for mixing
             void_vec = pseudoelectrostatic_force/\
                 numpy.linalg.norm(pseudoelectrostatic_force)
-            
+
             displacement = \
                 self.void_bias_fraction*displacement_norm*void_vec + \
                 (1 - self.void_bias_fraction)*displacement

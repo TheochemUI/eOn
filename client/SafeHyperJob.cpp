@@ -1,13 +1,7 @@
-
-#include <cstdlib>
-
+#include "SafeHyperJob.h"
 #include "BondBoost.h"
 #include "Dynamics.h"
-#include "Log.h"
-#include "Matter.h"
 #include "Optimizer.h"
-#include "SafeHyperJob.h"
-#include <vector>
 
 std::vector<std::string> SafeHyperJob::run(void) {
   // TODO: Rework
@@ -15,8 +9,8 @@ std::vector<std::string> SafeHyperJob::run(void) {
   reactant = new Matter(pot, params);
   saddle = new Matter(pot, params);
   product = new Matter(pot, params);
-  final = new Matter(pot, params);
-  final_tmp = new Matter(pot, params);
+  final_img = new Matter(pot, params);
+  final_img_tmp = new Matter(pot, params);
 
   minimizeFCalls = mdFCalls = refineFCalls = dephaseFCalls = 0;
   time = 0.0;
@@ -24,23 +18,24 @@ std::vector<std::string> SafeHyperJob::run(void) {
       helper_functions::getRelevantFile(params->conFilename);
   current->con2matter(reactantFilename);
 
-  log("\nMinimizing initial reactant\n");
+  SPDLOG_LOGGER_DEBUG(log, "Minimizing initial reactant");
   long refFCalls = Potential::fcalls;
   *reactant = *current;
   reactant->relax();
   // minimizeFCalls += (Potential::fcalls - refFCalls);
 
-  log("\nParallel Replica Dynamics, running\n\n");
+  SPDLOG_LOGGER_DEBUG(log, "Parallel Replica Dynamics, running");
 
   int status = dynamics();
 
   saveData(status);
 
   if (newStateFlag) {
-    log("Transition time: %.2e s\n",
-        minCorrectedTime * 1.0e-15 * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Transition time: {:.2e} s",
+                        minCorrectedTime * 1.0e-15 * params->timeUnit);
   } else {
-    log("No new state was found in %ld dynamics steps (%.3e s)\n",
+    SPDLOG_LOGGER_DEBUG(
+        log, "No new state was found in {} dynamics steps ({:.3e} s)",
         params->mdSteps, time * 1.0e-15 * params->timeUnit);
   }
 
@@ -48,8 +43,8 @@ std::vector<std::string> SafeHyperJob::run(void) {
   delete reactant;
   delete saddle;
   delete product;
-  delete final_tmp;
-  delete final;
+  delete final_img_tmp;
+  delete final_img;
 
   return returnFiles;
 }
@@ -100,12 +95,13 @@ int SafeHyperJob::dynamics() {
   dephase();
   // dephaseFCalls = Potential::fcalls - refFCalls;
 
-  log("\nStarting MD run\nTemperature: %.2f Kelvin\n"
-      "Total Simulation Time: %.2f fs\nTime Step: %.2f fs\nTotal Steps: "
-      "%ld\n\n",
+  SPDLOG_LOGGER_DEBUG(
+      log,
+      "Starting MD run\nTemperature: {:.2f} Kelvin\n"
+      "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: {}",
       Temp, params->mdSteps * params->mdTimeStep * params->timeUnit,
       params->mdTimeStep * params->timeUnit, params->mdSteps);
-  log("MD buffer length: %ld\n", mdBufferLength);
+  SPDLOG_LOGGER_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
   long tenthSteps = params->mdSteps / 10;
   // This prevents and edge case division by zero if mdSteps is < 10
@@ -118,7 +114,8 @@ int SafeHyperJob::dynamics() {
     if ((params->biasPotential == Hyperdynamics::BOND_BOOST) && !newStateFlag) {
       // GH: boost should be a unitless factor, multipled by TimeStep to get the
       // boosted time
-      // log("step= %3d, boost = %10.5f",step,bondBoost.boost());
+      // SPDLOG_LOGGER_DEBUG(log, "step= {} , boost = {:.5f}", step,
+      // bondBoost.boost());
       boostPotential = bondBoost.boost();
       boost = 1.0 * exp(boostPotential / kB / Temp);
       time += params->mdTimeStep * boost;
@@ -132,7 +129,7 @@ int SafeHyperJob::dynamics() {
     kinT = (2.0 * kinE / nFreeCoord / kB);
     sumT += kinT;
     sumT2 += kinT * kinT;
-    // log("steps = %10d temp = %10.5f \n",step,kinT);
+    // SPDLOG_LOGGER_DEBUG(log, "steps = {:10} temp = {:10.5f}", step, kinT);
 
     safeHyper.oneStep();
     mdFCalls++;
@@ -140,7 +137,7 @@ int SafeHyperJob::dynamics() {
     nCheck++; // count up to params->parrepStateCheckInterval before checking
               // for a transition
     step++;
-    // log("step = %4d, time= %10.4f\n",step,time);
+    // SPDLOG_LOGGER_DEBUG(log, "step = {:4}, time = {:10.4f}", step, time);
     //  standard conditions; record mater object in the transition buffer
     if (params->parrepRefineTransition && recordFlag && !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
@@ -160,8 +157,8 @@ int SafeHyperJob::dynamics() {
       // minimizeFCalls += Potential::fcalls - refFCalls;
       if (transitionFlag == true) {
         nState++;
-        log("New State %ld: ", nState);
-        *final_tmp = *current;
+        SPDLOG_LOGGER_DEBUG(log, "New State {}: ", nState);
+        *final_img_tmp = *current;
         transitionTime = time;
         newStateStep = step; // remember the step when we are in a new state
         transitionStep = newStateStep;
@@ -172,7 +169,8 @@ int SafeHyperJob::dynamics() {
     // Refine transition step
 
     if (transitionFlag) {
-      // log("[Parallel Replica] Refining transition time.\n");
+      // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
+      // time.");
       refFCalls = Potential::fcalls;
       refineStep = refine(mdBuffer, mdBufferLength, reactant);
 
@@ -196,14 +194,17 @@ int SafeHyperJob::dynamics() {
       if (correctedTime < minCorrectedTime) {
         minCorrectedTime = correctedTime;
         *saddle = *mdBuffer[refineStep];
-        *final = *final_tmp;
+        *final_img = *final_img_tmp;
       }
-      log("tranisitonTime= %.3e s, biasPot= %.3f eV, correctedTime= %.3e s, "
-          "sumCorrectedTime= %.3e s, minCorTime= %.3e s\n",
-          transitionTime * 1e-15 * params->timeUnit, transitionPot,
-          correctedTime * 1e-15 * params->timeUnit,
-          sumCorrectedTime * 1e-15 * params->timeUnit,
-          minCorrectedTime * 1.0e-15 * params->timeUnit);
+      SPDLOG_LOGGER_DEBUG(log,
+                          "tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, "
+                          "correctedTime= {:.3e} s, "
+                          "sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s",
+                          transitionTime * 1e-15 * params->timeUnit,
+                          transitionPot,
+                          correctedTime * 1e-15 * params->timeUnit,
+                          sumCorrectedTime * 1e-15 * params->timeUnit,
+                          minCorrectedTime * 1.0e-15 * params->timeUnit);
 
       // refineFCalls += Potential::fcalls - refFCalls;
       transitionFlag = false;
@@ -218,31 +219,36 @@ int SafeHyperJob::dynamics() {
     // stdout Progress
     if ((step % tenthSteps == 0) || (step == params->mdSteps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
-      log("progress: %3.0f%%, max displacement: %6.3lf, step %7ld/%ld\n",
-          (double)100.0 * step / params->mdSteps, maxAtomDistance, step,
-          params->mdSteps);
+      SPDLOG_LOGGER_DEBUG(
+          log, "progress: {:.0f}%, max displacement: {:.3f}, step {} / {}",
+          static_cast<double>(100.0 * step / params->mdSteps), maxAtomDistance,
+          step, params->mdSteps);
     }
   }
 
-  // calculate avearges
+  // calculate averages
   avgT = sumT / step;
   varT = sumT2 / step - avgT * avgT;
 
   if (nBoost > 0) {
-    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf; Boost = "
-        "%lf\n\n",
-        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-        sumboost / nBoost);
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; "
+                        "Factor = {:.6f}; Boost = {:.6f}",
+                        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
+                        sumboost / nBoost);
   } else {
-    log("\nTemperature : Average = %lf ; Stddev = %lf ; Factor = %lf\n\n", avgT,
-        sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);
+    SPDLOG_LOGGER_DEBUG(
+        log,
+        "Temperature : Average = {:.6f} ; Stddev = {:.6f} ; Factor = {:.6f}",
+        avgT, sqrt(varT), varT / avgT / avgT * nFreeCoord / 2);
   }
-  if (isfinite(avgT) == 0) {
-    log("Infinite average temperature, something went wrong!\n");
+  if (std::isfinite(avgT) == 0) {
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Infinite average temperature, something went wrong!");
     newStateFlag = false;
   }
 
-  *product = *final;
+  *product = *final_img;
   // new state was detected; determine refined transition time
   for (long i = 0; i < mdBufferLength; i++) {
     delete mdBuffer[i];
@@ -334,7 +340,8 @@ void SafeHyperJob::dephase() {
 
   DephaseSteps = int(params->parrepDephaseTime / params->mdTimeStep);
   Dynamics dephaseDynamics(current, params.get());
-  log("Dephasing for %.2f fs\n", params->parrepDephaseTime * params->timeUnit);
+  SPDLOG_LOGGER_DEBUG(log, "Dephasing for {:.2f} fs",
+                      params->parrepDephaseTime * params->timeUnit);
 
   step = stepNew = loop = 0;
 
@@ -354,12 +361,15 @@ void SafeHyperJob::dephase() {
 
     if (transitionFlag) {
       dephaseRefineStep = refine(dephaseBuffer, dephaseBufferLength, reactant);
-      log("loop = %ld; dephase refine step = %ld\n", loop, dephaseRefineStep);
+      SPDLOG_LOGGER_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
+                          dephaseRefineStep);
       transitionStep = dephaseRefineStep - 1; // check that this is correct
       transitionStep = (transitionStep > 0) ? transitionStep : 0;
-      log("Dephasing warning: in a new state, inverse the momentum and restart "
-          "from step %ld\n",
-          step + transitionStep);
+      SPDLOG_LOGGER_DEBUG(log,
+                          "Dephasing warning: in a new state, inverse the "
+                          "momentum and restart "
+                          "from step {}",
+                          step + transitionStep);
       *current = *dephaseBuffer[transitionStep];
       velocity = current->getVelocities();
       velocity = velocity * (-1);
@@ -367,7 +377,8 @@ void SafeHyperJob::dephase() {
       step = step + transitionStep;
     } else {
       step = step + dephaseBufferLength;
-      // log("Successful dephasing for %.2f steps \n", step);
+      // SPDLOG_LOGGER_DEBUG(log, "Successful dephasing for {:.2f} steps",
+      // step);
     }
 
     for (long i = 0; i < dephaseBufferLength; i++) {
@@ -376,13 +387,14 @@ void SafeHyperJob::dephase() {
 
     if ((params->parrepDephaseLoopStop) &&
         (loop > params->parrepDephaseLoopMax)) {
-      log("Reach dephase loop maximum, stop dephasing! Dephased for %ld "
-          "steps\n ",
+      SPDLOG_LOGGER_DEBUG(
+          log,
+          "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",
           step);
       break;
     }
-    log("Successfully Dephased for %.2f fs",
-        step * params->mdTimeStep * params->timeUnit);
+    SPDLOG_LOGGER_DEBUG(log, "Successfully Dephased for {:.2f} fs",
+                        step * params->mdTimeStep * params->timeUnit);
   }
 }
 
@@ -396,7 +408,8 @@ bool SafeHyperJob::checkState(Matter *current, Matter *reactant) {
 }
 
 long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
-  // log("[Parallel Replica] Refining transition time.\n");
+  // SPDLOG_LOGGER_DEBUG(log, "[Parallel Replica] Refining transition
+  // time.\n");
 
   bool midTest;
   long min, max, mid;
@@ -414,8 +427,8 @@ long SafeHyperJob::refine(Matter *buff[], long length, Matter *reactant) {
     } else if (midTest == true) {
       max = mid;
     } else {
-      log("Refine step failed! \n");
-      exit(1);
+      SPDLOG_LOGGER_CRITICAL(log, "Refine step failed!");
+      std::exit(1);
     }
   }
 

@@ -42,4 +42,3 @@ for i in range(len(p) - 1):
         temp.r += j * (v * (d/(N-1)))
         io.savecon(outfile, temp, 'a')
 io.savecon(outfile, p[len(p) - 1], 'a')
-

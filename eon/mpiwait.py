@@ -29,4 +29,3 @@ def mpiwait():
 
         if MPI.COMM_WORLD.Iprobe(MPI.ANY_SOURCE, MPI.ANY_TAG):
             break
-

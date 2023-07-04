@@ -33,8 +33,7 @@ Optimizer *Optimizer::getOptimizer(ObjectiveFunction *objf,
     mizer = new SteepestDescent(objf, parameters);
   } else {
     auto log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod or refineOptMethod: {}",
-                           meth);
+    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod: {}", parameters->optMethod);
     std::exit(1);
   }
   return mizer;

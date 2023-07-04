@@ -188,7 +188,7 @@ void Atoms::DeformAtoms(SuperCell *newSuperCell)
 {
   for (int i = 0; i < 3; i++)
     if (superCell->periodic[i] != newSuperCell->periodic[i])
-      throw (Exception("Periodicity can not be changed! p[") << "i" << "]: " 
+      throw (Exception("Periodicity can not be changed! p[") << "i" << "]: "
 	     << superCell->periodic[i] << " -> " << newSuperCell->periodic[i]);
   potential->UpdateSuperCell(newSuperCell);
   for (int a = 0; a < nAtoms; a++)

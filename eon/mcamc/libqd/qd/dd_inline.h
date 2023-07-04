@@ -40,7 +40,7 @@ inline dd_real operator+(const dd_real &a, double b) {
 
 /* double-double + double-double */
 inline dd_real dd_real::ieee_add(const dd_real &a, const dd_real &b) {
-  /* This one satisfies IEEE style error bound, 
+  /* This one satisfies IEEE style error bound,
      due to K. Briggs and W. Kahan.                   */
   double s1, s2, t1, t2;
 
@@ -283,7 +283,7 @@ inline dd_real operator/(const dd_real &a, double b) {
   double p1, p2;
   double s, e;
   dd_real r;
-  
+
   q1 = a.x[0] / b;   /* approximate quotient. */
 
   /* Compute  this - q1 * d */
@@ -291,7 +291,7 @@ inline dd_real operator/(const dd_real &a, double b) {
   s = qd::two_diff(a.x[0], p1, e);
   e += a.x[1];
   e -= p2;
-  
+
   /* get next approximation. */
   q2 = (s + e) / b;
 
@@ -329,7 +329,7 @@ inline dd_real dd_real::accurate_div(const dd_real &a, const dd_real &b) {
   q1 = a.x[0] / b.x[0];  /* approximate quotient */
 
   r = a - q1 * b;
-  
+
   q2 = r.x[0] / b.x[0];
   r -= (q2 * b);
 
@@ -549,14 +549,14 @@ inline dd_real nint(const dd_real &a) {
   if (hi == a.x[0]) {
     /* High word is an integer already.  Round the low word.*/
     lo = qd::nint(a.x[1]);
-    
+
     /* Renormalize. This is needed if x[0] = some integer, x[1] = 1/2.*/
     hi = qd::quick_two_sum(hi, lo, lo);
   } else {
     /* High word is not an integer. */
     lo = 0.0;
     if (std::abs(hi-a.x[0]) == 0.5 && a.x[1] < 0.0) {
-      /* There is a tie in the high word, consult the low word 
+      /* There is a tie in the high word, consult the low word
          to break the tie. */
       hi -= 1.0;      /* NOTE: This does not cause INEXACT. */
     }

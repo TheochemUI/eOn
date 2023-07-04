@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #SBATCH --job-name=eon_neb_test
 #SBATCH --output=neb.log
 #SBATCH --qos=debug
@@ -18,4 +18,3 @@ module load vasp/5.4.1_vtst-gcc
 module load ase
 
 eonclient
-

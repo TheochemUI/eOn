@@ -175,7 +175,7 @@ def savecon(fileout, p, w = 'w'):
 
 
 def load_mode(modefilein):
-    ''' 
+    '''
     Reads a mode.dat file into an N by 3 numpy array
         modefilein: may be either a file-like object of a filename
     '''
@@ -204,7 +204,7 @@ def save_mode(modefileout, displace_vector):
     else:
         f = open(modefileout, 'w')
     for i in range(len(displace_vector)):
-        f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0], 
+        f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0],
             displace_vector[i][1], displace_vector[i][2]))
 
 
@@ -270,15 +270,15 @@ def loadposcar(filein):
     else:
         f = open(filein, 'r')
     # Line 1: Atom types
-    AtomTypes = f.readline().split() 
+    AtomTypes = f.readline().split()
     # Line 2: scaling of coordinates
-    scale = float(f.readline()) 
+    scale = float(f.readline())
     # Lines 3-5: the box
     box = numpy.zeros((3, 3))
     for i in range(3):
         line = f.readline().split()
         box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-    # Line 6: number of atoms of each type. 
+    # Line 6: number of atoms of each type.
     line = f.readline().split()
     NumAtomsPerType = []
     for l in line:
@@ -291,7 +291,7 @@ def loadposcar(filein):
     # Line 7: selective or cartesian
     sel = f.readline()[0]
     selective_flag = (sel == 's' or sel == 'S')
-    if not selective_flag: 
+    if not selective_flag:
         car = sel
     else:
         car = f.readline()[0]
@@ -308,7 +308,7 @@ def loadposcar(filein):
             pos = line[0:3]
             if selective_flag:
                 sel = line[3:7]
-                if sel[0] == 'T' or sel[0] == 't': 
+                if sel[0] == 'T' or sel[0] == 't':
                     p.free[atom_index] = 1
                 elif sel[0] == 'F' or sel[0] == 'f':
                     p.free[atom_index] = 0
@@ -327,7 +327,7 @@ def saveposcar(fileout, p, w='w', direct = False):
         fileout: name to save it under
         point:    atoms object to save
         w:        write/append flag
-    ''' 
+    '''
     if hasattr(fileout, 'write'):
         poscar = fileout
     else:
@@ -356,9 +356,9 @@ def saveposcar(fileout, p, w='w', direct = False):
     for i in range(len(p)):
             posline = " ".join(['%20.14f' % s for s in p.r[i]]) + " "
             for j in range(3):
-                if(p.free[i]): 
+                if(p.free[i]):
                     posline+='   T'
-                else: 
+                else:
                     posline+='   F'
             poscar.write(posline+'\n')
 
@@ -414,7 +414,7 @@ class ini(SCP):
         if section not in self.sections():
             self.add_section(section)
         SCP.set(self, section, option, str(value))
-        if type(self.filenames) == str:  
+        if type(self.filenames) == str:
             name = self.filenames
         else:
             name = self.filenames[-1]

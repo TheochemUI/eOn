@@ -142,6 +142,15 @@ cd gtests
 cp ../../gtests/data/gpr_dimer/client.log ../../gtests/data/gpr_dimer/config.ini ../../gtests/data/gpr_dimer/direction.dat ../../gtests/data/gpr_dimer/displacement.con ../../gtests/data/gpr_dimer/mode.dat ../../gtests/data/gpr_dimer/pos.con ../../gtests/data/gpr_dimer/results.dat .
 gdb gprdimereon # or lldb
 #+end_src
+* Contributing
+*Do* run ~pre-commit~ before actually submitting pull requests!
+#+begin_src bash
+pipx run pre-commit run --all-files
+#+end_src
+For best results, consider installing the ~git~ hook as well.
+#+begin_src bash
+pipx run pre-commit install
+#+end_src
 * TODO Development Rosetta
 ** Machine Learning Concepts
 ** EON Concepts

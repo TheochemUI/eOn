@@ -19,4 +19,3 @@ void append_expn(std::string &str, int expn) {
 
   str += '0' + expn;
 }
-

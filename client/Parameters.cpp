@@ -7,7 +7,6 @@
 #include "INIFile.h"
 #include "ImprovedDimer.h"
 #include "Job.h"
-#include "Log.h"
 #include "NudgedElasticBand.h"
 #include "Potential.h"
 #include "Prefactor.h"

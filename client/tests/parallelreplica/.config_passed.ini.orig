@@ -29,4 +29,3 @@ refine_transition_time=T
 state_save_interval=10.0
 state_check_interval=1000.0
 post_transition_time=200.0
-
