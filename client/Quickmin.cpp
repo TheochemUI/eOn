@@ -9,8 +9,12 @@ Quickmin::Quickmin(ObjectiveFunction *objfPassed,
   velocity.resize(objf->degreesOfFreedom());
   velocity.setZero();
   iteration = 0;
-  log = spdlog::basic_logger_st("qm", "_qm.log", true);
-  log->set_pattern("%v");
+  if (spdlog::get("qm")) {
+    log = spdlog::get("qm");
+  } else {
+    log = spdlog::basic_logger_st("qm", "_qm.log", true);
+  }
+  log->set_pattern("[%l] [QM] %v");
 }
 
 Quickmin::~Quickmin() { return; }
