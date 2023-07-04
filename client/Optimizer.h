@@ -34,7 +34,16 @@
  */
 
 class Optimizer {
+private:
+  const OptType otype;
+
+protected:
+  std::shared_ptr<Parameters> m_params;
+
 public:
+  Optimizer(std::shared_ptr<Parameters> a_params)
+      : otype{a_params->potential},
+        m_params{a_params} {}
   //! optimizer deconstructor
   virtual ~Optimizer(){};
   //! Template for stepping the optimizer, returns convergence

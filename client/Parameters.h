@@ -140,8 +140,8 @@ public:
   double saddleZeroModeAbortCurvature;
 
   // [Optimizer] //
-  string optMethod;
-  string refineOptMethod;      // used below refine threshold
+  OptType optMethod;
+  OptType refineOptMethod;     // used below refine threshold
   double refineThreshold;      // threshold to switch opt_method
   string optConvergenceMetric; // norm, max_atom, max_component
   string optConvergenceMetricLabel;
