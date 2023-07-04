@@ -47,10 +47,9 @@ public:
       : jtype{parameters->job}, params{std::make_shared<Parameters>(
                                     *std::move(parameters))},
         pot{helper_functions::makePotential(params->potential, params)} {}
-  Job(PotType ptype, std::unique_ptr<Parameters> parameters)
-      : jtype{parameters->job}, params{std::make_shared<Parameters>(
-                                    *std::move(parameters))},
-        pot{helper_functions::makePotential(ptype, params)} {}
+  Job(std::shared_ptr<Potential> potPassed,
+      std::shared_ptr<Parameters> parameters)
+      : jtype{parameters->job}, params{parameters}, pot{potPassed} {}
   virtual ~Job() = default;
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;

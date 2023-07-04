@@ -217,6 +217,11 @@ Parameters::Parameters() {
   gprDebugDy = 0.1;              // debug_dy
   gprDebugDz = 0.1;              // debug_dz
 
+  // GP Surrogate Parameters
+  sub_job = JobType::Unknown;
+  gp_uncertainity = 0.05;
+  gp_linear_path_always = true;
+
   // [Hessian] //
   hessianAtomList = string("All");
   hessianZeroFreqValue = 1e-6;
@@ -476,7 +481,7 @@ int Parameters::load(FILE *file) {
     processSearchMinimizationOffset = optMaxMove;
     // Handle each optimizer separately
     if (ini.FindKey("QuickMin") != -1) {
-      optTimeStepInput =
+    optTimeStepInput =
           ini.GetValueF("QuickMin", "time_step", optTimeStepInput);
       optTimeStep = optTimeStepInput / timeUnit;
       optQMSteepestDecent = ini.GetValueB("Optimizer", "qm_steepest_descent",
@@ -484,29 +489,29 @@ int Parameters::load(FILE *file) {
     } else if (ini.FindKey("FIRE") != -1) {
       SPDLOG_WARN("Overwriting QuickMin timestep with Fire timestep!!");
       optTimeStepInput = ini.GetValueF("FIRE", "time_step", optTimeStepInput);
-      optTimeStep = optTimeStepInput / timeUnit;
-      optMaxTimeStepInput =
+    optTimeStep = optTimeStepInput / timeUnit;
+    optMaxTimeStepInput =
           ini.GetValueF("FIRE", "time_step_max", optMaxTimeStepInput);
-      optMaxTimeStep = optMaxTimeStepInput / timeUnit;
+    optMaxTimeStep = optMaxTimeStepInput / timeUnit;
     } else if (ini.FindKey("LBFGS") != -1) {
       optLBFGSMemory = ini.GetValueL("LBFGS", "lbfgs_memory", optLBFGSMemory);
-      optLBFGSInverseCurvature = ini.GetValueF(
+    optLBFGSInverseCurvature = ini.GetValueF(
           "LBFGS", "lbfgs_inverse_curvature", optLBFGSInverseCurvature);
       optLBFGSMaxInverseCurvature = ini.GetValueF(
           "LBFGS", "lbfgs_max_inverse_curvature", optLBFGSMaxInverseCurvature);
-      optLBFGSAutoScale =
+    optLBFGSAutoScale =
           ini.GetValueB("LBFGS", "lbfgs_auto_scale", optLBFGSAutoScale);
-      optLBFGSAngleReset =
+    optLBFGSAngleReset =
           ini.GetValueB("LBFGS", "lbfgs_angle_reset", optLBFGSAngleReset);
       optLBFGSDistanceReset =
           ini.GetValueB("LBFGS", "lbfgs_distance_reset", optLBFGSDistanceReset);
     } else if (ini.FindKey("CG") != -1) {
-      optCGNoOvershooting =
+    optCGNoOvershooting =
           ini.GetValueB("CG", "cg_no_overshooting", optCGNoOvershooting);
       optCGKnockOutMaxMove =
           ini.GetValueB("CG", "cg_knock_out_max_move", optCGKnockOutMaxMove);
       optCGLineSearch = ini.GetValueB("CG", "cg_line_search", optCGLineSearch);
-      optCGLineConverged =
+    optCGLineConverged =
           ini.GetValueF("CG", "cg_line_converged", optCGLineConverged);
       optCGMaxIterBeforeReset = ini.GetValueL("CG", "cg_max_iter_before_reset",
                                               optCGMaxIterBeforeReset);
@@ -539,6 +544,13 @@ int Parameters::load(FILE *file) {
     dimerRemoveRotation =
         ini.GetValueB("Dimer", "remove_rotation", dimerRemoveRotation);
 
+    // GP Surrogate Parameters
+    sub_job = helper_functions::getJobType(
+        toLowerCase(ini.GetValue("Surrogate", "sub_job")));
+    gp_uncertainity =
+        ini.GetValueF("Surrogate", "gp_uncertainity", gp_uncertainity);
+    gp_linear_path_always = ini.GetValueB("Surrogate", "gp_linear_path_always",
+                                          gp_linear_path_always);
     // [Lanczos] //
 
     lanczosTolerance = ini.GetValueF("Lanczos", "tolerance", lanczosTolerance);

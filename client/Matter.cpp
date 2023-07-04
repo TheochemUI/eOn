@@ -1,4 +1,5 @@
 #include "Matter.h"
+#include "BaseStructures.h"
 #include "BondBoost.h"
 #include "HelperFunctions.h"
 #include "ObjectiveFunction.h"
@@ -95,7 +96,6 @@ void Matter::initializeDataMembers(std::shared_ptr<Parameters> params) {
   recomputePotential = true;
   forceCalls = 0;
   parameters = params;
-  potential = NULL;
 }
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
@@ -283,6 +283,10 @@ AtomMatrix Matter::getPositionsFree() const {
   return ret;
 }
 
+VectorXi Matter::getAtomicNrsFree() const {
+  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+}
+
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
   MatterObjectiveFunction objf(std::make_shared<Matter>(*this), parameters);
@@ -317,7 +321,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
     if (!quiet) {
       SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
                           "[Matter]", iteration, stepSize,
-                          objf.getConvergence(), getPotentialEnergy());
+          objf.getConvergence(), getPotentialEnergy());
     }
 
     if (writeMovie) {
@@ -826,12 +830,37 @@ void Matter::computePotential() {
       potential =
           helper_functions::makePotential(parameters->potential, parameters);
     }
-
-    potcall_logger->info(
-        "Calling potential {}",
-        helper_functions::getPotentialName(potential->getType()));
-    std::tie(potentialEnergy, forces) =
-        potential->get_ef(positions, atomicNrs, cell);
+    // SPDLOG_TRACE("Potential is {}", helper_functions::getPotentialName(
+    //                                     this->potential->getType()));
+    if (potential->getType() != PotType::PYSURROGATE) {
+      // Default value for true_pot, so not a surrogate run
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
+      auto [pE, frcs, var_none] = potential->get_ef(positions, atomicNrs, cell);
+      potentialEnergy = pE;
+      forces = frcs;
+    } else {
+      // For the Surrogates, only use free data
+      // potcall_logger->info(
+      //     "Calling potential {}",
+      //     helper_functions::getPotentialName(potential->getType()));
+      auto [freePE, freeForces, vari] = potential->get_ef(
+          this->getPositionsFree(), this->getAtomicNrsFree(), cell);
+      // Now populate full structures
+      this->potentialEnergy = freePE;
+      if (vari.has_value()) {
+        this->variance = vari.value();
+      } else {
+        throw std::runtime_error("You should have gotten a value\n");
+      }
+      for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
+        if (!isFixed(idx)) {
+          forces.row(idx) = freeForces.row(jdx);
+          jdx++;
+        }
+      }
+    }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
@@ -1212,5 +1241,13 @@ void Matter::setPotential(std::shared_ptr<Potential> pot) {
   this->potential = pot;
   recomputePotential = true;
 }
+
+double Matter::getEnergyVariance() { return this->variance(0, 0); }
+
+Eigen::VectorXd Matter::getForceVariance() {
+  return this->variance.segment(1, numberOfFreeAtoms() * 3);
+}
+
+double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
