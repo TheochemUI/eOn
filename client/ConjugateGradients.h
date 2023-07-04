@@ -27,12 +27,26 @@ class ConjugateGradients : public Optimizer {
 public:
   //! Conjugate Gradients optimizer constructor
   /*!
-   * \param *objf an ref ObjectiveFunction that tells the optimizer how to run
-   * \param *parameters defined by the config.init file
+   * \param std::shared_ptr<ObjectiveFunction> m_objf that tells the optimizer
+   * how to run \param std::shared_ptr<Parameters> m_params defined by the
+   * config.init file
    */
-  ConjugateGradients(ObjectiveFunction *objf, Parameters *parameters);
+  ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
+                     std::shared_ptr<Parameters> a_params)
+      : m_objf{a_objf},
+        m_params{a_params},
+        m_directionOld{a_objf->getPositions() * 0.0},
+        m_forceOld{a_objf->getPositions() * 0.0}, // use setZero instead
+        m_cg_i{0} {
+    if (spdlog::get("cg")) {
+      m_log = spdlog::get("cg");
+    } else {
+      m_log = spdlog::basic_logger_st("cg", "_cg.log", true);
+    }
+    m_log->set_pattern("[%l] [CG] %v");
+  }
   //! Conjugant Gradient deconstructor
-  ~ConjugateGradients();
+  ~ConjugateGradients() = default;
 
   //! Calls the next step in the algorithm
   /**
@@ -47,40 +61,41 @@ public:
    */
   int run(int maxIterations, double maxMove);
   //! Gets the direction of the next step
-  VectorXd getStep();
+  Eigen::VectorXd getStep();
 
 private:
   //! An objective function relating a certain job method to the conjugate
   //! gradient optimizer
-  ObjectiveFunction *objf;
+  std::shared_ptr<ObjectiveFunction> m_objf;
   //! Parameters set by the config.init file
-  Parameters *parameters;
+  std::shared_ptr<Parameters> m_params;
 
   //! Current step direction of the conjugate gradient
-  VectorXd direction;
+  Eigen::VectorXd m_direction;
   //! Algorithms previous step direction
-  VectorXd directionOld;
+  Eigen::VectorXd m_directionOld;
   //! Normalised version of the current direction vector
-  VectorXd directionNorm;
+  Eigen::VectorXd m_directionNorm;
   //! Current force vector
-  VectorXd force;
+  Eigen::VectorXd m_force;
   //! Previous force vector
-  VectorXd forceOld;
+  Eigen::VectorXd m_forceOld;
+  std::shared_ptr<spdlog::logger> m_log;
 
-  //! Counts the number of descrete steps untill algorithm convergence
-  int cg_i;
+  //! Counts the number of discrete steps until algorithm convergence
+  size_t m_cg_i;
 
   //! Steps the conjugate gradient
   /**
    *  Checks for convergence based on the change in displacement or direction
    */
-  int single_step(double maxMove);
+  int single_step(double a_maxMove);
   //! Steps the conjugate gradient
   /**
    * Checks for convergence based on the ratio of the projected force along a
    * line to the norm of the total force
    */
-  int line_search(double maxMove);
+  int line_search(double a_maxMove);
 };
 
 #endif
