@@ -20,7 +20,7 @@ void getTime(double *real, double *user, double *sys)
     gettimeofday(&time, NULL);
     *real = (double)time.tv_sec + (double)time.tv_usec/1000000.0;
     struct rusage r_usage;
-    if (getrusage(RUSAGE_SELF, &r_usage)!=0) 
+    if (getrusage(RUSAGE_SELF, &r_usage)!=0)
     {
         fprintf(stderr, "problem getting usage info: %s\n", strerror(errno));
     }

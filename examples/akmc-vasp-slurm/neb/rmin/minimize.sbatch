@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #SBATCH --job-name=eon_rmin
 #SBATCH --output=min.log
 #SBATCH --qos=debug
@@ -17,4 +17,3 @@ module load vasp/5.4.1_vtst-gcc
 module load ase
 
 eon
-

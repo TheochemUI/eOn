@@ -192,7 +192,7 @@ class BHgui(atomview.atomview):
         for i in range(2,len(lines)):
             x.append(i-2)
             unsortedlines.append((lines[i].split()[0],lines[i].split()[2]))
-        sortedlines = sorted(unsortedlines, key  = lambda tuble: int (tuble[1])) 
+        sortedlines = sorted(unsortedlines, key  = lambda tuble: int (tuble[1]))
         for i in sortedlines:
             y.append(i[1])
             grouplabels.append(i[0])
@@ -207,7 +207,7 @@ class BHgui(atomview.atomview):
         p.xlim([0-fp,max(x)+fp])
         ax.set_xticks(x)
         ax.set_xticklabels(grouplabels)
-        self.rplotWindow.set_default_size(425,425) 
+        self.rplotWindow.set_default_size(425,425)
         container = gtk.VBox()
         self.rplotWindow.add(container)
         graph = drawArea(fig)
@@ -217,7 +217,7 @@ class BHgui(atomview.atomview):
         self.rplotWindow.show_all()
 
 
-    # average acceptanceratio 
+    # average acceptanceratio
     def acceptanceratio_average(self, *args):
         ratios = []
         for i in range(self.numstates+1):

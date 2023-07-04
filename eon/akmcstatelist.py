@@ -13,7 +13,7 @@ from eon import statelist
 
 class AKMCStateList(statelist.StateList):
     """ The StateList class.  Serves as an interface to State objects and StateList metadata. """
-    def __init__(self, kT, thermal_window, max_thermal_window, 
+    def __init__(self, kT, thermal_window, max_thermal_window,
                   initial_state = None, filter_hole = False):
         statelist.StateList.__init__(self, akmcstate.AKMCState, initial_state)
         # aKMC data.
@@ -93,7 +93,7 @@ class AKMCStateList(statelist.StateList):
                                 reverse_eq_rate = config.akmc_eq_rate
                             print("new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate)
 
-                        # Remember we are now looking at the reverse processes 
+                        # Remember we are now looking at the reverse processes
                         reverse_procs[id]['product'] = reactant_number
                         reverse_procs[id]['saddle_energy'] = saddle_energy
                         reverse_procs[id]['prefactor'] = reactant.procs[process_id]['product_prefactor']
@@ -201,7 +201,7 @@ class AKMCStateList(statelist.StateList):
 
     def connect_states(self, states):
         '''
-        This function goes through the process tables of all states in the argument and checks if any of the 
+        This function goes through the process tables of all states in the argument and checks if any of the
         unregistered processes connect these states. It thus tries to connect update the processtables of the states.
         '''
         # print "connect_states, states: ",states

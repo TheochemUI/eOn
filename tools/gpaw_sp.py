@@ -16,7 +16,7 @@ def create_gpaw(comm):
     from gpaw import GPAW, FermiDirac, PoissonSolver, setup_paths
     from gpaw import Mixer
     setup_paths.insert(0,'.')
-    calc = GPAW(xc='PBE', 
+    calc = GPAW(xc='PBE',
                 occupations=FermiDirac(width=0.02),
                 mixer = Mixer(beta=0.10, nmaxold=5, weight=100.0),
                 communicator=comm)
@@ -93,7 +93,7 @@ while True:
     my_comm.broadcast(cell,           0)
     my_comm.broadcast(pbc,            0)
     my_comm.broadcast(logdir,         0)
-    
+
     t0 = time.time()
     tmp = []
     for x in logdir:

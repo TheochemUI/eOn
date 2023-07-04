@@ -1,4 +1,4 @@
-  US Au                                  
+  US Au
  11.0000000000000000
  parameters from PSCTR are:
    VRHFIN =Au: s1d10
@@ -20,7 +20,7 @@
    LCOR   =        T    correct aug charges
    RMAX   =    3.440    core radius for proj-oper
    QCUT   =   -3.634; QGAM   =    7.268    optimization parameters
- 
+
    Description
      l     E      TYP  RCUT    TYP  RCUT
      2   .000      7  2.300    23  2.840

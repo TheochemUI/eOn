@@ -12,38 +12,38 @@
 #endif
 
 /* If fused multiply-add is available, define to correct macro for
-   using it.  It is invoked as QD_FMA(a, b, c) to compute fl(a * b + c). 
-   If correctly rounded multiply-add is not available (or if unsure), 
+   using it.  It is invoked as QD_FMA(a, b, c) to compute fl(a * b + c).
+   If correctly rounded multiply-add is not available (or if unsure),
    keep it undefined.*/
 #ifndef QD_FMA
 /* #undef QD_FMA */
 #endif
 
 /* If fused multiply-subtract is available, define to correct macro for
-   using it.  It is invoked as QD_FMS(a, b, c) to compute fl(a * b - c). 
-   If correctly rounded multiply-add is not available (or if unsure), 
+   using it.  It is invoked as QD_FMS(a, b, c) to compute fl(a * b - c).
+   If correctly rounded multiply-add is not available (or if unsure),
    keep it undefined.*/
 #ifndef QD_FMS
 /* #undef QD_FMS */
 #endif
 
 /* Set the following to 1 to define commonly used function
-   to be inlined.  This should be set to 1 unless the compiler 
-   does not support the "inline" keyword, or if building for 
+   to be inlined.  This should be set to 1 unless the compiler
+   does not support the "inline" keyword, or if building for
    debugging purposes. */
 #ifndef QD_INLINE
 #define QD_INLINE 1
 #endif
 
 /* Set the following to 1 to use ANSI C++ standard header files
-   such as cmath, iostream, etc.  If set to zero, it will try to 
+   such as cmath, iostream, etc.  If set to zero, it will try to
    include math.h, iostream.h, etc, instead. */
 #ifndef QD_HAVE_STD
 #define QD_HAVE_STD 1
 #endif
 
 /* Set the following to 1 to make the addition and subtraction
-   to satisfy the IEEE-style error bound 
+   to satisfy the IEEE-style error bound
 
       fl(a + b) = (1 + d) * (a + b)
 

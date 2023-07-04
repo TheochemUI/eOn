@@ -67,7 +67,7 @@ Start by ensuring that all the packages listed below are installed:
 %
 \subsubsection{boincadm user}
 Make a new user(boincadm) to handle boinc:
-\begin{verbatim}	
+\begin{verbatim}
 sudo useradd -m -s /bin/bash boincadm
 \end{verbatim}
 %
@@ -79,15 +79,15 @@ sudo usermod -G boincadm www-data
 \subsubsection{MySQL}
 Start mysql:
 \begin{verbatim}
-mysql -h localhost -u root [-p] 
+mysql -h localhost -u root [-p]
 \end{verbatim}
 Where the \texttt{-p} only should be used if the MySQL \texttt{root} user got a password.
 %
 Configure mysql
 \begin{verbatim}
 GRANT ALL ON *.* TO 'boincadm'@'localhost';
-SET PASSWORD FOR 'boincadm'@'localhost'='XXX'; 
-exit 
+SET PASSWORD FOR 'boincadm'@'localhost'='XXX';
+exit
 \end{verbatim}
 %
 where \texttt{XXX} represents the password.
@@ -110,11 +110,11 @@ mv server_stable boinc
 cd boinc
 \end{verbatim}
 %
-Build boinc server. 
+Build boinc server.
 \begin{verbatim}
-./_autosetup   
+./_autosetup
 ./configure --disable-client
-make 
+make
 \end{verbatim}
 %
 If \texttt{./autosetup} complains about a too old version of autoreconf the change line \texttt{if check\_version autoreconf 2.58} to \texttt{if check\_version /usr/bin/autoreconf2.50} in this file.
@@ -125,9 +125,9 @@ Make sure the hostname is the same as the address used when connecting to the co
 Enter the Boinc tools directiory and create a new project:
 \begin{verbatim}
 cd .../boinc/tools
-./make_project eon 
+./make_project eon
 \end{verbatim}
-where \texttt{eon} can be replaced with another project name if preferred.  
+where \texttt{eon} can be replaced with another project name if preferred.
 Follow the instructions in the created readme file until the command bin/xadd.
 
 \subsection{Secure the ops page}
@@ -136,7 +136,7 @@ Go to eon/html/ops and run:
 cd .../eon/html/ops
 htpasswd -c .htpasswd USERNAME
 \end{verbatim}
-where \texttt{USERNAME} is the name of the user that should have access to the \texttt{ops} page.  
+where \texttt{USERNAME} is the name of the user that should have access to the \texttt{ops} page.
 In \texttt{eon/html/project/project.inc} edit \texttt{function auth\_ops()} by changing the default deny access \texttt{auth\_ops\_deny()} to \texttt{//auth\_ops\_deny()}.
 \begin{verbatim}
 cd .../eon/html/project/
@@ -184,7 +184,7 @@ Add the following deamons to the \texttt{.../eon/config.xml}:
   <cmd>
     sample_assimilator -d 3 -app client
   </cmd>
-</daemon> 
+</daemon>
 \end{verbatim}
 %
 To get the newly added application into the Boinc go to the root and run:

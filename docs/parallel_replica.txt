@@ -7,7 +7,7 @@ Parallel Replica
 
 Parallel Replica dynamics (PRD) is the simplest and the accurate way to
 accelerate a molecular dynamics simulation. [#voter98_13985]_ The only
-assumption made in this method is that the reactions satisfy first order kinetics. 
+assumption made in this method is that the reactions satisfy first order kinetics.
 
 .. math::
 
@@ -23,7 +23,7 @@ decorrelate their motions. The simulation clock starts after this dephasing
 stage and stops when the first transition is detected in any of replicas.
 Because those N trajectories are independent, they can explore the phase space
 N times faster than using a single trajectory. The overall simulation clock is
-advanced by the sum of all the simulation times in replicas. 
+advanced by the sum of all the simulation times in replicas.
 
 In order to work with distributed computing, we have modified the traditional
 scheme for running PRD. The replica generating and dephasing stage is exactly
@@ -34,8 +34,8 @@ server increments the simulation time :math:`t` until the first transition
 occurs.
 
 In order to run Parallel Replica, set **job** to *parallel_replica* in the
-**[Main]** section. For regular MD the stepsize and length of the trajactory and 
-parameters of thermostat can be set in the **[Dynamics]** section. The temperature 
+**[Main]** section. For regular MD the stepsize and length of the trajactory and
+parameters of thermostat can be set in the **[Dynamics]** section. The temperature
 for the dynamics run is set in the **[Main]** section.
 
 [Parallel Replica] Options
@@ -69,4 +69,3 @@ for the dynamics run is set in the **[Main]** section.
 .. rubric:: References
 
 .. [#voter98_13985] A.F. Voter, "Parallel replica method for dynamics of infrequent events” *Phys. Rev. B* **57**, 13985 (1998). doi:`10.1103/PhysRevB.57.R13985 <http://link.aps.org/doi/10.1103/PhysRevB.57.R13985>`_
-

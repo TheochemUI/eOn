@@ -26,7 +26,7 @@ Enter 'src' directory and change the Makefile by adding the section 'x86-eon'
 
 4
 Compile the IMD code, which creates an executable located in '$IMD/bin':
- 
+
  make IMDSYS=x86-eon imd_cg_eam_adp_nbl_writef
 
 3

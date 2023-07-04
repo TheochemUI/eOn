@@ -11,4 +11,3 @@ b = io.loadcon(sys.argv[2])
 c = atoms.nonrelative_motion(a, b)
 
 io.savecon(sys.argv[3], c)
-

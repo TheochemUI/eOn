@@ -12,14 +12,14 @@ Prefactor
 **all_free_atoms**: Account for all free atoms when determining the prefactor.
 
     default: ``false``
-    
+
 **filter_scheme**: Determines how to filter the atoms for use in the prefactor calculation.
 The two options are "cutoff", which includes atoms that move more than "min_displacement",
-and "fraction", which includes the atoms that make up "filter_fraction" of the total motion, 
+and "fraction", which includes the atoms that make up "filter_fraction" of the total motion,
 prioritizing the atoms that move the most.
 
     default: ``fraction``
-    
+
 **filter_fraction**: When using filter_scheme "fraction", the atoms that move the most will be
 included in the prefactor calculation, limited to the number that make up "filter_fraction" of
 the total motion.
@@ -50,7 +50,7 @@ instead of doing a full prefactor calculation.
 
     default: ``1e+21``
 
-**configuration**: When EON runs as a prefactor job the eigenfrequencies 
+**configuration**: When EON runs as a prefactor job the eigenfrequencies
 will be determined for the stated configuration.
 
     default: ``reactant``
@@ -59,5 +59,3 @@ will be determined for the stated configuration.
         ``reactant``
         ``saddle``
         ``product``
-        
-

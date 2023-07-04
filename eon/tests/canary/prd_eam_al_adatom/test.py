@@ -43,6 +43,5 @@ for i in range(len(unit)):
     if abs(u-r)/u > 0.01:
         print failstr
         sys.exit()
-        
-print passstr
 
+print passstr

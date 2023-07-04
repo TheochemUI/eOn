@@ -22,7 +22,7 @@ Systems which can be modelled
 
 The systems which are best modelled using EON are those in which
 the important kinetics are governed by rare events. Diffusion in solids and chemical
-reactions at surface are particularly suitable when there is a  
+reactions at surface are particularly suitable when there is a
 clear separation of time scales
 between atomic vibrations at the diffusion or catalytic events of interest.
 
@@ -72,4 +72,3 @@ With contributions from a number of other developers:
 * Raymond Smith (UT)
 * Erik Edelmann (Finland)
 * Jutta Rogal (Bochum)
-

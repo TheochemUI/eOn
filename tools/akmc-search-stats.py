@@ -46,4 +46,3 @@ while os.path.isdir(os.path.join('states', str(i))):
 			unknown += 1
 	print('%10d %10d %10d %10d %10d %10d %10d %10d %10d %10d' % (i, good, nc, energy, iterations, nonlocalt, barrier, nonneg, prefac, unknown))
 	i += 1
-

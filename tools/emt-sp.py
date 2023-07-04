@@ -21,7 +21,7 @@ def create_gpaw(comm):
                     'density':1e-2,
                     'eigenstates':1e-5
                   }
-    #calc = GPAW(xc='PBE', 
+    #calc = GPAW(xc='PBE',
     #            h=.30,
     #            nbands=-8,
     #            txt='gpaw_%i.txt'%world.rank,
@@ -134,5 +134,5 @@ while True:
     if my_comm.rank == 0:
         world.send(calculation_failed, my_client_rank, tag=0)
         if not calculation_failed:
-            world.send(e1, my_client_rank, tag=0) 
+            world.send(e1, my_client_rank, tag=0)
             world.send(f1, my_client_rank, tag=0)

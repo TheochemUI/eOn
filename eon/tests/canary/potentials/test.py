@@ -14,14 +14,14 @@ for line in tab:
     # 0 - filename
     # 1 - potential
     # 2 - tolerance
-    tests.append({'file':line[0], 'potential':line[1], 'energy':float(line[2]), 
+    tests.append({'file':line[0], 'potential':line[1], 'energy':float(line[2]),
         'tolerance':float(line[3])})
 tab.close()
 
 for test in tests:
     #copy the reactant
-    shutil.copy(os.path.join('structs/',test['file']), 'pos.con')   
-    
+    shutil.copy(os.path.join('structs/',test['file']), 'pos.con')
+
     #write the config
     conf = open('config.ini','w')
     print >> conf, '[Main]'
@@ -29,7 +29,7 @@ for test in tests:
     print >> conf, '[Potential]'
     print >> conf, 'potential =', test['potential']
     conf.close()
-    
+
     os.system("../../../client/client > /dev/null")
 
     result = open("results.dat",'r')
@@ -56,4 +56,3 @@ os.unlink('results.dat')
 
 if not allpassed:
     sys.exit(1)
-

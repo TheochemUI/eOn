@@ -13,7 +13,7 @@ from eon import fileio as io
 class State:
     """ The state super class. """
     def __init__(self, statepath, statenumber, statelist, previous_state_num = -1,
-                 reactant_path = None):                 
+                 reactant_path = None):
         """ Creates a new state, with lazily loaded data. """
 
         # The parent statelist.
@@ -119,4 +119,3 @@ class State:
     def get_process_table(self):
         self.load_process_table()
         return self.procs
-
