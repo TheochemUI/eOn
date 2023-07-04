@@ -12,8 +12,8 @@ int FIRE::step(double a_maxMove) {
   Eigen::VectorXd f = -m_objf->getGradient();
   Eigen::VectorXd x = m_objf->getPositions();
 
-  m_v += f * m_dt;
-  Eigen::VectorXd dx = m_v * m_dt;
+  m_vel += f * m_dt;
+  Eigen::VectorXd dx = m_vel * m_dt;
 
   dx = helper_functions::maxAtomMotionAppliedV(dx, m_max_move);
   m_objf->setPositions(x + dx);
@@ -22,11 +22,11 @@ int FIRE::step(double a_maxMove) {
   Eigen::VectorXd f_unit = f / f.norm();
 
   // FIRE
-  P = f.dot(m_v);
-  m_v = (1 - m_alpha) * m_v + m_alpha * f_unit * m_v.norm();
+  P = f.dot(m_vel);
+  m_vel = (1 - m_alpha) * m_vel + m_alpha * f_unit * m_vel.norm();
   SPDLOG_LOGGER_DEBUG(
       m_log, "P: {:.4f}, v: {:.4f}, m_dt: {:.4f}, m_alpha: {:.4f}, N: {}", P,
-      fmt::streamed(m_v), m_dt, m_alpha, m_N);
+      fmt::streamed(m_vel), m_dt, m_alpha, m_N);
   if (P >= 0) {
     m_N++;
     if (m_N > m_N_min) {
@@ -35,7 +35,7 @@ int FIRE::step(double a_maxMove) {
     }
   } else {
     m_dt = m_dt * m_f_dec;
-    m_v = m_v * 0.0;
+    m_vel = m_vel * 0.0;
     m_alpha = m_alpha_start;
     m_N = 0;
   }
