@@ -48,7 +48,7 @@ public:
    * \param *parameters defined by the config.init file
    */
   static Optimizer *getOptimizer(ObjectiveFunction *objf,
-                                 Parameters *parameters);
+                                 Parameters *parameters, bool refine = false);
 };
 
 #endif

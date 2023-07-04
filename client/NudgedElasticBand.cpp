@@ -153,12 +153,25 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       path[maxEnergyImage]->matter2con("neb_maximage.con", append);
     }
     VectorXd pos = objf.getPositions();
+    double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
         status = NEBStatus::STATUS_BAD_MAX_ITERATIONS;
         break;
       }
-      optimizer->step(params->optMaxMove);
+      if (refine_optim) {
+        if (optim && convForce > params->refineThreshold) {
+          optim->step(params->optMaxMove);
+        } else {
+          if (!switched) {
+            switched = true;
+            SPDLOG_DEBUG("Switched to {}", params->refineOptMethod);
+          }
+          refine_optim->step(params->optMaxMove);
+        }
+      } else {
+        optim->step(params->optMaxMove);
+      }
     }
     iteration++;
 
@@ -182,10 +195,13 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     SPDLOG_LOGGER_DEBUG(log, "\n NEB converged");
   }
 
+  delete optim;
+  if (switched) {
+    delete refine_optim;
+  }
   printImageData();
   findExtrema();
 
-  delete optimizer;
   return status;
 }
 

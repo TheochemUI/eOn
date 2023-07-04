@@ -5,6 +5,7 @@
 #include "Parameters.h"
 #include "Potential.h"
 #include <memory>
+#include <spdlog/sinks/basic_file_sink.h>
 
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 class BondBoost;
