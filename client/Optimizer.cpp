@@ -5,35 +5,37 @@
 #include "Quickmin.h"
 #include "SteepestDescent.h"
 
-Optimizer *Optimizer::getOptimizer(ObjectiveFunction *objf,
-                                   Parameters *parameters, bool refine) {
-  Optimizer *mizer = nullptr;
+std::unique_ptr<Optimizer>
+Optimizer::getOptimizer(std::shared_ptr<ObjectiveFunction> a_objf,
+                        std::shared_ptr<Parameters> a_params, bool a_refine) {
+  std::unique_ptr<Optimizer> mizer = nullptr;
   std::string meth = "NONE"s;
-  if (refine) {
-    if (parameters->refineOptMethod == "NONE"s) {
-      SPDLOG_CRITICAL(
-          "refine was passed to getOptimizer when it shouldn't have been");
+  if (a_refine) {
+    if (a_params->refineOptMethod == "NONE"s) {
+      auto log = spdlog::get("_traceback");
+      SPDLOG_LOGGER_CRITICAL(
+          log, "refine was passed to getOptimizer when it shouldn't have been");
       std::exit(1);
-      meth = parameters->optMethod;
+      meth = a_params->optMethod;
     } else {
-      meth = parameters->refineOptMethod;
+      meth = a_params->refineOptMethod;
     }
   } else {
-    meth = parameters->optMethod;
+    meth = a_params->optMethod;
   }
   if (meth == "cg") {
-    mizer = new ConjugateGradients(objf, parameters);
+    mizer = std::make_unique<ConjugateGradients>(a_objf, a_params);
   } else if (meth == "qm") {
-    mizer = new Quickmin(objf, parameters);
+    mizer = std::make_unique<Quickmin>(a_objf, a_params);
   } else if (meth == "lbfgs") {
-    mizer = new LBFGS(objf, parameters);
+    mizer = std::make_unique<LBFGS>(a_objf, a_params);
   } else if (meth == "fire") {
-    mizer = new FIRE(objf, parameters);
+    mizer = std::make_unique<FIRE>(a_objf, a_params);
   } else if (meth == "sd") {
-    mizer = new SteepestDescent(objf, parameters);
+    mizer = std::make_unique<SteepestDescent>(a_objf, a_params);
   } else {
     auto log = spdlog::get("_traceback");
-    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod or refineOptMethod: {}",
+    SPDLOG_LOGGER_CRITICAL(log, "Unknown optMethod or a_refineOptMethod: {}",
                            meth);
     std::exit(1);
   }
