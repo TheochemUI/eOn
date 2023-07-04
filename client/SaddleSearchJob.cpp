@@ -1,7 +1,6 @@
 
 #include "SaddleSearchJob.h"
 #include "EpiCenters.h"
-#include "Log.h"
 #include "Potential.h"
 
 #include <stdio.h>
@@ -21,9 +20,9 @@ std::vector<std::string> SaddleSearchJob::run(void) {
     if (disp != NULL && mode != NULL) {
       displacementFilename = "displacement_cp.con";
       modeFilename = "mode_cp.dat";
-      log("Resuming from checkpoint\n");
+      SPDLOG_LOGGER_DEBUG(log, "Resuming from checkpoint");
     } else {
-      log("No checkpoint files found\n");
+      SPDLOG_LOGGER_DEBUG(log, "No checkpoint files found");
     }
   }
 
@@ -133,61 +132,64 @@ void SaddleSearchJob::saveData(int status) {
 }
 
 void SaddleSearchJob::printEndState(int status) {
-  log("[Saddle Search] Final status: ");
+  SPDLOG_LOGGER_DEBUG(log, "[Saddle Search] Final status: ");
 
   if (status == MinModeSaddleSearch::STATUS_GOOD)
-    log("Success\n");
+    SPDLOG_LOGGER_DEBUG(log, "Success");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_CONVEX)
-    log("Initial displacement unable to reach convex region\n");
+    SPDLOG_LOGGER_DEBUG(log,
+                        "Initial displacement unable to reach convex region");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_ENERGY)
-    log("Barrier too high\n");
+    SPDLOG_LOGGER_DEBUG(log, "Barrier too high");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_CONCAVE_ITERATIONS)
-    log("Too many iterations in concave region\n");
+    SPDLOG_LOGGER_DEBUG(log, "Too many iterations in concave region");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS)
-    log("Too many iterations\n");
+    SPDLOG_LOGGER_DEBUG(log, "Too many iterations");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED)
-    log("Saddle is not connected to initial state\n");
+    SPDLOG_LOGGER_DEBUG(log, "Saddle is not connected to initial state");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_PREFACTOR)
-    log("Prefactors not within window\n");
+    SPDLOG_LOGGER_DEBUG(log, "Prefactors not within window");
 
   else if (status == MinModeSaddleSearch::STATUS_FAILED_PREFACTOR)
-    log("Hessian calculation failed\n");
+    SPDLOG_LOGGER_DEBUG(log, "Hessian calculation failed");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_HIGH_BARRIER)
-    log("Energy barrier not within window\n");
+    SPDLOG_LOGGER_DEBUG(log, "Energy barrier not within window");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MINIMA)
-    log("Minimizations from saddle did not converge\n");
+    SPDLOG_LOGGER_DEBUG(log, "Minimizations from saddle did not converge");
 
   else if (status == MinModeSaddleSearch::STATUS_NONNEGATIVE_ABORT)
-    log("Nonnegative initial mode, aborting\n");
+    SPDLOG_LOGGER_DEBUG(log, "Nonnegative initial mode, aborting");
 
   else if (status == MinModeSaddleSearch::STATUS_NEGATIVE_BARRIER)
-    log("Negative barrier detected\n");
+    SPDLOG_LOGGER_DEBUG(log, "Negative barrier detected");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT)
-    log("No reaction found during MD trajectory\n");
+    SPDLOG_LOGGER_DEBUG(log, "No reaction found during MD trajectory");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE)
-    log("Converged to stationary point with zero negative modes\n");
+    SPDLOG_LOGGER_DEBUG(
+        log, "Converged to stationary point with zero negative modes");
 
   else if (status == MinModeSaddleSearch::STATUS_BAD_NO_BARRIER)
-    log("No forward barrier was found along minimized band\n");
+    SPDLOG_LOGGER_DEBUG(log,
+                        "No forward barrier was found along minimized band");
 
   else if (status == MinModeSaddleSearch::STATUS_ZEROMODE_ABORT)
-    log("Zero mode abort.\n");
+    SPDLOG_LOGGER_DEBUG(log, "Zero mode abort.");
 
   else if (status == MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
-    log("Optimizer error.\n");
+    SPDLOG_LOGGER_DEBUG(log, "Optimizer error.");
 
   else
-    log("Unknown status: %i!\n", status);
+    SPDLOG_LOGGER_DEBUG(log, "Unknown status: {}!", status);
 
   return;
 }

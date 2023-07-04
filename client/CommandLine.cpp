@@ -1,6 +1,5 @@
 #include "CommandLine.h"
 #include "ConjugateGradients.h"
-#include "Log.h"
 #include "Matter.h"
 #include "Parameters.h"
 #include "Potential.h"
@@ -130,8 +129,6 @@ void commandLine(int argc, char **argv) {
   }
   params->optMethod = optimizer;
   params->optConvergedForce = optConvergedForce;
-
-  log_init(params.get(), (char *)"client.log");
 
   auto pot = helper_functions::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);

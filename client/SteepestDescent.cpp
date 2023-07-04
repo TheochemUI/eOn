@@ -2,9 +2,6 @@
 // Based on the SteepestDescent minimizer written in ASE.
 
 #include "SteepestDescent.h"
-#include "Log.h"
-#include <cassert>
-#include <cmath>
 
 SteepestDescent::SteepestDescent(ObjectiveFunction *objfPassed,
                                  Parameters *parametersPassed) {
@@ -12,9 +9,9 @@ SteepestDescent::SteepestDescent(ObjectiveFunction *objfPassed,
   parameters = parametersPassed;
 
   iteration = 0;
+  log = spdlog::basic_logger_st("sd", "_sd.log", true);
+  log->set_pattern("[%l] [SD] %v");
 }
-
-SteepestDescent::~SteepestDescent() { return; }
 
 int SteepestDescent::step(double maxMove) {
   VectorXd r = objf->getPositions();
@@ -29,7 +26,7 @@ int SteepestDescent::step(double maxMove) {
     if (alpha < 0) {
       alpha = parameters->optSDAlpha;
     }
-    log_file("[SD] alpha: %.4e\n", alpha);
+    SPDLOG_LOGGER_DEBUG(log, "[SD] alpha: {:.4e}", alpha);
   }
 
   dr = alpha * f;

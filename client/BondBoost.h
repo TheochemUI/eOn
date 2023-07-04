@@ -45,6 +45,7 @@ private:
   long nTABs;
   long nReg;
   long nBBs;
+  std::shared_ptr<spdlog::logger> log;
 };
 
 class Hyperdynamics {
