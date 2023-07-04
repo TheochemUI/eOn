@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Assumes kdbinsert.py is in the path, that the user is inside an eon akmc 
+# Assumes kdbinsert.py is in the path, that the user is inside an eon akmc
 # directory, and that the states directory is named 'states'.
 
 import os
@@ -20,4 +20,3 @@ while os.path.exists(os.path.join('states', '%d' % n)):
 		mode_path = os.path.join('states', '%d' % n, 'procdata', 'mode_%s.dat' % proc)
 		os.system('kdbinsert.py %s %s %s -o %s %s' % (reactant_path, saddle_path, product_path, mode_path, args))
 	n += 1
-

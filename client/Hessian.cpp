@@ -1,8 +1,5 @@
 #include "Hessian.h"
 #include "HelperFunctions.h"
-#include "Log.h"
-#include <math.h>
-
 Hessian::Hessian(Parameters *params, Matter *matter) {
   parameters = params;
   hessian.resize(0, 0);
@@ -155,8 +152,8 @@ VectorXd Hessian::removeZeroFreqs(VectorXd freqs) {
   }
 
   if (nremoved != 6) {
-    SPDLOG_LOGGER_DEBUG(
-        log, "[Hessian] Error: Found {} trivial eigenmodes instead of 6",
+    SPDLOG_LOGGER_ERROR(
+        log, "[Hessian] [error] Found {} trivial eigenmodes instead of 6",
         nremoved);
   }
   return newfreqs.head(size - nremoved);

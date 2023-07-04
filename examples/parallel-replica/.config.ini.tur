@@ -1,5 +1,5 @@
 [Main]
-job = parallel_replica 
+job = parallel_replica
 temperature = 500                   ; temperature of the MD simulations
 random_seed = 1024
 
@@ -29,5 +29,3 @@ stop_after_transition = false       ; flag to stop the job when a new state is f
 [Optimizer]
 opt_method = cg                     ; use the conjugate gradient optimizer
 converged_force = 0.005             ; stop optimizations when the max force per atom reaches 0.005 eV/A
-
-

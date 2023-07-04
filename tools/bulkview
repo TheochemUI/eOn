@@ -15,7 +15,7 @@ if len(p) == 0:
     p = io.loadcons(sys.argv[1])
 if len(p) == 0:
     abort()
-    
+
 try:
     outfile = sys.argv[2]
 except:
@@ -35,7 +35,3 @@ for a in p:
             b.append(a.r[i], a.free[i], a.names[i], a.mass[i])
     if len(b) > 0:
         io.savecon(outfile, b, 'a')
-    
-        
-            
-    

@@ -9,14 +9,14 @@
  *
  * Double-double precision (>= 106-bit significand) floating point
  * arithmetic package based on David Bailey's Fortran-90 double-double
- * package, with some changes. See  
+ * package, with some changes. See
  *
  *   http://www.nersc.gov/~dhbailey/mpdist/mpdist.html
- *   
+ *
  * for the original Fortran-90 version.
  *
  * Overall structure is similar to that of Keith Brigg's C++ double-double
- * package.  See  
+ * package.  See
  *
  *   http://www-epidem.plansci.cam.ac.uk/~kbriggs/doubledouble.html
  *
@@ -125,7 +125,7 @@ struct QD_API dd_real {
   static dd_real div(double a, double b);
   static dd_real sloppy_div(const dd_real &a, const dd_real &b);
   static dd_real accurate_div(const dd_real &a, const dd_real &b);
-  
+
   dd_real &operator/=(double a);
   dd_real &operator/=(const dd_real &a);
 
@@ -136,7 +136,7 @@ struct QD_API dd_real {
   static dd_real sqr(double d);
 
   static dd_real sqrt(double a);
-  
+
   bool is_zero() const;
   bool is_one() const;
   bool is_positive() const;
@@ -145,16 +145,16 @@ struct QD_API dd_real {
   static dd_real rand(void);
 
   void to_digits(char *s, int &expn, int precision = _ndigits) const;
-  void write(char *s, int len, int precision = _ndigits, 
+  void write(char *s, int len, int precision = _ndigits,
       bool showpos = false, bool uppercase = false) const;
-  std::string to_string(int precision = _ndigits, int width = 0, 
-      std::ios_base::fmtflags fmt = static_cast<std::ios_base::fmtflags>(0), 
+  std::string to_string(int precision = _ndigits, int width = 0,
+      std::ios_base::fmtflags fmt = static_cast<std::ios_base::fmtflags>(0),
       bool showpos = false, bool uppercase = false, char fill = ' ') const;
   int read(const char *s, dd_real &a);
 
   /* Debugging Methods */
   void dump(const std::string &name = "", std::ostream &os = std::cerr) const;
-  void dump_bits(const std::string &name = "", 
+  void dump_bits(const std::string &name = "",
                  std::ostream &os = std::cerr) const;
 
   static dd_real debug_rand();
@@ -178,7 +178,7 @@ QD_API dd_real ddrand(void);
 QD_API dd_real sqrt(const dd_real &a);
 
 QD_API dd_real polyeval(const dd_real *c, int n, const dd_real &x);
-QD_API dd_real polyroot(const dd_real *c, int n, 
+QD_API dd_real polyroot(const dd_real *c, int n,
     const dd_real &x0, int max_iter = 32, double thresh = 0.0);
 
 QD_API inline bool isnan(const dd_real &a) { return a.isnan(); }
@@ -270,7 +270,7 @@ QD_API dd_real atan2(const dd_real &y, const dd_real &x);
 QD_API dd_real sinh(const dd_real &a);
 QD_API dd_real cosh(const dd_real &a);
 QD_API dd_real tanh(const dd_real &a);
-QD_API void sincosh(const dd_real &a, 
+QD_API void sincosh(const dd_real &a,
                       dd_real &sinh_a, dd_real &cosh_a);
 
 QD_API dd_real asinh(const dd_real &a);
@@ -289,4 +289,3 @@ QD_API std::istream& operator>>(std::istream &s, dd_real &a);
 #endif
 
 #endif /* _QD_DD_REAL_H */
-

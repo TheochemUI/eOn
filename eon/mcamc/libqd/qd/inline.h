@@ -9,7 +9,7 @@
  *
  * This file contains the basic functions used both by double-double
  * and quad-double package.  These are declared as inline functions as
- * they are the smallest building blocks of the double-double and 
+ * they are the smallest building blocks of the double-double and
  * quad-double arithmetic.
  */
 #ifndef _QD_INLINE_H
@@ -124,7 +124,7 @@ inline double aint(double d) {
   return (d >= 0.0) ? std::floor(d) : std::ceil(d);
 }
 
-/* These are provided to give consistent 
+/* These are provided to give consistent
    interface for double with double-double and quad-double. */
 inline void sincosh(double t, double &sinh_t, double &cosh_t) {
   sinh_t = std::sinh(t);

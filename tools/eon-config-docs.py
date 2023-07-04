@@ -38,12 +38,11 @@ class documentation():
                 f.write("   default: %s\n" %config.format[i].keys[j].default)
             f.write("\n")
             f.write("   %s\n" %config.format[i].keys[j].description)
-            f.write("\n") 
+            f.write("\n")
             if config.format[i].keys[j].default != None:
                 if len(config.format[i].keys[j].values) != 0:
                     f.write("   options:\n")
-                    f.write("\n") 
+                    f.write("\n")
                     for k in range(len(config.format[i].keys[j].values)):
                         f.write("       **%s**: %s\n" %(config.format[i].keys[j].values[k].name, config.format[i].keys[j].values[k].description))
                         f.write("\n")
-

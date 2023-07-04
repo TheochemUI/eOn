@@ -46,7 +46,7 @@ c        write(*,*) i,ispec(i),x0(i),y0(i),z0(i)
 c      enddo
       point5 = 0.5d0
       pe = 0.0d0
-      ev = 1.602177d-19 
+      ev = 1.602177d-19
       one = 1.
       pi = 3.14159265358979324d0
 
@@ -144,7 +144,7 @@ c ******* point in routine - from alan foreman at harwell *************
       if (m.gt.nnbrs) goto 999
 c *************** jmh dec 88 : end ************************************
       jaddr(m) = i
-      xnbr(m) = x0(i) 
+      xnbr(m) = x0(i)
       ynbr(m) = y0(i)
       znbr(m) = z0(i)
       dafnbr(m) = dafrho(i)
@@ -248,8 +248,8 @@ C
        r = dsqrt(rsq)
 c
 ***********************************************************************
-      vsum=0.0d0 
-      vsumd=0.0d0 
+      vsum=0.0d0
+      vsumd=0.0d0
       IF(ipick1.eq.1) THEN
       if (r.gt.rcutp_fe) goto 7776
 c**********New ackland potential-2004*******************
@@ -338,10 +338,10 @@ C Pair potential of He-Fe interaction
      #              +xhep(8)*(HH(r8-r)*(r8-r)**2*3.)
      #              )*(-1.)
  7766  continue
-C - He-He interaction 
+C - He-He interaction
        ELSEIF(ipick1.EQ.3) THEN
         if(r.gt.5.4d0) go to 7666 ! need to check
-         xrm=r/herm  
+         xrm=r/herm
          sumc=c6/xrm**6.0+c8/xrm**8.0+c10/xrm**10.0
          term=heaa*exp(-hea*xrm+heb*xrm*xrm)
         if (xrm.lt.hed) then
@@ -567,7 +567,7 @@ c
       if (i.eq.0) goto 599
       m = 0
 99    m = m+1
-c ******* jmh dec 88 : this statement moved from later **************** 
+c ******* jmh dec 88 : this statement moved from later ****************
 c ******* point in routine - from alan foreman at harwell *************
 cRES3  info from HFD via AFC at Liverpool                               RES3
 cRES3 if (max.gt.nnbrs) goto 999                                        RES3
@@ -766,7 +766,7 @@ c ***************** jmh dec 88 : end ******************************
 c=======================================================================
 c Embedding energy or its derivative
 c      ro   -   density
-c      iw=1 -   embe = energy; 
+c      iw=1 -   embe = energy;
 c      iw=2 -   embe = derivative of energy
 c=======================================================================
 c

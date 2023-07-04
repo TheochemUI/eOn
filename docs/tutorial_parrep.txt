@@ -11,7 +11,7 @@ The example system is the diffusion of an Al adatom on the Al(100) surface. A sn
 ..  image:: fig/aladatom1.png
     :align: center
 
-The ``config.ini`` file will run a parallel replica job with 2 replicas on one local core. 
+The ``config.ini`` file will run a parallel replica job with 2 replicas on one local core.
 
 .. literalinclude:: ../examples/parallel-replica/.config.ini.tur
 
@@ -49,10 +49,10 @@ Information from the trajectoy is written in the ``dynamics.txt`` file::
                 0             0             0             1  8.200000e-12  8.200000e-12      0.000000  0.000000e+00
 
 The first column contains the number of the trajectories which find a transition label the successful searches, in this case all the three searches are successful. The second and fouth column label the reactant and product; Column 5 and Column 6 are the transition time for each success searches and the accumulated simulation time.
-    
+
 Detailed information of the simulation is stored in the folder ``states``. where the geometric and energy of the visited states are stored in the sub-folder labeled as state id. You can find the geometric of the prodcut in ``states/1/reactant.con/``, a snapshot is shown below:
 
-..  image:: fig/aladatom2.png 
+..  image:: fig/aladatom2.png
     :align: center
 
 Compared to the reactant geometric, we can tell that the transition we found follows the exchange mechanism.
@@ -70,5 +70,5 @@ You can turn on the hyperdynamics method by adding the following section to your
     bb_dvmax=0.4                    ; magnitude of the bond-boost bias potential
     bb_stretch_threshold=0.2        ; defines the bond-boost dividing surface
     bb_ds_curvature=0.95            ; curvature near the bond-boost dividing surface, it should be <= 1; a value of 0.9-0.98 is recommended
-   
+
 All other settings and output infomation are as in a regular parallel replica dynamics simulation.
