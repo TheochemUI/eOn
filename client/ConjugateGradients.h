@@ -52,13 +52,13 @@ public:
    * Either calls the single_step or line_search method depending on the
    * parameters \return whether or not the algorithm has converged
    */
-  int step(double maxMove) override;
+  int step(double a_maxMove) override;
   //! Runs the conjugate gradient
   /**
    * \todo method should also return an error code and message if the algorithm
    * errors out \return algorithm convergence
    */
-  int run(size_t maxIterations, double maxMove) override;
+  int run(size_t a_maxIterations, double a_maxMove) override;
   //! Gets the direction of the next step
   Eigen::VectorXd getStep();
 
