@@ -55,7 +55,7 @@ int FIRE::step(double a_maxMove) {
   }
 }
 
-int FIRE::run(int a_maxIterations, double a_maxMove) {
+int FIRE::run(size_t a_maxIterations, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxIterations) {
     step(a_maxMove);
   }
