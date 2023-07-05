@@ -21,12 +21,20 @@ int Quickmin::step(double a_maxMove) {
                      fmt::streamed(m_vel));
   m_objf->setPositions(m_objf->getPositions() + dr);
   m_iteration++;
-  return m_objf->isConverged();
+  if (m_objf->isConverged()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int Quickmin::run(size_t a_maxSteps, double a_maxMove) {
   while (!m_objf->isConverged() && m_iteration < a_maxSteps) {
     step(a_maxMove);
   }
-  return m_objf->isConverged();
+  if (m_objf->isConverged()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
