@@ -31,19 +31,19 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   return m_direction;
 }
 
-int ConjugateGradients::step(double maxMove) {
+int ConjugateGradients::step(double a_maxMove) {
   bool converged;
   if (m_params->optCGLineSearch) {
-    converged = line_search(maxMove);
+    converged = line_search(a_maxMove);
   } else {
-    converged = single_step(maxMove);
+    converged = single_step(a_maxMove);
   }
   if (converged)
     return 1;
   return 0;
 }
 
-int ConjugateGradients::line_search(double maxMove) {
+int ConjugateGradients::line_search(double a_maxMove) {
   Eigen::VectorXd pos;
   Eigen::VectorXd posStep;
   Eigen::VectorXd forceBeforeStep;
@@ -73,9 +73,9 @@ int ConjugateGradients::line_search(double maxMove) {
     stepSize = projectedForce / curvature;
     // stepSize = projectedForceBeforeStep / curvature;
 
-    if (maxMove < fabs(stepSize)) {
+    if (a_maxMove < fabs(stepSize)) {
       // first part get the sign of stepSize
-      stepSize = ((stepSize > 0) - (stepSize < 0)) * maxMove;
+      stepSize = ((stepSize > 0) - (stepSize < 0)) * a_maxMove;
     }
 
     forceBeforeStep = m_force;
@@ -100,7 +100,7 @@ int ConjugateGradients::line_search(double maxMove) {
   return 0;
 }
 
-int ConjugateGradients::single_step(double maxMove) {
+int ConjugateGradients::single_step(double a_maxMove) {
   Eigen::VectorXd pos;
   Eigen::VectorXd posStep;
   Eigen::VectorXd forceAfterStep;
@@ -121,25 +121,25 @@ int ConjugateGradients::single_step(double maxMove) {
   double curvature =
       (projectedForce1 - projectedForce2) / m_params->finiteDifference;
 
-  double stepSize = maxMove;
+  double stepSize = a_maxMove;
 
   if (curvature > 0.0) {
     stepSize = projectedForce1 / curvature;
   }
 
-  if (m_params->saddleBowlBreakout and maxMove < 0.0) {
-    stepSize = -maxMove;
-    maxMove = -maxMove;
+  if (m_params->saddleBowlBreakout and a_maxMove < 0.0) {
+    stepSize = -a_maxMove;
+    a_maxMove = -a_maxMove;
   }
 
   if (!m_params->optCGNoOvershooting) {
     if (m_params->saddleBowlBreakout) {
       // max displacement is based on system not single atom
       pos += helper_functions::maxMotionAppliedV(stepSize * m_directionNorm,
-                                                 maxMove);
+                                                 a_maxMove);
     } else {
       pos += helper_functions::maxAtomMotionAppliedV(stepSize * m_directionNorm,
-                                                     maxMove);
+                                                     a_maxMove);
     }
     m_objf->setPositions(pos);
   } else {
@@ -150,7 +150,7 @@ int ConjugateGradients::single_step(double maxMove) {
     while (passedMinimum < 0. and
            (0.1 * fabs(projectedForce1) < fabs(projectedForce2))) {
       posStep = pos + helper_functions::maxAtomMotionAppliedV(
-                          stepSize * m_directionNorm, maxMove);
+                          stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);
       projectedForce2 = forceAfterStep.dot(m_directionNorm);
@@ -166,7 +166,7 @@ int ConjugateGradients::single_step(double maxMove) {
     }
   }
   if (m_params->optCGKnockOutMaxMove) {
-    if (stepSize >= maxMove) {
+    if (stepSize >= a_maxMove) {
       // knockout old search direction
       m_directionOld = m_objf->getPositions() * 0.0;
       m_forceOld = m_objf->getPositions() * 0.0;
@@ -177,10 +177,10 @@ int ConjugateGradients::single_step(double maxMove) {
   return m_objf->isConverged();
 }
 
-int ConjugateGradients::run(int maxIterations, double maxMove) {
+int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
-  while (!m_objf->isConverged() && iterations <= maxIterations) {
-    step(maxMove);
+  while (!m_objf->isConverged() && iterations <= a_maxIterations) {
+    step(a_maxMove);
     iterations++;
   }
   return m_objf->isConverged();
