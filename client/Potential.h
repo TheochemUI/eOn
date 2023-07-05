@@ -14,11 +14,12 @@ private:
   PotType ptype;
 
 protected:
-  std::shared_ptr<Parameters> params;
+  std::shared_ptr<Parameters> m_params;
 
 public:
-  Potential(std::shared_ptr<Parameters> paramsIn)
-      : ptype{paramsIn->potential} {}
+  Potential(std::shared_ptr<Parameters> a_params)
+      : ptype{a_params->potential},
+        m_params{a_params} {}
   virtual ~Potential() = default;
 
   static int fcalls;
