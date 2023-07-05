@@ -145,8 +145,8 @@ public:
   double refineThreshold;      // threshold to switch opt_method
   string optConvergenceMetric; // norm, max_atom, max_component
   string optConvergenceMetricLabel;
-  long optMaxIterations; // maximum iterations for saddle point searches and
-                         // minimization
+  size_t optMaxIterations; // maximum iterations for saddle point searches and
+                           // minimization
   double
       optMaxMove; // maximum displacement vector for a step during optimization
   double optConvergedForce; // force convergence criterion required for an

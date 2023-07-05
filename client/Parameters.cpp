@@ -476,8 +476,8 @@ int Parameters::load(FILE *file) {
 
     optConvergedForce =
         ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
-    optMaxIterations =
-        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
+    optMaxIterations = static_cast<size_t>(
+        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations));
     optMaxMove = ini.GetValueF("Optimizer", "max_move", optMaxMove);
     processSearchMinimizationOffset = optMaxMove;
     // Handle each optimizer separately
