@@ -289,8 +289,10 @@ VectorXi Matter::getAtomicNrsFree() const {
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
                    string prefixMovie, string prefixCheckpoint) {
-  MatterObjectiveFunction objf(std::make_shared<Matter>(*this), parameters);
-  Optimizer *optimizer = Optimizer::getOptimizer(&objf, parameters.get());
+  auto objf = std::make_shared<MatterObjectiveFunction>(
+      std::make_shared<Matter>(*this), parameters);
+  auto optim =
+      helpers::create::mkOptim(objf, parameters->optMethod, parameters);
 
   ostringstream min;
   min << prefixMovie;
@@ -299,20 +301,20 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   }
 
   int iteration = 0;
-  const char *forceLabel = parameters->optConvergenceMetricLabel.c_str();
   if (!quiet) {
     SPDLOG_LOGGER_DEBUG(log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
-                        "Iter", "Step size", forceLabel, "Energy");
+                        "Iter", "Step size",
+                        parameters->optConvergenceMetricLabel, "Energy");
     SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}\n",
-                        "[Matter]", iteration, 0.0, objf.getConvergence(),
+                        "[Matter]", iteration, 0.0, objf->getConvergence(),
                         getPotentialEnergy());
   }
 
-  while (!objf.isConverged() && iteration < parameters->optMaxIterations) {
+  while (!objf->isConverged() && iteration < parameters->optMaxIterations) {
 
     AtomMatrix pos = getPositions();
 
-    optimizer->step(parameters->optMaxMove);
+    optim->step(parameters->optMaxMove);
     iteration++;
 
     double stepSize =
@@ -321,7 +323,7 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
     if (!quiet) {
       SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
                           "[Matter]", iteration, stepSize,
-                          objf.getConvergence(), getPotentialEnergy());
+                          objf->getConvergence(), getPotentialEnergy());
     }
 
     if (writeMovie) {
@@ -338,14 +340,13 @@ bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
   if (iteration == 0) {
     if (!quiet) {
       SPDLOG_LOGGER_DEBUG(log, "{} {:10i}  {:14.5e}  {:18.5e}  {:13.5f}",
-                          "[Matter]", iteration, 0.0, objf.getConvergence(),
+                          "[Matter]", iteration, 0.0, objf->getConvergence(),
                           getPotentialEnergy());
     }
   }
   //    bool converged = optimizer->run(parameters->optMaxIterations,
   //    parameters->optMaxMove);
-  delete optimizer;
-  return objf.isConverged();
+  return objf->isConverged();
 }
 
 VectorXd Matter::getPositionsFreeV() const {

@@ -111,7 +111,8 @@ NudgedElasticBand::NudgedElasticBand(
     std::shared_ptr<Matter> initialPassed, std::shared_ptr<Matter> finalPassed,
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
-    : params{parametersPassed}, pot{potPassed} {
+    : params{parametersPassed},
+      pot{potPassed} {
   numImages = params->nebImages;
   atoms = initialPassed->numberOfAtoms();
   auto linear_path = helper_functions::neb_paths::linearPath(
@@ -150,7 +151,8 @@ NudgedElasticBand::NudgedElasticBand(
     std::vector<std::shared_ptr<Matter>> initPath,
     std::shared_ptr<Parameters> parametersPassed,
     std::shared_ptr<Potential> potPassed)
-    : params{parametersPassed}, pot{potPassed} {
+    : params{parametersPassed},
+      pot{potPassed} {
   numImages = params->nebImages;
   auto initialPassed = initPath.front();
   auto finalPassed = initPath.back();
@@ -193,13 +195,14 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
 
   updateForces();
 
-  NEBObjectiveFunction objf(this, params);
+  auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
 
   bool switched{false};
-  Optimizer *optim = Optimizer::getOptimizer(&objf, params.get());
-  Optimizer *refine_optim = nullptr;
-  if (params->refineOptMethod != "none"s) {
-    refine_optim = Optimizer::getOptimizer(&objf, params.get(), true);
+  auto optim = helpers::create::mkOptim(objf, params->optMethod, params);
+  std::unique_ptr<Optimizer> refine_optim{nullptr};
+  if (params->refineOptMethod != OptType::None) {
+    refine_optim =
+        helpers::create::mkOptim(objf, params->refineOptMethod, params);
   }
   SPDLOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
                "step size", params->optConvergenceMetricLabel, "max image",
@@ -207,7 +210,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
   SPDLOG_DEBUG(
       "---------------------------------------------------------------\n");
 
-  while (objf.status != NEBStatus::GOOD) {
+  while (objf->status != NEBStatus::GOOD) {
     if (params->writeMovies) {
       bool append = true;
       if (iteration == 0) {
@@ -222,7 +225,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
       fclose(fileNEBPath);
       printImageData(true, iteration);
     }
-    VectorXd pos = objf.getPositions();
+    VectorXd pos = objf->getPositions();
     double convForce{convergenceForce()};
     if (iteration) { // so that we print forces before taking an optimizer step
       if (iteration >= params->nebMaxIterations) {
@@ -235,7 +238,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
         } else {
           if (!switched) {
             switched = true;
-            SPDLOG_DEBUG("Switched to {}", params->refineOptMethod);
+            SPDLOG_DEBUG("Switched to {}",
+                         helper_functions::getOptName(params->refineOptMethod));
           }
           refine_optim->step(params->optMaxMove);
         }
@@ -249,24 +253,24 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute(void) {
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
     double stepSize = helper_functions::maxAtomMotionV(
-        path[0]->pbcV(objf.getPositions() - pos));
+        path[0]->pbcV(objf->getPositions() - pos));
     SPDLOG_LOGGER_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
                         iteration, stepSize, convergenceForce(), maxEnergyImage,
                         dE);
 
     if (pot->getType() == PotType::PYSURROGATE) {
-      if (objf.isUncertain()) {
+      if (objf->isUncertain()) {
         SPDLOG_LOGGER_DEBUG(log, "NEB failed due to high uncertainity");
         status = NEBStatus::MAX_UNCERTAINITY;
         break;
-      } else if (objf.isConverged()) {
+      } else if (objf->isConverged()) {
         SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
         status = NEBStatus::GOOD;
         break;
       }
 
     } else {
-      if (objf.isConverged()) {
+      if (objf->isConverged()) {
         SPDLOG_LOGGER_DEBUG(log, "NEB converged\n");
         status = NEBStatus::GOOD;
         break;

@@ -6,7 +6,6 @@
 #include "Matter.h"
 
 #include "Parameters.h"
-#include "Prefactor.h"
 
 namespace Prefactor {
 const char RATE_HTST[] = "htst";

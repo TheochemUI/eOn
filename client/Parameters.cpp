@@ -117,9 +117,9 @@ Parameters::Parameters() {
   saddleZeroModeAbortCurvature = 0.0;   // eV/Ang^2
 
   // [Optimizers] //
-  optMethod = "cg"s;
+  optMethod = OptType::ConjugateGradient;
   optConvergenceMetric = "norm"s;
-  refineOptMethod = "none"s;
+  refineOptMethod = OptType::None;
   refineThreshold = 0.5;
   optMaxIterations = 1000;
   optConvergedForce = 0.01;
@@ -452,9 +452,10 @@ int Parameters::load(FILE *file) {
                       processSearchMinimizationOffset);
 
     // [Optimizers] //
-    optMethod = toLowerCase(ini.GetValue("Optimizer", "opt_method", optMethod));
-    refineOptMethod = toLowerCase(
-        ini.GetValue("Optimizer", "refine_opt_method", refineOptMethod));
+    optMethod = helper_functions::getOptType(
+        toLowerCase(ini.GetValue("Optimizer", "opt_method")));
+    refineOptMethod = helper_functions::getOptType(
+        toLowerCase(ini.GetValue("Optimizer", "refine_opt_method")));
     refineThreshold =
         ini.GetValueF("Optimizer", "refine_threshold", refineThreshold);
     optConvergenceMetric = toLowerCase(
@@ -475,8 +476,8 @@ int Parameters::load(FILE *file) {
 
     optConvergedForce =
         ini.GetValueF("Optimizer", "converged_force", optConvergedForce);
-    optMaxIterations =
-        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations);
+    optMaxIterations = static_cast<size_t>(
+        ini.GetValueL("Optimizer", "max_iterations", optMaxIterations));
     optMaxMove = ini.GetValueF("Optimizer", "max_move", optMaxMove);
     processSearchMinimizationOffset = optMaxMove;
     // Handle each optimizer separately
