@@ -141,11 +141,7 @@ int LBFGS::step(double a_maxMove) {
 
   m_iteration++;
 
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
 
 int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
@@ -155,9 +151,5 @@ int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
     if (status < 0)
       return -1;
   }
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
