@@ -174,11 +174,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     }
   }
 
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
 
 int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
@@ -187,9 +183,5 @@ int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
     step(a_maxMove);
     iterations++;
   }
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }

@@ -29,20 +29,12 @@ int SteepestDescent::step(double a_maxMove) {
 
   iteration++;
 
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
 
 int SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
   while (!m_objf->isConverged() && iteration < a_maxIteration) {
     step(a_maxMove);
   }
-  if (m_objf->isConverged()) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return m_objf->isConverged() ? 1 : 0;
 }
