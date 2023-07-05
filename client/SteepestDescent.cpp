@@ -3,58 +3,46 @@
 
 #include "SteepestDescent.h"
 
-SteepestDescent::SteepestDescent(ObjectiveFunction *objfPassed,
-                                 Parameters *parametersPassed) {
-  objf = objfPassed;
-  parameters = parametersPassed;
+int SteepestDescent::step(double a_maxMove) {
+  Eigen::VectorXd r = m_objf->getPositions();
+  Eigen::VectorXd f = -m_objf->getGradient();
 
-  iteration = 0;
-  if (spdlog::get("sd")) {
-    log = spdlog::get("sd");
-  } else {
-    log = spdlog::basic_logger_st("sd", "_sd.log", true);
-  }
-  log->set_pattern("[%l] [SD] %v");
-}
-
-int SteepestDescent::step(double maxMove) {
-  VectorXd r = objf->getPositions();
-  VectorXd f = -objf->getGradient();
-
-  VectorXd dr;
-  double alpha = parameters->optSDAlpha;
-  if (parameters->optSDTwoPoint == true && iteration > 0) {
-    VectorXd dx = r - rPrev;
-    VectorXd dg = -f + fPrev;
+  Eigen::VectorXd dr;
+  double alpha = m_params->optSDAlpha;
+  if (m_params->optSDTwoPoint == true && iteration > 0) {
+    Eigen::VectorXd dx = r - m_rPrev;
+    Eigen::VectorXd dg = -f + m_fPrev;
     alpha = dx.dot(dx) / dx.dot(dg);
     if (alpha < 0) {
-      alpha = parameters->optSDAlpha;
+      alpha = m_params->optSDAlpha;
     }
-    SPDLOG_LOGGER_DEBUG(log, "[SD] alpha: {:.4e}", alpha);
+    SPDLOG_LOGGER_DEBUG(m_log, "[SD] alpha: {:.4e}", alpha);
   }
 
   dr = alpha * f;
-  dr = helper_functions::maxAtomMotionAppliedV(dr, maxMove);
+  dr = helper_functions::maxAtomMotionAppliedV(dr, a_maxMove);
 
-  objf->setPositions(r + dr);
+  m_objf->setPositions(r + dr);
 
-  rPrev = r;
-  fPrev = f;
+  m_rPrev = r;
+  m_fPrev = f;
 
   iteration++;
 
-  //    return objf->isConverged();
-  if (objf->isConverged())
+  if (m_objf->isConverged()) {
     return 1;
-  return 0;
+  } else {
+    return 0;
+  }
 }
 
-int SteepestDescent::run(int maxSteps, double maxMove) {
-  while (!objf->isConverged() && iteration < maxSteps) {
-    step(maxMove);
+int SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
+  while (!m_objf->isConverged() && iteration < a_maxIteration) {
+    step(a_maxMove);
   }
-  //    return objf->isConverged();
-  if (objf->isConverged())
+  if (m_objf->isConverged()) {
     return 1;
-  return 0;
+  } else {
+    return 0;
+  }
 }
