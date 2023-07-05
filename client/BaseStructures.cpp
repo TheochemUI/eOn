@@ -356,7 +356,7 @@ std::string getOptName(OptType a_otype) {
     return "Steepest Descent optimizer"s;
   }
   default:
-    throw std::runtime_error("[Error] Invalid Optimizer!!");
+    throw std::runtime_error("[Error] Invalid Optimizer type!!");
   }
 }
 OptType getOptType(std::string a_oname) {
@@ -373,7 +373,7 @@ OptType getOptType(std::string a_oname) {
   } else if (a_oname == "unknown"s) {
     return OptType::Unknown;
   } else {
-    throw std::runtime_error("[Error] Invalid Optimizer!!");
+    throw std::runtime_error("[Error] Invalid Optimizer string!!");
   }
 }
 } // namespace helper_functions
