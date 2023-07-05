@@ -331,4 +331,49 @@ std::string getRunStatusName(RunStatus rstype) {
     break;
   }
 }
+
+std::string getOptName(OptType a_otype) {
+  switch (a_otype) {
+  case OptType::None: {
+    return "No optimizer"s;
+  }
+  case OptType::Unknown: {
+    return "Unknown optimizer"s;
+  }
+  case OptType::QuickMin: {
+    return "QuickMin optimizer"s;
+  }
+  case OptType::ConjugateGradient: {
+    return "Conjugate Gradient optimizer"s;
+  }
+  case OptType::LBFGS: {
+    return "Limited memory Broyden-Fletcher-Goldfarb-Shanno optimizer"s;
+  }
+  case OptType::FIRE: {
+    return "Fast Inertial Relaxation Engine optimizer"s;
+  }
+  case OptType::SteepestDescent: {
+    return "Steepest Descent optimizer"s;
+  }
+  default:
+    throw std::runtime_error("[Error] Invalid Optimizer!!");
+  }
+}
+OptType getOptType(std::string a_oname) {
+  if (a_oname == "cg"s) {
+    return OptType::ConjugateGradient;
+  } else if (a_oname == "qm"s) {
+    return OptType::QuickMin;
+  } else if (a_oname == "lbfgs"s) {
+    return OptType::LBFGS;
+  } else if (a_oname == "fire"s) {
+    return OptType::FIRE;
+  } else if (a_oname == "none"s) {
+    return OptType::None;
+  } else if (a_oname == "unknown"s) {
+    return OptType::Unknown;
+  } else {
+    throw std::runtime_error("[Error] Invalid Optimizer!!");
+  }
+}
 } // namespace helper_functions
